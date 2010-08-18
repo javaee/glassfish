@@ -36,8 +36,27 @@
 
 package com.sun.enterprise.resource.pool.monitor;
 
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
+import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
+import com.sun.enterprise.config.serverbeans.ResourcePool;
+import com.sun.enterprise.connectors.ConnectorRuntime;
 import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.resource.listener.PoolLifeCycleListener;
+import com.sun.logging.LogDomains;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import org.glassfish.api.monitoring.ContainerMonitoring;
+import org.glassfish.external.probe.provider.PluginPoint;
+import org.glassfish.external.probe.provider.StatsProviderManager;
 
 /**
  * Implementation of PoolLifeCycleListener interface to listen to events related
@@ -51,6 +70,15 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
     //TODO ASR check all methods for poolName usage which is incorrect
     private PoolInfo poolInfo;
     private ConnectionPoolProbeProvider poolProbeProvider;
+    //Map of app names and respective emitters for a pool.
+    private Map<PoolInfo, Map<String, ConnectionPoolAppEmitterImpl>> appStatsMap = null;
+    //Map of app names for a resource handle id
+    private Map<Long, String> resourceAppAssociationMap;
+    private static Logger _logger = LogDomains.getLogger(ConnectionPoolEmitterImpl.class,
+            LogDomains.RSR_LOGGER);
+    private List<JdbcConnPoolAppStatsProvider> jdbcPoolAppStatsProviders = null;
+    private List<ConnectorConnPoolAppStatsProvider> ccPoolAppStatsProviders = null;
+    private ConnectorRuntime runtime;
 
     /**
      * Constructor.
@@ -62,6 +90,11 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
         this.poolInfo = poolInfo;
         this.poolName = poolInfo.getName();
         this.poolProbeProvider = provider;
+        this.jdbcPoolAppStatsProviders = new ArrayList<JdbcConnPoolAppStatsProvider>();
+        this.ccPoolAppStatsProviders = new ArrayList<ConnectorConnPoolAppStatsProvider>();
+        this.appStatsMap = new HashMap<PoolInfo, Map<String, ConnectionPoolAppEmitterImpl>>();
+        this.resourceAppAssociationMap = new HashMap<Long, String>();
+        runtime = ConnectorRuntime.getRuntime();
     }
 
     /**
@@ -79,8 +112,13 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * Fires probe event that a connection has been acquired by the application 
      * for the given jdbc connection pool.
      */
-    public void connectionAcquired() {
+    public void connectionAcquired(long resourceHandleId) {
+        ConnectionPoolAppEmitterImpl appEmitter =
+                detectAppBasedProviders(getAppName(resourceHandleId));
         poolProbeProvider.connectionAcquiredEvent(poolName);
+        if(appEmitter != null) {
+            appEmitter.connectionAcquired();
+        }
     }
 
     /**
@@ -122,16 +160,23 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * Fires probe event that a connection is destroyed for the 
      * given jdbc connection pool.
      */
-    public void connectionDestroyed() {
+    public void connectionDestroyed(long resourceHandleId) {
         poolProbeProvider.connectionDestroyedEvent(poolName);
+        //Clearing the resource handle id appName mappings stored
+        resourceAppAssociationMap.remove(resourceHandleId);
     }
 
     /**
      * Fires probe event that a connection is released for the given jdbc
      * connection pool.
      */
-    public void connectionReleased() {
+    public void connectionReleased(long resourceHandleId) {
+        ConnectionPoolAppEmitterImpl appEmitter =
+                detectAppBasedProviders(getAppName(resourceHandleId));
         poolProbeProvider.connectionReleasedEvent(poolName);
+        if(appEmitter != null) {
+            appEmitter.connectionReleased();
+        }        
     }
 
     /**
@@ -165,8 +210,13 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * Fires probe event related to the fact the given jdbc connection pool has
      * got a connection used event.
      */
-    public void connectionUsed() {
+    public void connectionUsed(long resourceHandleId) {
+        ConnectionPoolAppEmitterImpl appEmitter =
+                detectAppBasedProviders(getAppName(resourceHandleId));
         poolProbeProvider.connectionUsedEvent(poolName);
+        if (appEmitter != null) {
+            appEmitter.connectionUsed();
+        }
     }
 
     /**
@@ -184,8 +234,13 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * got a decrement connection used event.
      * 
      */
-    public void decrementConnectionUsed() {
+    public void decrementConnectionUsed(long resourceHandleId) {
+        ConnectionPoolAppEmitterImpl appEmitter =
+                detectAppBasedProviders(getAppName(resourceHandleId));
         poolProbeProvider.decrementConnectionUsedEvent(poolName);
+        if(appEmitter != null) {
+            appEmitter.decrementConnectionUsed();
+        }
     }
 
     /**
@@ -224,5 +279,151 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      */
     public void connectionRequestDequeued() {
         poolProbeProvider.connectionRequestDequeuedEvent(poolName);
+    }
+
+    private String getAppName(long resourceHandleId) {
+        Context ic = null;
+        String appName = null;
+        try {
+            ic = new InitialContext();
+            appName = (String) ic.lookup("java:app/AppName");
+        } catch (NamingException ex) {
+            _logger.log(Level.FINE, "Unable to get application name using "
+                    + "java:app/AppName method");
+            appName = resourceAppAssociationMap.remove(resourceHandleId);
+        }
+        resourceAppAssociationMap.put(resourceHandleId, appName);
+        
+        return appName;
+    }
+
+    /**
+     * Detect if a Stats Provider has already been registered to the
+     * monitoring framework for this appName and if so, return the specific
+     * emitter. If not already registered, create and register the
+     * Stats Provider object to the monitoring framework and add to the list
+     * of emitters.
+     *
+     * @param appName
+     * @return
+     */
+    private ConnectionPoolAppEmitterImpl detectAppBasedProviders(String appName) {
+
+        ConnectionPoolAppProbeProvider probeAppProvider = null;
+        ConnectionPoolAppEmitterImpl connPoolAppEmitter = null;
+
+        if (appName == null) {
+            //Case when appname cannot be detected. Emitter cannot exist for
+            //a null appName for any pool.
+            return null;
+        }
+
+        if (appStatsMap.containsKey(poolInfo)) {
+            //Some apps have been registered for this pool.
+            //Find if this appName is already registered.
+            //All appEmitters for this pool
+            Map<String, ConnectionPoolAppEmitterImpl> appEmitters = appStatsMap.get(poolInfo);
+            //Check if the appEmitters list has an emitter for the appName.
+            ConnectionPoolAppEmitterImpl emitter = appEmitters.get(appName);
+            if(emitter != null) {
+                //This appName has already been registered to StatsProviderManager
+                return emitter;
+            } else {
+                if (!ConnectorsUtil.isApplicationScopedResource(poolInfo)) {
+                    //register to the StatsProviderManager and add to the list.
+                    probeAppProvider = registerConnectionPool(appName);
+                    connPoolAppEmitter = addToList(appName, probeAppProvider,
+                            appEmitters);
+                }
+            }
+        } else {
+            if (!ConnectorsUtil.isApplicationScopedResource(poolInfo)) {
+                //Does not contain any app providers associated with this poolname
+                //Create a map of app emitters for the appName and add them to the
+                //appStatsMap
+                probeAppProvider = registerConnectionPool(appName);
+                Map<String, ConnectionPoolAppEmitterImpl> appEmitters =
+                        new HashMap<String, ConnectionPoolAppEmitterImpl>();
+                connPoolAppEmitter = addToList(appName, probeAppProvider, appEmitters);
+            }
+        }
+        return connPoolAppEmitter;
+    }
+
+    /**
+     * Register the jdbc/connector connection pool Stats Provider object to the
+     * monitoring framework under the specific application name monitoring
+     * sub tree.
+     *
+     * @param appName
+     * @return
+     */
+    private ConnectionPoolAppProbeProvider registerConnectionPool(String appName) {
+        ConnectionPoolAppProbeProvider probeAppProvider = null;
+        ResourcePool pool = runtime.getConnectionPoolConfig(poolInfo);
+        if (pool instanceof JdbcConnectionPool) {
+            probeAppProvider = new JdbcConnPoolAppProbeProvider();
+            JdbcConnPoolAppStatsProvider jdbcPoolAppStatsProvider =
+                    new JdbcConnPoolAppStatsProvider(poolInfo, appName);
+            StatsProviderManager.register(
+                    ContainerMonitoring.JDBC_CONNECTION_POOL,
+                    PluginPoint.SERVER,
+                    "resources/" + poolName + "/" + appName, jdbcPoolAppStatsProvider);
+            jdbcPoolAppStatsProviders.add(jdbcPoolAppStatsProvider);
+        } else if (pool instanceof ConnectorConnectionPool) {
+            probeAppProvider = new ConnectorConnPoolAppProbeProvider();
+            ConnectorConnPoolAppStatsProvider ccPoolAppStatsProvider =
+                    new ConnectorConnPoolAppStatsProvider(poolInfo, appName);
+            StatsProviderManager.register(
+                    ContainerMonitoring.CONNECTOR_CONNECTION_POOL,
+                    PluginPoint.SERVER,
+                    "resources/" + poolName + "/" + appName, ccPoolAppStatsProvider);
+            ccPoolAppStatsProviders.add(ccPoolAppStatsProvider);
+        }
+        return probeAppProvider;
+    }
+
+    /**
+     * Add to the pool emitters list. the connection pool application emitter
+     * for the specific poolInfo and appName.
+     * @param appName
+     * @param probeAppProvider
+     * @param appEmitters
+     * @return
+     */
+    private ConnectionPoolAppEmitterImpl addToList(String appName,
+            ConnectionPoolAppProbeProvider probeAppProvider,
+            Map<String, ConnectionPoolAppEmitterImpl> appEmitters) {
+        ConnectionPoolAppEmitterImpl connPoolAppEmitter = null;
+        if (probeAppProvider != null) {
+            //Add the newly created probe provider to the list.
+            connPoolAppEmitter = new ConnectionPoolAppEmitterImpl(poolName,
+                    appName, probeAppProvider);
+            appEmitters.put(appName, connPoolAppEmitter);
+            appStatsMap.put(poolInfo, appEmitters);
+        }
+        runtime.getProbeProviderUtil().
+                getConnPoolBootstrap().addToPoolEmitters(poolInfo, this);
+        return connPoolAppEmitter;
+    }
+
+    /**
+     * Unregister the AppStatsProviders registered for this connection pool.
+     */
+    public void unregisterAppStatsProviders() {
+        Iterator jdbcProviders = jdbcPoolAppStatsProviders.iterator();
+        while (jdbcProviders.hasNext()) {
+            JdbcConnPoolAppStatsProvider jdbcPoolAppStatsProvider =
+                    (JdbcConnPoolAppStatsProvider) jdbcProviders.next();
+            StatsProviderManager.unregister(jdbcPoolAppStatsProvider);
+        }
+        Iterator ccProviders = ccPoolAppStatsProviders.iterator();
+        while (ccProviders.hasNext()) {
+            ConnectorConnPoolAppStatsProvider ccPoolAppStatsProvider =
+                    (ConnectorConnPoolAppStatsProvider) ccProviders.next();
+            StatsProviderManager.unregister(ccPoolAppStatsProvider);
+        }
+        jdbcPoolAppStatsProviders.clear();
+        ccPoolAppStatsProviders.clear();
     }
 }

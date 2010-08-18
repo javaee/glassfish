@@ -230,6 +230,10 @@ public class ResourceHandle implements
         return instance;
     }
 
+    public long getId() {
+        return id;
+    }
+
     public void fillInResourceObjects(Object userConnection,
                                       XAResource xaRes) {
         if (userConnection != null) usercon = userConnection;

@@ -49,7 +49,7 @@ import java.util.List;
  * to listen to the pool's lifecyle. Maintains a list of listeners for this pool
  * identified by poolName.
  * 
- * @author shalini
+ * @author Shalini M
  */
 public class PoolLifeCycleListenerRegistry implements PoolLifeCycleListener {
 
@@ -106,9 +106,9 @@ public class PoolLifeCycleListenerRegistry implements PoolLifeCycleListener {
         }
     }
 
-    public void connectionAcquired() {
+    public void connectionAcquired(long resourceHandleId) {
         for (PoolLifeCycleListener listener : poolListenersList) {
-            listener.connectionAcquired();
+            listener.connectionAcquired(resourceHandleId);
         }
     }
 
@@ -136,21 +136,21 @@ public class PoolLifeCycleListenerRegistry implements PoolLifeCycleListener {
         }
     }
 
-    public void connectionUsed() {
+    public void connectionUsed(long resourceHandleId) {
         for (PoolLifeCycleListener listener : poolListenersList) {
-            listener.connectionUsed();
+            listener.connectionUsed(resourceHandleId);
         }
     }
 
-    public void connectionDestroyed() {
+    public void connectionDestroyed(long resourceHandleId) {
         for (PoolLifeCycleListener listener : poolListenersList) {
-            listener.connectionDestroyed();
+            listener.connectionDestroyed(resourceHandleId);
         }
     }
 
-    public void connectionReleased() {
+    public void connectionReleased(long resourceHandleId) {
         for (PoolLifeCycleListener listener : poolListenersList) {
-            listener.connectionReleased();
+            listener.connectionReleased(resourceHandleId);
         }
     }
 
@@ -178,9 +178,9 @@ public class PoolLifeCycleListenerRegistry implements PoolLifeCycleListener {
         }
     }
 
-    public void decrementConnectionUsed() {
+    public void decrementConnectionUsed(long resourceHandleId) {
         for (PoolLifeCycleListener listener : poolListenersList) {
-            listener.decrementConnectionUsed();
+            listener.decrementConnectionUsed(resourceHandleId);
         }
     }
 

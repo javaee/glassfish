@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,73 +36,67 @@
 
 package com.sun.enterprise.resource.pool.monitor;
 
-import com.sun.enterprise.connectors.ConnectorRuntime;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
-
-
 /**
- * Utility class to create providers for monitoring purposes.
- * 
+ * Listen to events related to jdbc/connector connection pool monitoring
+ * grouped by applications.
+ * The methods invoke the probe providers internally to
+ * provide the monitoring related information grouped by applications.
+ *
  * @author Shalini M
  */
-@Service
-public class ConnectionPoolProbeProviderUtil {
+public class ConnectionPoolAppEmitterImpl {
 
-    private ConnectionPoolProbeProvider jcaProbeProvider = null;
-    private ConnectionPoolProbeProvider jdbcProbeProvider = null;
-    
-    @Inject 
-    private Habitat habitat;
-    
-    public void registerProbeProvider() {
-        if(ConnectorRuntime.getRuntime().isServer()) {
-            getConnPoolBootstrap().registerProvider();
-        }        
-    }
-    
-    /**
-     * Create probe provider for jcaPool related events.
-     * 
-     * The generated jcaPool probe providers are shared by all 
-     * jca connection pools. Each jca connection pool will qualify a 
-     * probe event with its pool name.
-     *
-     */   
-    public void createJcaProbeProvider() {    
-        jcaProbeProvider = new ConnectorConnPoolProbeProvider();
-    }
-    
-    /**
-     * Create probe provider for jdbcPool related events.
-     * 
-     * The generated jdbcPool probe providers are shared by all 
-     * jdbc connection pools. Each jdbc connection pool will qualify a 
-     * probe event with its pool name.
-     *
-     */   
-    public void createJdbcProbeProvider() {
-        jdbcProbeProvider = new JdbcConnPoolProbeProvider();
+    private String appName = null;
+    private String poolName = null;
+    private ConnectionPoolAppProbeProvider poolAppProbeProvider;
+
+    public ConnectionPoolAppEmitterImpl(String poolName, String appName,
+            ConnectionPoolAppProbeProvider provider) {
+        this.appName = appName;
+        this.poolName = poolName;
+        this.poolAppProbeProvider = provider;
     }
 
-    public ConnectionPoolStatsProviderBootstrap getConnPoolBootstrap() {
-        return habitat.getComponent(ConnectionPoolStatsProviderBootstrap.class);
+    public String getPoolName() {
+        return this.poolName;
     }
-    /**
-     * Get probe provider for connector connection pool related events
-     * @return ConnectorConnPoolProbeProvider
-     */
-    public ConnectionPoolProbeProvider getJcaProbeProvider() {
-        return jcaProbeProvider;
+
+    public String getAppName() {
+        return this.appName;
     }
     
     /**
-     * Get probe provider for jdbc connection pool related events
-     * @return JdbcConnPoolProbeProvider
+     * Fires probe event related to the fact the given connection pool has
+     * got a connection used event.
      */
-    public ConnectionPoolProbeProvider getJdbcProbeProvider() {
-        return jdbcProbeProvider;
+    public void connectionUsed() {
+        poolAppProbeProvider.connectionUsedEvent(poolName, appName);
     }
+
+    /**
+     * Fires probe event related to the fact the given connection pool has
+     * got a decrement connection used event.
+     *
+     */
+    public void decrementConnectionUsed() {
+        poolAppProbeProvider.decrementConnectionUsedEvent(poolName, appName);
+    }
+
+    /**
+     * Fires probe event that a connection has been acquired by the application
+     * for the given connection pool.
+     */
+    public void connectionAcquired() {
+        poolAppProbeProvider.connectionAcquiredEvent(poolName, appName);
+    }
+
+    /**
+     * Fires probe event that a connection is released for the given
+     * connection pool.
+     */
+    public void connectionReleased() {
+        poolAppProbeProvider.connectionReleasedEvent(poolName, appName);
+    }
+
 
 }

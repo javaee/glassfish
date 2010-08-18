@@ -52,7 +52,7 @@ public interface PoolLifeCycleListener {
     /**
      * indicates that a connection is acquired by application
      */
-    void connectionAcquired();
+    void connectionAcquired(long resourceHandleId);
 
     /**
      * indicates that a connection request is server in the time
@@ -78,17 +78,17 @@ public interface PoolLifeCycleListener {
     /**
      * indicates that a connection is being used
      */
-    void connectionUsed();
+    void connectionUsed(long resourceHandleId);
 
     /**
      * indicates that a connection is destroyed
      */
-    void connectionDestroyed();
+    void connectionDestroyed(long resourceHandleId);
 
     /**
      * indicates that a connection is released
      */
-    void connectionReleased();
+    void connectionReleased(long resourceHandleId);
 
     /**
      * indicates that a new connection is created
@@ -115,7 +115,7 @@ public interface PoolLifeCycleListener {
     /**
      * indicates that connection count that is used has to be decremented.
      */
-    void decrementConnectionUsed();
+    void decrementConnectionUsed(long resourceHandleId);
 
     /**
      * indicates that free connections count in the pool has to be decremented.

@@ -334,7 +334,6 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
         boolean pooling = Boolean.valueOf(domainCcp.getPooling());
         
         //TODO: should this be added to the beginning of this method?
-        //TODO: add properties to log strings 
         if(!pooling) {
             //Throw exception if assoc with thread is set to true.
             if(Boolean.valueOf(domainCcp.getAssociateWithThread())) {
@@ -344,7 +343,6 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
                         "cpou.pooling_disabled_assocwiththread_invalid_combination", domainCcp.getName());
                 throw new RuntimeException(i18nMsg);
             }
-            //TODO : Throw exception if flush connection pool is set
             
             //Below are useful in pooled environment only.
             //Throw warning for connection validation/validate-atmost-once/

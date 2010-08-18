@@ -36,12 +36,7 @@
 
 package com.sun.enterprise.resource.pool.monitor;
 
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
-import com.sun.enterprise.connectors.util.ResourcesUtil;
 import org.glassfish.resource.common.PoolInfo;
-import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
-import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
-import com.sun.enterprise.config.serverbeans.ResourcePool;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.listener.PoolLifeCycle;
@@ -49,8 +44,12 @@ import com.sun.enterprise.resource.pool.PoolLifeCycleListenerRegistry;
 import com.sun.enterprise.resource.pool.PoolLifeCycleRegistry;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
+import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
+import com.sun.enterprise.config.serverbeans.ResourcePool;
 
 import java.util.*;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.monitoring.ContainerMonitoring;
@@ -101,13 +100,22 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
     //List of all connector conn pool stats providers that are created and stored
     private List<ConnectorConnPoolStatsProvider> ccStatsProviders = null;
 
+    //Map of all ConnectionPoolEmitterImpl(s) for different pools
+    private Map<PoolInfo, ConnectionPoolEmitterImpl> poolEmitters = null;
     private Map<PoolInfo, PoolLifeCycleListenerRegistry> poolRegistries = null;
+    private ConnectorRuntime runtime;
 
     public ConnectionPoolStatsProviderBootstrap() {
         jdbcStatsProviders = new ArrayList<JdbcConnPoolStatsProvider>();
         ccStatsProviders = new ArrayList<ConnectorConnPoolStatsProvider>();
+        poolEmitters = new HashMap<PoolInfo, ConnectionPoolEmitterImpl>();
         poolRegistries = new HashMap<PoolInfo, PoolLifeCycleListenerRegistry>();
+        runtime = ConnectorRuntime.getRuntime();
         
+    }
+
+    public void addToPoolEmitters(PoolInfo poolInfo, ConnectionPoolEmitterImpl emitter) {
+        poolEmitters.put(poolInfo, emitter);
     }
 
     /**
@@ -143,9 +151,11 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
         }else{
             poolRegistry = poolRegistries.get(poolInfo);
         }
-        poolRegistry.registerPoolLifeCycleListener(
+        ConnectionPoolEmitterImpl emitter =
                 new com.sun.enterprise.resource.pool.monitor.ConnectionPoolEmitterImpl(
-                poolInfo, poolProvider));
+                poolInfo, poolProvider);
+        poolRegistry.registerPoolLifeCycleListener(emitter);
+        addToPoolEmitters(poolInfo, emitter);
         return poolRegistry;
     }
 
@@ -216,7 +226,7 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
      */
     private void registerPoolLifeCycleListener() {
         //Register provider only for server and not for clients
-        if(ConnectorRuntime.getRuntime().isServer()) {
+        if(runtime.isServer()) {
             PoolLifeCycleRegistry poolLifeCycleRegistry = PoolLifeCycleRegistry.getRegistry();
             poolLifeCycleRegistry.registerPoolLifeCycle(this);
         }
@@ -258,7 +268,16 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
                 }
             }
         }
+        unregisterPoolAppProviders(poolInfo);
         poolRegistries.remove(poolInfo);
+    }
+
+    public void unregisterPoolAppProviders(PoolInfo poolInfo) {
+        ConnectionPoolEmitterImpl emitter = poolEmitters.get(poolInfo);
+        //If an emitter was created for the poolInfo
+        if (emitter != null) {
+            emitter.unregisterAppStatsProviders();
+        }
     }
 
     /**
@@ -285,8 +304,8 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
         if(logger.isLoggable(Level.FINEST)) {
             logger.finest("Pool created : " + poolInfo);
         }
-        if(ConnectorRuntime.getRuntime().isServer()) {
-            ResourcePool pool = ConnectorRuntime.getRuntime().getConnectionPoolConfig(poolInfo);
+        if(runtime.isServer()) {
+            ResourcePool pool = runtime.getConnectionPoolConfig(poolInfo);
             if(pool instanceof JdbcConnectionPool) {
                 registerJdbcPool(poolInfo);
             } else if (pool instanceof ConnectorConnectionPool) {
@@ -307,7 +326,7 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
         if(logger.isLoggable(Level.FINEST)) {
             logger.finest("Pool Destroyed : " + poolInfo);
         }
-        if (ConnectorRuntime.getRuntime().isServer()) {
+        if (runtime.isServer()) {
             unregisterPool(poolInfo);
         }
     }
