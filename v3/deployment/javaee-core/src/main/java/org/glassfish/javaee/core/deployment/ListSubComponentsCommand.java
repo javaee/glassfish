@@ -173,19 +173,21 @@ public class ListSubComponentsCommand implements AdminCommand {
                         subModuleInfos.get(i));
                 }
             }
-            if(resources){
+            if (resources) {
                 Module module = application.getModule(key);
-                ActionReport subReport = report.addSubActionsReport();
-                CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation("_list-resources", subReport);
-                final ParameterMap parameters = new ParameterMap();
-                parameters.add("appname", application.getName());
-                parameters.add("modulename", module.getName());
-                inv.parameters(parameters).execute();
+                if (module != null) {
+                    ActionReport subReport = report.addSubActionsReport();
+                    CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation("_list-resources", subReport);
+                    final ParameterMap parameters = new ParameterMap();
+                    parameters.add("appname", application.getName());
+                    parameters.add("modulename", module.getName());
+                    inv.parameters(parameters).execute();
 
-                ActionReport.MessagePart subPart = subReport.getTopMessagePart();
-                for (ActionReport.MessagePart cp: subPart.getChildren()) {
-                    ActionReport.MessagePart resourcesChildPart = childPart.addChild();
-                    resourcesChildPart.setMessage("  " + cp.getMessage());
+                    ActionReport.MessagePart subPart = subReport.getTopMessagePart();
+                    for (ActionReport.MessagePart cp : subPart.getChildren()) {
+                        ActionReport.MessagePart resourcesChildPart = childPart.addChild();
+                        resourcesChildPart.setMessage("  " + cp.getMessage());
+                    }
                 }
             }
             i++;
