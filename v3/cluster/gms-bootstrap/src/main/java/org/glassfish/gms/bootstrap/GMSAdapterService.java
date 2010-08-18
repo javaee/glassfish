@@ -188,6 +188,12 @@ public class GMSAdapterService implements Startup, PostConstruct, ConfigListener
                     logger.log(TRACE_LEVEL, "creating gms-adapter for clustername " + cluster.getName() + " since no gms adapter found for clustername " + cluster.getName());
                 }
                 result = habitat.getByContract(GMSAdapter.class);
+
+                // see https://glassfish.dev.java.net/issues/show_bug.cgi?id=12850
+                if (result == null) {
+                    logger.log(Level.WARNING, "gmsadapter.not.available");
+                    return null;
+                }
                 boolean initResult = result.initialize(cluster.getName());
                 habitat.addIndex(new ExistingSingletonInhabitant<GMSAdapter>(result), GMSAdapter.class.getName(), cluster.getName());
                 if (logger.isLoggable(TRACE_LEVEL)) {
