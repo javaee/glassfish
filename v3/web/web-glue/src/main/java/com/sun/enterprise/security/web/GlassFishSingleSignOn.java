@@ -385,7 +385,7 @@ public class GlassFishSingleSignOn
             logger.fine(" Checking for cached principal for "
                         + cookie.getValue());
         }
-        SingleSignOnEntry entry = lookupEntry(cookie.getValue());
+        SingleSignOnEntry entry = lookup(cookie.getValue());
         if (entry != null) {
             if (logger.isLoggable(Level.FINE)) {
                 logger.fine(" Found cached principal '"
@@ -437,64 +437,6 @@ public class GlassFishSingleSignOn
 
 
     /**
-     * Associate the specified single sign on identifier with the
-     * specified Session.
-     *
-     * @param ssoId Single sign on identifier
-     * @param session Session to be associated
-     */
-    public void associate(String ssoId, Session session) {
-
-        if (!started) {
-            return;
-        }
-
-        //S1AS8 6155481 START
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine("Associate sso id " + ssoId + " with session "
-                        + session);
-        }
-        //S1AS8 6155481 END
-        SingleSignOnEntry sso = lookupEntry(ssoId);
-        if (sso != null) {
-            boolean wasAdded = sso.addSession(this, session);
-            if (wasAdded) {
-                synchronized (reverse) {
-                    reverse.put(session, ssoId);
-                }
-            }
-        }
-    }
-
-    /**
-     * Deregister the specified session.  If it is the last session,
-     * then also get rid of the single sign on identifier
-     *
-     * @param ssoId Single sign on identifier
-     * @param session Session to be deregistered
-     */
-    protected void deregister(String ssoId, Session session) {
-
-        synchronized (reverse) {
-            reverse.remove(session);
-        }
-
-        SingleSignOnEntry sso = lookupEntry(ssoId);
-        if ( sso == null )
-            return;
-
-        sso.removeSession( session );
-
-        // see if we are the last session, if so blow away ssoId
-        if (sso.isEmpty()) {
-            synchronized (cache) {
-                sso = (SingleSignOnEntry) cache.remove(ssoId);
-            }
-        }
-    }
-
-
-    /**
      * Deregister the specified single sign on identifier, and invalidate
      * any associated sessions.
      *
@@ -525,55 +467,7 @@ public class GlassFishSingleSignOn
     }
 
 
-    /**
-     * Register the specified Principal as being associated with the specified
-     * value for the single sign on identifier.
-     *
-     * @param ssoId Single sign on identifier to register
-     * @param principal Associated user principal that is identified
-     * @param authType Authentication type used to authenticate this
-     *  user principal
-     * @param username Username used to authenticate this user
-     * @param password Password used to authenticate this user
-     */
-    protected void register(String ssoId, Principal principal, String authType,
-                            String username, char[] password,
-                            String realmName) {
-
-        //S1AS8 6155481 START               
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine("Registering sso id '" + ssoId + "' for user '"
-                        + principal.getName() + " in realm " + realmName
-                        + "' with auth type '" + authType + "'");
-        }
-        //S1AS8 6155481 END
-        synchronized (cache) {
-            cache.put(ssoId, new SingleSignOnEntry(ssoId,
-                                                   principal, 
-                                                   authType,
-                                                   username, 
-                                                   password, 
-                                                   realmName));
-        }
-    }
-
-
     // ------------------------------------------------------ Protected Methods
-
-
-    /**
-     * Look up and return the cached SingleSignOn entry associated with this
-     * sso id value, if there is one; otherwise return <code>null</code>.
-     *
-     * @param ssoId Single sign on identifier to look up
-     */
-    protected SingleSignOnEntry lookupEntry(String ssoId) {
-
-        synchronized (cache) {
-            return ((SingleSignOnEntry) cache.get(ssoId));
-        }
-
-    }
 
 
     /**
@@ -725,7 +619,7 @@ public class GlassFishSingleSignOn
         }
 
         // Get a reference to the SingleSignOn
-        SingleSignOnEntry entry = lookupEntry(ssoId);
+        SingleSignOnEntry entry = lookup(ssoId);
         if (entry == null)
             return;
 
@@ -776,5 +670,3 @@ public class GlassFishSingleSignOn
     }
 
 }
-
-
