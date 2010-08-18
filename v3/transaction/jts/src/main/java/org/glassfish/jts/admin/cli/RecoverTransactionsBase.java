@@ -39,7 +39,6 @@ package org.glassfish.jts.admin.cli;
 import org.jvnet.hk2.annotations.Inject;
 
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.InstanceState;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Servers;
 
@@ -59,9 +58,6 @@ public class RecoverTransactionsBase {
 
     @Inject
     Servers servers;
-
-    @Inject
-    InstanceState state;
 
     @Param(name = "transactionlogdir", optional = true)
     String transactionLogDir;
@@ -116,10 +112,6 @@ public class RecoverTransactionsBase {
         }
 
         return rs;
-/**
-        return com.sun.enterprise.util.SystemPropertyConstants.DAS_SERVER_NAME.equals(serverName) || 
-                state.getState(serverName) == InstanceState.StateType.RUNNING;
-**/
     }
 
 }
