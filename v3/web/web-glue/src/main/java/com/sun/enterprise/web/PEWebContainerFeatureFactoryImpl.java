@@ -43,36 +43,30 @@ import org.jvnet.hk2.annotations.Service;
  * Implementation of WebContainerFeatureFactory which returns web container
  * feature implementations for PE.
  */
-@Service(name="pe")
+@Service(name="com.sun.enterprise.web.PEWebContainerFeatureFactoryImpl")
 public class PEWebContainerFeatureFactoryImpl
         implements WebContainerFeatureFactory {
         
-    @Override
     public WebContainerStartStopOperation getWebContainerStartStopOperation() {
         return new PEWebContainerStartStopOperation();
     }
     
-    @Override
     public HealthChecker getHADBHealthChecker(WebContainer webContainer) {
         return new PEHADBHealthChecker(webContainer);
     }
     
-    @Override
     public ReplicationReceiver getReplicationReceiver(EmbeddedWebContainer embedded) {
         return new PEReplicationReceiver(embedded);
     }    
     
-    @Override
     public SSOFactory getSSOFactory() {
         return new PESSOFactory();
     }    
 
-    @Override
     public VirtualServer getVirtualServer() {
         return new VirtualServer();
     }
     
-    @Override
     public String getSSLImplementationName(){
         return null;
     }
@@ -82,7 +76,6 @@ public class PEWebContainerFeatureFactoryImpl
      *
      * @return The default access log file prefix
      */
-    @Override
     public String getDefaultAccessLogPrefix() {
         return "_access_log.";
     }
@@ -92,7 +85,6 @@ public class PEWebContainerFeatureFactoryImpl
      *
      * @return The default access log file suffix
      */
-    @Override
     public String getDefaultAccessLogSuffix() {
         return ".txt";
     }
@@ -102,7 +94,6 @@ public class PEWebContainerFeatureFactoryImpl
      *
      * @return The default datestamp pattern to be applied to access log files
      */
-    @Override
     public String getDefaultAccessLogDateStampPattern() {
         return "yyyy-MM-dd";
     }
@@ -116,7 +107,6 @@ public class PEWebContainerFeatureFactoryImpl
      * ones are supposed to be date-stamped, and false if datestamp is to be
      * added only starting with the first rotation. 
      */
-    @Override
     public boolean getAddDateStampToFirstAccessLogFile() {
         return true;
     }
@@ -126,7 +116,6 @@ public class PEWebContainerFeatureFactoryImpl
      *
      * @return The default rotation interval in minutes
      */
-    @Override
     public int getDefaultRotationIntervalInMinutes() {
         return 15;
     }

@@ -402,10 +402,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         instanceName = _serverContext.getInstanceName();
 
-        String featureFactoryName =
-                (serverConfigLookup.getWebContainerAvailabilityEnabledFromConfig()? "ha" : "pe");
         webContainerFeatureFactory = habitat.getComponent(
-                WebContainerFeatureFactory.class, featureFactoryName);
+                PEWebContainerFeatureFactoryImpl.class);
 
         configureDynamicReloadingSettings();
         setDebugLevel();

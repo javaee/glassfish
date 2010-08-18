@@ -271,18 +271,7 @@ public class ServerConfigLookup {
         } else {
             return bool;
         }       
-    }
-
-    /**
-     * Get the sso-failover-enabled boolean from domain.xml.
-     */
-    public boolean isSsoFailoverEnabledFromConfig() {
-        WebContainerAvailability webContainerAvailabilityBean = getWebContainerAvailability();
-        if (webContainerAvailabilityBean == null) {
-            return false;
-        }
-        return toBoolean(webContainerAvailabilityBean.getSsoFailoverEnabled());
-    }
+    }    
 
     /**
      * Get the availability-enabled from domain.xml.

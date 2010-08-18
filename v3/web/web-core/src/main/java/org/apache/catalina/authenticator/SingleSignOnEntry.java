@@ -58,7 +58,7 @@ import org.apache.catalina.Session;
 import org.apache.catalina.session.StandardSession;
 
 import java.security.Principal;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -148,7 +148,7 @@ public class SingleSignOnEntry {
      * @param reverse the reverse map from which to remove the sessions as
      * they are being expired
      */
-    public synchronized void expireSessions(Map<Session, String> reverse) {
+    public synchronized void expireSessions(HashMap reverse) {
         for (int i = 0; i < sessions.length; i++) {
             if (log.isLoggable(Level.FINE)) {
                 log.fine(" Invalidating session " + sessions[i]);
