@@ -37,13 +37,17 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.Nodes;
 import com.sun.enterprise.config.serverbeans.ServerRef;
 import com.sun.enterprise.universal.process.ProcessManagerException;
+import java.io.IOException;
 import org.glassfish.api.ActionReport;
 import com.sun.enterprise.universal.process.LocalAdminCommand;
+import com.sun.enterprise.util.io.InstanceDirs;
+import java.io.File;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
@@ -57,6 +61,7 @@ import java.util.logging.Logger;
  * Remote AdminCommand to create an instance.  This command is run only on DAS.
  *  1. Register the instance on DAS
  *  2. Create the file system on the instance node via ssh, node agent, or other
+ *  3. Bootstrap a minimal set of config files on the instance for secure admin.
  *
  * @author Jennifer Chou
  */
@@ -81,6 +86,9 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
 
     @Inject
     private Nodes nodes;
+
+    @Inject
+    private ServerEnvironment env;
 
     @Param(name="node", alias="nodeagent")
     String node;
@@ -179,6 +187,7 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
             logger.info(msg);
             try {
                  int status = lac.execute();
+                 bootstrapSecureAdminLocally();
             }   catch (ProcessManagerException ex)  {
                 msg = Strings.get("create.instance.remote.failed",
                         instance, node, nodeHost, humanVersionOfCommand );
@@ -191,6 +200,9 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
             msg = Strings.get("creatingInstance", instance, node);
             logger.info(msg);
             int status =createInstanceRemote();
+            if (status == 0) {
+                bootstrapSecureAdminRemotely();
+            }
 
         } else {
             msg= Strings.get("create.instance.remote.notssh", instance, node, nodeHost, humanVersionOfCommand);
@@ -239,6 +251,22 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
         return dir;
     }
 
+    /**
+     * Returns the directory for the selected instance that is on the local
+     * system.
+     * @param instanceName name of the instance
+     * @return File for the local file system location of the instance directory
+     * @throws IOException
+     */
+    private File getLocalInstanceDir(String instanceName) throws IOException {
+        InstanceDirs instanceDirs = new InstanceDirs(null, null, instanceName);
+        return instanceDirs.getInstanceDir();
+    }
+
+    private File getDomainInstanceDir() {
+        return env.getInstanceRoot();
+    }
+
     private int createInstanceRemote() {
 
         ActionReport report = ctx.getActionReport();
@@ -279,6 +307,75 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
             return 1;
         }
         return 0;
+    }
+
+    /**
+     * Delivers bootstrap files for secure admin locally, because the instance
+     * is on the same system as the DAS (and therefore on the same system where
+     * this command is running).
+     *
+     * @return 0 if successful, 1 otherwise
+     */
+    private int bootstrapSecureAdminLocally() {
+        final ActionReport report = ctx.getActionReport();
+
+        try {
+            final SecureAdminBootstrapHelper bootHelper =
+                    SecureAdminBootstrapHelper.getLocalHelper(
+                        env.getInstanceRoot(),
+                        getLocalInstanceDir(instance));
+            bootHelper.bootstrapInstance();
+            return 0;
+        } catch (Exception ex) {
+            String msg = Strings.get("create.instance.local.boot.failed", instance, node, nodeHost);
+            logger.severe(msg);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);
+            return 1;
+        }
+    }
+
+    /**
+     * Delivers bootstrap files for secure admin remotely, because the instance
+     * is NOT on the same system as the DAS.
+     *
+     * @return 0 if successful; 1 otherwise
+     */
+    private int bootstrapSecureAdminRemotely() {
+        ActionReport report = ctx.getActionReport();
+
+        try {
+            final SecureAdminBootstrapHelper bootHelper =
+                SecureAdminBootstrapHelper.getRemoteHelper(
+                    habitat,
+                    getDomainInstanceDir(),
+                    nodeDir,
+                    instance,
+                    chooseNode(nodeList, node), logger);
+            bootHelper.bootstrapInstance();
+            return 0;
+        } catch (Exception ex) {
+            String msg = Strings.get(
+                    "create.instance.remote.boot.failed",
+                    instance,
+                    (ex instanceof SecureAdminBootstrapHelper.BootstrapException ? 
+                        ((SecureAdminBootstrapHelper.BootstrapException)ex).sshSettings() : null),
+                    ex.getMessage(),
+                    nodeHost);
+            logger.severe(msg);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);
+            return 1;
+        }
+    }
+
+    private Node chooseNode(final Node[] nodes, final String nodeName) {
+        for (Node n : nodes) {
+            if (n.getName().equals(nodeName)) {
+                return n;
+            }
+        }
+        throw new IllegalArgumentException(nodeName);
     }
 
 }

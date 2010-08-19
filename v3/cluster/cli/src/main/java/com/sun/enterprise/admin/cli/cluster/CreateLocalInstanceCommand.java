@@ -224,7 +224,7 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
          */
         final URI domainXMLURI = URI.create("config/domain.xml");
         final File domainXMLFile = new File(instanceDir.toURI().resolve(domainXMLURI));
-        domainXMLFile.setLastModified(domainXMLFile.lastModified() - 1000);
+        domainXMLFile.setLastModified(0);
         return result;
     }
 
