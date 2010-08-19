@@ -126,7 +126,7 @@ public abstract class TemplateListOfResource {
                 ResourceUtil.adjustParameters(data); //adjusting for DEFAULT is required only while executing a CLI command
                 resourceToCreate += data.get("DEFAULT");
                 String typeOfResult = ResourceUtil.getResultType(requestHeaders);
-                ActionReport actionReport = ResourceUtil.runCommand(commandName, data, RestService.getHabitat(), typeOfResult);
+                RestActionReporter actionReport = ResourceUtil.runCommand(commandName, data, RestService.getHabitat(), typeOfResult);
 
                 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
                 if (exitCode != ActionReport.ExitCode.FAILURE) {
