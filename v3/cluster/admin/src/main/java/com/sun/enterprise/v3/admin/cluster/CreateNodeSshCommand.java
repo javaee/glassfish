@@ -115,6 +115,9 @@ public class CreateNodeSshCommand implements AdminCommand  {
 
         setDefaults();        
 
+        /*
+         * XXX Was requiring a password even if I already had a valid
+         * SSH key setup
         sshL.init(sshuser, nodehost,  Integer.parseInt(sshport), sshpassword, sshkeyfile, sshkeypassphrase, logger);
         
         try {
@@ -129,6 +132,7 @@ public class CreateNodeSshCommand implements AdminCommand  {
         } catch (Exception e) {
             //handle KeyStoreException
         }
+         */
 
         ParameterMap map = new ParameterMap();
         map.add("DEFAULT", name);

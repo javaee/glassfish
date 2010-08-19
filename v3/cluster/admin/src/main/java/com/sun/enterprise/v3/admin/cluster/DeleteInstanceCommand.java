@@ -88,11 +88,16 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
     private Server instance;
     private String noderef;
     private String nodedir;
+    private String installdir;
     private Logger logger;    
     private AdminCommandContext ctx;
     private RemoteInstanceCommandHelper helper;
     private RemoteConnectHelper rch;
     private String instanceHost;
+    private String dasHost;
+    private int dasPort;
+    private Node theNode = null;
+    private StringBuilder humanVersionOfCommand = new StringBuilder();
 
 
     @Override
@@ -120,6 +125,8 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
             return;
         }
         instanceHost = instance.getAdminHost();
+        dasPort = helper.getAdminPort(SystemPropertyConstants.DAS_SERVER_NAME);
+        dasHost = System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY);
 
         // We attempt to delete the instance filesystem first by running
         // _delete-instance-filesystem. We then remove the instance
@@ -130,13 +137,17 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
         if(!StringUtils.ok(noderef)) {
             msg = Strings.get("missingNodeRef", instanceName);
             fsfailure = true;
-        } else if (nodes.getNode(noderef) == null) {
-            msg = Strings.get("noSuchNode", noderef);
-            fsfailure = true;
+        } else {
+            theNode = nodes.getNode(noderef);
+            if (theNode == null) {
+                msg = Strings.get("noSuchNode", noderef);
+                fsfailure = true;
+            }
         }
 
         if (!fsfailure) {
-            nodedir = nodes.getNode(noderef).getNodeDir();
+            nodedir = theNode.getNodeDir();
+            installdir = theNode.getInstallDir();
             try {
                 // Delete the instance files
                 deleteInstanceFilesystem();
@@ -166,19 +177,18 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
 
         // OK, try to give a helpful message depending on the failure
         if (configfailure && fsfailure) {
-            msg = msg + NL + Strings.get("delete.instance.failed",
+            msg = msg + NL + NL + Strings.get("delete.instance.failed",
                     instanceName, instanceHost);
         } else if (configfailure && !fsfailure) {
-            msg = msg + NL + Strings.get("delete.instance.config.failed",
+            msg = msg + NL + NL + Strings.get("delete.instance.config.failed",
                     instanceName, instanceHost);
         } else if (!configfailure && fsfailure) {
-            msg = msg + NL + Strings.get("delete.instance.filesystem.failed",
-                    instanceName, instanceHost,
-                    "asadmin _delete-instance-filesystem");
+            msg = msg + NL + NL + Strings.get("delete.instance.filesystem.failed",
+                    instanceName, noderef, instanceHost,
+                    humanVersionOfCommand);
         }
 
         if (configfailure || fsfailure) {
-            logger.warning(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);
         }
@@ -186,42 +196,49 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
 
      private void deleteInstanceRemote() throws IOException {
 
-         ActionReport report = ctx.getActionReport();
          StringBuilder output = new StringBuilder();
          ParameterMap map = new ParameterMap();
-         map.add("DEFAULT", instanceName);
          map.add("--node", noderef);
          if (nodedir != null) {
             map.add("--nodedir", nodedir);
+            humanVersionOfCommand.append(" --nodedir " + nodedir);
          }
+         map.add("DEFAULT", instanceName);
+         humanVersionOfCommand.append(" " + instanceName);
 
          // Run the command remotely (over SSH)
          try {
-         int status = rch.runCommand(noderef, "_delete-instance-filesystem",
+             int status = rch.runCommand(noderef, "_delete-instance-filesystem",
                          map, output);
-         if (output.length() > 0) {
-             logger.info(output.toString());
-         }
-         if (status != 0){
-             throw new IOException(output.toString());
-         }
-         }catch (SSHCommandExecutionException ec)  {
-            String msg = Strings.get("delete.instance.ssh.failed", instanceName, ec.getSSHSettings(), ec.getMessage(), instanceHost, ec.getCommandRun());
-            logger.severe(msg);
-            msg = Strings.get("delete.instance.remote.failed",
-                        instanceName, instanceHost);
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(msg);
-            throw new IOException();
+             if (output.length() > 0) {
+                 logger.info(output.toString());
+             }
+             if (status != 0){
+                String msg2 = Strings.get("node.command.failed", noderef,
+                        instanceHost, output.toString(), rch.getLastCommandRun());
+                logger.warning(msg2);
+                throw new IOException(msg2);
+             }
+         } catch (SSHCommandExecutionException ec)  {
+            String msg2 = Strings.get("node.ssh.bad.connect",
+                noderef, instanceHost, ec.getMessage());
+            // Log some extra info
+            String msg1 = Strings.get("node.command.failed.ssh.details",
+                    noderef, instanceHost, ec.getCommandRun(), ec.getMessage(),
+                    ec.getSSHSettings());
+            logger.warning(msg1);
+            throw new IOException(msg2, ec);
          }
      }
 
     private void deleteInstanceFilesystem() throws IOException {
 
-        int dasPort = helper.getAdminPort(SystemPropertyConstants.DAS_SERVER_NAME);
-        String dasHost = System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY);
         rch = new RemoteConnectHelper(habitat, nodeList, logger, dasHost, dasPort);
+
         String msg;
+        humanVersionOfCommand.append("asadmin" +
+                " --host "+ dasHost + " --port " + dasPort +
+                " delete-local-instance " + " --node " + noderef);
 
         // Check if the node is local. If so we can just execute
         // the command via ProcessManager.
@@ -229,10 +246,14 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
             // Run local admin command
             LocalAdminCommand lac = null;
             if (nodedir == null) {
-                lac = new LocalAdminCommand("_delete-instance-filesystem", "--node", noderef, instanceName);
+                lac = new LocalAdminCommand("_delete-instance-filesystem",
+                        "--node", noderef, instanceName);
             } else {
-                lac = new LocalAdminCommand("_delete-instance-filesystem", "--node", noderef, "--nodedir", nodedir, instanceName);
+                lac = new LocalAdminCommand("_delete-instance-filesystem",
+                        "--node", noderef, "--nodedir", nodedir, instanceName);
+                humanVersionOfCommand.append("--nodedir " + nodedir);
             }
+            humanVersionOfCommand.append(" " + instanceName);
             msg = Strings.get("deletingInstance", instanceName, LOCAL_HOST);
             logger.info(msg);
             try {
@@ -243,12 +264,14 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
                     msg = Strings.get("nonzero.status",
                             "asadmin _delete-instance-filesystem",
                             "localhost");
+                    logger.warning(msg);
                     throw new IOException(msg);
                 }
             } catch (ProcessManagerException ex)  {
-                msg = Strings.get("delete.instance.failed", instanceName, noderef) +
-                                  NL + ex.getMessage();
-                throw new IOException(msg);
+                String msg2 = Strings.get("node.command.failed",
+                        noderef, instanceHost, "_delete-instance-filesystem",
+                        ex.getMessage());
+                throw new IOException(msg2, ex);
             }
         } else if (rch.isRemoteConnectRequired(noderef)) {
             // Need to go remote.
@@ -256,9 +279,9 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
             logger.info(msg);
             deleteInstanceRemote();
         } else {
-            // Can't do it
-            msg = Strings.get("delete.instance.failed", instanceName, noderef);
-            throw new IOException(msg);
+            String msg2= Strings.get("node.not.ssh", noderef, instanceHost);
+            logger.warning(msg2);
+            throw new IOException(msg2);
         }
     }
 }

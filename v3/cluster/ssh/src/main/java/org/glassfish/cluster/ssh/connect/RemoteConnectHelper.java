@@ -121,6 +121,11 @@ public class RemoteConnectHelper  {
 
 
     }
+
+    public String getLastCommandRun() {
+        return fullCommand;
+    }
+
     // need to get the command options that were specified too
 
     public int runCommand(String noderef, String cmd, final ParameterMap parameters,

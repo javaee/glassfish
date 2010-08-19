@@ -115,11 +115,13 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
     private AdminCommandContext ctx;
     private RemoteInstanceCommandHelper helper;
     private RemoteConnectHelper rch;
+    private Node theNode = null;
     private String nodeHost = null;
     private String nodeDir = null;
+    private String installDir = null;
     private int dasPort;
     private String dasHost;
-
+    private StringBuilder humanVersionOfCommand = new StringBuilder();
 
     @Override
     public void postConstruct() {
@@ -133,7 +135,8 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
         logger = context.logger;
 
         // Make sure Node is valid
-        if (nodes.getNode(node) == null) {
+        theNode = nodes.getNode(node);
+        if (theNode == null) {
             String msg = Strings.get("noSuchNode", node);
             logger.warning(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -141,8 +144,9 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
             return;
         }
 
-        nodeHost = getHostFromNodeName(node);
-        nodeDir = getNodeDir(node);
+        nodeHost = getHostFromNodeName(node, theNode);
+        nodeDir = theNode.getNodeDir();
+        installDir = theNode.getInstallDir();
 
         // First, update domain.xml by calling _register-instance
 
@@ -172,46 +176,66 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
         rch = new RemoteConnectHelper(habitat, nodeList, logger, dasHost, dasPort);
         String msg;
         // What we tell humans to run if we fail. Local version
-        String humanVersionOfCommand = "asadmin " + " create-local-instance " +
-                    "--host "+ dasHost + " --node " + node + " " + instance;
+        humanVersionOfCommand.append(
+                 "asadmin" + " --host "+ dasHost + " --port " + dasPort +
+                 " create-local-instance " + " --node " + node);
 
-//        if (node == null || !rch.isRemoteConnectRequired(node)) {
         if (rch.isLocalhost(nodes.getNode(node))) {
             LocalAdminCommand lac = null;
             if (nodeDir == null) {
-                lac = new LocalAdminCommand("_create-instance-filesystem", "--node", node, instance);
+                lac = new LocalAdminCommand("_create-instance-filesystem",
+                        "--node", node, instance);
             } else {
-                lac = new LocalAdminCommand("_create-instance-filesystem", "--node", node, "--nodedir", nodeDir, instance);
+                lac = new LocalAdminCommand("_create-instance-filesystem",
+                        "--node", node, "--nodedir", nodeDir, instance);
+                humanVersionOfCommand.append(" --nodedir " + nodeDir);
             }
+            humanVersionOfCommand.append(" " + instance);
             msg = Strings.get("creatingInstance", instance, LOCAL_HOST);
             logger.info(msg);
             try {
                  int status = lac.execute();
-                 bootstrapSecureAdminLocally();
-            }   catch (ProcessManagerException ex)  {
-                msg = Strings.get("create.instance.remote.failed",
-                        instance, node, nodeHost, humanVersionOfCommand );
+                 if (status != 0) {
+                    // XXX need the commands output from lac, for now just
+                    // display status code
+                    msg = Strings.get("nonzero.status",
+                            "asadmin _create-instance-filesystem",
+                            "localhost");
+                    logger.warning(msg);
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    report.setMessage(msg);
+                } else {
+                    bootstrapSecureAdminLocally();
+                }
+            }  catch (ProcessManagerException ex)  {
+                msg = Strings.get("create.instance.filesystem.failed",
+                        instance, node, nodeHost );
                 logger.warning(msg);
+                String msg2 = Strings.get("node.command.failed",
+                        node, nodeHost, "_create-instance-filesystem",
+                        ex.getMessage());
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                report.setMessage(msg);
+                report.setMessage(msg + NL + msg2);
                 return;
             }
         } else if (rch.isRemoteConnectRequired(node)) {
             msg = Strings.get("creatingInstance", instance, node);
             logger.info(msg);
+            createInstanceRemote();
             int status =createInstanceRemote();
             if (status == 0) {
                 bootstrapSecureAdminRemotely();
             }
-
         } else {
-            msg= Strings.get("create.instance.remote.notssh", instance, node, nodeHost, humanVersionOfCommand);
+            msg = Strings.get("create.instance.filesystem.failed",
+                        instance, node, nodeHost );
             logger.warning(msg);
-            msg = Strings.get("create.instance.remote.notssh",
-                    instance, node, nodeHost, humanVersionOfCommand );
-            logger.warning(msg);
+            String msg2= Strings.get("node.not.ssh", node, nodeHost);
+            logger.warning(msg2);
+            String msg3 = Strings.get("node.ssh.tocomplete",
+                nodeHost, installDir, humanVersionOfCommand);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(msg);
+            report.setMessage(msg + NL + msg2 + NL + NL + msg3);
             return;            
         }
 
@@ -222,8 +246,7 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
      * @param nodeName  name of node
      * @return  node's host name, or "localhost" if can't find the host name
      */
-    private String getHostFromNodeName(String nodeName) {
-        Node theNode = nodes.getNode(nodeName);
+    private String getHostFromNodeName(String nodeName, Node theNode) {
         String hostName = null;
 
         if (theNode != null) {
@@ -235,20 +258,6 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
         } else {
             return hostName;
         }
-    }
-
-     /**
-     * Given a node name return the node's node-dir
-     * @param nodeName  name of node
-     * @return  node's node-dir, or null if not specified
-     */
-    private String getNodeDir(String nodeName) {
-        Node theNode = nodes.getNode(nodeName);
-        String dir = null;
-        if (theNode != null) {
-            dir = theNode.getNodeDir();
-        }
-        return dir;
     }
 
     /**
@@ -270,40 +279,48 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
     private int createInstanceRemote() {
 
         ActionReport report = ctx.getActionReport();
-            StringBuilder output = new StringBuilder();
-            ParameterMap map = new ParameterMap();
-            map.set("--node", node);
-            if (nodeDir != null) {
-                map.set("--nodedir", nodeDir);
-            }
-            map.set("DEFAULT", instance);
+        StringBuilder output = new StringBuilder();
+        ParameterMap map = new ParameterMap();
+        map.set("--node", node);
+        if (nodeDir != null) {
+            map.set("--nodedir", nodeDir);
+            humanVersionOfCommand.append(" --nodedir " + nodeDir);
+        }
+        map.set("DEFAULT", instance);
+        humanVersionOfCommand.append(" " + instance);
 
-            // What we tell humans to run if we fail
-            String humanVersionOfCommand = "asadmin --host " + dasHost +
-                    " --port " + dasPort + " create-local-instance" +
-                    " --node " + node + " " + instance;
         try {
                 
             int status = rch.runCommand(node, "_create-instance-filesystem",
                         map, output);
             if (output.length() > 0) {
-                logger.info(output.toString());
+                 logger.info(output.toString());
             }
             if (status != 0){
-                String msg = Strings.get("create.instance.remote.failed",
-                        instance, node, nodeHost, humanVersionOfCommand);
-                logger.warning(msg);
+                String msg1 = Strings.get("create.instance.filesystem.failed",
+                        instance, node, nodeHost );
+                logger.warning(msg1);
+                String msg2 = Strings.get("node.command.failed", node,
+                        nodeHost, output.toString(), rch.getLastCommandRun());
+                logger.warning(msg2);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                report.setMessage(output.toString() + NL + msg);
+                report.setMessage(msg1 + NL + msg2);
                 return 1;
             }
         } catch (SSHCommandExecutionException ec )  {
-            String msg = Strings.get("create.instance.ssh.failed", instance, ec.getSSHSettings(), ec.getMessage(), nodeHost, humanVersionOfCommand);
-            logger.severe(msg);
-            msg = Strings.get("create.instance.ssh.failed",
-                        instance, ec.getSSHSettings(), ec.getMessage(), nodeHost, humanVersionOfCommand);
+            String msg1 = Strings.get("create.instance.filesystem.failed",
+                        instance, node, nodeHost );
+            String msg2 = Strings.get("node.ssh.bad.connect",
+                node, nodeHost, ec.getMessage());
+            String msg3 = Strings.get("node.ssh.tocomplete",
+                nodeHost, installDir, humanVersionOfCommand);
+            report.setMessage(msg1 + " " + msg2 + NL + NL + msg3);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(msg);
+            // Log some extra info
+            msg1 = Strings.get("node.command.failed.ssh.details",
+                    node, nodeHost, ec.getCommandRun(), ec.getMessage(), ec.getSSHSettings());
+            logger.warning(msg1);
+
             return 1;
         }
         return 0;

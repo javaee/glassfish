@@ -147,7 +147,7 @@ public class SSHLauncher {
             port = 22;
         }
 
-        init(userName, host, port, sshAuth.getPassword(), keyFile, sshAuth.getKeyPassphrase(), logger);
+        init(userName, this.host, port, sshAuth.getPassword(), keyFile, sshAuth.getKeyPassphrase(), logger);
 
     }
 
