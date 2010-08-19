@@ -399,7 +399,6 @@ public class InstanceTest extends AdminBaseDevTest {
         report("create-local-instance-portbase-junk1", !asadmin("create-local-instance", "--portbase", "junk" ,instance));
         report("create-local-instance-portbase-junk2", !asadmin("create-local-instance", "--portbase", "99999999999" ,instance));
         report("create-local-instance-portbase-junk3", !asadmin("create-local-instance", "--portbase", "-11111111" ,instance));
-        report("create-local-instance-portbase-junk4", !asadmin("create-local-instance", "--portbase", "4800" ,instance));
         report("create-local-instance-portbase-success", asadmin("create-local-instance", "--portbase", "3300", "--checkports", "false" ,instance));
         AsadminReturn ret = asadminWithOutput("get", "servers.server."+instance+".system-property.*");
         boolean success = ret.outAndErr.indexOf("servers.server."+instance+".system-property.HTTP_LISTENER_PORT.value=3380") >= 0;
