@@ -232,7 +232,7 @@ public abstract class SecureAdminBootstrapHelper {
              */
             return (remoteNodeDir != null ? remoteNodeDir :
                 (new StringBuilder(ensureTrailingSlash(node.getInstallDir()))
-                    .append("glassfish/nodes/")
+                    .append("nodes/")
                     .append(node.getName())).toString());
         }
 
@@ -280,10 +280,9 @@ public abstract class SecureAdminBootstrapHelper {
 
         @Override
         protected void backdateInstanceDomainXML() throws BootstrapException {
-            final long backdatedDomainXMLTime = domainXMLTimestamp - 1000;
             final URI remoteDomainXMLURI = remoteInstanceURI.resolve(DOMAIN_XML_URI);
             try {
-                setLastModified(remoteDomainXMLURI.getPath(), backdatedDomainXMLTime);
+                setLastModified(remoteDomainXMLURI.getPath(), 0);
             } catch (IOException ex) {
                 throw new BootstrapException(launcher, ex);
             }
@@ -304,8 +303,7 @@ public abstract class SecureAdminBootstrapHelper {
             /*
              * Times over ssh are expressed as seconds since 01 Jan 1970.
              */
-            
-            final SFTPv3FileAttributes attrs = new SFTPv3FileAttributes();
+            final SFTPv3FileAttributes attrs = ftpClient.stat(path);
             attrs.mtime = secondsSince_01_Jan_1970(when);
             ftpClient.setstat(path, attrs);
         }
