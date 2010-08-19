@@ -1077,8 +1077,9 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
     }
 
     /**
-     * Returns true if this element and all its decedents are empty
-     * meaning all their attributes have default values.
+     * Returns true if this element is empty
+     * meaning all their attributes have default values and it has
+     * no descendants.
      *
      * @return true if the element is empty, false otherwise
      */
@@ -1089,13 +1090,9 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
             return false;
         }
 
-        // let's check the children
-        for (Child child : children) {
-            if (!child.isEmpty()) {
-                return false;
-            }
-        }
-        return true;
+        // if we have children, we are not empty.
+        return children.isEmpty();
+
 
     }
 
