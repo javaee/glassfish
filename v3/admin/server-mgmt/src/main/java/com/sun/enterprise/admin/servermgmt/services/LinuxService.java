@@ -35,7 +35,10 @@
  */
 package com.sun.enterprise.admin.servermgmt.services;
 
+import com.sun.enterprise.universal.process.ProcessManager;
+import com.sun.enterprise.universal.process.ProcessManagerException;
 import com.sun.enterprise.util.OS;
+import com.sun.enterprise.util.ObjectAnalyzer;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.io.ServerDirs;
 import java.io.File;
@@ -78,30 +81,18 @@ public class LinuxService extends NonSMFServiceAdapter {
             throw new RuntimeException(ex);
         }
     }
-    // bnevins, Aug 2010.  The unfortunate FAT interdace of the Service interface makes
-    // it confusing -- this method is really the only one that does something --
-    // all the other methods do configuration.
 
     @Override
     public final void createServiceInternal() {
         try {
             trace("**********   Object Dump  **********\n" + this.toString());
 
-
-
-
-
-
-
-            throw new UnsupportedOperationException("Not supported yet.");
-            /*
-            if (uninstall() == 0 && !isDryRun())
-            System.out.println(Strings.get("windows.services.uninstall.good"));
+            if (uninstall() == 0 && !info.dryRun)
+                System.out.println(Strings.get("linux.services.uninstall.good"));
             else
-            trace("No preexisting Service with that id and/or name was found");
+                trace("No preexisting Service with that name was found");
 
             install();
-             * */
         }
         catch (RuntimeException ex) {
             throw ex;
@@ -113,22 +104,28 @@ public class LinuxService extends NonSMFServiceAdapter {
 
     @Override
     public final String getSuccessMessage() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (info.dryRun)
+            return Strings.get("dryrun");
 
-        /*
-        if (isDryRun())
-        return Strings.get("dryrun");
+        return Strings.get("LinuxServiceCreated",
+                info.serviceName,
+                info.type.toString(),
+                target,
+                getFinalUser(),
+                target.getName());
+    }
 
-        return Strings.get("LinuxServiceCreated", getName(),
-        getServerDirs().getServerName() + " GlassFish Server",
-        getServerDirs().getServerDir(), targetXml, targetWin32Exe);
-         *
-         */
+    // called by outside caller (createService)
+    @Override
+    public final void writeReadmeFile(String msg) {
+        File f = new File(getServerDirs().getServerDir(), README);
+
+        ServicesUtils.appendTextToFile(f, msg);
     }
 
     @Override
-    public void writeReadmeFile(String msg) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public final String toString() {
+        return ObjectAnalyzer.toString(this);
     }
 
     @Override
@@ -180,8 +177,15 @@ public class LinuxService extends NonSMFServiceAdapter {
     }
 
     private String getServiceUserStart() {
-        if (StringUtils.ok(info.serviceUser))
-            return "su --login " + info.serviceUser + " --command \"";
+        // if the user is root (e.g. called with sudo and no serviceuser arg given)
+        // then do NOT specify a user.
+        // on the other hand -- if they specified one or they are logged in as a'privileged'
+        // user then use that account.
+        String u = getFinalUserButNotRoot();
+
+        if (u != null)
+            return "su --login " + u + " --command \"";
+
         return "";
     }
 
@@ -190,8 +194,68 @@ public class LinuxService extends NonSMFServiceAdapter {
             return "\"";
         return "";
     }
+
+    private int install() throws ProcessManagerException {
+        if (info.dryRun)
+            return 0;
+
+        target.setExecutable(true, false);
+        // it is NOT an error to not be able to uninstall
+        ProcessManager mgr = new ProcessManager(getInstallCommand());
+        mgr.execute();
+        trace("Uninstall STDERR: " + mgr.getStderr());
+        trace("Uninstall STDOUT: " + mgr.getStdout());
+        return mgr.getExitValue();
+    }
+
+    private int uninstall() throws ProcessManagerException {
+        if (info.dryRun)
+            return 0;
+
+        // it is NOT an error to not be able to uninstall
+        ProcessManager mgr = new ProcessManager(getUninstallCommand());
+        mgr.execute();
+        trace("Uninstall STDERR: " + mgr.getStderr());
+        trace("Uninstall STDOUT: " + mgr.getStdout());
+        return mgr.getExitValue();
+    }
+
+    private String[] getInstallCommand() {
+        String[] cmds = new String[3];
+        cmds[0] = UPDATER;
+        cmds[1] = target.getName();
+        cmds[2] = "defaults";
+
+        return cmds;
+    }
+
+    private String[] getUninstallCommand() {
+        String[] cmds = new String[3];
+        cmds[0] = UPDATER;
+        cmds[1] = target.getName();
+        cmds[2] = "remove";
+
+        return cmds;
+    }
+
+    private String getFinalUser() {
+        if (StringUtils.ok(info.serviceUser))
+            return info.serviceUser;
+        else
+            return info.osUser;
+    }
+
+    private String getFinalUserButNotRoot() {
+        String u = getFinalUser();
+
+        if ("root".equals(u))
+            return null;
+
+        return u;
+    }
     private String targetName;
     private File target;
     private static final String TEMPLATE_FILE_NAME = "linux-service.template";
     private static final String INITD = "/etc/init.d";
+    private static final String UPDATER = "update-rc.d";
 }

@@ -105,6 +105,11 @@ public class PlatformServicesInfo {
         this.serviceUser = serviceUser;
     }
 
+    public void setAppServerUser(String user) {
+        if (StringUtils.ok(user))
+            appserverUser = user;
+    }
+
     //////////////////////////////////////////////////////////////////////
     //////////////          private         //////////////////////////////
     //////////////////////////////////////////////////////////////////////
@@ -159,9 +164,10 @@ public class PlatformServicesInfo {
     File asadminScript;
     boolean force;
     String serviceUser;
+    Date date;
+    File passwordFile;
+    String appserverUser;
     // private to this implementation
-    private File passwordFile;
-    private Date date;
     private boolean valid;
     private File installRootDir;
 }

@@ -37,6 +37,7 @@ package com.sun.enterprise.admin.servermgmt.services;
 
 import com.sun.enterprise.universal.PropertiesDecoder;
 import com.sun.enterprise.universal.io.SmartFile;
+import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.io.ServerDirs;
 import java.io.*;
@@ -63,31 +64,6 @@ public abstract class NonSMFServiceAdapter extends ServiceAdapter {
 
     NonSMFServiceAdapter(ServerDirs dirs, AppserverServiceType type) {
         super(dirs, type);
-    }
-
-    @Override
-    public final String getDate() {
-        return date;
-    }
-
-    @Override
-    public final void setDate(String date) {
-        this.date = date;
-    }
-
-    @Override
-    public final String getPasswordFilePath() {
-        return passwordFilePath;
-    }
-
-    /**
-     * Do all the fun activities associated with getting the username and verifying
-     * the contents of the file.
-     * @param path
-     */
-    @Override
-    public final void setPasswordFilePath(String path) {
-        setAsadminCredentials(path);
     }
 
     @Override
@@ -128,25 +104,6 @@ public abstract class NonSMFServiceAdapter extends ServiceAdapter {
         throw new UnsupportedOperationException("getManifestFileTemplatePath() is not supported in this platform.");
     }
 
-    final String getAppserverUser() {
-        return appserverUser;
-    }
-
-    @Override
-    public final String getStartCommand() {
-        return info.type.startCommand();
-    }
-
-    @Override
-    public final String getRestartCommand() {
-        return info.type.restartCommand();
-    }
-
-    @Override
-    public final String getStopCommand() {
-        return info.type.stopCommand();
-    }
-
     @Override
     public final boolean isConfigValid() {
         // SMF-only
@@ -161,62 +118,11 @@ public abstract class NonSMFServiceAdapter extends ServiceAdapter {
         return templateFile;
     }
 
-    void fillTokenMap() {
-        getTokenMap().put(ENTITY_NAME_TN, getServerDirs().getServerName());
-        getTokenMap().put(DATE_CREATED_TN, getDate());
-        getTokenMap().put(SERVICE_NAME_TN, info.serviceName);
-        getTokenMap().put(CFG_LOCATION_TN, getServerDirs().getServerParentDir().getPath().replace('\\', '/'));
-        getTokenMap().put(START_COMMAND_TN, getStartCommand());
-        getTokenMap().put(STOP_COMMAND_TN, getStopCommand());
-        getTokenMap().put(LOCATION_ARGS_START_TN, getLocationArgsStart());
-        getTokenMap().put(LOCATION_ARGS_STOP_TN, getLocationArgsStop());
-
-        trace("MAP --> " + getTokenMap().toString());
-    }
-
     void setTemplateFile(String name) {
         templateFile = new File(info.libDir, "install/templates/" + name);
     }
 
 
-    /**
-     * If the user has specified a password file than get the info
-     * and convert into a String[] that CLI can use.
-     * e.g. { "--user", "harry", "--passwordfile", "/xyz" }
-     * authentication artifacts. Parameter may not be null.
-     */
-    private void setAsadminCredentials(String path) {
-        appserverUser = null;
-        passwordFilePath = null;
-
-        // it is allowed to have no passwordfile specified in V3
-        if (!ok(path))
-            return;
-
-        // But if they DID specify it -- it must be kosher...
-        File f = SmartFile.sanitize(new File(path));
-
-        if (!f.isFile())
-            throw new IllegalArgumentException(Strings.get("windows.services.passwordFileNotA", f));
-
-        if (!f.canRead())
-            throw new IllegalArgumentException(Strings.get("windows.services.passwordFileNotReadable", f));
-
-        Properties p = getProperties(f);
-
-        // IT 10255
-        // the password file may just have master password or just user or just user password
-        //
-
-        appserverUser = p.getProperty("AS_ADMIN_USER");
-
-        // we need a user for "--user" arg to start-domain
-
-        if (!ok(appserverUser))
-            appserverUser = null;
-
-        passwordFilePath = f.getPath().replace('\\', '/'); // already sanitized
-    }
 
     /**
      * This method is here to get rid of painful boilerplating...
@@ -231,36 +137,9 @@ public abstract class NonSMFServiceAdapter extends ServiceAdapter {
         return value;
     }
 
-    private Properties getProperties(File f) {
-        BufferedInputStream bis = null;
-
-        try {
-            bis = new BufferedInputStream(new FileInputStream(f));
-            final Properties p = new Properties();
-            p.load(bis);
-            return p;
-        }
-        catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
-        finally {
-            if (bis != null) {
-                try {
-                    bis.close();
-                }
-                catch (Exception ee) {
-                    // ignore
-                }
-            }
-        }
-    }
-
     private static boolean ok(String s) {
         return s != null && s.length() > 0;
     }
-    private String date = new Date().toString();    // default date string
-    private String passwordFilePath;
     private String flattenedServicePropertes;
-    private String appserverUser;
     private File templateFile;
 }

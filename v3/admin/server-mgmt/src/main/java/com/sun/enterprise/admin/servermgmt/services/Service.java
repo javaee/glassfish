@@ -36,8 +36,6 @@
 
 package com.sun.enterprise.admin.servermgmt.services;
 import com.sun.enterprise.util.io.ServerDirs;
-import java.io.File;
-import java.util.Date;
 import java.util.Map;
 
 /** Represents an abstract Service. This interface defines sufficient methods
@@ -58,23 +56,6 @@ import java.util.Map;
      */
     ServerDirs  getServerDirs();
     
-     String getDate();
-    
-    /** Sets the date as the date when this service is created.
-     * @param date String representation of the date
-     * @throws IllegalArgumentException if the parameter is null
-     */
-     void setDate(final String date);
-    
-    
-     String getPasswordFilePath();
-    /** Sets the absolute path of the password file that contains asadmin
-     * authentication artifacts. Parameter may not be null.
-     */
-     void setPasswordFilePath(final String path);
-    /** Returns timeout in seconds before the master boot restarter should
-     * give up starting this service.
-     */
      int getTimeoutSeconds();
     /** Sets timeout in seconds before the master boot restarter should
      * give up starting this service.
@@ -132,9 +113,6 @@ import java.util.Map;
      String getSuccessMessage();
 
      void writeReadmeFile(String msg);
-     String getStartCommand();
-     String getRestartCommand();
-     String getStopCommand();
      String getLocationArgsStart();
      String getLocationArgsRestart();
      String getLocationArgsStop();

@@ -46,7 +46,6 @@ import com.sun.enterprise.util.io.ServerDirs;
 import java.io.File;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -137,57 +136,6 @@ public final class SMFService extends ServiceAdapter {
             final String msg = sm.getString("serviceNameExists", info.smfFullServiceName);
             throw new IllegalArgumentException(msg);
         }
-    }
-
-
-    /** Returns the date the service is created.
-     * @return A String Representation of Date.
-     * @see java.util.Date
-     */
-    public String getDate() {
-        return (getTokenMap().get(DATE_CREATED_TN));
-    }
-
-    /** Sets the date as the date when this service is created.
-     * @param date String representation of the date
-     * @throws IllegalArgumentException if the parameter is null
-     */
-    public void setDate(final String date) {
-        if (date == null)
-            throw new IllegalArgumentException(nullArgMsg);
-        getTokenMap().put(DATE_CREATED_TN, date);
-    }
-
-    /** Returns the absolute path of the password file that contains asadmin
-     * authentication artifacts.
-     */
-    public String getPasswordFilePath() {
-        throw new UnsupportedOperationException("Not supported any longer.");
-    }
-
-    /** Sets the absolute path of the password file that contains asadmin
-     * authentication artifacts. Parameter may not be null.
-     */
-    public void setPasswordFilePath(final String path) {
-        // bnevins, 1/13/2010 IT: 11119
-        // admin username and admin password are never required to start a domain
-        // starting in V3.0.  At most the (non-default) master password is needed.
-
-        if (path == null)
-            throw new IllegalArgumentException(nullArgMsg);
-        String msg = null;
-        if (!new File(path).exists()) {
-            msg = sm.getString("doesNotExist", path);
-            throw new IllegalArgumentException(msg);
-        }
-        final String cp = FileUtils.safeGetCanonicalPath(new File(path));
-        final Map<String, String> tv = new HashMap<String, String>();
-
-        if (!fileContainsToken(path, AS_ADMIN_MASTERPASSWORD_TN, tv)) {
-            msg = sm.getString("missingParamsInFile", cp, AS_ADMIN_MASTERPASSWORD_TN);
-            throw new IllegalArgumentException(msg);
-        }
-        getTokenMap().put(CREDENTIALS_TN, " --passwordfile " + cp + " ");
     }
 
     /** Returns timeout in seconds before the master boot restarter should
@@ -375,20 +323,20 @@ public final class SMFService extends ServiceAdapter {
         checkOSUser();
         checkServiceName();
     }
-    
+
+    // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+    // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+    // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+    // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+    // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+    // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+    // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+    // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
     private void init_old_delete_me() {
-        getTokenMap().put(DATE_CREATED_TN, new Date().toString());
-        getTokenMap().put(SERVICE_NAME_TN, NULL_VALUE);
-        getTokenMap().put(SERVICE_TYPE_TN, NULL_VALUE);
-        getTokenMap().put(CFG_LOCATION_TN, NULL_VALUE);
-        getTokenMap().put(ENTITY_NAME_TN, NULL_VALUE);
-        getTokenMap().put(FQSN_TN, NULL_VALUE);
+        // ?????
         getTokenMap().put(START_INSTANCES_TN, START_INSTANCES_DEFAULT_VAL);
-        getTokenMap().put(AS_ADMIN_PATH_TN, NULL_VALUE);
         getTokenMap().put(AS_ADMIN_USER_TN, AS_ADMIN_USER_DEF_VAL);
-        //getTokenMap().put(PASSWORD_FILE_PATH_TN, NULL_VALUE);
         getTokenMap().put(TIMEOUT_SECONDS_TN, TIMEOUT_SECONDS_DV);
-        getTokenMap().put(OS_USER_TN, NULL_VALUE);
         getTokenMap().put(PRIVILEGES_TN, BASIC_NETADDR_PRIV_VAL);
         getTokenMap().put(CREDENTIALS_TN, " ");
     }
@@ -570,21 +518,6 @@ public final class SMFService extends ServiceAdapter {
     public void writeReadmeFile(String msg) {
         File f = new File(getServerDirs().getServerDir(), README);
         ServicesUtils.appendTextToFile(f, msg);
-    }
-
-    @Override
-    public final String getStartCommand() {
-        return info.type.startCommand();
-    }
-
-    @Override
-    public final String getRestartCommand() {
-        return info.type.startCommand();
-    }
-
-    @Override
-    public final String getStopCommand() {
-        return info.type.stopCommand();
     }
 
     @Override

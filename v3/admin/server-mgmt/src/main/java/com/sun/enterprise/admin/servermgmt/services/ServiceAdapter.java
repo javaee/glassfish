@@ -35,7 +35,9 @@
  */
 package com.sun.enterprise.admin.servermgmt.services;
 
+import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.io.ServerDirs;
+import java.io.*;
 import java.util.*;
 import static com.sun.enterprise.admin.servermgmt.services.Constants.*;
 
@@ -87,6 +89,7 @@ public abstract class ServiceAdapter implements Service {
     void initialize() {
         final String parentPath = info.serverDirs.getServerParentDir().getPath();
         final String serverName = info.serverDirs.getServerName();
+        setAsadminCredentials();
 
         getTokenMap().put(CFG_LOCATION_TN, parentPath);
         getTokenMap().put(ENTITY_NAME_TN, serverName);
@@ -100,7 +103,31 @@ public abstract class ServiceAdapter implements Service {
         getTokenMap().put(OS_USER_TN, info.osUser);
         getTokenMap().put(SERVICE_NAME_TN, info.smfFullServiceName);
         getTokenMap().put(AS_ADMIN_PATH_TN, info.asadminScript.getPath().replace('\\', '/'));
+        getTokenMap().put(DATE_CREATED_TN, info.date.toString());
+        getTokenMap().put(SERVICE_TYPE_TN, info.type.toString());
+        getTokenMap().put(CREDENTIALS_TN, getCredentials());
 
+    }
+
+    final String getCredentials() {
+        // 1 -- no auth of any kind needed -- by definition when there is no
+        // password file
+        // note: you do NOT want to give a "--user" arg -- it can only appear
+        // if there is a password file too
+        if (info.passwordFile == null)
+            return " ";
+
+        // 2. --
+        String user = info.appserverUser; // might be null
+
+        StringBuilder sb = new StringBuilder();
+
+        if (StringUtils.ok(user))
+            sb.append(" --user ").append(user);
+
+        sb.append(" --passwordfile ").append(info.passwordFile.getPath()).append(" ");
+
+        return sb.toString();
     }
 
     void trace(String s) {
@@ -110,6 +137,59 @@ public abstract class ServiceAdapter implements Service {
 
     final Map<String, String> getTokenMap() {
         return tokenMap;
+    }
+
+    /**
+     * If the user has specified a password file than get the info
+     * and convert into a String[] that CLI can use.
+     * e.g. { "--user", "harry", "--passwordfile", "/xyz" }
+     * authentication artifacts. Parameter may not be null.
+     */
+    private void setAsadminCredentials() {
+
+        // it is allowed to have no passwordfile specified in V3
+        if (info.passwordFile == null)
+            return;
+
+        // But if they DID specify it -- it must be kosher...
+
+        if (!info.passwordFile.isFile())
+            throw new IllegalArgumentException(Strings.get("windows.services.passwordFileNotA", info.passwordFile));
+
+        if (!info.passwordFile.canRead())
+            throw new IllegalArgumentException(Strings.get("windows.services.passwordFileNotReadable", info.passwordFile));
+
+        Properties p = getProperties(info.passwordFile);
+
+        // IT 10255
+        // the password file may just have master password or just user or just user password
+        //
+
+        info.setAppServerUser(p.getProperty("AS_ADMIN_USER"));
+    }
+
+    private Properties getProperties(File f) {
+        BufferedInputStream bis = null;
+
+        try {
+            bis = new BufferedInputStream(new FileInputStream(f));
+            final Properties p = new Properties();
+            p.load(bis);
+            return p;
+        }
+        catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            if (bis != null) {
+                try {
+                    bis.close();
+                }
+                catch (Exception ee) {
+                    // ignore
+                }
+            }
+        }
     }
     private final Map<String, String> tokenMap = new HashMap<String, String>();
     final PlatformServicesInfo info;

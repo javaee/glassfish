@@ -140,8 +140,8 @@ public final class CreateServiceCommand extends CLICommand {
                 info.setServiceUser(serviceUser);
 
             if (programOpts.getPasswordFile() != null)
-                service.setPasswordFilePath(SmartFile.sanitize(
-                        new File(programOpts.getPasswordFile()).getPath()));
+                info.setPasswordFile(SmartFile.sanitize(
+                        new File(programOpts.getPasswordFile())));
 
             service.setServiceProperties(serviceProperties);
             service.createService();

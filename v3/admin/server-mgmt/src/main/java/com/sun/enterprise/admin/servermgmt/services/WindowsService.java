@@ -160,23 +160,6 @@ public class WindowsService extends NonSMFServiceAdapter {
             handlePreExisting(targetWin32Exe, targetXml, info.force);
             FileUtils.copy(sourceWin32Exe, targetWin32Exe);
             trace("Copied from " + sourceWin32Exe + " to " + targetWin32Exe);
-
-
-            // TODO TODO TODO TODO
-            // TODO TODO TODO TODO
-            // TODO TODO TODO TODO
-            // TODO TODO TODO TODO
-            // TODO TODO TODO TODO
-            // TODO TODO TODO TODO
-            // TODO TODO TODO TODO
-            // TODO TODO TODO TODO
-            // filltokenmap needs to go
-            // filltokenmap needs to go
-            // filltokenmap needs to go
-            // filltokenmap needs to go
-            // filltokenmap needs to go
-            // filltokenmap needs to go
-            fillTokenMap();
             getTokenMap().put(CREDENTIALS_START_TN, getAsadminCredentials("startargument"));
             getTokenMap().put(CREDENTIALS_STOP_TN, getAsadminCredentials("stopargument"));
             ServicesUtils.tokenReplaceTemplateAtDestination(getTokenMap(), getTemplateFile().getPath(), targetXml.getPath());
@@ -229,11 +212,11 @@ public class WindowsService extends NonSMFServiceAdapter {
         // password file
         // note: you do NOT want to give a "--user" arg -- it can only appear
         // if there is a password file too
-        if (!ok(getPasswordFilePath()))
+        if (info.passwordFile == null)
             return " ";
 
         // 2. --
-        String user = getAppserverUser(); // might be null
+        String user = info.appserverUser; // might be null
 
         String begin = "<" + elem + ">";
         String end = "</" + elem + ">\n";
@@ -244,7 +227,7 @@ public class WindowsService extends NonSMFServiceAdapter {
             sb.append("  ").append(begin).append(user).append(end);
         }
         sb.append("  ").append(begin).append("--passwordfile").append(end);
-        sb.append("  ").append(begin).append(getPasswordFilePath()).append(end);
+        sb.append("  ").append(begin).append(info.passwordFile.getPath()).append(end);
         sb.append("  "); // such obsessive attention to detail!!! :-)
 
         return sb.toString();
