@@ -63,7 +63,18 @@
          </sun:panelGroup>
      </facet>
 
-    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
+    <sun:tableRowGroup id="rowGroup1" selected1="#{td.value.selected}" data={"$pageSession{destList}", "$pageSession{tableList2}"} sourceVar="td">
+        <ui:event type="beforeCreate">
+            // Add extra table properties...
+            createList(size="0", result="#{pageSession.tableList2}");
+            foreach(var="row" list="#{pageSession.destList}") {
+                gf.createAttributeMap(
+                    keys={"selected", "name", "type"},
+                    values={"$boolean{false}", "#{row.name}", "#{row.type}"},
+                    map="#{requestScope.tlMap}");
+                listAdd(list="#{pageSession.tableList2}", value="#{requestScope.tlMap}");
+            }
+        </ui:event>
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{configsTableRowGroupId});
         />

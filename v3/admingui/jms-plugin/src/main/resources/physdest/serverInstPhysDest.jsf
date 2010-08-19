@@ -51,12 +51,11 @@
             setSessionAttribute(key="standaloneInstanceTabs" value="general");
 
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/servers/server");
-            setPageSessionAttribute(key="childType" value="jdbc-connection-pool");
             setPageSessionAttribute(key="resourceUrl", value="#{pageSession.parentUrl}/#{pageSession.encodedInstanceName}");
             setPageSessionAttribute(key="rest-api" value="true");
 
             gf.restRequest(endpoint="#{pageSession.resourceUrl}/list-jmsdest", method="get", result="#{requestScope.result}");
-            println("***** requestScope.result = #{requestScope.result}");
+            setPageSessionAttribute(key="destList", value="#{requestScope.result.data.extraProperties.destinations}");
         />
     </event>
 

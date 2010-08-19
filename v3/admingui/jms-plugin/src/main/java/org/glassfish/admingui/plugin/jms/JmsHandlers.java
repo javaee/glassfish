@@ -240,8 +240,8 @@ public class JmsHandlers {
     }
 
     /**
-     *	<p>This handler creates a physical destination.</p>
-     *	@param	context	The HandlerContext.
+     * <p>This handler creates a physical destination.</p>
+     * @param context The HandlerContext.
      */
     @Handler(id = "createPhysicalDestination",
     input = {
@@ -269,8 +269,8 @@ public class JmsHandlers {
     }
 
     /**
-     *	<p>This handler updates a physical destination.</p>
-     *	@param	context	The HandlerContext.
+     * <p>This handler updates a physical destination.</p>
+     * @param context The HandlerContext.
      */
     @Handler(id = "updatePhysicalDestination",
     input = {
@@ -317,8 +317,8 @@ public class JmsHandlers {
     }
 
     /**
-     *	<p> This handler takes in selected rows, and removes selected config
-     *	@param	context	The HandlerContext.
+     * <p> This handler takes in selected rows, and removes selected config
+     * @param context The HandlerContext.
      */
     @Handler(id = "flushJMSDestination",
     input = {
@@ -337,13 +337,13 @@ public class JmsHandlers {
     }
 
     /**
-     *	<p> This handler returns a map populated with the default values for a
+     * <p> This handler returns a map populated with the default values for a
      * destination.  Currently, this is all hard-coded, based on data from the MQ
      * documentation.  When/if they expose an API for determining this programmatically,
      * the implementation will be updated.</p>
      * If an orig map is passed in, the default value will be set to this orig map instead
      * of creating a new one.  This is used for restoring back to the default value during edit.
-     *	@param	context	The HandlerContext.
+     * @param context The HandlerContext.
      */
     @Handler(id = "getDefaultPhysicalDestinationValues",
     input = {

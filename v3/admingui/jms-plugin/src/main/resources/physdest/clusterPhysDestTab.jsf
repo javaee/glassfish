@@ -1,6 +1,6 @@
 <sun:tab id="jmsPhysDest" immediate="true" text="$resource{i18njms.jmsPhysDestinations.tab}" toolTip="$resource{i18njms.jmsPhysDestinations.tab} Tab">
     <!command
-	setSessionAttribute(key="serverInstTabs" value="physDest");
-	gf.redirect(page="#{request.contextPath}/jms/physdest/clusterPhysDest.jsf");
+        setSessionAttribute(key="serverInstTabs" value="physDest");
+        gf.redirect(page="#{request.contextPath}/jms/physdest/clusterPhysDest.jsf?name=#{pageSession.clusterName}");
     />
 </sun:tab>

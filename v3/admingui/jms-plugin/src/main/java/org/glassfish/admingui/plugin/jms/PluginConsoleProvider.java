@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admingui.plugin.jms;
 
 import org.glassfish.api.admingui.ConsoleProvider;
@@ -41,23 +40,24 @@ import org.jvnet.hk2.annotations.Service;
 
 import java.net.URL;
 
-
 /**
- *  <p>	This class serves as a marker to indicate this OSGi bundle provides GUI
- *	content which is to be displayed in the GlassFish admin console.  The
- *	{@link #getConfiguration()} method should either return
- *	<code>(null)</code>, or a <code>URL</code> to the
- *	<code>console-config.xml</code> file.</p>
+ *  <p> This class serves as a marker to indicate this OSGi bundle provides GUI
+ *      content which is to be displayed in the GlassFish admin console.  The
+ *      {@link #getConfiguration()} method should either return
+ *      <code>(null)</code>, or a <code>URL</code> to the
+ *      <code>console-config.xml</code> file.</p>
  *
- *  @author Ken Paulsen	(ken.paulsen@sun.com)
+ *  @author Ken Paulsen (ken.paulsen@sun.com)
  */
 @Service
 public class PluginConsoleProvider implements ConsoleProvider {
 
     /**
-     *	<p> Returns a <code>URL</code> to the <code>console-config.xml</code>
-     *	    file, or <code>null</code>.  If <code>null</code> is returned, the
-     *	    default ("META-INF/admingui/console-config.xml") will be used.</p>
+     * <p> Returns a <code>URL</code> to the <code>console-config.xml</code>
+     *     file, or <code>null</code>.  If <code>null</code> is returned, the
+     *     default ("META-INF/admingui/console-config.xml") will be used.</p>
      */
-    public URL getConfiguration() { return null; }
+    public URL getConfiguration() {
+        return null;
+    }
 }
