@@ -60,7 +60,7 @@ import java.util.ArrayList;
  * List Admin Objects command
  * 
  */
-@TargetType(value={CommandTarget.DAS,CommandTarget.CONFIG, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@TargetType(value={CommandTarget.DAS,CommandTarget.CONFIG, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTERED_INSTANCE })
 @Cluster(value={RuntimeType.DAS})
 @Service(name="list-admin-objects")
 @Scoped(PerLookup.class)

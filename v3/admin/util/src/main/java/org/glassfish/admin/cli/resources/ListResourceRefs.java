@@ -61,7 +61,7 @@ import org.jvnet.hk2.component.PerLookup;
  * List Resource Refs Command
  * 
  */
-@TargetType(value={CommandTarget.DAS, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@TargetType(value={CommandTarget.DAS, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTERED_INSTANCE})
 @Cluster(value={RuntimeType.DAS})
 @Service(name="list-resource-refs")
 @Scoped(PerLookup.class)

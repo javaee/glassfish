@@ -59,7 +59,7 @@ import java.util.ArrayList;
  * List JDBC Resources command
  * 
  */
-@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTERED_INSTANCE })
 @Cluster(value={RuntimeType.DAS})
 @Service(name="list-jdbc-resources")
 @Scoped(PerLookup.class)

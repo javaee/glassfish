@@ -62,7 +62,7 @@ import org.glassfish.api.Param;
  * List Custom Resources command
  *
  */
-@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTERED_INSTANCE })
 @Cluster(value={RuntimeType.DAS})
 @Service(name="list-custom-resources")
 @Scoped(PerLookup.class)

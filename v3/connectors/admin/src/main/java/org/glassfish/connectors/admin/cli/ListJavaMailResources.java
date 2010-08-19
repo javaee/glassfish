@@ -60,7 +60,7 @@ import java.util.List;
  * List Mail Resources command
  *
  */
-@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
+@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTERED_INSTANCE })
 @Cluster(value={RuntimeType.DAS})
 @Service(name="list-javamail-resources")
 @Scoped(PerLookup.class)
