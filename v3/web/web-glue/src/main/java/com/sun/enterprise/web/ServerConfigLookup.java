@@ -329,6 +329,20 @@ public class ServerConfigLookup {
      * Get the persistenceType from domain.xml.
      * return null if not found
      */
+
+    public boolean getAsyncReplicationFromConfig(WebModule ctx) {
+        boolean asyncReplication = true;
+        DeploymentContext dc = ctx.getWebModuleConfig().getDeploymentContext();
+        if (dc != null) {
+            DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
+            if (params != null) {
+                asyncReplication = params.asyncreplication;
+            }
+
+        }
+        return asyncReplication;
+    }
+
     public PersistenceType getPersistenceTypeFromConfig() {
         String persistenceTypeString = null;      
         PersistenceType persistenceType = null;
