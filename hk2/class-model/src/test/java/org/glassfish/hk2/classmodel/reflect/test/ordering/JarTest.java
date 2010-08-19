@@ -38,10 +38,14 @@ package org.glassfish.hk2.classmodel.reflect.test.ordering;
 import org.glassfish.hk2.classmodel.reflect.Parser;
 import org.glassfish.hk2.classmodel.reflect.ParsingContext;
 import org.glassfish.hk2.classmodel.reflect.Type;
+import org.glassfish.hk2.classmodel.reflect.util.InputStreamArchiveAdapter;
 import org.junit.Ignore;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -76,6 +80,7 @@ public class JarTest {
         ParsingContext pc = new ParsingContext.Builder().logger(logger).build();
         Parser parser = new Parser(pc);
         long start = System.currentTimeMillis();
+
         parser.parse(f, new Runnable() {
             @Override
             public void run() {
