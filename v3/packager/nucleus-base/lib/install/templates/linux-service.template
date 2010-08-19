@@ -1,5 +1,4 @@
 #!/bin/sh
-#
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
 # Copyright 2010 Sun Microsystems, Inc. All rights reserved.
@@ -39,12 +38,15 @@
 # See this blog for more details:
 # http://blogs.sun.com/foo/entry/run_glassfish_v3_as_a
 # Remove the GF_USER setting to have the System account run GlassFish
+#
+#    Created on : %%%DATE_CREATED%%%
+#     Server Type:  %%%TYPE%%%
 
 ASADMIN="%%%AS_ADMIN_PATH%%%"
 
 case "$1" in
 start)
-    %%%SERVICEUSER_START%%%$ASADMIN %%%START_COMMAND%%% %%%CREDENTIALS%%% %%%LOCATION_ARGS_START%%% %%%ENTITY_NAME%% > /dev/null 2>&1 &%%%SERVICEUSER_STOP%%%
+    %%%SERVICEUSER_START%%%$ASADMIN %%%START_COMMAND%%% %%%CREDENTIALS%%% %%%LOCATION_ARGS_START%%% %%%ENTITY_NAME%%% > /dev/null 2>&1 &%%%SERVICEUSER_STOP%%%
     ;;
 stop)
     %%%SERVICEUSER_START%%%$ASADMIN %%%STOP_COMMAND%%%  %%%LOCATION_ARGS_STOP%%% %%%ENTITY_NAME%%% > /dev/null 2>&1 &%%%SERVICEUSER_STOP%%%

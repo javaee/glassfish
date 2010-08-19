@@ -10,6 +10,8 @@
     Created on : %%%DATE_CREATED%%%
     Author     : User and SJSAS Administration Team
     Description: The SMF Service Manifest file for domain %%%NAME%%% in %%%LOCATION%%%
+    Server Type:  %%%TYPE%%%
+
 -->
 
 <!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">

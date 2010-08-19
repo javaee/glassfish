@@ -10,6 +10,8 @@
     Created on : %%%DATE_CREATED%%%
     Author     : User and GlassFish Administration Team
     Description: The Windows Service Wrapper configuration file for server %%%ENTITY_NAME%%%.
+    Server Type:  %%%TYPE%%%
+
 -->
 
 <service>
