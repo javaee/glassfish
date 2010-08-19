@@ -60,6 +60,8 @@ public class ModelClassVisitor implements ClassVisitor {
     boolean deepVisit =false;
     final VisitingContext visitingContext = new VisitingContext();
     private final ModelFieldVisitor fieldVisitor = new ModelFieldVisitor(visitingContext);
+    private final ModelMethodVisitor methodVisitor = new ModelMethodVisitor(visitingContext);
+    private final ModelAnnotationVisitor annotationVisitor = new ModelAnnotationVisitor(visitingContext);
 
     public ModelClassVisitor(ParsingContext ctx, URI definingURI, String entryName) {
         this.ctx = ctx;
@@ -136,33 +138,8 @@ public class ModelClassVisitor implements ClassVisitor {
             System.out.println("Inspecting fields of " + type.getName());
             deepVisit =true;
         }
-
-        return new AnnotationVisitor() {
-            @Override
-            public void visit(String name, Object value) {
-                am.addValue(name, value);
-            }
-
-            @Override
-            public void visitEnum(String name, String desc, String value) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public AnnotationVisitor visitAnnotation(String name, String desc) {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public AnnotationVisitor visitArray(String name) {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public void visitEnd() {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-        };
+        visitingContext.annotation=am;
+        return annotationVisitor;
     }
 
     @Override
@@ -221,27 +198,13 @@ public class ModelClassVisitor implements ClassVisitor {
 
         final MethodModelImpl method = new MethodModelImpl(name, cm);
         type.addMethod(method);
-        return new org.objectweb.asm.commons.EmptyVisitor() {
-            @Override
-            public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-
-                AnnotationTypeImpl annotationType = (AnnotationTypeImpl) typeBuilder.getType(Opcodes.ACC_ANNOTATION, unwrap(desc), null );
-                AnnotationModelImpl annotationModel = new AnnotationModelImpl(method, annotationType);
-
-                // reverse index.
-                annotationType.getAnnotatedElements().add(method);
-
-                // forward index
-                method.addAnnotation(annotationModel);
-                return null;
-            }
-
-        };
+        visitingContext.method = method;
+        return methodVisitor;
     }
 
     @Override
     public void visitEnd() {
-        visitingContext.field=null;
+        type=null;
     }                                                            
 
     private String unwrap(String desc) {
@@ -250,7 +213,42 @@ public class ModelClassVisitor implements ClassVisitor {
 
     private static class VisitingContext {
         FieldModelImpl field;
+        MethodModelImpl method;
+        AnnotationModelImpl annotation;
 
+    }
+
+    private class ModelMethodVisitor extends EmptyVisitor implements FieldVisitor {
+
+        private final VisitingContext context;
+
+        private ModelMethodVisitor(VisitingContext context) {
+            this.context = context;
+        }
+
+        @Override
+        public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+
+            if (context.method==null) {
+                // probably an annotation method, ignore
+                return null;
+            }
+            AnnotationTypeImpl annotationType = (AnnotationTypeImpl) typeBuilder.getType(Opcodes.ACC_ANNOTATION, unwrap(desc), null);
+            AnnotationModelImpl annotationModel = new AnnotationModelImpl(context.method, annotationType);
+
+            // reverse index.
+            annotationType.getAnnotatedElements().add(context.method);
+
+            // forward index
+            context.method.addAnnotation(annotationModel);
+            context.annotation = annotationModel;
+            return annotationVisitor;
+        }
+
+        @Override
+        public void visitEnd() {
+            context.method=null;
+        }
     }
 
     private class ModelFieldVisitor extends EmptyVisitor implements FieldVisitor {
@@ -273,8 +271,32 @@ public class ModelClassVisitor implements ClassVisitor {
 
             // forward index
             field.addAnnotation(annotationModel);
-            return null;
+            context.annotation = annotationModel;
+            return annotationVisitor;
         }
 
+        @Override
+        public void visitEnd() {
+            context.field = null;
+        }
+    }
+
+    private class ModelAnnotationVisitor extends EmptyVisitor implements AnnotationVisitor {
+        private final VisitingContext context;
+
+        private ModelAnnotationVisitor(VisitingContext context) {
+            this.context = context;
+        }
+        
+        @Override
+        public void visit(String name, Object value) {
+            if (context.annotation==null) return;
+            context.annotation.addValue(name, value);
+        }
+
+        @Override
+        public void visitEnd() {
+            context.annotation=null;
+        }
     }
 }

@@ -46,6 +46,7 @@ import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.LockSupport;
 
 import javax.management.ObjectName;
 
@@ -153,7 +154,9 @@ public class ConfigBean extends Dom implements ConfigView {
 
     protected void setter(ConfigModel.Property target, Object value) throws Exception  {
         if (!writeLock) {
-            throw new PropertyVetoException("Not part of a transaction !", null);
+            throw new PropertyVetoException("Instance of " + typeName() + " named '" + getKey() +
+                    "' is not locked for writing when changing attribute " + target.xmlName()
+                    + ", you must use transaction semantics to access it.", null);
         }
         _setter(target, value);
     }
@@ -308,7 +311,24 @@ public class ConfigBean extends Dom implements ConfigView {
         }
 
         public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
-            throw new UnsupportedOperationException();
+            long nanosTimeout = TimeUnit.NANOSECONDS.convert(time, unit);
+            long increment = nanosTimeout/20;
+            long lastTime = System.nanoTime();
+            for (; ;) {
+                if (tryLock()) {
+                    return true;
+                }
+                if (nanosTimeout < 0) {
+                    return false;
+                }
+                LockSupport.parkNanos(increment);
+                long now = System.nanoTime();
+                nanosTimeout -= now - lastTime;
+                lastTime = now;
+                if (Thread.interrupted())
+                    break;
+            }
+            throw new InterruptedException();
         }
 
         public synchronized void unlock() {

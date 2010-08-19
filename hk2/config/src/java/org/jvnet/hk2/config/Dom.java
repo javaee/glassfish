@@ -44,6 +44,7 @@ import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+import java.beans.PropertyVetoException;
 import java.lang.reflect.*;
 import java.lang.annotation.Annotation;
 import java.util.*;
@@ -902,9 +903,9 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
             // getter
             return getter(p, method.getGenericReturnType());
         } else {
-            // setter
-            setter(p, args[0]);
-            return null;
+            throw new PropertyVetoException("Instance of " + typeName() + " named '" + getKey() +
+                    "' is not locked for writing when invoking method " + method.getName()
+                    + " you must use transaction semantics to access it.", null);
         }
     }
 

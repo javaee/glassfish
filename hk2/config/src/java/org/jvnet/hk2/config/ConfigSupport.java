@@ -45,6 +45,7 @@ import org.jvnet.hk2.component.Habitat;
 import java.beans.PropertyVetoException;
 import java.beans.PropertyChangeEvent;
 import java.lang.reflect.*;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.*;
@@ -93,6 +94,8 @@ public class ConfigSupport {
 
     @Inject
     Habitat habitat;
+
+    public static int lockTimeOutInSeconds=Integer.getInteger("org.glassfish.hk2.config.locktimeout", 3);
  
     /**
      * Execute some logic on one config bean of type T protected by a transaction
@@ -186,6 +189,12 @@ public class ConfigSupport {
                 throw e;
             }
 
+        } catch (java.lang.reflect.UndeclaredThrowableException e) {
+            t.rollback();
+            Throwable throwable = e.getCause();
+            if (throwable instanceof PropertyVetoException) throw new TransactionFailure(throwable.toString(), throwable);
+            throw new TransactionFailure(e.toString(), e);
+
         } catch(TransactionFailure e) {
             t.rollback();
             throw e;
@@ -200,8 +209,12 @@ public class ConfigSupport {
         throws TransactionFailure {
 
         WriteableView f = new WriteableView(s);
-        if (sourceBean.getLock().tryLock()) {
-            return f;
+        try {
+            if (sourceBean.getLock().tryLock(lockTimeOutInSeconds, TimeUnit.SECONDS)) {
+                return f;
+            }
+        } catch(InterruptedException e) {
+            // ignore, will throw a TransactionFailure exception
         }
         throw new TransactionFailure("Config bean already locked " + sourceBean, null);
     }

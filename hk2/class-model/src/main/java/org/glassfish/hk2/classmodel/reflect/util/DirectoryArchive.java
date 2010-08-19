@@ -89,15 +89,25 @@ public class DirectoryArchive extends AbstractAdapter {
         for (File f : dir.listFiles()) {
             Entry ae = new Entry(mangle(f), f.length(), f.isDirectory());
             if (!f.isDirectory()) {
+                if (ae.name.endsWith(".jar")) {
+                    JarArchive ja = null;
+                    try {
+                        ja = new JarArchive(f.toURI());
+                        ja.onSelectedEntries(selector, task, logger);
+                    } finally {
+                        ja.close();
+                    }
+                    continue;
+                }
                 if (!selector.isSelected(ae))
                     continue;
-                InputStream is = null;
+                FileChannel fc = null;
                 try {
                     try {
                         if (buffer.capacity()<f.length()) {
                             buffer = ByteBuffer.allocate((int) f.length());
                         }
-                        FileChannel fc = (new FileInputStream(f)).getChannel();
+                        fc = (new FileInputStream(f)).getChannel();
 
                         int read = fc.read(buffer);
                         if (read!=f.length()) {
@@ -112,8 +122,8 @@ public class DirectoryArchive extends AbstractAdapter {
                     }
 
                 } finally {
-                    if (is!=null) {
-                        is.close();
+                    if (fc!=null) {
+                        fc.close();
                     }
                 }
             } else {

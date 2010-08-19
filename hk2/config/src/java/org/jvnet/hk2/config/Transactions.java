@@ -245,12 +245,9 @@ public final class Transactions implements PostConstruct, PreDestroy {
 
                     for (final ConfigListener listener : configListeners) {
                         // each listener is notified in it's own thread.
-                        System.out.println("Spwaning for " + listener.getClass());
                         futures.put(executor.submit(new Callable<UnprocessedChangeEvents>() {
                             public UnprocessedChangeEvents call() throws Exception {
-                                System.out.println("Going with " + listener.getClass());                                
                                 UnprocessedChangeEvents e = job.process(listener);
-                                System.out.println("Done with " + listener.getClass());
                                 return e;
 
                             }
