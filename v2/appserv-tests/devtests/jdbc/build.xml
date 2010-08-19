@@ -106,6 +106,7 @@
 	<ant dir="transparent-pool-reconfig" target="all"/>
 	<ant dir="sqltracemonitoring" target="all"/>
 	<ant dir="statementleakdetection" target="all"/>
+	<ant dir="appbasedMonitoring" target="all"/>
 	<!--<antcall target="all-oracle"/>-->
     </target>
 

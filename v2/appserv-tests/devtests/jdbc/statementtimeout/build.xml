@@ -16,6 +16,8 @@
 
     <target name="all" depends="build,deploy,run,undeploy"/>
 
+    <target name="statementtimeout-run" depends="build,deploy-limited,run"/>
+
     <target name="clean" depends="init-common">
         <antcall target="clean-common"/>
     </target>
@@ -38,11 +40,20 @@
         </antcall>
     </target>
 
+    <target name="deploy-limited" depends="init-common">
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="set"/>
+            <param name="operand.props"
+                   value="${resources.dottedname.prefix}.jdbc-connection-pool.ql-jdbc-pool.statement_timeout_in_seconds=30"/>
+        </antcall>
+        <antcall target="deploy-common"/>
+    </target>
+
     <target name="deploy" depends="init-common">
         <antcall target="execute-sql-common">
             <param name="sql.file" value="sql/create_pointbase.sql"/>
         </antcall>
-        <antcall target="deploy-jdbc-common"/>
+	<antcall target="deploy-jdbc-common"/>
 
         <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>
@@ -68,6 +79,14 @@
 
         <antcall target="delete-persistence-resource-common"/>
         <antcall target="undeploy-jdbc-common"/>
+        <antcall target="undeploy-common"/>
+    </target>
+
+    <target name="undeploy-limited" depends="init-common">
+        <antcall target="execute-sql-common">
+            <param name="sql.file" value="sql/drop_pointbase.sql"/>
+        </antcall>
+
         <antcall target="undeploy-common"/>
     </target>
 
