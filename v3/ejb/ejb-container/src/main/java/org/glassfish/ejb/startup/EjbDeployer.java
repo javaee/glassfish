@@ -441,7 +441,13 @@ public class EjbDeployer
      */
     private void createAutomaticPersistentTimersForEJB(EjbDescriptor ejbDescriptor, String target) {
         try {
-            //Start EJB Timer Service if needed
+            if( EjbContainerUtilImpl.getInstance().isEJBLite() ) {
+                throw new RuntimeException("Invalid application.  EJB " +
+                        ejbDescriptor.getName() + " uses the EJB Timer Service"
+                        + ". This feature is not part of the EJB 3.1 Lite API");
+            }
+
+            //Start EJB Timer Service if it wasn't started yet. On DAS the first start will create the timer table.
             EJBTimerService timerService = EjbContainerUtilImpl.getInstance().getEJBTimerService(target);
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.log( Level.FINE, "EjbDeployer BEAN ID? " + ejbDescriptor.getUniqueId());
@@ -470,6 +476,7 @@ public class EjbDeployer
 
                 //TODO pass in only schedules to create.
                 timerService.recoverAndCreateSchedules(ejbDescriptor.getUniqueId(), schedules, owner, true);
+
                 if (_logger.isLoggable(Level.FINE)) {
                     _logger.log( Level.FINE, "EjbDeployer Done With BEAN ID? " + ejbDescriptor.getUniqueId());
                 }  
