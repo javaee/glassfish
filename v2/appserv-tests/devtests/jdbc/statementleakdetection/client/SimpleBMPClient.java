@@ -5,9 +5,17 @@ import javax.naming.*;
 import com.sun.s1asdev.jdbc.statementwrapper.ejb.SimpleBMPHome;
 import com.sun.s1asdev.jdbc.statementwrapper.ejb.SimpleBMP;
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+import javax.management.remote.JMXServiceURL;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
 
 public class SimpleBMPClient {
 
+    public static final String poolName = "ql-jdbc-pool";
+    public static final int JMX_PORT = 8686;
+    public static final String HOST_NAME = "localhost";
     public static void main(String[] args)
             throws Exception {
 
@@ -40,6 +48,11 @@ public class SimpleBMPClient {
             stat.addStatus(testSuite + " statementTest : ", stat.FAIL);
         }
 
+	if(getMonitorablePropertyOfConnectionPool() == 2) {
+            stat.addStatus(testSuite + " Monitoring after statementTest : ", stat.PASS);
+	} else {
+            stat.addStatus(testSuite + " Monitoring after statementTest : ", stat.FAIL);
+	}
         //Testing PreparedStatement object
         for (int i = 0; i < 2; i++) {
             SimpleBMPHome simpleBMPHome = (SimpleBMPHome) javax.rmi.PortableRemoteObject.narrow(objRef, SimpleBMPHome.class);
@@ -61,6 +74,11 @@ public class SimpleBMPClient {
             stat.addStatus(testSuite + " preparedStatementTest : ", stat.FAIL);
         }
 
+	if(getMonitorablePropertyOfConnectionPool() == 4) {
+            stat.addStatus(testSuite + " Monitoring after preparedStatementTest : ", stat.PASS);
+	} else {
+            stat.addStatus(testSuite + " Monitoring after preparedStatementTest : ", stat.FAIL);
+	}
         //Testing CallableStatement objects
         for (int i = 0; i < 2; i++) {
             SimpleBMPHome simpleBMPHome = (SimpleBMPHome) javax.rmi.PortableRemoteObject.narrow(objRef, SimpleBMPHome.class);
@@ -82,18 +100,30 @@ public class SimpleBMPClient {
             stat.addStatus(testSuite + " callableStatementTest : ", stat.FAIL);
         }
 
-        /*    if ( simpleBMP.metaDataTest() ) {
-        stat.addStatus(testSuite+" metaDataTest : ", stat.PASS);
-        } else {
-        stat.addStatus(testSuite+" metaDataTest : ", stat.FAIL);
-        }
-
-        if ( simpleBMP.resultSetTest() ) {
-        stat.addStatus(testSuite+" resultSetTest : ", stat.PASS);
-        } else {
-        stat.addStatus(testSuite+" resultSetTest : ", stat.FAIL);
-        }
-         */
+	if(getMonitorablePropertyOfConnectionPool() == 6) {
+            stat.addStatus(testSuite + " Monitoring after callableStatementTest : ", stat.PASS);
+	} else {
+            stat.addStatus(testSuite + " Monitoring after callableStatementTest : ", stat.FAIL);
+	}
         stat.printSummary();
+    }
+
+    public static int getMonitorablePropertyOfConnectionPool() throws Exception {
+	final String monitoringStat = "numpotentialstatementleak";
+	final String urlStr = "service:jmx:rmi:///jndi/rmi://" + HOST_NAME + ":" + JMX_PORT + "/jmxrmi";    
+        final JMXServiceURL url = new JMXServiceURL(urlStr);
+
+	final JMXConnector jmxConn = JMXConnectorFactory.connect(url);
+	final MBeanServerConnection connection = jmxConn.getMBeanServerConnection();
+
+        ObjectName objectName =
+            new ObjectName("amx:pp=/mon/server-mon[server],type=jdbcra-mon,name=resources/" + poolName);
+
+	javax.management.openmbean.CompositeDataSupport returnValue = 
+		(javax.management.openmbean.CompositeDataSupport) 
+		connection.getAttribute(objectName, monitoringStat);
+
+	System.out.println(">>>" + monitoringStat + "=" + returnValue.get("count"));
+        return new Integer(returnValue.get("count").toString());
     }
 }

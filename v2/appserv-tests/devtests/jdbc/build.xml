@@ -105,6 +105,7 @@
 	<ant dir="stmtCaching_hit_miss.monitoring" target="all"/>
 	<ant dir="transparent-pool-reconfig" target="all"/>
 	<ant dir="sqltracemonitoring" target="all"/>
+	<ant dir="statementleakdetection" target="all"/>
 	<!--<antcall target="all-oracle"/>-->
     </target>
 
