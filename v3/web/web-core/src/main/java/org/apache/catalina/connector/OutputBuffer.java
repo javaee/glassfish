@@ -668,6 +668,7 @@ public class OutputBuffer extends Writer
 
         addSessionVersionCookie(req, ctx);
         addSessionCookieWithJvmRoute(req, ctx);
+        addSessionCookieWithJReplica(req,ctx);
         addPersistedSessionCookie(req, ctx);
     }
 
@@ -717,6 +718,33 @@ public class OutputBuffer extends Writer
         response.addHeader(SET_COOKIE_HEADER,
                 coyoteResponse.getCookieString(cookie));
     }
+
+    /**
+     * Adds JSESSIONID cookie whose value includes jvmRoute if necessary.
+     */
+    private void addSessionCookieWithJReplica(Request request, StandardContext ctx) {
+        String replicaLocation = (String)request.getAttribute("jreplicaLocation");
+
+        if (replicaLocation != null) {
+            Cookie cookie = new Cookie(
+                "JREPLICA", replicaLocation);
+            request.configureSessionCookie(cookie);
+            if (request.isRequestedSessionIdFromCookie()) {
+                /*
+                 * Have the JSESSIONIDVERSION cookie inherit the
+                 * security setting of the JSESSIONID cookie to avoid
+                 * session loss when switching from HTTPS to HTTP,
+                 * see IT 7414
+                 */
+                cookie.setSecure(
+                    request.isRequestedSessionIdFromSecureCookie());
+            }
+            response.addHeader(SET_COOKIE_HEADER,
+                               coyoteResponse.getCookieString(cookie));
+        }
+
+    }
+
 
     private void addPersistedSessionCookie(Request request, StandardContext ctx) throws IOException {
         Session sess = request.getSessionInternal(false);

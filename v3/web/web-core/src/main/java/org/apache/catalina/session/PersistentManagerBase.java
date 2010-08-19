@@ -862,7 +862,7 @@ public abstract class PersistentManagerBase
      * and from the Store.
      *
      * @param session Session to be removed
-     * @param boolean persistentRemove - do we remove persistent session too
+     * @param  persistentRemove - do we remove persistent session too
      */
     public void remove(Session session, boolean persistentRemove) {
 
@@ -877,7 +877,7 @@ public abstract class PersistentManagerBase
      * Remove this Session from the active Sessions for this Manager,
      * and from the Store.
      *
-     * @param is Session's id to be removed
+     * @param id Session's id to be removed
      */    
     private void removeSession(String id){
         try {
