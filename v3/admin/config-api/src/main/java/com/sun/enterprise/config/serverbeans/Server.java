@@ -36,6 +36,7 @@
 package com.sun.enterprise.config.serverbeans;
 
 import com.sun.enterprise.config.util.ServerHelper;
+import com.sun.enterprise.config.util.PortBaseHelper;
 import com.sun.enterprise.config.util.PortManager;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -435,6 +436,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
         String lbEnabled = null;
         @Param(name = "checkports", optional = true, defaultValue = "true")
         boolean checkPorts = true;
+        @Param(name = "portbase", optional = true)
+        private String portBase;
         @Inject
         Domain domain;
         @Inject
@@ -474,6 +477,13 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                 throw new TransactionFailure(localStrings.getLocalString(
                         "cannotAddDuplicate", "There is an instance {0} already present.", instance.getName()));
             }
+
+            if (portBase != null) {
+                PortBaseHelper pbh = new PortBaseHelper(instance, portBase, false, logger);
+                pbh.verifyPortBase();
+                pbh.setPorts();
+            }
+
             // cluster instance using cluster config
             if (clusterName != null) {
                 if (configRef != null) {

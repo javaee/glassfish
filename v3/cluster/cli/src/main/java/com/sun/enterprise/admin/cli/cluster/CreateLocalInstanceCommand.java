@@ -43,7 +43,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
-import static com.sun.enterprise.admin.cli.cluster.PortBaseHelper.*;
 import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
@@ -99,7 +98,6 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
     private String RENDEZVOUS_DOTTED_NAME;
     private boolean _rendezvousOccurred;
     private String _node;
-    private PortBaseHelper pbh;
     protected static final String DEFAULT_MASTER_PASSWORD = KeystoreManager.DEFAULT_MASTER_PASSWORD;
     private ParamModelData masterPasswordOption;
     private static final String MASTER_PASSWORD_ALIAS="master-password";
@@ -121,8 +119,6 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
             validateNode(node, getInstallRootPath(), getInstanceHostName(true));
         }
 
-        pbh = new PortBaseHelper(portBase, checkPorts);
-        pbh.verifyPortBase();
         setDasDefaultsOnly = false;
         super.validate();  // instanceName is validated and set in super.validate(), directories created
         INSTANCE_DOTTED_NAME = "servers.server." + instanceName;
@@ -307,9 +303,6 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
     }
 
     private int registerToDAS() throws CommandException {
-        if (portBase != null) {
-            setPorts();
-        }
         ArrayList<String> argsList = new ArrayList<String>();
         argsList.add(0, "_register-instance");
         if (clusterName != null) {
@@ -327,6 +320,12 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         if (_node != null) {
             argsList.add("--node");
             argsList.add(_node);
+        }
+        argsList.add("--checkports");
+        argsList.add(String.valueOf(checkPorts));
+        if (portBase != null) {
+            argsList.add("--portbase");
+            argsList.add(portBase);
         }
         if (systemProperties != null) {
             argsList.add("--systemproperties");
@@ -431,38 +430,6 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
 
         RemoteCommand rc = new RemoteCommand("_validate-node", this.programOpts, this.env);
         return rc.execute(argsArray);
-    }
-
-    private void setPorts() {
-        if (portBase != null) {
-            StringBuffer sb;
-            if (systemProperties == null) {
-                sb = new StringBuffer();
-            } else {
-                sb = new StringBuffer(systemProperties);
-            }
-            if (sb.indexOf(ADMIN) == -1)
-                sb.append(":" + ADMIN + "=" + pbh.getAdminPort());
-            if (sb.indexOf(HTTP) == -1)
-                sb.append(":" + HTTP + "=" + pbh.getInstancePort());
-            if (sb.indexOf(HTTPS) == -1)
-                sb.append(":" + HTTPS + "=" + pbh.getHttpsPort());
-            if (sb.indexOf(IIOP) == -1)
-                sb.append(":" + IIOP + "=" + pbh.getIiopPort());
-            if (sb.indexOf(IIOPM) == -1)
-                sb.append(":" + IIOPM + "=" + pbh.getIiopmPort());
-            if (sb.indexOf(IIOPS) == -1)
-                sb.append(":" + IIOPS + "=" + pbh.getIiopsPort());
-            if (sb.indexOf(JMS) == -1)
-                sb.append(":" + JMS + "=" + pbh.getJmsPort());
-            if (sb.indexOf(JMX) == -1)
-                sb.append(":" + JMX + "=" + pbh.getJmxPort());
-            if (sb.charAt(0) == ':') {
-                 systemProperties = sb.substring(1);
-            } else {
-                systemProperties = sb.toString();
-            }
-        }
     }
 
     private String getInstanceHostName(boolean isCanonical) throws CommandException {
