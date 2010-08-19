@@ -381,9 +381,9 @@ public class JmsHandlers {
     public static void getPhysicalDestinationName(HandlerContext handlerCtx) {
         List<Map> list = (List<Map>) handlerCtx.getInputValue("list");
         for (Map map : list) {
-            String name = (String) map.get("Name");
+            String name = (String) map.get("name");
             if ("Name".equals(name)) {
-                String value = (String) map.get("Value");
+                String value = (String) map.get("value");
                 handlerCtx.setOutputValue("physDestName", value);
                 break;
             }

@@ -54,8 +54,8 @@
             //REST related
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
             setPageSessionAttribute(key="rest-api" value="true");
-            gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.listOfRows}", id="JndiName");
-            filterTable(table="#{requestScope.listOfRows}", key="ResAdapter", value="jmsra")
+            gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.listOfRows}", id="jndiName");
+            filterTable(table="#{requestScope.listOfRows}", key="resAdapter", value="jmsra")
 
             setPageSessionAttribute(key="tableTitle" value="$resource{i18njms.resourcesTable.destResources}");
             setPageSessionAttribute(key="createLink" value="/jms/jmsDestinationNew.jsf");

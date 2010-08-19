@@ -38,21 +38,15 @@
         onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
     <!command
         gf.updateEntity(endpoint="#{pageSession.selfUrl}", attrs="#{pageSession.valueMap}", skipAttrs="#{pageSession.skipAttrsList}",convertToFalse="#{pageSession.convertToFalseList}");
-        //mapPut(map="#{pageSession.valueMap2}", key="Enabled", value="#{pageSession.resourceRefEnabled}");
         gf.updateEntity(endpoint="#{pageSession.selfUrl2}", attrs="#{pageSession.valueMap2}");
 
-        getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-        getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-        //REST - TO DO
-        setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
-
         createMap(result=>$attribute{nameMap});
-        mapPut(map="$attribute{nameMap}", key="selected", value="#{false}");
         mapPut(map="$attribute{nameMap}", key="name", value="Name");
         mapPut(map="$attribute{nameMap}", key="value", value="#{pageSession.physDestName}");
         listAdd(list="$attribute{newList}", value="$attribute{nameMap}");
-        //REST - TO DO
-        setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+
+        javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
+        gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json", method="POST", data="#{requestScope.tmpJSON}", result="#{requestScope.restResponse}");
 
         prepareSuccessfulMsg();
         gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
@@ -65,23 +59,24 @@
                         attrs="#{pageSession.valueMap}"
                         convertToFalse="#{pageSession.convertToFalseList}"
                         result => $attribute{resultEndPoint});
-        //createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
-         //       attrs="#{pageSession.valueMap}", convertToFalse="#{pageSession.convertToFalseList}", result => $attribute{objStr});
-        //createResourceRef(resourceName="#{pageSession.valueMap['name']}", enabled="#{pageSession.valueMap2['enabled'] == 'true'}");
 
         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
 
         createMap(result=>$attribute{nameMap});
-        mapPut(map="$attribute{nameMap}", key="selected", value="false");
         mapPut(map="$attribute{nameMap}", key="name", value="Name");
         mapPut(map="$attribute{nameMap}", key="value", value="#{pageSession.physDestName}");
         listAdd(list="$attribute{newList}", value="$attribute{nameMap}");
         //REST - TO DO
         if (#{pageSession['rest-api']}) {
-        setAttribute(key="objStr", value="#{pageSession.restObjStr},name=#{pageSession.valueMap['name']}");
+            setAttribute(key="objStr", value="#{pageSession.restObjStr},name=#{pageSession.valueMap['name']}");
         }
-        setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+
+        javaToJSON(obj="$attribute{newList}" json="#{requestScope.tmpJSON}");
+        urlencode(value="#{pageSession.valueMap.name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+        gf.restRequest(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}/property.json",
+            method="POST", data="#{requestScope.tmpJSON}", result="#{requestScope.restResponse}");
+
         gf.redirect(page="#{parentPage}")
     />
 </sun:button>

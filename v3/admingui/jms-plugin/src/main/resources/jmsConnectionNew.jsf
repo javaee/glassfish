@@ -87,8 +87,6 @@
             </sun:panelGroup>
         </facet>
     </sun:title>
-"VM ----> #{pageSession.valueMap}
-"VM2 ----> #{pageSession.valueMap2}
 #include "/jms/poolProperties.inc"
 #include "/common/shared/propertyDescTable.inc"
     <sun:title id="title2" >

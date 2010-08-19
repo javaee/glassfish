@@ -69,8 +69,11 @@
             setPageSessionAttribute(key="resourceRefUrl", value="#{sessionScope.REST_URL}/servers/server/server/resource-ref/#{pageSession.encodedName}");
             setPageSessionAttribute(key="rest-api" value="true");
             gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
-            //REST - TO DO
-            getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+
+            gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json", method="GET", result="#{requestScope.propTable}");
+            setPageSessionAttribute(key="tableList", value="#{requestScope.propTable.data.extraProperties.properties}");
+
+            //getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
             gf.getEntityAttrs(endpoint="#{pageSession.resourceRefUrl}.json",  valueMap="#{pageSession.resourceRef}");
 
             //set the following for including buttons.inc
