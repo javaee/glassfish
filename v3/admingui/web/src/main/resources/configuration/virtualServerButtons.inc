@@ -102,8 +102,8 @@
                     EnsureDefaultWebModule(endpoint="#{pageSession.selfUrl}",vsName="#{pageSession.valueMap['id']}",instanceList="#{requestScope.instanceList}");
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    setAttribute(key="objStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/http-service,type=virtual-server,name=#{pageSession.valueMap['id']}");
-                    setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                    javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
+		    gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="POST" data="#{requestScope.tmpJSON}" result="#{requestScope.restResponse}");
                     gf.redirect(page="#{parentPage}?configName=#{configName}")
                 />
             </sun:button>
