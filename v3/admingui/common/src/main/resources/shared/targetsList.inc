@@ -43,7 +43,7 @@ gf.restRequest(
     attrs="#{requestScope.stAttrs}"
     method="GET"
     result="#{pageSession.restMap}");
- gf.getPropertiesList(listProps="#{pageSession.restMap.data.children}" keyList="#{pageSession.targetList}");
+ gf.getMapKeys(Map="#{pageSession.restMap.data.extraProperties}" Keys="#{pageSession.targetList}");
 
  gf.listCombine(list="#{pageSession.targetList}",  list2="#{pageSession.clusterList}");
  listAdd(list="#{pageSession.targetList}", value="server" index="0");

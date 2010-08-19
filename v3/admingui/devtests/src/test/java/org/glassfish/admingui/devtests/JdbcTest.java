@@ -83,14 +83,14 @@ public class JdbcTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:resources:JDBC:jdbcResources:jdbcResources_link", TRIGGER_JDBC_RESOURCES);
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_JDBC_RESOURCE);
 
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:nameNew:name", jndiName);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:descProp:desc", description);
-        int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
+        selenium.type("form:propertySheet:propertSectionTextField:nameNew:name", jndiName);
+        selenium.type("form:propertySheet:propertSectionTextField:descProp:desc", description);
+        int count = addTableRow("form:basicTable", "form:basicTable:topActionsGroup1:addSharedTableButton");
 
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "description");
-        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_JDBC_RESOURCES);
+        selenium.type("form:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
+        selenium.type("form:basicTable:rowGroup1:0:col3:col1St", "value");
+        selenium.type("form:basicTable:rowGroup1:0:col4:col1St", "description");
+        clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JDBC_RESOURCES);
 
         assertTrue(selenium.isTextPresent(jndiName));
         assertTrue(selenium.isTextPresent(description));

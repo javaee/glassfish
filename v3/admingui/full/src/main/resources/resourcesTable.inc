@@ -46,7 +46,7 @@
     
 #include "/full/tableButtons.inc"
 
-   <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}", "$attribute{listOfRowsExtra}"} sourceVar="td">
+   <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
      <!afterCreate
          getClientId(component="$this{component}" clientId=>$page{tableRowGroupId});
         />

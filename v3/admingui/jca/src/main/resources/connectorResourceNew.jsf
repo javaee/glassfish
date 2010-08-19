@@ -63,20 +63,26 @@
         setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
 
         createMap(result="#{pageSession.valueMap2}")
-        mapPut(map="#{pageSession.valueMap2}" key="enabled" value="true");
+        mapPut(map="#{pageSession.valueMap}" key="enabled" value="true");
+        setPageSessionAttribute(key="useString" value="#{false}");
     />
     </event>
-            <sun:form id="propertyForm">
+            <sun:form id="form">
 #include "/common/shared/alertMsg.inc"
 
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18njca.connectorResource.newPageTitle}" helpText="$resource{i18njca.connectorResource.newPageTitleHelp}">
-#include "/common/shared/editPageButtons.inc"
+#include "/common/resourceNode/resourceEditPageButtons.inc"
                     </sun:title>
 
 #include "/jca/connectorResourceAttr.inc"
 #include "/common/shared/propertyDescTable.inc"
-
+<event>
+<!afterCreate
+    setPageSessionAttribute(key="setDefaultTarget" value="true");
+    includeIntegrations(type="org.glassfish.admingui:TargetSectionForResource" );
+/>
+</event>
 
 	<sun:hidden id="helpKey" value="$resource{help_jca.connectorResourceNew}" />
             </sun:form>

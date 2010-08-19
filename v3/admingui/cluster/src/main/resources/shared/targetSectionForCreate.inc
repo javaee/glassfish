@@ -45,8 +45,8 @@
             endpoint="#{sessionScope.REST_URL}/list-instances"
             attrs="#{requestScope.stAttrs}"
             method="GET"
-            result="#{pageSession.restMap}");         
-         gf.getPropertiesList(listProps="#{pageSession.restMap.data.children}" keyList="#{pageSession.targetList}");
+            result="#{pageSession.restMap}");
+         gf.getMapKeys(Map="#{pageSession.restMap.data.extraProperties}" Keys="#{pageSession.targetList}");
          
          gf.listCombine(list="#{pageSession.targetList}",  list2="#{requestScope.clusterList}");
          listAdd(list="#{pageSession.targetList}", value="server" index="0");

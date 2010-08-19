@@ -138,6 +138,36 @@ public class RestUtilHandlers {
         handlerCtx.setOutputValue("keyList", keyList);
     }
 
+     /*
+     * This handler will be removed once connectorRuntime methods returns a list of maps
+     * instead of a map.
+     */
+    @Handler(id = "gf.convertMapToTable",
+        input = {
+            @HandlerInput(name = "map", type = Map.class, required = true)
+        },
+        output = {
+            @HandlerOutput(name = "tableList", type = List.class)
+        })
+    public static void convertMapToTable(HandlerContext handlerCtx) {
+        Map<String, String> props = (Map<String, String>) handlerCtx.getInputValue("map");
+        List<Map<String, String>> list = new ArrayList();
+        if (props != null) {
+            for (String key : props.keySet()) {
+                HashMap oneRow = new HashMap();
+                Object value = props.get(key);
+                String valString = (value == null) ? "" : value.toString();
+                oneRow.put("selected", false);
+                oneRow.put("name", key);
+                oneRow.put("value", valString);
+                oneRow.put("description", "");
+                list.add(oneRow);
+            }
+        }
+
+        handlerCtx.setOutputValue("tableList", list);
+    }
+
     public static List<String> getListFromPropertiesList(List<Map<String, Object>> props) {
         List<String> keyList = new ArrayList<String>();
         if (props != null) {

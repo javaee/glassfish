@@ -76,10 +76,10 @@ public class ConnectorsTest extends BaseSeleniumTestClass {
 
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_CONNECTOR_RESOURCE);
 
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:jndiTextProp:jnditext", testConnector);
-        selenium.select("propertyForm:propertySheet:propertSectionTextField:poolNameProp:PoolName", "label=" + testPool);
+        selenium.type("form:propertySheet:propertSectionTextField:jndiTextProp:jnditext", testConnector);
+        selenium.select("form:propertySheet:propertSectionTextField:poolNameProp:PoolName", "label=" + testPool);
 
-        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_CONNECTOR_RESOURCE);
+        clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_CONNECTOR_RESOURCE);
 
         // Disable resource
         testDisableButton(testConnector,
