@@ -77,13 +77,13 @@
               <artifactId>ha-shoal-cache-bootstrap</artifactId>
               <version>${project.version}</version>
           </dependency>
-<!--
+
           <dependency>
               <groupId>org.glassfish.ha</groupId>
-              <artifactId>ha-apt</artifactId>
+              <artifactId>ha-shoal-cache-store</artifactId>
               <version>${project.version}</version>
           </dependency>
--->
+
 
     	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	

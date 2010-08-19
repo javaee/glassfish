@@ -36,7 +36,14 @@
 
 package org.shoal.ha.store;
 
+
 import org.glassfish.ha.store.api.*;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
+import org.shoal.adapter.store.ReplicatedBackingStore;
+import org.shoal.adapter.store.StoreableReplicatedBackingStore;
+import org.shoal.ha.mapper.KeyMapper;
 
 import java.io.Serializable;
 import java.util.Properties;
@@ -44,34 +51,45 @@ import java.util.Properties;
 /**
  * @author Mahesh Kannan
  */
+@Service(name="shoal-backing-store-factory")
 public class ReplicatedBackingStoreFactory
     implements BackingStoreFactory {
-
-    private Properties props;
 
     public ReplicatedBackingStoreFactory()  {
     }
 
     public ReplicatedBackingStoreFactory(Properties p)  {
-        this.props=p;
     }
 
     @Override
     public <K extends Serializable, V extends Serializable> BackingStore<K, V> createBackingStore(BackingStoreConfiguration<K, V> conf)
             throws BackingStoreException {
 
-        ReplicatedBackingStore<K, V> bStore = new ReplicatedBackingStore<K, V>();
-        bStore.initialize(conf);
-        System.out.println("ReplicatedBackingStoreFactory:: CREATED an instance of: " + bStore.getClass().getName());
-        return bStore;
+        System.out.println("Entered GlassFish2ShoalBackingStoreFactory.createBackingStore...");
+
+        KeyMapper keyMapper = new GlassFishKeyMapper(conf.getInstanceName(), conf.getClusterName());
+        conf.getVendorSpecificSettings().put("key.mapper", keyMapper);
+        
+        Class<V> vClazz = conf.getValueClazz();
+        if (Storeable.class.isAssignableFrom(vClazz)) {
+            StoreableReplicatedBackingStore srbs = new StoreableReplicatedBackingStore();
+            srbs.initialize(conf);
+            return srbs;
+        } else {
+            ReplicatedBackingStore<K, V> bStore = new ReplicatedBackingStore<K, V>();
+            bStore.initialize(conf);
+            System.out.println("GlassFish2ShoalBackingStoreFactory:: CREATED an instance of: " + bStore.getClass().getName());
+            return bStore;
+        }
     }
 
     @Override
     public BackingStoreTransaction createBackingStoreTransaction() {
         return new BackingStoreTransaction() {
             @Override
-            public void commit() throws BackingStoreException {    
+            public void commit() throws BackingStoreException {
             }
         };
     }
+
 }

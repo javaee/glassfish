@@ -61,6 +61,7 @@ public class HACookieInfo {
         if (cookie != null && cookie.trim().length() > 0) {
             this.cookie = cookie.trim();
             String[] args = cookie.split(":");
+            System.out.println("HACookie.initialize(" + cookie + ")");
             replica = args[0];
             initialized = true;
         }

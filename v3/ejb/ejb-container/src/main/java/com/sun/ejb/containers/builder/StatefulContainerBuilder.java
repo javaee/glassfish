@@ -133,6 +133,8 @@ public class StatefulContainerBuilder
 
     private boolean HAEnabled = false;
 
+    private boolean asyncReplication = true;
+
     public StatefulContainerBuilder() {
         super();
     }
@@ -166,6 +168,7 @@ public class StatefulContainerBuilder
                         DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
                         if (params != null) {
                             appLevelHAEnabled = params.availabilityenabled;
+                            asyncReplication = params.asyncreplication;
                         }
                     }
                     
@@ -254,6 +257,7 @@ public class StatefulContainerBuilder
         Map<String, Object> vendorMap = conf.getVendorSpecificSettings();
         vendorMap.put("local.caching", true);
         vendorMap.put("start.gms", false);
+        vendorMap.put("async.replication", asyncReplication);
         
         if (gmsAdapterService != null) {
             GMSAdapter gmsAdapter = gmsAdapterService.getGMSAdapter();
