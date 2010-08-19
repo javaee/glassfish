@@ -49,10 +49,6 @@
             setSessionAttribute(key="eeJvmSettingsTab" value="eeJvmGeneral");
             setSessionAttribute(key="javaConfigTab" value="jvmGeneral");
             getRequestValue(key="configName" value=>$page{configName} default="server-config");
-	    // FIXME: I don't think the following 2 lines should be used anymore... -Ken
-            setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config],type=java-config");
-            setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs,type=config,name=server-config");
-            
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
             setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/java-config");
             setPageSessionAttribute(key="rest-api" value="true");
@@ -60,8 +56,8 @@
             
             setPageSessionAttribute(key="convertToFalseList" value={"debugEnabled"});
             setPageSessionAttribute(key="childType" value="java-config");
-            //REST-TODO take care of property table
-            getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});            
+            gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="GET" result="#{requestScope.propTable}");
+            setPageSessionAttribute(key="tableList" value="#{requestScope.propTable.data.extraProperties.properties}");
             setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/javaConfig/serverInstJvmGeneral.jsf?configName=#{pageSession.configName}");
             setPageSessionAttribute(key="skipAttrsList", value={"envClasspathIgnored" "serverClasspath" "systemClasspath" "classpathPrefix" "classpathSuffix" "nativeLibraryPathPrefix" "nativeLibraryPathSuffix"});
              //set the following for including buttons.inc
