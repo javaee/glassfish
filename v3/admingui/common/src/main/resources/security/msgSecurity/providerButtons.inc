@@ -40,10 +40,12 @@
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
                     onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
-                    saveMsgProviderInfo(edit="true" attrMap="#{pageSession.valueMap}" objName="#{requestScope.objName}" )
+                    saveMsgProviderInfo(edit="true" attrMap="#{pageSession.valueMap}" configName="#{pageSession.configName}" )
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    setProxyProperties(objectNameStr="#{requestScope.objName}", propertyList="$attribute{newList}", systemProp="#{false}" );
+                    // Need to set the objName with AMX URL till setProxyProperties in REST is done
+                    setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/security-service/message-security-config[#{pageSession.valueMap['msgSecurityName']}],type=provider-config,name=#{pageSession.valueMap['Name']}");
+                    setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{false}" );
                     prepareSuccessfulMsg();
                     gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
@@ -53,7 +55,7 @@
                 <!command
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    saveMsgProviderInfo(edit="false" attrMap="#{pageSession.valueMap}" objName="#{requestScope.objName}" propList="$attribute{newList}" )
+                    saveMsgProviderInfo(edit="false" attrMap="#{pageSession.valueMap}" configName="#{pageSession.configName}" propList="$attribute{newList}" )
                     gf.redirect(page="#{pageSession.parentPage}");
                 />
             </sun:button>

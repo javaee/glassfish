@@ -64,7 +64,18 @@
                 <!command
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    createMsgSecurity(attrMap="#{pageSession.valueMap}" providerObjName="#{pageSession.providerObjName}" propList="$attribute{newList}")
+                    createMap(result="#{pageSession.securityConfigMap}")
+                    mapPut(map="#{pageSession.securityConfigMap}" key="layer" value="#{pageSession.valueMap['AuthLayer']}");
+                    if ("#{pageSession.valueMap['defaultProvider']}=true") {
+                        mapPut(map="#{pageSession.securityConfigMap}" key="isdefaultprovider" value="true");
+                    }
+                    if ("!(#{pageSession.valueMap['defaultProvider']}=true)") {
+                        mapPut(map="#{pageSession.securityConfigMap}" key="isdefaultprovider" value="false");
+                    }
+                    mapPut(map="#{pageSession.securityConfigMap}" key="providername" value="#{pageSession.valueMap['Name']}");
+                    mapPut(map="#{pageSession.securityConfigMap}" key="providertype" value="#{pageSession.valueMap['ProviderType']}");
+                    mapPut(map="#{pageSession.securityConfigMap}" key="classname" value="#{pageSession.valueMap['ClassName']}");
+                    gf.createEntity(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/message-security-config" attrs="#{pageSession.securityConfigMap}");
                     gf.redirect(page="#{pageSession.parentPage}?configName=#{configName}")
                 />
             </sun:button>
@@ -82,7 +93,7 @@
             <sun:property id="AuthLayerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecurity.authLayerLabel}" >
                  <sun:dropDown id="AuthLayer" selected="#{pageSession.valueMap['AuthLayer']}" labels="$pageSession{layers}"  required="#{true}" >
                  <!beforeCreate
-                    getMessageSecurityAuthLayersForCreate(layers="#{pageSession.layers}");
+                    getMessageSecurityAuthLayersForCreate(layers="#{pageSession.layers}" configName="#{pageSession.configName}");
                  />
                  </sun:dropDown>
              </sun:property>

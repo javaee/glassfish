@@ -50,7 +50,34 @@
         urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
         urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
         urlencode(value="#{pageSession.msgSecurityName}" encoding="UTF-8" result="#{pageSession.encodedMsgSecurityName}");
-        getMsgProviderInfo(providerName="#{pageSession.Name}"  msgSecurityName="#{pageSession.msgSecurityName}" configName="#{pageSession.configName}"   attrMap="#{pageSession.valueMap}")
+        setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/message-security-config/#{pageSession.msgSecurityName}/provider-config/#{pageSession.Name}");
+        setPageSessionAttribute(key="rest-api" value="true");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.providerMap}");
+        createMap(result="#{pageSession.valueMap}");
+        mapPut(map="#{pageSession.valueMap}"  key="msgSecurityName" value="#{pageSession.msgSecurityName}");
+        mapPut(map="#{pageSession.valueMap}"  key="configName" value="#{pageSession.configName}");
+        mapPut(map="#{pageSession.valueMap}"  key="Name" value="#{pageSession.Name}");
+        mapPut(map="#{pageSession.valueMap}"  key="ProviderType" value="#{pageSession.providerMap['providerType']}");
+        mapPut(map="#{pageSession.valueMap}"  key="ClassName" value="#{pageSession.providerMap['className']}");
+        setPageSessionAttribute(key="requestPolicyUrl", value="#{pageSession.selfUrl}/request-policy");
+        gf.checkIfEndPointExist(endpoint="#{pageSession.requestPolicyUrl}" exists="#{pageSession.exist}");
+        if(#{exist}) {
+            gf.getEntityAttrs(endpoint="#{pageSession.requestPolicyUrl}.json", valueMap="#{pageSession.requestPolicyMap}");
+            mapPut(map="#{pageSession.valueMap}"  key="Request-AuthSource" value="#{pageSession.requestPolicyMap['authSource']}");
+            mapPut(map="#{pageSession.valueMap}"  key="Request-AuthRecipient" value="#{pageSession.requestPolicyMap['authRecipient']}");
+        }
+        setPageSessionAttribute(key="responsePolicyUrl", value="#{pageSession.selfUrl}/response-policy");
+        gf.checkIfEndPointExist(endpoint="#{pageSession.requestPolicyUrl}" exists="#{pageSession.exist}");
+        if(#{exist}) {
+            gf.getEntityAttrs(endpoint="#{pageSession.requestPolicyUrl}.json", valueMap="#{pageSession.responsePolicyMap}");
+            mapPut(map="#{pageSession.valueMap}"  key="Response-AuthSource" value="#{pageSession.responsePolicyMap['authSource']}");
+            mapPut(map="#{pageSession.valueMap}"  key="Response-AuthRecipient" value="#{pageSession.responsePolicyMap['authRecipient']}");
+        }
+        gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/message-security-config/#{pageSession.msgSecurityName}.json",
+                          valueMap="#{pageSession.msgSecurityMap}");
+        mapPut(map="#{pageSession.valueMap}"  key="defaultProvider" value="false");
+        if ("#{pageSession.msgSecurityMap['defaultClientProvider']}=true || #{pageSession.msgSecurityMap['defaultProvider']}=true")
+            mapPut(map="#{pageSession.valueMap}"  key="defaultProvider" value="true");
         setPageSessionAttribute(key="objectNameStr",
             value="amx:pp=/domain/configs/config[#{pageSession.configName}]/security-service/message-security-config[#{pageSession.msgSecurityName}],type=provider-config,name=#{pageSession.Name}");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});

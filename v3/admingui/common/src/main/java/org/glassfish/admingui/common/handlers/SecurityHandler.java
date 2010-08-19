@@ -566,18 +566,23 @@ public class SecurityHandler {
     @Handler(id="addDefaultProviderInfo",
         input={
             @HandlerInput(name="providerList", type=List.class, required=true),
+            @HandlerInput(name="configName", type=String.class, required=true),
             @HandlerInput(name="msgSecurityName", type=String.class, required=true)
     })
     public static void addDefaultProviderInfo(HandlerContext handlerCtx){
-        List<Map> providerList = (List<Map>) handlerCtx.getInputValue("providerList");
-        MessageSecurityConfig msgConfig = getMsgSecurityProxy((String) handlerCtx.getInputValue("msgSecurityName"));
-        String defaultProvider = msgConfig.getDefaultProvider();
-        String defaultClientProvider = msgConfig.getDefaultClientProvider();
+        List<HashMap> providerList = (ArrayList<HashMap>) handlerCtx.getInputValue("providerList");
+        String configName = (String) handlerCtx.getInputValue("configName");
+        String msgSecurityName = (String) handlerCtx.getInputValue("msgSecurityName");
+
+        String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName
+                                        + "/security-service/message-security-config/" + msgSecurityName;
+        Map<String, Object> valueMap = (Map<String, Object>) RestApiHandlers.getEntityAttrs(endpoint, "entity");
+        String defaultProvider = (String) valueMap.get("defaultProvider");
+        String defaultClientProvider = (String) valueMap.get("defaultClientProvider");
         String trueStr = GuiUtil.getMessage("common.true");
         String falseStr = GuiUtil.getMessage("common.false");
         for(Map oneRow : providerList){
-            String name = (String)oneRow.get("Name");
-            if (name.equals(defaultProvider) || name.equals(defaultClientProvider)){
+            if (defaultProvider.length() > 0 || defaultClientProvider.length() > 0){
                 oneRow.put("default", trueStr);
             }else{
                 oneRow.put("default", falseStr);
@@ -629,16 +634,24 @@ public class SecurityHandler {
 
 
     @Handler(id="getMessageSecurityAuthLayersForCreate",
+        input={
+            @HandlerInput(name="attrMap", type=Map.class, required=true),
+            @HandlerInput(name="configName", type=String.class, required=true),
+            @HandlerInput(name="propList", type=List.class, required=true)},
         output={
             @HandlerOutput(name="layers", type=List.class)}
         )
-    public static void getMessageSecurityAuthLayersForCreate(HandlerContext handlerCtx){
+    public static void getMessageSecurityAuthLayersForCreate(HandlerContext handlerCtx) throws Exception {
         List layers = new ArrayList();
+        String configName = (String) handlerCtx.getInputValue("configName");
         layers.add("SOAP");
         layers.add("HttpServlet");
-        Set<AMXProxy> pSet = V3AMX.getInstance().getDomainRoot().getQueryMgr().queryType("message-security-config");
-        for(AMXProxy msgProxy : pSet){
-            layers.remove(msgProxy.getName());
+        String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName + "/security-service/message-security-config";
+        Set<String> msgSecurityCfgs = (Set<String>) (RestApiHandlers.getChildMap(endpoint)).keySet();
+        for(String name : msgSecurityCfgs){
+            if (layers.contains(name)) {
+                layers.remove(name);
+            }
         }
         handlerCtx.setOutputValue("layers", layers);
     }
@@ -647,62 +660,33 @@ public class SecurityHandler {
     @Handler(id="getProvidersByType",
         input={
             @HandlerInput(name="msgSecurityName", type=String.class, required=true),
+            @HandlerInput(name="configName", type=String.class, required=true),
             @HandlerInput(name="type", type=List.class, required=true)},
         output={
             @HandlerOutput(name="result", type=List.class)})
-     public static void getProvidersByType(HandlerContext handlerCtx){
+     public static void getProvidersByType(HandlerContext handlerCtx) throws Exception {
         List type = (List) handlerCtx.getInputValue("type");
         List result = new ArrayList();
-        MessageSecurityConfig msgConfig = getMsgSecurityProxy((String) handlerCtx.getInputValue("msgSecurityName"));
-        Map<String, ProviderConfig> providers = msgConfig.childrenMap(ProviderConfig.class);
-        for(ProviderConfig pp : providers.values()){
-            if (type.contains(pp.getProviderType())){
-                result.add(com.sun.jsftemplating.util.Util.htmlEscape(pp.getName()));
+        String configName = (String) handlerCtx.getInputValue("configName");
+        String msgSecurityName = (String) handlerCtx.getInputValue("msgSecurityName");
+        String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
+                                "/security-service/message-security-config/" + msgSecurityName + "/provider-config";
+        List<String> providers = (List<String>) RestApiHandlers.getChildList(endpoint);
+        for(String providerEndpoint : providers){
+            Map providerAttrs = (HashMap) RestApiHandlers.getAttributesMap(providerEndpoint);
+            String providerType = (String) providerAttrs.get("providerType");
+            if (type.contains(providerType)) {
+                result.add(com.sun.jsftemplating.util.Util.htmlEscape((String)providerAttrs.get("providerId")));
             }
         }
         result.add(0, "");
         handlerCtx.setOutputValue("result", result);
     }
 
-    @Handler(id="getMsgProviderInfo",
-        input={
-            @HandlerInput(name="providerName", type=String.class, required=true),
-            @HandlerInput(name="msgSecurityName", type=String.class, required=true),
-            @HandlerInput(name="configName", type=String.class, required=true)
-    },
-        output={
-            @HandlerOutput(name="attrMap", type=Map.class)}
-     )
-     public static void getMsgProviderInfo(HandlerContext handlerCtx){
-        String providerName = (String) handlerCtx.getInputValue("providerName");
-        String msgSecurityName = (String) handlerCtx.getInputValue("msgSecurityName");
-        String configName = (String) handlerCtx.getInputValue("configName");
-        MessageSecurityConfig msgConfig = getMsgSecurityProxy(msgSecurityName);
-        ProviderConfig provider = msgConfig.childrenMap(ProviderConfig.class).get(providerName);
-        Map attrMap = new HashMap();
-        attrMap.put("msgSecurityName", msgSecurityName);
-        attrMap.put("configName", configName);
-        attrMap.put("Name", providerName);
-        attrMap.put("ProviderType", provider.getProviderType());
-        attrMap.put("ClassName", provider.getClassName());
-        if (provider.getRequestPolicy()!= null){
-            attrMap.put("Request-AuthSource",  str(provider.getRequestPolicy().getAuthSource()));
-            attrMap.put("Request-AuthRecipient",  str(provider.getRequestPolicy().getAuthRecipient()));
-        }
-        if (provider.getResponsePolicy()!= null){
-            attrMap.put("Response-AuthSource",  str(provider.getResponsePolicy().getAuthSource()));
-            attrMap.put("Response-AuthRecipient",  str(provider.getResponsePolicy().getAuthRecipient()));
-        }
-        if (providerName.equals(msgConfig.getDefaultClientProvider()) || (providerName.equals(msgConfig.getDefaultProvider()))){
-            attrMap.put("defaultProvider", "true");
-        }
-        handlerCtx.setOutputValue("attrMap",  attrMap);
-    }
-
-
     @Handler(id="saveMsgProviderInfo",
          input={
             @HandlerInput(name="attrMap", type=Map.class, required=true),
+            @HandlerInput(name="configName", type=Map.class, required=true),
             @HandlerInput(name="edit", type=String.class, required=true),
             @HandlerInput(name = "propList", type = List.class)             //propList used when edit is false.
      },
@@ -717,48 +701,31 @@ public class SecurityHandler {
         String configName = attrMap.get("configName");
         List propList = (List) handlerCtx.getInputValue("propList");
 
-        
-        MessageSecurityConfig msgConfig = getMsgSecurityProxy(msgSecurityName);
+        String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
+                                "/security-service/message-security-config/" + msgSecurityName + "/provider-config";
+        String providerEndpoint = endpoint + "/" + providerName;
 
-        ProviderConfig provider = msgConfig.childrenMap(ProviderConfig.class).get(providerName);
         if (edit.equals("true")){
-            if (provider == null){
+            boolean providerExist = RestApiHandlers.get(providerEndpoint).isSuccess();
+            if (!providerExist){
                 GuiUtil.handleError(handlerCtx, GuiUtil.getMessage(COMMON_BUNDLE, "msg.error.noSuchProvider")); //normally won't happen.
                 return;
             }else{
-                provider.setClassName(attrMap.get("ClassName"));
-                provider.setProviderType(attrMap.get("ProviderType"));
+                Map<String, Object> providerMap = (Map<String, Object>)RestApiHandlers.getEntityAttrs(providerEndpoint, "entity");
+                providerMap.put("className", attrMap.get("ClassName"));
+                providerMap.put("providerType", attrMap.get("ProviderType"));
+                RestApiHandlers.sendUpdateRequest(endpoint, providerMap, null, null, null);
             }
         }else{
             Map attrs = new HashMap();
-            attrs.put("Name", attrMap.get("Name"));
-            attrs.put("ClassName", attrMap.get("ClassName"));
-            attrs.put("ProviderType", attrMap.get("ProviderType"));
-            List pList = V3AMX.verifyPropertyList(propList);
-            if (pList.size() > 0){
-                Map[] propMaps = (Map[])pList.toArray(new Map[pList.size()]);
+            attrs.put("providerId", attrMap.get("Name"));
+            attrs.put("className", attrMap.get("ClassName"));
+            attrs.put("providerType", attrMap.get("ProviderType"));
+            if (propList.size() > 0){
+                Map[] propMaps = (Map[])propList.toArray(new Map[propList.size()]);
                 attrs.put(Util.deduceType(Property.class), propMaps);
             }
-            msgConfig.createChild("provider-config", attrs);
-            provider = msgConfig.childrenMap(ProviderConfig.class).get(providerName);
-        }
-
-        String def = attrMap.get("defaultProvider");
-        if (def == null){
-            if (providerName.equals(msgConfig.getDefaultProvider())){
-                msgConfig.setDefaultProvider("");
-            }
-            if (providerName.equals(msgConfig.getDefaultClientProvider())) {
-                msgConfig.setDefaultClientProvider("");
-            }
-        }else{
-            String type = provider.getProviderType();
-            if (type.equals("server") || type.equals("client-server")){
-                msgConfig.setDefaultProvider(providerName);
-            }
-            if (type.equals("client") || type.equals("client-server")){
-                msgConfig.setDefaultClientProvider(providerName);
-            }
+            RestApiHandlers.sendCreateRequest(endpoint, attrs, null, null, null);
         }
 
         //if we pass in "", backend will throw bean violation, since it only accepts certain values.
@@ -769,35 +736,17 @@ public class SecurityHandler {
             }
         }
 
-        if ( provider.getRequestPolicy()== null){
-            if (GuiUtil.isEmpty(attrMap.get("Request-AuthSource")) && GuiUtil.isEmpty(attrMap.get("Request-AuthRecipient"))){
-                //no need to create one if all is empty.
-            }else{
-                Map attrs = new HashMap();
-                attrs.put("authSource", attrMap.get("Request-AuthSource"));
-                attrs.put("AuthRecipient", attrMap.get("Request-AuthRecipient"));
-                provider.createChild("request-policy", attrs);
-            }
-        }else{
-            provider.getRequestPolicy().setAuthSource(attrMap.get("Request-AuthSource"));
-            provider.getRequestPolicy().setAuthRecipient(attrMap.get("Request-AuthRecipient"));
-        }
+        Map reqPolicyMap = new HashMap();
+        reqPolicyMap.put("authSource", attrMap.get("Request-AuthSource"));
+        reqPolicyMap.put("authRecipient", attrMap.get("Request-AuthRecipient"));
+        String reqPolicyEP = providerEndpoint + "/request-policy";
+        RestApiHandlers.sendUpdateRequest(reqPolicyEP, reqPolicyMap, null, null, null);
 
-
-        if ( provider.getResponsePolicy()== null){
-            if (GuiUtil.isEmpty(attrMap.get("Response-AuthSource")) && GuiUtil.isEmpty(attrMap.get("Response-AuthRecipient"))){
-                //no need to create one if all is empty.
-            }else{
-                Map attrs = new HashMap();
-                attrs.put("authSource", attrMap.get("Response-AuthSource"));
-                attrs.put("AuthRecipient", attrMap.get("Response-AuthRecipient"));
-                provider.createChild("response-policy", attrs);
-            }
-        }else{
-            provider.getResponsePolicy().setAuthSource(attrMap.get("Response-AuthSource"));
-            provider.getResponsePolicy().setAuthRecipient(attrMap.get("Response-AuthRecipient"));
-        }
-        handlerCtx.setOutputValue("objName",  provider.objectName().toString());
+        Map respPolicyMap = new HashMap();
+        respPolicyMap.put("authSource", attrMap.get("Response-AuthSource"));
+        respPolicyMap.put("authRecipient", attrMap.get("Response-AuthRecipient"));
+        String respPolicyEP = providerEndpoint + "/response-policy";
+        RestApiHandlers.sendUpdateRequest(respPolicyEP, respPolicyMap, null, null, null);
     }
 
 

@@ -47,14 +47,17 @@
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=security-service");
         setPageSessionAttribute(key="childType" value="message-security-config");
-        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service");
+        setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
+        setPageSessionAttribute(key="rest-api" value="true");
+        gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", id="authLayer", result="#{requestScope.listOfRows}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nc.msg.JS.confirmDeleteMsgSecurities}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/common/security/msgSecurity/msgSecurityNew.jsf?configName=#{pageSession.configName}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/common/security/msgSecurity/msgSecurity.jsf?configName=#{pageSession.configName}");
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/common/security/msgSecurity/msgSecurityEdit.jsf");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18nc.msgSecurity.TableTitle}");
+        setPageSessionAttribute(key="deleteKey" value="layer");
     />
     </event>
 "    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":configurations:#{pageSession.configName}:security:messageSecurity");</script>
@@ -74,7 +77,7 @@
         getClientId(component="$this{component}" clientId=>$page{tableId});
     />
 
-#include "/common/shared/listTableButtons.inc"
+#include "providerTableButtons.inc"
 
    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
      <!afterCreate
