@@ -55,11 +55,13 @@ import org.apache.catalina.Response;
 import org.apache.catalina.Session;
 import org.apache.catalina.core.StandardContext;
 import com.sun.logging.LogDomains;
+import org.glassfish.ha.common.HACookieManager;
 import org.glassfish.web.valve.GlassFishValve;
 
 /**
  *
  * @author  lwhite
+ * @author Rajiv Mordani
  */
 public class HASessionStoreValve extends ValveBase {
 
@@ -82,7 +84,27 @@ public class HASessionStoreValve extends ValveBase {
     public int invoke(org.apache.catalina.Request request, org.apache.catalina.Response response) throws java.io.IOException, javax.servlet.ServletException {
         //FIXME this is for 7.0PE style valves
         //left here if the same optimization is done to the valve architecture
-        return INVOKE_NEXT; 
+        String sessionId = null;
+        ReplicationWebEventPersistentManager manager;
+        StandardContext  context;
+
+        HttpServletRequest httpServletrequest = (HttpServletRequest)request.getRequest();
+        HttpSession session = httpServletrequest.getSession(false);
+        if (session != null) {
+            sessionId = session.getId();
+        }
+        
+        System.out.println("id is " + sessionId);
+        if (sessionId != null) {
+            context = (StandardContext) request.getContext();
+            manager = (ReplicationWebEventPersistentManager)context.getManager();
+            String replica = manager.getReplicaFromPredictor(sessionId, "-1");
+            
+            httpServletrequest.setAttribute("jreplicaLocation", replica);
+        }
+
+
+        return INVOKE_NEXT;
         // return 0;
     }
     
@@ -137,6 +159,7 @@ public class HASessionStoreValve extends ValveBase {
                 pMgr.doValveSave(session);
             }
         }
+        HACookieManager.reset();
     }    
     
 }

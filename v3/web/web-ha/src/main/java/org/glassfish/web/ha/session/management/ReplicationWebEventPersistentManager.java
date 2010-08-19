@@ -49,6 +49,10 @@ import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Session;
 import org.glassfish.gms.bootstrap.GMSAdapterService;
+import org.glassfish.ha.common.GlassFishHAReplicaPredictor;
+import org.glassfish.ha.common.HACookieInfo;
+import org.glassfish.ha.common.HACookieManager;
+import org.glassfish.ha.common.NoopHAReplicaPredictor;
 import org.glassfish.ha.store.api.BackingStoreConfiguration;
 import org.glassfish.ha.store.api.BackingStoreException;
 import org.glassfish.ha.store.api.BackingStoreFactory;
@@ -78,19 +82,22 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
     
 
     @Inject
-    Habitat habitat;
+    private Habitat habitat;
 
     @Inject
-    GMSAdapterService gmsAdapterService;
+    private GMSAdapterService gmsAdapterService;
 
-    String clusterName = "";
 
-    String instanceName = "";
+    private GlassFishHAReplicaPredictor predictor;
+
+    private String clusterName = "";
+
+    private String instanceName = "";
 
     /**
      * The logger to use for logging ALL web container related messages.
      */
-    protected static final Logger _logger 
+    private static final Logger _logger 
         = LogDomains.getLogger(ReplicationWebEventPersistentManager.class, LogDomains.WEB_LOGGER);    
     
     /**
@@ -102,7 +109,7 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
     /**
      * The descriptive name of this Manager implementation (for logging).
      */
-    protected static final String name = "ReplicationWebEventPersistentManager";    
+    private static final String name = "ReplicationWebEventPersistentManager";    
 
 
     // ------------------------------------------------------------- Properties
@@ -117,7 +124,7 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
 
         return (this.info);
 
-    }   
+    }
     
     /** Creates a new instance of ReplicationWebEventPersistentManager */
     public ReplicationWebEventPersistentManager() {
@@ -264,6 +271,14 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
         return;
     }
 
+    public String getReplicaFromPredictor(String sessionId, String version) {
+        System.out.println("Manager.replicaFromPredictor " + sessionId + "version " + version);
+        HACookieInfo cookieInfo = predictor.makeCookie(gmsAdapterService.getGMSAdapter().getClusterName(), sessionId, version);
+        HACookieManager.setCurrrent(cookieInfo);
+        System.out.println("ReplicationWebEventManager setcurrent to " + cookieInfo);
+        return cookieInfo.getReplica();
+    }
+
     /**
      * Gracefully terminate the active use of the public methods of this
      * component.  This method should be the last one called on a given
@@ -284,7 +299,6 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
         _logger.info("Create backing store invoked with persistence type " + persistenceType + " and store name " + storeName);
         BackingStoreFactory factory = habitat.getComponent(BackingStoreFactory.class, "replication");
         BackingStoreConfiguration<String, T> conf = new BackingStoreConfiguration<String, T>();
-        // config.getWebContainer().getSessionConfig().getSessionManager().getStoreProperties().getDirectory();
 
         if(gmsAdapterService.isGmsEnabled()) {
             clusterName = gmsAdapterService.getGMSAdapter().getClusterName();
@@ -296,12 +310,21 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
                 .setStoreType(persistenceType)
                 .setKeyClazz(String.class).setValueClazz(metadataClass);
 
+        Map<String, Object> vendorMap = conf.getVendorSpecificSettings();
+        vendorMap.put("async.replication", true); 
 
         try {
             _logger.info("About to create backing store " + conf);
             this.backingStore = factory.createBackingStore(conf);
         } catch (BackingStoreException e) {
             e.printStackTrace();  
+        }
+        Object obj = vendorMap.get("key.mapper");
+        if (obj != null && obj instanceof GlassFishHAReplicaPredictor) {
+            predictor = (GlassFishHAReplicaPredictor)obj;
+            System.out.println("ReplicatedManager.keymapper is " + predictor);
+        } else {
+            predictor = new NoopHAReplicaPredictor();
         }
     }
 }

@@ -57,6 +57,7 @@ import org.apache.catalina.session.StandardSession;
 /**
  *
  * @author  lwhite
+ * @author  Rajiv Mordani
  */
 public abstract class BaseHASession extends StandardSession
         implements HASession {
