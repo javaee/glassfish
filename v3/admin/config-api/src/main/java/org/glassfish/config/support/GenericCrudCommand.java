@@ -365,7 +365,7 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
      */
     public static Properties convertStringToProperties(String propsString, char sep) {
         final Properties properties = new Properties();
-        if (propsString != null) {
+        if ((propsString != null)&&(!propsString.equals("[]"))) {
 
             //This is because when there are multiple values in the arraylist
             //they appear like [foo=bar:baz=baz1] so need to remove the braces
