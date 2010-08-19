@@ -345,7 +345,8 @@ public class RestApiHandlers {
             }
 
             for (Map oneRow : (List<Map>) handlerCtx.getInputValue("selectedRows")) {
-                RestResponse response = delete(endpoint + "/" + (String) oneRow.get(id), payload);
+                RestResponse response = delete(endpoint + "/" +
+                        URLEncoder.encode((String) oneRow.get(id), "UTF-8"), payload);
                 if (!response.isSuccess()) {
                     GuiUtil.handleError(handlerCtx, "Unable to delete the resource " + (String) oneRow.get(id));
                 }
