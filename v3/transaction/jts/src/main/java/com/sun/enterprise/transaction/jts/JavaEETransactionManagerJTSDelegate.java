@@ -40,6 +40,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.concurrent.locks.Lock;
@@ -62,9 +63,11 @@ import com.sun.enterprise.config.serverbeans.TransactionService;
 
 import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
+import com.sun.enterprise.transaction.api.RecoveryResourceRegistry;
 import com.sun.enterprise.transaction.api.TransactionAdminBean;
 import com.sun.enterprise.transaction.api.XAResourceWrapper;
 import com.sun.enterprise.transaction.spi.JavaEETransactionManagerDelegate;
+import com.sun.enterprise.transaction.spi.RecoveryEventListener;
 import com.sun.enterprise.transaction.spi.TransactionalResource;
 import com.sun.enterprise.transaction.spi.TransactionInternal;
 
@@ -74,7 +77,15 @@ import com.sun.enterprise.transaction.jts.recovery.SybaseXAResource;
 import com.sun.enterprise.transaction.JavaEETransactionManagerSimplified;
 import com.sun.enterprise.transaction.JavaEETransactionImpl;
 
+import org.glassfish.gms.bootstrap.GMSAdapter;
+import org.glassfish.gms.bootstrap.GMSAdapterService;
+import com.sun.enterprise.ee.cms.core.CallBack;
+import com.sun.enterprise.ee.cms.core.GMSConstants;
+import com.sun.enterprise.ee.cms.core.FailureRecoverySignal;
+import com.sun.enterprise.ee.cms.core.Signal;
+
 import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.logging.LogDomains;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
@@ -107,7 +118,7 @@ public class JavaEETransactionManagerJTSDelegate
 
     private Logger _logger;
 
-    // Use JavaEETransactionManagerSimplified Sting Manager for Localization
+    // Use JavaEETransactionManagerSimplified logger and Sting Manager for Localization
     private static StringManager sm
            = StringManager.getManager(JavaEETransactionManagerSimplified.class);
 
@@ -126,6 +137,7 @@ public class JavaEETransactionManagerJTSDelegate
             javaEETM.setDelegate(this);
         }
 
+        _logger = LogDomains.getLogger(JavaEETransactionManagerSimplified.class, LogDomains.JTA_LOGGER);
         initTransactionProperties();
 
         setInstance(this);
@@ -499,14 +511,23 @@ public class JavaEETransactionManagerJTSDelegate
                         new OracleXAResource());
                 }
         
-                value = txnService.getPropertyValue("sybase-xa-recovery-workaround");
-                if (value != null && "true".equals(value)) {
+                if (Boolean.parseBoolean(txnService.getPropertyValue("sybase-xa-recovery-workaround"))) {
                     xaresourcewrappers.put(
                         "com.sybase.jdbc2.jdbc.SybXADataSource",
                         new SybaseXAResource());
                 }
+        
+                if (Boolean.parseBoolean(txnService.getPropertyValue("delegated-recovery")) && 
+                        Boolean.parseBoolean(txnService.getAutomaticRecovery())) {
+                    // Register GMS notification callback
+                    if (_logger.isLoggable(Level.FINE))
+                        _logger.log(Level.FINE,"TM: Registering for GMS notification callback");
+
+                    new GMSCallBack();
+                }
     
-                // XXX ??? Properties from EjbServiceGroup.initJTSProperties ??? XXX
+                // Other Properties from EjbServiceGroup.initJTSProperties are initialized 
+                // when an XA transaction is started or interceptor is registered.
             }
         }
     }
@@ -610,6 +631,51 @@ public class JavaEETransactionManagerJTSDelegate
 
     public void initXA() {
         setTransactionManager();
+    }
+
+    class GMSCallBack implements CallBack {
+
+        private static final String component = "TRANSACTION-RECOVERY-SERVICE";
+
+        GMSCallBack() {
+            if (habitat != null) {
+                GMSAdapterService gmsAdapterService = habitat.getComponent(GMSAdapterService.class);
+                if (gmsAdapterService != null) {
+                    GMSAdapter gmsAdapter = gmsAdapterService.getGMSAdapter();
+                    if (gmsAdapter != null) {
+                        gmsAdapter.registerFailureRecoveryListener(component, this);
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void processNotification(Signal signal) {
+            if (signal instanceof FailureRecoverySignal) {
+                if (_logger.isLoggable(Level.INFO)) {
+                    _logger.log(Level.INFO, "[GMSCallBack] failure recovery signal: " + signal);
+                }
+                String instance = signal.getMemberToken();
+                RecoveryResourceRegistry recoveryListenersRegistry = habitat.getComponent(RecoveryResourceRegistry.class);
+
+                // TODO: support recovery to be a no-op when no XA transactions were running.
+                Set<RecoveryEventListener> listeners = recoveryListenersRegistry.getEventListeners();
+                for (RecoveryEventListener erl : listeners) {
+                    erl.beforeRecovery(instance);
+                }
+
+                // TODO
+                _logger.log(Level.WARNING, "[GMSCallBack] Automatic delegated transaction recovery is not yet supported");
+
+                for (RecoveryEventListener erl : listeners) {
+                    erl.afterRecovery(true, instance);
+                }
+            } else {
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "[GMSCallBack] ignoring signal: " + signal);
+                }
+            }
+        }
     }
 
     private static class ReadWriteLock implements Lock {
