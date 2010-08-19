@@ -263,17 +263,22 @@ public final class ConfigModel {
             }
         }
 
-        // tokenize by finding 'x|X' and 'X|Xx' then insert '-'.
-        StringBuilder buf = new StringBuilder(name.length()+5);
-        for(String t : Dom.TOKENIZER.split(name)) {
-            if(buf.length()>0)  buf.append('-');
-            buf.append(t.toLowerCase());
-        }
-        name = buf.toString();
+        name = camelCaseToXML(name);
 
         // at this point name should match XML names in the model, modulo case.
         return findIgnoreCase(name);
-    }    
+    }
+
+    public String camelCaseToXML(String camelCase) {
+        
+        // tokenize by finding 'x|X' and 'X|Xx' then insert '-'.
+        StringBuilder buf = new StringBuilder(camelCase.length()+5);
+        for(String t : Dom.TOKENIZER.split(camelCase)) {
+            if(buf.length()>0)  buf.append('-');
+            buf.append(t.toLowerCase());
+        }
+        return buf.toString();
+    }
 
     public abstract static class Property {
 
