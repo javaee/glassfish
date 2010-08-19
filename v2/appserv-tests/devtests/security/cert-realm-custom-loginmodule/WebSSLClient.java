@@ -18,7 +18,7 @@ import com.sun.ejte.ccl.reporter.*;
 public class WebSSLClient {
 
     private static final String TEST_NAME
-        = "security-web-mutual-ssl";    
+        = "security-cert-realm-custom-loginmodule";    
 
     private static final String EXPECTED_RESPONSE
         = "This is CN=SSLTest, OU=Sun Java System Application Server, O=Sun Microsystems, L=Santa Clara, ST=California, C=US from index.jsp";
