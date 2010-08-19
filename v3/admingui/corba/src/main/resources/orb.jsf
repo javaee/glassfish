@@ -44,21 +44,17 @@
 <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=iiop-service");
         setPageSessionAttribute(key="childType" value="orb");
-        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/iiop-service,type=orb");
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/iiop-service");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
-        // REST - TODO
-        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+        gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="GET" result="#{requestScope.propTable}");
+        setPageSessionAttribute(key="tableList" value="#{requestScope.propTable.data.extraProperties.properties}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/corba/orb.jsf?configName=#{pageSession.configName}");
 
         setPageSessionAttribute(key="has2Objects" value="#{true}" );  //for editPageButtons.inc
-        setPageSessionAttribute(key="parentObjectNameStr2", value="amx:pp=/domain/configs,type=config,name=#{pageSession.configName}");
         setPageSessionAttribute(key="childType2" value="iiop-service");
-        setPageSessionAttribute(key="objectNameStr2" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=iiop-service");
         setPageSessionAttribute(key="parentUrl2", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
         setPageSessionAttribute(key="selfUrl2", value="#{pageSession.parentUrl2}/#{pageSession.childType2}");
         setPageSessionAttribute(key="rest-api" value="true");
@@ -94,7 +90,8 @@
                             convertToFalse="#{pageSession.convertToFalseList2}")
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                    javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
+		    gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="POST" data="#{requestScope.tmpJSON}" result="#{requestScope.restResponse}");
                     prepareSuccessfulMsg();
                     gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
@@ -118,8 +115,8 @@
                 labels="$pageSession{availableThreadPools}"
                 selected="#{pageSession.selectedThreadPools}" >
                 <!beforeCreate
-                    getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=thread-pools"
-                        type="thread-pool" result="#{pageSession.threadPools}");
+                    gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/thread-pools"
+                          result="#{pageSession.threadPools}");
                     getListBoxOptions(
                         availableList="#{pageSession.threadPools}",
                         selectedCommaString="#{pageSession.valueMap['useThreadPoolIds']}",
