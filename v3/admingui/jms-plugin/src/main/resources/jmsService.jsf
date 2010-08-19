@@ -82,14 +82,20 @@
                         onClick="return submitAndDisable(this, '$resource{i18n.button.Processing}');" >
                         <!command
                             prepareSuccessfulMsg();
-                            createMap(result="#{attrs}");
-                            mapPut(map="#{attrs}", key="name", value="tempConnectionPool");
-                            mapPut(map="#{attrs}", key="connectionDefinitionName", value="javax.jms.QueueConnectionFactory");
-                            mapPut(map="#{attrs}", key="resourceAdapterName", value="jmsra");
-                            // TODO: REST
-                            createProxy(parentObjectNameStr="amx:pp=/domain,type=resources", childType="connector-connection-pool", attrs="#{attrs}");
-                            pingJms(poolName="tempConnectionPool");
-                            deleteChild(objectNameStr="amx:pp=/domain,type=resources",type="connector-connection-pool",name="tempConnectionPool");
+
+                            gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/servers/server", result="#{pageSession.serverList}");
+                            foreach (var="server" list="#{pageSession.serverList}") {
+                                gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server/#{server}", method="GET", result="#{requestScope.serverDetails}");
+                                if ("#{pageSession.configName} = #{requestScope.serverDetails.data.extraProperties.entity.configRef}") {
+                                    gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server/#{server}/jms-ping", method="get", result="#{requestScope.pingResults}");
+                                    if ("(#{requestScope.pingResults.responseCode} = 200)") {
+                                        prepareAlertMsg(type="success", summary="$resource{i18njms.jms.PingSuccess}");
+                                    }
+                                    if ("!(#{requestScope.pingResults.responseCode} = 200)") {
+                                        gf.handleError(detail="#{requestScope.pingResults.data.message}");
+                                    }
+                                }
+                            }
                         />
                     </sun:button>
 
