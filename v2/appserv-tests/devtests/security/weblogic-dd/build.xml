@@ -1,0 +1,184 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "file:./../../../config/run.xml">
+<!ENTITY testProperties SYSTEM "./build.properties">
+<!ENTITY commonSecurity SYSTEM "file:./../common.xml">
+]>
+
+
+<project name="security-weblogic-dd" basedir="." default="usage">
+
+   &commonSetup;
+   &commonBuild;
+   &commonRun;
+   &commonSecurity;
+   &testProperties;
+
+    <target name="all" depends="display-header">
+        <antcall target="setup"/>
+        <antcall target="build"/>
+        <antcall target="deploy"/>
+        <antcall target="run"/>
+        <antcall target="undeploy"/>
+        <antcall target="unsetup"/>
+    </target>
+
+    <target name="display-header">
+        <echo message="-->Running ${ant.project.name} tests from ${basedir} ..."/>
+    </target>
+   
+    <target name="setup" depends="init-common">
+        <antcall target="create-user-common">
+            <param name="user" value="wlUser"/>
+            <param name="password" value="javaee"/>
+            <param name="groups" value="weblogic-xml"/>
+        </antcall>
+        <antcall target="create-user-common">
+            <param name="user" value="wlAppUser"/>
+            <param name="password" value="javaee"/>
+            <param name="groups" value="weblogic-app-xml"/>
+        </antcall>
+    </target>
+
+    <target name="unsetup" depends="init-common">
+        <antcall target="delete-user-common">
+            <param name="user" value="wlUser"/>
+        </antcall>
+        <antcall target="delete-user-common">
+            <param name="user" value="wlAppUser"/>
+        </antcall>
+    </target>
+
+    <target name="deploy" depends="init-common">
+        <antcall target="deploy-common"/>
+    </target>
+
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-common"/>
+    </target>
+    
+    <target name="clean" depends="init-common">
+        <antcall target="clean-common"/>
+    </target>
+
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="web"/>
+            <param name="build.classes.dir" value="${build.classes.dir}/web"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+            <param name="build.classes.dir" value="${build.classes.dir}"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+        <mkdir dir="${assemble.dir}"/>
+        <mkdir dir="${build.classes.dir}/META-INF"/>
+
+
+        <antcall target="package-war-common">
+            <param name="war.classes" value="${build.classes.dir}/web"/>
+            <param name="war.file" value="${assemble.dir}/${appname}-web.war"/>
+        </antcall>
+
+        <copy file="${weblogic-application.xml}" tofile="${build.classes.dir}/META-INF/weblogic-application.xml" failonerror="false"/>
+        <jar jarfile="${assemble.dir}/${appname}App.ear">
+            <fileset dir="${assemble.dir}">
+                <include name="*.war"/>
+            </fileset>
+            <fileset dir="${build.classes.dir}">
+                <include name="META-INF/weblogic-application.xml"/>
+            </fileset>
+            <fileset dir="${env.APS_HOME}/lib" includes="reporter.jar"/>
+        </jar>
+    </target>
+
+    <!-- variables needed by custom-build 
+         1. wlpass
+         2. wluser
+         3. wlrole
+         4. testres
+    -->
+    <target name="custom-neg-run" depends="init-common">
+
+        <echo message="Testing (NEGATIVE TEST) against URL http://${http.host}:${http.port}/${appname}-web/${testres} using username/password ${wluser}/${wlpass}"/>
+
+        <java classname="TestRoleAssignment" fork="true">
+            <classpath>
+                <pathelement path="${build.classes.dir}:${s1astest.classpath}"/>
+            </classpath>
+            <arg value="-url"/>
+            <arg value="http://${http.host}:${http.port}/${appname}-web/${testres}"/>
+            <arg value="-user"/>
+            <arg value="${wluser}"/>
+            <arg value="-pass"/>
+            <arg value="${wlpass}"/>
+            <arg value="-role"/>
+            <arg value="${wlrole}"/>
+            <arg value="-negative"/>
+        </java>
+    </target>
+
+
+    <target name="custom-run" depends="init-common">
+
+        <echo message="Testing against URL http://${http.host}:${http.port}/${appname}-web/${testres} using username/password ${wluser}/${wlpass}"/>
+
+        <java classname="TestRoleAssignment" fork="true">
+            <classpath>
+                <pathelement path="${build.classes.dir}:${s1astest.classpath}"/>
+            </classpath>
+            <arg value="-url"/>
+            <arg value="http://${http.host}:${http.port}/${appname}-web/${testres}"/>
+            <arg value="-user"/>
+            <arg value="${wluser}"/>
+            <arg value="-pass"/>
+            <arg value="${wlpass}"/>
+            <arg value="-role"/>
+            <arg value="${wlrole}"/>
+        </java>
+    </target>
+    <target name="run" depends="init-common">
+        <antcall target="run-positive"/>
+        <antcall target="run-negative"/>
+    </target>
+
+    <target name="run-positive" depends="init-common">
+        <antcall target="custom-run">
+            <param name="wluser" value="wlUser"/>
+            <param name="wlpass" value="javaee"/>
+            <param name="testres" value="test1"/>
+            <param name="wlrole" value="weblogic-xml"/>
+        </antcall>
+        <antcall target="custom-run">
+            <param name="wluser" value="wlAppUser"/>
+            <param name="wlpass" value="javaee"/>
+            <param name="testres" value="test2"/>
+            <param name="wlrole" value="weblogic-app-xml"/>
+        </antcall>
+    </target>
+    
+    <target name="run-negative" depends="init-common">
+        <antcall target="custom-neg-run">
+            <param name="wluser" value="wlUser"/>
+            <param name="wlpass" value="javaee"/>
+            <param name="testres" value="test2"/>
+            <param name="wlrole" value="weblogic-xml"/>
+        </antcall>
+        <antcall target="custom-neg-run">
+            <param name="wluser" value="wlAppUser"/>
+            <param name="wlpass" value="javaee"/>
+            <param name="testres" value="test1"/>
+            <param name="wlrole" value="weblogic-app-xml"/>
+        </antcall>
+    </target>
+    
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+
+</project>

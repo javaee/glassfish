@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    <servlet>
+        <servlet-name>TestServlet1</servlet-name>
+        <servlet-class>com.sun.security.devtests.weblogicdd.TestServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TestServlet1</servlet-name>
+        <url-pattern>/test1</url-pattern>
+        <url-pattern>/test2</url-pattern>
+    </servlet-mapping>
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>test1</web-resource-name>
+            <description/>
+            <url-pattern>/test1</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description/>
+            <role-name>weblogic-xml</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>test2</web-resource-name>
+            <description/>
+            <url-pattern>/test2</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description/>
+            <role-name>weblogic-app-xml</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <login-config>
+        <auth-method>BASIC</auth-method>
+    </login-config>
+    <security-role>
+        <description/>
+        <role-name>weblogic-xml</role-name>
+    </security-role>
+    <security-role>
+        <description/>
+        <role-name>weblogic-app-xml</role-name>
+    </security-role>
+</web-app>

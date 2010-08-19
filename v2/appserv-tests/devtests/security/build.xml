@@ -28,6 +28,7 @@
         <ant dir="authConf" target="all"/>
         <ant dir="negativeRealmPerApp" target="all"/>
         <ant dir="realmPerApp" target="all"/>  
+	<ant dir="weblogic-dd" target="all"/>
         <ant dir="sful" target="all"/>
         <ant dir="userWithAtSymbol" target="all"/>
         <ant dir="anyone" target="all"/>
