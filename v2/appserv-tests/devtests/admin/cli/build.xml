@@ -64,7 +64,7 @@
     <pathconvert refid="class.path" property="test"/>
 
     <target name="debug-windows" depends="instance, cluster"/>
-    <target name="cli" depends="ports, instance, cluster, configs, sync, domain, backup, tokens,validation,node, load-balancer, misc-commands"/>
+    <target name="cli" depends="ports, instance, cluster, configs, sync, domain, backup, tokens,validation,node, load-balancer, misc-commands, manual-sync"/>
 
     <target name="cluster" depends="init">
         <java classname="admin.ClusterTest"  fork="true" classpath="${test}">
@@ -128,6 +128,12 @@
 
     <target name="misc-commands" depends="init">
         <java classname="admin.MiscCommandsTest"  fork="true" classpath="${test}">
+            <jvmarg value="${javaprops}"/>
+        </java>
+    </target>
+
+    <target name="manual-sync" depends="init">
+        <java classname="admin.ManualSyncTest"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
         </java>
     </target>
