@@ -398,16 +398,18 @@ public class CustomResourceTest extends AdminBaseDevTest {
     public void testListCustomResourceTargetInstance1() {
         String testName = "testListCustomResourceTargetInstance1";
         AsadminReturn result = asadminWithOutput(LIST_CUSTOM_RESOURCES, INSTANCE1_NAME);
-        reportFailureResultStatus(testName, result);
-        reportExpectedFailureResult(testName, result, "not allowed");
+//        reportFailureResultStatus(testName, result);
+//        reportExpectedFailureResult(testName, result, "not allowed");
+        reportResultStatus(testName, result);
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE2_NAME);
     }
 
     public void testListCustomResourceTargetInstance2() {
         String testName = "testListCustomResourceTargetInstance2";
         AsadminReturn result = asadminWithOutput(LIST_CUSTOM_RESOURCES, INSTANCE2_NAME);
-        reportFailureResultStatus(testName, result);
-        reportExpectedFailureResult(testName, result, "not allowed");
+//        reportFailureResultStatus(testName, result);
+//        reportExpectedFailureResult(testName, result, "not allowed");
+        reportResultStatus(testName, result);
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE1_NAME );
     }
 

@@ -453,16 +453,18 @@ public class ConnectorResourceTest extends AdminBaseDevTest {
     public void testListConnectorResourceTargetInstance1() {
         String testName = "testListConnectorResourceTargetInstance1";
         AsadminReturn result = asadminWithOutput(LIST_CONNECTOR_RESOURCES, INSTANCE1_NAME);
-        reportFailureResultStatus(testName, result);
-        reportExpectedFailureResult(testName, result, "not allowed");
+//        reportFailureResultStatus(testName, result);
+//        reportExpectedFailureResult(testName, result, "not allowed");
+        reportResultStatus(testName, result);
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE2_NAME);
     }
 
     public void testListConnectorResourceTargetInstance2() {
         String testName = "testListConnectorResourceTargetInstance2";
         AsadminReturn result = asadminWithOutput(LIST_CONNECTOR_RESOURCES, INSTANCE2_NAME);
-        reportFailureResultStatus(testName, result);
-        reportExpectedFailureResult(testName, result, "not allowed");
+//        reportFailureResultStatus(testName, result);
+//        reportExpectedFailureResult(testName, result, "not allowed");
+        reportResultStatus(testName, result);
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE1_NAME );
     }
 

@@ -405,16 +405,18 @@ public class ExternalJndiResourceTest extends AdminBaseDevTest {
     public void testListJndiResourceTargetInstance1() {
         String testName = "testListJndiResourceTargetInstance1";
         AsadminReturn result = asadminWithOutput(LIST_JNDI_RESOURCES, INSTANCE1_NAME);
-        reportFailureResultStatus(testName, result);
-        reportExpectedFailureResult(testName, result, "not allowed");
+//       reportFailureResultStatus(testName, result);
+//        reportExpectedFailureResult(testName, result, "not allowed");
+        reportResultStatus(testName, result);
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE2_NAME);
     }
 
     public void testListJndiResourceTargetInstance2() {
         String testName = "testListJndiResourceTargetInstance2";
         AsadminReturn result = asadminWithOutput(LIST_JNDI_RESOURCES, INSTANCE2_NAME);
-        reportFailureResultStatus(testName, result);
-        reportExpectedFailureResult(testName, result, "not allowed");
+//        reportFailureResultStatus(testName, result);
+//       reportExpectedFailureResult(testName, result, "not allowed");
+        reportResultStatus(testName, result);
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE1_NAME );
     }
 

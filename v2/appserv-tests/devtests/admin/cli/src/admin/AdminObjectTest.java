@@ -391,16 +391,18 @@ public class AdminObjectTest extends AdminBaseDevTest {
     public void testListAdminObjectTargetInstance1() {
         String testName = "testListAdminObjectTargetInstance1";
         AsadminReturn result = asadminWithOutput(LIST_ADMIN_OBJECTS, INSTANCE1_NAME);
-        reportFailureResultStatus(testName, result);
-        reportExpectedFailureResult(testName, result, "not allowed");
+//        reportFailureResultStatus(testName, result);
+//        reportExpectedFailureResult(testName, result, "not allowed");
+        reportResultStatus(testName, result);
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE2_NAME);
     }
 
     public void testListAdminObjectTargetInstance2() {
         String testName = "testListAdminObjectTargetInstance2";
         AsadminReturn result = asadminWithOutput(LIST_ADMIN_OBJECTS, INSTANCE2_NAME);
-        reportFailureResultStatus(testName, result);
-        reportExpectedFailureResult(testName, result, "not allowed");
+//        reportFailureResultStatus(testName, result);
+//        reportExpectedFailureResult(testName, result, "not allowed");
+        reportResultStatus(testName, result);
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE1_NAME );
     }
 

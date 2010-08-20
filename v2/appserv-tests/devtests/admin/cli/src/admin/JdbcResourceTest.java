@@ -478,16 +478,18 @@ public class JdbcResourceTest extends AdminBaseDevTest {
     public void testListJdbcResourceTargetInstance1() {
         String testName = "testListJdbcResourceTargetInstance1";
         AsadminReturn result = asadminWithOutput(LIST_JDBC_RESOURCES, INSTANCE1_NAME);
-        reportFailureResultStatus(testName, result);
-        reportExpectedFailureResult(testName, result, "not allowed");
+//        reportFailureResultStatus(testName, result);
+//        reportExpectedFailureResult(testName, result, "not allowed");
+        reportResultStatus(testName, result);
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE2_NAME);
     }
 
     public void testListJdbcResourceTargetInstance2() {
         String testName = "testListJdbcResourceTargetInstance2";
         AsadminReturn result = asadminWithOutput(LIST_JDBC_RESOURCES, INSTANCE2_NAME);
-        reportFailureResultStatus(testName, result);
-        reportExpectedFailureResult(testName, result, "not allowed");
+//        reportFailureResultStatus(testName, result);
+//        reportExpectedFailureResult(testName, result, "not allowed");
+        reportResultStatus(testName, result);
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE1_NAME );
     }
 

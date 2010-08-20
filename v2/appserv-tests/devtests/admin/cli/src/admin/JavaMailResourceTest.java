@@ -405,16 +405,18 @@ public class JavaMailResourceTest extends AdminBaseDevTest {
     public void testListMailResourceTargetInstance1() {
         String testName = "testListMailResourceTargetInstance1";
         AsadminReturn result = asadminWithOutput(LIST_MAIL_RESOURCES, INSTANCE1_NAME);
-        reportFailureResultStatus(testName, result);
-        reportExpectedFailureResult(testName, result, "not allowed");
+//        reportFailureResultStatus(testName, result);
+//        reportExpectedFailureResult(testName, result, "not allowed");
+        reportResultStatus(testName, result);
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE2_NAME);
     }
 
     public void testListMailResourceTargetInstance2() {
         String testName = "testListMailResourceTargetInstance2";
         AsadminReturn result = asadminWithOutput(LIST_MAIL_RESOURCES, INSTANCE2_NAME);
-        reportFailureResultStatus(testName, result);
-        reportExpectedFailureResult(testName, result, "not allowed");
+ //       reportFailureResultStatus(testName, result);
+ //       reportExpectedFailureResult(testName, result, "not allowed");
+        reportResultStatus(testName, result);
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE1_NAME );
     }
 
