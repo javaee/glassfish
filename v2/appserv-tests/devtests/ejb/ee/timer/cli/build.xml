@@ -149,12 +149,6 @@
         </antcall>
     </target>
 
-    <target name="delete-timers" depends="init-common">
-        <antcall target="execute-ejb-sql-common">
-            <param name="sql.file" value="delete.sql"/>
-        </antcall>
-    </target>
-
     <target name="start-database" depends="init-common">
         <echo message="Starting database"/>
         <echo message="${ASADMIN}"/>
@@ -198,9 +192,7 @@
     </target>
 
     <target name="run" depends="init-common">
-        <antcall target="delete-timers"/>
         <antcall target="list-timers"/>
-        <antcall target="delete-timers"/>
         <antcall target="migrate-timers"/>
     </target>
 
