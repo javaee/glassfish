@@ -41,7 +41,8 @@
 package org.glassfish.web.ha.authenticator;
 
 import java.io.*;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Shing Wai Chan
@@ -51,11 +52,9 @@ public class HASingleSignOnEntryMetadata implements Serializable {
 
     protected String authType = null;
 
-    protected char[] password = null;
-
     protected byte[] principalBytes = null;
 
-    protected List<HASessionData> sessionDataList = null;
+    protected Set<HASessionData> sessionDataSet = new HashSet<HASessionData>();
 
     protected String username = null;
 
@@ -72,17 +71,14 @@ public class HASingleSignOnEntryMetadata implements Serializable {
     }
 
     public HASingleSignOnEntryMetadata(String id, byte[] principalBytes, String authType,
-            String username, char[] password, String realmName,
-            List<HASessionData> sessionDataList,
+            String username, String realmName,
             long lastAccessTime, long maxIdleTime, long version) {
         
         this.id = id;
         this.principalBytes = ((principalBytes != null) ? ((byte[])principalBytes.clone()) : null);
         this.authType = authType;
-        this.username = username;
-        this.password = ((password != null) ? ((char[])password.clone()) : null);
+        this.username = username;;
         this.realmName = realmName;
-        this.sessionDataList = sessionDataList;
         this.lastAccessTime = lastAccessTime;
         this.maxIdleTime = maxIdleTime;
         this.version = version;
@@ -104,20 +100,20 @@ public class HASingleSignOnEntryMetadata implements Serializable {
         return username;
     }
 
-    public char[] getPassword() {
-        return ((password != null) ? ((char[])password.clone()) : null);
-    }
-
     public String getRealmName() {
         return realmName;
     }
 
-    public List<HASessionData> getHASessionDataList() {
-        return sessionDataList;
+    public Set<HASessionData> getHASessionDataSet() {
+        return sessionDataSet;
     }
 
     public long getLastAccessTime() {
         return lastAccessTime;
+    }
+
+    void setLastAccessTime(long lastAccessTime) {
+        this.lastAccessTime = lastAccessTime;
     }
 
     public long getVersion() {
@@ -126,5 +122,13 @@ public class HASingleSignOnEntryMetadata implements Serializable {
 
     public long getMaxIdleTime() {
         return maxIdleTime;
+    }
+
+    boolean addHASessionData(HASessionData sessionData) {
+        return sessionDataSet.add(sessionData);
+    }
+
+    boolean removeHASessionData(HASessionData sessionData) {
+        return sessionDataSet.remove(sessionData);
     }
 }

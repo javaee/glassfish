@@ -65,8 +65,7 @@ import org.apache.catalina.session.StandardSession;
  */
 public abstract class BaseHASession extends StandardSession
         implements HASession {
-    
-    protected String ssoId="";
+
     protected String userName="";
     protected boolean persistentFlag = false;
 //    private transient HttpSessionExtraParams extraParams;
@@ -88,13 +87,8 @@ public abstract class BaseHASession extends StandardSession
     public void setId(String id) {
         super.setId(id);
 //        extraParams = new HttpSessionExtraParams(this);
-    }    
-    
-    /** return the ssoId */
-    public String getSsoId(){
-	return ssoId;
-    }
-    
+    } 
+
     /**
      * Gets the name of the instance.that previously owned this HttpSession.
      *
@@ -135,13 +129,6 @@ public abstract class BaseHASession extends StandardSession
         isSuspect.set(value);
     }    
 
-    /** set the ssoId 
-     * @param ssoId
-     */
-    public void setSsoId(String ssoId){
-	this.ssoId = ssoId;
-    }
-    
     /**
      * always return true for isDirty()
      * this type of session is always dirty

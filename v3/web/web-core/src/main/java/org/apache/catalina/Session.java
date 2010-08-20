@@ -351,4 +351,16 @@ public interface Session {
      */
     public Map<String, Object> getAttributes();
 
+
+    /**
+     * Return the single sign on id.
+     * It is null if there is no SSO.
+     */
+    public String getSsoId();
+
+
+    /**
+     * Set the single sign on id.
+     */
+    public void setSsoId(String ssoId);
 }

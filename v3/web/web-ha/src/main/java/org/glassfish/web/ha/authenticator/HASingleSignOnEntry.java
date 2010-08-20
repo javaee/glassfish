@@ -45,14 +45,11 @@ import org.apache.catalina.Container;
 import org.apache.catalina.core.StandardContext;
 
 import org.apache.catalina.Session;
+import org.apache.catalina.authenticator.SingleSignOn;
 import org.apache.catalina.authenticator.SingleSignOnEntry;
 
 import java.io.*;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author Shing Wai Chan
@@ -64,15 +61,17 @@ public class HASingleSignOnEntry extends SingleSignOnEntry {
 
     protected JavaEEIOUtils ioUtils;
 
+    protected HASingleSignOnEntryMetadata metadata = null;
+
     // default constructor is required by backing store
     public HASingleSignOnEntry() {
-        this(null, null, null, null, null, null, 0, 0, 0, null);
+        this(null, null, null, null, null, 0, 0, 0, null);
     }
 
     public HASingleSignOnEntry(Container container, HASingleSignOnEntryMetadata m,
             JavaEEIOUtils ioUtils) {
         this(m.getId(), null, m.getAuthType(),
-                m.getUsername(), m.getPassword(), m.getRealmName(),
+                m.getUsername(), m.getRealmName(),
                 m.getLastAccessTime(), m.getMaxIdleTime(), m.getVersion(),
                 ioUtils);
 
@@ -107,8 +106,7 @@ public class HASingleSignOnEntry extends SingleSignOnEntry {
             }
         }
 
-        Set<Session> sessionSet = new HashSet<Session>();
-        for (HASessionData data: m.getHASessionDataList()) {
+        for (HASessionData data: m.getHASessionDataSet()) {
             StandardContext context = (StandardContext)container.findChild(data.getContextPath());
             Session session = null;
             try {
@@ -116,32 +114,65 @@ public class HASingleSignOnEntry extends SingleSignOnEntry {
             } catch(IOException ex) {
                 throw new IllegalStateException(ex);
             }
-            sessionSet.add(session);
+            sessions.add(session);
         }
-        sessions = sessionSet.toArray(new Session[sessionSet.size()]);
     }
 
-
-
     public HASingleSignOnEntry(String id, Principal principal, String authType,
-            String username, char[] password, String realmName,
+            String username, String realmName,
             long lastAccessTime, long maxIdleTime, long version,
             JavaEEIOUtils ioUtils) {
         
-        super(id, principal, authType, username, password, realmName);
+        super(id, principal, authType, username, realmName);
         this.lastAccessTime = lastAccessTime;
         this.maxIdleTime = maxIdleTime;
         this.version = version;
         this.ioUtils = ioUtils;
+
+        metadata = new HASingleSignOnEntryMetadata(
+                id, convertToByteArray(principal), authType,
+                username, realmName,
+                lastAccessTime, maxIdleTime, version);
     }
 
     public HASingleSignOnEntryMetadata getMetadata() {
-        List<HASessionData> sessionDataList = new ArrayList<HASessionData>();
-        for (Session session: sessions) {
-            sessionDataList.add(new HASessionData(session.getId(),
-                        session.getManager().getContainer().getName()));
+        return metadata;
+    }
+
+    public long getMaxIdleTime() {
+        return maxIdleTime;
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
+    @Override
+    public synchronized boolean addSession(SingleSignOn sso, Session session) {
+        boolean result = super.addSession(sso, session);
+        if (result) {
+            metadata.addHASessionData(new HASessionData(session.getId(),
+                session.getManager().getContainer().getName()));
         }
 
+        return result;
+    }
+
+    @Override
+    public synchronized void removeSession(Session session) {
+        super.removeSession(session);
+        metadata.removeHASessionData(new HASessionData(session.getId(),
+                session.getManager().getContainer().getName()));
+    }
+
+    @Override
+    public void setLastAccessTime(long lastAccessTime) {
+        super.setLastAccessTime(lastAccessTime);
+        metadata.setLastAccessTime(lastAccessTime);
+    }
+
+    // convert a Serializable object into byte array
+    private byte[] convertToByteArray(Object obj) {
         ByteArrayOutputStream baos = null;
         BufferedOutputStream bos = null;
         ObjectOutputStream oos = null;
@@ -149,7 +180,7 @@ public class HASingleSignOnEntry extends SingleSignOnEntry {
             baos = new ByteArrayOutputStream();
             bos = new BufferedOutputStream(bos);
             oos = ioUtils.createObjectOutputStream(baos, true);
-            oos.writeObject(principal);
+            oos.writeObject(obj);
         } catch(Exception ex) {
             throw new IllegalStateException(ex);
         } finally {
@@ -172,16 +203,7 @@ public class HASingleSignOnEntry extends SingleSignOnEntry {
                 }
             }
         }
-        return new HASingleSignOnEntryMetadata(id, baos.toByteArray(), authType,
-                username, password, realmName, sessionDataList,
-                lastAccessTime, maxIdleTime, version);
-    }
 
-    public long getMaxIdleTime() {
-        return maxIdleTime;
-    }
-
-    public long getVersion() {
-        return version;
+        return baos.toByteArray();
     }
 }

@@ -139,12 +139,6 @@ public class SingleSignOn
     */
 
     /**
-     * The cache of single sign on identifiers, keyed by the Session that is
-     * associated with them.
-     */
-    protected Map<Session, String> reverse = new HashMap<Session, String>();
-
-    /**
      * Component started flag.
      */
     /** CR 6411114 (Lifecycle implementation moved to ValveBase)
@@ -295,10 +289,7 @@ public class SingleSignOn
         if (debug >= 1)
             log("Process session destroyed on " + session);
 
-        String ssoId = null;
-        synchronized (reverse) {
-            ssoId = reverse.get(session);
-        }
+        String ssoId = session.getSsoId();
         if (ssoId == null) {
             return;
         }
@@ -438,12 +429,7 @@ public class SingleSignOn
 
         SingleSignOnEntry sso = lookup(ssoId);
         if (sso != null) {
-            boolean wasAdded = sso.addSession(this, session);
-            if (wasAdded) {
-                synchronized (reverse) {
-                    reverse.put(session, ssoId);
-                }
-            }
+            sso.addSession(this, session);
         }
     }
 
@@ -455,10 +441,6 @@ public class SingleSignOn
      * @param session Session to be deregistered
      */
     protected void deregister(String ssoId, Session session) {
-
-        synchronized (reverse) {
-            reverse.remove(session);
-        }
 
         SingleSignOnEntry sso = lookup(ssoId);
         if ( sso == null )
@@ -495,8 +477,7 @@ public class SingleSignOn
 
         synchronized (cache) {
             cache.put(ssoId, new SingleSignOnEntry(ssoId, principal, authType,
-                                                   username, password,
-                                                   realmName));
+                                                   username, realmName));
         }
 
     }

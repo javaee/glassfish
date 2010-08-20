@@ -172,6 +172,7 @@ public class GlassFishSingleSignOn
      * @exception LifecycleException if this component detects a fatal error
      *  that prevents this component from being used
      */
+    @Override
     public void start() throws LifecycleException {
 
         // START CR 6411114
@@ -194,6 +195,7 @@ public class GlassFishSingleSignOn
      * @exception LifecycleException if this component detects a fatal error
      *  that needs to be reported
      */
+    @Override
     public void stop() throws LifecycleException {
 
         /** CR 6411114
@@ -220,6 +222,7 @@ public class GlassFishSingleSignOn
      *
      * @param event SessionEvent that has occurred
      */
+    @Override
     public void sessionEvent(SessionEvent event) {
 
         // We only care about session destroyed events
@@ -233,10 +236,7 @@ public class GlassFishSingleSignOn
             logger.fine("Process session destroyed on " + session);
         }
         //S1AS8 6155481 END
-        String ssoId = null;
-        synchronized (reverse) {
-            ssoId = (String) reverse.get(session);
-        }
+        String ssoId = session.getSsoId();
         if (ssoId == null) {
             return;
         }
@@ -276,6 +276,7 @@ public class GlassFishSingleSignOn
         throws IOException, ServletException {
      */
     // START OF IASRI 4665318
+    @Override
     public int invoke(Request request, Response response)
         throws IOException, ServletException {
     // END OF IASRI 4665318
@@ -463,7 +464,7 @@ public class GlassFishSingleSignOn
             return;
 
         // Expire any associated sessions
-        sso.expireSessions(reverse);
+        sso.expireSessions();
 
         // NOTE:  Clients may still possess the old single sign on cookie,
         // but it will be removed on the next request since it is no longer
@@ -629,11 +630,6 @@ public class GlassFishSingleSignOn
 
         // Remove the inactive session from SingleSignOnEntry
         entry.removeSession(session);
-
-        // Remove the inactive session from the 'reverse' Map.
-        synchronized(reverse) {
-            reverse.remove(session);
-        }
 
         // If there are not sessions left in the SingleSignOnEntry,
         // deregister the entry.

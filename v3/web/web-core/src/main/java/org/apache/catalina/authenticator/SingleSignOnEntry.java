@@ -59,10 +59,10 @@
 package org.apache.catalina.authenticator;
 
 import org.apache.catalina.Session;
-import org.apache.catalina.session.StandardSession;
 
 import java.security.Principal;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -78,11 +78,9 @@ public class SingleSignOnEntry {
 
     protected String authType = null;
 
-    protected char[] password = null;
-
     protected Principal principal = null;
 
-    protected Session sessions[] = new Session[0];
+    protected Set<Session> sessions = new HashSet<Session>();
 
     protected String username = null;
 
@@ -91,14 +89,12 @@ public class SingleSignOnEntry {
     protected long lastAccessTime;
 
     public SingleSignOnEntry(String id, Principal principal, String authType,
-                             String username, char[] password,
-                             String realmName) {
+                             String username, String realmName) {
         super();
         this.id = id;
         this.principal = principal;
         this.authType = authType;
         this.username = username;
-        this.password = ((password != null) ? ((char[])password.clone()) : null);
         this.realmName = realmName;
         this.lastAccessTime = System.currentTimeMillis();
     }
@@ -110,27 +106,16 @@ public class SingleSignOnEntry {
      * @return true if the session was added, false otherwise
      */
     public synchronized boolean addSession(SingleSignOn sso, Session session) {
-        for (int i = 0; i < sessions.length; i++) {
-            if (session == sessions[i])
-                return false;
+        boolean result = sessions.add(session);
+        if (result) {
+            session.addSessionListener(sso);
         }
-        Session results[] = new Session[sessions.length + 1];
-        System.arraycopy(sessions, 0, results, 0, sessions.length);
-        results[sessions.length] = session;
-        sessions = results;
-        session.addSessionListener(sso);
 
         return true;
     }
 
     public synchronized void removeSession(Session session) {
-        Session[] nsessions = new Session[sessions.length - 1];
-        for (int i = 0, j = 0; i < sessions.length; i++) {
-            if (session == sessions[i])
-                continue;
-            nsessions[j++] = sessions[i];
-        }
-        sessions = nsessions;
+        sessions.remove(session);
     }
 
 
@@ -142,36 +127,29 @@ public class SingleSignOnEntry {
      * associated with it, and false otherwise
      */
     public synchronized boolean isEmpty() {
-        return (sessions.length == 0);
+        return (sessions.size() == 0);
     }
 
 
     /**
      * Expires all sessions associated with this SingleSignOnEntry
      *
-     * @param reverse the reverse map from which to remove the sessions as
-     * they are being expired
      */
-    public synchronized void expireSessions(Map<Session, String> reverse) {
-        for (int i = 0; i < sessions.length; i++) {
+    public synchronized void expireSessions() {
+        for (Session session: sessions) {
             if (log.isLoggable(Level.FINE)) {
-                log.fine(" Invalidating session " + sessions[i]);
-            }
-
-            // Remove from reverse cache first to avoid recursion
-            synchronized (reverse) {
-                reverse.remove(sessions[i]);
+                log.fine(" Invalidating session " + session);
             }
         
             //6406580 START
             /*
             // Invalidate this session
-            sessions[i].expire();
+            session.expire();
              */
             // Invalidate this session
             // if it is not already invalid(ated)
-            if( (sessions[i]).getIsValid() ) {
-                sessions[i].expire();
+            if( (session).getIsValid() ) {
+                session.expire();
             }
             //6406580 END
         }
@@ -192,17 +170,6 @@ public class SingleSignOnEntry {
      */
     public String getAuthType() {
         return authType;
-    }
-
-    /**
-     * Gets the password credential (if any) associated with the SSO.
-     *
-     * @return  the password credential associated with the SSO, or
-     *          <code>null</code> if the original authentication type
-     *          does not involve a password.
-     */
-    public char[] getPassword() {
-        return password;
     }
 
     /**

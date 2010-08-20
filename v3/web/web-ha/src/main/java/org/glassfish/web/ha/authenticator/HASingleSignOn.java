@@ -45,19 +45,15 @@ import com.sun.enterprise.security.web.GlassFishSingleSignOn;
 import com.sun.logging.LogDomains;
 
 import org.apache.catalina.Session;
-import org.apache.catalina.SessionEvent;
 import org.apache.catalina.authenticator.SingleSignOnEntry;
 import org.glassfish.ha.store.api.BackingStore;
 import org.glassfish.ha.store.api.BackingStoreException;
-import org.glassfish.web.ha.session.management.HASession;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.security.Principal;
 
 /**
- * Note that the reverse map in SingleSignOn is not used and update here.
- *
  * @author Shing Wai Chan
  */
 public class HASingleSignOn extends GlassFishSingleSignOn {
@@ -72,39 +68,6 @@ public class HASingleSignOn extends GlassFishSingleSignOn {
         super();
         this.ioUtils = ioUtils;
         this.ssoEntryMetadataBackingStore = ssoEntryMetadataBackingStore;
-    }
-
-    @Override
-    public void sessionEvent(SessionEvent event) {
-
-        // We only care about session destroyed events
-        if (!Session.SESSION_DESTROYED_EVENT.equals(event.getType()))
-            return;
-
-        // Look up the single session id associated with this session (if any)
-        HASession session = (HASession)event.getSession();
-        //S1AS8 6155481 START
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine("Process session destroyed on " + session);
-        }
-        //S1AS8 6155481 END
-        String ssoId = session.getSsoId();
-        if (ssoId == null) {
-            return;
-        }
-  
-        // Was the session destroyed as the result of a timeout?
-        // If so, we'll just remove the expired session from the
-        // SSO.  If the session was logged out, we'll log out
-        // of all session associated with the SSO.
-        if (session.hasExpired()) {
-            removeSession(ssoId, session);
-        } else {
-            // The session was logged out.
-            // Deregister this single session id, invalidating 
-            // associated sessions
-            deregister(ssoId);
-        }
     }
 
     @Override
@@ -125,8 +88,7 @@ public class HASingleSignOn extends GlassFishSingleSignOn {
             return;
 
         // Expire any associated sessions
-        // reverse is not in this class. it is ok to pass in
-        sso.expireSessions(reverse);
+        sso.expireSessions();
 
         try {
             ssoEntryMetadataBackingStore.remove(ssoId);
@@ -149,7 +111,7 @@ public class HASingleSignOn extends GlassFishSingleSignOn {
         HASingleSignOnEntry ssoEntry = null;
         synchronized (cache) {
             ssoEntry = new HASingleSignOnEntry(ssoId, principal, authType,
-                    username, password, realmName,
+                    username, realmName,
                     // revisit maxIdleTime 1000000, version 0
                     System.currentTimeMillis(), 1000000, 0,
                     ioUtils);
@@ -175,12 +137,7 @@ public class HASingleSignOn extends GlassFishSingleSignOn {
 
         HASingleSignOnEntry sso = (HASingleSignOnEntry)lookup(ssoId);
         if (sso != null) {
-            boolean wasAdded = sso.addSession(this, session);
-            if (wasAdded) {
-                synchronized (reverse) {
-                    reverse.put(session, ssoId);
-                }
-            }
+            sso.addSession(this, session);
 
             try {
                 ssoEntryMetadataBackingStore.save(ssoId, sso.getMetadata(), false);
