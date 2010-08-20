@@ -70,7 +70,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.security.MessageDigest;
@@ -819,21 +818,7 @@ public abstract class AuthenticatorBase
      */
     protected Session getSession(HttpRequest request, boolean create) {
         
-        HttpServletRequest hreq =
-                (HttpServletRequest) request.getRequest();
-        HttpSession hses = hreq.getSession(create);
-        if (hses == null)
-            return (null);
-        Manager manager = context.getManager();
-        if (manager == null)
-            return (null);
-        else {
-            try {
-                return (manager.findSession(hses.getId()));
-            } catch (IOException e) {
-                return (null);
-            }
-        }
+        return request.getSessionInternal(create);
         
     }
     
