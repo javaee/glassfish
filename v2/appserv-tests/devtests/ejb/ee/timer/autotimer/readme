@@ -1,0 +1,26 @@
+This test, when run with 'all' target performs the following steps:
+
+- build
+- setup
+  - start-database
+  - startDomain
+  - setup-database (add jdbc resource for the timer resource and set it as the timer resource)
+  - setup-cluster (create cluster of 2 instances, enable resources in the cluster, and deploy the application)
+
+- run
+  - run-test (verify that automatic timer is executed on one and only one instance)
+    Deploy randomly assigns an instance to own automatic timer and it is started on that instance when the bean is loaded.
+    Test cancels automatic timer after verification and creates a new programmatic timer.
+    Test creates files to hold port for the instance with the timers ('success') and without ('error')
+    Expected result: timer was executed on one and only one instance
+  - run-failover (verify that timers are automatically migrated to another instance, when the instance that originally runs them is stopped)
+    Test identifies the instance that runs timers and stops it.
+    Test verifies that after a small sleep the timers are executed on the other instance.
+    Expected result: timers are executed on another instance
+
+- unsetup
+  - unsetup-cluster (undeploy the application, stop and delete the cluster)
+  - unsetup-database (remove resource and unset timer resource)
+  - stop-database
+  - stopDomain
+
