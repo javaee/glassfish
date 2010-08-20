@@ -234,6 +234,7 @@
         theVersionHolder.setText(theVersionContent.toString());
       } else {
 	option2.setSelected(true);
+        option2.requestFocus();
       }
 
       frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
@@ -319,6 +320,7 @@
           theMsg = StringUtils.wrap(Msg.get("NO_JDKS_DETECTED_OR_BUNDLED", null), 70);
         } else {
           option3.setSelected(true);
+          option3.requestFocus();
           theMsg = StringUtils.wrap(Msg.get("NO_JDKS_DETECTED", null), 70);
         }
         JOptionPane.showMessageDialog(frame, theMsg, Msg.get("INFO", null), JOptionPane.INFORMATION_MESSAGE);

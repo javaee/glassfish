@@ -283,6 +283,8 @@ return theAL;
       radio3.setSelected(false);
       radio4.setSelected(false);
 
+      radio1.requestFocus();
+
       String installMode = (String)ConfigHelper.getValue("InstallType.Option.CONFIGURATION_MODE");
         if (installMode.equals("CONFIG_ONLY")) {
         	wizard.enableBack(true);
@@ -291,6 +293,7 @@ return theAL;
         wizard.enableCancel(true);
 
       setRegOption("CREATE_DOMAIN");
+ 
 
       List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
      }

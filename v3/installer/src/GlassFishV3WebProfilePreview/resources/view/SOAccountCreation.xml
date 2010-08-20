@@ -212,6 +212,8 @@
       wizard.enableCancel(true);
       wizard.enableBack(true);
       wizard.enableNext(true);
+      setFirstTab = wizard.getComponentByName(content, "EMAIL");
+      setFirstTab.requestFocus();
      }
 
     return (Runnable)this;

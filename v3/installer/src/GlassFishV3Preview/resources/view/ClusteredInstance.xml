@@ -241,6 +241,9 @@ run() {
       wizard.enableCancel(true);
       wizard.enableBack(true);
       domainName.setEnabled(false);
+      setFirstTab = wizard.getComponentByName(content, "INSTANCE_NAME");
+      setFirstTab.requestFocus();
+
       List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
      }
 	return (Runnable)this;

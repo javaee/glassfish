@@ -237,6 +237,7 @@ return theAL;
       bg.add(radio1);
       bg.add(radio2);
       bg.add(radio3);
+      radio1.requestFocus();
 
       // Select first radio button when first displayed.
       radio1.setSelected(true);

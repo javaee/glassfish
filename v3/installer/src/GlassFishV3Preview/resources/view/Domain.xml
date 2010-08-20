@@ -392,6 +392,8 @@ run() {
       // Enable back only for Advanced installation.
       if (ConfigHelper.getStringValue("InstallUserType.Option.USER_TYPE").equals("ADVANCED_USER"))
     	wizard.enableBack(true);
+        setFirstTab = wizard.getComponentByName(content, "DOMAIN_NAME");
+	setFirstTab.requestFocus();
       List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
      
      }

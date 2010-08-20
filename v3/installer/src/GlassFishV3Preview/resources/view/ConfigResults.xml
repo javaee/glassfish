@@ -307,6 +307,7 @@ import java.util.logging.Logger;
     if (ConfigHelper.getStringValue("InstallUserType.Option.USER_TYPE").equals("ADVANCED_USER"))
     	wizard.enableBack(true);
     wizard.enableNext(true);
+    summaryTab.requestFocus();
   }
 return (Runnable)this;]]>
                 </apt:scriptCode>

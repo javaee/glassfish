@@ -194,6 +194,7 @@ return theAL;
       // Select first radio button when first displayed.
       radio1.setSelected(true);
       radio2.setSelected(false);
+      radio1.requestFocus();
 
         wizard.enableBack(true);
         wizard.enableNext(true);

@@ -296,6 +296,8 @@ run() {
       wizard.enableCancel(true);
       wizard.enableBack(true);
       List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
+      setFirstTab = getComponentByName(content, "BOOTSTRAP_UPDATETOOL");
+      setFirstTab.requestFocus();
      }
 return (Runnable)this;
     

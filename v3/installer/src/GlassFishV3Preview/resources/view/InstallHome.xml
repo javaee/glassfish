@@ -88,6 +88,8 @@
                             ("InstallType.Option.CONFIGURATION_MODE");
         panelTopText = wizard.getComponentByName((Container)content,"INSTALL_TEXT_TOP");
         panelBottomText = wizard.getComponentByName((Container)content,"INSTALL_TEXT_BOTTOM");
+        installHome = wizard.getComponentByName(content,"INSTALL_HOME");
+        installHome.requestFocus();
         
         if (installMode.equals("CONFIG_ONLY")) {
             panelTopText.setText((String)Msg.get("CONFIGONLY_TOP_TEXT",null));
