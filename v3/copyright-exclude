@@ -1,0 +1,15 @@
+deployment/schemas/
+deployment/dtds/
+connectors/descriptors/src/main/resources/glassfish/lib/dtds/
+connectors/javax.resource/src/main/java/connector_1_5.dtd
+osgi.bundle
+/yui/
+/zlib-1.1.4/
+tests/community/web/jruby/helloapp/public/javascripts/
+osgi-javaee/osgi-jdbc/src/main/java/org/osgi/service/jdbc/DataSourceFactory.java
+admingui/common/src/main/resources/security/realms/checkpswd.js 
+admingui/common/src/main/resources/images/node.jsf
+.gif
+.jpg
+.png
+.exe
