@@ -1111,11 +1111,6 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         if(tagName==null)
             throw new IllegalArgumentException("Trying t write a local element "+this+" w/o a tag name");
 
-        // we don't write out empty elements.
-        if (isEmpty()) {
-            return;
-        }
-
         w.writeStartElement(tagName);
         
         for (Map.Entry<String, String> attributeToWrite : attributesToWrite().entrySet()) {
