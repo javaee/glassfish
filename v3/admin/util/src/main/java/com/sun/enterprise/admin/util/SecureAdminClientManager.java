@@ -178,7 +178,8 @@ public class SecureAdminClientManager {
             final boolean isInteractive,
             final String serverName,
             final String nodeDir,
-            final String node) {
+            final String node,
+            final File nodeDirRoot) {
 
         /*
          * The client/instance security information is common to a whole domain.
@@ -190,7 +191,7 @@ public class SecureAdminClientManager {
          */
         if (instance == null) {
             instance = new SecureAdminClientManager(commandMasterPassword,
-                    isInteractive, serverName, nodeDir, node);
+                    isInteractive, serverName, nodeDir, node, nodeDirRoot);
         }
     }
 
@@ -198,8 +199,9 @@ public class SecureAdminClientManager {
             final boolean isInteractive,
             final String serverName,
             final String nodeDir,
-            final String node) {
-        domain = prepareDomain(serverName, nodeDir, node);
+            final String node,
+            final File nodeDirRoot) {
+        domain = prepareDomain(serverName, nodeDir, node, nodeDirRoot);
         if (domain == null) {
             return;
         }
@@ -261,7 +263,8 @@ public class SecureAdminClientManager {
 
     private Domain prepareDomain(final String serverName,
             final String nodeDir,
-            final String node) {
+            final String node,
+            final File nodeDirRoot) {
         /*
          * At least one of serverName, nodeDir, or node must be non-null.
          * Otherwise we'll have no way of figuring out which domain.xml to
@@ -278,7 +281,10 @@ public class SecureAdminClientManager {
         }
         final ServerDirsSelector selector;
         try {
-            selector = ServerDirsSelector.getInstance(null, serverName, nodeDir, node);
+            final String nodeDirToUse = (nodeDir != null
+                ? nodeDir
+                : nodeDirRoot.getAbsolutePath());
+            selector = ServerDirsSelector.getInstance(null, serverName, nodeDirToUse, node);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }

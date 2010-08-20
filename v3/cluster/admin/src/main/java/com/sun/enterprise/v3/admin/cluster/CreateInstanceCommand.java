@@ -271,9 +271,25 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
      * @return File for the local file system location of the instance directory
      * @throws IOException
      */
-    private File getLocalInstanceDir(String instanceName) throws IOException {
-        InstanceDirs instanceDirs = new InstanceDirs(null, null, instanceName);
+    private File getLocalInstanceDir() throws IOException {
+        /*
+         * Pass the node directory parent and the node directory name explicitly
+         * or else InstanceDirs will not work as we want if there are multiple
+         * nodes registered on this node.
+         * 
+         * If the configuration recorded an explicit directory for the node,
+         * then use it.  Otherwise, use the default node directory of
+         * ${installDir}/nodes/${nodeName}.
+         */
+        final File nodeDirFile = (nodeDir != null ?
+            new File(nodeDir) :
+            defaultNodeDirFile());
+        InstanceDirs instanceDirs = new InstanceDirs(nodeDirFile.getParent(), nodeDirFile.getName(), instance);
         return instanceDirs.getInstanceDir();
+    }
+
+    private File defaultNodeDirFile() {
+        return new File(new File(installDir, "nodes"), node);
     }
 
     private File getDomainInstanceDir() {
@@ -344,7 +360,7 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
             final SecureAdminBootstrapHelper bootHelper =
                     SecureAdminBootstrapHelper.getLocalHelper(
                         env.getInstanceRoot(),
-                        getLocalInstanceDir(instance));
+                        getLocalInstanceDir());
             bootHelper.bootstrapInstance();
             return 0;
         } catch (Exception ex) {

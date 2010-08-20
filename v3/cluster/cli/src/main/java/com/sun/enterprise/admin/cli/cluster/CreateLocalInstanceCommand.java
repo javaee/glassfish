@@ -137,9 +137,10 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
                 passwords.get(CLIConstants.MASTER_PASSWORD) != null ?
                     passwords.get(CLIConstants.MASTER_PASSWORD).toCharArray() : null,
                 programOpts.isInteractive(),
-                null /* no server_name option on create-local-instance */,
+                instanceName,
                 nodeDir,
-                node);
+                node,
+                nodeDirRoot);
 
         if (!rendezvousWithDAS()) {
             instanceDir.delete();
