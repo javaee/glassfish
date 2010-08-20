@@ -2155,6 +2155,23 @@ public abstract class BaseContainer
     }
 
     /**
+     * Call back from the timer migration process to add 
+     * automatic timers to the map of scheduleIds
+     */
+    protected void addSchedule(TimerPrimaryKey timerId, TimerSchedule ts) {
+        for (Method m : schedules.keySet()) {
+            if (m.getName().equals(ts.getTimerMethodName()) &&
+                    m.getParameterTypes().length == ts.getMethodParamCount()) {
+                scheduleIds.put(timerId, m);
+                if( _logger.isLoggable(Level.FINE) ) {
+                    _logger.log(Level.FINE, "Adding schedule: " +
+                            ts.getScheduleAsString() + " FOR method: " + m);
+                }
+            }
+        }
+    }
+
+    /**
      * Check timeout method and set it accessable
      */
     private void processEjbTimeoutMethod(Method method) throws Exception {
@@ -3987,14 +4004,13 @@ public abstract class BaseContainer
         inv.method = getTimeoutMethod(timerState); 
         inv.beanMethod = inv.method;
 
-        prepareEjbTimeoutParams(inv, timerState, timerService);
-
-        // Delegate to subclass for i.ejbObject / i.isLocal setup.
-        doTimerInvocationInit(inv, timerState);
-     
         ClassLoader originalClassLoader = null;
-     
         try {
+            prepareEjbTimeoutParams(inv, timerState, timerService);
+
+            // Delegate to subclass for i.ejbObject / i.isLocal setup.
+            doTimerInvocationInit(inv, timerState);
+     
             originalClassLoader = Utility.setContextClassLoader(loader);
 
             preInvoke(inv);

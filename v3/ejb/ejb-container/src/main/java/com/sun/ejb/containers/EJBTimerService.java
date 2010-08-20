@@ -355,8 +355,9 @@ public class EJBTimerService
                            "Changed ownership of " + toRestore.size() + 
                            " timers.  Now reactivating timers...");
 
+                _notifyContainers(toRestore);
+
                 tm.begin();
-                
                 _restoreTimers(toRestore);    
                 success = true;
                 
@@ -388,7 +389,7 @@ public class EJBTimerService
             logger.log(Level.INFO, fromOwnerId + " has 0 timers in need " +
                        "of migration");                    
         }
-        
+
         return totalTimersMigrated;
 
     } //migrateTimers()
@@ -509,6 +510,24 @@ public class EJBTimerService
                 tm.commit();
             } catch(Exception e) {
                 logger.log(Level.WARNING, "ejb.timer_service_init_error", e);
+            }
+        }
+    }
+
+    /**
+     * The portion of timer migration that notifies containers about 
+     * automatic timers being migrated to this instance
+     */
+    private void _notifyContainers(Set<TimerState> timers) {
+        for(TimerState timer: timers) {
+            TimerSchedule ts = timer.getTimerSchedule();
+            if (ts != null && ts.isAutomatic()) {
+                long containerId = timer.getContainerId();
+                BaseContainer container = getContainer(containerId);
+                if( container != null ) {
+                    TimerPrimaryKey timerId = getPrimaryKey(timer);
+                    container.addSchedule(timerId, ts);
+                }
             }
         }
     }
