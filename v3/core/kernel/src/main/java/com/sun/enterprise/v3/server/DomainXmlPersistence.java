@@ -82,16 +82,27 @@ public class DomainXmlPersistence implements ConfigurationPersistence, Configura
             new LocalStringManagerImpl(DomainXmlPersistence.class);    
 
 
-    private ManagedFile getPidFile() throws IOException {
+    private synchronized ManagedFile getPidFile() throws IOException {
         File location=null;
         try {
             // I am locking indefinitely with a 2 seconds timeOut.
-            location = new File(env.getConfigDirPath(), "pid");
+            location = new File(env.getConfigDirPath(), "lockfile");
+            if (!location.exists()) {
+                if (!location.createNewFile()) {
+                    if (!location.exists()) {
+                        String message = localStrings.getLocalString("cannotCreateLockfile",
+                                "Cannot create lock file at {0}, configuration changes will not be persisted",
+                                location);
+                        logger.log(Level.SEVERE, message);
+                        throw new IOException(message);
+                    }
+                }
+            }
             return new ManagedFile(location, 2000, -1);
         } catch (IOException e) {
             logger.log(Level.SEVERE,
                     localStrings.getLocalString("InvalidLocation",
-                            "Cannot obtain pid file location {0}, configuration changes will not be persisted",
+                            "Cannot obtain lockfile location {0}, configuration changes will not be persisted",
                             location), e);
             throw e;
         }
@@ -107,7 +118,7 @@ public class DomainXmlPersistence implements ConfigurationPersistence, Configura
         return getPidFile().accessWrite();
     }
 
-    public synchronized void save(DomDocument doc) throws IOException {
+    public void save(DomDocument doc) throws IOException {
         File destination = getDestination();
         if (destination == null) {
             logger.severe(localStrings.getLocalString("NoLocation",
@@ -169,13 +180,13 @@ public class DomainXmlPersistence implements ConfigurationPersistence, Configura
 
             // backup the current file
             File backup = new File(env.getConfigDirPath(), "domain.xml.bak");
-            if (backup.exists() && !backup.delete()) {
+            if (destination.exists() && backup.exists() && !backup.delete()) {
                 logger.severe(localStrings.getLocalString("BackupDeleteFailed",
                         "Could not delete previous backup file at {0}, configuration changes not persisted" , backup.getAbsolutePath()));
                 return;
             }
             if (destination != null) {
-                if (!destination.renameTo(backup)) {
+                if (destination.exists() && !destination.renameTo(backup)) {
                     logger.severe(localStrings.getLocalString("TmpRenameFailed",
                             "Could not rename {0} to {1}, configuration changes not persisted",  destination.getAbsolutePath() , backup.getAbsolutePath()));
                     return;

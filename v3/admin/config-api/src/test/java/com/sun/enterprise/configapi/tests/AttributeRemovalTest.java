@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.configapi.tests;
 
+import com.sun.enterprise.config.serverbeans.Server;
 import org.junit.Test;
 import org.junit.Before;
 import org.jvnet.hk2.config.*;
@@ -50,6 +51,7 @@ import com.sun.enterprise.config.serverbeans.VirtualServer;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * User: Jerome Dochez
@@ -88,5 +90,45 @@ public class AttributeRemovalTest extends ConfigApiTest {
         // ensure it's removed
         org.junit.Assert.assertNull(vs.getDefaultWebModule());
     }
+    
+    @Test(expected=PropertyVetoException.class)
+    public void readOnlyRemovalTest() throws TransactionFailure , PropertyVetoException{
+        Server server = getHabitat().getComponent(Server.class);
+        logger.fine("config-ref is " + server.getConfigRef());
+        try {
+            server.setConfigRef(null);
+        } catch (PropertyVetoException e) {
+            if (logger.isLoggable(Level.FINE))
+                e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @Test
+    public void deprecatedWrite() throws TransactionFailure {
+        final Server server = getHabitat().getComponent(Server.class);
+        final String value = server.getConfigRef();
+        logger.fine("config-ref is " + server.getNodeAgentRef());
+        ConfigSupport.apply(new SingleConfigCode<Server>() {
+            @Override
+            public Object run(Server s) throws PropertyVetoException, TransactionFailure {
+                s.setConfigRef(null);
+                return null;
+            }
+        }, server);
+
+        logger.fine("after, config-ref is " + server.getNodeAgentRef());
+        // restore
+        ConfigSupport.apply(new SingleConfigCode<Server>() {
+            @Override
+            public Object run(Server s) throws PropertyVetoException, TransactionFailure {
+                s.setConfigRef(value);
+                return null;
+            }
+        }, server);
+
+
+    }
+    
 
 }

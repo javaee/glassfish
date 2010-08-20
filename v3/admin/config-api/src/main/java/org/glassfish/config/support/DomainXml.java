@@ -68,6 +68,7 @@ import javax.xml.stream.XMLStreamConstants;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.net.URL;
@@ -92,6 +93,8 @@ public abstract class DomainXml implements Populator {
     XMLInputFactory xif;
     @Inject
     ServerEnvironmentImpl env;
+    @Inject
+    ConfigurationAccess configAccess;
 
     final static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(DomainXml.class);    
@@ -160,7 +163,27 @@ public abstract class DomainXml implements Populator {
      * Determines the location of <tt>domain.xml</tt> to be parsed.
      */
     protected URL getDomainXml(ServerEnvironmentImpl env) throws IOException {
-        return new File(env.getConfigDirPath(), ServerEnvironmentImpl.kConfigXMLFileName).toURI().toURL();
+        File domainXml = new File(env.getConfigDirPath(), ServerEnvironmentImpl.kConfigXMLFileName);
+        if (domainXml.exists() && domainXml.length()>0) {
+            return domainXml.toURI().toURL();
+        } else {
+
+            EarlyLogger.add(Level.SEVERE,
+                    localStrings.getLocalString("NoConfigFile",
+                            "{0} does not exist or is empty, will use backup",
+                            domainXml.getAbsolutePath()));
+            domainXml = new File(env.getConfigDirPath(), ServerEnvironmentImpl.kConfigXMLFileNameBackup);
+            if (domainXml.exists() && domainXml.length()>0) {
+                return domainXml.toURI().toURL();
+            }
+            EarlyLogger.add(Level.SEVERE,
+                    localStrings.getLocalString("NoBackupFile",
+                            "{0} does not exist or is empty, cannot use backup",
+                            domainXml.getAbsolutePath()));
+        }
+        throw new IOException(localStrings.getLocalString("NoUsableConfigFile",
+                            "No usable configuration file at {0}",
+                            env.getConfigDirPath()));
     }
 
     /**
@@ -180,8 +203,21 @@ public abstract class DomainXml implements Populator {
                 throw new RuntimeException("Internal Error: Unknown server type: "
                         + env.getRuntimeType());
 
-            parser.parse(xsr, getDomDocument());
-            xsr.close();
+            Lock lock = null;
+            try {
+                // lock the domain.xml for reading if not embedded
+                try {
+                    lock = configAccess.accessRead();
+                } catch(Exception e) {
+                    // ignore
+                }
+                parser.parse(xsr, getDomDocument());
+                xsr.close();
+            } finally {
+                if (lock!=null) {
+                    lock.unlock();
+                }
+            }
             String errorMessage = xsr.configWasFound();
 
             if (errorMessage != null)
