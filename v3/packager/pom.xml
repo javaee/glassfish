@@ -66,6 +66,7 @@
     <modules>
 	<module>external</module>
 	<module>nucleus-base</module>
+	<module>legal</module>
 	<module>felix</module>
 	<module>glassfish-hk2</module>
 	<module>glassfish-grizzly</module>

@@ -52,7 +52,7 @@
     <artifactId>legal-fragment</artifactId>
     <name>Glassfish Legal content distribution fragment</name>
     <description>This pom describes how to assemble the Glassfish legal content distribution fragment</description>
-    <packaging>distribution-fragment</packaging>
+    <packaging>distribution-base-zip</packaging>
 
      <build>
         <plugins>
