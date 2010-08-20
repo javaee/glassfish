@@ -354,7 +354,41 @@ public class V2DottedNameSupport {
         }
         return null;
     }
-    
+
+    public List<Map.Entry> applyOverrideRules(List<Map.Entry> nodes) {
+        HashMap<String, Map.Entry> store = new HashMap<String, Map.Entry>();
+        for (int i=0; i<nodes.size(); i++) {
+            Map.Entry<Dom, String> currentNode = nodes.get(i);
+            Map.Entry<Dom, String> storedNode = store.get(currentNode.getValue());
+            if(storedNode == null) {
+                store.put(currentNode.getValue(), currentNode);
+                continue;
+            }
+            int storedNodePrecedenceLevel = getPrecedenceLevel(storedNode.getKey());
+            int currNodePrecedenceLevel = getPrecedenceLevel(currentNode.getKey());
+            if(storedNodePrecedenceLevel < currNodePrecedenceLevel)
+                store.put(currentNode.getValue(), currentNode);
+        }
+        List<Map.Entry> finalList = new ArrayList<Map.Entry>();
+        for(String key : store.keySet()) {
+            finalList.add(store.get(key));
+        }
+        store.clear();
+        return finalList;
+    }
+
+    private int getPrecedenceLevel(Dom entry) {
+        String parent = entry.parent().typeName();
+        int level = 4;
+        if(Config.class.getCanonicalName().equals(parent))
+            level = 1;
+        if(Cluster.class.getCanonicalName().equals(parent))
+            level = 2;
+        if(Server.class.getCanonicalName().equals(parent))
+            level = 3;
+        return level;
+    }
+
     public List<Map.Entry> sortNodesByDottedName(Map<Dom, String> nodes) {
         List<Map.Entry> mapEntries = new ArrayList(nodes.entrySet());
         Collections.sort(mapEntries, new Comparator() {

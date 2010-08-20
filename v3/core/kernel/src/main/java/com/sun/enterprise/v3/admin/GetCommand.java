@@ -169,6 +169,7 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         }
 
         List<Map.Entry> matchingNodesSorted = sortNodesByDottedName(matchingNodes);
+        matchingNodesSorted = applyOverrideRules(matchingNodesSorted);
         boolean foundMatch = false;
         for (Map.Entry<Dom, String> node : matchingNodesSorted) {
             // if we get more of these special cases, we should switch to a Renderer pattern
@@ -232,10 +233,12 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         } else {
             targetName = pattern.substring(0, pattern.indexOf("."));
         }
-        if(!serverEnv.getInstanceName().equals(targetName)) {
+        if(serverEnv.isDas() &&
+						!serverEnv.getInstanceName().equals(targetName)) {
             callInstance(report, ctxt, targetName);
             return;
         }
+        targetName = (targetName.equals("*")) ? serverEnv.getInstanceName() : targetName;
         org.glassfish.flashlight.datatree.TreeNode tn = mrdr.get(targetName);
         if (tn == null) {
             //No monitoring data, so nothing to list
@@ -331,7 +334,8 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
             ParameterMap paramMap = new ParameterMap();
             paramMap.set("monitor", "true");
             paramMap.set("DEFAULT", pattern);
-            List<Server> targetList = targetService.getInstances(targetName);
+            List<Server> targetList = (targetName.equals("*")) ? targetService.getAllInstances() :
+                    targetService.getInstances(targetName);
             ClusterOperationUtil.replicateCommand("get", FailurePolicy.Error, FailurePolicy.Warn, targetList,
                     context, paramMap, habitat);
         } catch(Exception ex) {
