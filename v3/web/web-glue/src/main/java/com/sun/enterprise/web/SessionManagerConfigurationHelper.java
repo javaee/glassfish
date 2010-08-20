@@ -98,7 +98,7 @@ public class SessionManagerConfigurationHelper {
         boolean isAppDistributable = false;
         if (_wbd != null) {
             isAppDistributable = _wbd.isDistributable();
-	}
+        }
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest("Web App Distributable (" + getApplicationId(_ctx)
                            + "): " + isAppDistributable);    
@@ -246,9 +246,6 @@ public class SessionManagerConfigurationHelper {
         _persistence = persistence;
         _persistenceFrequency = frequency;
         _persistenceScope = scope;
-        if(_logger.isLoggable(Level.FINEST)) {
-            _logger.finest("SessionManager _persistenceType " + _persistence.getType());
-        }
     }
     
     /**
