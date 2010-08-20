@@ -21,7 +21,7 @@
 
     <target name="setup" depends="init-common">
         <property environment="env"/>
-	<echo message="file=${env.S1AS_HOME}\domains\domain1\config\keyfile2" file="temp.txt"/>
+	<echo message="file=${env.S1AS_HOME}/domains/domain1/config/keyfile2" file="temp.txt"/>
 	<replace file="temp.txt" token=":" value="\:"/>
 	<replace file="temp.txt" token="\" value="\\"/>
 	<loadproperties srcFile="temp.txt"/>
