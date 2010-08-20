@@ -190,7 +190,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 echo "Extracting archive, please wait..."
-tail +166l $0 > $tmp/tmp.jar
+tail +170l $0 > $tmp/tmp.jar
 cd $tmp
 $my_jar xvf tmp.jar 
 $my_jar xvf ./Product/Packages/Engine.zip 
