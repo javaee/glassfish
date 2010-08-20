@@ -3,11 +3,11 @@ package com.acme;
 
 import java.net.*;
 import java.io.*;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class HttpClient {
 
-    private static final String ASADMIN = "/home/rajiv/Software/glassfishv3/glassfish/bin/asadmin";
+    private static final String ASADMIN = "/space/work/v3/trunk/glassfishv3/glassfish/bin/asadmin";
     private static String appName = "SFSBDriver";
     private static String servletName = "SFSBDriverServlet";
 
@@ -17,7 +17,8 @@ public class HttpClient {
     private String failoverPort;
 
     private volatile SessionStateInfo stateInfo = new SessionStateInfo();
-    String cookie;
+    String jsessionIDCookie;
+    List<String> responseCookies;
 
 
     public static void main(String args[]) {
@@ -46,7 +47,7 @@ public class HttpClient {
 
             stateInfo = extractSessionStates(uc);
             stateInfo.setAccessCount(1);
-            cookie = stateInfo.getJsessionCookie();
+            jsessionIDCookie = stateInfo.getJsessionCookie();
 
             System.out.println("*****************************************************************");
             System.out.println("*** StateInfo: " + stateInfo + " ***");
@@ -56,7 +57,9 @@ public class HttpClient {
                 System.out.println("Connecting for the " + i + " time....");
                 u = new URL(url);
                 uc = u.openConnection();
-                uc.setRequestProperty("Cookie", cookie);
+		for (String cookie : responseCookies) {
+                	uc.setRequestProperty("Cookie", cookie);
+		}
                 uc.connect();
                 SessionStateInfo info = extractSessionStates(uc);
                 info.setAccessCount(2+i);
@@ -74,8 +77,8 @@ public class HttpClient {
             System.out.println("Stopping inst1...");
             Process proc = Runtime.getRuntime().exec(ASADMIN + "  stop-instance inst1");
             proc.waitFor();
-            Thread.sleep(3 * 1000);
             System.out.println("Process stop-instance finished...");
+            Thread.sleep(3 * 1000);
 
 
             System.out.println("Redirecting traffic to " + failoverPort + "...");
@@ -85,7 +88,9 @@ public class HttpClient {
                 System.out.println("Connecting for the " + i + " time....");
                 u = new URL(url);
                 uc = u.openConnection();
-                uc.setRequestProperty("Cookie", stateInfo.getJsessionCookie());
+		for (String cookie : responseCookies) {
+                	uc.setRequestProperty("Cookie", cookie);
+		}
                 uc.connect();
                 SessionStateInfo info = extractSessionStates(uc);
                 info.setAccessCount(5+i);
@@ -99,6 +104,12 @@ public class HttpClient {
                 }
             }
             
+            System.out.println("Restarting inst1...");
+            proc = Runtime.getRuntime().exec(ASADMIN + "  start-instance inst1");
+            proc.waitFor();
+            System.out.println("Process start-instance finished...");
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -108,15 +119,21 @@ public class HttpClient {
             throws IOException {
         SessionStateInfo tmpSessState = new SessionStateInfo();
         String headerName = null;
+        responseCookies = new ArrayList<String>();
         for (int i = 1; (headerName = uc.getHeaderFieldKey(i)) != null; i++) {
             if (headerName.equals("Set-Cookie")) {
-                tmpSessState.setJsessionCookie(uc.getHeaderField(i));
-                System.out.println("JUST READ COOKIE: " + uc.getHeaderField(i));
+                String cookie = uc.getHeaderField(i);
+                responseCookies.add(cookie);
+                System.out.println("JUST READ COOKIE: " + cookie);
+                if (cookie.startsWith("JSESSIONID=")) {
+		    jsessionIDCookie = cookie;
+                }
             }
         }
 
         if (tmpSessState.getJsessionCookie() == null) {
-            tmpSessState.setJsessionCookie(cookie);    
+            tmpSessState.setJsessionCookie(jsessionIDCookie);    
+            responseCookies.add(jsessionIDCookie);    
         }
         int code = ((HttpURLConnection) uc).getResponseCode();
         InputStream is = uc.getInputStream();
