@@ -52,6 +52,7 @@ public class MiscCommandsTest extends AdminBaseDevTest {
 
     private void runTests() {
         testVersion();
+        testMulticastValidator();
         stat.printSummary();
     }
 
@@ -65,5 +66,48 @@ public class MiscCommandsTest extends AdminBaseDevTest {
         report(tn + "dasup-local", asadmin("version", "--local"));
         report(tn + "dasup-t-v-l", !asadmin("version", "--local", "--terse", "--verbose"));
         stopDomain();
+    }
+
+    private void testMulticastValidator() {
+        final int defaultSeconds = 20;
+
+        long time0 = System.currentTimeMillis();
+        report("validate-multicast-noarg", asadmin("validate-multicast"));
+        long time1 = System.currentTimeMillis();
+
+        // should take at least 20 seconds
+        boolean success = (time1-time0) > (1000 * defaultSeconds);
+        report("validate-multicast-timing", success);
+
+        // now with params
+        final String port = "2049";
+        final String address = "228.9.3.3";
+        final String period = "900";
+        final int seconds = 5;
+        time0 = System.currentTimeMillis();
+        AsadminReturn ret = asadminWithOutput("validate-multicast",
+            "--multicastport", port,
+            "--multicastaddress", address,
+            "--sendperiod", period,
+            "--timeout", String.valueOf(seconds));
+        time1 = System.currentTimeMillis();
+        String out = ret.outAndErr;
+        report("validate-multicast-params", ret.returnValue);
+        report("vaidalte-multicast-param-port",
+            out.contains(port));
+        report("vaidalte-multicast-param-address",
+            out.contains(address));
+        report("vaidalte-multicast-param-period",
+            out.contains(period));
+        report("vaidalte-multicast-param-seconds",
+            out.contains(String.valueOf(seconds)));
+
+        // should only take a little over 5 seconds
+        int atLeast = seconds - 1;
+        int notThisLong = seconds + 5; // wide berth here
+        report("vaidalte-multicast-param-timing-under",
+            (time1-time0) > 1000*atLeast);
+        report("vaidalte-multicast-param-timing-over",
+            (time1-time0) < 1000*notThisLong);
     }
 }
