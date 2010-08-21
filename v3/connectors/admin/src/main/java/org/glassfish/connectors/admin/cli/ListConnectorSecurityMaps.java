@@ -48,6 +48,8 @@ import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -66,6 +68,7 @@ import java.util.logging.Logger;
  * List Connector Security Maps
  *
  */
+@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTERED_INSTANCE })
 @Service(name="list-connector-security-maps")
 @Scoped(PerLookup.class)
 @Cluster(value={RuntimeType.DAS})

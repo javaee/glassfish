@@ -48,6 +48,8 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -60,6 +62,7 @@ import java.util.ArrayList;
  * List JDBC Connection Pools command
  * 
  */
+@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTERED_INSTANCE })
 @Service(name="list-jdbc-connection-pools")
 @Scoped(PerLookup.class)
 @Cluster(value={RuntimeType.DAS})
