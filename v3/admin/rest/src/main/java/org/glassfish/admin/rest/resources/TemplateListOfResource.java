@@ -40,10 +40,10 @@
 
 package org.glassfish.admin.rest.resources;
 
+import org.glassfish.admin.rest.CliFailureException;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.jersey.api.core.ResourceContext;
 import com.sun.jersey.multipart.FormDataMultiPart;
-import org.glassfish.admin.rest.Constants;
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.Util;
@@ -59,7 +59,6 @@ import javax.ws.rs.core.*;
 
 import java.util.*;
 
-import static org.glassfish.admin.rest.ResourceUtil.buildMethodMetadataMap;
 import static org.glassfish.admin.rest.Util.*;
 
 /**
@@ -146,16 +145,22 @@ public abstract class TemplateListOfResource {
             } else {
                 // create it on the fly without a create CLI command.
 
-                Class<? extends ConfigBeanProxy> proxy = getElementTypeByName(parent, tagName);
+               /* Class<? extends ConfigBeanProxy> proxy = getElementTypeByName(parent, tagName);
                 data = ResourceUtil.translateCamelCasedNamesToXMLNames(data);
-                ConfigBean createdBean = ConfigSupport.createAndSet((ConfigBean) parent, proxy, data);
-                String successMessage =
-                        localStrings.getLocalString("rest.resource.create.message",
-                                "\"{0}\" created successfully.", createdBean.getKey());
-                return ResourceUtil.getActionReportResult(201, successMessage, requestHeaders, uriInfo);
+                try {
+                    ConfigBean createdBean = ConfigSupport.createAndSet((ConfigBean) parent, proxy, data);
+                    String successMessage =
+                            localStrings.getLocalString("rest.resource.create.message",
+                            "\"{0}\" created successfully.", createdBean.getKey());
+                    return ResourceUtil.getActionReportResult(201, successMessage, requestHeaders, uriInfo);
+                } catch (TransactionFailure ex) {
+                    throw new CliFailureException(ex.getMessage(), ex);
+                }*/
+                     throw new CliFailureException("No CRUD Create possible.");
+
 
             }
-        } catch (Exception e) {
+        }catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
@@ -197,7 +202,7 @@ public abstract class TemplateListOfResource {
                 postMethodMetaData.setIsFileUploadOperation(true);
             }
             map.put("POST", postMethodMetaData);
-        } else {
+        } /*else {
             ConfigModel.Node prop = (ConfigModel.Node) parent.model.getElement(tagName);
             if (prop == null) { //maybe null when Element ("*") is used
                 try {
@@ -228,7 +233,7 @@ public abstract class TemplateListOfResource {
                 map.put("POST", postMethodMetaData);
             }
 
-        }
+        }*/
 
         return map;
     }

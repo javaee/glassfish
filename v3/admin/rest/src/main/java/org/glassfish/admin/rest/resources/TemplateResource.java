@@ -78,9 +78,12 @@ public class TemplateResource {
     protected UriInfo uriInfo;
     @Context
     protected ResourceContext resourceContext;
-    protected Dom entity;
+    protected Dom entity;  //may be null when not created yet...
     protected Dom parent;
     protected String tagName;
+    protected boolean entityNeedsToBeCreated = false;
+    protected ConfigModel childModel ; //good model even if the child entity is null
+
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(TemplateResource.class);
     final private static List<String> attributesToSkip = new ArrayList<String>() {{
             add("parent");
@@ -95,7 +98,7 @@ public class TemplateResource {
 
     @GET
     public ActionReportResult getEntity(@QueryParam("expandLevel") @DefaultValue("1") int expandLevel) {
-        if (getEntity() == null) {
+        if (childModel == null) {//wrong entity name at this point
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
 
@@ -124,19 +127,37 @@ public class TemplateResource {
                 data.remove("operation");
                 return delete(data);
             }
-
-            Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>>();
-            data = ResourceUtil.translateCamelCasedNamesToXMLNames(data);
-            mapOfChanges.put((ConfigBean) getEntity(), data);
-            RestService.getConfigSupport().apply(mapOfChanges); //throws TransactionFailure
-
+            if (entityNeedsToBeCreated == false) { //just update it.
+                Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>>();
+                data = ResourceUtil.translateCamelCasedNamesToXMLNames(data);
+                mapOfChanges.put((ConfigBean) getEntity(), data);
+                RestService.getConfigSupport().apply(mapOfChanges); //throws TransactionFailure
+            } else {//create if in the tree
+                Class<? extends ConfigBeanProxy> proxy = TemplateListOfResource.getElementTypeByName(parent, tagName);
+                ConfigBean theParent = (ConfigBean) parent;
+                //need to change from camel case to xml !!!createAndSet works on xml names
+                HashMap<String, String> xmldata = new HashMap<String, String>();
+                Set<String> keys = data.keySet();
+                Iterator<String> iterator = keys.iterator();
+                String key;
+                while (iterator.hasNext()) {
+                    key = iterator.next();
+                    xmldata.put(theParent.model.camelCaseToXML(key), data.get(key));
+                }
+                ConfigSupport.createAndSet(theParent, proxy, xmldata);
+                entity = parent.nodeElement(tagName);
+                entityNeedsToBeCreated = false;
+            }
             String successMessage = localStrings.getLocalString("rest.resource.update.message",
                     "\"{0}\" updated successfully.", new Object[]{uriInfo.getAbsolutePath()});
             return ResourceUtil.getActionReportResult(200, successMessage, requestHeaders, uriInfo);
         } catch (Exception ex) {
             if (ex.getCause() instanceof ValidationException) {
                 return ResourceUtil.getActionReportResult(400, ex.getMessage(), requestHeaders, uriInfo);
-            } else {
+            } else if(ex instanceof TransactionFailure){
+                 return ResourceUtil.getActionReportResult(400, ex.getMessage(), requestHeaders, uriInfo);
+            }
+                else {
                 throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
             }
         }
@@ -236,8 +257,11 @@ public class TemplateResource {
         map.put("GET", new MethodMetaData());
 
         /////optionsResult.putMethodMetaData("POST", new MethodMetaData());
-        MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData((ConfigBean) getEntity());
-        postMethodMetaData.setDescription("Update");
+        MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData(childModel);
+        if (entityNeedsToBeCreated)
+            postMethodMetaData.setDescription("Create A New One");
+        else
+            postMethodMetaData.setDescription("Update");
         map.put("POST", postMethodMetaData);
 
 
@@ -281,6 +305,7 @@ public class TemplateResource {
 
     public void setEntity(Dom p) {
         entity = p;
+        childModel = p.model;
     }
 
     public Dom getEntity() {
@@ -296,12 +321,20 @@ public class TemplateResource {
             // jerome will change the domain.xml writer to not emit empty tags
             try {
                 Class<? extends ConfigBeanProxy> proxy = TemplateListOfResource.getElementTypeByName(parent, tagName);
-                HashMap<String, String> data = new HashMap<String, String>();
-                ConfigSupport.createAndSet((ConfigBean) parent, proxy, data);
+                ConfigBean theParent = (ConfigBean) parent;
+                // we quickly crate one just to get it smodel.
+                // but the real one might be created later, if the user wants it!
+               entityNeedsToBeCreated = true;
+               entity = theParent.allocate(proxy);
+               childModel = entity.model;
+               entity = null;
+
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
             }
-            entity = parent.nodeElement(tagName);
+
+        } else {
+                childModel = entity.model;
 
         }
     }
@@ -465,6 +498,8 @@ public class TemplateResource {
     }
 
     protected String getDeleteCommand() {
+        if (entity==null)
+            return null;
         return ResourceUtil.getCommand(RestRedirect.OpType.DELETE, getEntity());
     }
 
@@ -505,9 +540,10 @@ public class TemplateResource {
     protected ActionReportResult buildActionReportResult(boolean showEntityValues) {
         RestActionReporter ar = new RestActionReporter();
         ConfigBean entity = (ConfigBean)getEntity();
-        ar.setActionDescription(upperCaseFirstLetter(entity.model.getTagName()));
+        ar.setActionDescription(upperCaseFirstLetter(childModel.getTagName()));
         if (showEntityValues) {
-            ar.getExtraProperties().put("entity", getAttributes(entity));
+            if (entity!=null)
+                ar.getExtraProperties().put("entity", getAttributes(entity));
         }
         OptionsResult optionsResult = new OptionsResult(Util.getResourceName(uriInfo));
         Map<String, MethodMetaData> mmd = getMethodMetaData();
@@ -516,7 +552,9 @@ public class TemplateResource {
         optionsResult.putMethodMetaData("DELETE", mmd.get("DELETE"));
 
         ResourceUtil.addMethodMetaData(ar, mmd);
-        ar.getExtraProperties().put("childResources", ResourceUtil.getResourceLinks(entity, uriInfo));
+        if (entity!=null) {
+            ar.getExtraProperties().put("childResources", ResourceUtil.getResourceLinks(entity, uriInfo));
+        }
         ar.getExtraProperties().put("commands", ResourceUtil.getCommandLinks(getCommandResourcesPaths()));
 
         return new ActionReportResult(ar, entity, optionsResult);

@@ -313,8 +313,8 @@ public class ResourceUtil {
      * @param configBean the config bean associated with the resource.
      * @return MethodMetaData the meta-data store for the resource method.
      */
-    public static MethodMetaData getMethodMetaData(ConfigBean configBean) {
-        return getMethodMetaData(configBean, Constants.MESSAGE_PARAMETER);
+    public static MethodMetaData getMethodMetaData(ConfigModel configBeanModel) {
+        return getMethodMetaData(configBeanModel, Constants.MESSAGE_PARAMETER);
     }
 
     /**
@@ -326,40 +326,37 @@ public class ResourceUtil {
      *                      Constants.QUERY_PARAMETER and Constants.MESSAGE_PARAMETER
      * @return MethodMetaData the meta-data store for the resource method.
      */
-    public static MethodMetaData getMethodMetaData(ConfigBean configBean, int parameterType) {
+    public static MethodMetaData getMethodMetaData(ConfigModel configBeanModel, int parameterType) {
         MethodMetaData methodMetaData = new MethodMetaData();
 
-        if (configBean != null) {
-            Class<? extends ConfigBeanProxy> configBeanProxy = null;
-            try {
-                configBeanProxy = (Class<? extends ConfigBeanProxy>)
-                        configBean.model.classLoaderHolder.get().loadClass(configBean.model.targetTypeName);
+        Class<? extends ConfigBeanProxy> configBeanProxy = null;
+        try {
+            configBeanProxy = (Class<? extends ConfigBeanProxy>) configBeanModel.classLoaderHolder.get().loadClass(configBeanModel.targetTypeName);
 
-                Set<String> attributeNames = configBean.model.getAttributeNames();
-                for (String attributeName : attributeNames) {
-                    String methodName = getAttributeMethodName(attributeName);
-                    try {
-                        Method method = configBeanProxy.getMethod(methodName);
-                        Attribute attribute = method.getAnnotation(Attribute.class);
-                        if (attribute != null) {
-                            ParameterMetaData parameterMetaData = getParameterMetaData(attribute);
+            Set<String> attributeNames = configBeanModel.getAttributeNames();
+            for (String attributeName : attributeNames) {
+                String methodName = getAttributeMethodName(attributeName);
+                try {
+                    Method method = configBeanProxy.getMethod(methodName);
+                    Attribute attribute = method.getAnnotation(Attribute.class);
+                    if (attribute != null) {
+                        ParameterMetaData parameterMetaData = getParameterMetaData(attribute);
 
-                            //camelCase the attributeName before passing out
-                            attributeName = eleminateHypen(attributeName);
-                            if (parameterType == Constants.QUERY_PARAMETER) {
-                                methodMetaData.putQueryParamMetaData(attributeName, parameterMetaData);
-                            } else {
-                                //message parameter
-                                methodMetaData.putParameterMetaData(attributeName, parameterMetaData);
-                            }
+                        //camelCase the attributeName before passing out
+                        attributeName = eleminateHypen(attributeName);
+                        if (parameterType == Constants.QUERY_PARAMETER) {
+                            methodMetaData.putQueryParamMetaData(attributeName, parameterMetaData);
+                        } else {
+                            //message parameter
+                            methodMetaData.putParameterMetaData(attributeName, parameterMetaData);
                         }
-                    } catch (NoSuchMethodException e) {
-                        e.printStackTrace();
                     }
+                } catch (NoSuchMethodException e) {
+                    e.printStackTrace();
                 }
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
             }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
 
         return methodMetaData;

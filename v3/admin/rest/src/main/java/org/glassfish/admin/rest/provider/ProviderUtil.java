@@ -248,7 +248,7 @@ public class ProviderUtil {
 
         Set<String> attributes = proxy.model.getAttributeNames();
 
-        MethodMetaData methodMetaData = ResourceUtil.getMethodMetaData(proxy);
+        MethodMetaData methodMetaData = ResourceUtil.getMethodMetaData(proxy.model);
 
         Set<String> parameters = methodMetaData.parameters();
         Iterator<String> iterator = parameters.iterator();

@@ -77,9 +77,10 @@ import org.jvnet.hk2.config.Dom;
  * @author ludo
  */
 public class GlassFishDomainResource extends TemplateResource {
-    @Override
-    public Dom getEntity() {
-        return RestService.getDomainBean();
+
+    public GlassFishDomainResource(){
+        childModel = RestService.getDomainBean().model;
+        entity = RestService.getDomainBean();
     }
 
     @Path("view-log/")
