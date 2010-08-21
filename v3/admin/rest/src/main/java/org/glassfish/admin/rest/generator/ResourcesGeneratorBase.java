@@ -412,6 +412,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
 
     //TODO - fetch command name from config bean(RestRedirect annotation).
     private static final Map<String, String> configBeanToDELETECommand = new HashMap<String, String>() {{
+        put("AmxPref", "GENERIC-DELETE");
         put("ApplicationRef", "delete-application-ref");
         put("ExternalJndiResource", "delete-jndi-resource");
         put("JaccProvider", "delete-jacc-provider");
@@ -432,18 +433,23 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         put("JavaConfig", "create-profiler"); // TODO check: This row is not used
         put("ListAdminObjectResource", "create-admin-object");
         put("ListApplication", "deploy");
+        put("ListApplicationRef", "create-application-ref");
         put("ListAuditModule", "create-audit-module");
         put("ListAuthRealm", "create-auth-realm");
         put("ListCluster", "create-cluster");
+        put("ListConfig", "create-config");
         put("ListConnectorConnectionPool", "create-connector-connection-pool");
         put("ListConnectorResource", "create-connector-resource");
         put("ListCustomResource", "create-custom-resource");
         put("ListExternalJndiResource", "create-jndi-resource");
         put("ListHttpListener", "create-http-listener");
         put("ListIiopListener", "create-iiop-listener");
+        put("ListJaccProvider", "create-jacc-provider");
         put("ListJdbcConnectionPool", "create-jdbc-connection-pool");
         put("ListJdbcResource", "create-jdbc-resource");
         put("ListJmsHost", "create-jms-host");
+        put("ListLbConfig", "create-http-lb-config");
+        put("ListLoadBalancer", "create-http-lb");
         put("ListMailResource", "create-javamail-resource");
         put("ListMessageSecurityConfig", "create-message-security-provider");
         put("ListNetworkListener", "create-network-listener");
