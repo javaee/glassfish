@@ -208,7 +208,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Extracting the installer archive..."
-tail +218l $0 > ${tmpdir_path}/tmp.jar
+tail +258l $0 > ${tmpdir_path}/tmp.jar
 cd ${tmpdir_path}
 $my_jar xf tmp.jar 
 
