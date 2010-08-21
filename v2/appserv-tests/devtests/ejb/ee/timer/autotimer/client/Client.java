@@ -154,7 +154,7 @@ public class Client extends AdminBaseDevTest {
     }
 
    private String execute(String appname, String port, String expectedResult) {
-        String connection = "http://localhost:" + port + "/" + appname + "/VerifyServlet";
+        String connection = "http://localhost:" + port + "/" + appname + "/VerifyServlet?" + port;
 
         System.out.println("invoking webclient servlet at " + connection);
         String result=null;

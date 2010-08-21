@@ -29,13 +29,14 @@ public class VerifyServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
 	resp.setContentType("text/html");
 
+        String param = req.getQueryString();
         out.println("<html>");
             out.println("<head>");
             out.println("<title>Servlet VerifyServlet</title>");
             out.println("</head>");
             out.println("<body>");
         try {
-	    out.println("RESULT:" + bean.timeoutReceived());
+	    out.println("RESULT:" + bean.timeoutReceived(param));
         }catch(Throwable e){
             out.println("got exception");
             out.println(e);

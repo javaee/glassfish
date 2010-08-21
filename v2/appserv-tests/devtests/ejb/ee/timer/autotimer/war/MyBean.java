@@ -6,6 +6,7 @@
 package com.acme;
 
 import java.util.Collection;
+import java.util.HashSet;
 import javax.ejb.*;
 import javax.annotation.Resource;
 
@@ -19,6 +20,8 @@ public class MyBean {
 
     @Resource TimerService ts;
     private volatile int counter = 0;
+    private HashSet timers = new HashSet();
+    private volatile boolean second_timer_running = false;
 
     @Schedule(second="*/5", minute="*", hour="*", info = "timer01")
     private void scheduledtimeout(Timer t) {
@@ -27,12 +30,14 @@ public class MyBean {
 
     @Timeout
     private void requestedtimeout(Timer t) {
+        second_timer_running = true;
         test(t, "timer02");
     }
 
     private void test(Timer t, String name) {
-        if (t.getInfo().equals(name)) {
+        if (((String)t.getInfo()).startsWith(name)) {
             System.err.println("In ___MyBean:timeout___ "  + t.getInfo() + " - persistent: " + t.isPersistent());
+            timers.add(t.getInfo());
             counter++;
         } else {
             throw new RuntimeException("Wrong " + t.getInfo() + " timer was called");
@@ -40,15 +45,16 @@ public class MyBean {
 
     }
 
-    public boolean timeoutReceived() {
+    public boolean timeoutReceived(String param) {
         System.err.println("In ___MyBean:timeoutReceived___ " + counter + " times");
-        int result = counter;
-        Collection<Timer> timers = ts.getTimers();
-        for (Timer t : timers) {
-            t.cancel();
+        boolean result = (counter > 0);
+        if (!second_timer_running)  {
+            ts.createTimer(1000, 5000, "timer02 " + param);
+        } else {
+            result = result && (timers.size() == 3);
         }
-        ts.createTimer(1000, 5000, "timer02");
+
         counter = 0;
-        return (result > 0);
+        return result;
     }
 }
