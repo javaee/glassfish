@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.launcher;
 
 import com.sun.enterprise.universal.collections.CollectionUtils;
@@ -56,17 +55,17 @@ import java.util.logging.Level;
 import static com.sun.enterprise.util.SystemPropertyConstants.*;
 import static com.sun.enterprise.admin.launcher.GFLauncherConstants.*;
 
-
 /**
  * This is the main Launcher class designed for external and internal usage.
  * Each of the 3 kinds of server -- domain, node-agent and instance -- need
- * to sublass this class.  
+ * to subclass this class.
  * @author bnevins
  */
 public abstract class GFLauncher {
     ///////////////////////////////////////////////////////////////////////////
     //////     PUBLIC api area starts here             ////////////////////////
     ///////////////////////////////////////////////////////////////////////////
+
     /**
      * 
      * @return The info object that contains startup info
@@ -93,12 +92,13 @@ public abstract class GFLauncher {
         }
         catch (Throwable t) {
             // hk2 might throw a java.lang.Error
-            throw new GFLauncherException(strings.get("unknownError", t.getMessage()) ,t);
+            throw new GFLauncherException(strings.get("unknownError", t.getMessage()), t);
         }
         finally {
             GFLauncherLogger.removeLogFileHandler();
         }
     }
+
     /**
      * Launches the server - but forces the setup() to go through again.
      * @throws com.sun.enterprise.admin.launcher.GFLauncherException
@@ -114,7 +114,7 @@ public abstract class GFLauncher {
             List<String> commands = new LinkedList<String>();
             commands.add(javaExe);
 
-            for(String cmd : cmdsIn) {
+            for (String cmd : cmdsIn) {
                 commands.add(cmd);
             }
 
@@ -127,7 +127,7 @@ public abstract class GFLauncher {
         }
         catch (Throwable t) {
             // hk2 might throw a java.lang.Error
-            throw new GFLauncherException(strings.get("unknownError", t.getMessage()) ,t);
+            throw new GFLauncherException(strings.get("unknownError", t.getMessage()), t);
         }
         finally {
             GFLauncherLogger.removeLogFileHandler();
@@ -136,19 +136,19 @@ public abstract class GFLauncher {
 
     public synchronized void setup() throws GFLauncherException, MiniXmlParserException {
         ASenvPropertyReader pr;
-        if(isFakeLaunch()) {
+        if (isFakeLaunch()) {
             pr = new ASenvPropertyReader(info.getInstallDir());
         }
         else {
             pr = new ASenvPropertyReader();
         }
-        
+
         asenvProps = pr.getProps();
         info.setup();
         setupLogLevels();
         MiniXmlParser parser = new MiniXmlParser(getInfo().getConfigFile(), getInfo().getInstanceName());
         String domainName = parser.getDomainName();
-        if(GFLauncherUtils.ok(domainName)) {
+        if (GFLauncherUtils.ok(domainName)) {
             info.setDomainName(domainName);
         }
         info.setAdminPorts(parser.getAdminPorts());
@@ -182,7 +182,7 @@ public abstract class GFLauncher {
     public final int getExitValue() {
         return exitValue;
     }
-    
+
     /**
      * You don't want to call this before calling launch because it would not 
      * make sense.
@@ -192,8 +192,8 @@ public abstract class GFLauncher {
      * before calling this method.
      */
     public final Process getProcess() throws GFLauncherException {
-        if(process == null)
-                throw new GFLauncherException("invalid_process");
+        if (process == null)
+            throw new GFLauncherException("invalid_process");
 
         return process;
     }
@@ -207,7 +207,7 @@ public abstract class GFLauncher {
      * @see com.sun.enterprise.universal.process.ProcessStreamDrainer
      */
     public final ProcessStreamDrainer getProcessStreamDrainer() throws GFLauncherException {
-        if(psd == null)
+        if (psd == null)
             throw new GFLauncherException("invalid_psd");
 
         return psd;
@@ -219,7 +219,7 @@ public abstract class GFLauncher {
      * @throws GFLauncherException if you call this method too early
      */
     public String getLogFilename() throws GFLauncherException {
-        if(!logFilenameWasFixed)
+        if (!logFilenameWasFixed)
             throw new GFLauncherException(strings.get("internalError") + " call to getLogFilename() before it has been initialized");
 
         return logFilename;
@@ -243,7 +243,8 @@ public abstract class GFLauncher {
                 if (attr.startsWith("address=")) {
                     try {
                         return Integer.parseInt(attr.substring(8));
-                    } catch (NumberFormatException ex) {
+                    }
+                    catch (NumberFormatException ex) {
                         return -1;
                     }
                 }
@@ -271,17 +272,17 @@ public abstract class GFLauncher {
     private void setLogFilename(MiniXmlParser parser) throws GFLauncherException {
         logFilename = parser.getLogFilename();
 
-        if(logFilename == null)
+        if (logFilename == null)
             logFilename = DEFAULT_LOGFILE;
     }
 
     private void fixLogFilename() throws GFLauncherException {
-        if(!GFLauncherUtils.ok(logFilename))
+        if (!GFLauncherUtils.ok(logFilename))
             logFilename = DEFAULT_LOGFILE;
 
         File f = new File(logFilename);
 
-        if(!f.isAbsolute()) {
+        if (!f.isAbsolute()) {
             // this is quite normal.  Logging Service will by default return
             // a relative path!
             f = new File(info.getInstanceRootDir(), logFilename);
@@ -294,42 +295,42 @@ public abstract class GFLauncher {
         // this is common in unit tests AND the first time the instance is
         // started....
 
-        if(!f.exists()) {
+        if (!f.exists()) {
             File parent = f.getParentFile();
-            if(!parent.isDirectory()) {
+            if (!parent.isDirectory()) {
                 boolean wasCreated = parent.mkdirs();
-                if(!wasCreated) {
+                if (!wasCreated) {
                     f = null; // give up!!
                 }
             }
         }
 
-        if(f == null)
+        if (f == null)
             logFilename = null;
         else
             logFilename = f.getPath();
-                
+
         logFilenameWasFixed = true;
     }
 
     // unit tests will want 'fake' so that the process is not really started.
-    enum LaunchType
-    {
+    enum LaunchType {
+
         normal, debug, trace, fake
-    }; 
-    
+    };
+
     void setMode(LaunchType mode) {
         this.mode = mode;
     }
-    
+
     LaunchType getMode() {
         return mode;
     }
-    
+
     boolean isFakeLaunch() {
         return mode == LaunchType.fake;
     }
-    
+
     abstract List<File> getMainClasspath() throws GFLauncherException;
 
     abstract String getMainClass() throws GFLauncherException;
@@ -345,19 +346,19 @@ public abstract class GFLauncher {
     final List<String> getCommandLine() {
         return commandLine;
     }
-    
+
     final long getStartTime() {
         return startTime;
     }
-    
+
     void launchInstance() throws GFLauncherException, MiniXmlParserException {
-        if(isFakeLaunch()) {
+        if (isFakeLaunch()) {
             return;
         }
-        
+
         List<String> cmds = getCommandLine();
         ProcessBuilder pb = new ProcessBuilder(cmds);
-        
+
         //pb.directory(getInfo().getConfigDir());
 
 
@@ -367,10 +368,10 @@ public abstract class GFLauncher {
             File newDir = getInfo().getConfigDir();
             pb.directory(newDir);
         }
-        catch(Exception e) {
+        catch (Exception e) {
         }
 
-        
+
         //run the process and attach Stream Drainers
         try {
             process = pb.start();
@@ -388,7 +389,7 @@ public abstract class GFLauncher {
 
         long endTime = System.currentTimeMillis();
         GFLauncherLogger.info("launchTime", (endTime - getStartTime()));
-        
+
         //if verbose, hang round until the domain stops
         if (getInfo().isVerbose())
             wait(process);
@@ -400,27 +401,30 @@ public abstract class GFLauncher {
         BufferedWriter bw = null;
         try {
             bw = new BufferedWriter(new OutputStreamWriter(os));
-            for(String token : info.securityTokens) {
+            for (String token : info.securityTokens) {
                 bw.write(token);
                 bw.newLine();
                 bw.flush();      //flusing once is ok too
             }
-        } catch(IOException e) {
+        }
+        catch (IOException e) {
             handleDeadProcess();
             throw e;   //process is not dead, but got some other exception, rethrow it
-        } finally {
+        }
+        finally {
             if (bw != null) {
                 handleDeadProcess();
                 bw.close();
             }
         }
     }
+
     private void handleDeadProcess() throws GFLauncherException {
         String trace = getDeadProcessTrace(process);
         if (trace != null)
             throw new GFLauncherException(trace);
     }
-    
+
     private String getDeadProcessTrace(Process sp) throws GFLauncherException {
         //returns null in case the process is NOT dead
         try {
@@ -429,7 +433,8 @@ public abstract class GFLauncher {
             String output = psd.getOutErrString();
             String trace = strings.get("server_process_died", ev, output);
             return trace;
-        } catch(IllegalThreadStateException e) {
+        }
+        catch (IllegalThreadStateException e) {
             //the process is still running and we are ok
             return null;
         }
@@ -445,11 +450,11 @@ public abstract class GFLauncher {
 
         String CLIStartTime = System.getProperty("WALL_CLOCK_START");
 
-        if(CLIStartTime != null && CLIStartTime.length() > 0) {
+        if (CLIStartTime != null && CLIStartTime.length() > 0) {
             cmdLine.add("-DWALL_CLOCK_START=" + CLIStartTime);
         }
 
-        if(jvmOptions != null)
+        if (jvmOptions != null)
             addIgnoreNull(cmdLine, jvmOptions.toStringArray());
 
         GFLauncherNativeHelper nativeHelper = new GFLauncherNativeHelper(info, javaConfig, jvmOptions, profiler);
@@ -459,23 +464,23 @@ public abstract class GFLauncher {
         try {
             addIgnoreNull(cmdLine, getInfo().getArgsAsList());
         }
-        catch(GFLauncherException gfle) {
+        catch (GFLauncherException gfle) {
             throw gfle;
         }
-        catch(Exception e) {
+        catch (Exception e) {
             //harmless
         }
     }
 
     private void addIgnoreNull(List<String> list, String s) {
-        if(GFLauncherUtils.ok(s))
+        if (GFLauncherUtils.ok(s))
             list.add(s);
     }
+
     private void addIgnoreNull(List<String> list, Collection<String> ss) {
-        if(ss != null && !ss.isEmpty())
+        if (ss != null && !ss.isEmpty())
             list.addAll(ss);
     }
-
 
     private void wait(final Process p) throws GFLauncherException {
         try {
@@ -501,7 +506,7 @@ public abstract class GFLauncher {
         // Each time this method is called we reset the Process reference inside
         // the processWhacker
 
-        if(processWhacker == null)  {
+        if (processWhacker == null) {
             Runtime runtime = Runtime.getRuntime();
             final String msg = strings.get("serverStopped", info.getType());
             processWhacker = new ProcessWhacker(p, msg);
@@ -510,7 +515,7 @@ public abstract class GFLauncher {
         else
             processWhacker.setProcess(p);
     }
-        
+
     private void resolveAllTokens() {
         // resolve jvm-options against:
         // 1. itself
@@ -559,7 +564,7 @@ public abstract class GFLauncher {
         resolver.resolve(debugOptions);
         //resolver.resolve(sysPropsFromXml);
         logFilename = resolver.resolve(logFilename);
-    // TODO ?? Resolve sysPropsFromXml ???
+        // TODO ?? Resolve sysPropsFromXml ???
     }
 
     private void setJavaExecutable() throws GFLauncherException {
@@ -618,7 +623,7 @@ public abstract class GFLauncher {
     }
 
     private List<String> getDebug() {
-        if(info.isDebug() || javaConfig.isDebugEnabled()) {
+        if (info.isDebug() || javaConfig.isDebugEnabled()) {
             return javaConfig.getDebugOptions();
         }
         return Collections.emptyList();
@@ -627,36 +632,35 @@ public abstract class GFLauncher {
     private void setupProfilerAndJvmOptions(MiniXmlParser parser) throws MiniXmlParserException, GFLauncherException {
         // add JVM options from Profiler *last* so they override config's
         // JVM options
-        
-        profiler  = new Profiler(
-                parser.getProfilerConfig(), 
-                parser.getProfilerJvmOptions(), 
+
+        profiler = new Profiler(
+                parser.getProfilerConfig(),
+                parser.getProfilerJvmOptions(),
                 parser.getProfilerSystemProperties());
 
         List<String> rawJvmOptions = parser.getJvmOptions();
         rawJvmOptions.addAll(getSpecialSystemProperties());
-        if(profiler.isEnabled()) {
+        if (profiler.isEnabled()) {
             rawJvmOptions.addAll(profiler.getJvmOptions());
         }
         jvmOptions = new JvmOptions(rawJvmOptions);
     }
 
-
     private void setupMonitoring(MiniXmlParser parser) throws GFLauncherException {
         // As usual we have to be very careful.
 
         // If it is NOT enabled -- we are out of here!!!
-        if(parser.isMonitoringEnabled() == false)
+        if (parser.isMonitoringEnabled() == false)
             return;
 
         // if the user has a hard-coded "-javaagent" jvm-option that uses OUR jar
         //then we do NOT want to add our own.
         Set<String> plainKeys = jvmOptions.plainProps.keySet();
-        for(String key : plainKeys) {
-            if(key.startsWith("javaagent:")) {
+        for (String key : plainKeys) {
+            if (key.startsWith("javaagent:")) {
                 // complications -- of course!!  They may have mix&match forward and back slashes
                 key = key.replace('\\', '/');
-                if(key.indexOf(BTRACE_PATH) > 0)
+                if (key.indexOf(BTRACE_PATH) > 0)
                     return; // Done!!!!
             }
         }
@@ -665,7 +669,7 @@ public abstract class GFLauncher {
         try {
             jvmOptions.plainProps.put(getMonitoringJvmOptionString(), null);
         }
-        catch(GFLauncherException gfe) {
+        catch (GFLauncherException gfe) {
             // This has been defined as a non-fatal error.
             // Silently ignore it -- but do NOT add it as an option
         }
@@ -677,26 +681,27 @@ public abstract class GFLauncher {
         String jarPath = SmartFile.sanitize(jarFile).getPath().replace('\\', '/');
 
         // make sure it exists
-        if(!jarFile.isFile())
+        if (!jarFile.isFile())
             throw new GFLauncherException("no_btrace_jar", jarPath);
-        
+
         return "javaagent:" + jarPath + "=unsafe=true,noServer=true";
     }
+
     private List<String> getSpecialSystemProperties() throws GFLauncherException {
         Map<String, String> props = new HashMap<String, String>();
         props.put(INSTALL_ROOT_PROPERTY, getInfo().getInstallDir().getAbsolutePath());
         props.put(INSTANCE_ROOT_PROPERTY, getInfo().getInstanceRootDir().getAbsolutePath());
-        return ( this.propsToJvmOptions(props) );
+        return (this.propsToJvmOptions(props));
     }
 
     void logCommandLine() {
         StringBuilder sb = new StringBuilder();
-        for(String s : commandLine) {
+        for (String s : commandLine) {
             // newline before the first line...
             sb.append(NEWLINE);
             sb.append(s);
         }
-        if(!isFakeLaunch()) {
+        if (!isFakeLaunch()) {
             GFLauncherLogger.info("commandline", sb.toString());
         }
     }
@@ -709,30 +714,30 @@ public abstract class GFLauncher {
         classpath = s;
     }
 
-    private List<String> propsToJvmOptions(Map<String,String> map) {
+    private List<String> propsToJvmOptions(Map<String, String> map) {
         List<String> ss = new ArrayList<String>();
         Set<String> set = map.keySet();
-        
-        for(String name : set) {
+
+        for (String name : set) {
             String value = map.get(name);
-            String jvm = "-D" + name; 
-            
-            if(value != null) {
+            String jvm = "-D" + name;
+
+            if (value != null) {
                 jvm += "=" + value;
             }
-            
+
             ss.add(jvm);
         }
-        
+
         return ss;
     }
+
     private void setupLogLevels() {
-        if(info.isVerbose())
+        if (info.isVerbose())
             GFLauncherLogger.setConsoleLevel(Level.INFO);
         else
             GFLauncherLogger.setConsoleLevel(Level.WARNING);
     }
-
     private List<String> commandLine = new ArrayList<String>();
     private GFLauncherInfo info;
     private Map<String, String> asenvProps;
@@ -748,16 +753,16 @@ public abstract class GFLauncher {
     private LaunchType mode = LaunchType.normal;
     private final static LocalStringsImpl strings = new LocalStringsImpl(GFLauncher.class);
     private boolean setupCalledByClients = false; //handle with care
-    private int     exitValue = -1;
-    private ProcessWhacker  processWhacker;
+    private int exitValue = -1;
+    private ProcessWhacker processWhacker;
     private Process process;
-    private ProcessStreamDrainer    psd;
+    private ProcessStreamDrainer psd;
     private boolean logFilenameWasFixed = false;
     private boolean needsUpgrade = false;
 
     ///////////////////////////////////////////////////////////////////////////
-    
     private static class ProcessWhacker implements Runnable {
+
         ProcessWhacker(Process p, String msg) {
             message = msg;
             process = p;
@@ -774,7 +779,6 @@ public abstract class GFLauncher {
             System.out.println(message);
             process.destroy();
         }
-
         private String message;
         private Process process;
     }
