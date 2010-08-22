@@ -101,6 +101,9 @@ public class DataSourceSpec implements java.io.Serializable {
     public static final int TIMETOKEEPQUERIESINMINUTES = 42;
     public static final int STATEMENTLEAKTIMEOUTINSECONDS = 43;
     public static final int STATEMENTLEAKRECLAIM = 44;
+    public static final int POOLNAME = 45;
+    public static final int APPLICATIONNAME = 46;
+    public static final int MODULENAME = 47;
 
     private ConcurrentHashMap<Integer, String> details = new ConcurrentHashMap<Integer, String>();
 

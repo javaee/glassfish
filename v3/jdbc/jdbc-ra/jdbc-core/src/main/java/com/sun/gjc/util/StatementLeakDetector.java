@@ -43,6 +43,8 @@ package com.sun.gjc.util;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.gjc.monitoring.StatementLeakProbeProvider;
 import com.sun.logging.LogDomains;
+import org.glassfish.resource.common.PoolInfo;
+
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
@@ -63,7 +65,7 @@ import java.util.logging.Logger;
 public class StatementLeakDetector {
     private HashMap<Statement, StackTraceElement[]> statementLeakThreadStackHashMap;
     private HashMap<Statement, StatementLeakTask> statementLeakTimerTaskHashMap;
-    private String connectionPoolName;
+    private PoolInfo poolInfo;
     private boolean statementLeakTracing;
     private long statementLeakTimeoutInMillis;
     private boolean statementLeakReclaim;
@@ -77,9 +79,9 @@ public class StatementLeakDetector {
     private Timer timer;
     private StatementLeakProbeProvider stmtLeakProbeProvider = null;
 
-    public StatementLeakDetector(String poolName, boolean leakTracing,
+    public StatementLeakDetector(PoolInfo poolInfo, boolean leakTracing,
             long leakTimeoutInMillis, boolean leakReclaim, Timer timer) {
-        connectionPoolName = poolName;
+        this.poolInfo = poolInfo;
         statementLeakThreadStackHashMap = new HashMap<Statement, StackTraceElement[]>();
         statementLeakTimerTaskHashMap = new HashMap<Statement, StatementLeakTask>();
         listeners = new HashMap<Statement, StatementLeakListener>();
@@ -164,14 +166,15 @@ public class StatementLeakDetector {
             if (statementLeakThreadStackHashMap.containsKey(stmt)) {
                 StackTraceElement[] threadStack = statementLeakThreadStackHashMap.remove(stmt);
                 StatementLeakListener stmtLeakListener = listeners.get(stmt);
-                stmtLeakProbeProvider.potentialStatementLeakEvent(connectionPoolName);
+                stmtLeakProbeProvider.potentialStatementLeakEvent(poolInfo.getName(),
+                        poolInfo.getApplicationName(), poolInfo.getModuleName());
                 printStatementLeakTrace(threadStack);
                 statementLeakTimerTaskHashMap.remove(stmt);
                 if (statementLeakReclaim) {
                     try {
                         stmtLeakListener.reclaimStatement();
                     } catch (SQLException ex) {
-                        Object[] params = new Object[]{connectionPoolName, ex};
+                        Object[] params = new Object[]{poolInfo, ex};
                         _logger.log(Level.WARNING, 
                                 "statement.leak.detector_reclaim_statement_failure",
                                 params);
@@ -192,16 +195,16 @@ public class StatementLeakDetector {
         StringBuffer stackTrace = new StringBuffer();
         String msg = localStrings.getStringWithDefault(
                 "potential.statement.leak.msg",
-                "A potential statement leak detected for connection pool " + connectionPoolName +
+                "A potential statement leak detected for connection pool " + poolInfo +
                         ". The stack trace of the thread is provided below : ",
-                new Object[]{connectionPoolName});
+                new Object[]{poolInfo});
         stackTrace.append(msg);
         stackTrace.append("\n");
         for (int i = 2; i < threadStackTrace.length; i++) {
             stackTrace.append(threadStackTrace[i].toString());
             stackTrace.append("\n");
         }
-        _logger.log(Level.WARNING, stackTrace.toString(), "ConnectionPoolName=" + connectionPoolName);
+        _logger.log(Level.WARNING, stackTrace.toString(), "ConnectionPoolName=" + poolInfo);
     }
 
     /**

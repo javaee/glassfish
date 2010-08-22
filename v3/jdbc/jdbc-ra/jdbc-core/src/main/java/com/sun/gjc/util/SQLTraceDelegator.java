@@ -60,18 +60,18 @@ public class SQLTraceDelegator implements SQLTraceListener {
     //List of listeners 
     protected List<SQLTraceListener> sqlTraceListenersList;
     private String poolName;
+    private String appName;
+    private String moduleName;
     private SQLTraceProbeProvider probeProvider = null;
 
     public SQLTraceProbeProvider getProbeProvider() {
         return probeProvider;
     }
 
-    public SQLTraceDelegator() {
-        
-    }
-
-    public SQLTraceDelegator(String poolName) {
+    public SQLTraceDelegator(String poolName, String appName, String moduleName) {
         this.poolName = poolName;
+        this.appName = appName;
+        this.moduleName = moduleName;
         probeProvider = new SQLTraceProbeProvider();
     }
 
@@ -110,7 +110,7 @@ public class SQLTraceDelegator implements SQLTraceListener {
                         break;
                     }
                     if (sqlQuery != null) {
-                        probeProvider.cacheSqlQueryEvent(poolName, sqlQuery);
+                        probeProvider.cacheSqlQueryEvent(poolName, appName, moduleName, sqlQuery);
                     }
                 }
             }

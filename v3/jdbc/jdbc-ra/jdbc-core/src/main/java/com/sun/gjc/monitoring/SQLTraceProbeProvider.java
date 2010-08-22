@@ -62,6 +62,8 @@ public class SQLTraceProbeProvider {
      */
     @Probe(name=JdbcRAConstants.CACHE_SQL_QUERY)
     public void cacheSqlQueryEvent(@ProbeParam("poolName") String poolName,
+                                   @ProbeParam("appName") String appName,
+                                   @ProbeParam("moduleName") String moduleName,
             @ProbeParam("sql") String sql) {
 
     }

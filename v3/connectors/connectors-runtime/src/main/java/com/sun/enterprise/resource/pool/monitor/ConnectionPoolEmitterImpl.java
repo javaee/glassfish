@@ -71,7 +71,8 @@ import org.glassfish.external.probe.provider.StatsProviderManager;
  */
 public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
     private String poolName;
-    //TODO ASR check all methods for poolName usage which is incorrect
+    private String appName;
+    private String moduleName;
     private PoolInfo poolInfo;
     private ConnectionPoolProbeProvider poolProbeProvider;
     //Map of app names and respective emitters for a pool.
@@ -93,6 +94,8 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
     public ConnectionPoolEmitterImpl(PoolInfo poolInfo, ConnectionPoolProbeProvider provider) {
         this.poolInfo = poolInfo;
         this.poolName = poolInfo.getName();
+        this.appName = poolInfo.getApplicationName();
+        this.moduleName = poolInfo.getModuleName();
         this.poolProbeProvider = provider;
         this.jdbcPoolAppStatsProviders = new ArrayList<JdbcConnPoolAppStatsProvider>();
         this.ccPoolAppStatsProviders = new ArrayList<ConnectorConnPoolAppStatsProvider>();
@@ -109,7 +112,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      */
     public void toString(StringBuffer stackTrace) {
         stackTrace.append("\n Monitoring Statistics for \n" + poolName);
-        poolProbeProvider.toString(poolName, stackTrace);
+        poolProbeProvider.toString(poolName, appName, moduleName, stackTrace);
     }
     
     /**
@@ -119,7 +122,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
     public void connectionAcquired(long resourceHandleId) {
         ConnectionPoolAppEmitterImpl appEmitter =
                 detectAppBasedProviders(getAppName(resourceHandleId));
-        poolProbeProvider.connectionAcquiredEvent(poolName);
+        poolProbeProvider.connectionAcquiredEvent(poolName, appName, moduleName);
         if(appEmitter != null) {
             appEmitter.connectionAcquired();
         }
@@ -133,7 +136,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * @param timeTakenInMillis time taken to serve a connection
      */    
     public void connectionRequestServed(long timeTakenInMillis) {
-        poolProbeProvider.connectionRequestServedEvent(poolName, timeTakenInMillis);
+        poolProbeProvider.connectionRequestServedEvent(poolName, appName, moduleName, timeTakenInMillis);
     }
 
     /**
@@ -141,7 +144,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * has got a connection timed-out event.
      */
     public void connectionTimedOut() {
-        poolProbeProvider.connectionTimedOutEvent(poolName);
+        poolProbeProvider.connectionTimedOutEvent(poolName, appName, moduleName);
     }
 
     /**
@@ -149,7 +152,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * current request for the given jdbc connection pool.
      */
     public void connectionNotMatched() {
-        poolProbeProvider.connectionNotMatchedEvent(poolName);        
+        poolProbeProvider.connectionNotMatchedEvent(poolName, appName, moduleName);        
     }
 
     /**
@@ -157,7 +160,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * request for the given jdbc connection pool.
      */
     public void connectionMatched() {
-        poolProbeProvider.connectionMatchedEvent(poolName);        
+        poolProbeProvider.connectionMatchedEvent(poolName, appName, moduleName);        
     }
 
     /**
@@ -165,7 +168,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * given jdbc connection pool.
      */
     public void connectionDestroyed(long resourceHandleId) {
-        poolProbeProvider.connectionDestroyedEvent(poolName);
+        poolProbeProvider.connectionDestroyedEvent(poolName, appName, moduleName);
         //Clearing the resource handle id appName mappings stored
         resourceAppAssociationMap.remove(resourceHandleId);
     }
@@ -177,7 +180,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
     public void connectionReleased(long resourceHandleId) {
         ConnectionPoolAppEmitterImpl appEmitter =
                 detectAppBasedProviders(getAppName(resourceHandleId));
-        poolProbeProvider.connectionReleasedEvent(poolName);
+        poolProbeProvider.connectionReleasedEvent(poolName, appName, moduleName);
         if(appEmitter != null) {
             appEmitter.connectionReleased();
         }        
@@ -188,7 +191,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * connection pool.
      */
     public void connectionCreated() {
-        poolProbeProvider.connectionCreatedEvent(poolName);
+        poolProbeProvider.connectionCreatedEvent(poolName, appName, moduleName);
     }
     
     /**
@@ -197,7 +200,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      *
      */
     public void foundPotentialConnectionLeak() {
-        poolProbeProvider.potentialConnLeakEvent(poolName);
+        poolProbeProvider.potentialConnLeakEvent(poolName, appName, moduleName);
     }
 
     /**
@@ -207,7 +210,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * @param count number of times the validation failed
      */
     public void connectionValidationFailed(int count) {
-        poolProbeProvider.connectionValidationFailedEvent(poolName, count);
+        poolProbeProvider.connectionValidationFailedEvent(poolName, appName, moduleName, count);
     }
 
     /**
@@ -217,7 +220,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
     public void connectionUsed(long resourceHandleId) {
         ConnectionPoolAppEmitterImpl appEmitter =
                 detectAppBasedProviders(getAppName(resourceHandleId));
-        poolProbeProvider.connectionUsedEvent(poolName);
+        poolProbeProvider.connectionUsedEvent(poolName, appName, moduleName);
         if (appEmitter != null) {
             appEmitter.connectionUsed();
         }
@@ -230,7 +233,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * @param count number of connections freed to pool
      */
     public void connectionsFreed(int count) {
-        poolProbeProvider.connectionsFreedEvent(poolName, count);
+        poolProbeProvider.connectionsFreedEvent(poolName, appName, moduleName, count);
     }
 
     /**
@@ -241,7 +244,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
     public void decrementConnectionUsed(long resourceHandleId) {
         ConnectionPoolAppEmitterImpl appEmitter =
                 detectAppBasedProviders(getAppName(resourceHandleId));
-        poolProbeProvider.decrementConnectionUsedEvent(poolName);
+        poolProbeProvider.decrementConnectionUsedEvent(poolName, appName, moduleName);
         if(appEmitter != null) {
             appEmitter.decrementConnectionUsed();
         }
@@ -253,7 +256,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * 
      */
     public void decrementNumConnFree() {
-        poolProbeProvider.decrementNumConnFreeEvent(poolName);
+        poolProbeProvider.decrementNumConnFreeEvent(poolName, appName, moduleName);
     }
     
     /**
@@ -264,7 +267,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * @param steadyPoolSize 
      */
     public void incrementNumConnFree(boolean beingDestroyed, int steadyPoolSize) {
-        poolProbeProvider.incrementNumConnFreeEvent(poolName, beingDestroyed, steadyPoolSize);
+        poolProbeProvider.incrementNumConnFreeEvent(poolName, appName, moduleName, beingDestroyed, steadyPoolSize);
     }
 
     /**
@@ -273,7 +276,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * 
      */
     public void connectionRequestQueued() {
-        poolProbeProvider.connectionRequestQueuedEvent(poolName);
+        poolProbeProvider.connectionRequestQueuedEvent(poolName, appName, moduleName);
     }
 
     /**
@@ -282,7 +285,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      * 
      */
     public void connectionRequestDequeued() {
-        poolProbeProvider.connectionRequestDequeuedEvent(poolName);
+        poolProbeProvider.connectionRequestDequeuedEvent(poolName, appName, moduleName);
     }
 
     private String getAppName(long resourceHandleId) {
@@ -403,6 +406,7 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
             //Add the newly created probe provider to the list.
             connPoolAppEmitter = new ConnectionPoolAppEmitterImpl(poolName,
                     appName, probeAppProvider);
+            //NOTE : this appName here is different from "appName" instance variable.
             appEmitters.put(appName, connPoolAppEmitter);
             appStatsMap.put(poolInfo, appEmitters);
         }

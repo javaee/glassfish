@@ -72,9 +72,7 @@ import org.glassfish.gmbal.ManagedObject;
 @Description("Connector Connection Pool Statistics")
 public class ConnectorConnPoolStatsProvider {
     
-    private String ccPoolName;
     private Logger logger;
-    //TODO ASR using poolName in all methods which is incorrect
     private PoolInfo poolInfo;    
 
     
@@ -143,7 +141,6 @@ public class ConnectorConnPoolStatsProvider {
 
     public ConnectorConnPoolStatsProvider(PoolInfo poolInfo, Logger logger) {    
         this.poolInfo = poolInfo;
-        this.ccPoolName = poolInfo.getName();
         this.logger = logger;
     }
     
@@ -152,9 +149,13 @@ public class ConnectorConnPoolStatsProvider {
      * @param pool JdbcConnectionPool that got a connLeakEvent
      */
     @ProbeListener(JCA_PROBE_LISTENER + "potentialConnLeakEvent")
-    public void potentialConnLeakEvent(@ProbeParam("poolName") String poolName) {
+    public void potentialConnLeakEvent(@ProbeParam("poolName") String poolName,
+                                       @ProbeParam("appName") String appName,
+                                       @ProbeParam("moduleName") String moduleName
+                                       ) {
 	// handle the conn leak probe event
-        if((poolName != null) && (poolName.equals(this.ccPoolName))) {
+        PoolInfo poolInfo = new PoolInfo(poolName, appName, moduleName);
+        if(this.poolInfo.equals(poolInfo)) {
             if(logger.isLoggable(Level.FINEST)) {
                 logger.finest("Connection Leak event received - poolName = " + 
                              poolName);
@@ -170,10 +171,14 @@ public class ConnectorConnPoolStatsProvider {
      * @param pool JdbcConnectionPool that got a connTimedOutEvent
      */
     @ProbeListener(JCA_PROBE_LISTENER + "connectionTimedOutEvent")
-    public void connectionTimedOutEvent(@ProbeParam("poolName") String poolName) {
+    public void connectionTimedOutEvent(@ProbeParam("poolName") String poolName,
+                                        @ProbeParam("appName") String appName,
+                                        @ProbeParam("moduleName") String moduleName
+                                        ) {
 	// handle the conn timed out probe event
-        if((poolName != null) && (poolName.equals(this.ccPoolName))) {
-            if(logger.isLoggable(Level.FINEST)) {            
+        PoolInfo poolInfo = new PoolInfo(poolName, appName, moduleName);
+        if(this.poolInfo.equals(poolInfo)) {
+            if(logger.isLoggable(Level.FINEST)) {
                 logger.finest("Connection Timed-out event received - poolName = " + 
                              poolName);
             }
@@ -188,9 +193,13 @@ public class ConnectorConnPoolStatsProvider {
      */
     @ProbeListener(JCA_PROBE_LISTENER + "decrementNumConnFreeEvent")
     public void decrementNumConnFreeEvent(
-            @ProbeParam("poolName") String poolName) {
+            @ProbeParam("poolName") String poolName,
+            @ProbeParam("appName") String appName,
+            @ProbeParam("moduleName") String moduleName
+            ) {
 	// handle the num conn free decrement event
-        if((poolName != null) && (poolName.equals(this.ccPoolName))) {
+        PoolInfo poolInfo = new PoolInfo(poolName, appName, moduleName);
+        if(this.poolInfo.equals(poolInfo)) {
             if(logger.isLoggable(Level.FINEST)) {
                 logger.finest("Decrement Num Connections Free event received - poolName = " + 
                         poolName);
@@ -211,11 +220,14 @@ public class ConnectorConnPoolStatsProvider {
     @ProbeListener(JCA_PROBE_LISTENER + "incrementNumConnFreeEvent")
     public void incrementNumConnFreeEvent(
             @ProbeParam("poolName") String poolName,
-            @ProbeParam("beingDestroyed") boolean beingDestroyed,            
+            @ProbeParam("appName") String appName,
+            @ProbeParam("moduleName") String moduleName,
+            @ProbeParam("beingDestroyed") boolean beingDestroyed,
             @ProbeParam("steadyPoolSize") int steadyPoolSize) {            
 	// handle the num conn free increment event
-        if((poolName != null) && (poolName.equals(this.ccPoolName))) {
-            if(logger.isLoggable(Level.FINEST)) {            
+        PoolInfo poolInfo = new PoolInfo(poolName, appName, moduleName);
+        if(this.poolInfo.equals(poolInfo)) {
+            if(logger.isLoggable(Level.FINEST)) {
                 logger.finest("Increment Num Connections Free event received - poolName = " + 
                              poolName);
             }
@@ -242,9 +254,13 @@ public class ConnectorConnPoolStatsProvider {
      */
     @ProbeListener(JCA_PROBE_LISTENER + "decrementConnectionUsedEvent")
     public void decrementConnectionUsedEvent(
-            @ProbeParam("poolName") String poolName) {
+            @ProbeParam("poolName") String poolName,
+            @ProbeParam("appName") String appName,
+            @ProbeParam("moduleName") String moduleName
+            ) {
 	// handle the num conn used decrement event
-        if((poolName != null) && (poolName.equals(this.ccPoolName))) {
+        PoolInfo poolInfo = new PoolInfo(poolName, appName, moduleName);
+        if(this.poolInfo.equals(poolInfo)) {
             if(logger.isLoggable(Level.FINEST)) {
                 logger.finest("Decrement Num Connections Used event received - poolName = " + 
                              poolName);
@@ -263,10 +279,13 @@ public class ConnectorConnPoolStatsProvider {
      */
     @ProbeListener(JCA_PROBE_LISTENER + "connectionsFreedEvent")
     public void connectionsFreedEvent(
-            @ProbeParam("poolName") String poolName, 
+            @ProbeParam("poolName") String poolName,
+            @ProbeParam("appName") String appName,
+            @ProbeParam("moduleName") String moduleName,
             @ProbeParam("count") int count) {
 	// handle the connections freed event
-        if((poolName != null) && (poolName.equals(this.ccPoolName))) {
+        PoolInfo poolInfo = new PoolInfo(poolName, appName, moduleName);
+        if(this.poolInfo.equals(poolInfo)) {
             if(logger.isLoggable(Level.FINEST)) {
                 logger.finest("Connections Freed event received - poolName = " +
                         poolName);
@@ -287,9 +306,13 @@ public class ConnectorConnPoolStatsProvider {
      */
     @ProbeListener(JCA_PROBE_LISTENER + "connectionUsedEvent")
     public void connectionUsedEvent(
-            @ProbeParam("poolName") String poolName) {
+            @ProbeParam("poolName") String poolName,
+            @ProbeParam("appName") String appName,
+            @ProbeParam("moduleName") String moduleName
+            ) {
 	// handle the connection used event
-        if((poolName != null) && (poolName.equals(this.ccPoolName))) {
+        PoolInfo poolInfo = new PoolInfo(poolName, appName, moduleName);
+        if(this.poolInfo.equals(poolInfo)) {
             if(logger.isLoggable(Level.FINEST)) {
                 logger.finest("Connection Used event received - poolName = " + 
                              poolName);
@@ -307,8 +330,13 @@ public class ConnectorConnPoolStatsProvider {
      */
     @ProbeListener(JCA_PROBE_LISTENER + "connectionValidationFailedEvent")
     public void connectionValidationFailedEvent(
-            @ProbeParam("poolName") String poolName, @ProbeParam("increment") int increment) {
-        if((poolName != null) && (poolName.equals(this.ccPoolName))) {
+            @ProbeParam("poolName") String poolName,
+            @ProbeParam("appName") String appName,
+            @ProbeParam("moduleName") String moduleName,
+            @ProbeParam("increment") int increment) {
+
+        PoolInfo poolInfo = new PoolInfo(poolName, appName, moduleName);
+        if(this.poolInfo.equals(poolInfo)) {
             if(logger.isLoggable(Level.FINEST)) {
                 logger.finest("Connection Validation Failed event received - " +
                     "poolName = " + poolName);
@@ -327,10 +355,14 @@ public class ConnectorConnPoolStatsProvider {
      */
     @ProbeListener(JCA_PROBE_LISTENER + "connectionRequestServedEvent")
     public void connectionRequestServedEvent(
-            @ProbeParam("poolName") String poolName, 
+            @ProbeParam("poolName") String poolName,
+            @ProbeParam("appName") String appName,
+            @ProbeParam("moduleName") String moduleName,
             @ProbeParam("timeTakenInMillis") long timeTakenInMillis) {
-        if((poolName != null) && (poolName.equals(this.ccPoolName))) {
-            if(logger.isLoggable(Level.FINEST)) {            
+
+        PoolInfo poolInfo = new PoolInfo(poolName, appName, moduleName);
+        if(this.poolInfo.equals(poolInfo)) {
+            if(logger.isLoggable(Level.FINEST)) {
                 logger.finest("Connection request served event received - " +
                     "poolName = " + poolName);
             }
@@ -344,9 +376,14 @@ public class ConnectorConnPoolStatsProvider {
      */
     @ProbeListener(JCA_PROBE_LISTENER + "connectionDestroyedEvent")
     public void connectionDestroyedEvent(
-            @ProbeParam("poolName") String poolName) {
-        if((poolName != null) && (poolName.equals(this.ccPoolName))) {
-            if(logger.isLoggable(Level.FINEST)) {            
+            @ProbeParam("poolName") String poolName,
+            @ProbeParam("appName") String appName,
+            @ProbeParam("moduleName") String moduleName
+            ) {
+
+        PoolInfo poolInfo = new PoolInfo(poolName, appName, moduleName);
+        if(this.poolInfo.equals(poolInfo)) {
+            if(logger.isLoggable(Level.FINEST)) {
                 logger.finest("Connection destroyed event received - " +
                     "poolName = " + poolName);
             }
@@ -359,9 +396,14 @@ public class ConnectorConnPoolStatsProvider {
      */
     @ProbeListener(JCA_PROBE_LISTENER + "connectionAcquiredEvent")
     public void connectionAcquiredEvent(
-            @ProbeParam("poolName") String poolName) {
-        if((poolName != null) && (poolName.equals(this.ccPoolName))) {
-            if(logger.isLoggable(Level.FINEST)) {            
+            @ProbeParam("poolName") String poolName,
+            @ProbeParam("appName") String appName,
+            @ProbeParam("moduleName") String moduleName
+            ) {
+
+        PoolInfo poolInfo = new PoolInfo(poolName, appName, moduleName);
+        if(this.poolInfo.equals(poolInfo)) {
+            if(logger.isLoggable(Level.FINEST)) {
                 logger.finest("Connection acquired event received - " +
                     "poolName = " + poolName);
             }
@@ -374,9 +416,14 @@ public class ConnectorConnPoolStatsProvider {
      */
     @ProbeListener(JCA_PROBE_LISTENER + "connectionReleasedEvent")
     public void connectionReleasedEvent(
-            @ProbeParam("poolName") String poolName) {
-        if((poolName != null) && (poolName.equals(this.ccPoolName))) {
-            if(logger.isLoggable(Level.FINEST)) {            
+            @ProbeParam("poolName") String poolName,
+            @ProbeParam("appName") String appName,
+            @ProbeParam("moduleName") String moduleName
+            ) {
+
+        PoolInfo poolInfo = new PoolInfo(poolName, appName, moduleName);
+        if(this.poolInfo.equals(poolInfo)) {
+            if(logger.isLoggable(Level.FINEST)) {
                 logger.finest("Connection released event received - " +
                     "poolName = " + poolName);
             }
@@ -389,9 +436,14 @@ public class ConnectorConnPoolStatsProvider {
      */
     @ProbeListener(JCA_PROBE_LISTENER + "connectionCreatedEvent")
     public void connectionCreatedEvent(
-            @ProbeParam("poolName") String poolName) {
-        if((poolName != null) && (poolName.equals(this.ccPoolName))) {
-            if(logger.isLoggable(Level.FINEST)) {            
+            @ProbeParam("poolName") String poolName,
+            @ProbeParam("appName") String appName,
+            @ProbeParam("moduleName") String moduleName
+            ) {
+
+        PoolInfo poolInfo = new PoolInfo(poolName, appName, moduleName);
+        if(this.poolInfo.equals(poolInfo)) {
+            if(logger.isLoggable(Level.FINEST)) {
                 logger.finest("Connection created event received - " +
                     "poolName = " + poolName);
             }
@@ -408,7 +460,7 @@ public class ConnectorConnPoolStatsProvider {
     @Reset
     public void reset() {
         if(logger.isLoggable(Level.FINEST)) {        
-            logger.finest("Reset event received - poolName = " + ccPoolName);
+            logger.finest("Reset event received - poolName = " + poolInfo);
         }
         PoolStatus status = ConnectorRuntime.getRuntime().getPoolManager().getPoolStatus(poolInfo);
         numConnUsed.setCurrent(status.getNumConnUsed());
@@ -434,8 +486,13 @@ public class ConnectorConnPoolStatsProvider {
      */
     @ProbeListener(JCA_PROBE_LISTENER + "connectionMatchedEvent")
     public void connectionMatchedEvent(
-            @ProbeParam("poolName") String poolName) {
-        if((poolName != null) && (poolName.equals(this.ccPoolName))) {
+            @ProbeParam("poolName") String poolName,
+            @ProbeParam("appName") String appName,
+            @ProbeParam("moduleName") String moduleName
+            ) {
+
+        PoolInfo poolInfo = new PoolInfo(poolName, appName, moduleName);
+        if(this.poolInfo.equals(poolInfo)) {
             if(logger.isLoggable(Level.FINEST)) {
                 logger.finest("Connection matched event received - " +
                     "poolName = " + poolName);
@@ -450,8 +507,12 @@ public class ConnectorConnPoolStatsProvider {
      */
     @ProbeListener(JCA_PROBE_LISTENER + "connectionNotMatchedEvent")
     public void connectionNotMatchedEvent(
-            @ProbeParam("poolName") String poolName) {
-        if((poolName != null) && (poolName.equals(this.ccPoolName))) {
+            @ProbeParam("poolName") String poolName,
+            @ProbeParam("appName") String appName,
+            @ProbeParam("moduleName") String moduleName
+            ) {
+        PoolInfo poolInfo = new PoolInfo(poolName, appName, moduleName);
+        if(this.poolInfo.equals(poolInfo)) {
             if(logger.isLoggable(Level.FINEST)) {
                 logger.finest("Connection not matched event received - " +
                     "poolName = " + poolName);
@@ -465,9 +526,13 @@ public class ConnectorConnPoolStatsProvider {
      */
     @ProbeListener(JCA_PROBE_LISTENER + "connectionRequestQueuedEvent")
     public void connectionRequestQueuedEvent(
-            @ProbeParam("poolName") String poolName) {
-        if((poolName != null) && (poolName.equals(this.ccPoolName))) {
-            if(logger.isLoggable(Level.FINEST)) {            
+            @ProbeParam("poolName") String poolName,
+            @ProbeParam("appName") String appName,
+            @ProbeParam("moduleName") String moduleName
+            ) {
+        PoolInfo poolInfo = new PoolInfo(poolName, appName, moduleName);
+        if(this.poolInfo.equals(poolInfo)) {
+            if(logger.isLoggable(Level.FINEST)) {
                 logger.finest("Wait Queue length modified event received - " +
                     "poolName = " + poolName);
             }
@@ -480,9 +545,14 @@ public class ConnectorConnPoolStatsProvider {
      */
     @ProbeListener(JCA_PROBE_LISTENER + "connectionRequestDequeuedEvent")
     public void connectionRequestDequeuedEvent(
-            @ProbeParam("poolName") String poolName) {
-        if((poolName != null) && (poolName.equals(this.ccPoolName))) {
-            if(logger.isLoggable(Level.FINEST)) {            
+            @ProbeParam("poolName") String poolName,
+            @ProbeParam("appName") String appName,
+            @ProbeParam("moduleName") String moduleName
+            ) {
+
+        PoolInfo poolInfo = new PoolInfo(poolName, appName, moduleName);
+        if(this.poolInfo.equals(poolInfo)) {
+            if(logger.isLoggable(Level.FINEST)) {
                 logger.finest("Wait Queue length modified event received - " +
                     "poolName = " + poolName);
             }

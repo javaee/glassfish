@@ -44,6 +44,7 @@ import com.sun.gjc.spi.ManagedConnectionFactory;
 import com.sun.gjc.spi.base.*;
 import com.sun.logging.LogDomains;
 import com.sun.gjc.monitoring.StatementCacheProbeProvider;
+import org.glassfish.resource.common.PoolInfo;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -66,15 +67,15 @@ public class LRUCacheImpl implements Cache {
     private int maxSize ;
     protected final static Logger _logger;
     private StatementCacheProbeProvider probeProvider = null;
-    private String poolName;
+    private PoolInfo poolInfo;
 
     static {
         _logger = LogDomains.getLogger(ManagedConnectionFactory.class, LogDomains.RSR_LOGGER);
     }
 
-    public LRUCacheImpl(String poolName, int maxSize){
+    public LRUCacheImpl(PoolInfo poolInfo, int maxSize){
         this.maxSize = maxSize;
-        this.poolName = poolName;
+        this.poolInfo = poolInfo;
         list = new LinkedHashMap<CacheObjectKey, CacheEntry>();
         try {
             if(probeProvider == null) {
@@ -102,11 +103,11 @@ public class LRUCacheImpl implements Cache {
             result = entry.entryObj;
             _logger.finest("Cache Hit");
             //TODO-SC Busy cache hits?
-            probeProvider.statementCacheHitEvent(poolName);
+            probeProvider.statementCacheHitEvent(poolInfo.getName(), poolInfo.getApplicationName(), poolInfo.getModuleName());
         } else {
             //Cache miss
             _logger.finest("Cache Miss");
-            probeProvider.statementCacheMissEvent(poolName);
+            probeProvider.statementCacheMissEvent(poolInfo.getName(), poolInfo.getApplicationName(), poolInfo.getModuleName());
         }
         return result;
     }

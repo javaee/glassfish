@@ -69,6 +69,7 @@ import com.sun.gjc.spi.base.datastructure.Cache;
 import com.sun.gjc.spi.base.datastructure.CacheFactory;
 import com.sun.gjc.util.SQLTraceDelegator;
 import com.sun.gjc.util.StatementLeakDetector;
+import org.glassfish.resource.common.PoolInfo;
 
 /**
  * <code>ManagedConnection</code> implementation for Generic JDBC Connector.
@@ -162,7 +163,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
     public ManagedConnection(PooledConnection pooledConn, java.sql.Connection sqlConn,
                              PasswordCredential passwdCred, 
                              javax.resource.spi.ManagedConnectionFactory mcf,
-                             String poolName,
+                             PoolInfo poolInfo,
                              int statementCacheSize, String statementCacheType,
                              SQLTraceDelegator delegator,
                              long statementLeakTimeout, boolean statementLeakReclaim)
@@ -193,8 +194,8 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         }
         logWriter = mcf.getLogWriter();
         ce = new ConnectionEvent(this, ConnectionEvent.CONNECTION_CLOSED);
-        tuneStatementCaching(poolName, statementCacheSize, statementCacheType);
-        tuneStatementLeakTracing(poolName, statementLeakTimeout, statementLeakReclaim);
+        tuneStatementCaching(poolInfo, statementCacheSize, statementCacheType);
+        tuneStatementLeakTracing(poolInfo, statementLeakTimeout, statementLeakReclaim);
     }
 
     public StatementLeakDetector getLeakDetector() {
@@ -228,13 +229,13 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         _logger.log(Level.FINE, "jdbc.execute_init_sql_end");       
     }
 
-    private void tuneStatementCaching(String poolName, int statementCacheSize,
+    private void tuneStatementCaching(PoolInfo poolInfo, int statementCacheSize,
             String statementCacheType) {
         cacheSize = statementCacheSize;
         cacheType = statementCacheType;
         if (cacheSize > 0) {
             try {
-                statementCache = CacheFactory.getDataStructure(poolName, cacheType, cacheSize);
+                statementCache = CacheFactory.getDataStructure(poolInfo, cacheType, cacheSize);
                 statementCaching = true;
             } catch (ResourceException ex) {
                 _logger.severe(ex.getMessage());
@@ -242,7 +243,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         }
     }
 
-    private void tuneStatementLeakTracing(String poolName, long statementLeakTimeout,
+    private void tuneStatementLeakTracing(PoolInfo poolInfo, long statementLeakTimeout,
             boolean statementLeakReclaim) {
         stmtLeakTimeout = statementLeakTimeout;
         stmtLeakReclaim = statementLeakReclaim;
@@ -251,7 +252,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
             ManagedConnectionFactory spiMCF = (ManagedConnectionFactory) mcf;
             statementLeakTracing = true;
             if (leakDetector == null) {
-                leakDetector = new StatementLeakDetector(poolName, statementLeakTracing,
+                leakDetector = new StatementLeakDetector(poolInfo, statementLeakTracing,
                         stmtLeakTimeout, stmtLeakReclaim,
                         ((com.sun.gjc.spi.ResourceAdapter) spiMCF.getResourceAdapter()).getTimer());
             }

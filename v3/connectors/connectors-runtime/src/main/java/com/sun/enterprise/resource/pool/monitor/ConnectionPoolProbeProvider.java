@@ -53,9 +53,11 @@ public abstract class ConnectionPoolProbeProvider {
      * <code>poolName</code>has got a connection validation failed event.
      * 
      * @param poolName for which connection validation has failed
+     * @param appName application-name in which the pool is defined
+     * @param moduleName module-name in which the pool is defined
      * @param increment number of times the validation failed
      */
-    public void connectionValidationFailedEvent(String poolName, int increment) {
+    public void connectionValidationFailedEvent(String poolName, String appName, String moduleName, int increment) {
     }
 
     /**
@@ -63,8 +65,10 @@ public abstract class ConnectionPoolProbeProvider {
      * name <code>poolName</code> has got a connection timed out event.
      * 
      * @param poolName that has got a connection timed-out event
+     * @param appName application-name in which the pool is defined
+     * @param moduleName module-name in which the pool is defined
      */
-    public void connectionTimedOutEvent(String poolName) {
+    public void connectionTimedOutEvent(String poolName, String appName, String moduleName) {
     }
 
     /**
@@ -72,8 +76,10 @@ public abstract class ConnectionPoolProbeProvider {
      * <code>poolName</code> is having a potentialConnLeak event.
      * 
      * @param poolName
+     * @param appName application-name in which the pool is defined
+     * @param moduleName module-name in which the pool is defined
      */
-    public void potentialConnLeakEvent(String poolName) {
+    public void potentialConnLeakEvent(String poolName, String appName, String moduleName) {
     }
 
     /**
@@ -81,8 +87,10 @@ public abstract class ConnectionPoolProbeProvider {
      * <code>poolName</code>has got a decrement free connections size event.
      * 
      * @param poolName for which decrement numConnFree is got
+     * @param appName application-name in which the pool is defined
+     * @param moduleName module-name in which the pool is defined
      */
-    public void decrementNumConnFreeEvent(String poolName) {
+    public void decrementNumConnFreeEvent(String poolName, String appName, String moduleName) {
     }
 
     /**
@@ -90,10 +98,12 @@ public abstract class ConnectionPoolProbeProvider {
      * <code>poolName</code>has got a decrement free connections size event.
      * 
      * @param poolName for which decrement numConnFree is got
-     * @param beingDestroyed if the connection is destroyed due to error 
+     * @param appName application-name in which the pool is defined
+     * @param moduleName module-name in which the pool is defined
+     * @param beingDestroyed if the connection is destroyed due to error
      * @param steadyPoolSize 
      */
-    public void incrementNumConnFreeEvent(String poolName, boolean beingDestroyed,
+    public void incrementNumConnFreeEvent(String poolName, String appName, String moduleName, boolean beingDestroyed,
             int steadyPoolSize) {
     }
 
@@ -102,8 +112,10 @@ public abstract class ConnectionPoolProbeProvider {
      * <code>poolName</code>has got a decrement connections used event.
      * 
      * @param poolName for which decrement numConnUsed is got
+     * @param appName application-name in which the pool is defined
+     * @param moduleName module-name in which the pool is defined
      */
-    public void decrementConnectionUsedEvent(String poolName) {
+    public void decrementConnectionUsedEvent(String poolName, String appName, String moduleName) {
     }
 
     /**
@@ -111,8 +123,10 @@ public abstract class ConnectionPoolProbeProvider {
      * <code>poolName</code>has got a increment connections used event.
      * 
      * @param poolName for which increment numConnUsed is got
+     * @param appName application-name in which the pool is defined
+     * @param moduleName module-name in which the pool is defined
      */
-    public void connectionUsedEvent(String poolName) {
+    public void connectionUsedEvent(String poolName, String appName, String moduleName) {
     }
 
     /**
@@ -120,9 +134,11 @@ public abstract class ConnectionPoolProbeProvider {
      * <code>poolName</code>has got a increment connections free event.
      * 
      * @param poolName for which increment numConnFree is got
+     * @param appName application-name in which the pool is defined
+     * @param moduleName module-name in which the pool is defined
      * @param count number of connections freed to pool
      */
-    public void connectionsFreedEvent(String poolName, int count) {
+    public void connectionsFreedEvent(String poolName, String appName, String moduleName, int count) {
     }
 
     /**
@@ -130,19 +146,23 @@ public abstract class ConnectionPoolProbeProvider {
      * time <code>timeTakenInMillis</code> for the given  connection pool
      * <code> poolName</code> 
      * 
-     * @param poolName 
+     * @param poolName
+     * @param appName application-name in which the pool is defined
+     * @param moduleName module-name in which the pool is defined
      * @param timeTakenInMillis time taken to serve a connection
      */
-    public void connectionRequestServedEvent(String poolName, long timeTakenInMillis) {
+    public void connectionRequestServedEvent(String poolName, String appName, String moduleName, long timeTakenInMillis) {
     }
 
     /**
      * Emits probe event/notification that a connection is destroyed for the 
      * given  connection pool <code>poolName</code>
      * 
-     * @param poolName 
+     * @param poolName
+     * @param appName application-name in which the pool is defined
+     * @param moduleName module-name in which the pool is defined
      */
-    public void connectionDestroyedEvent(String poolName) {
+    public void connectionDestroyedEvent(String poolName, String appName, String moduleName) {
     }
 
     /**
@@ -150,8 +170,10 @@ public abstract class ConnectionPoolProbeProvider {
      * for the given  connection pool <code>poolName</code>
      * 
      * @param poolName
+     * @param appName application-name in which the pool is defined
+     * @param moduleName module-name in which the pool is defined
      */
-    public void connectionAcquiredEvent(String poolName) {
+    public void connectionAcquiredEvent(String poolName, String appName, String moduleName) {
     }
 
     /**
@@ -159,8 +181,10 @@ public abstract class ConnectionPoolProbeProvider {
      *  connection pool <code>poolName</code>
      * 
      * @param poolName
+     * @param appName application-name in which the pool is defined
+     * @param moduleName module-name in which the pool is defined
      */
-    public void connectionReleasedEvent(String poolName) {
+    public void connectionReleasedEvent(String poolName, String appName, String moduleName) {
     }
 
     /**
@@ -168,11 +192,13 @@ public abstract class ConnectionPoolProbeProvider {
      * given  connection pool <code>poolName</code>
      * 
      * @param poolName
+     * @param appName application-name in which the pool is defined
+     * @param moduleName module-name in which the pool is defined
      */
-    public void connectionCreatedEvent(String poolName) {
+    public void connectionCreatedEvent(String poolName, String appName, String moduleName) {
     }
 
-    public void toString(String poolName, StringBuffer stackTrace) {
+    public void toString(String poolName, String appName, String moduleName, StringBuffer stackTrace) {
     }
 
     /**
@@ -180,8 +206,10 @@ public abstract class ConnectionPoolProbeProvider {
      * current request for the given  connection pool <code>poolName</code>
      * 
      * @param poolName
+     * @param appName application-name in which the pool is defined
+     * @param moduleName module-name in which the pool is defined
      */
-    public void connectionMatchedEvent(String poolName) {
+    public void connectionMatchedEvent(String poolName, String appName, String moduleName) {
     }
 
     /**
@@ -190,8 +218,10 @@ public abstract class ConnectionPoolProbeProvider {
      * <code>poolName</code>
      * 
      * @param poolName
+     * @param appName application-name in which the pool is defined
+     * @param moduleName module-name in which the pool is defined
      */
-    public void connectionNotMatchedEvent(String poolName) {
+    public void connectionNotMatchedEvent(String poolName, String appName, String moduleName) {
     }
 
     /**
@@ -199,8 +229,10 @@ public abstract class ConnectionPoolProbeProvider {
      * for the given  connection pool <code>poolName</code>
      * 
      * @param poolName
+     * @param appName application-name in which the pool is defined
+     * @param moduleName module-name in which the pool is defined
      */
-    public void connectionRequestQueuedEvent(String poolName) {
+    public void connectionRequestQueuedEvent(String poolName, String appName, String moduleName) {
     }
 
     /**
@@ -208,7 +240,9 @@ public abstract class ConnectionPoolProbeProvider {
      * for the given  connection pool <code>poolName</code>
      * 
      * @param poolName
+     * @param appName application-name in which the pool is defined
+     * @param moduleName module-name in which the pool is defined
      */
-    public void connectionRequestDequeuedEvent(String poolName) {
+    public void connectionRequestDequeuedEvent(String poolName, String appName, String moduleName) {
     }
 }

@@ -53,6 +53,7 @@ import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
 import com.sun.gjc.util.SQLTrace;
 import com.sun.gjc.util.SQLTraceCache;
+import org.glassfish.resource.common.PoolInfo;
 
 /**
  * Provides the monitoring data for JDBC RA module
@@ -81,13 +82,15 @@ public class JdbcStatsProvider {
             "The total number of potential Statement leaks");
 
     private String poolName;
+    private PoolInfo poolInfo;
     private SQLTraceCache sqlTraceCache;
 
-    public JdbcStatsProvider(String poolName, int sqlTraceCacheSize,
+    public JdbcStatsProvider(String poolName, String appName, String moduleName, int sqlTraceCacheSize,
             long timeToKeepQueries) {
         this.poolName = poolName;
-        if(sqlTraceCacheSize > 0) { 
-            this.sqlTraceCache = new SQLTraceCache(poolName, sqlTraceCacheSize, timeToKeepQueries);
+        poolInfo = new PoolInfo(poolName, appName, moduleName);
+        if(sqlTraceCacheSize > 0) {
+            this.sqlTraceCache = new SQLTraceCache(poolName, appName, moduleName, sqlTraceCacheSize, timeToKeepQueries);
         }
     }
 
@@ -96,9 +99,13 @@ public class JdbcStatsProvider {
      * @param poolName JdbcConnectionPool that has got a statement cache hit event.
      */
     @ProbeListener(JdbcRAConstants.STATEMENT_CACHE_DOTTED_NAME + JdbcRAConstants.STATEMENT_CACHE_HIT)
-    public void statementCacheHitEvent(@ProbeParam("poolName") String poolName) {
+    public void statementCacheHitEvent(@ProbeParam("poolName") String poolName,
+                                       @ProbeParam("appName") String appName,
+                                       @ProbeParam("moduleName") String moduleName
+                                       ) {
 
-        if ((poolName != null) && (poolName.equals(this.poolName))) {
+        PoolInfo poolInfo = new PoolInfo(poolName, appName, moduleName);
+        if(this.poolInfo.equals(poolInfo)){
             numStatementCacheHit.increment();
         }
     }
@@ -108,9 +115,13 @@ public class JdbcStatsProvider {
      * @param poolName JdbcConnectionPool that has got a statement cache miss event.
      */
     @ProbeListener(JdbcRAConstants.STATEMENT_CACHE_DOTTED_NAME + JdbcRAConstants.STATEMENT_CACHE_MISS)
-    public void statementCacheMissEvent(@ProbeParam("poolName") String poolName) {
+    public void statementCacheMissEvent(@ProbeParam("poolName") String poolName,
+                                        @ProbeParam("appName") String appName,
+                                        @ProbeParam("moduleName") String moduleName
+                                        ) {
 
-        if ((poolName != null) && (poolName.equals(this.poolName))) {
+        PoolInfo poolInfo = new PoolInfo(poolName, appName, moduleName);
+        if(this.poolInfo.equals(poolInfo)){
             numStatementCacheMiss.increment();
         }
     }
@@ -126,9 +137,12 @@ public class JdbcStatsProvider {
      */
     @ProbeListener(JdbcRAConstants.SQL_TRACING_DOTTED_NAME + JdbcRAConstants.CACHE_SQL_QUERY)
     public void cacheSqlQueryEvent(@ProbeParam("poolName") String poolName,
+                                   @ProbeParam("appName") String appName,
+                                   @ProbeParam("moduleName") String moduleName,
             @ProbeParam("sql") String sql) {
 
-        if ((poolName != null) && (poolName.equals(this.poolName))) {
+        PoolInfo poolInfo = new PoolInfo(poolName, appName, moduleName);
+        if(this.poolInfo.equals(poolInfo)){
             if(sqlTraceCache != null) {
                 if (sql != null) {
                     SQLTrace cacheObj = new SQLTrace(sql, 1,
@@ -145,9 +159,12 @@ public class JdbcStatsProvider {
      */
     @ProbeListener(JdbcRAConstants.STATEMENT_LEAK_DOTTED_NAME + JdbcRAConstants.POTENTIAL_STATEMENT_LEAK)
     public void potentialStatementLeakEvent(@ProbeParam("connectionPoolName")
-            String connectionPoolName) {
+            String connectionPoolName,
+                                   @ProbeParam("appName") String appName,
+                                   @ProbeParam("moduleName") String moduleName) {
 
-        if ((connectionPoolName != null) && (connectionPoolName.equals(this.poolName))) {
+        PoolInfo poolInfo = new PoolInfo(poolName, appName, moduleName);
+        if(this.poolInfo.equals(poolInfo)){
             numPotentialStatementLeak.increment();
         }
     }

@@ -61,7 +61,10 @@ public class StatementCacheProbeProvider {
      * @param increment number of times the statement cache was hit
      */
     @Probe(name=JdbcRAConstants.STATEMENT_CACHE_HIT)
-    public void statementCacheHitEvent(@ProbeParam("poolName") String poolName) {
+    public void statementCacheHitEvent(@ProbeParam("poolName") String poolName,
+                                       @ProbeParam("appName") String appName,
+                                       @ProbeParam("moduleName") String moduleName
+                                       ) {
 
     }
 
@@ -73,7 +76,10 @@ public class StatementCacheProbeProvider {
      * @param increment number of times the statement cache was missed
      */
     @Probe(name=JdbcRAConstants.STATEMENT_CACHE_MISS)
-    public void statementCacheMissEvent(@ProbeParam("poolName") String poolName) {
+    public void statementCacheMissEvent(@ProbeParam("poolName") String poolName,
+                                        @ProbeParam("appName") String appName,
+                                        @ProbeParam("moduleName") String moduleName
+                                        ) {
 
     }
 

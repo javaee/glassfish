@@ -315,10 +315,31 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                 "Statement Timeout",
                 "java.lang.String"));
 
+        PoolInfo poolInfo = conConnPool.getPoolInfo();
+
         propList.add(new ConnectorConfigProperty ("PoolMonitoringSubTreeRoot",
-                ConnectorsUtil.getPoolMonitoringSubTreeRoot(conConnPool.getPoolInfo()) + "",
+                ConnectorsUtil.getPoolMonitoringSubTreeRoot(poolInfo) + "",
                 "Pool Monitoring Sub Tree Root",
                 "java.lang.String"));
+
+        propList.add(new ConnectorConfigProperty ("PoolName",
+                poolInfo.getName() + "",
+                "Pool Name",
+                "java.lang.String"));
+
+        if(poolInfo.getApplicationName() != null){
+            propList.add(new ConnectorConfigProperty ("ApplicationName",
+                poolInfo.getApplicationName() + "",
+                "Application Name",
+                "java.lang.String"));
+        }
+
+        if(poolInfo.getModuleName() != null){
+            propList.add(new ConnectorConfigProperty ("ModuleName",
+                poolInfo.getModuleName() + "",
+                "Module name",
+                "java.lang.String"));
+        }
 
         propList.add(new ConnectorConfigProperty ("StatementCacheSize",
                 adminPool.getStatementCacheSize() + "",

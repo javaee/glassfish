@@ -71,6 +71,7 @@ import org.glassfish.api.jdbc.SQLTraceListener;
 import org.glassfish.api.monitoring.ContainerMonitoring;
 import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.external.probe.provider.StatsProviderManager;
+import org.glassfish.resource.common.PoolInfo;
 
 /**
  * <code>ManagedConnectionFactory</code> implementation for Generic JDBC Connector.
@@ -546,7 +547,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         String delimiter = ",";
         
         if(sqlTraceListeners != null && !sqlTraceListeners.equals("null")) {
-            sqlTraceDelegator = new SQLTraceDelegator(getPoolMonitoringSubTreeRoot());
+            sqlTraceDelegator = new SQLTraceDelegator(getPoolName(), getApplicationName(), getModuleName());
             StringTokenizer st = new StringTokenizer(sqlTraceListeners, delimiter);
             while (st.hasMoreTokens()) {
                 String sqlTraceListener = st.nextToken().trim();            
@@ -1025,7 +1026,31 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
     public String getPoolMonitoringSubTreeRoot() {
         return spec.getDetail(DataSourceSpec.POOLMONITORINGSUBTREEROOT);
     }
-    
+
+    public String getApplicationName() {
+        return spec.getDetail(DataSourceSpec.APPLICATIONNAME);
+    }
+
+    public void setApplicationName(String value) {
+        spec.setDetail(DataSourceSpec.APPLICATIONNAME, value);
+    }
+
+    public String getModuleName() {
+        return spec.getDetail(DataSourceSpec.MODULENAME);
+    }
+
+    public void setModuleName(String value) {
+        spec.setDetail(DataSourceSpec.MODULENAME, value);
+    }
+
+    public String getPoolName() {
+        return spec.getDetail(DataSourceSpec.POOLNAME);
+    }
+
+    public void setPoolName(String value) {
+        spec.setDetail(DataSourceSpec.POOLNAME, value);
+    }
+
     public String getStatementCacheType() {
         return spec.getDetail(DataSourceSpec.STATEMENTCACHETYPE);
     }
@@ -1230,8 +1255,9 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
     protected ManagedConnection constructManagedConnection(PooledConnection pc,
                                                            Connection sqlCon, PasswordCredential passCred,
                                                            ManagedConnectionFactory mcf) throws ResourceException {
+        PoolInfo poolInfo = new PoolInfo(getPoolName(), getApplicationName(), getModuleName());
         return new com.sun.gjc.spi.ManagedConnection(pc, sqlCon, passCred, mcf, 
-                getPoolMonitoringSubTreeRoot(), statementCacheSize, statementCacheType, sqlTraceDelegator,
+                poolInfo, statementCacheSize, statementCacheType, sqlTraceDelegator,
                 statementLeakTimeout, statementLeakReclaim);
     }
 
@@ -1351,8 +1377,8 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         if (statementCacheSize > 0 ||
                 (sqlTraceListeners != null && !sqlTraceListeners.equals("null")) ||
                 statementLeakTimeout > 0) {
-            jdbcStatsProvider = new JdbcStatsProvider(poolMonitoringSubTreeRoot, sqlTraceCacheSize,
-                    timeToKeepQueries);
+            jdbcStatsProvider = new JdbcStatsProvider(getPoolName(), getApplicationName(), getModuleName(),
+                    sqlTraceCacheSize, timeToKeepQueries);
             //get the poolname and use it to initialize the stats provider n register
             StatsProviderManager.register(
                     ContainerMonitoring.JDBC_CONNECTION_POOL,

@@ -49,8 +49,8 @@ import org.glassfish.external.probe.provider.annotations.ProbeProvider;
  *
  * @author Shalini M
  */
-@ProbeProvider(moduleProviderName=JdbcRAConstants.GLASSFISH,
-moduleName=JdbcRAConstants.JDBCRA, probeProviderName=JdbcRAConstants.STATEMENT_LEAK_PROBE)
+@ProbeProvider(moduleProviderName = JdbcRAConstants.GLASSFISH,
+        moduleName = JdbcRAConstants.JDBCRA, probeProviderName = JdbcRAConstants.STATEMENT_LEAK_PROBE)
 public class StatementLeakProbeProvider {
 
     /**
@@ -59,9 +59,10 @@ public class StatementLeakProbeProvider {
      *
      * @param connectionPoolName for which statement leak occurred
      */
-    @Probe(name=JdbcRAConstants.POTENTIAL_STATEMENT_LEAK)
-    public void potentialStatementLeakEvent(@ProbeParam("connectionPoolName")
-            String connectionPoolName) {
+    @Probe(name = JdbcRAConstants.POTENTIAL_STATEMENT_LEAK)
+    public void potentialStatementLeakEvent(@ProbeParam("connectionPoolName") String connectionPoolName,
+                                            @ProbeParam("appName") String appName,
+                                            @ProbeParam("moduleName") String moduleName) {
     }
 
 }

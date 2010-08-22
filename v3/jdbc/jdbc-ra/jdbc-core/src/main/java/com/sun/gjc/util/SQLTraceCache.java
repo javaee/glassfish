@@ -64,12 +64,16 @@ public class SQLTraceCache {
     private long timeToKeepQueries = 60 * 1000;
     private SQLTraceTimerTask sqlTraceTimerTask;
     private String poolName;
+    private String appName;
+    private String moduleName;
     private final static Logger _logger = LogDomains.getLogger(SQLTraceCache.class,
             LogDomains.RSR_LOGGER);
     private static final String LINE_BREAK = "%%%EOL%%%";
 
-    public SQLTraceCache(String poolName, int maxSize, long timeToKeepQueries) {
+    public SQLTraceCache(String poolName, String appName, String moduleName, int maxSize, long timeToKeepQueries) {
         this.poolName = poolName;
+        this.appName = appName;
+        this.moduleName = moduleName;
         this.numTopQueriesToReport = maxSize;
         list = new ArrayList<SQLTrace>();
         this.timeToKeepQueries = timeToKeepQueries * 60 * 1000;

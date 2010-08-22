@@ -44,6 +44,8 @@ import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.gjc.common.DataSourceObjectBuilder;
 import com.sun.gjc.spi.ManagedConnectionFactory;
 import com.sun.logging.LogDomains;
+import org.glassfish.resource.common.PoolInfo;
+
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -64,13 +66,13 @@ public class CacheFactory {
     protected final static StringManager localStrings =
             StringManager.getManager(DataSourceObjectBuilder.class);
 
-    public static Cache getDataStructure(String poolName, String className,
+    public static Cache getDataStructure(PoolInfo poolInfo, String className,
             int maxSize) throws ResourceException {
         Cache stmtCacheStructure;
 
         if(className == null || className.trim().equals("")) {
             debug("Initializing LRU Cache Implementation");
-            stmtCacheStructure = new LRUCacheImpl(poolName, maxSize);
+            stmtCacheStructure = new LRUCacheImpl(poolInfo, maxSize);
         } else {
             stmtCacheStructure = initCustomCacheStructurePrivileged(className, 
                     maxSize);
