@@ -1,3 +1,7 @@
+if [ -n "$verbose" ]
+then
+    set -x
+fi
 export HUDSON=true
 export ROOT=`pwd`
 if [ -x "/usr/bin/cygpath" ]
@@ -16,6 +20,6 @@ export APS_HOME="$ROOT/appserv-tests"
 
 cd "$APS_HOME"
 (jps |grep Main |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
-cd "$APS_HOME/devtests/deployment
+cd "$APS_HOME/devtests/deployment"
 time ant all
 egrep 'FAILED *0' "$APS_HOME/count.txt" >/dev/null || exit 1
