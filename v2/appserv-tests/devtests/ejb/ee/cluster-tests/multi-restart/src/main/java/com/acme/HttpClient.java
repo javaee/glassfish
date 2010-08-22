@@ -3,7 +3,7 @@ package com.acme;
 
 import java.net.*;
 import java.io.*;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class HttpClient {
 
@@ -16,11 +16,13 @@ public class HttpClient {
     private String[] port = new String[3];
 
     private volatile SessionStateInfo stateInfo = new SessionStateInfo();
-    String cookie;
 
     private int _accessCount = 0;
 
     private boolean canProceed = false;
+
+    String jsessionIDCookie;
+    List<String> responseCookies;
 
     public static void main(String args[]) {
         HttpClient client = new HttpClient(args);
@@ -53,7 +55,7 @@ public class HttpClient {
     
                 stateInfo = extractSessionStates(uc);
                 stateInfo.setAccessCount(1);
-                cookie = stateInfo.getJsessionCookie();
+                jsessionIDCookie = stateInfo.getJsessionCookie();
     
                 stopAndAccessAndStart(instanceNames[0], port[1]);
                 stopAndAccessAndStart(instanceNames[1], port[2]);
@@ -66,6 +68,8 @@ public class HttpClient {
     }
 
     private void stopAndAccessAndStart(String instance, String port) {
+            try { Thread.sleep(3*1000); } catch (Exception ex) {}
+
 	    stopInstance(instance);
             String url = "http://" + host + ":" + port +
                     "/" + appName + "/" + servletName;
@@ -88,10 +92,11 @@ public class HttpClient {
 
     private void stopInstance(String instName) {
 	try {
+	    System.out.println("Executing stop-instance "  + instName);
+	    Thread.sleep(3 * 1000);
 	    Process proc = Runtime.getRuntime().exec(ASADMIN + "  stop-instance " + instName);
 	    proc.waitFor();
 	    System.out.println("Process stop-instance "  + instName + " finished...");
-	    Thread.sleep(3 * 1000);
 	} catch (Exception ex) {
 	    System.err.println("Error while stopping instance " + instName);
 	}
@@ -99,6 +104,7 @@ public class HttpClient {
 
     private void startInstance(String instName) {
 	try {
+	    System.out.println("Executing start-instance "  + instName);
 	    Process proc = Runtime.getRuntime().exec(ASADMIN + "  start-instance " + instName);
 	    proc.waitFor();
 	    System.out.println("Process start-instance "  + instName + " finished...");
@@ -112,7 +118,9 @@ public class HttpClient {
 	try {
             URL url = new URL(urlStr);
             URLConnection uc = url.openConnection();
-            uc.setRequestProperty("Cookie", stateInfo.getJsessionCookie());
+	    for (String cookie : responseCookies) {
+                uc.setRequestProperty("Cookie", cookie);
+	    }
             uc.connect();
             SessionStateInfo info = extractSessionStates(uc);
             info.setAccessCount(++_accessCount);
@@ -136,16 +144,23 @@ public class HttpClient {
             throws IOException {
         SessionStateInfo tmpSessState = new SessionStateInfo();
         String headerName = null;
+        responseCookies = new ArrayList<String>();
         for (int i = 1; (headerName = uc.getHeaderFieldKey(i)) != null; i++) {
             if (headerName.equals("Set-Cookie")) {
-                tmpSessState.setJsessionCookie(uc.getHeaderField(i));
-                //System.out.println("JUST READ COOKIE: " + uc.getHeaderField(i));
+                String cookie = uc.getHeaderField(i);
+                responseCookies.add(cookie);
+                System.out.println("JUST READ COOKIE: " + cookie);
+                if (cookie.startsWith("JSESSIONID=")) {
+		    jsessionIDCookie = cookie;
+                }
             }
         }
 
         if (tmpSessState.getJsessionCookie() == null) {
-            tmpSessState.setJsessionCookie(cookie);    
+            tmpSessState.setJsessionCookie(jsessionIDCookie);    
+            responseCookies.add(jsessionIDCookie);    
         }
+
         int code = ((HttpURLConnection) uc).getResponseCode();
         InputStream is = uc.getInputStream();
         BufferedReader input = new BufferedReader(new InputStreamReader(is));
@@ -188,7 +203,6 @@ public class HttpClient {
             }
         }
 
-        System.out.println("** COMPLETELY READ RESPONSE. State info: " + tmpSessState);
         if (code != 200) {
             throw new RuntimeException("Incorrect return code: " + code);
         }
