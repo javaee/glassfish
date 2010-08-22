@@ -547,15 +547,11 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
             ActionReport subReport = report.addSubActionsReport();
             subReport.setExtraProperties(new Properties());
-            if (properties!=null && properties.containsKey(DeploymentProperties.KEEP_SESSIONS)) {
-                Properties undeployProperties = new Properties();
-                undeployProperties.put(DeploymentProperties.KEEP_SESSIONS, properties.getProperty(DeploymentProperties.KEEP_SESSIONS));
-                parameters.add("properties", DeploymentUtils.propertiesValue(undeployProperties, ':'));
-            } else if (property!=null && property.containsKey(DeploymentProperties.KEEP_SESSIONS)) {
-                Properties undeployProperties = new Properties();
-                undeployProperties.put(DeploymentProperties.KEEP_SESSIONS, property.getProperty(DeploymentProperties.KEEP_SESSIONS));
-                parameters.add("properties", DeploymentUtils.propertiesValue(undeployProperties, ':'));
-            }
+
+            List<String> propertyNames = new ArrayList<String>();
+            propertyNames.add(DeploymentProperties.KEEP_SESSIONS);
+            propertyNames.add(DeploymentProperties.PRESERVE_APP_SCOPED_RESOURCES);
+            populatePropertiesToParameterMap(parameters, propertyNames);
 
             CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation("undeploy", subReport);
 
@@ -563,6 +559,25 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             return subReport.getExtraProperties();
         }
         return null;
+    }
+
+    private void populatePropertiesToParameterMap(ParameterMap parameters, List<String> propertyNamesList) {
+
+        Properties props = new Properties();
+        if (properties != null) {
+            for (String propertyName : propertyNamesList) {
+                if (properties.containsKey(propertyName)) {
+                    props.put(propertyName, properties.getProperty(propertyName));
+                }
+            }
+        } else if (property != null) {
+            for (String propertyName : propertyNamesList) {
+                if (property.containsKey(propertyName)) {
+                    props.put(propertyName, property.getProperty(propertyName));
+                }
+            }
+        }
+        parameters.add("properties", DeploymentUtils.propertiesValue(props, ':'));
     }
 
     /**

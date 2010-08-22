@@ -1015,4 +1015,41 @@ public class ResourcesUtil {
         return pool;
     }
 
+    public boolean isRARResource(Resource resource){
+        return resource instanceof ConnectorResource ||
+                resource instanceof AdminObjectResource ||
+                resource instanceof ConnectorConnectionPool ||
+                resource instanceof ResourceAdapterConfig ||
+                resource instanceof WorkSecurityMap;
+    }
+
+    public String getRarNameOfResource(Resource resource, Resources resources){
+        String rarName = null;
+        if(isRARResource(resource)){
+            if(resource instanceof ConnectorResource){
+                String poolName = ((ConnectorResource)resource).getPoolName();
+                for(Resource res : resources.getResources()){
+                    if(res instanceof ConnectorConnectionPool){
+                        ConnectorConnectionPool ccp = ((ConnectorConnectionPool)res);
+                        if(ccp.getName().equals(poolName)){
+                            return ccp.getResourceAdapterName();
+                        }
+                    }
+                }
+            }else if (resource instanceof ConnectorConnectionPool){
+                ConnectorConnectionPool ccp = ((ConnectorConnectionPool)resource);
+                return ccp.getResourceAdapterName();
+            }else if (resource instanceof AdminObjectResource){
+                AdminObjectResource aor = (AdminObjectResource)resource;
+                return aor.getResAdapter();
+            }else if (resource instanceof ResourceAdapterConfig){
+                ResourceAdapterConfig rac = (ResourceAdapterConfig)resource;
+                return rac.getResourceAdapterName();
+            }else if (resource instanceof WorkSecurityMap){
+                WorkSecurityMap wsm = (WorkSecurityMap)resource;
+                return wsm.getResourceAdapterName();
+            }
+        }
+        return rarName;
+    }
 }

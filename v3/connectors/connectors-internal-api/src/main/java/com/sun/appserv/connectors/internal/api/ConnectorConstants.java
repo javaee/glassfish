@@ -457,5 +457,7 @@ public interface ConnectorConstants {
     //flag to enable dynamic-reconfiguration feature for connection pool
     public static final String DYNAMIC_RECONFIGURATION_FLAG = "dynamic-reconfiguration-wait-timeout-in-seconds";
 
-    public static enum TriState {yes, no, unknown}
+    public static enum TriState {
+        TRUE, FALSE, UNKNOWN
+    }
 }

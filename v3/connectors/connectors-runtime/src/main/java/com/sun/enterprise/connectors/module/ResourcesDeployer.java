@@ -41,18 +41,22 @@
 package com.sun.enterprise.connectors.module;
 
 import com.sun.appserv.connectors.internal.api.*;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants.TriState;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.config.serverbeans.Resource;
+import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.resource.ResourceUtilities;
 import com.sun.logging.LogDomains;
 import org.glassfish.admin.cli.resources.*;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.OpsParams;
+import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.event.*;
 import org.glassfish.deployment.common.DeploymentException;
+import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.data.ApplicationInfo;
@@ -77,6 +81,11 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * ResourcesDeployer to handle "glassfish-resources.xml(s)" bundled in the application.
+ *
+ * @author Jagadish Ramu
+ */
 @Service
 public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, ResourcesApplication>
         implements PostConstruct, PreDestroy, EventListener {
@@ -107,6 +116,10 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
 
     @Inject
     private static Applications applications;
+
+    private static Map<String, Map<String, Resources>> resourceConfigurations =
+            new HashMap<String, Map<String, Resources>>();
+    private static Map<String, Application> preservedApps = new HashMap<String, Application>();
 
     private static Logger _logger = LogDomains.getLogger(ConnectorDeployer.class, LogDomains.RSR_LOGGER);
 
@@ -140,7 +153,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
         super.load(container, context);
         debug("App-Scoped-Resources ResourcesDeployer.load()");
         ResourcesApplication application = habitat.getComponent(ResourcesApplication.class);
-        application.setApplicationName(getApplicationName(context));
+        application.setApplicationName(getAppNameFromDeployCmdParams(context));
         return application;
     }
 
@@ -166,9 +179,9 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                     String fileName = fileNames.get(moduleName);
                     debug("Sun Resources XML : " + fileName);
 
-                    String appName = getApplicationName(dc);
+                    String appName = getAppNameFromDeployCmdParams(dc);
                     moduleName = getActualModuleName(moduleName);
-                    String scope = "java:app";
+                    String scope ;
                     if(appName.equals(moduleName)){
                         scope = ConnectorConstants.JAVA_APP_SCOPE_PREFIX;
                     }else{
@@ -194,7 +207,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                     appScopedResources.put(moduleName, resourcesList);
                 }
                 dc.addTransientAppMetaData(ConnectorConstants.APP_SCOPED_RESOURCES_MAP, appScopedResources);
-                final String appName = getApplicationName(dc);
+                final String appName = getAppNameFromDeployCmdParams(dc);
                 ApplicationInfo appInfo = appRegistry.get(appName);
                 if(appInfo != null){
                     Application app = dc.getTransientAppMetaData(Application.APPLICATION, Application.class);
@@ -216,8 +229,40 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
         ResourceUtilities.resolveResourceDuplicatesConflictsWithinArchive(resourcesXMLList);
     }
 
+    /**
+     * retain old resource configuration for the new archive being deployed.
+     * @param dc DeploymentContext
+     * @param allResources all resources (app scoped, module scoped) of old application
+     * @throws Exception when unable to retain old resource configuration.
+     */
+    public static void retainResourceConfig(DeploymentContext dc, Map<String, Resources> allResources) throws Exception {
+        String appName = getAppNameFromDeployCmdParams(dc);
+        Application application = dc.getTransientAppMetaData(Application.APPLICATION, Application.class);
+        Resources appScopedResources = allResources.get(appName);
+
+        if(appScopedResources != null){
+            application.setResources(appScopedResources);
+        }
+
+        List<Module> modules = application.getModule();
+        if(modules != null){
+            for(Module module : modules){
+                Resources moduleScopedResources = allResources.get(module.getName());
+                if(moduleScopedResources != null){
+                    module.setResources(moduleScopedResources);
+                }
+            }
+        }
+    }
+
+    /**
+     * During "load()" event (eg: app/app-ref enable, server start),
+     * populate resource-config in app-info so that it can be used for
+     * constructing connector-classloader for the application.
+     * @param dc DeploymentContext
+     */
     public static void populateResourceConfigInAppInfo(DeploymentContext dc){
-        String appName = getApplicationName(dc);
+        String appName = getAppNameFromDeployCmdParams(dc);
         Application application = applications.getApplication(appName);
         ApplicationInfo appInfo = appRegistry.get(appName);
         if(application != null && appInfo != null){
@@ -239,7 +284,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
     }
 
     public static void createResources(DeploymentContext dc, boolean embedded) throws ResourceException {
-        String appName = getApplicationName(dc);
+        String appName = getAppNameFromDeployCmdParams(dc);
         Application app = dc.getTransientAppMetaData(Application.APPLICATION, Application.class);
         Map<String, Map<String, List>> resourcesList =
                 (Map<String, Map<String, List>>)dc.getTransientAppMetadata().get(ConnectorConstants.APP_SCOPED_RESOURCES_MAP);
@@ -297,7 +342,8 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
     }
 
     private static Collection<com.sun.enterprise.config.serverbeans.Resource>
-    createConfig(Resources resources, Iterator<org.glassfish.resource.common.Resource> resourcesToRegister, boolean embedded)
+    createConfig(Resources resources, Iterator<org.glassfish.resource.common.Resource> resourcesToRegister,
+                 boolean embedded)
     throws ResourceException {
         List<com.sun.enterprise.config.serverbeans.Resource> resourceConfigs =
                 new ArrayList<com.sun.enterprise.config.serverbeans.Resource>();
@@ -315,10 +361,12 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                 com.sun.enterprise.config.serverbeans.Resource configBeanResource =
                         rm.createConfigBean(resources, attrList, props);
                 if (configBeanResource != null) {
-                    if(embedded && isEmbeddedRarResource(configBeanResource, resources.getResources())== ConnectorConstants.TriState.yes){
+                    if(embedded &&
+                            isEmbeddedRarResource(configBeanResource, resources.getResources()) == TriState.TRUE){
                         resources.getResources().add(configBeanResource);
                         resourceConfigs.add(configBeanResource);
-                    }else if(!embedded && isEmbeddedRarResource(configBeanResource, resources.getResources())== ConnectorConstants.TriState.no){
+                    }else if(!embedded &&
+                            isEmbeddedRarResource(configBeanResource, resources.getResources()) == TriState.FALSE){
                         resources.getResources().add(configBeanResource);
                         resourceConfigs.add(configBeanResource);
                     }
@@ -383,18 +431,17 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
 
     public static void deployResources(String applicationName, String moduleName,
                                 Collection<com.sun.enterprise.config.serverbeans.Resource> configBeanResources,
-                                boolean embedded)
-            throws Exception {
+                                boolean embedded) throws Exception {
         for(com.sun.enterprise.config.serverbeans.Resource configBeanResource : configBeanResources){
             if(configBeanResource instanceof ResourcePool){
                 ResourcePool resourcePool = (ResourcePool)configBeanResource;
 
                 if(embedded){
-                    if(isEmbeddedRarResource(configBeanResource, configBeanResources) == ConnectorConstants.TriState.yes){
+                    if(isEmbeddedRarResource(configBeanResource, configBeanResources) == TriState.TRUE){
                         getResourceDeployer(resourcePool).deployResource(resourcePool, applicationName, moduleName);
                     }
                 }else{
-                    if(isEmbeddedRarResource(configBeanResource, configBeanResources) == ConnectorConstants.TriState.no){
+                    if(isEmbeddedRarResource(configBeanResource, configBeanResources) == TriState.FALSE){
                         getResourceDeployer(resourcePool).deployResource(resourcePool, applicationName, moduleName);
                     }
                 }
@@ -402,22 +449,22 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                 BindableResource resource = (BindableResource)configBeanResource;
                 ResourceInfo resourceInfo = new ResourceInfo(resource.getJndiName(), applicationName, moduleName);
                 if(embedded){
-                    if(isEmbeddedRarResource(configBeanResource, configBeanResources) == ConnectorConstants.TriState.yes){
+                    if(isEmbeddedRarResource(configBeanResource, configBeanResources) == TriState.TRUE){
                         resourcesBinder.deployResource(resourceInfo, resource);
                     }
                 }else{
-                    if(isEmbeddedRarResource(configBeanResource, configBeanResources)== ConnectorConstants.TriState.no){
+                    if(isEmbeddedRarResource(configBeanResource, configBeanResources)== TriState.FALSE){
                         resourcesBinder.deployResource(resourceInfo, resource);
                     }
                 }
             }else{
                 if(embedded){
-                    if(isEmbeddedRarResource(configBeanResource, configBeanResources)== ConnectorConstants.TriState.yes){
+                    if(isEmbeddedRarResource(configBeanResource, configBeanResources)== TriState.TRUE){
                         //work-security-map, resource-adapter-config
                         getResourceDeployer(configBeanResource).deployResource(configBeanResource);
                     }
                 }else{
-                    if(isEmbeddedRarResource(configBeanResource, configBeanResources)== ConnectorConstants.TriState.no){
+                    if(isEmbeddedRarResource(configBeanResource, configBeanResources)== TriState.FALSE){
                         //work-security-map, resource-adapter-config
                         getResourceDeployer(configBeanResource).deployResource(configBeanResource);
                     }
@@ -431,32 +478,31 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
     public static ConnectorConstants.TriState
     isEmbeddedRarResource(com.sun.enterprise.config.serverbeans.Resource configBeanResource,
                                           Collection<com.sun.enterprise.config.serverbeans.Resource> configBeanResources) {
-        //boolean result = false;
-        ConnectorConstants.TriState result = ConnectorConstants.TriState.no;
+        TriState result = TriState.FALSE;
         if(configBeanResource instanceof ConnectorResource){
             String poolName = ((ConnectorResource)configBeanResource).getPoolName();
             ConnectorConnectionPool pool = getPool(configBeanResources, poolName);
             if(pool != null){
                 if(pool.getResourceAdapterName().contains(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER)){
-                    result = ConnectorConstants.TriState.yes;
+                    result = TriState.TRUE;
                 }
             }else{
-                result = ConnectorConstants.TriState.unknown;
+                result = TriState.UNKNOWN;
             }
         }else if(configBeanResource instanceof AdminObjectResource){
             AdminObjectResource aor = (AdminObjectResource)configBeanResource;
             if(aor.getResAdapter().contains(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER)){
-                result = ConnectorConstants.TriState.yes;
+                result = TriState.TRUE;
             }
         }else if (configBeanResource instanceof ConnectorConnectionPool){
             ConnectorConnectionPool ccp = (ConnectorConnectionPool)configBeanResource;
             if(ccp.getResourceAdapterName().contains(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER)){
-                result = ConnectorConstants.TriState.yes;
+                result = TriState.TRUE;
             }
         }else if (configBeanResource instanceof WorkSecurityMap){
             WorkSecurityMap wsm = (WorkSecurityMap)configBeanResource;
             if(wsm.getResourceAdapterName().contains(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER)){
-                result = ConnectorConstants.TriState.yes;
+                result = TriState.TRUE;
             }
         }/*else if (configBeanResource instanceof ResourceAdapterConfig){
             ResourceAdapterConfig rac = (ResourceAdapterConfig)configBeanResource;
@@ -465,8 +511,8 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
         return result;
     }
 
-    public static ConnectorConnectionPool getPool(Collection<com.sun.enterprise.config.serverbeans.Resource> configBeanResources,
-                                            String poolName) {
+    public static ConnectorConnectionPool getPool(
+            Collection<com.sun.enterprise.config.serverbeans.Resource> configBeanResources, String poolName) {
         ConnectorConnectionPool result = null;
         for(com.sun.enterprise.config.serverbeans.Resource res : configBeanResources){
             if(res instanceof ConnectorConnectionPool){
@@ -479,7 +525,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
         return result;
     }
 
-    private static String getApplicationName(DeploymentContext dc) {
+    private static String getAppNameFromDeployCmdParams(DeploymentContext dc) {
         final DeployCommandParameters commandParams = dc.getCommandParameters(DeployCommandParameters.class);
         return commandParams.name();
     }
@@ -527,27 +573,239 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
     }
 
     /**
-     * event listener to listen to </code>resource-adapter undeploy validation</code> and
-     * to validate the undeployment. Undeployment will fail, if resources are found
-     * and --cascade is not set.
-     * @param event Event
+     * Event listener to listen to </code>application undeploy validation</code> and
+     * if <i>preserveResources</i> flag is set, cache the &lt;resources&gt;
+     * config for persisting it in domain.xml
      */
-    public void event(org.glassfish.api.event.EventListener.Event event) {
-        if (Deployment.DEPLOYMENT_BEFORE_CLASSLOADER_CREATION.equals(event.type())) {
+    public void event(Event event) {
+        if (event.is(Deployment.DEPLOYMENT_BEFORE_CLASSLOADER_CREATION)) {
             DeploymentContext dc = (DeploymentContext) event.hook();
             final DeployCommandParameters deployParams = dc.getCommandParameters(DeployCommandParameters.class);
-            try{
-                if (deployParams.origin == OpsParams.Origin.deploy) {
-                    processArchive(dc);
-                    createResources(dc, false);
-                }else if(deployParams.origin == OpsParams.Origin.load){
-                    populateResourceConfigInAppInfo(dc);
+            processResources(dc, deployParams);
+        }else if(event.is(Deployment.UNDEPLOYMENT_VALIDATION)){
+            DeploymentContext dc = (DeploymentContext) event.hook();
+            final UndeployCommandParameters undeployCommandParameters =
+                    dc.getCommandParameters(UndeployCommandParameters.class);
+            preserveResources(dc, undeployCommandParameters);
+        }/*else if(Deployment.UNDEPLOYMENT_FAILURE.equals(event.type())){
+            DeploymentContext dc = (DeploymentContext) event.hook();
+            cleanupPreservedResources(dc, event);
+        }else if(Deployment.DEPLOYMENT_FAILURE.equals(event.type())){
+            DeploymentContext dc = (DeploymentContext) event.hook();
+            cleanupPreservedResources(dc, event);
+        }*/
+    }
+
+    private void processResources(DeploymentContext dc, DeployCommandParameters deployParams) {
+        try{
+            if (deployParams.origin == OpsParams.Origin.deploy) {
+                Properties properties = deployParams.properties;
+                if(properties != null){
+                    //handle if "preserveAppScopedResources" property is set (during deploy --force=true)
+                    String preserve = properties.getProperty(DeploymentProperties.PRESERVE_APP_SCOPED_RESOURCES);
+                    if(preserve != null && Boolean.valueOf(preserve)){
+                        String appName = getAppNameFromDeployCmdParams(dc);
+                        Map<String, Resources> allResources = resourceConfigurations.remove(appName);
+                        Application oldApp = preservedApps.remove(appName);
+                        if(allResources != null && oldApp != null){
+                            Application application = dc.getTransientAppMetaData(Application.APPLICATION, Application.class);
+                            validatePreservedResources(allResources, oldApp, application);
+                            retainResourceConfig(dc, allResources);
+                        }
+                        return ;
+                    }
                 }
-            }catch(Exception e){
-                // only DeploymentExceptions are propagated and result in deployment failure
-                // in the event notification infrastructure
-                throw new DeploymentException(e);
+
+                processArchive(dc);
+                createResources(dc, false);
+            }else if(deployParams.origin == OpsParams.Origin.load){
+                //during load event (ie., app/app-ref enable or server start, resource configuration
+                //is present in domain.xml. Use the configuration.
+                populateResourceConfigInAppInfo(dc);
             }
+        }catch(Exception e){
+            // only DeploymentExceptions are propagated and result in deployment failure
+            // in the event notification infrastructure
+            throw new DeploymentException(e);
+        }
+    }
+
+    /**
+     * Validates the old resource configuration against new archive's modules.
+     * @param allResources all resources (app scoped, module scoped)
+     * @param oldApp Old Application config
+     * @param newApp New Applicatoin config
+     * @throws ResourceConflictException when it is not possible to map any of the resource(s) to 
+     * new application/its modules
+     */
+    private void validatePreservedResources(Map<String, Resources> allResources, Application oldApp,
+                                               Application newApp) throws ResourceConflictException {
+        //check whether old app has any RAR
+        List<Module> oldRARModules = new ArrayList<Module>();
+        List<Module> oldModules = oldApp.getModule();
+        for (Module oldModule : oldModules) {
+            if (oldModule.getEngine(ConnectorConstants.CONNECTOR_MODULE) != null) {
+                oldRARModules.add(oldModule);
+            }
+        }
+
+/*
+       //check whether new app has any RAR
+       //TODO ASR : <sniffer> info is not available during initial phase of deployment. Hence doing "module-name" check.
+       List<Module> newRARModules = new ArrayList<Module>();
+        List<Module> newModules = newApp.getModule();
+        for (Module newModule : newModules) {
+            if (newModule.getEngine(ConnectorConstants.CONNECTOR_MODULE) != null) {
+                newRARModules.add(newModule);
+            }
+        }
+*/
+        List<Module> newRARModules = newApp.getModule();
+
+
+        //check whether all old RARs are present in new RARs list.
+        List<Module> staleRars = new ArrayList<Module>();
+        for (Module oldRARModule : oldRARModules) {
+            String oldRARModuleName = oldRARModule.getName();
+            boolean found = false;
+            for (Module newRARModule : newRARModules) {
+                String newRARModuleName = newRARModule.getName();
+                if (newRARModuleName.equals(oldRARModuleName)) {
+                    found = true;
+                }
+            }
+            if(!found){
+                staleRars.add(oldRARModule);
+            }
+        }
+
+        String appName = newApp.getName();
+        if (staleRars.size() > 0) {
+            Resources appScopedResources = allResources.get(appName);
+            if (appScopedResources != null) {
+                validateResourcesForStaleReference(appName, staleRars, appScopedResources);
+            }
+
+            List<Module> newModules = newApp.getModule();
+            for(Module newModule : newModules){
+                Module oldModule = oldApp.getModule(newModule.getName());
+                if(oldModule != null){
+                    Resources oldModuleResources = oldModule.getResources();
+                    if(oldModuleResources != null){
+                        validateResourcesForStaleReference(appName, staleRars, oldModuleResources);
+                    }
+                }//else its a new module in the archive being redeployed.
+            }
+        }
+    }
+
+    /**
+     * Validates whether the old application has RARs and those are retained in new application.<br>
+     * If the new application does not have any of the old application's RAR, validates whether<br>
+     * any module is using the RAR's resources. If used, fail with ResourceConflictException<br>
+     * as the RAR's resource is not valid anymore.
+     * @param appName application-name
+     * @param staleRars List of Stale Resource Adapters (ie., were defined in old app, not in new app)
+     * @param resources resources that need to be checked for stale RAR references.
+     * @throws ResourceConflictException When any of the resource has reference to old RAR
+     */
+    private void validateResourcesForStaleReference(String appName, List<Module> staleRars, Resources resources)
+            throws ResourceConflictException{
+        boolean found = false;
+        for (Resource resource : resources.getResources()) {
+            ResourcesUtil resourcesUtil = ResourcesUtil.createInstance();
+            //connector type of resource may be : connector-resource, ccp, aor, wsm, rac
+            if (resourcesUtil.isRARResource(resource)) {
+                String rarNameOfResource = resourcesUtil.getRarNameOfResource(resource, resources);
+                if (rarNameOfResource.contains(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER)) {
+                    String embeddedRARName = ConnectorsUtil.getRarNameFromApplication(rarNameOfResource);
+                    for (Module module : staleRars) {
+                        //check whether these RARs are referenced by app-scoped-resources ?
+                        if (getActualModuleName(module.getName()).equals(embeddedRARName)) {
+                            throw new ResourceConflictException("Existing resources refer RAR " +
+                                    "[ " + embeddedRARName + " ] which is" +
+                                    "not present in the re-deployed application ["+appName+"] anymore. " +
+                                    "re-deploy the application after resolving the conflicts");
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+/*
+    private void cleanupPreservedResources(DeploymentContext dc, Event event) {
+        if (Deployment.DEPLOYMENT_FAILURE.equals(event.type())) {
+            final DeployCommandParameters deployCommandParameters =
+                    dc.getCommandParameters(DeployCommandParameters.class);
+            if (deployCommandParameters.origin == OpsParams.Origin.deploy) {
+                Properties properties = deployCommandParameters.properties;
+                String appName = deployCommandParameters.name();
+                cleanupPreservedResources(appName, properties);
+            }
+        } else if (Deployment.UNDEPLOYMENT_FAILURE.equals(event.type())) {
+            final UndeployCommandParameters undeployCommandParameters =
+                    dc.getCommandParameters(UndeployCommandParameters.class);
+            if (undeployCommandParameters.origin == OpsParams.Origin.undeploy) {
+                Properties properties = undeployCommandParameters.properties;
+                String appName = undeployCommandParameters.name();
+                cleanupPreservedResources(appName, properties);
+            }
+        }
+    }
+
+    private void cleanupPreservedResources(String appName, Properties properties) {
+        if(properties != null){
+            String preserve = properties.getProperty(DeploymentProperties.PRESERVE_APP_SCOPED_RESOURCES);
+            if(preserve != null && Boolean.valueOf(preserve)){
+                resourceConfigurations.remove(appName);
+                preservedApps.remove(appName);
+            }
+        }
+    }
+*/
+
+    /**
+     * preserve the old application's resources so that they can be registered during deploy.
+     * @param dc DeploymentContext
+     * @param undeployCommandParameters undeploy command parameters
+     */
+    private void preserveResources(DeploymentContext dc, UndeployCommandParameters undeployCommandParameters) {
+        try{
+            if (undeployCommandParameters.origin == OpsParams.Origin.undeploy) {
+                Properties properties = undeployCommandParameters.properties;
+                if(properties != null){
+                    String preserve = properties.getProperty(DeploymentProperties.PRESERVE_APP_SCOPED_RESOURCES);
+                    if(preserve != null && Boolean.valueOf(preserve)){
+                        debug("Preserve app scoped resources enabled");
+                        Map<String, Resources> allResources = new HashMap<String, Resources>();
+                        final UndeployCommandParameters commandParams =
+                                dc.getCommandParameters(UndeployCommandParameters.class);
+                        String appName = commandParams.name();
+                        Application app = applications.getApplication(appName);
+                        Resources appScopedResources = app.getResources();
+                        if(appScopedResources != null){
+                            allResources.put(appName, appScopedResources);
+                        }
+                        List<Module> modules = app.getModule();
+                        if(modules != null){
+                            for(Module module : modules){
+                                Resources moduleScopedResources = module.getResources();
+                                if(moduleScopedResources != null){
+                                    allResources.put(module.getName(), moduleScopedResources);
+                                }
+                            }
+                        }
+                        //store the resource-configuration and application (for module information ie., sniffer type)
+                        resourceConfigurations.put(appName, allResources);
+                        preservedApps.put(appName, app);
+                    }
+                }
+            }
+        }catch(Exception e){
+            // only DeploymentExceptions are propagated and result in deployment failure
+            // in the event notification infrastructure
+            throw new DeploymentException(e.getMessage(), e);
         }
     }
 

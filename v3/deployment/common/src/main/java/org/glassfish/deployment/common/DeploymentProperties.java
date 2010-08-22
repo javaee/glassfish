@@ -543,6 +543,8 @@ public class DeploymentProperties extends Properties {
 
     public static final String KEEP_SESSIONS = "keepSessions";
 
+    public static final String PRESERVE_APP_SCOPED_RESOURCES = "preserveAppScopedResources";
+
     static Map keyMap;
 
     static {
