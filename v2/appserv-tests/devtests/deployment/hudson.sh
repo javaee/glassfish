@@ -17,9 +17,19 @@ time wget -q -O glassfish.zip http://gf-hudson.sfbay.sun.com/hudson/job/gf-trunk
 unzip -q glassfish.zip
 export S1AS_HOME="$ROOT/glassfishv3/glassfish"
 export APS_HOME="$ROOT/appserv-tests"
-
 cd "$APS_HOME"
 (jps |grep Main |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
 cd "$APS_HOME/devtests/deployment"
+
+if [ -z "$DEPL_TARGET"]
+then
+    $S1AS_HOME/bin/asadmin start-domain
+fi
+
 time ant all
+
+if [ -z "$DEPL_TARGET"]
+then
+    $S1AS_HOME/bin/asadmin stop-domain
+fi
 egrep 'FAILED *0' "$APS_HOME/count.txt" >/dev/null || exit 1
