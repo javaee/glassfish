@@ -300,31 +300,33 @@ public class AppSpecificConnectorClassLoaderUtil {
             boolean rac = ResourceAdapterConfig.class.isAssignableFrom(type);
 
             Iterator itr = resources.getResources().iterator();
-            while(itr.hasNext()){
-                String resourceName = null;
-                Resource res = (Resource)itr.next();
-                if(bindableResource && res instanceof BindableResource){
-                    resourceName = ((BindableResource)res).getJndiName();
-                } else if(poolResource && res instanceof ResourcePool){
-                    resourceName = ((ResourcePool)res).getName();
-                } else if(rac && res instanceof ResourceAdapterConfig){
-                    resourceName = ((ResourceAdapterConfig)res).getName();
-                } else if(workSecurityMap && res instanceof WorkSecurityMap){
-                    resourceName = ((WorkSecurityMap)res).getName();
+                while(itr.hasNext()){
+                    String resourceName = null;
+                    Resource res = (Resource)itr.next();
+                    if(bindableResource && res instanceof BindableResource){
+                        resourceName = ((BindableResource)res).getJndiName();
+                    } else if(poolResource && res instanceof ResourcePool){
+                        resourceName = ((ResourcePool)res).getName();
+                    } else if(rac && res instanceof ResourceAdapterConfig){
+                        resourceName = ((ResourceAdapterConfig)res).getName();
+                    } else if(workSecurityMap && res instanceof WorkSecurityMap){
+                        resourceName = ((WorkSecurityMap)res).getName();
+                    }
+                    if(resourceName != null){
+                        if(!(resourceName.startsWith(ConnectorConstants.JAVA_APP_SCOPE_PREFIX) /*||
+                                resourceName.startsWith(ConnectorConstants.JAVA_GLOBAL_SCOPE_PREFIX)*/)){
+                            resourceName = ConnectorConstants.JAVA_APP_SCOPE_PREFIX + resourceName;
+                        }
+                        if(!(name.startsWith(ConnectorConstants.JAVA_APP_SCOPE_PREFIX) /*||
+                         name.startsWith(ConnectorConstants.JAVA_GLOBAL_SCOPE_PREFIX)*/)){
+                            name = ConnectorConstants.JAVA_APP_SCOPE_PREFIX + name;
+                        }
+                        if(name.equals(resourceName)){
+                            foundRes = res;
+                            break;
+                        }
+                    }
                 }
-                if(resourceName != null){
-                    if(!(resourceName.startsWith("java:app/") || resourceName.startsWith("java:global/"))){
-                        resourceName = "java:app/" + resourceName;
-                    }
-                    if(!(name.startsWith("java:app/") || name.startsWith("java:global/"))){
-                        name = "java:app/" + name;
-                    }
-                    if(name.equals(resourceName)){
-                        foundRes = res;
-                        break;
-                    }
-                }
-            }
             }
         }
         return foundRes;
