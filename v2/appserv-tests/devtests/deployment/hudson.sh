@@ -36,4 +36,6 @@ errors=`egrep -c '\[FAILED|UNKNOWN\]' client.log`
 if [ 0 -ne $errors ] 
 then
   exit 1
+else
+  exit 0
 fi
