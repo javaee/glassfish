@@ -32,4 +32,8 @@ if [ -z "$DEPL_TARGET"]
 then
     $S1AS_HOME/bin/asadmin stop-domain
 fi
-egrep 'FAILED *0' "$APS_HOME/count.txt" >/dev/null || exit 1
+errors=`egrep -c '\[FAILED|UNKNOWN\]' appserv-tests/devtests/deployment/client.log`
+if [ 0 -ne $errors ] 
+then
+  exit 1
+fi
