@@ -32,7 +32,7 @@ if [ -z "$DEPL_TARGET"]
 then
     $S1AS_HOME/bin/asadmin stop-domain
 fi
-errors=`egrep -c '\[FAILED|UNKNOWN\]' appserv-tests/devtests/deployment/client.log`
+errors=`egrep -c '\[FAILED|UNKNOWN\]' client.log`
 if [ 0 -ne $errors ] 
 then
   exit 1
