@@ -124,6 +124,13 @@ public class BackupRequest
 
         ///////////////////////////////////////////////////////////////////////////
 
+	public void setBackupDir(File dir)
+	{
+		backupDir = dir;
+	}
+
+        ///////////////////////////////////////////////////////////////////////////
+
 	public void setForce(boolean f)
 	{
 		force = f;
@@ -150,7 +157,7 @@ public class BackupRequest
 	// we can get a nice concise centralized display of ALL the variables
 	// for all commands
 	
-	File	backupDir;
+	File	backupDir = null;
 	boolean	terse	= false;
 	boolean	verbose	= false;
         boolean force = false;

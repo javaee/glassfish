@@ -93,7 +93,13 @@ public class BackupManager extends BackupRestoreManager
 		if(!FileUtils.safeIsDirectory(request.domainDir))
 			throw new BackupException("backup-res.NoDomainDir", request.domainDir);
 
-		File backupDir = new File(request.domainDir, Constants.BACKUP_DIR);
+                File backupDir = null;
+
+                if (request.backupDir != null) {
+                    backupDir = request.backupDir;
+                } else {
+		    backupDir = new File(request.domainDir, Constants.BACKUP_DIR);
+                }
 
 		// not an error for this directory to not exist yet
 		backupDir.mkdirs();

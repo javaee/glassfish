@@ -117,7 +117,9 @@ public class ListManager extends BackupRestoreManager
 		if(!FileUtils.safeIsDirectory(request.domainDir))
 			throw new BackupException("backup-res.NoDomainDir", request.domainDir);
 
-		request.backupDir = new File(request.domainDir, Constants.BACKUP_DIR);
+                if (request.backupDir == null) {
+		    request.backupDir = new File(request.domainDir, Constants.BACKUP_DIR);
+                }
 
 		// It's a warning to not exist...
 		if(!FileUtils.safeIsDirectory(request.backupDir))

@@ -72,6 +72,9 @@ public final class BackupDomainCommand extends BackupCommands {
     @Param(name = "description", optional = true)
     String description;
 
+    @Param(optional = true)
+    String backupdir;
+
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(BackupDomainCommand.class);
 
@@ -96,6 +99,7 @@ public final class BackupDomainCommand extends BackupCommands {
                 strings.get("DomainIsNotStopped", domainName));
         }
         setDescription(description);
+        setBackupDir(backupdir);
         prepareRequest();
         initializeLogger();     // in case program options changed
     }

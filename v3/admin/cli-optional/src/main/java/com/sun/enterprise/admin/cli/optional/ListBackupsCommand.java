@@ -42,6 +42,7 @@ package com.sun.enterprise.admin.cli.optional;
 
 import java.io.*;
 
+import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import com.sun.enterprise.util.ObjectAnalyzer;
 import com.sun.enterprise.backup.BackupException;
@@ -61,6 +62,9 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 @Scoped(PerLookup.class)
 public final class ListBackupsCommand extends BackupCommands {
 
+    @Param(optional = true)
+    String backupdir;
+
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ListDomainsCommand.class);
 
@@ -79,6 +83,7 @@ public final class ListBackupsCommand extends BackupCommands {
             throw new CommandException(
                 strings.get("InvalidDirectory", domainFile.getPath()));
         }
+        setBackupDir(backupdir);
         prepareRequest();
         initializeLogger();     // in case program options changed
     }

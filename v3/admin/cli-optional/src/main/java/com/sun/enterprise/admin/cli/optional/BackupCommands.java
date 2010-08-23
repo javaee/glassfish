@@ -78,6 +78,8 @@ public abstract class BackupCommands extends LocalDomainCommand {
 
     private String desc = null;
 
+    private String backupdir = null;
+
      /**
      * A method that checks the options and operand that the user supplied.
      * These tests are slightly different for different CLI commands
@@ -115,13 +117,25 @@ public abstract class BackupCommands extends LocalDomainCommand {
     protected void setDescription(String d) {
         desc = d;
     }
+
+    protected void setBackupDir(String dir) {
+        backupdir = dir;
+    }
     
-    protected void prepareRequest() {
+    protected void prepareRequest() throws CommandValidationException {
 
         request = new BackupRequest(domainDirParam, domainName, desc);
 
         request.setTerse(programOpts.isTerse());
         request.setVerbose(verbose);
+        if (backupdir != null) {
+            File f = new File(backupdir);
+            if (!f.isAbsolute()) {
+                throw new CommandValidationException(
+                    strings.get("InvalidBackupDirPath", backupdir));
+            }
+            request.setBackupDir(f);
+        }
     }
  
     /*
