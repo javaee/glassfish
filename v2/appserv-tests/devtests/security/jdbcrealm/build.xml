@@ -9,7 +9,7 @@
 ]>
 
 
-<project name="security-ldap-simple" basedir="." default="usage">
+<project name="security-jdbcrealm" basedir="." default="usage">
 
    &commonSetup;
    &commonBuild;

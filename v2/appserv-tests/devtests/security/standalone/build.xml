@@ -8,7 +8,7 @@
 <!ENTITY run SYSTEM "file:./../../../config/run.xml">
 ]>
 
-<project name="plogin" default="usage" basedir=".">
+<project name="standalone" default="usage" basedir=".">
 
     &commonSetup;
     &commonBuild;

@@ -9,7 +9,7 @@
 ]>
 
 
-<project name="methodperms" basedir="." default="usage">
+<project name="jsp2sful" basedir="." default="usage">
 
     &commonSetup;
     &commonBuild;

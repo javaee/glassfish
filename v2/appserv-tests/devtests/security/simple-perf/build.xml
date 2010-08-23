@@ -6,7 +6,7 @@
 <!ENTITY testproperties SYSTEM "file:./build.properties">
 ]>
 
-<project name="SSLconverterApp" default="usage" basedir=".">
+<project name="simple-perf" default="usage" basedir=".">
 
     &commonSetup;
     &commonBuild;

@@ -8,7 +8,7 @@
 ]>
 
 
-<project name="realmperapp" basedir="." default="usage">
+<project name="LDAPrealmperapp" basedir="." default="usage">
 
    &commonSetup;
    &commonBuild;

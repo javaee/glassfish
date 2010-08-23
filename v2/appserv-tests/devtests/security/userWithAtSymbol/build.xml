@@ -9,7 +9,7 @@
 ]>
 
 
-<project name="realmperapp" basedir="." default="usage">
+<project name="user-with-at-symbol" basedir="." default="usage">
 
    &commonSetup;
    &commonBuild;
