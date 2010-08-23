@@ -84,11 +84,9 @@ public abstract class ReplicationManagerBase extends PersistentManagerBase {
         
     }
 
-/*
     public boolean isSessionVersioningSupported() {
         return true; 
     }
-*/
 
     public abstract void doValveSave(Session session);
 }
