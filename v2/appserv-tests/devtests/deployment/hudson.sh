@@ -1,3 +1,4 @@
+#!/bin/sh
 if [ -n "$verbose" ]
 then
     set -x
