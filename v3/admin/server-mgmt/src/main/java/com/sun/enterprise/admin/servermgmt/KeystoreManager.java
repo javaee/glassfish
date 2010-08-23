@@ -57,11 +57,13 @@ import com.sun.enterprise.util.ExecException;
 import com.sun.enterprise.util.net.NetUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.KeyStore;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
@@ -417,38 +419,56 @@ public class KeystoreManager {
      * @param newKeyPassword the new password for the s1as alias
      * @throws RepositoryException
      */    
-    protected void changeS1ASAliasPassword(RepositoryConfig config, 
-        String storePassword, String oldKeyPassword, String newKeyPassword) 
-        throws RepositoryException
-    {                
+    protected void changeS1ASAliasPassword(RepositoryConfig config,
+            String storePassword, String oldKeyPassword, String newKeyPassword)
+            throws RepositoryException {
         if (!storePassword.equals(oldKeyPassword) && !oldKeyPassword.equals(newKeyPassword)) {
             final PEFileLayout layout = getFileLayout(config);
             final File src = layout.getTrustStoreTemplate();
             final File keystore = layout.getKeyStore();
             //First see if the alias exists. The user could have deleted it. Any failure in the 
             //command indicates that the alias does not exist, so we return without error.
-            String[] keytoolCmd = {                
-                "-list",
-                "-keystore", keystore.getAbsolutePath(),   
-                "-alias", CERTIFICATE_ALIAS,
-            };            
-            KeytoolExecutor p = new KeytoolExecutor(keytoolCmd, 30, 
-                new String[] {storePassword});  
+            String keyStoreType = System.getProperty("javax.net.ssl.keyStoreType");
+            if (keyStoreType == null) {
+                keyStoreType = KeyStore.getDefaultType();
+            }
+
+            //add code to change all the aliases that exist rather then change s1as only
+            List<String> aliases = new ArrayList<String>();
             try {
-                p.execute("s1asKeyPasswordNotChanged", keystore);                                    
+                KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+                keyStore.load(new FileInputStream(keystore), storePassword.toCharArray());
+                Enumeration<String> all = keyStore.aliases();
+                while (all.hasMoreElements()) {
+                    aliases.add(all.nextElement());
+                }
+            } catch (Exception e) {
+                aliases.add(CERTIFICATE_ALIAS);
+            }
+
+            String[] keytoolCmd = {
+                "-list",
+                "-keystore", keystore.getAbsolutePath(),
+                "-alias", CERTIFICATE_ALIAS,};
+            KeytoolExecutor p = new KeytoolExecutor(keytoolCmd, 30,
+                    new String[]{storePassword});
+            try {
+                p.execute("s1asKeyPasswordNotChanged", keystore);
             } catch (RepositoryException ex) {
                 return;
             }
-            
+
             //change truststore password from the default
-            keytoolCmd = new String[] {                
-                "-keypasswd",
-                "-keystore", keystore.getAbsolutePath(),   
-                "-alias", CERTIFICATE_ALIAS,
-            };
-            p = new KeytoolExecutor(keytoolCmd, 30, 
-                new String[] {storePassword, oldKeyPassword, newKeyPassword, newKeyPassword});              
-            p.execute("s1asKeyPasswordNotChanged", keystore);                                   
+            for (String alias : aliases) {
+                keytoolCmd = new String[]{
+                            "-keypasswd",
+                            "-keystore", keystore.getAbsolutePath(),
+                            "-alias", alias,};
+                p = new KeytoolExecutor(keytoolCmd, 30,
+                        new String[]{storePassword, oldKeyPassword, newKeyPassword, newKeyPassword});
+                p.execute("s1asKeyPasswordNotChanged", keystore);
+            }
+
         }
     }
     
