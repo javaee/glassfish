@@ -281,6 +281,7 @@
   
             validateInstallHome(theInstallHomeDir);
             
+	    /* Removing redundant read, causing a hang in install panel.
             theReq = new BusRequest("SetAllConfig",
               new ConfigControl(ConfigControl.ConfigCommand.SET_ALL_CONFIGURATION, null));
             theResponse = ControlBus.getInstance().publishRequest(theReq, "svc://general/conf");
@@ -288,6 +289,7 @@
                 LOGGER.log(Level.WARNING, "CANNOT_PREFILL",
                   "error=" + EnhancedException.getLastCause(theResponse.getException()).getLocalizedMessage());
              }
+	    */
 
             /*
              * NOTE : PLEASE READ !!!!!!!!
