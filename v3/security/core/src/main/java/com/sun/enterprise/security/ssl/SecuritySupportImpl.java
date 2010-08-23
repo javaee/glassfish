@@ -84,7 +84,7 @@ public class SecuritySupportImpl implements SecuritySupport {
     protected static boolean initialized = false;
     protected static final List<KeyStore> keyStores = new ArrayList<KeyStore>();
     protected static final List<KeyStore> trustStores = new ArrayList<KeyStore>();
-    protected static final List<String> keyStorePasswords = new ArrayList<String>();
+    protected static final List<char[]> keyStorePasswords = new ArrayList<char[]>();
     protected static final List<String> tokenNames = new ArrayList<String>();
 
     private MasterPasswordImpl masterPasswordHelper = null;
@@ -189,7 +189,7 @@ public class SecuritySupportImpl implements SecuritySupport {
                 trustStorePass);
             keyStores.add(keyStore);
             trustStores.add(trustStore);
-            keyStorePasswords.add(new String(keyStorePass));
+            keyStorePasswords.add(Arrays.copyOf(keyStorePass, keyStorePass.length));
             tokenNames.add(tokenName);
         } catch(Exception ex) {
             throw new IllegalStateException(ex);
@@ -264,8 +264,8 @@ public class SecuritySupportImpl implements SecuritySupport {
      * This method returns an array of passwords in order corresponding to
      * array of keystores.
      */
-    String[] getKeyStorePasswords() {
-        return keyStorePasswords.toArray(new String[keyStorePasswords.size()]);
+    List<char[]> getKeyStorePasswords() {
+        return keyStorePasswords;
     }
 
     /**
@@ -345,7 +345,7 @@ public class SecuritySupportImpl implements SecuritySupport {
 
     public PrivateKey getPrivateKeyForAlias(String alias, int keystoreIndex) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
         SSLUtils.checkPermission(SSLUtils.KEYSTORE_PASS_PROP);
-        Key key = keyStores.get(keystoreIndex).getKey(alias, keyStorePasswords.get(keystoreIndex).toCharArray());
+        Key key = keyStores.get(keystoreIndex).getKey(alias, keyStorePasswords.get(keystoreIndex));
         if (key instanceof PrivateKey) {
             return (PrivateKey) key;
         } else {

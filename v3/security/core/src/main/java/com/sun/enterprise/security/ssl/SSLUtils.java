@@ -74,6 +74,7 @@ import com.sun.logging.*;
 import java.security.AccessControlException;
 import java.security.AccessController;
 import java.security.Permission;
+import java.util.List;
 import java.util.PropertyPermission;
 import javax.net.ssl.SSLSocketFactory;
 import org.jvnet.hk2.annotations.Service;
@@ -205,13 +206,13 @@ public final class SSLUtils implements PostConstruct {
     }
     public KeyManager[] getKeyManagers(String algorithm) throws Exception{
         KeyStore[] kstores = getKeyStores();
-        String[] pwds = ((SecuritySupportImpl)secSupp).getKeyStorePasswords();
+        List<char[]> pwds = ((SecuritySupportImpl)secSupp).getKeyStorePasswords();
         ArrayList<KeyManager> keyManagers = new ArrayList<KeyManager>();
         for (int i = 0; i < kstores.length; i++) {
             checkCertificateDates(kstores[i]);
 	    KeyManagerFactory kmf = KeyManagerFactory.getInstance(
                     (algorithm != null)? algorithm: KeyManagerFactory.getDefaultAlgorithm());
-	    kmf.init(kstores[i], pwds[i].toCharArray());
+            kmf.init(kstores[i], pwds.get(i));
             KeyManager[] kmgrs = kmf.getKeyManagers();
             if (kmgrs != null)
                 keyManagers.addAll(Arrays.asList(kmgrs));
@@ -392,9 +393,8 @@ public final class SSLUtils implements PostConstruct {
         } catch(KeyStoreException ex) {
             mergedStore = KeyStore.getInstance("JKS");
         }
-        String[] passwords = ((SecuritySupportImpl)secSupp).getKeyStorePasswords();
-        mergedStore.load(null,
-                passwords[passwords.length - 1].toCharArray());
+        List<char[]> passwords = ((SecuritySupportImpl)secSupp).getKeyStorePasswords();
+        mergedStore.load(null, passwords.get(passwords.size() - 1));
 
         String[] tokens = secSupp.getTokenNames();
         for (int i = 0; i < trustStores.length; i++) {
