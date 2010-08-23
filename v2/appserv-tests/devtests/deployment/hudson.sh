@@ -1,4 +1,3 @@
-#!/bin/sh
 if [ -n "$verbose" ]
 then
     set -x
@@ -34,11 +33,7 @@ then
     $S1AS_HOME/bin/asadmin stop-domain
 fi
 egrep '\[FAILED|UNKNOWN\]' client.log >> /dev/null
-sts=$?
-echo Just finished egrep
-if [ $sts -eq 0 ]
+if [ $? -eq 0 ]
 then
-  echo Found FAILED or UNKNOWN
   exit 1
 fi
-echo Found no FAILED or UNKNOWN
