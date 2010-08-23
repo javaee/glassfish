@@ -56,6 +56,9 @@
             urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
             setSessionAttribute(key="clusterTabs" value="general"); // ????
 
+            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jms/physdest/clusterPhysDest.jsf?name=#{pageSession.clusterName}");
+
+
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/clusters/cluster");
             setPageSessionAttribute(key="resourceUrl", value="#{pageSession.parentUrl}/#{pageSession.encodedClusterName}");
             setPageSessionAttribute(key="rest-api" value="true");

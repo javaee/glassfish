@@ -72,7 +72,7 @@
             attrs="#{pageSession.attrs}"
             method="GET"
             result="#{pageSession.listInstanceResult}");
-        gf.getDeploymentTargets(listInstanceProps="#{pageSession.listInstanceResult['data']['properties']}" result="#{pageSession.standalone}" );
+        gf.getDeploymentTargets(listInstanceProps="#{pageSession.listInstanceResult['data']['extraProperties']['instanceList']}" result="#{pageSession.standalone}" );
         gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", 
                 includeList="#{pageSession.standalone}" skipList={"server"}
                 result="#{requestScope.listOfRows}");

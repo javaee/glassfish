@@ -301,7 +301,7 @@ public class JmsHandlers {
 
     @Handler(id = "deleteJMSDest",
     input = {
-        @HandlerInput(name = "selectedRows", type = List.class, required = true)} //        @HandlerInput(name="targetName", type=String.class, required=true)}
+        @HandlerInput(name = "selectedRows", type = List.class, required = true)}
     )
     public static void deleteJMSDest(HandlerContext handlerCtx) {
 //        String configName = ((String) handlerCtx.getInputValue("targetName"));

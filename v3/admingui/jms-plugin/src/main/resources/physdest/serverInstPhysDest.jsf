@@ -55,6 +55,7 @@
             getRequestValue(key="name" value="#{pageSession.instanceName}");
             urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
             setSessionAttribute(key="standaloneInstanceTabs" value="general");
+            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jms/physdest/serverInstPhysDest.jsf?name=#{pageSession.instanceName}");
 
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/servers/server");
             setPageSessionAttribute(key="resourceUrl", value="#{pageSession.parentUrl}/#{pageSession.encodedInstanceName}");

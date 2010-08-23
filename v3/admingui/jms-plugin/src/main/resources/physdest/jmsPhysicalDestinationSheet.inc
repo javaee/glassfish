@@ -51,7 +51,18 @@
      <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.Save}"
             onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
         <!command
-            createPhysicalDestination(name="#{name}", type="#{type}", attributes="#{pageSession.valueMap}");
+            //createPhysicalDestination(name="#{name}", type="#{type}", attributes="#{pageSession.valueMap}");
+            createMap(result="#{requestScope.attrsMap}");
+/*
+            mapPut(map="#{requestScope.attrsMap}" key="property" value="ConsumerFlowLimit=#{pageSession.valueMap.ConsumerFlowLimit}:LimitBehavior=#{pageSession.valueMap.LimitBehavior}:"
+                    "LocalDeliveryPreferred=#{pageSession.valueMap.LocalDeliveryPreferred}:MaxBytesPerMsg=#{pageSession.valueMap.MaxBytesPerMsg}:MaxNumActiveConsumers=#{pageSession.valueMap.MaxNumActiveConsumers}:"
+                    "MaxNumBackupConsumers=#{pageSession.valueMap.MaxNumBackupConsumers}:MaxNumProducers=#{pageSession.valueMap.MaxNumProducers}:UseDMQ=#{pageSession.valueMap.UseDMQ}:"
+                    "MaxNumMsgs=#{pageSession.valueMap.MaxNumMsgs}:MaxTotalMsgBytes=#{pageSession.valueMap.MaxTotalMsgBytes}:ValidateXMLSchemaEnabled=#{pageSession.valueMap.ValidateXMLSchemaEnabled}:"
+                    "XMLSchemaURIList=#{pageSession.valueMap.XMLSchemaURIList}");*/
+            mapPut(map="#{requestScope.attrsMap}", key="desttype", value="#{pageSession.valueMap.destType}");
+            mapPut(map="#{requestScope.attrsMap}", key="target", value="#{name}");
+            mapPut(map="#{requestScope.attrsMap}", key="id", value="#{pageSession.valueMap.name}");
+
             gf.redirect(page="#{pageSession.parentPage}");
         />
     </sun:button>

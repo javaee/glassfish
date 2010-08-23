@@ -44,7 +44,7 @@
     <!facet actionsTop>
          <sun:panelGroup id="topActionsGroup1">
             <sun:button id="newButton" text="$resource{i18n.button.New}" >
-                <!command gf.redirect(page="/jms/jmsPhysicalDestinationNew.jsf"); />
+                <!command gf.redirect(page="/jms/physdest/jmsPhysicalDestinationNew.jsf"); />
             </sun:button>
 
             <sun:button id="deleteButton" text="$resource{i18n.button.Delete}" disabled="#{false}" primary="#{false}"
@@ -52,7 +52,14 @@
             <!command
                 getUIComponent(clientId="$pageSession{configsTableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                deleteJMSDest(selectedRows="${selectedRows}");
+                prepareSuccessfulMsg();
+                foreach (var="dest" list="$attribute{selectedRows}") {
+                     createMap(result="#{requestScope.attrsMap}");
+                     mapPut(map="#{requestScope.attrsMap}" key="desttype" value="#{dest.type}" );
+                     mapPut(map="#{requestScope.attrsMap}" key="id" value="#{dest.name}" );
+                     gf.restRequest(endpoint="#{pageSession.resourceUrl}/delete-jmsdest",
+                        attrs="#{requestScope.attrsMap}", method="delete", result="#{requestScope.result}");
+                }
                 setAttribute(key="selectedRows" value="${selectedRows}");
                 gf.redirect(page="#{pageSession.selfPage}");
             />
@@ -62,15 +69,22 @@
                 <!command
                     getUIComponent(clientId="$pageSession{configsTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                    flushJMSDestination(selectedRows="${selectedRows}");
+//                    flushJMSDestination(selectedRows="${selectedRows}");
                     prepareAlertMsg(summary="$resource{i18njms.jmsPhysDestinations.flushed}", type="success");
-                    gf.redirect(page="#{pageSession.selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&configName=#{configName}");
+                    foreach (var="dest" list="$attribute{selectedRows}") {
+                         createMap(result="#{requestScope.attrsMap}");
+                         mapPut(map="#{requestScope.attrsMap}" key="desttype" value="#{dest.type}" );
+                         mapPut(map="#{requestScope.attrsMap}" key="id" value="#{dest.name}" );
+                         gf.restRequest(endpoint="#{pageSession.resourceUrl}/flush-jmsdest",
+                            attrs="#{requestScope.attrsMap}", method="post", result="#{requestScope.result}");
+                         // TODO: handle failures
+                    }
                 />
             </sun:button>
          </sun:panelGroup>
      </facet>
 
-    <sun:tableRowGroup id="rowGroup1" selected1="#{td.value.selected}" data={"$pageSession{destList}", "$pageSession{tableList2}"} sourceVar="td">
+    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$pageSession{destList}", "$pageSession{tableList2}"} sourceVar="td">
         <ui:event type="beforeCreate">
             // Add extra table properties...
             createList(size="0", result="#{pageSession.tableList2}");
@@ -90,7 +104,7 @@
         </sun:tableColumn>
 
         <sun:tableColumn id="col1" headerText="$resource{i18n.common.PropertyName}" sort="name" rowHeader="$boolean{true}">
-            <sun:hyperlink id="nameCol" text="#{td.value.name}" url="#{pageSession.editPage}?name=#{td.value.name}&type=#{td.value.type}" />
+            <sun:hyperlink id="nameCol" text="#{td.value.name}" url="/jms/physdest/jmsPhysicalDestinationEdit.jsf?name=#{td.value.name}&type=#{td.value.type}" />
         </sun:tableColumn>
 
         <sun:tableColumn id="col3" headerText="$resource{i18n.common.type.header}" sort="type" rowHeader="$boolean{true}">
