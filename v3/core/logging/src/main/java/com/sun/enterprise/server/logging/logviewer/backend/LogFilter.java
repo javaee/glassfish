@@ -69,7 +69,6 @@ import java.util.logging.Logger;
  * @AUTHOR: Carla Mott, Naman Mehta
  */
 @Service
-
 public class LogFilter {
 
     // This is the name of the Results Attribute that we send out to the
@@ -131,11 +130,9 @@ public class LogFilter {
             String logLevel, Boolean onlyLevel, List listOfModules,
             Properties nameValueMap, String anySearch) {
 
-
-        /*      Testing code for instance setup
-        return getLogRecordsUsingQuery(logFileName, fromRecord, next, forward, requestedCount,
-        fromDate, toDate, logLevel, onlyLevel, listOfModules, nameValueMap, anySearch, "in2");
-        */
+        //      Testing code for instance setup
+        //return getLogRecordsUsingQuery(logFileName, fromRecord, next, forward, requestedCount,
+        //        fromDate, toDate, logLevel, onlyLevel, listOfModules, nameValueMap, anySearch, "in2", false);
 
         LogFile logFile = null;
         if ((logFileName != null)
@@ -187,7 +184,7 @@ public class LogFilter {
             String logFileName, Long fromRecord, Boolean next, Boolean forward,
             Integer requestedCount, Date fromDate, Date toDate,
             String logLevel, Boolean onlyLevel, List listOfModules,
-            Properties nameValueMap, String anySearch, String instanceName) {
+            Properties nameValueMap, String anySearch, String instanceName, boolean logFileRefresh) {
 
 
         Server targetServer = domain.getServerNamed(instanceName);
@@ -202,13 +199,27 @@ public class LogFilter {
                     nameValueMap, anySearch);
         } else {
             // for Instance it's going through this loop. This will use ssh utility to get file from instance machine(remote machine) and
-            // store in temp directory which is used to get LogFile object.
+            // store under glassfish/domains/domain1/logs/<instance name>/ directory which is used to get LogFile object.
             // Right now user needs to go through this URL to setup and configure ssh http://wikis.sun.com/display/GlassFish/3.1SSHSetup
 
-            instanceLogFile = new LogFilterForInstance().getInstanceLogFile(habitat, targetServer,
-                    domain, logger, instanceName);
-        }
+            File logFileOnServer = new File(env.getDomainRoot().getAbsolutePath() + File.separator + "logs"
+                    + File.separator + instanceName + File.separator + "server.log");
 
+            if (!logFileOnServer.exists()) {
+                // if log file is not found on server then need to download
+                instanceLogFile = new LogFilterForInstance().getInstanceLogFile(habitat, targetServer,
+                        domain, logger, instanceName, env.getDomainRoot().getAbsolutePath());
+            } else {
+                if (logFileRefresh) {
+                    // if gui sends refresh request for log file.
+                    instanceLogFile = new LogFilterForInstance().getInstanceLogFile(habitat, targetServer,
+                            domain, logger, instanceName, env.getDomainRoot().getAbsolutePath());
+                } else {
+                    // if file is already there then using existing instance log file
+                    instanceLogFile = logFileOnServer;
+                }
+            }
+        }
 
         LogFile logFile = null;
         logFile = getLogFile(instanceLogFile.getAbsolutePath());

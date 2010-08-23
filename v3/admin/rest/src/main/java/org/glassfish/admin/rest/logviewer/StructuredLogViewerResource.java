@@ -40,21 +40,22 @@
 
 package org.glassfish.admin.rest.logviewer;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
+import com.sun.enterprise.server.logging.logviewer.backend.LogFilter;
+import org.glassfish.admin.rest.RestService;
+import org.glassfish.internal.api.LogManager;
+
+import javax.management.Attribute;
 import javax.management.AttributeList;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import com.sun.enterprise.server.logging.logviewer.backend.LogFilter;
+import java.io.IOException;
 import java.io.Serializable;
-import javax.management.Attribute;
-import org.glassfish.admin.rest.RestService;
-import org.glassfish.internal.api.LogManager;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * REST resource to get Log records
@@ -77,7 +78,8 @@ public class StructuredLogViewerResource {
             @QueryParam("logLevel") @DefaultValue("INFO") String logLevel,
             @QueryParam("anySearch") @DefaultValue("") String anySearch,
             @QueryParam("listOfModules") List<String> listOfModules, //default value is empty for List
-            @QueryParam("instanceName") @DefaultValue("") String instanceName) throws IOException {
+            @QueryParam("instanceName") @DefaultValue("") String instanceName,
+            @QueryParam("logFileRefresh") @DefaultValue("false") boolean logFileRefresh) throws IOException {
 
         return getWithType(
                 logFileName,
@@ -86,7 +88,7 @@ public class StructuredLogViewerResource {
                 maximumNumberOfResults,
                 fromTime,
                 toTime,
-                logLevel, onlyLevel, anySearch, listOfModules, instanceName, "json");
+                logLevel, onlyLevel, anySearch, listOfModules, instanceName, "json", logFileRefresh);
 
     }
 
@@ -103,7 +105,8 @@ public class StructuredLogViewerResource {
             @QueryParam("logLevel") @DefaultValue("INFO") String logLevel,
             @QueryParam("anySearch") @DefaultValue("") String anySearch,
             @QueryParam("listOfModules") List<String> listOfModules, //default value is empty for List,
-            @QueryParam("instanceName") @DefaultValue("") String instanceName) throws IOException {
+            @QueryParam("instanceName") @DefaultValue("") String instanceName,
+            @QueryParam("logFileRefresh") @DefaultValue("false") boolean logFileRefresh) throws IOException {
 
         return getWithType(
                 logFileName,
@@ -112,7 +115,7 @@ public class StructuredLogViewerResource {
                 maximumNumberOfResults,
                 fromTime,
                 toTime,
-                logLevel, onlyLevel, anySearch, listOfModules, instanceName, "xml");
+                logLevel, onlyLevel, anySearch, listOfModules, instanceName, "xml",logFileRefresh);
 
     }
 
@@ -125,7 +128,8 @@ public class StructuredLogViewerResource {
             long toTime,
             String logLevel, boolean onlyLevel, String anySearch, List<String> listOfModules,
             String instanceName,
-            String type) throws IOException {
+            String type,
+            boolean logFileRefresh) throws IOException {
 
         if (RestService.getHabitat().getComponent(LogManager.class) == null) {
             //the logger service is not install, so we cannot rely on it.
@@ -156,7 +160,7 @@ public class StructuredLogViewerResource {
                     maximumNumberOfResults,
                     fromTime == -1 ? null : new Date(fromTime),
                     toTime == -1 ? null : new Date(toTime),
-                    logLevel, onlyLevel, listOfModules, nameValueMap, anySearch, instanceName);
+                    logLevel, onlyLevel, listOfModules, nameValueMap, anySearch, instanceName, logFileRefresh);
             return convertQueryResult(result, type);
         }
 

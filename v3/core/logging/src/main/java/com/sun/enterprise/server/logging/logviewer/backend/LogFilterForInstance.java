@@ -61,7 +61,7 @@ import java.util.logging.Logger;
  */
 public class LogFilterForInstance {
 
-    public File getInstanceLogFile(Habitat habitat, Server targetServer, Domain domain, Logger logger, String instanceName) {
+    public File getInstanceLogFile(Habitat habitat, Server targetServer, Domain domain, Logger logger, String instanceName, String domainRoot) {
 
         File instanceLogFile = null;
 
@@ -78,11 +78,14 @@ public class LogFilterForInstance {
 
             SFTPClient sftpClient = sshL.getSFTPClient();
 
-            File tempFile = File.createTempFile("instance", "log");
-            tempFile.delete();
-            tempFile.mkdirs();
+            File logFileDirectoryOnServer = new File(domainRoot + File.separator + "logs"
+                    + File.separator + instanceName);
+            if (logFileDirectoryOnServer.exists())
+                logFileDirectoryOnServer.delete();
 
-            instanceLogFile = new File(tempFile.getAbsolutePath() + File.separator + instanceName + ".log");
+            logFileDirectoryOnServer.mkdirs();
+
+            instanceLogFile = new File(logFileDirectoryOnServer.getAbsolutePath() + File.separator + "server.log");
 
             InputStream inputStream = sftpClient.read(node.getInstallDir() + File.separator + "nodes" + File.separator
                     + sNode + File.separator + instanceName + File.separator + "logs" + File.separator + "server.log");
