@@ -77,6 +77,7 @@ public class BackupCommandsTest extends AdminBaseDevTest {
         testCommandsWithDefaultOptions();
         testCommandsWithDASRunning();
         testCommandsWithOperands();
+        testBackupDirOption();
         testRestoreWithFileName();
         testCommandsWithNoDomains();
         testCommandsWithMultipleDomains();
@@ -125,6 +126,31 @@ public class BackupCommandsTest extends AdminBaseDevTest {
         // restore backup
         report("restore-domain-with-operand", asadmin("restore-domain", DOMAIN1));
 
+    }
+
+    private void testBackupDirOption() {
+
+        // perform a backup
+        report("backup-domain-with-backupdir", asadmin("backup-domain", "--backupdir", BACKUP_DIR, DOMAIN1));
+
+        // list backup
+        report("list-backups-with-backupdir", asadmin("list-backups", "--backupdir", BACKUP_DIR));
+
+        // list backup invalid domain
+        report("list-backups-with-invalid-operand", !asadmin("list-backups", "--backupdir", BACKUP_DIR, "foo"));
+
+        //test for absolute path
+        report("list-backups-with-invalid-backupdir", !asadmin("list-backups", "--backupdir", "foo"));
+
+        cleanupBackupDir();
+    }
+
+    private void cleanupBackupDir() {
+        File path = new File(BACKUP_DIR);
+        for(File f : path.listFiles()) {
+            f.delete();
+        }
+        path.delete();
     }
 
     private void testRestoreWithFileName() {
@@ -195,5 +221,6 @@ public class BackupCommandsTest extends AdminBaseDevTest {
     private static final String FORCE_OPTION = "--force";
     private static final String FILENAME_OPTION = "--filename";
     private static final String BACKUP_FILE = "resources/domain2_2010_07_19_v00001.zip";
+    private static final String BACKUP_DIR = System.getenv("APS_HOME") + "devtests/admin/cli/backupdir";
 
 }
