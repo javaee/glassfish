@@ -186,7 +186,7 @@ public class LoginContextDriver  {
             if (e instanceof LoginException) {
                 throw (LoginException) e;
             } else {
-                throw (LoginException) new LoginException("Login failed: " + e.toString()).initCause(e);
+                throw (LoginException) new LoginException("Login failed: " + e.getMessage()).initCause(e);
             }
         }
 
@@ -392,7 +392,7 @@ public class LoginContextDriver  {
                 throw (LoginException)e;
             else
                 throw (LoginException)
-                    new LoginException("Login failed: " + e.toString()).initCause(e);
+                    new LoginException("Login failed: " + e.getMessage()).initCause(e);
         }
         if(getAuditManager() != null && getAuditManager().isAuditOn()){
             getAuditManager().authentication(user, realm, true);
@@ -476,7 +476,7 @@ public class LoginContextDriver  {
                 throw (LoginException)e;
             else
                 throw (LoginException)
-                    new LoginException("Login failed: " + e.toString()).initCause(e);
+                    new LoginException("Login failed: " + e.getMessage()).initCause(e);
         }
         if(getAuditManager().isAuditOn()){
             getAuditManager().authentication(username, realmName, true);
@@ -769,7 +769,7 @@ public class LoginContextDriver  {
             else
                 throw (LoginException)
                     new LoginException("Failed to retrieve public credential: "+
-                                       e.toString()).initCause(e);
+                                       e.getMessage()).initCause(e);
         }
 
         return obj;
@@ -826,7 +826,7 @@ public class LoginContextDriver  {
             else
                 throw (LoginException)
                     new LoginException("Failed to retrieve private credential: "+
-                                     e.toString()).initCause(e);
+                                     e.getMessage()).initCause(e);
         }
 
         return obj;
@@ -1002,7 +1002,7 @@ private static void setSecurityContext(String userName,
             if (e instanceof LoginException) {
                 throw (LoginException) e;
             } else {
-                throw (LoginException) new LoginException("Login failed: " + e.toString()).initCause(e);
+                throw (LoginException) new LoginException("Login failed: " + e.getMessage()).initCause(e);
             }
         }
 

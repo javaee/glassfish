@@ -394,7 +394,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
 
        } catch (Exception le) {
            if (_logger.isLoggable(Level.WARNING)) {
-               _logger.log(Level.WARNING,"web.login.failed", le);
+               _logger.log(Level.WARNING,"web.login.failed", le.toString());
             }
        }
         return null;
@@ -482,7 +482,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         } catch (Exception le) {
             success = false;
             if (_logger.isLoggable(Level.WARNING)) {
-                _logger.log(Level.WARNING,"web.login.failed", le);
+                _logger.log(Level.WARNING,"web.login.failed", le.toString());
             }
         }
         if (success) {
