@@ -32,10 +32,4 @@ if [ -z "$DEPL_TARGET"]
 then
     $S1AS_HOME/bin/asadmin stop-domain
 fi
-errors=`egrep -c '\[FAILED|UNKNOWN\]' client.log`
-if [ 0 -ne $errors ] 
-then
-  exit 1
-else
-  exit 0
-fi
+egrep -c '\[FAILED|UNKNOWN\]' client.log >> /dev/null
