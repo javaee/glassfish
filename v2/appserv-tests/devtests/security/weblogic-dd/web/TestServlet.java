@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.Principal;
-import java.util.Properties;
 
 public class TestServlet extends HttpServlet {
 
@@ -15,8 +14,8 @@ public class TestServlet extends HttpServlet {
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter out = response.getWriter();
-        out.println("<br>Basic Authentication tests from Servlet: Test1,Test2,Test3 ");
-        out.println("<br>Authorization test from Servlet: Test4,Test5-> HttpServletRequest.isUserInRole() authorization from Servlet.");
+        out.println("<br>Basic Authentication tests from Servlet: Test1,Test2 ");
+        out.println("<br>Authorization test from Servlet: Test3 -> HttpServletRequest.isUserInRole() authorization from Servlet.");
 
         test1(request, response, out);
         test2(request, response, out);
