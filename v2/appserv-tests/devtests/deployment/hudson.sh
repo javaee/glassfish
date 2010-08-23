@@ -25,7 +25,6 @@ if [ -z "$DEPL_TARGET"]
 then
     $S1AS_HOME/bin/asadmin start-domain
 fi
-cd war/servletonly
 time ant all
 
 if [ -z "$DEPL_TARGET"]
