@@ -36,5 +36,7 @@ fi
 egrep '\[FAILED|UNKNOWN\]' client.log >> /dev/null
 if [ $? -eq 0 ]
 then
+  echo Found FAILED or UNKNOWN
   exit 1
 fi
+echo Found no FAILED or UNKNOWN
