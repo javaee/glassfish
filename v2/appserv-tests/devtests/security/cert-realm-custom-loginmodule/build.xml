@@ -86,6 +86,12 @@
         <antcall target="generate-ca-client-certs-ee" />-->
 	<copy file="${assemble.dir}/test-${appname}.jar"
             todir="${env.S1AS_HOME}/lib"/>
+	<copy file="${admin.domain.dir}/${admin.domain}/config/login.conf"
+            tofile="${admin.domain.dir}/${admin.domain}/config/login.conf.ORIG"/>
+	<concat destfile="${admin.domain.dir}/${admin.domain}/config/login.conf" append="true"><![CDATA[certRealm {
+        com.sun.s1asdev.security.certrealm.lm.CertificateLM required;
+};]]>
+	</concat>
         <antcall target="restart-server-instance-common"/>
 	<antcall target="asadmin-common">
             <param name="admin.command"
@@ -101,7 +107,7 @@
     </target>
 
     <target name="restore" depends="init-common" >
-        <antcall target="asadmin-common">
+        <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command"
                    value="set" />
             <param name="as.props" value="${as.props}"/>
@@ -109,6 +115,8 @@
                    value="configs.config.server-config.security-service.auth-realm.certificate.property.jaas-context=" />
         </antcall>
         <antcall target="remove-store-common"/>
+        <move file="${admin.domain.dir}/${admin.domain}/config/login.conf.ORIG"
+            tofile="${admin.domain.dir}/${admin.domain}/config/login.conf"/>
 	<delete file="${env.S1AS_HOME}/lib/test-${appname}.jar" failonerror="false"/>
         <antcall target="restart-server-instance-common"/>
     </target>
