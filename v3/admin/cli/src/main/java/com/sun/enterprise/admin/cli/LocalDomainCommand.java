@@ -113,6 +113,7 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
      * @param name the user-specified domain name.
      */
     protected final void setDomainName(String name) {
+        dd = null;
         userArgDomainName = name;
     }
 

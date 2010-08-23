@@ -40,25 +40,17 @@
 
 package com.sun.enterprise.admin.cli.optional;
 
-import com.sun.enterprise.util.io.ServerDirs;
 import java.io.File;
 import java.io.IOException;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.admin.*;
-import org.glassfish.api.Param;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
-import com.sun.enterprise.admin.launcher.GFLauncher;
-import com.sun.enterprise.admin.launcher.GFLauncherException;
-import com.sun.enterprise.admin.launcher.GFLauncherFactory;
-import com.sun.enterprise.admin.launcher.GFLauncherInfo;
 import com.sun.enterprise.admin.servermgmt.DomainConfig;
 import com.sun.enterprise.admin.servermgmt.DomainsManager;
 import com.sun.enterprise.admin.servermgmt.pe.PEDomainsManager;
-import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.util.io.DomainDirs;
 
 /**
@@ -73,25 +65,29 @@ public final class ListDomainsCommand extends LocalDomainCommand {
     private String domainsRoot = null;
 
     /*
-     * We don't want the domain to be initialized since this command is not
-     * for a specific domain.
+     * Override the validate method because super.validate() calls initDomain,
+     * and since we don't have a domain name yet, we aren't ready to call that.
      */
     @Override
-    protected void initDomain() throws CommandException { }
+    protected void validate()
+            throws CommandException, CommandValidationException {
+    }
 
     @Override
     protected int executeCommand()
             throws CommandException, CommandValidationException {
         try {
-            DomainConfig domainConfig = new DomainConfig(null, getDomainsRoot());
+            File domainsDirFile = ok(domainDirParam) ? 
+                new File(domainDirParam) : DomainDirs.getDefaultDomainsDir();
+
+            DomainConfig domainConfig = new DomainConfig(null, domainsDirFile.getAbsolutePath());
             DomainsManager manager = new PEDomainsManager();
             String[] domainsList = manager.listDomains(domainConfig);
             programOpts.setInteractive(false);  // no prompting for passwords
             if (domainsList.length > 0) {
                 for (String dn : domainsList) {
                     String status = getStatus(dn);
-                    String dname = strings.get("list.domains.Name");
-                    logger.printMessage(dname + " " + dn + " " + status);
+                    logger.printMessage(strings.get("list.domains.Output", dn, status));
                 }
             } else {
                 logger.printDetailMessage(strings.get("NoDomainsToList"));
@@ -102,65 +98,24 @@ public final class ListDomainsCommand extends LocalDomainCommand {
         return 0;
     }
 
-    protected String getDomainsRoot() throws CommandException {
-        if (domainsRoot != null) {
-            return domainsRoot;
-        }
-        try {
-            File domainsDirFile = ok(domainDirParam) ?
-                new File(domainDirParam) : DomainDirs.getDefaultDomainsDir();
-            if (!domainsDirFile.isDirectory()) {
-                throw new CommandException(
-                            strings.get("InvalidDomainPath",
-                            domainsDirFile.toString()));
-            }
-            domainsRoot = SmartFile.sanitize(domainsDirFile.getAbsolutePath());
-            return domainsRoot;
-        }
-        catch (IOException ioe) {
-            throw new CommandException(strings.get("InvalidDomainPath",
-                    ioe.getLocalizedMessage()));
-        }
-    }
-
-    // Implementation note: This has to be redone - km@dev.java.net (Aug 2008)
     private String getStatus(String dn) throws IOException, CommandException {
-        try {
-            GFLauncher launcher = GFLauncherFactory.getInstance(
-                RuntimeType.DAS);
-            GFLauncherInfo li = launcher.getInfo();
-            String parent = getDomainsRoot();
-            
-            if (parent != null)
-                li.setDomainParentDir(parent);            
-
-            li.setDomainName(dn);
-            launcher.setup(); //admin ports are not available otherwise
-            setServerDirs(new ServerDirs(li.getInstanceRootDir()));
-
-            programOpts.setPort(li.getAnAdminPort());
-            boolean status =
-                isThisDAS(SmartFile.sanitize(li.getInstanceRootDir()));
-            if (status) {
-                try {
-                    RemoteCommand cmd =
-                        new RemoteCommand("_get-restart-required",
-                                            programOpts, env);
-                    String restartRequired =
-                        cmd.executeAndReturnOutput("_get-restart-required");
-                    if (Boolean.parseBoolean(restartRequired.trim()))
-                        return strings.get("list.domains.StatusRestartRequired");
-                } catch (Exception ex) {
-                }
-                return strings.get("list.domains.StatusRunning");
-            } else
-                return strings.get("list.domains.StatusNotRunning");
-        } catch (GFLauncherException gf) {
-            logger.printExceptionStackTrace(gf);
-            return strings.get("list.domains.StatusUnknown");
-        } catch (MiniXmlParserException me) {
-            logger.printExceptionStackTrace(me);
-            return strings.get("list.domains.StatusUnknown");
-        }
+        setDomainName(dn);
+        initDomain();
+        programOpts.setPort(getAdminPort());
+        boolean status = isThisDAS(getDomainRootDir());
+        if (status) {
+            try {
+                RemoteCommand cmd =
+                    new RemoteCommand("_get-restart-required",
+                                        programOpts, env);
+                String restartRequired =
+                    cmd.executeAndReturnOutput("_get-restart-required");
+                if (Boolean.parseBoolean(restartRequired.trim()))
+                    return strings.get("list.domains.StatusRestartRequired");
+            } catch (Exception ex) {
+            }
+            return strings.get("list.domains.StatusRunning");
+        } else
+            return strings.get("list.domains.StatusNotRunning");
     }
 }
