@@ -37,7 +37,7 @@ public class SimpleBMPClient {
                 result = false;
                 break;
             }
-            Thread.sleep(20000);
+            Thread.sleep(5000);
         }
         SimpleBMPHome simpleBMPHome1 = (SimpleBMPHome) javax.rmi.PortableRemoteObject.narrow(objRef, SimpleBMPHome.class);
 
@@ -63,7 +63,7 @@ public class SimpleBMPClient {
                 result = false;
                 break;
             }
-            Thread.sleep(20000);
+            Thread.sleep(5000);
         }
         SimpleBMPHome simpleBMPHome2 = (SimpleBMPHome) javax.rmi.PortableRemoteObject.narrow(objRef, SimpleBMPHome.class);
 
@@ -89,7 +89,7 @@ public class SimpleBMPClient {
                 result = false;
                 break;
             }
-            Thread.sleep(20000);
+            Thread.sleep(5000);
         }
         SimpleBMPHome simpleBMPHome3 = (SimpleBMPHome) javax.rmi.PortableRemoteObject.narrow(objRef, SimpleBMPHome.class);
 

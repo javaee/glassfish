@@ -47,7 +47,7 @@
       <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>
             <param name="operand.props"
-                   value="${resources.dottedname.prefix}.jdbc-connection-pool.ql-jdbc-pool.statement-leak-timeout-in-seconds=10"/>
+                   value="${resources.dottedname.prefix}.jdbc-connection-pool.ql-jdbc-pool.statement-leak-timeout-in-seconds=3"/>
    </antcall>
       <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>
