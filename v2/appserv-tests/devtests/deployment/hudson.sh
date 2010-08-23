@@ -33,7 +33,7 @@ then
     $S1AS_HOME/bin/asadmin stop-domain
 fi
 egrep -c '\[FAILED|UNKNOWN\]' client.log >> /dev/null
-if [ $? -ne 0 ]
+if [ $? -eq 0 ]
 then
   exit 1
 fi
