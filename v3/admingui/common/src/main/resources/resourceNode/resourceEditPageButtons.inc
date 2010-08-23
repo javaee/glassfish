@@ -79,11 +79,11 @@
                         }
                     }
 
-                    //REST-TODO  need to take care of setProxyProperties()
                     if (#{pageSession.hasPropertyTable}){
                         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                        setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                        javaToJSON(obj="#{newList}" json="#{requestScope.tmpJSON}");
+                        gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="POST" data="#{requestScope.tmpJSON}" result="#{requestScope.restResponse}");
                     }
 
                     if (#{pageSession.additionalSaveHandler}){
@@ -150,17 +150,13 @@
                                 convertToFalse="#{pageSession.convertToFalseList2}"
                                 result => $attribute{resultEndpoint2});
                         }
-                    }               
-                
+                    }                
 
-                    ////REST-TODO  need to take care setProxyProperties()
                     if (#{pageSession.hasPropertyTable}){
                         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                        if (#{pageSession['rest-api']}) {
-                            setAttribute(key="objStr", value="#{pageSession.restObjStr},name=#{pageSession.valueMap['name']}");
-                        }
-                        setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                        javaToJSON(obj="#{newList}" json="#{requestScope.tmpJSON}");
+                        gf.restRequest(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.valueMap['name']}/property.json" method="POST" data="#{requestScope.tmpJSON}" result="#{requestScope.restResponse}");
                     }                   
 
                     if (#{pageSession.additionalSaveHandler}){

@@ -79,7 +79,9 @@
                 #setPageSessionAttribute(key="selectedTargets" value=[] );
         }
         }
-
+        setPageSessionAttribute(key="useCheckBox" value="#{true}");
+        setPageSessionAttribute(key="useString" value="#{false}");
+        
         gf.convertListToOptionArray(list="#{pageSession.targetList}", optionArray="#{pageSession.availableTargets}");
     />
     <sun:propertySheetSection id="targetSectionId" visible="#{pageSession.showTargetSection}" label="$resource{i18n.common.TargetTableTitle}"  >

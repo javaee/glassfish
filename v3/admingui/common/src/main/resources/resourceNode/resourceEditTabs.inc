@@ -64,7 +64,7 @@
     <sun:tab id="targetTab" immediate="$boolean{true}" text="$resource{i18n.common.TargetTab}" >
         <!command
             setSessionAttribute(key="resEditTabs" value="targetTab");
-            gf.redirect(page="#{targetPage}");
+            gf.redirect(page="#{targetPage}&generalPage=#{generalPage}");
         />
     </sun:tab>
 </sun:tabSet>

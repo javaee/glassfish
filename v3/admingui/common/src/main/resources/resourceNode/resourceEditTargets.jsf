@@ -57,7 +57,7 @@
             urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
             //For resourceEditTabs.inc
             setSessionAttribute(key="resEditTabs" value="targetTab");
-            setPageSessionAttribute(key="generalPage" value="#{request.contextPath}/full/customResourceEdit.jsf?name=#{pageSession.encodedName}");
+            getRequestValue(key="generalPage" value="#{pageSession.generalPage}");
             setPageSessionAttribute(key="targetPage" value="#{request.contextPath}/common/resourceNode/resourceEditTargets.jsf?name=#{pageSession.encodedName}");
         />
     </event>
@@ -88,7 +88,7 @@
                         setAttribute(key="name" value="#{name}");
                         setAttribute(key="targetPage" value="#{targetPage}");
                         setAttribute(key="targetPageHelp" value="#{targetPageHelp}");
-                        gf.redirect(page="#{request.contextPath}/common/resourceNode/resourceManageTargets.jsf?resName=#{pageSession.encodedName}&listPageLink=#{pageSession.listPageLink}");
+                        gf.redirect(page="#{request.contextPath}/common/resourceNode/resourceManageTargets.jsf?resName=#{pageSession.encodedName}&generalPage=#{pageSession.generalPage}");
                 />
             </sun:button>
             <sun:button id="button2" text="$resource{i18n.button.Enable}" disabled="#{true}" primary="#{false}" >

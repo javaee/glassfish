@@ -52,14 +52,9 @@
     <!beforeCreate
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/full/externalResourceNew.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/full/externalResources.jsf");
-        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="childType" value="external-jndi-resource");
-        //REST - for setproxyProperties after creating an entity.
-        setPageSessionAttribute(key="restObjStr", value="amx:pp=/domain/resources,type=#{pageSession.childType}");
         setPageSessionAttribute(key="showJndiLookup" value="#{true}");
-        //REST related
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
-        setPageSessionAttribute(key="rest-api" value="true");
         gf.getDefaultValues(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", valueMap="#{pageSession.valueMap}");
 
         setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
@@ -85,7 +80,7 @@
             mapPut(map="#{pageSession.valueMap}" key="factoryClass" value="#{pageSession.factoryClass}") 
             mapPut(map="#{pageSession.valueMap}" key="resType" value="#{resChosen}") 
             mapPut(map="#{pageSession.valueMap}" key="jndiLookupName" value="#{jndiLookup}") 
-            setAttribute(key="tableList" value="#{newList}");
+            setPageSessionAttribute(key="tableList" value="#{newList}");
         }
         gf.getJndiResourceForCreate(resources="#{pageSession.propsMap}" result="#{requestScope.entriesList}", classnameOption=>$page{classnameOption}, attrMap="#{pageSession.attrMap}", factoryMap="#{pageSession.factoryMap}" );
         addEmptyFirstElement(in="$attribute{entriesList}"  out="#{pageSession.builtInEntries}")
@@ -99,8 +94,7 @@
 
         //for create, we want to set a default target.  This is used by targetSectionForCreate.inc
         setPageSessionAttribute(key="setDefaultTarget" value="#{true}" );
-        setPageSessionAttribute(key="useString" value="#{false}");
-
+        
     />
     </event>
     

@@ -52,6 +52,7 @@
     <event>
         <!beforeCreate
             getRequestValue(key="resName" value="#{pageSession.resName}");
+            getRequestValue(key="generalPage" value="#{pageSession.generalPage}");
             urlencode(value="#{pageSession.resName}" encoding="UTF-8" result="#{pageSession.encodedResName}");
 #include "/common/shared/targetsList.inc"
             setPageSessionAttribute(key="resTargets" value={});
@@ -68,7 +69,6 @@
                  }
              }
              convertListToArray(list="#{pageSession.resTargets}" array="#{pageSession.selectedTargets}");
-             getRequestValue(key="listPageLink" value="#{pageSession.listPageLink}"  default="/common/applications/applications.jsf");
         />
     </event>
 <sun:form id="form">
@@ -125,12 +125,12 @@
                         gf.restRequest(endpoint="#{endpoint}" attrs="#{requestScope.resRefAttrsMap}", method="DELETE");
                     }
                     prepareSuccessfulMsg();
-                    gf.redirect(page="#{request.contextPath}/common/resourceNode/resourceEditTargets.jsf?name=#{pageSession.encodedResName}&listPageLink=#{pageSession.listPageLink}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                    gf.redirect(page="#{request.contextPath}/common/resourceNode/resourceEditTargets.jsf?name=#{pageSession.encodedResName}&generalPage=#{pageSession.generalPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
             <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
                 <!command
-                    gf.redirect(page="#{request.contextPath}/common/resourceNode/resourceEditTargets.jsf?name=#{pageSession.encodedResName}&listPageLink=#{pageSession.listPageLink}");
+                    gf.redirect(page="#{request.contextPath}/common/resourceNode/resourceEditTargets.jsf?name=#{pageSession.encodedResName}&generalPage=#{pageSession.generalPage}");
                 />
             </sun:button>
         </sun:panelGroup>
