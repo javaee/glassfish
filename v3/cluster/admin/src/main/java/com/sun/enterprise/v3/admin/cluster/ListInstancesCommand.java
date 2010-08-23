@@ -204,6 +204,7 @@ public class ListInstancesCommand implements AdminCommand {
         StringBuilder sb = new StringBuilder();
         boolean first = true;
         Properties extraProps = new Properties();
+        List instanceList = new ArrayList();
 
         for (InstanceInfo ii : infos) {
             if(first) 
@@ -238,10 +239,12 @@ public class ListInstancesCommand implements AdminCommand {
             if(state == InstanceState.StateType.RESTART_REQUIRED) {
                 insDetails.put("restartReasons", failedCmds);
             }
-            if(ii.isRunning())
+            if(ii.isRunning()) {
                 insDetails.put("uptime", ii.getUptime());
-            extraProps.put(name, insDetails);
+            }
+            instanceList.add(insDetails);
         }
+        extraProps.put("instanceList", instanceList);
         report.setExtraProperties(extraProps);
 
         if (verbose)

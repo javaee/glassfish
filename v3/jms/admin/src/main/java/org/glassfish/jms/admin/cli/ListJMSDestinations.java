@@ -106,31 +106,39 @@ public class ListJMSDestinations extends JMSDestination implements AdminCommand 
         ServerContext serverContext;
 
 
-     public void execute(AdminCommandContext context) {
+    public void execute(AdminCommandContext context) {
 
         final ActionReport report = context.getActionReport();
 
-          if(destType != null && !destType.equals(JMS_DEST_TYPE_QUEUE) &&
-                 !destType.equals(JMS_DEST_TYPE_TOPIC))
-          {
-            report.setMessage(localStrings.getLocalString("admin.mbeans.rmb.invalid_jms_desttype",destType));
+        if (destType != null && !destType.equals(JMS_DEST_TYPE_QUEUE)
+                && !destType.equals(JMS_DEST_TYPE_TOPIC)) {
+            report.setMessage(localStrings.getLocalString("admin.mbeans.rmb.invalid_jms_desttype", destType));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
 
+        report.setExtraProperties(new Properties());
+        List<Map> jmsDestList = new ArrayList<Map>();
+
         try {
-            List<JMSDestinationInfo> list= listJMSDestinations(target, destType);
+            List<JMSDestinationInfo> list = listJMSDestinations(target, destType);
 
             if (list.isEmpty()) {
                 final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
                 part.setMessage(localStrings.getLocalString("nothingToList",
-                    "Nothing to list."));
+                        "Nothing to list."));
             } else {
                 for (JMSDestinationInfo destInfo : list) {
                     final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
                     part.setMessage(destInfo.getDestinationName());
+                    Map<String, String> destMap = new HashMap<String, String>();
+                    destMap.put("name", destInfo.getDestinationName());
+                    destMap.put("type", destInfo.getDestinationType());
+                    jmsDestList.add(destMap);
                 }
             }
+
+            report.getExtraProperties().put("destinations", jmsDestList);
 
         } catch (Exception e) {
             logger.throwing(getClass().getName(), "ListJMSDestination", e);
@@ -141,7 +149,7 @@ public class ListJMSDestinations extends JMSDestination implements AdminCommand 
             report.setFailureCause(e);
             return;
         }
-     }
+    }
 
 // list-jmsdest
     public List listJMSDestinations(String tgtName, String destType)
