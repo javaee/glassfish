@@ -758,8 +758,26 @@ public class WsUtil {
     }
 
     public boolean isJAXWSbasedService(WebService ws) {
+
+        if(ws.isJaxWSBased() != null) {
+            //already verified
+            return ws.isJaxWSBased();
+        }
+
         boolean jaxwsEndPtFound = false;
         boolean jaxrpcEndPtFound = false;
+
+        String declaredType = ws.getType();
+        if(declaredType != null) {
+            if(declaredType.equals("JAX-WS")) {
+                jaxwsEndPtFound = true;
+            } else if(declaredType.equals("JAX-RPC")) {
+                jaxrpcEndPtFound = false;
+            } else {
+                logger.log(Level.SEVERE, rb.getString("webservice.type.error"),new Object[] {ws.getDescription(), declaredType});
+            }
+        }
+        //Verify that all the endpoints are of the same type 
         for (WebServiceEndpoint endpoint : ws.getEndpoints()) {
             String implClassName;
             if (endpoint.implementedByEjbComponent()) {
@@ -823,6 +841,14 @@ public class WsUtil {
                     ws.getWebServicesDescriptor().setSpecVersion("1.1");
                 }
             }
+        }
+
+        if(jaxwsEndPtFound) {
+            ws.setJaxWSBased(true);
+            ws.setType("JAX-WS");
+        } else {
+            ws.setJaxWSBased(false);
+            ws.setType("JAX-RPC");
         }
         return jaxwsEndPtFound;
     }

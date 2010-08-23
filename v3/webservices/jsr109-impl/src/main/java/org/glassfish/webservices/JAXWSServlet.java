@@ -51,6 +51,8 @@ import com.sun.xml.ws.api.server.Adapter;
 import com.sun.xml.ws.api.server.Invoker;
 import com.sun.xml.ws.api.server.SDDocumentSource;
 import com.sun.xml.ws.api.server.WSEndpoint;
+import com.sun.xml.ws.developer.SchemaValidationFeature;
+import com.sun.xml.ws.developer.StreamingAttachmentFeature;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapterList;
 import org.glassfish.webservices.monitoring.Endpoint;
@@ -94,7 +96,7 @@ public class JAXWSServlet extends HttpServlet {
     private String contextRoot;
     private WebServiceEngineImpl wsEngine_;
     private ClassLoader classLoader;
-
+    private boolean wsdlExposed = true;
     public void init(ServletConfig servletConfig) throws ServletException {
         try {
             super.init(servletConfig);
@@ -215,7 +217,7 @@ public class JAXWSServlet extends HttpServlet {
         // normal WSDL retrieval invocation
         try {
             ServletAdapter targetEndpoint = (ServletAdapter) getEndpointFor(request);
-            if (targetEndpoint != null) {
+            if (targetEndpoint != null && wsdlExposed) {
                 targetEndpoint.publishWSDL(getServletContext(), request, response);
             } else {
                 String message =
@@ -289,6 +291,9 @@ public class JAXWSServlet extends HttpServlet {
         // Get the proper binding using BindingID
         String givenBinding = endpoint.getProtocolBinding();
 
+        if(endpoint.getWsdlExposed() != null) {
+            wsdlExposed = Boolean.parseBoolean(endpoint.getWsdlExposed());
+        }
         // Get list of all wsdls and schema
         SDDocumentSource primaryWsdl = null;
         Collection docs = null;
@@ -350,6 +355,17 @@ public class JAXWSServlet extends HttpServlet {
             RespectBindingFeature rbFeature = new RespectBindingFeature(rb.isEnabled());
             wsFeatures.add(rbFeature);
         }
+
+        if(endpoint.getValidateRequest() != null && Boolean.parseBoolean(endpoint.getValidateRequest())) {
+            //enable SchemaValidationFeature
+            wsFeatures.add(new SchemaValidationFeature());
+        }
+
+        if(endpoint.getStreamAttachments() != null && Boolean.parseBoolean(endpoint.getStreamAttachments())) {
+            //enable StreamingAttachmentsFeature
+            wsFeatures.add(new StreamingAttachmentFeature());
+        }
+
         if (wsFeatures.size()>0){
             binding = BindingID.parse(givenBinding).createBinding(wsFeatures.toArray
                     (new WebServiceFeature[0]));
