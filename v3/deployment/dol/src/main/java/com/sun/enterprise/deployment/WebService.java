@@ -95,6 +95,9 @@ public class WebService extends Descriptor {
 
     /** type JAX-WS or JAX-RPC */
     private String type;
+
+    private Boolean isJaxWSBased = null;
+
     /**
      * Default constructor. 
      */
@@ -102,6 +105,21 @@ public class WebService extends Descriptor {
         this("");
     }
 
+    /**
+     * If this returns non-null value, then it is verified that all the endpoints are of the same type.
+     * @return
+     */
+    public Boolean isJaxWSBased() {
+        return isJaxWSBased;
+    }
+
+    /**
+     * This is called after verifying that all the endpoints are of the same type, either JAX-WS or JAX-RPC 
+     * @param isJaxWSBased
+     */
+    public void setJaxWSBased(boolean isJaxWSBased) {
+        this.isJaxWSBased = isJaxWSBased;
+    }
 
     /**
      * copy constructor. 
