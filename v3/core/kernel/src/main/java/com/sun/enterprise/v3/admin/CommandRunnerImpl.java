@@ -245,7 +245,7 @@ public class CommandRunnerImpl implements CommandRunner {
                                                     final AdminCommandContext context) {
 
         ActionReport report = context.getActionReport();
-        report.setActionDescription(model.getCommandName() + " AdminCommand");
+        report.setActionDescription(model.getCommandName() + " command");
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         try {
             GenericCrudCommand c = GenericCrudCommand.class.cast(command);
