@@ -59,9 +59,13 @@ public class Client extends AdminBaseDevTest {
     public static void main(String[] args) {
 
         if ("prepare".equals(args[0])) {
-            (new Client()).prepare(args[1]);
+            (new Client()).prepare();
+        } else if ("deploy".equals(args[0])) {
+            (new Client()).deploy(args[1]);
         } else if ("clean".equals(args[0])) {
-            (new Client()).clean(args[1]);
+            (new Client()).clean();
+        } else if ("undeploy".equals(args[0])) {
+            (new Client()).undeploy(args[1]);
         } else if ("verify1".equals(args[0])) {
             (new Client()).verify(args[1], args[2], args[0]);
         } else if ("verify2".equals(args[0])) {
@@ -76,16 +80,21 @@ public class Client extends AdminBaseDevTest {
         return "Unit test for automatic timers";
     }
 
-    public void prepare(String path) {
+    public void prepare() {
         try {
             asadmin("create-cluster", CLUSTER_NAME);
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE1_NAME);
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE2_NAME);
             asadmin("start-cluster", CLUSTER_NAME);
             //asadmin("set-log-level", "javax.enterprise.resource.jta=FINE");
-            System.out.println("Started cluster. Setting up resources.");
-
             asadmin("create-resource-ref", "--target", CLUSTER_NAME, XA_RESOURCE);
+            System.out.println("Started cluster.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void deploy(String path) {
+        try {
             asadmin("deploy", "--target", CLUSTER_NAME, path);
             System.out.println("Deployed " + path);
         } catch (Exception e) {
@@ -139,10 +148,17 @@ public class Client extends AdminBaseDevTest {
         }
     }
 
-    public void clean(String name) {
+    public void undeploy(String name) {
         try {
             asadmin("undeploy", "--target", CLUSTER_NAME, name);
             System.out.println("Undeployed " + name);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void clean() {
+        try {
             asadmin("stop-cluster", CLUSTER_NAME);
             asadmin("delete-local-instance", INSTANCE1_NAME);
             asadmin("delete-local-instance", INSTANCE2_NAME);
