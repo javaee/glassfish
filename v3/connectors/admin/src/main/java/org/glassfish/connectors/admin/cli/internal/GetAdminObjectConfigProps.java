@@ -78,27 +78,20 @@ public class GetAdminObjectConfigProps implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
+        Map<String, String> adminObjectConfigProps ;
+        Properties extraProperties = new Properties();
         try {
-            Properties properties = new Properties();
             if (adminObjectClass == null) {
-                Map<String, String> adminObjectConfigProps =
-                        connectorRuntime.getAdminObjectConfigProps(rarName, adminObjectInterface);
-
-                for (String key : adminObjectConfigProps.keySet()) {
-                    properties.put(key, adminObjectConfigProps.get(key));
-                }
+                adminObjectConfigProps = connectorRuntime.getAdminObjectConfigProps(rarName, adminObjectInterface);
             } else {
-                Map<String, String> adminObjectConfigProps =
+                adminObjectConfigProps =
                         connectorRuntime.getAdminObjectConfigProps(rarName, adminObjectInterface, adminObjectClass);
-
-                for (String key : adminObjectConfigProps.keySet()) {
-                    properties.put(key, adminObjectConfigProps.get(key));
-                }
             }
-            report.setExtraProperties(properties);
+            extraProperties.put("adminObjectConfigProps", adminObjectConfigProps);
+            report.setExtraProperties(extraProperties);
 
         } catch (Exception e) {
-            report.setMessage("_get-admin-object-config-properties failed");
+            report.setMessage("_get-admin-object-config-properties failed : " + e.getMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

@@ -50,6 +50,9 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
+import java.util.Arrays;
+import java.util.Properties;
+
 /**
  * @author Jagadish Ramu
  */
@@ -73,14 +76,13 @@ public class GetAdminObjectInterfaceNames implements AdminCommand {
         try {
             String[] adminObjectInterfaceNames =
                     connectorRuntime.getAdminObjectInterfaceNames(rarName);
-
-            for (String intfName : adminObjectInterfaceNames) {
-                final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage(intfName);
+            Properties extraProperties = new Properties();
+            if(adminObjectInterfaceNames != null){
+                extraProperties.put("adminObjectInterfaceNames", Arrays.asList(adminObjectInterfaceNames));
             }
-
+            report.setExtraProperties(extraProperties);
         } catch (Exception e) {
-            report.setMessage("_get-admin-object-interface-names failed");
+            report.setMessage("_get-admin-object-interface-names failed : " + e.getMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

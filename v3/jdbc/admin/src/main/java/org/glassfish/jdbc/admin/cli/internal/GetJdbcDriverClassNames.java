@@ -50,7 +50,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Jagadish Ramu
@@ -79,13 +79,11 @@ public class GetJdbcDriverClassNames implements AdminCommand {
 
         try {
             Set<String> driverClassNames = connectorRuntime.getJdbcDriverClassNames(dbVendor, resType, introspect);
-
-            for (String vendorName : driverClassNames) {
-                final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage(vendorName);
-            }
+            Properties extraProperties = new Properties();
+            extraProperties.put("driverClassNames", new ArrayList(driverClassNames));
+            report.setExtraProperties(extraProperties);
         } catch (Exception e) {
-            report.setMessage("_get-jdbc-driver-class-names failed");
+            report.setMessage("_get-jdbc-driver-class-names failed : " + e.getMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

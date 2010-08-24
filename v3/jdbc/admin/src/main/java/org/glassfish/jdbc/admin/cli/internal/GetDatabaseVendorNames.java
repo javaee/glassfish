@@ -49,6 +49,8 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
+import java.util.ArrayList;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -70,13 +72,11 @@ public class GetDatabaseVendorNames implements AdminCommand {
 
         try {
             Set<String> vendorNames = connectorRuntime.getDatabaseVendorNames();
-
-            for (String vendorName : vendorNames) {
-                final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage(vendorName);
-            }
+            Properties extraProperties = new Properties();
+            extraProperties.put("vendorNames", new ArrayList(vendorNames));
+            report.setExtraProperties(extraProperties);
         } catch (Exception e) {
-            report.setMessage("_get-database-vendor-names failed");
+            report.setMessage("_get-database-vendor-names failed : " + e.getMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

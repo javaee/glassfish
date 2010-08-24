@@ -49,6 +49,9 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
+import java.util.Arrays;
+import java.util.Properties;
+
 
 /**
  * @author Jagadish Ramu
@@ -68,14 +71,13 @@ public class GetSystemRarsAllowingPoolCreation implements AdminCommand {
 
         try {
             String[] rarList = connectorRuntime.getSystemConnectorsAllowingPoolCreation();
+            Properties extraProperties = new Properties();
             if (rarList != null) {
-                for (String rar : rarList) {
-                    final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                    part.setMessage(rar);
-                }
+                extraProperties.put("rarList", Arrays.asList(rarList));
             }
+            report.setExtraProperties(extraProperties);
         } catch (Exception e) {
-            report.setMessage("_get-system-rars-allowing-pool-creation failed");
+            report.setMessage("_get-system-rars-allowing-pool-creation failed : " + e.getMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

@@ -50,6 +50,8 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
+import java.util.ArrayList;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -74,13 +76,11 @@ public class GetValidationClassNames implements AdminCommand {
 
         try {
             Set<String> validationClassNames = connectorRuntime.getValidationClassNames(dbVendor);
-
-            for (String vendorName : validationClassNames) {
-                final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage(vendorName);
-            }
+            Properties extraProperties = new Properties();
+            extraProperties.put("validationClassNames", new ArrayList(validationClassNames));
+            report.setExtraProperties(extraProperties);
         } catch (Exception e) {
-            report.setMessage("_get-validation-class-names failed");
+            report.setMessage("_get-validation-class-names failed : " + e.getMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

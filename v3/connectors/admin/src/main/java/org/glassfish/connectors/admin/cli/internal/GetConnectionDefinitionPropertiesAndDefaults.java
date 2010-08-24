@@ -79,14 +79,11 @@ public class GetConnectionDefinitionPropertiesAndDefaults implements AdminComman
         try {
             Map<String, Object> connectionDefinitionPropertiesAndDefaults =
                     connectorRuntime.getConnectionDefinitionPropertiesAndDefaults(connectionDefinitionClass, resType);
-            Properties properties = new Properties();
-
-            for (String key : connectionDefinitionPropertiesAndDefaults.keySet()) {
-                properties.put(key, connectionDefinitionPropertiesAndDefaults.get(key));
-            }
-            report.setExtraProperties(properties);
+            Properties extraProperties = new Properties();
+            extraProperties.put("connectionDefinitionPropertiesAndDefaults", connectionDefinitionPropertiesAndDefaults);
+            report.setExtraProperties(extraProperties);
         } catch (Exception e) {
-            report.setMessage("_get-connection-definition-properties-and-defaults failed");
+            report.setMessage("_get-connection-definition-properties-and-defaults failed : " + e.getMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

@@ -79,14 +79,11 @@ public class GetMCFConfigProperties implements AdminCommand {
         try {
             Map<String, String> mcfConfigProps =
                     connectorRuntime.getMCFConfigProps(rarName, connectionDefnName);
-            Properties properties = new Properties();
-
-            for (String key : mcfConfigProps.keySet()) {
-                properties.put(key, mcfConfigProps.get(key));
-            }
-            report.setExtraProperties(properties);
+            Properties extraProperties = new Properties();
+            extraProperties.put("mcfConfigProps", mcfConfigProps);
+            report.setExtraProperties(extraProperties);
         } catch (Exception e) {
-            report.setMessage("_get-mcf-config-properties failed");
+            report.setMessage("_get-mcf-config-properties failed : " + e.getMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

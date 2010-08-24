@@ -77,13 +77,11 @@ public class GetMessageListenerConfigProperties implements AdminCommand {
         try {
             Map<String, String> messageListenerConfigProps =
                     connectorRuntime.getMessageListenerConfigProps(rarName, messageListenerType);
-            Properties properties = new Properties();
-            for (String key : messageListenerConfigProps.keySet()) {
-                properties.put(key, messageListenerConfigProps.get(key));
-            }
-            report.setExtraProperties(properties);
+            Properties extraProperties = new Properties();
+            extraProperties.put("messageListenerConfigProps", messageListenerConfigProps);
+            report.setExtraProperties(extraProperties);
         } catch (Exception e) {
-            report.setMessage("_get-message-listener-config-properties");
+            report.setMessage("_get-message-listener-config-properties : " + e.getMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

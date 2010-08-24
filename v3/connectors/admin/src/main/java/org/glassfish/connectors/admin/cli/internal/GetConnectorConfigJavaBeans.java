@@ -79,16 +79,13 @@ public class GetConnectorConfigJavaBeans implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         try {
-            Properties properties = new Properties();
+            Properties extraProperties = new Properties();
             Map<String, String> configProps =
                     connectorRuntime.getConnectorConfigJavaBeans(rarName, connectionDefnName, javaBeanType);
-
-            for (String key : configProps.keySet()) {
-                properties.put(key, configProps.get(key));
-            }
-            report.setExtraProperties(properties);
+            extraProperties.put("configProps", configProps);
+            report.setExtraProperties(extraProperties);
         } catch (Exception e) {
-            report.setMessage("_get-connector-config-java-beans failed");
+            report.setMessage("_get-connector-config-java-beans failed : " + e.getMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

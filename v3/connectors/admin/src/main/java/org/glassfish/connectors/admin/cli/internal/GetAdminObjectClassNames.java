@@ -50,6 +50,10 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Properties;
+
 
 /**
  * @author Jagadish Ramu
@@ -76,13 +80,13 @@ public class GetAdminObjectClassNames implements AdminCommand {
         try {
             String[] adminObjectClassNames =
                     connectorRuntime.getAdminObjectClassNames(rarName, adminObjectInterface);
-
-            for (String intfName : adminObjectClassNames) {
-                final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage(intfName);
+            Properties extraProperties = new Properties();
+            if(adminObjectClassNames != null){
+                extraProperties.put("adminObjectClassNames", Arrays.asList(adminObjectClassNames));
             }
+            report.setExtraProperties(extraProperties);
         } catch (Exception e) {
-            report.setMessage("_get-admin-object-class-names failed");
+            report.setMessage("_get-admin-object-class-names failed : " + e.getMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

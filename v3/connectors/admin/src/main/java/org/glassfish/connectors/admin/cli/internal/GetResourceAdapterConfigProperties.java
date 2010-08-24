@@ -75,14 +75,11 @@ public class GetResourceAdapterConfigProperties implements AdminCommand {
         try {
             Map<String, String> configProps =
                     connectorRuntime.getResourceAdapterConfigProps(rarName);
-            Properties properties = new Properties();
-
-            for (String key : configProps.keySet()) {
-                properties.put(key, configProps.get(key));
-            }
-            report.setExtraProperties(properties);
+            Properties extraProperties = new Properties();
+            extraProperties.put("configProps",configProps);
+            report.setExtraProperties(extraProperties);
         } catch (Exception e) {
-            report.setMessage("_get-resource-adapter-config-properties failed");
+            report.setMessage("_get-resource-adapter-config-properties failed : " + e.getMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

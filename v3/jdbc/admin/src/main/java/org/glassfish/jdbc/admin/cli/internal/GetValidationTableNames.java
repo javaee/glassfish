@@ -51,6 +51,8 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
+import java.util.ArrayList;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -81,13 +83,11 @@ public class GetValidationTableNames implements AdminCommand {
         try {
             PoolInfo poolInfo = new PoolInfo(poolName, applicationName, moduleName);
             Set<String> validationTableNames = connectorRuntime.getValidationTableNames(poolInfo);
-
-            for (String vendorName : validationTableNames) {
-                final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage(vendorName);
-            }
+            Properties extraProperties = new Properties();
+            extraProperties.put("validationTableNames", new ArrayList(validationTableNames));
+            report.setExtraProperties(extraProperties);
         } catch (Exception e) {
-            report.setMessage("_get-validation-table-names failed");
+            report.setMessage("_get-validation-table-names failed : " + e.getMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

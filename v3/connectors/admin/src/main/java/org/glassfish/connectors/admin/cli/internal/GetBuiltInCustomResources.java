@@ -70,13 +70,11 @@ public class GetBuiltInCustomResources implements AdminCommand {
 
         try {
             Map<String, String> builtInCustomResources = connectorRuntime.getBuiltInCustomResources();
-            Properties properties = new Properties();
-            for (String key : builtInCustomResources.keySet()) {
-                properties.put(key,builtInCustomResources.get(key));
-            }
-            report.setExtraProperties(properties);
+            Properties extraProperties = new Properties();
+            extraProperties.put("builtInCustomResources", builtInCustomResources);
+            report.setExtraProperties(extraProperties);
         } catch (Exception e) {
-            report.setMessage("_get-built-in-custom-resources failed");
+            report.setMessage("_get-built-in-custom-resources failed : " + e.getMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

@@ -50,6 +50,9 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
+import java.util.Arrays;
+import java.util.Properties;
+
 /**
  * @author Jagadish Ramu
  */
@@ -71,13 +74,13 @@ public class GetMessageListenerTypes implements AdminCommand {
         try {
             String[] messageListenerTypes =
                     connectorRuntime.getMessageListenerTypes(rarName);
-
-            for (String key : messageListenerTypes) {
-                final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage(key);
+            Properties extraProperties = new Properties();
+            if(messageListenerTypes != null){
+                extraProperties.put("messageListenerTypes", Arrays.asList(messageListenerTypes));
             }
+            report.setExtraProperties(extraProperties);
         } catch (Exception e) {
-            report.setMessage("_message-listener-types failed");
+            report.setMessage("_message-listener-types failed : " + e.getMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;
