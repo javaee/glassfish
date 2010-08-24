@@ -74,9 +74,7 @@
         gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-system-rars-allowing-pool-creation"
                        method="GET"
                        result="#{requestScope.result}");
-        gf.getMessageProps(messageListProps="#{requestScope.result.data.children}"
-                           id="message"
-                           keyList="#{pageSession.modList}");
+        setPageSessionAttribute(key="modList" value="#{requestScope.result.data.extraProperties.rarList}");
         gf.listCombine(list="#{pageSession.modList}" list2="#{requestScope.rarList}");
         //To get the connection definitions for RA
         if (!#{resAdapterChoosen}) {
@@ -92,9 +90,7 @@
                            attrs="#{requestScope.connDefAttrs}"
                            method="GET"
                            result="#{requestScope.result}");
-            gf.getMessageProps(messageListProps="#{requestScope.result.data.children}"
-                               id="message"
-                               keyList="#{pageSession.cdList}");
+            setPageSessionAttribute(key="cdList" value="#{requestScope.result.data.extraProperties.defnNames}");            
         }
     />
 </event>

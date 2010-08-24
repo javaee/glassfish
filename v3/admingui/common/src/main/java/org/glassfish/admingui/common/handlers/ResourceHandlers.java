@@ -73,6 +73,7 @@ public class ResourceHandlers {
             @HandlerOutput(name = "result", type = List.class)})
     public static void getResourceRealStatus(HandlerContext handlerCtx) {
         List<Map> rows = (List) handlerCtx.getInputValue("rows");
+        Map<String, String> targetsMap = new HashMap<String, String>();
         String resourceRefEndPoint = (String) handlerCtx.getInputValue("endpoint");
         for (Map oneRow : rows) {
             String name = (String) oneRow.get("encodedName");
@@ -85,12 +86,15 @@ public class ResourceHandlers {
             List<String> targetUrls = new ArrayList<String>();
             for ( String target : targets) {
                 if(TargetUtil.isCluster(target)) {
+                    targetsMap.put(GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster/"+target, target);
                     targetUrls.add(GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster/"+target);
                 } else {
+                    targetsMap.put(GuiUtil.getSessionValue("REST_URL")+"/servers/server/"+target, target);
                     targetUrls.add(GuiUtil.getSessionValue("REST_URL")+"/servers/server/"+target);
                 }
             }
             oneRow.put("targetUrls", targetUrls);
+            oneRow.put("targetsMap", targetsMap);
             oneRow.put("enabled", enabledStr);
         }
         handlerCtx.setOutputValue("result", rows);

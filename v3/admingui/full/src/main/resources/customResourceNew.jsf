@@ -67,11 +67,8 @@
         gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-built-in-custom-resources"
                        method="GET"
                        result="#{requestScope.result}");
-        setPageSessionAttribute(key="propsMap" value="#{requestScope.result.data.extraProperties}");
-        <!--gf.getMessageProps(messageListProps="#{requestScope.result.data.children}"
-                           id="message"
-                           propsMap="#{pageSession.propsMap}");-->
-        
+        setPageSessionAttribute(key="propsMap" value="#{requestScope.result.data.extraProperties.builtInCustomResources}");
+                
         if(#{resChosen}) {
             setPageSessionAttribute(key="factoryClass", value="#{pageSession.propsMap['$attribute{resChosen}']");
             mapPut(map="#{pageSession.valueMap}" key="name" value="#{Name}")

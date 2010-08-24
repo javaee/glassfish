@@ -98,7 +98,12 @@
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
                     onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
-                    mapPut(map="#{pageSession.valueMap}" key="Target" value="domain")
+                    if ("#{pageSession.childType}=admin-object-resource") {
+                        mapPut(map="#{pageSession.valueMap}" key="Target" value="server-config");
+                    }
+                    if ("!(#{pageSession.childType}=admin-object-resource)") {
+                        mapPut(map="#{pageSession.valueMap}" key="Target" value="domain");
+                    }                    
                     gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}"
                         attrs="#{pageSession.valueMap}"
                         skipAttrs="#{pageSession.skipAttrsList}"
@@ -157,7 +162,7 @@
                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                         javaToJSON(obj="#{newList}" json="#{requestScope.tmpJSON}");
                         gf.restRequest(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.valueMap['name']}/property.json" method="POST" data="#{requestScope.tmpJSON}" result="#{requestScope.restResponse}");
-                    }                   
+                    }
 
                     if (#{pageSession.additionalSaveHandler}){
                         gf.invokeHandler(handler="#{pageSession.additionalSaveHandler}", args="#{pageSession.additionalSaveHandlerArgs}" );

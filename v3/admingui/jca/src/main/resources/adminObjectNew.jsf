@@ -52,10 +52,7 @@
     <!beforeCreate
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/adminObjectNew.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/adminObjectResources.jsf");
-        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="childType" value="admin-object-resource");
-        //REST - for setproxyProperties after creating an entity.
-        setPageSessionAttribute(key="restObjStr", value="amx:pp=/domain/resources,type=#{pageSession.childType}");
         if(#{reload}){
             createMap(result="#{pageSession.tmpMap}")
             mapPut(map="#{pageSession.tmpMap}" key="name" value="$attribute{nameChosen}");
@@ -63,11 +60,8 @@
             mapPut(map="#{pageSession.tmpMap}" key="resType" value="$attribute{resType}");
             mapPut(map="#{pageSession.tmpMap}" key="className" value="#{className}");
         }
-        //REST related
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
-        setPageSessionAttribute(key="rest-api" value="true");
         gf.getDefaultValues(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", valueMap="#{pageSession.valueMap}");
-        
         setPageSessionAttribute(key="convertToFalseList" value={"enabled"});
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{false}" );
@@ -78,7 +72,7 @@
         setPageSessionAttribute(key="reload" value="#{false}" );
 
         createMap(result="#{pageSession.valueMap2}")
-        mapPut(map="#{pageSession.valueMap2}" key="enabled" value="true");
+        mapPut(map="#{pageSession.valueMap}" key="enabled" value="true");
         gf.getAdminObjectResourceWizard(
             reload="#{reload}"
             attrMap="#{pageSession.tmpMap}"
@@ -91,9 +85,7 @@
                        attrs="#{pageSession.attrsMap}"
                        method="GET"
                        result="#{requestScope.result}");
-        gf.getMessageProps(messageListProps="#{requestScope.result.data.children}"
-                           id="message"
-                           keyList="#{requestScope.resourceTypes}");
+        setAttribute(key="resourceTypes" value="#{requestScope.result.data.extraProperties.adminObjectInterfaceNames}");
         setAttribute(key="zero" value="$int{0}");
         setAttribute(key="size" value="#{requestScope.resourceTypes.size()}");
         if (#{requestScope.size} > #{requestScope.zero}) {
@@ -106,9 +98,7 @@
                            attrs="#{pageSession.attrsMap}"
                            method="GET"
                            result="#{requestScope.result}");
-            gf.getMessageProps(messageListProps="#{requestScope.result.data.children}"
-                               id="message"
-                               keyList="#{requestScope.classNames}");
+            setAttribute(key="classNames" value="#{requestScope.result.data.extraProperties.adminObjectClassNames}");
             setAttribute(key="size" value="#{requestScope.resourceTypes.size()}");
             if (#{requestScope.size} > #{requestScope.zero}) {
                 if(!#{pageSession.valueMap['className']}) {
@@ -120,24 +110,27 @@
                                attrs="#{pageSession.attrsMap}"
                                method="GET"
                                result="#{requestScope.result}");
-            gf.getMessageProps(messageListProps="#{requestScope.result.data.children}"
-                                   id="message"
-                                   propsMap="#{requestScope.adminObjProps}");
-            setAttribute(key="tableList" value="#{requestScope.adminObjProps.data.extraProperties.properties}");
+            gf.convertMapToTable(map="#{requestScope.result.data.extraProperties.adminObjectConfigProps}" tableList="#{pageSession.tableList}");
         }
         
     />
     </event>
-            <sun:form id="propertyForm">
+            <sun:form id="form">
 #include "/common/shared/alertMsg.inc"
 
                 <!-- Page Title #include "/jca/buttons.inc" -->
                 <sun:title id="propertyContentPage" title="$resource{i18njca.adminObject.NewPageTitle}" helpText="$resource{i18njca.adminObject.NewPageTitleHelp}">
-#include "/common/shared/editPageButtons.inc"
+#include "/common/resourceNode/resourceEditPageButtons.inc"
                     </sun:title>
                     "<br><br>
 #include "/jca/adminObjectAttr.inc"
 #include "/common/shared/propertyDescTable.inc"
+<event>
+<!afterCreate
+    setPageSessionAttribute(key="setDefaultTarget" value="true");
+    includeIntegrations(type="org.glassfish.admingui:TargetSectionForResource" );
+/>
+</event>
 
 	<sun:hidden id="helpKey" value="$resource{help_jca.adminObjectNew1}" />
             </sun:form>

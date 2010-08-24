@@ -86,8 +86,7 @@
                                     endpoint="#{pageSession.restURL}/#{requestScope.encodedResName}.json"
                                     method="GET"
                                     result=>$page{resourceRefAttrs});
-
-                                setAttribute(key="status" value="#{resourceRefAttrs.data.entity.enabled}");
+                                setAttribute(key="status" value="#{resourceRefAttrs.data.extraProperties.entity.enabled}");
                                 mapGet(Map="#{requestScope.typeMap}" Key="#{requestScope.resType}" Value=>$attribute{type});
                                 mapGet(Map="#{requestScope.editMap}" Key="#{requestScope.resType}" Value=>$attribute{link});
                                 gf.createAttributeMap(keys={"Enabled", "selected", "Name", "link", "Type"}

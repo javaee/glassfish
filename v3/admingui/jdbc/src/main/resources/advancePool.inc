@@ -158,12 +158,11 @@
                     if(#{pageSession.valueMap['isConnectionValidationRequired']}) {
                         if ( "#{pageSession.valueMap.connectionValidationMethod}=table" ) {
                             gf.createAttributeMap(keys={"poolname"} values={"$pageSession{encodedName}"} map="#{requestScope.attrMap}");
-                            gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-validation-table-names.json"
+                            gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-validation-table-names"
                                            attrs="#{requestScope.attrMap}"
                                            method="get"
                                            result="#{requestScope.result}");
-                            gf.getMessageProps(messageListProps="#{requestScope.result.data.result}"
-                                               keyList="#{pageSession.tableNameList}");                            
+                            setPageAttribute(key="tableNameList" value="#{requestScope.result.data.extraProperties.validationTableNames}");                            
                         }
                     }
                 />

@@ -53,7 +53,8 @@
             attrs="#{requestScope.stAttrs}"
             method="GET"
             result="#{pageSession.restMap}");
-         gf.getMapKeys(Map="#{pageSession.restMap.data.extraProperties}" Keys="#{pageSession.targetList}");
+        gf.getMessageProps(messageListProps="#{pageSession.restMap.data.extraProperties.instanceList}"
+                           keyList="#{pageSession.targetList}");
          
          gf.listCombine(list="#{pageSession.targetList}",  list2="#{requestScope.clusterList}");
          listAdd(list="#{pageSession.targetList}", value="server" index="0");

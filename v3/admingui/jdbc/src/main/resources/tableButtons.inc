@@ -54,9 +54,27 @@
             <!command
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                //deleteChildren(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType}", selectedRows="${selectedRows}");
-                //deleteChildren(objectNameStr="amx:pp=/domain/servers,type=server,name=server", type="resource-ref", selectedRows="${selectedRows}");
-                gf.deleteCascade(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", selectedRows="${selectedRows}");
+                foreach (var="row" list="#{requestScope.selectedRows}") {
+                urlencode(value="#{row['name']}" result="#{requestScope.encodedResName}");
+                setAttribute(key="targetUrlsList" value="#{row['targetUrls']}");
+                foreach (var="targetUrl" list="#{requestScope.targetUrlsList}") {
+                    createMap(result="#{requestScope.attrMap}");
+                    mapGet(Map="#{row['targetsMap']}" Key="#{requestScope.targetUrl}" Value="#{requestScope.targetVal}");
+                    mapPut(map="#{requestScope.attrMap}" key="target" value="#{targetVal}");
+                    gf.restRequest(
+                        endpoint="#{requestScope.targetUrl}/resource-ref/#{requestScope.encodedResName}"
+                        attrs="#{requestScope.attrMap}"
+                        method="DELETE"
+                        result="#{requestScope.foo}");
+                }
+                createMap(result="#{requestScope.attrMap}");
+                mapPut(map="#{requestScope.attrMap}" key="target" value="domain");
+                gf.restRequest(
+                    endpoint="#{pageSession.parentUrl}/#{pageSession.childType}/#{requestScope.encodedResName}"
+                    attrs="#{requestScope.attrMap}"
+                    method="DELETE"
+                    result="#{requestScope.foo}");
+                }
                 gf.redirect(page="#{pageSession.listLink}");
             />
         </sun:button>

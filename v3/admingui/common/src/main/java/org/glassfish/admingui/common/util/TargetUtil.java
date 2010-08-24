@@ -73,11 +73,12 @@ public class TargetUtil {
         try{
             Map responseMap = RestApiHandlers.restRequest( endpoint , attrsMap, "get" , null);
             Map  dataMap = (Map) responseMap.get("data");
-            Map<String, Object>  props = (Map<String, Object>) dataMap.get("extraProperties");
+            Map<String, Object>  extraProps = (Map<String, Object>) dataMap.get("extraProperties");
+            List<Map<String, String>> props = (List<Map<String, String>>) extraProps.get("instanceList");            
             if (props == null){
                 return result;
             }
-            result.addAll(props.keySet());
+            result = RestUtilHandlers.getListFromMapKey(props);
         }catch (Exception ex){
             GuiUtil.getLogger().severe("Error in getStandaloneInstances ; \nendpoint = " +endpoint + ", attrsMap=" + attrsMap);
         }

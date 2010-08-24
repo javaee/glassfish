@@ -54,7 +54,7 @@
         urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
         setSessionAttribute(key="serverInstTabs" value="resources");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/common/appServer/serverInstResources.jsf?instanceName=server");
-        setPageSessionAttribute(key="restURL" value="#{sessionScope.REST_URL}/servers/server/#{pageSession.encodedInstanceName}/resource-ref");        
+        setPageSessionAttribute(key="restURL" value="#{sessionScope.REST_URL}/servers/server/#{pageSession.encodedInstanceName}/resource-ref");
     />
     </event>
 <sun:form id="propertyForm">

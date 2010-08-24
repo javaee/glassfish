@@ -102,7 +102,7 @@
                                       method="post");
                     }                    
                     setAttribute(key="selectedRows" value="${selectedRows}");
-                    gf.redirect(page="#{pageSession.targetPage}");
+                    gf.redirect(page="#{pageSession.targetPage}&generalPage=#{pageSession.generalPage}");
                 />
             </sun:button>
             <sun:button id="button3" text="$resource{i18n.button.Disable}" disabled="#{true}" primary="#{false}" >
@@ -116,7 +116,7 @@
                                       method="post");
                     }
                     setAttribute(key="selectedRows" value="${selectedRows}");
-                    gf.redirect(page="#{pageSession.targetPage}");
+                    gf.redirect(page="#{pageSession.targetPage}&generalPage=#{pageSession.generalPage}");
                 />
             </sun:button>
          </sun:panelGroup>

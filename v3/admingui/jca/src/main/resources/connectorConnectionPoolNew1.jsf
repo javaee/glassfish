@@ -68,9 +68,7 @@
         gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-system-rars-allowing-pool-creation"
                        method="GET"
                        result="#{requestScope.result}");
-        gf.getMessageProps(messageListProps="#{requestScope.result.data.children}"
-                           id="message"
-                           keyList="#{requestScope.modList}");
+        setAttribute(key="modList" value="#{requestScope.result.data.extraProperties.rarList}");
         gf.listCombine(list="#{requestScope.modList}" list2="#{requestScope.rarList}");
         addEmptyFirstElement(in="$attribute{modList}"  out="#{pageSession.modules}")
         gf.getConnectorConnectionPoolWizard(
@@ -87,9 +85,7 @@
                            attrs="#{requestScope.connDefAttrs}"
                            method="GET"
                            result="#{requestScope.result}");
-            gf.getMessageProps(messageListProps="#{requestScope.result.data.children}"
-                               id="message"
-                               keyList=>$attribute{connectionDefinitions});
+            setAttribute(key="connectionDefinitions" value="#{requestScope.result.data.extraProperties.defnNames}");            
         }
         
     />
@@ -122,9 +118,7 @@
                                                        attrs="#{requestScope.mcfAttrs}"
                                                        method="GET"
                                                        result="#{requestScope.result}");
-                                        gf.getMessageProps(messageListProps="#{requestScope.result.data.children}"
-                                                           id="message"
-                                                           propsMap=>$attribute{mcfProps});
+                                        setAttribute(key="mcfProps" value="#{requestScope.result.data.extraProperties.mcfConfigProps}");
                                         gf.updateConnectorConnectionPoolWizard(props="#{mcfProps}" currentAdapter="#{currentAdapter}" currentDef="#{currentConnDef}");
                                     }
                                 }

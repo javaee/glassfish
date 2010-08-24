@@ -250,7 +250,7 @@ public class JdbcTempHandler {
 
     private static List getJdbcDriverClassNames(String dbVendor, String resType, boolean introspect) {
         String endpoint = (String) GuiUtil.getSessionValue("REST_URL");
-        endpoint = endpoint + "/resources/get-jdbc-driver-class-names.json";
+        endpoint = endpoint + "/resources/get-jdbc-driver-class-names";
         Map<String, Object> attrs = new HashMap<String, Object>();
         attrs.put("dbVendor", dbVendor);
         attrs.put("restype", resType);
@@ -258,7 +258,10 @@ public class JdbcTempHandler {
         List<String> jdbcClassNames = new ArrayList<String>();
         try {
             Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, attrs, "GET", null);
-            jdbcClassNames = RestUtilHandlers.getListFromMapKey((List<Map<String, String>>) ((Map<String, Object>) responseMap.get("data")).get("children"), "message");
+            Map<String, Object> extraPropsMap = (Map<String, Object>) ((Map<String, Object>) responseMap.get("data")).get("extraProperties");
+            if ( extraPropsMap != null) {
+                jdbcClassNames = (List<String>) extraPropsMap.get("driverClassNames");
+            }            
         } catch (Exception ex) {
             GuiUtil.getLogger().severe("Error in getJdbcDriverClassNames ; \nendpoint = " + endpoint + "attrs=" + attrs + "method=GET");
             //we don't need to call GuiUtil.handleError() because thats taken care of in restRequest() when we pass in the handler.
@@ -268,11 +271,14 @@ public class JdbcTempHandler {
 
     private static List getDatabaseVendorNames() {
         String endpoint = (String) GuiUtil.getSessionValue("REST_URL");
-        endpoint = endpoint + "/resources/get-database-vendor-names.json";
+        endpoint = endpoint + "/resources/get-database-vendor-names";
         List<String> vendorList = new ArrayList<String>();
         try {
             Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "GET", null);
-            vendorList = RestUtilHandlers.getListFromMapKey((List<Map<String, String>>) ((Map<String, Object>) responseMap.get("data")).get("children"), "message");
+            Map<String, Object> extraPropsMap = (Map<String, Object>) ((Map<String, Object>) responseMap.get("data")).get("extraProperties");
+            if ( extraPropsMap != null) {
+                vendorList = (List<String>) extraPropsMap.get("vendorNames");
+            }            
         } catch (Exception ex) {
             GuiUtil.getLogger().severe("Error in getDatabaseVendorNames ; \nendpoint = " + endpoint + "attrs=null method=GET");
             //we don't need to call GuiUtil.handleError() because thats taken care of in restRequest() when we pass in the handler.
@@ -282,13 +288,17 @@ public class JdbcTempHandler {
 
     private static Map<String, String> getConnectionDefinitionPropertiesAndDefaults(String datasourceClassName, String resType) {
         String endpoint = (String) GuiUtil.getSessionValue("REST_URL");
-        endpoint = endpoint + "/resources/get-connection-definition-properties-and-defaults.json";
+        endpoint = endpoint + "/resources/get-connection-definition-properties-and-defaults";
         Map<String, Object> attrs = new HashMap<String, Object>();
         attrs.put("connectionDefinitionClass", datasourceClassName);
         attrs.put("restype", resType);
         Map<String, String> connDefProps = new HashMap<String, String>();
         try {
             Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, attrs, "GET", null);
+            Map<String, Object> extraPropsMap = (Map<String, Object>) ((Map<String, Object>) responseMap.get("data")).get("extraProperties");
+            if ( extraPropsMap != null) {
+                connDefProps = (Map<String, String>) (List<String>) extraPropsMap.get("connectionDefinitionPropertiesAndDefaults");
+            }
             connDefProps = RestUtilHandlers.getMapFromMapKey((List<Map<String, String>>) ((Map<String, Object>) responseMap.get("data")).get("children"), "message");
         } catch (Exception ex) {
             GuiUtil.getLogger().severe("Error in getJdbcDriverClassNames ; \nendpoint = " + endpoint + "attrs=" + attrs + "method=GET");
