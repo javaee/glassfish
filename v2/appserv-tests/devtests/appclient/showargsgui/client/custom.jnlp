@@ -1,0 +1,10 @@
+<jnlp>
+  <resources>
+    <property name="color" value="pink"/>
+  </resources>
+
+  <application-desc main-class="does.not.Exist">
+    <argument>ignored</argument>
+  </application-desc>
+
+</jnlp>

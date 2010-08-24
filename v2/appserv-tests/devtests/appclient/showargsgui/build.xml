@@ -34,9 +34,9 @@
             <param name="appclient.jar" value="${appclient.jar.path}"/>
         </antcall>
 
-        <!-- add the images -->
+        <!-- add the images and custom JNLP file -->
         <jar jarfile="${appclient.jar.path}" basedir="." 
-             update="true" includes="**/*.jpg **/*.gif"/>
+             update="true" includes="**/*.jpg **/*.gif **/*.jnlp"/>
 
         <!-- Build the library jar. -->        
 <!--

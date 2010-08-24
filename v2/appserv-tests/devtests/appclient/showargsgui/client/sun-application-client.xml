@@ -4,6 +4,7 @@
 <sun-application-client>
     <java-web-start-access>
         <context-root>/tim</context-root>
-        <vendor>client/icon.jpg::client/splash.jpg::Sun Microsystems, Inc.</vendor>
+<!--        <vendor>client/icon.jpg::client/splash.jpg::Sun Microsystems, Inc.</vendor> -->
+        <jnlp-doc>client/custom.jnlp</jnlp-doc>
     </java-web-start-access>
 </sun-application-client>
