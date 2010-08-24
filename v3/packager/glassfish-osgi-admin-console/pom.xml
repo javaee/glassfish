@@ -85,6 +85,12 @@
             <artifactId>felix-webconsole-extension</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.admingui</groupId>
+            <artifactId>glassfish-osgi-console-plugin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    
     
     	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	

@@ -63,6 +63,13 @@
        <stage-module-autostart-jars graphid="all-modules" />
        <stage-distribution-fragments graphid="all-modules" />
 
+       <!-- move console plugin jar to modules directory -->
+
+       <move
+           file="target/stage/${install.dir.name}/glassfish/modules/autostart/glassfish-osgi-console-plugin.jar"
+	   todir="target/stage/${install.dir.name}/glassfish/modules"
+	   failonerror="false"/>
+
 
        <if test="${compression}">
 	       <antcall target="pack.compression" />
