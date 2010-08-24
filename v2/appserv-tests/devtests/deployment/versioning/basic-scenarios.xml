@@ -95,6 +95,31 @@
     <antcall target="autodeploy.scenario">
         <param name="description" value="xml.version(6) autodeploy"/>
     </antcall>
+
+    <!-- Simple deployment using jsr88. InputStream mode -->
+    <antcall target="deploy.version-stream.jsr88">
+        <param name="include-application-xml" value="true"/>
+        <param name="versionExpression" value="${identifier.3}"/>
+        <param name="xmlVersionIdentifier" value="${identifier.3}"/>
+    </antcall>
+
+    <antcall target="test.registred">
+        <param name="versionExpression" value="${identifier.3}"/>
+        <param name="description" value="xml.version(7) deploy jsr88"/>
+    </antcall>
+
+    <!-- Force deployment using jsr88. InputStream mode -->
+    <antcall target="redeploy.version-stream.jsr88">
+        <param name="include-application-xml" value="true"/>
+        <param name="versionExpression" value="${identifier.3}"/>
+        <param name="xmlVersionIdentifier" value="${identifier.2}"/>
+    </antcall>
+
+    <antcall target="test.registred">
+        <param name="versionExpression" value="${identifier.3}"/>
+        <param name="description" value="xml.version(8) deploy jsr88"/> 
+    </antcall>
+
 </target>
 
 <!--
@@ -453,4 +478,107 @@
     <antcall target="test.notregistred">
         <param name="description" value="sample.scenarios(10)"/>
     </antcall>
+</target>
+
+<target name="rolling-upgrade.scenario" if="doCluster">
+    <!--
+      This property is used to skip the reference creations over
+      the standalone instance depltest-server of the devtests in EE mode
+    -->
+    <condition property="doRollingUpgrade">
+      <not><isset property="doRollingUpgrade"/></not>
+    </condition>
+
+    <echo message="Running... asadmin create-local-instance"/>
+    <exec executable="${ASADMIN}" failonerror="true">
+        <arg line="create-local-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --cluster ${testCluster} --systemproperties HTTP_LISTENER_PORT=${deploy.clusterinstance1.httpport}:HTTP_SSL_LISTENER_PORT=2102:IIOP_LISTENER_PORT=${deploy.clusterinstance2.orbport}:IIOP_SSL_LISTENER_PORT=2302:IIOP_SSL_MUTUALAUTH_PORT=2402:JMX_SYSTEM_CONNECTOR_PORT=2502:JMS_PROVIDER_PORT=2602:ASADMIN_LISTENER_PORT=2702 ${testClusterServer2}"/>
+    </exec>
+    <echo message="Running... asadmin start-instance"/>
+    <antcall target="start-process">
+        <param name="line" value="start-local-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} ${testClusterServer2}"/>
+    </antcall>
+
+    <!-- give some time to the instance to be available -->
+    <sleep seconds="40"/>
+    <!-- clean the version(s) deployed on the cluster -->
+    <antcall target="clean.scenario"/>
+
+    <!-- deploys an untagged version to the cluster -->
+    <antcall target="deploy.version"/>
+    <!-- deploys a specific version to the cluster in a DISABLE state -->
+    <antcall target="deploy.version">
+      <param name="versionExpression" value="${identifier.1}"/>
+      <param name="enabled" value="false"/>
+    </antcall>
+
+    <!-- give some time to the instances to be available -->
+    <sleep seconds="40"/>
+
+    <!--
+      check that the version running on the first cluster instance
+      is the untagged version
+    -->
+    <antcall target="run.positive.clusterInstance1">
+        <param name="description" value="rolling.upgrade(1)"/>
+    </antcall>
+    <!--
+      check that the version running on the second cluster instance
+      is the untagged version
+    -->
+    <antcall target="run.positive.clusterInstance2">
+        <param name="description" value="rolling.upgrade(1)"/>
+    </antcall>
+    
+    <!-- switch the 2nd instance to the specific version -->
+    <antcall target="enable.version.clusterInstance2">
+      <param name="versionExpression" value="${identifier.1}"/>
+    </antcall>
+
+     <!--
+      check that the version running on the first cluster instance
+      is the untagged version
+    -->
+    <antcall target="run.positive.clusterInstance1">
+        <param name="description" value="rolling.upgrade(2)"/>
+    </antcall>
+     <!--
+      check that the version running on the second cluster instance
+      is the ${identifier.1} version
+    -->
+    <antcall target="run.positive.clusterInstance2">
+        <param name="description" value="rolling.upgrade(2)"/>
+        <param name="versionExpression" value="${identifier.1}"/>
+    </antcall>
+
+    <!-- switch the 2nd instance to the specific version -->
+    <antcall target="enable.version.clusterInstance1">
+      <param name="versionExpression" value="${identifier.1}"/>
+    </antcall>
+     <!--
+      check that the version running on the first cluster instance
+      is the ${identifier.1} version
+    -->
+    <antcall target="run.positive.clusterInstance1">
+        <param name="description" value="rolling.upgrade(3)"/>
+        <param name="versionExpression" value="${identifier.1}"/>
+    </antcall>
+     <!--
+      check that the version running on the second cluster instance
+      is the ${identifier.1} version
+    -->
+    <antcall target="run.positive.clusterInstance2">
+        <param name="description" value="rolling.upgrade(3)"/>
+        <param name="versionExpression" value="${identifier.1}"/>
+    </antcall>
+
+    <echo message="Running... asadmin stop-instance"/>
+    <exec executable="${ASADMIN}">
+        <arg line="stop-local-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} ${testClusterServer2}"/>
+    </exec>
+    <!-- give some time to the instance to stop -->
+    <sleep seconds="10"/>
+    <echo message="Running... asadmin delete-instance"/>
+    <exec executable="${ASADMIN}">
+        <arg line="delete-local-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} ${testClusterServer2}"/>
+    </exec>
 </target>

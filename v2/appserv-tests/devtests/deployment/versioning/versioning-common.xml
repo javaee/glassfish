@@ -1,6 +1,9 @@
 <!-- GLOBAL PROPERTIES -->
 <property name="autodeployDir" value="${appserver.instance.dir}/autodeploy"/>
 <property name="clientStubsDir" value="${build}/${untaggedName}Client-stubs"/>
+<property name="testClusterServer2" value="depltest-cluster-server2"/>
+<property name="deploy.clusterinstance2.httpport" value="2002"/>
+<property name="deploy.clusterinstance2.orbport" value="2202"/>
 
 <!--
   HANDLING COMMANDS TARGETS, usable for making versioning scenarios
@@ -37,6 +40,7 @@
   </antcall>
 </target>
 
+
 <!--
   Enables the given version
   @param ${versionExpression} (optional)
@@ -44,6 +48,22 @@
 <target name="enable.version" depends="process.appname,prepare.cluster">
   <antcall target="common.enable.asadmin">
     <param name="arg.list" value="${appName}"/>
+  </antcall>
+</target>
+
+<!--
+  Enables the given version on ${testClusterServer1} or ${testClusterServer2}
+  Used by rolling-upgrade scenario
+  @param ${versionExpression} (optional)
+-->
+<target name="enable.version.clusterInstance1" if="doRollingUpgrade" depends="prepare.httpport.clusterInstance1">
+  <antcall target="enable.version">
+    <param name="ASADMIN-ARGS" value="--user ${admin.user} --passwordfile ${passwordFile} --port ${admin.port} --target ${testClusterServer1}"/>
+  </antcall>
+</target>
+<target name="enable.version.clusterInstance2" if="doRollingUpgrade" depends="prepare.httpport.clusterInstance2">
+  <antcall target="enable.version">
+    <param name="ASADMIN-ARGS" value="--user ${admin.user} --passwordfile ${passwordFile} --port ${admin.port} --target ${testClusterServer2}"/>
   </antcall>
 </target>
 
@@ -75,12 +95,30 @@
 <target name="deploy.version.jsr88" depends="prepare.version.jsr88,common.deploy.jsr88"/>
 
 <!--
+  Deploys the given version with JSR88. Use inputstream.
+  @param ${versionExpression} (optional)
+  @param ${xmlVersionIdentifier} (optional)
+-->
+<target name="deploy.version-stream.jsr88" depends="prepare.version.jsr88,common.deploy-stream.jsr88"/>
+
+<!--
   Redeploys the given version with JSR88
   @param ${versionExpression} (optional)
 -->
 <target name="redeploy.version.jsr88" depends="prepare.version.jsr88">
     <antcall target="common.run.jsr88">
         <param name="command" value="redeploy"/>
+        <param name="arg.list" value="true ${arg.list}"/>
+    </antcall>
+</target>
+
+<!--
+  Redeploys the given version with JSR88. Use inputstream.
+  @param ${versionExpression} (optional)
+-->
+<target name="redeploy.version-stream.jsr88" depends="prepare.version.jsr88">
+    <antcall target="common.run.jsr88">
+        <param name="command" value="redeploy-stream"/>
         <param name="arg.list" value="true ${arg.list}"/>
     </antcall>
 </target>
@@ -131,6 +169,14 @@
 <target name="run" depends="run.positive"/>
 <target name="run.positive" depends="prepare.client, prepare.run, common.run.positive"/>
 <target name="run.negative" depends="prepare.client, prepare.run, common.run.negative"/>
+
+<!--
+  Test that the given version is running on ${testClusterServer1} or ${testClusterServer2}
+  Used by rolling-upgrade scenario
+  @param ${test-details} (required)
+-->
+<target name="run.positive.clusterInstance1" if="doRollingUpgrade" depends="prepare.clusterInstance1,prepare.run.positive.clusterInstances,runclient"/>
+<target name="run.positive.clusterInstance2" if="doRollingUpgrade" depends="prepare.clusterInstance2,prepare.run.positive.clusterInstances,runclient"/>
 
 <!--
   Test that the given version is registred or not on the ${testServer} target.
@@ -373,6 +419,29 @@
   <property name="classname" value="${classRunclient}"/>
   <property name="outputLog" value="${build}/${log.id}.output.log"/>
 </target>
+<target name="prepare.run.positive.clusterInstances" if="doRollingUpgrade" depends="increment.log.next,process.versionExpression">
+  <loadproperties srcFile="log.properties"/>
+  <property name="direction" value="true"/>
+  <property name="url" value="http://${http.host}:${depltest.port}/${link}"/>
+  <property name="arg.list" value="${url} ${direction} ${versionExpression}"/>
+  <property name="log.id" value="${log.next}"/>
+  <antcall target="declare-test">
+    <param name="description" value="${test-details} logID=${log.next}"/>
+  </antcall>
+</target>
+<target name="prepare.httpport.clusterInstance1" if="doRollingUpgrade">
+  <property name="depltest.port" value="${deploy.clusterinstance1.httpport}"/>
+</target>
+<target name="prepare.httpport.clusterInstance2" if="doRollingUpgrade">
+  <property name="depltest.port" value="${deploy.clusterinstance2.httpport}"/>
+</target>
+<target name="prepare.clusterInstance1" if="doRollingUpgrade" depends="prepare.httpport.clusterInstance1">
+  <property name="test-details" value="${description} (instance1)"/>
+</target>
+<target name="prepare.clusterInstance2" if="doRollingUpgrade" depends="prepare.httpport.clusterInstance2">
+  <property name="test-details" value="${description} (instance2)"/>
+  <property name="depltest.port" value="${deploy.clusterinstance2.httpport}"/>
+</target>
 
 <!--
   INTERNAL TESTS TARGET, not directly usable for making scenarios
@@ -412,7 +481,7 @@
   <antcall target="_clean.scenario"/>
 </target>
 <target name="_clean.scenario" depends="prepare,has.version.registred,del.all.version.registred"/>
-<target name="clean.scenario.cluster" if="doCluster">
+<target name="clean.scenario.cluster" if="doCluster" unless="doRollingUpgrade">
   <antcall target="_clean.scenario.cluster"/>
 </target>
 <target name="_clean.scenario.cluster" depends="prepare, has.ref.registred, del.all.ref.registred"/>
@@ -423,7 +492,7 @@
 </target>
 <target name="_del.all.ref.registred" depends="prepare.clean.scenario.cluster, exec.asadmin"/>
 <!-- del the given version reference if registred -->
-<target name="del.ref.registred" if="doCluster">
+<target name="del.ref.registred" if="doCluster" unless="doRollingUpgrade">
   <antcall target="_del.ref.registred"/>
 </target>
 <target name="_del.ref.registred" unless="notRegistred" depends="prepare.cluster,is.ref.registred">
@@ -699,27 +768,6 @@
 <!--
  OTHER TARGETS
 -->
-<target name="delete.log.next">
-  <delete file="log.properties"/>
-</target>
-<target name="increment.log.next">
-  <propertyfile file="log.properties">
-    <entry key="log.next" default="0" type="int" operation="+" value="1"/>
-  </propertyfile>
-</target>
-<target name="assemble.non-existent" if="fileNotExist">
-  <antcall target="assemble"/>
-</target>
-<target name="clobber" depends="clean, delete.log.next">
-  <delete dir="${build}"/>
-</target>
-<target name="usage">
-  <antcall target="all"/>
-</target>
-<target name="private-all" depends="delete.log.next">
-  <antcall target="main-all"/>
-  <antcall target="delete.log.next"/>
-</target>
 
 <!--
   prepare.client: this target intends to call the appropriate target before
@@ -748,3 +796,33 @@
   This target is called with the following targets common.run, common.run.positive, common.run.negative
 -->
 <target name="runclient" depends="prepare.runclient,java.with.result,process.result"/>
+
+<target name="delete.log.next">
+  <delete file="log.properties"/>
+</target>
+<target name="increment.log.next">
+  <propertyfile file="log.properties">
+    <entry key="log.next" default="0" type="int" operation="+" value="1"/>
+  </propertyfile>
+</target>
+<target name="assemble.non-existent" if="fileNotExist">
+  <antcall target="assemble"/>
+</target>
+<target name="clobber" depends="clean, delete.log.next">
+  <delete dir="${build}"/>
+</target>
+<target name="usage">
+  <antcall target="all"/>
+</target>
+<target name="_private-all" unless="doRollingUpgrade">
+  <antcall target="main-all"/>
+</target>
+<target name="private-rollingUpgrade" if="doRollingUpgrade" depends="init">
+  <antcall target="main-rollingUpgrade"/>
+</target>
+<target name="private-all" depends="delete.log.next">
+  <antcall target="private-rollingUpgrade"/>
+  <antcall target="_private-all"/>
+  <antcall target="delete.log.next"/>
+</target>
+

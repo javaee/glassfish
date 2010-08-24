@@ -79,5 +79,10 @@
         <antcall target="switch"/>
 	<antcall target="xml.version.information"/>
         <antcall target="client-stubs"/>
+<!--        <antcall target="rolling-upgrade.scenario"/>-->
+    </target>
+
+    <target name="main-rollingUpgrade">
+        <antcall target="rolling-upgrade.scenario"/>
     </target>
 </project>

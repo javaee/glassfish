@@ -29,4 +29,7 @@
         <property name="build" value="${build}/simple-versioned-ear"/>
       </ant>
     </target>
+    <target name="rolling-upgrade">
+      <ant antfile="rolling-upgrade.xml" target="all-ee"/>
+    </target>
 </project>

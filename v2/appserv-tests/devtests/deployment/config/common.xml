@@ -505,7 +505,7 @@ AS_ADMIN_MASTERPASSWORD=changeit
 </target>
 
 
-<target name="createAppRef" depends="init,setEnabled" if="doCluster">
+<target name="createAppRef" depends="init,setEnabled" if="doCluster" unless="doRollingUpgrade">
     <echo message="Create Application Reference for ${testName}"/>
     <antcall target="common.run.asadmin">
         <param name="arg.list" 
@@ -529,7 +529,7 @@ AS_ADMIN_MASTERPASSWORD=changeit
     </antcall>
 </target>
 
-<target name="enableAppOnInstance" depends="init" if="doCluster">
+<target name="enableAppOnInstance" depends="init" if="doCluster" unless="doRollingUpgrade">
     <echo message="Enable application for ${testName}"/>
     <antcall target="common.run.asadmin">
         <param name="arg.list"
