@@ -74,15 +74,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class NetUtils {
+
     private final static boolean asDebug = Boolean.parseBoolean(System.getenv("AS_DEBUG"));
 
     private static void printd(String string) {
-        if(asDebug) {
+        if (asDebug) {
             System.out.println(string);
         }
     }
 
     public enum PortAvailability {
+
         illegalNumber, noPermission, inUse, unknown, OK
     };
 
@@ -100,35 +102,35 @@ public class NetUtils {
         String myCanonicalHostName = System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY);
 
         try {
-            if(!StringUtils.ok(myCanonicalHostName))
+            if (!StringUtils.ok(myCanonicalHostName))
                 myCanonicalHostName = getCanonicalHostName();
 
             InetAddress[] adds = InetAddress.getAllByName(hostname);
 
-            if(adds == null || adds.length <= 0)
+            if (adds == null || adds.length <= 0)
                 return false;
 
-            for(InetAddress ia : adds)
+            for (InetAddress ia : adds)
                 host_ips.add(ia.getHostAddress());
 
             adds = InetAddress.getAllByName(myCanonicalHostName);
-            for(int i = 0; adds != null && i < adds.length; i++ ) {
+            for (int i = 0; adds != null && i < adds.length; i++) {
                 String ip = adds[i].getHostAddress();
-                if(!local_ips.contains(ip))
+                if (!local_ips.contains(ip))
                     local_ips.add(ip);
             }
 
             adds = InetAddress.getAllByName("localhost");
-            for(int i = 0; adds != null && i < adds.length; i++ ) {
+            for (int i = 0; adds != null && i < adds.length; i++) {
                 String ip = adds[i].getHostAddress();
-                if(!local_ips.contains(ip))
+                if (!local_ips.contains(ip))
                     local_ips.add(ip);
             }
 
             adds = InetAddress.getAllByName(null);
-            for(int i = 0; adds != null && i < adds.length; i++ ) {
+            for (int i = 0; adds != null && i < adds.length; i++) {
                 String ip = adds[i].getHostAddress();
-                if(!local_ips.contains(ip))
+                if (!local_ips.contains(ip))
                     local_ips.add(ip);
             }
         }
@@ -138,12 +140,12 @@ public class NetUtils {
 
         // if any hostAddress matches any localAddress -- then the host is local...
 
-        for(String hip : host_ips)
-            for(String lip : local_ips)
-                if(hip.equals(lip))
+        for (String hip : host_ips)
+            for (String lip : local_ips)
+                if (hip.equals(lip))
                     return true;
-        
-            return false;
+
+        return false;
     }
 
     /**
@@ -158,42 +160,42 @@ public class NetUtils {
         List<String> host2_ips = new ArrayList<String>();
 
         try {
-            if(!StringUtils.ok(host1) && !StringUtils.ok(host2))
+            if (!StringUtils.ok(host1) && !StringUtils.ok(host2))
                 return true; // edge case ==> both are null or empty
 
-            if(!StringUtils.ok(host1) || !StringUtils.ok(host2))
+            if (!StringUtils.ok(host1) || !StringUtils.ok(host2))
                 return false; // just one of them is null or empty 
 
             InetAddress[] adds1 = InetAddress.getAllByName(host1);
             InetAddress[] adds2 = InetAddress.getAllByName(host2);
 
             boolean adds1Empty = false; // readability.  You'll see why below!
-            boolean adds2Empty = false; 
-            
-            if(adds1 == null || adds1.length <= 0)
+            boolean adds2Empty = false;
+
+            if (adds1 == null || adds1.length <= 0)
                 adds1Empty = true;
 
-            if(adds2 == null || adds2.length <= 0)
+            if (adds2 == null || adds2.length <= 0)
                 adds2Empty = true;
 
             // I told you!
-            if(adds1Empty && adds2Empty) // both
+            if (adds1Empty && adds2Empty) // both
                 return true;
-            
-            if(adds1Empty || adds2Empty) // one but not the other
+
+            if (adds1Empty || adds2Empty) // one but not the other
                 return false;
-            
-            for(InetAddress ia : adds1)
+
+            for (InetAddress ia : adds1)
                 host1_ips.add(ia.getHostAddress());
 
-            for(InetAddress ia : adds2)
+            for (InetAddress ia : adds2)
                 host2_ips.add(ia.getHostAddress());
 
-            for(String h1ip : host1_ips)
-                for(String h2ip : host2_ips)
-                    if(h1ip.equals(h2ip))
+            for (String h1ip : host1_ips)
+                for (String h2ip : host2_ips)
+                    if (h1ip.equals(h2ip))
                         return true;
-        
+
             return false;
         }
         catch (UnknownHostException ex) {
@@ -202,9 +204,9 @@ public class NetUtils {
     }
 
     /////////////  END  Newer methods added June 2010 ////////////////////
-
     static public Socket getClientSocket(final String host, final int port, final int msecTimeout) {
         class SocketFetcher implements Runnable {
+
             @Override
             public void run() {
                 try {
@@ -214,11 +216,13 @@ public class NetUtils {
                     socket = null;
                 }
             }
+
             Socket getSocket() {
                 return socket;
             }
             private Socket socket;
-        };
+        }
+        ;
 
         SocketFetcher fetcher = new SocketFetcher();
         Thread t = new Thread(fetcher);
@@ -261,7 +265,7 @@ public class NetUtils {
         // check to see if ip returned or canonical hostname is different than hostname
         // It is possible for dhcp connected computers to have an erroneous name returned
         // that is created by the dhcp server.  If that happens, return just the default hostname
-        if(hostname.equals(InetAddress.getLocalHost().getHostAddress())
+        if (hostname.equals(InetAddress.getLocalHost().getHostAddress())
                 || !hostname.startsWith(defaultHostname)) {
             // don't want IP or canonical hostname, this will cause a lot of problems for dhcp users
             // get just plan host name instead
@@ -276,7 +280,7 @@ public class NetUtils {
         try {
             String hname = getHostName();
 
-            if(hname == null) {
+            if (hname == null) {
                 return null;
             }
 
@@ -292,13 +296,13 @@ public class NetUtils {
         try {
             InetAddress[] adds = getHostAddresses();
 
-            if(adds == null) {
+            if (adds == null) {
                 return null;
             }
 
             String[] ips = new String[adds.length];
 
-            for(int i = 0; i < adds.length; i++) {
+            for (int i = 0; i < adds.length; i++) {
                 String ip = trimIP(adds[i].toString());
                 ips[i] = ip;
             }
@@ -312,13 +316,13 @@ public class NetUtils {
 
     ///////////////////////////////////////////////////////////////////////////
     public static String trimIP(String ip) {
-        if(ip == null || ip.length() <= 0) {
+        if (ip == null || ip.length() <= 0) {
             return ip;
         }
 
         int index = ip.lastIndexOf('/');
 
-        if(index >= 0) {
+        if (index >= 0) {
             return ip.substring(++index);
         }
 
@@ -335,7 +339,7 @@ public class NetUtils {
 
             byte[] bytes = new byte[stk.countTokens()];
 
-            for(int i = 0; stk.hasMoreTokens(); i++) {
+            for (int i = 0; stk.hasMoreTokens(); i++) {
                 String num = stk.nextToken();
                 int inum = Integer.parseInt(num);
                 bytes[i] = (byte) inum;
@@ -350,7 +354,7 @@ public class NetUtils {
 
     ///////////////////////////////////////////////////////////////////////////
     public static boolean isLocalHost(String ip) {
-        if(ip == null) {
+        if (ip == null) {
             return false;
         }
 
@@ -361,24 +365,24 @@ public class NetUtils {
 
     ///////////////////////////////////////////////////////////////////////////
     public static boolean isLocal(String ip) {
-        if(ip == null) {
+        if (ip == null) {
             return false;
         }
 
         ip = trimIP(ip);
 
-        if(isLocalHost(ip)) {
+        if (isLocalHost(ip)) {
             return true;
         }
 
         String[] myIPs = getHostIPs();
 
-        if(myIPs == null) {
+        if (myIPs == null) {
             return false;
         }
 
-        for(int i = 0; i < myIPs.length; i++) {
-            if(ip.equals(myIPs[i])) {
+        for (int i = 0; i < myIPs.length; i++) {
+            if (ip.equals(myIPs[i])) {
                 return true;
             }
         }
@@ -398,8 +402,8 @@ public class NetUtils {
      * @return The next incremental port number or 0 if a port cannot be found.
      */
     public static int getNextFreePort(String hostName, int port) {
-        while(port++ < MAX_PORT) {
-            if(isPortFree(hostName, port)) {
+        while (port++ < MAX_PORT) {
+            if (isPortFree(hostName, port)) {
                 return port;
             }
         }
@@ -416,11 +420,11 @@ public class NetUtils {
     public static int getFreePort(String hostName, int startingPort, int endingPort) {
         int range = endingPort - startingPort;
         int port = 0;
-        if(range > 0) {
+        if (range > 0) {
             Random r = new Random();
-            while(true) {
+            while (true) {
                 port = r.nextInt(range + 1) + startingPort;
-                if(isPortFree(hostName, port)) {
+                if (isPortFree(hostName, port)) {
                     break;
                 }
             }
@@ -429,7 +433,7 @@ public class NetUtils {
     }
 
     public static boolean isPortValid(int portNumber) {
-        if(portNumber >= 0 && portNumber <= MAX_PORT) {
+        if (portNumber >= 0 && portNumber <= MAX_PORT) {
             return true;
         }
         else {
@@ -448,11 +452,11 @@ public class NetUtils {
 
     ///////////////////////////////////////////////////////////////////////////
     public static boolean isPortFree(String hostName, int portNumber) {
-        if(portNumber <= 0 || portNumber > MAX_PORT) {
+        if (portNumber <= 0 || portNumber > MAX_PORT) {
             return false;
         }
 
-        if(hostName == null || isThisMe(hostName)) {
+        if (hostName == null || isThisMe(hostName)) {
             return isPortFreeServer(portNumber);
         }
         else {
@@ -473,20 +477,20 @@ public class NetUtils {
      * @return one of the 5 possibilities for this port
      */
     public static PortAvailability checkPort(int portNumber) {
-        if(!isPortValid(portNumber))
+        if (!isPortValid(portNumber))
             return PortAvailability.illegalNumber;
 
         boolean client = isPortFreeClient(null, portNumber);
         boolean server = isPortFreeServer(portNumber);
 
-        if(server && client)
+        if (server && client)
             return PortAvailability.OK;
 
-        if(server && !client)
+        if (server && !client)
             // impossible -- or at least I can not make this happen in a test case
             return PortAvailability.unknown;
 
-        if(!server && !client)
+        if (!server && !client)
             return PortAvailability.inUse;
         else // !server && client
             return PortAvailability.noPermission;
@@ -505,7 +509,7 @@ public class NetUtils {
             // Feel free to change it if you know EXACTLY what you're doing
 
             //If the host name is null, assume localhost
-            if(hostName == null) {
+            if (hostName == null) {
                 hostName = getHostName();
             }
             Socket socket = new Socket(hostName, portNumber);
@@ -539,12 +543,12 @@ public class NetUtils {
             byte[] allZero = new byte[]{0, 0, 0, 0};
             InetAddress add = InetAddress.getByAddress(allZero);
 
-            if(isPortFreeServer(port, add) == false)
+            if (isPortFreeServer(port, add) == false)
                 return false;   // return immediately on "not-free"
 
             add = InetAddress.getLocalHost();
 
-            if(isPortFreeServer(port, add) == false)
+            if (isPortFreeServer(port, add) == false)
                 return false;   // return immediately on "not-free"
 
             add = InetAddress.getByName("localhost");
@@ -609,13 +613,13 @@ public class NetUtils {
                 //squelch the exception
             }
             finally {
-                if(!portFound) {
+                if (!portFound) {
                     freePort = 0;
                 }
                 try {
-                    if(serverSocket != null) {
+                    if (serverSocket != null) {
                         serverSocket.close();
-                        if(!serverSocket.isClosed()) {
+                        if (!serverSocket.isClosed()) {
                             throw new Exception("local exception ...");
                         }
                     }
@@ -653,10 +657,10 @@ public class NetUtils {
         // Get the result
         java.io.InputStream istream = socket.getInputStream();
         int count = 0;
-        while(count < 20) {
+        while (count < 20) {
             // Wait up to 4 seconds
             try {
-                if(istream.available() > 0) {
+                if (istream.available() > 0) {
                     break;
                 }
                 Thread.sleep(200);
@@ -676,16 +680,16 @@ public class NetUtils {
         // default & try to detect an http response.
         String response = new String(input).toLowerCase();
         boolean isSecure = true;
-        if(response.length() == 0) {
+        if (response.length() == 0) {
             isSecure = false;
         }
-        else if(response.startsWith("http/1.")) {
+        else if (response.startsWith("http/1.")) {
             isSecure = false;
         }
-        else if(response.indexOf("<html") != -1) {
+        else if (response.indexOf("<html") != -1) {
             isSecure = false;
         }
-        else if(response.indexOf("connection: ") != -1) {
+        else if (response.indexOf("connection: ") != -1) {
             isSecure = false;
         }
         return isSecure;
@@ -715,7 +719,7 @@ public class NetUtils {
             return false;
         }
         finally {
-            if(server != null) {
+            if (server != null) {
                 try {
                     server.close();
                 }
@@ -740,13 +744,13 @@ public class NetUtils {
             InetAddress[] myadds = getHostAddresses();
             InetAddress[] theiradds = InetAddress.getAllByName(hostname);
 
-            for(int i = 0; i < theiradds.length; i++) {
-                if(theiradds[i].isLoopbackAddress()) {
+            for (int i = 0; i < theiradds.length; i++) {
+                if (theiradds[i].isLoopbackAddress()) {
                     return true;
                 }
 
-                for(int j = 0; j < myadds.length; j++) {
-                    if(myadds[j].equals(theiradds[i])) {
+                for (int j = 0; j < myadds.length; j++) {
+                    if (myadds[j].equals(theiradds[i])) {
                         return true;
                     }
                 }
@@ -793,6 +797,3 @@ public class NetUtils {
         (byte) '.', (byte) '0', (byte) '\n', (byte) '\n'
     };
 }
-
-
-
