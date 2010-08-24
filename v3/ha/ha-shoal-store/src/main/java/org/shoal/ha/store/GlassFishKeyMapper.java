@@ -64,43 +64,26 @@ public class GlassFishKeyMapper
 
     @Override
     public HACookieInfo makeCookie(String groupName, Object key, String version) {
-
-        System.out.println("ENTERED makeCookie(" + key + ", " + version + ")");
         String cookieStr = null;
-        if (version == null) {
-            version = "-1";
-        }
 
-        if (key == null) {
-            key = Thread.currentThread().getName() + "-";
+        if (key != null) {
+            String mappedInstance = super.getMappedInstance(groupName, key);
+            if (version == null) {
+                version = "" + Long.MIN_VALUE;
+            }
+            cookieStr = (mappedInstance == null) ? (":" + version) : (mappedInstance + ":" + version);
         }
-        String str = super.getMappedInstance(groupName, key);
-        cookieStr = (str == null) ? (":" + version) : (str + ":" + version);
-
-        System.out.println("makeCookie calling new HACookieInfo(" + cookieStr + ")");
         return new HACookieInfo(cookieStr);
     }
 
-    /*
     @Override
     public String getMappedInstance(String groupName, Object key1) {
         HACookieInfo cookieInfo = HACookieManager.getCurrent();
-        if (cookieInfo.isInitialized()) {
+        if (cookieInfo.getReplica() != null) {
             return cookieInfo.getReplica();
         } else {
-            return super.getMappedInstance(groupName, key1);    //To change body of overridden methods use File | Settings | File Templates.
+            return super.getMappedInstance(groupName, key1);
         }
-    }
+    } 
 
-
-    @Override
-    public String[] findReplicaInstance(String groupName, Object key1, String keyMappingInfo) {
-        HACookieInfo cookieInfo = HACookieManager.getCurrent();
-        if (cookieInfo.isInitialized()) {
-            return cookieInfo.getReplica();
-        } else {
-            return super.getMappedInstance(groupName, key1);    //To change body of overridden methods use File | Settings | File Templates.
-        }
-    }
-    */
 }

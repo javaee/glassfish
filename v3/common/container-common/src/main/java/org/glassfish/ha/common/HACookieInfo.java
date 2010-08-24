@@ -55,36 +55,34 @@ public class HACookieInfo {
 
     String replica;
 
-    boolean initialized;
-
     public HACookieInfo(String cookie) {
         initialize(cookie);
     }
 
     public HACookieInfo initialize(String cookie) {
-        if (cookie != null && cookie.trim().length() > 0) {
-            this.cookie = cookie.trim();
-            String[] args = cookie.split(":");
-            System.out.println("HACookie.initialize(" + cookie + ")");
-            replica = args[0];
-            initialized = true;
-        }
+        update(cookie);
 
         return this;
     }
 
+    public void update(String cookie) {
+        if (cookie != null && cookie.trim().length() > 0) {
+            this.cookie = cookie.trim();
+            String[] args = cookie.split(":");
+            replica = args[0];
+
+            System.out.println("HACookie.update(" + cookie + ") => " + replica);
+        }
+    }
+
     void reset() {
+        cookie = null;
         hashKey = null;
         replica = null;
-        initialized = false;
     }
 
     public String getCookie() {
         return cookie;
-    }
-
-    public boolean isInitialized() {
-        return initialized;
     }
 
     public Object getHashKey() {
@@ -109,7 +107,6 @@ public class HACookieInfo {
                 "cookie='" + cookie + '\'' +
                 ", hashKey=" + hashKey +
                 ", replica='" + replica + '\'' +
-                ", initialized=" + initialized +
                 '}';
     }
 }
