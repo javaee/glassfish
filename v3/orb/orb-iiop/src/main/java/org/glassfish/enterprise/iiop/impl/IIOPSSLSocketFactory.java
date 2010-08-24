@@ -54,6 +54,7 @@ import com.sun.enterprise.config.serverbeans.IiopService;
 import com.sun.grizzly.config.dom.Ssl;
 import com.sun.logging.LogDomains;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -86,8 +87,12 @@ import com.sun.enterprise.security.integration.AppClientSSL;
  */
 public class IIOPSSLSocketFactory  implements ORBSocketFactory
 { 
-    private static final Logger _logger = LogDomains.getLogger(
-        IIOPSSLSocketFactory.class, LogDomains.CORBA_LOGGER);
+    private static Logger _logger = null;
+    static{
+        _logger=LogDomains.getLogger(IIOPSSLSocketFactory.class, LogDomains.CORBA_LOGGER);
+    }
+
+
 
     private static final String TLS = "TLS";
     private static final String SSL3 = "SSLv3";

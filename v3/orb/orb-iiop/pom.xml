@@ -51,7 +51,7 @@
     </parent>
     <artifactId>orb-iiop</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>GlassFish ORB interface layer implementation</name>
+    <name>GlassFish ORB conector implementation</name>
     <developers>
         <developer>
             <id>mk111283</id>
@@ -65,16 +65,6 @@
         </developer>
     </developers>
     <dependencies>
-        <dependency>
-            <groupId>org.glassfish.cluster</groupId>
-            <artifactId>gms-bootstrap</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.shoal</groupId>
-            <artifactId>shoal-gms-api</artifactId>
-            <version>${shoal.version}</version>
-        </dependency>
         <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
@@ -91,7 +81,6 @@
         <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-orb</artifactId>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>com.sun.corba</groupId>

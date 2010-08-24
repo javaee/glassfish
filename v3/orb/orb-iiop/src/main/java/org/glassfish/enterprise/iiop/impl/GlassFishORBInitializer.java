@@ -70,12 +70,6 @@ public class GlassFishORBInitializer extends org.omg.CORBA.LocalObject
     private static final Logger _logger =
             LogDomains.getLogger(GlassFishORBInitializer.class, LogDomains.CORBA_LOGGER);
 
-    private static void fineLog( String fmt, Object... args ) {
-        if (_logger.isLoggable(Level.FINE)) {
-            _logger.log(Level.FINE, fmt, args ) ;
-        }
-    }
-
     public GlassFishORBInitializer() {
         /*
         //Ken feels that adding the property to orbInitProperties
@@ -96,7 +90,6 @@ public class GlassFishORBInitializer extends org.omg.CORBA.LocalObject
      * @param info object that provides initialization attributes
      *            and operations by which interceptors are registered.
      */
-    @Override
     public void pre_init(org.omg.PortableInterceptor.ORBInitInfo info) {
     }
 
@@ -106,12 +99,14 @@ public class GlassFishORBInitializer extends org.omg.CORBA.LocalObject
      * @param info object that provides initialization attributes
      *            and operations by which interceptors are registered.
      */
-    @Override
     public void post_init(org.omg.PortableInterceptor.ORBInitInfo info) {
         Codec codec = null;
 
-        fineLog( "J2EE Initializer post_init");
-        fineLog( "Creating Codec for CDR encoding");
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "J2EE Initializer post_init");
+            // Create a Codec that can be passed to interceptors.
+            _logger.log(Level.FINE, "Creating Codec for CDR encoding");
+        }
 
         CodecFactory cf = info.codec_factory();
 
@@ -127,27 +122,35 @@ public class GlassFishORBInitializer extends org.omg.CORBA.LocalObject
                     iiopUtils.getAllIIOPInterceptrFactories();
 
             for (IIOPInterceptorFactory factory : interceptorFactories) {
-                fineLog( "Processing interceptor factory: {0}", factory);
-
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "Processing interceptor factory: " + factory);
+                }
                 ClientRequestInterceptor clientReq =
                         factory.createClientRequestInterceptor(info, codec);
                 ServerRequestInterceptor serverReq =
                         factory.createServerRequestInterceptor(info, codec);
 
                 if (clientReq != null) {
-                    fineLog( "Registering client interceptor: {0}", clientReq);
+                    if (_logger.isLoggable(Level.FINE)) {
+                        _logger.log(Level.FINE, "Registering client interceptor: " + clientReq);
+                    }
                     info.add_client_request_interceptor(clientReq);
                 }
                 if (serverReq != null) {
-                    fineLog( "Registering server interceptor: {0}", serverReq);
+                    if (_logger.isLoggable(Level.FINE)) {
+                        _logger.log(Level.FINE, "Registering server interceptor: " + serverReq);
+                    }
                     info.add_server_request_interceptor(serverReq);
                 }
             }
 
         } catch (Exception e) {
-            fineLog( "Exception registering interceptors", e);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Exception registering interceptors", e);
+            }
             throw new RuntimeException(e.getMessage(), e);
         }
+
     }
 }
 

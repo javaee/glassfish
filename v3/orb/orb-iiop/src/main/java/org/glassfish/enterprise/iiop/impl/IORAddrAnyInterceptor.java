@@ -40,31 +40,38 @@
 
 package org.glassfish.enterprise.iiop.impl;
 
-import com.sun.logging.LogDomains;
+import org.omg.CORBA.Any;
+import org.omg.CORBA.ORB;
 import org.omg.IOP.Codec;
+import org.omg.IOP.TaggedComponent;
 
+import com.sun.corba.ee.spi.legacy.connection.ORBSocketFactory;
+import com.sun.corba.ee.spi.legacy.interceptor.IORInfoExt;
+import com.sun.corba.ee.spi.ior.iiop.AlternateIIOPAddressComponent;
+import com.sun.corba.ee.impl.interceptors.IORInfoImpl;
+
+import java.util.logging.*;
+import com.sun.logging.*;
 
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class IORAddrAnyInterceptor extends org.omg.CORBA.LocalObject
                     implements org.omg.PortableInterceptor.IORInterceptor{
     
     public static final String baseMsg = IORAddrAnyInterceptor.class.getName();
-    private static final Logger _logger = LogDomains.getLogger(
-        IORAddrAnyInterceptor.class, LogDomains.CORBA_LOGGER);
+    private static Logger _logger=null;
+    static {
+       _logger=LogDomains.getLogger(IORAddrAnyInterceptor.class, LogDomains.CORBA_LOGGER);
+    }
     
     private Codec codec;
     
     
-    /** Creates a new instance of IORAddrAnyInterceptor
-     * @param c The codec
-     */
+    /** Creates a new instance of IORAddrAnyInterceptor */
     public IORAddrAnyInterceptor(Codec c) {
         codec = c;
     }
@@ -108,7 +115,6 @@ public class IORAddrAnyInterceptor extends org.omg.CORBA.LocalObject
      * permitted. (This means that the ORB being destroyed is still capable
      * of acting as a client, but not as a server.)
      */
-    @Override
     public void destroy() {
     }
     
@@ -129,11 +135,10 @@ public class IORAddrAnyInterceptor extends org.omg.CORBA.LocalObject
      * and proceed to call the next IOR Interceptor's
      * <code>establish_components</code> operation.
      *
-     * @param iorInfo The <code>IORInfo</code> instance used by the ORB
+     * @param info The <code>IORInfo</code> instance used by the ORB
      *    service to query applicable policies and add components to be
      *    included in the generated IORs.
      */
-    @Override
     public void establish_components(org.omg.PortableInterceptor.IORInfo iorInfo) {
         /*
         try {
@@ -171,16 +176,14 @@ public class IORAddrAnyInterceptor extends org.omg.CORBA.LocalObject
      *
      * @return the name of the interceptor.
      */
-    @Override
     public String name() {
         return baseMsg;
     }
 
     protected short intToShort( int value ) 
     {
-	if (value > 32767) {
-            return (short) (value - 65536);
-        }
+	if (value > 32767)
+	    return (short)(value - 65536) ;
 	return (short)value ;
     }
     

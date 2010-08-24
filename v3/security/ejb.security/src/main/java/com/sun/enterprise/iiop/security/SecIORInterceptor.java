@@ -52,6 +52,7 @@ import com.sun.logging.*;
 import com.sun.enterprise.deployment.EjbDescriptor;
 //import com.sun.enterprise.util.ORBManager;
 //import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
+//import com.sun.enterprise.iiop.ASORBUtilities;
 import org.glassfish.enterprise.iiop.util.IIOPUtils;
 import org.jvnet.hk2.component.Habitat;
 import org.omg.CORBA.ORB;
@@ -114,8 +115,7 @@ public class SecIORInterceptor extends org.omg.CORBA.LocalObject
 	}
 
         /*TODO:V3:Cluster uncomment later
-        // just inject the GMSAdapterService, and check for null
-        if (gmsAdapterService != null) {
+        if (ASORBUtilities.isGMSAvailableAndClusterHeartbeatEnabled()) {
 	    // If this app server instance is part of a dynamic cluster (that is,
 	    // one that supports RMI-IIOP failover and load balancing, DO NOT
 	    // create the CSIv2 components here.  Instead, handle this in the

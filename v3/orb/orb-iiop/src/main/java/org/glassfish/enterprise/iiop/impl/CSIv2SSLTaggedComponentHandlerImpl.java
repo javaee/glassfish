@@ -55,7 +55,7 @@ import org.omg.IOP.TaggedComponent;
 import org.omg.PortableInterceptor.IORInfo;
 
 import com.sun.corba.ee.spi.folb.ClusterInstanceInfo;
-import com.sun.corba.ee.impl.folb.CSIv2SSLTaggedComponentHandler;
+import com.sun.corba.ee.spi.folb.CSIv2SSLTaggedComponentHandler;
 import com.sun.corba.ee.spi.ior.IOR;
 import com.sun.corba.ee.spi.orb.DataCollector;
 import com.sun.corba.ee.spi.orb.ORB;
@@ -68,6 +68,7 @@ import com.sun.corba.ee.spi.ior.iiop.IIOPAddress ;
 
 // END imports for getSocketInfo code
 
+import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.logging.LogDomains;
 //
 import org.glassfish.enterprise.iiop.api.IIOPSSLUtil;
@@ -81,8 +82,10 @@ public class CSIv2SSLTaggedComponentHandlerImpl
     implements CSIv2SSLTaggedComponentHandler,
 	       ORBConfigurator
 {
-    private static final Logger _logger = LogDomains.getLogger(
-        CSIv2SSLTaggedComponentHandlerImpl.class, LogDomains.CORBA_LOGGER);
+    private static Logger _logger = null;
+    static {
+        _logger = LogDomains.getLogger(CSIv2SSLTaggedComponentHandlerImpl.class, LogDomains.CORBA_LOGGER);
+    }
 
     private final String baseMsg = 
 	CSIv2SSLTaggedComponentHandlerImpl.class.getName();
@@ -94,31 +97,27 @@ public class CSIv2SSLTaggedComponentHandlerImpl
     // CSIv2SSLTaggedComponentHandler
     //
 
-    @Override
     public TaggedComponent insert(IORInfo iorInfo, 
  				  List<ClusterInstanceInfo> clusterInstanceInfo)
     {
 	TaggedComponent result = null;
 	try {
 	    if (_logger.isLoggable(Level.FINE)) {
-		_logger.log(Level.FINE, "{0}.insert->:", baseMsg);
+		_logger.log(Level.FINE, baseMsg + ".insert->:");
 	    }
 
-            List<com.sun.corba.ee.spi.folb.SocketInfo> socketInfos =
-                new ArrayList<com.sun.corba.ee.spi.folb.SocketInfo>();
+            List<com.sun.corba.ee.spi.folb.SocketInfo> socketInfos = new ArrayList<com.sun.corba.ee.spi.folb.SocketInfo>();
             for(ClusterInstanceInfo clInstInfo : clusterInstanceInfo){
-                for (com.sun.corba.ee.spi.folb.SocketInfo sinfo :
-                    clInstInfo.endpoints()) {
-                    if (sinfo.type().equals("SSL")
-                       || sinfo.type().equals("SSL_MUTUALAUTH")){
-                       socketInfos.add(sinfo);
+                for(int endPIndex=0; endPIndex < clInstInfo.endpoints.length; endPIndex++){
+                    com.sun.corba.ee.spi.folb.SocketInfo socketInfo = clInstInfo.endpoints[endPIndex];
+                    if(socketInfo.type.equals("SSL") || socketInfo.type.equals("SSL_MUTUALAUTH")){
+                        socketInfos.add(socketInfo);                  
                     }
                 }                
             }
             IIOPSSLUtil sslUtil = null;
             if (Globals.getDefaultHabitat() != null) {
-                sslUtil =
-                    Globals.getDefaultHabitat().getComponent(IIOPSSLUtil.class);
+                sslUtil = Globals.getDefaultHabitat().getComponent(IIOPSSLUtil.class);
                 return sslUtil.createSSLTaggedComponent(iorInfo, socketInfos);
             } else {
                 return null;
@@ -126,21 +125,18 @@ public class CSIv2SSLTaggedComponentHandlerImpl
            
 	} finally {
 	    if (_logger.isLoggable(Level.FINE)) {
-		_logger.log(Level.FINE, "{0}.insert<-: {1}",
-                    new Object[]{baseMsg, result});
+		_logger.log(Level.FINE, baseMsg + ".insert<-: " + result);
 	    }
 	}
     }
 
-    @Override
     public List<SocketInfo> extract(IOR ior)
     {
 	List<SocketInfo> socketInfo = null;
         try {
 	    if (_logger.isLoggable(Level.FINE)) {
-		_logger.log(Level.FINE, "{0}.extract->:", baseMsg);
+		_logger.log(Level.FINE, baseMsg + ".extract->:");
 	    }
-
             IIOPProfileTemplate iiopProfileTemplate = (IIOPProfileTemplate)ior.
                                  getProfile().getTaggedProfileTemplate();
             IIOPAddress primary = iiopProfileTemplate.getPrimaryAddress() ;
@@ -148,33 +144,29 @@ public class CSIv2SSLTaggedComponentHandlerImpl
 
             IIOPSSLUtil sslUtil = null;
             if (Globals.getDefaultHabitat() != null) {
-                sslUtil = Globals.getDefaultHabitat().getComponent(
-                    IIOPSSLUtil.class);
-                socketInfo = (List<SocketInfo>)sslUtil.getSSLPortsAsSocketInfo(
-                    ior);
+                sslUtil = Globals.getDefaultHabitat().getComponent(IIOPSSLUtil.class);
+                socketInfo = (List<SocketInfo>)sslUtil.getSSLPortsAsSocketInfo(ior);
             }
-
             if (socketInfo == null) {
                 if (_logger.isLoggable(Level.FINE)) {
-		    _logger.log(Level.FINE, 
-                        "{0}.extract: did not find SSL SocketInfo", baseMsg);
+		    _logger.log(Level.FINE, baseMsg
+				+ ".extract: did not find SSL SocketInfo");
 		}
             } else {
                 if (_logger.isLoggable(Level.FINE)) {
-		    _logger.log(Level.FINE, 
-                        "{0}.extract: found SSL socketInfo", baseMsg);
+		    _logger.log(Level.FINE, baseMsg
+				+ ".extract: found SSL socketInfo");
 		}
             }        
 	    if (_logger.isLoggable(Level.FINE)) {
-		_logger.log(Level.FINE, 
-                    "{0}.extract: Connection Context", baseMsg);
+		_logger.log(Level.FINE, baseMsg 
+			    + ".extract: Connection Context");		
 	    }
         } catch ( Exception ex ) {
 	    _logger.log(Level.WARNING, "Exception getting SocketInfo", ex);
         } finally {
 	    if (_logger.isLoggable(Level.FINE)) {
-		_logger.log(Level.FINE, 
-                    "{0}.extract<-: {1}", new Object[]{baseMsg, socketInfo});
+		_logger.log(Level.FINE, baseMsg + ".extract<-: " + socketInfo);
 	    }
 	}
 	return socketInfo;
@@ -185,7 +177,6 @@ public class CSIv2SSLTaggedComponentHandlerImpl
     // ORBConfigurator
     //
 
-    @Override
     public void configure(DataCollector collector, ORB orb) 
     {
 	if (_logger.isLoggable(Level.FINE)) {

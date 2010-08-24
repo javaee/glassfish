@@ -40,12 +40,11 @@
 
 package org.glassfish.enterprise.iiop.impl;
 
-import com.sun.corba.ee.spi.ior.IOR;
-import com.sun.corba.ee.spi.ior.ObjectKey;
-import com.sun.corba.ee.spi.ior.TaggedProfile;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.io.File;
 
+import javax.rmi.CORBA.*;
 import javax.rmi.PortableRemoteObject;
 
 import org.glassfish.enterprise.iiop.api.ProtocolManager;
@@ -58,10 +57,15 @@ import com.sun.enterprise.deployment.EjbDescriptor;
 
 import com.sun.enterprise.util.Utility;
 
+import javax.ejb.EJBException;
 import javax.ejb.NoSuchObjectLocalException;
 import javax.ejb.TransactionRolledbackLocalException;
 import javax.ejb.TransactionRequiredLocalException;
+import javax.ejb.ConcurrentAccessException;
 
+
+import org.omg.CORBA.*;
+import org.omg.CORBA.ORB;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.ImplicitActivationPolicyValue;
 import org.omg.PortableServer.LifespanPolicyValue;
@@ -70,28 +74,26 @@ import org.omg.CosNaming.NamingContext;
 import org.omg.CosNaming.NamingContextHelper;
 import org.omg.CosNaming.NameComponent;
 
+
 import com.sun.corba.ee.spi.oa.rfm.ReferenceFactoryManager ;
-import com.sun.corba.ee.spi.orb.ORB;
 import com.sun.corba.ee.spi.presentation.rmi.PresentationManager;
 import com.sun.corba.ee.spi.presentation.rmi.StubAdapter;
 
+
+import com.sun.corba.ee.impl.naming.cosnaming.TransientNameService;
 import com.sun.corba.ee.spi.orbutil.ORBConstants;
-import com.sun.logging.LogDomains;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.rmi.CORBA.Tie;
+import com.sun.corba.ee.spi.orb.*;
+import com.sun.corba.ee.spi.ior.*;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.annotations.Inject;
-import org.omg.CORBA.CompletionStatus;
-import org.omg.CORBA.INVALID_TRANSACTION;
-import org.omg.CORBA.MARSHAL;
-import org.omg.CORBA.NO_PERMISSION;
-import org.omg.CORBA.OBJECT_NOT_EXIST;
-import org.omg.CORBA.Policy;
-import org.omg.CORBA.TRANSACTION_REQUIRED;
-import org.omg.CORBA.TRANSACTION_ROLLEDBACK;
+
+import java.util.logging.*;
+import java.lang.Object;
+
+import com.sun.logging.*;
+
 
 /**
  * This class implements the ProtocolManager interface for the
@@ -110,6 +112,9 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
         LogDomains.getLogger(POAProtocolMgr.class, LogDomains.CORBA_LOGGER);
     
     private static final int MAPEXCEPTION_CODE = 9998;
+    private static final String InitialObjectsDb = "initial.db";
+
+    private static final String ORG_OMG_STUB_PREFIX = "org.omg.stub.";
 
     private ORB orb;
 
@@ -120,32 +125,35 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
 
     public POAProtocolMgr() {}
 
-    @Override
-    public void initialize(org.omg.CORBA.ORB o) {
+    public void initialize(ORB o)
+    {
+
         this.orb = (ORB)o;
 
-        this.presentationMgr = ORB.getPresentationManager();
+        this.presentationMgr = 
+            ((com.sun.corba.ee.spi.orb.ORB) orb).getPresentationManager();
+
     }
 
 
     // Called in all VMs, must be called only after InitialNaming is available
-    @Override
-    public void initializePOAs() throws Exception {
+    public void initializePOAs()
+        throws Exception
+    {   
 	    // NOTE:  The RootPOA manager used to activated here.
 	    ReferenceFactoryManager rfm =
 	        (ReferenceFactoryManager)orb.resolve_initial_references(
 		    ORBConstants.REFERENCE_FACTORY_MANAGER ) ;
 	    rfm.activate() ;
 
-	    _logger.log(Level.FINE,
-                "POAProtocolMgr.initializePOAs: RFM resolved and activated");
+	    _logger.log(Level.FINE, "POAProtocolMgr.initializePOAs: RFM resolved and activated");
     }
 
-    @Override
-    public void initializeRemoteNaming(Remote remoteNamingProvider) 
-        throws Exception {
+    public void initializeRemoteNaming(Remote remoteNamingProvider) throws Exception
+    {
 
         try {
+
             PortableRemoteObject.exportObject(remoteNamingProvider);
 
             Tie servantsTie = javax.rmi.CORBA.Util.getTie(remoteNamingProvider);
@@ -154,20 +162,20 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
             //servantsTie.orb(ORBManager.getORB());
             //org.omg.CORBA.Object provider = servantsTie.thisObject());
 
-            // Create a CORBA objref for SerialContextProviderImpl using a POA
-            POA rootPOA = (POA) orb.resolve_initial_references("RootPOA");
+	        // Create a CORBA objref for SerialContextProviderImpl using a POA
+	        POA rootPOA = (POA) orb.resolve_initial_references("RootPOA");
 
-            Policy[] policy = new Policy[2];
-            policy[0] = rootPOA.create_implicit_activation_policy(
-                        ImplicitActivationPolicyValue.IMPLICIT_ACTIVATION);
-            policy[1] = rootPOA.create_lifespan_policy(
-                LifespanPolicyValue.PERSISTENT);
+	        Policy[] policy = new Policy[2];
+	        policy[0] = rootPOA.create_implicit_activation_policy(
+			    ImplicitActivationPolicyValue.IMPLICIT_ACTIVATION);
+	        policy[1] = rootPOA.create_lifespan_policy(
+		    LifespanPolicyValue.PERSISTENT);
 
-            POA poa = rootPOA.create_POA("SerialContextProviderPOA", null,
-                                        policy);
-            poa.the_POAManager().activate();
-            org.omg.CORBA.Object provider = poa.servant_to_reference(
-                                                    (Servant)servantsTie);
+	        POA poa = rootPOA.create_POA("SerialContextProviderPOA", null,
+					 policy);
+	        poa.the_POAManager().activate();
+	        org.omg.CORBA.Object provider = poa.servant_to_reference(
+							(Servant)servantsTie);
 
             // put object in NameService
             org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService");
@@ -179,6 +187,7 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
             ncRef.rebind(path, provider);
 
         } catch (Exception ex) {
+
             _logger.log(Level.SEVERE,
                  "enterprise_naming.excep_in_insertserialcontextprovider",ex);
 
@@ -189,9 +198,10 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
     }
 
     // Called only in J2EE Server VM
-    @Override
-    public void initializeNaming() throws Exception {
-        // NOTE: The TransientNameService reference is NOT HA.
+    public void initializeNaming() throws Exception
+    {
+
+	    // NOTE: The TransientNameService reference is NOT HA.
         // new TransientNameService((com.sun.corba.ee.spi.orb.ORB)orb);
         // _logger.log(Level.FINE, "POAProtocolMgr.initializeNaming: complete");
     }
@@ -200,52 +210,44 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
     /**     
      * Return a factory that can be used to create/destroy remote
      * references for a particular EJB type.
-     * @param container The container to use
-     * @param remoteHomeView The remote home view
-     * @param id The object id
-     * @return the ref factory
-     */
-    @Override
-    public RemoteReferenceFactory getRemoteReferenceFactory(
-        EjbContainerFacade container, boolean remoteHomeView, String id) {
+     */          
+    public RemoteReferenceFactory getRemoteReferenceFactory
+        (EjbContainerFacade container, boolean remoteHomeView, String id)
+    {
+	    RemoteReferenceFactory factory = new POARemoteReferenceFactory
+            (container, this, orb, remoteHomeView, id);
 
-        RemoteReferenceFactory factory = new POARemoteReferenceFactory
-        (container, this, orb, remoteHomeView, id);
-
-        return factory;
+	    return factory;
     }
 
     /**
      * Connect the RMI object to the protocol.
      */
-    @Override
     public void connectObject(Remote remoteObj) throws RemoteException
     {
          StubAdapter.connect(remoteObj,  orb);    
     }	
 
 
-    @Override
     public boolean isStub(Object obj) {
         return StubAdapter.isStub(obj);
     }
 
-    @Override
     public boolean isLocal(Object obj) {
         return StubAdapter.isLocal(obj);
     }
 
-    @Override
     public byte[] getObjectID(org.omg.CORBA.Object obj) {
+
         IOR ior = ((com.sun.corba.ee.spi.orb.ORB)orb).getIOR(obj, false);
 	    java.util.Iterator iter = ior.iterator();
 
-        byte[] oid = null;
-        if (iter.hasNext()) {
-            TaggedProfile profile = (TaggedProfile) iter.next();
-            ObjectKey objKey = profile.getObjectKey();
-            oid = objKey.getId().getId();
-        }
+	    byte[] oid = null;
+	    if (iter.hasNext()) {
+		    TaggedProfile profile = (TaggedProfile) iter.next();
+		    ObjectKey objKey = profile.getObjectKey();
+		    oid = objKey.getId().getId();
+	    }
 
         return oid;
     }
@@ -254,16 +256,16 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
      * Return true if the two object references refer to the same
      * remote object.
      */
-    @Override
-    public boolean isIdentical(Remote obj1, Remote obj2) {
-        org.omg.CORBA.Object corbaObj1 = (org.omg.CORBA.Object)obj1;
-        org.omg.CORBA.Object corbaObj2 = (org.omg.CORBA.Object)obj2;
+    public boolean isIdentical(Remote obj1, Remote obj2)
+    {
+	    org.omg.CORBA.Object corbaObj1 = (org.omg.CORBA.Object)obj1;
+	    org.omg.CORBA.Object corbaObj2 = (org.omg.CORBA.Object)obj2;
 
-        return corbaObj1._is_equivalent(corbaObj2);
+	    return corbaObj1._is_equivalent(corbaObj2);
     }
 
-    @Override
     public void validateTargetObjectInterfaces(Remote targetObj) {
+        
         if( targetObj != null ) {
             // All Remote interfaces implemented by targetObj will be
             // validated as a side-effect of calling setTarget().
@@ -276,11 +278,11 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
         }
 
     }
+
   
     /**
      * Map the EJB/RMI exception to a protocol-specific (e.g. CORBA) exception
      */
-    @Override
     public Throwable mapException(Throwable exception) {
 
         boolean initCause = true;
@@ -327,47 +329,47 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
     /**
      * Called from SecurityMechanismSelector for each objref creation
      */
-    @Override
-    public EjbDescriptor getEjbDescriptor(byte[] ejbKey) {
-        EjbDescriptor result = null;
+    public EjbDescriptor getEjbDescriptor(byte[] ejbKey)
+    {
+	    EjbDescriptor result = null;
 
-        try {
-            if(_logger.isLoggable(Level.FINE)) {
-                _logger.log(Level.FINE,
-                    "POAProtocolMgr.getEjbDescriptor->: {0}", ejbKey);
-            }
+	    try {
+	        if(_logger.isLoggable(Level.FINE)) {
+		        _logger.log(Level.FINE, "POAProtocolMgr.getEjbDescriptor->: " + ejbKey);
+	        }
 
-            if ( ejbKey.length < POARemoteReferenceFactory.EJBID_OFFSET + 8 ) {
-                if(_logger.isLoggable(Level.FINE)) {
-                    _logger.log(Level.FINE,
-                        "POAProtocolMgr.getEjbDescriptor: {0}: {1} < {2}{3}",
-                    new Object[]{ejbKey, ejbKey.length,
-                        POARemoteReferenceFactory.EJBID_OFFSET, 8});
-                }
+	        if ( ejbKey.length < POARemoteReferenceFactory.EJBID_OFFSET + 8 ) {
+		        if(_logger.isLoggable(Level.FINE)) {
+		            _logger.log(Level.FINE, "POAProtocolMgr.getEjbDescriptor: "
+				    + ejbKey
+				    + ": " + ejbKey.length + " < "
+				    + POARemoteReferenceFactory.EJBID_OFFSET + 8);
+		        }
+		        return null;
+	        }
 
-                return null;
-            }
+	        long ejbId = Utility.bytesToLong(ejbKey, POARemoteReferenceFactory.EJBID_OFFSET);
 
-            long ejbId = Utility.bytesToLong(ejbKey,
-                POARemoteReferenceFactory.EJBID_OFFSET);
-
-            if(_logger.isLoggable(Level.FINE)) {
-                _logger.log(Level.FINE,
-                    "POAProtocolMgr.getEjbDescriptor: {0}: ejbId: {1}",
-                    new Object[]{ejbKey, ejbId});
-            }
+	        if(_logger.isLoggable(Level.FINE)) {
+		        _logger.log(Level.FINE, "POAProtocolMgr.getEjbDescriptor: "
+			                + ejbKey + ": ejbId: " + ejbId);
+	        }
 
             EjbService ejbService = habitat.getByContract(EjbService.class);
 
-            result = ejbService.ejbIdToDescriptor(ejbId);
-        } finally {
-            if(_logger.isLoggable(Level.FINE)) {
-                _logger.log(Level.FINE,
-                    "POAProtocolMgr.getEjbDescriptor<-: {0}: {1}",
-                    new Object[]{ejbKey, result});
-            }
-        }
+		    result = ejbService.ejbIdToDescriptor(ejbId);
+
+	    } finally {
+	        if(_logger.isLoggable(Level.FINE)) {
+		        _logger.log(Level.FINE, "POAProtocolMgr.getEjbDescriptor<-: "
+			    + ejbKey + ": " + result);
+	        }
+	    }
 
         return result;
    }
+
+
+
+
 }

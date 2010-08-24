@@ -63,6 +63,7 @@ import org.glassfish.enterprise.iiop.util.IIOPUtils;
 import java.nio.channels.SocketChannel;
 import java.net.Socket;
 
+import org.glassfish.enterprise.iiop.api.ORBLazyServiceInitializer;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 
 import com.sun.corba.ee.impl.naming.cosnaming.TransientNameService;
@@ -76,6 +77,7 @@ import java.util.logging.Level;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Arrays;
+import java.util.Properties;
 import java.nio.channels.SelectableChannel;
 import org.glassfish.enterprise.iiop.util.ThreadPoolStats;
 import org.glassfish.enterprise.iiop.util.ThreadPoolStatsImpl;
@@ -137,22 +139,17 @@ public class PEORBConfigurator implements ORBConfigurator {
             // ORB creates its own threadpool if threadpoolMgr was null above
             ThreadPool thpool=tpool.getDefaultThreadPool();
             String ThreadPoolName = thpool.getName();
-            ThreadPoolStats tpStats = new ThreadPoolStatsImpl(
-                thpool.getWorkQueue(0).getThreadPool());
-            StatsProviderManager.register("orb", PluginPoint.SERVER,
-                "thread-pool/orb/threadpool/"+ThreadPoolName, tpStats);
+            ThreadPoolStats tpStats = new ThreadPoolStatsImpl(thpool.getWorkQueue(0).getThreadPool());
+            StatsProviderManager.register("orb", PluginPoint.SERVER, "thread-pool/orb/threadpool/"+ThreadPoolName, tpStats);
            
             configureCopiers(orb);
             configureCallflowInvocationInterceptor(orb);
-
-            // In the server-case, iiop acceptors need to be set up after the 
-            // initial part of the orb creation but before any
-            // portable interceptor initialization
+            // In the server-case, iiop acceptors need to be set up after the initial part of the
+            // orb creation but before any portable interceptor initialization
             IIOPUtils iiopUtils = IIOPUtils.getInstance();
             if (iiopUtils.getProcessType().isServer()) {
-                IiopListener[] iiopListenerBeans = 
-                    IIOPUtils.getInstance().getIiopService()
-                    .getIiopListener().toArray(new IiopListener[0]);
+                IiopListener[] iiopListenerBeans = (IiopListener[]) IIOPUtils.getInstance().
+                    getIiopService().getIiopListener().toArray(new IiopListener[0]);
                 this.createORBListeners(iiopUtils, iiopListenerBeans, orb);
             }
             if (orb.getORBData().environmentIsGFServer()) {
@@ -196,7 +193,6 @@ public class PEORBConfigurator implements ORBConfigurator {
     private static void configureCallflowInvocationInterceptor(ORB orb) {
         orb.setInvocationInterceptor(
                 new InvocationInterceptor() {
-            @Override
                     public void preInvoke() {
                         /*    TODO
                   Agent agent = Switch.getSwitch().getCallFlowAgent();
@@ -207,7 +203,6 @@ public class PEORBConfigurator implements ORBConfigurator {
                   */
                     }
 
-            @Override
                     public void postInvoke() {
                         /*   TODO
                   Agent agent = Switch.getSwitch().getCallFlowAgent();
@@ -316,7 +311,6 @@ public class PEORBConfigurator implements ORBConfigurator {
             acceptor = lazyAcceptor;
         }
 
-        @Override
         public void handleRequest(SelectableChannel channel) {
             SocketChannel sch = (SocketChannel)channel ;
             Socket socket = sch.socket() ;
