@@ -72,11 +72,6 @@ public class ServerDirsTest {
         assertTrue(grandParentFile.isDirectory());
         assertTrue(userNextToTopLevelFile.isDirectory());
         assertTrue(userTopLevelFile.isDirectory());
-        System.out.println(childFile);
-        System.out.println(parentFile);
-        System.out.println(grandParentFile);
-        System.out.println("Top legal directory: " + userTopLevelFile);
-        System.out.println("Next to top legal directory: " + userNextToTopLevelFile);
     }
 
     /**
@@ -93,7 +88,6 @@ public class ServerDirsTest {
             ServerDirs sd = new ServerDirs(userTopLevelFile);
         }
         catch (IOException e) {
-            System.out.println("Got expected IOException.  Here is the message string: " + e.getLocalizedMessage());
             throw e;
         }
     }

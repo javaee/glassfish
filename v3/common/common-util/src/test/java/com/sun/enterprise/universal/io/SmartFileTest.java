@@ -74,15 +74,6 @@ public class SmartFileTest {
     public void tearDown() {
     }
 
-    /**
-     * Test of sanitize method, of class SmartFile.
-     */
-    @Test
-    public void sanitize() {
-        for (String path : FILENAMES) {
-            System.out.println(path + " --> " + SmartFile.sanitize(path));
-        }
-    }
 
     /**
      * Test of sanitizePaths method, of class SmartFile.
@@ -102,22 +93,7 @@ public class SmartFileTest {
             String drive = here.substring(0, 2);
             cp1expected = drive + "/a/b/c;" + here + "/qqq;" + here + "/z/e";
         }
-
-        System.out.println("******** Sanitized ClassPath Test ******************");
-
-        String cp = System.getProperty("java.class.path");
-        System.out.println("Current Classpath: " + cp + "\nSanitized Classpath: "
-                + SmartFile.sanitizePaths(cp));
-
-        System.out.println("here: " + here);
-        System.out.println("before: " + cp1before);
-        System.out.println("after: " + SmartFile.sanitizePaths(cp1before));
-        System.out.println("Expected: " + cp1expected);
-        System.out.println("***************************************************");
-
-        // All the QL and devtests are very unstable right now.
-        // I'll uncomment this later whn things are rock solid.
-        //assertEquals(cp1expected, SmartFile.sanitizePaths(cp1before));
+        assertEquals(cp1expected, SmartFile.sanitizePaths(cp1before));
     }
 
     /**

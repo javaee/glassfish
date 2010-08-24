@@ -58,12 +58,10 @@ public class DurationTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        System.out.println("*********  START Duration Output Strings ***************");
     }
 
     @AfterClass
     public static void tearDownClass() throws Exception {
-        System.out.println("*********  END Duration Output Strings ***************");
     }
 
     @Before
@@ -82,7 +80,6 @@ public class DurationTest {
                     Duration.MSEC_PER_SECOND * 59;
         
         Duration d = new Duration(msec);
-        System.out.println(d);
         assertTrue(d.numWeeks == 3);
         assertTrue(d.numDays == 6);
         assertTrue(d.numHours == 23);
@@ -101,7 +98,6 @@ public class DurationTest {
                     
         
         Duration d = new Duration(msec);
-        System.out.println(d);
         assertTrue(d.numWeeks == 7);
         assertTrue(d.numDays == 6);
         assertTrue(d.numHours == 23);
@@ -113,20 +109,17 @@ public class DurationTest {
     public void test3() {
         long msec = System.currentTimeMillis();
         Duration d = new Duration(msec);
-        System.out.println(d);
         assertTrue(d.numWeeks > 38 * 52);
     }
     @Test
     public void test4() {
         Duration d = new Duration(27188);
-        System.out.println(d);
         assertTrue(d.numSeconds == 27);
         assertTrue(d.numMilliSeconds == 188);
     }
     @Test
     public void test5() {
         Duration d = new Duration(2);
-        System.out.println(d);
         assertTrue(d.numSeconds == 0);
         assertTrue(d.numMilliSeconds == 2);
     }

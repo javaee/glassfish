@@ -1,3 +1,4 @@
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -64,7 +65,6 @@ public class ASenvPropertyReaderTest {
         installDir = new File(
             ASenvPropertyReaderTest.class.getClassLoader().getResource
             ("config/asenv.bat").getPath()).getParentFile().getParentFile();
-        System.out.println("INSTALL-DIR: " + installDir);
     }
 
     @AfterClass
@@ -82,7 +82,7 @@ public class ASenvPropertyReaderTest {
 
     @Test
     public void test() {
-        System.out.println(pr);
+        //System.out.println(pr);
     }
     ASenvPropertyReader pr;
     private static File installDir;

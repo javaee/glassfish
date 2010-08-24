@@ -99,7 +99,6 @@ public class NetUtilsTest {
      */
     @Test
     public void testHostIsLocal() {
-        System.out.println("hostIsLocal Test");
 
         String[] hostnames = new String[]{null, "", unlikelyName, "oracle.com", "localhost", NetUtils.getHostName()};
         boolean[] expected = new boolean[]{true, true, false, false, true, true};

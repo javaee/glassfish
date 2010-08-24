@@ -114,19 +114,19 @@ public class PayloadFilesManagerTest {
      */
     @Test
     public void testGetOutputFileURI() throws Exception {
-        System.out.println("getOutputFileURI");
+        ////System.out.println("getOutputFileURI");
 
         PayloadFilesManager instance = new PayloadFilesManager.Temp(Logger.getAnonymousLogger());
         String originalPath = "way/over/there/myApp.ear";
         Part testPart = PayloadImpl.Part.newInstance("text/plain", originalPath, null, "random content");
         URI result = instance.getOutputFileURI(testPart, testPart.getName());
-        System.out.println("  " + originalPath + " -> " + result);
+        ////System.out.println("  " + originalPath + " -> " + result);
         assertTrue(result.toASCIIString().endsWith("/myApp.ear"));
     }
 
     @Test
     public void testBraces() throws Exception {
-        System.out.println("testBraces");
+        ////System.out.println("testBraces");
 
         final File tmpDir = File.createTempFile("gfpayl{braces}", "tmp");
         tmpDir.delete();
@@ -137,7 +137,7 @@ public class PayloadFilesManagerTest {
         final String originalPath = "some/path";
         final Part testPart = PayloadImpl.Part.newInstance("text/plain", originalPath, null, "random content");
         final URI result = instance.getOutputFileURI(testPart, testPart.getName());
-        System.out.println("  " + originalPath + " -> " + result);
+        ////System.out.println("  " + originalPath + " -> " + result);
         assertFalse(result.toASCIIString().contains("{"));
     }
 
@@ -161,7 +161,7 @@ public class PayloadFilesManagerTest {
                 // Make sure all files have the same parent - since in this test
                 // they all came from the same path originally.
                 for (File f : files) {
-                    System.out.println("  " + f.toURI().toASCIIString());
+                    ////System.out.println("  " + f.toURI().toASCIIString());
                     if (parent == null) {
                         parent = f.getParentFile();
                     } else {
@@ -197,7 +197,7 @@ public class PayloadFilesManagerTest {
                     } else {
                         success &= (f.getName().equals(fileName)) && ( ! parents.contains(f.getParentFile()));
                     }
-                    System.out.println("  " + f.toURI().toASCIIString());
+                    ////System.out.println("  " + f.toURI().toASCIIString());
                 }
                 assertTrue("Failed because temp file names did not match or at least two had a parent in common", success);
             }
@@ -222,10 +222,10 @@ public class PayloadFilesManagerTest {
             @Override
             protected void checkResults(Inbound ib, PayloadFilesManager instance) throws Exception {
                 List<File> files = instance.processParts(ib);
-                System.out.println("  Original: " + originalFile.toURI().toASCIIString());
+                ////System.out.println("  Original: " + originalFile.toURI().toASCIIString());
 
                 for (File f : files) {
-                    System.out.println("  Temp file: " + f.toURI().toASCIIString());
+                    ////System.out.println("  Temp file: " + f.toURI().toASCIIString());
                     if (f.equals(originalFile)) {
                         fail("Temp file was created at original top-level path; should have been in a temp dir");
                     }
@@ -253,9 +253,9 @@ public class PayloadFilesManagerTest {
                     if (f.getName().equals("flat.txt")) {
                         success &= (f.getParentFile().equals(instance.getTargetDir()));
                     }
-                    System.out.println("  " + f.toURI().toASCIIString());
+                    ////System.out.println("  " + f.toURI().toASCIIString());
                 }
-                System.out.println("  Done");
+                ////System.out.println("  Done");
                 assertTrue("Flat file was not deposited in top-level temp directory", success);
             }
         }.run("testPathlessFile");
@@ -263,13 +263,13 @@ public class PayloadFilesManagerTest {
 
 //    @Test
 //    public void testWindowsPath() throws Exception {
-//        System.out.println("testWindowsPath");
+//        //System.out.println("testWindowsPath");
 //        testForBadChars("C:\\Program Files\\someDir");
 //    }
 //
 //    @Test
 //    public void testNonWindowsPath() throws Exception {
-//        System.out.println("testNonWindowsPath");
+//        //System.out.println("testNonWindowsPath");
 //        testForBadChars("/Users/whoever/someDir");
 //
 //    }
@@ -745,17 +745,17 @@ public class PayloadFilesManagerTest {
     }
 
     private static void listDir(final String title, final File dir) {
-        System.out.println(title);
+        ////System.out.println(title);
         listDir(dir);
-        System.out.println();
+        ////System.out.println();
     }
 
     private static void listDir(final File dir) {
         if ( ! dir.exists()) {
-            System.out.println("Directory  " + dir.getAbsolutePath() + " does not exist");
+            //System.out.println("Directory  " + dir.getAbsolutePath() + " does not exist");
         } else {
             for (File f : dir.listFiles()) {
-                System.out.println((f.isDirectory() ? "dir " : "    ") + f.getAbsolutePath());
+                //System.out.println((f.isDirectory() ? "dir " : "    ") + f.getAbsolutePath());
                 if (f.isDirectory()) {
                     listDir(f);
                 }
@@ -1177,7 +1177,7 @@ public class PayloadFilesManagerTest {
 //            uri = URI.create(initialPath.replace(File.separator, "/"));
 //            targetDirURI = instance.getTargetDir().toURI();
 //
-//            System.out.println("  " + initialPath + " -> " + uri.toASCIIString());
+//            //System.out.println("  " + initialPath + " -> " + uri.toASCIIString());
 //            String uriString = targetDirURI.relativize(uri).toASCIIString();
 //
 //            // trim the trailing slash for the directory
@@ -1208,7 +1208,7 @@ public class PayloadFilesManagerTest {
         public void run(String testName) throws Exception {
             File tempZipFile = null;
 
-            System.out.println(testName);
+            //System.out.println(testName);
 
 
             try {
@@ -1288,12 +1288,12 @@ public class PayloadFilesManagerTest {
 
                         @Override
                         public void publish(LogRecord record) {
-                            System.out.println(record.getMessage());
+                            //System.out.println(record.getMessage());
                         }
 
                         @Override
                         public void flush() {
-                            System.out.flush();
+                            //System.out.flush();
                         }
 
                         @Override

@@ -214,7 +214,6 @@ public class MiniXmlParserTest {
         try {
             new MiniXmlParser(noconfig, "server");
         } catch (MiniXmlParserException ex) {
-            System.out.println("This exception is expected.  Here it is: " + ex);
             throw ex;
         }
     }
@@ -400,11 +399,6 @@ public class MiniXmlParserTest {
             double d = (double) (nanoStop - nanoStart);
             d *= .001;
             d *= .001;
-            System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
-            System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
-            System.out.println("Milliseconds= " + d);
-            System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
-            System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
         } catch (MiniXmlParserException ex) {
             Logger.getLogger(MiniXmlParserTest.class.getName()).log(Level.SEVERE, null, ex);
         }

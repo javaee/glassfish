@@ -79,7 +79,6 @@ public class PropertiesDecoderTest {
      */
     @Test
     public void testUnflatten() {
-        System.out.println("*****   Unflatten Test   ******* ");
         String s = "foo=goo:xyz:hoo=ioo";
         Map<String, String> result = PropertiesDecoder.unflatten(s);
         Map<String, String> expResult = new HashMap<String,String>();
@@ -99,8 +98,5 @@ public class PropertiesDecoderTest {
         expResult.put("foo", "qbert");
         expResult.put("a", "b=c=d");
         assertEquals(expResult, result);
-        System.out.println(result.toString());
-
-        System.out.println("*****   Unflatten Test   ******* ");
     }
 }

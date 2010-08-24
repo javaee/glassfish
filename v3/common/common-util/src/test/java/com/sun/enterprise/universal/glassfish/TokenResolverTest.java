@@ -85,7 +85,6 @@ public class TokenResolverTest {
      */
     @Test
     public void testResolve_Map() {
-        System.out.println("Testing token-resolve of map");
         Map<String,String> map2 = new HashMap<String,String>();
 
         map2.put("foo", "${name1}");
@@ -112,7 +111,6 @@ public class TokenResolverTest {
      */
     @Test
     public void testResolve_List() {
-        System.out.println("resolve");
         List<String> list = null;
         TokenResolver instance = new TokenResolver(testMap);
         //instance.resolve(list);
@@ -125,7 +123,6 @@ public class TokenResolverTest {
      */
     @Test
     public void testResolve_String() {
-        System.out.println("resolve String Test");
         TokenResolver instance = new TokenResolver(testMap);
         String expResult = "xyzvalue1xyz";
         String result = instance.resolve("xyz${name1}xyz");

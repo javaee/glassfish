@@ -79,7 +79,6 @@ public class UtilityTest {
      */
     @Test
     public void testGetEnvOrProp() {
-        System.out.println("getEnvOrProp");
         Map<String, String> env = System.getenv();
         Set<String> keys = env.keySet();
         String key = null;

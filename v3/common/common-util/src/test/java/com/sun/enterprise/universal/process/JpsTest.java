@@ -76,6 +76,5 @@ public class JpsTest {
     @Test
     public void atest() {
         int pid = Jps.getPid("ASMain");
-        System.out.println("ASMain pid = " + pid);
     }
 }

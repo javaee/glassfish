@@ -95,6 +95,7 @@ public class ProcessManagerTest {
             pm = new ProcessManager("cat", textfile);
 
         pm.setStdinLines(hugeInput());
+        pm.setEcho(false);
         pm.execute();
     }
 

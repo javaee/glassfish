@@ -68,10 +68,10 @@ public class ReadLockTest {
 
         File f = getFile();
         try {
-            System.out.println("trying the lock on " + f.getAbsolutePath());
+            //System.out.println("trying the lock on " + f.getAbsolutePath());
             final ManagedFile managed = new ManagedFile(f, 1000, 1000);
             Lock fl = managed.accessRead();
-            System.out.println("Got the lock on " + f.getAbsolutePath());
+            //System.out.println("Got the lock on " + f.getAbsolutePath());
             List<Future<Boolean>> results = new ArrayList<Future<Boolean>>(5);
             for (int i=0;i<5;i++) {
                 results.add(Executors.newFixedThreadPool(2).submit(new Callable<Boolean>() {
@@ -113,7 +113,7 @@ public class ReadLockTest {
                 throw new IOException(e);
             }
         } else {
-            System.out.println("Not found !");
+            //System.out.println("Not found !");
         }
         return null;
     }    

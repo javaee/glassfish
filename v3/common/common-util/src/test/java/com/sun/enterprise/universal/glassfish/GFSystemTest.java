@@ -116,9 +116,7 @@ class ParentThread extends Thread {
             String result = GFSystem.getProperty("foo");
 
             if (result.equals(getName())) {
-                System.out.println("Parent Thread " + getName() + "--> foo = " + GFSystem.getProperty("foo"));
             } else {
-                System.out.println("Expected: " + getName() + ", got: " + result);
                 GFSystemTest.setFailure();
             }
             t.join();
@@ -141,9 +139,7 @@ class ChildThread extends Thread {
             String result = GFSystem.getProperty("foo");
 
             if (result.equals(parentName)) {
-                System.out.println("Child Thread of " + parentName + " --> foo = " + GFSystem.getProperty("foo"));
             } else {
-                System.out.println("ChildThread Expected: " + parentName + ", got: " + result);
                 GFSystemTest.setFailure();
             }
             t.join();
@@ -163,10 +159,7 @@ class GrandChildThread extends Thread {
     public void run() {
         String result = GFSystem.getProperty("foo");
 
-        if(result.equals(grandParentName))
-            System.out.println("GrandChild Thread of " + grandParentName + " --> foo = " + GFSystem.getProperty("foo"));
-        else {
-            System.out.println("GrandChildThread Expected: " + getName() + ", got: " + result);
+        if(!result.equals(grandParentName)) {
             GFSystemTest.setFailure();
         }
     }

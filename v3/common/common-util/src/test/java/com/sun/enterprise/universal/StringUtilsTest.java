@@ -79,7 +79,6 @@ public class StringUtilsTest {
      */
     @Test
     public void removeEnclosingQuotes() {
-        System.out.println("removeEnclosingQuotes");
         String a = "\"hello\"";
         String b = "'hello'";
         String c = "\"hello'";

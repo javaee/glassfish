@@ -77,7 +77,7 @@ public class TestClient {
                 if (mode.equals("write")) {
                     lock = managed.accessWrite();
                 } else {
-                    System.out.println("usage : TestClient [ read | write ]. Invalid option : " + mode);
+                    //System.out.println("usage : TestClient [ read | write ]. Invalid option : " + mode);
                     return;
                 }
 
@@ -85,10 +85,10 @@ public class TestClient {
                 e.printStackTrace();
                 return;
             }
-            System.out.println("I have the lock in "+ mode +" mode, press enter to release ");
+            //System.out.println("I have the lock in "+ mode +" mode, press enter to release ");
             System.in.read(bytes);
             lock.unlock();
-            System.out.println("released");
+            //System.out.println("released");
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             return;
