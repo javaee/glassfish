@@ -226,11 +226,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.cluster</groupId>
-            <artifactId>cluster-ssh</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.core</groupId>
             <artifactId>logging</artifactId>
             <version>${project.version}</version>
