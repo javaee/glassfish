@@ -140,8 +140,10 @@ public class GMSAnnounceBeforeStopClusterCommand implements AdminCommand {
                 }
             }
         } finally {
-            GMSAnnounceSupplementalInfo result = new GMSAnnounceSupplementalInfo(clusterMembers, gmsStopCluster, gmsadapter);
-            report.setResultType(GMSAnnounceSupplementalInfo.class,  result);
+            if (gms != null) {
+                GMSAnnounceSupplementalInfo result = new GMSAnnounceSupplementalInfo(clusterMembers, gmsStopCluster, gmsadapter);
+                report.setResultType(GMSAnnounceSupplementalInfo.class,  result);
+            }
         }
     }
 

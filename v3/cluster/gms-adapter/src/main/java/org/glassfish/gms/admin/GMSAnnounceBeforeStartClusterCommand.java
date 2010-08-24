@@ -139,8 +139,10 @@ public class GMSAnnounceBeforeStartClusterCommand implements AdminCommand {
                 }
             }
         } finally {
-            GMSAnnounceSupplementalInfo result = new GMSAnnounceSupplementalInfo(clusterMembers, gmsStartCluster, gmsadapter);
-            report.setResultType(GMSAnnounceSupplementalInfo.class,  result);
+            if (gms != null) {
+                GMSAnnounceSupplementalInfo result = new GMSAnnounceSupplementalInfo(clusterMembers, gmsStartCluster, gmsadapter);
+                report.setResultType(GMSAnnounceSupplementalInfo.class,  result);
+            }
         }
     }
 
