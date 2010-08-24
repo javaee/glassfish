@@ -119,12 +119,9 @@
          <event>
             <!beforeEncode
                 mapPut(map="#{pageSession.statusAttrs}" key="DEFAULT" value="#{pageSession.configName}" );
-                gf.callRestAndExtractMsgProps(
-                    endpoint="#{sessionScope.REST_URL}/list-instances.xml"
-                    attrs="#{pageSession.statusAttrs}"
-                    method="GET"
-                    keyList="#{requestScope.instanceList}" propsMap="#{requestScope.propsMap}");
-
+                gf.restRequest(endpoint="#{sessionScope.REST_URL}/list-instances", attrs="#{requestScope.statusAttrs}"
+                    method="GET", result="#{requestScope.restMap}");
+                gf.getMapKeys(Map="#{requestScope.restMap.data.extraProperties}" Keys="#{requestScope.instanceList}");
                 if(#{pageSession.configName}=server-config){
                     listAdd(list="#{requestScope.instanceList}" value="server" index="0");
                 }
