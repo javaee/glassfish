@@ -54,6 +54,7 @@ import org.jvnet.hk2.component.Habitat;
 import javax.management.Attribute;
 import javax.management.AttributeList;
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
@@ -207,13 +208,23 @@ public class LogFilter {
 
             if (!logFileOnServer.exists()) {
                 // if log file is not found on server then need to download
-                instanceLogFile = new LogFilterForInstance().getInstanceLogFile(habitat, targetServer,
-                        domain, logger, instanceName, env.getDomainRoot().getAbsolutePath());
+                try {
+                    instanceLogFile = new LogFilterForInstance().getInstanceLogFile(habitat, targetServer,
+                            domain, logger, instanceName, env.getDomainRoot().getAbsolutePath());
+                } catch (IOException e) {
+                    logger.log(Level.WARNING, "logging.backend.error.instance", e);
+                    throw new RuntimeException(e);
+                }
             } else {
                 if (logFileRefresh) {
                     // if gui sends refresh request for log file.
-                    instanceLogFile = new LogFilterForInstance().getInstanceLogFile(habitat, targetServer,
-                            domain, logger, instanceName, env.getDomainRoot().getAbsolutePath());
+                    try {
+                        instanceLogFile = new LogFilterForInstance().getInstanceLogFile(habitat, targetServer,
+                                domain, logger, instanceName, env.getDomainRoot().getAbsolutePath());
+                    } catch (IOException e) {
+                        logger.log(Level.WARNING, "logging.backend.error.instance", e);
+                        throw new RuntimeException(e);
+                    }
                 } else {
                     // if file is already there then using existing instance log file
                     instanceLogFile = logFileOnServer;

@@ -81,9 +81,9 @@ import java.util.Properties;
 *
 */
 @Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
-@Service(name = "set-log-level")
+@Service(name = "set-log-levels")
 @Scoped(PerLookup.class)
-@I18n("set.log.level")
+@I18n("set.log.levels")
 public class SetLogLevel implements AdminCommand {
 
     @Param(name = "name_value", primary = true, separator = ':')

@@ -445,7 +445,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
       */
     private String getZipFileName(String sourceDir) {
 
-        final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
+        final String DATE_FORMAT_NOW = "yyyy-MM-dd_HH-mm-ss";
 
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);

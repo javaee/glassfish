@@ -49,7 +49,6 @@ import org.glassfish.cluster.ssh.sftp.SFTPClient;
 import org.jvnet.hk2.component.Habitat;
 
 import java.io.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -61,7 +60,8 @@ import java.util.logging.Logger;
  */
 public class LogFilterForInstance {
 
-    public File getInstanceLogFile(Habitat habitat, Server targetServer, Domain domain, Logger logger, String instanceName, String domainRoot) {
+    public File getInstanceLogFile(Habitat habitat, Server targetServer, Domain domain, Logger logger,
+                                   String instanceName, String domainRoot) throws IOException {
 
         File instanceLogFile = null;
 
@@ -69,40 +69,34 @@ public class LogFilterForInstance {
         // store in temp directory which is used to get LogFile object.
         // Right now user needs to go through this URL to setup and configure ssh http://wikis.sun.com/display/GlassFish/3.1SSHSetup
 
-        try {
-            SSHLauncher sshL = habitat.getComponent(SSHLauncher.class);
-            String sNode = targetServer.getNode();
-            Nodes nodes = domain.getNodes();
-            Node node = nodes.getNode(sNode);
-            sshL.init(node, logger);
+        SSHLauncher sshL = habitat.getComponent(SSHLauncher.class);
+        String sNode = targetServer.getNode();
+        Nodes nodes = domain.getNodes();
+        Node node = nodes.getNode(sNode);
+        sshL.init(node, logger);
 
-            SFTPClient sftpClient = sshL.getSFTPClient();
+        SFTPClient sftpClient = sshL.getSFTPClient();
 
-            File logFileDirectoryOnServer = new File(domainRoot + File.separator + "logs"
-                    + File.separator + instanceName);
-            if (logFileDirectoryOnServer.exists())
-                logFileDirectoryOnServer.delete();
+        File logFileDirectoryOnServer = new File(domainRoot + File.separator + "logs"
+                + File.separator + instanceName);
+        if (logFileDirectoryOnServer.exists())
+            logFileDirectoryOnServer.delete();
 
-            logFileDirectoryOnServer.mkdirs();
+        logFileDirectoryOnServer.mkdirs();
 
-            instanceLogFile = new File(logFileDirectoryOnServer.getAbsolutePath() + File.separator + "server.log");
+        instanceLogFile = new File(logFileDirectoryOnServer.getAbsolutePath() + File.separator + "server.log");
 
-            InputStream inputStream = sftpClient.read(node.getInstallDir() + File.separator + "nodes" + File.separator
-                    + sNode + File.separator + instanceName + File.separator + "logs" + File.separator + "server.log");
+        InputStream inputStream = sftpClient.read(node.getInstallDir() + File.separator + "nodes" + File.separator
+                + sNode + File.separator + instanceName + File.separator + "logs" + File.separator + "server.log");
 
-            BufferedInputStream in = new BufferedInputStream(inputStream);
-            FileOutputStream file = new FileOutputStream(instanceLogFile);
-            BufferedOutputStream out = new BufferedOutputStream(file);
-            int i;
-            while ((i = in.read()) != -1) {
-                out.write(i);
-            }
-            out.flush();
+        BufferedInputStream in = new BufferedInputStream(inputStream);
+        FileOutputStream file = new FileOutputStream(instanceLogFile);
+        BufferedOutputStream out = new BufferedOutputStream(file);
+        int i;
+        while ((i = in.read()) != -1) {
+            out.write(i);
         }
-        catch (IOException ex) {
-            logger.log(Level.WARNING, "logging.backend.error.instance", ex);
-            throw new RuntimeException(ex);
-        }
+        out.flush();
 
         return instanceLogFile;
 

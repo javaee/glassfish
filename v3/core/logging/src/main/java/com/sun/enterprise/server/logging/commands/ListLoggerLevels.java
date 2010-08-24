@@ -71,9 +71,9 @@ import java.util.Iterator;
  * To change this template use File | Settings | File Templates.
  */
 @Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
-@Service(name = "list-logger-levels")
+@Service(name = "list-log-levels")
 @Scoped(PerLookup.class)
-@I18n("list.logger.levls")
+@I18n("list.log.levels")
 public class ListLoggerLevels implements AdminCommand {
 
     @Inject
