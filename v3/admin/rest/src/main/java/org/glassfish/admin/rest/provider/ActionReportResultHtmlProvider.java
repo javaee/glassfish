@@ -40,6 +40,7 @@
 
 package org.glassfish.admin.rest.provider;
 
+import org.glassfish.api.ActionReport.ExitCode;
 import com.sun.enterprise.v3.common.ActionReporter;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.results.GetResult;
@@ -83,8 +84,13 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
             final List<Map<String, String>> commands = (List<Map<String, String>>) ar.getExtraProperties().get("commands");
             final MethodMetaData postMetaData = proxy.getMetaData().getMethodMetaData("POST");
 
+            if (proxy.getCommandDisplayName()!=null) {//for commands, we want the output of the command before the form
+                //  result.append("<h2>Raw Output</h2>");
+                result.append(processReport(ar));
+            }
+            
             if ((postMetaData != null) && (entity == null)) {
-                String postCommand = getHtmlRespresentationsForCommand(postMetaData, "POST", "Create", uriInfo);
+                String postCommand = getHtmlRespresentationsForCommand(postMetaData, "POST", proxy.getCommandDisplayName(), uriInfo);
                 result.append(getHtmlForComponent(postCommand, "Create " + ar.getActionDescription(), ""));
             }
 
@@ -92,22 +98,24 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
                 String attributes = ProviderUtil.getHtmlRepresentationForAttributes(proxy.getEntity(), uriInfo);
                 result.append(ProviderUtil.getHtmlForComponent(attributes, "Attributes", ""));
 
-                String deleteCommand = ProviderUtil.getHtmlRespresentationsForCommand(proxy.getMetaData().getMethodMetaData("DELETE"), "DELETE", "Delete", uriInfo);
+                String deleteCommand = ProviderUtil.getHtmlRespresentationsForCommand(proxy.getMetaData().getMethodMetaData("DELETE"), "DELETE", proxy.getCommandDisplayName(), uriInfo);
                 result.append(ProviderUtil.getHtmlForComponent(deleteCommand, "Delete " + entity.model.getTagName(), ""));
             }
 
-            if (childResources != null) {
+            if ((childResources != null)&&(childResources.size()>0)) {
                 String childResourceLinks = getResourcesLinks(childResources);
                 result.append(ProviderUtil.getHtmlForComponent(childResourceLinks, "Child Resources", ""));
             }
 
-            if (commands != null) {
+            if ((commands != null) &&(commands.size()>0)) {
                 String commandLinks = getCommandLinks(commands);
                 result.append(ProviderUtil.getHtmlForComponent(commandLinks, "Commands", ""));
             }
 
-            result.append("<h2>Raw Output</h2>");
-            result.append(processReport(ar));
+            if (proxy.getCommandDisplayName()==null) {//for NON commands, we want the output of the command after the form
+                //  result.append("<h2>Raw Output</h2>");
+                result.append(processReport(ar));
+            }
         }
         return result.append("</div></body></html>").toString();
     }
@@ -150,13 +158,18 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
 
     protected String processReport(ActionReporter ar) {
         StringBuilder result = new StringBuilder();
-        result.append("<h1>GlassFish ")
+        result.append("<h2>")
                 .append(ar.getActionDescription())
-                .append(" command report</h1><h2>")
-                .append(ar.getMessage() != null ? ar.getMessage() : "")
-                .append("</h2><h2>Exit Code: ")
-                .append(ar.getActionExitCode().toString())
-                .append("</h2><hr>");
+                .append(" ouptut:</h2><h3>")
+                .append(ar.getMessage() != null ? "<pre>"+ar.getMessage()+"</pre>" : "")
+                .append("</h3>");
+        if ((ar.getMessage() == null)
+                || (ar.getMessage().equals(""))
+                || (ar.getActionExitCode() != ExitCode.SUCCESS)) {
+            result.append("<h3>Exit Code: " + ar.getActionExitCode().toString() + "</h3>");
+
+        }
+        result.append("<hr>");
 
         Properties properties = ar.getTopMessagePart().getProps();
         if (!properties.isEmpty()) {

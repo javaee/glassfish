@@ -55,6 +55,8 @@ public class ActionReportResult extends Result {
     private RestActionReporter __message;
     private OptionsResult __metaData;
     private ConfigBean __entity;
+    private String commandDisplayName = null;
+
 
     /**
      * Constructor
@@ -83,6 +85,12 @@ public class ActionReportResult extends Result {
         __metaData = metaData;
     }
 
+    public ActionReportResult(String name, RestActionReporter r,  OptionsResult metaData, String displayName) {
+        __name = name;
+        __message = r;
+        __metaData = metaData;
+        commandDisplayName = displayName;
+    }
     /**
      * Returns the result string this object represents
      */
@@ -90,7 +98,12 @@ public class ActionReportResult extends Result {
         return __message;
     }
 
-
+    /**
+     * Returns display name for command associated with the command resource.
+     */
+    public String getCommandDisplayName() {
+        return commandDisplayName;
+    }
     /**
      * Returns OptionsResult - the meta-data of this resource.
      */
