@@ -46,6 +46,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.process.ProcessStreamDrainer;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
+import com.sun.enterprise.util.OS;
 import com.sun.enterprise.util.net.NetUtils;
 import java.io.*;
 import java.util.*;
@@ -371,9 +372,9 @@ public abstract class GFLauncher {
         catch (Exception e) {
         }
 
-
         //run the process and attach Stream Drainers
         try {
+            closeStandardStreamsMaybe();
             process = pb.start();
             if (getInfo().isVerbose()) {
                 psd = ProcessStreamDrainer.redirect(getInfo().getDomainName(), process);
@@ -738,6 +739,43 @@ public abstract class GFLauncher {
         else
             GFLauncherLogger.setConsoleLevel(Level.WARNING);
     }
+
+    private void closeStandardStreamsMaybe() {
+        // see issue 12832
+        // Windows bug/feature --> 
+        // Say process A (ssh) creates Process B (asadmin start-instance )
+        // which then fires up Process C (the instance).
+        // Process B exits but Process A does NOT.  Process A is waiting for 
+        // Process C to exit.  
+        // The solution is to close down the standard streams BEFORE creating 
+        // Process C.  Then Process A becomes convinced that the process it created
+        // has finished.
+        // If there is a console that means the user is sitting at the terminal
+        // directly and we don't have to worry about it.
+        // Note that the issue is inside SSH -- not inside GF code per se.  I.e.
+        // Process B absolutely positively does exit whether or not this code runs...
+        // don't run this unless we have to because our "..." messages disappear.
+
+        if (System.console() == null && OS.isWindows()) {
+            System.out.println(strings.get("ssh"));
+            try {
+                System.in.close();
+            }
+            catch (Exception e) { // ignore
+            }
+            try {
+                System.err.close();
+            }
+            catch (Exception e) { // ignore
+            }
+            try {
+                System.out.close();
+            }
+            catch (Exception e) { // ignore
+            }
+        }
+    }
+
     private List<String> commandLine = new ArrayList<String>();
     private GFLauncherInfo info;
     private Map<String, String> asenvProps;
