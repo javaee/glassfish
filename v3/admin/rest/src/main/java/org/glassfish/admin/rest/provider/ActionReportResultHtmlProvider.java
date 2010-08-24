@@ -203,7 +203,7 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
                     .append("<tr><td>Message</td>")
                     .append("<td>")
                     .append(part.getMessage())
-                    .append("</td></tr><td>Properites</td><td>")
+                    .append("</td></tr><td>Properties</td><td>")
                     .append(processMap(part.getProps()))
                     .append("</td></tr>");
             List<ActionReport.MessagePart> children = part.getChildren();

@@ -115,7 +115,7 @@ public class ActionReportResultJsonProvider extends BaseProvider<ActionReportRes
         for (MessagePart part : parts) {
             JSONObject object = new JSONObject();
             object.put("message", part.getMessage());
-            object.put("properites", part.getProps());
+            object.put("properties", part.getProps());
             List<MessagePart> children = part.getChildren();
             if (children.size() > 0) {
                 object.put("children", processChildren(part.getChildren()));
