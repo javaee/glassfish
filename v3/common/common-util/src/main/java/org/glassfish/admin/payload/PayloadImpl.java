@@ -223,12 +223,18 @@ public class PayloadImpl implements Payload {
                             enhancedProps,
                             f);
                 } else {
-                    final InputStream is = new BufferedInputStream(new FileInputStream(f));
                     String contentType = URLConnection.guessContentTypeFromName(f.getName());
                     if (contentType == null) {
-                        contentType = URLConnection.guessContentTypeFromStream(is);
-                        if (contentType == null) {
-                            contentType = "application/octet-stream";
+                        final InputStream is = new BufferedInputStream(new FileInputStream(f));
+                        try {
+                            contentType = URLConnection.guessContentTypeFromStream(is);
+                            if (contentType == null) {
+                                contentType = "application/octet-stream";
+                            }
+                        } finally {
+                            if (is != null) {
+                                is.close();
+                            }
                         }
                     }
                     enhancedProps.setProperty("last-modified", Long.toString(f.lastModified()));
@@ -237,7 +243,7 @@ public class PayloadImpl implements Payload {
                             contentType,
                             fileURI.getPath(),
                             enhancedProps,
-                            is));
+                            f));
                 }
             }
         }
