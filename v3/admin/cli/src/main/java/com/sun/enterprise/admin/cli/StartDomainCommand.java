@@ -69,7 +69,7 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
 
     private GFLauncherInfo info;
     private GFLauncher launcher;
-    @Param(optional = true, defaultValue = "false")
+    @Param(optional = true, shortName = "v", defaultValue = "false")
     private boolean verbose;
     @Param(optional = true, defaultValue = "false")
     private boolean upgrade;
