@@ -43,12 +43,15 @@ package com.sun.enterprise.v3.admin.cluster;
 import com.sun.enterprise.admin.util.InstanceStateService;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.cluster.InstanceInfo;
+import com.sun.enterprise.util.StringUtils;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
+import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.InstanceState;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.admin.config.ReferenceContainer;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -85,19 +88,40 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
     private static final String NONE = "Nothing to list.";
     private static final String EOL = "\n";
 
+    @Param(optional = true, primary = true, defaultValue = "domain")
+    String whichTarget;
+
+    @Inject
+    private Clusters allClusters;
+
+    private ActionReport report ;
+
     @Override
     public void postConstruct() {
         helper = new RemoteInstanceCommandHelper(habitat);
     }
 
     public void execute(AdminCommandContext context) {
-        ActionReport report = context.getActionReport();
+        report = context.getActionReport();
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         Logger logger = context.getLogger();
         ActionReport.MessagePart top = report.getTopMessagePart();
 
-        Clusters clusters = domain.getClusters();
-        List<Cluster> clusterList = clusters.getCluster();
+        List<Cluster> clusterList = null;
+        //Fix for issue 13057 list-clusters doesn't take an operand
+        //defaults to domain
+        if (whichTarget.equals("domain" )) {
+            Clusters clusters = domain.getClusters();
+            clusterList = clusters.getCluster();
+        } else {
+
+            clusterList = createClusterList();
+
+            if (clusterList == null) {
+                fail(Strings.get("list.instances.badTarget", whichTarget));
+                return;
+            }
+        }
         StringBuilder sb = new StringBuilder();
         if (clusterList.size() < 1) {
             sb.append(NONE);
@@ -115,8 +139,6 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
         //not running (no instance running)
         //partially running (at least 1 instance is not running)
 
-        // bnevins: hassle to not have an extra linefeed at the end
-        boolean firstCluster = true;
 
         for (Cluster cluster : clusterList) {
             String clusterName = cluster.getName();
@@ -157,15 +179,94 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
                 value = PARTIALLY_RUNNING;
             }
 
-            // do not put an extraneous linefeed at the end!
-            if (firstCluster)
-                firstCluster = false;
-            else
-                sb.append(EOL);
-
-            sb.append(clusterName).append(display);
+            sb.append(clusterName).append(display).append(EOL);
             top.addProperty(clusterName, value);
         }
-        report.setMessage(sb.toString());
+        String output = sb.toString();
+        //Fix for isue 12885
+        report.setMessage(output.substring(0,output.length()-1 ));
+    }
+
+    /*
+    * if target was junk then return all the clusters
+    */
+    private List<Cluster> createClusterList() {
+        // 1. no whichTarget specified
+        if (!StringUtils.ok(whichTarget))
+            return allClusters.getCluster();
+
+        ReferenceContainer rc = domain.getReferenceContainerNamed(whichTarget);
+        // 2. Not a server or a cluster. Could be a config or a Node
+        if (rc == null) {
+            return getClustersForNodeOrConfig();
+        }
+        else if (rc.isServer()) {
+            Server s =((Server) rc);
+            List<Cluster> cl = new LinkedList<Cluster>();
+            cl.add(s.getCluster());
+            return  cl;
+        }
+        else if (rc.isCluster()) {
+            Cluster cluster = (Cluster) rc;
+            List<Cluster> cl = new LinkedList<Cluster>();
+            cl.add(cluster);
+            return cl;
+        }
+        else
+            return null;
+    }
+
+     private List<Cluster> getClustersForNodeOrConfig() {
+        if (whichTarget == null)
+            throw new NullPointerException("impossible!");
+
+        List<Cluster> list = getClustersForNode();
+
+        if (list == null)
+            list = getClustersForConfig();
+
+        return list;
+    }
+
+     private List<Cluster> getClustersForNode() {
+        boolean foundNode = false;
+        Nodes nodes = domain.getNodes();
+
+        if (nodes != null) {
+            List<Node> nodeList = nodes.getNode();
+            if (nodeList != null) {
+                for (Node node : nodeList) {
+                    if (whichTarget.equals(node.getName())) {
+                        foundNode = true;
+                        break;
+                    }
+                }
+            }
+        }
+         if (!foundNode)
+             return null;
+         else
+             return domain.getClustersOnNode(whichTarget);
+    }
+
+     private List<Cluster> getClustersForConfig() {
+        Config config = domain.getConfigNamed(whichTarget);
+
+        if (config == null)
+            return null;
+
+        List<ReferenceContainer> rcs = domain.getReferenceContainersOf(config);
+        List<Cluster> clusters = new LinkedList<Cluster>();
+
+        for (ReferenceContainer rc : rcs)
+            if (rc.isCluster())
+                clusters.add((Cluster) rc);
+
+        return clusters;
+    }
+
+     private void fail(String s) {
+        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+        report.setMessage(s);
     }
 }

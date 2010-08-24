@@ -81,7 +81,9 @@ public final class ListConfigsCommand implements AdminCommand {
             sb.append(config.getName()).append('\n');
 
         }
-        report.addSubActionsReport().setMessage(sb.toString() );
+        String output = sb.toString();
+        //Fix for isue 12885
+        report.addSubActionsReport().setMessage(output.substring(0,output.length()-1 ));
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 

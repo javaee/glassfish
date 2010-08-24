@@ -175,7 +175,7 @@ public class TranslatedConfigView implements ConfigView {
            final boolean     exists = pa.aliasExists(an);
            if (!exists) {
 
-               final String msg = "No_such_alias"+ an;
+               final String msg = String.format("Alias  %s does not exist",an);
                throw new IllegalArgumentException(msg);
            }
            final String real = pa.getPasswordForAlias(an);

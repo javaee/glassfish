@@ -58,6 +58,7 @@ import com.sun.enterprise.util.StringUtils;
 import javax.validation.constraints.NotNull;
 import java.beans.PropertyVetoException;
 import java.util.*;
+import java.util.logging.Logger;
 
 
 @Configured
@@ -471,6 +472,9 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
     List<Server> getInstancesOnNode(String nodeName);
 
     @DuckTyped
+    List<Cluster> getClustersOnNode(String nodeName);
+
+    @DuckTyped
     SecureAdmin getSecureAdmin();
 
     class Duck {
@@ -491,10 +495,34 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
                 }
             }
             catch(Exception e) {
-                // ignore
+                 Logger.getAnonymousLogger().warning("Error when getting servers " + e.getLocalizedMessage());
             }
             return ret;
         }
+
+        /* return an empty list if given garbage -- or errors are encountered
+         * or if no matches
+         */
+        public static List<Cluster> getClustersOnNode(Domain domain, String nodeName) {
+           
+            HashMap<String,Cluster> clMap = new HashMap<String,Cluster>();
+            List<Server> serverList = getInstancesOnNode(domain, nodeName);
+
+            try {
+                for(Server server : serverList) {
+                    Cluster mycl = server.getCluster();
+                    if(nodeName.equals(server.getNode()) )   {
+                        clMap.put(mycl.getName(),mycl);
+                    }
+                }
+            }
+            catch(Exception e) {
+                Logger.getAnonymousLogger().warning("Error when getting clusters on node " + e.getLocalizedMessage());
+
+            }
+            return new ArrayList(clMap.values());
+        }
+        
         public static List<Application> getAllDefinedSystemApplications(Domain me) {
             List<Application> allSysApps = new ArrayList<Application>();
             SystemApplications sa = me.getSystemApplications();
