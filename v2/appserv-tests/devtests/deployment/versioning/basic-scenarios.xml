@@ -95,31 +95,6 @@
     <antcall target="autodeploy.scenario">
         <param name="description" value="xml.version(6) autodeploy"/>
     </antcall>
-
-    <!-- Simple deployment using jsr88. InputStream mode -->
-    <antcall target="deploy.version-stream.jsr88">
-        <param name="include-application-xml" value="true"/>
-        <param name="versionExpression" value="${identifier.3}"/>
-        <param name="xmlVersionIdentifier" value="${identifier.3}"/>
-    </antcall>
-
-    <antcall target="test.registred">
-        <param name="versionExpression" value="${identifier.3}"/>
-        <param name="description" value="xml.version(7) deploy jsr88"/>
-    </antcall>
-
-    <!-- Force deployment using jsr88. InputStream mode -->
-    <antcall target="redeploy.version-stream.jsr88">
-        <param name="include-application-xml" value="true"/>
-        <param name="versionExpression" value="${identifier.3}"/>
-        <param name="xmlVersionIdentifier" value="${identifier.2}"/>
-    </antcall>
-
-    <antcall target="test.registred">
-        <param name="versionExpression" value="${identifier.3}"/>
-        <param name="description" value="xml.version(8) deploy jsr88"/> 
-    </antcall>
-
 </target>
 
 <!--
