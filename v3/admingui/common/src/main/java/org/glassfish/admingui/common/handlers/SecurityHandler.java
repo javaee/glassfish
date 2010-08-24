@@ -521,9 +521,9 @@ public class SecurityHandler {
     private static String getGroupNames(String realmName, String userName, String configName, HandlerContext handlerCtx){
         try{
             String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
-                                                                "/security-service/auth-realm/" + realmName + "/list-group-names?userName=" + userName;
+                                                                "/security-service/auth-realm/" + realmName + "/list-group-names?username=" + userName;
             Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "get", handlerCtx);
-            List<HashMap> children = (List<HashMap>)((Map<String, Object>) responseMap.get("data")).get("entry");
+            List<HashMap> children = (List<HashMap>)((Map<String, Object>) responseMap.get("data")).get("extraProperties");
             HashMap values = (HashMap)((ArrayList)((HashMap)children.get(3)).get("list")).get(0);
             String name  = (String) ((HashMap)((List<HashMap>)((HashMap)((ArrayList) values.get("map")).get(0)).get("entry")).get(0)).get("value");
             return name;

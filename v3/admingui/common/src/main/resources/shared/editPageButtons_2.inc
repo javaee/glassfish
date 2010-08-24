@@ -111,7 +111,7 @@
 		// Save properties...
 		if (#{pageSession.hasPropertyTable}) {
 		    javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
-//println("payload -------------------------------> #{requestScope.tmpJSON}");
+println("payload -------------------------------> #{requestScope.tmpJSON}");
 		    gf.restRequest(
 			endpoint="#{pageSession.selfUrl}/property.json"
 			method="POST"

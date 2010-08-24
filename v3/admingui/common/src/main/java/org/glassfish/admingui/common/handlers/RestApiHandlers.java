@@ -48,6 +48,7 @@ import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
+import java.util.logging.Level;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.MiscUtil;
 import org.glassfish.admingui.common.util.RestResponse;
@@ -203,7 +204,11 @@ public class RestApiHandlers {
 
 	Object data = null;
         if (attrs == null) {
-	    data = (handlerCtx == null) ? null : handlerCtx.getInputValue("data");
+	    try {
+                data = (handlerCtx == null) ? null : handlerCtx.getInputValue("data");
+            } catch (Exception e) {
+                //
+            }
 	    if (data != null) {
 		// We'll send the raw data
 		useData = true;
@@ -215,7 +220,7 @@ public class RestApiHandlers {
         method = method.toLowerCase();
 
 // FIXME: Move to fine level later.
-        GuiUtil.getLogger().info("restRequest: endpoint=" + endpoint + "\nattrs=" + attrs + "\nmethod=" + method);
+        GuiUtil.getLogger().log(Level.INFO, "restRequest: endpoint={0}\nattrs={1}\nmethod={2}", new Object[]{endpoint, attrs, method});
 
 	// Execute the request...
         RestResponse response = null;

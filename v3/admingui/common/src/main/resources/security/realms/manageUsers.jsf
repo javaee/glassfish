@@ -48,14 +48,18 @@
 <!define name="content">
     <event>
     <!beforeCreate
-    getRequestValue(key="configName" value=>$page{configName} default="server-config");
-    getRequestValue(key="name" value=>$page{Name});
-    urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
-    urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
-    getFileUsers(Realm="#{Name}", configName="#{pageSession.configName}", result=>$attribute{listOfRows} );
-    gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/admin-service/jmx-connector/system.json", method="get", result="#{requestScope.result}");
-    setPageSessionAttribute(key="AuthRealmName" value="#{requestScope.result.entity['authRealmName']");
-    if ("#{pageSession.Name}=#{pageSession.authRealm}"){
+        getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        getRequestValue(key="name" value=>$page{Name});
+        urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+        urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
+        //getFileUsers(Realm="#{Name}", configName="#{pageSession.configName}", result=>$attribute{listOfRows} );
+        gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/auth-realm/#{Name}/list-users",
+            method="get", result="#{requestScope.listUsersResult}");
+        setPageSessionAttribute(key="listOfRows", value="#{requestScope.listUsersResult.data.extraProperties.users}");
+        println("***** users = #{pageSession.listOfRows}");
+        gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/admin-service/jmx-connector/system.json", method="get", result="#{requestScope.result}");
+        setPageSessionAttribute(key="AuthRealmName" value="#{requestScope.result.entity['authRealmName']");
+        if ("#{pageSession.Name}=#{pageSession.authRealm}"){
             setPageSessionAttribute(key="tableTitle", value="$resource{i18nc.manageAdminUsers.TableTitle}")
             setPageSessionAttribute(key="helpKey", value="$resource{help_common.manageAdminUsers}" )
             
@@ -126,9 +130,20 @@
                     </sun:panelGroup>
                     </facet>
 
-                   <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
-                     <!afterCreate
-                         getClientId(component="$this{component}" clientId=>$page{tableRowGroupId});
+                   <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$pageSession{listOfRows}", "$pageSession{tableList2}"} sourceVar="td">
+                        <!beforeCreate
+                            // Add extra table properties...
+                            createList(size="0", result="#{pageSession.tableList2}");
+                            foreach(var="row" list="#{pageSession.listOfRows}") {
+                                setAttribute(key="userName", value="#{row.name}");
+                                setAttribute(key="userGroups", value="#{row.groups}");
+                                gf.createAttributeMap(keys={"selected", "users", "groups"},
+                                    values={"$boolean{false}", "$attribute{userName}", "$attribute{userGroups}"}, map="#{requestScope.tlMap}");
+                                listAdd(list="#{pageSession.tableList2}", value="#{requestScope.tlMap}");
+                            }
+                        />
+                        <!afterCreate
+                            getClientId(component="$this{component}" clientId=>$page{tableRowGroupId});
                         />
                     <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">
                             <sun:checkbox id="select"
@@ -144,7 +159,11 @@
                     </sun:tableColumn>
 
                     <sun:tableColumn headerText="$resource{i18nc.manageUsers.GroupList}" rowHeader="$boolean{true}" id="col11">
-                        <staticText id="nameCol" value="#{td.value.groups}" />
+                        <h:dataTable var="group" value="#{td.value.groups}" border="0">
+                            <h:column>
+                                <h:outputText value="#{group}"/>
+                            </h:column>
+                        </h:dataTable>
                     </sun:tableColumn>
                 </sun:tableRowGroup>
                 </sun:table>
