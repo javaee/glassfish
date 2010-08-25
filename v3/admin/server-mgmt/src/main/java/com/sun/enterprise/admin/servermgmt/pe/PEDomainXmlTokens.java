@@ -75,6 +75,8 @@ public final class PEDomainXmlTokens
 
     public static final String OSGI_SHELL_TELNET_PORT_TOKEN_NAME = "OSGI_SHELL_TELNET_PORT";
 
+    public static final String JAVA_DEBUGGER_PORT_TOKEN_NAME = "JAVA_DEBUGGER_PORT";
+
     //This token is used for SE/EE only now, but it is likely that we will want to expose it
     //in PE (i.e. to access the exposed Mbeans). Remember that the http jmx port (used by
     //asadmin) will not be exposed pubically.
@@ -160,7 +162,12 @@ public final class PEDomainXmlTokens
             (Integer)domainConfig.get(DomainConfig.K_OSGI_SHELL_TELNET_PORT);
         tv = new TokenValue(OSGI_SHELL_TELNET_PORT_TOKEN_NAME, osgiShellTelnetPort.toString());
         tokens.add(tv);
-        
+
+        final Integer javaDebuggerPort =
+            (Integer)domainConfig.get(DomainConfig.K_JAVA_DEBUGGER_PORT);
+        tv = new TokenValue(JAVA_DEBUGGER_PORT_TOKEN_NAME, javaDebuggerPort.toString());
+        tokens.add(tv);
+
         return ( tokens );
     }
 }

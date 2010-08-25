@@ -47,32 +47,13 @@ import java.util.logging.Logger;
 import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.net.NetUtils;
+import static com.sun.enterprise.config.util.PortConstants.*;
 
 /**
  * Port base utilities used by create-local-instance.  Similar to create-domain.
  * @author Jennifer
  */
 public class PortBaseHelper {
-    
-    public static final int PORT_MAX_VAL = 65535;
-    public static final int PORTBASE_ADMINPORT_SUFFIX = 48;
-    public static final int PORTBASE_HTTPSSL_SUFFIX = 81;
-    public static final int PORTBASE_IIOPSSL_SUFFIX = 38;
-    public static final int PORTBASE_IIOPMUTUALAUTH_SUFFIX = 39;
-    public static final int PORTBASE_INSTANCE_SUFFIX = 80;
-    public static final int PORTBASE_JMS_SUFFIX = 76;
-    public static final int PORTBASE_IIOP_SUFFIX = 37;
-    public static final int PORTBASE_JMX_SUFFIX = 86;
-
-    public static final String ADMIN = "ASADMIN_LISTENER_PORT";
-    public static final String HTTP = "HTTP_LISTENER_PORT";
-    public static final String HTTPS = "HTTP_SSL_LISTENER_PORT";
-    public static final String IIOP = "IIOP_LISTENER_PORT";
-    public static final String IIOPM = "IIOP_SSL_MUTUALAUTH_PORT";
-    public static final String IIOPS = "IIOP_SSL_LISTENER_PORT";
-    public static final String JMS = "JMS_PROVIDER_PORT";
-    public static final String JMX = "JMX_SYSTEM_CONNECTOR_PORT";
-
     
     final private static LocalStringsImpl strings = new LocalStringsImpl(PortBaseHelper.class);
 
@@ -120,6 +101,14 @@ public class PortBaseHelper {
 
     public String getJmxPort() {
         return jmxPort;
+    }
+
+    public String getOsgiPort() {
+        return osgiPort;
+    }
+
+    public String getDebugPort() {
+        return debugPort;
     }
 
     /**
@@ -183,7 +172,15 @@ public class PortBaseHelper {
         verifyPortBasePortIsValid(JMX,
             portbase + PORTBASE_JMX_SUFFIX);
         jmxPort = String.valueOf(portbase + PORTBASE_JMX_SUFFIX);
-    }
+
+        verifyPortBasePortIsValid(OSGI,
+            portbase + PORTBASE_OSGI_SUFFIX);
+        osgiPort = String.valueOf(portbase + PORTBASE_OSGI_SUFFIX);
+
+        verifyPortBasePortIsValid(DEBUG,
+            portbase + PORTBASE_DEBUG_SUFFIX);
+        debugPort = String.valueOf(portbase + PORTBASE_DEBUG_SUFFIX);
+}
 
     /**
      * Verify that the portbase port is valid
@@ -217,6 +214,8 @@ public class PortBaseHelper {
             setSystemProperty(IIOPS, getIiopsPort());
             setSystemProperty(JMS, getJmsPort());
             setSystemProperty(JMX, getJmxPort());
+            setSystemProperty(OSGI, getOsgiPort());
+            setSystemProperty(DEBUG, getDebugPort());
         }
     }
 
@@ -244,6 +243,8 @@ public class PortBaseHelper {
     private String iiopsPort;
     private String jmsPort;
     private String jmxPort;
+    private String osgiPort;
+    private String debugPort;
     private Logger _logger;
     private Server _server;
 }

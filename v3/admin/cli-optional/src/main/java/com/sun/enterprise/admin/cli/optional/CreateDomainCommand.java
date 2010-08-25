@@ -69,6 +69,7 @@ import com.sun.appserv.management.client.prefs.LoginInfo;
 import com.sun.appserv.management.client.prefs.LoginInfoStore;
 import com.sun.appserv.management.client.prefs.LoginInfoStoreFactory;
 import com.sun.logging.*;
+import static com.sun.enterprise.config.util.PortConstants.*;
 
 /**
  *  This is a local command that creates a domain.
@@ -88,27 +89,8 @@ public final class CreateDomainCommand extends CLICommand {
     private static final String INSTANCE_PORT = "instanceport";
     private static final String DOMAIN_PROPERTIES = "domainproperties";
     private static final String PORTBASE_OPTION = "portbase";
-
-    private static final int DEFAULT_HTTPSSL_PORT = 8181;
-    private static final int DEFAULT_IIOPSSL_PORT = 3820;
-    private static final int DEFAULT_IIOPMUTUALAUTH_PORT = 3920;
-    private static final int DEFAULT_INSTANCE_PORT = 8080;
-    private static final int DEFAULT_JMS_PORT = 7676;
     private static final String DEFAULT_JMS_USER = "admin";
     private static final String DEFAULT_JMS_PASSWORD = "admin";
-    private static final int DEFAULT_IIOP_PORT = 3700;
-    private static final int DEFAULT_JMX_PORT = 8686;
-    private static final int DEFAULT_OSGI_SHELL_TELNET_PORT = 6666;
-    private static final int PORT_MAX_VAL = 65535;
-    private static final int PORTBASE_ADMINPORT_SUFFIX = 48;
-    private static final int PORTBASE_HTTPSSL_SUFFIX = 81;
-    private static final int PORTBASE_IIOPSSL_SUFFIX = 38;
-    private static final int PORTBASE_IIOPMUTUALAUTH_SUFFIX = 39;
-    private static final int PORTBASE_INSTANCE_SUFFIX = 80;
-    private static final int PORTBASE_JMS_SUFFIX = 76;
-    private static final int PORTBASE_IIOP_SUFFIX = 37;
-    private static final int PORTBASE_JMX_SUFFIX = 86;
-    private static final int PORTBASE_OSGI_SHELL_SUFFIX = 66;
 
     private String adminUser = null;
 
@@ -292,9 +274,15 @@ public final class CreateDomainCommand extends CLICommand {
             String.valueOf(portbase + PORTBASE_JMX_SUFFIX));
 
         verifyPortBasePortIsValid(DomainConfig.K_OSGI_SHELL_TELNET_PORT,
-            portbase + PORTBASE_OSGI_SHELL_SUFFIX);
+            portbase + PORTBASE_OSGI_SUFFIX);
         domainProperties.put(DomainConfig.K_OSGI_SHELL_TELNET_PORT,
-            String.valueOf(portbase + PORTBASE_OSGI_SHELL_SUFFIX));
+            String.valueOf(portbase + PORTBASE_OSGI_SUFFIX));
+
+        verifyPortBasePortIsValid(DomainConfig.K_JAVA_DEBUGGER_PORT,
+            portbase + PORTBASE_DEBUG_SUFFIX);
+        domainProperties.put(DomainConfig.K_JAVA_DEBUGGER_PORT,
+            String.valueOf(portbase + PORTBASE_DEBUG_SUFFIX));
+
     }
 
     /**
@@ -563,10 +551,15 @@ public final class CreateDomainCommand extends CLICommand {
                 Integer.toString(DEFAULT_OSGI_SHELL_TELNET_PORT),
                 "OSGI_SHELL");
 
+        final Integer javaDebuggerPort = getPort(domainProperties,
+                DomainConfig.K_JAVA_DEBUGGER_PORT, null,
+                Integer.toString(DEFAULT_JAVA_DEBUGGER_PORT),
+                "JAVA_DEBUGGER");
+
         checkPortPrivilege(new Integer[]{
             adminPortInt, instancePortInt, jmsPort, orbPort, httpSSLPort,
             jmsPort, orbPort, httpSSLPort, iiopSSLPort,
-            iiopMutualAuthPort, jmxPort
+            iiopMutualAuthPort, jmxPort, osgiShellTelnetPort, javaDebuggerPort
         });
 
         DomainConfig domainConfig = new DomainConfig(domainName,
@@ -576,7 +569,7 @@ public final class CreateDomainCommand extends CLICommand {
                 saveMasterPassword, instancePortInt, jmsUser,
                 jmsPassword, jmsPort, orbPort,
                 httpSSLPort, iiopSSLPort,
-                iiopMutualAuthPort, jmxPort, osgiShellTelnetPort,
+                iiopMutualAuthPort, jmxPort, osgiShellTelnetPort, javaDebuggerPort,
                 domainProperties);
         if (template != null) {
             domainConfig.put(DomainConfig.K_TEMPLATE_NAME, template);

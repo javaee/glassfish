@@ -165,7 +165,7 @@
       </security-service>
       <transaction-service tx-log-dir="${com.sun.aas.instanceRoot}/logs" >
       </transaction-service>
-      <java-config classpath-suffix="" system-classpath="" debug-options="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9009">
+      <java-config classpath-suffix="" system-classpath="" debug-options="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=%%%JAVA_DEBUGGER_PORT%%%">
         <jvm-options>-XX:MaxPermSize=192m</jvm-options>
         <jvm-options>-client</jvm-options>
         <jvm-options>-XX:+UnlockDiagnosticVMOptions</jvm-options>
@@ -335,7 +335,7 @@
          </security-service>
          <transaction-service tx-log-dir="${com.sun.aas.instanceRoot}/logs" automatic-recovery="true" />
          <diagnostic-service />
-         <java-config debug-options="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9009" system-classpath="" classpath-suffix="">
+         <java-config debug-options="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=${JAVA_DEBUGGER_PORT}" system-classpath="" classpath-suffix="">
              <jvm-options>-XX:MaxPermSize=192m</jvm-options>
              <jvm-options>-server</jvm-options>
              <jvm-options>-XX:+UnlockDiagnosticVMOptions</jvm-options>
@@ -351,7 +351,26 @@
              <jvm-options>-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory</jvm-options>
              <jvm-options>-XX:NewRatio=2</jvm-options>
              <jvm-options>-Xmx512m</jvm-options>
-         </java-config>
+             <!-- Port on which remote shell listens for connections.-->
+             <jvm-options>-Dosgi.shell.telnet.port=${OSGI_SHELL_TELNET_PORT}</jvm-options>
+             <!-- How many concurrent users can connect to this remote shell -->
+             <jvm-options>-Dosgi.shell.telnet.maxconn=1</jvm-options>
+             <!-- From which hosts users can connect -->
+             <jvm-options>-Dosgi.shell.telnet.ip=127.0.0.1</jvm-options>
+             <!-- Directory being watched by fileinstall. -->
+             <jvm-options>-Dfelix.fileinstall.dir=${com.sun.aas.installRoot}/modules/autostart/</jvm-options>
+             <!-- Time period fileinstaller thread in ms. -->
+             <jvm-options>-Dfelix.fileinstall.poll=5000</jvm-options>
+             <!-- log level: 1 for error, 2 for warning, 3 for info and 4 for debug. -->
+             <jvm-options>-Dfelix.fileinstall.log.level=3</jvm-options>
+             <!-- should new bundles be started or installed only?
+                 true => start, false => only install
+             -->
+             <jvm-options>-Dfelix.fileinstall.bundles.new.start=true</jvm-options>
+             <!-- should watched bundles be started transiently or persistently -->
+             <jvm-options>-Dfelix.fileinstall.bundles.startTransient=true</jvm-options>
+             <!-- End of OSGi bundle configurations -->
+        </java-config>
          <availability-service>
              <web-container-availability availability-enabled="true" http-session-store-pool-name="jdbc/hastore" persistence-frequency="web-method" persistence-scope="session" persistence-store-health-check-enabled="false" persistence-type="replicated" sso-failover-enabled="false"/>
              <ejb-container-availability availability-enabled="true" sfsb-store-pool-name="jdbc/hastore"/>
@@ -389,7 +408,7 @@
              <thread-pool name="http-thread-pool" />
              <thread-pool max-thread-pool-size="200" idle-thread-timeout-in-seconds="120" name="thread-pool-1" />
          </thread-pools>
-         <group-management-service ping-protocol-timeout-in-millis="5000"/>
+         <group-management-service/>
          <management-rules />
          <system-property name="ASADMIN_LISTENER_PORT" value="24848"/>
          <system-property name="HTTP_LISTENER_PORT" value="28080"/>
@@ -399,6 +418,8 @@
          <system-property name="IIOP_SSL_LISTENER_PORT" value="23820"/>
          <system-property name="IIOP_SSL_MUTUALAUTH_PORT" value="23920"/>
          <system-property name="JMX_SYSTEM_CONNECTOR_PORT" value="28686"/>
+         <system-property name="OSGI_SHELL_TELNET_PORT" value="26666"/>
+         <system-property name="JAVA_DEBUGGER_PORT" value="29009"/>
      </config>
   </configs>
   <property name="administrative.domain.name" value="%%%DOMAIN_NAME%%%"/>

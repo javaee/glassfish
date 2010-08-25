@@ -51,7 +51,6 @@ import java.beans.PropertyVetoException;
 import java.util.*;
 import java.util.logging.*;
 import org.jvnet.hk2.config.TransactionFailure;
-import static com.sun.enterprise.config.util.PortConstants.PORTSLIST;
 
 /**
  * Hiding place for the remarkably complex logic of assigning ports to instances
