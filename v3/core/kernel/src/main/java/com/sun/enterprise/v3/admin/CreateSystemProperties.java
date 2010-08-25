@@ -83,7 +83,7 @@ import org.jvnet.hk2.config.types.Property;
 @Scoped(PerLookup.class)
 @Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
 @TargetType(value={CommandTarget.CLUSTER, 
-CommandTarget.CONFIG, CommandTarget.DAS, CommandTarget.DOMAIN, CommandTarget.STANDALONE_INSTANCE})
+CommandTarget.CONFIG, CommandTarget.DAS, CommandTarget.DOMAIN, CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTERED_INSTANCE})
 @I18n("create.system.properties")
 public class CreateSystemProperties implements AdminCommand {
     
