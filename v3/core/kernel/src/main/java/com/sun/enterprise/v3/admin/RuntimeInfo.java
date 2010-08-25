@@ -37,24 +37,31 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.admin;
 
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.Param;
+import java.util.logging.Level;
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedExceptionAction;
+import java.lang.management.RuntimeMXBean;
+import java.lang.management.OperatingSystemMXBean;
+import java.lang.management.ManagementFactory;
 import com.sun.enterprise.module.bootstrap.StartupContext;
-import java.util.logging.*;
-import org.glassfish.api.*;
+import java.util.logging.Logger;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.Cluster;
-import org.glassfish.api.admin.RuntimeType;
-import org.jvnet.hk2.annotations.*;
-import org.jvnet.hk2.component.*;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.PerLookup;
 import static org.glassfish.api.ActionReport.ExitCode.SUCCESS;
-import static org.glassfish.api.ActionReport.ExitCode.FAILURE;
 
 /**
  * https://glassfish.dev.java.net/issues/show_bug.cgi?id=12483
  * @author Byron Nevins
+ * @author Ludovic Champenois
  */
 @Service(name = "_get-runtime-info")
 @Scoped(PerLookup.class)
@@ -70,13 +77,41 @@ public class RuntimeInfo implements AdminCommand {
         top = report.getTopMessagePart();
         logger = context.getLogger();
         jpdaEnabled = Boolean.parseBoolean(ctx.getArguments().getProperty("-debug"));
-        debug();
-        report.setMessage(reportMessage.toString());
-    }
-
-    private void debug() {
         top.addProperty("debug", Boolean.toString(jpdaEnabled));
+        final OperatingSystemMXBean osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+
+        top.addProperty("os.arch", osBean.getArch());
+        top.addProperty("os.name", osBean.getName());
+        top.addProperty("os.version", osBean.getVersion());
+        top.addProperty("availableProcessorsCount", "" + osBean.getAvailableProcessors());
+
+        // getTotalPhysicalMemorySize is from com.sun.management.OperatingSystemMXBean and cannot easily access it via OSGi
+        // also if we are not on a sun jdk, we will not return this attribute.
+        try {
+            final Method jm = osBean.getClass().getMethod("getTotalPhysicalMemorySize");
+            AccessController.doPrivileged(
+                    new PrivilegedExceptionAction() {
+                        public Object run() throws Exception {
+                            if (!jm.isAccessible()) {
+                                jm.setAccessible(true);
+                            }
+                            return null;
+                        }
+                    });
+
+            top.addProperty("totalPhysicalMemorySize", "" + jm.invoke(osBean));
+
+        } catch (Exception ex) {
+            logger.log(Level.SEVERE, null, ex);
+        }
+
+
+        RuntimeMXBean rmxb = ManagementFactory.getRuntimeMXBean();
+        top.addProperty("startTimeMillis", "" + rmxb.getStartTime());
+        top.addProperty("pid", "" + rmxb.getName());
+
         reportMessage.append(Strings.get("runtime.info.debug", jpdaEnabled ? "enabled" : "not enabled"));
+        report.setMessage(reportMessage.toString());
     }
     @Inject
     StartupContext ctx;
