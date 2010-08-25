@@ -55,17 +55,14 @@
     <!beforeCreate
         setSessionAttribute(key="ejbContainerTabs" value="ejbTimerTab");
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=ejb-container");
-        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/ejb-container,type=ejb-timer-service");
-
         setPageSessionAttribute(key="childType" value="ejb-timer-service");
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/ejb-container");
         setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/ejb-container/ejb-timer-service");
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
 
-        //REST-TODO take care property table
-        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+        gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="GET" result="#{requestScope.propTable}");
+        setPageSessionAttribute(key="tableList" value="#{requestScope.propTable.data.extraProperties.properties}");
 
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/ejb/configuration/ejbContainerTimerService.jsf?configName=#{pageSession.configName}");
         //set the following for including buttons.inc
