@@ -563,7 +563,8 @@ public class ASURLClassLoader
             _logger.log(Level.WARNING,
                         "loader.asurlclassloader_done_already_called",
                         new Object[] { name, doneSnapshot });
-            return null;
+            // return an empty enumeration instead of null. See issue #13096
+            return Collections.enumeration(Collections.EMPTY_LIST);
         }
         List<URL> resourcesList = new ArrayList<URL>();
 
