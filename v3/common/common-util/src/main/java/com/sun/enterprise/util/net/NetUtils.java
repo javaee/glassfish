@@ -75,6 +75,8 @@ import java.util.logging.Logger;
 
 public class NetUtils {
 
+    private final static boolean asDebug = Boolean.parseBoolean(System.getenv("AS_DEBUG"));
+
     private static void printd(String string) {
         if (asDebug) {
             System.out.println(string);
@@ -91,28 +93,55 @@ public class NetUtils {
     public static final int MAX_PORT = 65535;
 
     /////////////  BEGIN  Newer methods added June 2010 ////////////////////
-    public static boolean IsThisHostLocal(String theHostName) {
+    public static boolean IsThisHostLocal(String hostname) {
         // come on JDK!  Why is this so #$@% difficult!?!
         // if you can think of something better -- go for it!!!
         // use IP addresses because one hostname can have more than one IP address!
         List<String> host_ips = new ArrayList<String>();
+        List<String> local_ips = new ArrayList<String>();
         String myCanonicalHostName = System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY);
 
-        if (!StringUtils.ok(myCanonicalHostName))
-            myCanonicalHostName = canonicalHostName;
+        try {
+            if (!StringUtils.ok(myCanonicalHostName))
+                myCanonicalHostName = getCanonicalHostName();
 
-        InetAddress[] adds = getAllByName(theHostName);
+            InetAddress[] adds = InetAddress.getAllByName(hostname);
 
-        if (adds == null || adds.length <= 0)
+            if (adds == null || adds.length <= 0)
+                return false;
+
+            for (InetAddress ia : adds)
+                host_ips.add(ia.getHostAddress());
+
+            adds = InetAddress.getAllByName(myCanonicalHostName);
+            for (int i = 0; adds != null && i < adds.length; i++) {
+                String ip = adds[i].getHostAddress();
+                if (!local_ips.contains(ip))
+                    local_ips.add(ip);
+            }
+
+            adds = InetAddress.getAllByName("localhost");
+            for (int i = 0; adds != null && i < adds.length; i++) {
+                String ip = adds[i].getHostAddress();
+                if (!local_ips.contains(ip))
+                    local_ips.add(ip);
+            }
+
+            adds = InetAddress.getAllByName(null);
+            for (int i = 0; adds != null && i < adds.length; i++) {
+                String ip = adds[i].getHostAddress();
+                if (!local_ips.contains(ip))
+                    local_ips.add(ip);
+            }
+        }
+        catch (UnknownHostException ex) {
             return false;
-
-        for (InetAddress ia : adds)
-            host_ips.add(ia.getHostAddress());
+        }
 
         // if any hostAddress matches any localAddress -- then the host is local...
 
         for (String hip : host_ips)
-            for (String lip : localIpAddresses)
+            for (String lip : local_ips)
                 if (hip.equals(lip))
                     return true;
 
@@ -130,98 +159,51 @@ public class NetUtils {
         List<String> host1_ips = new ArrayList<String>();
         List<String> host2_ips = new ArrayList<String>();
 
-        if (!StringUtils.ok(host1) && !StringUtils.ok(host2))
-            return true; // edge case ==> both are null or empty
+        try {
+            if (!StringUtils.ok(host1) && !StringUtils.ok(host2))
+                return true; // edge case ==> both are null or empty
 
-        if (!StringUtils.ok(host1) || !StringUtils.ok(host2))
-            return false; // just one of them is null or empty
+            if (!StringUtils.ok(host1) || !StringUtils.ok(host2))
+                return false; // just one of them is null or empty 
 
-        InetAddress[] adds1 = getAllByName(host1);
-        InetAddress[] adds2 = getAllByName(host2);
+            InetAddress[] adds1 = InetAddress.getAllByName(host1);
+            InetAddress[] adds2 = InetAddress.getAllByName(host2);
 
-        boolean adds1Empty = false; // readability.  You'll see why below!
-        boolean adds2Empty = false;
+            boolean adds1Empty = false; // readability.  You'll see why below!
+            boolean adds2Empty = false;
 
-        if (adds1 == null || adds1.length <= 0)
-            adds1Empty = true;
+            if (adds1 == null || adds1.length <= 0)
+                adds1Empty = true;
 
-        if (adds2 == null || adds2.length <= 0)
-            adds2Empty = true;
+            if (adds2 == null || adds2.length <= 0)
+                adds2Empty = true;
 
-        // I told you!
-        if (adds1Empty && adds2Empty) // both
-            return true;
+            // I told you!
+            if (adds1Empty && adds2Empty) // both
+                return true;
 
-        if (adds1Empty || adds2Empty) // one but not the other
+            if (adds1Empty || adds2Empty) // one but not the other
+                return false;
+
+            for (InetAddress ia : adds1)
+                host1_ips.add(ia.getHostAddress());
+
+            for (InetAddress ia : adds2)
+                host2_ips.add(ia.getHostAddress());
+
+            for (String h1ip : host1_ips)
+                for (String h2ip : host2_ips)
+                    if (h1ip.equals(h2ip))
+                        return true;
+
             return false;
-
-        for (InetAddress ia : adds1)
-            host1_ips.add(ia.getHostAddress());
-
-        for (InetAddress ia : adds2)
-            host2_ips.add(ia.getHostAddress());
-
-        for (String h1ip : host1_ips)
-            for (String h2ip : host2_ips)
-                if (h1ip.equals(h2ip))
-                    return true;
-
-        return false;
+        }
+        catch (UnknownHostException ex) {
+            return false;
+        }
     }
 
     /////////////  END  Newer methods added June 2010 ////////////////////
-    /**
-     * JDK will throw an Exception if DNS is fouled-up.  We don't want that!
-     * @param host
-     * @return an array of InetAddresses
-     */
-    private static InetAddress[] getAllByName(String theHostName) {
-        try {
-            return InetAddress.getAllByName(theHostName);
-        }
-        catch (UnknownHostException ex) {
-            return new InetAddress[0];
-        }
-    }
-
-    /**
-     * JDK will throw an Exception if DNS is fouled-up.  We don't want that!
-     * @param host
-     * @return an array of InetAddresses
-     *
-    public static InetAddress[] getAllByNameExperimental(String theHostName) {
-
-    GetAllByNameFetcher fetcher = new GetAllByNameFetcher(theHostName);
-    Thread t = new Thread(fetcher, "GetAllByNameThreadDaemon");
-    t.setDaemon(true); // don't allow this thread to delay shutting down!
-    t.start();
-
-    try {
-    t.join(1000);
-    }
-    catch (InterruptedException ex) {
-    // ignore
-    }
-    return fetcher.getAddresses();
-    }
-     */
-    private static InetAddress[] getAllByNameInternal(String theHostName, int timeoutInMsec) {
-
-        try {
-            return InetAddress.getAllByName(theHostName);
-        }
-        catch (UnknownHostException ex) {
-            try {
-                InetAddress[] adds = new InetAddress[1];
-                adds[0] = InetAddress.getByName(theHostName);
-                return adds;
-            }
-            catch (Exception ex2) {
-                return new InetAddress[0];
-            }
-        }
-    }
-
     static public Socket getClientSocket(final String host, final int port, final int msecTimeout) {
         class SocketFetcher implements Runnable {
 
@@ -258,7 +240,12 @@ public class NetUtils {
 
     ///////////////////////////////////////////////////////////////////////////
     public static String getHostName() {
-        return hostName;
+        try {
+            return InetAddress.getLocalHost().getHostName();
+        }
+        catch (Exception e) {
+            return null;
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -270,11 +257,22 @@ public class NetUtils {
      * @throws UnknownHostException so it can be handled on a case by case basis
      */
     public static String getCanonicalHostName() throws UnknownHostException {
-        if (canonicalHostName != null)
-            return canonicalHostName;
+        String hostname = null;
+        String defaultHostname = InetAddress.getLocalHost().getHostName();
+        // look for full name
+        hostname = InetAddress.getLocalHost().getCanonicalHostName();
 
-        // should never happen...
-        throw new UnknownHostException("DNS Timeout");
+        // check to see if ip returned or canonical hostname is different than hostname
+        // It is possible for dhcp connected computers to have an erroneous name returned
+        // that is created by the dhcp server.  If that happens, return just the default hostname
+        if (hostname.equals(InetAddress.getLocalHost().getHostAddress())
+                || !hostname.startsWith(defaultHostname)) {
+            // don't want IP or canonical hostname, this will cause a lot of problems for dhcp users
+            // get just plan host name instead
+            hostname = defaultHostname;
+        }
+
+        return hostname;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -286,7 +284,7 @@ public class NetUtils {
                 return null;
             }
 
-            return getAllByName(hname);
+            return InetAddress.getAllByName(hname);
         }
         catch (Exception e) {
             return null;
@@ -537,7 +535,7 @@ public class NetUtils {
         // Amazingly I have seen all 3 possibilities -- so just checking on 0.0.0.0
         // is not good enough.
         // Usually it is the 0.0.0.0 -- but JMS (default:7676)
-        // only returns false from the :port combination.
+        // only returns false from the "localhost":port combination.
         // We want to be aggressively disqualifying ports rather than the other
         // way around
 
@@ -553,7 +551,7 @@ public class NetUtils {
             if (isPortFreeServer(port, add) == false)
                 return false;   // return immediately on "not-free"
 
-            add = InetAddress.getByName(LOCALHOST);
+            add = InetAddress.getByName("localhost");
 
             return isPortFreeServer(port, add);
         }
@@ -738,12 +736,13 @@ public class NetUtils {
         return isRunning(null, port);
     }
     ///////////////////////////////////////////////////////////////////////////
+    private static final String LOCALHOST_IP = "127.0.0.1";
 
     ///////////////////////////////////////////////////////////////////////////
     private static boolean isThisMe(String hostname) {
         try {
             InetAddress[] myadds = getHostAddresses();
-            InetAddress[] theiradds = getAllByName(hostname);
+            InetAddress[] theiradds = InetAddress.getAllByName(hostname);
 
             for (int i = 0; i < theiradds.length; i++) {
                 if (theiradds[i].isLoopbackAddress()) {
@@ -762,107 +761,8 @@ public class NetUtils {
 
         return false;
     }
+
     ///////////////////////////////////////////////////////////////////////////
-
-    /**
-     * This method returns the fully qualified name of the host.  If
-     * the name can't be resolved (on windows if there isn't a domain specified), just
-     * host name is returned
-     *
-     * @throws UnknownHostException so it can be handled on a case by case basis
-     */
-    private static String getCanonicalHostNameInternal() throws UnknownHostException {
-        String hostname = null;
-        String defaultHostname = InetAddress.getLocalHost().getHostName();
-        // look for full name
-        hostname = InetAddress.getLocalHost().getCanonicalHostName();
-        // check to see if ip returned or canonical hostname is different than hostname
-        // It is possible for dhcp connected computers to have an erroneous name returned
-        // that is created by the dhcp server.  If that happens, return just the default hostname
-        if (hostname.equals(InetAddress.getLocalHost().getHostAddress())
-                || !hostname.startsWith(defaultHostname)) {
-            // don't want IP or canonical hostname, this will cause a lot of problems for dhcp users
-            // get just plan host name instead
-            hostname = defaultHostname;
-        }
-
-        return hostname;
-    }
-    private final static boolean asDebug = Boolean.parseBoolean(System.getenv("AS_DEBUG"));
-    //private static volatile boolean canonicalHostNameWasChecked = false;
-    private final static String canonicalHostName; // GUARANTEED thread safe
-    private final static String hostName; // GUARANTEED thread safe
-    private final static String LOCALHOST = "localhost";
-    private final static List<String> localIpAddresses = new ArrayList<String>(); // can be slow so cache it!
-    private static final String LOCALHOST_IP = "127.0.0.1";
-
-    static {
-        // Do this **one** time only!
-        CanonicalHostNameFetcher fetcher = new CanonicalHostNameFetcher();
-        fetcher.run();
-
-        /* do this to speed things up with your own timeout
-        Thread t = new Thread(fetcher, "GetCanonicalHostNameThreadDaemon");
-        t.setDaemon(true); // don't allow this thread to delay shutting down!
-        t.start();
-
-        try {
-        t.join(1000);
-        }
-        catch (InterruptedException ex) {
-        // ignore
-        }
-         */
-        String temp; // needed because of final variables...
-        temp = fetcher.getHostName();
-
-        if (!StringUtils.ok(temp))
-            temp = LOCALHOST;
-
-        canonicalHostName = temp;
-
-        try {
-            temp = InetAddress.getLocalHost().getHostName();
-        }
-        catch (Exception e) {
-            temp = null;
-        }
-        if (!StringUtils.ok(temp))
-            temp = LOCALHOST;
-
-        hostName = temp;
-
-        InetAddress adds[] = null;
-
-        adds = getAllByName(canonicalHostName);
-        for (InetAddress add : adds) {
-            String ip = add.getHostAddress();
-            if (!localIpAddresses.contains(ip))
-                localIpAddresses.add(ip);
-        }
-        adds = getAllByName(LOCALHOST);
-        for (InetAddress add : adds) {
-            String ip = add.getHostAddress();
-            if (!localIpAddresses.contains(ip))
-                localIpAddresses.add(ip);
-        }
-        adds = getAllByName(null);
-        for (InetAddress add : adds) {
-            String ip = add.getHostAddress();
-            if (!localIpAddresses.contains(ip))
-                localIpAddresses.add(ip);
-        }
-        adds = getAllByName(hostName);
-        for (InetAddress add : adds) {
-            String ip = add.getHostAddress();
-            if (!localIpAddresses.contains(ip))
-                localIpAddresses.add(ip);
-        }
-        if (!localIpAddresses.contains(LOCALHOST_IP))
-            localIpAddresses.add(LOCALHOST_IP);
-
-    }
-
     public static void main(String[] args) {
         System.out.println("80: " + isPortFree(80));
         System.out.println("777: " + isPortFree(777));
@@ -896,64 +796,4 @@ public class NetUtils {
         (byte) 'H', (byte) 'T', (byte) 'T', (byte) 'P', (byte) '/', (byte) '1',
         (byte) '.', (byte) '0', (byte) '\n', (byte) '\n'
     };
-
-    private static class CanonicalHostNameFetcher implements Runnable {
-
-        @Override
-        public void run() {
-            try {
-                // this can take a LONG time -- like 60,000 msec!!!
-                hostname = getCanonicalHostNameInternal();
-            }
-            catch (UnknownHostException ex) {
-                hostname = null;
-            }
-        }
-
-        private synchronized String getHostName() {
-            return hostname;
-        }
-        private volatile String hostname;
-    }
-
-    /*
-    private static class GetAllByNameFetcher implements Runnable {
-
-    public GetAllByNameFetcher(String theHostName) {
-    this.theHostName = theHostName;
-    }
-
-    @Override
-    public void run() {
-    InetAddress[] adds = null;
-
-    try {
-    // this can be VERY slow (multiple seconds) if Dns is munged...
-    adds = InetAddress.getAllByName(theHostName);
-    }
-    catch (UnknownHostException ex) {
-    try {
-    adds = new InetAddress[1];
-    adds[0] = InetAddress.getByName(theHostName);
-    }
-    catch (Exception ex2) {
-    adds = new InetAddress[0];
-    }
-    }
-    // do it thread-safe!
-    // we may get timed-out before we get here...
-    synchronized (addresses) {
-    addresses = adds;
-    }
-    }
-
-    private InetAddress[] getAddresses() {
-    synchronized (addresses) {
-    return addresses;
-    }
-    }
-    private volatile InetAddress[] addresses = new InetAddress[0];
-    private final String theHostName;
-    }
-     */
 }
