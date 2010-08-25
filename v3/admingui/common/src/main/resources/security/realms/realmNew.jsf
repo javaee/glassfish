@@ -76,8 +76,7 @@
         setPageSessionAttribute(key="showUserButton" value="#{false}" )
         getRequestValue(key="configName" value=>$page{configName}  default="server-config");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/security/realms/realms.jsf");
-        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service");
-        setPageSessionAttribute(key="rest-api" value="true");
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=security-service");
         getRealmAttrForCreate(attrMap=>$page{attrMap}, classnameOption=>$page{classnameOption}, realmClasses=>$page{realmClasses}, properties=>$page{props}  );
         setPageSessionAttribute(key="myOption" value="$pageSession{classnameOption}");
     />

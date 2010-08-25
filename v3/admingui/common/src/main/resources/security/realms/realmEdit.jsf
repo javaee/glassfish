@@ -58,15 +58,10 @@
         urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/security/realms/realms.jsf");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/security/realms/realmEdit.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}");
-        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/auth-realm/#{pageSession.encodedName}");
-        setPageSessionAttribute(key="rest-api" value="true");
-        getRealmAttrForEdit(endpoint="#{parentUrl}" attrMap=>$page{attrMap}, classnameOption=>$page{classnameOption}, realmClasses=>$page{realmClasses}, properties="#{requestScope.tableList}" );
+        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/security-service,type=auth-realm,name=#{pageSession.Name}")
+        getRealmAttrForEdit(objectNameStr="#{objectNameStr}" attrMap=>$page{attrMap}, classnameOption=>$page{classnameOption}, realmClasses=>$page{realmClasses}, properties="#{requestScope.tableList}" );
         setPageSessionAttribute(key="myOption" value="$pageSession{classnameOption}");
-        gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/auth-realm/#{pageSession.Name}/supports-user-management.json", method="get", result="#{requestScope.result}");
-        setPageSessionAttribute(key="showUserButton" value="#{false}");
-        if ("#{requestScope.result.data['message']}=true") {
-            setPageSessionAttribute(key="showUserButton" value="#{true}");
-        }
+        hasManageUserButton(realmName="#{pageSession.Name}" result="#{pageSession.showUserButton}")
     />
     </event>
 #include "/common/security/realms/realm.inc"
