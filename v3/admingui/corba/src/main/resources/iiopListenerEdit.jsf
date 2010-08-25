@@ -57,15 +57,13 @@
         setSessionAttribute(key="iiopTab" value="iiopEdit");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/corba/iiopListenerEdit.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/corba/iiopListeners.jsf");
-        setPageSessionAttribute(key="parentObjectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=iiop-service")
         setPageSessionAttribute(key="childType" value="iiop-listener")
-        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/iiop-service,type=iiop-listener,name=#{pageSession.Name}");
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/iiop-service");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
-        //REST-TODO take care of property table
-        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+        gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="GET" result="#{requestScope.propTable}");
+        setPageSessionAttribute(key="tableList" value="#{requestScope.propTable.data.extraProperties.properties}");
         //set the following for including buttons.inc
         setPageSessionAttribute(key="convertToFalseList" value={"securityEnabled" "enabled"})
         setPageSessionAttribute(key="edit" value="#{true}" )
