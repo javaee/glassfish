@@ -46,6 +46,7 @@ import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;  
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -60,6 +61,7 @@ import org.glassfish.admin.amx.intf.config.Property;
 import org.glassfish.admin.amx.intf.config.ProviderConfig;
 import org.glassfish.admin.amx.intf.config.SecurityService;
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.util.JSONUtil;
 import org.glassfish.admingui.common.util.RestResponse;
 import org.glassfish.admingui.common.util.V3AMX;
 
@@ -91,98 +93,138 @@ public class SecurityHandler {
         handlerCtx.setOutputValue("properties", new ArrayList());
     }
     
-    /**
-     *	<p> This handler returns the a Map for storing the attributes for editing a realm.
-     *  This can be used by either the node agent realm or the realm in configuration-Security-realm
-     *	@param	handlerCtx	The HandlerContext.
-     */
     @Handler(id="getRealmAttrForEdit",
     input={
-        @HandlerInput(name="objectNameStr", type=String.class)},
+        @HandlerInput(name="endpoint", type=String.class)},
     output={
         @HandlerOutput(name="attrMap",      type=Map.class),
         @HandlerOutput(name="classnameOption",      type=String.class),
         @HandlerOutput(name="realmClasses",      type=List.class),
         @HandlerOutput(name="properties", type=List.class)})
-        
+
     public static void getRealmAttrForEdit(HandlerContext handlerCtx) {
 
-        String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
-        AuthRealm realm = (AuthRealm) V3AMX.objectNameToProxy(objectNameStr).as(AuthRealm.class);
+        String endpoint = (String) handlerCtx.getInputValue("endpoint");
 
-        Map<String, Property> origProps = realm.getProperty();
+        HashMap<String, Object> realmMap = (HashMap<String, Object>) RestApiHandlers.getEntityAttrs(endpoint, "entity");
+        
+        HashMap<String, Object> responseMap = (HashMap<String, Object>) RestApiHandlers.restRequest(endpoint + "/property.json", null, "GET", null);
+        HashMap propsMap = (HashMap) ((Map<String, Object>) responseMap.get("data")).get("extraProperties");
+        ArrayList<HashMap> propList = (ArrayList<HashMap>) propsMap.get("properties");
+        HashMap origProps = new HashMap();
+        for (HashMap prop : propList) {
+            origProps.put(prop.get("name"), prop.get("value"));
+        }
 
         Map attrMap = new HashMap();
-        attrMap.put("Name", realm.getName());
+        attrMap.put("Name", (String) realmMap.get("name"));
         attrMap.put("fileJaax", "fileRealm");
         attrMap.put("ldapJaax", "ldapRealm" );
         attrMap.put("solarisJaax", "solarisRealm");
         attrMap.put("jdbcJaax", "jdbcRealm");
-        
-        String classname = realm.getClassname();
-        
+
+        String classname = (String) realmMap.get("classname");
+
         if (realmClassList.contains(classname)){
             handlerCtx.setOutputValue("classnameOption", "predefine");
             attrMap.put("predefinedClassname", Boolean.TRUE);
             attrMap.put("classname", classname);
-            List props = V3AMX.getChildrenMapForTableList(realm, "property",  skipRealmPropsList);
+            List props = getChildrenMapForTableList(origProps, "property", skipRealmPropsList);
             handlerCtx.setOutputValue("properties", props);
 
             if(classname.indexOf("FileRealm")!= -1){
-                attrMap.put("file",  V3AMX.getPropValue(origProps, "file"));
-                attrMap.put("fileJaax",  V3AMX.getPropValue(origProps, "jaas-context"));
-                attrMap.put("fileAsGroups",  V3AMX.getPropValue(origProps, "assign-groups"));
+                attrMap.put("file", origProps.get("file"));
+                attrMap.put("fileJaax", origProps.get("jaas-context"));
+                attrMap.put("fileAsGroups", origProps.get("assign-groups"));
             }else
             if(classname.indexOf("LDAPRealm")!= -1){
-                attrMap.put("ldapJaax",  V3AMX.getPropValue(origProps, "jaas-context"));
-                attrMap.put("ldapAsGroups",  V3AMX.getPropValue(origProps, "assign-groups"));
-                attrMap.put("directory",  V3AMX.getPropValue(origProps, "directory"));
-                attrMap.put("baseDn",  V3AMX.getPropValue(origProps, "base-dn"));
+                attrMap.put("ldapJaax", origProps.get("jaas-context"));
+                attrMap.put("ldapAsGroups", origProps.get("assign-groups"));
+                attrMap.put("directory", origProps.get("directory"));
+                attrMap.put("baseDn", origProps.get("base-dn"));
             }else
             if(classname.indexOf("SolarisRealm")!= -1){
-                attrMap.put("solarisJaax",  V3AMX.getPropValue(origProps, "jaas-context"));
-                attrMap.put("solarisAsGroups",  V3AMX.getPropValue(origProps, "assign-groups"));
+                attrMap.put("solarisJaax", origProps.get("jaas-context"));
+                attrMap.put("solarisAsGroups", origProps.get("assign-groups"));
             }else
             if(classname.indexOf("JDBCRealm")!= -1){
-                attrMap.put("jdbcJaax",  V3AMX.getPropValue(origProps, "jaas-context"));
-                attrMap.put("jdbcAsGroups",  V3AMX.getPropValue(origProps, "assign-groups"));
-                attrMap.put("datasourceJndi",  V3AMX.getPropValue(origProps, "datasource-jndi"));
-                attrMap.put("userTable",  V3AMX.getPropValue(origProps, "user-table"));
-                attrMap.put("userNameColumn",  V3AMX.getPropValue(origProps, "user-name-column"));
-                attrMap.put("passwordColumn",  V3AMX.getPropValue(origProps, "password-column"));
-                attrMap.put("groupTable",  V3AMX.getPropValue(origProps, "group-table"));
-                attrMap.put("groupNameColumn",  V3AMX.getPropValue(origProps, "group-name-column"));
-                attrMap.put("dbUser",  V3AMX.getPropValue(origProps, "db-user"));
-                attrMap.put("dbPassword",  V3AMX.getPropValue(origProps, "db-password"));
-                attrMap.put("digestAlgorithm",  V3AMX.getPropValue(origProps, "digest-algorithm"));
-                attrMap.put("encoding",  V3AMX.getPropValue(origProps, "encoding"));
-                attrMap.put("charset",  V3AMX.getPropValue(origProps, "charset"));
+                attrMap.put("jdbcJaax", origProps.get("jaas-context"));
+                attrMap.put("jdbcAsGroups", origProps.get("assign-groups"));
+                attrMap.put("datasourceJndi", origProps.get("datasource-jndi"));
+                attrMap.put("userTable", origProps.get("user-table"));
+                attrMap.put("userNameColumn", origProps.get("user-name-column"));
+                attrMap.put("passwordColumn", origProps.get("password-column"));
+                attrMap.put("groupTable", origProps.get("group-table"));
+                attrMap.put("groupNameColumn", origProps.get("group-name-column"));
+                attrMap.put("dbUser", origProps.get("db-user"));
+                attrMap.put("dbPassword", origProps.get("db-password"));
+                attrMap.put("digestAlgorithm", origProps.get("digest-algorithm"));
+                attrMap.put("encoding", origProps.get("encoding"));
+                attrMap.put("charset", origProps.get("charset"));
 
            }else
             if(classname.indexOf("CertificateRealm")!= -1){
-                attrMap.put("certAsGroups",  V3AMX.getPropValue(origProps, "assign-groups"));
+                attrMap.put("certAsGroups", origProps.get("assign-groups"));
             }
         }else{
             //Custom realm class
             handlerCtx.setOutputValue("classnameOption", "input");
             attrMap.put("predefinedClassname", Boolean.FALSE);
             attrMap.put("classnameInput", classname);
-            List props = V3AMX.getNonSkipPropertiesMap(realm, null);
+            List<HashMap> props = getListfromMap(origProps);
             handlerCtx.setOutputValue("properties", props);
         }
 
         handlerCtx.setOutputValue("attrMap", attrMap);
         handlerCtx.setOutputValue("realmClasses", realmClassList);
     }
-    
+
+    public static List getChildrenMapForTableList(Map<String, Object> realmMap, String childType, List skipList){
+        boolean hasSkip = true;
+        if (skipList == null ){
+            hasSkip = false;
+        }
+        List result = new ArrayList();
+        if (realmMap != null) {
+            Set s = realmMap.entrySet();
+            Iterator it = s.iterator();
+            while(it.hasNext()) {
+                Map.Entry m =(Map.Entry)it.next();
+                HashMap oneRow = new HashMap();
+                if ( hasSkip && skipList.contains(m.getKey())){
+                    continue;
+                }
+                oneRow.put("selected", false);
+                oneRow.put(m.getKey(), m.getValue());
+                oneRow.put("encodedName", GuiUtil.encode((String)m.getKey(), null,null) );
+                result.add(oneRow);
+            }
+        }
+        return result;
+    }
+
+    public static List<HashMap> getListfromMap(HashMap<String, Object> props) {
+        List<HashMap> result = new ArrayList();
+        Iterator it = props.entrySet().iterator();
+        while(it.hasNext()) {
+            Map.Entry m =(Map.Entry)it.next();
+            HashMap oneRow = new HashMap();
+            oneRow.put("selected", false);
+            oneRow.put("Name", m.getKey());
+            oneRow.put("Value", m.getValue());
+            oneRow.put("Description", "");
+            result.add(oneRow);
+        }
+        return result;
+    }
     
     @Handler(id="saveRealm",
     input={
-        @HandlerInput(name="objectNameStr",   type=String.class),
-        @HandlerInput(name="parentObjectName",   type=String.class),
+        @HandlerInput(name="endpoint",   type=String.class),
         @HandlerInput(name="classnameOption",   type=String.class),
         @HandlerInput(name="attrMap",      type=Map.class),
         @HandlerInput(name="edit",      type=Boolean.class),
+        @HandlerInput(name="contentType", type=String.class, required=false),
         @HandlerInput(name="propList", type=List.class)
     })
     public static void saveRealm(HandlerContext handlerCtx) {
@@ -190,14 +232,14 @@ public class SecurityHandler {
         List<Map<String,String>> propList = (List)handlerCtx.getInputValue("propList");
         Map<String,String> attrMap = (Map)handlerCtx.getInputValue("attrMap");
 
-        if (attrMap==null){
+        if (attrMap == null) {
             attrMap = new HashMap();
         }
         String classname = "";
         try{
           if(option.equals("predefine")){
             classname = attrMap.get("classname");
-            
+
             if(classname.indexOf("FileRealm")!= -1){
                 putOptional(attrMap, propList, "file", "file");
                 putOptional(attrMap, propList, "jaas-context", "fileJaax");
@@ -227,23 +269,27 @@ public class SecurityHandler {
                 putOptional(attrMap, propList, "encoding", "encoding");
                 putOptional(attrMap, propList, "charset", "charset");
                 putOptional(attrMap, propList, "assign-groups", "jdbcAsGroups");
-           }else
-            if(classname.indexOf("CertificateRealm")!= -1){
-                putOptional(attrMap, propList, "assign-groups", "certAsGroups");
-            }
-         } else {
-            classname = attrMap.get("classnameInput");            
-         }
+           }else {
+               if(classname.indexOf("CertificateRealm")!= -1){
+                   putOptional(attrMap, propList, "assign-groups", "certAsGroups");
+               }
+           }
+        } else {
+           classname = attrMap.get("classnameInput");
+        }
 
-          Boolean edit = (Boolean) handlerCtx.getInputValue("edit");
-          if (edit.booleanValue()){
-              String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
-              V3AMX.setAttribute(objectNameStr, new Attribute("Classname", classname));
-              V3AMX.setProperties(objectNameStr, propList, false);
+        Boolean edit = (Boolean) handlerCtx.getInputValue("edit");
+        String endpoint = (String) handlerCtx.getInputValue("endpoint");
+        if (edit.booleanValue()){
+            Map values = new HashMap();
+            values.put("classname", classname);
+            RestApiHandlers.restRequest(endpoint, values, "post", handlerCtx);
+            String tmpJSON = JSONUtil.javaToJSON(propList, -1);
+            RestApiHandlers.post(endpoint, tmpJSON, (String) handlerCtx.getInputValue("contentType"));
           }else{
              Map<String, Object> cMap = new HashMap();
-             cMap.put("Name", attrMap.get("Name"));
-             cMap.put("Classname", classname);
+             cMap.put("name", attrMap.get("Name"));
+             cMap.put("classname", classname);
 
              Map[] propMaps = new Map[propList.size()];
              int i=0;
@@ -253,10 +299,10 @@ public class SecurityHandler {
                  }
                  propMaps[i++] = oneProp;
              }
-             cMap.put(Util.deduceType(Property.class), propMaps);
-             AMXConfigProxy amx = V3AMX.getInstance().getConfig("server-config").getSecurityService();
-             AMXConfigProxy child =  amx.createChild("auth-realm", cMap);
-//             V3AMX.setProperties(child.objectName().toString(), propList, false);
+             endpoint = endpoint + "/auth-realm";
+             RestApiHandlers.restRequest(endpoint, cMap, "post", handlerCtx);
+             String tmpJSON = JSONUtil.javaToJSON(propList, -1);
+             RestApiHandlers.post(endpoint, tmpJSON, (String) handlerCtx.getInputValue("contentType"));
           }
 
       }catch(Exception ex){

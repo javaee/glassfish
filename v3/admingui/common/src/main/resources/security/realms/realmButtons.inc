@@ -48,7 +48,7 @@
             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
             prepareSuccessfulMsg();
             saveRealm(
-                objectNameStr="#{objectNameStr}"
+                endpoint="#{parentUrl}"
                 classnameOption="#{myOption}",
                 attrMap="#{attrMap}",
                 propList="${newList}"
@@ -64,7 +64,7 @@
             getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
             saveRealm(
-                parentObjectName="#{parentObjectName}",
+                endpoint="#{parentUrl}",
                 classnameOption="#{classnameOption}",
                 attrMap="#{attrMap}",
                 propList="${newList}"
