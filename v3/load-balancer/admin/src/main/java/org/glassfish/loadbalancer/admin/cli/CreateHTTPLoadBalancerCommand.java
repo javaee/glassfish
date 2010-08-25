@@ -145,6 +145,9 @@ public final class CreateHTTPLoadBalancerCommand extends LBCommandsBase
     @Param (optional=true, defaultValue="true")
     Boolean routecookie;
 
+    @Param (obsolete=true)
+    Boolean autoapplyenabled;
+
     @Param(optional=true, name="property", separator=':')
     Properties properties;
 
@@ -261,7 +264,7 @@ public final class CreateHTTPLoadBalancerCommand extends LBCommandsBase
     private void createLBConfig(String config) throws CommandException {
         CommandInvocation ci = runner.getCommandInvocation("create-http-lb-config", report);
         ParameterMap map = new ParameterMap();
-        map.add("target", target);
+        //map.add("target", target);
         map.add("responsetimeout", responsetimeout);
         map.add("httpsrouting", httpsrouting==null ? null : httpsrouting.toString());
         map.add("reloadinterval", reloadinterval);
