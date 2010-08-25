@@ -63,7 +63,7 @@
                 <configuration>
                     <instructions>
                         <Embed-Dependency>
-                            *;scope=compile;inline=true
+                            *;artifactId=sysnet-registration;inline=true
                         </Embed-Dependency>
                         <!-- Export everything from the embedded jar 
                              in the final bundle 
@@ -78,7 +78,7 @@
                         <HK2-Bundle-Name>${pom.groupId}:${pom.artifactId}</HK2-Bundle-Name>
                         <!-- We need this dependency to be set, because
                              sysnet depends on commons-codec. Although
-                             OSGi can do pacage wiring, HK2 only works with
+                             OSGi can do package wiring, HK2 only works with
                              module wiring.
                         -->
                         <HK2-Import-Bundles>${pom.groupId}:commons-codec-repackaged</HK2-Import-Bundles>
@@ -113,7 +113,15 @@
             <artifactId>sysnet-registration</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+        <!-- We depend on repackaged jar so that bnd will automatically add
+             mandatory attribute to Import-Package -->
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>commons-codec-repackaged</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
+
     <developers>
         <developer>
             <id>ss141213</id>
