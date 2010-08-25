@@ -66,8 +66,8 @@ public class MigrateTimersTest extends TimerTestBase {
     public void migrateTimers() {
         String testName = "migrateTimers";
         
-        //assuming no automatic migration when stopping a local instance.
-        asadmin("stop-local-instance", instance_name_1);
+        //assuming no automatic migration when stopping a instance.
+        asadmin("stop-instance", instance_name_1);
         AsadminReturn output = asadminWithOutput("migrate-timers", instance_name_1);
         logger.log(Level.INFO, "Finished migrate-timer: {0}", new Object[]{output.outAndErr});
 
@@ -80,9 +80,9 @@ public class MigrateTimersTest extends TimerTestBase {
     public void migrateTimersWithTarget() {
         String testName = "migrateTimersWithTarget";
 
-        //assuming no automatic migration when stopping a local instance.
-        asadmin("stop-local-instance", instance_name_2);
-        asadmin("start-local-instance", instance_name_1);
+        //assuming no automatic migration when stopping a instance.
+        asadmin("stop-instance", instance_name_2);
+        asadmin("start-instance", instance_name_1);
         AsadminReturn output = asadminWithOutput("migrate-timers", "--target", instance_name_1 ,instance_name_2);
         logger.log(Level.INFO, "Finished migrate-timer: {0}", new Object[]{output.outAndErr});
 
@@ -97,9 +97,9 @@ public class MigrateTimersTest extends TimerTestBase {
     public void migrateTimersOutsideCluster() {
         String testName = "migrateTimersOutsideCluster";
 
-        //assuming no automatic migration when stopping a local instance.
-        asadmin("stop-local-instance", instance_name_1);
-        asadmin("start-local-instance", instance_name_3);
+        //assuming no automatic migration when stopping a instance.
+        asadmin("stop-instance", instance_name_1);
+        asadmin("start-instance", instance_name_3);
         AsadminReturn output = asadminWithOutput("migrate-timers", "--target", instance_name_3, instance_name_1);
         logger.log(Level.INFO, "Finished migrate-timer: {0}", new Object[]{output.outAndErr});
         report(testName, output.returnValue == false);

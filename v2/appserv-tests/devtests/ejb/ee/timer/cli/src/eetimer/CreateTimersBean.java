@@ -40,12 +40,12 @@ import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
-import javax.ejb.Stateless;
+import javax.ejb.Singleton;
 import javax.ejb.TimedObject;
 import javax.ejb.Timer;
 import javax.ejb.TimerService;
 
-@Stateless
+@Singleton
 public class CreateTimersBean implements TimedObject {
     private static final Logger logger = Logger.getLogger(CreateTimersBean.class.getName());
 
