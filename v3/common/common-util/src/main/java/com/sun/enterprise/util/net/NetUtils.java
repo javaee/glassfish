@@ -175,22 +175,36 @@ public class NetUtils {
      * @param host
      * @return an array of InetAddresses
      */
-    public static InetAddress[] getAllByName(String theHostName) {
-
-        GetAllByNameFetcher fetcher = new GetAllByNameFetcher(theHostName);
-        Thread t = new Thread(fetcher, "GetAllByNameThreadDaemon");
-        t.setDaemon(true); // don't allow this thread to delay shutting down!
-        t.start();
-
+    private static InetAddress[] getAllByName(String theHostName) {
         try {
-            t.join(1000);
+            return InetAddress.getAllByName(theHostName);
         }
-        catch (InterruptedException ex) {
-            // ignore
+        catch (UnknownHostException ex) {
+            return new InetAddress[0];
         }
-        return fetcher.getAddresses();
     }
 
+    /**
+     * JDK will throw an Exception if DNS is fouled-up.  We don't want that!
+     * @param host
+     * @return an array of InetAddresses
+     *
+    public static InetAddress[] getAllByNameExperimental(String theHostName) {
+
+    GetAllByNameFetcher fetcher = new GetAllByNameFetcher(theHostName);
+    Thread t = new Thread(fetcher, "GetAllByNameThreadDaemon");
+    t.setDaemon(true); // don't allow this thread to delay shutting down!
+    t.start();
+
+    try {
+    t.join(1000);
+    }
+    catch (InterruptedException ex) {
+    // ignore
+    }
+    return fetcher.getAddresses();
+    }
+     */
     private static InetAddress[] getAllByNameInternal(String theHostName, int timeoutInMsec) {
 
         try {
@@ -785,17 +799,20 @@ public class NetUtils {
     static {
         // Do this **one** time only!
         CanonicalHostNameFetcher fetcher = new CanonicalHostNameFetcher();
+        fetcher.run();
+
+        /* do this to speed things up with your own timeout
         Thread t = new Thread(fetcher, "GetCanonicalHostNameThreadDaemon");
         t.setDaemon(true); // don't allow this thread to delay shutting down!
         t.start();
 
         try {
-            t.join(1000);
+        t.join(1000);
         }
         catch (InterruptedException ex) {
-            // ignore
+        // ignore
         }
-
+         */
         String temp; // needed because of final variables...
         temp = fetcher.getHostName();
 
@@ -899,42 +916,44 @@ public class NetUtils {
         private volatile String hostname;
     }
 
+    /*
     private static class GetAllByNameFetcher implements Runnable {
 
-        public GetAllByNameFetcher(String theHostName) {
-            this.theHostName = theHostName;
-        }
-
-        @Override
-        public void run() {
-            InetAddress[] adds = null;
-
-            try {
-                // this can be VERY slow (multiple seconds) if Dns is munged...
-                adds = InetAddress.getAllByName(theHostName);
-            }
-            catch (UnknownHostException ex) {
-                try {
-                    adds = new InetAddress[1];
-                    adds[0] = InetAddress.getByName(theHostName);
-                }
-                catch (Exception ex2) {
-                    adds = new InetAddress[0];
-                }
-            }
-            // do it thread-safe!
-            // we may get timed-out before we get here...
-            synchronized (addresses) {
-                addresses = adds;
-            }
-        }
-
-        private InetAddress[] getAddresses() {
-            synchronized (addresses) {
-                return addresses;
-            }
-        }
-        private volatile InetAddress[] addresses = new InetAddress[0];
-        private final String theHostName;
+    public GetAllByNameFetcher(String theHostName) {
+    this.theHostName = theHostName;
     }
+
+    @Override
+    public void run() {
+    InetAddress[] adds = null;
+
+    try {
+    // this can be VERY slow (multiple seconds) if Dns is munged...
+    adds = InetAddress.getAllByName(theHostName);
+    }
+    catch (UnknownHostException ex) {
+    try {
+    adds = new InetAddress[1];
+    adds[0] = InetAddress.getByName(theHostName);
+    }
+    catch (Exception ex2) {
+    adds = new InetAddress[0];
+    }
+    }
+    // do it thread-safe!
+    // we may get timed-out before we get here...
+    synchronized (addresses) {
+    addresses = adds;
+    }
+    }
+
+    private InetAddress[] getAddresses() {
+    synchronized (addresses) {
+    return addresses;
+    }
+    }
+    private volatile InetAddress[] addresses = new InetAddress[0];
+    private final String theHostName;
+    }
+     */
 }
