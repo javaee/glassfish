@@ -429,6 +429,7 @@ public class SingleSignOn
 
         SingleSignOnEntry sso = lookup(ssoId);
         if (sso != null) {
+            session.setSsoId(ssoId);
             sso.addSession(this, session);
         }
     }
@@ -446,6 +447,7 @@ public class SingleSignOn
         if ( sso == null )
             return;
 
+        session.setSsoId(null);
         sso.removeSession( session );
 
         // see if we are the last session, if so blow away ssoId

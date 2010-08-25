@@ -137,6 +137,7 @@ public class HASingleSignOn extends GlassFishSingleSignOn {
 
         HASingleSignOnEntry sso = (HASingleSignOnEntry)lookup(ssoId);
         if (sso != null) {
+            session.setSsoId(ssoId);
             sso.addSession(this, session);
 
             try {
