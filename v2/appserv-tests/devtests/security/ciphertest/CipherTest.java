@@ -7,8 +7,6 @@ import javax.net.ssl.SSLHandshakeException;
 
 import javax.net.ServerSocketFactory;
 
-import java.net.Socket;
-
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.BufferedReader;

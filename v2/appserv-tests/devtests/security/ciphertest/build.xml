@@ -39,6 +39,8 @@
         <antcall target="asadmin-batch-common">
           <param name="asadmin.file" value="testsetup.asadmin"/>
         </antcall>
+
+        <delete file="testsetup.asadmin" />
         <antcall target="restart-server-instance-common"/>
     </target>
 
@@ -46,6 +48,7 @@
         <antcall target="asadmin-batch-common">
           <param name="asadmin.file" value="testunsetup.asadmin"/>
         </antcall>
+        <antcall target="restart-server-instance-common"/>
     </target>
 
     <target name="clean" depends="init-common">

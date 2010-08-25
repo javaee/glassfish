@@ -62,12 +62,6 @@
         <env key="VMARGS" value=" -Djavax.net.ssl.keyStore=${mykeystore.db.file} -Djavax.net.ssl.trustStore=${mytruststore.db.file} -Djavax.net.ssl.keyStorePassword=${ssl.password} -Djavax.net.ssl.trustStorePassword=${ssl.password}"/>
         <arg value="-client" />
         <arg value="${assemble.dir}/${appname}AppClient.jar"/>
-  	<!-- dummy user added as appclient throwing login window -->	
-	<arg value="-textauth"/>
-        <arg value="-user"/>
-        <arg value="temp"/>
-        <arg value="-password"/>
-        <arg value="temp"/>
       </exec>
     </target>
     <target name="undeploy" depends="init-common">

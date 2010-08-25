@@ -1,7 +1,6 @@
 package devtests.security;
 
 import java.io.*;
-import java.util.*;
 import java.security.cert.X509Certificate;
 import javax.servlet.*;
 import javax.servlet.http.*;

@@ -1,7 +1,6 @@
 package devtests.security;
 
 import java.io.*;
-import java.util.*;
 import java.security.*;
 import java.net.*;
 import javax.net.ssl.*;
