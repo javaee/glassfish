@@ -424,6 +424,8 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         put("ProtocolFinder", "delete-protocol-finder");
         put("Transport", "delete-transport");
         put("ThreadPool", "delete-threadpool");
+        put("SecurityMap", "delete-connector-security-map");
+        put("WorkSecurityMap", "delete-connector-security-map");
     }};
 
     //TODO - fetch command name from config bean(RestRedirect annotation).

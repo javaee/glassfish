@@ -40,7 +40,8 @@
 
 package org.glassfish.admin.rest.cli;
 
-import org.glassfish.api.ActionReport;
+import com.sun.enterprise.v3.common.ActionReporter;
+import java.util.Arrays;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
@@ -71,13 +72,8 @@ public class GetGroupNamesCommand implements AdminCommand {
     public void execute(AdminCommandContext context) {
         SecurityUtil su = new SecurityUtil(domain);
         String[] list = su.getGroupNames(realmName,userName);
-        ActionReport report = context.getActionReport();
+        ActionReporter report = (ActionReporter)context.getActionReport();
         report.setActionExitCode(ExitCode.SUCCESS);
-        ActionReport.MessagePart part = report.getTopMessagePart();
-
-        for (String s : list) {
-            ActionReport.MessagePart childPart = part.addChild();
-            childPart.setMessage(s);
-        }
+        report.getExtraProperties().put("groups", Arrays.asList(list));
     }
 }
