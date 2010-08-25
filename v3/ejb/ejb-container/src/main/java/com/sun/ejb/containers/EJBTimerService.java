@@ -746,10 +746,12 @@ public class EJBTimerService
     }
 
     /**
-     * Remove from the cache (i.e. stop) all timers associated with a particular ejb container
+     * Remove from the cache and stop all timers associated with a particular ejb container
      * and known to this server instance.
      * This is typically called when an ejb is disabled or on a server shutdown
      * to avoid accidentally removing a valid timer.  
+     * This is also called when an ejb is disabled as part of an undeploy. Removal
+     * of the associated timer from the database is done as the last step of undeployment.
      */
     void stopTimers(long containerId) {
         Set<TimerPrimaryKey> timerIds = null;
@@ -758,21 +760,47 @@ public class EJBTimerService
         timerIds.addAll(timerCache_.getNonPersistentTimerIdsForContainer(containerId));
 
         for(TimerPrimaryKey nextTimerId: timerIds) {
-            expungeTimer(nextTimerId);
+            RuntimeTimerState nextTimerState = null;
+            try {
+                nextTimerState = getTimerState(nextTimerId);
+                if( nextTimerState != null ) {
+                    synchronized(nextTimerState) {
+                        if( nextTimerState.isScheduled() ) {
+                            EJBTimerTask timerTask = 
+                                nextTimerState.getCurrentTimerTask();
+                            timerTask.cancel();
+                        } 
+                    }
+                }
+            } catch(Exception e) {
+                logger.log(Level.WARNING, "ejb.destroy_timer_error",
+                           new Object[] { nextTimerId });
+                logger.log(Level.WARNING, "", e);
+            } finally {
+                if( nextTimerState != null ) {
+                    timerCache_.removeTimer(nextTimerId);
+                }
+            }
         }
     }
 
     /**
      * Destroy all timers associated with a particular ejb container
-     * and owned by this server instance.  
      * This is typically called when an ejb is undeployed.  It expunges
      * all timers whose timed object matches the given container.  In
      * the case of an entity bean container, all timers associated with
      * any of that container's entity bean identities will be destroyed.
      * This action *can not* be rolled back.  
      */
-    void destroyTimers(long containerId) {
+    public void destroyTimers(long containerId) {
         Set<TimerPrimaryKey> timerIds = null;
+
+        if (timerLocal_.countTimersByContainer(containerId) == 0) {
+            if( logger.isLoggable(Level.INFO) ) {
+                logger.log(Level.INFO, "No timers to be deleted for containerId: " + containerId);
+            }
+            return;
+        }
 
         TransactionManager tm = ejbContainerUtil.getTransactionManager();
 
@@ -783,39 +811,12 @@ public class EJBTimerService
             // doing individual transactions per timer.            
             tm.begin();
             
-            // Get *all* timers for this ejb. Since the app is being undeployed
-            // any server instance can delete all the timers for the same ejb.
-            // Whichever one gets there first will actually do the delete. 
-            timerIds = timerLocal_.findTimerIdsByContainer(containerId);
-            timerIds.addAll(timerCache_.getNonPersistentTimerIdsForContainer(containerId));
-
-            for(TimerPrimaryKey nextTimerId: timerIds) {
-                RuntimeTimerState nextTimerState = null;
-                try {
-                    nextTimerState = getTimerState(nextTimerId);
-                    if( nextTimerState != null ) {
-                        synchronized(nextTimerState) {
-                            if( nextTimerState.isScheduled() ) {
-                                EJBTimerTask timerTask = 
-                                    nextTimerState.getCurrentTimerTask();
-                                timerTask.cancel();
-                            } 
-                        }
-                        if (nextTimerState.isPersistent()) {
-                            timerLocal_.remove(nextTimerId);
-                        }
-                    }
-                } catch(Exception e) {
-                    logger.log(Level.WARNING, "ejb.destroy_timer_error",
-                               new Object[] { nextTimerId });
-                    logger.log(Level.WARNING, "", e);
-                } finally {
-                    if( nextTimerState != null ) {
-                        timerCache_.removeTimer(nextTimerId);
-                    }
-                }
+            // Remove *all* timers for this ejb. Since the app is being undeployed
+            // it will be called only once for all server instances.
+            int deleted = timerLocal_.deleteTimersByContainer(containerId);
+            if( logger.isLoggable(Level.INFO) ) {
+                logger.log(Level.INFO, "[" + deleted + "] timers deleted for containerId: " + containerId);
             }
-
         } catch(Exception ex) {
             logger.log(Level.WARNING, "ejb.destroy_timers_error",
                        new Object[] { String.valueOf(containerId) });
@@ -824,8 +825,6 @@ public class EJBTimerService
             try {
                 tm.commit();
             } catch(Exception e) {
-                // Most likely caused by two or more server instances trying
-                // to delete the timers for the same ejb at the same time.
                 logger.log(Level.WARNING, "ejb.destroy_timers_error",
                            new Object[] { String.valueOf(containerId) });
                 logger.log(Level.WARNING, "", e);

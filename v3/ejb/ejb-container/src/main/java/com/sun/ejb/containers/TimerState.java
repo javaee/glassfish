@@ -145,6 +145,11 @@ import com.sun.ejb.EJBUtils;
         name="updateTimersFromOwnerToNewOwner",
         query="UPDATE Timer t SET t.ownerId = :toOwner WHERE t.ownerId = :fromOwner"
     )
+    ,
+    @NamedQuery(
+        name="deleteTimersByContainer",
+        query="DELETE FROM Timer t WHERE t.containerId = :containerId"
+    )
 })
 @Table(name="EJB__TIMER__TBL")
 @IdClass(com.sun.ejb.containers.TimerPrimaryKey.class)

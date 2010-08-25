@@ -421,11 +421,11 @@ public class EjbDeployer
     }
 
     private void checkEjbBundleForTimers(EjbBundleDescriptor ejbBundle, String target, ClassLoader cl) {
-        if (_logger.isLoggable(Level.FINE)) {
-            _logger.log( Level.FINE, "EjbDeployer.checkEjbBundleForTimers in BUNDLE: " + ejbBundle.getName());
-        }
-
         if (ejbBundle != null) {
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log( Level.FINE, "EjbDeployer.checkEjbBundleForTimers in BUNDLE: " + ejbBundle.getName());
+            }
+
             ejbBundle.setClassLoader(cl);
             for (EjbDescriptor ejbDescriptor : ejbBundle.getEjbs()) {
                 if (_logger.isLoggable(Level.FINE)) {

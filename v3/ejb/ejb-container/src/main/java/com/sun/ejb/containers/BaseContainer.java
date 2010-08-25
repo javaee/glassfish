@@ -4175,6 +4175,7 @@ public abstract class BaseContainer
                 setUndeployedState();
 
                 try {
+                   stopTimers();
                    destroyTimers();
                 } catch(Exception e) {
                     _logger.log(Level.FINE, "Error destroying timers for " +

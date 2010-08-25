@@ -668,6 +668,12 @@ public class TimerBean implements TimerLocal {
         return q.executeUpdate();
     }
 
+    public int deleteTimersByContainer(long containerId) {
+        Query q = em.createNamedQuery("deleteTimersByContainer");
+        q.setParameter("containerId", containerId);
+        return q.executeUpdate();
+    }
+
     public static void testCreate(String timerId, EJBContext context,
                                    String ownerId,
                                   Date initialExpiration, 

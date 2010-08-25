@@ -149,6 +149,9 @@ public interface TimerLocal {
     // Migrate timers from one server instance to another via bulk update
     int migrateTimers(String fromOwnerId, String toOwnerId);
 
+    // Delete all timers owned by this EJB (aka containerID)
+    int deleteTimersByContainer(long containerId);
+
     // Called from the TimerWelcomeServlet
     Set findActiveNonPersistentTimersOwnedByThisServer();
 }
