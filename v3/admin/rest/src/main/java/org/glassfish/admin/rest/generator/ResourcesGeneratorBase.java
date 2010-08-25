@@ -415,17 +415,21 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         put("AmxPref", "GENERIC-DELETE");
         put("ApplicationRef", "delete-application-ref");
         put("ExternalJndiResource", "delete-jndi-resource");
+        put("GroupMap", "GENERIC-DELETE");
         put("JaccProvider", "delete-jacc-provider");
         put("NetworkListener", "delete-network-listener");
+        put("Principal", "GENERIC-DELETE");
+        put("PrincipalMap", "GENERIC-DELETE");
         put("Profiler", "delete-profiler");
         put("Property", "GENERIC-DELETE");
         put("Protocol", "delete-protocol");
         put("ProtocolFilter", "delete-protocol-filter");
         put("ProtocolFinder", "delete-protocol-finder");
+        put("SecurityMap", "delete-connector-security-map");
         put("Transport", "delete-transport");
         put("ThreadPool", "delete-threadpool");
-        put("SecurityMap", "delete-connector-security-map");
-        put("WorkSecurityMap", "delete-connector-security-map");
+        put("UserGroup", "GENERIC-DELETE");
+        put("WorkSecurityMap", "delete-connector-work-security-map");
     }};
 
     //TODO - fetch command name from config bean(RestRedirect annotation).
