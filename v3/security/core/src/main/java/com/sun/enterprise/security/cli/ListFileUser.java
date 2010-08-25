@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.security.cli;
 
+import com.sun.enterprise.security.auth.realm.NoSuchUserException;
 import java.util.Enumeration;
 
 import org.glassfish.api.admin.AdminCommand;
@@ -64,6 +65,12 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.security.auth.realm.RealmsManager;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.admin.Cluster;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.CommandTarget;
@@ -193,11 +200,24 @@ public class ListFileUser implements AdminCommand {
 
         try {
             Enumeration users = fr.getUserNames();
+            List userList = new ArrayList();
             
             while (users.hasMoreElements()) {
                 final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage((String) users.nextElement());
+                String userName = (String) users.nextElement();
+                part.setMessage(userName);
+                Map userMap = new HashMap();
+                userMap.put("name", userName);
+                try {
+                    userMap.put("groups", Collections.list(fr.getGroupNames(userName)));
+                } catch (NoSuchUserException ex) {
+                    // This should never be thrown since we just got the user name from the realm
+                }
+                userList.add(userMap);
             }
+            Properties extraProperties = new Properties();
+            extraProperties.put("users", userList);
+            report.setExtraProperties(extraProperties);
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } catch (BadRealmException e) {
             report.setMessage(
