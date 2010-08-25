@@ -122,6 +122,10 @@ Variables Used:
       tofile="${build.classes.dir}/tmp/WEB-INF/glassfish-web.xml" failonerror="false"/>
   <copy file="${sun-web.xml}" 
       tofile="${build.classes.dir}/tmp/WEB-INF/sun-web.xml" failonerror="false"/>
+  <copy file="${glassfish-ejb-jar.xml}" 
+      tofile="${build.classes.dir}/tmp/WEB-INF/glassfish-ejb-jar.xml" failonerror="false"/>
+  <copy file="${sun-ejb-jar.xml}" 
+      tofile="${build.classes.dir}/tmp/WEB-INF/sun-ejb-jar.xml" failonerror="false"/>
   <copy file="${weblogic.xml}" 
       tofile="${build.classes.dir}/tmp/WEB-INF/weblogic.xml" failonerror="false"/>
   <copy file="${glassfish-resources.xml}" 
@@ -186,8 +190,10 @@ Variables Used:
     <fileset dir="${build.classes.dir}/tmp/" casesensitive="true">
       <include name="WEB-INF/web.xml"/>
       <include name="WEB-INF/glassfish-web.xml"/>
+      <include name="WEB-INF/glassfish-ejb-jar.xml"/>
       <include name="WEB-INF/glassfish-resources.xml"/>
       <include name="WEB-INF/sun-web.xml"/>
+      <include name="WEB-INF/sun-ejb-jar.xml"/>
       <include name="WEB-INF/beans.xml"/>
       <include name="WEB-INF/weblogic.xml"/>
       <include name="WEB-INF/webservices.xml"/>
