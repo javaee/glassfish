@@ -109,16 +109,25 @@ public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
         public Object run(Cluster cluster) throws PropertyVetoException, TransactionFailure {
             //set gms-enabled (default is true incase it may not appear in upgraded
             //domain.xml)
-            cluster.setGmsEnabled(cluster.getHeartbeatEnabled());
-            cluster.setHeartbeatEnabled(null);
+            String value = cluster.getHeartbeatEnabled();
+            if (value != null) {
+                cluster.setGmsEnabled(value);
+                cluster.setHeartbeatEnabled(null);
+            }
 
             //set gms-multicast-address the value obtained from heartbeat-address
-            cluster.setGmsMulticastAddress(cluster.getHeartbeatAddress());
-            cluster.setHeartbeatAddress(null);
+            value = cluster.getHeartbeatAddress();
+            if (value != null) {
+                cluster.setGmsMulticastAddress(value);
+                cluster.setHeartbeatAddress(null);
+            }
 
             //set gms-multicast-port the value of heartbeat-port
-            cluster.setGmsMulticastPort(cluster.getHeartbeatPort());
-            cluster.setHeartbeatPort(null);
+            value = cluster.getHeartbeatPort();
+            if (value != null) {
+                cluster.setGmsMulticastPort(value);
+                cluster.setHeartbeatPort(null);
+            }
 
             //gms-bind-interface is an attribute of cluster in 3.1
             Property prop  = cluster.getProperty("gms-bind-interface-address");
@@ -127,9 +136,12 @@ public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
                 List<Property> props = cluster.getProperty();
                 props.remove(prop);
             } else {
-                cluster.setGmsBindInterfaceAddress(String.format(
-                        "${GMS-BIND-INTERFACE-ADDRESS-%s}",
-                        cluster.getName()));
+                value = cluster.getGmsBindInterfaceAddress();
+                if (value == null) {
+                    cluster.setGmsBindInterfaceAddress(String.format(
+                            "${GMS-BIND-INTERFACE-ADDRESS-%s}",
+                            cluster.getName()));
+                }
             }
             return cluster;
         }
@@ -139,35 +151,32 @@ public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
         public Object run(Config config) throws PropertyVetoException, TransactionFailure {
             GroupManagementService gms = config.getGroupManagementService();
             Transaction t = Transaction.getTransaction(config);
-            t.enroll(gms);
+            gms = t.enroll(gms);
             String value = gms.getPingProtocolTimeoutInMillis();
             if (value != null) {
                 gms.setGroupDiscoveryTimeoutInMillis(value);
             } // else null for server-config
-            // workaround gf it 1303
-            // gms.setPingProtocolTimeoutInMillis(null);
+            gms.setPingProtocolTimeoutInMillis(null);
 
             FailureDetection fd = gms.getFailureDetection();
-            t.enroll(fd);
+            fd = t.enroll(fd);
             value = gms.getFdProtocolTimeoutInMillis();
             if (value != null){
                 fd.setHeartbeatFrequencyInMillis(value);
             } // else  null for server-config
-            // workaround gf it 1303
-            //gms.setFdProtocolTimeoutInMillis(null);
+            gms.setFdProtocolTimeoutInMillis(null);
 
             value = gms.getFdProtocolMaxTries();
             if (value != null) {
                 fd.setMaxMissedHeartbeats(value);
             } // else null for server config
-            // workaround gf it 1303
-            //gms.setFdProtocolMaxTries(null);
+            gms.setFdProtocolMaxTries(null);
 
             value = gms.getVsProtocolTimeoutInMillis();
             if (value != null) {
                 fd.setVerifyFailureWaittimeInMillis(value);
             } // else null for server-config
-            //gms.setVsProtocolTimeoutInMillis(null);
+            gms.setVsProtocolTimeoutInMillis(null);
 
             Property prop = gms.getProperty("failure-detection-tcp-retransmit-timeout");
             if (prop != null && prop.getValue() != null ) {
@@ -177,9 +186,8 @@ public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
             } //else v3.1 default value for VerifyFailureConnectTimeoutInMillis is sufficient.
 
             // remove v2.1 attributes that are no longer needed.  No info to transfer to v3.1 gms config.
-            // workaround gf it 1303
-            //gms.setMergeProtocolMaxIntervalInMillis(null);
-            //gms.setMergeProtocolMinIntervalInMillis(null);
+            gms.setMergeProtocolMaxIntervalInMillis(null);
+            gms.setMergeProtocolMinIntervalInMillis(null);
 
             return config;
         }
