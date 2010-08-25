@@ -8,7 +8,6 @@ public class HttpBasicAuthTest implements Runnable {
 
     private int suxesCount = 0;
     private int failureCount = 0;
-    private int totalCount = 0;
     private boolean result = true;
 
     private long minTime = Long.MAX_VALUE;

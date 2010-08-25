@@ -6,7 +6,6 @@
 
 package shopping;
 import javax.ejb.EJBHome;
-import shopping.RpaRemote;
 /**
  *
  * @author  Harpreet Singh

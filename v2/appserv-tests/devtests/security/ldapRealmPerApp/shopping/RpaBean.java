@@ -8,11 +8,10 @@ package shopping;
 
 import javax.ejb.SessionContext;
 import javax.ejb.SessionBean;
-import java.util.Vector;
-import java.lang.String;
-import java.util.Iterator;
 import javax.ejb.EJBException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 /**
  *
  * @author  Harpreet
@@ -27,24 +26,24 @@ public class RpaBean implements SessionBean {
     
     private int totalItems = 0;
     
-    private Vector items;
+    private List<String> items;
     
-    private Vector itemPrice;
+    private List<Integer> itemPrice;
     
     private SessionContext sc = null;
     
     /** Creates a new instance of ShoppingEJB */
     public void ejbCreate(String shopperName) {
         shopper = shopperName;
-        items = new Vector();
-        itemPrice = new Vector();
+        items = new ArrayList<String>();
+        itemPrice = new ArrayList<Integer>();
     }
     
-    public void addItem(java.lang.String item, int price) throws EJBException,
+    public void addItem(String item, int price) throws EJBException,
         RemoteException{
         checkCallerPrincipal();
         items.add(item);
-        itemPrice.add(new Integer(price));
+        itemPrice.add(Integer.valueOf(price));
         totalItems++;
         totalPrice += price;
         System.out.println(" Shopping Cart: Shopper "+ shopper +" has bought "
@@ -52,12 +51,12 @@ public class RpaBean implements SessionBean {
             " .TotalPrice = " + totalPrice);
     }
     
-    public void deleteItem(java.lang.String item) throws EJBException, 
+    public void deleteItem(String item) throws EJBException, 
         RemoteException{
         checkCallerPrincipal();
         int index = items.indexOf(item);
         items.remove(item);
-        Integer price = (Integer) itemPrice.get(index);
+        Integer price = itemPrice.get(index);
         System.out.println("Shopping Cart: Removing item "+ item +" @price "+ 
             price.intValue());
         totalPrice -= price.shortValue();
@@ -73,12 +72,7 @@ public class RpaBean implements SessionBean {
     
     public String[] getItems() throws EJBException{
         checkCallerPrincipal();
-        Iterator it = items.iterator();
-        int sz = items.size();
-        String[] itemNames = new String[sz];
-        for(int i=0; it.hasNext();){
-            itemNames[i++] = new String( (String)it.next());
-        }
+        String[] itemNames = items.toArray(new String[0]);
         return itemNames;
     }
     

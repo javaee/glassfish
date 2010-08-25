@@ -22,7 +22,7 @@
       <antcall target="clean-common"/>
     </target>
 
-    <target name="setup" depends="init-common">
+    <target name="setup" depends="init-common,prepare-store-common">
         <copy file="${assemble.dir}/test-${appname}-provider.jar"
             todir="${env.S1AS_HOME}/lib"/>
 
@@ -32,11 +32,7 @@
             <param name="operand.props" value="httpsTestAuthModule"/>
         </antcall>
 
-        <antcall target="prepare-store-nickname-common">
-            <param name="cert.nickname" value="s1as"/>
-        </antcall>
-
-        <!--antcall target="restart"/-->
+        <antcall target="restart"/>
     </target>
 
     <target name="unsetup" depends="init-common">
@@ -45,21 +41,14 @@
             <param name="as.props" value="${as.props} --layer HttpServlet"/>
             <param name="operand.props" value="httpsTestAuthModule"/>
         </antcall>
+	<antcall target="remove-store-common"/>
 
-      <!--  <antcall target="reconfig-common"/>-->
-
-        <!--antcall target="restart"/-->
+        <antcall target="restart"/>
         <!-- may not be able to delete this file in PC environment -->
         <delete file="${env.S1AS_HOME}/lib/test-${appname}-provider.jar" failonerror="false"/>
     </target>
 
     <target name="build" depends="init-common, init-security-util">
-        <delete file="descriptor/sun-web.xml" failonerror="false"/>
-        <copy file="descriptor/sun-web.xml.template" tofile="descriptor/sun-web.xml"/>
-        <replace file="descriptor/sun-web.xml">
-            <replacefilter token="@S1ASCN@" value="${s1asCN}"/>
-        </replace>
-
         <antcall target="webclient-war-common">
             <param name="hasWebclient" value="yes"/>
         </antcall>
@@ -92,6 +81,7 @@
             <jvmarg value="-Djavax.net.ssl.trustStore=${mytruststore.db.file}"/>
             <jvmarg value="-Djavax.net.ssl.keyStorePassword=${ssl.password}"/>
             <jvmarg value="-Djavax.net.ssl.trustStorePassword=${ssl.password}"/>
+            <jvmarg value="-Dsun.security.ssl.allowUnsafeRenegotiation=true"/>
 
             <arg value="${s1asCN}"/>
             <arg value="${https.port}"/>

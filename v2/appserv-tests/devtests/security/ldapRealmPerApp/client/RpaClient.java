@@ -5,16 +5,9 @@
 
 package shopping;
 
-import java.io.*;
-import java.util.*;
-import javax.ejb.EJBHome;
 import javax.naming.*;
 import javax.rmi.PortableRemoteObject;
-import org.omg.CORBA.ORB;
 import com.sun.enterprise.security.LoginContext;
-//import com.sun.enterprise.security.LoginException;
-import java.rmi.RemoteException;
-import java.security.*;
 
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
@@ -39,9 +32,9 @@ public class RpaClient {
         Context ic = null;
         LoginContext lc=null;
         RpaHome home=null;
-        String testId = "Sec::LDAP realm";
+        String testId = "Sec:: LDAP realm";
     	try{
-            stat.addDescription("Security::LDAP realm");
+            stat.addDescription("Security:: LDAP realm");
 	    ic = new InitialContext();
             // create EJB using factory from container 
             java.lang.Object objref = ic.lookup("rpaLoginBean");

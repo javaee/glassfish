@@ -256,12 +256,12 @@
 </target>
 
     <target name="setup-ssl" depends="init-common,env-check">
-      <antcall target="import-ldap-server-cert"/>
+<!--      <antcall target="import-ldap-server-cert"/>-->
       <antcall target="create-auth-ldaprealm-ssl"/>
       <antcall target="create-ldap-usrgrps"/>
     </target>
     <target name="unsetup-ssl" depends="init-common,env-check">
-      <antcall target="delete-ldap-server-cert"/>
+<!--      <antcall target="delete-ldap-server-cert"/>-->
       <antcall target="delete-auth-ldaprealm"/>
       <antcall target="delete-ldap-usrgrps"/>
     </target>

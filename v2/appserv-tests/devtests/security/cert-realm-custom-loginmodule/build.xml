@@ -54,8 +54,6 @@
     </target>
 
     <target name="run" depends="init-common,init-security-util">
-        <!-- <property name="myhttps.host" value="localhost"/>
-         <property name="myhttps.port" value="8181"/> -->
         <java classname="devtests.security.WebSSLClient">
             <sysproperty key="javax.net.debug1" value="ssl,handshake,data,trustmanager"   />
             <sysproperty key="sun.security.ssl.allowUnsafeRenegotiation" value="true"   />
@@ -82,8 +80,6 @@
 
     <target name="setup" depends="init-common,prepare-store-common">
         <antcall target="env-check" />
-<!--        <antcall target="generate-ca-client-certs-pe" />
-        <antcall target="generate-ca-client-certs-ee" />-->
 	<copy file="${assemble.dir}/test-${appname}.jar"
             todir="${env.S1AS_HOME}/lib"/>
 	<copy file="${admin.domain.dir}/${admin.domain}/config/login.conf"
@@ -120,102 +116,5 @@
 	<delete file="${env.S1AS_HOME}/lib/test-${appname}.jar" failonerror="false"/>
         <antcall target="restart-server-instance-common"/>
     </target>
-
-
-
-
-<target name="generate-ca-client-certs-pe" depends="init-common" unless="isNSS">
-<!--client side -->
- <!--   <exec executable="${java.home}/bin/keytool" failonerror="false">
-        <arg line="-delete -alias testcert1 -keystore ${mykeystore.db.file} -storepass ${ssl.password}"/>
-    </exec>-->
-<!--    <exec executable="${java.home}/bin/keytool" failonerror="false">
-        <arg line="-delete -alias alice -keystore ${mytruststore.db.file} -storepass ${ssl.password}"/>
-    </exec>
-
-    <antcall target="import-cert-jks">
-        <param name="cert.alias" value="alice"/>
-        <param name="keystore.file" value="${mytruststore.db.file}"/>
-        <param name="cert.file" value="${env.APS_HOME}/devtests/security/cert-realm-custom-loginmodule/certificate/alice.pfx"/>
-    </antcall>-->
-
-  <!--  <antcall target="convert-pkcs12-to-jks">
-        <param name="pkcs12.file" value="${env.APS_HOME}/devtests/security/cert-realm-custom-loginmodule/certificate/testcert1.p12"/>
-        <param name="pkcs12.pass" value="${ssl.password}"/>
-        <param name="jks.file" value="${mykeystore.db.file}"/>
-        <param name="jks.pass" value="${ssl.password}"/>
-    </antcall>-->
-
-<!-- server side -->
-    <exec executable="${java.home}/bin/keytool" failonerror="false">
-        <arg line="-delete -alias iroot -keystore ${admin.domain.dir}/${admin.domain}/config/cacerts.jks -storepass ${ssl.password}"/>
-    </exec>
-    <exec executable="${java.home}/bin/keytool" failonerror="true">
-        <arg line="-import -trustcacerts -alias iroot  -storepass '${ssl.password}' -noprompt "/>
-        <arg value="-file"/>
-        <arg file="${env.APS_HOME}/devtests/security/cert-realm-custom-loginmodule/certificate/iroot.cer"/>
-        <arg value="-keystore"/>
-        <arg file="${admin.domain.dir}/${admin.domain}/config/cacerts.jks"/>
-    </exec>
-</target>
-
-<!-- 
-   generate selfsigned CA cert testca, and testcert1(issued by/signed by testca) in ${nss.db.dir};
-   export testca    to testca.rfc and then import to ${mytruststore.db.file};
-   export testcert1 to testcert.p12 and then import it to ${mykeystore.db.file}.
--->   
-<target name="generate-ca-client-certs-ee" depends="init-common" if="isNSS">
-    <mkdir dir="build"/>
-    <echo message="${ssl.password}"   file="build/passfile"/>
-    <echo message="anything"          file="build/seedfile"/>
-
-    <exec executable="${env.S1AS_HOME}/lib/certutil" failonerror="false">
-        <env key="LD_LIBRARY_PATH" path="${env.S1AS_HOME}/lib"/>
-        <arg line="-D -n testcert1  -d ${nss.db.dir}"/>
-    </exec>
-    <exec executable="${env.S1AS_HOME}/lib/certutil" failonerror="false">
-        <env key="LD_LIBRARY_PATH" path="${env.S1AS_HOME}/lib"/>
-        <arg line="-D -n testca -d ${nss.db.dir}"/>
-    </exec>
-
-    <exec executable="${env.S1AS_HOME}/lib/certutil" failonerror="true">
-        <env key="LD_LIBRARY_PATH" path="${env.S1AS_HOME}/lib"/>
-        <arg line="-S -x -n testca -s 'CN=testca, O=Sun, OU=JWS, L=Santa Clara, C=US' -t TCu,Pu,Pu -m 1111 -v 1111  -f ./build/passfile -z ./build/seedfile -d ${nss.db.dir}"/>
-    </exec>
-    <exec executable="${env.S1AS_HOME}/lib/certutil" failonerror="true" output="build/iroot.cer">
-        <env key="LD_LIBRARY_PATH" path="${env.S1AS_HOME}/lib"/>
-        <arg line="-L -n testca -a"/>
-        <arg value="-d"/>
-        <arg file="${nss.db.dir}"/>
-    </exec>
-    <antcall target="import-cert-jks">
-        <param name="cert.alias" value="testca"/>
-        <param name="keystore.file" value="${mytruststore.db.file}"/>
-        <param name="cert.file" value="build/alice.pfx"/>
-    </antcall>
-
-    <exec executable="${env.S1AS_HOME}/lib/certutil" failonerror="true">
-        <env key="LD_LIBRARY_PATH" path="${env.S1AS_HOME}/lib"/>
-        <arg line="-S -n testcert1 -s 'CN=testcert1, O=Sun, OU=JWS, L=Santa Clara, C=US' -t Pu,Pu,Pu -m 2111 -v 2111  -c testca -f ./build/passfile -z ./build/seedfile -d ${nss.db.dir}"/>
-    </exec>
-    <antcall target="export-cert-p12-nss">
-        <param name="cert.file" value="${env.APS_HOME}/devtests/security/cert-realm-custom-loginmodule/build/testcert1.p12"/>
-        <param name="cert.dir" value="${nss.db.dir}"/>
-        <param name="certdb.pwd" value="${ssl.password}"/>
-        <param name="cert.pwd" value="${ssl.password}"/>
-        <param name="cert.nickname" value="testcert1"/>
-    </antcall>
-    <antcall target="convert-pkcs12-to-jks">
-        <param name="pkcs12.file" value="${env.APS_HOME}/devtests/security/cert-realm-custom-loginmodule/build/testcert1.p12"/>
-        <param name="pkcs12.pass" value="${ssl.password}"/>
-        <param name="jks.file" value="${mykeystore.db.file}"/>
-        <param name="jks.pass" value="${ssl.password}"/>
-    </antcall>
-    <exec executable="${env.S1AS_HOME}/lib/certutil" failonerror="false">
-        <env key="LD_LIBRARY_PATH" path="${env.S1AS_HOME}/lib"/>
-        <arg line="-D -n testcert1  -d ${nss.db.dir}"/>
-    </exec>
-    
-</target>
 
 </project>

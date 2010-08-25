@@ -17,6 +17,7 @@
     
    <target name="all">
         <antcall target="build"/>
+        <antcall target="create-ldap-usrgrps" />
         <antcall target="setup"/>
         <antcall target="deploy"/>
         <antcall target="run"/>
@@ -24,12 +25,13 @@
         <antcall target="sslsetup"/>
         <antcall target="run"/>
         <antcall target="undeploy"/>
+        <antcall target="delete-ldap-usrgrps" />
         <antcall target="sslunsetup"/>
     </target>
 
-    <target name="plainldaprealm" depends="build, setup, deploy, run, undeploy, unsetup"/>
+    <target name="plainldaprealm" depends="build, create-ldap-usrgrps, setup, deploy, run, undeploy, delete-ldap-usrgrps, unsetup"/>
 
-    <target name="sslldaprealm" depends="build, sslsetup, deploy, run, undeploy, sslunsetup"/>
+    <target name="sslldaprealm" depends="build, create-ldap-usrgrps, sslsetup, deploy, run, undeploy, delete-ldap-usrgrps, sslunsetup"/>
 
     <target name="clean" depends="init-common">
         <delete dir="${build.classes.dir}"/>
@@ -37,7 +39,6 @@
     </target>
 
     <target name="setup" depends="init-common">
-        <antcall target="create-ldap-usrgrps" />
         <property name="directory.server.url" value="ldap://${directory.server.host}:${directory.server.port}"/>
         <echo message="directory=${directory.server.url}" file="temp.txt"/>
         <replace file="temp.txt" token=":" value="\\:"/>
@@ -54,11 +55,9 @@
             <param name="admin.command" value="create-auth-realm" />
             <param name="operand.props" value="--classname com.sun.enterprise.security.auth.realm.ldap.LDAPRealm --property directory=${directory}:base-dn=${base-dn}:jaas-context=ldapRealm:com.sun.jndi.ldap.connect.pool.debug=fine:com.sun.jndi.ldap.connect.pool.maxsize=2 ldap"/>
         </antcall>
-<!--        <antcall target="reconfig-common"/>-->
     </target>
 
     <target name="sslsetup" depends="init-common">
-        <antcall target="create-ldap-usrgrps" />
         <property name="directory.server.sslurl" value="ldaps://${directory.server.host}:${directory.server.sslport}"/>
         <echo message="ssldirectory=${directory.server.sslurl}" file="temp.txt"/>
         <replace file="temp.txt" token=":" value="\\:"/>
@@ -76,11 +75,6 @@
             <param name="admin.command" value="create-auth-realm" />
             <param name="operand.props" value="--classname com.sun.enterprise.security.auth.realm.ldap.LDAPRealm --property directory=${ssldirectory}:base-dn=${base-dn}:jaas-context=ldapRealm:com.sun.jndi.ldap.connect.pool.debug=fine:com.sun.jndi.ldap.connect.pool.maxsize=2 ldap"/>
         </antcall>
-
-        <antcall target="set-jvm-options"/>
-
-<!--        <antcall target="reconfig-common"/>-->
-        <antcall target="restart"/>
     </target>
 
     <target name="compile" depends="clean">
@@ -102,12 +96,14 @@
 
 
     <target name="run" depends="init-common">
+      <echo message="PASSWORD=j2ee/shingwai" file="${build.classes.dir}/passfile.txt" />
       <exec executable="${APPCLIENT}">
         <arg line="-client ${assemble.dir}/${appname}AppClient.jar"/>
-        <arg line="-textauth"/>
+        <arg line="-textauth" />
         <arg line="-user j2ee/shingwai"/>
-        <arg line="-password j2ee/shingwai"/>
+        <arg line="-passwordfile ${build.classes.dir}/passfile.txt"/>
       </exec>
+      <delete file="${build.classes.dir}/passfile.txt" />
     </target>
 
     <target name="undeploy" depends="init-common">
@@ -115,45 +111,16 @@
     </target>
 
     <target name="unsetup" depends="init-common">
-        <antcall target="delete-ldap-usrgrps" />
         <antcall target="asadmin-common">
             <param name="admin.command" value="delete-auth-realm" />
             <param name="operand.props" value="ldap" />
         </antcall>
-<!--        <antcall target="reconfig-common"/>-->
     </target>
 
     <target name="sslunsetup" depends="init-common">
-        <antcall target="delete-ldap-usrgrps" />
         <antcall target="asadmin-common">
             <param name="admin.command" value="delete-auth-realm" />
             <param name="operand.props" value="ldap" />
-        </antcall>
-        <antcall target="unset-jvm-options"/>
-<!--        <antcall target="reconfig-common"/>-->
-        <antcall target="restart"/>
-    </target>
-
-    <target name="processStoreLocation" depends="init-common">
-        <echo message="trustStore=${directory.server.certjks}" file="temp.txt"/>
-        <replace file="temp.txt" token="\" value="/"/>
-        <replace file="temp.txt" token=":" value="\\:"/>
-        <loadproperties srcFile="temp.txt"/>
-        <echo message="${trustStore}"/>
-        <delete file="temp.txt"/>
-    </target>
-
-    <target name="set-jvm-options" depends="processStoreLocation">
-        <antcall target="asadmin-common">
-            <param name="admin.command" value="create-jvm-options" />
-            <param name="operand.props" value="-Djavax.net.ssl.trustStore=${trustStore}" />
-        </antcall>
-    </target>
-
-    <target name="unset-jvm-options" depends="processStoreLocation">
-        <antcall target="asadmin-common">
-            <param name="admin.command" value="delete-jvm-options" />
-            <param name="operand.props" value="-Djavax.net.ssl.trustStore=${trustStore}" />
         </antcall>
     </target>
 

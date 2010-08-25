@@ -5,8 +5,6 @@
 package com.sun.s1asdev.security.jmac.https;
 
 import java.util.Map;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.security.cert.X509Certificate;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
@@ -16,34 +14,31 @@ import javax.security.auth.message.AuthStatus;
 import javax.security.auth.message.MessageInfo;
 import javax.security.auth.message.MessagePolicy;
 import javax.security.auth.message.callback.CallerPrincipalCallback;
-import javax.security.auth.message.callback.PasswordValidationCallback;
 import javax.security.auth.message.module.ServerAuthModule;
 import javax.security.auth.x500.X500Principal;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
-import sun.misc.BASE64Decoder;
-
 public class HttpsTestAuthModule implements ServerAuthModule {
+
     private CallbackHandler handler = null;
 
     public void initialize(MessagePolicy requestPolicy,
-               MessagePolicy responsePolicy,
-               CallbackHandler handler,
-               Map options)
-               throws AuthException {
+            MessagePolicy responsePolicy,
+            CallbackHandler handler,
+            Map options)
+            throws AuthException {
         this.handler = handler;
     }
 
     public Class[] getSupportedMessageTypes() {
-        return new Class[] { HttpServletRequest.class, HttpServletResponse.class };
+        return new Class[]{HttpServletRequest.class, HttpServletResponse.class};
     }
 
     public AuthStatus validateRequest(MessageInfo messageInfo,
-                               Subject clientSubject,
-                               Subject serviceSubject) throws AuthException {
+            Subject clientSubject,
+            Subject serviceSubject) throws AuthException {
 
 
         if (!isMandatory(messageInfo)) {
@@ -53,14 +48,14 @@ public class HttpsTestAuthModule implements ServerAuthModule {
         X500Principal x500Principal = null;
         try {
             HttpServletRequest request =
-                (HttpServletRequest)messageInfo.getRequestMessage();
+                    (HttpServletRequest) messageInfo.getRequestMessage();
             X509Certificate certs[] =
-                (X509Certificate[])request.getAttribute(
-                "javax.servlet.request.X509Certificate");
+                    (X509Certificate[]) request.getAttribute(
+                    "javax.servlet.request.X509Certificate");
             if (certs == null || certs.length < 1) {
                 System.out.println("javax...certs is null or empty");
-                certs =  (X509Certificate[])request.getAttribute(
-                    "org.apache.coyote.request.X509Certificate");
+                certs = (X509Certificate[]) request.getAttribute(
+                        "org.apache.coyote.request.X509Certificate");
             }
             System.out.println("certs: " + certs);
             if (certs != null && certs.length > 0) {
@@ -69,15 +64,15 @@ public class HttpsTestAuthModule implements ServerAuthModule {
             }
 
             CallerPrincipalCallback cpCallback =
-                new CallerPrincipalCallback(clientSubject, x500Principal);
+                    new CallerPrincipalCallback(clientSubject, x500Principal);
             System.out.println("Subject before invoking callbacks: " + clientSubject);
-            handler.handle(new Callback[] { cpCallback });
+            handler.handle(new Callback[]{cpCallback});
             System.out.println("Subject after invoking callbacks: " + clientSubject);
 
             request.setAttribute("MY_NAME", getClass().getName());
             System.out.println("login success: " + x500Principal);
             return AuthStatus.SUCCESS;
-        } catch(Throwable t) {
+        } catch (Throwable t) {
             System.out.println("login fails: " + x500Principal);
             t.printStackTrace();
             return AuthStatus.SEND_FAILURE;
@@ -90,11 +85,11 @@ public class HttpsTestAuthModule implements ServerAuthModule {
     }
 
     public void cleanSubject(MessageInfo messageInfo, Subject subject)
-        throws AuthException {
+            throws AuthException {
     }
 
     private boolean isMandatory(MessageInfo messageInfo) {
-        return Boolean.valueOf((String)messageInfo.getMap().get(
-            "javax.security.auth.message.MessagePolicy.isMandatory"));
+        return Boolean.valueOf((String) messageInfo.getMap().get(
+                "javax.security.auth.message.MessagePolicy.isMandatory"));
     }
 }
