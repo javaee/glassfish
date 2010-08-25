@@ -42,8 +42,10 @@
                         com.sun.enterprise.deploy.shared; \
                         com.sun.enterprise.deployment.deploy.shared; \
                         org.glassfish.loader.util; \
-                        org.glassfish.deployment.common; version=${project.osgi.version}
+                        org.glassfish.deployment.common; \
+                        org.glassfish.deployment.monitor; version=${project.osgi.version} 
                         
 DynamicImport-Package: \
+                        org.glassfish.flashlight.provider, \
                         org.objectweb.asm;password=GlassFish, \
                         org.objectweb.asm.commons;password=GlassFish

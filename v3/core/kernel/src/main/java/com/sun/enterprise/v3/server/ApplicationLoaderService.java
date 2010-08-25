@@ -74,6 +74,9 @@ import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.deployment.SnifferManager;
 import org.glassfish.internal.api.*;
+import org.glassfish.external.probe.provider.PluginPoint;
+import org.glassfish.external.probe.provider.StatsProviderManager;
+import org.glassfish.deployment.monitor.DeploymentLifecycleStatsProvider;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 
@@ -160,6 +163,10 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
         }catch(Exception e){
             logger.log(Level.WARNING, "optionalpkg.error", e);
         }
+
+        DeploymentLifecycleStatsProvider dlsp = new DeploymentLifecycleStatsProvider();
+        StatsProviderManager.register("deployment", PluginPoint.SERVER,
+            "deployment/lifecycle", dlsp);
 
         Domain domain = habitat.getComponent(Domain.class);
         systemApplications = domain.getSystemApplications();

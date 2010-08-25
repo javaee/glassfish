@@ -147,6 +147,24 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable, Pro
      */
     public void setWebContainer(String value) throws PropertyVetoException;
 
+   /**
+     * Gets the value of the deployment property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute (defaultValue="OFF")
+    @Pattern(regexp="(OFF|LOW|HIGH)")
+    public String getDeployment();
+
+    /**
+     * Sets the value of the webContainer property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    public void setDeployment(String value) throws PropertyVetoException;
+
     /**
      * Gets the value of the transactionService property.
      *

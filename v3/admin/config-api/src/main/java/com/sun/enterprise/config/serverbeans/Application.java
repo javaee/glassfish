@@ -80,7 +80,9 @@ public interface Application extends Injectable, ApplicationName, PropertyBag {
     public static final String APPCLIENT_SNIFFER_TYPE = "appclient";
     public static final String JPA_SNIFFER_TYPE = "jpa";
     public static final String WEBSERVICE_SNIFFER_TYPE = "webservices";
+    public static final String EAR_SNIFFER_TYPE = "ear";
     public static final String APPLICATION = "application";
+    public static final String EXTERNAL_MODULE_TYPE = "external";
 
     /**
      * Gets the value of the contextRoot property.

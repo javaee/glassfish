@@ -51,6 +51,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import org.glassfish.deployment.common.*;
+import org.glassfish.deployment.monitor.DeploymentLifecycleProbeProvider;
 import org.glassfish.hk2.classmodel.reflect.Parser;
 import org.glassfish.hk2.classmodel.reflect.ParsingContext;
 import org.glassfish.hk2.classmodel.reflect.Types;
@@ -89,6 +90,7 @@ import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.component.PreDestroy;
+import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.SingleConfigCode;
@@ -114,7 +116,7 @@ import java.lang.instrument.ClassFileTransformer;
  */
 @Service
 @Scoped(Singleton.class)
-public class ApplicationLifecycle implements Deployment {
+public class ApplicationLifecycle implements Deployment, PostConstruct {
 
     private static final String[] UPLOADED_GENERATED_DIRS = new String [] {"policy", "xml", "ejb", "jsp"};
 
@@ -161,6 +163,14 @@ public class ApplicationLifecycle implements Deployment {
         return engineInfo.getDeployer();
     }
 
+    protected DeploymentLifecycleProbeProvider 
+        deploymentLifecycleProbeProvider = null;
+
+
+    public void postConstruct() {
+        deploymentLifecycleProbeProvider = 
+            new DeploymentLifecycleProbeProvider();
+    }
 
     /**
      * Returns the ArchiveHandler for the passed archive abstraction or null
@@ -387,6 +397,8 @@ public class ApplicationLifecycle implements Deployment {
         } finally {
             if (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS) {
                 events.send(new Event<ApplicationInfo>(Deployment.DEPLOYMENT_SUCCESS, appInfo));
+                deploymentLifecycleProbeProvider.applicationDeployedEvent(appName, getApplicationType(appInfo));
+
             } else {
                 events.send(new Event<DeploymentContext>(Deployment.DEPLOYMENT_FAILURE, context));
             }
@@ -850,6 +862,7 @@ public class ApplicationLifecycle implements Deployment {
         }
         if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
             events.send(new Event(Deployment.UNDEPLOYMENT_SUCCESS, context));
+            deploymentLifecycleProbeProvider.applicationUndeployedEvent(appName, getApplicationType(info));
         } else {            
             events.send(new Event(Deployment.UNDEPLOYMENT_FAILURE, context));            
         }
@@ -1828,5 +1841,23 @@ public class ApplicationLifecycle implements Deployment {
             }
         }
         return false;
+    }
+
+    private String getApplicationType(ApplicationInfo appInfo) {
+        for (Sniffer sniffer : appInfo.getSniffers()) {
+            String moduleType = sniffer.getModuleType();
+            if (moduleType.equals(Application.EAR_SNIFFER_TYPE)) {
+                return Application.EAR_SNIFFER_TYPE;
+            } else if (moduleType.equals(Application.WEB_SNIFFER_TYPE)) {
+                return Application.WEB_SNIFFER_TYPE;
+            } else if (moduleType.equals(Application.EJB_SNIFFER_TYPE)) {
+                return Application.EJB_SNIFFER_TYPE;
+            } else if (moduleType.equals(Application.APPCLIENT_SNIFFER_TYPE)) {
+                return Application.APPCLIENT_SNIFFER_TYPE;
+            } else if (moduleType.equals(Application.CONNECTOR_SNIFFER_TYPE)) {
+                return Application.CONNECTOR_SNIFFER_TYPE;
+            }
+        }
+        return Application.EXTERNAL_MODULE_TYPE;
     }
 }
