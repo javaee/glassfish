@@ -94,6 +94,10 @@ public class ListSubComponentsCommand implements AdminCommand {
     @Param(optional=true, defaultValue="false")
     private Boolean resources = false;
 
+    //hidden parameter for internal use only. 
+    @Param(optional=true, defaultValue="false")
+    private Boolean suppressNilOutput = false;
+
     @Inject
     public Deployment deployment;
 
@@ -203,7 +207,7 @@ public class ListSubComponentsCommand implements AdminCommand {
             part.addProperty(key, subComponentsMap.get(key));
         }
 
-        if (subComponents.size() == 0) {
+        if (subComponents.size() == 0 && !suppressNilOutput) {
             part.setMessage(localStrings.getLocalString("listsubcomponents.no.elements.to.list", "Nothing to List."));
         }
 

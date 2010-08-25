@@ -279,11 +279,12 @@ public class ListComponentsCommand  implements AdminCommand {
 
         final ParameterMap parameters = new ParameterMap();
         parameters.add("DEFAULT", appName);
+        parameters.add("suppressNilOutput", "true");
         parameters.add("resources", resources.toString());
 
         inv.parameters(parameters).execute();
 
-        ActionReport.MessagePart subPart = subReport.getTopMessagePart();       
+        ActionReport.MessagePart subPart = subReport.getTopMessagePart();
         for (ActionReport.MessagePart childPart: subPart.getChildren()) {
             ActionReport.MessagePart actualChildPart = part.addChild();
             actualChildPart.setMessage("  " + childPart.getMessage());
