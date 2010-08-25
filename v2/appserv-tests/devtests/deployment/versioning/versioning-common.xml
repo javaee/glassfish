@@ -88,21 +88,21 @@
 </target>
 
 <!--
-  Deploys the given version with JSR88
+  Deploys the given version with JSR88 API that use a File
   @param ${versionExpression} (optional)
   @param ${xmlVersionIdentifier} (optional)
 -->
 <target name="deploy.version.jsr88" depends="prepare.version.jsr88,common.deploy.jsr88"/>
 
 <!--
-  Deploys the given version with JSR88. Use inputstream.
+  Deploys the given version with the JSR88 API that use an Inputstream.
   @param ${versionExpression} (optional)
   @param ${xmlVersionIdentifier} (optional)
 -->
 <target name="deploy.version-stream.jsr88" depends="prepare.version.jsr88,common.deploy-stream.jsr88"/>
 
 <!--
-  Redeploys the given version with JSR88
+  Redeploys the given version with JSR88 API that use a File
   @param ${versionExpression} (optional)
 -->
 <target name="redeploy.version.jsr88" depends="prepare.version.jsr88">
@@ -113,7 +113,7 @@
 </target>
 
 <!--
-  Redeploys the given version with JSR88. Use inputstream.
+  Redeploys the given version with the JSR88 API that use a Inputstream.
   @param ${versionExpression} (optional)
 -->
 <target name="redeploy.version-stream.jsr88" depends="prepare.version.jsr88">

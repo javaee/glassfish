@@ -4,11 +4,13 @@
 
 <!-- runs only on PE mode-->
 <target name="autodeploy.scenario" if="PE">
+    <!-- deploys by using the autodeploy mechanism -->
     <antcall target="autodeploy.version">
         <param name="versionExpression" value="${identifier.2}"/>
         <param name="xmlVersionIdentifier" value="${identifier.2}"/>
     </antcall>
 
+    <!-- test that the deployed version running is ${identifier.2} -->
     <antcall target="test.registred">
         <param name="versionExpression" value="${identifier.2}"/>
     </antcall>
@@ -60,33 +62,37 @@
         <param name="versionExpression" value="${identifier.2}"/>
     </antcall>
 
-    <!-- Simple deploiment using jsr88. File mode -->
+    <!-- deploys by using the 1st jsr88 api -->
     <antcall target="deploy.version.jsr88">
         <param name="versionExpression" value="${identifier.1}"/>
         <param name="xmlVersionIdentifier" value="${identifier.1}"/>
     </antcall>
 
+    <!-- test that the deployed version running is ${identifier.1} -->
     <antcall target="test.registred">
         <param name="versionExpression" value="${identifier.1}"/>
         <param name="description" value="xml.version(3) deploy jsr88"/>
     </antcall>
 
+    <!-- deploys by using the 1st jsr88 api (file mode)-->
     <antcall target="deploy.version.jsr88">
         <param name="versionExpression" value="${identifier.4}"/>
         <param name="xmlVersionIdentifier" value="${identifier.4}"/>
     </antcall>
 
+    <!-- test that the deployed version running is ${identifier.4} -->
     <antcall target="test.registred">
         <param name="versionExpression" value="${identifier.4}"/>
         <param name="description" value="xml.version(4) deploy jsr88"/>
     </antcall>
 
-    <!-- Force deployment using jsr88. File mode -->
+    <!-- redeploys by using the 1st jsr88 api (File mode) -->
     <antcall target="redeploy.version.jsr88">
         <param name="versionExpression" value="${identifier.4}"/>
         <param name="xmlVersionIdentifier" value="${identifier.4}"/>
     </antcall>
 
+    <!-- test that the deployed version running is ${identifier.4} -->
     <antcall target="test.registred">
         <param name="versionExpression" value="${identifier.4}"/>
         <param name="description" value="xml.version(5) redeploy jsr88"/>
@@ -94,6 +100,30 @@
 
     <antcall target="autodeploy.scenario">
         <param name="description" value="xml.version(6) autodeploy"/>
+    </antcall>
+
+    <!-- deploys by using the 2nd jsr88 api (InputStream mode) -->
+    <antcall target="deploy.version-stream.jsr88">
+        <param name="versionExpression" value="${identifier.3}"/>
+        <param name="xmlVersionIdentifier" value="${identifier.3}"/>
+    </antcall>
+
+    <!-- test that the deployed version running is ${identifier.3} -->
+    <antcall target="test.registred">
+        <param name="versionExpression" value="${identifier.3}"/>
+        <param name="description" value="xml.version(7) deploy-stream jsr88"/>
+    </antcall>
+
+    <!-- redeploys by using the 2nd jsr88 api (InputStream mode) -->
+    <antcall target="redeploy.version-stream.jsr88">
+        <param name="versionExpression" value="${identifier.3}"/>
+        <param name="xmlVersionIdentifier" value="${identifier.2}"/>
+    </antcall>
+
+    <!-- test that the deployed version running is ${identifier.3} -->
+    <antcall target="test.registred">
+        <param name="versionExpression" value="${identifier.3}"/>
+        <param name="description" value="xml.version(8) deploy-stream jsr88"/>
     </antcall>
 </target>
 
