@@ -50,9 +50,8 @@
                     saveMsgProviderInfo(edit="true" attrMap="#{pageSession.valueMap}" configName="#{pageSession.configName}" )
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    // Need to set the objName with AMX URL till setProxyProperties in REST is done
-                    setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/security-service/message-security-config[#{pageSession.valueMap['msgSecurityName']}],type=provider-config,name=#{pageSession.valueMap['Name']}");
-                    setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{false}" );
+                    javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
+		    gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="POST" data="#{requestScope.tmpJSON}" result="#{requestScope.restResponse}");
                     prepareSuccessfulMsg();
                     gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />

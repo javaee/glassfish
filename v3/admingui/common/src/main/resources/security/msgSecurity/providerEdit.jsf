@@ -85,9 +85,8 @@
         mapPut(map="#{pageSession.valueMap}"  key="defaultProvider" value="false");
         if ("#{pageSession.msgSecurityMap['defaultClientProvider']}=true || #{pageSession.msgSecurityMap['defaultProvider']}=true")
             mapPut(map="#{pageSession.valueMap}"  key="defaultProvider" value="true");
-        setPageSessionAttribute(key="objectNameStr",
-            value="amx:pp=/domain/configs/config[#{pageSession.configName}]/security-service/message-security-config[#{pageSession.msgSecurityName}],type=provider-config,name=#{pageSession.Name}");
-        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+        gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="GET" result="#{requestScope.propTable}");
+        setPageSessionAttribute(key="tableList" value="#{requestScope.propTable.data.extraProperties.properties}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/security/msgSecurity/providerEdit.jsf?name=#{pageSession.encodedName}&msgSecurityName=#{pageSession.encodedMsgSecurityName}&configName=#{pageSession.encodedConfigName}");
         setPageSessionAttribute(key="cPage" value="#{request.contextPath}/common/security/msgSecurity/providers.jsf?name=#{pageSession.msgSecurityName}&configName=#{configName}");
         getRequestValue(key="cancelPage" 
