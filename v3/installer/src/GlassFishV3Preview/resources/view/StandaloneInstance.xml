@@ -175,24 +175,9 @@ validatePortValues(String inputPort)  {
 
 run() {
 
-       if (System.getProperty("os.name").toLowerCase().startsWith("mac")) {
-                ConfigHelper.setValue
-                        ("JDKSelection.directory.SELECTED_JDK",
-                        System.getProperty("java.home"));
- 		List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
-		activeModes.add("IS_MAC");
-     }
-       if (System.getProperty("os.name").toLowerCase().startsWith("aix")) {
-                ConfigHelper.setValue
-                        ("JDKSelection.directory.SELECTED_JDK",
-                        System.getProperty("java.home"));
- 		List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
-		activeModes.add("IS_AIX");
-     }
       wizard.enableNext(true);
       wizard.enableCancel(true);
       wizard.enableBack(true);
-      List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
       setFirstTab = getComponentByName(content, "INSTANCE_NAME");
       setFirstTab.requestFocus();
 
