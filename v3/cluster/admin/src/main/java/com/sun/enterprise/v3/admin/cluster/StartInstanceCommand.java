@@ -143,6 +143,15 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
             report.setMessage(msg);
             return;
         }
+
+        if (instance.isRunning()) {
+            msg = Strings.get("start.instance.already.running", instanceName);
+            logger.info(msg);
+            report.setMessage(msg);
+            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+            return;
+        }
+
         noderef = helper.getNode(instance);
         if(!StringUtils.ok(noderef)) {
             msg = Strings.get("missingNodeRef", instanceName);

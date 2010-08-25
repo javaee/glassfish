@@ -41,9 +41,16 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ArrayBlockingQueue;
+
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.CommandException;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -54,6 +61,9 @@ import org.glassfish.api.ActionReport.ExitCode;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.grizzly.config.dom.ThreadPool;
+
 
 /*
  * ClusterCommandHelper is a helper class that knows how to execute an
@@ -130,61 +140,107 @@ class ClusterCommandHelper {
                                             clusterName));
             return report;
         }
+        int nInstances = targetServers.size();
 
         // We will save the name of the instances that worked and did
         // not work so we can summarize our results.
         StringBuilder failedServerNames = new StringBuilder();
         StringBuilder succeededServerNames = new StringBuilder();
+        String msg;
         ReportResult reportResult = new ReportResult();
         boolean failureOccurred = false;
 
         // Save command output to return in ActionReport
         StringBuilder output = new StringBuilder();
 
-        CommandInvocation invocation = runner.getCommandInvocation(
-                        command, report);
+
+        // Optimize the oder of server instances to avoid clumping on nodes
+        logger.fine(String.format("Original instance list %s",
+                serverListToString(targetServers)));
+        targetServers = optimizeServerListOrder(targetServers);
+
+        // Holds responses from the threads running the command
+        ArrayBlockingQueue<CommandRunnable> responseQueue = 
+                    new ArrayBlockingQueue<CommandRunnable>(nInstances);
+
+        // Make the thread pool use the smaller of the number of instances
+        // or half the admin thread pool size.
+        int adminThreadPoolSize = getAdminThreadPoolSize();
+        int threadPoolSize = Math.min(nInstances, adminThreadPoolSize / 2);
+        if (threadPoolSize < 1)
+            threadPoolSize = 1;
+
+        ExecutorService threadPool = Executors.newFixedThreadPool(threadPoolSize);
 
         if (map == null) {
             map = new ParameterMap();
         }
 
-        // XXX dipol
-        // We sequentially loop through the servers and execute the command.
-        // We really should spin off threads so we can do some of these
-        // in parallel. Rumor is the cluster command replication code will
-        // provide a utility that we will be able to leverage.
+        logger.info(String.format(
+            "Executing %s on %d instances using a thread pool of size %d: %s",
+            command, nInstances, threadPoolSize,
+            serverListToString(targetServers)));
+
+        // Loop through instance names, construct the command for each
+        // instance name, and hand it off to the threadpool.
         for (Server server : targetServers) {
-            String msg;
+            String iname = server.getName();
 
+            ParameterMap instanceParameterMap = new ParameterMap(map);
             // Set the instance name as the operand for the commnd
-            map.set("DEFAULT", server.getName());
-            invocation.parameters(map);
+            instanceParameterMap.set("DEFAULT", iname);
 
-            msg = command + " " + server.getName();
+            ActionReport instanceReport = runner.getActionReport("plain");
+            instanceReport.setActionExitCode(ExitCode.SUCCESS);
+            CommandInvocation invocation = runner.getCommandInvocation(
+                        command, instanceReport);
+            invocation.parameters(instanceParameterMap);
+
+            msg = command + " " + iname;
             logger.info(msg);
             if (verbose) {
                 output.append(msg).append(NL);
             }
-            report.setActionExitCode(ExitCode.SUCCESS);
-            invocation.execute();
-            if (report.getActionExitCode() != ExitCode.SUCCESS) {
+
+            // Wrap the command invocation in a runnable and hand it off
+            // to the thread pool
+            CommandRunnable cmdRunnable = new CommandRunnable(invocation,
+                    instanceReport, responseQueue);
+            cmdRunnable.setName(iname);
+            threadPool.execute(cmdRunnable);
+        }
+
+        logger.fine(String.format("%s commands queued, waiting for responses",
+                command));
+
+        // Now go get results from the response queue.
+        for (int n = 0; n < nInstances; n++) {
+            CommandRunnable cmdRunnable = null;
+            try {
+                cmdRunnable = responseQueue.take();
+            } catch (InterruptedException e) {
+            }
+            String iname = cmdRunnable.getName();
+            ActionReport instanceReport = cmdRunnable.getActionReport();
+            logger.fine(String.format("Instance %d of %d (%s) has responded with %s",
+                    n+1, nInstances, iname, instanceReport.getActionExitCode()));
+            if (instanceReport.getActionExitCode() != ExitCode.SUCCESS) {
                 // Bummer, the command had an error. Log and save output
                 failureOccurred = true;
-                failedServerNames.append(server.getName()).append(" ");
-                reportResult.failedServerNames.add(server.getName());
-                msg = report.getMessage();
+                failedServerNames.append(iname).append(" ");
+                reportResult.failedServerNames.add(iname);
+                msg = iname + ": " + instanceReport.getMessage();
                 logger.severe(msg);
                 output.append(msg).append(NL);
             } else {
                 // Command worked. Note that too.
-                succeededServerNames.append(server.getName()).append(" ");
-                reportResult.succeededServerNames.add(server.getName());
+                succeededServerNames.append(iname).append(" ");
+                reportResult.succeededServerNames.add(iname);
             }
         }
 
         report.setActionExitCode(ExitCode.SUCCESS);
         
-        // too error prone to parse report message to get list of failed or succeeded server names.
         if (failureOccurred) {
             report.setResultType(List.class, reportResult.failedServerNames);
         } else {
@@ -216,10 +272,105 @@ class ClusterCommandHelper {
         return report;
     }
 
+    /**
+     * Get the size of the admin threadpool
+     */
+    private int getAdminThreadPoolSize() {
+
+        final int DEFAULT_POOL_SIZE = 5;
+
+        // Get the DAS configuratoin
+        Config config = domain.getConfigNamed("server-config");
+        if (config == null)
+            return DEFAULT_POOL_SIZE;
+
+        // Get the list of thread pools
+        List<ThreadPool> pools = config.getThreadPools().getThreadPool();
+
+        // Find the http-thread-pool
+        ThreadPool target = null;
+        for (ThreadPool pool : pools) {
+            if ("http-thread-pool".equals(pool.getName())) {
+                target = pool;
+            }
+        }
+
+        if (target == null && !pools.isEmpty()) {
+            target = pools.get(0);
+        }
+
+        int n = Integer.parseInt(target.getMaxThreadPoolSize());
+
+        return n;
+    }
+
+    /**
+     * Optimize the order of the list of servers. Basically we
+     * want the server list to be ordered such that we rotate over
+     * the nodes. For example we want: n1, n2, n3, n1, n2, n3
+     * not: n1, n1, n2, n2, n3, n3. This is to spread the load
+     * of operations across nodes.
+     *
+     * @param original a list of servers
+     * @return a list of servers with a more optimal order
+     */
+    List<Server> optimizeServerListOrder(List<Server> original) {
+
+        // Don't bother with all this if it's just two instances
+        if (original.size() < 3) {
+            return original;
+        }
+
+        // There must be a more efficient way to do this, but this is what
+        // we do. We first distribute all the server instances into a table
+        // that is indexed by node name. Then we snake over that table to
+        // create the final list.
+
+        // Key is the node name, value is the list of servers on that node
+        HashMap<String, List<Server>> serverTable =
+                new HashMap<String, List<Server>>();
+
+        // Distribute servers into serverTable
+        int count = 0;
+        for (Server server : original) {
+            String nodeName = server.getNode();
+
+            List<Server> serverList = serverTable.get(nodeName);
+            if (serverList == null) {
+                serverList = new ArrayList<Server>();
+                serverTable.put(nodeName, serverList);
+            }
+            serverList.add(server);
+            count++;
+        }
+
+        // Now snake through server table moving server entries from the
+        // table to the final optimized list.
+        List<Server> optimized = new ArrayList<Server>(count);
+        Set<String> nodes = serverTable.keySet();
+        while (count > 0) {
+            for (String nodeName : nodes) {
+                List<Server> serverList = serverTable.get(nodeName);
+                if (! serverList.isEmpty()) {
+                    optimized.add(serverList.remove(0));
+                    count--;
+                }
+            }
+        }
+
+        return optimized;
+    }
+
+    private String serverListToString(List<Server> servers) {
+        StringBuilder sb = new StringBuilder();
+        for (Server s : servers) {
+            sb.append(s.getNode() + "-" + s.getName() + " ");
+        }
+        return sb.toString();
+    }
+
     static public class ReportResult {
-        final public List<String> succeededServerNames = new LinkedList<String>();
-        final public List<String> failedServerNames = new LinkedList<String>();
+        final public List<String> succeededServerNames = new ArrayList<String>();
+        final public List<String> failedServerNames = new ArrayList<String>();
     }
 }
-
-

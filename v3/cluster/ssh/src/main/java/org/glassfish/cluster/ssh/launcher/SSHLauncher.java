@@ -114,8 +114,8 @@ public class SSHLauncher {
     private String password;
 
     // Password before it has been expanded. Used for debugging.
-    private String rawPassword;
-    private String rawKeyPassPhrase;
+    private String rawPassword = null;
+    private String rawKeyPassPhrase = null;
 
     @Inject
     private Habitat habitat;
@@ -144,6 +144,8 @@ public class SSHLauncher {
         if (sshAuth != null) {
             userName = sshAuth.getUserName();
             this.keyFile = sshAuth.getKeyfile();
+            this.rawPassword = sshAuth.getPassword();
+            this.rawKeyPassPhrase = sshAuth.getKeyPassphrase();
         }
         try {
             port = Integer.parseInt(connector.getSshPort());
@@ -151,7 +153,8 @@ public class SSHLauncher {
             port = 22;
         }
 
-        init(userName, this.host, port, sshAuth.getPassword(), keyFile, sshAuth.getKeyPassphrase(), logger);
+        init(userName, this.host, port, this.rawPassword, keyFile,
+                this.rawKeyPassPhrase, logger);
 
     }
 
