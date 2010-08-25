@@ -49,22 +49,16 @@
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs,type=config,name=#{pageSession.configName}");
         setPageSessionAttribute(key="childType" value="transaction-service");
-        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=transaction-service");
-        
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
         setPageSessionAttribute(key="childType" value="transaction-service");
         setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/transaction-service");
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
         
-        //REST-TODO take care of getChildrenTable
-        //getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+        gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="GET" result="#{requestScope.propTable}");
+        setPageSessionAttribute(key="tableList" value="#{requestScope.propTable.data.extraProperties.properties}");
         
-        gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json", method="GET", result="#{requestScope.propTable}");
-        setPageSessionAttribute(key="tableList", value="#{requestScope.propTable.data.extraProperties.properties}");
-
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jts/transactionService.jsf?configName=#{pageSession.configName}");
         setPageSessionAttribute(key="convertToFalseList" value={"automaticRecovery"});
         //set the following for including buttons.inc
