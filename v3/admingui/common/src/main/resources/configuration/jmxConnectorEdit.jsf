@@ -52,7 +52,6 @@
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setSessionAttribute(key="jmxConnectorTab" value="jmxConnectorEdit");
-        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=admin-service");
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/admin-service");
         setPageSessionAttribute(key="rest-api" value="true");
@@ -62,8 +61,6 @@
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/configuration/jmxConnectorEdit.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
         setPageSessionAttribute(key="skipAttrsList" value={"SystemJmxConnectorName", "Name", "Type"});
 
-	// FIXME: I don't think the following line is used anymore... -Ken
-        //setPageSessionAttribute(key="objectNameStr2" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/admin-service,type=jmx-connector,name=#{pageSession.valueMap['systemJmxConnectorName']}")
         setPageSessionAttribute(key="selfUrl2", value="#{pageSession.parentUrl}/admin-service/jmx-connector/#{pageSession.valueMap['systemJmxConnectorName']}");
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}.json", valueMap="#{pageSession.valueMap2}");
         setPageSessionAttribute(key="convertToFalseList2" value={"SecurityEnabled"});
