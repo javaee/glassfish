@@ -155,28 +155,28 @@ public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
             String value = gms.getPingProtocolTimeoutInMillis();
             if (value != null) {
                 gms.setGroupDiscoveryTimeoutInMillis(value);
+                gms.setPingProtocolTimeoutInMillis(null);
             } // else null for server-config
-            gms.setPingProtocolTimeoutInMillis(null);
 
             FailureDetection fd = gms.getFailureDetection();
             fd = t.enroll(fd);
             value = gms.getFdProtocolTimeoutInMillis();
             if (value != null){
                 fd.setHeartbeatFrequencyInMillis(value);
+                gms.setFdProtocolTimeoutInMillis(null);
             } // else  null for server-config
-            gms.setFdProtocolTimeoutInMillis(null);
 
             value = gms.getFdProtocolMaxTries();
             if (value != null) {
                 fd.setMaxMissedHeartbeats(value);
+                gms.setFdProtocolMaxTries(null);
             } // else null for server config
-            gms.setFdProtocolMaxTries(null);
 
             value = gms.getVsProtocolTimeoutInMillis();
             if (value != null) {
                 fd.setVerifyFailureWaittimeInMillis(value);
-            } // else null for server-config
-            gms.setVsProtocolTimeoutInMillis(null);
+                gms.setVsProtocolTimeoutInMillis(null);
+            } // else null for server-config           
 
             Property prop = gms.getProperty("failure-detection-tcp-retransmit-timeout");
             if (prop != null && prop.getValue() != null ) {
@@ -186,8 +186,12 @@ public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
             } //else v3.1 default value for VerifyFailureConnectTimeoutInMillis is sufficient.
 
             // remove v2.1 attributes that are no longer needed.  No info to transfer to v3.1 gms config.
-            gms.setMergeProtocolMaxIntervalInMillis(null);
-            gms.setMergeProtocolMinIntervalInMillis(null);
+            if (gms.getMergeProtocolMinIntervalInMillis() != null) {
+                gms.setMergeProtocolMinIntervalInMillis(null);
+            }
+            if (gms.getMergeProtocolMaxIntervalInMillis() != null) {
+                gms.setMergeProtocolMaxIntervalInMillis(null);
+            }
 
             return config;
         }
