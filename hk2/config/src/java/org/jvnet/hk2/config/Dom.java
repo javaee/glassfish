@@ -88,7 +88,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
          * Returns a deep copy of itself.
          * @return a deep copy of itself.
          */
-        protected abstract Child deepCopy();
+        protected abstract Child deepCopy(Dom parent);
 
         /**
          * Returns true if it is an empty child, meaning
@@ -111,9 +111,9 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         }
 
         @Override
-        protected Child deepCopy() {
+        protected Child deepCopy(Dom parent) {
 
-            return new NodeChild(name, dom.copy());
+            return new NodeChild(name, dom.copy(parent));
         }
 
         @Override
@@ -140,7 +140,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         }
 
         @Override
-        protected Child deepCopy() {
+        protected Child deepCopy(Dom parent) {
             return new LeafChild(name, value);
         }
 
@@ -254,23 +254,24 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
      * Copy constructor, used to get a deep copy of the passed instance
      * @param source the instance to copy
      */
-    public Dom(Dom source) {
-        this(source.habitat, source.document, source.parent, source.model);
+    public Dom(Dom source, Dom parent) {
+        this(source.habitat, source.document, parent, source.model);
         List<Child> newChildren = new ArrayList<Child>();
         for (Child child : source.children) {
-            newChildren.add(child.deepCopy());
+            newChildren.add(child.deepCopy(this));
         }
         setChildren(newChildren);
         attributes.putAll(source.attributes);
     }
 
     /**
-     * Returns a copy of itself.
+     * Returns a copy of itself providing the parent for the new copy.
      *
-     * @return a copy of itself.
+     * @param parent the parent instance for the cloned copy
+     * @return the cloned copy
      */
-    protected Dom copy() {
-        return new Dom(this);
+    protected <T extends Dom> T copy(T parent) {
+        return (T) new Dom(this, parent);
     }
     
     /**

@@ -117,19 +117,21 @@ public class ConfigBean extends Dom implements ConfigView {
      *
      * @param source  the instance to copy 
      */
-    public ConfigBean(ConfigBean source) {
-        super(source);
+    public ConfigBean(Dom source, Dom parent) {
+        super(source, parent);
     }
 
     /**
-     * Returns a copy of itself
+     * Returns a copy of itself providing the parent for the new copy.
      *
-     * @return a copy of itself.
+     * @param parent the parent instance for the cloned copy
+     * @return the cloned copy
      */
     @Override
-    protected ConfigBean copy() {
-        return new ConfigBean(this);
+    protected <T extends Dom> T copy(T parent) {
+        return (T) new ConfigBean(this, parent);
     }
+
 
     /**
      * Returns an optional feature of the ConfigBean. Optional features are implemented
