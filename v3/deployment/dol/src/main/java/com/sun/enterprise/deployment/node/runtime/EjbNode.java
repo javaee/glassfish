@@ -166,6 +166,8 @@ public class EjbNode extends DeploymentDescriptorNode {
             element.getQName())) {
             descriptor.getIASEjbExtraDescriptors().setCheckpointedMethods(
                 value);
+        } else if(RuntimeTagNames.PER_REQUEST_LOAD_BALANCING.equals(element.getQName())) {
+            descriptor.getIASEjbExtraDescriptors().setPerRequestLoadBalancing(Boolean.valueOf(value));
         }
         else super.setElementValue(element, value);
     }
@@ -337,7 +339,9 @@ public class EjbNode extends DeploymentDescriptorNode {
                 new CheckpointAtEndOfMethodNode();
             checkpointNode.writeDescriptor(ejbNode, RuntimeTagNames.CHECKPOINT_AT_END_OF_METHOD, checkpointMethodDesc);
         }
-	
+        if (ejbDescriptor.getIASEjbExtraDescriptors().getPerRequestLoadBalancing() != null) {
+            appendTextChild(ejbNode, RuntimeTagNames.PER_REQUEST_LOAD_BALANCING, String.valueOf(ejbDescriptor.getIASEjbExtraDescriptors().getPerRequestLoadBalancing()));
+        }
         // availability-enabled
         setAttribute(ejbNode, RuntimeTagNames.AVAILABILITY_ENABLED, (String) ejbDescriptor.getIASEjbExtraDescriptors().getAttributeValue(ejbDescriptor.getIASEjbExtraDescriptors().AVAILABILITY_ENABLED));
 

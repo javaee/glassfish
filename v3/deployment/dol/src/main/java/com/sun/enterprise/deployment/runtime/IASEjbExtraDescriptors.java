@@ -142,9 +142,18 @@ public class IASEjbExtraDescriptors extends RuntimeDescriptor {
     private int cmtTimeoutInSeconds = 0;
 
     /**
-     * Specifes the thread pool to be used for this ejb's invocation
+     * Specifies the thread pool to be used for this ejb's invocation
      */
     private String useThreadPoolId;
+
+    /**
+     * a true/false flag that controls the per-request load balancing
+     * behavior of EJB 2.x/3.x Remote client invocations on a stateless session
+     * bean. If set to true, per-request load balancing is enabled for the
+     * associated stateless session bean.  If set to false or not set,
+     * per-request load balancing is not enabled.
+     */
+    private Boolean perRequestLoadBalancing;
 
     // contants used to parse the checkpointedMethods 
     private final static String METHODS_DELIM = ";";
@@ -447,6 +456,14 @@ public class IASEjbExtraDescriptors extends RuntimeDescriptor {
             return flushMethodDescriptor.isFlushEnabledFor(methodDesc);
         }
         return false;
+    }
+
+    public Boolean getPerRequestLoadBalancing() {
+        return perRequestLoadBalancing;
+    }
+
+    public void setPerRequestLoadBalancing(Boolean perRequestLoadBalancing) {
+        this.perRequestLoadBalancing = perRequestLoadBalancing;
     }
 
      /**

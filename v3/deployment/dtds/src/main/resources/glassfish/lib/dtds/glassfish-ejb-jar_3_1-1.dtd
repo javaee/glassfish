@@ -24,7 +24,7 @@ System unique object id. Automatically generated and updated at deployment/redep
 This is the root element describing all the runtime of an ejb-jar in the application.
 -->
 <!ELEMENT enterprise-beans (name?, unique-id?, ejb*, pm-descriptors?, cmp-resource?,
-	message-destination*, webservice-description*)>
+	message-destination*, webservice-description*, property*)>
 
 <!--
 This is the element describing runtime bindings for a single ejb.
@@ -52,7 +52,7 @@ Additional properties applicable to a message-driven bean:
                cmp?, principal?, mdb-connection-factory?, jms-durable-subscription-name?, 
                jms-max-messages-load?, ior-security-config?, is-read-only-bean?, 
                refresh-period-in-seconds?, commit-option?, cmt-timeout-in-seconds?, use-thread-pool-id?, gen-classes?, 
-               bean-pool?, bean-cache?, mdb-resource-adapter?, webservice-endpoint*, flush-at-end-of-method?, checkpointed-methods?, checkpoint-at-end-of-method?)>
+               bean-pool?, bean-cache?, mdb-resource-adapter?, webservice-endpoint*, flush-at-end-of-method?, checkpointed-methods?, checkpoint-at-end-of-method?, per-request-load-balancing?)>
 
 <!-- 
 This attribute is only applicable for stateful session bean 
@@ -70,6 +70,14 @@ Used in ejb, method
 The text in this element is a true/false flag for read only beans.
 -->
 <!ELEMENT is-read-only-bean (#PCDATA)>
+
+<!--
+This element contains a true/false flag that controls the per-request load balancing
+behavior of EJB 2.x/3.x Remote client invocations on a stateless session bean. If set
+to true, per-request load balancing is enabled for the associated stateless session
+bean.  If set to false or not set, per-request load balancing is not enabled. 
+-->
+<!ELEMENT per-request-load-balancing (#PCDATA)>
 
 <!--
 This is the root element which binds an ejb reference to a jndi name.
