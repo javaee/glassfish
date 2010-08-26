@@ -103,7 +103,8 @@ public abstract class OSGiContainer {
         ActionReport report = getReport();
         osgiAppInfo = deployJavaEEArtifacts(b, report);
         if (osgiAppInfo == null) {
-            throw new Exception("Deployment of " + b + " failed because of following reason: " + report.getMessage());
+            throw new Exception("Deployment of " + b + " failed because of following reason: " + report.getMessage(),
+                    report.getFailureCause());
         }
         try {
             applications.put(b, osgiAppInfo);

@@ -58,6 +58,9 @@ import java.io.IOException;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.config.serverbeans.*;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleReference;
+import org.osgi.service.packageadmin.PackageAdmin;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -73,14 +76,26 @@ public class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
     }
 
     @Override
-    protected DeployCommandParameters getDeployParams(ReadableArchive archive) throws Exception {
-        DeployCommandParameters parameters = super.getDeployParams(archive);
+    protected WAB makeArchive() {
+        Bundle host = getBundle();
+        Bundle[] fragments = getPackageAdmin().getFragments(host);
+        return new WAB(host, fragments);
+    }
+
+    private PackageAdmin getPackageAdmin() {
+        BundleContext ctx = BundleReference.class.cast(getClass().getClassLoader()).getBundle().getBundleContext();
+        return PackageAdmin.class.cast(ctx.getService(ctx.getServiceReference(PackageAdmin.class.getName())));
+    }
+
+    @Override
+    protected DeployCommandParameters getDeployParams() throws Exception {
+        DeployCommandParameters parameters = super.getDeployParams();
         // Set the contextroot explicitly, else it defaults to name.
         try
         {
             // We expect WEB_CONTEXT_PATH to be always present.
             // This is mandated in the spec.
-            parameters.contextroot = archive.getManifest().
+            parameters.contextroot = getArchive().getManifest().
                     getMainAttributes().getValue(org.glassfish.osgiweb.Constants.WEB_CONTEXT_PATH);
         }
         catch (IOException e)
@@ -92,14 +107,14 @@ public class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
             throw new Exception(Constants.WEB_CONTEXT_PATH +
                     " manifest header is mandatory");
         }
-        parameters.virtualservers = getVirtualServers(archive);
+        parameters.virtualservers = getVirtualServers();
         return parameters;
     }
 
-    private String getVirtualServers(ReadableArchive archive) {
+    private String getVirtualServers() {
         String virtualServers = null;
         try {
-            virtualServers = archive.getManifest().getMainAttributes().getValue(
+            virtualServers = getArchive().getManifest().getMainAttributes().getValue(
                     org.glassfish.osgiweb.Constants.VIRTUAL_SERVERS);
         } catch (Exception e) {
             // ignore

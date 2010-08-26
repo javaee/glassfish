@@ -40,10 +40,12 @@
 
 package org.glassfish.osgiweb;
 
+import org.apache.naming.resources.FileDirContext;
 import org.glassfish.osgijavaeebase.OSGiDeploymentContext;
 import org.glassfish.osgijavaeebase.BundleClassLoader;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.web.loader.ResourceEntry;
 import org.glassfish.web.loader.WebappClassLoader;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -51,18 +53,22 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.OpsParams;
 import org.osgi.framework.*;
 
+import java.io.FileFilter;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.IOException;
 import java.io.File;
 
 import com.sun.enterprise.module.common_impl.CompositeEnumeration;
+
+import javax.naming.directory.DirContext;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -124,38 +130,7 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
             }
         };
 
-        finalClassLoader = new WebappClassLoader(parent){
-
-            // Since we don't set URLs, we need to return appropriate URLs
-            // for JSPC to work. See WebappLoader.setClassPath().
-            @Override
-            public URL[] getURLs()
-            {
-                return convert((String)bundle.getHeaders().
-                        get(org.osgi.framework.Constants.BUNDLE_CLASSPATH));
-            }
-            private URL[] convert(String bcp) {
-                if (bcp == null || bcp.isEmpty()) bcp=".";
-                List<URL> urls = new ArrayList<URL>();
-                //Bundle-ClassPath entries are separated by ; or ,
-                StringTokenizer entries = new StringTokenizer(bcp, ",;");
-                String entry;
-                while (entries.hasMoreTokens()) {
-                    entry = entries.nextToken().trim();
-                    if (entry.startsWith("/")) entry = entry.substring(1);
-                    try
-                    {
-                        URL url = new File(getSourceDir(), entry).toURI().toURL();
-                        urls.add(url);
-                    }
-                    catch (MalformedURLException e)
-                    {
-                        logger.logp(Level.WARNING, "OSGiDeploymentContext", "convert", "Failed to add {0} as classpath because of", new Object[]{entry, e.getMessage()});
-                    }
-                }
-                return urls.toArray(new URL[0]);
-            }
-        };
+        finalClassLoader = new WABClassLoader(parent);
         // This does not work. Find out why TempBundleClassLoader loads a
         // separate copy of Globals.class.
 //        shareableTempClassLoader = new WebappClassLoader(
@@ -165,4 +140,104 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
         WebappClassLoader.class.cast(finalClassLoader).start();
     }
 
+    private class WABClassLoader extends WebappClassLoader {
+        /*
+         * We need this class loader for variety of reasons explained below:
+         * a) GlassFish default servlet (DefaultServlet.java), the servlet responsible for serving static content
+         * fails to serve any static content from META-INF/resources/ of WEB-INF/lib/*.jar, if the classloader is not
+         * an instanceof WebappClassLoader.
+         * b) DefaultServlet also expects WebappClassLoader's resourceEntries to be properly populated.
+         * c)   
+         */
+        public WABClassLoader(ClassLoader parent) {
+            super(parent);
+            FileDirContext r = new FileDirContext();
+            File base = getSourceDir();
+            r.setDocBase(base.getAbsolutePath());
+
+            setResources(r);
+            addRepository("WEB-INF/classes/", new File(base, "WEB-INF/classes/"));
+            File libDir = new File(base, "WEB-INF/lib");
+            if (libDir.exists()) {
+                int baseFileLen = base.getPath().length();
+                for (File file : libDir.listFiles(
+                        new FileFilter() {
+                            public boolean accept(File pathname) {
+                                String fileName = pathname.getName();
+                                return (fileName.endsWith(".jar") && pathname.isFile());
+                            }
+                        }))
+                {
+                    try {
+                        addJar(file.getPath().substring(baseFileLen),
+                                new JarFile(file), file);
+                    } catch (Exception e) {
+                        // Catch and ignore any exception in case the JAR file
+                        // is empty.
+                    }
+                }
+            }
+            setWorkDir(getScratchDir("jsp")); // We set the same working dir as set in WarHandler
+        }
+
+        // Since we don't set URLs, we need to return appropriate URLs
+        // for JSPC to work. See WebappLoader.setClassPath().
+        @Override
+        public URL[] getURLs()
+        {
+            return convert((String)bundle.getHeaders().
+                    get(org.osgi.framework.Constants.BUNDLE_CLASSPATH));
+        }
+
+        private URL[] convert(String bcp) {
+            if (bcp == null || bcp.isEmpty()) bcp=".";
+            List<URL> urls = new ArrayList<URL>();
+            //Bundle-ClassPath entries are separated by ; or ,
+            StringTokenizer entries = new StringTokenizer(bcp, ",;");
+            String entry;
+            while (entries.hasMoreTokens()) {
+                entry = entries.nextToken().trim();
+                if (entry.startsWith("/")) entry = entry.substring(1);
+                try
+                {
+                    URL url = new File(getSourceDir(), entry).toURI().toURL();
+                    urls.add(url);
+                }
+                catch (MalformedURLException e)
+                {
+                    logger.logp(Level.WARNING, "OSGiDeploymentContext", "convert", "Failed to add {0} as classpath because of", new Object[]{entry, e.getMessage()});
+                }
+            }
+            return urls.toArray(new URL[0]);
+        }
+
+        @Override
+        public URL getResource(String name) {
+            // META-INF/resources punch-in
+            if (name.startsWith("META-INF/resources/")) {
+                URL url = super.findResource(name);
+                if (url != null) {
+                    // Locating the repository for special handling in the case
+                    // of a JAR
+                    ResourceEntry entry = resourceEntries.get(name);
+                    try {
+                        String repository = entry.codeBase.toString();
+                        if ((repository.endsWith(".jar"))
+                                && !(name.endsWith(".class"))
+                                && !(name.endsWith(".jar"))) {
+                            // Copy binary content to the work directory if not present
+                            File resourceFile = new File(loaderDir, name);
+                            url = resourceFile.toURL();
+                        }
+                    } catch (Exception e) {
+                        // Ignore
+                    }
+                    return url;
+                }
+            } else {
+                return super.getResource(name);
+            }
+            return null;
+        }
+    }
 }

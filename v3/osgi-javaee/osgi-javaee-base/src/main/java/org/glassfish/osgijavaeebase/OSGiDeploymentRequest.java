@@ -69,6 +69,7 @@ public abstract class OSGiDeploymentRequest
             Logger.getLogger(OSGiUndeploymentRequest.class.getPackage().getName());
 
     private ActionReport reporter;
+
     private Bundle b;
     private boolean dirDeployment;
     private Deployment deployer;
@@ -124,13 +125,23 @@ public abstract class OSGiDeploymentRequest
         //    use the bundle directly to create the archive.
         // 2. Prepare a context for deployment. This includes setting up
         // various deployment options, setting up of an ArchiveHandler,
-        // expansion of the archive, etc.
+        // expansion of the archive, etc. The archive needs to be expanded before we create
+        // deployment context, because in order to create WABClassLoader, we need to know
+        // expansion directory location, so that we can configure the repositories correctly.
+        // More over, we need to create the deployment options before expanding the archive, because
+        // we set application name = archive.getName(). If we explode first and then create OpsParams, then
+        // we will end up using the same name as used by "asadmin deploy --type=osgi" and eventually hit by
+        // issue #10536.
         // 3. Finally deploy and store the result in our inmemory map.
 
-        archive = new OSGiBundleArchive(b);
+        archive = makeArchive();
 
         // Set up a deployment context
-        OpsParams opsParams = getDeployParams(archive);
+        OpsParams opsParams = getDeployParams();
+
+        // expand if necessary, else set directory deployment to true
+        expandIfNeeded();
+
         dc = getDeploymentContextImpl(
                 reporter,
                 logger,
@@ -138,9 +149,14 @@ public abstract class OSGiDeploymentRequest
                 opsParams,
                 env,
                 b);
+    }
 
-        // expand if necessary, else set directory deployment to true
-        expandIfNeeded();
+    /**
+     * Factory method. Subclasses override this to create specialised Archive instance.
+     * @return
+     */
+    protected ReadableArchive makeArchive() {
+        return new OSGiBundleArchive(b);
     }
 
     protected abstract OSGiDeploymentContext getDeploymentContextImpl(ActionReport reporter, Logger logger, ReadableArchive archive, OpsParams opsParams, ServerEnvironmentImpl env, Bundle b) throws Exception;
@@ -195,7 +211,7 @@ public abstract class OSGiDeploymentRequest
         // Try to obtain a handle to the underlying archive.
         // First see if it is backed by a file or a directory, else treat
         // it as a generic bundle.
-        File file = makeFile(dc.getSource());
+        File file = makeFile(archive);
 
         // expand if necessary, else set directory deployment to true
         dirDeployment = file != null && file.isDirectory();
@@ -204,14 +220,14 @@ public abstract class OSGiDeploymentRequest
             logger.logp(Level.FINE, "OSGiDeploymentRequest", "expandIfNeeded",
                     "Archive is already expanded at = {0}", new Object[]{file});
             archive = archiveFactory.openArchive(file);
-            dc.setSource(archive);
             return;
         }
 
-        // ok we need to explode the directory somwhere and
+        // ok we need to explode the archive somwhere and
         // remember to delete it on shutdown
         // We can't use archive name as it can contain file separator, so
         // we shall use a temporary name
+        // TODO(Sahoo): Do it in Bundle private storage of the container
         File tmpFile = File.createTempFile("osgiapp", "");
 
         // create a directory in place of the tmp file.
@@ -228,7 +244,6 @@ public abstract class OSGiDeploymentRequest
             logger.logp(Level.INFO, "OSGiDeploymentRequest", "expand",
                     "Expanded at {0}", new Object[]{targetArchive.getURI()});
             archive = archiveFactory.openArchive(tmpFile);
-            dc.setSource(archive); // set the new archive as source.
         } else {
             throw new IOException("Not able to expand " + archive.getName() +
                     " in " + tmpFile);
@@ -253,15 +268,22 @@ public abstract class OSGiDeploymentRequest
         return null;
     }
 
-    protected DeployCommandParameters getDeployParams(ReadableArchive archive) throws Exception
+    protected DeployCommandParameters getDeployParams() throws Exception
     {
+        assert(archive != null);
         DeployCommandParameters parameters = new DeployCommandParameters();
         parameters.name = archive.getName();
-
         parameters.enabled = Boolean.TRUE;
         parameters.origin = DeployCommandParameters.Origin.deploy;
         parameters.force = false;
         return parameters;
     }
 
+    public Bundle getBundle() {
+        return b;
+    }
+
+    public ReadableArchive getArchive() {
+        return archive;
+    }
 }

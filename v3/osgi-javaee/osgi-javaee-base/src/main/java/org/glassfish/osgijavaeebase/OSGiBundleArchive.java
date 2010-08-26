@@ -48,15 +48,11 @@ import org.osgi.framework.Bundle;
 import static org.osgi.framework.Constants.BUNDLE_VERSION;
 import org.osgi.service.url.AbstractURLStreamHandlerService;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.*;
+import java.nio.ByteBuffer;
 import java.util.*;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.jar.JarInputStream;
-import java.util.jar.Manifest;
+import java.util.jar.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -238,7 +234,7 @@ public class OSGiBundleArchive implements ReadableArchive, URIable, Iterable<Bun
     }
 
     public boolean isDirectory(String name) {
-        return b.getEntryPaths(name) != null;
+        return b.getEntry(name.endsWith("/") ? name : name + "/") != null;
     }
 
     public Manifest getManifest() throws IOException {
@@ -340,6 +336,53 @@ public class OSGiBundleArchive implements ReadableArchive, URIable, Iterable<Bun
 
     public Iterator<BundleResource> iterator() {
         return new BundleResourceIterator();
+    }
+
+    /**
+     *
+     * @return a Jar format InputStream for this bundle's content
+     */
+    public InputStream getInputStream() throws IOException {
+        if (uri != null) {
+            return uri.toURL().openStream();
+        } else {
+            // create a JarOutputStream on the fly from the bundle's content
+            // Can we optimize by reading off Felix's cache? Investigate in future.
+            PipedInputStream is = new PipedInputStream();
+            final PipedOutputStream os = new PipedOutputStream(is);
+            new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        JarOutputStream jos = new JarOutputStream(os, getManifest());
+                        ByteBuffer buf = ByteBuffer.allocate(1024);
+                        for (String s : Collections.list(entries())) {
+                            if (s.equals(JarFile.MANIFEST_NAME)) continue; // we have already inserted manifest
+                            jos.putNextEntry(new JarEntry(s));
+                            if (!isDirectory(s)) {
+                                InputStream in = getEntry(s);
+                                try {
+                                    JarHelper.copy(in, jos, buf);
+                                } finally {
+                                    try {
+                                        in.close();
+                                    } catch (IOException e) {
+                                        // ignore
+                                    }
+                                }
+                            }
+                            jos.closeEntry();
+                        }
+                        jos.close();
+                        os.close();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
+                    }
+
+                }
+            }.start();
+            return is;
+        }
     }
 
     /**
@@ -496,13 +539,9 @@ public class OSGiBundleArchive implements ReadableArchive, URIable, Iterable<Bun
             }
         }
 
-        private ZipInputStream getZIS() {
-            try {
-                return new ZipInputStream(b.getEntry(distanceFromTop).openStream());
-            } catch (IOException e) {
-                // We don't expect this to occur
-                throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
-            }
+        private ZipInputStream getZIS() throws IOException {
+            // Since user can supply random entry and ask for an embedded archive, propagate the exception to user.
+            return new ZipInputStream(b.getEntry(distanceFromTop).openStream());
         }
 
         private Collection<String> getEntries() {
@@ -528,21 +567,21 @@ public class OSGiBundleArchive implements ReadableArchive, URIable, Iterable<Bun
 
         public long getEntrySize(String name) {
             if (exists(name)) {
-                ZipInputStream zis = getZIS();
+                ZipInputStream zis = null;
                 try {
+                    zis = getZIS();
                     while (true) {
-                        ZipEntry ze = null;
-                        try {
-                            ze = zis.getNextEntry();
-                            if (ze.getName().equals(name)) {
-                                return ze.getSize();
-                            }
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
+                        ZipEntry ze = zis.getNextEntry();
+                        if (name.equals(ze.getName())) {
+                            return ze.getSize();
                         }
                     }
-                } finally {
-                    closeZIS(zis);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }  finally {
+                    if (zis != null) {
+                        closeZIS(zis);
+                    }
                 }
             }
             return 0;
