@@ -49,7 +49,7 @@ public class JPAResourceProducerSingletonEJB_BusinessMethodProducer {
     EntityManagerFactory customerDatabasePersistenceUnit;
     
     @Produces @ProducedViaProducerMethod
-    public EntityManagerFactory getEMF(){
+    public EntityManagerFactory createEMF(){
         return customerDatabasePersistenceUnit;
     }
 }
