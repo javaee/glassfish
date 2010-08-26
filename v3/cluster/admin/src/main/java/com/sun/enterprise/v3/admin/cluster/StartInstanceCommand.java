@@ -321,6 +321,7 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
                 logger.warning(msg1);
             }
         } else {
+            humanVersionOfCommand.append(" " + instanceName);
             String msg1 = Strings.get("start.instance.failed",
                         instanceName, noderef, nodeHost );
             logger.warning(msg1);

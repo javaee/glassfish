@@ -105,7 +105,7 @@ public class UpdateNodeCommand implements AdminCommand {
     @Param(name = "sshkeypassphrase", optional = true, password=true)
      String sshkeypassphrase;
 
-    @Param(name = "type", optional=true, defaultValue="CONFIG")
+    @Param(name = "type", optional=true)
      String type;
 
     @Override
@@ -151,7 +151,8 @@ public class UpdateNodeCommand implements AdminCommand {
                         writeableNode.setNodeHost(nodehost);
                     if (installdir != null)
                         writeableNode.setInstallDir(installdir);
-                    writeableNode.setType(type);
+                    if (type != null)
+                        writeableNode.setType(type);
                     if (sshport != null || sshnodehost != null ||sshuser != null || sshkeyfile != null){
                         SshConnector sshC = writeableNode.getSshConnector();
                         if (sshC == null)  {

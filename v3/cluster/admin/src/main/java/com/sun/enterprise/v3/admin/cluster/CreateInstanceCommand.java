@@ -47,6 +47,7 @@ import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.Nodes;
 import com.sun.enterprise.config.serverbeans.ServerRef;
 import com.sun.enterprise.universal.process.ProcessManagerException;
+import com.sun.enterprise.util.StringUtils;
 import java.io.IOException;
 import org.glassfish.api.ActionReport;
 import com.sun.enterprise.universal.process.LocalAdminCommand;
@@ -110,6 +111,9 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
     @Param(name = "checkports", optional = true, defaultValue = "true")
     private boolean checkPorts;
 
+    @Param(name = "portbase", optional = true)
+    private String portBase;
+
     @Param(name = "systemproperties", optional = true, separator = ':')
     private String systemProperties;
 
@@ -165,6 +169,9 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
         }
         if(!checkPorts){
             map.add("checkports", "false");
+        }
+        if(StringUtils.ok(portBase)){
+            map.add("portbase", portBase);
         }
         map.add("systemproperties", systemProperties);
         map.add("DEFAULT", instance);
