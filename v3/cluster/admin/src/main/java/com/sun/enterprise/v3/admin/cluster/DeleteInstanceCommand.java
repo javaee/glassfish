@@ -132,6 +132,15 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
         dasPort = helper.getAdminPort(SystemPropertyConstants.DAS_SERVER_NAME);
         dasHost = System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY);
 
+        // make sure instance is not running.
+        if (instance.isRunning()){
+            msg = Strings.get("instance.shutdown", instanceName);
+            logger.warning(msg);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);
+            return;
+        }
+
         // We attempt to delete the instance filesystem first by running
         // _delete-instance-filesystem. We then remove the instance
         // from the config no matter if we could delete the files or not.
@@ -228,7 +237,7 @@ public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
                 noderef, instanceHost, ec.getMessage());
             // Log some extra info
             String msg1 = Strings.get("node.command.failed.ssh.details",
-                    noderef, instanceHost, ec.getCommandRun(), ec.getMessage(),
+                    noderef, instanceHost, ec.getCommandRun(), ec.getMessage(),  
                     ec.getSSHSettings());
             logger.warning(msg1);
             throw new IOException(msg2, ec);
