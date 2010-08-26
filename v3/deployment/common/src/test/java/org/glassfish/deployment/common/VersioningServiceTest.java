@@ -53,9 +53,6 @@ import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.types.Property;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import com.sun.enterprise.config.serverbeans.*;
-import org.glassfish.deployment.common.VersioningDeploymentException;
-import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
-import org.glassfish.deployment.common.VersioningDeploymentUtil;
 
 /**
  *
@@ -502,6 +499,53 @@ public class VersioningServiceTest {
         } catch (VersioningDeploymentSyntaxException ex) {
         }
         assertEquals(expectedResult, result);
+    }
+
+     /**
+     * Test of isUntagged method, of class VersioningDeploymentUtil.
+     */
+    @Test
+    public void testIsUntagged() {
+        try{
+            VersioningDeploymentUtil.isUntagged(APPLICATION_NAME+":");
+            fail("an exception has to be thrown when '"+APPLICATION_NAME+":' is supplied to isUntagged method");
+        }
+        catch(VersioningDeploymentException e){}
+        try{
+            VersioningDeploymentUtil.isUntagged(":BETA");
+            fail("an exception has to be thrown when ':BETA' is supplied to isUntagged method");
+        }
+        catch(VersioningDeploymentException e){}
+        try{
+            VersioningDeploymentUtil.isUntagged("::");
+            fail("an exception has to be thrown when '::' is supplied to isUntagged method");
+        }
+        catch(VersioningDeploymentException e){}
+        assertEquals(false, VersioningDeploymentUtil.isUntagged(null));
+        assertEquals(false, VersioningDeploymentUtil.isUntagged(APPLICATION_NAME+":*"));
+        assertEquals(false, VersioningDeploymentUtil.isUntagged(APPLICATION_NAME+":BETA*"));
+        assertEquals(false, VersioningDeploymentUtil.isUntagged(APPLICATION_NAME+":BETA"));
+        assertEquals(false, VersioningDeploymentUtil.isUntagged(APPLICATION_NAME+"::"));
+    }
+
+     /**
+     * Test of isVersionExpression method, of class VersioningDeploymentUtil.
+     */
+    @Test
+    public void testIsVersionExpression() {
+        assertEquals(false, VersioningDeploymentUtil.isVersionExpression(null));
+        assertEquals(false, VersioningDeploymentUtil.isVersionExpression(APPLICATION_NAME));
+        assertEquals(true, VersioningDeploymentUtil.isVersionExpression(APPLICATION_NAME+":BETA"));
+        assertEquals(true, VersioningDeploymentUtil.isVersionExpression(APPLICATION_NAME+"::"));
+    }
+
+    /**
+     * Test of isVersionIdentifier method, of class VersioningDeploymentUtil.
+     */
+    @Test
+    public void testIsVersionIdentifier() {
+        assertEquals(false, VersioningDeploymentUtil.isVersionIdentifier(APPLICATION_NAME+":*"));
+        assertEquals(false, VersioningDeploymentUtil.isVersionIdentifier(APPLICATION_NAME+":BETA*"));
     }
 
     // this class is used to fake the List<Application> 

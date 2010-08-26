@@ -206,10 +206,13 @@ public class CreateApplicationRefCommand implements AdminCommand {
 
                 // we provides warning messages
                 // if a versioned name has been provided to the command
-                if(!(VersioningDeploymentUtil.isUntagged(name))){
+                if(VersioningDeploymentUtil.isVersionExpression(name)){
                     ActionReport.MessagePart childPart = part.addChild();
                     childPart.setMessage(localStrings.getLocalString("appref.already.exists",
                             "Application reference {0} already exists in target {1}.", appName, target));
+                } else {
+                    // returns failure if an untagged name has been provided
+                    return;
                 }
             } else {
 

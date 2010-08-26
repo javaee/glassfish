@@ -116,7 +116,7 @@ public class PostCreateApplicationRefCommand implements AdminCommand {
             // if a versioned name has been provided to the command
             if(VersioningDeploymentUtil.isUntagged(name)){
                 report.setMessage(localStrings.getLocalString("appref.already.exists","Application reference {0} already exists in target {1}.", name, target));
-                report.setActionExitCode(ActionReport.ExitCode.WARNING);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             }
             return;
         }

@@ -82,16 +82,22 @@ public class VersioningDeploymentUtil {
 
         if(appName != null && !appName.isEmpty()){
             int colonIndex = appName.indexOf(EXPRESSION_SEPARATOR);
-            // if versioned
-            if (colonIndex != -1) {
-
-                // if appName is ending with a colon
-                if (colonIndex == (appName.length() - 1)) {
+            // if the appname contains a EXPRESSION_SEPARATOR
+            if (colonIndex >= 0){
+                if (colonIndex == 0) {
+                    // if appName is starting with a colon
                     throw new VersioningDeploymentSyntaxException(
-                            LOCALSTRINGS.getLocalString("versioning.deployment.invalid.appname",
+                            LOCALSTRINGS.getLocalString("versioning.deployment.invalid.appname1",
+                            "excepted application name before colon: {0}",
+                            appName));
+                } else if (colonIndex == (appName.length() - 1)) {
+                    // if appName is ending with a colon
+                    throw new VersioningDeploymentSyntaxException(
+                            LOCALSTRINGS.getLocalString("versioning.deployment.invalid.appname2",
                             "excepted version identifier after colon: {0}",
                             appName));
                 }
+                // versioned
                 return appName.substring(0, colonIndex);
             }
         }
@@ -114,16 +120,26 @@ public class VersioningDeploymentUtil {
     public static final String getExpression(String appName)
             throws VersioningDeploymentSyntaxException {
 
-        int colonIndex = appName.indexOf(EXPRESSION_SEPARATOR);
-        // if versioned
-        if (colonIndex != -1) {
-            if (colonIndex == (appName.length() - 1)) {
-                throw new VersioningDeploymentSyntaxException(
-                        LOCALSTRINGS.getLocalString("versioning.deployment.invalid.appname",
-                        "excepted version expression/identifier after colon: {0}",
-                        appName));
+        if(appName != null && !appName.isEmpty()) {
+            int colonIndex = appName.indexOf(EXPRESSION_SEPARATOR);
+            // if the appname contains a EXPRESSION_SEPARATOR
+            if (colonIndex >= 0){
+                if (colonIndex == 0) {
+                    // if appName is starting with a colon
+                    throw new VersioningDeploymentSyntaxException(
+                            LOCALSTRINGS.getLocalString("versioning.deployment.invalid.appname1",
+                            "excepted application name before colon: {0}",
+                            appName));
+                } else if (colonIndex == (appName.length() - 1)) {
+                    // if appName is ending with a colon
+                    throw new VersioningDeploymentSyntaxException(
+                            LOCALSTRINGS.getLocalString("versioning.deployment.invalid.appname2",
+                            "excepted version identifier after colon: {0}",
+                            appName));
+                }
+                // versioned
+                return appName.substring(colonIndex + 1, appName.length());
             }
-            return appName.substring(colonIndex + 1, appName.length());
         }
         // not versioned
         return null;
@@ -195,9 +211,7 @@ public class VersioningDeploymentUtil {
         if (listVersion.size() == 0) {
             return Collections.EMPTY_LIST;
         }
-
         String expressionVersion = getExpression(appName);
-        //List<String> matchedVersions = new ArrayList<String>(listVersion);
 
         // if using an untagged version
         if (expressionVersion == null) {
@@ -299,13 +313,35 @@ public class VersioningDeploymentUtil {
      */
     public static final Boolean isUntagged(String appName) {
         Boolean isUntagged = false;
-        try {
-            String untaggedName = VersioningDeploymentUtil.getUntaggedName(appName);
-            if (untaggedName != null && untaggedName.equals(appName)) {
-                isUntagged = true;
-            }
-        } catch (VersioningDeploymentSyntaxException e) {
+        String untaggedName = VersioningDeploymentUtil.getUntaggedName(appName);
+        if (untaggedName != null && untaggedName.equals(appName)) {
+            isUntagged = true;
         }
         return isUntagged;
+    }
+
+    /**
+     * Test if the given application name is a version expression
+     *
+     * @param appName the application name
+     * @return <code>true</code> if the appName is a version expression
+     */
+    public static final Boolean isVersionExpression(String appName) {
+        Boolean isVersionExpression = false;
+        if(appName != null){
+            isVersionExpression = !isUntagged(appName);
+        }
+        return isVersionExpression;
+    }
+
+    /**
+     * Test if the given application name is a version identifier.
+     * 
+     * @param appName the application name
+     * @return <code>true</code> if the appName is a version identifier
+     */
+    public static final Boolean isVersionIdentifier(String appName) {
+        return isVersionExpression(appName) &&
+                !appName.contains(EXPRESSION_WILDCARD);
     }
 }
