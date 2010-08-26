@@ -5,7 +5,8 @@ This test, when run with 'all' target performs the following steps:
   - start-database
   - startDomain
   - setup-database (add jdbc resource for the timer resource and set it as the timer resource)
-  - setup-cluster (create cluster of 2 instances, enable resources in the cluster, and deploy the application)
+  - setup-cluster (create cluster of 2 instances, enable  resource in the cluster)
+- deploy (deploy the application which automatically starts ''timer01'' randomly on one of the instances - check the instance logs to see which one)
 
 - run
   - run-test (verify that automatic timer is executed on one and only one instance)
@@ -18,8 +19,9 @@ This test, when run with 'all' target performs the following steps:
     Test verifies that after a small sleep the timers are executed on the other instance.
     Expected result: all 3 timers are executed on the other instance
 
+- undeploy
 - unsetup
-  - unsetup-cluster (undeploy the application, stop and delete the cluster)
+  - unsetup-cluster (stop and delete the cluster)
   - unsetup-database (remove resource and unset timer resource)
   - stop-database
   - stopDomain
