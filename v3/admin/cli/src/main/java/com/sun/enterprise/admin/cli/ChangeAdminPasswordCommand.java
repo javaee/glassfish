@@ -62,17 +62,13 @@ import org.glassfish.config.support.TargetType;
  */
 @Service(name = "change-admin-password")
 @Scoped(PerLookup.class)
-@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
-@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER})
+@Cluster({RuntimeType.DAS})
 public class ChangeAdminPasswordCommand extends CLICommand {
     private ParameterMap params;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ChangeAdminPasswordCommand.class);
 
-    @Param(name = "target", optional = true, defaultValue =
-        SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
-    private String target;
 
     /**
      * Require the user to actually type the passwords.

@@ -54,6 +54,7 @@ import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
+import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
@@ -62,11 +63,13 @@ import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.security.auth.realm.RealmsManager;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import java.util.List;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
+import org.glassfish.internal.api.Target;
 
 /**
  * Change Admin Password Command
@@ -81,8 +84,7 @@ import org.glassfish.config.support.TargetType;
 @Service(name="change-admin-password")
 @Scoped(PerLookup.class)
 @I18n("change.admin.password")
-@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
-@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER})
+@Cluster({RuntimeType.DAS})
 public class ChangeAdminPassword implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 
@@ -97,12 +99,8 @@ public class ChangeAdminPassword implements AdminCommand {
     @Param(name="username", primary=true)
     private String userName;
 
-    @Param(name = "target", optional = true, defaultValue =
-    SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
-    private String target;
-
-    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    private Config config;
+    @Inject
+    private Configs configs;
     @Inject
     private Domain domain;
 
@@ -120,14 +118,9 @@ public class ChangeAdminPassword implements AdminCommand {
         
         final ActionReport report = context.getActionReport();
 
-        Server targetServer = domain.getServerNamed(target);
-        if (targetServer!=null) {
-            config = domain.getConfigNamed(targetServer.getConfigRef());
-        }
-        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
-        if (cluster!=null) {
-            config = domain.getConfigNamed(cluster.getConfigRef());
-        }
+        List <Config> configList = configs.getConfig();
+        Config config = configList.get(0);
+
         SecurityService securityService = config.getSecurityService();
        
         AuthRealm fileAuthRealm = null;        
