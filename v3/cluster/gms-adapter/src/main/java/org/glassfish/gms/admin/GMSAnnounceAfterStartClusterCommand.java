@@ -63,7 +63,6 @@ import java.util.logging.Logger;
 @Supplemental(value = "start-cluster", on = Supplemental.Timing.After, ifFailure = FailurePolicy.Warn)
 @Scoped(PerLookup.class)
 public class GMSAnnounceAfterStartClusterCommand implements AdminCommand {
-    final static Logger logger = LogDomains.getLogger(GMSAnnounceAfterStartClusterCommand.class, LogDomains.CORE_LOGGER);
 
     @Inject
     private ServerEnvironment env;

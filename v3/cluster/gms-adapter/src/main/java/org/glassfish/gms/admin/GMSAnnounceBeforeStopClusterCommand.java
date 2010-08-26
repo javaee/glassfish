@@ -75,7 +75,6 @@ import java.util.logging.Logger;
 @Supplemental(value = "stop-cluster", on = Supplemental.Timing.Before, ifFailure = FailurePolicy.Warn)
 @Scoped(PerLookup.class)
 public class GMSAnnounceBeforeStopClusterCommand implements AdminCommand {
-    final static Logger logger = LogDomains.getLogger(GMSAnnounceBeforeStopClusterCommand.class, LogDomains.CORE_LOGGER);
 
     @Inject
     private ServerEnvironment env;

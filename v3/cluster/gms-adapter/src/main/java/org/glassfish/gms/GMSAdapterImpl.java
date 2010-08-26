@@ -85,6 +85,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
     private static final Logger logger =
         LogDomains.getLogger(GMSAdapterImpl.class, LogDomains.GMS_LOGGER);
+    
     private Level gmsLogLevel = Level.CONFIG;
     private static final String BEGINS_WITH = "^";
     private static final String GMS_PROPERTY_PREFIX = "GMS_";

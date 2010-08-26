@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,6 +41,7 @@
 package org.glassfish.gms;
 
 import com.sun.enterprise.config.serverbeans.*;
+import com.sun.logging.LogDomains;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
@@ -61,9 +62,12 @@ import java.beans.PropertyVetoException;
  * @author Bhakti Mehta
  *
  */
-
 @Service
 public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
+
+    private static final Logger logger =
+        LogDomains.getLogger(GMSConfigUpgrade.class, LogDomains.GMS_LOGGER);
+
     @Inject
     Clusters clusters;
 
@@ -86,8 +90,7 @@ public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
                 ConfigSupport.apply(new ClusterConfigCode(), cl);
             }
         } catch (Exception e) {
-            Logger.getAnonymousLogger().log(Level.SEVERE,
-                    "Failure while upgrading cluster data from V2 to V3", e);
+            logger.log(Level.SEVERE, "gmsupgrade.failed", e);
             throw new RuntimeException(e);
         }
     }
@@ -100,7 +103,7 @@ public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
                 ConfigSupport.apply(new GroupManagementServiceConfigCode(), c);
             }
         } catch (Throwable t) {
-            Logger.getAnonymousLogger().log(Level.SEVERE,"Failure while upgrading cluster data from V2 to V3", t);
+            logger.log(Level.SEVERE, "gmsupgrade.failed", t);
             throw new RuntimeException(t);
         }
     }
