@@ -4036,19 +4036,16 @@ public class Request
     public Session lockSession() {
         Session sess = getSessionInternal(false);
         // Now lock the session
-        //XXX need to revisit
-        //if (sess != null) {
-        if (sess instanceof StandardSession) {
+        if (sess != null) {
             long pollTime = 200L;
             int maxNumberOfRetries = 7;
             int tryNumber = 0;
             boolean keepTrying = true;
             boolean lockResult = false;
-            StandardSession haSess = (StandardSession) sess;
             // Try to lock up to maxNumberOfRetries times.
             // Poll and wait starting with 200 ms.
             while(keepTrying) {
-                lockResult = haSess.lockForeground();
+                lockResult = sess.lockForeground();
                 if(lockResult) {
                     keepTrying = false;
                     break;
@@ -4062,7 +4059,7 @@ public class Request
                     // Unlock the background so we can take over.
                     log.warning("This should not happen-breaking " +
                         "background lock: sess =" + sess);
-                    haSess.unlockBackground();
+                    sess.unlockBackground();
                 }              
             }
         }
@@ -4084,11 +4081,8 @@ public class Request
     public void unlockSession() {
         Session sess = getSessionInternal(false);
         // Now unlock the session
-        //XXX need to revisit
-        //if (sess != null) {
-        if (sess instanceof StandardSession) {
-            StandardSession haSess = (StandardSession) sess;
-            haSess.unlockForeground();
+        if (sess != null) {
+            sess.unlockForeground();
         }        
     }     
 

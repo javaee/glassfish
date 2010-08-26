@@ -601,8 +601,7 @@ public abstract class PersistentManagerBase
         long timeNow = System.currentTimeMillis();
         Session sessions[] = findSessions();
 
-        for (int i = 0; i < sessions.length; i++) {
-            StandardSession session = (StandardSession) sessions[i];            
+        for (Session session : sessions) {
             /* START CR 6363689
             if (!session.isValid()) {
             */
@@ -1377,16 +1376,16 @@ public abstract class PersistentManagerBase
             int timeIdle = // Truncate, do not round up
                 (int) ((timeNow - sessions[i].getLastAccessedTime()) / 1000L);
             if (timeIdle > minIdleSwap) {
-                StandardSession session = (StandardSession) sessions[i];
+                Session session = sessions[i];
                 //skip the session if it cannot be locked
                 if(session.lockBackground()) {
                     if(log.isLoggable(Level.FINE))
                         log.fine(sm.getString
                             ("persistentManager.swapTooManyActive",
-                            sessions[i].getIdInternal(),
+                            session.getIdInternal(),
                             Integer.valueOf(timeIdle)));                    
                     try {
-                        swapOut(sessions[i]);
+                        swapOut(session);
                     } catch (java.util.ConcurrentModificationException e1) {
                         // This is logged in writeSession()                           
                     } catch (IOException e) {
@@ -1418,8 +1417,7 @@ public abstract class PersistentManagerBase
 
         // Back up all sessions idle longer than maxIdleBackup
         if (maxIdleBackup >= 0) {
-            for (int i = 0; i < sessions.length; i++) {
-                StandardSession session = (StandardSession) sessions[i];
+            for (Session session : sessions) {
                 if (!session.isValid())
                     continue;                
                 int timeIdle = // Truncate, do not round up

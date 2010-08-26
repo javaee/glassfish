@@ -92,11 +92,10 @@ public class PESessionLocker extends BaseSessionLocker implements SessionLocker 
             int tryNumber = 0;
             boolean keepTrying = true;
             boolean lockResult = false;
-            StandardSession stdSess = (StandardSession) sess;
             //try to lock up to maxNumberOfRetries times
             //poll and wait starting with 200 ms
             while(keepTrying) {
-                lockResult = stdSess.lockForeground();
+                lockResult = sess.lockForeground();
                 if(lockResult) {
                     keepTrying = false;
                     result = true;
@@ -110,7 +109,7 @@ public class PESessionLocker extends BaseSessionLocker implements SessionLocker 
                     //tried to wait and lock maxNumberOfRetries times; throw an exception
                     //throw new ServletException("unable to acquire session lock");
                     //instead of above; unlock the background so we can take over
-                    stdSess.unlockBackground();
+                    sess.unlockBackground();
                 }              
             }
         }
@@ -152,8 +151,7 @@ public class PESessionLocker extends BaseSessionLocker implements SessionLocker 
         Session sess = this.getSession(request);
         //now unlock the session
         if(sess != null) {
-            StandardSession stdSess = (StandardSession) sess;
-            stdSess.unlockForeground();
+            sess.unlockForeground();
         }        
     }    
     

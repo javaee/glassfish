@@ -991,12 +991,11 @@ public class StandardManager
         Session[] sessions = findSessions();
         if (sessions != null) {
             for (Session session : sessions) {
-                StandardSession sess = (StandardSession) session;
-                if (sess.lockBackground()) {
+                if (session.lockBackground()) {
                     try {
-                        sess.isValid();
+                        session.isValid();
                     } finally {
-                        sess.unlockBackground();
+                        session.unlockBackground();
                     }
                 }
             }

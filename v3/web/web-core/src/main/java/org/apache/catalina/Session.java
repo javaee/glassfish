@@ -363,4 +363,30 @@ public interface Session {
      * Set the single sign on id.
      */
     public void setSsoId(String ssoId);
+
+
+    /**
+     * lock the session for foreground
+     * returns true if successful; false if unsuccessful
+     */
+    public boolean lockBackground();
+
+
+    /**
+     * unlock the session from background
+     */
+    public void unlockBackground();
+
+
+    /**
+     * lock the session for background
+     * returns true if successful; false if unsuccessful
+     */     
+    public boolean lockForeground();
+    
+
+    /**
+     * unlock the session from foreground
+     */      
+    public void unlockForeground(); 
 }
