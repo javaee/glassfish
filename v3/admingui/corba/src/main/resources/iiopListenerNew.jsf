@@ -50,7 +50,6 @@
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        setPageSessionAttribute(key="parentObjectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=iiop-service")
         setPageSessionAttribute(key="childType" value="iiop-listener")
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/corba/iiopListeners.jsf");
         setPageSessionAttribute(key="pageTitle" value="$resource{i18n_corba.iiopListeners.newPageTitle}");
@@ -62,7 +61,6 @@
         //set the following for including buttons.inc
         setPageSessionAttribute(key="convertToFalseList" value={"securityEnabled" "enabled"})
         setPageSessionAttribute(key="edit" value="#{false}" );
-        setPageSessionAttribute(key="restObjStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/iiop-service,type=iiop-listener" );
         setPageSessionAttribute(key="skipAttrsList" value={"Enabled", "Port", "Security-enabled"});
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );

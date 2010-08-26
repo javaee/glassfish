@@ -57,7 +57,6 @@
         urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/corba/sslEdit.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/corba/iiopListeners.jsf");
-        setPageSessionAttribute(key="parentObjectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/iiop-service,type=iiop-listener,name=#{pageSession.Name}")
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/iiop-service/iiop-listener/#{pageSession.Name}");
         setPageSessionAttribute(key="rest-api" value="true");
         setPageSessionAttribute(key="childType" value="ssl")

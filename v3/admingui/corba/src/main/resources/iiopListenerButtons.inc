@@ -58,10 +58,8 @@
                     if (#{pageSession.hasPropertyTable}){
                         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                        if (#{pageSession['rest-api']}) {
-                                setAttribute(key="objStr", value="#{pageSession.restObjStr},name=#{pageSession.valueMap['id']}");
-                            }
-                        setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                        javaToJSON(obj="#{newList}" json="#{requestScope.tmpJSON}");
+                        gf.restRequest(endpoint="#{pageSession.selfUrl}/#{pageSession.valueMap['id']}/property.json" method="POST" data="#{requestScope.tmpJSON}" result="#{requestScope.restResponse}");
                     }
 
                     if (#{pageSession.showSuccessfulMsg}){
