@@ -41,8 +41,9 @@
 package com.sun.enterprise.admin.util;
 
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Server;
 import org.glassfish.api.Startup;
-import org.glassfish.api.admin.InstanceState;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -57,6 +58,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
 /**
@@ -198,6 +200,13 @@ public class InstanceStateService implements Startup, PostConstruct {
         } catch (Exception e) {
             logger.severe("Error while removing instance node : " + e.getLocalizedMessage());
         }
+    }
+
+    public Future<InstanceCommandResult> submitJob(Server server, InstanceCommand ice, InstanceCommandResult r) {
+        InstanceState s = instanceStates.get(server.getName());
+        if(s == null)
+            return null;
+        return s.submitJob(ice, r);
     }
 
     @Override

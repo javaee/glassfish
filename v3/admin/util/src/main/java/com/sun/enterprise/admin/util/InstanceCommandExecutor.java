@@ -42,6 +42,8 @@ package com.sun.enterprise.admin.util;
 
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.admin.remote.RemoteAdminCommand;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.StringUtils;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
 import org.jvnet.hk2.annotations.Inject;
@@ -56,22 +58,74 @@ import java.util.logging.Logger;
 /**
  * @author Vijay Ramachandran
  */
-public class InstanceCommandExecutor extends RemoteAdminCommand {
+public class InstanceCommandExecutor extends RemoteAdminCommand implements Runnable, InstanceCommand {
 
     @Inject
     Domain domain;
 
     private Server server;
+    private ParameterMap params;
+    private ActionReport aReport;
+    private String commandName;
+    private FailurePolicy offlinePolicy;
+    private FailurePolicy failPolicy;
+    private InstanceCommandResult result;
 
-    public InstanceCommandExecutor(String commandName, Server server,
-                                   String host, int port, Logger logger) throws CommandException {
-        super(commandName, host, port, false, "admin", "", logger);
+    private static final LocalStringManagerImpl strings =
+                        new LocalStringManagerImpl(InstanceCommandExecutor.class);
+
+    public InstanceCommandExecutor(String name, FailurePolicy fail, FailurePolicy offline, Server server,
+                                   String host, int port, Logger logger,
+                                   ParameterMap p, ActionReport r, InstanceCommandResult res) throws CommandException {
+        //TODO : Should this change for secured DAS-INSTANCE ?
+        super(name, host, port, false, "admin", "", logger);
         this.server = server;
+        this.params = p;
+        this.aReport = r;
+        this.commandName = name;
+        this.offlinePolicy = offline;
+        this.failPolicy = fail;
+        this.result = res;
     }
 
-    public String getCommandOutput() {
-        return this.output;
-    }
+    public String getCommandOutput() { return this.output; }
 
-    public Server getServer() { return server;}
+    public Server getServer() { return server; }
+
+    public ActionReport getReport() { return this.aReport; }
+
+    public void run() {
+        try {
+            executeCommand(params);
+            aReport.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+            if(StringUtils.ok(getCommandOutput()))
+                aReport.setMessage(getServer().getName() + " :\n" + getCommandOutput() + "\n\n");
+            /*
+            else
+                aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.commandSuccessful",
+                    "Command {0} executed successfully on server instance {1}", commandName, getServer().getName()));
+                    */
+        } catch (CommandException cmdEx) {
+            ActionReport.ExitCode finalResult;
+            if(cmdEx.getCause() instanceof java.net.ConnectException) {
+                finalResult = FailurePolicy.applyFailurePolicy(offlinePolicy, ActionReport.ExitCode.WARNING);
+                if(!finalResult.equals(ActionReport.ExitCode.FAILURE))
+                    aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.warnoffline",
+                        "WARNING : Instance {0} seems to be offline; Command was not replicated to that instance",
+                            getServer().getName()));
+            } else {
+                finalResult = FailurePolicy.applyFailurePolicy(failPolicy, ActionReport.ExitCode.FAILURE);
+                if(finalResult.equals(ActionReport.ExitCode.FAILURE))
+                    aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.commandFailed",
+                        "Command {0} failed on server instance {1} : {2}", commandName, getServer().getName(),
+                            cmdEx.getMessage()));
+                else
+                    aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.commandWarning",
+                        "WARNING : Command {0} did not complete successfully on server instance {1} : {2}",
+                            commandName, getServer().getName(), cmdEx.getMessage()));
+            }
+            aReport.setActionExitCode(finalResult);
+        }
+        result.setInstanceCommand(this);
+    }
 }
