@@ -13,7 +13,7 @@
  * language governing permissions and limitations under the License.
  *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at packager/legal/LICENSE.txt.
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  *
  * GPL Classpath Exception:
  * Oracle designates this particular file as subject to the "Classpath"
@@ -38,60 +38,31 @@
  * holder.
  */
 
-package org.glassfish.config.support;
+package org.glassfish.api.admin.config;
 
-import org.glassfish.api.I18n;
-import org.jvnet.hk2.annotations.*;
-import org.glassfish.api.admin.AdminCommand;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.lang.annotation.*;
 
 /**
- * List command annotation.
+ * Defines a binding to a model class, used to retrieve metadata about this
+ * model.
  *
- * Follow the same pattern as {@link Create} or {@link Delete} annotations
- * to generate a command implementation to list elements.
- *
- * Types of elements are listed are infered from the annotated method and
- * parent instance to get the list of elements from must be returned by
- * the resolver.
- *
- * See {@link Create} for initialization information
- *
- * @author Jerome Dochez
  */
-@Contract
-@Retention(RUNTIME)
-@Target(ElementType.METHOD)
-@InhabitantAnnotation("default")
-@ContractProvided(AdminCommand.class)
-@ServiceProvider(GenericListCommand.class)
-public @interface Listing {
+@Documented
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ModelBinding {
+    /**
+     * returns the model the annotated type is bound to
+     *
+     * @return the model type
+     */
+    public Class<?> type();
 
     /**
-     * Name of the command that will be used to register this generic command implementation under.
+     * Returns the getter method name defined on the {@link org.glassfish.api.admin.config.ModelBinding#type()}
+     * type annotated with model information like {@link org.jvnet.hk2.config.Attribute}
      *
-     * @return the command name as the user types it.
+     * @return the type getter method name
      */
-    @Index
-    String value();
-
-    /**
-     * Returns the instance of the parent that should be used get the list of children.
-     *
-     * @return the parent instance.
-     */
-    Class<? extends CrudResolver> resolver() default CrudResolver.DefaultResolver.class;
-
-    /**
-     * Returns the i18n key that will be used to look up a localized string in the annotated
-     * type module.
-     *
-     * @return the key to look up localized description for the command.
-     */
-    I18n i18n();    
+    public String getterMethodName();
 }

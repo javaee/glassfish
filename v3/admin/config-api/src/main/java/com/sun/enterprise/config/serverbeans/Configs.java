@@ -42,6 +42,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import java.util.List;
 
+import org.glassfish.api.I18n;
 import org.glassfish.config.support.Create;
 import org.glassfish.config.support.Delete;
 import org.glassfish.config.support.TypeAndNameResolver;
@@ -64,7 +65,7 @@ public interface Configs extends ConfigBeanProxy, Injectable {
      * </pre>
      * <p/> <p/> <p/> Objects of the following type(s) are allowed in the list {@link Config }
      */
-    @Create("create-config")
+    @Create(value="create-config", i18n=@I18n("create.config.command"))
     @Element(required=true)
     List<Config> getConfig();
 

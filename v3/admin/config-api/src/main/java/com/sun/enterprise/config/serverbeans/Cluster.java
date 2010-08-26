@@ -45,6 +45,7 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import java.io.*;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import org.glassfish.config.support.*;
@@ -112,6 +113,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      * @throws PropertyVetoException if a listener vetoes the change
      */
     @Param(name="config", optional=true)
+    @I18n("generic.config")
     void setConfigRef(String value) throws PropertyVetoException;
 
     /**

@@ -13,7 +13,7 @@
  * language governing permissions and limitations under the License.
  *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at packager/legal/LICENSE.txt.
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  *
  * GPL Classpath Exception:
  * Oracle designates this particular file as subject to the "Classpath"
@@ -38,13 +38,13 @@
  * holder.
  */
 
-package org.glassfish.config.support;
+package org.glassfish.common.util.admin;
 
+import com.sun.enterprise.util.LocalStringManager;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.CommandModel;
-import org.glassfish.common.util.admin.CommandModelImpl;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigModel;
@@ -54,33 +54,46 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 public class GenericCommandModel extends CommandModel {
 
     final HashMap<String, ParamModel> params = new HashMap<String, ParamModel>();
     final String commandName;
     final Cluster cluster;
+    final I18n i18n;
+    final LocalStringManager localStrings;
 
-    public GenericCommandModel(Class<?> targetType, Cluster cluster, DomDocument document, String commandName, Class<?>... extraTypes) {
+    public GenericCommandModel(Class<?> targetType,
+                               Cluster cluster,
+                               I18n i18n,
+                               LocalStringManager localStrings,
+                               DomDocument document,
+                               String commandName,
+                               Class<?>... extraTypes) {
         this.commandName = commandName;
         this.cluster = cluster;
+        this.i18n = i18n;
+        this.localStrings = localStrings;
+
         if (targetType!=null && ConfigBeanProxy.class.isAssignableFrom(targetType)) {
             ConfigModel cm = document.buildModel(targetType);
             for (Method m : targetType.getMethods()) {
                 ConfigModel.Property prop = cm.toProperty(m);
                 if (prop == null) continue;
                 String attributeName = prop.xmlName;
+                I18n paramI18n = m.getAnnotation(I18n.class);
                 if (m.isAnnotationPresent(Param.class)) {
                     Param p = m.getAnnotation(Param.class);
                     if (p.name() != null && !p.name().isEmpty()) {
-                        params.put(p.name(), new ParamBasedModel(p.name(), p));
+                        params.put(p.name(), new ParamBasedModel(p.name(), p, paramI18n));
                     } else {
                         if (m.isAnnotationPresent(Attribute.class)) {
                             Attribute attr = m.getAnnotation(Attribute.class);
                             if (attr.value() != null && !attr.value().isEmpty()) {
-                                params.put(attr.value(), new AttributeBasedModel(attr.value(), attr));
+                                params.put(attr.value(), new AttributeBasedModel(attr.value(), attr, paramI18n));
                             } else {
-                                params.put(attributeName, new AttributeBasedModel(attributeName, attr));
+                                params.put(attributeName, new AttributeBasedModel(attributeName, attr, paramI18n));
                             }
                         }
                     }
@@ -90,19 +103,23 @@ public class GenericCommandModel extends CommandModel {
 
         if (extraTypes!=null) {
             for (Class extraType : extraTypes) {
-                CommandModelImpl cm = new CommandModelImpl();
-                cm.init(extraType);
-                
-                for (String paramName : cm.getParametersNames()) {
-                    params.put(paramName, cm.getModelFor(paramName));
+                for (Map.Entry<String, ParamModel> e : CommandModelImpl.init(extraType, i18n, localStrings).entrySet()) {
+                    if (!params.containsKey(e.getKey()))
+                        params.put(e.getKey(), e.getValue());
                 }
 
             }
         }
     }
 
-    public I18n getI18n() {
-        return null;
+    @Override
+    public String getLocalizedDescription() {
+        return localStrings.getLocalString(i18n.value(), "");
+    }
+
+    @Override
+    public String getUsageText() {
+        return localStrings.getLocalString(i18n.value()+".usagetext", null);
     }
 
     public String getCommandName() {
@@ -125,10 +142,22 @@ public class GenericCommandModel extends CommandModel {
     private final class ParamBasedModel extends ParamModel {
         final String name;
         final Param param;
+        final I18n i18n;
 
-        private ParamBasedModel(String name, Param param) {
+        private ParamBasedModel(String name, Param param, I18n i18n) {
             this.name = name;
             this.param = param;
+            this.i18n = i18n;
+        }
+
+        @Override
+        public String getLocalizedDescription() {
+            if (i18n!=null) {
+                return GenericCommandModel.this.localStrings.getLocalString(i18n.value(), "");
+            } else {
+                return GenericCommandModel.this.localStrings.getLocalString(
+                        GenericCommandModel.this.i18n.value()+"." + name, "");
+            }
         }
 
         public String getName() {
@@ -140,7 +169,7 @@ public class GenericCommandModel extends CommandModel {
         }
 
         public I18n getI18n() {
-            return null;
+            return i18n;
         }
 
         public Class getType() {
@@ -151,18 +180,26 @@ public class GenericCommandModel extends CommandModel {
     private final class AttributeBasedModel extends ParamModel {
         final String name;
         final Attribute attr;
+        final I18n i18n;
 
-        private AttributeBasedModel(String name, Attribute attr) {
+        private AttributeBasedModel(String name, Attribute attr, I18n i18n) {
             this.name = name;
             this.attr = attr;
+            this.i18n = i18n;
         }
 
         public String getName() {
             return name;
         }
 
-        public I18n getI18n() {
-            return null;
+        @Override
+        public String getLocalizedDescription() {
+            if (i18n!=null) {
+                return GenericCommandModel.this.localStrings.getLocalString(i18n.value(), "");
+            } else {
+                return GenericCommandModel.this.localStrings.getLocalString(
+                        GenericCommandModel.this.i18n.value()+"." + name, "");
+            }
         }
 
         public Class getType() {

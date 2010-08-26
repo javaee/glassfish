@@ -446,7 +446,7 @@ public class RemoteCommand extends CLICommand {
      * Return a CommandModel that only includes the --help option.
      */
     private CommandModel helpModel() {
-        CommandModelData cm = new CommandModelData(name, null);
+        CommandModelData cm = new CommandModelData(name);
         cm.add(new ParamModelData("help", boolean.class, true, "false", "?"));
         return cm;
     }

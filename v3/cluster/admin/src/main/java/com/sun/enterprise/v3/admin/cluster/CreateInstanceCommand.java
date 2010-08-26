@@ -98,6 +98,7 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
     String node;
 
     @Param(name = "config", optional=true)
+    @I18n("generic.config")
     String configRef;
 
     @Param(name="cluster", optional=true)

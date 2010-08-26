@@ -40,10 +40,13 @@
 
 package org.glassfish.config.support;
 
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.hk2.component.InjectionResolver;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.I18n;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.config.Named;
+import org.glassfish.common.util.admin.GenericCommandModel;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.*;
@@ -85,7 +88,10 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
         create = getAnnotation(targetMethod, Create.class);
         resolverType = create.resolver();
         try {
-            model = new GenericCommandModel(targetType, create.cluster(), habitat.getComponent(DomDocument.class), commandName, create.resolver(), create.decorator());
+            model = new GenericCommandModel(targetType, create.cluster(), create.i18n(),
+                    new LocalStringManagerImpl(targetType),
+                    habitat.getComponent(DomDocument.class),
+                    commandName, create.resolver(), create.decorator());
             if (logger.isLoggable(level)) {
                 for (String paramName : model.getParametersNames()) {
                     CommandModel.ParamModel param = model.getModelFor(paramName);

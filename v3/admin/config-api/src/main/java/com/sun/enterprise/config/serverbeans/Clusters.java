@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import org.glassfish.api.I18n;
 import org.glassfish.config.support.*;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.DuckTyped;
@@ -63,8 +64,10 @@ public interface Clusters extends ConfigBeanProxy, Injectable {
       * @return list of {@link Cluster }
       */
     @Element
-    @Create(value="create-cluster", decorator=Cluster.Decorator.class)
-    @Delete(value="delete-cluster", resolver= TypeAndNameResolver.class, decorator=Cluster.DeleteDecorator.class)
+    @Create(value="create-cluster", decorator=Cluster.Decorator.class, i18n=@I18n("create.cluster.command"))
+    @Delete(value="delete-cluster", resolver= TypeAndNameResolver.class, decorator=Cluster.DeleteDecorator.class
+        , i18n=@I18n("delete.cluster.command"))
+
 
     public List<Cluster> getCluster();
 

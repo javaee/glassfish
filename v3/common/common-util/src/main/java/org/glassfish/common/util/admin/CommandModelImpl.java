@@ -1,4 +1,4 @@
-/*
+    /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
  * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
@@ -40,14 +40,18 @@
 
 package org.glassfish.common.util.admin;
 
+import com.sun.enterprise.util.LocalStringManager;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.Param;
 import org.glassfish.api.UnknownOptionsAreOperands;
 import org.glassfish.api.I18n;
-import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.CommandModel;
+import org.glassfish.api.admin.config.ModelBinding;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.config.Attribute;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.AnnotatedElement;
@@ -63,48 +67,75 @@ import java.util.LinkedHashMap;
 public class CommandModelImpl extends CommandModel {
 
     // use a LinkedHashMap so params appears in the order they are declared in the class.
-    final Map<String, CommandModel.ParamModel> params = new LinkedHashMap<String, ParamModel>();
-    final String commandName;
-    final Cluster cluster;
-    final I18n i18n;
-    private boolean dashOk = false;
+    final private Map<String, CommandModel.ParamModel> params;
+    final private String commandName;
+    final private Cluster cluster;
+    final private I18n i18n;
+    final private boolean dashOk;
+    final private LocalStringManager localStrings;
 
     public CommandModelImpl(Class<?> commandType) {
 
         Service service = commandType.getAnnotation(Service.class);
-        commandName = service!=null?service.name():null;
+        commandName = service != null ? service.name() : null;
         i18n = commandType.getAnnotation(I18n.class);
         cluster = commandType.getAnnotation(Cluster.class);
-        init(commandType);
+        localStrings = new LocalStringManagerImpl(commandType);
+
+        params = init(commandType, i18n, localStrings);
+        Class currentClazz = commandType;
+        boolean found = false;
+        while (currentClazz != null) {
+            if (currentClazz.isAnnotationPresent(UnknownOptionsAreOperands.class))
+                found = true;
+            currentClazz = currentClazz.getSuperclass();
+        }
+        dashOk = found;
     }
 
-    public CommandModelImpl() {
-        commandName = null;
-        cluster=null;
-        i18n=null;
-    }
 
-    public void init(Class commandType) {
+    public static Map<String, ParamModel> init(Class commandType, I18n i18n, LocalStringManager localStrings) {
 
         Class currentClazz = commandType;
-        while(currentClazz!=null) {
+        Map<String, ParamModel> results = new LinkedHashMap<String, ParamModel>();
+        while (currentClazz != null) {
+
 
             for (Field f : currentClazz.getDeclaredFields()) {
-                add(f);
+                I18n fieldI18n = f.getAnnotation(I18n.class);
+                if (fieldI18n!=null) {
+                    localStrings = new LocalStringManagerImpl(commandType);
+                }
+                add(results, f, i18n, localStrings);
             }
 
             for (Method m : currentClazz.getDeclaredMethods()) {
-                add(m);
+                I18n fieldI18n = m.getAnnotation(I18n.class);
+                if (fieldI18n!=null) {
+                    localStrings = new LocalStringManagerImpl(commandType);
+                }
+                add(results, m, i18n, localStrings);
             }
 
-	    if (currentClazz.isAnnotationPresent(UnknownOptionsAreOperands.class))
-		dashOk = true;
             currentClazz = currentClazz.getSuperclass();
+        }
+        return results;
+    }
+
+    public String getLocalizedDescription() {
+        if (i18n!=null) {
+            return localStrings.getLocalString(i18n.value(), "");
+        } else {
+            return null;
         }
     }
 
-    public I18n getI18n() {
-        return i18n;
+    public String getUsageText() {
+        if (i18n!=null) {
+            return localStrings.getLocalString(i18n.value()+".usagetext", null);
+        } else {
+            return null;
+        }
     }
 
     public String getCommandName() {
@@ -129,30 +160,55 @@ public class CommandModelImpl extends CommandModel {
      */
     @Override
     public boolean unknownOptionsAreOperands() {
-	return dashOk;
+        return dashOk;
     }
 
-    private void add(AnnotatedElement e) {
-        if (e.isAnnotationPresent(Param.class)) {
-            ParamModel model = new ParamModelImpl(e);
-            if (!params.containsKey(model.getName())) {
-                params.put(model.getName(), model);
+    private static void add(Map<String, ParamModel> results, AnnotatedElement e, I18n parentI18n, LocalStringManager localStrings) {
+        Param param = e.getAnnotation(Param.class);
+        if (param!=null) {
+            String defaultValue = param.defaultValue();
+            ModelBinding mb = e.getAnnotation(ModelBinding.class);
+            if (mb!=null && defaultValue.isEmpty()) {
+                Method m = null;
+                try {
+                    m = mb.type().getMethod(mb.getterMethodName());
+                } catch (NoSuchMethodException e1) {
+                    // ignore.
+                }
+                if (m!=null) {
+                    Attribute attr = m.getAnnotation(Attribute.class);
+                    if (attr!=null) {
+                        defaultValue = attr.defaultValue();
+                    }
+                }
+            }
+            ParamModel model = new ParamModelImpl(e, defaultValue, parentI18n, localStrings);
+            if (!results.containsKey(model.getName())) {
+                results.put(model.getName(), model);
             }
         }
     }
 
-    static class ParamModelImpl extends ParamModel {
+    private static class ParamModelImpl extends ParamModel {
 
-        final String    name;
-        final Param     param;
-        final I18n      i18n;
-        final Class     type;
+        final private String name;
+        final private Param param;
+        final private I18n i18n;
+        final private I18n parentI18n;
+        final private LocalStringManager localStrings;
+        final private Class type;
+        final private String defaultValue;
 
-        ParamModelImpl(AnnotatedElement e) {
+
+        ParamModelImpl(AnnotatedElement e, String defaultValue, I18n parentI18n, LocalStringManager localStrings) {
             Param p = e.getAnnotation(Param.class);
+            this.parentI18n = parentI18n;
+            this.localStrings = localStrings;
             name = getParamName(p, e);
+            this.defaultValue = defaultValue;
             param = p;
             i18n = e.getAnnotation(I18n.class);
+
             if (e instanceof Method) {
                 type = ((Method) e).getReturnType();
             } else if (e instanceof Field) {
@@ -168,7 +224,81 @@ public class CommandModelImpl extends CommandModel {
         }
 
         public Param getParam() {
-            return param;
+            return new Param() {
+                @Override
+                public String name() {
+                    return param.name();
+                }
+
+                @Override
+                public String acceptableValues() {
+                    return param.acceptableValues();
+                }
+
+                @Override
+                public boolean optional() {
+                    return param.optional();
+                }
+
+                @Override
+                public String shortName() {
+                    return param.shortName();
+                }
+
+                @Override
+                public boolean primary() {
+                    return param.primary();
+                }
+
+                @Override
+                public String defaultValue() {
+                    return defaultValue;
+                }
+
+                @Override
+                public boolean password() {
+                    return param.password();
+                }
+
+                @Override
+                public char separator() {
+                    return param.separator();
+                }
+
+                @Override
+                public boolean multiple() {
+                    return param.multiple();
+                }
+
+                @Override
+                public boolean obsolete() {
+                    return param.obsolete();
+                }
+
+                @Override
+                public String alias() {
+                    return param.alias();
+                }
+
+                @Override
+                public Class<? extends Annotation> annotationType() {
+                    return param.annotationType();
+                }
+            };
+        }
+
+        public String getLocalizedDescription() {
+            String paramDesc=null;
+            if (i18n!=null) {
+                paramDesc = localStrings.getLocalString(i18n.value(), "");
+            } else {
+                if (parentI18n!=null)
+                    paramDesc = localStrings.getLocalString(parentI18n.value() + "." + name, "");
+            }
+            if (paramDesc==null) {
+                paramDesc="";
+            }
+            return paramDesc;
         }
 
         public I18n getI18n() {

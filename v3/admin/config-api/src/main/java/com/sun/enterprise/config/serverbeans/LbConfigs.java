@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import org.glassfish.api.I18n;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.*;
 import org.jvnet.hk2.config.Configured;
@@ -84,8 +85,11 @@ public interface LbConfigs extends ConfigBeanProxy, Injectable  {
      */
     @Element
     @Create(value="create-http-lb-config", decorator=LbConfig.Decorator.class,
-            cluster=@org.glassfish.api.admin.Cluster(value = RuntimeType.DAS))
-    @Delete(value="delete-http-lb-config", resolver= TypeAndNameResolver.class, decorator=LbConfig.DeleteDecorator.class)
+            cluster=@org.glassfish.api.admin.Cluster(value = RuntimeType.DAS),
+            i18n=@I18n("create.http.lb.config.command"))
+    @Delete(value="delete-http-lb-config", resolver= TypeAndNameResolver.class,
+            decorator=LbConfig.DeleteDecorator.class,
+            i18n=@I18n("delete.http.lb.config.command"))
     public List<LbConfig> getLbConfig();
 
     /**

@@ -40,6 +40,7 @@
 
 package org.glassfish.config.support;
 
+import org.glassfish.api.I18n;
 import org.glassfish.api.admin.Cluster;
 import org.jvnet.hk2.annotations.*;
 import org.glassfish.api.admin.AdminCommand;
@@ -87,7 +88,17 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * the generic command execution, with the newly created instance.
  *
  * The {@link CreationDecorator} will be looked up by its type and
- * normal injection or parameter injection can happen. 
+ * normal injection or parameter injection can happen.
+ *
+ * Internationalization of generic commands follow the same rule as
+ * described in the {@link AdminCommand} javadocs. The {@link I18n}
+ * annotation referenced from this annotation will be used as the
+ * top level command annotation, which should provide the command
+ * description and expected result.
+ *
+ * Parameters can be annotated with @I18n as well to override the
+ * default mapping and all resources must be located in the target
+ * type module local strings properties file.
  *
  * @author Jerome Dochez
  */
@@ -131,5 +142,13 @@ public @interface Create {
      * @return the cluster information
      */
     Cluster cluster() default @Cluster();
+
+    /**
+     * Returns the i18n key that will be used to look up a localized string in the annotated
+     * type module.
+     *
+     * @return the key to look up localized description for the command.
+     */
+    I18n i18n();
 
 }

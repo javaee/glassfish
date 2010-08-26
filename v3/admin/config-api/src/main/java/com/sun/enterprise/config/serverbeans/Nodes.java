@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import org.glassfish.api.I18n;
 import org.glassfish.config.support.*;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
@@ -63,8 +64,10 @@ public interface Nodes extends ConfigBeanProxy, Injectable {
       * @return list of {@link Node }
       */
     @Element
-    @Create(value="_create-node", decorator=Node.Decorator.class )
-    @Delete(value="delete-node-ssh", resolver= TypeAndNameResolver.class, decorator=Node.DeleteDecorator.class)
+    @Create(value="_create-node", decorator=Node.Decorator.class, i18n=@I18n("_create.node.command") )
+    @Delete(value="delete-node-ssh", resolver= TypeAndNameResolver.class,
+            decorator=Node.DeleteDecorator.class,
+            i18n=@I18n("delete.node.ssh.delete"))
     
     /*
     @CRUD(

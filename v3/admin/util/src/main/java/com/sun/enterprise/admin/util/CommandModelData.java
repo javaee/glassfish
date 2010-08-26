@@ -68,22 +68,24 @@ public class CommandModelData extends CommandModel {
     private final Map<String, CommandModel.ParamModel> params =
                                 new LinkedHashMap<String, ParamModel>();
     private final String commandName;
-    private final I18n i18n;
     public boolean dashOk = false;
 
-    public CommandModelData(String name, I18n i18n) {
+    public CommandModelData(String name) {
         commandName = name;
-        this.i18n = i18n;
     }
 
     CommandModelData() {
         commandName = null;
-        i18n = null;
     }
 
     @Override
-    public I18n getI18n() {
-        return i18n;
+    public String getLocalizedDescription() {
+        return null;
+    }
+
+    @Override
+    public String getUsageText() {
+        return null;
     }
 
     @Override
@@ -130,7 +132,6 @@ public class CommandModelData extends CommandModel {
 
         public String    name;
         public ParamData param;
-        public I18n      i18n;
         public Class     type;
         // from the server, for password fields
         public String    description;
@@ -174,14 +175,15 @@ public class CommandModelData extends CommandModel {
         }
 
         @Override
+        public String getLocalizedDescription() {
+            return "";
+        }
+
+        @Override
         public Param getParam() {
             return param;
         }
 
-        @Override
-        public I18n getI18n() {
-            return i18n;
-        }
 
         @Override
         public Class getType() {
@@ -196,7 +198,7 @@ public class CommandModelData extends CommandModel {
         @Override
         public String toString() {
             return "ParamModelData: name=" + name + ", type=" + type +
-                ", i18n=" + i18n + ", param=" + param.toString();
+                ", i18n=" + getLocalizedDescription() + ", param=" + param.toString();
         }
     }
 

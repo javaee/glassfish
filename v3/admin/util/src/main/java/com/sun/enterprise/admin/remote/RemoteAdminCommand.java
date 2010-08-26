@@ -904,7 +904,7 @@ public class RemoteAdminCommand {
             logger.finer("------- RAW METADATA RESPONSE ---------");
         }
 
-        CommandModelData cm = new CommandModelData(name, null);
+        CommandModelData cm = new CommandModelData(name);
         boolean sawFile = false;
         try {
             DocumentBuilder d =

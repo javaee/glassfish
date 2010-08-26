@@ -59,12 +59,42 @@ import com.sun.hk2.component.InjectionResolver;
  */
 public abstract class CommandModel {
 
+    /**
+     * Returns the command name as it is typed by the user.
+     *
+     * @return the command name
+     */
     public abstract String getCommandName();
 
-    public abstract I18n getI18n();
+    /**
+     * Returns a localized description for this command
+     *
+     * @return a localized displayable description
+     */
+    public abstract String getLocalizedDescription();
 
+    /**
+     * Returns a localized usage text for this command or null if the usage
+     * text should be generated from this model.
+     *
+     * @return the usage text
+     */
+    public abstract String getUsageText();
+
+    /**
+     * Returns the parameter model for a particular parameter
+     *
+     * @param paramName the requested parameter model name
+     * @return the parameter model if the command supports a parameter of the passed
+     * name or null if not.
+     */
     public abstract ParamModel getModelFor(String paramName);
 
+    /**
+     * Returns a collection of parameter names supported by this admininstrative command
+     *
+     * @return all the command's paramter names.
+     */
     public abstract Collection<String> getParametersNames();
 
     /**
@@ -75,6 +105,12 @@ public abstract class CommandModel {
      */
     public abstract Cluster getClusteringAttributes();
 
+    /**
+     * Returns a collection of parameter model for all the parameters supported
+     * by this command.
+     *
+     * @return the command's parameters models.
+     */
     public Collection<ParamModel> getParameters() {
         ArrayList<ParamModel> copy = new ArrayList<ParamModel>();
         for (String name : getParametersNames()) {
@@ -108,16 +144,40 @@ public abstract class CommandModel {
             name = ASADMIN_CMD_PREFIX + name.toUpperCase();
         }
         return name;
-    }    
+    }
 
+    /**
+     * Model for a command parameter.
+     *
+     */
     public static abstract class ParamModel {
 
+        /**
+         * Returns the command parameter name.
+         *
+         * @return the command parameter name
+         */
         public abstract String getName();
 
+        /**
+         * Returns the command @Param annotation values.
+         *
+         * @return the @Param instance for this parameter
+         */
         public abstract Param getParam();
 
-        public abstract I18n getI18n();
+        /**
+         * Returns a localized description for this parameter
+         *
+         * @return a localized String
+         */
+        public abstract String getLocalizedDescription();
 
+        /**
+         * Returns the parameter type.
+         *
+         * @return the parameter type.
+         */
         public abstract Class getType();
 
         public boolean isParamId(String key) {
@@ -136,9 +196,10 @@ public abstract class CommandModel {
 
     /**
      * Should an unknown option be considered an operand by asadmin?
+     * @return true if unknown options are operands.
      */
     public boolean unknownOptionsAreOperands() {
-	return false;	// default implementation
+	    return false;	// default implementation
     }
 
     private static final String ASADMIN_CMD_PREFIX = "AS_ADMIN_";

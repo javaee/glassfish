@@ -44,11 +44,11 @@ import java.beans.PropertyVetoException;
 import java.util.Map;
 import java.util.Properties;
 
+import org.glassfish.api.admin.config.ModelBinding;
 import org.glassfish.internal.api.Target;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -92,7 +92,8 @@ public class CreateVirtualServer implements AdminCommand {
     String defaultWebModule;
     @Param(name = "state", acceptableValues = "on, off, disabled", optional = true)
     String state;
-    @Param(name = "logfile", optional = true, defaultValue = "${com.sun.aas.instanceRoot}/logs/server.log")
+    @Param(name = "logfile", optional = true)
+    @ModelBinding(type=VirtualServer.class, getterMethodName ="getLogFile")
     String logFile;
     @Param(name = "property", optional = true, separator = ':')
     Properties properties;

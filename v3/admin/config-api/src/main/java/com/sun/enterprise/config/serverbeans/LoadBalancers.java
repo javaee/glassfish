@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import org.glassfish.api.I18n;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -83,8 +84,10 @@ public interface LoadBalancers extends ConfigBeanProxy, Injectable  {
      * {@link LoadBalancer }
      */
     @Element
-    @Delete(value="delete-http-lb", resolver= TypeAndNameResolver.class, decorator=LoadBalancer.DeleteDecorator.class)
-    @Listing(value="list-http-lbs")
+    @Delete(value="delete-http-lb", resolver= TypeAndNameResolver.class,
+            decorator=LoadBalancer.DeleteDecorator.class,
+            i18n=@I18n("delete.http.lb.command"))
+    @Listing(value="list-http-lbs", i18n=@I18n("list.http.lbs.command"))
     public List<LoadBalancer> getLoadBalancer();
 
     /**

@@ -88,4 +88,6 @@ public interface LocalStringManager {
 	String defaultFormat,
 	Object arguments[]
     );
+
+    public String getLocalString(String key, String defaultValue);
 }

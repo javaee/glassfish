@@ -40,6 +40,7 @@
 
 package org.glassfish.config.support;
 
+import org.glassfish.api.I18n;
 import org.glassfish.api.admin.Cluster;
 import org.jvnet.hk2.annotations.*;
 import org.glassfish.api.admin.AdminCommand;
@@ -88,6 +89,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Usually, most instances can be looked up by using the instance type
  * and its key (provided by the --name or --target parameters for instance).
  *
+ * See {@link Create} for initialization information
+ * 
  * @author Jerome Dochez
  */
 @Contract
@@ -130,5 +133,13 @@ public @interface Delete {
      * @return the cluster information
      */
     Cluster cluster() default @Cluster();
+
+    /**
+     * Returns the i18n key that will be used to look up a localized string in the annotated
+     * type module.
+     *
+     * @return the key to look up localized description for the command.
+     */
+    I18n i18n();    
     
 }

@@ -254,16 +254,6 @@ public class CommandRunnerImpl implements CommandRunner {
             // do nothing.
         }
 
-        LocalStringManagerImpl localStrings =
-            new LocalStringManagerImpl(command.getClass());
-
-        // Let's get the command i18n key
-        I18n i18n = model.getI18n();
-        String i18n_key = "";
-        if (i18n!=null) {
-            i18n_key = i18n.value();
-        }
-
         // inject
         try {
             injectionMgr.inject(command, injector);
@@ -280,8 +270,7 @@ public class CommandRunnerImpl implements CommandRunner {
             final String usage = getUsageText(command, model);
             if (paramModel != null) {
                 String paramName = paramModel.getName();
-                String paramDesc =
-                    getParamDescription(localStrings, i18n_key, paramModel);
+                String paramDesc = paramModel.getLocalizedDescription();
 
                 if (param.primary()) {
                     errorMsg = adminStrings.getLocalString("commandrunner.operand.required",
@@ -408,26 +397,7 @@ public class CommandRunnerImpl implements CommandRunner {
         return context.getActionReport();
     }
 
-    private static String getParamDescription(
-            LocalStringManagerImpl localStrings,
-            String i18nKey,
-            CommandModel.ParamModel model) {
 
-        I18n i18n = model.getI18n();
-        String paramDesc;
-        if (i18n == null) {
-            paramDesc =
-                localStrings.getLocalString(i18nKey+"."+model.getName(), "");
-        } else {
-            paramDesc = localStrings.getLocalString(i18n.value(), "");
-        }
-        if (paramDesc == null) {
-            paramDesc = "";
-//          paramDesc = adminStrings.getLocalString("adapter.nodesc",
-//                                                  "no description provided");
-        }
-        return paramDesc;
-    }
 
     /**
      * Get the usage-text of the command.
@@ -441,21 +411,13 @@ public class CommandRunnerImpl implements CommandRunner {
      */
     static String getUsageText(AdminCommand command, CommandModel model) {
         StringBuffer usageText = new StringBuffer();
-        I18n i18n = model.getI18n();
-        String i18nKey = null;
 
-        final LocalStringManagerImpl lsm =
-            new LocalStringManagerImpl(command.getClass());
-        if (i18n!=null) {
-            i18nKey = i18n.value();
-        }
-	String usage;
-        if (i18nKey != null &&
-		ok(usage = lsm.getLocalString(i18nKey+".usagetext", ""))) {
+    	String usage;
+        if (ok(usage = model.getUsageText())) {
 	    usageText.append(
                 adminStrings.getLocalString("adapter.usage", "Usage: "));
             usageText.append(usage);
-	    return usageText.toString();
+            return usageText.toString();
         } else {
             return generateUsageText(model);
         }
@@ -540,30 +502,22 @@ public class CommandRunnerImpl implements CommandRunner {
 
         CommandModel model = getModel(command);
         report.setActionDescription(model.getCommandName() + " help");
-        LocalStringManagerImpl localStrings =
-                                new LocalStringManagerImpl(command.getClass());
-        // Let's get the command i18n key
-        I18n i18n = command.getClass().getAnnotation(I18n.class);
-        String i18nKey = "";
 
-        if (i18n != null) {
-            i18nKey = i18n.value();
+        // XXX - this is a hack for now.  if the request mapped to an
+        // XMLContentActionReporter, that means we want the command metadata.
+        if (report instanceof XMLContentActionReporter) {
+            getMetadata(command, model, report);
+        } else {
+            report.setMessage(model.getCommandName() + " - " +
+                    model.getLocalizedDescription());
+            report.getTopMessagePart().addProperty("SYNOPSIS",
+                    encodeManPage(new BufferedReader(new StringReader(
+                            getUsageText(command, model)))));
+            for (CommandModel.ParamModel param : model.getParameters()) {
+                addParamUsage(report, param);
+            }
+            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         }
-	// XXX - this is a hack for now.  if the request mapped to an
-	// XMLContentActionReporter, that means we want the command metadata.
-	if (report instanceof XMLContentActionReporter) {
-	    getMetadata(command, model, report);
-	} else {
-	    report.setMessage(model.getCommandName() + " - " +
-                                    localStrings.getLocalString(i18nKey, ""));
-	    report.getTopMessagePart().addProperty("SYNOPSIS",
-                            encodeManPage(new BufferedReader(new StringReader(
-                                getUsageText(command, model)))));
-	    for (CommandModel.ParamModel param : model.getParameters()) {
-		addParamUsage(report, localStrings, i18nKey, param);
-	    }
-	    report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-	}
     }
 
     /**
@@ -581,13 +535,6 @@ public class CommandRunnerImpl implements CommandRunner {
         LocalStringManagerImpl localStrings =
 		new LocalStringManagerImpl(command.getClass());
 
-        // Let's get the command i18n key
-        I18n i18n = model.getI18n();
-        String i18n_key = "";
-        if (i18n!=null) {
-            i18n_key = i18n.value();
-        }
-
 	ActionReport.MessagePart top = report.getTopMessagePart();
 	ActionReport.MessagePart cmd = top.addChild();
 	// <command name="name">
@@ -595,7 +542,7 @@ public class CommandRunnerImpl implements CommandRunner {
 	cmd.addProperty("name", model.getCommandName());
 	if (model.unknownOptionsAreOperands())
 	    cmd.addProperty("unknown-options-are-operands", "true");
-	String usage = localStrings.getLocalString(i18n_key + ".usagetext", "");
+	String usage = model.getLocalizedDescription();
 	if (ok(usage))
 	    cmd.addProperty("usage", usage);
 	CommandModel.ParamModel primary = null;
@@ -615,7 +562,7 @@ public class CommandRunnerImpl implements CommandRunner {
 	    ppart.addProperty("optional", Boolean.toString(param.optional()));
 	    if (param.obsolete())	// don't include it if it's false
 		ppart.addProperty("obsolete", "true");
-	    String paramDesc = getParamDescription(localStrings, i18n_key, p);
+	    String paramDesc = p.getLocalizedDescription();
 	    if (ok(paramDesc))
 		ppart.addProperty("description", paramDesc);
 	    if (ok(param.shortName()))
@@ -640,7 +587,7 @@ public class CommandRunnerImpl implements CommandRunner {
 		    primary.getParam().optional() ? "0" : "1");
 	    primpart.addProperty("max", primary.getParam().multiple() ?
                         "unlimited" : "1");
-	    String desc = getParamDescription(localStrings, i18n_key, primary);
+	    String desc = primary.getLocalizedDescription();
 	    if (ok(desc))
 		primpart.addProperty("description", desc);
 	}
@@ -682,8 +629,6 @@ public class CommandRunnerImpl implements CommandRunner {
 
     private void addParamUsage(
             ActionReport report,
-            LocalStringManagerImpl localStrings,
-            String i18nKey,
             CommandModel.ParamModel model) {
         Param param = model.getParam();
         if (param!=null) {
@@ -698,10 +643,10 @@ public class CommandRunnerImpl implements CommandRunner {
             if (param.primary()) {
                 //if primary then it's an operand
                 report.getTopMessagePart().addProperty(paramName+"_operand",
-                            getParamDescription(localStrings, i18nKey, model));
+                            model.getLocalizedDescription());
             } else {
                 report.getTopMessagePart().addProperty(paramName,
-                            getParamDescription(localStrings, i18nKey, model));
+                            model.getLocalizedDescription());
             }
         }
     }
