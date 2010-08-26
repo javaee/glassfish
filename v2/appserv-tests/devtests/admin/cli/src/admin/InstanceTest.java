@@ -246,8 +246,8 @@ public class InstanceTest extends AdminBaseDevTest {
         boolean success = ret.outAndErr.indexOf("servers.server." + iname + ".config-ref=" + iname + "-config") >= 0;
         report("create-instance-configref", success);
 
-        ret = asadminWithOutput("get", "servers.server." + iname + ".node");
-        success = ret.outAndErr.indexOf("servers.server." + iname + ".node=localhost") >= 0;
+        ret = asadminWithOutput("get", "servers.server." + iname + ".node-ref");
+        success = ret.outAndErr.indexOf("servers.server." + iname + ".node-ref=localhost") >= 0;
         report("create-instance-node", success);
 
         report("create-instance-existsAlready", !asadmin("create-instance",
