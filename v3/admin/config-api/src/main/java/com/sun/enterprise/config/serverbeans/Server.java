@@ -147,7 +147,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      * @throws PropertyVetoException if a listener vetoes the change
      */
     @Param(name = "node", optional = true)
-    void setNodeRef(String value) throws PropertyVetoException;
+    void setNode(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the node property.
@@ -158,7 +158,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *         {@link String }
      */
     @Attribute
-    String getNodeRef();
+    String getNode();
 
     /**
      * Gets the value of the lbWeight property.
@@ -276,12 +276,6 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
 
     @DuckTyped
     boolean isRunning();
-
-    @DuckTyped
-    void setNode(String nodeRef)throws PropertyVetoException;
-
-    @DuckTyped
-    String getNode();
 
     class Duck {
 
@@ -432,14 +426,6 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                 // drop through...
             }
             return false;
-        }
-
-        public static void setNode(Server server, String nodeRef) throws PropertyVetoException{
-            server.setNodeRef(nodeRef);
-        }
-
-        public static String getNode(Server server){
-            return server.getNodeRef();  
         }
     }
 
