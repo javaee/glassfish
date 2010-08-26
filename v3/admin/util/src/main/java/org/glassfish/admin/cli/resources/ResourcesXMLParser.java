@@ -152,10 +152,11 @@ public class ResourcesXMLParser implements EntityResolver
             DocumentBuilder builder = factory.newDocumentBuilder();
             builder.setEntityResolver(this);
             builder.setErrorHandler(errorHandler);
+            Object args[] = new Object[]{resourceFile};
             if (resourceFile == null) {
-		String msg = localStrings.getString( "resources.parser.no_resource_file", 
-                                                        "Resource file ({0} does not exist", 
-                                                        resourceFile );
+		String msg = localStrings.getStringWithDefault( "resources.parser.no_resource_file",
+                                                        "Resource file ({0} does not exist",
+                                                        args );
                 throw new Exception( msg );
             }
             InputSource is = new InputSource(resourceFile.toURI().toString());
@@ -176,10 +177,11 @@ public class ResourcesXMLParser implements EntityResolver
             } catch (IOException ex) {
             }
             if(!isDoctypePresent){
+                Object args[] = new Object[]{resourceFile.toString()};
                 throw new Exception(
-                    localStrings.getString("resources.parser.doctype_not_present_in_xml", 
-                                            "Error Parsing the xml ({0}), doctype is not present", 
-                                            resourceFile.toString()));
+                    localStrings.getStringWithDefault("resources.parser.doctype_not_present_in_xml", 
+                                            "Error Parsing the xml ({0}), doctype is not present",
+                                            args));
             }
             Exception  x = sxe;
             if (sxe.getException() != null)
