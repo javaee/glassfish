@@ -40,11 +40,8 @@
 
 package org.glassfish.osgiweb;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleEvent;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.SynchronousBundleListener;
-import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.*;
+
 import static org.osgi.framework.Constants.ACTIVATION_LAZY;
 import static org.osgi.framework.Constants.BUNDLE_ACTIVATIONPOLICY;
 import org.osgi.service.url.URLConstants;
@@ -69,7 +66,7 @@ import com.sun.hk2.component.ExistingSingletonInhabitant;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class WebExtender implements Extender, SynchronousBundleListener
+public class WebExtender implements Extender, BundleListener
 {
     private OSGiWebContainer wc;
     private static final Logger logger =

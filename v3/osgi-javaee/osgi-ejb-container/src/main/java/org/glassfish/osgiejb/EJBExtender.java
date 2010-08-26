@@ -40,11 +40,8 @@
 
 package org.glassfish.osgiejb;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleEvent;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.SynchronousBundleListener;
-import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.*;
+
 import static org.osgi.framework.Constants.ACTIVATION_LAZY;
 import static org.osgi.framework.Constants.BUNDLE_ACTIVATIONPOLICY;
 import org.glassfish.osgijavaeebase.Extender;
@@ -55,12 +52,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.Dictionary;
 
 /**
- * An extender that listens to web application bundle's lifecycle
+ * An extender that listens to OSGi application bundle's lifecycle
  * events and does the necessary deployment/undeployment.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class EJBExtender implements Extender, SynchronousBundleListener
+public class EJBExtender implements Extender, BundleListener
 {
     private OSGiEJBContainer c;
     private static final Logger logger =
