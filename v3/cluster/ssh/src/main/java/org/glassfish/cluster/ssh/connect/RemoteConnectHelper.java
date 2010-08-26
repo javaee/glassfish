@@ -148,6 +148,7 @@ public class RemoteConnectHelper  {
                 logger.severe("Invalid installdir "+noderef);
                 return 1;
             }
+            System.out.println("install dir "+ nodeHome);
             SshConnector connector = node.getSshConnector();
             if ( connector != null)  {
                 sshL=habitat.getComponent(SSHLauncher.class);
@@ -158,10 +159,11 @@ public class RemoteConnectHelper  {
 
                 // We always pass the DAS host and port to the asadmin
                 // command we are running because some local commands like
-                String prefix = nodeHome +"/bin/asadmin " +
+                String prefix = nodeHome +File.separator+ "bin"+ File.separator+"asadmin " +
                         " --host " + dasHost + " --port " + dasPort +
                         " " + cmd;
-
+                String unixStyleSlash = prefix.replaceAll("\\\\","/");
+                System.out.println("unix Style command"+unixStyleSlash);
                  //get the params for the command
                 // we don't validate since called by other commands directly
                 String instanceName = new String();
@@ -182,10 +184,10 @@ public class RemoteConnectHelper  {
 
                     command = command + " "+ key + " " +value;
                 }
-                fullCommand = prefix + command + " " +  instanceName;
+                fullCommand = unixStyleSlash + command + " " +  instanceName;
 
                 ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-
+                System.out.println("fullcommand "+ fullCommand);
                 commandStatus = sshL.runCommand(fullCommand, outStream);
                 String results = outStream.toString();
                 outputString.append(results);
