@@ -109,7 +109,9 @@ public class PESessionLocker extends BaseSessionLocker implements SessionLocker 
                     //tried to wait and lock maxNumberOfRetries times; throw an exception
                     //throw new ServletException("unable to acquire session lock");
                     //instead of above; unlock the background so we can take over
-                    sess.unlockBackground();
+                    if (sess instanceof StandardSession) {
+                        ((StandardSession)sess).unlockBackground();
+                    }
                 }              
             }
         }

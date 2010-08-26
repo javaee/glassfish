@@ -601,7 +601,8 @@ public abstract class PersistentManagerBase
         long timeNow = System.currentTimeMillis();
         Session sessions[] = findSessions();
 
-        for (Session session : sessions) {
+        for (int i = 0; i < sessions.length; i++) {
+            StandardSession session = (StandardSession) sessions[i];
             /* START CR 6363689
             if (!session.isValid()) {
             */
@@ -1376,7 +1377,7 @@ public abstract class PersistentManagerBase
             int timeIdle = // Truncate, do not round up
                 (int) ((timeNow - sessions[i].getLastAccessedTime()) / 1000L);
             if (timeIdle > minIdleSwap) {
-                Session session = sessions[i];
+                StandardSession session = (StandardSession) sessions[i];
                 //skip the session if it cannot be locked
                 if(session.lockBackground()) {
                     if(log.isLoggable(Level.FINE))
@@ -1417,7 +1418,8 @@ public abstract class PersistentManagerBase
 
         // Back up all sessions idle longer than maxIdleBackup
         if (maxIdleBackup >= 0) {
-            for (Session session : sessions) {
+            for (int i = 0; i < sessions.length; i++) {
+                StandardSession session = (StandardSession) sessions[i];
                 if (!session.isValid())
                     continue;                
                 int timeIdle = // Truncate, do not round up

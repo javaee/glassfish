@@ -4059,7 +4059,9 @@ public class Request
                     // Unlock the background so we can take over.
                     log.warning("This should not happen-breaking " +
                         "background lock: sess =" + sess);
-                    sess.unlockBackground();
+                    if (sess instanceof StandardSession) {
+                        ((StandardSession)sess).unlockBackground();
+                    }
                 }              
             }
         }
