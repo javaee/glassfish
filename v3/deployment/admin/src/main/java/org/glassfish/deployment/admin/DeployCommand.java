@@ -295,12 +295,20 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 deploymentContext.getAppProps().putAll(undeployProps);
             }
 
-            if (properties!=null) {
-                deploymentContext.getAppProps().putAll(properties);
+            if (properties != null || property != null) {
+                // if one of them is not null, let's merge them 
+                // to properties so we don't need to always 
+                // check for both
+                if (properties == null) {
+                    properties = new Properties();
+                }
+                if (property != null) {
+                    properties.putAll(property);
+                }
             }
 
-            if (property!=null) {
-                deploymentContext.getAppProps().putAll(property);
+            if (properties != null) {
+                deploymentContext.getAppProps().putAll(properties);
             }
 
             // clean up any generated files
@@ -568,12 +576,6 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             for (String propertyName : propertyNamesList) {
                 if (properties.containsKey(propertyName)) {
                     props.put(propertyName, properties.getProperty(propertyName));
-                }
-            }
-        } else if (property != null) {
-            for (String propertyName : propertyNamesList) {
-                if (property.containsKey(propertyName)) {
-                    props.put(propertyName, property.getProperty(propertyName));
                 }
             }
         }
