@@ -66,7 +66,7 @@ public class WindowsScriptManager {
 			+ "\n"
 			+ "Link.Description = \"%%DESCRIPTION%%\""
 			+ "\n"
-			+ "Link.Arguments = \"%%ARGUMENTS%%\""
+			+ "Link.Arguments = \"%%ARGUMENTS%%"
 			+ "\n"
 			+ "Link.IconLocation = \"%%ICON_FILE_PATH%%\""
 			+ "\n"

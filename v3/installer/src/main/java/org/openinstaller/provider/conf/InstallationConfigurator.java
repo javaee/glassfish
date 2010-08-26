@@ -183,11 +183,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
            //create domain startup/shutdown wrapper scripts
          if (OSUtils.isWindows()) {
                 setupWindowsDomainScripts();
-                /*
                 createServerShortCuts();
-                 *
-                 */
-
             } else {
                 setupUnixDomainScripts();
             }
@@ -346,12 +342,12 @@ public final class InstallationConfigurator implements Configurator, Notificatio
         wsShortMgr.createFolder(folderName);
         String modifiedInstallDir = productRef.getInstallLocation().replace("\\", "\\\\");
         // Create short cut for starting update tool.
-        wsShortMgr.createShortCut(
+         wsShortMgr.createShortCut(
                 folderName,
                 "Start Update Tool",
                 modifiedInstallDir + "\\\\bin\\\\updatetool.exe",
                 "Start updatetool",
-                "",
+                "\"",
                 modifiedInstallDir + "\\\\updatetool\\\\vendor-packages\\\\updatetool\\\\images\\\\application-update-tool.ico",
                 modifiedInstallDir + "\\\\bin",
                 "2");
@@ -370,49 +366,14 @@ public final class InstallationConfigurator implements Configurator, Notificatio
         WindowsShortcutManager wsShortMgr = new WindowsShortcutManager();
         wsShortMgr.createFolder(folderName);
         String modifiedInstallDir = productRef.getInstallLocation().replace("\\", "\\\\");
-        String modifiedAsAdminPath = 
-                GlassFishUtils.getGlassfishAdminScriptPath(productRef.getInstallLocation()).replace("\\", "\\\\");
-
-
-        String configMode = (String) ConfigHelper.getValue("NodeServerOptions.configoptions.CONFIGURATION_MODE");
-        if (configMode.equalsIgnoreCase("CREATE_DOMAIN")) {
-            // Create short cut for starting server.
-            wsShortMgr.createShortCut(
-                    folderName,
-                    "Start Application Server",
-                    modifiedInstallDir + "\\\\" + modifiedAsAdminPath,
-                    "Start server",
-                    "start-domain domain1",
-                    modifiedInstallDir + "\\\\glassfish\\\\icons\\\\startAppserv.ico",
-                    modifiedInstallDir + "\\\\glassfish",
-                    "2");
-
-
-            // Create short cut for Stop application server.
-            wsShortMgr.createShortCut(
-                    folderName,
-                    "Stop Application Server",
-                    modifiedInstallDir + "\\\\" + modifiedAsAdminPath,
-                    "Stop server",
-                    "stop-domain domain1",
-                    modifiedInstallDir + "\\\\glassfish\\\\icons\\\\stopAppserv.ico",
-                    modifiedInstallDir + "\\\\glassfish",
-                    "2");
-
-            // Create short cut for Admin Console.
-            wsShortMgr.createShortCut(
-                    folderName,
-                    "Administration Console",
-                    "http://localhost:" + configData.get("ADMIN_PORT"));
-        }
-
+    
         // Create short cut for uninstall.exe.
-        wsShortMgr.createShortCut(
+         wsShortMgr.createShortCut(
                 folderName,
                 "Uninstall",
                 modifiedInstallDir + "\\\\uninstall.exe",
                 "Uninstall",
-                "-j \"" + jdkHome.replace("\\", "\\\\") + "\"",
+                "-j \" & chr(34) & \"" + jdkHome.replace("\\", "\\\\") + "\" & chr(34)",
                 modifiedInstallDir + "\\\\glassfish\\\\icons\\\\uninstall.ico",
                 modifiedInstallDir,
                 "2");
