@@ -44,8 +44,11 @@ import com.sun.appserv.connectors.internal.api.*;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants.TriState;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.connectors.util.ResourcesUtil;
+import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.resource.ResourceUtilities;
 import com.sun.logging.LogDomains;
 import org.glassfish.admin.cli.resources.*;
@@ -123,6 +126,12 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
 
     private static Logger _logger = LogDomains.getLogger(ConnectorDeployer.class, LogDomains.RSR_LOGGER);
 
+    private static final String META_INF = "META-INF";
+    private static final String RESOURCES_XML = "glassfish-resources.xml";
+    private static final String RESOURCES_XML_META_INF = "META-INF/glassfish-resources.xml";
+    private static final String RESOURCES_XML_WEB_INF = "WEB-INF/glassfish-resources.xml";
+    
+
     public ResourcesDeployer(){
     }
 
@@ -173,7 +182,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                 Map<String,Map<String, List>> appScopedResources = new HashMap<String,Map<String,List>>();
                 Map<String, String> fileNames = new HashMap<String, String>();
 
-                retrieveAllResourcesXMLs(fileNames, archive.getURI().getPath());
+                retrieveAllResourcesXMLs(fileNames, archive);
 
                 for (String moduleName: fileNames.keySet()) {
                     String fileName = fileNames.get(moduleName);
@@ -532,6 +541,57 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
         return commandParams.name();
     }
 
+    public void retrieveAllResourcesXMLs(Map<String, String> fileNames, ReadableArchive archive) throws IOException {
+
+        if(DeploymentUtils.isEAR(archive)){
+            //Look for top-level META-INF/glassfish-resources.xml
+            if(archive.exists(RESOURCES_XML_META_INF)){
+                String archivePath = archive.getURI().getPath();
+                String fileName = archivePath + RESOURCES_XML_META_INF;
+                if(_logger.isLoggable(Level.FINEST)){
+                    _logger.finest("GlassFish-Resources Deployer - fileName : " + fileName +
+                            " - parent : " + archive.getName());
+                }
+                fileNames.put(archive.getName(), fileName);
+            }
+
+            //Lok for sub-module level META-INF/glassfish-resources.xml and WEB-INF/glassfish-resources.xml
+            Enumeration<String> entries = archive.entries();
+            while(entries.hasMoreElements()){
+                String element = entries.nextElement();
+                if(element.endsWith(".jar") || element.endsWith(".war") || element.endsWith(".rar") ||
+                        element.endsWith("_jar") || element.endsWith("_war") || element.endsWith("_rar")){
+                    ReadableArchive subArchive = archive.getSubArchive(element);
+                    if(subArchive != null ){
+                        retrieveResourcesXMLFromArchive(fileNames, subArchive);
+                    }
+                }
+            }
+        }else{
+            //Look for standalone archive's META-INF/glassfish-resources.xml and WEB-INF/glassfish-resources.xml
+            retrieveResourcesXMLFromArchive(fileNames, archive);
+        }
+    }
+
+    private void retrieveResourcesXMLFromArchive(Map<String, String> fileNames, ReadableArchive subArchive) {
+        if(DeploymentUtils.hasResourcesXML(subArchive)){
+            String subArchivePath = subArchive.getURI().getPath();
+            String fileName ;
+            if(DeploymentUtils.isWebArchive(subArchive)){
+                fileName = subArchivePath +  RESOURCES_XML_WEB_INF;
+            }else{
+                fileName = subArchivePath + RESOURCES_XML_META_INF;
+            }
+            if(_logger.isLoggable(Level.FINEST)){
+                _logger.finest("GlassFish-Resources Deployer - fileName : " + fileName +
+                        " - parent : " + subArchive.getName());
+            }
+
+            fileNames.put(subArchive.getName(), fileName);
+        }
+    }
+
+    /*
     public void retrieveAllResourcesXMLs(Map<String, String> fileNames, String path) throws IOException {
         File file = new File(path);
         File[] files = file.listFiles();
@@ -544,18 +604,17 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                         fileNames.put(name, files[i].getAbsolutePath());
                     }
                 } else if(entry.endsWith("WEB-INF/glassfish-resources.xml")){
-                    //TODO ASR : need to make sure that this is indeed *_war directory
                     if (!files[i].isDirectory()) {
                         String name = file.getParentFile().getName();
                         fileNames.put(name, files[i].getAbsolutePath());
                     }
                 } else if(files[i].isDirectory()){
-                    //TODO ASR : no need to do multi-level recursion ? (first level is sufficient ?)
                     retrieveAllResourcesXMLs(fileNames, files[i].getAbsolutePath());
                 }
             }
         }
     }
+    */
 
     /**
      * Given a <i>resource</i> instance, appropriate deployer will be provided
