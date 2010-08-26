@@ -137,7 +137,7 @@ public interface ConfigBeanProxy {
                 throw new TransactionFailure("Must use a locked parent config object for copying new config object");
             }
 
-            ConfigBean copy = configBean.copy();
+            ConfigBean copy = configBean.copy(configBean.parent());
             return t.enroll(copy.createProxy());
         }
 
