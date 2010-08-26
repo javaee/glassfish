@@ -111,15 +111,27 @@ public class ApplicationConfigListener implements TransactionListener,
         for (PropertyChangeEvent event : changes) {
             if (event.getSource() instanceof Application || 
                 event.getSource() instanceof ApplicationRef) {
-                if (event.getPropertyName().equals("enabled")) {
-                    String oldValue = (String)event.getOldValue();
-                    String newValue = (String)event.getNewValue();
-                    if (oldValue != null && newValue != null && 
-                        !oldValue.equals(newValue)) {
-                        // if this is a change event of the enable 
-                        // attribute on application or application-ref element
+                Object oldValue = event.getOldValue();
+                Object newValue = event.getNewValue();
+                if (oldValue != null && newValue != null && 
+                    oldValue instanceof String && 
+                    newValue instanceof String &&
+                    !((String)oldValue).equals((String)newValue)) {
+                    // if it's an attribute change of the application
+                    // element or application-ref element
+                    Object parent = event.getSource();
+                    String appName = null;
+                    if (parent instanceof Application) {
+                        appName = ((Application)parent).getName();
+                    } else if (parent instanceof ApplicationRef) {
+                        appName = ((ApplicationRef)parent).getRef();
+                    }
+                    if (event.getPropertyName().equals("enabled")) {
                         handleAppEnableChange(event.getSource(), 
-                            Boolean.valueOf(newValue));
+                            appName, Boolean.valueOf((String)newValue));
+                    } else {
+                        handleOtherAppConfigChanges(event.getSource(), 
+                            appName);
                     }
                 }
             }
@@ -135,13 +147,8 @@ public class ApplicationConfigListener implements TransactionListener,
         logger = Logger.getLogger(ApplicationConfigListener.class.getName());
     }
 
-    private void handleAppEnableChange(Object parent, boolean enabled) {
-        String appName = null;
-        if (parent instanceof Application) {
-            appName = ((Application)parent).getName();
-        } else if (parent instanceof ApplicationRef) {
-            appName = ((ApplicationRef)parent).getRef();
-        }
+    private void handleAppEnableChange(Object parent, 
+        String appName, boolean enabled) {
         if (enabled) {
             if (isCurrentInstanceMatchingTarget(parent)) {
                 enableApplication(appName);
@@ -152,6 +159,17 @@ public class ApplicationConfigListener implements TransactionListener,
             }
         }
     }
+
+    private void handleOtherAppConfigChanges(Object parent, String appName) {
+        // reload the application for other application related 
+        // config changes if the application is in enabled state
+        if (isCurrentInstanceMatchingTarget(parent) && 
+            deployment.isAppEnabled(applications.getApplication(appName))) {
+            disableApplication(appName); 
+            enableApplication(appName);
+        }
+    }
+
 
     private boolean isCurrentInstanceMatchingTarget(Object parent) {
         // DAS receive all the events, so we need to figure out 
