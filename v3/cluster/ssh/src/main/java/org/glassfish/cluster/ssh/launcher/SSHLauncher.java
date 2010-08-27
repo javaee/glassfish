@@ -64,6 +64,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Service(name="SSHLauncher")
@@ -130,11 +131,15 @@ public class SSHLauncher {
 
         host = connector.getSshHost();
         if (SSHUtil.checkString(host) != null) {
-            this.host = host;            
+            this.host = host;
         } else {
             this.host = node.getNodeHost();
         }
+        if (logger.isLoggable(Level.FINE)) {
+	    logger.fine("Connecting to host " + host); 
+        }
 
+        //XXX Why do we need this again?  This is already done above and set to host
         String sshHost = connector.getSshHost();
         if (sshHost != null)
             this.host = sshHost;
@@ -169,6 +174,7 @@ public class SSHLauncher {
         this.userName = SSHUtil.checkString(userName) == null ?
                     System.getProperty("user.name") : userName;
 
+        
         this.rawPassword = password;
         this.password = expandPasswordAlias(password);
         this.rawKeyPassPhrase = keyPassPhrase;
@@ -185,6 +191,9 @@ public class SSHLauncher {
                 e.printStackTrace();
             }
         }
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine ("SSH info is " + toString());
+        }
     }
 
 
@@ -200,6 +209,9 @@ public class SSHLauncher {
 
         connection.connect(new HostVerifier(knownHostsDatabase));
         if(SSHUtil.checkString(keyFile) == null && SSHUtil.checkString(password) == null) {
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("keyfile and password are null. Will try to authenticate with default key file if available");
+            }
             // check the default key locations if no authentication
             // method is explicitly configured.
             File home = new File(System.getProperty("user.home"));
@@ -213,15 +225,24 @@ public class SSHLauncher {
                                                              key, null);
                 }
                 if (isAuthenticated) {
-                    logger.fine("Authentication successful");
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.fine("Authentication successful using key " + keyName);
+                    }
                     break;
                 }
 
             }
         }
         if (!isAuthenticated && SSHUtil.checkString(keyFile) != null) {
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("Specified key file is " + keyFile);
+            }
             File key = new File(keyFile);
             if (key.exists()) {
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.fine("Specified key file exists at " + key);
+                }
+
                 //See if the key file is protected with passphrase
                 
                isAuthenticated = connection.authenticateWithPublicKey(
@@ -229,13 +250,19 @@ public class SSHLauncher {
 
             }
         } if (!isAuthenticated && SSHUtil.checkString(password) != null) {
+              if (logger.isLoggable(Level.FINE)) {
+                  logger.fine("Authenticating with password " + getPrintablePassword(password));
+              }
+
           isAuthenticated = connection.authenticateWithPassword(userName, password);
       }
 
         if (!isAuthenticated && !connection.isAuthenticationComplete()) {
             connection.close();
             connection = null;
-            logger.fine("Could not authenticate");
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("Could not authenticate");
+            }
             throw new IOException("Could not authenticate");
         }
         SSHUtil.register(connection);
