@@ -194,6 +194,13 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
         Element root = appendChildNS(parent, getXMLRootTag().getQName(),
                     TagNames.WL_WEB_APP_NAMESPACE);
 
+        //security-role-assignment*
+        List<WLSecurityRoleAssignment> wlRoleAssignments = bundleDescriptor.getApplication().getWlRoleAssignments();
+        for (int i = 0; i < wlRoleAssignments.size(); i++) {
+            WLSecurityRoleAssignmentNode sran = new WLSecurityRoleAssignmentNode();
+            sran.writeDescriptor(root, RuntimeTagNames.WL_SECURITY_ROLE_ASSIGNMENT, wlRoleAssignments.get(i));
+        }
+
         // session-descriptor
         WLSessionDescriptorNode sessionDescriptorNode = new WLSessionDescriptorNode();
         sessionDescriptorNode.writeDescriptor(root, bundleDescriptor);
@@ -213,13 +220,6 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
         for (WebComponentDescriptor webCompDesc : bundleDescriptor.getServletDescriptors()) {
             WLServletDescriptorNode servletDescriptorNode = new WLServletDescriptorNode();
             servletDescriptorNode.writeDescriptor(root, webCompDesc);
-        }
-
-        //security-role-assignment*
-        List<WLSecurityRoleAssignment> wlRoleAssignments = bundleDescriptor.getApplication().getWlRoleAssignments();
-        for (int i = 0; i < wlRoleAssignments.size(); i++) {
-            WLSecurityRoleAssignmentNode sran = new WLSecurityRoleAssignmentNode();
-            sran.writeDescriptor(root, RuntimeTagNames.WL_SECURITY_ROLE_ASSIGNMENT, wlRoleAssignments.get(i));
         }
 
         return root;
