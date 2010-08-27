@@ -190,14 +190,21 @@ println("payload -------------------------------> #{requestScope.tmpJSON}");
                     }
                     }
 
-                    ////REST-TODO  need to take care setProxyProperties()
                     if (#{pageSession.hasPropertyTable}){
-                        getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                        getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                         if (#{pageSession['rest-api']}) {
-                            setAttribute(key="objStr", value="#{pageSession.restObjStr},name=#{pageSession.valueMap['name']}");
+                            javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
+                            println("payload -------------------------------> #{requestScope.tmpJSON}");
+                            urlencode(value="#{pageSession.valueMap['name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
+                            gf.restRequest(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodeName}/property.json"
+                                           method="POST"
+                                           data="#{requestScope.tmpJSON}"
+                                           result="#{requestScope.restResponse}");
                         }
-                        setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                        if ("!#{pageSession['rest-api']}") {
+                            getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+                            getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                            setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                        }
                     }
 
                     //when creating resource, need to create the resource-ref

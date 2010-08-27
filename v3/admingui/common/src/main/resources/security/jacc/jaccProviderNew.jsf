@@ -57,6 +57,7 @@
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getDefaultValues(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+        createList(size="0", result="#{pageSession.tableList}");
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{false}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
