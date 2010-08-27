@@ -203,15 +203,18 @@ public class CreateApplicationRefCommand implements AdminCommand {
             ApplicationRef applicationRef = domain.getApplicationRefInTarget(appName, target);
             if ( applicationRef != null ) {
                 suppInfo.setAppRefExists(true);
-
+                
                 // we provides warning messages
                 // if a versioned name has been provided to the command
-                if(VersioningDeploymentUtil.isVersionExpression(name)){
+                if( VersioningDeploymentUtil.isVersionExpression(name) ){
                     ActionReport.MessagePart childPart = part.addChild();
                     childPart.setMessage(localStrings.getLocalString("appref.already.exists",
                             "Application reference {0} already exists in target {1}.", appName, target));
                 } else {
-                    // returns failure if an untagged name has been provided
+                    // returns failure if an untagged name has been provided to the command
+                    report.setMessage(localStrings.getLocalString("appref.already.exists",
+                            "Application reference {0} already exists in target {1}.", name, target));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                     return;
                 }
             } else {

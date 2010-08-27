@@ -285,8 +285,8 @@ public class VersioningDeploymentUtil {
     /**
      * Replaces the colon with a dash in the given application name.
      *
-     * @param appName
-     * @return return a valid repository name
+     * @param appName the application name
+     * @return a valid repository name
      * @throws VersioningDeploymentSyntaxException if getEpression and getUntaggedName
      * throws exception
      */
@@ -309,9 +309,16 @@ public class VersioningDeploymentUtil {
     }
 
     /**
-     * @return return true is the given application name is not versioned
+     * Test if the given application name is an untagged name
+     * 
+     * @param appName the application name
+     * @return <code>true</code> is the given application name is not versioned
+     * @throws VersioningDeploymentSyntaxException if getUntaggedName
+     * throws exception
      */
-    public static final Boolean isUntagged(String appName) {
+    public static final Boolean isUntagged(String appName) 
+            throws VersioningDeploymentSyntaxException {
+
         Boolean isUntagged = false;
         String untaggedName = VersioningDeploymentUtil.getUntaggedName(appName);
         if (untaggedName != null && untaggedName.equals(appName)) {
@@ -325,8 +332,12 @@ public class VersioningDeploymentUtil {
      *
      * @param appName the application name
      * @return <code>true</code> if the appName is a version expression
+     * @throws VersioningDeploymentSyntaxException if isUntaggedName
+     * throws exception
      */
-    public static final Boolean isVersionExpression(String appName) {
+    public static final Boolean isVersionExpression(String appName)
+            throws VersioningDeploymentSyntaxException {
+        
         Boolean isVersionExpression = false;
         if(appName != null){
             isVersionExpression = !isUntagged(appName);
@@ -336,9 +347,11 @@ public class VersioningDeploymentUtil {
 
     /**
      * Test if the given application name is a version identifier.
-     * 
+     *
      * @param appName the application name
      * @return <code>true</code> if the appName is a version identifier
+     * @throws VersioningDeploymentSyntaxException if isVersionExpression
+     * throws exception
      */
     public static final Boolean isVersionIdentifier(String appName) {
         return isVersionExpression(appName) &&
