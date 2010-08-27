@@ -40,7 +40,9 @@ public class SlessEJB5 implements Sless5
         if( !aroundTimeoutCalled ) {
             throw new EJBException("bean class aroundTimeout not called");
         }
-        aroundTimeoutCalled = false;
+        // Enough if it is set once to true. Otherwise a timer can be executed 
+        // between verify() and direct call to this method through the interface
+        // aroundTimeoutCalled = false;
 
         if( !aroundAllCalled ) {
             throw new EJBException("InderceptorD aroundAll not called");
