@@ -92,7 +92,8 @@ public class ConnectorsTest extends BaseSeleniumTestClass {
                 "propertyForm:propertySheet:propertSectionTextField:statusProp:enabled",
                 "propertyForm:propertyContentPage:topButtons:cancelButton",
                 TRIGGER_CONNECTOR_RESOURCE,
-                TRIGGER_EDIT_CONNECTOR_RESOURCE);
+                TRIGGER_EDIT_CONNECTOR_RESOURCE,
+                "off");
 
         // Enable resource
         testEnableButton(testConnector,
@@ -101,7 +102,8 @@ public class ConnectorsTest extends BaseSeleniumTestClass {
                 "propertyForm:propertySheet:propertSectionTextField:statusProp:enabled",
                 "propertyForm:propertyContentPage:topButtons:cancelButton",
                 TRIGGER_CONNECTOR_RESOURCE,
-                TRIGGER_EDIT_CONNECTOR_RESOURCE);
+                TRIGGER_EDIT_CONNECTOR_RESOURCE,
+                "on");
 
         // Delete connector resource
         deleteRow("propertyForm:resourcesTable:topActionsGroup1:button1", "propertyForm:resourcesTable", testConnector);

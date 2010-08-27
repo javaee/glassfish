@@ -81,13 +81,15 @@ public class LifecycleModulesTest extends BaseSeleniumTestClass {
                 "propertyForm:propertySheet:propertSectionTextField:statusProp:status",
                 "propertyForm:propertyContentPage:topButtons:cancelButton",
                 TRIGGER_LIFECYCLE_MODULES,
-                TRIGGER_EDIT_LIFECYCLE_MODULE);
+                TRIGGER_EDIT_LIFECYCLE_MODULE,
+                "off");
 
         testEnableButton(lifecycleName, "propertyForm:deployTable", "propertyForm:deployTable:topActionsGroup1:button2",
                 "propertyForm:propertySheet:propertSectionTextField:statusProp:status",
                 "propertyForm:propertyContentPage:topButtons:cancelButton",
                 TRIGGER_LIFECYCLE_MODULES,
-                TRIGGER_EDIT_LIFECYCLE_MODULE);
+                TRIGGER_EDIT_LIFECYCLE_MODULE,
+                "on");
 
         deleteRow("propertyForm:deployTable:topActionsGroup1:button1", "propertyForm:deployTable", lifecycleName);
     }

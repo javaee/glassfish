@@ -76,14 +76,16 @@ public class JndiTest extends BaseSeleniumTestClass {
                 "form1:propertySheet:propertSectionTextField:statusProp:enabled",
                 "form1:propertyContentPage:topButtons:cancelButton",
                 TRIGGER_CUSTOM_RESOURCES,
-                TRIGGER_EDIT_CUSTOM_RESOURCE);
+                TRIGGER_EDIT_CUSTOM_RESOURCE,
+                "off");
         testEnableButton(resourceName,
                 "propertyForm:resourcesTable",
                 "propertyForm:resourcesTable:topActionsGroup1:button2",
                 "form1:propertySheet:propertSectionTextField:statusProp:enabled",
                 "form1:propertyContentPage:topButtons:cancelButton",
                 TRIGGER_CUSTOM_RESOURCES,
-                TRIGGER_EDIT_CUSTOM_RESOURCE);
+                TRIGGER_EDIT_CUSTOM_RESOURCE,
+                "on");
 
         deleteRow("propertyForm:resourcesTable:topActionsGroup1:button1", "propertyForm:resourcesTable", resourceName);
     }
@@ -113,14 +115,16 @@ public class JndiTest extends BaseSeleniumTestClass {
                 "form:propertySheet:propertSectionTextField:statusProp:enabled",
                 "form:propertyContentPage:topButtons:cancelButton",
                 TRIGGER_EXTERNAL_RESOURCES,
-                TRIGGER_EDIT_EXTERNAL_RESOURCE);
+                TRIGGER_EDIT_EXTERNAL_RESOURCE,
+                "off");
         testEnableButton(resourceName,
                 "propertyForm:resourcesTable",
                 "propertyForm:resourcesTable:topActionsGroup1:button2",
                 "form:propertySheet:propertSectionTextField:statusProp:enabled",
                 "form:propertyContentPage:topButtons:cancelButton",
                 TRIGGER_EXTERNAL_RESOURCES,
-                TRIGGER_EDIT_EXTERNAL_RESOURCE);
+                TRIGGER_EDIT_EXTERNAL_RESOURCE,
+                "on");
 
 //        selectTableRowByValue("propertyForm:resourcesTable", resourceName);
 //        waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:button3");

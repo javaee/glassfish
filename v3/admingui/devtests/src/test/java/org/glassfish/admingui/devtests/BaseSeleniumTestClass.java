@@ -385,8 +385,9 @@ public class BaseSeleniumTestClass {
             String statusID,
             String backToTableButtonId,
             String tableTriggerText,
-            String editTriggerText) {
-        testEnableDisableButton(resourceName, tableId, enableButtonId, statusID, backToTableButtonId, tableTriggerText, editTriggerText, "on");
+            String editTriggerText,
+            String statusMsg) {
+        testEnableDisableButton(resourceName, tableId, enableButtonId, statusID, backToTableButtonId, tableTriggerText, editTriggerText, statusMsg);
     }
 
     protected void testDisableButton(String resourceName,
@@ -395,8 +396,9 @@ public class BaseSeleniumTestClass {
             String statusId,
             String backToTableButtonId,
             String tableTriggerText,
-            String editTriggerText) {
-        testEnableDisableButton(resourceName, tableId, disableButtonId, statusId, backToTableButtonId, tableTriggerText, editTriggerText, "off");
+            String editTriggerText,
+            String statusMsg) {
+        testEnableDisableButton(resourceName, tableId, disableButtonId, statusId, backToTableButtonId, tableTriggerText, editTriggerText, statusMsg);
     }
 
     private void testEnableDisableButton(String resourceName,
@@ -413,8 +415,31 @@ public class BaseSeleniumTestClass {
         waitForButtonDisabled(enableButtonId);
 
         clickAndWait(getLinkIdByLinkText(tableId, resourceName), editTriggerText);
-        Assert.assertEquals(state, selenium.getValue(statusId));
+        if(state.contains("Target")) {
+            Assert.assertEquals(state, selenium.getText(statusId));
+        } else {
+            Assert.assertEquals(state, selenium.getValue(statusId));
+        }
         clickAndWait(backToTableButtonId, tableTriggerText);
+    }
+
+    protected void testEnableOrDisableTarget(String tableSelectMutlipleId,
+            String enableButtonId,
+            String generalTabId,
+            String targetTabId,
+            String statusId,
+            String generalTriggerText,
+            String targetTriggerText,
+            String state) {
+        selenium.click(tableSelectMutlipleId);
+        waitForButtonEnabled(enableButtonId);
+        selenium.click(enableButtonId);
+        waitForButtonDisabled(enableButtonId);
+
+        clickAndWait(generalTabId, generalTriggerText);
+        Assert.assertEquals(state, selenium.getText(statusId));
+
+        clickAndWait(targetTabId, targetTriggerText);
     }
 
     private static String getParameter(String paramName, String defaultValue) {

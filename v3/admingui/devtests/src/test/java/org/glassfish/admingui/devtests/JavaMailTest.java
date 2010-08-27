@@ -78,14 +78,16 @@ public class JavaMailTest extends BaseSeleniumTestClass {
                 "propertyForm:propertySheet:propertSectionTextField:statusProp:enabled",
                 "propertyForm:propertyContentPage:topButtons:cancelButton",
                 TRIGGER_JAVA_MAIL,
-                TRIGGER_EDIT_JAVAMAIL_SESSION);
+                TRIGGER_EDIT_JAVAMAIL_SESSION,
+                "off");
         testEnableButton(resourceName,
                 "propertyForm:resourcesTable",
                 "propertyForm:resourcesTable:topActionsGroup1:button2",
                 "propertyForm:propertySheet:propertSectionTextField:statusProp:enabled",
                 "propertyForm:propertyContentPage:topButtons:cancelButton",
                 TRIGGER_JAVA_MAIL,
-                TRIGGER_EDIT_JAVAMAIL_SESSION);
+                TRIGGER_EDIT_JAVAMAIL_SESSION,
+                "on");
 
         deleteRow("propertyForm:resourcesTable:topActionsGroup1:button1", "propertyForm:resourcesTable", resourceName);
     }
