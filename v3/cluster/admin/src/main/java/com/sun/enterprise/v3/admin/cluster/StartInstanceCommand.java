@@ -77,6 +77,7 @@ import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
  * @author Carla Mott
  */
 @Service(name = "start-instance")
+@CommandLock(CommandLock.LockType.NONE) // don't prevent _synchronize-files
 @Scoped(PerLookup.class)
 @I18n("start.instance.command")
 public class StartInstanceCommand implements AdminCommand, PostConstruct {

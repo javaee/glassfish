@@ -56,6 +56,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.concurrent.locks.Lock;
 
 import com.sun.enterprise.util.Utility;
 import org.glassfish.admin.payload.PayloadFilesManager;
@@ -119,6 +120,9 @@ public class CommandRunnerImpl implements CommandRunner {
 
     @Inject
     private InstanceStateService state;
+
+    @Inject
+    private AdminCommandLock adminLock;
 
     private static final String ASADMIN_CMD_PREFIX = "AS_ADMIN_";
 
@@ -994,6 +998,15 @@ public class CommandRunnerImpl implements CommandRunner {
                         "All @Cluster attribute and type validation completed successfully. Starting replication stages"));
             }
 
+            /**
+             * We're finally ready to actually execute the command instance.
+             * Acquire the appropriate lock.
+             */
+            Lock lock = adminLock.getLock(command);
+            try {
+                if (lock != null)
+                    lock.lock();        // XXX - should use a timeout
+
             // If command is undoable, then invoke prepare method
             if(command instanceof UndoableCommand) {
                 UndoableCommand uCmd = (UndoableCommand) command;
@@ -1050,6 +1063,12 @@ public class CommandRunnerImpl implements CommandRunner {
                 }
             } else
                 doCommand(model, command, context);
+            
+            } finally {
+                // command is done, release the lock
+                if (lock != null)
+                    lock.unlock();
+            }
 
         } catch (Exception ex) {
             logger.severe(ex.getMessage());

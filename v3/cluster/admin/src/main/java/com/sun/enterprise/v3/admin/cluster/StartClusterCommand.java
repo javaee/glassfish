@@ -58,6 +58,7 @@ import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 @I18n("start.cluster.command")
 @Service(name = "start-cluster")
 @Cluster(value={RuntimeType.DAS}, ifFailure=FailurePolicy.Warn)
+@CommandLock(CommandLock.LockType.NONE) // don't prevent _synchronize-files
 @Scoped(PerLookup.class)
 public class StartClusterCommand implements AdminCommand, PostConstruct {
 

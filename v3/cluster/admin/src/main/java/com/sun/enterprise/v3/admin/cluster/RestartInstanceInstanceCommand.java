@@ -54,6 +54,7 @@ import org.jvnet.hk2.component.PerLookup;
  */
 @Service(name = "_restart-instance")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE) // allow restart always
 @Async
 @I18n("restart.instance.command")
 @Cluster(RuntimeType.INSTANCE)

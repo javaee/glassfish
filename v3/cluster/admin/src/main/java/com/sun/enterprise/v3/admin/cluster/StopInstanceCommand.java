@@ -40,14 +40,18 @@
 
 package com.sun.enterprise.v3.admin.cluster;
 
+import java.util.Iterator;
+import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.sun.enterprise.admin.remote.RemoteAdminCommand;
+import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.v3.admin.StopServer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Async;
 import org.glassfish.api.I18n;
@@ -56,20 +60,17 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.CommandException;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-
-import java.util.Iterator;
-import java.util.Collection;
-import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PerLookup;
-import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 
 /**
  * AdminCommand to stop the instance
@@ -82,6 +83,7 @@ import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
  */
 @Service(name = "stop-instance")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE) // allow stop-instance always
 @I18n("stop.instance.command")
 @Cluster(RuntimeType.DAS)
 public class StopInstanceCommand extends StopServer implements AdminCommand, PostConstruct {

@@ -57,6 +57,7 @@ import org.jvnet.hk2.component.PerLookup;
  */
 @Service(name = "restart-instance")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE) // don't prevent _synchronize-files
 @I18n("restart.instance.command")
 @Cluster(RuntimeType.DAS)
 public class RestartInstanceCommand implements AdminCommand {

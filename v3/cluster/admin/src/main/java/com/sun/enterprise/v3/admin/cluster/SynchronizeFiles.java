@@ -73,6 +73,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
  */
 @Service(name="_synchronize-files")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.EXCLUSIVE)
 @I18n("synchronize.command")
 public class SynchronizeFiles implements AdminCommand {
 
