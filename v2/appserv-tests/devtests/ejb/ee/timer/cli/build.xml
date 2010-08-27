@@ -221,7 +221,22 @@
     </target>
 
     <target name="migrate-timers" depends="init-common">
+        <antcall target="-disable-gms" />
         <run-client main-class="eetimer.MigrateTimersTest"/>
+    </target>
+
+    <target name="-disable-gms">
+        <antcall target="asadmin-common-ignore-fail">
+            <param name="admin.command" value="set" />
+            <param name="operand.props" value="clusters.cluster.${cluster-name}.gms-enabled=false"/>
+        </antcall>
+        <antcall target="restart-server" />
+        <antcall target="stop-cluster-common">
+            <param name="cluster-name" value="${cluster-name}"/>
+        </antcall>
+        <antcall target="start-cluster-common">
+            <param name="cluster-name" value="${cluster-name}"/>
+        </antcall>
     </target>
 
     <target name="clean" depends="init-common">
