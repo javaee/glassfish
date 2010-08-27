@@ -52,7 +52,6 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.List;
 
-import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.*;
