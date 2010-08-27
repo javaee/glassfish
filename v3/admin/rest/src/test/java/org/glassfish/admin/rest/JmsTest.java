@@ -40,7 +40,6 @@
 
 package org.glassfish.admin.rest;
 
-import java.util.List;
 import com.sun.jersey.api.client.ClientResponse;
 import org.junit.Test;
 
@@ -65,9 +64,11 @@ public class JmsTest extends RestTestBase {
     static final String URL_JMS_HOST = "/domain/configs/config/server-config/jms-service/jms-host";
     static final String URL_CREATE_JMS_DEST = "/domain/servers/server/server/create-jmsdest";
     static final String URL_DELETE_JMS_DEST = "/domain/servers/server/server/delete-jmsdest";
-    static final String URL_LIST_JMS_DEST = "/domain/servers/server/server/list-jmsdest";
     static final String URL_FLUSH_JMS_DEST = "/domain/servers/server/server/flush-jmsdest";
+    static final String URL_GET_JMS_DEST = "/domain/servers/server/server/__get-jmsdest";
+    static final String URL_LIST_JMS_DEST = "/domain/servers/server/server/list-jmsdest";
     static final String URL_PING_JMS = "/domain/servers/server/server/jms-ping";
+    static final String URL_UPDATE_JMS_DEST = "/domain/servers/server/server/__update-jmsdest";
 
     @Test
     public void testJmsConnectionFactories() {
@@ -151,9 +152,16 @@ public class JmsTest extends RestTestBase {
     @Test
     public void testJmsDest() {
         final String jmsDestName = "jmsDest" + generateRandomString();
-        Map<String, String> newDest = new HashMap<String, String>() {{
+        final int maxNumMsgs = generateRandomNumber(500);
+        final int consumerFlowLimit = generateRandomNumber(500);
+
+        final Map<String, String> newDest = new HashMap<String, String>() {{
             put("id", jmsDestName);
             put("destType", "topic");
+        }};
+        Map<String, String> destProps = new HashMap<String, String>() {{
+            putAll(newDest);
+            put("property", "MaxNumMsgs="+maxNumMsgs+":ConsumerFlowLimit="+consumerFlowLimit);
         }};
 
         // Test Create
@@ -161,16 +169,23 @@ public class JmsTest extends RestTestBase {
         // This command returns 200 instead of 201, for some reason.  Odd.
         checkStatusForSuccess(response);
 
-        // Test creation. There's no CLI for editing a JMS destination, so we query
-        // the broker for the newly created destination to make sure it knows about it
-        String results = get(URL_LIST_JMS_DEST).getEntity(String.class);
-        assertTrue(results.contains(jmsDestName));
+        response = get(URL_GET_JMS_DEST, newDest);
+        checkStatusForSuccess(response);
+
+        response = post(URL_UPDATE_JMS_DEST, destProps);
+        checkStatusForSuccess(response);
+        response = get(URL_GET_JMS_DEST, newDest);
+        checkStatusForSuccess(response);
+        Map<String, String> entity = this.getEntityValues(response);
+        assertEquals(maxNumMsgs, entity.get("MaxNumMsgs"));
+        assertEquals(consumerFlowLimit, entity.get("ConsumerFlowLimit"));
 
         // Test deletion
         response = post(URL_DELETE_JMS_DEST, newDest); // You POST to commands
         checkStatusForSuccess(response);
-        results = get(URL_LIST_JMS_DEST).getEntity(String.class);
-        assertFalse(results.contains(jmsDestName));
+
+        response = get(URL_GET_JMS_DEST, newDest);
+        assertFalse(response.getStatus() == 200);
     }
 
     @Test
