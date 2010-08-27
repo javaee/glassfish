@@ -167,9 +167,6 @@
 		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} glassfish-upgrade-l10n" />
 	</exec>
 	<exec dir="target/source/l10n" executable="python" failonerror="true">
-		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} glassfish-scripting-l10n" />
-	</exec>
-	<exec dir="target/source/l10n" executable="python" failonerror="true">
 		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} glassfish-nucleus-l10n" />
 	</exec>
 	<exec dir="target/source/l10n" executable="python" failonerror="true">
