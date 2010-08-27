@@ -825,43 +825,67 @@ public class ResourceUtil {
         return pmdm;
     }
 
-    public static Map<String, String> getResourceLinks(Dom dom, UriInfo uriInfo) {
+  public static Map<String, String> getResourceLinks(Dom dom, UriInfo uriInfo) {
         Map<String, String> links = new TreeMap<String, String>();
         Set<String> elementNames = dom.model.getElementNames();
 
         //expose ../applications/application resource to enable deployment
         //when no applications deployed on server
-        if (elementNames.isEmpty()) {
-            if("applications".equals(Util.getName(uriInfo.getPath(), '/'))) {
-                elementNames.add("application");
-            }
-        }
+//        if (elementNames.isEmpty()) {
+//            if("applications".equals(Util.getName(uriInfo.getPath(), '/'))) {
+//                elementNames.add("application");
+//            }
+//        }
         for (String elementName : elementNames) { //for each element
             if (elementName.equals("*")) {
                 ConfigModel.Node node = (ConfigModel.Node) dom.model.getElement(elementName);
                 ConfigModel childModel = node.getModel();
-                try {
-                    Class<?> subType = childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName);
-                    List<ConfigModel> lcm = dom.document.getAllModelsImplementing(subType);
-                    if (lcm == null) { //https://glassfish.dev.java.net/issues/show_bug.cgi?id=12654
-                        lcm = new ArrayList<ConfigModel>();
-                        lcm.add(childModel);
-                    }
+                    List<ConfigModel> lcm =getRealChildConfigModels( childModel,  dom.document) ;
+
                     Collections.sort(lcm, new ConfigModelComparator());
                     if (lcm != null) {
                         for (ConfigModel cmodel : lcm) {
                             links.put(cmodel.getTagName(), ProviderUtil.getElementLink(uriInfo, cmodel.getTagName()));
                         }
                     }
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+
             } else {
                 links.put(elementName, ProviderUtil.getElementLink(uriInfo, elementName));
             }
         }
 
         return links;
+    }
+   
+    public static boolean isOnlyATag (ConfigModel model){
+        return (model.getAttributeNames().isEmpty()) && (model.getElementNames().isEmpty());
+    }
+
+
+    public static List<ConfigModel> getRealChildConfigModels(ConfigModel childModel, DomDocument domDocument) {
+        List<ConfigModel> retlist = new ArrayList<ConfigModel>();
+        try {
+            Class<?> subType = childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName);
+            List<ConfigModel> list = domDocument.getAllModelsImplementing(subType);
+
+            if (list != null) {
+                for (ConfigModel el : list) {
+                    if (isOnlyATag(el)) { //this is just a tag element
+                        retlist.addAll(getRealChildConfigModels(el, domDocument));
+                    } else {
+                        retlist.add(el);
+                    }
+                }
+            } else {//https://glassfish.dev.java.net/issues/show_bug.cgi?id=12654
+                if (!isOnlyATag(childModel)) { //this is just a tag element
+                    retlist.add(childModel);
+                }
+
+            }
+        } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+        }
+        return retlist;
     }
 
     public static Map<String, String> getResourceLinks(List<Dom> proxyList, UriInfo uriInfo) {

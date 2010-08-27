@@ -40,7 +40,12 @@
 
 package org.glassfish.admin.rest.provider;
 
-import org.glassfish.admin.rest.Util;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.utils.DomConfigurator;
 import org.glassfish.admin.rest.utils.ConfigModelComparator;
 import org.jvnet.hk2.config.ConfigModel;
@@ -54,7 +59,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.*;
 
 import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
@@ -128,34 +132,18 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
         Map<String, String> links = new TreeMap<String, String>();
         Set<String> elementNames = dom.model.getElementNames();
 
-        //expose ../applications/application resource to enable deployment
-        //when no applications deployed on server
-        if (elementNames.isEmpty()) {
-            if("applications".equals(Util.getName(uriInfo.getPath(), '/'))) {
-                elementNames.add("application");
-            }
-        }
         for (String elementName : elementNames) { //for each element
             if (elementName.equals("*")) {
                 ConfigModel.Node node = (ConfigModel.Node) dom.model.getElement(elementName);
                 ConfigModel childModel = node.getModel();
-                try {
-                    Class<?> subType = childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName);
-                    List<ConfigModel> lcm = dom.document.getAllModelsImplementing(subType);
-                    if (lcm == null) { //https://glassfish.dev.java.net/issues/show_bug.cgi?id=12654
-                        lcm = new ArrayList<ConfigModel>();
-                        lcm.add(childModel);
-                    }
-                    Collections.sort(lcm, new ConfigModelComparator());
+                List<ConfigModel> lcm = ResourceUtil.getRealChildConfigModels(childModel, dom.document);
+                Collections.sort(lcm, new ConfigModelComparator());
 
-                    if (lcm != null) {
-                        Collections.sort(lcm, new ConfigModelComparator());
-                        for (ConfigModel cmodel : lcm) {
-                            links.put(cmodel.getTagName(), ProviderUtil.getElementLink(uriInfo, cmodel.getTagName()));
-                        }
+                if (lcm != null) {
+                    Collections.sort(lcm, new ConfigModelComparator());
+                    for (ConfigModel cmodel : lcm) {
+                        links.put(cmodel.getTagName(), ProviderUtil.getElementLink(uriInfo, cmodel.getTagName()));
                     }
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
                 }
             } else {
                 links.put(elementName, ProviderUtil.getElementLink(uriInfo, elementName));

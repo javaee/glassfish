@@ -41,6 +41,7 @@
 package org.glassfish.admin.rest.generator;
 
 import org.glassfish.admin.rest.Constants;
+import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.api.admin.RestRedirect;
 import org.glassfish.api.admin.RestRedirects;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -55,6 +56,7 @@ import java.util.Set;
 
 /**
  * @author Mitesh Meswani
+ * @author Ludovic Champenois
  */
 public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
 
@@ -93,7 +95,22 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
 
         for (String elementName : model.getElementNames()) {
             ConfigModel.Property childElement = model.getElement(elementName);
-            if (childElement.isLeaf()) {
+            if (elementName.equals("*")) {
+                ConfigModel.Node node = (ConfigModel.Node) childElement;
+                ConfigModel childModel = node.getModel();
+                List<ConfigModel> subChildConfigModels = ResourceUtil.getRealChildConfigModels(childModel, domDocument);
+                for (ConfigModel subChildConfigModel : subChildConfigModels) {
+                    if (ResourceUtil.isOnlyATag(childModel)) {
+                        String childResourceClassName = getClassName(getUnqualifiedTypeName(subChildConfigModel.targetTypeName));
+                        String childPath = subChildConfigModel.getTagName();
+                        classWriter.createGetChildResource(childPath, childResourceClassName);
+                        generateSingle(subChildConfigModel, domDocument);
+                    } else {
+                        processNonLeafChildConfigModel(subChildConfigModel, childElement, domDocument, classWriter);
+
+                    }
+                }
+            } else  if (childElement.isLeaf()) {
                 if (childElement.isCollection()) {
                     //handle the CollectionLeaf config objects.
                     //JVM Options is an example of CollectionLeaf object.
@@ -163,43 +180,25 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
 
     }
 
-    private void processNonLeafChildElement(String elementName, ConfigModel.Property element, DomDocument domDocument, ClassWriter classWriter) {
-        ConfigModel.Node node = (ConfigModel.Node) element;
-        ConfigModel model = node.getModel();
-        String beanName = getUnqualifiedTypeName(model.targetTypeName);
+    private void processNonLeafChildElement(String elementName, ConfigModel.Property childElement, DomDocument domDocument, ClassWriter classWriter) {
+        ConfigModel.Node node = (ConfigModel.Node) childElement;
+        ConfigModel childModel = node.getModel();
+        String beanName = getUnqualifiedTypeName(childModel.targetTypeName);
 
-        if (elementName.equals("*")) { //e.g. element Resource of Resources
-            List<ConfigModel> childConfigModels = null;
-            try {
-                Class<?> subType = model.classLoaderHolder.get().loadClass(model.targetTypeName);
-                childConfigModels = domDocument.getAllModelsImplementing(subType);
-            } catch (ClassNotFoundException e) {
-                throw new GeneratorException(e);
+        if (beanName.equals("Property")) {
+            classWriter.createGetChildResource("property", "PropertiesBagResource");
+        } else {
+            String childResourceClassName = getClassName(beanName);
+            if (childElement.isCollection()) {
+                childResourceClassName = "List" + childResourceClassName;
             }
-            if (childConfigModels != null) {
-                for (ConfigModel childConfigModel : childConfigModels) {
-                    processNonLeafChildConfigModel(childConfigModel, element, domDocument, classWriter);
-                }
-            } else {
-                //e.g. model.targetTypeName == "engine" (Application/Module/Engine)
-                processNonLeafChildConfigModel(model, element, domDocument, classWriter);
-            }
-        } else { // => !childElement.isLeaf() && !elementName.equals("*")
-            if (beanName.equals("Property")) {
-                classWriter.createGetChildResource("property", "PropertiesBagResource");
-            } else {
-                String childResourceClassName = getClassName(beanName);
-                if(element.isCollection()) {
-                    childResourceClassName = "List" + childResourceClassName;
-                }
-                classWriter.createGetChildResource(model.getTagName(), childResourceClassName);
-            }
+            classWriter.createGetChildResource(childModel.getTagName(), childResourceClassName);
+        }
 
-            if (element.isCollection()) {
-                generateList(model, domDocument);
-            } else {
-                generateSingle(model, domDocument);
-            }
+        if (childElement.isCollection()) {
+            generateList(childModel, domDocument);
+        } else {
+            generateSingle(childModel, domDocument);
         }
     }
 
