@@ -377,23 +377,6 @@ public class JmsHandlers {
         handlerCtx.setOutputValue("map", map);
     }
 
-    @Handler(id = "getPhysicalDestinationName",
-    input = {
-        @HandlerInput(name = "list", type = List.class, required = true)},
-    output = {
-        @HandlerOutput(name = "physDestName", type = String.class)})
-    public static void getPhysicalDestinationName(HandlerContext handlerCtx) {
-        List<Map> list = (List<Map>) handlerCtx.getInputValue("list");
-        for (Map map : list) {
-            String name = (String) map.get("name");
-            if ("Name".equals(name)) {
-                String value = (String) map.get("value");
-                handlerCtx.setOutputValue("physDestName", value);
-                break;
-            }
-        }
-    }
-
     @Handler(id = "pingJms",
     input = {
         @HandlerInput(name = "poolName", type = String.class, required = true)})

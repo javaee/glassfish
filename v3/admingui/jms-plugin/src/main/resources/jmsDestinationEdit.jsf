@@ -53,33 +53,34 @@
         urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jms/jmsDestinationEdit.jsf?name=#{pageSession.encodedName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jms/jmsDestinations.jsf");
-
         setPageSessionAttribute(key="pageTitle" value="$resource{i18njms.jmsDestination.editPageTitle}")
         setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18njms.jmsDestination.editPageTitleHelp}")
 
-        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources" );
         setPageSessionAttribute(key="childType" value="admin-object-resource");
         setPageSessionAttribute(key="convertToFalseList" value={"enabled"});
-        setPageSessionAttribute(key="skipAttrsList" value={"jndiName"});
-
-        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=admin-object-resource,name=#{pageSession.Name}");
-        setPageSessionAttribute(key="objectNameStr2", value="amx:pp=/domain/servers/server[server],type=resource-ref,name=#{pageSession.Name}");
-
-        //setPageSessionAttribute(key="resourceRefEnabled", value="#{empty pageSession.valueMap2 ? 'true' : pageSession.valueMap2['enabled']}");
-
-        //REST related
+        setPageSessionAttribute(key="skipAttrsList" value={"jndiName"});        
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
         setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}/resources/#{pageSession.childType}/#{pageSession.encodedName}");
-        setPageSessionAttribute(key="rest-api" value="true");
-        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+        
         setPageSessionAttribute(key="childType2", value="resource-ref");
         setPageSessionAttribute(key="selfUrl2", value="#{sessionScope.REST_URL}/servers/server/server/#{pageSession.childType2}/#{pageSession.encodedName}");
-        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}.json" valueMap="#{pageSession.valueMap2}");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}" valueMap="#{pageSession.valueMap2}");
+        setPageSessionAttribute(key="convertToFalseList2" value={"enabled"});
+        setPageSessionAttribute(key="has2Objects" value="#{true}" );
+    
+        //For resourceEditTabs.inc
+        setSessionAttribute(key="resEditTabs" value="general");
+        setPageSessionAttribute(key="generalPage" value="#{pageSession.selfPage}");
+        setPageSessionAttribute(key="targetPage" value="#{request.contextPath}/common/resourceNode/resourceEditTargets.jsf?name=#{pageSession.encodedName}");
 
         gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json", method="GET", result="#{requestScope.propTable}");
         setPageSessionAttribute(key="tableList", value="#{requestScope.propTable.data.extraProperties.properties}");
-
-        getPhysicalDestinationName(list="#{tableList}", physDestName="#{pageSession.physDestName}");
+        foreach (var="row" list="#{pageSession.tableList}") {
+            if ("#{row['name']}=Name") {
+                setPageSessionAttribute(key="physDestName" value="#{row['value']}");
+            }
+        }
         filterTable(table="#{pageSession.tableList}", key="name", value="Name", keep="false");
 
         //set the following for including buttons.inc
@@ -91,12 +92,12 @@
     />
     </event>
     <sun:form id="propertyForm">
+#include "/common/resourceNode/resourceEditTabs.inc"
 #include "/common/shared/alertMsg.inc"
     <sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}">
         <!-- Buttons  -->
         <sun:button id="loadDefaults" style="margin-left: 8pt" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >
             <!command
-                //getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
                 gf.getDefaultValues(endpoint="#{pageSession.selfUrl2}" orig="#{pageSession.valueMap2}" valueMap="#{pageSession.valueMap2}")
             />
         </sun:button>

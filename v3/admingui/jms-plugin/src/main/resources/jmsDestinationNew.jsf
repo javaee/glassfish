@@ -54,19 +54,13 @@
 
             setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jms/jmsDestinationNew.jsf");
             setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jms/jmsDestinations.jsf");
-
-            setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources" );
             setPageSessionAttribute(key="childType" value="admin-object-resource");
-            //REST - for setproxyProperties after creating an entity.
-            setPageSessionAttribute(key="restObjStr", value="amx:pp=/domain/resources,type=#{pageSession.childType}");
             setPageSessionAttribute(key="convertToFalseList" value={"enabled"});
-            //REST related
+
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
-            setPageSessionAttribute(key="rest-api" value="true");
             gf.getDefaultValues(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", valueMap="#{pageSession.valueMap}");
             gf.getDefaultValues(endpoint="#{sessionScope.REST_URL}/servers/server/server/resource-ref", valueMap="#{pageSession.valueMap2}");
-            //guiLog(message="***** valueMap2 = #{pageSession.valueMap2}");
-
+            mapPut(map="#{pageSession.valueMap}" key="enabled" value="true");
             mapPut(map="#{pageSession.valueMap}", key="resAdapter", value="jmsra");
 
             //set the following for including buttons.inc
@@ -75,13 +69,11 @@
             setPageSessionAttribute(key="showCancelButton" value="#{true}" );
             setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
             setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
-
-            if( $session{supportCluster}) {
-                //getTargetsOptionsList(AvailableTargets=>$pageSession{availableTargets}, SelectedTargets=>$pageSession{selectedTargets});
-            }
+            
+            setPageSessionAttribute(key="useString" value="#{false}");
         />
     </event>
-    <sun:form id="propertyForm">
+    <sun:form id="form">
 #include "/common/shared/alertMsg.inc"
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}">
@@ -95,6 +87,12 @@
 "<br><br>
 #include "/jms/jmsDestinationSheet.inc"
 #include "/common/shared/propertyDescTable.inc"
+<event>
+<!afterCreate
+    setPageSessionAttribute(key="setDefaultTarget" value="true");
+    includeIntegrations(type="org.glassfish.admingui:TargetSectionForResource" );
+/>
+</event>
         <!facet pageButtonsBottom>
             <sun:panelGroup id="bottomButtons">
 #include "/jms/jmsDestinationButtons.inc"
