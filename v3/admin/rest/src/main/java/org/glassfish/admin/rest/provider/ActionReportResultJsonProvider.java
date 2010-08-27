@@ -150,13 +150,9 @@ public class ActionReportResultJsonProvider extends BaseProvider<ActionReportRes
     protected Object getJsonObject(Object object) throws JSONException {
         Object result = null;
         if (object instanceof Collection) {
-            if (!((Collection) object).isEmpty()) {
-                result = processCollection((Collection)object);
-            }
+            result = processCollection((Collection)object);
         } else if (object instanceof Map) {
-            if (!((Map) object).isEmpty()) {
-                result = processMap((Map)object);
-            }
+            result = processMap((Map)object);
         } else {
             result = object;
         }

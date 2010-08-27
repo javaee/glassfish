@@ -157,7 +157,8 @@ public class ApplicationTest extends RestTestBase {
             put("node", "localhost");
         }};
         Map<String, String> applicationRef = new HashMap<String, String>() {{
-            put("ref", appName);
+            put("id", appName);
+            put("target", instanceName);
         }};
 
         try {

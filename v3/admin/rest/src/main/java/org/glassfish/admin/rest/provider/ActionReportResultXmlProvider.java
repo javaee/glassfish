@@ -143,13 +143,9 @@ public class ActionReportResultXmlProvider extends BaseProvider<ActionReportResu
         if (object == null) {
             result = "";
         } else if (object instanceof Collection) {
-            if (!((Collection) object).isEmpty()) {
-                result = processCollection((Collection)object);
-            }
+            result = processCollection((Collection)object);
         } else if (object instanceof Map) {
-            if (!((Map) object).isEmpty()) {
-                result = processMap((Map)object);
-            }
+            result = processMap((Map)object);
         } else if (object instanceof Number) {
             result = new XmlObject("number", (Number)object);
         } else if (object instanceof String) {

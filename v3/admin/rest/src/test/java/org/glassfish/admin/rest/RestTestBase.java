@@ -206,9 +206,9 @@ public class RestTestBase {
     }
 
     protected List<String> getCommandResults(ClientResponse response) {
-        String xml = response.getEntity(String.class);
+        String document = response.getEntity(String.class);
         List<String> results = new ArrayList<String>();
-        Map map = MarshallingUtils.buildMapFromDocument(xml);
+        Map map = MarshallingUtils.buildMapFromDocument(document);
         String message = (String)map.get("message");
         if (message != null && !"".equals(message)) {
             results.add(message);

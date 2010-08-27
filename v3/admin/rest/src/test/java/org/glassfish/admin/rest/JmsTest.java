@@ -63,11 +63,11 @@ public class JmsTest extends RestTestBase {
     static final String URL_CONNECTOR_CONNECTION_POOL = "/domain/resources/connector-connection-pool";
     static final String URL_CONNECTOR_RESOURCE = "/domain/resources/connector-resource";
     static final String URL_JMS_HOST = "/domain/configs/config/server-config/jms-service/jms-host";
-    static final String URL_CREATE_JMS_DEST = "/domain/configs/config/server-config/jms-service/create-jmsdest";
-    static final String URL_DELETE_JMS_DEST = "/domain/configs/config/server-config/jms-service/delete-jmsdest";
-    static final String URL_LIST_JMS_DEST = "/domain/configs/config/server-config/jms-service/list-jmsdest";
-    static final String URL_FLUSH_JMS_DEST = "/domain/configs/config/server-config/jms-service/flush-jmsdest";
-    static final String URL_PING_JMS = "/domain/configs/config/server-config/jms-service/jms-ping";
+    static final String URL_CREATE_JMS_DEST = "/domain/servers/server/server/create-jmsdest";
+    static final String URL_DELETE_JMS_DEST = "/domain/servers/server/server/delete-jmsdest";
+    static final String URL_LIST_JMS_DEST = "/domain/servers/server/server/list-jmsdest";
+    static final String URL_FLUSH_JMS_DEST = "/domain/servers/server/server/flush-jmsdest";
+    static final String URL_PING_JMS = "/domain/servers/server/server/jms-ping";
 
     @Test
     public void testJmsConnectionFactories() {

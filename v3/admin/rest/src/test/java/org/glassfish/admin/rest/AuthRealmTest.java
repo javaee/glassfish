@@ -40,6 +40,7 @@
 
 package org.glassfish.admin.rest;
 
+import org.glassfish.admin.rest.clientutils.MarshallingUtils;
 import java.util.List;
 import com.sun.jersey.api.client.ClientResponse;
 import java.util.HashMap;
@@ -58,7 +59,12 @@ public class AuthRealmTest extends RestTestBase {
 
     @Test
     public void testListGroupNames() {
-        List<String> groups = getCommandResults(get(URL_LIST_GROUP_NAMES));
+        ClientResponse response = this.get(URL_LIST_GROUP_NAMES);
+        checkStatusForSuccess(response);
+        Map responseMap = MarshallingUtils.buildMapFromDocument(response.getEntity(String.class));
+        Map extraProperties = (Map)responseMap.get("extraProperties");
+        List<String> groups = (List<String>)extraProperties.get("groups");
+
         assertTrue(groups.size() > 0);
     }
 
