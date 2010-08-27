@@ -43,6 +43,7 @@ package com.sun.enterprise.deployment.node.ws;
 import com.sun.enterprise.deployment.WebService;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.node.*;
+import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import com.sun.enterprise.deployment.xml.WebServicesTagNames;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -75,8 +76,13 @@ class WLWebServiceEndpointNode extends DeploymentDescriptorNode {
     @Override
     protected Map getDispatchTable() {
         Map table = super.getDispatchTable();
+        table.put(RuntimeTagNames.AUTH_METHOD, "setAuthMethod");
+        table.put(RuntimeTagNames.REALM, "setRealm");
+        table.put(WebServicesTagNames.TRANSPORT_GUARANTEE,
+                  "setTransportGuarantee");
         table.put(WLWebServicesTagNames.STREAM_ATTACHMENTS, "setStreamAttachments");
         table.put(WLWebServicesTagNames.VALIDATE_REQUEST, "setValidateRequest");
+
         return table;
     }
 
@@ -113,6 +119,24 @@ class WLWebServiceEndpointNode extends DeploymentDescriptorNode {
         appendTextChild(wseNode,
                 WebServicesTagNames.PORT_COMPONENT_NAME,
                 descriptor.getEndpointName());
+
+        // login config only makes sense for ejbs.  For web components,
+        // this info is described in web application itself.
+        if( descriptor.implementedByEjbComponent() &&
+            descriptor.hasAuthMethod() ) {
+            Node loginConfigNode = appendChild(wseNode,
+                                               RuntimeTagNames.LOGIN_CONFIG);
+
+            appendTextChild(loginConfigNode, RuntimeTagNames.AUTH_METHOD,
+                            descriptor.getAuthMethod());
+            appendTextChild(loginConfigNode, RuntimeTagNames.REALM,
+                            descriptor.getRealm());
+        }
+
+        if(descriptor.getTransportGuarantee() != null) {
+            appendTextChild(wseNode, WebServicesTagNames.TRANSPORT_GUARANTEE,
+                        descriptor.getTransportGuarantee());
+        }
 
         if (descriptor.getWsdlExposed() != null) {
             new WSDLNode(descriptor).writeDescriptor(wseNode, descriptor);
