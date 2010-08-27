@@ -417,12 +417,13 @@ public class ResourcesXMLParser implements EntityResolver
         if(namingScopes.contains(scope)){
             if(name != null){
                 for(String namingScope : namingScopes){
+                    Object args[] = new Object[]{name, namingScope, scope};
                     if(name.startsWith(namingScope) && !namingScope.equals(scope)){
-                        String msg = localStrings.getString( "invalid.scope.defined.for.resource",
+                        String msg = localStrings.getStringWithDefault( "invalid.scope.defined.for.resource",
                                                                 "Resource [ {0} ] is not allowed to specify the scope " +
                                                                         "[ {1} ]. Acceptable scope for this resource" +
-                                                                        " is [ {2} ]",
-                                                                name, namingScope, scope );
+                                                                        " is [ {2} ]", args
+                                                                 );
                         throw new IllegalStateException(msg);
                     }
                 }
