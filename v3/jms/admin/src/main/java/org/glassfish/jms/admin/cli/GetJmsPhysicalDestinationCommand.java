@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
- *
+ * 
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -11,20 +11,20 @@
  * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at packager/legal/LICENSE.txt.
- *
+ * 
  * GPL Classpath Exception:
  * Oracle designates this particular file as subject to the "Classpath"
  * exception as provided by Oracle in the GPL Version 2 section of the License
  * file that accompanied this code.
- *
+ * 
  * Modifications:
  * If applicable, add the following below the License Header, with the fields
  * enclosed by brackets [] replaced by your own identifying information:
  * "Portions Copyright [year] [name of copyright owner]"
- *
+ * 
  * Contributor(s):
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
@@ -39,61 +39,51 @@
  */
 package org.glassfish.jms.admin.cli;
 
-import org.glassfish.api.I18n;
-import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.ExecuteOn;
-import org.glassfish.config.support.CommandTarget;
-import org.glassfish.config.support.TargetType;
-import org.glassfish.api.admin.RuntimeType;
-import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.internal.api.ServerContext;
-import org.glassfish.api.admin.RuntimeType;
-import java.util.*;
-import java.util.logging.Logger;
-
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.config.serverbeans.*;
-
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Level;
+import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
-import javax.management.AttributeList;
-
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.internal.api.ServerContext;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
-import com.sun.logging.LogDomains;
-
 /**
- * Create JMS Destination
  *
+ * @author jasonlee
  */
-@Service(name = "create-jmsdest")
+@Service(name = "__get-jmsdest")
 @Scoped(PerLookup.class)
-@I18n("create.jms.dest")
-@ExecuteOn({RuntimeType.DAS})
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
 @TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER, CommandTarget.CONFIG})
-public class CreateJMSDestination extends JMSDestination implements AdminCommand {
-    static Logger logger = LogDomains.getLogger(CreateJMSDestination.class, LogDomains.ADMIN_LOGGER);
-
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateJMSDestination.class);
+public class GetJmsPhysicalDestinationCommand extends JMSDestination implements AdminCommand {
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(GetJmsPhysicalDestinationCommand.class);
 
     @Param(name = "destType", shortName = "T", optional = false)
     String destType;
-
-    @Param(name = "property", optional = true, separator = ':')
-    Properties props;
 
     @Param(name = "dest_name", primary = true)
     String destName;
 
     @Param(optional = true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
     @Inject
     com.sun.appserv.connectors.internal.api.ConnectorRuntime connectorRuntime;
@@ -101,87 +91,59 @@ public class CreateJMSDestination extends JMSDestination implements AdminCommand
     @Inject
     Domain domain;
 
-    //@Inject
-    //Configs configs;
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
 
     @Inject
     ServerContext serverContext;
 
+    // com.sun.messaging.jms.server:type=Destination,subtype=Config,desttype=destinationType,name=destinationName
+    @Override
     public void execute(AdminCommandContext context) {
-
         final ActionReport report = context.getActionReport();
+        logger.entering(getClass().getName(), "__getJmsPhysicalDestination",
+                new Object[]{destName, destType});
 
         try {
             validateJMSDestName(destName);
             validateJMSDestType(destType);
-        } catch (IllegalArgumentException e) {
-            report.setMessage(e.getMessage());
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
 
-        if (destType.equals(JMS_DEST_TYPE_QUEUE)) {
-            if (props == null) {
-                props = new Properties();
-            }
-            if (!props.containsKey(MAX_ACTIVE_CONSUMERS_PROPERTY)
-                    && !props.containsKey(MAX_ACTIVE_CONSUMERS_ATTRIBUTE)) {
-                props.put(MAX_ACTIVE_CONSUMERS_ATTRIBUTE, DEFAULT_MAX_ACTIVE_CONSUMERS);
-            }
-        }
-        try {
-            createJMSDestination();
+            Map entity = getJMSDestination();
+            Properties ep = new Properties();
+            ep.put("entity", entity);
+            report.setExtraProperties(ep);
+            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } catch (Exception e) {
-            report.setMessage(localStrings.getLocalString("create.jms.destination.CannotCreateJMSDest",
-                    "Unable to create JMS Destination."));
+            report.setMessage(e.getMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
     }
 
-    // create-jmsdest
-    private void createJMSDestination() throws Exception {
+    protected Map<String, Object> getJMSDestination()
+            throws Exception {
 
+        logger.log(Level.FINE, "__getJmsPhysicalDestination ...");
         MQJMXConnectorInfo mqInfo = getMQJMXConnectorInfo(target, config, serverContext, domain, connectorRuntime);
+        Map<String, Object> destAttrs = new HashMap<String, Object>();
 
-        //MBeanServerConnection  mbsc = getMBeanServerConnection(tgtName);
         try {
             MBeanServerConnection mbsc = mqInfo.getMQMBeanServerConnection();
-            ObjectName on = new ObjectName(
-                    DESTINATION_MANAGER_CONFIG_MBEAN_NAME);
-            String[] signature = null;
-            AttributeList destAttrs = null;
-            Object[] params = null;
 
-            if (props != null) {
-                destAttrs = convertProp2Attrs(props);
-            }
-
-            // setAppserverDefaults(destAttrs, mqInfo);
-
-            if (destType.equalsIgnoreCase(JMS_DEST_TYPE_TOPIC)) {
+            if (destType.equalsIgnoreCase("topic")) {
                 destType = DESTINATION_TYPE_TOPIC;
-            } else if (destType.equalsIgnoreCase(JMS_DEST_TYPE_QUEUE)) {
+            } else if (destType.equalsIgnoreCase("queue")) {
                 destType = DESTINATION_TYPE_QUEUE;
             }
-            if ((destAttrs == null) || (destAttrs.size() == 0)) {
-                signature = new String[]{
-                            "java.lang.String",
-                            "java.lang.String"};
-                params = new Object[]{destType, destName};
-            } else {
-                signature = new String[]{
-                            "java.lang.String",
-                            "java.lang.String",
-                            "javax.management.AttributeList"};
-                params = new Object[]{destType, destName, destAttrs};
+            ObjectName on = new ObjectName(MBEAN_DOMAIN_NAME + ":type=Destination,subtype=Config,desttype=" + destType +",name=\"" + destName + "\"");
+            MBeanAttributeInfo[] attribs = mbsc.getMBeanInfo(on).getAttributes();
+            for (MBeanAttributeInfo attrib: attribs){
+                destAttrs.put(attrib.getName(), mbsc.getAttribute(on, attrib.getName()));
             }
-
-            mbsc.invoke(on, "create", params, signature);
+            return destAttrs;
         } catch (Exception e) {
-            logAndHandleException(e, "admin.mbeans.rmb.error_creating_jms_dest");
+            //log JMX Exception trace as WARNING
+            logAndHandleException(e, "admin.mbeans.rmb.error_getting_jms_dest");
         } finally {
             try {
                 if (mqInfo != null) {
@@ -191,5 +153,6 @@ public class CreateJMSDestination extends JMSDestination implements AdminCommand
                 handleException(e);
             }
         }
+        return destAttrs;
     }
 }

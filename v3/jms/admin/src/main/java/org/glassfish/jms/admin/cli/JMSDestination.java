@@ -615,6 +615,9 @@ public abstract class JMSDestination {
                          } else if (propName.equals("NumDestinations")) {
                              destAttrs.add(new Attribute("NumDestinations",
                                                          Integer.valueOf(destProps.getProperty("NumDestinations"))));
+                         } else if (propName.equals("ConsumerFlowLimit")) {
+                             destAttrs.add(new Attribute("ConsumerFlowLimit",
+                                                         Long.valueOf(destProps.getProperty("ConsumerFlowLimit"))));
                          }
                      }
             return destAttrs;
