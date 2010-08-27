@@ -75,6 +75,9 @@ public final class BackupDomainCommand extends BackupCommands {
     @Param(optional = true)
     String backupdir;
 
+    @Param(optional=true)
+    String force;
+
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(BackupDomainCommand.class);
 
@@ -94,9 +97,11 @@ public final class BackupDomainCommand extends BackupCommands {
                 strings.get("InvalidDirectory", domainFile.getPath()));
         }
 
-        if (DASUtils.pingDASQuietly(programOpts, env)) {
-            throw new CommandException(
-                strings.get("DomainIsNotStopped", domainName));
+        if (force == null ) {
+            if (DASUtils.pingDASQuietly(programOpts, env)) {
+                throw new CommandException(
+                        strings.get("DomainIsNotStopped", domainName));
+            }
         }
         setDescription(description);
         setBackupDir(backupdir);
