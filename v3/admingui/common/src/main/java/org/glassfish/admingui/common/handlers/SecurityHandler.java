@@ -426,11 +426,11 @@ public class SecurityHandler {
             List obj = (List) handlerCtx.getInputValue("selectedRows");
             List<Map> selectedRows = (List) obj;
             for(Map oneRow : selectedRows){
-                String user = (String)oneRow.get("users");
+                String user = (String)oneRow.get("name");
                 String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName + "/admin-service/jmx-connector/system.json";
                 Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "get", handlerCtx);
                 Map<String, Object> valueMap = (Map<String, Object>) responseMap.get("data");
-                valueMap = (Map<String, Object>) valueMap.get("entity");
+                valueMap = (Map<String, Object>) ((Map<String, Object>) valueMap.get("extraProperties")).get("entity");
                 String authRealm = (String) valueMap.get("authRealmName");
                 if (realmName.equals(authRealm) && user.equals(GuiUtil.getSessionValue("userName"))){
                     error = GuiUtil.getMessage(COMMON_BUNDLE, "msg.error.cannotDeleteCurrent");
