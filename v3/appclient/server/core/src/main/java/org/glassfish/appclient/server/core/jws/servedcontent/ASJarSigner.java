@@ -76,15 +76,13 @@ public class ASJarSigner implements PostConstruct {
     /** default alias for signing if the admin does not specify one */
     private static final String DEFAULT_ALIAS_VALUE = "s1as";
 
+    private static final String DEFAULT_DIGEST_ALGORITHM = "SHA1";
+    private static final String DEFAULT_KEY_ALGORITHM = "RSA";
+
 //    /** user-specified signing alias */
 //    private final String userAlias; // = System.getProperty(USER_SPECIFIED_ALIAS_PROPERTYNAME);
     
     private static final StringManager localStrings = StringManager.getManager(ASJarSigner.class);
-
-    // TODO: SecuritySupportImpl does not properly init as a @Service; just create one for now
-//    @Inject
-
-
 
     private Logger logger;
 
@@ -108,9 +106,11 @@ public class ASJarSigner implements PostConstruct {
             alias = DEFAULT_ALIAS_VALUE;
         }
         long startTime = System.currentTimeMillis();
+        long duration = 0;
         synchronized(this) {
             try {
-                JarSigner jarSigner = new JarSigner("SHA1", "RSA");
+                JarSigner jarSigner = new JarSigner(DEFAULT_DIGEST_ALGORITHM,
+                        DEFAULT_KEY_ALGORITHM);
                 jarSigner.signJar(unsignedJar, signedJar, alias);
             } catch (Throwable t) {
                 /*
@@ -126,13 +126,12 @@ public class ASJarSigner implements PostConstruct {
                 throw new Exception(localStrings.getString("jws.sign.errorSigning", 
                         signedJar.getAbsolutePath(), alias), t);
             } finally {
-                long duration = System.currentTimeMillis() - startTime;
+                duration = System.currentTimeMillis() - startTime;
                 logger.log(Level.FINE, "Signing {0} took {1} ms",
                         new Object[]{unsignedJar.getAbsolutePath(), duration});
             }
-        } 
-        
-        return System.currentTimeMillis() - startTime;
+        }
+        return duration;
     }
 
     /**

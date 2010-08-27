@@ -48,7 +48,6 @@
 
 package com.sun.enterprise.security;
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.*;
 
 public class GUIErrorDialog extends javax.swing.JDialog {
@@ -73,10 +72,7 @@ public class GUIErrorDialog extends javax.swing.JDialog {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 closeDialog(evt);
             }
-        }
-        );
-        
-        okButton.setLabel("OK");
+        });
         okButton.setActionCommand("okButton");
         okButton.setText("OK");
         okButton.addActionListener (new ActionListener (){

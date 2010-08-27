@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.security.ssl;
 
 import com.sun.enterprise.server.pluggable.SecuritySupport;
@@ -75,6 +74,7 @@ import sun.security.x509.AlgorithmId;
 import sun.security.x509.X500Name;
 
 /**
+ * A utility class to sign jar files.
  *
  * @author Sudarsan Sridhar
  */
@@ -110,24 +110,22 @@ public class JarSigner {
     }
 
     /**
-     * Hash the InputStream completely.
+     * Hash the JarEntry completely.
      *
-     * @param is the InputStream
+     * @param jf the JarFile
+     * @param je the JarEntry
+     * @throws IOException
      * @return resulting hash
      */
-    private String hash(InputStream is) throws IOException {
-        while (is.available() > 0) {
-            byte[] data = new byte[is.available()];
-            int read = is.read(data);
-            md.update(data, 0, read);
-        }
-        return b64encoder.encodeBuffer(md.digest()).trim();
+    private String hash(JarFile jf, JarEntry je) throws IOException {
+        byte[] data = readJarEntry(jf, je);
+        return b64encoder.encodeBuffer(md.digest(data)).trim();
     }
 
     /**
      * Signs a jar.
      * 
-     * @param jf input jar file
+     * @param input input jar file
      * @param output output jar file
      * @param alias signing alias in the keystore
      */
@@ -166,8 +164,7 @@ public class JarSigner {
                     currentLine.append("Name: ").append(name);
                     appendLine(me, currentLine);
                     currentLine.setLength(0);
-                    InputStream jis = jf.getInputStream(je);
-                    me.append(digestAlgorithm).append("-Digest: ").append(hash(jis)).append("\r\n");
+                    me.append(digestAlgorithm).append("-Digest: ").append(hash(jf, je)).append("\r\n");
                     appendAttributes(me, manifest, name);
                     // Create digest lines in ME.SF
                     currentLine.append("Name: ").append(name);
@@ -229,39 +226,30 @@ public class JarSigner {
             // Write output
             ZipOutputStream zout = new ZipOutputStream(
                     new FileOutputStream(output));
-            try {
-                zout.putNextEntry((signed)
-                        ? new ZipEntry(jf.getJarEntry(JarFile.MANIFEST_NAME))
-                        : new ZipEntry(JarFile.MANIFEST_NAME));
-                zout.write(manifestContent);
+            zout.putNextEntry((signed)
+                    ? getZipEntry(jf.getJarEntry(JarFile.MANIFEST_NAME))
+                    : new ZipEntry(JarFile.MANIFEST_NAME));
+            zout.write(manifestContent);
 
-                zout.putNextEntry(new ZipEntry("META-INF/"
-                        + alias.toUpperCase(Locale.US) + ".SF"));
-                zout.write(sigFileContent);
+            zout.putNextEntry(new ZipEntry("META-INF/"
+                    + alias.toUpperCase(Locale.US) + ".SF"));
+            zout.write(sigFileContent);
 
-                zout.putNextEntry(new ZipEntry("META-INF/"
-                        + alias.toUpperCase(Locale.US) + "." + keyAlgorithm));
-                zout.write(bout.toByteArray());
+            zout.putNextEntry(new ZipEntry("META-INF/"
+                    + alias.toUpperCase(Locale.US) + "." + keyAlgorithm));
+            zout.write(bout.toByteArray());
 
-                jes = jf.entries();
-                while (jes.hasMoreElements()) {
-                    JarEntry je = jes.nextElement();
-                    String name = je.getName();
-                    if (!name.equals(JarFile.MANIFEST_NAME)) {
-                        zout.putNextEntry(new ZipEntry(je));
-                        InputStream jis = jf.getInputStream(je);
-                        while (jis.available() > 0) {
-                            byte[] data = new byte[jis.available()];
-                            int read = jis.read(data);
-                            zout.write(data, 0, read);
-                        }
-                        zout.flush();
-                        zout.closeEntry();
-                    }
+            jes = jf.entries();
+            while (jes.hasMoreElements()) {
+                JarEntry je = jes.nextElement();
+                String name = je.getName();
+                if (!name.equals(JarFile.MANIFEST_NAME)) {
+                    zout.putNextEntry(getZipEntry(je));
+                    byte[] data = readJarEntry(jf, je);
+                    zout.write(data);
                 }
-            } finally {
-                zout.close();
             }
+            zout.close();
         } finally {
             jf.close();
         }
@@ -356,20 +344,40 @@ public class JarSigner {
      * 
      * @param jf the jar file
      * @param je the jar entry
-     * @return completely read bytes from je.
+     * @return bytes from je.
      * @throws IOException
      */
     private static byte[] readJarEntry(JarFile jf, JarEntry je) throws IOException {
         if (je == null) {
             return null;
         }
-        ByteArrayOutputStream content = new ByteArrayOutputStream();
+        byte[] data = new byte[(int) je.getSize()];
         InputStream jis = jf.getInputStream(je);
-        while (jis.available() > 0) {
-            byte[] data = new byte[jis.available()];
-            int read = jis.read(data);
-            content.write(data, 0, read);
+        int current;
+        int idx = 0;
+        while ((current = jis.read()) > -1) {
+            data[idx++] = (byte) current;
         }
-        return content.toByteArray();
+        return data;
+    }
+
+    /**
+     * Get the ZipEntry for the given JarEntry. Added in order to suppress the
+     * compressedSize field as it was causing errors
+     *
+     * @param je The jar entry.
+     * @return ZipEntry with fields populated from the JarEntry.
+     */
+    private static ZipEntry getZipEntry(JarEntry je) {
+        ZipEntry ze = new ZipEntry(je.getName());
+
+        ze.setComment(je.getComment());
+        ze.setCrc(je.getCrc());
+        ze.setExtra(je.getExtra());
+        ze.setMethod(je.getMethod());
+        ze.setSize(je.getSize());
+        ze.setTime(je.getTime());
+
+        return ze;
     }
 }

@@ -197,7 +197,7 @@ public class SecurityServiceImpl implements SecurityService {
             }
             //Setting if userPrincipal in WSCtxt applies for JAXWS endpoints only
             epInfo.prepareInvocation(false);
-            WebServiceContextImpl ctxt = (WebServiceContextImpl) ((EjbRuntimeEndpointInfo) epInfo).getWebServiceContext();
+            WebServiceContextImpl ctxt = (WebServiceContextImpl) epInfo.getWebServiceContext();
             ctxt.setUserPrincipal(webPrincipal);
 
         } catch (Exception e) {

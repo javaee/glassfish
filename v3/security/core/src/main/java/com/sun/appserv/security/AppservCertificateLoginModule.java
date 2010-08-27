@@ -80,7 +80,7 @@ public abstract class AppservCertificateLoginModule implements LoginModule {
     /**
      * System Logger.
      */
-    protected final Logger _logger =
+    protected static final Logger _logger =
             LogDomains.getLogger(AppservCertificateLoginModule.class, LogDomains.SECURITY_LOGGER);
     private CallbackHandler callbackHandler;
     private boolean success = false;
@@ -90,14 +90,15 @@ public abstract class AppservCertificateLoginModule implements LoginModule {
     private X500Principal x500Principal;
     private String appName = null;
 
-    public final void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState, Map<String, ?> options) {
+    public final void initialize(Subject subject, CallbackHandler callbackHandler
+            , Map<String, ?> sharedState, Map<String, ?> options) {
         this.subject = subject;
         this._sharedState = sharedState;
         this._options = options;
         this.callbackHandler = callbackHandler;
         if (_logger.isLoggable(Level.FINE)) {
-            _logger.log(Level.FINE, "Login module initialized: "
-                    + this.getClass().toString());
+            _logger.log(Level.FINE, "Login module initialized: {0}"
+                    , this.getClass().toString());
         }
     }
 
@@ -165,7 +166,7 @@ public abstract class AppservCertificateLoginModule implements LoginModule {
 
     final public boolean logout() throws LoginException {
         if (_logger.isLoggable(Level.FINE)) {
-            _logger.log(Level.FINE, "JAAS logout for: " + subject.toString());
+            _logger.log(Level.FINE, "JAAS logout for: {0}", subject.toString());
         }
 
         subject.getPrincipals().clear();
@@ -190,7 +191,7 @@ public abstract class AppservCertificateLoginModule implements LoginModule {
         return true;
     }
 
-    private final void extractCredentials() throws LoginException {
+    private void extractCredentials() throws LoginException {
         // Certificates are available as a List object in the Public Credentials.
         Set<List> creds = subject.getPublicCredentials(List.class);
         Iterator<List> itr = creds.iterator();
@@ -257,7 +258,7 @@ public abstract class AppservCertificateLoginModule implements LoginModule {
      *
      * @return the application name. Non-null only for web container.
      */
-    protected String getAppName() {
+    protected final String getAppName() {
         return appName;
     }
 
