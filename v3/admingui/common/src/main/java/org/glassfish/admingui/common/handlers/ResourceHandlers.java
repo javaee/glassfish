@@ -40,6 +40,7 @@
 
 package org.glassfish.admingui.common.handlers;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.List;
 
@@ -47,8 +48,11 @@ import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.TargetUtil;
@@ -74,62 +78,32 @@ public class ResourceHandlers {
     public static void getResourceRealStatus(HandlerContext handlerCtx) {
         List<Map> rows = (List) handlerCtx.getInputValue("rows");
         Map<String, String> targetsMap = new HashMap<String, String>();
-        String resourceRefEndPoint = (String) handlerCtx.getInputValue("endpoint");
         for (Map oneRow : rows) {
-            String name = (String) oneRow.get("encodedName");
-            String endpoint = resourceRefEndPoint + "/" +name;
-            if (! RestApiHandlers.get(endpoint).isSuccess()){
-                continue;            //The resource is only created on domain, no source-ref exists.
-            }
-            String enabledStr = DeployUtil.getTargetEnableInfo(name, false, false);
-            List<String> targets = DeployUtil.getApplicationTarget(name, "resource-ref");
-            List<String> targetUrls = new ArrayList<String>();
-            for ( String target : targets) {
-                if(TargetUtil.isCluster(target)) {
-                    targetsMap.put(GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster/"+target, target);
-                    targetUrls.add(GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster/"+target);
-                } else {
-                    targetsMap.put(GuiUtil.getSessionValue("REST_URL")+"/servers/server/"+target, target);
-                    targetUrls.add(GuiUtil.getSessionValue("REST_URL")+"/servers/server/"+target);
+            try {
+                String name = (String) oneRow.get("name");
+                String encodedName = URLEncoder.encode(name, "UTF-8");
+                List<String> targets = DeployUtil.getApplicationTarget(encodedName, "resource-ref");                
+                if (targets == null || targets.size() == 0) {
+                    continue; //The resource is only created on domain, no source-ref exists.
                 }
+                String enabledStr = DeployUtil.getTargetEnableInfo(encodedName, false, false);
+                List<String> targetUrls = new ArrayList<String>();
+                for (String target : targets) {
+                    if (TargetUtil.isCluster(target)) {
+                        targetsMap.put(GuiUtil.getSessionValue("REST_URL") + "/clusters/cluster/" + target, target);
+                        targetUrls.add(GuiUtil.getSessionValue("REST_URL") + "/clusters/cluster/" + target);
+                    } else {
+                        targetsMap.put(GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + target, target);
+                        targetUrls.add(GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + target);
+                    }
+                }
+                oneRow.put("targetUrls", targetUrls);
+                oneRow.put("targetsMap", targetsMap);
+                oneRow.put("enabled", enabledStr);
+            } catch (Exception ex) {
+                GuiUtil.handleException(handlerCtx, ex);
             }
-            oneRow.put("targetUrls", targetUrls);
-            oneRow.put("targetsMap", targetsMap);
-            oneRow.put("enabled", enabledStr);
         }
         handlerCtx.setOutputValue("result", rows);
-    }
-
-    @Handler(id = "getJMSFactoriesTable",
-        input = {
-            @HandlerInput(name="endpoint", type = String.class, required = true)
-        },
-        output = {
-        @HandlerOutput(name = "result", type = java.util.List.class)
-    })
-    public static void getJMSFactoriesTable(HandlerContext handlerCtx) throws Exception {
-        String endpoint = (String)handlerCtx.getInputValue("endpoint");
-        Map<String, String> children = RestApiHandlers.getChildMap(endpoint);
-
-        List result = new ArrayList();
-
-        for (Map.Entry<String, String> entry : children.entrySet()) {
-            String poolName = entry.getKey();
-            String poolUrl = entry.getValue();
-            if (GuiUtil.isEmpty(poolName)) {
-                continue;   //this is a required attribute, shouldn't happen.
-            }
-            Map<String, Object> poolEntity = RestApiHandlers.getEntityAttrs(poolUrl, "entity");
-            if (poolEntity.get("resourceAdapterName").equals("jmsra")) {
-                Map oneRow = new HashMap();
-                oneRow.put("selected", false);
-                oneRow.put("name", poolName);
-                oneRow.put("jndiName", poolEntity.get("name"));
-                oneRow.put("connectionDefinitionName", poolEntity.get("connectionDefinitionName"));
-                oneRow.put("description",  poolEntity.get("description"));
-                result.add(oneRow);
-            }
-        }
-        handlerCtx.setOutputValue("result", result);
     }
 }

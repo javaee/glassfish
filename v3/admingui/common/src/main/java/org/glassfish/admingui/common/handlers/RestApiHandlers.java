@@ -711,6 +711,9 @@ public class RestApiHandlers {
         Map extraProperties = (Map) data.get("extraProperties");
         if (extraProperties != null) {
             childElements = (Map<String, String>) extraProperties.get("childResources");
+            if (childElements == null) {
+                childElements = new TreeMap<String, String>();
+            }
         }
 
         return childElements;

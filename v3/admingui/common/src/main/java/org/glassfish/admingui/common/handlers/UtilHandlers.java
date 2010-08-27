@@ -315,10 +315,10 @@ public class UtilHandlers {
         List list = (List)handlerCtx.getInputValue("list");
         List list2 = (List)handlerCtx.getInputValue("list2");
         if (list == null) {
-            list = new ArrayList();
-            if (list2 == null) {
-                return;
-            }
+            list = new ArrayList();            
+        }
+        if (list2 == null) {
+            return;
         }
         for(Object one : list2) {
                 list.add(one);

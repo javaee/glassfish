@@ -67,42 +67,32 @@
         </sun:tableColumn>
 
         <sun:tableColumn id="colPoolName" headerText="$resource{i18njms.resourcesTable.colPoolName}" rendered="#{isConnPage}" sort="Name" rowHeader="$boolean{true}">
-            <sun:hyperlink id="link" text="#{td.value.name}" url="#{pageSession.editLink}?name=#{td.value.name}&jndiName=#{td.value.jndiName}" />
+            <sun:hyperlink id="link" text="#{td.value.name}" url="#{pageSession.editLink}?name=#{td.value.name}&jndiName=#{td.value.name}" />
         </sun:tableColumn>
 
         <sun:tableColumn id="jndiName" headerText="$resource{i18njms.resourcesTable.colJndiName}" rendered="#{isConnPage}" sort="Name" rowHeader="$boolean{true}">
-            <sun:staticText id="jndi" text="#{td.value.jndiName}"  />
+            <sun:staticText id="jndi" text="#{td.value.name}"  />
         </sun:tableColumn>
 
         <sun:tableColumn id="colEnabled1" headerText="$resource{i18njms.resourcesTable.colEnabled}" rendered="#{isConnPage}" sort="Enabled" rowHeader="$boolean{true}">
-            <staticText id="enabled" value="#{requestScope.connRes and requestScope.resourceRef}">
+            <staticText id="enabled" value="#{td.value.enabled}">
                 <!event type="beforeEncode">
-                    if (#{pageSession['rest-api']}){
-                        urlencode(value="#{td.value.jndiName}" encoding="UTF-8" result="#{pageSession.encodedJndiName}");
-                        gf.getEntityAttrs(endpoint="#{pageSession.parentUrl}/connector-resource/#{pageSession.encodedJndiName}", valueMap="#{requestScope.connResMap}");
+                        urlencode(value="#{td.value.name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+                        gf.getEntityAttrs(endpoint="#{pageSession.parentUrl}/connector-resource/#{pageSession.encodedName}", valueMap="#{requestScope.connResMap}");
                         setAttribute(key="connRes" value="#{requestScope.connResMap['enabled']}");
-                        gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/servers/server/server/resource-ref/#{pageSession.encodedJndiName}", valueMap="#{requestScope.resourceRefMap}");
+                        gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/servers/server/server/resource-ref/#{pageSession.encodedName}", valueMap="#{requestScope.resourceRefMap}");
                         setAttribute(key="resourceRef" value="#{requestScope.resourceRefMap['enabled']}");
-                    }
-                    if (!#{pageSession['rest-api']}){
-                        getProxyAttribute(objectNameStr="amx:pp=/domain/resources,type=connector-resource,name=#{td.value.jndiName}", attrName="Enabled", value="#{requestScope.connRes}");
-                        getProxyAttribute(objectNameStr="amx:pp=/domain/servers/server[server],type=resource-ref,name=#{td.value.jndiName}", attrName="Enabled", value="#{requestScope.resourceRef}");
-                    }
+                
                 </event>
             </staticText>
         </sun:tableColumn>
 
         <sun:tableColumn id="colEnabled2" headerText="$resource{i18njms.resourcesTable.colEnabled}" rendered="#{!isConnPage}" sort="Enabled" rowHeader="$boolean{true}">
-            <staticText id="enabled" value="#{td.value.enabled and requestScope.resourceRef}">
+            <staticText id="enabled" value="#{td.value.enabled}">
                 <!event type="beforeEncode">
-                    if (#{pageSession['rest-api']}){
                        urlencode(value="#{td.value.name}" encoding="UTF-8" result="#{pageSession.encodedName}");
                        gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/servers/server/server/resource-ref/#{pageSession.encodedName}", valueMap="#{requestScope.resourceRefMap}");
-                       setAttribute(key="resourceRef" value="#{requestScope.resourceRefMap['enabled']}");
-                    }
-                    if (!#{pageSession['rest-api']}){
-                         getProxyAttribute(objectNameStr="amx:pp=/domain/servers/server[server],type=resource-ref,name=#{td.value.name}", attrName="Enabled", value="#{requestScope.resourceRef}");
-                    }
+                       setAttribute(key="resourceRef" value="#{requestScope.resourceRefMap['enabled']}");                
                 </event>
             </staticText>
         </sun:tableColumn>

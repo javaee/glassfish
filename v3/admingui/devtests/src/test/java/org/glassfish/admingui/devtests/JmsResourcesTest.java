@@ -61,11 +61,11 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:resources:jmsResources:jmsConnectionFactories:jmsConnectionFactories_link", TRIGGER_JMS_CONNECTION_FACTORIES);
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_JMS_CONN_FACT);
 
-        selenium.type("propertyForm:propertySheet:generalPropertySheet:jndiProp:jndiProp", poolName);
-        selenium.select("propertyForm:propertySheet:generalPropertySheet:resType:resType", "label=javax.jms.TopicConnectionFactory");
-        selenium.type("propertyForm:propertySheet:generalPropertySheet:descProp:descProp", description);
-        selenium.select("propertyForm:propertySheet:poolPropertySheet:transprop:trans", "label=LocalTransaction");
-        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_JMS_CONNECTION_FACTORIES);
+        selenium.type("form:propertySheet:generalPropertySheet:jndiProp:jndiProp", poolName);
+        selenium.select("form:propertySheet:generalPropertySheet:resType:resType", "label=javax.jms.TopicConnectionFactory");
+        selenium.type("form:propertySheet:generalPropertySheet:descProp:descProp", description);
+        selenium.select("form:propertySheet:poolPropertySheet:transprop:trans", "label=LocalTransaction");
+        clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JMS_CONNECTION_FACTORIES);
         assertTrue(selenium.isTextPresent(poolName));
 
         // This can't currently use testDisableButton/testEnableButton because the table is different from the others
@@ -91,10 +91,10 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:resources:jmsResources:jmsDestinationResources:jmsDestinationResources_link", TRIGGER_JMS_DESTINATION_RESOURCES);
         sleep(1000);
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_JMS_DEST_RES);
-        selenium.type("propertyForm:propertyContentPage:propertySheet:propertSectionTextField:jndiProp:jndi", resourceName);
-        selenium.type("propertyForm:propertyContentPage:propertySheet:propertSectionTextField:nameProp:name", "somePhysicalDestination");
-        selenium.type("propertyForm:propertyContentPage:propertySheet:propertSectionTextField:descProp:desc", description);
-        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_JMS_DESTINATION_RESOURCES);
+        selenium.type("form:propertyContentPage:propertySheet:propertSectionTextField:jndiProp:jndi", resourceName);
+        selenium.type("form:propertyContentPage:propertySheet:propertSectionTextField:nameProp:name", "somePhysicalDestination");
+        selenium.type("form:propertyContentPage:propertySheet:propertSectionTextField:descProp:desc", description);
+        clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JMS_DESTINATION_RESOURCES);
         assertTrue(selenium.isTextPresent(resourceName) && selenium.isTextPresent(description));
 
         // This can't currently use testDisableButton/testEnableButton because the table is different from the others

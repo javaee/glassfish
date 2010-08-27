@@ -42,39 +42,15 @@
 
 <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
         onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
-    <!command
-        if (!#{pageSession['rest-api']}) {
-            if(#{pageSession.hasPropertySheet}){
-                saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}", attrs="#{pageSession.valueMap}", skipAttrs="#{pageSession.skipAttrsList}",
-                    convertToFalse="#{pageSession.convertToFalseList}"
-                );
-                saveBeanAttributes(objectNameStr="#{pageSession.resourceRefObjectNameStr}", attrs="#{pageSession.resourceRef}", convertToFalse={"enabled"});
-                if(#{pageSession.has2Objects}){
-                    saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr2}", attrs="#{pageSession.valueMap2}", skipAttrs="#{pageSession.skipAttrsList2}",
-                        convertToFalse="#{pageSession.convertToFalseList2}"
-                    );
-                }
-            }
-        }
-        if (#{pageSession['rest-api']}) {
-            if(#{pageSession.hasPropertySheet}){
-                gf.updateEntity(endpoint="#{pageSession.selfUrl}", attrs="#{pageSession.valueMap}", skipAttrs="#{pageSession.skipAttrsList}",
-                    convertToFalse="#{pageSession.convertToFalseList}"
-                );
-                gf.updateEntity(endpoint="#{pageSession.resourceRefUrl}", attrs="#{pageSession.resourceRef}", convertToFalse={"enabled"});
-                if(#{pageSession.has2Objects}){
-                    gf.updateEntity(endpoint="#{pageSession.selfUrl2}", attrs="#{pageSession.valueMap2}", skipAttrs="#{pageSession.skipAttrsList2}",
-                        convertToFalse="#{pageSession.convertToFalseList2}"
-                    );
-                }
-            }
-        }
-        if (#{pageSession.hasPropertyTable}){
-            getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-            getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-            //REST - TO DO
-            setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
-        }
+    <!command        
+        gf.updateEntity(endpoint="#{pageSession.selfUrl}", attrs="#{pageSession.valueMap}", skipAttrs="#{pageSession.skipAttrsList}",
+            convertToFalse="#{pageSession.convertToFalseList}"
+        );                
+        gf.updateEntity(endpoint="#{pageSession.resourceRefUrl}", attrs="#{pageSession.resourceRef}", convertToFalse={"enabled"});     
+
+        javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
+        gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json", method="POST", data="#{requestScope.tmpJSON}", result="#{requestScope.restResponse}");
+
         prepareSuccessfulMsg();
         gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
     />
@@ -86,33 +62,41 @@
         // Update the connector-resource with the Name specified on the connector-connection-pool
         mapPut(map="#{pageSession.valueMap2}", key="poolName", value="#{pageSession.valueMap['name']}");
         mapPut(map="#{pageSession.valueMap2}", key="name", value="#{pageSession.valueMap['name']}");
-        if (!#{pageSession['rest-api']}) {
-            createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType2}"
-                    attrs="#{pageSession.valueMap2}", convertToFalse="#{pageSession.convertToFalseList2}", result => $attribute{objStr3});
+        
+        // Create connector-connection-pool
+        gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}",
+            attrs="#{pageSession.valueMap}", convertToFalse="#{pageSession.convertToFalseList}", result => $attribute{resultEndPoint});
+        // Create connector-resource
+        mapPut(map="#{pageSession.valueMap2}" key="target" value="domain");
+        gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType2}",
+                attrs="#{pageSession.valueMap2}", convertToFalse="#{pageSession.convertToFalseList2}", result => $attribute{resultEndPoint3});
 
-            // Create connector-connection-pool
-            createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
-                attrs="#{pageSession.valueMap}", convertToFalse="#{pageSession.convertToFalseList}", result => $attribute{objStr});
-
-            // resource is always enabled.  resource-ref toggles
-            createResourceRef(resourceName="#{pageSession.valueMap['name']}", enabled="#{!empty pageSession.resourceRef['enabled']}");
-        }
-        if (#{pageSession['rest-api']}) {
-            // Create connector-connection-pool
-            gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}",
-                attrs="#{pageSession.valueMap}", convertToFalse="#{pageSession.convertToFalseList}", result => $attribute{resultEndPoint});
-            gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType2}",
-                    attrs="#{pageSession.valueMap2}", convertToFalse="#{pageSession.convertToFalseList2}", result => $attribute{resultEndPoint3});
+        //The selected Targets will be available as #{pageSession.selectedTargets},  which is an array.
+        //We need to create source-ref of the selected targets.
+        convertArrayToCommaString(array="#{pageSession.selectedTargets}" commaString="#{requestScope.cs}")
+        convertStringtoList(str="#{requestScope.cs}" result="#{requestScope.targetList}");
+        println("===========#{requestScope.targetList}");
+        setAttribute(key="nTargets" value="#{requestScope.targetList.size()}");
+        dec(number="#{requestScope.nTargets}" value="#{requestScope.endRef}");
+        forLoop(end="#{requestScope.endRef}"  varName="nn"){
+            setAttribute(key="targetName" value="#{requestScope.targetList[nn]}");
+            gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/servers/server/#{requestScope.targetName}", exists="#{requestScope.isServer}");
+            if (#{requestScope.isServer}){
+                setAttribute(key="endp" value="#{sessionScope.REST_URL}/servers/server/#{requestScope.targetName}/resource-ref");
+            }
+            if (!#{requestScope.isServer}){
+                setAttribute(key="endp" value="#{sessionScope.REST_URL}/clusters/cluster/#{requestScope.targetName}/resource-ref");
+            }
+            createMap(result="#{requestScope.refsMap}")
+            mapPut(map="#{requestScope.refsMap}" key="id" value="#{pageSession.valueMap2['name']}")
+            mapPut(map="#{requestScope.refsMap}" key="enabled" value="#{pageSession.resourceRef['enabled']}")
+            mapPut(map="#{requestScope.refsMap}" key="target" value="#{requestScope.targetName}")
+            gf.createEntity(endpoint="#{requestScope.endp}" attrs="#{requestScope.refsMap}" convertToFalse={"enabled"});
         }
 
         if (#{pageSession.hasPropertyTable}){
             getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-            //REST - TO DO
-            if (#{pageSession['rest-api']}) {
-                setAttribute(key="objStr", value="#{pageSession.restObjStr},name=#{pageSession.valueMap['name']}");
-            }
-
             javaToJSON(obj="$attribute{newList}" json="#{requestScope.tmpJSON}");
             urlencode(value="#{pageSession.valueMap.name}" encoding="UTF-8" result="#{pageSession.encodedName}");
             gf.restRequest(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}/property.json",

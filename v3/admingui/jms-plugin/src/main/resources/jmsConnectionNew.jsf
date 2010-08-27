@@ -52,15 +52,10 @@
             setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jms/jmsConnectionNew.jsf");
             setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jms/jmsConnections.jsf");
 
-            setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources" );
             setPageSessionAttribute(key="childType" value="connector-connection-pool");
             setPageSessionAttribute(key="childType2" value="connector-resource");
-            //REST - for setproxyProperties after creating an entity.
-            setPageSessionAttribute(key="restObjStr", value="amx:pp=/domain/resources,type=#{pageSession.childType}");
             setPageSessionAttribute(key="convertToFalseList" value={"failAllConnections", "isConnectionValidationRequired"});
-            //REST related
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
-            setPageSessionAttribute(key="rest-api" value="true");
             gf.getDefaultValues(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", valueMap="#{pageSession.valueMap}");
             gf.getDefaultValues(endpoint="#{pageSession.parentUrl}/#{pageSession.childType2}", valueMap="#{pageSession.valueMap2}");
             gf.getDefaultValues(endpoint="#{sessionScope.REST_URL}/servers/server/server/resource-ref", valueMap="#{pageSession.resourceRef}");
@@ -74,16 +69,13 @@
             setPageSessionAttribute(key="showCancelButton" value="#{true}" );
             setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
             setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
-
+            
+            setPageSessionAttribute(key="useString" value="#{false}");
             // TODO: set default values for user/pass in the properties table
-
-            if( $session{supportCluster}) {
-                //getTargetsOptionsList(AvailableTargets=>$pageSession{availableTargets}, SelectedTargets=>$pageSession{selectedTargets});
-            }
         />
     </event>
 
-    <sun:form id="propertyForm" >
+    <sun:form id="form" >
 #include "/common/shared/alertMsg.inc"
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18njms.connectionFactory.newPageTitle}" helpText="$resource{i18njms.connectionFactory.newPageTitleHelp}">
@@ -95,6 +87,12 @@
     </sun:title>
 #include "/jms/poolProperties.inc"
 #include "/common/shared/propertyDescTable.inc"
+<event>
+<!afterCreate
+    setPageSessionAttribute(key="setDefaultTarget" value="true");
+    includeIntegrations(type="org.glassfish.admingui:TargetSectionForResource" );
+/>
+</event>
     <sun:title id="title2" >
         <!facet pageButtonsBottom>
             <sun:panelGroup id="bottomButtons">

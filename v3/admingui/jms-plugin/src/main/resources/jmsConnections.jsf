@@ -59,13 +59,12 @@
             setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain,type=resources");
             setPageSessionAttribute(key="childType" value="connector-connection-pool");
             setPageSessionAttribute(key="childType2" value="connector-resource");
-            //getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
-            //filterTable(table="#{requestScope.listOfRows}", key="ResourceAdapterName", value="jmsra")
-            //REST related
+            
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
-            setPageSessionAttribute(key="rest-api" value="true");
             setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/connector-connection-pool");
-            getJMSFactoriesTable(endpoint="#{pageSession.selfUrl}", result="#{requestScope.listOfRows}");
+            gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.tmpRows}");
+            filterTable(table="#{requestScope.tmpRows}", key="resourceAdapterName", value="jmsra")
+            gf.getResourceRealStatus(endpoint="#{sessionScope.REST_URL}/servers/server/server/resource-ref" rows="#{requestScope.tmpRows}" result="#{requestScope.listOfRows}")
 
             setPageSessionAttribute(key="tableTitle" value="$resource{i18njms.resourcesTable.connectionFactories}");
             setPageSessionAttribute(key="editLink" value="/jms/jmsConnectionEdit.jsf");
@@ -73,7 +72,6 @@
             setPageSessionAttribute(key="listLink" value="/jms/jmsConnections.jsf");
             setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18njms.resourcesTable.deleteConnMessage}");
             
-            setPageSessionAttribute(key="targetLink" value="/jms/jmsConnectionTargets.jsf");
             setPageSessionAttribute(key="resourceType" value="connectorResource");
             setPageSessionAttribute(key="isJmsConnectionFactory" value="#{true}");
             setPageSessionAttribute(key="hasPool" value="#{false}");
