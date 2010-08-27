@@ -52,18 +52,16 @@
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setSessionAttribute(key="jmxConnectorTab" value="jmxConnectorEdit");
-        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
-        setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/admin-service");
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/admin-service");
         setPageSessionAttribute(key="rest-api" value="true");
-        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
-	gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json", method="GET" result="#{requestScope.propTable}");
-	setAttribute(key="tableList" value="#{requestScope.propTable.data.extraProperties.properties}");
+        gf.getEntityAttrs(endpoint="#{pageSession.parentUrl}.json", valueMap="#{pageSession.adminServiceMap}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/configuration/jmxConnectorEdit.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
-        setPageSessionAttribute(key="skipAttrsList" value={"SystemJmxConnectorName", "Name", "Type"});
 
-        setPageSessionAttribute(key="selfUrl2", value="#{pageSession.parentUrl}/admin-service/jmx-connector/#{pageSession.valueMap['systemJmxConnectorName']}");
-        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}.json", valueMap="#{pageSession.valueMap2}");
-        setPageSessionAttribute(key="convertToFalseList2" value={"SecurityEnabled"});
+        setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/jmx-connector/#{pageSession.adminServiceMap['systemJmxConnectorName']}");
+        gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json", method="GET" result="#{requestScope.propTable}");
+        setPageSessionAttribute(key="tableList" value="#{requestScope.propTable.data.extraProperties.properties}");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
+        setPageSessionAttribute(key="convertToFalseList" value={"securityEnabled"});
 
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
@@ -71,7 +69,7 @@
         setPageSessionAttribute(key="showCancelButton" value="#{false}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
         setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
-        setPageSessionAttribute(key="has2Objects" value="#{true}" );
+        setPageSessionAttribute(key="has2Objects" value="#{false}" );
 
     />
     </event>
@@ -87,29 +85,29 @@
 <sun:propertySheet id="propertySheet" requiredFields="#{hasRequiredFields}">
     <sun:propertySheetSection id="propertySheetSection">
             <sun:property id="JmxNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.jmxNameLabel}" >
-                <sun:staticText id="JmxName" text="#{pageSession.valueMap2['name']}" />
+                <sun:staticText id="JmxName" text="#{pageSession.valueMap['name']}" />
             </sun:property>
             <sun:property id="JmxProtocolProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.jmxProtocolLabel}" >
-                <sun:staticText id="JmxProtocol" text="#{pageSession.valueMap2['protocol']}" />
+                <sun:staticText id="JmxProtocol" text="#{pageSession.valueMap['protocol']}" />
             </sun:property>
             <sun:property id="JmxServUrlProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.jmxServUrlLabel}" >
                 <sun:staticText id="JmxServUrl" text="#{pageSession.jmxURL}" />
                 <!beforeCreate
                     gf.restRequest(endpoint="#{sessionScope.REST_URL}/jmx-urls.json", method="get", result="#{requestScope.result}");
-                    setPageSessionAttribute(key="jmxURL" value="#{requestScope.result.data['jmx-service-urls'][0]}");
+                    setPageSessionAttribute(key="jmxURL" value="#{requestScope.result.data.extraProperties['jmxServiceUrls'][0]}");
                 />
             </sun:property>
             <sun:property id="SecurityProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.securityLabel}" >
-                <sun:checkbox id="Security" label="$resource{i18n.desc.Enabled}" selected="#{pageSession.valueMap2['securityEnabled']}" selectedValue="true" />
+                <sun:checkbox id="Security" label="$resource{i18n.desc.Enabled}" selected="#{pageSession.valueMap['securityEnabled']}" selectedValue="true" />
             </sun:property>
             <sun:property id="AddressProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.addressLabel}" helpText="$resource{i18n.edJmxConnector.addressHelp}" >
-                <sun:textField id="Address" styleClass="required" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.edJmxConnector.address']}" text="#{pageSession.valueMap2['address']}" required="#{true}" />
+                <sun:textField id="Address" styleClass="required" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.edJmxConnector.address']}" text="#{pageSession.valueMap['address']}" required="#{true}" />
             </sun:property>
             <sun:property id="PortProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.portLabel}" helpText="$resource{i18n.edJmxConnector.portHelp}" >
-                <sun:textField id="Port" styleClass="required port" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.edJmxConnector.port']}" text="#{pageSession.valueMap2['port']}" required="#{true}" />
+                <sun:textField id="Port" styleClass="required port" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.edJmxConnector.port']}" text="#{pageSession.valueMap['port']}" required="#{true}" />
             </sun:property>
             <sun:property id="RealmNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.realmNameLabel}" helpText="$resource{i18n.edJmxConnector.realmNameHelp}" >
-                <sun:textField id="RealmName" styleClass="required" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.edJmxConnector.realmName']}" text="#{pageSession.valueMap2['authRealmName']}" required="#{true}" />
+                <sun:textField id="RealmName" styleClass="required" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.edJmxConnector.realmName']}" text="#{pageSession.valueMap['authRealmName']}" required="#{true}" />
             </sun:property>
 
 
