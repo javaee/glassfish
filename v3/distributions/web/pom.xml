@@ -166,14 +166,6 @@
             <type>zip</type>
         </dependency>   
 
-        <!-- scripting package -->
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-scripting</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>   
-
 	<!-- all previous web-nb distribution packages -->
         <dependency>
             <groupId>org.glassfish.packager</groupId>

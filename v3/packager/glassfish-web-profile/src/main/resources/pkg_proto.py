@@ -62,7 +62,6 @@ pkg = {
 		 	"pkg:/glassfish-grizzly" : {"type" : "require" },
 			"pkg:/glassfish-nucleus" : {"type" : "require" },
 			"pkg:/glassfish-grizzly-full" : {"type" : "require" },
-			"pkg:/glassfish-scripting" : {"type" : "require" },
 			"pkg:/glassfish-common" : {"type" : "require" },
 			"pkg:/shoal" : {"type" : "require" },
 			"pkg:/glassfish-cluster" : {"type" : "require" },

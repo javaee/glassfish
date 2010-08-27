@@ -79,10 +79,6 @@
         <property name="image.dir" value="${image.dir}"/>
     </ant>
     <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-scripting"/>
-        <property name="image.dir" value="${image.dir}"/>
-    </ant>
-    <ant antfile="../distributions.xml" target="install-package">
         <property name="package.name" value="glassfish-common"/>
         <property name="image.dir" value="${image.dir}"/>
     </ant>
@@ -201,10 +197,6 @@
 </target>
 
 <target name="install-l10n-packages" description="Installing l10n packages">
-    <ant antfile="../distributions.xml" target="install-package">
-        <property name="package.name" value="glassfish-scripting-l10n"/>
-        <property name="image.dir" value="${image.dir}"/>
-   </ant>
    <ant antfile="../distributions.xml" target="install-package">
         <property name="package.name" value="glassfish-common-l10n"/>
         <property name="image.dir" value="${image.dir}"/>
