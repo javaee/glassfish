@@ -86,27 +86,31 @@ public class TextClassWriter implements ClassWriter {
         writer.write("/*\n");
         writer.write(" * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n");
         writer.write(" *\n");
-        writer.write(" * Copyright 2009-2010 Oracle and/or its affiliates. All rights reserved.\n");
+        writer.write(" * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.\n");
         writer.write(" *\n");
         writer.write(" * The contents of this file are subject to the terms of either the GNU\n");
         writer.write(" * General Public License Version 2 only (\"GPL\") or the Common Development\n");
         writer.write(" * and Distribution License(\"CDDL\") (collectively, the \"License\").  You\n");
-        writer.write(" * may not use this file except in compliance with the License. You can obtain\n");
-        writer.write(" * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html\n");
-        writer.write(" * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific\n");
+        writer.write(" * may not use this file except in compliance with the License.  You can\n");
+        writer.write(" * obtain a copy of the License at\n");
+        writer.write(" * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html\n");
+        writer.write(" * or packager/legal/LICENSE.txt.  See the License for the specific\n");
         writer.write(" * language governing permissions and limitations under the License.\n");
         writer.write(" *\n");
         writer.write(" * When distributing the software, include this License Header Notice in each\n");
-        writer.write(" * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.\n");
-        writer.write(" * Sun designates this particular file as subject to the \"Classpath\" exception\n");
-        writer.write(" * as provided by Sun in the GPL Version 2 section of the License file that\n");
-        writer.write(" * accompanied this code.  If applicable, add the following below the License\n");
-        writer.write(" * Header, with the fields enclosed by brackets [] replaced by your own\n");
-        writer.write(" * identifying information: \"Portions Copyrighted [year]\n");
-        writer.write(" * [name of copyright owner]\"\n");
+        writer.write(" * file and include the License file at packager/legal/LICENSE.txt.\n");
+        writer.write(" *\n");
+        writer.write(" * GPL Classpath Exception:\n");
+        writer.write(" * Oracle designates this particular file as subject to the \"Classpath\"\n");
+        writer.write(" * exception as provided by Oracle in the GPL Version 2 section of the License\n");
+        writer.write("* file that accompanied this code.\n");
+        writer.write(" *\n");
+        writer.write(" * Modifications:\n");
+        writer.write(" * If applicable, add the following below the License Header, with the fields\n");
+        writer.write(" * enclosed by brackets [] replaced by your own identifying information:\n");
+        writer.write(" * \"Portions Copyright [year] [name of copyright owner]\"\n");
         writer.write(" *\n");
         writer.write(" * Contributor(s):\n");
-        writer.write(" *\n");
         writer.write(" * If you wish your version of this file to be governed by only the CDDL or\n");
         writer.write(" * only the GPL Version 2, indicate your decision by adding \"[Contributor]\n");
         writer.write(" * elects to include this software in this distribution under the [CDDL or GPL\n");
@@ -118,6 +122,7 @@ public class TextClassWriter implements ClassWriter {
         writer.write(" * only if the new code is made subject to such option by the copyright\n");
         writer.write(" * holder.\n");
         writer.write(" */\n");
+        writer.write("\n");
     }
 
     private void writeImportStatements() throws IOException {
