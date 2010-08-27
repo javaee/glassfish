@@ -86,7 +86,7 @@ public class TextClassWriter implements ClassWriter {
         writer.write("/*\n");
         writer.write(" * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n");
         writer.write(" *\n");
-        writer.write(" * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.\n");
+        writer.write(" * Copyright 2009-2010 Oracle and/or its affiliates. All rights reserved.\n");
         writer.write(" *\n");
         writer.write(" * The contents of this file are subject to the terms of either the GNU\n");
         writer.write(" * General Public License Version 2 only (\"GPL\") or the Common Development\n");
