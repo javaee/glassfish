@@ -887,6 +887,7 @@ public class ClusterTest extends AdminBaseDevTest {
 	// create-system-properties command
 	report(tn+"create-system-properties-das", asadmin("create-system-properties", "das=server"));
 	report(tn+"create-system-properties-cluster", asadmin("create-system-properties", "--target", cname, "cl=in1in2"));
+	report(tn+"create-system-properties-clusteredins", asadmin("create-system-properties", "--target", i2name, "clins=in2"));
 	report(tn+"create-system-properties-instance", asadmin("create-system-properties", "--target", i3name, "in3=in3"));
 
 	// Test list output
@@ -895,6 +896,8 @@ public class ClusterTest extends AdminBaseDevTest {
         report(tn+"test-das-has-das-system-properties", success);
         success = ret.outAndErr.indexOf("cl=in1in2") < 0;
         report(tn+"test-das-has-no-cl-system-properties", success);
+        success = ret.outAndErr.indexOf("clins=in2") < 0;
+        report(tn+"test-das-has-no-clins-system-properties", success);
         success = ret.outAndErr.indexOf("in3=in3") < 0;
         report(tn+"test-das-has-no-in3-system-properties", success);
         ret = asadminWithOutput("list-system-properties", cname);
@@ -902,6 +905,8 @@ public class ClusterTest extends AdminBaseDevTest {
         report(tn+"test-cluster-has-no-das-system-properties", success);
         success = ret.outAndErr.indexOf("cl=in1in2") >= 0;
         report(tn+"test-cluster-has-cl-system-properties", success);
+        success = ret.outAndErr.indexOf("clins=in2") < 0;
+        report(tn+"test-das-has-no-clins-system-properties", success);
         success = ret.outAndErr.indexOf("in3=in3") < 0;
         report(tn+"test-cluster-has-no-in3-system-properties", success);
         ret = asadminWithOutput("list-system-properties", i3name);
@@ -909,13 +914,26 @@ public class ClusterTest extends AdminBaseDevTest {
         report(tn+"test-instance-has-no-das-system-properties", success);
         success = ret.outAndErr.indexOf("cl=in1in2") < 0;
         report(tn+"test-instance-has-no-cl-system-properties", success);
+        success = ret.outAndErr.indexOf("clins=in2") < 0;
+        report(tn+"test-das-has-no-clins-system-properties", success);
         success = ret.outAndErr.indexOf("in3=in3") >= 0;
         report(tn+"test-instance-has-in3-system-properties", success);
+        ret = asadminWithOutput("list-system-properties", i2name);
+        success = ret.outAndErr.indexOf("das=server") < 0;
+        report(tn+"test-instance-has-no-das-system-properties", success);
+        success = ret.outAndErr.indexOf("cl=in1in2") < 0;
+        report(tn+"test-instance-has-no-cl-system-properties", success);
+        success = ret.outAndErr.indexOf("clins=in2") >= 0;
+        report(tn+"test-das-has-clins-system-properties", success);
+        success = ret.outAndErr.indexOf("in3=in3") < 0;
+        report(tn+"test-instance-has-in3-system-properties", success);
+
 
 	// delete system-properties command
 	report(tn+"delete-system-property-das", asadmin("delete-system-property", "das"));
 	report(tn+"delete-system-property-cluster", asadmin("delete-system-property", "--target", cname, "cl"));
 	report(tn+"delete-system-property-instance", asadmin("delete-system-property", "--target", i3name, "in3"));
+	report(tn+"delete-system-property-instance", asadmin("delete-system-property", "--target", i2name, "clins"));
 
 	// Test list output
         ret = asadminWithOutput("list-system-properties");
@@ -923,6 +941,8 @@ public class ClusterTest extends AdminBaseDevTest {
         report(tn+"test-das-has-no-das-system-properties", success);
         success = ret.outAndErr.indexOf("cl=in1in2") < 0;
         report(tn+"test-das-has-no-cl-system-properties", success);
+        success = ret.outAndErr.indexOf("clins=in2") < 0;
+        report(tn+"test-das-has-no-clins-system-properties", success);
         success = ret.outAndErr.indexOf("in3=in3") < 0;
         report(tn+"test-das-has-no-in3-system-properties", success);
         ret = asadminWithOutput("list-system-properties", "--target", cname);
@@ -930,6 +950,8 @@ public class ClusterTest extends AdminBaseDevTest {
         report(tn+"test-cluster-has-no-das-system-properties", success);
         success = ret.outAndErr.indexOf("cl=in1in2") < 0;
         report(tn+"test-cluster-has-no-cl-system-properties", success);
+        success = ret.outAndErr.indexOf("clins=in2") < 0;
+        report(tn+"test-das-has-no-clins-system-properties", success);
         success = ret.outAndErr.indexOf("in3=in3") < 0;
         report(tn+"test-cluster-has-no-in3-system-properties", success);
         ret = asadminWithOutput("list-system-properties", "--target", i3name);
@@ -937,11 +959,19 @@ public class ClusterTest extends AdminBaseDevTest {
         report(tn+"test-instance-has-no-das-system-properties", success);
         success = ret.outAndErr.indexOf("cl=in1in2") < 0;
         report(tn+"test-instance-has-no-cl-system-properties", success);
+        success = ret.outAndErr.indexOf("clins=in2") < 0;
+        report(tn+"test-das-has-no-clins-system-properties", success);
         success = ret.outAndErr.indexOf("in3=in3") < 0;
         report(tn+"test-instance-has-no-in3-system-properties", success);
-
-	// Test create-jvm fails on clustered instances
-	report(tn+"create-system-properties-clustered-instance", !asadmin("create-system-properties", "--target", i2name, "cl=in1in2"));
+        ret = asadminWithOutput("list-system-properties", "--target", i2name);
+        success = ret.outAndErr.indexOf("das=server") < 0;
+        report(tn+"test-instance-has-no-das-system-properties", success);
+        success = ret.outAndErr.indexOf("cl=in1in2") < 0;
+        report(tn+"test-instance-has-no-cl-system-properties", success);
+        success = ret.outAndErr.indexOf("clins=in2") < 0;
+        report(tn+"test-das-has-no-clins-system-properties", success);
+        success = ret.outAndErr.indexOf("in3=in3") < 0;
+        report(tn+"test-instance-has-no-in3-system-properties", success);
 
         // Cleanup
         report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
