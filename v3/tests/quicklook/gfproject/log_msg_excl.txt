@@ -175,7 +175,7 @@ Leaving GMS group
 normal termination of ViewWindow thread for group
 MessageWindow thread for group
 SignalHandler task named
-
+SLF4J:
 
 # From QL Test - No need to fix this
 In SingletonBean::init()
@@ -317,7 +317,7 @@ javax.ejb.NoSuchObjectLocalException: The EJB does not exist. session-key:
  Current thread done cleanup
 Glassfish-specific \(Non-portable\) JNDI names for EJB 
 StatefulContainerbuilder instantiated store
-
+StatefulContainerBuilder.buildStoreManager()
 
 # Waiting to be fixed: 12207
 issueAttributeChangeForXmlAttrName\(\): MBean attribute name not found for xml name, using xml name: name
@@ -326,10 +326,18 @@ AttributeChangeNotification:
 
 # Waiting to be fixed: 12305
 admin console: initSessionAttributes
-
+Error in getStandaloneInstances
+Error in getClusters
+restRequest: endpoint
 
 # Waiting to be fixed: 12307
 JMS Service Connection URL is
 
 # Waiting to be fixed: 12657
 SynchronizeFiles: logger
+
+# Waiting to be fixed: 13155
+PersistenceStrategyBuilderFactory>>createPersistenceStrategyBuilder
+
+# Waiting to be fixed: 11990
+Adding instance
