@@ -51,9 +51,11 @@
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=security-service");
         setPageSessionAttribute(key="childType" value="auth-realm");
-        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service");
+        setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
+        setPageSessionAttribute(key="rest-api" value="true");
+        gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.listOfRows}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nc.msg.JS.confirmDeleteRealms}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/common/security/realms/realmNew.jsf?configName=#{pageSession.configName}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/common/security/realms/realms.jsf?configName=#{pageSession.configName}");
@@ -92,12 +94,12 @@
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18nc.jacc.table.nameCol}"  sort="Name" rowHeader="$boolean{true}" id="col1">
-        <sun:hyperlink id="link" text="#{td.value.Name}"
-            url="#{pageSession.editLink}&name=#{td.value.Name}" />
+        <sun:hyperlink id="link" text="#{td.value.name}"
+            url="#{pageSession.editLink}&name=#{td.value.name}" />
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18nc.realm.colClassname}"   rowHeader="$boolean{true}" id="col2">
-        <staticText id="classnameCol" value="#{td.value.Classname}" />
+        <staticText id="classnameCol" value="#{td.value.classname}" />
     </sun:tableColumn>
 
   </sun:tableRowGroup>
