@@ -55,7 +55,7 @@ import com.sun.enterprise.config.serverbeans.AdminObjectResource;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.util.ArrayList;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.api.admin.RuntimeType;
@@ -67,7 +67,7 @@ import org.glassfish.api.admin.RuntimeType;
 @Service(name="list-jms-resources")
 @Scoped(PerLookup.class)
 @I18n("list.jms.resources")
-@Cluster({RuntimeType.DAS})
+@ExecuteOn({RuntimeType.DAS})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.DOMAIN})
 
 public class ListJMSResources implements AdminCommand {

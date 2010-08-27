@@ -62,7 +62,7 @@ import org.glassfish.config.support.TargetType;
  */
 @Service(name = "change-admin-password")
 @Scoped(PerLookup.class)
-@Cluster({RuntimeType.DAS})
+@ExecuteOn({RuntimeType.DAS})
 public class ChangeAdminPasswordCommand extends CLICommand {
     private ParameterMap params;
 

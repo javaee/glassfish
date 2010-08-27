@@ -43,7 +43,7 @@ package org.glassfish.deployment.admin;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -69,7 +69,7 @@ import java.io.IOException;
  * Get deployment configurations command
  */
 @Service(name="_get-deployment-configurations")
-@Cluster(value={RuntimeType.DAS})
+@ExecuteOn(value={RuntimeType.DAS})
 @Scoped(PerLookup.class)
 public class GetDeploymentConfigurationsCommand implements AdminCommand {
 

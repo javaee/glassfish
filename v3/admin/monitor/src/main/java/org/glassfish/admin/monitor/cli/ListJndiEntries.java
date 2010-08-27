@@ -47,7 +47,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -62,7 +62,7 @@ import java.util.List;
 @Service(name = "list-jndi-entries")
 @Scoped(PerLookup.class)
 @I18n("list.jndi.entries")
-@Cluster(value={RuntimeType.INSTANCE})
+@ExecuteOn(value={RuntimeType.INSTANCE})
 @TargetType(value={CommandTarget.DOMAIN, CommandTarget.DAS, 
                    CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER,
                    CommandTarget.CLUSTERED_INSTANCE})

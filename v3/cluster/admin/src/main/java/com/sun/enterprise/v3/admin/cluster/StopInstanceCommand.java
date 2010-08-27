@@ -58,7 +58,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.CommandException;
 import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.admin.ParameterMap;
@@ -85,7 +85,7 @@ import org.jvnet.hk2.component.PerLookup;
 @Scoped(PerLookup.class)
 @CommandLock(CommandLock.LockType.NONE) // allow stop-instance always
 @I18n("stop.instance.command")
-@Cluster(RuntimeType.DAS)
+@ExecuteOn(RuntimeType.DAS)
 public class StopInstanceCommand extends StopServer implements AdminCommand, PostConstruct {
 
     @Inject

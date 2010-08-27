@@ -55,7 +55,7 @@ import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -98,7 +98,7 @@ import org.glassfish.deployment.common.VersioningDeploymentException;
 @Service(name="undeploy")
 @I18n("undeploy.command")
 @Scoped(PerLookup.class)
-@Cluster(value={RuntimeType.DAS, RuntimeType.INSTANCE})
+@ExecuteOn(value={RuntimeType.DAS, RuntimeType.INSTANCE})
 @TargetType(value={CommandTarget.DOMAIN, CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
 public class UndeployCommand extends UndeployCommandParameters implements AdminCommand {
 

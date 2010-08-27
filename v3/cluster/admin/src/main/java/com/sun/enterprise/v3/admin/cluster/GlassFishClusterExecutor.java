@@ -125,7 +125,7 @@ public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct 
         } catch(ClassCastException e) {
             model = new CommandModelImpl(command.getClass());
         }
-        org.glassfish.api.admin.Cluster clAnnotation = model.getClusteringAttributes();
+        org.glassfish.api.admin.ExecuteOn clAnnotation = model.getClusteringAttributes();
         List<RuntimeType> runtimeTypes = new ArrayList<RuntimeType>();
         if(clAnnotation == null) {
             runtimeTypes.add(RuntimeType.DAS);

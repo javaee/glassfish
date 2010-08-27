@@ -47,7 +47,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Scoped;
@@ -69,7 +69,7 @@ import org.jvnet.hk2.component.PerLookup;
  */
 @Service(name="_instanceValidateRemoteDirDeployment")
 @Scoped(PerLookup.class)
-@Cluster(value={RuntimeType.INSTANCE})
+@ExecuteOn(value={RuntimeType.INSTANCE})
 public class InstanceValidateRemoteDirDeploymentCommand implements AdminCommand {
 
     private static final LocalStringsImpl localStrings =

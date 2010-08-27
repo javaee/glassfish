@@ -73,7 +73,7 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name = "migrate-timers")
 @Scoped(PerLookup.class)
 @I18n("migrate.timers")
-@org.glassfish.api.admin.Cluster(value = {RuntimeType.INSTANCE})
+@org.glassfish.api.admin.ExecuteOn(value = {RuntimeType.INSTANCE})
 @TargetType(value = {CommandTarget.DAS, CommandTarget.CLUSTERED_INSTANCE})
 public class MigrateTimers implements AdminCommand {
 

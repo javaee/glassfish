@@ -51,7 +51,7 @@ import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.FailurePolicy;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.RuntimeType;
@@ -78,7 +78,7 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name="_validateRemoteDirDeployment")
 @Supplemental(value="deploy", on=Supplemental.Timing.Before, ifFailure=FailurePolicy.Error)
 @Scoped(PerLookup.class)
-@Cluster(value={RuntimeType.DAS})
+@ExecuteOn(value={RuntimeType.DAS})
 
 public class ValidateRemoteDirDeploymentCommand extends DeployCommandParameters
         implements AdminCommand {

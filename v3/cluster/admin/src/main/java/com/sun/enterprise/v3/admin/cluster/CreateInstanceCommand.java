@@ -73,7 +73,7 @@ import java.util.logging.Logger;
 @Service(name = "create-instance")
 @I18n("create.instance")
 @Scoped(PerLookup.class)
-@Cluster({RuntimeType.DAS})
+@ExecuteOn({RuntimeType.DAS})
 public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
 
     private static final String DEFAULT_NODE = "localhost";

@@ -75,7 +75,7 @@ import org.glassfish.config.support.CommandTarget;
 @Service(name = "delete-http-lb-ref")
 @Scoped(PerLookup.class)
 @TargetType(value={CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
-@org.glassfish.api.admin.Cluster(RuntimeType.DAS)
+@org.glassfish.api.admin.ExecuteOn(RuntimeType.DAS)
 public final class DeleteHTTPLBRefCommand extends LBCommandsBase
         implements AdminCommand {
 

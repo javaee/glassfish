@@ -59,7 +59,7 @@ import org.jvnet.hk2.component.PerLookup;
 @Scoped(PerLookup.class)
 @CommandLock(CommandLock.LockType.NONE) // don't prevent _synchronize-files
 @I18n("restart.instance.command")
-@Cluster(RuntimeType.DAS)
+@ExecuteOn(RuntimeType.DAS)
 public class RestartInstanceCommand implements AdminCommand {
 
     @Override

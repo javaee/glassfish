@@ -67,7 +67,7 @@ import java.util.List;
  * @author Jennifer Chou, Jagadish Ramu 
  */
 @TargetType(value={CommandTarget.DAS, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
-@org.glassfish.api.admin.Cluster(value={RuntimeType.DAS, RuntimeType.INSTANCE})
+@org.glassfish.api.admin.ExecuteOn(value={RuntimeType.DAS, RuntimeType.INSTANCE})
 @Service(name="delete-resource-ref")
 @Scoped(PerLookup.class)
 @I18n("delete.resource.ref")

@@ -50,7 +50,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -70,7 +70,7 @@ import java.util.Iterator;
  * Time: 5:32:17 PM
  * To change this template use File | Settings | File Templates.
  */
-@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
 @Service(name = "list-log-levels")
 @Scoped(PerLookup.class)
 @I18n("list.log.levels")

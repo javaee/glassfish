@@ -52,7 +52,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Inject;
@@ -80,7 +80,7 @@ import java.util.List;
 @Service(name="delete-ssl")
 @Scoped(PerLookup.class)
 @I18n("delete.ssl")
-@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class DeleteSsl implements AdminCommand {
     

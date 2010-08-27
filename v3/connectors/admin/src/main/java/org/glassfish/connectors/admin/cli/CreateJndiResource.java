@@ -70,7 +70,7 @@ import static org.glassfish.resource.common.ResourceConstants.ENABLED;
  * Create Jndi Resource
  */
 @TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
-@org.glassfish.api.admin.Cluster(RuntimeType.ALL)
+@org.glassfish.api.admin.ExecuteOn(RuntimeType.ALL)
 @Service(name = "create-jndi-resource")
 @Scoped(PerLookup.class)
 @I18n("create.jndi.resource")

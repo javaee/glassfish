@@ -58,7 +58,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Target(ElementType.TYPE)
-public @interface Cluster {
+public @interface ExecuteOn {
 
     /**
      * Returns an array of process types on which the annotated action should run
@@ -75,7 +75,7 @@ public @interface Cluster {
      * @return a {@link ClusterExecutor} type or null to use the default executor that takes the
      * "target" command parameter to 
      */
-    Class<? extends ClusterExecutor> executor() default Cluster.TargetBasedExecutor.class;
+    Class<? extends ClusterExecutor> executor() default ExecuteOn.TargetBasedExecutor.class;
 
 
     /**

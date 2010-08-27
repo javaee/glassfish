@@ -78,7 +78,7 @@ import java.util.HashSet;
 @Service(name = "_validate-node")
 @I18n("validate.node")
 @Scoped(PerLookup.class)
-@Cluster({RuntimeType.DAS})
+@ExecuteOn({RuntimeType.DAS})
 public class ValidateNodeCommand implements AdminCommand {
 
     @Inject

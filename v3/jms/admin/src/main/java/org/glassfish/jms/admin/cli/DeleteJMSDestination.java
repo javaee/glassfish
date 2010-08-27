@@ -65,7 +65,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.logging.LogDomains;
 
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.api.admin.RuntimeType;
@@ -78,7 +78,7 @@ import org.glassfish.api.admin.ServerEnvironment;
 @Service(name="delete-jmsdest")
 @Scoped(PerLookup.class)
 @I18n("delete.jms.dest")
-@Cluster({RuntimeType.DAS})
+@ExecuteOn({RuntimeType.DAS})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 
 

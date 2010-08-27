@@ -44,7 +44,7 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.DeployCommandParameters;
@@ -93,7 +93,7 @@ import org.glassfish.deployment.versioning.VersioningService;
  */
 @Service(name="create-application-ref")
 @I18n("create.application.ref.command")
-@Cluster(value={RuntimeType.DAS})
+@ExecuteOn(value={RuntimeType.DAS})
 @Scoped(PerLookup.class)
 @TargetType(value={CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
 public class CreateApplicationRefCommand implements AdminCommand {

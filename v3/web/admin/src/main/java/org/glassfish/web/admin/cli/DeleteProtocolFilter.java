@@ -78,7 +78,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Service(name = "delete-protocol-filter")
 @Scoped(PerLookup.class)
 @I18n("delete.protocol.filter")
-@org.glassfish.api.admin.Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@org.glassfish.api.admin.ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class DeleteProtocolFilter implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =

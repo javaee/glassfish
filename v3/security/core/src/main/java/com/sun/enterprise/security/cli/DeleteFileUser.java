@@ -64,7 +64,7 @@ import com.sun.enterprise.security.auth.realm.RealmsManager;
 import com.sun.enterprise.security.common.Util;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import java.beans.PropertyVetoException;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.CommandTarget;
@@ -87,7 +87,7 @@ import org.jvnet.hk2.config.types.Property;
 @Service(name="delete-file-user")
 @Scoped(PerLookup.class)
 @I18n("delete.file.user")
-@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER})
 public class DeleteFileUser implements /*UndoableCommand*/ AdminCommand {
     

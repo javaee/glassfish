@@ -44,7 +44,7 @@ import com.sun.enterprise.config.serverbeans.Config;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.TargetType;
@@ -74,7 +74,7 @@ import java.beans.PropertyVetoException;
 @Service(name="delete-profiler")
 @Scoped(PerLookup.class)
 @I18n("delete.profiler")
-@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class DeleteProfiler implements AdminCommand {
 

@@ -51,7 +51,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
@@ -65,7 +65,7 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name="list-timers")
 @Scoped(PerLookup.class)
 @I18n("list.timers")
-@Cluster(value={RuntimeType.DAS})
+@ExecuteOn(value={RuntimeType.DAS})
 @TargetType(value={CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
 public class ListTimers implements AdminCommand {
 

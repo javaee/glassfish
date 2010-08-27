@@ -65,7 +65,7 @@ import org.glassfish.config.support.TargetType;
  */
 @Service(name = "login")
 @Scoped(PerLookup.class)
-@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER})
 public class LoginCommand extends CLICommand {
 

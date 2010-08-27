@@ -48,7 +48,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -58,7 +58,7 @@ import org.jvnet.hk2.component.PerLookup;
 /**
  * @author cmott
  */
-@Cluster({RuntimeType.INSTANCE})
+@ExecuteOn({RuntimeType.INSTANCE})
 @Service(name = "rotate-log")
 @Scoped(PerLookup.class)
 @I18n("rotate.log")

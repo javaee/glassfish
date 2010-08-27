@@ -73,7 +73,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Service(name = "create-protocol-filter")
 @Scoped(PerLookup.class)
 @I18n("create.protocol.filter")
-@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class CreateProtocolFilter implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =

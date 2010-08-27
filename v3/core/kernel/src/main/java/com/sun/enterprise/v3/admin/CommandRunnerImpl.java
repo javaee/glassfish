@@ -890,7 +890,7 @@ public class CommandRunnerImpl implements CommandRunner {
                     "Parameter mapping, validation, injection completed successfully; Starting paramater injection"));
 
             // Read cluster annotation attributes
-            org.glassfish.api.admin.Cluster clAnnotation = model.getClusteringAttributes();
+            org.glassfish.api.admin.ExecuteOn clAnnotation = model.getClusteringAttributes();
             if(clAnnotation == null) {
                 runtimeTypes.add(RuntimeType.DAS);
                 runtimeTypes.add(RuntimeType.INSTANCE);
@@ -916,7 +916,7 @@ public class CommandRunnerImpl implements CommandRunner {
                 targetName = "server";
 
             logger.fine(adminStrings.getLocalString("dynamicreconfiguration.diagnostics.target",
-                    "@Cluster parsing and default settings done; Current target is " + targetName));
+                    "@ExecuteOn parsing and default settings done; Current target is " + targetName));
 
             if(serverEnv.isDas()) {
 
@@ -939,7 +939,7 @@ public class CommandRunnerImpl implements CommandRunner {
                 // If the target is "server" and the command is not marked for DAS,
                 // add DAS to RuntimeTypes; This is important because those class of CLIs that
                 // do not always have to be run on DAS followed by applicable instances
-                // will have @Cluster(RuntimeType.INSTANCE) and they have to be run on DAS
+                // will have @ExecuteOn(RuntimeType.INSTANCE) and they have to be run on DAS
                 // ONLY if the target is "server"
                 if(CommandTarget.DAS.isValid(habitat, targetName) &&
                         !runtimeTypes.contains(RuntimeType.DAS)) {
@@ -995,7 +995,7 @@ public class CommandRunnerImpl implements CommandRunner {
                     return;
                 }
                 logger.fine(adminStrings.getLocalString("dynamicreconfiguration.diagnostics.replicationvalidationdone",
-                        "All @Cluster attribute and type validation completed successfully. Starting replication stages"));
+                        "All @ExecuteOn attribute and type validation completed successfully. Starting replication stages"));
             }
 
             /**

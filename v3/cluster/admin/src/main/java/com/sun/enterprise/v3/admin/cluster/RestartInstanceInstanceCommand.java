@@ -57,7 +57,7 @@ import org.jvnet.hk2.component.PerLookup;
 @CommandLock(CommandLock.LockType.NONE) // allow restart always
 @Async
 @I18n("restart.instance.command")
-@Cluster(RuntimeType.INSTANCE)
+@ExecuteOn(RuntimeType.INSTANCE)
 public class RestartInstanceInstanceCommand extends RestartServer implements AdminCommand {
 
     @Inject

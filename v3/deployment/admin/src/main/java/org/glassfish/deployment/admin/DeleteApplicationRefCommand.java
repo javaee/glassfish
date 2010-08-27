@@ -44,7 +44,7 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.OpsParams.Origin;
@@ -87,7 +87,7 @@ import org.glassfish.deployment.versioning.VersioningService;
  */
 @Service(name="delete-application-ref")
 @I18n("delete.application.ref.command")
-@Cluster(value={RuntimeType.DAS, RuntimeType.INSTANCE})
+@ExecuteOn(value={RuntimeType.DAS, RuntimeType.INSTANCE})
 @Scoped(PerLookup.class)
 @TargetType(value={CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
 public class DeleteApplicationRefCommand implements AdminCommand {

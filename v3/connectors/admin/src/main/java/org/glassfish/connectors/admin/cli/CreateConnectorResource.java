@@ -48,7 +48,7 @@ import org.glassfish.api.ActionReport;
 
 import static org.glassfish.resource.common.ResourceConstants.*;
 
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.resource.common.ResourceConstants;
@@ -77,7 +77,7 @@ import java.util.HashMap;
  * 
  */
 @TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
-@Cluster(RuntimeType.ALL)
+@ExecuteOn(RuntimeType.ALL)
 @Service(name="create-connector-resource")
 @Scoped(PerLookup.class)
 @I18n("create.connector.resource")

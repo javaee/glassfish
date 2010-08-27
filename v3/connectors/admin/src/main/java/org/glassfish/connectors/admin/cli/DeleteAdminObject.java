@@ -69,7 +69,7 @@ import java.util.Set;
  * 
  */
 @TargetType(value={CommandTarget.DAS,CommandTarget.CONFIG, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
-@Cluster(value={RuntimeType.ALL})
+@ExecuteOn(value={RuntimeType.ALL})
 @Service(name="delete-admin-object")
 @Scoped(PerLookup.class)
 @I18n("delete.admin.ojbect")

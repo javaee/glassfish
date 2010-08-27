@@ -47,7 +47,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import static org.glassfish.resource.common.ResourceConstants.*;
 
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
@@ -79,7 +79,7 @@ import java.util.HashMap;
  * @author Jennifer Chou, Jagadish Ramu 
  */
 @TargetType(value={CommandTarget.DAS,CommandTarget.CONFIG, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
-@Cluster(RuntimeType.ALL)
+@ExecuteOn(RuntimeType.ALL)
 @Service(name=AOR_CREATE_COMMAND_NAME)
 @Scoped(PerLookup.class)
 @I18n("create.admin.object")

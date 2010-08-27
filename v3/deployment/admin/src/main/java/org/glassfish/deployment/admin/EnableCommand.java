@@ -44,7 +44,7 @@ import com.sun.enterprise.config.serverbeans.Application;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.ParameterMap;
@@ -89,7 +89,7 @@ import org.glassfish.deployment.versioning.VersioningService;
  */
 @Service(name="enable")
 @I18n("enable.command")
-@Cluster(value={RuntimeType.DAS, RuntimeType.INSTANCE})
+@ExecuteOn(value={RuntimeType.DAS, RuntimeType.INSTANCE})
 @Scoped(PerLookup.class)
 @TargetType(value={CommandTarget.DOMAIN, CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER, CommandTarget.CLUSTERED_INSTANCE})
 public class EnableCommand extends StateCommandParameters implements AdminCommand {

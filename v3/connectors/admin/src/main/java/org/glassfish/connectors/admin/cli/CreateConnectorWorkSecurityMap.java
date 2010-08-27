@@ -47,7 +47,7 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -71,7 +71,7 @@ import java.util.logging.Logger;
  * Create Connector Work Security Map
  *
  */
-@Cluster(RuntimeType.ALL)
+@ExecuteOn(RuntimeType.ALL)
 @Service(name="create-connector-work-security-map")
 @Scoped(PerLookup.class)
 @I18n("create.connector.work.security.map")

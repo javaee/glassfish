@@ -51,7 +51,7 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.RuntimeType;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
 import org.jvnet.hk2.annotations.Inject;
@@ -69,7 +69,7 @@ import java.util.logging.Level;
 @Service(name="delete-lifecycle-module")
 @I18n("delete.lifecycle.module")
 @Scoped(PerLookup.class)
-@Cluster(value={RuntimeType.DAS})
+@ExecuteOn(value={RuntimeType.DAS})
 @TargetType(value={CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
 public class DeleteLifecycleModuleCommand implements AdminCommand {
 

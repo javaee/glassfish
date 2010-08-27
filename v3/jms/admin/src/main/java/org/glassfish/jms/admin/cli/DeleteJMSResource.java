@@ -47,7 +47,7 @@ import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.api.admin.RuntimeType;
@@ -71,7 +71,7 @@ import java.util.Properties;
 @Service(name="delete-jms-resource")
 @Scoped(PerLookup.class)
 @I18n("delete.jms.resource")
-@Cluster({RuntimeType.DAS})
+@ExecuteOn({RuntimeType.DAS})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.DOMAIN})
 
 public class DeleteJMSResource implements AdminCommand {

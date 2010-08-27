@@ -60,7 +60,7 @@ import java.util.logging.Logger;
 @Service(name = "_create-node-implicit")
 @I18n("create.node.implicit")
 @Scoped(PerLookup.class)
-@Cluster({RuntimeType.DAS})
+@ExecuteOn({RuntimeType.DAS})
 public class CreateNodeImplicitCommand implements AdminCommand {
 
     @Inject

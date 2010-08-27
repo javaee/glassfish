@@ -101,9 +101,9 @@ public abstract class CommandModel {
      * Return the cluster parameters for this command  or null if none are
      * specified and defaults should be used.
      *
-     * @return a {@link Cluster} annotation instance or null
+     * @return a {@link ExecuteOn} annotation instance or null
      */
-    public abstract Cluster getClusteringAttributes();
+    public abstract ExecuteOn getClusteringAttributes();
 
     /**
      * Returns a collection of parameter model for all the parameters supported

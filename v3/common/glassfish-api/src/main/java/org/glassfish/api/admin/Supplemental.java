@@ -114,7 +114,7 @@ import java.lang.annotation.RetentionPolicy;
  * when the supplemental command is executed in isolation.
  *
  * <p>If a supplemental command is annotated with @Rollback, it is still subject to the
- * supplemented command {@link org.glassfish.api.admin.Cluster#ifFailure()} value to decide
+ * supplemented command {@link org.glassfish.api.admin.ExecuteOn#ifFailure()} value to decide
  * whether or not roll-backing should happen in case of failure.
  *
  * <p>When associating a supplemental command to a command X, it's always a good idea

@@ -46,7 +46,7 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.resource.common.ResourceStatus;
 import org.jvnet.hk2.annotations.Service;
@@ -67,7 +67,7 @@ import java.util.logging.Logger;
  * Delete Connector Connection Pool Command
  * 
  */
-@Cluster(RuntimeType.ALL)
+@ExecuteOn(RuntimeType.ALL)
 @Service(name="delete-connector-connection-pool")
 @Scoped(PerLookup.class)
 @I18n("delete.connector.connection.pool")

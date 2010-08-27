@@ -47,7 +47,7 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
@@ -71,7 +71,7 @@ import java.util.Iterator;
  * 
  */
 @TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
-@Cluster(RuntimeType.ALL)
+@ExecuteOn(RuntimeType.ALL)
 @Service(name="add-resources")
 @Scoped(PerLookup.class)
 @I18n("add.resources")

@@ -47,7 +47,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.CommandRunner.CommandInvocation;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
@@ -66,7 +66,7 @@ import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 @Service(name = "delete-node-config")
 @I18n("delete.node.config")
 @Scoped(PerLookup.class)
-@Cluster({RuntimeType.DAS})
+@ExecuteOn({RuntimeType.DAS})
 public class DeleteNodeConfigCommand implements AdminCommand, PostConstruct {
     @Inject
     Habitat habitat;

@@ -47,7 +47,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -67,7 +67,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Service(name = "disable-secure-admin")
 @Scoped(PerLookup.class)
 @I18n("disable.secure.admin.command")
-@Cluster(RuntimeType.ALL)
+@ExecuteOn(RuntimeType.ALL)
 public class DisableSecureAdminCommand implements AdminCommand {
 
     @Inject

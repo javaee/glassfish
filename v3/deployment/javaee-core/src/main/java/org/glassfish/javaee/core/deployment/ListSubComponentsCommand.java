@@ -45,7 +45,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.internal.deployment.Deployment;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.XModuleType;
@@ -76,7 +76,7 @@ import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
 @Service(name="list-sub-components")
 @I18n("list.sub.components")
 @Scoped(PerLookup.class)
-@Cluster(value={RuntimeType.DAS})
+@ExecuteOn(value={RuntimeType.DAS})
 public class ListSubComponentsCommand implements AdminCommand {
 
     @Param(primary=true)

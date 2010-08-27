@@ -69,7 +69,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
 @Service(name="_get-host-and-port")
-@org.glassfish.api.admin.Cluster(value={RuntimeType.DAS})
+@org.glassfish.api.admin.ExecuteOn(value={RuntimeType.DAS})
 @Scoped(PerLookup.class)
 public class GetHostAndPortCommand implements AdminCommand {
 

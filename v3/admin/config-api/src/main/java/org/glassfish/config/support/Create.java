@@ -41,7 +41,7 @@
 package org.glassfish.config.support;
 
 import org.glassfish.api.I18n;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.jvnet.hk2.annotations.*;
 import org.glassfish.api.admin.AdminCommand;
 
@@ -137,11 +137,11 @@ public @interface Create {
 
     /**
      * Returns the desired behaviors in a clustered environment. By default, using all the
-     * {@link Cluster} default values
+     * {@link ExecuteOn} default values
      *
      * @return the cluster information
      */
-    Cluster cluster() default @Cluster();
+    ExecuteOn cluster() default @ExecuteOn();
 
     /**
      * Returns the i18n key that will be used to look up a localized string in the annotated

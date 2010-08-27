@@ -72,7 +72,7 @@ import org.glassfish.config.support.CommandTarget;
 @Service(name = "delete-http-health-checker")
 @Scoped(PerLookup.class)
 @TargetType(value={CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
-@org.glassfish.api.admin.Cluster(RuntimeType.DAS)
+@org.glassfish.api.admin.ExecuteOn(RuntimeType.DAS)
 public final class DeleteHTTPHealthCheckerCommand implements AdminCommand {
 
     @Param(optional=true)

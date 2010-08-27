@@ -65,7 +65,7 @@ import java.util.logging.Logger;
  * To change this template use File | Settings | File Templates.
  */
 
-@Cluster({RuntimeType.INSTANCE})
+@ExecuteOn({RuntimeType.INSTANCE})
 @Service(name = "_get-log-file")
 @Scoped(PerLookup.class)
 @I18n("get.log.file")

@@ -44,7 +44,7 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.admin.*;
 import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.config.serverbeans.*;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
@@ -61,7 +61,7 @@ import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
  */
 @Service(name="ping-connection-pool")
 @Scoped(PerLookup.class)
-@Cluster(value={RuntimeType.DAS})
+@ExecuteOn(value={RuntimeType.DAS})
 @I18n("ping.connection.pool")
 public class PingConnectionPool implements AdminCommand {
     

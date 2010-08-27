@@ -70,7 +70,7 @@ import java.util.*;
  * Time: 4:39:05 AM
  */
 @Service(name="set")
-@Cluster(RuntimeType.INSTANCE)
+@ExecuteOn(RuntimeType.INSTANCE)
 @Scoped(PerLookup.class)
 @I18n("set")
 public class SetCommand extends V2DottedNameSupport implements AdminCommand, PostConstruct {

@@ -66,7 +66,7 @@ import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
  * @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
  * @author Byron Nevins
  */
-@org.glassfish.api.admin.Cluster(RuntimeType.DAS)
+@org.glassfish.api.admin.ExecuteOn(RuntimeType.DAS)
 @Service(name = "list-instances")
 @I18n("list.instances.command")
 @Scoped(PerLookup.class)

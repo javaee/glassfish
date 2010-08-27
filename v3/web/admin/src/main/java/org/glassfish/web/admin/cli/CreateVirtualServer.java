@@ -57,7 +57,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.TargetType;
@@ -78,7 +78,7 @@ import org.jvnet.hk2.config.types.Property;
 @Service(name = "create-virtual-server")
 @Scoped(PerLookup.class)
 @I18n("create.virtual.server")
-@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class CreateVirtualServer implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateVirtualServer.class);

@@ -85,7 +85,7 @@ import org.jvnet.hk2.component.PerLookup;
  * @author Byron Nevins
  * @author Jennifer Chou
  */
-@org.glassfish.api.admin.Cluster(RuntimeType.DAS)
+@org.glassfish.api.admin.ExecuteOn(RuntimeType.DAS)
 @Service(name = "export-sync-bundle")
 @Scoped(PerLookup.class)
 //@TargetType(value={CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE})

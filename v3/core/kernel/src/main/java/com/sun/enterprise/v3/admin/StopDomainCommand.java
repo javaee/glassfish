@@ -65,7 +65,7 @@ import java.util.Collection;
 @Scoped(PerLookup.class)
 @Async
 @I18n("stop.domain.command")
-@Cluster(RuntimeType.DAS)
+@ExecuteOn(RuntimeType.DAS)
 public class StopDomainCommand extends StopServer implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(StopDomainCommand.class);

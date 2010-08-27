@@ -54,7 +54,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.CommandTarget;
@@ -71,7 +71,7 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name = "list-network-listeners")
 @Scoped(PerLookup.class)
 @I18n("list.network.listeners")  
-@Cluster(RuntimeType.DAS)
+@ExecuteOn(RuntimeType.DAS)
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class ListNetworkListeners implements AdminCommand {
     final private static LocalStringManagerImpl localStrings

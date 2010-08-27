@@ -71,7 +71,7 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name = "list-protocol-filters")
 @Scoped(PerLookup.class)
 @I18n("list.protocol.filters")
-@org.glassfish.api.admin.Cluster(RuntimeType.DAS)
+@org.glassfish.api.admin.ExecuteOn(RuntimeType.DAS)
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class ListProtocolFilters implements AdminCommand {
     final private static LocalStringManagerImpl localStrings

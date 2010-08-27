@@ -40,7 +40,7 @@
 
 package org.glassfish.jdbc.admin.cli;
 
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
@@ -70,7 +70,7 @@ import java.util.Properties;
  * 
  */
 @TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
-@Cluster(RuntimeType.ALL)
+@ExecuteOn(RuntimeType.ALL)
 @Service(name="create-jdbc-resource")
 @Scoped(PerLookup.class)
 @I18n("create.jdbc.resource")

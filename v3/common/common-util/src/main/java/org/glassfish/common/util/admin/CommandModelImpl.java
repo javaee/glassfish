@@ -45,7 +45,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.Param;
 import org.glassfish.api.UnknownOptionsAreOperands;
 import org.glassfish.api.I18n;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.CommandModel;
 import org.glassfish.api.admin.config.ModelBinding;
 import org.jvnet.hk2.annotations.Service;
@@ -69,7 +69,7 @@ public class CommandModelImpl extends CommandModel {
     // use a LinkedHashMap so params appears in the order they are declared in the class.
     final private Map<String, CommandModel.ParamModel> params;
     final private String commandName;
-    final private Cluster cluster;
+    final private ExecuteOn execOn;
     final private I18n i18n;
     final private boolean dashOk;
     final private LocalStringManager localStrings;
@@ -79,7 +79,7 @@ public class CommandModelImpl extends CommandModel {
         Service service = commandType.getAnnotation(Service.class);
         commandName = service != null ? service.name() : null;
         i18n = commandType.getAnnotation(I18n.class);
-        cluster = commandType.getAnnotation(Cluster.class);
+        execOn = commandType.getAnnotation(ExecuteOn.class);
         localStrings = new LocalStringManagerImpl(commandType);
 
         params = init(commandType, i18n, localStrings);
@@ -151,8 +151,8 @@ public class CommandModelImpl extends CommandModel {
     }
 
     @Override
-    public Cluster getClusteringAttributes() {
-        return cluster;
+    public ExecuteOn getClusteringAttributes() {
+        return execOn;
     }
 
     /**

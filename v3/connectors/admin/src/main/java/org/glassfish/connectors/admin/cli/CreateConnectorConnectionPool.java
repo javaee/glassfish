@@ -70,7 +70,7 @@ import static org.glassfish.connectors.admin.cli.CLIConstants.*;
  * Create Connector Connection Pool Command
  *
  */
-@Cluster(RuntimeType.ALL)
+@ExecuteOn(RuntimeType.ALL)
 @Service(name=CCP_CREATE_COMMAND_NAME)
 @Scoped(PerLookup.class)
 @I18n("create.connector.connection.pool")

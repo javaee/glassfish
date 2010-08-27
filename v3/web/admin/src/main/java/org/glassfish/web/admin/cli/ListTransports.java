@@ -67,7 +67,7 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name = "list-transports")
 @Scoped(PerLookup.class)
 @I18n("list.transports")
-@Cluster(RuntimeType.DAS)
+@ExecuteOn(RuntimeType.DAS)
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class ListTransports implements AdminCommand {
     final private static LocalStringManagerImpl localStrings

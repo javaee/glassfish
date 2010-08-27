@@ -49,7 +49,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
@@ -64,7 +64,7 @@ import java.util.logging.Level;
 
 @Service(name = "freeze-transaction-service")
 @TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER, CommandTarget.CLUSTERED_INSTANCE, CommandTarget.CONFIG})
-@Cluster(RuntimeType.INSTANCE)
+@ExecuteOn(RuntimeType.INSTANCE)
 @Scoped(PerLookup.class)
 @I18n("freeze.transaction.service")
 public class FreezeTransactionService implements AdminCommand {

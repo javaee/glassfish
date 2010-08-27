@@ -64,7 +64,7 @@ import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.security.auth.realm.RealmsManager;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.CommandTarget;
@@ -83,7 +83,7 @@ import org.glassfish.config.support.TargetType;
 @Service(name="list-file-groups")
 @Scoped(PerLookup.class)
 @I18n("list.file.group")
-@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER})
 public class ListFileGroup implements AdminCommand {
 

@@ -43,7 +43,7 @@ package org.glassfish.deployment.admin;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
@@ -67,7 +67,7 @@ import java.util.logging.Logger;
  * Get context root command
  */
 @Service(name="_get-context-root")
-@Cluster(value={RuntimeType.DAS})
+@ExecuteOn(value={RuntimeType.DAS})
 @Scoped(PerLookup.class)
 public class GetContextRootCommand implements AdminCommand {
 

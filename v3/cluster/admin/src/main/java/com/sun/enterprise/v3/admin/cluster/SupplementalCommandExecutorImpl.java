@@ -193,8 +193,8 @@ public class SupplementalCommandExecutorImpl implements SupplementalCommandExecu
             command = cmd;
             timing = time;
             failurePolicy = onFail;
-            org.glassfish.api.admin.Cluster ann =
-                    cmd.getClass().getAnnotation(org.glassfish.api.admin.Cluster.class);
+            org.glassfish.api.admin.ExecuteOn ann =
+                    cmd.getClass().getAnnotation(org.glassfish.api.admin.ExecuteOn.class);
             if( ann == null) {
                 whereToRun.add(RuntimeType.DAS);
                 whereToRun.add(RuntimeType.INSTANCE);

@@ -49,7 +49,7 @@ import org.glassfish.api.admin.*;
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport;
 
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Service;
@@ -72,7 +72,7 @@ import java.util.List;
 @Service(name="list-threadpools")
 @Scoped(PerLookup.class)
 @I18n("list.threadpools")
-@Cluster(RuntimeType.DAS)
+@ExecuteOn(RuntimeType.DAS)
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class ListThreadpools implements AdminCommand {
 

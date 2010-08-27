@@ -69,7 +69,7 @@ import org.jvnet.hk2.component.PerLookup;
 
 import com.sun.logging.LogDomains;
 
-//import org.glassfish.api.admin.Cluster;
+//import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.api.admin.RuntimeType;
@@ -84,7 +84,7 @@ import org.glassfish.api.admin.ServerEnvironment;
 @Service(name="flush-jmsdest")
 @Scoped(PerLookup.class)
 @I18n("flush.jms.dest")
-@org.glassfish.api.admin.Cluster({RuntimeType.DAS})
+@org.glassfish.api.admin.ExecuteOn({RuntimeType.DAS})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 
 public class FlushJMSDestination extends JMSDestination implements AdminCommand {

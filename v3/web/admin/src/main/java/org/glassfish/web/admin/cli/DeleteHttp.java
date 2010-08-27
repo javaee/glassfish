@@ -78,7 +78,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Scoped(PerLookup.class)
 @I18n("delete.http")
 
-@org.glassfish.api.admin.Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@org.glassfish.api.admin.ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class DeleteHttp implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =

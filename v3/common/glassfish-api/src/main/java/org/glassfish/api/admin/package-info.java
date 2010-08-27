@@ -79,7 +79,7 @@
   <p>
  It might be possible for a supplemental command to fail executing and since such commands execute usually after the
  supplemented command has finished executing, a rollbacking mechanism can be described though the combination of the
- {@link org.glassfish.api.admin.Cluster#ifFailure()} annotation value and the {@link UndoableCommand}}. If a clustered
+ {@link org.glassfish.api.admin.ExecuteOn#ifFailure()} annotation value and the {@link UndoableCommand}}. If a clustered
  command requires rollbacking when any of its supplemented command fail then it must be annotated with {@link UndoableCommand}
  and all of its supplemented commands must also be annotated with {@link UndoableCommand}, otherwise, it must be flagged by
  the system as an error.
@@ -92,16 +92,16 @@
 
  <h3>Clustering support</h3>
 
- A command can be optionally annotated with {@link org.glassfish.api.admin.Cluster} to specify the clustering
- support. A command not annotated with {@link Cluster} will have a virtual @Cluster annotation with the default values.
+ A command can be optionally annotated with {@link org.glassfish.api.admin.ExecuteOn} to specify the clustering
+ support. A command not annotated with {@link ExecuteOn} will have a virtual @ExecuteOn annotation with the default values.
  (note to asarch, this is mainly for backward compatibility, can be revisited).
 
  <p>A Clustered command will be executed on the server receiving the command from the user (the DAS usually) and any
- of the remote instances identified by the {@link org.glassfish.api.admin.Cluster#executor()} instance.
+ of the remote instances identified by the {@link org.glassfish.api.admin.ExecuteOn#executor()} instance.
 
  <p>For a command to not be "cluster" available requires the following annotation :
  <pre><code>
- &#64Cluster(RuntimeType.DAS)
+ &#64ExecuteOn(RuntimeType.DAS)
  </code></pre>
  <p>Whether commands are executed in parallel or synchronously is immaterial to the user as long as he gets proper
  feedback on the remote commands executions successes or failures.
@@ -113,7 +113,7 @@
  execution of an administrative change. 
 
  <p>In a clustering environment, any of the remote invocations can rollback the entire set of changes depending on the
- values of {@link org.glassfish.api.admin.Cluster#ifFailure()} and {@link org.glassfish.api.admin.Cluster#ifOffline()}
+ values of {@link org.glassfish.api.admin.ExecuteOn#ifFailure()} and {@link org.glassfish.api.admin.ExecuteOn#ifOffline()}
  annotation values.
 
  <p>A Supplemental command can force the roll-backing of the supplemented command using the {@link org.glassfish.api.admin.Supplemental#ifFailure()}

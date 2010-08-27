@@ -63,7 +63,7 @@ import org.jvnet.hk2.component.*;
  */
 @Service(name = "change-master-password")
 @Scoped(PerLookup.class)
-@Cluster(RuntimeType.DAS)
+@ExecuteOn(RuntimeType.DAS)
 public class ChangeMasterPasswordCommand extends LocalDomainCommand {
     @Param(name = "savemasterpassword", optional = true, defaultValue = "false")
     private boolean savemp;

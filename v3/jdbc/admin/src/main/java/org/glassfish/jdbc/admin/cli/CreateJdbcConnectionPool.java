@@ -66,7 +66,7 @@ import java.util.Properties;
  * Create JDBC Connection Pool Command
  * 
  */
-@Cluster(RuntimeType.ALL)
+@ExecuteOn(RuntimeType.ALL)
 @Service(name="create-jdbc-connection-pool")
 @Scoped(PerLookup.class)
 @I18n("create.jdbc.connection.pool")

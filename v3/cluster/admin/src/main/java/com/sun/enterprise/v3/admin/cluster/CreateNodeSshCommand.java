@@ -63,7 +63,7 @@ import java.util.logging.Logger;
 @Service(name = "create-node-ssh")
 @I18n("create.node.ssh")
 @Scoped(PerLookup.class)
-@Cluster({RuntimeType.DAS})
+@ExecuteOn({RuntimeType.DAS})
 public class CreateNodeSshCommand implements AdminCommand  {
 
     @Inject

@@ -67,7 +67,7 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name = "list-protocols")
 @Scoped(PerLookup.class)
 @I18n("list.protocols")
-@Cluster(RuntimeType.DAS)
+@ExecuteOn(RuntimeType.DAS)
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class ListProtocols implements AdminCommand {
     final private static LocalStringManagerImpl localStrings

@@ -60,7 +60,7 @@ import java.util.logging.Logger;
 @Service(name = "create-node-config")
 @I18n("create.node.config")
 @Scoped(PerLookup.class)
-@Cluster({RuntimeType.DAS})
+@ExecuteOn({RuntimeType.DAS})
 public class CreateNodeConfigCommand implements AdminCommand {
 
 

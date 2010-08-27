@@ -61,7 +61,7 @@ import java.beans.PropertyVetoException;
  * Delete RA Config command
  *
  */
-@org.glassfish.api.admin.Cluster(RuntimeType.ALL)
+@org.glassfish.api.admin.ExecuteOn(RuntimeType.ALL)
 @Service(name="delete-resource-adapter-config")
 @Scoped(PerLookup.class)
 @I18n("delete.resource.adapter.config")

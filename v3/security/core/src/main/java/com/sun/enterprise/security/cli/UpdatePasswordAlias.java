@@ -51,7 +51,7 @@ import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.security.store.PasswordAdapter;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
@@ -82,7 +82,7 @@ import org.jvnet.hk2.annotations.Inject;
 @Service(name="update-password-alias")
 @Scoped(PerLookup.class)
 @I18n("update.password.alias")
-@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER})
 public class UpdatePasswordAlias implements AdminCommand {
 

@@ -53,7 +53,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import static org.glassfish.resource.common.ResourceConstants.*;
 
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.resource.common.ResourceStatus;
 import org.jvnet.hk2.annotations.Service;
@@ -73,7 +73,7 @@ import java.util.HashMap;
  * Create RA Config Command
  *
  */
-@Cluster(RuntimeType.ALL)
+@ExecuteOn(RuntimeType.ALL)
 @Service(name=RAC_CREATE_RAC_COMMAND)
 @Scoped(PerLookup.class)
 @I18n("create.resource.adapter.config")

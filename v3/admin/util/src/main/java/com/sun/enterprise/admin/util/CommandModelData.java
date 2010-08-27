@@ -44,7 +44,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.UnknownOptionsAreOperands;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.CommandModel;
 import org.jvnet.hk2.annotations.Service;
 
@@ -104,7 +104,7 @@ public class CommandModelData extends CommandModel {
     }
 
     @Override
-    public Cluster getClusteringAttributes() {
+    public ExecuteOn getClusteringAttributes() {
         return null;
     }
 

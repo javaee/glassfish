@@ -70,7 +70,7 @@ public interface Servers extends ConfigBeanProxy, Injectable  {
     @Element
     // example below on how to annotate a CRUD command with cluster specific data.
     @Create(value="_register-instance", resolver= TypeResolver.class, decorator= Server.CreateDecorator.class,
-        cluster=@org.glassfish.api.admin.Cluster(value = RuntimeType.DAS),
+        cluster=@org.glassfish.api.admin.ExecuteOn(value = RuntimeType.DAS),
         i18n=@I18n("_register.instance.command"))
     @Delete(value="_unregister-instance", resolver= TypeAndNameResolver.class,
             decorator=Server.DeleteDecorator.class,

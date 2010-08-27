@@ -63,7 +63,7 @@ import java.beans.PropertyVetoException;
 /**
  * Create Connector SecurityMap command
  */
-@org.glassfish.api.admin.Cluster(RuntimeType.ALL)
+@org.glassfish.api.admin.ExecuteOn(RuntimeType.ALL)
 @Service(name=SM_CREATE_COMMAND_NAME)
 @Scoped(PerLookup.class)
 @I18n("create.connector.security.map")

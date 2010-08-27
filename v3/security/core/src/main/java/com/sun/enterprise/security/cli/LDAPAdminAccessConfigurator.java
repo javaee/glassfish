@@ -73,7 +73,7 @@ import java.beans.PropertyVetoException;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
@@ -87,7 +87,7 @@ import org.jvnet.hk2.component.PerLookup;
  */
 @Service(name="configure-ldap-for-admin")
 @Scoped(PerLookup.class)
-@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER, CommandTarget.CONFIG})
 public class LDAPAdminAccessConfigurator implements AdminCommand {
 

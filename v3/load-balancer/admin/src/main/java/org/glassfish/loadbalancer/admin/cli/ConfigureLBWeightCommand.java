@@ -66,7 +66,7 @@ import org.glassfish.api.admin.*;
 @Service(name = "configure-lb-weight")
 @Scoped(PerLookup.class)
 @I18n("configure.lb.weight")
-@org.glassfish.api.admin.Cluster(RuntimeType.DAS)
+@org.glassfish.api.admin.ExecuteOn(RuntimeType.DAS)
 public final class ConfigureLBWeightCommand extends LBCommandsBase
                                             implements AdminCommand {
 

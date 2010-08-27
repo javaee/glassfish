@@ -66,7 +66,7 @@ import java.util.logging.Logger;
 @Service(name = "_update-node")
 @I18n("update.node")
 @Scoped(PerLookup.class)
-@Cluster({RuntimeType.DAS})
+@ExecuteOn({RuntimeType.DAS})
 public class UpdateNodeCommand implements AdminCommand {
 
     @Inject

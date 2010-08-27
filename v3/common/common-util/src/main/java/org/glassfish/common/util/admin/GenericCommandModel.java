@@ -43,7 +43,7 @@ package org.glassfish.common.util.admin;
 import com.sun.enterprise.util.LocalStringManager;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.CommandModel;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -60,12 +60,12 @@ public class GenericCommandModel extends CommandModel {
 
     final HashMap<String, ParamModel> params = new HashMap<String, ParamModel>();
     final String commandName;
-    final Cluster cluster;
+    final ExecuteOn cluster;
     final I18n i18n;
     final LocalStringManager localStrings;
 
     public GenericCommandModel(Class<?> targetType,
-                               Cluster cluster,
+                               ExecuteOn cluster,
                                I18n i18n,
                                LocalStringManager localStrings,
                                DomDocument document,
@@ -135,7 +135,7 @@ public class GenericCommandModel extends CommandModel {
     }
 
     @Override
-    public Cluster getClusteringAttributes() {
+    public ExecuteOn getClusteringAttributes() {
         return cluster;
     }
 

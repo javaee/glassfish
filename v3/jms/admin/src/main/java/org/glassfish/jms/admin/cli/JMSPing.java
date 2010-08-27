@@ -48,7 +48,7 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -65,7 +65,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 
-@Cluster({RuntimeType.DAS})
+@ExecuteOn({RuntimeType.DAS})
 @TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 @Service(name="jms-ping")
 @Scoped(PerLookup.class)

@@ -57,7 +57,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
@@ -73,7 +73,7 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name = "list-virtual-servers")
 @Scoped(PerLookup.class)
 @I18n("list.virtual.servers")  
-@Cluster(RuntimeType.DAS)
+@ExecuteOn(RuntimeType.DAS)
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class ListVirtualServers implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListVirtualServers.class);

@@ -49,7 +49,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
@@ -59,7 +59,7 @@ import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 
 @Service(name = "rollback-transaction")
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTERED_INSTANCE})
-@Cluster(RuntimeType.INSTANCE)
+@ExecuteOn(RuntimeType.INSTANCE)
 @Scoped(PerLookup.class)
 @I18n("rollback.transaction")
 public class RollbackTransaction implements AdminCommand {

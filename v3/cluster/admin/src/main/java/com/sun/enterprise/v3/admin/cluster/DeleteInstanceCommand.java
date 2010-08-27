@@ -49,7 +49,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.CommandRunner.CommandInvocation;
 import org.jvnet.hk2.annotations.*;
 import org.glassfish.cluster.ssh.connect.RemoteConnectHelper;
@@ -67,7 +67,7 @@ import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 @Service(name = "delete-instance")
 @I18n("delete.instance")
 @Scoped(PerLookup.class)
-@Cluster({RuntimeType.DAS})
+@ExecuteOn({RuntimeType.DAS})
 public class DeleteInstanceCommand implements AdminCommand, PostConstruct {
 
     private static final String DEFAULT_NODE = "localhost";

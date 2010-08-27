@@ -65,7 +65,7 @@ import org.glassfish.config.support.CommandTarget;
 @Service(name = "disable-http-lb-application")
 @Scoped(PerLookup.class)
 @TargetType(value={CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
-@org.glassfish.api.admin.Cluster(RuntimeType.DAS)
+@org.glassfish.api.admin.ExecuteOn(RuntimeType.DAS)
 public final class DisableHTTPLBApplicationCommand implements AdminCommand {
 
     @Param(primary=true)

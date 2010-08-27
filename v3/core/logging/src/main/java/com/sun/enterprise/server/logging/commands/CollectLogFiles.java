@@ -74,7 +74,7 @@ import java.util.logging.Logger;
  * Time: 3:27:24 PM
  * To change this template use File | Settings | File Templates.
  */
-@Cluster({RuntimeType.DAS})
+@ExecuteOn({RuntimeType.DAS})
 @Service(name = "collect-log-files")
 @Scoped(PerLookup.class)
 @I18n("collect.log.files")

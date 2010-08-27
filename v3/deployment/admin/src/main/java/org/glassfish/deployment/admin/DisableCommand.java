@@ -56,7 +56,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.internal.deployment.Deployment;
@@ -92,7 +92,7 @@ import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
  */
 @Service(name="disable")
 @I18n("disable.command")
-@Cluster(value={RuntimeType.DAS, RuntimeType.INSTANCE})
+@ExecuteOn(value={RuntimeType.DAS, RuntimeType.INSTANCE})
 @Scoped(PerLookup.class)
 @TargetType(value={CommandTarget.DOMAIN, CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER, CommandTarget.CLUSTERED_INSTANCE})
 public class DisableCommand extends UndeployCommandParameters implements AdminCommand {

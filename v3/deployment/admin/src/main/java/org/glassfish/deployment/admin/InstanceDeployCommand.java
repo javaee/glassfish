@@ -51,7 +51,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.ActionReport;
@@ -85,7 +85,7 @@ import java.io.OutputStream;
  */
 @Service(name="_deploy")
 @Scoped(PerLookup.class)
-@Cluster(value={RuntimeType.INSTANCE})
+@ExecuteOn(value={RuntimeType.INSTANCE})
 public class InstanceDeployCommand extends InstanceDeployCommandParameters implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(InstanceDeployCommand.class);

@@ -47,7 +47,7 @@ import java.util.ArrayList;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.Supplemental;
@@ -70,7 +70,7 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name="_postdeploy")
 @Supplemental(value="deploy", ifFailure=FailurePolicy.Warn)
 @Scoped(PerLookup.class)
-@Cluster(value={RuntimeType.DAS})
+@ExecuteOn(value={RuntimeType.DAS})
 
 public class PostDeployCommand extends DeployCommandParameters implements AdminCommand {
 

@@ -68,7 +68,7 @@ import static org.glassfish.resource.common.ResourceConstants.JNDI_NAME;
  *
  */
 @TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
-@org.glassfish.api.admin.Cluster(RuntimeType.ALL)
+@org.glassfish.api.admin.ExecuteOn(RuntimeType.ALL)
 @Service(name="create-custom-resource")
 @Scoped(PerLookup.class)
 @I18n("create.custom.resource")

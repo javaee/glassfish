@@ -68,7 +68,7 @@ import org.glassfish.internal.api.Target;
 @Service(name = "enable-http-lb-server")
 @Scoped(PerLookup.class)
 @TargetType(value={CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
-@org.glassfish.api.admin.Cluster(RuntimeType.DAS)
+@org.glassfish.api.admin.ExecuteOn(RuntimeType.DAS)
 public final class EnableHTTPLBServerCommand extends LBCommandsBase
                                              implements AdminCommand {
 

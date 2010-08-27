@@ -57,7 +57,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.UnknownOptionsAreOperands;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -84,7 +84,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Service(name="create-jvm-options")   //implements the cli command by this "name"
 @Scoped(PerLookup.class)            //should be provided "per lookup of this class", not singleton
 @I18n("create.jvm.options")
-@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 @UnknownOptionsAreOperands()
 public final class CreateJvmOptions implements AdminCommand {

@@ -60,7 +60,7 @@ import static com.sun.enterprise.admin.cli.CLIConstants.*;
  * Start a local server instance.
  */
 @Service(name = "start-local-instance")
-@Cluster(RuntimeType.DAS)
+@ExecuteOn(RuntimeType.DAS)
 @Scoped(PerLookup.class)
 public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
                                         implements StartServerCommand {

@@ -41,7 +41,7 @@
 package org.glassfish.deployment.admin;
 
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.I18n;
 import org.glassfish.config.support.TargetType;
@@ -57,7 +57,7 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name="list-applications")
 @I18n("list.applications")
 @Scoped(PerLookup.class)
-@Cluster(value={RuntimeType.DAS})
+@ExecuteOn(value={RuntimeType.DAS})
 @TargetType(value={CommandTarget.DOMAIN, CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
 public class ListApplicationsCommand extends ListComponentsCommand {
 

@@ -82,7 +82,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Service(name = "create-transport")
 @Scoped(PerLookup.class)
 @I18n("create.transport")
-@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
+@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class CreateTransport implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =

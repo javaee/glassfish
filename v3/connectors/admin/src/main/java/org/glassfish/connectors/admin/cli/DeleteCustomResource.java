@@ -66,7 +66,7 @@ import java.util.Set;
  *
  */
 @TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE })
-@org.glassfish.api.admin.Cluster(value={RuntimeType.ALL})
+@org.glassfish.api.admin.ExecuteOn(value={RuntimeType.ALL})
 @Service(name="delete-custom-resource")
 @Scoped(PerLookup.class)
 @I18n("delete.custom.resource")

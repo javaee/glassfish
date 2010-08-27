@@ -45,7 +45,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
@@ -62,7 +62,7 @@ import java.util.logging.Level;
 
 @Service(name = "recover-transactions")
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTERED_INSTANCE})
-@Cluster(RuntimeType.DAS)
+@ExecuteOn(RuntimeType.DAS)
 @Scoped(PerLookup.class)
 @I18n("recover.transactions")
 public class RecoverTransactions extends RecoverTransactionsBase implements AdminCommand {
