@@ -1717,6 +1717,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                  * return
                  */
                 ctx.setAvailable(true);
+                // release DeploymentContext in memory
+                wmInfo.setDeploymentContext(null);
                 return ctx;
             } else {
                 String msg = rb.getString("webcontainer.duplicateContextRoot");
@@ -1927,6 +1929,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         vs.addChild(ctx);
 
         ctx.loadSessions(deploymentProperties);
+        // release DeploymentContext in memory
+        wmInfo.setDeploymentContext(null);
 
         return ctx;
     }
