@@ -86,8 +86,8 @@ public final class GlassFishConfigBean extends ConfigBean {
         super(habitat, document, parent, model, in);                
     }
 
-    public GlassFishConfigBean(ConfigBean source) {
-        super(source);
+    public GlassFishConfigBean(Dom source, Dom parent) {
+        super(source, parent);
     }
 
     @Override
@@ -105,8 +105,8 @@ public final class GlassFishConfigBean extends ConfigBean {
      * @return a copy of itself.
      */
     @Override
-    protected GlassFishConfigBean copy() {
-        return new GlassFishConfigBean(this);
+    protected <T extends Dom> T copy(T parent) {
+        return (T) new GlassFishConfigBean(this, parent);
     }
 
 

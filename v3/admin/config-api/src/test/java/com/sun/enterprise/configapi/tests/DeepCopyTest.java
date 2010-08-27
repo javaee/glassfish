@@ -54,6 +54,7 @@ import java.beans.PropertyVetoException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.logging.Level;
 
 /**
  * Test the deepCopy feature of ConfigBeans.
@@ -103,6 +104,68 @@ public class DeepCopyTest extends ConfigApiTest {
         }, getHabitat().getComponent(Configs.class));
         String resultingXML = save(document).toString();
         Assert.assertTrue(resultingXML.contains("some-config"));
+    }
+
+    @Test
+    public void parentingTest() throws Exception {
+
+        final Config config = getHabitat().getComponent(Config.class);
+        Assert.assertNotNull(config);
+        String configName = config.getName();
+        final Config newConfig = (Config) ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy>() {
+            @Override
+            public Object run(ConfigBeanProxy parent) throws PropertyVetoException, TransactionFailure {
+                Config newConfig = (Config) config.deepCopy(parent);
+                newConfig.setName("cloned-config");
+                return newConfig;
+            }
+        }, config.getParent());
+        Assert.assertNotNull(newConfig);
+
+        // now let's check the parents are correct.
+        Dom original = Dom.unwrap(config);
+        Dom cloned = Dom.unwrap(newConfig);
+
+        assertTypes(original, cloned);
+
+        logger.info("types equality passed");
+        assertParenting(original);
+        assertParenting(cloned);
+    }
+
+    private void assertTypes(Dom original, Dom cloned) {
+        logger.info(original.model.getTagName()+":" + original.getKey() + ":" + original.getClass().getSimpleName() +
+                " and " + cloned.model.getTagName()+":" + cloned.getKey() + ":" + cloned.getClass().getSimpleName());
+        Assert.assertEquals(original.getClass(), cloned.getClass());
+        for (String elementName : original.getElementNames()) {
+            ConfigModel.Property property = original.model.getElement(elementName);
+            if (property.isLeaf()) continue;
+            Dom originalChild = original.element(elementName);
+            Dom clonedChild = cloned.element(elementName);
+            if (originalChild==null && clonedChild==null) continue;
+            Assert.assertNotNull(originalChild);
+            Assert.assertNotNull(clonedChild);
+            assertTypes(originalChild, clonedChild);
+        }
+    }
+
+    private void assertParenting(Dom dom) {
+
+        for (String elementName : dom.model.getElementNames()) {
+            ConfigModel.Property property = dom.model.getElement(elementName);
+            if (property.isLeaf()) continue;
+            Dom child = dom.element(elementName);
+            if (child==null) continue;
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("Parent of " + child.model.targetTypeName + ":" + child.getKey() + " is " + child.parent().getKey() + " while I am " + dom.getKey());
+            }
+            logger.info("Parent of " + child.model.targetTypeName + ":" + child.getKey() + " is " +
+                    child.parent().model.targetTypeName + ":" + child.parent().getKey() + " while I am " +
+                    dom.model.targetTypeName + ":" + dom.getKey());
+
+            Assert.assertEquals(dom, child.parent());
+            assertParenting(child);
+        }        
     }
 
     final DomDocument document = getDocument(getHabitat());
