@@ -145,7 +145,7 @@ public class InstanceHandler {
     public static void getJvmOptionsValues(HandlerContext handlerCtx) {
         try{
             ArrayList<String> list = getJvmOptions(handlerCtx);
-            handlerCtx.setOutputValue("result", GuiUtil.convertArrayToListOfMap(list.toArray(), "Value"));
+            handlerCtx.setOutputValue("result", GuiUtil.convertArrayToListOfMap(list.toArray(), "value"));
         }catch (Exception ex){
             ex.printStackTrace();
             handlerCtx.setOutputValue("result", new HashMap());
@@ -159,8 +159,8 @@ public class InstanceHandler {
             endpoint = endpoint + ".json";
         Map<String, Object> attrs = (Map<String, Object>) handlerCtx.getInputValue("attrs");
         Map result = (HashMap) RestApiHandlers.restRequest(endpoint, attrs, "get", handlerCtx).get("data");
-        list = (ArrayList) result.get("JvmOption");
-        if (list == null || (list != null && list.get(0).contains("EnD")))
+        list = (ArrayList<String>) ((Map<String, Object>) result.get("extraProperties")).get("leafList");
+        if (list == null)
             list = new ArrayList<String>();
         return list;
     }

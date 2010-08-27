@@ -61,18 +61,17 @@
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/javaConfig/serverInstProfiler.jsf");
         setPageSessionAttribute(key="childType" value="profiler");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nc.msg.JS.confirmDeleteProfiler}");
-        setPageSessionAttribute(key="profilerUrl", value="#{pageSession.parentUrl}/java-config/profiler");
+        setPageSessionAttribute(key="profilerUrl", value="#{pageSession.parentUrl}/java-config/profiler/jvm-options");
         setPageSessionAttribute(key="createProfilerUrl", value="#{pageSession.parentUrl}/java-config/create-profiler");
         setPageSessionAttribute(key="deleteProfilerUrl", value="#{pageSession.parentUrl}/java-config/profiler");
         gf.checkIfEndPointExist(endpoint="#{pageSession.profilerUrl}" exists="#{pageSession.edit}");
 
         if(#{edit}) {
-            gf.getEntityAttrs(endpoint="#{pageSession.profilerUrl}.json", valueMap="#{pageSession.valueMap}");
-            //REST-TODO take care of property table
+            gf.getEntityAttrs(endpoint="#{pageSession.parentUrl}/java-config/profiler.json", valueMap="#{pageSession.valueMap}");
             getJvmOptionsValues(endpoint="#{pageSession.profilerUrl}/jvm-options.json"  result=>$attribute{tableList});
         }
         if(!#{edit}) {
-            gf.getEntityAttrs(endpoint="#{pageSession.createProfilerUrl}.json", valueMap="#{pageSession.valueMap}");
+            gf.getEntityAttrs(endpoint="#{pageSession.parentUrl}/java-config/profiler.json", valueMap="#{pageSession.valueMap}");
         }
         setPageSessionAttribute(key="convertToFalseList" value={"enabled"});
     />
