@@ -70,9 +70,8 @@ public class OSGiFrameworkLauncher {
     public Framework launchOSGiFrameWork() throws Exception {
         if (!isOSGiEnv()) {
             // Start an OSGi framework
-            ServiceLoader<FrameworkFactory> frameworkFactories = ServiceLoader.load(FrameworkFactory.class,
-
-                    getClass().getClassLoader());
+            ServiceLoader<FrameworkFactory> frameworkFactories =
+                    ServiceLoader.load(FrameworkFactory.class, getClass().getClassLoader());
             for (FrameworkFactory ff : frameworkFactories) {
                 framework = ff.newFramework(properties);
             }

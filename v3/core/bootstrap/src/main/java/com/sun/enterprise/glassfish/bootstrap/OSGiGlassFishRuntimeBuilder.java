@@ -47,6 +47,15 @@ import org.osgi.framework.launch.Framework;
 import java.util.Properties;
 
 /**
+ * This RuntimeBuilder can only handle GlassFish_Platform of following types:
+ * {@link org.glassfish.experimentalgfapi.Constants.Platform#Felix},
+ * {@link org.glassfish.experimentalgfapi.Constants.Platform#Equinox},
+ * and {@link org.glassfish.experimentalgfapi.Constants.Platform#Knopflerfish}.
+ *
+ * It can't handle {@link org.glassfish.experimentalgfapi.Constants.Platform#GenericOSGi} platform,
+ * because it reads framework configuration from a framework specific file when it calls
+ * {@link ASMainHelper#buildStartupContext(java.util.Properties)}.
+ *
  * This class is responsible for
  * a) setting up OSGi framework,
  * b) installing glassfish bundles,
@@ -83,11 +92,16 @@ public final class OSGiGlassFishRuntimeBuilder implements GlassFishRuntime.Runti
     }
 
     public boolean handles(Properties properties) {
-        // default is Felix
+        /*
+         * This builder can't handle GOSGi platform, because we read framework configuration from a framework
+         * specific file in ASMainHelper.buildStartupContext(properties);
+         */
+        final String platformStr = properties.getProperty(Constants.PLATFORM_PROPERTY_KEY);
+        if (platformStr == null || platformStr.trim().isEmpty()) {
+            return false;
+        }
         Constants.Platform platform =
-                Constants.Platform.valueOf(properties.getProperty(
-                        Constants.PLATFORM_PROPERTY_KEY, Constants.Platform.Felix.name()));
-        // TODO(Sahoo): Add support for generic OSGi platform
+                Constants.Platform.valueOf(platformStr);
         switch (platform) {
             case Felix:
             case Equinox:

@@ -38,9 +38,20 @@
 # holder.
 #
 
+Bundle-Activator: com.sun.enterprise.glassfish.bootstrap.GlassFishMainActivator
+
+# Please note we don't everything that's required by every class in this module.
+# We only import packages required by GlassFishMainActivator and its dependencies
+# such as EmbeddedOSGiGlassFishRuntimeBuilder. The rest of the dependencies are 
+# pulled in dynamically via DynamicImport-Package. By doing this, we will be able
+# to install and start this bundle in a vanilla OSGi environment and then bootstrap
+# rest of GlassFish bundles. Please contact Sahoo or Bhavani before you make any change in this 
+# bundle's manifest.
 Import-Package: \
-    com.sun.enterprise.module.impl, \
-    *
+    org.glassfish.experimentalgfapi,
+    org.osgi.*
+
+DynamicImport-Package: *
 
 -exportcontents: \
     org.glassfish.experimentalgfapi; \
