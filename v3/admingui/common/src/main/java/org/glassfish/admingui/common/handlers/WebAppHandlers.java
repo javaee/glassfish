@@ -510,20 +510,20 @@ public class WebAppHandlers {
    @Handler(id = "checkVsOfAppRef")
    public static void checkVsOfAppRef(HandlerContext handlerCtx) throws Exception{
        String configUrl = GuiUtil.getSessionValue("REST_URL") + "/configs/config/";
-       List configs = RestApiHandlers.getChildList(configUrl);
+       List configs = new ArrayList(RestApiHandlers.getChildMap(configUrl).keySet());
        ArrayList vsList = new ArrayList();
        for (Object cfgName : configs) {
            String vsUrl = configUrl + cfgName + "/http-service/virtual-server";
-           List vsNames = RestApiHandlers.getChildList(vsUrl);
+           List vsNames = new ArrayList(RestApiHandlers.getChildMap(vsUrl).keySet());
            for (Object str : vsNames) {
                if (!vsList.contains(str))
                    vsList.add(str);
            }
        }
-       List servers = RestApiHandlers.getChildList(GuiUtil.getSessionValue("REST_URL") + "/servers/server");
+       List servers = new ArrayList(RestApiHandlers.getChildMap(GuiUtil.getSessionValue("REST_URL") + "/servers/server").keySet());
        for (Object svrName : servers) {
            String serverEndpoint = GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + svrName;
-           List appRefs = RestApiHandlers.getChildList(serverEndpoint + "/application-ref");
+           List appRefs = new ArrayList(RestApiHandlers.getChildMap(serverEndpoint + "/application-ref").keySet());
            for (Object appRef : appRefs) {
                String apprefEndpoint = serverEndpoint + "/application-ref/" + appRef;
                Map apprefAttrs = RestApiHandlers.getAttributesMap(apprefEndpoint);
