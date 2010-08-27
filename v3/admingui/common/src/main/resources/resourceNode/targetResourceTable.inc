@@ -79,11 +79,11 @@
                     urlencode(value="#{requestScope.resName}" encoding="UTF-8" result="#{requestScope.encodedResName}");
                     foreach (var="resType" list="#{pageSession.resTypes}") {
                         //To verify the given resource is of resType or not.
-                        gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/resources/#{requestScope.resType}/#{requestScope.encodedResName}.json", exists="#{requestScope.isResourceLinkExists}");
+                        gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/resources/#{requestScope.resType}/#{requestScope.encodedResName}", exists="#{requestScope.isResourceLinkExists}");
                         if (#{requestScope.isResourceLinkExists}) {
                             if ("!#{pageSession.filterValue} | (#{pageSession.filterValue}=#{requestScope.resType})") {
                                 gf.restRequest(
-                                    endpoint="#{pageSession.restURL}/#{requestScope.encodedResName}.json"
+                                    endpoint="#{pageSession.restURL}/#{requestScope.encodedResName}"
                                     method="GET"
                                     result=>$page{resourceRefAttrs});
                                 setAttribute(key="status" value="#{resourceRefAttrs.data.extraProperties.entity.enabled}");

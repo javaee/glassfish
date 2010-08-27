@@ -92,10 +92,10 @@
 
     <sun:propertySheetSection id="propertSectionTextField2" label="$resource{i18njca.connectorSecurityMap.backendPrincipal}">
         <sun:property id="userNameEdit" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.userName}">
-            <sun:textField id="userNameEdit" styleClass="required" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.connectorSecurityMap.userName']}" text="#{pageSession.valueMap2['userName']}" required="#{true}" />
+            <sun:textField id="userNameEdit" disabled="#{edit}" styleClass="required" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.connectorSecurityMap.userName']}" text="#{pageSession.valueMap['mappedUserName']}" required="#{true}" />
         </sun:property>
         <sun:property id="passwordEdit" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.password}">
-            <sun:passwordField id="passwordEdit" styleClass="required" columns="$int{55}" text="#{pageSession.valueMap2['password']}" required="#{true}" />
+            <sun:passwordField id="passwordEdit" styleClass="required" columns="$int{55}" text="#{pageSession.valueMap['mappedPassword']}" required="#{true}"/>
         </sun:property>
     </sun:propertySheetSection>
 

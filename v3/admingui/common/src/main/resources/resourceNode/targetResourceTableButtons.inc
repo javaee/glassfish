@@ -56,12 +56,12 @@
                     gf.createAttributeMap(keys={"enabled"} values={"true"} map="#{requestScope.attrMap}");
                     urlencode(value="#{row['Name']}" result="#{requestScope.encodedResName}");
                     gf.restRequest(
-                        endpoint="#{pageSession.restURL}/#{requestScope.encodedResName}.json"
+                        endpoint="#{pageSession.restURL}/#{requestScope.encodedResName}"
                         method="GET"
                         result="#{requestScope.result}");
                     if ("#{requestScope.result.responseCode}=200") {
                         gf.restRequest(
-                            endpoint="#{pageSession.restURL}/#{requestScope.encodedResName}.json"
+                            endpoint="#{pageSession.restURL}/#{requestScope.encodedResName}"
                             attrs="#{requestScope.attrMap}"
                             method="POST"
                             result="#{requestScope.foo}");
@@ -80,12 +80,12 @@
                     gf.createAttributeMap(keys={"enabled"} values={"false"} map="#{requestScope.attrMap}");
                     urlencode(value="#{row['Name']}" result="#{requestScope.encodedResName}");
                     gf.restRequest(
-                        endpoint="#{pageSession.restURL}/#{requestScope.encodedResName}.json"
+                        endpoint="#{pageSession.restURL}/#{requestScope.encodedResName}"
                         method="GET"
                         result="#{requestScope.result}");
                     if ("#{requestScope.result.responseCode}=200") {
                         gf.restRequest(
-                            endpoint="#{pageSession.restURL}/#{requestScope.encodedResName}.json"
+                            endpoint="#{pageSession.restURL}/#{requestScope.encodedResName}"
                             attrs="#{requestScope.attrMap}"
                             method="POST"
                             result="#{requestScope.foo}");

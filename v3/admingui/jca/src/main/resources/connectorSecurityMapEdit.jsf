@@ -57,18 +57,26 @@
         urlencode(value="#{pageSession.mapName}" encoding="UTF-8" result="#{pageSession.encodedMapName}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorSecurityMapEdit.jsf?name=#{pageSession.encodedName}&mapName=#{pageSession.encodedMapName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorSecurityMaps.jsf?name=#{pageSession.encodedName}");
-        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources/connector-connection-pool[#{pageSession.Name}],type=security-map,name=#{pageSession.mapName}");
-        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/resources,type=connector-connection-pool,name=#{pageSession.Name}");
+        //setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources/connector-connection-pool[#{pageSession.Name}],type=security-map,name=#{pageSession.mapName}");
+        //setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/resources,type=connector-connection-pool,name=#{pageSession.Name}");
         setPageSessionAttribute(key="childType" value="security-map");
-        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-        getProxyAttribute(objectNameStr="#{pageSession.objectNameStr}", attrName="userGroup", value="#{pageSession.tempAttr}");
-        convertArrayToCommaString(array="#{pageSession.tempAttr}"  commaString="#{pageSession.valueMap['userGroupCommaStr']}");
-        getProxyAttribute(objectNameStr="#{pageSession.objectNameStr}", attrName="principal", value="#{pageSession.tempPAttr}");
-        convertArrayToCommaString(array="#{pageSession.tempPAttr}"  commaString="#{pageSession.valueMap['principalCommaStr']}");
-        getProxyAttribute(objectNameStr="#{pageSession.objectNameStr}", attrName="backendPrincipal", value="#{pageSession.tempAttrBE}");
+        //REST related
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources/connector-connection-pool/#{pageSession.encodedName}");
+        setPageSessionAttribute(key="selfUrl" value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedMapName}");
+        setPageSessionAttribute(key="rest-api" value="true");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+
+        gf.restRequest(endpoint="#{pageSession.selfUrl}/user-group" method="GET" result="#{requestScope.userGroupsMap}");
+        gf.restRequest(endpoint="#{pageSession.selfUrl}/principal" method="GET" result="#{requestScope.principalsMap}");
+        convertListToCommaString(list="#{requestScope.userGroupsMap.data.extraProperties.leafList}"  commaString="#{pageSession.valueMap['userGroupCommaStr']}");
+        convertListToCommaString(list="#{requestScope.principalsMap.data.extraProperties.leafList}"  commaString="#{pageSession.valueMap['principalCommaStr']}");
+        
         setPageSessionAttribute(key="has2Objects" value="#{true}" );  //for editPageButtons.inc
-        setPageSessionAttribute(key="objectNameStr2", value="#{pageSession.tempAttrBE}");
-        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr2}" valueMap="#{pageSession.valueMap2}");
+        setPageSessionAttribute(key="selfUrl2" value="#{pageSession.selfUrl}/backend-principal");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}" valueMap="#{pageSession.valueMap2}");
+        mapPut(map="#{pageSession.valueMap}" key="mappedUserName" value="#{pageSession.valueMap2.userName}");
+        mapPut(map="#{pageSession.valueMap}" key="mappedPassword" value="#{pageSession.valueMap2.password}");
+        
        if(#{pageSession.valueMap['principalCommaStr']}) {
            setAttribute(key="usersOptionP" value="principals" );
            setPageSessionAttribute(key="myOption" value="principals");

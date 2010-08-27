@@ -45,57 +45,64 @@
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}') && checkClassname()) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
-                convertSecurityMapPropsToStringArray(edit="true", userGroups="#{pageSession.valueMap['userGroupCommaStr']}", principals="#{pageSession.valueMap['principalCommaStr']}", usersOptions="#{usersOptionU}", principalsSA =>$attribute{principalsSA}  usersSA =>$attribute{usersSA});
-                mapPut(map="#{pageSession.valueMap}" key="userGroup" value="#{usersSA}")
-                mapPut(map="#{pageSession.valueMap}" key="principal" value="#{principalsSA}")
-                if(#{pageSession.hasPropertySheet}){
-                    saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
-                        skipAttrs="#{pageSession.skipAttrsList}"
-                        convertToFalse="#{pageSession.convertToFalseList}"
-                        onlyUseAttrs="#{pageSession.onlyUseAttrs}"
-                    );
-                    if(#{pageSession.has2Objects}){
-                        saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr2}"  attrs="#{pageSession.valueMap2}"
-                            skipAttrs="#{pageSession.skipAttrsList2}"
-                            convertToFalse="#{pageSession.convertToFalseList2}"
-                        );
+                    //Remove the old user groups
+                    gf.restRequest(endpoint="#{pageSession.selfUrl}/user-group" method="GET" result="#{requestScope.result}");
+                    setAttribute(key="oldGroupsList" value="#{requestScope.result.data.extraProperties.leafList}");
+                    convertListToCommaString(list="#{requestScope.oldGroupsList}" commaString="#{requestScope.oldGroupsCommaStr}");
+                    gf.createAttributeMap(keys={"poolName", "mapName", "groups"}
+                                          values={"$pageSession{encodedName}", "$pageSession{encodedMapName}", "$attribute{oldGroupsCommaStr}"},
+                                          map="#{requestScope.attrsMap}");
+                    gf.restRequest(endpoint="#{pageSession.selfUrl}/user-group" attrs="#{requestScope.attrsMap}" method="DELETE");
+                    //Remove the old principals
+                    gf.restRequest(endpoint="#{pageSession.selfUrl}/principal" method="GET" result="#{requestScope.result}");
+                    setAttribute(key="oldPrincipalsList" value="#{requestScope.result.data.extraProperties.leafList}");
+                    convertListToCommaString(list="#{requestScope.oldPrincipalsList}" commaString="#{requestScope.oldPrincipalsCommaStr}");
+                    gf.createAttributeMap(keys={"poolName", "mapName", "principals"}
+                                          values={"$pageSession{encodedName}", "$pageSession{encodedMapName}", "$attribute{oldPrincipalsCommaStr}"},
+                                          map="#{requestScope.attrsMap}");
+                    gf.restRequest(endpoint="#{pageSession.selfUrl}/principal" attrs="#{requestScope.attrsMap}" method="DELETE");
+                    if("#{requestScope.usersOptionU}=users"){
+                        //Create a user group with the new values.
+                        setAttribute(key="groupStr" value="#{pageSession.valueMap.userGroupCommaStr}");
+                        gf.createAttributeMap(keys={"poolName", "mapName", "groups"}
+                                              values={"$pageSession{encodedName}", "$pageSession{encodedMapName}", "$attribute{groupStr}"},
+                                              map="#{requestScope.attrsMap}");
+                        gf.restRequest(endpoint="#{pageSession.selfUrl}/user-group" attrs="#{requestScope.attrsMap}" method="POST");
                     }
-                }
-                prepareSuccessfulMsg();
-                gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                    if("#{requestScope.usersOptionP}=principals"){
+                        //Create a principal with the new values.
+                        setAttribute(key="principalStr" value="#{pageSession.valueMap.principalCommaStr}");
+                        gf.createAttributeMap(keys={"poolName", "mapName", "principals"}
+                                              values={"$pageSession{encodedName}", "$pageSession{encodedMapName}", "$attribute{principalStr}"},
+                                              map="#{requestScope.attrsMap}");
+                        gf.restRequest(endpoint="#{pageSession.selfUrl}/principal" attrs="#{requestScope.attrsMap}" method="POST");
+                    }
+                    //Update the backend-principal
+                    createMap(result="#{requestScope.attrsMap}");
+                    mapPut(map="#{requestScope.attrsMap}" key="password" value="#{pageSession.valueMap['mappedPassword']}");
+                    gf.restRequest(endpoint="#{pageSession.selfUrl}/backend-principal" attrs="#{requestScope.attrsMap}" method="POST");
+
+                    prepareSuccessfulMsg();
+                    gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}') &&  checkClassname() ) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
-                convertSecurityMapPropsToStringArray(edit="false", userGroups="#{pageSession.valueMap['userGroupCommaStr']}", principals="#{pageSession.valueMap['principalCommaStr']}", usersOptions="#{usersOptionU}",  principalsSA =>$attribute{principalsSA} usersSA =>$attribute{usersSA});
-                if($attribute{usersSA}){
-                   mapPut(map="#{pageSession.valueMap}" key="userGroup" value="#{usersSA}")
-                }
-                if($attribute{principalsSA}) {
-                    mapPut(map="#{pageSession.valueMap}" key="principal" value="#{principalsSA}")
-                }
-                   createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
+                    convertStringtoList(str="#{pageSession.valueMap.userGroupCommaStr}" result=>$attribute{usersSA});
+                    convertStringtoList(str="#{pageSession.valueMap.principalCommaStr}" result=>$attribute{principalsSA});
+                    if($attribute{usersSA}){
+                       mapPut(map="#{pageSession.valueMap}" key="userGroups" value="#{pageSession.valueMap.userGroupCommaStr}")
+                    }
+                    if($attribute{principalsSA}) {
+                        mapPut(map="#{pageSession.valueMap}" key="principals" value="#{pageSession.valueMap.principalCommaStr}")
+                    }
+                    mapPut(map="#{pageSession.valueMap}" key="poolName" value="#{pageSession.Name}");
+                    gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}"
                         attrs="#{pageSession.valueMap}"
                         convertToFalse="#{pageSession.convertToFalseList}"
                         skipAttrs="#{pageSession.skipAttrsList}"
-                        result => $attribute{objStr});
-                    setPageSessionAttribute(key="parentObjectNameStr2", value="$attribute{objStr}");
-                    if(#{pageSession.has2Objects}){
-                        if (#{pageSession.parentObjectNameStr2}){
-                            createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr2}" childType="#{pageSession.childType2}"
-                                attrs="#{pageSession.valueMap2}"
-                                convertToFalse="#{pageSession.convertToFalseList2}"
-                                result => $attribute{objStr2});
-                        }
-                        if (!#{pageSession.parentObjectNameStr2}){
-                            //create as a sub-element
-                            createProxy(parentObjectNameStr="$attribute{objStr}" childType="#{pageSession.childType2}"
-                                attrs="#{pageSession.valueMap2}"
-                                convertToFalse="#{pageSession.convertToFalseList2}"
-                                result => $attribute{objStr2});
-                        }
-                    }
+                        result => $attribute{objStr});                    
                     gf.redirect(page="#{pageSession.parentPage}")
                 />
             </sun:button>

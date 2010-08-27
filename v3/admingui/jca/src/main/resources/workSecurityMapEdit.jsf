@@ -54,15 +54,39 @@
         urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/workSecurityMapEdit.jsf?name=#{pageSession.encodedName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/workSecurityMaps.jsf");
-        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=work-security-map,name=#{pageSession.Name}");
-        //REST related
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
         setPageSessionAttribute(key="childType", value="work-security-map");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
         setPageSessionAttribute(key="rest-api" value="true");
-        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
-        //REST - TO DO
-        getWorkSecurityMapInfo(objectNameStr="#{pageSession.objectNameStr}"  valueMap2="#{pageSession.valueMap2}" usersOptionG="#{requestScope.usersOptionG}" usersOptionP="#{requestScope.usersOptionP}");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+        
+        createMap(result="#{pageSession.valueMap2}");
+        gf.getChildList(parentEndpoint="#{pageSession.selfUrl}", childType="group-map", result="#{requestScope.groupsInfo}", id="eisGroup");
+        setAttribute(key="usersOptionG" value="users");
+        foreach(var="rowGroup" list="#{requestScope.groupsInfo}") {
+            if(#{groupsStr}) {
+            setAttribute(key="groupsStr" value="#{groupsStr},#{rowGroup.eisGroup}=#{rowGroup.mappedGroup}");
+            }
+            if(!#{groupsStr}) {
+            setAttribute(key="groupsStr" value="#{rowGroup.eisGroup}=#{rowGroup.mappedGroup}");
+            }
+        }
+        mapPut(map="#{pageSession.valueMap2}" key="groupMapping" value="#{groupsStr}");
+        
+        if('!(#{groupsStr})') {
+            gf.getChildList(parentEndpoint="#{pageSession.selfUrl}", childType="principal-map", result="#{requestScope.principalsInfo}", id="eisPrincipal");
+            setAttribute(key="usersOptionP" value="principals");
+            setAttribute(key="usersOptionG" value="");
+            foreach(var="rowGroup" list="#{requestScope.principalsInfo}") {
+                if(#{principalsStr}) {
+                setAttribute(key="principalsStr" value="#{principalsStr},#{rowGroup.eisPrincipal}=#{rowGroup.mappedPrincipal}");
+                }
+                if(!#{principalsStr}) {
+                setAttribute(key="principalsStr" value="#{rowGroup.eisPrincipal}=#{rowGroup.mappedPrincipal}");
+                }
+            }
+            mapPut(map="#{pageSession.valueMap2}" key="principalMapping" value="#{principalsStr}");            
+        }
         setPageSessionAttribute(key="edit" value="#{true}" );
     />
     </event>

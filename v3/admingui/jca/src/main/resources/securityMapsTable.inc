@@ -65,7 +65,20 @@
         <!command
             getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-            gf.deleteCascade(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", selectedRows="${selectedRows}");
+            foreach (var="row" list="#{requestScope.selectedRows}") {
+                createMap(result="#{requestScope.attrMap}");
+                if("#{pageSession.childType}=work-security-map") {
+                    mapPut(map="#{requestScope.attrMap}" key="raname" value="#{row['resourceAdapterName']}");
+                }
+                if("#{pageSession.childType}=security-map") {
+                    mapPut(map="#{requestScope.attrMap}" key="poolName" value="#{pageSession.encodedName}");
+                }
+                gf.restRequest(
+                    endpoint="#{pageSession.parentUrl}/#{pageSession.childType}/#{row['encodedName']}"
+                    attrs="#{requestScope.attrMap}"
+                    method="DELETE"
+                    result="#{requestScope.foo}");
+            }
             gf.redirect(page="#{pageSession.listLink}");
         />
         </sun:button>

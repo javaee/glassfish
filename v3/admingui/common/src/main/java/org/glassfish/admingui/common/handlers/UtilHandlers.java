@@ -289,6 +289,9 @@ public class UtilHandlers {
             list = new ArrayList();
         }
         Integer index = (Integer)handlerCtx.getInputValue("index");
+        if(list == null) {
+            list = new ArrayList();
+        }
         if (index == null)
                 list.add(handlerCtx.getInputValue("value"));
         else{
