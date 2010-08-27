@@ -138,7 +138,9 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
     private void generateCollectionLeafResource(String beanName) {
         String className = getClassName(beanName);
 
-        if (alreadyGenerated(className)) return;
+        if (alreadyGenerated(className)) {
+            return;
+        }
 
         ClassWriter classWriter = getClassWriter(className, "CollectionLeafResource", null);
 
@@ -496,6 +498,8 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
     private static final Map<String, CollectionLeafMetaData> configBeanToCollectionLeafMetaData =
             new HashMap<String, CollectionLeafMetaData>() {{
         put("JvmOptions",new CollectionLeafMetaData("create-jvm-options", "delete-jvm-options", "JvmOption"));
+        put("Principal",new CollectionLeafMetaData("__create-principal", "__delete-principal", "Principal"));
+        put("UserGroup",new CollectionLeafMetaData("__create-user-group", "__delete-user-group", "User Group"));
     }};
 
 }

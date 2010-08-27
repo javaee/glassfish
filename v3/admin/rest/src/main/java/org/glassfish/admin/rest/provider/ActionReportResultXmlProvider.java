@@ -76,7 +76,7 @@ public class ActionReportResultXmlProvider extends BaseProvider<ActionReportResu
         result.put("exit_code", ar.getActionExitCode().toString());
 
         Properties properties = ar.getTopMessagePart().getProps();
-        if (!properties.isEmpty()) {
+        if ((properties != null) && (!properties.isEmpty())) {
             result.put("properties", new XmlMap("properties", properties));
         }
 
@@ -86,12 +86,12 @@ public class ActionReportResultXmlProvider extends BaseProvider<ActionReportResu
         }
 
         List<MessagePart> children = ar.getTopMessagePart().getChildren();
-        if (children.size() > 0) {
+        if ((children != null) && (!children.isEmpty())) {
             result.put("children", processChildren(children));
         }
 
         List<ActionReporter> subReports = ar.getSubActionsReport();
-        if (subReports.size() > 0) {
+       if ((subReports != null) && (!subReports.isEmpty())) {
             result.put("subReports", processSubReports(subReports));
         }
 
@@ -130,7 +130,9 @@ public class ActionReportResultXmlProvider extends BaseProvider<ActionReportResu
         for (Map.Entry<Object, Object> entry : props.entrySet()) {
             String key = entry.getKey().toString();
             Object value = getXmlObject(entry.getValue());
-            extraProperties.put(key, value);
+            if (value != null) {
+                extraProperties.put(key, value);
+            }
         }
 
         return extraProperties;
@@ -141,9 +143,13 @@ public class ActionReportResultXmlProvider extends BaseProvider<ActionReportResu
         if (object == null) {
             result = "";
         } else if (object instanceof Collection) {
-            result = processCollection((Collection)object);
+            if (!((Collection) object).isEmpty()) {
+                result = processCollection((Collection)object);
+            }
         } else if (object instanceof Map) {
-            result = processMap((Map)object);
+            if (!((Map) object).isEmpty()) {
+                result = processMap((Map)object);
+            }
         } else if (object instanceof Number) {
             result = new XmlObject("number", (Number)object);
         } else if (object instanceof String) {

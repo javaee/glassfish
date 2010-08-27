@@ -102,12 +102,12 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
                 result.append(ProviderUtil.getHtmlForComponent(deleteCommand, "Delete " + entity.model.getTagName(), ""));
             }
 
-            if ((childResources != null)&&(childResources.size()>0)) {
+            if ((childResources != null)&&(!childResources.isEmpty())) {
                 String childResourceLinks = getResourcesLinks(childResources);
                 result.append(ProviderUtil.getHtmlForComponent(childResourceLinks, "Child Resources", ""));
             }
 
-            if ((commands != null) &&(commands.size()>0)) {
+            if ((commands != null) &&(!commands.isEmpty())) {
                 String commandLinks = getCommandLinks(commands);
                 result.append(ProviderUtil.getHtmlForComponent(commandLinks, "Commands", ""));
             }
@@ -160,7 +160,7 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
         StringBuilder result = new StringBuilder();
         result.append("<h2>")
                 .append(ar.getActionDescription())
-                .append(" ouptut:</h2><h3>")
+                .append(" output:</h2><h3>")
                 .append(ar.getMessage() != null ? "<pre>"+ar.getMessage()+"</pre>" : "")
                 .append("</h3>");
         if ((ar.getMessage() == null)
@@ -246,9 +246,13 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
         if (object == null) {
             return "";
         } else if (object instanceof Collection) {
-            result = processCollection((Collection) object);
+            if (!((Collection)object).isEmpty()) {
+                result = processCollection((Collection) object);
+            }
         } else if (object instanceof Map) {
-            result = processMap((Map) object);
+            if (!((Map)object).isEmpty()) {
+                result = processMap((Map) object);
+            }
         } else {
             result = object.toString();
         }
@@ -269,17 +273,24 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
     }
 
     protected String processMap(Map map) {
-        StringBuilder result = new StringBuilder("<table border=\"1\" style=\"border-collapse: collapse\">");
-        result.append("<tr><th>key</th><th>value</th></tr>");
+        StringBuilder result = new StringBuilder();
+        if (!map.isEmpty()) {
+            result.append("<table border=\"1\" style=\"border-collapse: collapse\"><tr><th>key</th><th>value</th></tr>");
 
-        for (Map.Entry entry : (Set<Map.Entry>) map.entrySet()) {
-            result.append("<tr><td>")
-                    .append(entry.getKey())
-                    .append("</td><td>")
-                    .append(getHtmlRepresentation(entry.getValue()))
-                    .append("</td></tr>");
+            for (Map.Entry entry : (Set<Map.Entry>) map.entrySet()) {
+                final String htmlRepresentation = getHtmlRepresentation(entry.getValue());
+                if (htmlRepresentation != null) {
+                    result.append("<tr><td>")
+                            .append(entry.getKey())
+                            .append("</td><td>")
+                            .append(htmlRepresentation)
+                            .append("</td></tr>");
+                }
+            }
+
+            result.append("</table>");
         }
 
-        return result.append("</table>").toString();
+        return result.toString();
     }
 }

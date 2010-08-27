@@ -87,22 +87,22 @@ public class ActionReportResultJsonProvider extends BaseProvider<ActionReportRes
         result.put("exit_code", ar.getActionExitCode());
         
         Properties properties = ar.getTopMessagePart().getProps();
-        if (properties != null) {
+        if ((properties != null) && (!properties.isEmpty())) {
             result.put("properties", properties);
         }
 
         Properties extraProperties = ar.getExtraProperties();
-        if (extraProperties != null) {
+        if ((extraProperties != null) && (!extraProperties.isEmpty())) {
             result.put("extraProperties", getExtraProperties(result, extraProperties));
         }
 
         List<MessagePart> children = ar.getTopMessagePart().getChildren();
-        if (children.size() > 0) {
+        if ((children != null) && (!children.isEmpty())) {
             result.put("children", processChildren(children));
         }
 
         List<ActionReporter> subReports = ar.getSubActionsReport();
-        if (subReports.size() > 0) {
+        if ((subReports != null) && (!subReports.isEmpty())) {
             result.put("subReports", processSubReports(subReports));
         }
 
@@ -150,9 +150,13 @@ public class ActionReportResultJsonProvider extends BaseProvider<ActionReportRes
     protected Object getJsonObject(Object object) throws JSONException {
         Object result = null;
         if (object instanceof Collection) {
-            result = processCollection((Collection)object);
+            if (!((Collection) object).isEmpty()) {
+                result = processCollection((Collection)object);
+            }
         } else if (object instanceof Map) {
-            result = processMap((Map)object);
+            if (!((Map) object).isEmpty()) {
+                result = processMap((Map)object);
+            }
         } else {
             result = object;
         }
