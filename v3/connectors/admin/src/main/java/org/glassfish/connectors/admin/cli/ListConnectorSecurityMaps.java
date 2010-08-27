@@ -40,6 +40,7 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -58,8 +59,8 @@ import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
 import com.sun.enterprise.config.serverbeans.BackendPrincipal;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-//import com.sun.enterprise.v3.common.PropsFileActionReporter;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -91,7 +92,7 @@ public class ListConnectorSecurityMaps extends ConnectorSecurityMap implements A
     private String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
     @Inject
-    ConnectorConnectionPool[] ccPools;
+    private Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -110,6 +111,7 @@ public class ListConnectorSecurityMaps extends ConnectorSecurityMap implements A
         //} catch(ClassCastException e) {
             // ignore this is not a manifest output.
         //}
+        Collection<ConnectorConnectionPool> ccPools =  domain.getResources().getResources(ConnectorConnectionPool.class);
 
         if (!doesPoolNameExist(poolName, ccPools)) {
             report.setMessage(localStrings.getLocalString("create.connector.security.map.noSuchPoolFound",

@@ -40,6 +40,7 @@
 
 package org.glassfish.jdbc.admin.cli;
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
@@ -56,7 +57,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * List JDBC Connection Pools command
@@ -72,7 +73,7 @@ public class ListJdbcConnectionPools implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListJdbcConnectionPools.class);    
 
     @Inject
-    private JdbcConnectionPool[] connPools;
+    private Domain domain;
 
     @Param(primary = true, optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME, alias = "targetName", obsolete = true)
     private String target ;
@@ -88,11 +89,10 @@ public class ListJdbcConnectionPools implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
          try {
-            JDBCConnectionPoolManager connPoolMgr = new JDBCConnectionPoolManager();
-            ArrayList<String> list = connPoolMgr.list(connPools);
-            for (String cpName : list) {
+            Collection<JdbcConnectionPool> connPools = domain.getResources().getResources(JdbcConnectionPool.class);
+            for (JdbcConnectionPool pool : connPools) {
                 final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage(cpName);
+                part.setMessage(pool.getName());
             }
             if(report.getTopMessagePart().getChildren().size() == 0){
                 ActionReport.MessagePart part = report.getTopMessagePart().addChild();

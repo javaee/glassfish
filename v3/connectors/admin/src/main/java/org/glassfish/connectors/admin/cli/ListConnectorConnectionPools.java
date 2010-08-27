@@ -40,6 +40,7 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
@@ -56,8 +57,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -75,7 +75,7 @@ public class ListConnectorConnectionPools implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListConnectorConnectionPools.class);    
 
     @Inject
-    private ConnectorConnectionPool[] connPools;
+    private Domain domain;
 
     @Param(primary = true, optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME, alias = "targetName", obsolete = true)
     private String target ;
@@ -91,20 +91,17 @@ public class ListConnectorConnectionPools implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         try {
-            List<String> list = new ArrayList<String>();
-            for (ConnectorConnectionPool cp : connPools) {
-                list.add(cp.getName());
+            Collection<ConnectorConnectionPool> connPools = domain.getResources().getResources(ConnectorConnectionPool.class);
+            for (ConnectorConnectionPool pool : connPools) {
+                final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+                part.setMessage(pool.getName());
             }
-            if (list.isEmpty()) {
-                report.setMessage(localStrings.getLocalString(
-                        "list.connector.connection.pools.empty", "Nothing to list."));
-            } else {
-                for (String cpName : list) {
-                    final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                    part.setMessage(cpName);
-                }
+            if(report.getTopMessagePart().getChildren().size() == 0){
+                ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+                part.setMessage(localStrings.getLocalString("list.connector.connection.pools.empty",
+                    "Nothing to list."));
             }
-
+            
         } catch (Exception e) {
             Logger.getLogger(ListConnectorConnectionPools.class.getName()).log(Level.SEVERE,
                     "Something went wrong in list-connector-connection-pools", e);

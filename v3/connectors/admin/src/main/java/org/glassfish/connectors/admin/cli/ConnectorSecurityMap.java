@@ -70,7 +70,7 @@ public class ConnectorSecurityMap {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ConnectorSecurityMap.class);
 
-    boolean doesPoolNameExist(String poolName, ConnectorConnectionPool[] ccPools) {
+    boolean doesPoolNameExist(String poolName, Collection<ConnectorConnectionPool> ccPools) {
         //check if the poolname exists.If it does not then throw an exception.
         boolean doesPoolExist = false;
         if (ccPools != null) {
@@ -83,7 +83,7 @@ public class ConnectorSecurityMap {
         return doesPoolExist;
     }
 
-    boolean doesMapNameExist(String poolName, String mapname, ConnectorConnectionPool[] ccPools) {
+    boolean doesMapNameExist(String poolName, String mapname, Collection<ConnectorConnectionPool> ccPools) {
         //check if the mapname exists for the given pool name..
         List<SecurityMap> maps = getAllSecurityMapsForPool(poolName, ccPools);
 
@@ -99,7 +99,7 @@ public class ConnectorSecurityMap {
         return doesMapNameExist;
     }
 
-    List<SecurityMap> getAllSecurityMapsForPool(String poolName, ConnectorConnectionPool[] ccPools) {
+    List<SecurityMap> getAllSecurityMapsForPool(String poolName, Collection<ConnectorConnectionPool> ccPools) {
          List<SecurityMap> securityMaps = null;
          for (ConnectorConnectionPool ccp : ccPools) {
             if (ccp.getName().equals(poolName)) {
@@ -110,7 +110,7 @@ public class ConnectorSecurityMap {
          return securityMaps;
     }
 
-    ConnectorConnectionPool getPool(String poolName, ConnectorConnectionPool[] ccPools) {
+    ConnectorConnectionPool getPool(String poolName, Collection<ConnectorConnectionPool> ccPools) {
          ConnectorConnectionPool pool = null;
          for (ConnectorConnectionPool ccp : ccPools) {
             if (ccp.getName().equals(poolName)) {
@@ -121,7 +121,7 @@ public class ConnectorSecurityMap {
          return pool;
     }
 
-    SecurityMap getSecurityMap(String mapName, String poolName, ConnectorConnectionPool[] ccPools) {
+    SecurityMap getSecurityMap(String mapName, String poolName, Collection<ConnectorConnectionPool> ccPools) {
         List<SecurityMap> maps = getAllSecurityMapsForPool(poolName, ccPools);
         SecurityMap map = null;
         if (maps != null) {

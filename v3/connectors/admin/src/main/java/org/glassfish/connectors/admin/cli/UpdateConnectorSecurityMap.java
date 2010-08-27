@@ -42,6 +42,7 @@ package org.glassfish.connectors.admin.cli;
 
 import com.sun.enterprise.config.serverbeans.BackendPrincipal;
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -61,6 +62,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -101,7 +103,7 @@ public class UpdateConnectorSecurityMap extends ConnectorSecurityMap implements 
     String securityMapName;
 
     @Inject
-    ConnectorConnectionPool[] ccPools;
+    private Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -119,6 +121,7 @@ public class UpdateConnectorSecurityMap extends ConnectorSecurityMap implements 
             return;
         }
 
+        Collection<ConnectorConnectionPool> ccPools =  domain.getResources().getResources(ConnectorConnectionPool.class);
         if (!doesPoolNameExist(poolName, ccPools)) {
             report.setMessage(localStrings.getLocalString("create.connector.security.map.noSuchPoolFound",
                     "Connector connection pool {0} does not exist. Please specify a valid pool name.", poolName));

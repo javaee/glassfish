@@ -93,7 +93,7 @@ public class CreateConnectorSecurityMap extends ConnectorSecurityMap implements 
     private String securityMapName;
 
     @Inject
-    private ConnectorConnectionPool[] ccPools;
+    private Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -127,6 +127,7 @@ public class CreateConnectorSecurityMap extends ConnectorSecurityMap implements 
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
+        Collection<ConnectorConnectionPool> ccPools =  domain.getResources().getResources(ConnectorConnectionPool.class);
 
         if (!doesPoolNameExist(poolName, ccPools)) {
             report.setMessage(localStrings.getLocalString("create.connector.security.map.noSuchPoolFound",

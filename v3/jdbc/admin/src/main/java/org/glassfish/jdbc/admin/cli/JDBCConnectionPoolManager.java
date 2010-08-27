@@ -341,14 +341,6 @@ public class JDBCConnectionPoolManager implements ResourceManager {
         return new ResourceStatus(ResourceStatus.SUCCESS, msg);
     }
 
-    public ArrayList list(JdbcConnectionPool[] connPools) {
-        ArrayList<String> list = new ArrayList<String>();
-        for (JdbcConnectionPool cp : connPools) {
-            list.add(cp.getName());
-        }
-        return list;
-    }
-
     private boolean isResourceExists(Resources resources, String poolName) {
         return resources.getResourceByName(JdbcConnectionPool.class, poolName) != null;
     }

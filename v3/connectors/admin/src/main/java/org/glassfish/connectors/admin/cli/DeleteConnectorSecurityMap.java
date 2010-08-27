@@ -40,6 +40,7 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
@@ -60,6 +61,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
 import java.beans.PropertyVetoException;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -87,7 +89,7 @@ public class DeleteConnectorSecurityMap extends ConnectorSecurityMap implements 
     private String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
     @Inject
-    private ConnectorConnectionPool[] ccPools;
+    private Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -98,8 +100,9 @@ public class DeleteConnectorSecurityMap extends ConnectorSecurityMap implements 
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
+        Collection<ConnectorConnectionPool> ccPools =  domain.getResources().getResources(ConnectorConnectionPool.class);
         // ensure we already have this resource
-        if (!isResourceExists()) {
+        if (!isResourceExists(ccPools)) {
             report.setMessage(localStrings.getLocalString(
                     "delete.connector.security.map.notFound",
                     "A security map named {0} for connector connection pool {1} does not exist.",
@@ -109,6 +112,7 @@ public class DeleteConnectorSecurityMap extends ConnectorSecurityMap implements 
         }
 
         try {
+
             final ConnectorConnectionPool pool = getPool(poolName, ccPools);
             // delete connector-security-map
             ConfigSupport.apply(new SingleConfigCode<ConnectorConnectionPool>() {
@@ -144,7 +148,7 @@ public class DeleteConnectorSecurityMap extends ConnectorSecurityMap implements 
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 
-    private boolean isResourceExists() {
+    private boolean isResourceExists(Collection<ConnectorConnectionPool> ccPools) {
         for (ConnectorConnectionPool resource : ccPools) {
             if (resource.getName().equals(poolName)) {
                 for (SecurityMap sm : resource.getSecurityMap()) {
