@@ -154,6 +154,10 @@ public class Target {
         return instances;        
     }
 
+    public Node getNode(String targetName) {
+        return domain.getNodeNamed(targetName);
+    }
+
     /**
      * Given the name of a target, returns a list of Server objects. If given target is a standalone server,
      * then the server's Server element is returned in the list. If the target is a cluster, then the list of Server
@@ -184,6 +188,13 @@ public class Target {
                         domain.getServerNamed(aTarget).getConfigRef().equals(targetName)) {
                     instances.add(domain.getServerNamed(aTarget));
                 }
+            }
+        }
+        if(CommandTarget.NODE.isValid(habitat, targetName)) {
+            List<Server> allInstances = getAllInstances();
+            for(Server s : allInstances) {
+                if(targetName.equals(s.getNode()))
+                    instances.add(s);
             }
         }
         return instances;

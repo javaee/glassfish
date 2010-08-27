@@ -138,6 +138,21 @@ public enum CommandTarget implements TargetValidator {
         public String getDescription() {
             return "Cluster";
         }
+    },
+    /**
+     * a node configuration change
+     */
+    NODE {
+        @Override
+        public boolean isValid(Habitat habitat, String target) {
+            Domain domain = habitat.getComponent(Domain.class);
+            return domain.getNodeNamed(target) != null;
+        }
+
+        @Override
+        public String getDescription() {
+            return "Node";
+        }
     };
 
     @Override
