@@ -444,6 +444,9 @@ public class CommandRunnerImpl implements CommandRunner {
             final Param param = pModel.getParam();
             final String paramName =
 		    		pModel.getName().toLowerCase(Locale.ENGLISH);
+            // skip "hidden" options
+            if (paramName.startsWith("_"))
+                continue;
             // do not want to display password as an option
             if (param.password())
                 continue;
@@ -638,14 +641,17 @@ public class CommandRunnerImpl implements CommandRunner {
         if (param!=null) {
              // this is a param.
             String paramName = model.getName().toLowerCase(Locale.ENGLISH);
-            //do not want to display password in the usage
+            // skip "hidden" options
+            if (paramName.startsWith("_"))
+                return;
+            // do not want to display password in the usage
             if (param.password())
                 return;
-            //do not want to display obsolete options
+            // do not want to display obsolete options
             if (param.obsolete())
                 return;
             if (param.primary()) {
-                //if primary then it's an operand
+                // if primary then it's an operand
                 report.getTopMessagePart().addProperty(paramName+"_operand",
                             model.getLocalizedDescription());
             } else {

@@ -289,6 +289,9 @@ public abstract class CLICommand implements PostConstruct {
         for (ParamModel opt : usageOptions()) {
             optText.setLength(0);
             final String optName = lc(opt.getName());
+            // skip "hidden" options
+            if (optName.startsWith("_"))
+                continue;
             // do not want to display password as an option
             if (opt.getParam().password())
                 continue;
