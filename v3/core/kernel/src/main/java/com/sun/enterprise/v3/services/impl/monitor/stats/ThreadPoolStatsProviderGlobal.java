@@ -40,83 +40,24 @@
 
 package com.sun.enterprise.v3.services.impl.monitor.stats;
 
-import com.sun.grizzly.util.ExtendedThreadPool;
 import org.glassfish.external.probe.provider.annotations.ProbeListener;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
-import org.glassfish.external.statistics.CountStatistic;
-import org.glassfish.external.statistics.annotations.Reset;
-import org.glassfish.external.statistics.impl.CountStatisticImpl;
 import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
-import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
 
 /**
- * Thread Pool statistics
+ * Server wide Thread Pool statistics
  * 
- * @author Alexey Stashok
+ * @author Amy Roh
  */
 @AMXMetadata(type = "thread-pool-mon", group = "monitoring")
 @ManagedObject
 @Description("Thread Pool Statistics")
-public class ThreadPoolStatsProvider implements StatsProvider {
+public class ThreadPoolStatsProviderGlobal extends ThreadPoolStatsProvider {
 
-    private final String name;
-    protected final CountStatisticImpl maxThreadsCount = new CountStatisticImpl("MaxThreads", "count", "Maximum number of threads allowed in the thread pool");
-    protected final CountStatisticImpl coreThreadsCount = new CountStatisticImpl("CoreThreads", "count", "Core number of threads in the thread pool");
-    
-    protected final CountStatisticImpl totalExecutedTasksCount = new CountStatisticImpl("TotalExecutedTasksCount", "count", "Provides the total number of tasks, which were executed by the thread pool");
-    protected final CountStatisticImpl currentThreadCount = new CountStatisticImpl("CurrentThreadCount", "count", "Provides the number of request processing threads currently in the listener thread pool");
-    protected final CountStatisticImpl currentThreadsBusy = new CountStatisticImpl("CurrentThreadsBusy", "count", "Provides the number of request processing threads currently in use in the listener thread pool serving requests");
-
-    protected volatile ExtendedThreadPool threadPool;
-
-    public ThreadPoolStatsProvider(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public Object getStatsObject() {
-        return threadPool;
-    }
-
-    @Override
-    public void setStatsObject(Object object) {
-        if (object instanceof ExtendedThreadPool) {
-            threadPool = (ExtendedThreadPool) object;
-        } else {
-            threadPool = null;
-        }
-    }
-
-    @ManagedAttribute(id = "maxthreads")
-    @Description("Maximum number of threads allowed in the thread pool")
-    public CountStatistic getMaxThreadsCount() {
-        return maxThreadsCount;
-    }
-
-    @ManagedAttribute(id = "corethreads")
-    @Description("Core number of threads in the thread pool")
-    public CountStatistic getCoreThreadsCount() {
-        return coreThreadsCount;
-    }
-
-    @ManagedAttribute(id = "totalexecutedtasks")
-    @Description("Provides the total number of tasks, which were executed by the thread pool")
-    public CountStatistic getTotalExecutedTasksCount() {
-        return totalExecutedTasksCount;
-    }
-
-    @ManagedAttribute(id = "currentthreadcount")
-    @Description("Provides the number of request processing threads currently in the listener thread pool")
-    public CountStatistic getCurrentThreadCount() {
-        return currentThreadCount;
-    }
-
-    @ManagedAttribute(id = "currentthreadsbusy")
-    @Description("Provides the number of request processing threads currently in use in the listener thread pool serving requests.")
-    public CountStatistic getCurrentThreadsBusy() {
-        return currentThreadsBusy;
+    public ThreadPoolStatsProviderGlobal(String name) {
+        super(name);
     }
 
     @ProbeListener("glassfish:kernel:thread-pool:setMaxThreadsEvent")
@@ -125,9 +66,7 @@ public class ThreadPoolStatsProvider implements StatsProvider {
             @ProbeParam("threadPoolName") String threadPoolName,
             @ProbeParam("maxNumberOfThreads") int maxNumberOfThreads) {
 
-        if (name.equals(monitoringId)) {
-            maxThreadsCount.setCount(maxNumberOfThreads);
-        }
+        maxThreadsCount.setCount(maxNumberOfThreads);
     }
 
     @ProbeListener("glassfish:kernel:thread-pool:setCoreThreadsEvent")
@@ -136,9 +75,7 @@ public class ThreadPoolStatsProvider implements StatsProvider {
             @ProbeParam("threadPoolName") String threadPoolName,
             @ProbeParam("coreNumberOfThreads") int coreNumberOfThreads) {
 
-        if (name.equals(monitoringId)) {
-            coreThreadsCount.setCount(coreNumberOfThreads);
-        }
+        coreThreadsCount.setCount(coreNumberOfThreads);
     }
 
     @ProbeListener("glassfish:kernel:thread-pool:threadAllocatedEvent")
@@ -147,9 +84,7 @@ public class ThreadPoolStatsProvider implements StatsProvider {
             @ProbeParam("threadPoolName") String threadPoolName,
             @ProbeParam("threadId") String threadId) {
 
-        if (name.equals(monitoringId)) {
-            currentThreadCount.increment();
-        }
+        currentThreadCount.increment();
     }
 
     @ProbeListener("glassfish:kernel:thread-pool:threadReleasedEvent")
@@ -158,9 +93,7 @@ public class ThreadPoolStatsProvider implements StatsProvider {
             @ProbeParam("threadPoolName") String threadPoolName,
             @ProbeParam("threadId") String threadId) {
 
-        if (name.equals(monitoringId)) {
-            currentThreadCount.decrement();
-        }
+        currentThreadCount.decrement();
     }
 
     @ProbeListener("glassfish:kernel:thread-pool:threadDispatchedFromPoolEvent")
@@ -169,9 +102,7 @@ public class ThreadPoolStatsProvider implements StatsProvider {
             @ProbeParam("threadPoolName") String threadPoolName,
             @ProbeParam("threadId") String threadId) {
 
-        if (name.equals(monitoringId)) {
-            currentThreadsBusy.increment();
-        }
+        currentThreadsBusy.increment();
     }
 
     @ProbeListener("glassfish:kernel:thread-pool:threadReturnedToPoolEvent")
@@ -180,22 +111,8 @@ public class ThreadPoolStatsProvider implements StatsProvider {
             @ProbeParam("threadPoolName") String threadPoolName,
             @ProbeParam("threadId") String threadId) {
 
-        if (name.equals(monitoringId)) {
-            totalExecutedTasksCount.increment();
-            currentThreadsBusy.decrement();
-        }
+        totalExecutedTasksCount.increment();
+        currentThreadsBusy.decrement();
     }
-
-    @Reset
-    public void reset() {
-        final ExtendedThreadPool threadPoolObject = threadPool;
-        if (threadPoolObject != null) {
-            maxThreadsCount.setCount(threadPoolObject.getMaximumPoolSize());
-            coreThreadsCount.setCount(threadPoolObject.getCorePoolSize());
-            currentThreadCount.setCount(threadPoolObject.getPoolSize());
-            currentThreadsBusy.setCount(threadPoolObject.getActiveCount());
-        }
-
-        totalExecutedTasksCount.setCount(0);
-    }
+    
 }

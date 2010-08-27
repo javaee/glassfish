@@ -62,14 +62,14 @@ import org.glassfish.gmbal.ManagedObject;
 public class KeepAliveStatsProvider implements StatsProvider {
 
     private final String name;
-    private final CountStatisticImpl maxRequestsCount = new CountStatisticImpl("MaxRequests", "count", "Maximum number of requests allowed on a single keep-alive connection");
-    private final CountStatisticImpl timeoutInSeconds = new CountStatisticImpl("SecondsTimeouts", "seconds", "Keep-alive timeout value in seconds");
-    private final CountStatisticImpl keepAliveConnectionsCount = new CountStatisticImpl("CountConnections", "count", "Number of connections in keep-alive mode");
-    private final CountStatisticImpl flushesCount = new CountStatisticImpl("CountFlushes", "count", "Number of keep-alive connections that were closed");
-    private final CountStatisticImpl hitsCount = new CountStatisticImpl("CountHits", "count", "Number of requests received by connections in keep-alive mode");
-    private final CountStatisticImpl refusalsCount = new CountStatisticImpl("CountRefusals", "count", "Number of keep-alive connections that were rejected");
-    private final CountStatisticImpl timeoutsCount = new CountStatisticImpl("CountTimeouts", "count", "Number of keep-alive connections that timed out");
-    private volatile KeepAliveStats keepAliveStats;
+    protected final CountStatisticImpl maxRequestsCount = new CountStatisticImpl("MaxRequests", "count", "Maximum number of requests allowed on a single keep-alive connection");
+    protected final CountStatisticImpl timeoutInSeconds = new CountStatisticImpl("SecondsTimeouts", "seconds", "Keep-alive timeout value in seconds");
+    protected final CountStatisticImpl keepAliveConnectionsCount = new CountStatisticImpl("CountConnections", "count", "Number of connections in keep-alive mode");
+    protected final CountStatisticImpl flushesCount = new CountStatisticImpl("CountFlushes", "count", "Number of keep-alive connections that were closed");
+    protected final CountStatisticImpl hitsCount = new CountStatisticImpl("CountHits", "count", "Number of requests received by connections in keep-alive mode");
+    protected final CountStatisticImpl refusalsCount = new CountStatisticImpl("CountRefusals", "count", "Number of keep-alive connections that were rejected");
+    protected final CountStatisticImpl timeoutsCount = new CountStatisticImpl("CountTimeouts", "count", "Number of keep-alive connections that timed out");
+    protected volatile KeepAliveStats keepAliveStats;
 
     public KeepAliveStatsProvider(String name) {
         this.name = name;

@@ -63,21 +63,21 @@ public class FileCacheStatsProvider implements StatsProvider {
 
     private final String name;
 
-    private final CountStatisticImpl hitsCount = new CountStatisticImpl("HitsCount", "count" , "Number of cache lookup hits");
-    private final CountStatisticImpl missesCount = new CountStatisticImpl("MissesCount", "count", "Number of cache lookup misses");
-    private final CountStatisticImpl infoHitsCount = new CountStatisticImpl("InfoHitsCount", "count", "Number of hits on cached file info");
-    private final CountStatisticImpl infoMissesCount = new CountStatisticImpl("InfoMissesCount", "count", "Number of misses on cached file info");
-    private final CountStatisticImpl contentHitsCount = new CountStatisticImpl("ContentHitsCount", "count", "Number of hits on cached file content");
-    private final CountStatisticImpl contentMissesCount = new CountStatisticImpl("ContentMissesCount", "count", "Number of misses on cached file content");
+    protected final CountStatisticImpl hitsCount = new CountStatisticImpl("HitsCount", "count" , "Number of cache lookup hits");
+    protected final CountStatisticImpl missesCount = new CountStatisticImpl("MissesCount", "count", "Number of cache lookup misses");
+    protected final CountStatisticImpl infoHitsCount = new CountStatisticImpl("InfoHitsCount", "count", "Number of hits on cached file info");
+    protected final CountStatisticImpl infoMissesCount = new CountStatisticImpl("InfoMissesCount", "count", "Number of misses on cached file info");
+    protected final CountStatisticImpl contentHitsCount = new CountStatisticImpl("ContentHitsCount", "count", "Number of hits on cached file content");
+    protected final CountStatisticImpl contentMissesCount = new CountStatisticImpl("ContentMissesCount", "count", "Number of misses on cached file content");
 
-    private final CountStatisticImpl openCacheEntriesCount = new CountStatisticImpl("OpenCacheEntriesCount", "count", "Number of current open cache entries");
-    private final AtomicLong heapSize = new AtomicLong();
-    private final AtomicLong mappedMemorySize = new AtomicLong();
+    protected final CountStatisticImpl openCacheEntriesCount = new CountStatisticImpl("OpenCacheEntriesCount", "count", "Number of current open cache entries");
+    protected final AtomicLong heapSize = new AtomicLong();
+    protected final AtomicLong mappedMemorySize = new AtomicLong();
 
-    private final AtomicLong maxHeapSize = new AtomicLong();
-    private final AtomicLong maxMappedMemorySize = new AtomicLong();
+    protected final AtomicLong maxHeapSize = new AtomicLong();
+    protected final AtomicLong maxMappedMemorySize = new AtomicLong();
 
-    private volatile FileCache fileCache;
+    protected volatile FileCache fileCache;
     
     public FileCacheStatsProvider(String name) {
         this.name = name;

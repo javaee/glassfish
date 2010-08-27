@@ -120,6 +120,8 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
 
     private final GrizzlyMonitoring monitoring;
 
+    private static final String NETWORK_CONFIG_PREFIX = "";
+
     private final ConcurrentLinkedQueue<MapperUpdateListener> mapperUpdateListeners =
             new ConcurrentLinkedQueue<MapperUpdateListener>();
 
@@ -399,6 +401,8 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             
             throw e;
         }
+
+        registerMonitoringStatsProviders();
     }
 
     @Override
@@ -494,6 +498,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         for (NetworkProxy proxy : proxies) {
             proxy.stop();
         }
+        unregisterMonitoringStatsProviders();
     }
 
     /*
@@ -609,6 +614,20 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             // Deliberate no-op
             return null;
         }
+    }
+
+    protected void registerMonitoringStatsProviders() {
+        monitoring.registerThreadPoolStatsProviderGlobal(NETWORK_CONFIG_PREFIX);
+        monitoring.registerKeepAliveStatsProviderGlobal(NETWORK_CONFIG_PREFIX);
+        monitoring.registerFileCacheStatsProviderGlobal(NETWORK_CONFIG_PREFIX);
+        monitoring.registerConnectionQueueStatsProviderGlobal(NETWORK_CONFIG_PREFIX);
+    }
+
+    protected void unregisterMonitoringStatsProviders() {
+        monitoring.unregisterThreadPoolStatsProviderGlobal(NETWORK_CONFIG_PREFIX);
+        monitoring.unregisterKeepAliveStatsProviderGlobal(NETWORK_CONFIG_PREFIX);
+        monitoring.unregisterFileCacheStatsProviderGlobal(NETWORK_CONFIG_PREFIX);
+        monitoring.unregisterConnectionQueueStatsProviderGlobal(NETWORK_CONFIG_PREFIX);
     }
 
     private void registerAdapter(org.glassfish.api.container.Adapter a) throws EndpointRegistrationException {

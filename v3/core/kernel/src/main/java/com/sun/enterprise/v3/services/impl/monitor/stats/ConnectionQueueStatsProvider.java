@@ -63,32 +63,32 @@ import org.glassfish.gmbal.ManagedObject;
 @ManagedObject
 @Description("Connection Queue Statistics")
 public class ConnectionQueueStatsProvider implements StatsProvider {
-    private static final long MINUTE = 60 * 1000;
+    protected static final long MINUTE = 60 * 1000;
     
     private final String name;
 
-    private final CountStatisticImpl countTotalConnections = new CountStatisticImpl("CountTotalConnections", "count", "Total number of connections that have been accepted");
-    private final Map<Integer, Long> openConnectionsCount = new ConcurrentHashMap<Integer, Long>();
+    protected final CountStatisticImpl countTotalConnections = new CountStatisticImpl("CountTotalConnections", "count", "Total number of connections that have been accepted");
+    protected final Map<Integer, Long> openConnectionsCount = new ConcurrentHashMap<Integer, Long>();
 
-    private final CountStatisticImpl countOverflows = new CountStatisticImpl("CountOverflows", "count", "Number of times the queue has been too full to accommodate a connection");
+    protected final CountStatisticImpl countOverflows = new CountStatisticImpl("CountOverflows", "count", "Number of times the queue has been too full to accommodate a connection");
 
-    private final AtomicInteger countQueuedAtomic = new AtomicInteger();
-    private final CountStatisticImpl countQueued = new CountStatisticImpl("CountQueued", "count", "Number of connections currently in the queue");
+    protected final AtomicInteger countQueuedAtomic = new AtomicInteger();
+    protected final CountStatisticImpl countQueued = new CountStatisticImpl("CountQueued", "count", "Number of connections currently in the queue");
     
-    private final CountStatisticImpl countTotalQueued = new CountStatisticImpl("CountTotalQueued", "count", "Total number of connections that have been queued");
+    protected final CountStatisticImpl countTotalQueued = new CountStatisticImpl("CountTotalQueued", "count", "Total number of connections that have been queued");
 
-    private final CountStatisticImpl maxQueued = new CountStatisticImpl("MaxQueued", "count", "Maximum size of the connection queue");
+    protected final CountStatisticImpl maxQueued = new CountStatisticImpl("MaxQueued", "count", "Maximum size of the connection queue");
 
-    private final AtomicInteger peakQueuedAtomic = new AtomicInteger();
-    private final CountStatisticImpl peakQueued = new CountStatisticImpl("PeakQueued", "count", "Largest number of connections that were in the queue simultaneously");
+    protected final AtomicInteger peakQueuedAtomic = new AtomicInteger();
+    protected final CountStatisticImpl peakQueued = new CountStatisticImpl("PeakQueued", "count", "Largest number of connections that were in the queue simultaneously");
     
-    private final CountStatisticImpl ticksTotalQueued = new CountStatisticImpl("TicksTotalQueued", "count", "(Unsupported) Total number of ticks that connections have spent in the queue");
+    protected final CountStatisticImpl ticksTotalQueued = new CountStatisticImpl("TicksTotalQueued", "count", "(Unsupported) Total number of ticks that connections have spent in the queue");
 
-    private final int[] averageStatsPerMinute = new int[15];
-    private long averageLastShift;
-    private int averageMinuteCounter;
+    protected final int[] averageStatsPerMinute = new int[15];
+    protected long averageLastShift;
+    protected int averageMinuteCounter;
 
-    private volatile ExtendedThreadPool threadPool;
+    protected volatile ExtendedThreadPool threadPool;
 
     public ConnectionQueueStatsProvider(String name) {
         this.name = name;
@@ -271,7 +271,7 @@ public class ConnectionQueueStatsProvider implements StatsProvider {
         }
     }
 
-    private void incAverageMinute() {
+    protected void incAverageMinute() {
         synchronized(averageStatsPerMinute) {
             final long currentTime = System.currentTimeMillis();
             if (currentTime - averageLastShift >= MINUTE) {
@@ -282,7 +282,7 @@ public class ConnectionQueueStatsProvider implements StatsProvider {
         }
     }
 
-    private int getAverageBy(int mins) {
+    protected int getAverageBy(int mins) {
         synchronized(averageStatsPerMinute) {
             final long currentTime = System.currentTimeMillis();
             if (currentTime - averageLastShift >= MINUTE) {

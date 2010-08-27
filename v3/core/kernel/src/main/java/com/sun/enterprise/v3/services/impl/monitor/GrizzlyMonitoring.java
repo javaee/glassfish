@@ -41,13 +41,17 @@
 package com.sun.enterprise.v3.services.impl.monitor;
 
 import com.sun.enterprise.v3.services.impl.monitor.probes.ConnectionQueueProbeProvider;
-import com.sun.enterprise.v3.services.impl.monitor.probes.FileCacheProbeProvider;
+import com.sun.enterprise.v3.services.impl.monitor.probes.FileCacheProbeProvider;             
 import com.sun.enterprise.v3.services.impl.monitor.probes.KeepAliveProbeProvider;
 import com.sun.enterprise.v3.services.impl.monitor.probes.ThreadPoolProbeProvider;
 import com.sun.enterprise.v3.services.impl.monitor.stats.ConnectionQueueStatsProvider;
+import com.sun.enterprise.v3.services.impl.monitor.stats.ConnectionQueueStatsProviderGlobal;
 import com.sun.enterprise.v3.services.impl.monitor.stats.FileCacheStatsProvider;
+import com.sun.enterprise.v3.services.impl.monitor.stats.FileCacheStatsProviderGlobal;
 import com.sun.enterprise.v3.services.impl.monitor.stats.KeepAliveStatsProvider;
+import com.sun.enterprise.v3.services.impl.monitor.stats.KeepAliveStatsProviderGlobal;
 import com.sun.enterprise.v3.services.impl.monitor.stats.ThreadPoolStatsProvider;
+import com.sun.enterprise.v3.services.impl.monitor.stats.ThreadPoolStatsProviderGlobal;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.glassfish.external.probe.provider.PluginPoint;
@@ -244,6 +248,114 @@ public class GrizzlyMonitoring {
      * @param name network listener name
      */
     public void unregisterConnectionQueueStatsProvider(String name) {
+        final ConnectionQueueStatsProvider connectionQueueStatsProvider =
+                connectionQueueStatsProvidersMap.remove(name);
+        if (connectionQueueStatsProvider != null) {
+            StatsProviderManager.unregister(connectionQueueStatsProvider);
+        }
+    }
+
+    /**
+     * Register server wide thread-pool statistics provider
+     */
+    public void registerThreadPoolStatsProviderGlobal(String name) {
+        ThreadPoolStatsProvider threadPoolStatsProvider = new ThreadPoolStatsProviderGlobal(name);
+        ThreadPoolStatsProvider oldthreadPoolStatsProvider =
+                threadPoolStatsProvidersMap.put(name, threadPoolStatsProvider);
+
+        if (oldthreadPoolStatsProvider != null) {
+            StatsProviderManager.unregister(oldthreadPoolStatsProvider);
+        }
+
+        StatsProviderManager.register(CONFIG_ELEMENT, PluginPoint.SERVER,
+                subtreePrefix(name) + "/thread-pool", threadPoolStatsProvider);
+    }
+
+    /**
+     * Unregister server wide thread-pool statistics provider
+     */
+    public void unregisterThreadPoolStatsProviderGlobal(String name) {
+        final ThreadPoolStatsProvider threadPoolStatsProvider =
+                threadPoolStatsProvidersMap.remove(name);
+        if (threadPoolStatsProvider != null) {
+            StatsProviderManager.unregister(threadPoolStatsProvider);
+        }
+    }
+
+    /**
+     * Register server wide keep-alive statistics provider for a network listener
+     */
+    public void registerKeepAliveStatsProviderGlobal(String name) {
+        KeepAliveStatsProvider keepAliveStatsProvider = new KeepAliveStatsProviderGlobal(name);
+        KeepAliveStatsProvider oldKeepAliveStatsProvider =
+                keepAliveStatsProvidersMap.put(name, keepAliveStatsProvider);
+
+        if (oldKeepAliveStatsProvider != null) {
+            StatsProviderManager.unregister(oldKeepAliveStatsProvider);
+        }
+
+        StatsProviderManager.register(CONFIG_ELEMENT, PluginPoint.SERVER,
+                subtreePrefix(name) + "/keep-alive", keepAliveStatsProvider);
+    }
+
+    /**
+     * Unregister server wide keep-alive statistics provider
+     */
+    public void unregisterKeepAliveStatsProviderGlobal(String name) {
+        final KeepAliveStatsProvider keepAliveStatsProvider =
+                keepAliveStatsProvidersMap.remove(name);
+        if (keepAliveStatsProvider != null) {
+            StatsProviderManager.unregister(keepAliveStatsProvider);
+        }
+    }
+
+    /**
+     * Register server wide file-cache statistics provider for a network listener
+     */
+    public void registerFileCacheStatsProviderGlobal(String name) {
+        FileCacheStatsProvider fileCacheStatsProvider = new FileCacheStatsProviderGlobal(name);
+        FileCacheStatsProvider oldFileCacheStatsProvider =
+                fileCacheStatsProvidersMap.put(name, fileCacheStatsProvider);
+
+        if (oldFileCacheStatsProvider != null) {
+            StatsProviderManager.unregister(oldFileCacheStatsProvider);
+        }
+
+        StatsProviderManager.register(CONFIG_ELEMENT, PluginPoint.SERVER,
+                subtreePrefix(name) + "/file-cache", fileCacheStatsProvider);
+    }
+
+    /**
+     * Unregister serve wide file-cache statistics provider for a network listener
+     */
+    public void unregisterFileCacheStatsProviderGlobal(String name) {
+        final FileCacheStatsProvider fileCacheStatsProvider =
+                fileCacheStatsProvidersMap.remove(name);
+        if (fileCacheStatsProvider != null) {
+            StatsProviderManager.unregister(fileCacheStatsProvider);
+        }
+    }
+
+    /**
+     * Register server wide connection queue statistics provider for a network listener
+     */
+    public void registerConnectionQueueStatsProviderGlobal(String name) {
+        ConnectionQueueStatsProvider connectionQueueStatsProvider = new ConnectionQueueStatsProviderGlobal(name);
+        ConnectionQueueStatsProvider oldConnectionQueueStatsProvider =
+                connectionQueueStatsProvidersMap.put(name, connectionQueueStatsProvider);
+
+        if (oldConnectionQueueStatsProvider != null) {
+            StatsProviderManager.unregister(oldConnectionQueueStatsProvider);
+        }
+
+        StatsProviderManager.register(CONFIG_ELEMENT, PluginPoint.SERVER,
+                subtreePrefix(name) + "/connection-queue", connectionQueueStatsProvider);
+    }
+
+    /**
+     * Unregister server wide connection queue statistics provider for a network listener
+     */
+    public void unregisterConnectionQueueStatsProviderGlobal(String name) {
         final ConnectionQueueStatsProvider connectionQueueStatsProvider =
                 connectionQueueStatsProvidersMap.remove(name);
         if (connectionQueueStatsProvider != null) {
