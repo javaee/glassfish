@@ -121,7 +121,7 @@ public class DescriptorArchivist {
                         }
                     }
 
-                    String runtimeDDPath = "sun-" + ddPath;
+                    String runtimeDDPath = "glasfish-" + ddPath;
                     DeploymentDescriptorFile confDDFile = moduleArchivist.getConfigurationDDFile();
                     if (confDDFile!=null) {
                         OutputStream os = out.putNextEntry(runtimeDDPath);

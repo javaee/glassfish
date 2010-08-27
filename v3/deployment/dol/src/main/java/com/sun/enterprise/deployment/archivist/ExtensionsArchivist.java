@@ -85,6 +85,10 @@ public abstract class ExtensionsArchivist  {
         return null;
     }
 
+    public DeploymentDescriptorFile getSunConfigurationDDFile(RootDeploymentDescriptor descriptor) {
+        return null;
+    }
+
     public DeploymentDescriptorFile getGFCounterPartConfigurationDDFile(RootDeploymentDescriptor descriptor) {
         return null;
     }
@@ -150,6 +154,14 @@ public abstract class ExtensionsArchivist  {
         try {
             String confDDPath = confDD.getDeploymentDescriptorPath();
             is = archive.getEntry(confDDPath);
+            if (is == null) {
+                confDD = getSunConfigurationDDFile(descriptor);
+                if (confDD != null) {
+                    confDDPath = confDD.getDeploymentDescriptorPath();
+                    is = archive.getEntry(confDDPath);
+                }
+            }
+
             if (is != null) {
                 DeploymentDescriptorFile gfConfDD = 
                     getGFCounterPartConfigurationDDFile(descriptor);

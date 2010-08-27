@@ -50,6 +50,7 @@ import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.deployment.io.EjbDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.runtime.EjbRuntimeDDFile;
+import com.sun.enterprise.deployment.io.runtime.GFEjbRuntimeDDFile;
 import com.sun.hk2.component.Holder;
 import org.glassfish.apf.Scanner;
 import org.glassfish.api.deployment.archive.Archive;
@@ -89,16 +90,25 @@ public class EjbInWarArchivist
     public DeploymentDescriptorFile getStandardDDFile(RootDeploymentDescriptor descriptor) {
         return new EjbDeploymentDescriptorFile() {
             public String getDeploymentDescriptorPath() {
-                return "WEB-INF/ejb-jar.xml";  //TODO Add this to DescriptorConstants.class
+                return DescriptorConstants.EJB_IN_WAR_ENTRY;
             }
         };
     }
 
     @Override
     public DeploymentDescriptorFile getConfigurationDDFile(RootDeploymentDescriptor descriptor) {
+        return new GFEjbRuntimeDDFile() {
+            public String getDeploymentDescriptorPath() {
+                return DescriptorConstants.GF_EJB_IN_WAR_ENTRY;
+            }
+        };
+    }
+
+    @Override
+    public DeploymentDescriptorFile getSunConfigurationDDFile(RootDeploymentDescriptor descriptor) {
         return new EjbRuntimeDDFile() {
             public String getDeploymentDescriptorPath() {
-                return "WEB-INF/" + "sun-" + "ejb-jar.xml"; //TODO Add this to DescriptorConstants.class
+                return DescriptorConstants.S1AS_EJB_IN_WAR_ENTRY;
             }
         };
     }

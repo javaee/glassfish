@@ -94,11 +94,17 @@ public interface DescriptorConstants {
     /** The name of the ejb deployment descriptor entry inside an ejb jar. */
     String EJB_JAR_ENTRY = "META-INF/ejb-jar.xml";
 
+   /** The name of the ejb deployment descriptor entry inside a war. */
+    String EJB_IN_WAR_ENTRY = "WEAB-INF/ejb-jar.xml";
+
     /** The name of the Sun deployment descriptor entry in ejb module jar. */
     String S1AS_EJB_DD_ENTRY="META-INF"+File.separator+S1AS_PREFIX+"ejb-jar.xml";
 
     /** The Sun ejb deployment descriptor entry inside an ejb jar. */
     String S1AS_EJB_JAR_ENTRY = "META-INF/" + S1AS_PREFIX + "ejb-jar.xml";
+
+    /** The Sun ejb deployment descriptor entry inside a war. */
+    String S1AS_EJB_IN_WAR_ENTRY = "WEB-INF/" + S1AS_PREFIX + "ejb-jar.xml";
 
     /** The name of the deployment descriptor entry in the web module. */
     String WEB_DD_ENTRY = "WEB-INF" + File.separator + "web.xml";
@@ -152,6 +158,9 @@ public interface DescriptorConstants {
 
     /** The name of the glassfish deployment descriptor entry in the ejb jar. */
     String GF_EJB_JAR_ENTRY = "META-INF/" + GF_PREFIX + "ejb-jar.xml";
+
+    /** The name of the glassfish deployment descriptor entry in the war. */
+    String GF_EJB_IN_WAR_ENTRY = "WEB-INF/" + GF_PREFIX + "ejb-jar.xml";
 
     /** The name of the glassfish deployment descriptor entry in the client jar. */
     String GF_APP_CLIENT_JAR_ENTRY = "META-INF/"+ GF_PREFIX + "application-client.xml";
