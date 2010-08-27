@@ -65,6 +65,12 @@ public class ConnectorNamingUtils {
 
     private static ConnectorRuntime runtime;
 
+    static {
+        //making sure that connector-runtime is always initialized.
+        //This solves the issue of multiple threads doing resource lookup in STANDALONE mode.
+        getRuntime();
+    }
+
     public static ConnectorRuntime getRuntime() {
         try {
             if (runtime == null) {
