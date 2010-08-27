@@ -47,8 +47,6 @@ import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.connectors.util.ResourcesUtil;
-import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.resource.ResourceUtilities;
 import com.sun.logging.LogDomains;
 import org.glassfish.admin.cli.resources.*;
@@ -126,11 +124,9 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
 
     private static Logger _logger = LogDomains.getLogger(ConnectorDeployer.class, LogDomains.RSR_LOGGER);
 
-    private static final String META_INF = "META-INF";
-    private static final String RESOURCES_XML = "glassfish-resources.xml";
     private static final String RESOURCES_XML_META_INF = "META-INF/glassfish-resources.xml";
     private static final String RESOURCES_XML_WEB_INF = "WEB-INF/glassfish-resources.xml";
-    
+
 
     public ResourcesDeployer(){
     }
@@ -182,13 +178,15 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                 Map<String,Map<String, List>> appScopedResources = new HashMap<String,Map<String,List>>();
                 Map<String, String> fileNames = new HashMap<String, String>();
 
-                retrieveAllResourcesXMLs(fileNames, archive);
+                String appName = getAppNameFromDeployCmdParams(dc);
+                //using appName as it is possible that "deploy --name=APPNAME" will
+                //be different than the archive name.
+                retrieveAllResourcesXMLs(fileNames, archive, appName);
 
                 for (String moduleName: fileNames.keySet()) {
                     String fileName = fileNames.get(moduleName);
                     debug("Sun Resources XML : " + fileName);
 
-                    String appName = getAppNameFromDeployCmdParams(dc);
                     moduleName = getActualModuleName(moduleName);
                     String scope ;
                     if(appName.equals(moduleName)){
@@ -216,7 +214,6 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                     appScopedResources.put(moduleName, resourcesList);
                 }
                 dc.addTransientAppMetaData(ConnectorConstants.APP_SCOPED_RESOURCES_MAP, appScopedResources);
-                final String appName = getAppNameFromDeployCmdParams(dc);
                 ApplicationInfo appInfo = appRegistry.get(appName);
                 if(appInfo != null){
                     Application app = dc.getTransientAppMetaData(Application.APPLICATION, Application.class);
@@ -253,12 +250,14 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
             application.setResources(appScopedResources);
         }
 
-        List<Module> modules = application.getModule();
-        if(modules != null){
-            for(Module module : modules){
-                Resources moduleScopedResources = allResources.get(module.getName());
-                if(moduleScopedResources != null){
-                    module.setResources(moduleScopedResources);
+        if(DeploymentUtils.isEAR(dc.getSource())){
+            List<Module> modules = application.getModule();
+            if(modules != null){
+                for(Module module : modules){
+                    Resources moduleScopedResources = allResources.get(module.getName());
+                    if(moduleScopedResources != null){
+                        module.setResources(moduleScopedResources);
+                    }
                 }
             }
         }
@@ -541,7 +540,8 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
         return commandParams.name();
     }
 
-    public void retrieveAllResourcesXMLs(Map<String, String> fileNames, ReadableArchive archive) throws IOException {
+    public void retrieveAllResourcesXMLs(Map<String, String> fileNames, ReadableArchive archive,
+                                         String actualArchiveName) throws IOException {
 
         if(DeploymentUtils.isEAR(archive)){
             //Look for top-level META-INF/glassfish-resources.xml
@@ -552,7 +552,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                     _logger.finest("GlassFish-Resources Deployer - fileName : " + fileName +
                             " - parent : " + archive.getName());
                 }
-                fileNames.put(archive.getName(), fileName);
+                fileNames.put(actualArchiveName, fileName);
             }
 
             //Lok for sub-module level META-INF/glassfish-resources.xml and WEB-INF/glassfish-resources.xml
@@ -563,31 +563,32 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                         element.endsWith("_jar") || element.endsWith("_war") || element.endsWith("_rar")){
                     ReadableArchive subArchive = archive.getSubArchive(element);
                     if(subArchive != null ){
-                        retrieveResourcesXMLFromArchive(fileNames, subArchive);
+                        retrieveResourcesXMLFromArchive(fileNames, subArchive, subArchive.getName());
                     }
                 }
             }
         }else{
             //Look for standalone archive's META-INF/glassfish-resources.xml and WEB-INF/glassfish-resources.xml
-            retrieveResourcesXMLFromArchive(fileNames, archive);
+            retrieveResourcesXMLFromArchive(fileNames, archive, actualArchiveName);
         }
     }
 
-    private void retrieveResourcesXMLFromArchive(Map<String, String> fileNames, ReadableArchive subArchive) {
-        if(DeploymentUtils.hasResourcesXML(subArchive)){
-            String subArchivePath = subArchive.getURI().getPath();
+    private void retrieveResourcesXMLFromArchive(Map<String, String> fileNames, ReadableArchive archive,
+                                                 String actualArchiveName) {
+        if(DeploymentUtils.hasResourcesXML(archive)){
+            String archivePath = archive.getURI().getPath();
             String fileName ;
-            if(DeploymentUtils.isWebArchive(subArchive)){
-                fileName = subArchivePath +  RESOURCES_XML_WEB_INF;
+            if(DeploymentUtils.isWebArchive(archive)){
+                fileName = archivePath +  RESOURCES_XML_WEB_INF;
             }else{
-                fileName = subArchivePath + RESOURCES_XML_META_INF;
+                fileName = archivePath + RESOURCES_XML_META_INF;
             }
             if(_logger.isLoggable(Level.FINEST)){
                 _logger.finest("GlassFish-Resources Deployer - fileName : " + fileName +
-                        " - parent : " + subArchive.getName());
+                        " - parent : " + archive.getName());
             }
 
-            fileNames.put(subArchive.getName(), fileName);
+            fileNames.put(actualArchiveName, fileName);
         }
     }
 
@@ -663,6 +664,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                 Properties properties = deployParams.properties;
                 if(properties != null){
                     //handle if "preserveAppScopedResources" property is set (during deploy --force=true)
+                    //TODO ASR need to check whether the call is "force=true" or re-deploy
                     String preserve = properties.getProperty(DeploymentProperties.PRESERVE_APP_SCOPED_RESOURCES);
                     if(preserve != null && Boolean.valueOf(preserve)){
                         String appName = getAppNameFromDeployCmdParams(dc);
