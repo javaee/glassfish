@@ -38,7 +38,7 @@
  * holder.
  */
 
-package com.sun.enterprise.glassfish.bootstrap;
+package org.glassfish.kernel;
 
 import org.glassfish.experimentalgfapi.GlassFish;
 import org.glassfish.experimentalgfapi.GlassFishRuntime;

@@ -38,8 +38,9 @@
  * holder.
  */
 
-package com.sun.enterprise.glassfish.bootstrap;
+package org.glassfish.kernel;
 
+import com.sun.enterprise.glassfish.bootstrap.*;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
@@ -48,6 +49,7 @@ import org.glassfish.experimentalgfapi.GlassFish;
 import org.glassfish.experimentalgfapi.GlassFishRuntime;
 import org.jvnet.hk2.component.Habitat;
 import org.osgi.framework.*;
+import org.osgi.framework.Constants;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -158,21 +160,21 @@ public class GlassFishActivator implements BundleActivator {
     }
 
     private void setEnv(Properties properties) {
-        final String installRootValue = properties.getProperty(Constants.INSTALL_ROOT_PROP_NAME);
+        final String installRootValue = properties.getProperty(com.sun.enterprise.glassfish.bootstrap.Constants.INSTALL_ROOT_PROP_NAME);
         if (installRootValue != null && !installRootValue.isEmpty()) {
             File installRoot = new File(installRootValue);
-            System.setProperty(Constants.INSTALL_ROOT_PROP_NAME, installRoot.getAbsolutePath());
+            System.setProperty(com.sun.enterprise.glassfish.bootstrap.Constants.INSTALL_ROOT_PROP_NAME, installRoot.getAbsolutePath());
             final Properties asenv = ASMainHelper.parseAsEnv(installRoot);
             for (String s : asenv.stringPropertyNames()) {
                 System.setProperty(s, asenv.getProperty(s));
             }
-            System.setProperty(Constants.INSTALL_ROOT_URI_PROP_NAME, installRoot.toURI().toString());
+            System.setProperty(com.sun.enterprise.glassfish.bootstrap.Constants.INSTALL_ROOT_URI_PROP_NAME, installRoot.toURI().toString());
         }
-        final String instanceRootValue = properties.getProperty(Constants.INSTANCE_ROOT_PROP_NAME);
+        final String instanceRootValue = properties.getProperty(com.sun.enterprise.glassfish.bootstrap.Constants.INSTANCE_ROOT_PROP_NAME);
         if (instanceRootValue != null && !instanceRootValue.isEmpty()) {
             File instanceRoot = new File(instanceRootValue);
-            System.setProperty(Constants.INSTANCE_ROOT_PROP_NAME, instanceRoot.getAbsolutePath());
-            System.setProperty(Constants.INSTANCE_ROOT_URI_PROP_NAME, instanceRoot.toURI().toString());
+            System.setProperty(com.sun.enterprise.glassfish.bootstrap.Constants.INSTANCE_ROOT_PROP_NAME, instanceRoot.getAbsolutePath());
+            System.setProperty(com.sun.enterprise.glassfish.bootstrap.Constants.INSTANCE_ROOT_URI_PROP_NAME, instanceRoot.toURI().toString());
         }
     }
 

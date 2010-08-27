@@ -50,7 +50,7 @@ import java.util.Properties;
  * This class is responsible for
  * a) setting up OSGi framework,
  * b) installing glassfish bundles,
- * c) starting the primordial GlassFish bundle,
+ * c) starting the primordial GlassFish bundle (i.e., GlassFish Kernel bundle),
  * d) obtaining a reference to GlassFishRuntime OSGi service.
  * <p/>
  * Steps #b & #c are handled via {@link AutoProcessor}.

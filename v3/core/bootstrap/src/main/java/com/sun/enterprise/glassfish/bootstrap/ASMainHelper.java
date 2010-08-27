@@ -64,7 +64,7 @@ import java.util.regex.Pattern;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-class ASMainHelper {
+public class ASMainHelper {
 
     private static Logger logger = Logger.getLogger(ASMainHelper.class.getPackage().getName());
 
@@ -129,7 +129,7 @@ class ASMainHelper {
         return null;
     }
 
-    static Properties parseAsEnv(File installRoot) {
+    public static Properties parseAsEnv(File installRoot) {
 
         Properties asenvProps = new Properties();
 

@@ -108,7 +108,7 @@ glassfish.auto.start=reference:${com.sun.aas.installRootURI}/modules/osgi-main.j
 # Following three properties are used by GlassFish provisioning bundle (osgi-main.jar)
 org.jvnet.hk2.osgimain.bundlesDir=${com.sun.aas.installRoot}/modules/
 org.jvnet.hk2.osgimain.excludedSubDirs=autostart/
-org.jvnet.hk2.osgimain.autostartBundles=glassfish.jar
+org.jvnet.hk2.osgimain.autostartBundles=kernel.jar
 
 # The Felix launcher registers a shutdown hook to cleanly stop the framework
 # by default, uncomment the following line to disable it.
