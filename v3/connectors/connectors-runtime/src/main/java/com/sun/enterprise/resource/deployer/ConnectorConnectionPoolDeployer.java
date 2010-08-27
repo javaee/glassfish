@@ -82,7 +82,7 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
     @Inject
     private ConnectorRuntime runtime;
 
-    private static Logger _logger = LogDomains.getLogger(ConnectorConnectionPoolDeployer.class, LogDomains.CORE_LOGGER);
+    private static Logger _logger = LogDomains.getLogger(ConnectorConnectionPoolDeployer.class, LogDomains.RSR_LOGGER);
 
     private static StringManager localStrings =
             StringManager.getManager(ConnectorConnectionPoolDeployer.class);

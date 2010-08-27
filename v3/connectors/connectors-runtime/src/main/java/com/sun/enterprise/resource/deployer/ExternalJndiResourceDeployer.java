@@ -105,7 +105,7 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
     private static final StringManager localStrings =
         StringManager.getManager(ExternalJndiResourceDeployer.class);
     /** logger for this deployer */
-    private static Logger _logger=LogDomains.getLogger(ExternalJndiResourceDeployer.class, LogDomains.CORE_LOGGER);
+    private static Logger _logger=LogDomains.getLogger(ExternalJndiResourceDeployer.class, LogDomains.RSR_LOGGER);
 
     /**
      * {@inheritDoc}

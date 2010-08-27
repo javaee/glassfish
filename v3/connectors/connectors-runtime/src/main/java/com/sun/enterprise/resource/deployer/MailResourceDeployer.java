@@ -95,7 +95,7 @@ public class MailResourceDeployer extends GlobalResourceDeployer
             StringManager.getManager(MailResourceDeployer.class);
 
     // logger for this deployer
-    private static Logger _logger = LogDomains.getLogger(MailResourceDeployer.class, LogDomains.CORE_LOGGER);
+    private static Logger _logger = LogDomains.getLogger(MailResourceDeployer.class, LogDomains.RSR_LOGGER);
 
     /**
      * {@inheritDoc}

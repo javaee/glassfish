@@ -104,7 +104,7 @@ public class CustomResourceDeployer implements ResourceDeployer {
     @Inject
     private ResourceNamingService cns;
     /** logger for this deployer */
-    private static Logger _logger=LogDomains.getLogger(CustomResourceDeployer.class, LogDomains.CORE_LOGGER);
+    private static Logger _logger=LogDomains.getLogger(CustomResourceDeployer.class, LogDomains.RSR_LOGGER);
 
     /**
      * {@inheritDoc}

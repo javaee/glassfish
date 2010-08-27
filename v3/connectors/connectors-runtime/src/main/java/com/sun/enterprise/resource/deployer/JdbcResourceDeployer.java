@@ -97,7 +97,7 @@ public class JdbcResourceDeployer implements ResourceDeployer {
     private static final StringManager localStrings =
             StringManager.getManager(JdbcResourceDeployer.class);
     // logger for this deployer
-    private static Logger _logger = LogDomains.getLogger(JdbcResourceDeployer.class, LogDomains.CORE_LOGGER);
+    private static Logger _logger = LogDomains.getLogger(JdbcResourceDeployer.class, LogDomains.RSR_LOGGER);
 
     /**
      * {@inheritDoc}
