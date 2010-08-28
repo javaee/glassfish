@@ -55,6 +55,9 @@ public class WLWebServicesTagNames {
     public static final String WSDL_PUBLISH_FILE = "wsdl-publish-file";
     public static final String WEBSERVICE_TYPE = "webservice-type";
     public static final String WEBSERVICE_SECURITY = "webservice-security";
+    public static final String SERVICE_ENDPOINT_ADDRESS = "service-endpoint-address";
+    public static final String WEBSERVICE_CONTEXTPATH = "webservice-contextpath";
+    public static final String WEBSERVICE_SERVICEURI="webservice-serviceuri";
     public static final String WSDL = "wsdl";
     public static final String WSDL_EXPOSED = "exposed";
     public static final String STREAM_ATTACHMENTS = "stream-attachments";

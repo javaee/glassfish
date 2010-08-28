@@ -102,6 +102,9 @@ class WLWebServiceEndpointNode extends DeploymentDescriptorNode {
         if (WLWebServicesTagNames.WSDL.equals(elementName)) {
             node = new WSDLNode(descriptor);
             node.setParentNode(this);
+        } else if (WLWebServicesTagNames.SERVICE_ENDPOINT_ADDRESS.equals(elementName)) {
+            node = new ServiceEndpointAddressNode(descriptor);
+            node.setParentNode(this);
         }
         return node;
 
@@ -203,4 +206,85 @@ class WLWebServiceEndpointNode extends DeploymentDescriptorNode {
         }
 
     }
+
+    /**
+     * This node represents
+     * <service-endpoint-address>
+     *  <webservice-contextpath/>
+     *  <webservice-serviceuri/>
+     * </service-endpoint-address>
+     * <p/>
+     * inside port-component
+     */
+    public static class ServiceEndpointAddressNode extends DeploymentDescriptorNode {
+        private final XMLElement tag =
+                new XMLElement(WLWebServicesTagNames.SERVICE_ENDPOINT_ADDRESS);
+        WebServiceEndpoint descriptor;
+
+        private String contextPath = "";
+
+        public ServiceEndpointAddressNode(WebServiceEndpoint descriptor) {
+            this.descriptor = descriptor;
+        }
+
+
+        protected XMLElement getXMLRootTag() {
+            return tag;
+        }
+
+        public Object getDescriptor() {
+            return descriptor;
+        }
+
+        protected Map getDispatchTable() {
+            Map table = super.getDispatchTable();
+            return table;
+        }
+
+        @Override
+        public void setElementValue(XMLElement element, String value) {
+            String elementName = element.getQName();
+            if (WLWebServicesTagNames.WEBSERVICE_CONTEXTPATH.equals(elementName)) {
+                //contextPath is ignored for servlet endpoints as they get it from web.xml
+                if(descriptor.implementedByEjbComponent()) {
+                    contextPath = value;
+                }
+            } else if (WLWebServicesTagNames.WEBSERVICE_SERVICEURI.equals(elementName)) {
+                String serviceuri =  elementName;
+                serviceuri = (serviceuri.startsWith("/")?"":"/") + serviceuri;
+                descriptor.setEndpointAddressUri(contextPath+serviceuri);
+
+            } else super.setElementValue(element, value);
+        }
+
+        public Node writeDescriptor(Node parent, WebServiceEndpoint descriptor) {
+            String ctxtPath;
+            String serviceUri;
+            String endpointAddressUri = descriptor.getEndpointAddressUri();
+            if (descriptor.implementedByEjbComponent()) {
+                ctxtPath = endpointAddressUri.substring(0, endpointAddressUri.lastIndexOf("/") - 1);
+                serviceUri = endpointAddressUri.substring(endpointAddressUri.lastIndexOf("/"));
+            } else {
+                //for servlet endpoint, use web application context root
+                ctxtPath = descriptor.getWebComponentImpl().getWebBundleDescriptor().getContextRoot();
+                serviceUri = endpointAddressUri;
+            }
+            Document doc = getOwnerDocument(parent);
+            Element serviceEndpointAddress = doc.createElement(WLWebServicesTagNames.SERVICE_ENDPOINT_ADDRESS);
+
+            Element ctxtPathEl = doc.createElement(WLWebServicesTagNames.WEBSERVICE_CONTEXTPATH);
+            ctxtPathEl.appendChild(doc.createTextNode(ctxtPath));
+            serviceEndpointAddress.appendChild(ctxtPathEl);
+
+            Element serviceuriEl = doc.createElement(WLWebServicesTagNames.WEBSERVICE_SERVICEURI);
+            serviceuriEl.appendChild(doc.createTextNode(serviceUri));
+            serviceEndpointAddress.appendChild(serviceuriEl);
+
+            parent.appendChild(serviceEndpointAddress);
+            return serviceEndpointAddress;
+
+        }
+
+    }
+    
 }
