@@ -40,15 +40,20 @@
 
 package com.sun.enterprise.deployment.node.runtime.web;
 
+import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
+import com.sun.enterprise.deployment.Role;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.Role;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.deployment.node.runtime.RuntimeBundleNode;
 import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.node.runtime.common.WLResourceDescriptionNode;
 import com.sun.enterprise.deployment.node.runtime.common.WLSecurityRoleAssignmentNode;
 import com.sun.enterprise.deployment.runtime.common.WLSecurityRoleAssignment;
+import com.sun.enterprise.deployment.runtime.common.ResourceRef;
+import com.sun.enterprise.deployment.runtime.web.SunWebApp;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import com.sun.enterprise.deployment.xml.TagNames;
 import org.w3c.dom.Element;
@@ -77,7 +82,7 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
         return Collections.unmodifiableList(systemIDs);
     }
 
-    WebBundleDescriptor descriptor=null;
+    WebBundleDescriptor descriptor = null;
         
     /** Creates new WLWebBundleRuntimeNode */
     public WLWebBundleRuntimeNode(WebBundleDescriptor descriptor) {
@@ -94,16 +99,18 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
      * Initialize the child handlers
      */
     protected void Init() {
-        registerElementHandler(new XMLElement(RuntimeTagNames.SERVLET_DESCRIPTOR),
-                WLServletDescriptorNode.class);
-        registerElementHandler(new XMLElement(RuntimeTagNames.CONTAINER_DESCRIPTOR),
-                WLContainerDescriptorNode.class);
+        registerElementHandler(new XMLElement(RuntimeTagNames.WL_SECURITY_ROLE_ASSIGNMENT),
+                WLSecurityRoleAssignmentNode.class);
+        registerElementHandler(new XMLElement(RuntimeTagNames.RESOURCE_DESCRIPTION),
+                WLResourceDescriptionNode.class);
         registerElementHandler(new XMLElement(RuntimeTagNames.SESSION_DESCRIPTOR),
                 WLSessionDescriptorNode.class);
         registerElementHandler(new XMLElement(RuntimeTagNames.JSP_DESCRIPTOR),
                 WLJspDescriptorNode.class);
-        registerElementHandler(new XMLElement(RuntimeTagNames.WL_SECURITY_ROLE_ASSIGNMENT),
-                WLSecurityRoleAssignmentNode.class);
+        registerElementHandler(new XMLElement(RuntimeTagNames.CONTAINER_DESCRIPTOR),
+                WLContainerDescriptorNode.class);
+        registerElementHandler(new XMLElement(RuntimeTagNames.SERVLET_DESCRIPTOR),
+                WLServletDescriptorNode.class);
     }
     
     /**
@@ -180,7 +187,18 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
                     }
                 }
             }
-        } else super.addDescriptor(newDescriptor);
+        } else if (newDescriptor instanceof ResourceRef) {
+            ResourceRef resourceRef = (ResourceRef) newDescriptor;
+            descriptor.getSunDescriptor().addResourceRef(resourceRef);
+            try {
+                ResourceReferenceDescriptor rrd = descriptor.getResourceReferenceByName(resourceRef.getResRefName());
+                rrd.setJndiName(resourceRef.getJndiName());
+            } catch (IllegalArgumentException iae) {
+                DOLUtils.getDefaultLogger().warning(iae.getMessage());
+            }
+        } else {
+            super.addDescriptor(newDescriptor);
+        }
     }
 
     /**
@@ -194,11 +212,22 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
         Element root = appendChildNS(parent, getXMLRootTag().getQName(),
                     TagNames.WL_WEB_APP_NAMESPACE);
 
+        SunWebApp sunWebApp = bundleDescriptor.getSunDescriptor();
+
         //security-role-assignment*
         List<WLSecurityRoleAssignment> wlRoleAssignments = bundleDescriptor.getApplication().getWlRoleAssignments();
         for (int i = 0; i < wlRoleAssignments.size(); i++) {
             WLSecurityRoleAssignmentNode sran = new WLSecurityRoleAssignmentNode();
             sran.writeDescriptor(root, RuntimeTagNames.WL_SECURITY_ROLE_ASSIGNMENT, wlRoleAssignments.get(i));
+        }
+
+        //resource-description*
+        ResourceRef[] resourceRefs = sunWebApp.getResourceRef();
+        if (resourceRefs != null && resourceRefs.length > 0) {
+            WLResourceDescriptionNode node = new WLResourceDescriptionNode();
+            for (ResourceRef resRef : resourceRefs) {
+                node.writeDescriptor(root, RuntimeTagNames.RESOURCE_DESCRIPTION, resRef);
+            }
         }
 
         // session-descriptor

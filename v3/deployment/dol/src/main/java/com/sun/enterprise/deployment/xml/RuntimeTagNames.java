@@ -325,11 +325,7 @@ public interface RuntimeTagNames extends TagNames {
 
 
     // Weblogic specific
-    // container-descriptor
-    public static final String CONTAINER_DESCRIPTOR = "container-descriptor";
-    public static final String PREFER_WEB_INF_CLASSES = "prefer-web-inf-classes";
-    public static final String INDEX_DIRECTORY_ENALBED = "index-directory-enabled";
-    public static final String INDEX_DIRECTORY_SORT_BY = "index-directory-sort-by";
+    public static final String RESOURCE_DESCRIPTION = "resource-description";
     // session-descriptor
     public static final String SESSION_DESCRIPTOR = "session-descriptor";
     public static final String TIMEOUT_SECS = "timeout-secs";
@@ -346,10 +342,6 @@ public interface RuntimeTagNames extends TagNames {
     public static final String URL_REWRITING_ENABLED = "url-rewriting-enabled";
     public static final String PERSISTENT_STORE_DIR = "persistent-store-dir";
     public static final String SAVE_SESSIONS_ENABLED = "save-sessions-enabled";
-    // servlet-descriptor
-    public static final String SERVLET_DESCRIPTOR = "servlet-descriptor";
-    public static final String RUN_AS_PRINCIPAL_NAME = "run-as-principal-name";
-
     // jsp-descriptor
     public static final String JSP_DESCRIPTOR = "jsp-descriptor";
     public static final String KEEPGENERATED = "keepgenerated";
@@ -370,4 +362,12 @@ public interface RuntimeTagNames extends TagNames {
     public static final String COMPRESS_HTML_TEMPLATE = "compress-html-template";
     public static final String OPTIMIZE_JAVA_EXPRESSION = "optimize-java-expression";
     public static final String RESOURCE_PROVIDER_CLASS = "resource-provider-class";
+    // container-descriptor
+    public static final String CONTAINER_DESCRIPTOR = "container-descriptor";
+    public static final String PREFER_WEB_INF_CLASSES = "prefer-web-inf-classes";
+    public static final String INDEX_DIRECTORY_ENALBED = "index-directory-enabled";
+    public static final String INDEX_DIRECTORY_SORT_BY = "index-directory-sort-by";
+    // servlet-descriptor
+    public static final String SERVLET_DESCRIPTOR = "servlet-descriptor";
+    public static final String RUN_AS_PRINCIPAL_NAME = "run-as-principal-name";
 }

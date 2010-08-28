@@ -100,6 +100,8 @@ public class RuntimeDescriptorFactory {
         register(new XMLElement(RuntimeTagNames.RESOURCE_ENV_REF), ResourceEnvRef.class);        
         register(new XMLElement(RuntimeTagNames.DEFAULT_RESOURCE_PRINCIPAL), DefaultResourcePrincipal.class);
         register(new XMLElement(RuntimeTagNames.CONSTRAINT_FIELD), ConstraintField.class);
+        // weblogic DD
+        register(new XMLElement(RuntimeTagNames.RESOURCE_DESCRIPTION), ResourceRef.class);
         
         // EJB
         register(new XMLElement(RuntimeTagNames.PM_DESCRIPTOR), IASPersistenceManagerDescriptor.class);
@@ -117,6 +119,7 @@ public class RuntimeDescriptorFactory {
         register(new XMLElement(RuntimeTagNames.SECURITY_ROLE_MAPPING), SecurityRoleMapping.class);
         register(new XMLElement(RuntimeTagNames.WL_SECURITY_ROLE_ASSIGNMENT), WLSecurityRoleAssignment.class);
         register(new XMLElement(RuntimeTagNames.VALVE), Valve.class);
+
     }
 
     /**
