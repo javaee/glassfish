@@ -145,7 +145,7 @@ public final class CreateHTTPLoadBalancerCommand extends LBCommandsBase
     @Param (optional=true, defaultValue="true")
     Boolean routecookie;
 
-    @Param (obsolete=true)
+    @Param (obsolete=true, optional=true)
     Boolean autoapplyenabled;
 
     @Param(optional=true, name="property", separator=':')
