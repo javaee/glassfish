@@ -1,3 +1,4 @@
+copyright-exclude
 deployment/schemas/
 deployment/dtds/
 connectors/descriptors/src/main/resources/glassfish/lib/dtds/
@@ -8,14 +9,21 @@ tests/community/web/jruby/helloapp/public/javascripts/
 osgi-javaee/osgi-jdbc/src/main/java/org/osgi/service/jdbc/DataSourceFactory.java
 admingui/common/src/main/resources/security/realms/checkpswd.js 
 admingui/common/src/main/resources/images/node.jsf
+admingui/war/src/main/webapp/3rd-party-license
 /META-INF/MANIFEST.MF
 /META-INF/services/
+/README
 packager/legal/
 packager/nucleus-base/legal/
 packager/CDDL+GPL.txt
 packager/ApacheLicense.txt
 packager/JAVAHELP_BCL.txt
 web/weld-integration/manifest.mf
+common/common-util/src/test/resources/process/lots_o_text.txt
+common/annotation-framework/src/main/java/org/glassfish/apf/skip-annotation-class-list 
+appclient/client/acc/src/test/resources/topSecret.stuff
+admin/cli/src/main/resources/supported-legacy-command-names
+admin/cli/src/main/resources/unsupported-legacy-command-names
 .gif
 .jpg
 .png
@@ -24,3 +32,7 @@ web/weld-integration/manifest.mf
 .jar
 .zip
 .war
+.sql
+.jks
+.json
+.class
