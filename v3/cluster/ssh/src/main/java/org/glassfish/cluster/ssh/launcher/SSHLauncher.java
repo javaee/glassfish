@@ -315,6 +315,11 @@ public class SSHLauncher {
         return sftpClient;
     }
 
+    public SCPClient getSCPClient() throws IOException {
+        openConnection();
+        return new SCPClient(connection);
+    }
+
     public String expandPasswordAlias(String alias) {
 
         String expandedPassword = null;
