@@ -41,7 +41,6 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
-import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.Nodes;
@@ -53,11 +52,13 @@ import org.glassfish.api.ActionReport;
 import com.sun.enterprise.universal.process.LocalAdminCommand;
 import com.sun.enterprise.util.io.InstanceDirs;
 import java.io.File;
+import java.util.logging.Level;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.CommandRunner.CommandInvocation;
 import org.glassfish.cluster.ssh.connect.RemoteConnectHelper;
+import org.glassfish.internal.api.ServerContext;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import java.util.logging.Logger;
@@ -94,6 +95,9 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
 
     @Inject
     private ServerEnvironment env;
+
+    @Inject
+    private ServerContext serverContext;
 
     @Param(name="node", alias="nodeagent")
     String node;
@@ -291,13 +295,28 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
          */
         final File nodeDirFile = (nodeDir != null ?
             new File(nodeDir) :
-            defaultNodeDirFile());
+            defaultLocalNodeDirFile());
         InstanceDirs instanceDirs = new InstanceDirs(nodeDirFile.getParent(), nodeDirFile.getName(), instance);
         return instanceDirs.getInstanceDir();
     }
 
-    private File defaultNodeDirFile() {
-        return new File(new File(installDir, "nodes"), node);
+    private File defaultLocalNodeDirFile() {
+        /*
+         * The "nodes" directory we want to use is a child of
+         * the install directory.
+         *
+         * The installDir field contains the installation directory which the
+         * administrator specified, if s/he specified one, when the target node
+         * was first created.  It is null if the administrator did not specify
+         * an installation directory for the node.  In that case we should
+         * use the DAS's install directory (because this method applies in the
+         * local instance case).
+         */
+        final File nodeParentDir = (
+                installDir == null
+                    ? serverContext.getInstallRoot()
+                    : new File(installDir));
+        return new File(new File(nodeParentDir, "nodes"), node);
     }
 
     private File getDomainInstanceDir() {
@@ -355,6 +374,7 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
     }
 
     /**
+     *
      * Delivers bootstrap files for secure admin locally, because the instance
      * is on the same system as the DAS (and therefore on the same system where
      * this command is running).
@@ -373,7 +393,7 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
             return 0;
         } catch (Exception ex) {
             String msg = Strings.get("create.instance.local.boot.failed", instance, node, nodeHost);
-            logger.severe(msg);
+            logger.log(Level.SEVERE, msg, ex);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);
             return 1;
