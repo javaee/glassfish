@@ -108,7 +108,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
     }
 
 
-    private void createStandAloneInstance(String instanceName){
+    public void createStandAloneInstance(String instanceName){
         clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", TRIGGER_INSTANCES_PAGE);
         clickAndWait("propertyForm:instancesTable:topActionsGroup1:newButton", TRIGGER_NEW_PAGE );
         selenium.type("propertyForm:propertySheet:propertSectionTextField:NameTextProp:NameText", instanceName);
