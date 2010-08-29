@@ -21,11 +21,14 @@ cd "$APS_HOME"
 (jps |grep Main |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
 cd "$APS_HOME/devtests/deployment"
 
+antTarget="all-ee"
 if [ -z "$DEPL_TARGET"]
 then
     $S1AS_HOME/bin/asadmin start-domain
+    antTarget="all"
 fi
-time ant all
+
+time ant $antTarget
 
 if [ -z "$DEPL_TARGET"]
 then
