@@ -84,6 +84,9 @@ public class GlassFishMainActivator implements BundleActivator {
         if (installRoot == null) {
             throw new RuntimeException("Property named " + Constants.INSTALL_ROOT_PROP_NAME + " is not set.");
         }
+        if (!new File(installRoot).exists()) {
+            throw new RuntimeException("No such directory: [" + installRoot + "]");
+        }
         properties.setProperty(Constants.INSTALL_ROOT_PROP_NAME,
                 installRoot);
         String instanceRoot = properties.getProperty(Constants.INSTANCE_ROOT_PROP_NAME);
