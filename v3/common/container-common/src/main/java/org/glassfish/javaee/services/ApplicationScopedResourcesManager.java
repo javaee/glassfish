@@ -167,7 +167,7 @@ public class ApplicationScopedResourcesManager implements PostStartup, PostConst
                 } else if (resource instanceof ResourcePool) {
                     // ignore, as they are loaded lazily
                 } else {
-                    // only other resource left is RAC
+                    // only other resources left are RAC, CWSM
                     try {
                         getResourceDeployer(resource).deployResource(resource, applicationName, moduleName);
                     } catch (Exception e) {
