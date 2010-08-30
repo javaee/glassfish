@@ -49,6 +49,7 @@ import javax.transaction.TransactionManager;
 import javax.transaction.TransactionSynchronizationRegistry;
 import javax.transaction.UserTransaction;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
@@ -92,7 +93,12 @@ public class JTAExtender implements Extender {
             try {
                 InitialContext ic = getInitialContext();
                 Object target = ic.lookup(jndiName);
-                return method.invoke(target, args);
+                try {
+                    return method.invoke(target, args);
+                } catch (InvocationTargetException e) {
+                    // We need to unwrap the real exception and throw it
+                    throw e.getCause();
+                }
             } catch (NamingException e) {
                 throw new RuntimeException("JTA Service is not available.", e);
             }
