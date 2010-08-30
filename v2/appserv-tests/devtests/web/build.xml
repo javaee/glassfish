@@ -514,6 +514,7 @@
         <ant dir="weblogicDD/sessionPreserveAcrossRedeployDeclarative" target="all"/>
         <ant dir="weblogicDD/dirListing" target="all"/>
         <ant dir="weblogicDD/jspDescriptor" target="all"/>
+        <ant dir="weblogicDD/runAsPrincipalName" target="all"/>
     </target>
 
     <target name="clustering" depends="init-report">
