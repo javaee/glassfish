@@ -53,16 +53,10 @@
             <arg value="${http.host}"/>
             <arg value="${http.port}"/>
             <arg value="${https.port}"/>
-            <arg value="true"/>
             <arg value="${truststore.db.file}"/>
         </java>
-        <java classname="wrongtransport.HttpRedirectElement" classpathref="reportbuilder.class.path">
-            <arg value="${http.host}"/>
-            <arg value="${http.port}"/>
-            <arg value="${https.port}"/>
-            <arg value="false"/>
-            <arg value="${truststore.db.file}"/>
-        </java>
+
+        <!-- old style redirects -->
         <java classname="wrongtransport.WrongTransport" classpathref="reportbuilder.class.path">
           <arg value="${http.host}"/>
           <arg value="${http.port}"/>

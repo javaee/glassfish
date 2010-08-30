@@ -56,23 +56,29 @@ import com.sun.grizzly.config.HttpProtocolFinder;
 
 public class HttpRedirectElement extends BaseDevTest {
     private String targetUrl;
+    private String httpPort;
+    private String httpsPort;
     private boolean secureRedirect;
+    private boolean samePort;
     private SSLSocketFactory ssf;
 
     public HttpRedirectElement(final String host, final String port, final String securePort, boolean secureRedirect,
-        final String path) {
+        final boolean samePort, final String path) {
+        httpPort = port;
+        httpsPort = securePort;
         this.secureRedirect = secureRedirect;
+        this.samePort = samePort;
         stat.getSuite().setName(getTestName());
         stat.getSuite().setDescription(getTestDescription());
         createPUElements();
         try {
             String url;
             if (secureRedirect) {
-                targetUrl = "https://" + host + ":" + port + "/";
-                url = "http://" + host + ":" + port + "/";
+                targetUrl = String.format("https://%s:%s/", host, samePort ? port : securePort);
+                url = String.format("http://%s:%s/", host, port);
             } else {
-                targetUrl = "http://" + host + ":" + securePort + "/";
-                url = "https://" + host + ":" + securePort + "/";
+                targetUrl = String.format("http://%s:%s/", host, samePort ? securePort : port);
+                url = String.format("https://%s:%s/", host, securePort);
                 ssf = getSSLSocketFactory(path);
             }
             HttpURLConnection connection = getConnection(url);
@@ -134,21 +140,24 @@ public class HttpRedirectElement extends BaseDevTest {
 
     @Override
     protected String getTestName() {
-        System.out.println("HttpRedirectElement.getTestName: secureRedirect = " + secureRedirect);
-        final String name = secureRedirect ? "HttpToHttpsRedirectSamePort" : "HttpsToHttpRedirectSamePort";
-        System.out.println("HttpRedirectElement.getTestName: name = " + name);
-        return name;
+        return String.format("%sRedirectOn%sPort",
+            secureRedirect ? "HttpToHttps" : "HttpsToHttp",
+            samePort ? "Same" : "Different");
     }
 
     @Override
     protected String getTestDescription() {
-        return "Http " + (secureRedirect ? "-->" : "<--")
-            + " Https redirection on the same port using new http-redirect elements";
+        return String.format("%s redirection on %s port using http-redirect elements",
+            secureRedirect ? "HTTP to HTTPS" : "HTTPS to HTTP",
+            samePort ? "the same" : "different");
     }
 
     public static void main(String args[]) throws Exception {
-        System.out.println("HttpRedirectElement.main: args = " + Arrays.toString(args));
-        new HttpRedirectElement(args[0], args[1], args[2], Boolean.valueOf(args[3]), args[4]);
+        for(boolean secure : new boolean[] {true, false}) {
+            for(boolean same : new boolean[] {true, false}) {
+                new HttpRedirectElement(args[0], args[1], args[2], secure, same, args[3]);
+            }
+        }
     }
 
     private void createPUElements() {
@@ -157,7 +166,14 @@ public class HttpRedirectElement extends BaseDevTest {
         report("create-http-redirect-protocol", asadmin("create-protocol",
             "--securityenabled", String.valueOf(!secureRedirect),
             redirectProtocol));
+        String port;
+        if(samePort) {
+            port = "-1";
+        } else {
+            port = secureRedirect ? httpsPort : httpPort;
+        }
         report("create-http-redirect", asadmin("create-http-redirect",
+            "--redirect-port", port,
             "--secure-redirect", String.valueOf(secureRedirect),
             redirectProtocol));
         if (!secureRedirect) {
