@@ -260,7 +260,7 @@ public class InstanceHandler {
         }
     }
 
-    private static final String PROPERTY_VALUE = "Value";
+    private static final String PROPERTY_VALUE = "value";
 }
         
  

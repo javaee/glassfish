@@ -573,9 +573,8 @@ public class SecurityHandler {
             String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
                                                                 "/security-service/auth-realm/" + realmName + "/list-group-names?username=" + userName;
             Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "get", handlerCtx);
-            List<HashMap> children = (List<HashMap>)((Map<String, Object>) responseMap.get("data")).get("extraProperties");
-            HashMap values = (HashMap)((ArrayList)((HashMap)children.get(3)).get("list")).get(0);
-            String name  = (String) ((HashMap)((List<HashMap>)((HashMap)((ArrayList) values.get("map")).get(0)).get("entry")).get(0)).get("value");
+            HashMap children = (HashMap)((Map<String, Object>) responseMap.get("data")).get("extraProperties");
+            String name = (String)((List)children.get("groups")).get(0);
             return name;
         }catch(Exception ex){
             ex.printStackTrace();
