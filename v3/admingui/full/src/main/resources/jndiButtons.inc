@@ -75,7 +75,7 @@
                 <!command
                     updateJndiResourceAttrs(attrMap="#{attrMap}", entries="#{pageSession.valueMap['resType']}", classnameOption="#{classnameOption}", resType="#{requestScope.resType}" );
                     mapPut(map="#{pageSession.valueMap}" key="resType" value="#{requestScope.resType}")
-                    mapPut(map="#{pageSession.valueMap}" key="Target" value="domain")
+                    mapPut(map="#{pageSession.valueMap}" key="target" value="domain")
                     gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}"
                         attrs="#{pageSession.valueMap}"
                         convertToFalse="#{pageSession.convertToFalseList}" );
