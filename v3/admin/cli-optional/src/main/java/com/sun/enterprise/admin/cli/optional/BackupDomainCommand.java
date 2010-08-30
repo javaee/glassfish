@@ -75,7 +75,7 @@ public final class BackupDomainCommand extends BackupCommands {
     @Param(optional = true)
     String backupdir;
 
-    @Param(optional=true)
+    @Param(name="_force",optional=true)
     String force;
 
     private static final LocalStringsImpl strings =
