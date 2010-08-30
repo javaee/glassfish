@@ -82,7 +82,7 @@ public class CreateJavaMailResourceTest extends ConfigApiTest {
     @Before
     public void setUp() {
         habitat = getHabitat();
-        resources = habitat.getComponent(Resources.class);
+        resources = habitat.getComponent(Domain.class).getResources();
         assertTrue(resources != null);
         parameters = new ParameterMap();
         context = new AdminCommandContext(

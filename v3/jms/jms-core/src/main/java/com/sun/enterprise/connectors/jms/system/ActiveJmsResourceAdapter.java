@@ -2038,7 +2038,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
     }
 
     private Resources getAllResources(){
-        return habitat.getComponent(Resources.class);
+        return habitat.getComponent(Domain.class).getResources();
     }
 
     private AdminService getAdminService() {

@@ -91,7 +91,7 @@ public class ResourceProviderService implements ConfigListener {
         this.habitat = habitat;
         this.bundleContext = bundleContext;
         servers = habitat.getComponent(Servers.class);
-        resources = habitat.getComponent(Resources.class);
+        resources = habitat.getComponent(Domain.class).getResources();
         postConstruct();
     }
 

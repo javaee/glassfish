@@ -40,17 +40,14 @@
 
 package com.sun.enterprise.resource.pool.monitor;
 
+import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.resource.common.PoolInfo;
-import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.listener.PoolLifeCycle;
 import com.sun.enterprise.resource.pool.PoolLifeCycleListenerRegistry;
 import com.sun.enterprise.resource.pool.PoolLifeCycleRegistry;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
-import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
-import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
-import com.sun.enterprise.config.serverbeans.ResourcePool;
 
 import java.util.*;
 import java.util.Map;
@@ -164,7 +161,7 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
     }
 
     public Resources getResources(){
-        return habitat.getComponent(Resources.class);
+        return habitat.getComponent(Domain.class).getResources();
     }
 
     public ConnectionPoolProbeProviderUtil getProbeProviderUtil(){

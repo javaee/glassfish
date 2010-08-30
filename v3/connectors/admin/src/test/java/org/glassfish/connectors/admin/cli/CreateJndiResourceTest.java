@@ -83,7 +83,7 @@ public class CreateJndiResourceTest extends ConfigApiTest {
     @Before
     public void setUp() {
         habitat = getHabitat();
-        resources = habitat.getComponent(Resources.class);
+        resources = habitat.getComponent(Domain.class).getResources();
         server = habitat.getComponent(Server.class);
         parameters = new ParameterMap();
         context = new AdminCommandContext(

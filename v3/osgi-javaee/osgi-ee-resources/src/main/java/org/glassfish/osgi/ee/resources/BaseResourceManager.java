@@ -41,6 +41,7 @@
 package org.glassfish.osgi.ee.resources;
 
 import com.sun.enterprise.config.serverbeans.BindableResource;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.ResourceRef;
 import com.sun.enterprise.config.serverbeans.Resources;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
@@ -110,7 +111,7 @@ public class BaseResourceManager {
     }
 
     protected Resources getResources() {
-        return habitat.getComponent(Resources.class);
+        return habitat.getComponent(Domain.class).getResources();
     }
 
     protected ResourceHelper getResourceHelper() {

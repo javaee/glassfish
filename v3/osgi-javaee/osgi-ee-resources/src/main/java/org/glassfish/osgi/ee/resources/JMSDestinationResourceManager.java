@@ -76,7 +76,7 @@ public class JMSDestinationResourceManager extends BaseResourceManager implement
      * @param context bundle-context
      */
     public void registerJmsResources(BundleContext context) {
-        Resources resources = getHabitat().getComponent(Resources.class);
+        Resources resources = getHabitat().getComponent(Domain.class).getResources();
         Collection<AdminObjectResource> administeredObjectResources = resources.getResources(AdminObjectResource.class);
         for (AdminObjectResource resource : administeredObjectResources) {
             if (isJmsResource(resource)) {

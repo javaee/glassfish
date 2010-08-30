@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.configapi.tests;
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.jvnet.hk2.config.TransactionFailure;
@@ -75,7 +76,7 @@ public class ConcurrentModificationsTest extends ConfigApiTest {
     public void collectionTest() throws TransactionFailure {
 
         Habitat habitat = super.getHabitat();
-        final Resources resources = habitat.getComponent(Resources.class);
+        final Resources resources = habitat.getComponent(Domain.class).getResources();
         assertTrue(resources!=null);
 
         ConfigSupport.apply(new SingleConfigCode<Resources>() {

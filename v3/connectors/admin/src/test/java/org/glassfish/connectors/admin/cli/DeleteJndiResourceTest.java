@@ -81,7 +81,7 @@ public class DeleteJndiResourceTest extends ConfigApiTest {
     @Before
     public void setUp() {
         habitat = getHabitat();
-        resources = habitat.getComponent(Resources.class);
+        resources = habitat.getComponent(Domain.class).getResources();
         parameters = new ParameterMap();
         cr = habitat.getComponent(CommandRunner.class);
         context = new AdminCommandContext(

@@ -41,6 +41,7 @@
 package org.glassfish.connectors.admin.cli;
 
 import com.sun.enterprise.config.serverbeans.CustomResource;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
@@ -84,7 +85,7 @@ public class ListCustomResourcesTest extends ConfigApiTest {
         context = new AdminCommandContext(
                 LogDomains.getLogger(ListCustomResourcesTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter());
-        Resources resources = habitat.getComponent(Resources.class);
+        Resources resources = habitat.getComponent(Domain.class).getResources();
         assertTrue(resources != null);
         for (Resource resource : resources.getResources()) {
             if (resource instanceof CustomResource) {

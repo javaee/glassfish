@@ -341,7 +341,6 @@ public class AppSpecificConnectorClassLoaderUtil {
                     com.sun.enterprise.config.serverbeans.Application.class);
             Resources resources = null;
             if(app != null){
-                //Module module = app.getModule(moduleName);
                 Module module = null;
                 List<Module> modules = app.getModule();
                 for(Module m : modules){
@@ -351,7 +350,6 @@ public class AppSpecificConnectorClassLoaderUtil {
                     }
                 }
                 if(module != null){
-                    //resources = module.getResources();
                     resources = appInfo.getTransientAppMetaData(module.getName()+"-resources", Resources.class);
                 }
             }
@@ -376,11 +374,11 @@ public class AppSpecificConnectorClassLoaderUtil {
                     resourceName = ((WorkSecurityMap)res).getName();
                 }
                 if(resourceName != null){
-                    if(!(resourceName.startsWith("java:module/") /*|| resourceName.startsWith("java:global/")*/)){
-                        resourceName = "java:module/" + resourceName;
+                    if(!(resourceName.startsWith(ConnectorConstants.JAVA_MODULE_SCOPE_PREFIX) /*|| resourceName.startsWith("java:global/")*/)){
+                        resourceName = ConnectorConstants.JAVA_MODULE_SCOPE_PREFIX + resourceName;
                     }
-                    if(!(name.startsWith("java:module/") /*|| name.startsWith("java:global/")*/)){
-                        name = "java:module/" + name;
+                    if(!(name.startsWith(ConnectorConstants.JAVA_MODULE_SCOPE_PREFIX) /*|| name.startsWith("java:global/")*/)){
+                        name = ConnectorConstants.JAVA_MODULE_SCOPE_PREFIX + name;
                     }
                     if(name.equals(resourceName)){
                         foundRes = res;
@@ -443,7 +441,7 @@ public class AppSpecificConnectorClassLoaderUtil {
     }
 
     private Resources getResources() {
-        return habitat.getComponent(Resources.class);
+        return habitat.getComponent(Domain.class).getResources();
     }
 
     private Applications getApplications() {

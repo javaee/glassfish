@@ -40,12 +40,7 @@
 
 package org.glassfish.jdbc.admin.cli;
 
-import com.sun.enterprise.config.serverbeans.JdbcResource;
-import com.sun.enterprise.config.serverbeans.Resource;
-import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.ResourceRef;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.Servers;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.logging.LogDomains;
@@ -78,7 +73,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 public class CreateJdbcResourceTest extends ConfigApiTest {
     // Get Resources config bean
     Habitat habitat = Utils.instance.getHabitat(this);
-    private Resources resources = habitat.getComponent(Resources.class);
+    private Resources resources = habitat.getComponent(Domain.class).getResources();
     private CreateJdbcResource command = null;
     private ParameterMap parameters = new ParameterMap();
     private AdminCommandContext context = null;

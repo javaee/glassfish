@@ -40,6 +40,7 @@
 
 package org.glassfish.jdbc.admin.cli;
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.Resources;
@@ -71,7 +72,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 //@Ignore // temporarily disabled
 public class ListJdbcResourcesTest extends ConfigApiTest {
     private Habitat habitat = Utils.instance.getHabitat(this);
-    private Resources resources = habitat.getComponent(Resources.class);
+    private Resources resources = habitat.getComponent(Domain.class).getResources();
     private int origNum = 0;
     private ParameterMap parameters = new ParameterMap();
     CreateJdbcResource createCommand = null;

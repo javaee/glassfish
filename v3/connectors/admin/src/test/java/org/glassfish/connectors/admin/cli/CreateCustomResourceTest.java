@@ -84,7 +84,7 @@ public class CreateCustomResourceTest extends ConfigApiTest {
     @Before
     public void setUp() {
         parameters = new ParameterMap();
-        resources = habitat.getComponent(Resources.class);
+        resources = habitat.getComponent(Domain.class).getResources();
         assertTrue(resources != null);
         command = habitat.getComponent(CreateCustomResource.class);
         assertTrue(command != null);

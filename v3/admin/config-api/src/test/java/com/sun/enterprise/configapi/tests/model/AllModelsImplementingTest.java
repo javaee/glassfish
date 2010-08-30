@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.configapi.tests.model;
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.configapi.tests.ConfigApiTest;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Resources;
@@ -67,7 +68,7 @@ public class AllModelsImplementingTest extends ConfigApiTest {
     public void checkResources() throws ClassNotFoundException {
 
         Habitat habitat = getHabitat();
-        Resources resources = habitat.getComponent(Resources.class);
+        Resources resources = habitat.getComponent(Domain.class).getResources();
         Dom dom = Dom.unwrap(resources);
         List <ConfigModel> models = dom.document.getAllModelsImplementing(Resource.class);
         for (ConfigModel model : models) {

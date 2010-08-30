@@ -1365,7 +1365,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     }
 
     private Resources getResources(){
-        return habitat.getComponent(Resources.class);
+        return habitat.getComponent(Domain.class).getResources();
     }
 
     /**

@@ -57,6 +57,7 @@ import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 
 /**
@@ -76,7 +77,7 @@ public class ListJdbcResources implements AdminCommand {
     private String target ;
     
     @Inject
-    private JdbcResource[] jdbcResources;
+    private Domain domain;
 
     @Inject
     private BindableResourcesHelper bindableResourcesHelper;
@@ -95,8 +96,9 @@ public class ListJdbcResources implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         try {
-            ArrayList<String> list = jdbcMgr.list(jdbcResources);
-            for (String jndiName : list) {
+            Collection<JdbcResource> jdbcResources = domain.getResources().getResources(JdbcResource.class);
+            for (JdbcResource jdbcResource : jdbcResources) {
+                String jndiName = jdbcResource.getJndiName();
                 if(bindableResourcesHelper.resourceExists(jndiName, target)){
                     ActionReport.MessagePart part = report.getTopMessagePart().addChild();
                     part.setMessage(jndiName);

@@ -67,7 +67,7 @@ public class JDBCResourceManager extends BaseResourceManager implements Resource
      * Exposes them as OSGi service by contract "javax.sql.DataSource"
      */
     private void registerJdbcResources(BundleContext context) {
-        Resources resources = getHabitat().getComponent(Resources.class);
+        Resources resources = getHabitat().getComponent(Domain.class).getResources();
         Collection<JdbcResource> jdbcResources = resources.getResources(JdbcResource.class);
         for (JdbcResource resource : jdbcResources) {
             ResourceRef resRef = getResourceHelper().getResourceRef(resource.getJndiName());
