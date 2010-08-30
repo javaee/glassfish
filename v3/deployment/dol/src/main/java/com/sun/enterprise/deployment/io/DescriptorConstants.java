@@ -95,7 +95,7 @@ public interface DescriptorConstants {
     String EJB_JAR_ENTRY = "META-INF/ejb-jar.xml";
 
    /** The name of the ejb deployment descriptor entry inside a war. */
-    String EJB_IN_WAR_ENTRY = "WEAB-INF/ejb-jar.xml";
+    String EJB_IN_WAR_ENTRY = "WEB-INF/ejb-jar.xml";
 
     /** The name of the Sun deployment descriptor entry in ejb module jar. */
     String S1AS_EJB_DD_ENTRY="META-INF"+File.separator+S1AS_PREFIX+"ejb-jar.xml";
