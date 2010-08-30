@@ -40,6 +40,7 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.admin.cli.resources.BindableResourcesHelper;
 import org.glassfish.api.Param;
@@ -58,12 +59,15 @@ import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.ConnectorResource;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
+import java.util.Collection;
+
 
 /**
  * List Connector Resources command
  * 
  */
-@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTERED_INSTANCE })
+@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE,
+        CommandTarget.CLUSTERED_INSTANCE })
 @ExecuteOn(value={RuntimeType.DAS})
 @Service(name="list-connector-resources")
 @Scoped(PerLookup.class)
@@ -73,7 +77,7 @@ public class ListConnectorResources implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListConnectorResources.class);    
  
     @Inject
-    private ConnectorResource[] connectorResources;
+    private Domain domain;
 
     @Param(primary = true, optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
     private String target ;
@@ -92,6 +96,8 @@ public class ListConnectorResources implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         try {
+            Collection<ConnectorResource> connectorResources =
+                    domain.getResources().getResources(ConnectorResource.class);
             for (ConnectorResource resource : connectorResources) {
                 if(bindableResourcesHelper.resourceExists(resource.getJndiName(), target)){
                     ActionReport.MessagePart part = report.getTopMessagePart().addChild();

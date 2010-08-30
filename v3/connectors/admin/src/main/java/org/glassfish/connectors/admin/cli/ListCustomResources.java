@@ -40,6 +40,7 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.admin.cli.resources.BindableResourcesHelper;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -58,6 +59,7 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.glassfish.api.Param;
 
@@ -83,7 +85,7 @@ public class ListCustomResources implements AdminCommand {
     private BindableResourcesHelper bindableResourcesHelper;
 
     @Inject
-    private CustomResource[] customResources;
+    private Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -97,7 +99,8 @@ public class ListCustomResources implements AdminCommand {
 
         try {
             List<String> list = new ArrayList<String>();
-
+            Collection<CustomResource> customResources =
+                    domain.getResources().getResources(CustomResource.class);
             for (CustomResource customResource : customResources) {
                 if(bindableResourcesHelper.resourceExists(customResource.getJndiName(), target)){
                     list.add(customResource.getJndiName());

@@ -40,6 +40,7 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.admin.cli.resources.BindableResourcesHelper;
 import org.glassfish.api.Param;
@@ -59,6 +60,7 @@ import com.sun.enterprise.config.serverbeans.AdminObjectResource;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 
 /**
@@ -81,7 +83,7 @@ public class ListAdminObjects implements AdminCommand {
     private BindableResourcesHelper bindableResourcesHelper;
 
     @Inject
-    private AdminObjectResource[] adminObjects;
+    private Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -96,6 +98,8 @@ public class ListAdminObjects implements AdminCommand {
         //TODO 3.1 - support for cluster-config ?
         try {
             ArrayList<String> list = new ArrayList<String>();
+            Collection<AdminObjectResource> adminObjects =
+                    domain.getResources().getResources(AdminObjectResource.class);
             for (AdminObjectResource r : adminObjects) {
                 if(bindableResourcesHelper.resourceExists(r.getJndiName(), target)){
                     list.add(r.getJndiName());

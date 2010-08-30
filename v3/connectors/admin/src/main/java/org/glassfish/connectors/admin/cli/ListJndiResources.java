@@ -40,6 +40,7 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.ExternalJndiResource;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -59,6 +60,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -81,7 +83,7 @@ public class ListJndiResources implements AdminCommand {
     private BindableResourcesHelper bindableResourcesHelper;
 
     @Inject
-    private ExternalJndiResource[] jndiResources;
+    private Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -95,7 +97,8 @@ public class ListJndiResources implements AdminCommand {
 
         try {
             List<String> list = new ArrayList<String>();
-
+            Collection<ExternalJndiResource> jndiResources =
+                    domain.getResources().getResources(ExternalJndiResource.class);
             for (ExternalJndiResource jndiResource : jndiResources) {
                 if(bindableResourcesHelper.resourceExists(jndiResource.getJndiName(), target)){
                     list.add(jndiResource.getJndiName());

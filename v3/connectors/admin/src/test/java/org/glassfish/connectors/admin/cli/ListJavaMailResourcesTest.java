@@ -41,6 +41,7 @@
 package org.glassfish.connectors.admin.cli;
 
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.MailResource;
 import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.Resources;
@@ -84,7 +85,7 @@ public class ListJavaMailResourcesTest extends ConfigApiTest {
         parameters = new ParameterMap();
         cr = habitat.getComponent(CommandRunner.class);
         assertTrue(cr != null);
-        Resources resources = habitat.getComponent(Resources.class);
+        Resources resources = habitat.getComponent(Domain.class).getResources();
         context = new AdminCommandContext(
                 LogDomains.getLogger(ListJavaMailResourcesTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter());

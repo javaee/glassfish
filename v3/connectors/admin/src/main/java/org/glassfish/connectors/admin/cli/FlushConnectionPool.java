@@ -83,9 +83,6 @@ public class FlushConnectionPool implements AdminCommand {
     private ConnectionPoolUtil poolUtil;
 
     @Inject
-    private ApplicationRef[] applicationRefs;
-
-    @Inject
     private ConnectorRuntime _runtime;
 
     public void execute(AdminCommandContext context) {

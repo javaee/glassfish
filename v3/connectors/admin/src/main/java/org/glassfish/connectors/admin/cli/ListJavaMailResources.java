@@ -40,6 +40,7 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.admin.cli.resources.BindableResourcesHelper;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -58,6 +59,7 @@ import com.sun.enterprise.config.serverbeans.MailResource;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -81,7 +83,7 @@ public class ListJavaMailResources implements AdminCommand {
     private BindableResourcesHelper bindableResourcesHelper;
 
     @Inject
-    private MailResource[] mailResources;
+    private Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -95,7 +97,8 @@ public class ListJavaMailResources implements AdminCommand {
 
         try {
             List<String> list = new ArrayList<String>();
-
+            Collection<MailResource> mailResources =
+                    domain.getResources().getResources(MailResource.class);
             for (MailResource mailResource : mailResources) {
                 if(bindableResourcesHelper.resourceExists(mailResource.getJndiName(), target)){
                     list.add(mailResource.getJndiName());

@@ -40,6 +40,7 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -57,6 +58,7 @@ import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.ResourceAdapterConfig;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -88,7 +90,7 @@ public class ListResourceAdapterConfigs implements AdminCommand {
     private String target ;
 
     @Inject
-    private ResourceAdapterConfig[] resourceAdapterConfigs;
+    private Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -103,6 +105,8 @@ public class ListResourceAdapterConfigs implements AdminCommand {
         try {
             HashMap<String, List<Property>> raMap = new HashMap<String, List<Property>>();
             boolean raExists = false;
+            Collection<ResourceAdapterConfig> resourceAdapterConfigs =
+                    domain.getResources().getResources(ResourceAdapterConfig.class);
             for (ResourceAdapterConfig r : resourceAdapterConfigs) {
                 if (raName != null && !raName.isEmpty()) {
                     if (r.getResourceAdapterName().equals(raName)) {

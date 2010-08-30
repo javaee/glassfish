@@ -110,9 +110,11 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
     private Domain domain;
 
     //Listen to config changes of resource refs.
-    @Inject
-    private ResourceRef[] resourceRefs;
-    
+    //@Inject
+    //private ResourceRef[] resourceRefs;
+    //private Server server;
+
+
     public void postConstruct() {
         bindConnectorDescriptors();
         deployResources(allResources.getResources());
@@ -161,7 +163,7 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
             } else if (resource instanceof ResourcePool) {
                 // ignore, as they are loaded lazily
             } else{
-                // only other resource left is RAC
+                // only other resource types left are RAC, CWSM
                 try{
                     getResourceDeployer(resource).deployResource(resource);
                 }catch(Exception e){
@@ -387,7 +389,7 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
             } else if (instance instanceof ResourcePool) {
                 //ignore - as pools are handled lazily
             } else if (instance instanceof Resource) {
-                //only resource type left is RAC and CWSM
+                //only resource type left are RAC and CWSM
                 try {
                     getResourceDeployer(instance).deployResource(instance);
                 } catch (Exception e) {
@@ -459,11 +461,17 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
     }
 
     private void addListenerToResourceRefs() {
-        for (ResourceRef ref : resourceRefs) {
+        for (ResourceRef ref : getResourceRefs()) {
             addListenerToResource(ref);
         }
     }
-    
+
+    private List<ResourceRef> getResourceRefs() {
+        //Instead of injecting ResourceRef[] config array (which will inject all resource-refs in domain.xml
+        //including the ones in other server instances), get appropriate instance's resource-refs alone.
+        return  domain.getServerNamed(environment.getInstanceName()).getResourceRef();
+    }
+
     /**
      * Add listener to a generic resource
      * Used in the case of create asadmin command when listeners have to
@@ -507,7 +515,7 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
      * Invoked from preDestroy().
      */
     private void removeListenerForResourceRefs() {
-        for (ResourceRef ref : resourceRefs) {
+        for (ResourceRef ref : getResourceRefs()) {
             removeListenerForResource(ref);
         }
     }

@@ -40,6 +40,7 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
@@ -60,6 +61,7 @@ import com.sun.enterprise.config.serverbeans.WorkSecurityMap;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.beans.PropertyVetoException;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -86,7 +88,7 @@ public class DeleteConnectorWorkSecurityMap implements AdminCommand {
     private Resources resources;
 
     @Inject
-    private WorkSecurityMap[] workSecurityMaps;
+    private Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -111,6 +113,8 @@ public class DeleteConnectorWorkSecurityMap implements AdminCommand {
             // delete connector-work-security-map
             ConfigSupport.apply(new SingleConfigCode<Resources>() {
 
+                Collection<WorkSecurityMap> workSecurityMaps =
+                        domain.getResources().getResources(WorkSecurityMap.class);
                 public Object run(Resources param) throws PropertyVetoException,
                         TransactionFailure {
                     for (WorkSecurityMap resource : workSecurityMaps) {

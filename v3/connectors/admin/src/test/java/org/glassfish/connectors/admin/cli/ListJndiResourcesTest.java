@@ -40,6 +40,7 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.ExternalJndiResource;
 import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.Resources;
@@ -84,7 +85,7 @@ public class ListJndiResourcesTest extends ConfigApiTest {
                 LogDomains.getLogger(ListJndiResourcesTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter());
         parameters = new ParameterMap();
-        Resources resources = habitat.getComponent(Resources.class);
+        Resources resources = habitat.getComponent(Domain.class).getResources();
         for (Resource resource : resources.getResources()) {
             if (resource instanceof ExternalJndiResource) {
                 origNum = origNum + 1;

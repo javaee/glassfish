@@ -43,6 +43,7 @@ package org.glassfish.connectors.admin.cli;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.annotations.Scoped;
@@ -56,7 +57,10 @@ public class ConnectionPoolUtil {
     private Applications applications;
 
     @Inject
-    private ApplicationRef[] applicationRefs;
+    private Domain domain;
+
+    @Inject
+    private ServerEnvironment env;
 
     final private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(ConnectionPoolUtil.class);
@@ -73,17 +77,16 @@ public class ConnectionPoolUtil {
         Application application = applications.getApplication(applicationName);
         if (application != null) {
             if (application.getEnabled().equalsIgnoreCase("true")) {
-                if (applicationRefs != null) {
-                    for (ApplicationRef appRef : applicationRefs) {
+                Server server = domain.getServerNamed(env.getInstanceName());
+                ApplicationRef appRef = server.getApplicationRef(applicationName);
+                if (appRef != null) {
                         if (appRef.getRef().equals(applicationName)) {
                             if (appRef.getEnabled().equalsIgnoreCase("false")) {
                                 setAppDisabledErrorMessage(report, applicationName, poolName);
                             } else {
                                 isValid = true;
-                                break;
                             }
                         }
-                    }
                 } else {
                     setAppDisabledErrorMessage(report, applicationName, poolName);
                 }

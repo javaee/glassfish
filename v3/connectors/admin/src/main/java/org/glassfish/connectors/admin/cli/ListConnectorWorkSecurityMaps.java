@@ -40,6 +40,7 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
@@ -49,12 +50,9 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import com.sun.enterprise.config.serverbeans.GroupMap;
-import com.sun.enterprise.config.serverbeans.PrincipalMap;
-import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.WorkSecurityMap;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -81,7 +79,7 @@ public class ListConnectorWorkSecurityMaps implements AdminCommand {
     Resources resources;
 
     @Inject
-    WorkSecurityMap[] workSecurityMaps;
+    Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -95,6 +93,8 @@ public class ListConnectorWorkSecurityMaps implements AdminCommand {
 
         try {
             boolean foundWSM = false;
+            Collection<WorkSecurityMap> workSecurityMaps =
+                    domain.getResources().getResources(WorkSecurityMap.class);
             for (WorkSecurityMap wsm : workSecurityMaps) {
                 if (wsm.getResourceAdapterName().equals(raName)) {
                     if (securityMap == null) {
@@ -115,7 +115,7 @@ public class ListConnectorWorkSecurityMaps implements AdminCommand {
             }
 
         } catch (Exception e) {
-            Logger.getLogger(DeleteConnectorWorkSecurityMap.class.getName()).log(Level.SEVERE,
+            Logger.getLogger(ListConnectorWorkSecurityMaps.class.getName()).log(Level.SEVERE,
                     "list-connector-work-security-maps failed", e);
             report.setMessage(localStrings.getLocalString("" +
                     "list.connector.work.security.maps.fail",
