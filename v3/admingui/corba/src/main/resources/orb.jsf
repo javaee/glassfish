@@ -122,7 +122,7 @@
                 labels="$pageSession{availableThreadPools}"
                 selected="#{pageSession.selectedThreadPools}" >
                 <!beforeCreate
-                    gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/thread-pools"
+                    gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/thread-pools/thread-pool"
                           result="#{pageSession.threadPools}");
                     getListBoxOptions(
                         availableList="#{pageSession.threadPools}",
