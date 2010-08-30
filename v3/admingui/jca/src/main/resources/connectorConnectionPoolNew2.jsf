@@ -57,12 +57,9 @@
         setPageSessionAttribute(key="step1Page" value="connectorConnectionPoolNew1.jsf" );
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorConnectionPoolNew2.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorConnectionPools.jsf");
-        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="childType" value="connector-connection-pool");
-        //REST - for setproxyProperties after creating an entity.
-        setPageSessionAttribute(key="restObjStr", value="amx:pp=/domain/resources,type=#{pageSession.childType}");
-        //REST - TO DO
-        updateProxyProperties(propertyList="#{wizardPoolProperties}" TableList=>$attribute{tableList});
+        //TO DO
+        updateProxyProperties(propertyList="#{wizardPoolProperties}" TableList="#{pageSession.tableList}");
         setPageSessionAttribute(key="convertToFalseList" value={"Ping" "FailAllConnections" "IsConnectionValidationRequired"});
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{false}" );
@@ -70,9 +67,8 @@
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
         setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
-        //REST related
+
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
-        setPageSessionAttribute(key="rest-api" value="true");
     />
     </event>
             <sun:form id="propertyForm">

@@ -166,7 +166,7 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_selected", "label=" + instanceName);
         selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
         clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGGER_VALUES_SAVED);
-        assertFalse(selenium.isTextPresent(jndiName));
+        assertFalse(selenium.isTextPresent(instanceName));
         //Go Back to Resources Page
         clickAndWait("treeForm:tree:resources:jmsResources:jmsConnectionFactories:jmsConnectionFactories_link", TRIGGER_JMS_CONNECTION_FACTORIES);
     }
@@ -275,7 +275,7 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_selected", "label=" + instanceName);
         selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
         clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGGER_VALUES_SAVED);
-        assertFalse(selenium.isTextPresent(jndiName));
+        assertFalse(selenium.isTextPresent(instanceName));
         //Go Back to Resources Page
         clickAndWait("treeForm:tree:resources:jmsResources:jmsDestinationResources:jmsDestinationResources_link", TRIGGER_JMS_DESTINATION_RESOURCES);
     }

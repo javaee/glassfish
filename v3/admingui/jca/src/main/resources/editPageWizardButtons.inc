@@ -64,11 +64,12 @@
                     if (#{pageSession.hasPropertyTable}){
                         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                        //REST - TO DO
-                        if ( #{pageSession['rest-api']}) {
-                           setAttribute(key="objStr", value="#{pageSession.restObjStr},name=#{sessionScope.wizardMap['Name']}");
-                        }
-                        setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                        javaToJSON(obj="#{newList}" json="#{requestScope.tmpJSON}");
+                        urlencode(value="#{sessionScope.wizardMap['Name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
+                        gf.restRequest(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodeName}/property.json"
+                                       method="POST"
+                                       data="#{requestScope.tmpJSON}"
+                                       result="#{requestScope.restResponse}");                        
                     }
                     if ("#{sessionScope.wizardMap['Ping']}") {
                         urlencode(value="#{sessionScope.wizardMap['Name']}" encoding="UTF-8" result="#{pageSession.encodeName}");

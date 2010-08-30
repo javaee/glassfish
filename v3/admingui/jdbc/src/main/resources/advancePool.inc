@@ -162,7 +162,7 @@
                                            attrs="#{requestScope.attrMap}"
                                            method="get"
                                            result="#{requestScope.result}");
-                            setPageAttribute(key="tableNameList" value="#{requestScope.result.data.extraProperties.validationTableNames}");                            
+                            setPageSessionAttribute(key="tableNameList" value="#{requestScope.result.data.extraProperties.validationTableNames}");
                         }
                     }
                 />

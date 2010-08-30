@@ -183,7 +183,7 @@ public class JndiTest extends BaseSeleniumTestClass {
         selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_selected", "label=" + instanceName);
         selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
         clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGGER_VALUES_SAVED);
-        assertFalse(selenium.isTextPresent(jndiName));
+        assertFalse(selenium.isTextPresent(instanceName));
         //Go Back to Resources Page
         clickAndWait("treeForm:tree:resources:jndi:customResources:customResources_link", TRIGGER_CUSTOM_RESOURCES);
     }
@@ -337,7 +337,7 @@ public class JndiTest extends BaseSeleniumTestClass {
         selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_selected", "label=" + instanceName);
         selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
         clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGGER_VALUES_SAVED);
-        assertFalse(selenium.isTextPresent(jndiName));
+        assertFalse(selenium.isTextPresent(instanceName));
         //Go Back to Resources Page
         clickAndWait("treeForm:tree:resources:jndi:externalResources:externalResources_link", TRIGGER_EXTERNAL_RESOURCES);
     }

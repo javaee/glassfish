@@ -55,18 +55,16 @@
         urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jdbc/jdbcConnectionPoolProperty.jsf?name=#{pageSession.encodedName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf");
-        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=jdbc-connection-pool,name=#{pageSession.Name}");
-        //REST related
+        
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
         setPageSessionAttribute(key="childType" value="jdbc-connection-pool");
         setPageSessionAttribute(key="resourceUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
-        setPageSessionAttribute(key="rest-api" value="true");
 
         gf.getEntityAttrs(endpoint="#{pageSession.resourceUrl}", valueMap="#{pageSession.valueMap}");
-        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="skipAttrsList", value={"jndiName"});
-        //REST - TO DO        
-        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+
+        gf.restRequest(endpoint="#{pageSession.resourceUrl}/property.json", method="GET", result="#{requestScope.propTable}");
+        setPageSessionAttribute(key="tableList", value="#{requestScope.propTable.data.extraProperties.properties}");
         />
     </event>
             <sun:form id="propertyForm">
@@ -79,9 +77,8 @@
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton"  text="$resource{i18n.button.Save}">
                 <!command
-                getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
+                gf.restRequest(endpoint="#{pageSession.resourceUrl}/property.json", method="POST", data="#{requestScope.tmpJSON}", result="#{requestScope.restResponse}");
                 prepareSuccessfulMsg();
                 if ("#{valueMap['ping']}") {
                     urlencode(value="#{valueMap['name']}" encoding="UTF-8" result="#{pageSession.encodeName}");

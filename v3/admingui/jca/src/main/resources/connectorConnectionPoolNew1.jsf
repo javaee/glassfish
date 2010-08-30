@@ -104,7 +104,6 @@
                         <sun:button id="nextButton" text="$resource{i18n.button.Next}" 
                             onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                             <!command
-                                //REST - TO DO
                                 //Update the connector connection pool wizard
                                 setAttribute(key="currentAdapter" value="#{wizardPoolExtra.ResourceAdapterName}");
                                 setAttribute(key="currentconnDef" value="#{wizardPoolExtra.ConnectionDefinitionName}");

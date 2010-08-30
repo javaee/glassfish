@@ -40,6 +40,7 @@
 
 package org.glassfish.admingui.devtests;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -49,9 +50,14 @@ public class ConnectorsTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_CONNECTOR_CONNECTION_POOLS = "Click New to create a new connector connection pool.";
     private static final String TRIGGER_NEW_CONNECTOR_CONNECTION_POOL_STEP_1 = "New Connector Connection Pool (Step 1 of 2)";
     private static final String TRIGGER_NEW_CONNECTOR_CONNECTION_POOL_STEP_2 = "New Connector Connection Pool (Step 2 of 2)";
+    private static final String TRIGGER_EDIT_CONNECTOR_CONNECTION_POOL = "Edit Connector Connection Pool";
     private static final String TRIGGER_CONNECTOR_RESOURCE = "A connector resource is a program object";
     private static final String TRIGGER_NEW_CONNECTOR_RESOURCE = "New Connector Resource";
     private static final String TRIGGER_EDIT_CONNECTOR_RESOURCE = "Edit Connector Resource";
+
+    private static final String TRIGGER_CONNECTOR_SECURITY_MAPS = "Connector Connection Pool Security Maps";
+    private static final String TRIGGER_NEW_CONNECTOR_SECURITY_MAP = "New Connector Connection Pool Security Map";
+    private static final String TRIGGER_EDIT_CONNECTOR_SECURITY_MAP = "Edit Connector Connection Pool Security Map";
 
     @Test
     public void testConnectorResources() {
@@ -203,6 +209,54 @@ public class ConnectorsTest extends BaseSeleniumTestClass {
         assertFalse(selenium.isTextPresent(instanceName));
     }
 
+    @Test
+    public void testConnectorSecurityMaps() {
+        String testPool = generateRandomString();
+        String testSecurityMap = generateRandomString();
+        String testGroup = generateRandomString();
+        String testPassword = generateRandomString();
+        String testUserName = generateRandomString();
+
+        clickAndWait("treeForm:tree:resources:Connectors:connectorConnectionPools:connectorConnectionPools_link", TRIGGER_CONNECTOR_CONNECTION_POOLS);
+
+        // Create new connection connection pool
+        clickAndWait("propertyForm:poolTable:topActionsGroup1:newButton", TRIGGER_NEW_CONNECTOR_CONNECTION_POOL_STEP_1);
+
+        selenium.type("propertyForm:propertySheet:generalPropertySheet:jndiProp:name", testPool);
+        selenium.select("propertyForm:propertySheet:generalPropertySheet:resAdapterProp:db", "label=jmsra");
+        waitForCondition("document.getElementById('propertyForm:propertySheet:generalPropertySheet:connectionDefProp:db').value != ''", 10000);
+
+        selenium.select("propertyForm:propertySheet:generalPropertySheet:connectionDefProp:db", "label=javax.jms.QueueConnectionFactory");
+        waitForButtonEnabled("propertyForm:title:topButtons:nextButton");
+
+        clickAndWait("propertyForm:title:topButtons:nextButton", TRIGGER_NEW_CONNECTOR_CONNECTION_POOL_STEP_2);
+
+        selenium.select("propertyForm:propertySheet:poolPropertySheet:transprop:trans", "label=NoTransaction");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:finishButton", TRIGGER_CONNECTOR_CONNECTION_POOLS);
+        assertTrue(selenium.isTextPresent(testPool));
+        //Create Connector Security Map
+        clickAndWait(getLinkIdByLinkText("propertyForm:poolTable", testPool), TRIGGER_EDIT_CONNECTOR_CONNECTION_POOL);
+        clickAndWait("propertyForm:connectorPoolSet:securityMapTab", TRIGGER_CONNECTOR_SECURITY_MAPS);
+	clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_CONNECTOR_SECURITY_MAP);
+
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:mapNameNew:mapName", testSecurityMap);
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:groupProp:group", testGroup);
+        selenium.type("propertyForm:propertySheet:propertSectionTextField2:userNameEdit:userNameEdit", testUserName);
+        selenium.type("propertyForm:propertySheet:propertSectionTextField2:passwordEdit:passwordEdit", testPassword);
+	clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_CONNECTOR_SECURITY_MAPS);
+
+	clickAndWait(getLinkIdByLinkText("propertyForm:resourcesTable", testSecurityMap), TRIGGER_EDIT_CONNECTOR_SECURITY_MAP);
+        Assert.assertEquals(testGroup, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:groupProp:group"));
+	clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_CONNECTOR_SECURITY_MAPS);
+
+        //Delete Connector Security Maps
+        deleteRow("propertyForm:resourcesTable:topActionsGroup1:button1", "propertyForm:resourcesTable", testSecurityMap);
+
+        // Delete connector connection pool
+        clickAndWait("treeForm:tree:resources:Connectors:connectorConnectionPools:connectorConnectionPools_link", TRIGGER_CONNECTOR_CONNECTION_POOLS);
+        deleteRow("propertyForm:poolTable:topActionsGroup1:button1", "propertyForm:poolTable", testPool);        
+    }
+
     private void manageTargets(String instanceName, String jndiName) {
         final String TRIGGER_EDIT_RESOURCE_TARGETS = "Resource Targets";
         final String enableStatus = "Enabled on All Targets";
@@ -242,8 +296,8 @@ public class ConnectorsTest extends BaseSeleniumTestClass {
         selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_selected", "label=" + instanceName);
         selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
         clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGGER_VALUES_SAVED);
-        assertFalse(selenium.isTextPresent(jndiName));
+        assertFalse(selenium.isTextPresent(instanceName));
         //Go Back to Resources Page
         clickAndWait("treeForm:tree:resources:Connectors:connectorResources:connectorResources_link", TRIGGER_CONNECTOR_RESOURCE);
-    }
+    }   
 }

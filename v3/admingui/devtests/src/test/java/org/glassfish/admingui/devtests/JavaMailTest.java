@@ -42,6 +42,7 @@ package org.glassfish.admingui.devtests;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 
@@ -72,6 +73,10 @@ public class JavaMailTest extends BaseSeleniumTestClass {
 
         assertTrue(selenium.isTextPresent(resourceName));
 
+        clickAndWait(getLinkIdByLinkText("propertyForm:resourcesTable", resourceName), TRIGGER_EDIT_JAVAMAIL_SESSION);
+        assertTableRowCount("propertyForm:basicTable", count);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_JAVA_MAIL);
+
         testDisableButton(resourceName,
                 "propertyForm:resourcesTable",
                 "propertyForm:resourcesTable:topActionsGroup1:button3",
@@ -90,5 +95,110 @@ public class JavaMailTest extends BaseSeleniumTestClass {
                 "on");
 
         deleteRow("propertyForm:resourcesTable:topActionsGroup1:button1", "propertyForm:resourcesTable", resourceName);
+    }
+
+    @Test
+    public void createMailResourceWithTargets() {
+        final String resourceName = generateRandomString();
+        final String description = resourceName + " description";
+        final String instanceName = generateRandomString();
+        final String enableStatus = "Enabled on All Targets";
+        final String disableStatus = "Disabled on All Targets";
+
+        StandaloneTest instanceTest = new StandaloneTest();
+        instanceTest.createStandAloneInstance(instanceName);
+
+        clickAndWait("treeForm:tree:resources:mailResources:mailResources_link", TRIGGER_JAVA_MAIL);
+        clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_JAVAMAIL_SESSION);
+
+        selenium.type("form:propertySheet:propertSectionTextField:nameNew:name", resourceName);
+        selenium.type("form:propertySheet:propertSectionTextField:hostProp:host", "localhost");
+        selenium.type("form:propertySheet:propertSectionTextField:userProp:user", "user");
+        selenium.type("form:propertySheet:propertSectionTextField:fromProp:from", "return@test.com");
+        selenium.type("form:propertySheet:propertSectionTextField:descProp:desc", description);
+        int count = addTableRow("form:basicTable", "form:basicTable:topActionsGroup1:addSharedTableButton");
+
+        selenium.type("form:basicTable:rowGroup1:0:col2:col1St", "property" + generateRandomString());
+        selenium.type("form:basicTable:rowGroup1:0:col3:col1St", "value");
+        selenium.type("form:basicTable:rowGroup1:0:col4:col1St", "description");
+
+        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + instanceName);
+        selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
+
+        clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JAVA_MAIL);
+
+        assertTrue(selenium.isTextPresent(resourceName));
+
+        clickAndWait(getLinkIdByLinkText("propertyForm:resourcesTable", resourceName), TRIGGER_EDIT_JAVAMAIL_SESSION);
+        assertTableRowCount("propertyForm:basicTable", count);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_JAVA_MAIL);
+
+        testDisableButton(resourceName,
+                "propertyForm:resourcesTable",
+                "propertyForm:resourcesTable:topActionsGroup1:button3",
+                "propertyForm:propertySheet:propertSectionTextField:statusProp2:enabledStr",
+                "propertyForm:propertyContentPage:topButtons:cancelButton",
+                TRIGGER_JAVA_MAIL,
+                TRIGGER_EDIT_JAVAMAIL_SESSION,
+                disableStatus);
+        testEnableButton(resourceName,
+                "propertyForm:resourcesTable",
+                "propertyForm:resourcesTable:topActionsGroup1:button2",
+                "propertyForm:propertySheet:propertSectionTextField:statusProp2:enabledStr",
+                "propertyForm:propertyContentPage:topButtons:cancelButton",
+                TRIGGER_JAVA_MAIL,
+                TRIGGER_EDIT_JAVAMAIL_SESSION,
+                enableStatus);
+        manageTargets(instanceName, resourceName);
+
+        deleteRow("propertyForm:resourcesTable:topActionsGroup1:button1", "propertyForm:resourcesTable", resourceName);
+        //Delete the instance
+        clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", instanceTest.TRIGGER_INSTANCES_PAGE);
+        deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
+        assertFalse(selenium.isTextPresent(instanceName));
+    }
+
+    private void manageTargets(String instanceName, String jndiName) {
+        final String TRIGGER_EDIT_RESOURCE_TARGETS = "Resource Targets";
+        final String enableStatus = "Enabled on All Targets";
+        final String disableStatus = "Disabled on All Targets";
+        final String TRIGGER_MANAGE_TARGETS = "Manage Targets";
+        final String TRIGGGER_VALUES_SAVED = "New values successfully saved.";
+
+        clickAndWait("treeForm:tree:resources:mailResources:mailResources_link", TRIGGER_JAVA_MAIL);
+        clickAndWait(getLinkIdByLinkText("propertyForm:resourcesTable", jndiName), TRIGGER_EDIT_JAVAMAIL_SESSION);
+        //Click on the target tab and verify whether the target is in the target table or not.
+        clickAndWait("propertyForm:resEditTabs:targetTab", TRIGGER_EDIT_RESOURCE_TARGETS);
+        assertTrue(selenium.isTextPresent(instanceName));
+
+        //Enable all targets
+        testEnableOrDisableTarget("propertyForm:targetTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image",
+                "propertyForm:targetTable:topActionsGroup1:button2",
+                "propertyForm:resEditTabs:general",
+                "propertyForm:resEditTabs:targetTab",
+                "propertyForm:propertySheet:propertSectionTextField:statusProp2:enabledStr",
+                TRIGGER_EDIT_JAVAMAIL_SESSION,
+                TRIGGER_EDIT_RESOURCE_TARGETS,
+                enableStatus);
+
+        //Disable all targets
+        testEnableOrDisableTarget("propertyForm:targetTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image",
+                "propertyForm:targetTable:topActionsGroup1:button3",
+                "propertyForm:resEditTabs:general",
+                "propertyForm:resEditTabs:targetTab",
+                "propertyForm:propertySheet:propertSectionTextField:statusProp2:enabledStr",
+                TRIGGER_EDIT_JAVAMAIL_SESSION,
+                TRIGGER_EDIT_RESOURCE_TARGETS,
+                disableStatus);
+
+        //Test the manage targets
+        clickAndWait("propertyForm:targetTable:topActionsGroup1:manageTargetButton", TRIGGER_MANAGE_TARGETS);
+        //Remove the created instance from the selected targets.
+        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_selected", "label=" + instanceName);
+        selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
+        clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGGER_VALUES_SAVED);
+        assertFalse(selenium.isTextPresent(jndiName));
+        //Go Back to Resources Page
+        clickAndWait("treeForm:tree:resources:mailResources:mailResources_link", TRIGGER_JAVA_MAIL);
     }
 }
