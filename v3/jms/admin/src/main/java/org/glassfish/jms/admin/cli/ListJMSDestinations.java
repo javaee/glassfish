@@ -76,7 +76,7 @@ import com.sun.logging.LogDomains;
 @Service(name="list-jmsdest")
 @Scoped(PerLookup.class)
 @I18n("list.jms.dests")
-@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
+@ExecuteOn({RuntimeType.DAS})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 
 public class ListJMSDestinations extends JMSDestination implements AdminCommand {
