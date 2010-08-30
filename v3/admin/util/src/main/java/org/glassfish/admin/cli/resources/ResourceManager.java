@@ -62,15 +62,10 @@ public interface ResourceManager {
      * @param attributes resource configuration
      * @param properties properties
      * @param target target 
-     * @param requiresNewTransaction indicates whether the resource need to be created under a new transaction
-     * @param createResourceRef flag indicating whether to create resource-ref for the resource or not
-     * @param requiresValidation indicates whether validation of attributes is required or not
      * @return ResourceStatus indicating the status of resource creation
      * @throws Exception when unable to create the resource
      */
-    ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
-                                 String target, boolean requiresNewTransaction, boolean createResourceRef,
-                                 boolean requiresValidation)
+    ResourceStatus create(Resources resources, HashMap attributes, final Properties properties, String target)
             throws Exception ;
 
     /**
@@ -79,10 +74,12 @@ public interface ResourceManager {
      * @param resources parent for the resource to be created
      * @param attributes attributes of the resource
      * @param properties properties of the resource
+     * @param validate indicate whether config validation is required or not
      * @return Config-Bean equivalent of the resource
      * @throws Exception when unable to create config-bean-equivalent 
      */
-    Resource createConfigBean(Resources resources, HashMap attributes, Properties properties) throws Exception;
+    Resource createConfigBean(Resources resources, HashMap attributes, Properties properties, boolean validate)
+            throws Exception;
 
     /**
      * returns the resource-type

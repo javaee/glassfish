@@ -350,13 +350,12 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
     }
 
     private static Collection<com.sun.enterprise.config.serverbeans.Resource>
-    createConfig(Resources resources, Iterator<org.glassfish.resource.common.Resource> resourcesToRegister,
+    createConfig(Resources resources, Collection<org.glassfish.resource.common.Resource> resourcesToRegister,
                  boolean embedded)
     throws ResourceException {
         List<com.sun.enterprise.config.serverbeans.Resource> resourceConfigs =
                 new ArrayList<com.sun.enterprise.config.serverbeans.Resource>();
-        while (resourcesToRegister.hasNext()) {
-            org.glassfish.resource.common.Resource resource = resourcesToRegister.next();
+        for (org.glassfish.resource.common.Resource resource : resourcesToRegister) {
             final HashMap attrList = resource.getAttributes();
             final Properties props = resource.getProperties();
             String desc = resource.getDescription();
@@ -366,6 +365,18 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
 
             try {
                 final ResourceManager rm = resourceFactory.getResourceManager(resource);
+                if(embedded && isEmbeddedResource(resource, resourcesToRegister)){
+                    com.sun.enterprise.config.serverbeans.Resource configBeanResource =
+                            rm.createConfigBean(resources, attrList, props, false);
+                    resources.getResources().add(configBeanResource);
+                    resourceConfigs.add(configBeanResource);
+                }else if(!embedded && !isEmbeddedResource(resource, resourcesToRegister)){
+                    com.sun.enterprise.config.serverbeans.Resource configBeanResource =
+                            rm.createConfigBean(resources, attrList, props, true);
+                    resources.getResources().add(configBeanResource);
+                    resourceConfigs.add(configBeanResource);
+                }
+/*
                 com.sun.enterprise.config.serverbeans.Resource configBeanResource =
                         rm.createConfigBean(resources, attrList, props);
                 if (configBeanResource != null) {
@@ -379,11 +390,77 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                         resourceConfigs.add(configBeanResource);
                     }
                 }
+*/
             } catch (Exception e) {
                 throw new ResourceException(e);
             }
         }
         return resourceConfigs;
+    }
+
+    private static boolean isConnectorResource(org.glassfish.resource.common.Resource resource){
+        if(resource.getType().equals(org.glassfish.resource.common.Resource.ADMIN_OBJECT_RESOURCE) ||
+           resource.getType().equals(org.glassfish.resource.common.Resource.CONNECTOR_CONNECTION_POOL) ||
+                resource.getType().equals(org.glassfish.resource.common.Resource.CONNECTOR_RESOURCE) ||
+                resource.getType().equals(org.glassfish.resource.common.Resource.RESOURCE_ADAPTER_CONFIG) ||
+                resource.getType().equals(org.glassfish.resource.common.Resource.CONNECTOR_WORK_SECURITY_MAP)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    private static boolean isEmbeddedResource(org.glassfish.resource.common.Resource resource,
+                                              Collection<org.glassfish.resource.common.Resource> resources){
+        boolean result = false;
+        if(isConnectorResource(resource)){
+            String attributeName = null;
+            if(resource.getType().equals(org.glassfish.resource.common.Resource.ADMIN_OBJECT_RESOURCE)){
+                attributeName = ResourceConstants.RES_ADAPTER;
+            } else if(resource.getType().equals(org.glassfish.resource.common.Resource.CONNECTOR_CONNECTION_POOL)){
+                attributeName = ResourceConstants.RES_ADAPTER_NAME;
+            } else if(resource.getType().equals(org.glassfish.resource.common.Resource.CONNECTOR_RESOURCE)){
+                String poolName = (String)resource.getAttributes().get(ResourceConstants.POOL_NAME);
+                if(poolName != null){
+                    org.glassfish.resource.common.Resource poolResource = getPoolResource(poolName, resources);
+                    //point to poolResource
+                    resource = poolResource;
+                    attributeName = ResourceConstants.RES_ADAPTER_NAME;
+                }
+            }/* else if(resource.getType().equals(org.glassfish.resource.common.Resource.RESOURCE_ADAPTER_CONFIG)){
+                attributeName = ResourceConstants.RES_ADAPTER_NAME;
+            } */else if(resource.getType().equals(org.glassfish.resource.common.Resource.CONNECTOR_WORK_SECURITY_MAP)){
+                attributeName = ResourceConstants.RES_ADAPTER_NAME;
+            }
+            if(attributeName != null && resource != null){
+                result = isEmbeddedRar(resource, attributeName);
+            }
+        }
+        return result;
+    }
+
+    private static org.glassfish.resource.common.Resource getPoolResource(
+            String poolName, Collection<org.glassfish.resource.common.Resource> resources){
+        org.glassfish.resource.common.Resource result = null;
+        for(org.glassfish.resource.common.Resource resource : resources){
+            if(resource.getType().equals(org.glassfish.resource.common.Resource.CONNECTOR_CONNECTION_POOL)){
+                String cpName = (String)resource.getAttributes().get(ResourceConstants.CONNECTION_POOL_NAME);
+                if(poolName.equals(cpName)){
+                    result = resource;
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    private static boolean isEmbeddedRar(org.glassfish.resource.common.Resource resource, String attributeName) {
+        boolean result = false;
+        String raName = (String)resource.getAttributes().get(attributeName);
+        if(raName != null && raName.contains(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER)){
+            result = true;
+        }
+        return result;
     }
 
 
@@ -400,7 +477,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                 }
 
                 Collection<Resource> resourceConfigurations =
-                        createConfig(asc, resources.iterator(), embedded);
+                        createConfig(asc, resources, embedded);
                 deployResources(app.getName(), null, resourceConfigurations, embedded);
             }
         } catch (Exception e) {
@@ -427,7 +504,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                 }
 
                 Collection<Resource> resourceConfigurations =
-                        createConfig(msc, resources.iterator(), embedded);
+                        createConfig(msc, resources, embedded);
                 deployResources(app.getName(), module.getName(), resourceConfigurations, embedded);
             }
         } catch (Exception e) {

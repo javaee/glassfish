@@ -52,6 +52,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.*;
 
+import javax.resource.ResourceException;
 import java.util.Properties;
 import java.util.HashMap;
 import java.util.Map;
@@ -75,12 +76,37 @@ public class ConnectorWorkSecurityMapResourceManager implements ResourceManager 
     }
 
     public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
-                                 String target, boolean requiresNewTransaction, boolean createResourceRef,
-                                 boolean requiresValidation)
-            throws Exception {
+                                 String target) throws Exception {
 
         setAttributes(attributes);
 
+        ResourceStatus validationStatus = isValid(resources);
+        if(validationStatus.getStatus() == ResourceStatus.FAILURE){
+            return validationStatus;
+        }
+
+        try {
+            ConfigSupport.apply(new SingleConfigCode<Resources>() {
+                public Object run(Resources param) throws PropertyVetoException,
+                        TransactionFailure {
+                    return createResource(param, properties);
+                }
+            }, resources);
+        } catch (TransactionFailure tfe) {
+            String msg = localStrings.getLocalString(
+                    "create.connector.work.security.map.fail",
+                    "Unable to create connector work security map {0}.", mapName) +
+                    " " + tfe.getLocalizedMessage();
+            return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
+        }
+        String msg = localStrings.getLocalString(
+                "create.work.security.map.success",
+                "Work security map {0} created.", mapName);
+        return new ResourceStatus(ResourceStatus.SUCCESS, msg, true);
+    }
+
+    private ResourceStatus isValid(Resources resources){
+        ResourceStatus status = new ResourceStatus(ResourceStatus.SUCCESS, "Validation Successful");
         if (mapName == null) {
             String msg = localStrings.getLocalString(
                     "create.connector.work.security.map.noMapName",
@@ -124,28 +150,7 @@ public class ConnectorWorkSecurityMapResourceManager implements ResourceManager 
                 }
             }
         }
-        if (requiresNewTransaction) {
-            try {
-                ConfigSupport.apply(new SingleConfigCode<Resources>() {
-                    public Object run(Resources param) throws PropertyVetoException,
-                            TransactionFailure {
-                        return createResource(param, properties);
-                    }
-                }, resources);
-            } catch (TransactionFailure tfe) {
-                String msg = localStrings.getLocalString(
-                        "create.connector.work.security.map.fail",
-                        "Unable to create connector work security map {0}.", mapName) +
-                        " " + tfe.getLocalizedMessage();
-                return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
-            }
-        } else {
-            createResource(resources, properties);
-        }
-        String msg = localStrings.getLocalString(
-                "create.work.security.map.success",
-                "Work security map {0} created.", mapName);
-        return new ResourceStatus(ResourceStatus.SUCCESS, msg, true);
+        return status;
     }
 
     private WorkSecurityMap createConfigBean(Resources param) throws PropertyVetoException, TransactionFailure {
@@ -187,10 +192,21 @@ public class ConnectorWorkSecurityMapResourceManager implements ResourceManager 
         groupsMap = (Properties) attrList.get(ResourceConstants.WORK_SECURITY_MAP_GROUP_MAP);
     }
 
-    public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties) throws Exception{
+    public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties, boolean validate)
+            throws Exception{
         setAttributes(attributes);
-        //TODO no use of props ?
-        //return createConfigBean(resources, props);
-        return createConfigBean(resources);        
+        ResourceStatus status = null;
+        if(!validate){
+            status = new ResourceStatus(ResourceStatus.SUCCESS,"");
+        }else{
+            status = isValid(resources);
+        }
+        if(status.getStatus() == ResourceStatus.SUCCESS){
+            return createConfigBean(resources);
+            //TODO no use of props ?
+            //return createConfigBean(resources);
+        }else{
+            throw new ResourceException(status.getMessage());
+        }
     }
 }

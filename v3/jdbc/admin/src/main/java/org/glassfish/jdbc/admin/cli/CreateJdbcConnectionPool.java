@@ -248,7 +248,7 @@ public class CreateJdbcConnectionPool implements AdminCommand {
 
         try {
             JDBCConnectionPoolManager connPoolMgr = new JDBCConnectionPoolManager();
-            rs = connPoolMgr.create(resources, attrList, properties, target, true, false, true);
+            rs = connPoolMgr.create(resources, attrList, properties, target);
         } catch(Exception e) {
             String actual = e.getMessage();
             String def = "JDBC connection pool: {0} could not be created, reason: {1}";

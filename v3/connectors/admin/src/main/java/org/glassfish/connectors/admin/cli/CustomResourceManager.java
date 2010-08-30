@@ -59,6 +59,7 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 
+import javax.resource.ResourceException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -89,11 +90,40 @@ public class CustomResourceManager implements ResourceManager {
     }
 
     public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
-                                 String target, boolean requiresNewTransaction, boolean createResourceRef,
-                                 boolean requiresValidation)
-            throws Exception {
+                                 String target) throws Exception {
         setAttributes(attributes, target);
 
+        ResourceStatus validationStatus = isValid(resources);
+        if(validationStatus.getStatus() == ResourceStatus.FAILURE){
+            return validationStatus;
+        }
+        try {
+            ConfigSupport.apply(new SingleConfigCode<Resources>() {
+
+                public Object run(Resources param) throws PropertyVetoException,
+                        TransactionFailure {
+
+                    return createResource(param, properties);
+                }
+            }, resources);
+
+                resourceUtil.createResourceRef(jndiName, enabledValueForTarget, target);
+        } catch (TransactionFailure tfe) {
+            String msg = localStrings.getLocalString(
+                    "create.custom.resource.fail",
+                    "Unable to create custom resource {0}.", jndiName) +
+                    " " + tfe.getLocalizedMessage();
+            return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
+        }
+
+        String msg = localStrings.getLocalString(
+                "create.custom.resource.success",
+                "Custom Resource {0} created.", jndiName);
+        return new ResourceStatus(ResourceStatus.SUCCESS, msg, true);
+    }
+
+    private ResourceStatus isValid(Resources resources){
+        ResourceStatus status = new ResourceStatus(ResourceStatus.SUCCESS, "Validation Successful");
         if (resType == null) {
             String msg = localStrings.getLocalString(
                     "create.custom.resource.noResType",
@@ -116,36 +146,7 @@ public class CustomResourceManager implements ResourceManager {
                     jndiName);
             return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
         }
-
-        if (requiresNewTransaction) {
-            try {
-                ConfigSupport.apply(new SingleConfigCode<Resources>() {
-
-                    public Object run(Resources param) throws PropertyVetoException,
-                            TransactionFailure {
-
-                        return createResource(param, properties);
-                    }
-                }, resources);
-
-                if(createResourceRef){
-                    resourceUtil.createResourceRef(jndiName, enabledValueForTarget, target);
-                }
-            } catch (TransactionFailure tfe) {
-                String msg = localStrings.getLocalString(
-                        "create.custom.resource.fail",
-                        "Unable to create custom resource {0}.", jndiName) +
-                        " " + tfe.getLocalizedMessage();
-                return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
-            }
-        } else {
-            createResource(resources, properties);
-        }
-
-        String msg = localStrings.getLocalString(
-                "create.custom.resource.success",
-                "Custom Resource {0} created.", jndiName);
-        return new ResourceStatus(ResourceStatus.SUCCESS, msg, true);
+        return status;
     }
 
     private void setAttributes(HashMap attributes, String target) {
@@ -189,8 +190,19 @@ public class CustomResourceManager implements ResourceManager {
         return newResource;
     }
 
-    public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties) throws Exception{
+    public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties, boolean validate)
+            throws Exception{
         setAttributes(attributes, null);
-        return createConfigBean(resources, properties);
+        ResourceStatus status = null;
+        if(!validate){
+            status = new ResourceStatus(ResourceStatus.SUCCESS,"");
+        }else{
+            status = isValid(resources);
+        }
+        if(status.getStatus() == ResourceStatus.SUCCESS){
+            return createConfigBean(resources, properties);
+        }else{
+            throw new ResourceException(status.getMessage());
+        }
     }
 }

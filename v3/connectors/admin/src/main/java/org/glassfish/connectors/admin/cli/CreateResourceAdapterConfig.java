@@ -153,7 +153,7 @@ public class CreateResourceAdapterConfig implements AdminCommand {
 
         ResourceAdapterConfigManager resAdapterConfigMgr = new ResourceAdapterConfigManager();
         try {
-            rs = resAdapterConfigMgr.create(resources, attrList, properties, target, true, false, true);
+            rs = resAdapterConfigMgr.create(resources, attrList, properties, target);
         } catch (Exception ex) {
             Logger.getLogger(CreateResourceAdapterConfig.class.getName()).log(
                     Level.SEVERE,

@@ -74,6 +74,7 @@ import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
+import javax.resource.ResourceException;
 
 /**
  *
@@ -116,13 +117,43 @@ public class AdminObjectManager implements ResourceManager {
         return ServerTags.ADMIN_OBJECT_RESOURCE;
     }
 
-    public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
-                                 String target, boolean requiresNewTransaction, boolean createResourceRef,
-                                 boolean requiresValidation)
+    public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties, String target)
             throws Exception {
         setAttributes(attributes, target);
 
-        if(requiresValidation){
+        ResourceStatus validationStatus = isValid(resources);
+        if(validationStatus.getStatus() == ResourceStatus.FAILURE){
+            return validationStatus;
+        }
+
+        try {
+            ConfigSupport.apply(new SingleConfigCode<Resources>() {
+
+                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                    return createResource(param, properties);
+                }
+            }, resources);
+
+            resourceUtil.createResourceRef(jndiName, enabledValueForTarget, target);
+
+        } catch (TransactionFailure tfe) {
+            Logger.getLogger(AdminObjectManager.class.getName()).log(Level.SEVERE,
+                    "Unabled to create administered object", tfe);
+            String msg = localStrings.getLocalString("create.admin.object.fail",
+                    "Unable to create administered object {0}.", jndiName) +
+                    " " + tfe.getLocalizedMessage();
+            return new ResourceStatus(ResourceStatus.FAILURE, msg);
+        }
+
+        String msg = localStrings.getLocalString(
+                "create.admin.object.success",
+                "Administered object {0} created.", jndiName);
+        return new ResourceStatus(ResourceStatus.SUCCESS, msg);
+
+    }
+
+    private ResourceStatus isValid(Resources resources){
+        ResourceStatus status = new ResourceStatus(ResourceStatus.SUCCESS, "Validation Successful");
         if (jndiName == null) {
             String msg = localStrings.getLocalString("create.admin.object.noJndiName",
                             "No JNDI name defined for administered object.");
@@ -137,7 +168,7 @@ public class AdminObjectManager implements ResourceManager {
 
         //no need to validate in remote instance as the validation would have happened in DAS.
         if(environment.isDas()){
-            ResourceStatus status = isValidRAName();
+            status = isValidRAName();
             if (status.getStatus() == ResourceStatus.FAILURE) {
                 return status;
             }
@@ -147,38 +178,7 @@ public class AdminObjectManager implements ResourceManager {
                 return status;
             }
         }
-        }
-
-        if (requiresNewTransaction) {
-            try {
-                ConfigSupport.apply(new SingleConfigCode<Resources>() {
-
-                    public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                        return createResource(param, properties);
-                    }
-                }, resources);
-
-                if (createResourceRef) {
-                    resourceUtil.createResourceRef(jndiName, enabledValueForTarget, target);
-                }
-
-            } catch (TransactionFailure tfe) {
-                Logger.getLogger(AdminObjectManager.class.getName()).log(Level.SEVERE,
-                        "Unabled to create administered object", tfe);
-                String msg = localStrings.getLocalString("create.admin.object.fail",
-                        "Unable to create administered object {0}.", jndiName) +
-                        " " + tfe.getLocalizedMessage();
-                return new ResourceStatus(ResourceStatus.FAILURE, msg);
-            }
-        } else {
-            createResource(resources, properties);
-        }
-
-        String msg = localStrings.getLocalString(
-                "create.admin.object.success",
-                "Administered object {0} created.", jndiName);
-        return new ResourceStatus(ResourceStatus.SUCCESS, msg);
-
+        return status;
     }
 
     private AdminObjectResource createResource(Resources param, Properties props) throws PropertyVetoException,
@@ -333,8 +333,18 @@ public class AdminObjectManager implements ResourceManager {
 
         return status;
     }
-    public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties) throws Exception{
+    public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties, boolean validate) throws Exception{
         setAttributes(attributes, null);
-        return createConfigBean(resources, properties);
+        ResourceStatus status = null;
+        if(!validate){
+            status = new ResourceStatus(ResourceStatus.SUCCESS,"");
+        }else{
+            status = isValid(resources);
+        }
+        if(status.getStatus() == ResourceStatus.SUCCESS){
+            return createConfigBean(resources, properties);
+        }else{
+            throw new ResourceException(status.getMessage());
+        }
     }
 }

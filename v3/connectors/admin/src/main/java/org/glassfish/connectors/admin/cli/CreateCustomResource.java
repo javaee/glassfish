@@ -123,7 +123,7 @@ public class CreateCustomResource implements AdminCommand {
         ResourceStatus rs;
 
         try {
-            rs = customResMgr.create(resources, attrList, properties, target, true, true, true);
+            rs = customResMgr.create(resources, attrList, properties, target);
         } catch(Exception e) {
             Logger.getLogger(CreateCustomResource.class.getName()).log(Level.SEVERE,
                     "Unable to create custom resource " + jndiName, e);

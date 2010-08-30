@@ -64,6 +64,7 @@ import static org.glassfish.resource.common.ResourceConstants.*;
 import org.jvnet.hk2.config.types.Property;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
+import javax.resource.ResourceException;
 
 /**
  * @author Jennifer Chou, Jagadish Ramu
@@ -102,13 +103,41 @@ public class ConnectorResourceManager implements ResourceManager {
     }
 
     public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
-                                 String target, boolean requiresNewTransaction, boolean createResourceRef,
-                                 boolean requiresValidation)
-            throws Exception {
+                                 String target) throws Exception {
 
         setAttributes(attributes, target);
 
-        if(requiresValidation){
+        ResourceStatus validationStatus = isValid(resources);
+        if(validationStatus.getStatus() == ResourceStatus.FAILURE){
+            return validationStatus;
+        }
+
+        try {
+            ConfigSupport.apply(new SingleConfigCode<Resources>() {
+
+                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                    return createResource(param, properties);
+                }
+            }, resources);
+
+            resourceUtil.createResourceRef(jndiName, enabledValueForTarget, target);
+
+        } catch (TransactionFailure tfe) {
+            String msg = localStrings.getLocalString("create.connector.resource.fail",
+                    "Connector resource {0} create failed ", jndiName) +
+                    " " + tfe.getLocalizedMessage();
+            return new ResourceStatus(ResourceStatus.FAILURE, msg);
+        }
+
+        String msg = localStrings.getLocalString(
+                "create.connector.resource.success", "Connector resource {0} created successfully",
+                jndiName);
+        return new ResourceStatus(ResourceStatus.SUCCESS, msg);
+
+    }
+
+    private ResourceStatus isValid(Resources resources){
+        ResourceStatus status = new ResourceStatus(ResourceStatus.SUCCESS, "Validation Successful");
         if (jndiName == null) {
             String msg = localStrings.getLocalString("create.connector.resource.noJndiName",
                     "No JNDI name defined for connector resource.");
@@ -127,37 +156,9 @@ public class ConnectorResourceManager implements ResourceManager {
                     "Attribute value (pool-name = {0}) is not found in list of connector connection pools.", poolName);
             return new ResourceStatus(ResourceStatus.FAILURE, msg);
         }
-        }
-
-        if (requiresNewTransaction) {
-            try {
-                ConfigSupport.apply(new SingleConfigCode<Resources>() {
-
-                    public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                        return createResource(param, properties);
-                    }
-                }, resources);
-
-                if(createResourceRef){
-                    resourceUtil.createResourceRef(jndiName, enabledValueForTarget, target);
-                }
-
-            } catch (TransactionFailure tfe) {
-                String msg = localStrings.getLocalString("create.connector.resource.fail",
-                        "Connector resource {0} create failed ", jndiName) +
-                        " " + tfe.getLocalizedMessage();
-                return new ResourceStatus(ResourceStatus.FAILURE, msg);
-            }
-        } else {
-            createResource(resources, properties);
-        }
-
-        String msg = localStrings.getLocalString(
-                "create.connector.resource.success", "Connector resource {0} created successfully",
-                jndiName);
-        return new ResourceStatus(ResourceStatus.SUCCESS, msg);
-
+        return status;
     }
+
 
     private ConnectorResource createResource(Resources param, Properties props) throws PropertyVetoException,
             TransactionFailure {
@@ -205,8 +206,19 @@ public class ConnectorResourceManager implements ResourceManager {
         return resources.getResourceByName(ConnectorConnectionPool.class, poolName) != null;
     }
 
-    public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties) throws Exception {
+    public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties, boolean validate)
+            throws Exception {
         setAttributes(attributes, null);
-        return createConfigBean(resources, properties);
+        ResourceStatus status = null;
+        if(!validate){
+            status = new ResourceStatus(ResourceStatus.SUCCESS,"");
+        }else{
+            status = isValid(resources);
+        }
+        if(status.getStatus() == ResourceStatus.SUCCESS){
+            return createConfigBean(resources, properties);
+        }else{
+            throw new ResourceException(status.getMessage());
+        }
     }
 }

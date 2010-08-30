@@ -41,7 +41,6 @@
 package org.glassfish.jdbc.admin.cli;
 
 import java.beans.PropertyVetoException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Map;
@@ -63,6 +62,8 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.admin.cli.resources.ResourceManager;
+
+import javax.resource.ResourceException;
 
 
 /**
@@ -123,9 +124,36 @@ public class JDBCConnectionPoolManager implements ResourceManager {
     }
 
     public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
-                                 String target, boolean requiresNewTransaction, boolean createResourceRef,
-                                 boolean requiresValidation) throws Exception {
+                                 String target) throws Exception {
         setAttributes(attributes);
+
+        ResourceStatus validationStatus = isValid(resources);
+        if(validationStatus.getStatus() == ResourceStatus.FAILURE){
+            return validationStatus;
+        }
+
+        try {
+            ConfigSupport.apply(new SingleConfigCode<Resources>() {
+
+                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                    return createResource(param, properties);
+                }
+            }, resources);
+
+        } catch (TransactionFailure tfe) {
+            String msg = localStrings.getLocalString(
+                    "create.jdbc.connection.pool.fail", "JDBC connection pool {0} create failed: {1}",
+                    jdbcconnectionpoolid, tfe.getMessage());
+            return new ResourceStatus(ResourceStatus.FAILURE, msg);
+        }
+        String msg = localStrings.getLocalString(
+                "create.jdbc.connection.pool.success", "JDBC connection pool {0} created successfully",
+                jdbcconnectionpoolid);
+        return new ResourceStatus(ResourceStatus.SUCCESS, msg);
+    }
+
+    private ResourceStatus isValid(Resources resources){
+        ResourceStatus status = new ResourceStatus(ResourceStatus.SUCCESS, "Validation Successful");
         if (jdbcconnectionpoolid == null) {
             String msg = localStrings.getLocalString("add.resources.noJdbcConnectionPoolId",
                     "No pool name defined for JDBC Connection pool.");
@@ -148,39 +176,17 @@ public class JDBCConnectionPoolManager implements ResourceManager {
                             "and --isconnectvalidatereq=true.");
             return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
         }
-
-        if (requiresNewTransaction) {
-            try {
-                ConfigSupport.apply(new SingleConfigCode<Resources>() {
-
-                    public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                        return createResource(param, properties);
-                    }
-                }, resources);
-
-            } catch (TransactionFailure tfe) {
-                String msg = localStrings.getLocalString(
-                        "create.jdbc.connection.pool.fail", "JDBC connection pool {0} create failed: {1}",
-                        jdbcconnectionpoolid, tfe.getMessage());
-                return new ResourceStatus(ResourceStatus.FAILURE, msg);
-            }
-        } else {
-            createResource(resources, properties);
-        }
-        String msg = localStrings.getLocalString(
-                "create.jdbc.connection.pool.success", "JDBC connection pool {0} created successfully",
-                jdbcconnectionpoolid);
-        return new ResourceStatus(ResourceStatus.SUCCESS, msg);
+        return status;
     }
 
     private JdbcConnectionPool createResource(Resources param, Properties properties) throws PropertyVetoException,
             TransactionFailure {
-        JdbcConnectionPool newResource = getJdbcConnectionPool(param, properties);
+        JdbcConnectionPool newResource = createConfigBean(param, properties);
         param.getResources().add(newResource);
         return newResource;
     }
 
-    private JdbcConnectionPool getJdbcConnectionPool(Resources param, Properties properties) throws PropertyVetoException,
+    private JdbcConnectionPool createConfigBean(Resources param, Properties properties) throws PropertyVetoException,
             TransactionFailure {
         JdbcConnectionPool newResource = param.createChild(JdbcConnectionPool.class);
         newResource.setWrapJdbcObjects(wrapJDBCObjects);
@@ -381,8 +387,19 @@ public class JDBCConnectionPoolManager implements ResourceManager {
         }
     }
 
-    public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties) throws Exception {
+    public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties, boolean validate)
+            throws Exception {
         setAttributes(attributes);
-        return getJdbcConnectionPool(resources, properties);
+        ResourceStatus status = null;
+        if(!validate){
+            status = new ResourceStatus(ResourceStatus.SUCCESS,"");
+        }else{
+            status = isValid(resources);
+        }
+        if(status.getStatus() == ResourceStatus.SUCCESS){
+            return createConfigBean(resources, properties);
+        }else{
+            throw new ResourceException(status.getMessage());
+        }
     }
 }

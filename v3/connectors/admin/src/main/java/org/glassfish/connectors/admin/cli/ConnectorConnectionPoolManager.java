@@ -66,6 +66,8 @@ import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
+import javax.resource.ResourceException;
+
 
 /**
  *
@@ -124,11 +126,40 @@ public class ConnectorConnectionPoolManager implements ResourceManager {
     }
 
     public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
-                                 String target, boolean requiresNewTransaction, boolean createResourceRef,
-                                 boolean requiresValidation)
-            throws Exception {
+                                 String target) throws Exception {
         setParams(attributes);
 
+        ResourceStatus validationStatus = isValid(resources, true);
+        if(validationStatus.getStatus() == ResourceStatus.FAILURE){
+            return validationStatus;
+        }
+        try {
+            ConfigSupport.apply(new SingleConfigCode<Resources>() {
+                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                    ConnectorConnectionPool newResource = createConfigBean(param, properties);
+                    param.getResources().add(newResource);
+                    return newResource;
+                }
+            }, resources);
+
+        } catch (TransactionFailure tfe) {
+            Logger.getLogger(ConnectorConnectionPoolManager.class.getName()).log(Level.SEVERE,
+                    "create-connector-connection-pool failed", tfe);
+            String msg = localStrings.getLocalString(
+                    "create.connector.connection.pool.fail", "Connector connection pool {0} create failed: {1}",
+                    poolname) + " " + tfe.getLocalizedMessage();
+            return new ResourceStatus(ResourceStatus.FAILURE, msg);
+        }
+
+        String msg = localStrings.getLocalString(
+                "create.connector.connection.pool.success", "Connector connection pool {0} created successfully",
+                poolname);
+        return new ResourceStatus(ResourceStatus.SUCCESS, msg);
+
+    }
+
+    private ResourceStatus isValid(Resources resources, boolean requiresNewTransaction){
+        ResourceStatus status = new ResourceStatus(ResourceStatus.SUCCESS, "Validation Successful");
         if (poolname == null) {
             String msg = localStrings.getLocalString("create.connector.connection.pool.noJndiName",
                             "No pool name defined for connector connection pool.");
@@ -151,7 +182,7 @@ public class ConnectorConnectionPoolManager implements ResourceManager {
             }
 
             try {
-                ResourceStatus status = validateConnectorConnPoolAttributes(raname, connectiondefinition);
+                status = validateConnectorConnPoolAttributes(raname, connectiondefinition);
                 if (status.getStatus() == ResourceStatus.FAILURE) {
                     return status;
                 }
@@ -165,34 +196,7 @@ public class ConnectorConnectionPoolManager implements ResourceManager {
                 return new ResourceStatus(ResourceStatus.FAILURE, msg);
             }
         }
-
-        if (requiresNewTransaction) {
-            try {
-                ConfigSupport.apply(new SingleConfigCode<Resources>() {
-                    public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                        ConnectorConnectionPool newResource = createConfigBean(param, properties);
-                        param.getResources().add(newResource);
-                        return newResource;
-                    }
-                }, resources);
-
-            } catch (TransactionFailure tfe) {
-                Logger.getLogger(ConnectorConnectionPoolManager.class.getName()).log(Level.SEVERE,
-                        "create-connector-connection-pool failed", tfe);
-                String msg = localStrings.getLocalString(
-                        "create.connector.connection.pool.fail", "Connector connection pool {0} create failed: {1}",
-                        poolname) + " " + tfe.getLocalizedMessage();
-                return new ResourceStatus(ResourceStatus.FAILURE, msg);
-            }
-        } else {
-            createResource(resources, properties);
-        }
-
-        String msg = localStrings.getLocalString(
-                "create.connector.connection.pool.success", "Connector connection pool {0} created successfully",
-                poolname);
-        return new ResourceStatus(ResourceStatus.SUCCESS, msg);
-
+        return status;
     }
 
     private ConnectorConnectionPool createResource(Resources param, Properties properties) throws PropertyVetoException,
@@ -348,8 +352,19 @@ public class ConnectorConnectionPoolManager implements ResourceManager {
         }
         return false;
     }
-    public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties) throws Exception{
+    public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties, boolean validate)
+            throws Exception{
         setParams(attributes);
-        return createConfigBean(resources, properties);
+        ResourceStatus status = null;
+        if(!validate){
+            status = new ResourceStatus(ResourceStatus.SUCCESS,"");
+        }else{
+            status = isValid(resources, false);
+        }
+        if(status.getStatus() == ResourceStatus.SUCCESS){
+            return createConfigBean(resources, properties);
+        }else{
+            throw new ResourceException(status.getMessage());
+        }
     }
 }

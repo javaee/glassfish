@@ -72,6 +72,8 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
+import javax.resource.ResourceException;
+
 
 /**
  *
@@ -95,10 +97,40 @@ public class ResourceAdapterConfigManager implements ResourceManager {
     }
 
     public ResourceStatus create(Resources resources, HashMap attributes, final Properties properties,
-                                 String target, boolean requiresNewTransaction, boolean createResourceRef,
-                                 boolean requiresValidation) throws Exception {
+                                 String target) throws Exception {
         setParams(attributes);
 
+        ResourceStatus validationStatus = isValid(resources);
+        if(validationStatus.getStatus() == ResourceStatus.FAILURE){
+            return validationStatus;
+        }
+
+        try {
+            ConfigSupport.apply(new SingleConfigCode<Resources>() {
+                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                    ResourceAdapterConfig newResource = createConfigBean(param, properties);
+                    param.getResources().add(newResource);
+                    return newResource;
+                }
+            }, resources);
+
+        } catch (TransactionFailure tfe) {
+            Logger.getLogger(ResourceAdapterConfigManager.class.getName()).log(Level.SEVERE,
+                    "TransactionFailure: create-resource-adapter-config", tfe);
+            String msg = localStrings.getLocalString("create.resource.adapter.config.fail",
+                    "Unable to create resource adapter config", raName) +
+                    " " + tfe.getLocalizedMessage();
+            return new ResourceStatus(ResourceStatus.FAILURE, msg);
+        }
+
+        String msg = localStrings.getLocalString(
+                "create.resource.adapter.config.success", "Resource adapter config {0} created successfully",
+                raName);
+        return new ResourceStatus(ResourceStatus.SUCCESS, msg);
+    }
+
+    private ResourceStatus isValid(Resources resources){
+        ResourceStatus status = new ResourceStatus(ResourceStatus.SUCCESS, "Validation Successful");
         if (raName == null) {
             String msg = localStrings.getLocalString("create.resource.adapter.confignoRAName",
                             "No RA Name defined for resource adapter config.");
@@ -110,32 +142,7 @@ public class ResourceAdapterConfigManager implements ResourceManager {
                     "Resource adapter config already exists for RAR", raName);
             return new ResourceStatus(ResourceStatus.FAILURE, msg);
         }
-        if (requiresNewTransaction) {
-            try {
-                ConfigSupport.apply(new SingleConfigCode<Resources>() {
-                    public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                        ResourceAdapterConfig newResource = createConfigBean(param, properties);
-                        param.getResources().add(newResource);
-                        return newResource;
-                    }
-                }, resources);
-
-            } catch (TransactionFailure tfe) {
-                Logger.getLogger(ResourceAdapterConfigManager.class.getName()).log(Level.SEVERE,
-                        "TransactionFailure: create-resource-adapter-config", tfe);
-                String msg = localStrings.getLocalString("create.resource.adapter.config.fail",
-                        "Unable to create resource adapter config", raName) +
-                        " " + tfe.getLocalizedMessage();
-                return new ResourceStatus(ResourceStatus.FAILURE, msg);
-            }
-        } else {
-            createConfigBean(resources, properties);
-        }
-
-        String msg = localStrings.getLocalString(
-                "create.resource.adapter.config.success", "Resource adapter config {0} created successfully",
-                raName);
-        return new ResourceStatus(ResourceStatus.SUCCESS, msg);
+        return status;
     }
 
     private ResourceAdapterConfig createConfigBean(Resources param, Properties properties) throws PropertyVetoException,
@@ -166,8 +173,19 @@ public class ResourceAdapterConfigManager implements ResourceManager {
         threadPoolIds = (String) attributes.get(THREAD_POOL_IDS);
         objectType = (String) attributes.get(ServerTags.OBJECT_TYPE);
     }
-    public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties) throws Exception{
+    public Resource createConfigBean(Resources resources, HashMap attributes, Properties properties, boolean validate)
+            throws Exception{
         setParams(attributes);
-        return createConfigBean(resources, properties);
+        ResourceStatus status = null;
+        if(!validate){
+            status = new ResourceStatus(ResourceStatus.SUCCESS,"");
+        }else{
+            status = isValid(resources);
+        }
+        if(status.getStatus() == ResourceStatus.SUCCESS){
+            return createConfigBean(resources, properties);
+        }else{
+            throw new ResourceException(status.getMessage());
+        }
     }
 }

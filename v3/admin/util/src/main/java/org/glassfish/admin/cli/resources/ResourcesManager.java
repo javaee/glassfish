@@ -85,7 +85,7 @@ public class ResourcesManager {
             ResourceStatus rs;
             try {
                 ResourceManager rm = resourceFactory.getResourceManager(resource);
-                rs = rm.create(resources, attrList, props, target, true, true, true);
+                rs = rm.create(resources, attrList, props, target);
             } catch (Exception e) {
                 String msg = e.getMessage();
                 rs = new ResourceStatus(ResourceStatus.FAILURE, msg);
@@ -107,7 +107,7 @@ public class ResourcesManager {
             ResourceStatus rs;
             try {
                 ResourceManager rm = resourceFactory.getResourceManager(resource);
-                rs = rm.create(resources, attrList, props, target, true, true, true);
+                rs = rm.create(resources, attrList, props, target);
             } catch (Exception e) {
                 String msg = e.getMessage();
                 rs = new ResourceStatus(ResourceStatus.FAILURE, msg);

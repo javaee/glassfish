@@ -122,7 +122,7 @@ public class CreateJdbcResource implements AdminCommand {
         ResourceStatus rs;
  
         try {
-            rs = jdbcMgr.create(resources, attrList, properties, target, true, true, true);
+            rs = jdbcMgr.create(resources, attrList, properties, target);
         } catch(Exception e) {
             report.setMessage(localStrings.getLocalString("create.jdbc.resource.failed",
                     "JDBC resource {0} creation failed", jndiName));
