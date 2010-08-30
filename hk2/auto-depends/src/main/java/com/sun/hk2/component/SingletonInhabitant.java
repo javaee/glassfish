@@ -59,15 +59,18 @@ public class SingletonInhabitant<T> extends AbstractWombInhabitantImpl<T> {
         if (object==null) {
             synchronized(this) {
                 if (object==null) {
-//                  object = womb.get(onBehalfOf);
-                  // we do it in two steps in case there is an initialization error, we 
-                  // want to avoid recursing
-                  object = womb.create(onBehalfOf);
+                  if (initializing) {
+                    throw new ComponentException("problem initializing - cycle detected involving: " + this);
+                  }
+                  initializing = true;
+                  
                   try {
-                    initializing = true;
+                    // we do it in two steps in case there is an initialization error, we 
+                    // want to avoid recursing
+                    T object = womb.create(onBehalfOf);
                     womb.initialize(object, onBehalfOf);
+                    this.object = object;
                   } catch (Throwable e) {
-                    object = null;
                     throw (e instanceof ComponentException) ? 
                         (ComponentException)e : new ComponentException("problem initializing", e);
                   } finally {
@@ -75,8 +78,6 @@ public class SingletonInhabitant<T> extends AbstractWombInhabitantImpl<T> {
                   }
                 }
             }
-        } else if (initializing) {
-          throw new ComponentException("problem initializing - cycle detected involving: " + this);
         }
         return object;
     }
