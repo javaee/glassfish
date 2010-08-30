@@ -51,10 +51,10 @@ public class WrongTransport extends BaseDevTest {
         createPUElements();
         try {
             secureURL = "https://" + host + ":" + port + "/";
-            HttpURLConnection connection = (HttpURLConnection) new URL("http://" + host + ":" + port + "/").openConnection();
+            final String url = "http://" + host + ":" + port + "/";
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
             connection.setInstanceFollowRedirects(true);
             checkStatus(connection);
-            parseResponse(connection);
         } catch (Throwable t) {
             t.printStackTrace();
         } finally {
@@ -120,17 +120,5 @@ public class WrongTransport extends BaseDevTest {
         String location = connection.getHeaderField("location");
         report("response-code", responseCode == 302);
         report("returned-location", secureURL.equals(location));
-    }
-
-    private void parseResponse(HttpURLConnection connection) throws Exception {
-        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        try {
-            String line;
-            while ((line = in.readLine()) != null) {
-                System.out.println(line);
-            }
-        } finally {
-            in.close();
-        }
     }
 }

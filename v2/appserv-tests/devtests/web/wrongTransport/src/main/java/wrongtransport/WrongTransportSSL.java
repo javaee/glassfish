@@ -63,9 +63,7 @@ public class WrongTransportSSL extends BaseDevTest {
         try {
             SSLSocketFactory ssf = getSSLSocketFactory(path);
             final String url = "https://" + host + ":" + port + "/";
-            System.out.println("WrongTransportSSL.WrongTransportSSL: url = " + url);
             HttpURLConnection connection = doSSLHandshake(url, ssf);
-            System.out.println("WrongTransportSSL.WrongTransportSSL: connection = " + connection);
             checkStatus(connection);
             parseResponse(connection);
         } catch (Throwable t) {
@@ -106,7 +104,6 @@ public class WrongTransportSSL extends BaseDevTest {
             "--ssl3enabled", "false",
             "--clientauthenabled", "false",
             "https-redirect"));
-
         //  pu-protocol
         report("create-pu-protocol", asadmin("create-protocol",
             "pu-protocol"));
@@ -142,18 +139,6 @@ public class WrongTransportSSL extends BaseDevTest {
         report("returned-location", redirectURL.equals(connection.getHeaderField("location")));
     }
 
-    private void parseResponse(HttpURLConnection connection) throws Exception {
-        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        try {
-            String line;
-            while ((line = in.readLine()) != null) {
-                System.out.println(line);
-            }
-        } finally {
-            in.close();
-        }
-    }
-
     private SSLSocketFactory getSSLSocketFactory(String trustStorePath)
         throws Exception {
         SSLContext sc = SSLContext.getInstance("SSL");
@@ -170,8 +155,6 @@ public class WrongTransportSSL extends BaseDevTest {
         connection.setHostnameVerifier(
             new HostnameVerifier() {
                 public boolean verify(String server, SSLSession session) {
-                    System.out.println("WrongTransportSSL.verify: server = " + server);
-                    System.out.println("WrongTransportSSL.verify: session = " + session);
                     return true;
                 }
             });
@@ -192,5 +175,15 @@ public class WrongTransportSSL extends BaseDevTest {
             stream.close();
         }
         return tms;
+    }
+
+    private void parseResponse(HttpURLConnection connection) throws Exception {
+        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        try {
+            while (in.readLine() != null) {
+            }
+        } finally {
+            in.close();
+        }
     }
 }
