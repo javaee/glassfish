@@ -177,7 +177,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     // ----------------------------------------------------- Instance Variables
 
     @Inject
-    Domain domain;
+    private Domain domain;
     
     @Inject
     private Habitat habitat;
@@ -186,37 +186,37 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     ServerContext _serverContext;
 
     @Inject
-    public ApplicationRegistry appRegistry;
+    private ApplicationRegistry appRegistry;
 
     @Inject
-    ComponentEnvManager componentEnvManager;
+    private ComponentEnvManager componentEnvManager;
 
     @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    Config serverConfig;
+    private Config serverConfig;
 
     @Inject(optional=true)
-    DasConfig dasConfig;
+    private DasConfig dasConfig;
 
     @Inject
-    Events events;
+    private Events events;
 
     @Inject
-    ClassLoaderHierarchy clh;
+    private ClassLoaderHierarchy clh;
 
     @Inject
-    GrizzlyService grizzlyService;
+    private GrizzlyService grizzlyService;
 
     @Inject
-    LoggingConfigImpl logConfig;
+    private LoggingConfigImpl logConfig;
 
     //@Inject
     //MonitoringService monitoringService;
 
     @Inject
-    JavaEEObjectStreamFactory javaEEObjectStreamFactory;
+    private JavaEEObjectStreamFactory javaEEObjectStreamFactory;
 
     @Inject
-    FileLoggerHandler logHandler;
+    private FileLoggerHandler logHandler;
 
     private HashMap<String, WebConnector> connectorMap = new HashMap<String, WebConnector>();
 
