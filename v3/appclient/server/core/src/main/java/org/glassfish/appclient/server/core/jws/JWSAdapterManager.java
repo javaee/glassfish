@@ -50,7 +50,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -206,7 +205,7 @@ public class JWSAdapterManager implements PostConstruct {
                     null);
 
             if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Registered system content adapter serving " + sysAdapter);
+                logger.log(Level.FINE, "Registered system content adapter serving {0}", sysAdapter);
             }
             return sysAdapter;
 
@@ -325,7 +324,8 @@ public class JWSAdapterManager implements PostConstruct {
                 "/org/glassfish/appclient/server/core/jws/templates/systemJarsDocumentTemplate.jnlp");
         final StringBuilder sb = new StringBuilder();
         for (String relativeURIString : systemJARRelativeURIs) {
-            sb.append("<jar href=\"" + signingAlias + "/" + relativeURIString + "\"/>").append(LINE_SEP);
+            sb.append("<jar href=\"").append(signingAlias).append("/")
+                    .append(relativeURIString).append("\"/>").append(LINE_SEP);
         }
         
         final Properties p = new Properties();
@@ -416,8 +416,8 @@ public class JWSAdapterManager implements PostConstruct {
                 addAdapterForUserFriendlyContextRoot(staticContent, dynamicContent,
                 tokens, contributor);
         appClientDeployer.recordContextRoot(appName, clientURIWithinEAR, userFriendlyAppAdapter.contextRoot());
-        logger.fine("Registered at context roots " + appAdapter.contextRoot() + "," +
-                userFriendlyAppAdapter.contextRoot());
+        logger.log(Level.FINE, "Registered at context roots {0},{1}",
+                new Object[]{appAdapter.contextRoot(), userFriendlyAppAdapter.contextRoot()});
         
         addContributorToAppLevelAdapter(appName, contributor);
     }
