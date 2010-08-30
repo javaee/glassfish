@@ -61,6 +61,9 @@ public class SecurityTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_NEW_MESSAGE_SECURITY_CONFIGURATION = "New Message Security Configuration";
     private static final String TRIGGER_EDIT_MESSAGE_SECURITY_CONFIGURATION = "Edit Message Security Configuration";
     private static final String TRIGGER_EDIT_PROVIDER_CONFIGURATION = "Edit Provider Configuration";
+    private static final String ADMIN_PWD_DOMAIN_ATTRIBUTES = "Domain Attributes";
+    private static final String ADMIN_PWD_NEW_ADMINPWD = "New Administrator Password";
+    private static final String ADMIN_PWD_SUCCESS = "New values successfully saved";
 
     @Test
     public void testNewSecurityRealm() {
@@ -193,5 +196,16 @@ public class SecurityTest extends BaseSeleniumTestClass {
 
         clickAndWait("treeForm:tree:configurations:server-config:security:messageSecurity:messageSecurity_link", TRIGGER_MESSAGE_SECURITY_CONFIGURATIONS);
         deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", LAYER_NAME);
+    }
+
+    @Test
+    public void testNewAdminPassword() {
+        final String userPassword = "admin" + generateRandomString();
+
+        clickAndWait("treeForm:tree:nodes:nodes_link", ADMIN_PWD_DOMAIN_ATTRIBUTES);
+        clickAndWait("propertyForm:domainTabs:adminPassword", ADMIN_PWD_NEW_ADMINPWD);
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:newPasswordProp:NewPassword", userPassword);
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:confirmPasswordProp:ConfirmPassword", userPassword);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", ADMIN_PWD_SUCCESS);
     }
 }
