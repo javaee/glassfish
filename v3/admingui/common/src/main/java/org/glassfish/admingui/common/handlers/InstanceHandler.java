@@ -177,10 +177,9 @@ public class InstanceHandler {
             Map<String, Object> payload = new HashMap<String, Object>();
             deleteJvmOptions(handlerCtx);
             for (Map<String, String> oneRow : options) {
-                String value = oneRow.get(PROPERTY_VALUE);
-                if (value.startsWith("-XX:"))
-                    value = "\"" + value + "\"";
-                payload.put("id", value);
+                String str = oneRow.get(PROPERTY_VALUE);
+                ArrayList kv = getKeyValuePair(str);
+                payload.put((String)kv.get(0), kv.get(1));
                 addJvmOption(endpoint,payload);
             }
         } catch (Exception ex) {
@@ -189,8 +188,7 @@ public class InstanceHandler {
     }
 
     public static void addJvmOption(String endpoint, Map payload) throws Exception{
-        if (endpoint.contains("/profiler")) {
-            endpoint = endpoint.substring(0, endpoint.indexOf("/profiler")) + "/jvm-options";
+        if (endpoint.contains("profiler")) {
             payload.put("profiler", "true");
         }
         RestResponse response = RestApiHandlers.post(endpoint, payload);
@@ -205,9 +203,8 @@ public class InstanceHandler {
         ArrayList list = getJvmOptions(handlerCtx);
         for (Object s: list) {
             String str = (String)s;
-            if (str.startsWith("-XX:"))
-                str = "\"" + str + "\"";
-            payload.put("id", str);
+            ArrayList kv = getKeyValuePair(str);
+            payload.put((String)kv.get(0), kv.get(1));
             if (endpoint.contains("/profiler")) {
                 endpoint = endpoint.substring(0, endpoint.indexOf("/profiler")) + "/jvm-options";
                 payload.put("profiler", "true");
@@ -217,6 +214,24 @@ public class InstanceHandler {
                 throw new Exception (response.getResponseBody());
             }
         }
+    }
+
+    private static ArrayList getKeyValuePair(String str) {
+        ArrayList list = new ArrayList(2);
+        int index = str.indexOf("=");
+        String key = "";
+        String value = "";
+        if (index != -1) {
+            key = str.substring(0,str.indexOf("="));
+            value = str.substring(str.indexOf("=")+1,str.length());
+        } else {
+            key = str;
+        }
+        if (key.startsWith("-XX:"))
+            key = "\"" + key + "\"";
+        list.add(0, key);
+        list.add(1, value);
+        return list;
     }
     
     /**
