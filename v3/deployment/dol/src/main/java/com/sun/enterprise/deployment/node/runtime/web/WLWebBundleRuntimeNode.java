@@ -41,6 +41,7 @@
 package com.sun.enterprise.deployment.node.runtime.web;
 
 import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.JmsDestinationReferenceDescriptor;
 import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
 import com.sun.enterprise.deployment.Role;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
@@ -49,9 +50,11 @@ import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.deployment.node.runtime.RuntimeBundleNode;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.node.runtime.common.WLResourceDescriptionNode;
+import com.sun.enterprise.deployment.node.runtime.common.WLResourceEnvDescriptionNode;
 import com.sun.enterprise.deployment.node.runtime.common.WLSecurityRoleAssignmentNode;
 import com.sun.enterprise.deployment.runtime.common.WLSecurityRoleAssignment;
 import com.sun.enterprise.deployment.runtime.common.ResourceRef;
+import com.sun.enterprise.deployment.runtime.common.ResourceEnvRef;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
@@ -103,6 +106,8 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
                 WLSecurityRoleAssignmentNode.class);
         registerElementHandler(new XMLElement(RuntimeTagNames.RESOURCE_DESCRIPTION),
                 WLResourceDescriptionNode.class);
+        registerElementHandler(new XMLElement(RuntimeTagNames.RESOURCE_ENV_DESCRIPTION),
+                WLResourceEnvDescriptionNode.class);
         registerElementHandler(new XMLElement(RuntimeTagNames.SESSION_DESCRIPTOR),
                 WLSessionDescriptorNode.class);
         registerElementHandler(new XMLElement(RuntimeTagNames.JSP_DESCRIPTOR),
@@ -188,11 +193,20 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
                 }
             }
         } else if (newDescriptor instanceof ResourceRef) {
-            ResourceRef resourceRef = (ResourceRef) newDescriptor;
+            ResourceRef resourceRef = (ResourceRef)newDescriptor;
             descriptor.getSunDescriptor().addResourceRef(resourceRef);
             try {
                 ResourceReferenceDescriptor rrd = descriptor.getResourceReferenceByName(resourceRef.getResRefName());
                 rrd.setJndiName(resourceRef.getJndiName());
+            } catch (IllegalArgumentException iae) {
+                DOLUtils.getDefaultLogger().warning(iae.getMessage());
+            }
+        } else if (newDescriptor instanceof ResourceEnvRef) {
+            ResourceEnvRef resourceEnvRef = (ResourceEnvRef)newDescriptor;
+            descriptor.getSunDescriptor().addResourceEnvRef(resourceEnvRef);
+            try {
+                JmsDestinationReferenceDescriptor  rrd = descriptor.getJmsDestinationReferenceByName(resourceEnvRef.getResourceEnvRefName());
+                rrd.setJndiName(resourceEnvRef.getJndiName());
             } catch (IllegalArgumentException iae) {
                 DOLUtils.getDefaultLogger().warning(iae.getMessage());
             }
@@ -205,7 +219,7 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
      * write the descriptor class to a DOM tree and return it
      *
      * @param parent node for the DOM tree
-     * @param the descriptor to write
+     * @param bundleDescriptor the descriptor to write
      * @return the DOM tree top node
      */
     public Node writeDescriptor(Node parent, WebBundleDescriptor bundleDescriptor) {
@@ -227,6 +241,15 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
             WLResourceDescriptionNode node = new WLResourceDescriptionNode();
             for (ResourceRef resRef : resourceRefs) {
                 node.writeDescriptor(root, RuntimeTagNames.RESOURCE_DESCRIPTION, resRef);
+            }
+        }
+
+        //resource-env-description*
+        ResourceEnvRef[] resourceEnvRefs = sunWebApp.getResourceEnvRef();
+        if (resourceEnvRefs != null && resourceEnvRefs.length > 0) {
+            WLResourceEnvDescriptionNode node = new WLResourceEnvDescriptionNode();
+            for (ResourceEnvRef resourceEnvRef : resourceEnvRefs) {
+                node.writeDescriptor(root, RuntimeTagNames.RESOURCE_ENV_DESCRIPTION, resourceEnvRef);
             }
         }
 

@@ -326,6 +326,8 @@ public interface RuntimeTagNames extends TagNames {
 
     // Weblogic specific
     public static final String RESOURCE_DESCRIPTION = "resource-description";
+    public static final String RESOURCE_ENV_DESCRIPTION = "resource-env-description";
+    public static final String EJB_REFERENCE_DESCRIPTION = "ejb-reference-description";
     // session-descriptor
     public static final String SESSION_DESCRIPTOR = "session-descriptor";
     public static final String TIMEOUT_SECS = "timeout-secs";
