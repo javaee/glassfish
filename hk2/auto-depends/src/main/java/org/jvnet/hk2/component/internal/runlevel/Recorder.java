@@ -98,7 +98,7 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
       if (null != rl) {
         if (null == rl.environment() || Void.class == rl.environment()) {
           // we record it anyway, for good measure during shutdown
-          activations.add(0, inhabitant);
+          activations.add(inhabitant);
           
           // verify it is not to a bad dependency
           if (rl.value() > runLevel) {
@@ -111,7 +111,9 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
   }
 
   /**
-   * Causes release of the entire activationSet
+   * Causes release of the entire activationSet.  Release occurs in the inverse
+   * order of the recordings.  So A->B->C will have startUp ordering be (C,B,A)
+   * because of dependencies.  The shutdown ordering will b (A,B,C).
    */
   public synchronized void release() {
     int pos = activations.size();

@@ -26,6 +26,7 @@ import org.jvnet.hk2.component.internal.runlevel.Recorder;
 import org.jvnet.hk2.junit.Hk2Runner;
 import org.jvnet.hk2.junit.Hk2RunnerOptions;
 import org.jvnet.hk2.test.runlevel.NonRunLevelWithRunLevelDepService;
+import org.jvnet.hk2.test.runlevel.RunLevelServiceBase;
 import org.jvnet.hk2.test.runlevel.RunLevelServiceNegOne;
 import org.jvnet.hk2.test.runlevel.ServiceA;
 import org.jvnet.hk2.test.runlevel.ServiceB;
@@ -279,7 +280,7 @@ public class RunLevelServiceTest {
    * @throws Exception 
    */
   @Test
-  public void serviceABC() throws Exception {
+  public void serviceABC_startUp_and_shutDown() throws Exception {
     installTestRunLevelService(false);
     
     Field fldCurrent = DefaultRunLevelService.class.getDeclaredField("current");
@@ -298,11 +299,14 @@ public class RunLevelServiceTest {
     fldUpSide.setAccessible(true);
     fldUpSide.set(defRLS, true);
 
+    RunLevelServiceBase.count = 0;
+    
     assertNotNull(h.getComponent(ServiceB.class));
     assertNotNull(h.getComponent(ServiceA.class));
     assertNotNull(h.getComponent(ServiceC.class));
 
     assertEquals(recorders.toString(), 1, recorders.size());
+    assertEquals("count", 3, RunLevelServiceBase.count);
 
     Recorder recorder = recorders.get(10);
     assertNotNull(recorder);
@@ -319,20 +323,30 @@ public class RunLevelServiceTest {
     assertTrue(iC.isInstantiated());
     
     Iterator<Inhabitant<?>> iter = activations.iterator();
-    assertSame("order is important", iA, iter.next());
-    assertSame("order is important", iB, iter.next());
     assertSame("order is important", iC, iter.next());
-    
+    assertSame("order is important", iB, iter.next());
+    assertSame("order is important", iA, iter.next());
+
     Method resetMthd = DefaultRunLevelService.class.getDeclaredMethod("reset", (Class<?>[])null);
     resetMthd.setAccessible(true);
     resetMthd.invoke(defRLS, (Object[])null);
     
+    RunLevelServiceBase a = (RunLevelServiceBase) iA.get();
+    RunLevelServiceBase b = (RunLevelServiceBase) iB.get();
+    RunLevelServiceBase c = (RunLevelServiceBase) iC.get();
+    
+    RunLevelServiceBase.count = 0;
     defRLS.proceedTo(0);
     assertFalse(iB.isInstantiated());
     assertFalse(iA.isInstantiated());
     assertFalse(iC.isInstantiated());
 
     assertEquals(recorders.toString(), 0, recorders.size());
+    assertEquals("count", 3, RunLevelServiceBase.count);
+    
+    assertEquals("order is important on shutdown too: A", 0, a.countStamp);
+    assertEquals("order is important on shutdown too: B", 1, b.countStamp);
+    assertEquals("order is important on shutdown too: C", 2, c.countStamp);
 
     assertListenerState(true, false, false);
   }
@@ -596,6 +610,7 @@ public class RunLevelServiceTest {
    */
   private void assertRecorderState() {
     assertFalse(recorders.toString(), recorders.isEmpty());
+//    System.out.println(recorders);
     // we could really do more here...
   }
   

@@ -19,7 +19,6 @@ import org.jvnet.hk2.test.runlevel.ARunLevel;
 import org.jvnet.hk2.test.runlevel.SomeOtherRunLevelService;
 
 import com.sun.hk2.component.ExistingSingletonInhabitant;
-import com.sun.hk2.component.TestInhabitantListener;
 import com.sun.hk2.component.TestRunLevelInhabitant;
 
 /**
