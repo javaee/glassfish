@@ -65,9 +65,19 @@
 
     <target name="clean">
       <antcall target="clean-common"/>
+      <delete dir="${basedir}/WEB-INF/classes" failonerror="false"/>
     </target>
 
-    <target name="deploy">
+    <target name="compile">
+  	<mkdir dir="${basedir}/WEB-INF/classes"/>
+  	<javac srcdir="${basedir}/src"
+    	destdir="${basedir}/WEB-INF/classes"
+        classpath="${env.S1AS_HOME}/modules/javax.servlet.jar"
+    	debug="on"
+	failonerror="true"/>
+    </target>
+
+    <target name="deploy" depends="compile">
       <antcall target="install-exploded">
         <param name="installPath" value="${TEST_HOME_WEB}/test6"/>
       </antcall>

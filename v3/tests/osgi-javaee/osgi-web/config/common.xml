@@ -46,6 +46,28 @@
   <delete dir="${build.base.dir}"/>
 </target>
 
+<target name="common-setup">
+   <mkdir dir="${TEST_HOME_WEB}/common/classes"/>
+   <javac srcdir="${TEST_HOME_WEB}/common"
+    destdir="${TEST_HOME_WEB}/common/classes"
+    debug="on"
+    failonerror="true"/>
+</target>
+
+<target name="common-unsetup">
+  <delete dir="${TEST_HOME_WEB}/common/classes" failonerror="false"/>
+</target>
+
+<target name="compile-common">
+  <mkdir dir="${build.base.dir}"/>
+  <echo message="common.xml: Compiling test source files" level="verbose"/>
+  <javac srcdir="${basedir}/src"
+    destdir="${build.base.dir}"
+    classpath="${env.S1AS_HOME}/modules/javax.servlet.jar:${env.S1AS_HOME}/osgi/felix/bin/felix.jar:${env.S1AS_HOME}/modules/jersey-core.jar"
+    debug="on"
+    failonerror="true"/>
+</target>
+
 <target name="package">
   <exec executable="mvn" failonerror="false" resultproperty="PackageFailure">
      <arg value="package"/>
@@ -63,8 +85,15 @@
 
 <target name="package-war">  
   <echo message="Creating ${appname}.war file"/>
-  <jar destfile="${destfile}" basedir="${build.classes.dir}" manifest="${manifest.mf}">
+  <copy toDir="${build.classes.dir}/WEB-INF/classes" failonerror="false">
+        <fileset dir="${build.base.dir}"/>
+  </copy>
+  <jar destfile="${destfile}" manifest="${manifest.mf}">
+	<fileset dir="${build.classes.dir}"
+	     excludes="**/main/**"
+	/>
   </jar>
+  <delete dir="${build.classes.dir}/WEB-INF/classes" failonerror="false"/>
 </target>
 
 <target name="deploy-application">
@@ -135,7 +164,7 @@
 <target name="report" if="FailStatus"> 
    <java classname="Reporter">
       <classpath>
-        <pathelement path="${TEST_HOME_WEB}/common"/>
+        <pathelement path="${TEST_HOME_WEB}/common/classes"/>
       </classpath>
       <arg value="${testname}"/>
       <arg value="${FailStatus}"/>
@@ -146,7 +175,7 @@
 <target name="test">
    <java classname="TestClient">
       <classpath>
-        <pathelement path="${TEST_HOME_WEB}/common"/>
+        <pathelement path="${TEST_HOME_WEB}/common/classes"/>
       </classpath>
       <arg value="${testURL}"/>
       <arg value="${testname}"/>
@@ -157,7 +186,7 @@
 <target name="generateSummary">
    <java classname="Reporter">
       <classpath>
-        <pathelement path="${TEST_HOME_WEB}/common"/>
+        <pathelement path="${TEST_HOME_WEB}/common/classes"/>
       </classpath>
       <arg value="${TestResultFile}"/>
       <arg value="${TestSummaryFile}"/>

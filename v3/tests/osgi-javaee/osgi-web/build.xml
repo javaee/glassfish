@@ -52,10 +52,12 @@
     &commonProperties;
 
     <target name="setup">
+        <antcall target="common-setup"/>
         <ant dir="framework-controller" target="setup"/>
     </target>
 
     <target name="unsetup">
+        <antcall target="common-unsetup"/>
         <ant dir="framework-controller" target="unsetup"/>
     </target> 
 
@@ -67,9 +69,7 @@
         <ant dir="hybridapp1" target="all"/>
         <ant dir="test1" target="all"/>
         <ant dir="test2" target="all"/>
-        <ant dir="test3" target="all"/>
         <ant dir="test4" target="all"/>
-        <ant dir="test5" target="all"/>
         <ant dir="test6" target="all"/>
         <ant dir="test7" target="all"/>
         <record name="osgi-javaee.output" action="stop" />
@@ -85,9 +85,7 @@
         <ant dir="hybridapp1" target="clean"/>
         <ant dir="test1" target="clean"/>
         <ant dir="test2" target="clean"/>
-        <ant dir="test3" target="clean"/>
         <ant dir="test4" target="clean"/>
-        <ant dir="test5" target="clean"/>
         <ant dir="test6" target="clean"/>
         <ant dir="test7" target="clean"/>
     </target>

@@ -69,7 +69,7 @@
 
     <target name="setup" depends="package-app, deploy-app"/>
 
-    <target name="package-app">
+    <target name="package-app" depends="compile-common">
       <mkdir dir="${basedir}/generated" />
       <antcall target="package-war">
         <param name="destfile" value="${basedir}/generated/${appname}.war"/>
