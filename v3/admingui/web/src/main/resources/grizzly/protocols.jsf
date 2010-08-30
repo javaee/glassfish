@@ -107,8 +107,8 @@
                 gf.restRequest(endpoint="#{pageSession.networkListenerUrl}/#{listener}.json",
                                method="get",
                                result="#{pageSession.networkListAttrs}");
-                if ("#{pageSession.networkListAttrs.data.entity['protocol']}=#{protocol['Name']}"){
-                    listAdd(value="#{pageSession.networkListAttrs.data.entity['name']}" list="#{pageSession.listenerList}");
+                if ("#{pageSession.networkListAttrs.data.extraProperties.entity['protocol']}=#{protocol['name']}"){
+                    listAdd(value="#{pageSession.networkListAttrs.data.extraProperties.entity['name']}" list="#{pageSession.listenerList}");
                 }
             }
             mapPut(map="#{protocol}" key="listenerList"  value="#{pageSession.listenerList}");
