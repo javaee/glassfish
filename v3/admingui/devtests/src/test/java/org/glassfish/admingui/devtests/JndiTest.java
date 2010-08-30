@@ -247,7 +247,7 @@ public class JndiTest extends BaseSeleniumTestClass {
     }
 
     @Test
-    public void testExternalResourcesTargets() {
+    public void testExternalResourcesWithTargets() {
         final String resourceName = generateRandomString();
         final String description = resourceName + " - description";
         final String instanceName = generateRandomString();

@@ -91,7 +91,7 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
     }
 
     @Test
-    public void testAddingConnectionFactoriesTargets() throws Exception {
+    public void testAddingConnectionFactoriesWithTargets() throws Exception {
         final String poolName = generateRandomString();
         final String description = "Test Pool - " + poolName;
         final String instanceName = generateRandomString();
@@ -201,7 +201,7 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
     }
 
     @Test
-    public void testAddingDestinationResourcesTargets() throws Exception {
+    public void testAddingDestinationResourcesWithTargets() throws Exception {
         final String resourceName = generateRandomString();
         final String instanceName = generateRandomString();
         final String description = "Test Destination - " + resourceName;

@@ -68,7 +68,12 @@
                         result="#{requestScope.foo}");
                 }
                 createMap(result="#{requestScope.attrMap}");
-                mapPut(map="#{requestScope.attrMap}" key="target" value="domain");
+                if ("#{pageSession.childType}=admin-object-resource") {
+                    mapPut(map="#{requestScope.attrMap}" key="target" value="server-config");
+                }
+                if ("!(#{pageSession.childType}=admin-object-resource)") {
+                    mapPut(map="#{requestScope.attrMap}" key="target" value="domain");
+                }
                 gf.restRequest(
                     endpoint="#{pageSession.parentUrl}/#{pageSession.childType}/#{requestScope.encodedResName}"
                     attrs="#{requestScope.attrMap}"
