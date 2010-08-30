@@ -102,6 +102,7 @@
             <ant dir="simple-managed-bean-interceptor" target="${smoke-target}"/>
             <ant dir="cdi-servlet-3.0-annotation" target="${smoke-target}"/>
             <ant dir="cdi-servlet-filter-3.0-annotation" target="${smoke-target}"/>
+            <ant dir="simple-wab-with-cdi" target="${smoke-target}"/>
             <ant dir="simple-ear" target="${smoke-target}"/>
         <record name="smoke.output" action="stop" />
     </target>
