@@ -48,6 +48,7 @@ var envVars = wshShell.Environment("PROCESS");
 var pathSep = ";";
 
 var prelim_AS_INSTALL = new String(envVars("AS_INSTALL"));
+var javaProgram = new String(envVars("JAVA"));
 var driveLetter = prelim_AS_INSTALL.substring(0,1).toUpperCase();
 var AS_INSTALL = driveLetter + prelim_AS_INSTALL.substring(1);
 
@@ -55,6 +56,7 @@ var AS_INSTALL_MOD = AS_INSTALL + "\\modules";
 
 var builtinEndorsedDirSetting = AS_INSTALL + "\\lib\\endorsed" + pathSep +
     AS_INSTALL_MOD + "\\endorsed";
+var mainClassIdentRequired = 1;
 
 var appcPath = envVars("APPCPATH");
 
@@ -95,8 +97,10 @@ if (appcPath != "") {
 }
 
 if (jvmMainArgs == "") {
-    accMainArgs = "-usage";
-    jvmMainArgs = "-jar " + accJar;
+    if (mainClassIdentRequired == 1) {
+        accMainArgs = "-usage";
+        jvmMainArgs = "-jar " + accJar;
+    }
 }
 /*
  * The next statement emits a "set" command which assigns the java command to be
@@ -105,7 +109,7 @@ if (jvmMainArgs == "") {
  * command.  Defining the env. variable from this
  * script does not work; the scope is not right.
  */
-var javaCmd = "java " + finishJVMArgs() + " -javaagent:" +
+var javaCmd = javaProgram + " " + finishJVMArgs() + " -javaagent:" +
     accJar + accArgs + "," + accMainArgs + " " +
     jvmMainArgs + " " + appArgs;
 
@@ -138,6 +142,9 @@ function processArgs() {
             matched = matchTo(token, accNonvaluedOptions);
             if (matched != null) {
                 recordACCArg(token);
+                if ((token == "-usage") || (token == "-help")) {
+                    mainClassIdentRequired = 0;
+                }
             }
         }
         if (matched == null) {

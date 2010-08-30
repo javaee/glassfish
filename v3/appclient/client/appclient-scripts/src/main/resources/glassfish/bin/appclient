@@ -99,10 +99,23 @@ accMainArgs=
 expecting=
 
 AS_INSTALL=`dirname $0`/..
+case "`uname`" in
+  CYGWIN*) AS_INSTALL=`cygpath --windows $AS_INSTALL`
+esac
+. "${AS_INSTALL}/config/asenv.conf"
+
+# asenv.conf currently overwrites AS_INSTALL (incorrectly).  So set it back.
+AS_INSTALL=`dirname $0`/..
+JAVA=java
+# Depends upon Java from ../config/asenv.conf
+if [ ${AS_JAVA} ]; then
+    JAVA=${AS_JAVA}/bin/java
+fi
 AS_INSTALL_MOD=$AS_INSTALL/modules
 
 builtinEndorsedDirsValue=$AS_INSTALL/lib/endorsed:$AS_INSTALL_MOD/endorsed
 userEndorsedDirsSetting=
+mainClassIdentRequired=1
 
 jvmArgs=-Dcom.sun.aas.installRoot=$AS_INSTALL\ -Djava.security.policy=$AS_INSTALL/lib/appclient/client.policy\ -Djava.system.class.loader=org.glassfish.appclient.client.acc.agent.ACCAgentClassLoader\ -Djava.security.auth.login.config=$AS_INSTALL/lib/appclient/appclientlogin.conf
 if [ "$VMARGS" != "" ]; then
@@ -349,6 +362,10 @@ for x do
         # The next case must refer to all valid ACC options that expect no value
         -textauth|-noappinvoke|-usage|-help)
             recordACCArg $x; expecting=
+            case $x in
+                -usage|-help)
+                    mainClassIdentRequired=0 ;;
+            esac
             ;;
 
         -*)
@@ -370,10 +387,12 @@ if [ "$APPCPATH" != "" ]; then
     accArgs=$accArgs,appcpath=\"$APPCPATH\"
 fi
 if [ "$jvmMainArgs" = "" ]; then
-    accMainArgs=-usage
-    jvmMainArgs=-jar\ $accJar
+    if [ $mainClassIdentRequired -eq 1 ]; then
+        recordACCArg -usage
+        jvmMainArgs=-jar\ $accJar
+    fi
 fi
 finishJVMArgs
-exec java $jvmArgs -javaagent:$accJar=mode=acscript${accArgs},$accMainArgs \
+exec $JAVA $jvmArgs -javaagent:$accJar=mode=acscript${accArgs},$accMainArgs \
     $jvmMainArgs \
     $appArgs

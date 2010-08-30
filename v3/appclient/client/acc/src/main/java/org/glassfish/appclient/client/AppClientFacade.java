@@ -45,12 +45,15 @@ import com.sun.enterprise.deployment.node.SaxParserHandlerBundled;
 import com.sun.enterprise.universal.glassfish.TokenResolver;
 import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.SystemPropertyConstants;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.CharArrayWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.instrument.Instrumentation;
@@ -87,11 +90,9 @@ import org.glassfish.appclient.client.acc.Util;
 import org.glassfish.appclient.client.acc.config.AuthRealm;
 import org.glassfish.appclient.client.acc.config.ClientContainer;
 import org.glassfish.appclient.client.acc.config.ClientCredential;
-import org.glassfish.appclient.client.acc.config.LogService;
 import org.glassfish.appclient.client.acc.config.MessageSecurityConfig;
 import org.glassfish.appclient.client.acc.config.Property;
 import org.glassfish.appclient.client.acc.config.TargetServer;
-import org.glassfish.appclient.client.jws.boot.LaunchSecurityHelper;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -104,6 +105,7 @@ import org.xml.sax.XMLReader;
 public class AppClientFacade {
 
     private static final String SUN_ACC_CONTENT_PROPERTY_NAME = "sun-acc.xml.content";
+    private static final String MAN_PAGE_PATH = "/org/glassfish/appclient/client/acc/appclient.1m";
 
     private static final Class<?> stringsAnchor = ACCClassLoader.class;
     private static LocalStringManager localStrings = new LocalStringManagerImpl(stringsAnchor);
@@ -195,15 +197,16 @@ public class AppClientFacade {
         AppclientCommandArguments appClientCommandArgs = AppclientCommandArguments
                 .newInstance(effectiveCommandLineArgs);
 
-        if (appClientCommandArgs.isUsage() || appClientCommandArgs.isHelp()) {
-            usage(0);
-        }
         /*
          * Process the agent arguments which include most of the appclient script
          * arguments.
          */
         launchInfo = CommandLaunchInfo.newInstance(agentArgsText);
-
+        if (launchInfo.getAppclientCommandArguments().isUsage()) {
+            usage(0);
+        } else if (launchInfo.getAppclientCommandArguments().isHelp()) {
+            help();
+        }
         /*
          * Handle the legacy env. variable APPCPATH.
          */
@@ -275,6 +278,25 @@ public class AppClientFacade {
     private static void usage(final int exitStatus) {
         System.err.println(getUsage());
         System.exit(exitStatus);
+    }
+
+    private static void help() throws IOException {
+        final InputStream is = AppClientFacade.class.getResourceAsStream(MAN_PAGE_PATH);
+        if (is == null) {
+            usage(0);
+        }
+        final BufferedReader helpReader = new BufferedReader(new InputStreamReader(is));
+        String line;
+        try {
+            while ((line = helpReader.readLine()) != null) {
+                System.err.println(line);
+            }
+        } finally {
+            if (is != null) {
+                is.close();
+            }
+            System.exit(0);
+        }
     }
 
     private static String getUsage() {

@@ -44,6 +44,15 @@ rem * and open the template in the editor.
 rem */
 setlocal
 set AS_INSTALL=%~dp0..
+call "%AS_INSTALL%\config\asenv.bat"
+REM asenv.bat currently overwrites AS_INSTALL (incorrectly).  So set it back.
+set AS_INSTALL=%~dp0..
+if "%AS_JAVA%x" == "x" goto UsePath
+set JAVA="%AS_JAVA%\bin\java"
+goto run
+:UsePath
+set JAVA=java
+:run
 set inputArgs=%*
 for /F "tokens=*" %%a in ('cscript //nologo "%AS_INSTALL%\bin\appclient.js"') do %%a
 %javaCmd%
