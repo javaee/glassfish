@@ -46,6 +46,7 @@ import org.glassfish.web.ha.authenticator.HASSOFactory;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Implementation of WebContainerFeatureFactory which returns web container
@@ -56,10 +57,10 @@ import org.jvnet.hk2.annotations.Service;
 @Service(name="ha")
 public class HAWebContainerFeatureFactoryImpl extends PEWebContainerFeatureFactoryImpl {
     @Inject
-    HASSOFactory haSSOFactory;
+    private Habitat habitat;
 
     @Override
     public SSOFactory getSSOFactory() {
-        return haSSOFactory;
+        return habitat.getComponent(HASSOFactory.class);
     }
 }
