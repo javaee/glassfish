@@ -61,7 +61,7 @@
         <sun:button id="addSharedTableButton" disabled="#{false}" text="$resource{i18nc.jvmOptions.AddJvmOption}" >
             <!command
                 getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                addRowToTable(TableRowGroup="$attribute{tableRowGroup}", NameList={"Name", "Value", "Description"});
+                addRowToTable(TableRowGroup="$attribute{tableRowGroup}", NameList={"name", "value", "description"});
             />                                 
         </sun:button>
         <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}">
@@ -85,7 +85,7 @@
                 onClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"
             />
         </sun:tableColumn>                    
-        <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="Value" rowHeader="$boolean{false}" id="col3">
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="value" rowHeader="$boolean{false}" id="col3">
             <sun:textField columns="$int{100}" maxLength="#{sessionScope.fieldLengths['maxLength.jvm.PropertyValue']}" id="col1St" value="#{td.value.value}" />
         </sun:tableColumn>
         "<br/>
