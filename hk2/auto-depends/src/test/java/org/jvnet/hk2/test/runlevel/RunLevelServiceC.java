@@ -2,7 +2,6 @@ package org.jvnet.hk2.test.runlevel;
 
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.test.contracts.TestingInfoService;
 
 /**
  * @see RunLevelServiceTest
@@ -11,18 +10,6 @@ import org.jvnet.hk2.test.contracts.TestingInfoService;
  */
 @RunLevel(10)
 @Service
-public class RunLevelServiceC implements TestingInfoService, ServiceC {
-
-  private boolean destroyed;
-  
-  @Override
-  public void preDestroy() {
-    destroyed = true;
-  }
-
-  @Override
-  public boolean isPreDestroyed() {
-    return destroyed;
-  }
+public class RunLevelServiceC extends RunLevelServiceBase implements ServiceC {
   
 }
