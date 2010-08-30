@@ -92,6 +92,9 @@ public class CollectLogFiles implements AdminCommand {
     private String outputFilePath;
 
     @Inject
+    ServerEnvironment env;
+
+    @Inject
     Domain domain;
 
     @Inject
@@ -131,29 +134,33 @@ public class CollectLogFiles implements AdminCommand {
             if (targetServer != null && targetServer.isDas()) {
 
                 // This loop if target instance is DAS
-                File file = new File(outputFilePath + File.separator + "server");
-                file.mkdir();
 
-                // Getting currenet Log File
-                File logFile = gf.getCurrentLogFile();
+                File tempDirectory = new File(outputFilePath + File.separator + "server");
+                tempDirectory.mkdir();
 
-                // File to copy in output file path.
-                File toFile = new File(file, logFile.getName());
+                // Getting all Log Files
+                File logsDir = new File(env.getDomainRoot() + File.separator + "logs");
+                File allLogFileNames[] = logsDir.listFiles();
+                for (File logFile : allLogFileNames) {
+                    // File to copy in output file path.
+                    File toFile = new File(tempDirectory, logFile.getName());
 
-                FileInputStream from = null;
-                FileOutputStream to = null;
+                    FileInputStream from = null;
+                    FileOutputStream to = null;
 
-                // Copying File
-                from = new FileInputStream(logFile);
-                to = new FileOutputStream(toFile);
-                byte[] buffer = new byte[4096];
-                int bytesRead;
+                    // Copying File
+                    from = new FileInputStream(logFile);
+                    to = new FileOutputStream(toFile);
+                    byte[] buffer = new byte[4096];
+                    int bytesRead;
 
-                while ((bytesRead = from.read(buffer)) != -1)
-                    to.write(buffer, 0, bytesRead); // write
+                    while ((bytesRead = from.read(buffer)) != -1)
+                        to.write(buffer, 0, bytesRead); // write
 
-                if (!toFile.exists()) {
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    if (!toFile.exists()) {
+                        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    }
+
                 }
 
                 try {
@@ -175,6 +182,8 @@ public class CollectLogFiles implements AdminCommand {
                     report.setFailureCause(e);
                 }
 
+                tempDirectory.delete();
+
             } else {
                 // This loop if target is not DAS
 
@@ -188,7 +197,7 @@ public class CollectLogFiles implements AdminCommand {
                 for (Server instance : instances) {
                     // downloading log files for all instances which is part of cluster under temp directory.
                     String instanceName = instance.getName();
-                    new LogFilterForInstance().getInstanceLogFile(habitat, instance,
+                    new LogFilterForInstance().downloadAllInstanceLogFiles(habitat, instance,
                             domain, logger, instanceName, tempDirectory.getAbsolutePath());
                 }
 

@@ -181,12 +181,33 @@ public class LogFilter {
         }
     }
 
+    public Vector getInstanceLogFileNames(String instanceName) {
+        Server targetServer = domain.getServerNamed(instanceName);
+        Vector allInstanceFileNames = new Vector();
+
+        if(targetServer.isDas()) {
+            File logsDir = new File(env.getDomainRoot() + File.separator + "logs" );
+            File allLogFileNames[] = logsDir.listFiles();
+            for(File fName : allLogFileNames) {
+                allInstanceFileNames.add(fName.getName());
+            }            
+        } else {
+            try {
+                allInstanceFileNames = new LogFilterForInstance().getInstanceLogFileNames(habitat,targetServer,domain,logger,instanceName);
+            } catch(IOException ex){
+                logger.log(Level.WARNING, "logging.backend.error.fetchrecord", ex);
+                throw new RuntimeException(ex);    
+            }
+        }
+        return allInstanceFileNames;
+    }
+
+
     public AttributeList getLogRecordsUsingQuery(
             String logFileName, Long fromRecord, Boolean next, Boolean forward,
             Integer requestedCount, Date fromDate, Date toDate,
             String logLevel, Boolean onlyLevel, List listOfModules,
             Properties nameValueMap, String anySearch, String instanceName, boolean logFileRefresh) {
-
 
         Server targetServer = domain.getServerNamed(instanceName);
 
@@ -204,13 +225,13 @@ public class LogFilter {
             // Right now user needs to go through this URL to setup and configure ssh http://wikis.sun.com/display/GlassFish/3.1SSHSetup
 
             File logFileOnServer = new File(env.getDomainRoot().getAbsolutePath() + File.separator + "logs"
-                    + File.separator + instanceName + File.separator + "server.log");
+                    + File.separator + instanceName + File.separator + logFileName);
 
             if (!logFileOnServer.exists()) {
                 // if log file is not found on server then need to download
                 try {
                     instanceLogFile = new LogFilterForInstance().getInstanceLogFile(habitat, targetServer,
-                            domain, logger, instanceName, env.getDomainRoot().getAbsolutePath());
+                            domain, logger, instanceName, env.getDomainRoot().getAbsolutePath(),logFileName);
                 } catch (IOException e) {
                     logger.log(Level.WARNING, "logging.backend.error.instance", e);
                     throw new RuntimeException(e);
@@ -220,7 +241,7 @@ public class LogFilter {
                     // if gui sends refresh request for log file.
                     try {
                         instanceLogFile = new LogFilterForInstance().getInstanceLogFile(habitat, targetServer,
-                                domain, logger, instanceName, env.getDomainRoot().getAbsolutePath());
+                                domain, logger, instanceName, env.getDomainRoot().getAbsolutePath(),logFileName);
                     } catch (IOException e) {
                         logger.log(Level.WARNING, "logging.backend.error.instance", e);
                         throw new RuntimeException(e);
