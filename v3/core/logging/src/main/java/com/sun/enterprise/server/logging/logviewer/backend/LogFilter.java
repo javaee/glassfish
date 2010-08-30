@@ -230,7 +230,7 @@ public class LogFilter {
             if (!logFileOnServer.exists()) {
                 // if log file is not found on server then need to download
                 try {
-                    instanceLogFile = new LogFilterForInstance().getInstanceLogFile(habitat, targetServer,
+                    instanceLogFile = new LogFilterForInstance().downloadGivenInstanceLogFile(habitat, targetServer,
                             domain, logger, instanceName, env.getDomainRoot().getAbsolutePath(),logFileName);
                 } catch (IOException e) {
                     logger.log(Level.WARNING, "logging.backend.error.instance", e);
@@ -240,7 +240,7 @@ public class LogFilter {
                 if (logFileRefresh) {
                     // if gui sends refresh request for log file.
                     try {
-                        instanceLogFile = new LogFilterForInstance().getInstanceLogFile(habitat, targetServer,
+                        instanceLogFile = new LogFilterForInstance().downloadGivenInstanceLogFile(habitat, targetServer,
                                 domain, logger, instanceName, env.getDomainRoot().getAbsolutePath(),logFileName);
                     } catch (IOException e) {
                         logger.log(Level.WARNING, "logging.backend.error.instance", e);

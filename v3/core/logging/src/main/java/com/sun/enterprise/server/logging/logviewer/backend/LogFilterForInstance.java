@@ -63,7 +63,7 @@ import java.util.logging.Logger;
  */
 public class LogFilterForInstance {
 
-    public File getInstanceLogFile(Habitat habitat, Server targetServer, Domain domain, Logger logger,
+    public File downloadGivenInstanceLogFile(Habitat habitat, Server targetServer, Domain domain, Logger logger,
                                    String instanceName, String domainRoot, String logFileName) throws IOException {
 
         File instanceLogFile = null;
