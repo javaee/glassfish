@@ -116,7 +116,7 @@ public class ConnectorsTest extends BaseSeleniumTestClass {
     }
 
     @Test
-    public void testJdbcResourcesWithTargets() {
+    public void testConnectorResourcesWithTargets() {
         String testPool = generateRandomString();
         String testConnector = generateRandomString();
         final String instanceName = generateRandomString();
