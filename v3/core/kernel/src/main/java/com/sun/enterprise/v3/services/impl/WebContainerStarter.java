@@ -95,19 +95,19 @@ public class WebContainerStarter
     private static final String TRACE_ENABLED_PROP = "traceEnabled";
 
     @Inject
-    Domain domain;
+    private Domain domain;
 
     @Inject
-    ContainerRegistry containerRegistry;
+    private ContainerRegistry containerRegistry;
 
     @Inject
-    ContainerStarter containerStarter;
+    private ContainerStarter containerStarter;
 
     @Inject
-    ModulesRegistry modulesRegistry;
+    private ModulesRegistry modulesRegistry;
 
     @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    Config serverConfig;
+    private Config serverConfig;
 
     @Inject
     private Habitat habitat;
