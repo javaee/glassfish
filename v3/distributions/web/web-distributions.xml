@@ -194,6 +194,9 @@
 	<replace file="${image.dir}/glassfish/lib/registration/servicetag-registry.xml" 
 		token="%%%SOURCE%%%" value="${source.distribution.name}"/>
 
+        <!-- stage appropriate legal content for this distribution -
+          it is OK to inherit nucleus content at this point     -->
+
 </target>
 
 <target name="install-l10n-packages" description="Installing l10n packages">

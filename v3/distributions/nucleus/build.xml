@@ -97,6 +97,24 @@
 	<replace file="target/stage/${install.dir.name}/glassfish/lib/registration/servicetag-registry.xml" 
 		token="%%%SOURCE%%%" value="${source.distribution.name}"/>
     
+        <!-- stage appropriate legal content for this distribution -->
+
+        <resolveArtifact artifactId="legal-fragment" groupId="org.glassfish.packager" property="legal-fragment.zip"/>
+
+
+        <unzip src="${legal-fragment.zip}"
+           dest="target/stage/${install.dir.name}">
+          <patternset>
+                  <exclude name="META-INF/**"/>
+          </patternset>
+        </unzip>
+
+        <!-- use web profile 3rd party licence file -->
+
+        <delete file="target/stage/${install.dir.name}/glassfish/legal/3RD-PARTY-LICENSE.txt" quiet="true" />
+        <move file="target/stage/${install.dir.name}/glassfish/legal/3RD-PARTY-LICENSE-WEB-PROFILE.txt"
+                tofile="target/stage/${install.dir.name}/glassfish/legal/3RD-PARTY-LICENSE.txt" />
+
 
         <!-- create distribution zip -->
 

@@ -217,5 +217,13 @@
             <version>${project.version}</version>
             <type>distribution-fragment</type>
         </dependency>
+        <!-- additional legal content dependency -->
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>legal-fragment</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+
     </dependencies>
 </project>

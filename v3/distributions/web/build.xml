@@ -72,6 +72,9 @@
 	<replace file="target/stage/${install.dir.name}/glassfish/lib/registration/servicetag-registry.xml" 
 		token="%%%SOURCE%%%" value="${source.distribution.name}"/>
 
+        <!-- stage appropriate legal content for this distribution -
+          it is OK to inherit nucleus content at this point     -->
+
         <!-- create distribution zip-->
        	<zip file="target/web.zip" duplicate="preserve">
             <zipfileset dir="target/stage" filemode="755"

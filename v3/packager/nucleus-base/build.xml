@@ -62,10 +62,8 @@
             <zipfileset prefix="glassfish" dir=".">
                 <include name="*.txt"/>
                 <include name="config/**"/>
-                <include name="legal/**"/>
                 <include name="lib/**"/>
                 <include name="domains/**"/>
-                <include name="COPYRIGHT"/>
             </zipfileset>
         </zip>
         <attachArtifact file="target/nucleus-base.zip"/>
