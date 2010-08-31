@@ -75,9 +75,10 @@ public class DBVendorTypeHelper {
     public final static int INFORMIX_ENUM    = 7;
     public final static int INGRES_ENUM      = 8;
     public final static int DERBY_ENUM       = 9;
+    public final static int SYMFOWARE_ENUM   = 10;
 
     //Please increment following when a new known database is added.
-    public final static int MAX_KNOWN_DB     = 10;
+    public final static int MAX_KNOWN_DB     = 11;
 
     /**
      * Array that defines mapping from given string name to enum.
@@ -85,7 +86,7 @@ public class DBVendorTypeHelper {
      */
     private final static String enumToStringMapping[] =
         {"SQL92", "ORACLE", "POINTBASE", "MSSQL", "SYBASE", "DB2", "MYSQL", 
-         "INFORMIX", "INGRES", "DERBY"}; // NOI18N
+         "INFORMIX", "INGRES", "DERBY", "SYMFOWARE"}; // NOI18N
 
     public final static String DEFAULT_DB  = enumToStringMapping[DEFAULT_DB_ENUM];
     public final static String ORACLE      = enumToStringMapping[ORACLE_ENUM];
@@ -97,6 +98,7 @@ public class DBVendorTypeHelper {
     public final static String INFORMIX    = enumToStringMapping[INFORMIX_ENUM];
     public final static String INGRES      = enumToStringMapping[INGRES_ENUM];
     public final static String DERBY       = enumToStringMapping[DERBY_ENUM];
+    public final static String SYMFOWARE   = enumToStringMapping[SYMFOWARE_ENUM];
 
     private final static String PROPERTY_PATH = "org/glassfish/persistence/common/"; // NOI18N
 

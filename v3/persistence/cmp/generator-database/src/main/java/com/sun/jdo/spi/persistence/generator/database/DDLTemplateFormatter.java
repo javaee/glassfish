@@ -61,6 +61,9 @@ class DDLTemplateFormatter {
     /** Formatter for the start of "create table" DDL. */
     private static MessageFormat createTableStart = null; 
 
+    /** Formatter for the start of "create index" DDL. */
+    private static MessageFormat createIndex = null;
+
     /** Formatter for "add constraint" DDL. */
     private static MessageFormat alterTableAddConstraintStart = null; 
 
@@ -91,6 +94,9 @@ class DDLTemplateFormatter {
     static void reset(MappingPolicy mappingPolicy) {
         createTableStart = new MessageFormat(
                 mappingPolicy.getCreateTableStart());
+	// Added for Symfoware support as indexes on primary keys are mandatory
+        createIndex = new MessageFormat(
+                mappingPolicy.getCreateIndex());
 
         alterTableAddConstraintStart = new MessageFormat(
                 mappingPolicy.getAlterTableAddConstraintStart());
@@ -114,6 +120,13 @@ class DDLTemplateFormatter {
      */
     static String formatCreateTable(Object o) {
         return createTableStart.format(o);
+    }
+
+    /**
+     * @returns A String formatted for the start of "create index" DDL.
+     */
+    static String formatCreateIndex(Object o) {
+        return createIndex.format(o);
     }
 
     /**

@@ -134,6 +134,11 @@ public class DatabaseOutputStream extends OutputStream {
      * statement, or in executing it.
      */
     public void write(String stmt) throws SQLException {
+	// Check if stmt is empty (null), and abort if so.
+        if (stmt == null || stmt.trim().length() == 0) {
+            return;
+        }
+
         PreparedStatement pstmt = conn_.prepareStatement(stmt);
         pstmt.execute();
     }

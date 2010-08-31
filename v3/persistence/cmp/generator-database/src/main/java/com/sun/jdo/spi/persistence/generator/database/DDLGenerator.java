@@ -136,6 +136,9 @@ public class DDLGenerator {
             DDLTemplateFormatter.reset(mappingPolicy);
             String schemaName = schema.getName().getName();
             List createAllTblDDL = new ArrayList();
+            // Added for Symfoware support as Symfoware does not automatically create
+            // indexes for primary keys. Creating indexes is mandatory.
+            List createIndexDDL = new ArrayList();
             List alterAddConstraintsDDL = new ArrayList();
             List alterDropConstraintsDDL = new ArrayList();
             List dropAllTblDDL = new ArrayList();
@@ -147,6 +150,10 @@ public class DDLGenerator {
 
                     createAllTblDDL.add(
                             createCreateTableDDL(table, mappingPolicy));
+		    // Added for Symfoware support as indexes on primary keys are mandatory
+                    if (table.getPrimaryKey() != null) {
+                        createIndexDDL.add(createIndexDDL(table));
+                    }
                     alterAddConstraintsDDL.addAll(
                             createAddConstraintsDDL(table));
                     alterDropConstraintsDDL.addAll(
@@ -157,7 +164,7 @@ public class DDLGenerator {
             }
             String stmtSeparator = mappingPolicy.getStatementSeparator();
             generateSQL(createDDLSql, dropDDLSql, dropDDLJdbc, createDDLJdbc, 
-                (DatabaseOutputStream) dbStream, createAllTblDDL, 
+                (DatabaseOutputStream) dbStream, createAllTblDDL, createIndexDDL,
                 alterAddConstraintsDDL, alterDropConstraintsDDL, dropAllTblDDL,
                 stmtSeparator, dropAndCreateTbl);
         }
@@ -171,6 +178,7 @@ public class DDLGenerator {
      * executes drop in undeployment time
      * @param dbStream for creating table in database
      * @param createAllTblDDL a list of create table statement
+     * @param createIndexDDL a list of create index statement
      * @param alterAddConstraintsDDL a list of adding constraints statement
      * @param alterDropConstraintDDL a list of droping constrains statement
      * @param dropAllTblDDL a list of droping tables statement
@@ -184,7 +192,7 @@ public class DDLGenerator {
     // XXX Fix method body comments.
     private static void generateSQL(OutputStream createSql,
             OutputStream dropSql, OutputStream dropTxt, OutputStream createTxt,
-            DatabaseOutputStream dbStream, List createAllTblDDL,
+            DatabaseOutputStream dbStream, List createAllTblDDL, List createIndexDDL,
             List alterAddConstraintsDDL, List alterDropConstraintsDDL,
             List dropAllTblDDL, String stmtSeparator, boolean dropAndCreateTbl)
             throws DBException, SQLException {
@@ -243,6 +251,15 @@ public class DDLGenerator {
                 }
             }
 
+            // ...then create indexes
+            for (int i = 0; i < createIndexDDL.size(); i++) {
+                String stmt = (String)createIndexDDL.get(i);
+                writeDDL(workStream, txtStream, stmtSeparator, stmt);
+                if (dbStream != null) {
+                    dbStream.write(stmt);
+                }
+            }
+
             // ...then create constraints
             for (int i = 0; i < alterAddConstraintsDDL.size(); i++) {
                 String stmt = (String)alterAddConstraintsDDL.get(i);
@@ -280,6 +297,10 @@ public class DDLGenerator {
      */
     private static void writeDDL(PrintStream sql, PrintStream txt, 
             String stmtSeparator, String stmt) {
+
+        if (stmt == null || stmt.trim().length() == 0) {
+            return;
+        }
 
         sql.println(stmt);
         sql.println(stmtSeparator);
@@ -341,6 +362,20 @@ public class DDLGenerator {
 
         return (String[]) createTblList.toArray(
                 new String[createTblList.size()]);
+    }
+
+    /**
+     * createIndexDDL has been added for Symfoware support. Returns DDL in String form 
+     * to create index.  The returned string has the format:
+     * <pre>
+     * CREATE INDEX table_name.table_name KEY(id, name)
+     * </pre>
+     * @param table Table for which DDL is to be created.
+     * @return DDL to create index.
+     */
+    private static String createIndexDDL(TableElement table) {
+        String[] twoParam = { table.getName().getName() , getColumnNames(table.getPrimaryKey().getColumns()) };
+        return DDLTemplateFormatter.formatCreateIndex(twoParam);
     }
 
     /**

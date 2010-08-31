@@ -235,6 +235,11 @@ public class MappingPolicy implements Cloneable {
     private static final String CREATE_TABLE_END_INDICATOR =
         "createTableEnd"; // NOI18N
 
+    /** The indicator for "create index". Added for Symfoware support as */
+    /** indexes on primary keys are mandatory */
+    private static final String CREATE_INDEX_INDICATOR =
+        "createIndex"; // NOI18N
+
     /** The indicator for starting a "drop table". */
     private static final String DROP_TABLE_INDICATOR =
         "dropTable"; // NOI18N
@@ -412,6 +417,9 @@ public class MappingPolicy implements Cloneable {
 
     /** The SQL for ending a "create table". */
     private String createTableEnd;
+
+    /** The SQL for "create index". */
+    private String createIndex;
 
     /** The SQL for "drop table". */
     private String dropTable;
@@ -1258,6 +1266,13 @@ public class MappingPolicy implements Cloneable {
     }
 
     /**
+     * @return the SQL for "create index".
+     */
+    String getCreateIndex() {
+        return createIndex;
+    }
+
+    /**
      * @return the SQL for a "drop table".
      */
     String getDropTable() {
@@ -1390,6 +1405,9 @@ public class MappingPolicy implements Cloneable {
             } else if (name.startsWith(CREATE_TABLE_END_INDICATOR)) {
                 createTableEnd = value;
 
+            } else if (name.startsWith(CREATE_INDEX_INDICATOR)) {
+                createIndex = value;
+
             } else if (name.startsWith(DROP_TABLE_INDICATOR)) {
                 dropTable = value;
 
@@ -1519,6 +1537,7 @@ public class MappingPolicy implements Cloneable {
             "statementSeparator=" + statementSeparator // NOI18N
             + "\ncreateTableStart=" + createTableStart // NOI18N
             + "\ncreateTableEnd=" + createTableEnd // NOI18N
+            + "\ncreateIndex=" + createIndex // NOI18N
             + "\ndropTable=" + dropTable // NOI18N
             + "\nalterTableAddConstraintStart=" + alterTableAddConstraintStart // NOI18N
             + "\nalterTableDropConstraint=" + alterTableDropConstraint // NOI18N
