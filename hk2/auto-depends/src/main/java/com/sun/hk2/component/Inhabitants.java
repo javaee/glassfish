@@ -90,6 +90,8 @@ public class Inhabitants {
 
       // wrap the inhabitant with a RunLevelInhabitant
       int runLevel = rl.value();
+      
+      // construct the runLevel inhabitant
       i = new RunLevelInhabitant(i, runLevel, rls.getState(), listener);
     }
     

@@ -60,7 +60,7 @@ public class RunLevelInhabitant<T, V> extends EventPublishingInhabitant<T> {
    * inhabitant.
    */
   private final RunLevelState<V> state;
-
+  
   /*public*/ RunLevelInhabitant(Inhabitant<T> delegate,
       int runLevel, RunLevelState<V> state) {
     this(delegate, runLevel, state, null);
@@ -112,4 +112,8 @@ public class RunLevelInhabitant<T, V> extends EventPublishingInhabitant<T> {
     }
   }
 
+  public RunLevelState<?> getState() {
+    return state;
+  }
+  
 }

@@ -36,7 +36,6 @@
  */
 package org.jvnet.hk2.component;
 
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import com.sun.hk2.component.ScopeInstance;

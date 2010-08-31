@@ -39,8 +39,6 @@ package org.jvnet.hk2.component.internal.runlevel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.component.ComponentException;
@@ -63,15 +61,21 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
 /*public*/ class Recorder implements InhabitantListener {
 
   private final int runLevel;
-  private final List<Inhabitant<?>> activations;
+  final List<Inhabitant<?>> activations;
+  private final Class<?> targetEnv;
   
-  Recorder(int runLevel) {
-    this(new ArrayList<Inhabitant<?>>(), runLevel);
+  Recorder(int runLevel, Class<?> targetEnv) {
+    this(new ArrayList<Inhabitant<?>>(), runLevel, targetEnv);
   }
   
   Recorder(List<Inhabitant<?>> list, int runLevel) {
+    this(new ArrayList<Inhabitant<?>>(), runLevel, Void.class);
+  }
+  
+  Recorder(List<Inhabitant<?>> list, int runLevel, Class<?> targetEnv) {
     this.activations = list;
     this.runLevel = runLevel;
+    this.targetEnv = targetEnv;
   }
 
   public int getRunLevel() {
@@ -96,8 +100,7 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
       RunLevel rl = ((AbstractInhabitantImpl<?>)inhabitant).getAnnotation(RunLevel.class);
       // actually, it should really never be null (in real life we could consider tossing an exception)
       if (null != rl) {
-        if (null == rl.environment() || Void.class == rl.environment()) {
-          // we record it anyway, for good measure during shutdown
+        if (null == rl.environment() || targetEnv == rl.environment()) {
           activations.add(inhabitant);
           
           // verify it is not to a bad dependency
@@ -108,26 +111,6 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
       }
     }
     return true;
-  }
-
-  /**
-   * Causes release of the entire activationSet.  Release occurs in the inverse
-   * order of the recordings.  So A->B->C will have startUp ordering be (C,B,A)
-   * because of dependencies.  The shutdown ordering will b (A,B,C).
-   */
-  public synchronized void release() {
-    int pos = activations.size();
-    while (--pos >= 0) {
-      Inhabitant<?> i = activations.get(pos);
-      try {
-        i.release();
-      } catch (Exception e) {
-        // don't percolate the exception since it may negatively impact processing
-        Logger.getAnonymousLogger().log(Level.WARNING, "exception caught during release:", e);
-      }
-    }
-    
-    activations.clear();
   }
 
 }

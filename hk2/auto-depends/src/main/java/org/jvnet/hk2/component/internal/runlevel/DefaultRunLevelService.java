@@ -64,146 +64,114 @@ import com.sun.hk2.component.RunLevelInhabitant;
 /**
  * The default environment RunLevelService implementation.
  * 
- * Assume ServiceA, ServiceB, and ServiceC are all in the same RunLevel and the dependencies are:
- *
- *    ServiceA -> ServiceB -> ServiceC
- *
- * Expected start order: ServiceC, ServiceB, ServiceA
- * Expected shutdown / PreDestroy order: ServiceA, ServiceB, ServiceC
- *
- * So, how do we decide when to record events to the recorder?  The answer is hook into
- * (post) PostConstruct activations.
- *
- * Since the model is not in the habitat, we will just need to randomly pick a start service.
- *
- * Case 1: A, B, then C by RLS.
- * get ServiceA (called by RLS)
- *   Start ServiceA:
- *     get ServiceB
- *       Start ServiceB:
- *         get ServiceC
- *           Start ServiceC
- *           wire ServiceC
- *           PostConstruct ServiceC
- *       wire ServiceB
- *       PostConstruct ServiceB
- *   wire ServiceA
- *   PostConstruct ServiceA
- * get ServiceB (called by RLS)
- * get ServiceC (called by RLS)
- *
- * Case 2: B, C, then A by RLS.
- * get ServiceB (called by RLS)
- *   Start ServiceB:
- *     get ServiceC
- *       Start ServiceC
- *       wire ServiceC
- *       PostConstruct ServiceC
- *   wire ServiceB
- *   PostConstruct ServiceB
- * get ServiceC (called by RLS)
- * get ServiceA (called by RLS)
- * Start ServiceA:
- *   get ServiceB
- *   wire ServiceA
- *   PostConstruct ServiceA
- *
- * Case 3: B, A, then C by RLS.
- * get ServiceB (called by RLS)
- *   Start ServiceB:
- *     get ServiceC
- *       Start ServiceC
- *       wire ServiceC
- *       PostConstruct ServiceC
- *   wire ServiceB
- *   PostConstruct ServiceB
- * get ServiceA (called by RLS)
- *   Start ServiceA:
- *     get ServiceB
- *   wire ServiceA
- *   PostConstruct ServiceA
- * get ServiceC (called by RLS)
- *
- * Case 4: C, B, then A by RLS.
- * get ServiceC (called by RLS)
- *   Start ServiceC:
- *   wire ServiceC
- *   PostConstruct ServiceC
- * get ServiceB (called by RLS)
- *   Start ServiceB:
- *     get ServiceC
- *   wire ServiceB
- *   PostConstruct ServiceB
- *   get ServiceA (called by RLS)
- *     Start ServiceA:
- *       get ServiceB
- *     wire ServiceA
- *     PostConstruct ServiceA
- * get ServiceA (called by RLS)
- *
+ * Assume ServiceA, ServiceB, and ServiceC are all in the same RunLevel and the
+ * dependencies are:
+ * 
+ * ServiceA -> ServiceB -> ServiceC
+ * 
+ * Expected start order: ServiceC, ServiceB, ServiceA Expected shutdown /
+ * PreDestroy order: ServiceA, ServiceB, ServiceC
+ * 
+ * So, how do we decide when to record events to the recorder? The answer is
+ * hook into (post) PostConstruct activations.
+ * 
+ * Since the model is not in the habitat, we will just need to arbitrarily pick
+ * a service instance to start with.
+ * 
+ * Case 1: A, B, then C by RLS. get ServiceA (called by RLS) Start ServiceA: get
+ * ServiceB Start ServiceB: get ServiceC Start ServiceC wire ServiceC
+ * PostConstruct ServiceC wire ServiceB PostConstruct ServiceB wire ServiceA
+ * PostConstruct ServiceA get ServiceB (called by RLS) get ServiceC (called by
+ * RLS)
+ * 
+ * Case 2: B, C, then A by RLS. get ServiceB (called by RLS) Start ServiceB: get
+ * ServiceC Start ServiceC wire ServiceC PostConstruct ServiceC wire ServiceB
+ * PostConstruct ServiceB get ServiceC (called by RLS) get ServiceA (called by
+ * RLS) Start ServiceA: get ServiceB wire ServiceA PostConstruct ServiceA
+ * 
+ * Case 3: B, A, then C by RLS. get ServiceB (called by RLS) Start ServiceB: get
+ * ServiceC Start ServiceC wire ServiceC PostConstruct ServiceC wire ServiceB
+ * PostConstruct ServiceB get ServiceA (called by RLS) Start ServiceA: get
+ * ServiceB wire ServiceA PostConstruct ServiceA get ServiceC (called by RLS)
+ * 
+ * Case 4: C, B, then A by RLS. get ServiceC (called by RLS) Start ServiceC:
+ * wire ServiceC PostConstruct ServiceC get ServiceB (called by RLS) Start
+ * ServiceB: get ServiceC wire ServiceB PostConstruct ServiceB get ServiceA
+ * (called by RLS) Start ServiceA: get ServiceB wire ServiceA PostConstruct
+ * ServiceA get ServiceA (called by RLS)
+ * 
  * ~~~
  * 
  * Note that the implementation performs some level of constraint checking
- * during injection.  For example,
+ * during injection. For example,
  * 
- *  - It is an error to have a RunLevel-annotated service at RunLevel X to
- *    depend on (i.e., be injected with) a RunLevel-annotated service at
- *    RunLevel Y when Y > X.
- *    
- *  - It is an error to have a non-RunLevel-annotated service to depend on
- *  a RunLevel-annotated service at any RunLevel.
- *  
+ * - It is an error to have a RunLevel-annotated service at RunLevel X to depend
+ * on (i.e., be injected with) a RunLevel-annotated service at RunLevel Y when Y
+ * > X.
+ * 
+ * - It is an error to have a non-RunLevel-annotated service to depend on a
+ * RunLevel-annotated service at any RunLevel.
+ * 
  * Note that the implementation does not handle Holder and Collection injection
  * constraint validations.
  * 
  * ~~~
  * 
- * The implementation will automatically proceedTo(-1) after the habitat has been initialized.
+ * The implementation will automatically proceedTo(-1) after the habitat has
+ * been initialized.
  * 
  * Note that all RunLevel values less than -1 will be ignored.
- *
+ * 
  * @author Jeff Trent
- *
+ * 
  * @since 3.1
  */
-public class DefaultRunLevelService
-  implements RunLevelService<Void>, RunLevelState<Void>, InhabitantListener, HabitatListener {
+public class DefaultRunLevelService implements RunLevelService<Void>,
+    RunLevelState<Void>, InhabitantListener, HabitatListener {
 
   static final boolean ASYNC_ENABLED = false;
-  
+
   private final boolean asyncMode;
+
+  private final Class<?> targetEnv;
+  
   private ExecutorService exec;
 
   private final Habitat habitat;
 
   private RunLevelState<Void> delegate;
-  
+
   private volatile Integer current;
+
   private volatile Integer planned;
-  
+
   private final HashMap<Integer, Recorder> recorders;
+
   private volatile Recorder activeRecorder;
+
   private volatile Integer activeRunLevel;
+
   private volatile Boolean upSide;
+
   private volatile Future<?> activeProceedToOp;
 
-  private enum ListenerEvent {
-    PROGRESS,
-    CANCEL,
-    ERROR,
-  }
   
-  public DefaultRunLevelService(Habitat habitat) {
-    this(habitat, ASYNC_ENABLED, new LinkedHashMap<Integer, Recorder>());
+  private enum ListenerEvent {
+    PROGRESS, CANCEL, ERROR,
   }
 
-  DefaultRunLevelService(Habitat habitat, boolean async,
+  public DefaultRunLevelService(Habitat habitat) {
+    this(habitat, ASYNC_ENABLED, Void.class, new LinkedHashMap<Integer, Recorder>());
+  }
+
+  DefaultRunLevelService(Habitat habitat, boolean async, Class<?> targetEnv,
       HashMap<Integer, Recorder> recorders) {
     this.habitat = habitat;
-    assert(null != habitat);
+    assert (null != habitat);
     this.asyncMode = async;
     if (asyncMode) {
-      // TODO: after jdk16 is the std, use cache policy to clear even the single thread after idle time
+      // TODO: after jdk16 is the std, use cache policy to clear even the single
+      // thread after idle time
       exec = Executors.newSingleThreadExecutor(new ThreadFactory() {
         @Override
         public Thread newThread(Runnable runnable) {
@@ -212,44 +180,47 @@ public class DefaultRunLevelService
         }
       });
     }
+    this.targetEnv = targetEnv;
     this.recorders = recorders;
-    
+
     habitat.addHabitatListener(this);
   }
-  
+
   @Override
   public String toString() {
     return getClass().getSimpleName() + "-" + System.identityHashCode(this)
         + "(" + current + ", " + planned + ", " + delegate + ")";
   }
-  
+
   @Override
   public synchronized void proceedTo(final int runLevel) {
     if (runLevel < -1) {
       throw new IllegalArgumentException();
     }
-    
+
     if (null != activeProceedToOp) {
-      Logger.getAnonymousLogger().log(Level.INFO, 
-          "Cancelling activation to runLevel {0} and instead proceeding to {1}",
-          new Object[] {planned, runLevel});
+      Logger.getAnonymousLogger()
+          .log(Level.INFO,
+              "Cancelling activation to runLevel {0} and instead proceeding to {1}",
+              new Object[] { planned, runLevel });
       activeProceedToOp.cancel(true);
       reset();
     }
 
-    assert(null == activeRunLevel);
-    assert(null == planned);
-    
+    assert (null == activeRunLevel);
+    assert (null == planned);
+
     // set planned immediately
     this.planned = runLevel;
-    
+
     if (null != exec) {
       activeProceedToOp = exec.submit(new Runnable() {
         @Override
         public void run() {
           proceedToWorker(runLevel);
           if (Thread.currentThread().isInterrupted()) {
-            DefaultRunLevelService.this.notify(ListenerEvent.CANCEL, null, null);
+            DefaultRunLevelService.this
+                .notify(ListenerEvent.CANCEL, null, null);
           } else {
             synchronized (DefaultRunLevelService.this) {
               DefaultRunLevelService.this.notifyAll();
@@ -284,12 +255,13 @@ public class DefaultRunLevelService
     this.planned = null;
     this.activeProceedToOp = null;
   }
-  
+
   private synchronized void upActiveRecorder(int runLevel) {
     upSide = true;
     activeRunLevel = runLevel;
 
-    // We do not create a Recorder here, and instead wait for notification to come in
+    // We do not create a Recorder here, and instead wait for notification to
+    // come in
 
     // create demand for RunLevel (runLevel) components
     activateRunLevel();
@@ -304,38 +276,64 @@ public class DefaultRunLevelService
     } else {
       activeRecorder = null;
     }
-    
+
     // notify listeners that we are complete
     notify(ListenerEvent.PROGRESS, null, null);
   }
 
   protected void activateRunLevel() {
     // TODO: we could cache this in top-level proceedTo()
-    Collection<Inhabitant<?>> runLevelInhabitants = habitat.getAllInhabitantsByContract(RunLevel.class.getName());
+    Collection<Inhabitant<?>> runLevelInhabitants = habitat
+        .getAllInhabitantsByContract(RunLevel.class.getName());
     for (Inhabitant<?> i : runLevelInhabitants) {
       AbstractInhabitantImpl<?> ai = AbstractInhabitantImpl.class.cast(i);
       RunLevel rl = ai.getAnnotation(RunLevel.class);
 
-      if (rl.value() == activeRunLevel) {
-//        assert(!i.isInstantiated()); -- avoid check since we could have cancelled a previous op
-        Logger.getAnonymousLogger().log(Level.FINE, "activating {0}", i);
+      if (accept(ai, rl)) {
+        RunLevelInhabitant<?,?> rli = RunLevelInhabitant.class.cast(ai);
+        checkBinding(rli);
+        
+        Logger.getAnonymousLogger().log(Level.FINE, "activating {0}", rli);
+
         try {
-          i.get();
-          assert(i.isInstantiated());
-          if (!RunLevelInhabitant.class.isInstance(ai)) {
-            Logger.getAnonymousLogger().log(Level.WARNING, 
-                "{0} is not a RunLevelInhabitant and therefore will not be released during shutdown", ai);
-          }
+          rli.get();
+          assert (rli.isInstantiated());
         } catch (Exception e) {
           // don't percolate the exception since it may negatively impact processing
-          Logger.getAnonymousLogger().log(Level.WARNING, "exception caught from activation:", e);
+          Logger.getAnonymousLogger().log(Level.WARNING,
+              "exception caught from activation: " + rli, e);
 
-          notify(ListenerEvent.ERROR, serviceContext(e, ai), e);
+          notify(ListenerEvent.ERROR, serviceContext(e, rli), e);
         }
-//      } else if (rl.value() < activeRunLevel) {
-          // should have been already, but we don't try here because it likely caused an exception earlier, or was cancelled
-//      } else {  // future runLevel
-//        assert(!i.isInstantiated()); -- avoid check since we could have cancelled a previous op
+      }
+    }
+  }
+
+  /**
+   * Returns true if the RunLevel for the given inhabitant in question
+   * should be processed by this RunLevelService instance.
+   * 
+   * @param i the inhabitant
+   * @param rl the inhabitan'ts runLevel
+   * @return
+   */
+  protected boolean accept(Inhabitant<?> i, RunLevel rl) {
+    return (rl.value() == activeRunLevel && rl.environment() == targetEnv);
+  }
+
+  // this is needed in the scenario where the habitat initially didn't
+  // have an instance of this RunLevelService (or derivative) and then
+  // later on in time, after all RunLevelInhabitants became defined,
+  // this instance was introduced. In the event that the RunLevelInhabitant's
+  // have not yet been bound, this will latently bind them now.
+  protected void checkBinding(RunLevelInhabitant<?,?> rli) {
+    RunLevelState<?> state = rli.getState();
+    if (state != this && RunLevelServiceStub.class.isInstance(state)) {
+      RunLevelService<?> delegate = ((RunLevelServiceStub)state).getDelegate();
+      if (null != delegate) {
+        assert(this == delegate);
+      } else {
+        ((RunLevelServiceStub)state).activate(this);
       }
     }
   }
@@ -347,11 +345,28 @@ public class DefaultRunLevelService
     // activeRecorder should really just be used on upSide
     Recorder downRecorder = recorders.remove(runLevel);
     if (null != downRecorder) {
-      downRecorder.release();
+      // Causes release of the entire activationSet.  Release occurs in the inverse
+      // order of the recordings.  So A->B->C will have startUp ordering be (C,B,A)
+      // because of dependencies.  The shutdown ordering will b (A,B,C).
+      int pos = downRecorder.activations.size();
+      while (--pos >= 0) {
+        Inhabitant<?> i = downRecorder.activations.get(pos);
+        try {
+          i.release();
+        } catch (Exception e) {
+          // don't percolate the exception since it may negatively impact processing
+          Logger.getAnonymousLogger().log(Level.WARNING,
+              "exception caught during release: " + i, e);
+
+          notify(ListenerEvent.ERROR, serviceContext(e, i), e);
+        }
+      }
+      
+      downRecorder.activations.clear();
     }
-    
+
     // don't set current until we've actually reached it
-    current = runLevel-1;
+    current = runLevel - 1;
 
     if (planned == current) {
       // needed for the chained case
@@ -359,13 +374,15 @@ public class DefaultRunLevelService
     } else {
       activeRunLevel = null;
     }
-    
+
     // notify listeners that we are complete
     notify(ListenerEvent.PROGRESS, null, null);
   }
 
-  private void notify(ListenerEvent event, ServiceContext context, Throwable error) {
-    Collection<RunLevelListener> activeListeners = habitat.getAllByContract(RunLevelListener.class);
+  private void notify(ListenerEvent event, ServiceContext context,
+      Throwable error) {
+    Collection<RunLevelListener> activeListeners = habitat
+        .getAllByContract(RunLevelListener.class);
     for (RunLevelListener listener : activeListeners) {
       try {
         if (ListenerEvent.PROGRESS == event) {
@@ -376,66 +393,69 @@ public class DefaultRunLevelService
           listener.onError(this, context, error, true);
         }
       } catch (Exception e) {
-        // don't percolate the exception since it may negatively impact processing
-        Logger.getAnonymousLogger().log(Level.WARNING, "exception caught from listener:", e);
+        // don't percolate the exception since it may negatively impact
+        // processing
+        Logger.getAnonymousLogger().log(Level.WARNING,
+            "exception caught from listener:", e);
       }
     }
   }
 
-  private ServiceContext serviceContext(Exception e, final AbstractInhabitantImpl<?> ai) {
+  private ServiceContext serviceContext(Exception e, final Inhabitant<?> i) {
     ServiceContext ctx = null;
 
     if (e instanceof ComponentException) {
-      ctx = ((ComponentException)e).getFailureContext();
+      ctx = ((ComponentException) e).getFailureContext();
     }
-    
+
     if (null == ctx) {
       ctx = new ServiceContext() {
         @Override
         public ClassLoader getClassLoader() {
           ClassLoader cl;
-          if (LazyInhabitant.class.isInstance(ai)) { 
-            cl = ((LazyInhabitant<?>)ai).getClassLoader();
+          if (LazyInhabitant.class.isInstance(i)) {
+            cl = ((LazyInhabitant<?>) i).getClassLoader();
           } else {
-            cl = ai.getClass().getClassLoader();
+            cl = i.getClass().getClassLoader();
           }
           return cl;
         }
 
         @Override
         public Inhabitant<?> getInhabitant() {
-          return ai;
+          return i;
         }
 
         @Override
         public String getType() {
-          return ai.typeName();
+          return i.typeName();
         }
-        
+
         @Override
         public String toString() {
-          return ai.toString();
+          return i.toString();
         }
       };
     }
-    
+
     return ctx;
   }
 
   void setDelegate(RunLevelState<Void> stateProvider) {
-    assert(this != stateProvider);
-    assert(getEnvironment() == stateProvider.getEnvironment());
+    assert (this != stateProvider);
+    assert (getEnvironment() == stateProvider.getEnvironment());
     this.delegate = stateProvider;
   }
-  
+
   @Override
   public RunLevelState<Void> getState() {
     return (null == delegate) ? this : delegate;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public Class<Void> getEnvironment() {
-    return (null == delegate) ? Void.class : delegate.getEnvironment();
+  public Class getEnvironment() {
+    return (null == delegate) ? targetEnv : delegate.getEnvironment();
   }
 
   @Override
@@ -449,19 +469,22 @@ public class DefaultRunLevelService
   }
 
   @Override
-  public boolean inhabitantChanged(InhabitantListener.EventType eventType, Inhabitant<?> inhabitant) {
+  public boolean inhabitantChanged(InhabitantListener.EventType eventType,
+      Inhabitant<?> inhabitant) {
     if (InhabitantListener.class.isInstance(delegate)) {
-      return InhabitantListener.class.cast(delegate).inhabitantChanged(eventType, inhabitant);
+      return InhabitantListener.class.cast(delegate).inhabitantChanged(
+          eventType, inhabitant);
     }
 
     if (null == activeRunLevel) {
-      // its unclear if this is possible, but definitely indicates a problem of some kind.
+      // its unclear if this is possible, but definitely indicates a problem of
+      // some kind.
       // If the recorder is not active, then we are not in a proceedTo() call.
       throw new ComponentException("problem: " + inhabitant);
     }
 
-    if ((upSide && InhabitantListener.EventType.INHABITANT_ACTIVATED != eventType) ||
-        (!upSide && InhabitantListener.EventType.INHABITANT_RELEASED != eventType)) {
+    if ((upSide && InhabitantListener.EventType.INHABITANT_ACTIVATED != eventType)
+        || (!upSide && InhabitantListener.EventType.INHABITANT_RELEASED != eventType)) {
       throw new ComponentException("problem: " + inhabitant);
     }
 
@@ -469,7 +492,7 @@ public class DefaultRunLevelService
     if (upSide) {
       synchronized (this) {
         if (null == activeRecorder) {
-          activeRecorder = new Recorder(activeRunLevel);
+          activeRecorder = new Recorder(activeRunLevel, targetEnv);
           if (null != recorders.put(activeRunLevel, activeRecorder)) {
             throw new AssertionError("bad state");
           }
@@ -482,14 +505,13 @@ public class DefaultRunLevelService
     if (null != activeRecorder) {
       activeRecorder.inhabitantChanged(eventType, inhabitant);
     }
-    
+
     // we always want to maintain our subscription
     return true;
   }
-  
+
   @Override
-  public boolean inhabitantChanged(
-      HabitatListener.EventType eventType,
+  public boolean inhabitantChanged(HabitatListener.EventType eventType,
       Habitat habitat, Inhabitant<?> inhabitant) {
     if (org.jvnet.hk2.component.HabitatListener.EventType.HABITAT_INITIALIZED == eventType) {
       proceedTo(-1);
@@ -498,8 +520,7 @@ public class DefaultRunLevelService
   }
 
   @Override
-  public boolean inhabitantIndexChanged(
-      HabitatListener.EventType eventType,
+  public boolean inhabitantIndexChanged(HabitatListener.EventType eventType,
       Habitat habitat, Inhabitant<?> inhabitant, String index, String name,
       Object service) {
     return true;
@@ -507,7 +528,7 @@ public class DefaultRunLevelService
 
   
   private static class RunLevelServiceThread extends Thread {
-    
+
     private RunLevelServiceThread(Runnable r) {
       super(r);
       setDaemon(true);
@@ -515,6 +536,5 @@ public class DefaultRunLevelService
     }
 
   }
-
 
 }
