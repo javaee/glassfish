@@ -60,7 +60,6 @@ import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import com.sun.enterprise.deployment.xml.TagNames;
-import com.sun.tools.corba.se.idl.Factories;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
