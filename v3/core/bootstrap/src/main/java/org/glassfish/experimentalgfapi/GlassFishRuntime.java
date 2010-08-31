@@ -40,7 +40,9 @@
 
 package org.glassfish.experimentalgfapi;
 
+import java.util.Iterator;
 import java.util.Properties;
+import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 
 /**
@@ -100,10 +102,15 @@ public abstract class GlassFishRuntime {
 //            }
 //        }
 //        System.out.println(sb);
-        ServiceLoader<RuntimeBuilder> runtimeBuilders = ServiceLoader.load(RuntimeBuilder.class, cl);
-        for (RuntimeBuilder builder : runtimeBuilders) {
-            if (builder.handles(properties)) {
-                return builder;
+        Iterator<RuntimeBuilder> runtimeBuilders = ServiceLoader.load(RuntimeBuilder.class, cl).iterator();
+        while (runtimeBuilders.hasNext()) {
+            try {
+                RuntimeBuilder builder = runtimeBuilders.next();
+                if (builder.handles(properties)) {
+                    return builder;
+                }
+            } catch (ServiceConfigurationError sce) {
+                // Ignore the exception and move ahead to the next builder.
             }
         }
         throw new RuntimeException("No runtime builder for this configuration: " + properties);

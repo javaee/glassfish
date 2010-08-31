@@ -52,14 +52,21 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class Util {
 
+    private static Logger logger = Logger.getLogger(Util.class.getPackage().getName());
+
     private Util(){}
 
+    public static Logger getLogger() {
+        return logger;
+    }
+    
     /**
      * Gets a property value from the supplied properties object, if not defined there from system properties.
      *

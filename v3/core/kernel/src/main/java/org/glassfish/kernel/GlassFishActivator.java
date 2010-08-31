@@ -91,51 +91,7 @@ public class GlassFishActivator implements BundleActivator {
                 final Habitat habitat = main.createHabitat(mr, startupContext);
                 final ModuleStartup gfKernel = main.findStartupService(mr, habitat, null, startupContext);
                 System.out.println("gfKernel = " + gfKernel);
-                final GlassFish glassFish = new GlassFish() {
-                    volatile Status status = Status.INIT;
-
-                    public synchronized void start() {
-                        try {
-                            status = Status.STARTING;
-                            gfKernel.start();
-                            status = Status.STARTED;
-                            startPostStartupBundles();
-                        } catch (Exception e) {
-                            throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
-                        }
-                    }
-
-                    public synchronized void stop() {
-                        if (status != Status.STARTED) return;
-                        try {
-                            status = Status.STOPPING;
-                            gfKernel.stop();
-                            status = Status.STOPPED;
-                        } catch (Exception e) {
-                            throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
-                        }
-                    }
-
-                    public synchronized void dispose() {
-                        throw new UnsupportedOperationException();
-                    }
-
-                    public synchronized Status getStatus() {
-                        return status;
-                    }
-
-                    public synchronized <T> T lookupService(Class<T> serviceType, String serviceName) {
-                        if (status != Status.STARTED) {
-                            throw new IllegalArgumentException("Server is not started yet. It is in " + status + "state");
-                        }
-
-                        // Habitat.getComponent(Class) searches both contract and type maps, but
-                        // getComponent(Class, String) only searches contract map.
-                        return serviceName != null ? habitat.getComponent(serviceType, serviceName) :
-                                habitat.getComponent(serviceType);
-                    }
-                };
-
+                GlassFish glassFish = new GlassFishImpl(gfKernel, habitat);
                 // register GlassFish in service registry
                 bundleContext.registerService(GlassFish.class.getName(), glassFish, properties);
                 return glassFish;

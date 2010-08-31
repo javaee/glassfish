@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,19 +40,64 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
+import com.sun.enterprise.module.bootstrap.ModuleStartup;
+import org.glassfish.experimentalgfapi.GlassFish;
+import org.jvnet.hk2.component.Habitat;
+
 /**
- * Tag Main to get the manifest file
+ * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class ASMain {
 
-    /*
-     * Most of the code in this file has been moved to ASMainHelper
-     *and  ASMainOSGi
-     */
+public class GlassFishImpl implements GlassFish {
 
-    public static void main(final String args[]) throws Exception {
-        ASMainHelper.checkJdkVersion();
-        GlassFishMain.main(args);
+    private ModuleStartup gfKernel;
+    private Habitat habitat;
+    volatile Status status = Status.INIT;
+
+    public GlassFishImpl(ModuleStartup gfKernel, Habitat habitat) {
+        this.gfKernel = gfKernel;
+        this.habitat = habitat;
+    }
+
+    public synchronized void start() {
+        if (status == Status.STARTED) return;
+        try {
+            status = Status.STARTING;
+            gfKernel.start();
+            status = Status.STARTED;
+        } catch (Exception e) {
+            throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
+        }
+    }
+
+    public synchronized void stop() {
+        if (status != Status.STARTED) return;
+        try {
+            status = Status.STOPPING;
+            gfKernel.stop();
+            status = Status.STOPPED;
+        } catch (Exception e) {
+            throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
+        }
+    }
+
+    public synchronized void dispose() {
+        throw new UnsupportedOperationException();
+    }
+
+    public synchronized Status getStatus() {
+        return status;
+    }
+
+    public synchronized <T> T lookupService(Class<T> serviceType, String serviceName) {
+        if (status != Status.STARTED) {
+            throw new IllegalArgumentException("Server is not started yet. It is in " + status + "state");
+        }
+
+        // Habitat.getComponent(Class) searches both contract and type maps, but
+        // getComponent(Class, String) only searches contract map.
+        return serviceName != null ? habitat.getComponent(serviceType, serviceName) :
+                habitat.getComponent(serviceType);
     }
 
 }

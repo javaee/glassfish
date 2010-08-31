@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,19 +40,49 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.bootstrap.BootException;
+import com.sun.enterprise.module.bootstrap.Main;
+import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.hk2.component.InhabitantsParser;
+import com.sun.hk2.component.InhabitantsParserDecorator;
+import org.jvnet.hk2.component.Habitat;
+
+import java.util.ServiceLoader;
+
 /**
- * Tag Main to get the manifest file
+ * Main for embedded.
+ *
+ * Moved from ASEmbedded.EmbeddedMain to be able to launch GlassFish in Static mode using
+ * the new APIs (org.glassfish.experimentalgfapi.*) to launch GlassFish.
+ *
+ * @author dochez
+ * @author bhavanishankar@dev.java.net
  */
-public class ASMain {
 
-    /*
-     * Most of the code in this file has been moved to ASMainHelper
-     *and  ASMainOSGi
-     */
+public class EmbeddedMain extends Main {
 
-    public static void main(final String args[]) throws Exception {
-        ASMainHelper.checkJdkVersion();
-        GlassFishMain.main(args);
+    @Override
+    protected void setParentClassLoader(StartupContext context, ModulesRegistry mr)
+            throws BootException {
+        // deliberate no-op
+    }
+
+    @Override
+    protected InhabitantsParser createInhabitantsParser(Habitat habitat) {
+        InhabitantsParser parser = super.createInhabitantsParser(habitat);
+        ServiceLoader<InhabitantsParserDecorator> decorators = ServiceLoader.load(
+                InhabitantsParserDecorator.class, Thread.currentThread().getContextClassLoader());
+        for (InhabitantsParserDecorator decorator : decorators) {
+            if (decorator.getName().equalsIgnoreCase(getName())) {
+                decorator.decorate(parser);
+            }
+        }
+        return parser;
+    }
+
+    public String getName() {
+        return "Embedded";
     }
 
 }

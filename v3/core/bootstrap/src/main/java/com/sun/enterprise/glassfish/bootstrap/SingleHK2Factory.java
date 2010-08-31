@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,19 +40,52 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
+import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.common_impl.AbstractFactory;
+import com.sun.enterprise.module.common_impl.ModuleId;
+import com.sun.enterprise.module.single.SingleModulesRegistry;
+
+import java.util.logging.Logger;
+
 /**
- * Tag Main to get the manifest file
+ * Factory which provides SingleModulesRegistry
+ * This should actually be in HK2 workspace.
+ *
+ * @author bhavanishankar@dev.java.net
  */
-public class ASMain {
 
-    /*
-     * Most of the code in this file has been moved to ASMainHelper
-     *and  ASMainOSGi
-     */
+public class SingleHK2Factory extends AbstractFactory {
 
-    public static void main(final String args[]) throws Exception {
-        ASMainHelper.checkJdkVersion();
-        GlassFishMain.main(args);
+    private static Logger logger = Util.getLogger();
+    ClassLoader cl;
+    ModulesRegistry modulesRegistry;
+
+    public static synchronized void initialize(ClassLoader cl) {
+        if (Instance != null) {
+            logger.warning("Singleton already initialized as " + getInstance());
+        }
+        Instance = new SingleHK2Factory(cl);
+        logger.info("Reinitialized singleton as " + getInstance());
     }
 
+    public SingleHK2Factory(ClassLoader cl) {
+        this.cl = cl;
+        this.modulesRegistry = new SingleModulesRegistry(cl);
+    }
+
+    @Override
+    public ModulesRegistry createModulesRegistry() {
+        return modulesRegistry == null ? modulesRegistry = new SingleModulesRegistry(cl) : modulesRegistry;
+    }
+
+    @Override
+    public ModuleId createModuleId(String name, String version) {
+        return new ModuleId(name);
+    }
+
+    @Override
+    public ModuleId createModuleId(ModuleDefinition md) {
+        return new ModuleId(md.getName());
+    }
 }
