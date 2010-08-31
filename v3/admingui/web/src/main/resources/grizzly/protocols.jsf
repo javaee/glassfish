@@ -72,12 +72,12 @@
                 gf.restRequest(endpoint="#{pageSession.networkListenerUrl}/#{listener}.json",
                                method="get",
                                result="#{pageSession.networkListAttrs}");
-                if ("#{pageSession.networkListAttrs.data.entity['protocol']}=#{pageSession.protocolName}"){
+                if ("#{pageSession.networkListAttrs.data.extraProperties.entity['protocol']}=#{pageSession.protocolName}"){
                     if (#{pageSession.protocolHttpExist}) {
                         gf.restRequest(endpoint="#{pageSession.protocolHttpUrl}.json", method="get", result="#{pageSession.protocolAttrHttp}");
-                        setPageSessionAttribute(key="vsName" value="#{pageSession.protocolAttrHttp.data.entity['defaultVirtualServer']}");
+                        setPageSessionAttribute(key="vsName" value="#{pageSession.protocolAttrHttp.data.extraProperties.entity['defaultVirtualServer']}");
                         gf.restRequest(endpoint="#{pageSession.virtualServerUrl}/#{vsName}.json", method="get", result="#{pageSession.vsAttrs}");
-                        changeNetworkListenersInVS(vsAttrs="#{pageSession.vsAttrs.data.entity}", listenerName="#{pageSession.networkListAttrs.data.entity['name']}", addFlag="{#false}", result="#{pageSession.vsAttrModified}");
+                        changeNetworkListenersInVS(vsAttrs="#{pageSession.vsAttrs.data.extraProperties.entity}", listenerName="#{pageSession.networkListAttrs.data.extraProperties.entity['name']}", addFlag="{#false}", result="#{pageSession.vsAttrModified}");
                         gf.restRequest(endpoint="#{pageSession.virtualServerUrl}/#{vsName}", attrs="#{pageSession.vsAttrModified}", method="post");
                     }
                     gf.restRequest(endpoint="#{pageSession.networkListenerUrl}/#{listener}", method="delete");

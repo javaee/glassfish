@@ -71,7 +71,6 @@
     </event>
             <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
-"VM ---> #{pageSession.valueMap}
     <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.networkListenerNewPageTitle}" helpText="$resource{i18n_web.grizzly.networkListenerNewPageTitleHelp}">
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
