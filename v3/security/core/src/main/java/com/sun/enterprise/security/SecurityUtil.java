@@ -55,7 +55,7 @@ import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import java.util.Collection;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.OpsParams;
-import org.glassfish.deployment.common.VersioningDeploymentUtil;
+import org.glassfish.deployment.versioning.VersioningUtils;
 /** 
   * This utility class encloses all the calls to a ejb method
   * in a specified subject
@@ -397,7 +397,7 @@ public class SecurityUtil{
             if( (root != ejbBundleDesc) && (root instanceof WebBundleDescriptor ) ) {
                 cid = createUniquePseudoModuleID(ejbBundleDesc);
             } else {
-                cid = VersioningDeploymentUtil.getRepositoryName(ejbBundleDesc.getApplication().getRegistrationName()) +
+                cid = VersioningUtils.getRepositoryName(ejbBundleDesc.getApplication().getRegistrationName()) +
                     '/' + ejbBundleDesc.getUniqueFriendlyId();
             }
         }
@@ -407,7 +407,7 @@ public class SecurityUtil{
         String cid = null;
         if (wbd != null ) {
             //String moduleId = wbd.getUniqueFriendlyId();
-            cid = VersioningDeploymentUtil.getRepositoryName(wbd.getApplication().getRegistrationName()) +
+            cid = VersioningUtils.getRepositoryName(wbd.getApplication().getRegistrationName()) +
                 '/' + wbd.getUniqueFriendlyId();
         }
         return cid;

@@ -87,8 +87,8 @@ import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.Payload;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.Events;
-import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
-import org.glassfish.deployment.common.VersioningDeploymentUtil;
+import org.glassfish.deployment.versioning.VersioningSyntaxException;
+import org.glassfish.deployment.versioning.VersioningUtils;
 
 import org.glassfish.deployment.versioning.VersioningService;
 
@@ -213,16 +213,16 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 DeploymentUtils.validateApplicationName(name);
             }
 
-            boolean isUntagged = VersioningDeploymentUtil.isUntagged(name);
+            boolean isUntagged = VersioningUtils.isUntagged(name);
             // no GlassFish versioning support for OSGi budles
             if ( name != null && !isUntagged && type != null && type.equals("osgi") ) {
                 ActionReport.MessagePart msgPart = context.getActionReport().getTopMessagePart();
                 msgPart.setChildrenType("WARNING");
                 ActionReport.MessagePart childPart = msgPart.addChild();
-                childPart.setMessage(VersioningDeploymentUtil.LOCALSTRINGS.getLocalString(
+                childPart.setMessage(VersioningUtils.LOCALSTRINGS.getLocalString(
                         "versioning.deployment.osgi.warning",
                         "OSGi bundles will not use the GlassFish versioning, any version information embedded as part of the name option will be ignored"));
-                name = VersioningDeploymentUtil.getUntaggedName(name);
+                name = VersioningUtils.getUntaggedName(name);
             }
 
             // if no version information embedded as part of application name
@@ -232,7 +232,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
                 if ( versionIdentifier != null && !versionIdentifier.isEmpty() ) {
                   StringBuilder sb = new StringBuilder(name).
-                          append(VersioningDeploymentUtil.EXPRESSION_SEPARATOR).
+                          append(VersioningUtils.EXPRESSION_SEPARATOR).
                           append(versionIdentifier);
                   name = sb.toString();
                 }
@@ -242,7 +242,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 // try to disable the enabled version, if exist
                 try {
                     versioningService.handleDisable(name,target, report);
-                } catch (VersioningDeploymentSyntaxException e) {
+                } catch (VersioningSyntaxException e) {
                     report.failure(logger, e.getMessage());
                     return;
                 }
@@ -261,7 +261,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
             // clean up any left over repository files
             if ( ! keepreposdir.booleanValue()) {
-                FileUtils.whack(new File(env.getApplicationRepositoryPath(), VersioningDeploymentUtil.getRepositoryName(name)));
+                FileUtils.whack(new File(env.getApplicationRepositoryPath(), VersioningUtils.getRepositoryName(name)));
             }
 
             File source = new File(archive.getURI().getSchemeSpecificPart());
@@ -276,7 +276,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                         versioningService.getVersionFromSameDir(source);
                 if (!force && versionFromSameDir != null) {
                     report.failure(logger,
-                            VersioningDeploymentUtil.LOCALSTRINGS.getLocalString(
+                            VersioningUtils.LOCALSTRINGS.getLocalString(
                                 "versioning.deployment.dual.inplace",
                                 "GlassFish do not support versioning for directory deployment when using the same directory. The directory {0} is already assigned to the version {1}.",
                                 source.getPath(),

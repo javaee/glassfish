@@ -70,8 +70,8 @@ import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.deployment.common.Artifacts;
 import org.glassfish.deployment.common.ClientArtifactsManager;
 import org.glassfish.deployment.common.DeploymentException;
-import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
-import org.glassfish.deployment.common.VersioningDeploymentUtil;
+import org.glassfish.deployment.versioning.VersioningSyntaxException;
+import org.glassfish.deployment.versioning.VersioningUtils;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -181,8 +181,8 @@ public class AppClientGroupFacadeGenerator {
         final DeployCommandParameters deployParams = dc.getCommandParameters(DeployCommandParameters.class);
         final String appName = deployParams.name();
         try {
-            return VersioningDeploymentUtil.getUntaggedName(appName) + "Client/";
-        } catch (VersioningDeploymentSyntaxException ex) {
+            return VersioningUtils.getUntaggedName(appName) + "Client/";
+        } catch (VersioningSyntaxException ex) {
             Logger.getLogger(AppClientGroupFacadeGenerator.class.getName()).log(Level.SEVERE, null, ex);
         }
         return appName;

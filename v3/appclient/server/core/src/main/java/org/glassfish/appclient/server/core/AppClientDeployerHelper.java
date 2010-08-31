@@ -73,8 +73,8 @@ import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.TokenHelper;
 import org.glassfish.deployment.common.Artifacts;
-import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
-import org.glassfish.deployment.common.VersioningDeploymentUtil;
+import org.glassfish.deployment.versioning.VersioningSyntaxException;
+import org.glassfish.deployment.versioning.VersioningUtils;
 import org.jvnet.hk2.component.Habitat;
 
 /**
@@ -436,8 +436,8 @@ public abstract class AppClientDeployerHelper {
              * One more level up because the group facade will reside in the
              * download directory.
              */
-            sb.append("../").append(VersioningDeploymentUtil.getUntaggedName(appName)).append("Client.jar");
-        } catch (VersioningDeploymentSyntaxException ex) {
+            sb.append("../").append(VersioningUtils.getUntaggedName(appName)).append("Client.jar");
+        } catch (VersioningSyntaxException ex) {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
         return sb.toString();

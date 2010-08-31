@@ -79,7 +79,7 @@ import java.io.File;
 import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
-import org.glassfish.deployment.common.VersioningDeploymentException;
+import org.glassfish.deployment.versioning.VersioningException;
 import org.glassfish.deployment.versioning.VersioningService;
 
 /**
@@ -133,7 +133,7 @@ public class DeleteApplicationRefCommand implements AdminCommand {
         List<String> matchedVersions = null;
         try {
             matchedVersions = versioningService.getMatchedVersions(name, target);
-        } catch (VersioningDeploymentException e) {
+        } catch (VersioningException e) {
             report.failure(logger, e.getMessage());
             return;
         }

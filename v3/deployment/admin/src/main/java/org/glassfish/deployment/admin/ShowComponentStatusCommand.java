@@ -60,7 +60,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
-import org.glassfish.deployment.common.VersioningDeploymentException;
+import org.glassfish.deployment.versioning.VersioningException;
 import org.glassfish.deployment.versioning.VersioningService;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
@@ -104,7 +104,7 @@ public class ShowComponentStatusCommand implements AdminCommand {
         List<String> matchedVersions = null;
         try {
             matchedVersions = versioningService.getMatchedVersions(name, target);
-        } catch (VersioningDeploymentException e) {
+        } catch (VersioningException e) {
             report.failure(logger, e.getMessage());
             return;
          }

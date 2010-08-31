@@ -72,7 +72,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.deployment.common.VersioningDeploymentUtil;
+import org.glassfish.deployment.versioning.VersioningUtils;
 
 /**
  * Objects of this type encapsulate the data and behaviour of a J2EE
@@ -254,15 +254,16 @@ public class Application extends BundleDescriptor
             name = newModule.getDescriptor().getDisplayName();
 
         }
+        String untaggedName = VersioningUtils.getUntaggedName(name);
         if (name != null) {
-            application.setDisplayName(VersioningDeploymentUtil.getUntaggedName(name));
-            application.setName(VersioningDeploymentUtil.getUntaggedName(name));
-            application.setAppName(VersioningDeploymentUtil.getUntaggedName(name));
+            application.setDisplayName(untaggedName);
+            application.setName(untaggedName);
+            application.setAppName(untaggedName);
         }
 
         // add the module to it
         newModule.setStandalone(true);
-        newModule.setArchiveUri(VersioningDeploymentUtil.getUntaggedName(name));
+        newModule.setArchiveUri(untaggedName);
         if (newModule.getDescriptor() != null) {
             newModule.getDescriptor().setApplication(application);
         }
@@ -667,7 +668,7 @@ public class Application extends BundleDescriptor
      * @return the EE app name of this application
      */
     public String getAppName() {
-        return VersioningDeploymentUtil.getUntaggedName(appName);
+        return VersioningUtils.getUntaggedName(appName);
     }
 
     /**
@@ -675,7 +676,7 @@ public class Application extends BundleDescriptor
      * @param appName the EE app name of this application
      */
     public void setAppName(String appName) {
-        this.appName = VersioningDeploymentUtil.getUntaggedName(appName);
+        this.appName = VersioningUtils.getUntaggedName(appName);
     }
 
     /**

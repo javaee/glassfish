@@ -88,7 +88,7 @@ import java.util.Collections;
 import org.glassfish.deployment.common.Artifacts;
 
 import org.glassfish.deployment.versioning.VersioningService;
-import org.glassfish.deployment.common.VersioningDeploymentException;
+import org.glassfish.deployment.versioning.VersioningException;
 
 /**
  * Undeploys applications.
@@ -147,7 +147,7 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
         try {
             matchedVersions = versioningService.getMatchedVersions(name, 
                 target);
-        } catch (VersioningDeploymentException e) {
+        } catch (VersioningException e) {
             if (env.isDas()) {
                 report.failure(logger, e.getMessage());
             } else {

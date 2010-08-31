@@ -40,6 +40,8 @@
 
 package com.sun.enterprise.v3.server;
 
+import org.glassfish.deployment.versioning.VersioningUtils;
+import org.glassfish.deployment.versioning.VersioningSyntaxException;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -1376,8 +1378,8 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
 
             String repositoryBitName = copy.params().name();
             try {
-                repositoryBitName = VersioningDeploymentUtil.getRepositoryName(repositoryBitName);
-            } catch (VersioningDeploymentSyntaxException e) {
+                repositoryBitName = VersioningUtils.getRepositoryName(repositoryBitName);
+            } catch (VersioningSyntaxException e) {
                 ActionReport report = copy.report();
                 report.setMessage(e.getMessage());
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);

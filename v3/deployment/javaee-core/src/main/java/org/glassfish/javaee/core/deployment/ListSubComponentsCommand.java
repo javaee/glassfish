@@ -67,8 +67,8 @@ import org.jvnet.hk2.component.PerLookup;
 
 import java.util.*;
 
-import org.glassfish.deployment.common.VersioningDeploymentUtil;
-import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
+import org.glassfish.deployment.versioning.VersioningUtils;
+import org.glassfish.deployment.versioning.VersioningSyntaxException;
 
 /**
  * list-sub-components command
@@ -121,8 +121,8 @@ public class ListSubComponentsCommand implements AdminCommand {
         }
 
         try {
-            VersioningDeploymentUtil.checkIdentifier(applicationName);
-        } catch (VersioningDeploymentSyntaxException ex) {
+            VersioningUtils.checkIdentifier(applicationName);
+        } catch (VersioningSyntaxException ex) {
             report.setMessage(ex.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;

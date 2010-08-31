@@ -50,9 +50,6 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
-import org.glassfish.deployment.common.VersioningDeploymentException;
-import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
-import org.glassfish.deployment.common.VersioningDeploymentUtil;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -90,7 +87,7 @@ public class VersioningService {
         } else {
             allApplications = domain.getApplications().getApplications();
         }
-        return VersioningDeploymentUtil.getVersions(untaggedName, allApplications);
+        return VersioningUtils.getVersions(untaggedName, allApplications);
     }
 
     /**
@@ -103,9 +100,9 @@ public class VersioningService {
      * @throws VersioningSyntaxException if getUntaggedName throws an exception
      */
     public final String getEnabledVersion(String name, String target)
-            throws VersioningDeploymentSyntaxException {
+            throws VersioningSyntaxException {
 
-        String untaggedName = VersioningDeploymentUtil.getUntaggedName(name);
+        String untaggedName = VersioningUtils.getUntaggedName(name);
         List<String> allVersions = getAllversions(untaggedName, target);
 
         if (allVersions != null) {
@@ -134,23 +131,23 @@ public class VersioningService {
      * or if getUntaggedName throws an exception
      */
     public final List<String> getMatchedVersions(String name, String target)
-            throws VersioningDeploymentSyntaxException, VersioningDeploymentException {
+            throws VersioningSyntaxException, VersioningException {
 
-        String untagged = VersioningDeploymentUtil.getUntaggedName(name);
+        String untagged = VersioningUtils.getUntaggedName(name);
         List<String> allVersions = getAllversions(untagged, target);
 
         if (allVersions.size() == 0) {
             // if versionned
             if(!name.equals(untagged)){
-                throw new VersioningDeploymentException(
-                        VersioningDeploymentUtil.LOCALSTRINGS.getLocalString("versioning.deployment.application.noversion",
+                throw new VersioningException(
+                        VersioningUtils.LOCALSTRINGS.getLocalString("versioning.deployment.application.noversion",
                         "Application {0} has no version registered",
                         untagged));  
             }
             return Collections.EMPTY_LIST;
         }
 
-        return VersioningDeploymentUtil.matchExpression(allVersions, name);
+        return VersioningUtils.matchExpression(allVersions, name);
     }
 
     /**
@@ -163,7 +160,7 @@ public class VersioningService {
      *  @param report ActionReport, report object to send back to client.
      */
     public void handleDisable(final String appName, final String target,
-            final ActionReport report) throws VersioningDeploymentSyntaxException {
+            final ActionReport report) throws VersioningSyntaxException {
 
         // retrieve the currently enabled version of the application
         String enabledVersion = getEnabledVersion(appName, target);
@@ -183,12 +180,14 @@ public class VersioningService {
     }
 
     /**
-    * @param directory
-    * @return the name of the version currently using the directory, else null
-    * @throws VersioningDeploymentSyntaxException
+     * Get the version directory-deployed from the given directory
+     *
+     * @param directory
+     * @return the name of the version currently using the directory, else null
+     * @throws VersioningSyntaxException     *
     */
     public String getVersionFromSameDir(File dir)
-            throws VersioningDeploymentSyntaxException{
+            throws VersioningSyntaxException{
 
         try {
             Iterator it = domain.getApplications().getApplications().iterator();
@@ -198,12 +197,12 @@ public class VersioningService {
             while ( it.hasNext() ) {
                 app = (Application) it.next();
                 if (app.getLocation().equals(dir.toURI().toString())) {
-                    if(!VersioningDeploymentUtil.getUntaggedName(app.getName()).equals(app.getName())){
+                    if(!VersioningUtils.getUntaggedName(app.getName()).equals(app.getName())){
                         return app.getName();
                     }
                 }
             }
-        } catch (VersioningDeploymentSyntaxException ex) {
+        } catch (VersioningSyntaxException ex) {
             // return null if an exception is thrown
         }
         return null;

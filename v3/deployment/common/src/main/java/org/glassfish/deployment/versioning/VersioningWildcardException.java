@@ -38,7 +38,9 @@
  * holder.
  */
 
-package org.glassfish.deployment.common;
+package org.glassfish.deployment.versioning;
+
+import org.glassfish.deployment.versioning.VersioningException;
 
 /**
  * This class is an exception used when application name that complies
@@ -46,7 +48,7 @@ package org.glassfish.deployment.common;
  *
  * @author Romain GRECOURT - SERLI (romain.grecourt@serli.com)
  */
-public class VersioningWildcardException extends VersioningDeploymentException {
+public class VersioningWildcardException extends VersioningException {
 
     public VersioningWildcardException(String msg) {
         super(msg);

@@ -77,8 +77,8 @@ import org.glassfish.appclient.server.core.jws.servedcontent.TokenHelper;
 import org.glassfish.deployment.common.Artifacts;
 import org.glassfish.deployment.common.Artifacts.FullAndPartURIs;
 import org.glassfish.deployment.common.DeploymentUtils;
-import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
-import org.glassfish.deployment.common.VersioningDeploymentUtil;
+import org.glassfish.deployment.versioning.VersioningSyntaxException;
+import org.glassfish.deployment.versioning.VersioningUtils;
 import org.jvnet.hk2.component.Habitat;
 
 public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
@@ -516,8 +516,8 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
     @Override
     public URI facadeUserURI(DeploymentContext dc){
         try {
-            return URI.create(VersioningDeploymentUtil.getUntaggedName(appName(dc)) + "Client/" + relativeFacadeURI(dc));
-        } catch (VersioningDeploymentSyntaxException ex) {
+            return URI.create(VersioningUtils.getUntaggedName(appName(dc)) + "Client/" + relativeFacadeURI(dc));
+        } catch (VersioningSyntaxException ex) {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
         return URI.create("");
@@ -537,8 +537,8 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
     private URI relativeGroupFacadeURI(DeploymentContext dc) {
         URI uri = URI.create("");
         try {
-            uri = URI.create(VersioningDeploymentUtil.getUntaggedName(appName(dc)) + "Client.jar");
-        } catch (VersioningDeploymentSyntaxException ex) {
+            uri = URI.create(VersioningUtils.getUntaggedName(appName(dc)) + "Client.jar");
+        } catch (VersioningSyntaxException ex) {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
         return uri;
@@ -566,8 +566,8 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
 
     private URI earDirUserURI(final DeploymentContext dc) {
         try {
-            return URI.create(VersioningDeploymentUtil.getUntaggedName(appName(dc)) + "Client/");
-        } catch (VersioningDeploymentSyntaxException ex) {
+            return URI.create(VersioningUtils.getUntaggedName(appName(dc)) + "Client/");
+        } catch (VersioningSyntaxException ex) {
            logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
         return URI.create("");

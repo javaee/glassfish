@@ -51,7 +51,7 @@ import java.util.Vector;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.deployment.common.VersioningDeploymentUtil;
+import org.glassfish.deployment.versioning.VersioningUtils;
 
 /**
  * This class describes a module information for an applicaiton module
@@ -194,9 +194,9 @@ public class ModuleDescriptor<T extends RootDeploymentDescriptor> extends Descri
     public String getModuleName() {
         String name = moduleName;
         if (moduleName == null) {
-            name = VersioningDeploymentUtil.getUntaggedName(DeploymentUtils.getDefaultEEName(path));
+            name = VersioningUtils.getUntaggedName(DeploymentUtils.getDefaultEEName(path));
         } else{
-            name = VersioningDeploymentUtil.getUntaggedName(moduleName);
+            name = VersioningUtils.getUntaggedName(moduleName);
         }
         return name;
     }

@@ -66,8 +66,8 @@ import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.TokenHelper;
 import org.glassfish.deployment.common.Artifacts;
 import org.glassfish.deployment.common.Artifacts.FullAndPartURIs;
-import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
-import org.glassfish.deployment.common.VersioningDeploymentUtil;
+import org.glassfish.deployment.versioning.VersioningSyntaxException;
+import org.glassfish.deployment.versioning.VersioningUtils;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.jvnet.hk2.component.Habitat;
 
@@ -108,8 +108,8 @@ public class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
         DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
         final String appName = params.name();
         try {
-            return VersioningDeploymentUtil.getUntaggedName(appName) + "Client";
-        } catch (VersioningDeploymentSyntaxException ex) {
+            return VersioningUtils.getUntaggedName(appName) + "Client";
+        } catch (VersioningSyntaxException ex) {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
         return appName + "Client";
@@ -247,8 +247,8 @@ public class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
             archiveName = uriText.substring(lastIndex);
         }
         try {
-            archiveName = VersioningDeploymentUtil.getUntaggedName(archiveName);
-        } catch (VersioningDeploymentSyntaxException ex) {
+            archiveName = VersioningUtils.getUntaggedName(archiveName);
+        } catch (VersioningSyntaxException ex) {
            logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
 //        if ( ! uriText.endsWith(".jar")) {

@@ -84,8 +84,8 @@ import java.util.Properties;
 import java.util.Collections;
 
 import org.glassfish.deployment.versioning.VersioningService;
-import org.glassfish.deployment.common.VersioningDeploymentException;
-import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
+import org.glassfish.deployment.versioning.VersioningException;
+import org.glassfish.deployment.versioning.VersioningSyntaxException;
 
 /**
  * Disable command
@@ -160,10 +160,10 @@ public class DisableCommand extends UndeployCommandParameters implements AdminCo
                 report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
                 return;
             }
-        } catch (VersioningDeploymentSyntaxException e) {
+        } catch (VersioningSyntaxException e) {
             report.failure(logger, e.getMessage());
             return;
-        } catch (VersioningDeploymentException e) {
+        } catch (VersioningException e) {
             report.failure(logger, e.getMessage());
             return;
         }

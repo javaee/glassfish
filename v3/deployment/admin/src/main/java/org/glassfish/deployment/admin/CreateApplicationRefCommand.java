@@ -82,10 +82,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.glassfish.deployment.common.ApplicationConfigInfo;
-import org.glassfish.deployment.common.VersioningDeploymentException;
-import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
-import org.glassfish.deployment.common.VersioningDeploymentUtil;
-import org.glassfish.deployment.common.VersioningWildcardException;
+import org.glassfish.deployment.versioning.VersioningException;
+import org.glassfish.deployment.versioning.VersioningSyntaxException;
+import org.glassfish.deployment.versioning.VersioningUtils;
+import org.glassfish.deployment.versioning.VersioningWildcardException;
 import org.glassfish.deployment.versioning.VersioningService;
 
 /**
@@ -149,7 +149,7 @@ public class CreateApplicationRefCommand implements AdminCommand {
         if ( enabled ) {
             try {
                 // warn users that they can use version expressions
-                VersioningDeploymentUtil.checkIdentifier(name);
+                VersioningUtils.checkIdentifier(name);
                 matchedVersions = new ArrayList<String>(1);
                 matchedVersions.add(name);
             } catch (VersioningWildcardException ex) {
@@ -158,7 +158,7 @@ public class CreateApplicationRefCommand implements AdminCommand {
                         "WARNING : version expression are available only with --enabled=false"));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
-            } catch (VersioningDeploymentSyntaxException ex) {
+            } catch (VersioningSyntaxException ex) {
                 report.setMessage(ex.getLocalizedMessage());
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
@@ -173,7 +173,7 @@ public class CreateApplicationRefCommand implements AdminCommand {
             // retrieve matched version(s) if exist
             try {
                 matchedVersions = versioningService.getMatchedVersions(name, null);
-            } catch (VersioningDeploymentException e) {
+            } catch (VersioningException e) {
                 report.failure(logger, e.getMessage());
                 return;
             }
@@ -206,7 +206,7 @@ public class CreateApplicationRefCommand implements AdminCommand {
                 
                 // we provides warning messages
                 // if a versioned name has been provided to the command
-                if( VersioningDeploymentUtil.isVersionExpression(name) ){
+                if( VersioningUtils.isVersionExpression(name) ){
                     ActionReport.MessagePart childPart = part.addChild();
                     childPart.setMessage(localStrings.getLocalString("appref.already.exists",
                             "Application reference {0} already exists in target {1}.", appName, target));

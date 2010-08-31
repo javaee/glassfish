@@ -66,6 +66,5 @@
         <module>autodeploy</module>
         <module>javax.enterprise.deploy</module>
         <module>jsr88-jar</module>
-        <module>versioning</module>
     </modules>
 </project>

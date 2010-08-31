@@ -40,6 +40,7 @@
 
 package org.glassfish.deployment.common;
 
+import org.glassfish.deployment.versioning.VersioningUtils;
 import java.lang.instrument.ClassFileTransformer;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.deployment.InstrumentableClassLoader;
@@ -252,7 +253,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
         if (subDirName != null )
             rootScratchDir = new File(rootScratchDir, subDirName);
         String appDirName = parameters.name();
-        appDirName = VersioningDeploymentUtil.getRepositoryName(parameters.name());
+        appDirName = VersioningUtils.getRepositoryName(parameters.name());
         return new File(rootScratchDir, appDirName);
     }
 
@@ -486,6 +487,6 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
 
     public File getAppInternalDir() {
         final File internalDir = new File(env.getApplicationRepositoryPath(), INTERNAL_DIR_NAME);
-        return new File(internalDir, VersioningDeploymentUtil.getRepositoryName(parameters.name()));
+        return new File(internalDir, VersioningUtils.getRepositoryName(parameters.name()));
     }
 }

@@ -38,7 +38,7 @@
  * holder.
  */
 
-package org.glassfish.deployment.common;
+package org.glassfish.deployment.versioning;
 
 /**
  * This class is an exception used when application name that complies
@@ -47,9 +47,9 @@ package org.glassfish.deployment.common;
  * @author Romain GRECOURT - SERLI (romain.grecourt@serli.com)
  */
 
-public class VersioningDeploymentException extends RuntimeException{
+public class VersioningException extends RuntimeException{
 
-    public VersioningDeploymentException(String msg) {
+    public VersioningException(String msg) {
         super(msg);
     }
 }

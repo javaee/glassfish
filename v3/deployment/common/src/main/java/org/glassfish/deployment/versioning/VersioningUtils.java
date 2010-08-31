@@ -38,7 +38,7 @@
  * holder.
  */
 
-package org.glassfish.deployment.common;
+package org.glassfish.deployment.versioning;
 
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -50,14 +50,15 @@ import java.util.StringTokenizer;
 
 /**
  * This class provides utility methods to handle application names
+ * in the versioning context
  *
  * @author Romain GRECOURT - SERLI (romain.grecourt@serli.com)
  */
 
-public class VersioningDeploymentUtil {
+public class VersioningUtils {
 
     public static final LocalStringManagerImpl LOCALSTRINGS =
-            new LocalStringManagerImpl(VersioningDeploymentUtil.class);
+            new LocalStringManagerImpl(VersioningUtils.class);
     public static final String EXPRESSION_SEPARATOR = ":";
     public static final String EXPRESSION_WILDCARD = "*";
     public static final String REPOSITORY_DASH = "~";
@@ -74,11 +75,11 @@ public class VersioningDeploymentUtil {
      *
      * @param appName the application name
      * @return the untagged version name
-     * @throws VersioningDeploymentSyntaxException if the given application name had some
+     * @throws VersioningSyntaxException if the given application name had some
      * critical patterns.
      */
     public static final String getUntaggedName(String appName)
-            throws VersioningDeploymentSyntaxException {
+            throws VersioningSyntaxException {
 
         if(appName != null && !appName.isEmpty()){
             int colonIndex = appName.indexOf(EXPRESSION_SEPARATOR);
@@ -86,13 +87,13 @@ public class VersioningDeploymentUtil {
             if (colonIndex >= 0){
                 if (colonIndex == 0) {
                     // if appName is starting with a colon
-                    throw new VersioningDeploymentSyntaxException(
+                    throw new VersioningSyntaxException(
                             LOCALSTRINGS.getLocalString("versioning.deployment.invalid.appname1",
                             "excepted application name before colon: {0}",
                             appName));
                 } else if (colonIndex == (appName.length() - 1)) {
                     // if appName is ending with a colon
-                    throw new VersioningDeploymentSyntaxException(
+                    throw new VersioningSyntaxException(
                             LOCALSTRINGS.getLocalString("versioning.deployment.invalid.appname2",
                             "excepted version identifier after colon: {0}",
                             appName));
@@ -114,11 +115,11 @@ public class VersioningDeploymentUtil {
      *
      * @param appName the application name
      * @return the version identifier / expression extracted from application name
-     * @throws VersioningDeploymentSyntaxException if the given application name had some
+     * @throws VersioningSyntaxException if the given application name had some
      * critical patterns.
      */
     public static final String getExpression(String appName)
-            throws VersioningDeploymentSyntaxException {
+            throws VersioningSyntaxException {
 
         if(appName != null && !appName.isEmpty()) {
             int colonIndex = appName.indexOf(EXPRESSION_SEPARATOR);
@@ -126,13 +127,13 @@ public class VersioningDeploymentUtil {
             if (colonIndex >= 0){
                 if (colonIndex == 0) {
                     // if appName is starting with a colon
-                    throw new VersioningDeploymentSyntaxException(
+                    throw new VersioningSyntaxException(
                             LOCALSTRINGS.getLocalString("versioning.deployment.invalid.appname1",
                             "excepted application name before colon: {0}",
                             appName));
                 } else if (colonIndex == (appName.length() - 1)) {
                     // if appName is ending with a colon
-                    throw new VersioningDeploymentSyntaxException(
+                    throw new VersioningSyntaxException(
                             LOCALSTRINGS.getLocalString("versioning.deployment.invalid.appname2",
                             "excepted version identifier after colon: {0}",
                             appName));
@@ -152,13 +153,14 @@ public class VersioningDeploymentUtil {
      * aware operations.
      *
      * @param appName the application name
-     * @throws VersioningDeploymentSyntaxException if the given application name had some
+     * @throws VersioningSyntaxException if the given application name had some
      * critical patterns.
      * @throws VersioningWildCardException if the given application name had some
      * wildcard character(s) in its identifier part.
      */
     public static final void checkIdentifier(String appName)
-            throws VersioningDeploymentSyntaxException {
+            throws VersioningSyntaxException {
+        
         String identifier = getExpression(appName);
         if (identifier != null && identifier.contains(EXPRESSION_WILDCARD)) {
             throw new VersioningWildcardException(
@@ -202,11 +204,11 @@ public class VersioningDeploymentUtil {
      * @param listVersion the set of all versions of the application
      * @param appName the application name containing the expression
      * @return the expression matched list
-     * @throws VersioningDeploymentException if the expression is an identifier matching
+     * @throws VersioningException if the expression is an identifier matching
      * a version not registered, or if getExpression throws an exception
      */
     public static final List<String> matchExpression(List<String> listVersion, String appName)
-            throws VersioningDeploymentException {
+            throws VersioningException {
 
         if (listVersion.size() == 0) {
             return Collections.EMPTY_LIST;
@@ -220,7 +222,7 @@ public class VersioningDeploymentUtil {
                 return listVersion.subList(listVersion.indexOf(appName),
                         listVersion.indexOf(appName) + 1);
             } else {
-                throw new VersioningDeploymentException(
+                throw new VersioningException(
                         LOCALSTRINGS.getLocalString("versioning.deployment.version.notreg",
                         "version {0} not registered",
                         appName));
@@ -234,7 +236,7 @@ public class VersioningDeploymentUtil {
                 return listVersion.subList(listVersion.indexOf(appName),
                         listVersion.indexOf(appName) + 1);
             } else {
-                throw new VersioningDeploymentException(
+                throw new VersioningException(
                         LOCALSTRINGS.getLocalString("versioning.deployment.version.notreg",
                         "Version {0} not registered",
                         appName));
@@ -287,11 +289,11 @@ public class VersioningDeploymentUtil {
      *
      * @param appName the application name
      * @return a valid repository name
-     * @throws VersioningDeploymentSyntaxException if getEpression and getUntaggedName
+     * @throws VersioningSyntaxException if getEpression and getUntaggedName
      * throws exception
      */
     public static final String getRepositoryName(String appName)
-            throws VersioningDeploymentSyntaxException {
+            throws VersioningSyntaxException {
 
         String expression = getExpression(appName);
         String untaggedName = getUntaggedName(appName);
@@ -313,14 +315,14 @@ public class VersioningDeploymentUtil {
      * 
      * @param appName the application name
      * @return <code>true</code> is the given application name is not versioned
-     * @throws VersioningDeploymentSyntaxException if getUntaggedName
+     * @throws VersioningSyntaxException if getUntaggedName
      * throws exception
      */
     public static final Boolean isUntagged(String appName) 
-            throws VersioningDeploymentSyntaxException {
+            throws VersioningSyntaxException {
 
         Boolean isUntagged = false;
-        String untaggedName = VersioningDeploymentUtil.getUntaggedName(appName);
+        String untaggedName = VersioningUtils.getUntaggedName(appName);
         if (untaggedName != null && untaggedName.equals(appName)) {
             isUntagged = true;
         }
@@ -332,11 +334,11 @@ public class VersioningDeploymentUtil {
      *
      * @param appName the application name
      * @return <code>true</code> if the appName is a version expression
-     * @throws VersioningDeploymentSyntaxException if isUntaggedName
+     * @throws VersioningSyntaxException if isUntaggedName
      * throws exception
      */
     public static final Boolean isVersionExpression(String appName)
-            throws VersioningDeploymentSyntaxException {
+            throws VersioningSyntaxException {
         
         Boolean isVersionExpression = false;
         if(appName != null){
@@ -350,10 +352,12 @@ public class VersioningDeploymentUtil {
      *
      * @param appName the application name
      * @return <code>true</code> if the appName is a version identifier
-     * @throws VersioningDeploymentSyntaxException if isVersionExpression
+     * @throws VersioningSyntaxException if isVersionExpression
      * throws exception
      */
-    public static final Boolean isVersionIdentifier(String appName) {
+    public static final Boolean isVersionIdentifier(String appName) 
+            throws VersioningSyntaxException{
+        
         return isVersionExpression(appName) &&
                 !appName.contains(EXPRESSION_WILDCARD);
     }

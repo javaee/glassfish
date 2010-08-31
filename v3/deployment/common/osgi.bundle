@@ -43,6 +43,7 @@
                         com.sun.enterprise.deployment.deploy.shared; \
                         org.glassfish.loader.util; \
                         org.glassfish.deployment.common; \
+                        org.glassfish.deployment.versioning; \
                         org.glassfish.deployment.monitor; version=${project.osgi.version} 
                         
 DynamicImport-Package: \

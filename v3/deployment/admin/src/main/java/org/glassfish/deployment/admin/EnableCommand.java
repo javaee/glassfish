@@ -80,7 +80,7 @@ import java.net.URI;
 import java.beans.PropertyVetoException;
 import org.glassfish.deployment.common.ApplicationConfigInfo;
 import org.glassfish.deployment.common.DeploymentUtils;
-import org.glassfish.deployment.common.VersioningDeploymentSyntaxException;
+import org.glassfish.deployment.versioning.VersioningSyntaxException;
 
 import org.glassfish.deployment.versioning.VersioningService;
 
@@ -151,7 +151,7 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
                 // try to disable the enabled version, if exist
                 try {
                     versioningService.handleDisable(name(),target, report);
-                } catch (VersioningDeploymentSyntaxException e) {
+                } catch (VersioningSyntaxException e) {
                     report.failure(logger, e.getMessage());
                     return;
                 }
