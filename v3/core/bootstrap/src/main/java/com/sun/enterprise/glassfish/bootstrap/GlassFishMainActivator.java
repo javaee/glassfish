@@ -80,9 +80,16 @@ public class GlassFishMainActivator implements BundleActivator {
 
     private Properties prepareStartupContext(BundleContext context) {
         Properties properties = new Properties();
-        final String installRoot = context.getProperty(org.glassfish.experimentalgfapi.Constants.INSTALL_ROOT_PROP_NAME);
+        String installRoot = context.getProperty(org.glassfish.experimentalgfapi.Constants.INSTALL_ROOT_PROP_NAME);
         if (installRoot == null) {
-            throw new RuntimeException("Property named " + Constants.INSTALL_ROOT_PROP_NAME + " is not set.");
+            installRoot = guessInstallRoot(context);
+            if (installRoot == null) {
+                throw new RuntimeException("Property named " + Constants.INSTALL_ROOT_PROP_NAME + " is not set.");
+            } else {
+                System.out.println("Deduced install root as : " + installRoot + " from location of bundle. " +
+                        "If this is not correct, set correct value in a property called " +
+                        org.glassfish.experimentalgfapi.Constants.INSTALL_ROOT_PROP_NAME);
+            }
         }
         if (!new File(installRoot).exists()) {
             throw new RuntimeException("No such directory: [" + installRoot + "]");
@@ -99,6 +106,27 @@ public class GlassFishMainActivator implements BundleActivator {
         // This property is understood by our corresponding builder.
         properties.setProperty(EmbeddedOSGiGlassFishRuntimeBuilder.BUILDER_NAME_PROPERTY, EmbeddedOSGiGlassFishRuntimeBuilder.class.getName());
         return properties;
+    }
+
+    /**
+     * This method tries to guess install root based on location of the bundle. Please note, because location of a
+     * bundle is free form string, this method can come to very wrong conclusion if user wants to fool us.
+     *
+     * @param context
+     * @return
+     */
+    private String guessInstallRoot(BundleContext context) {
+        String location = context.getBundle().getLocation();
+        try {
+            final URI uri = URI.create(location);
+            File f = new File(uri);
+            if (f.exists() && f.isFile() && f.getParentFile().getCanonicalPath().endsWith("modules") &&
+                    f.getParentFile().getParentFile().getCanonicalPath().endsWith("glassfish")) {
+                return f.getParentFile().getParentFile().getAbsolutePath();
+            }
+        } catch (Exception e) {
+        }
+        return null;
     }
 
     public void stop(BundleContext context) throws Exception {
