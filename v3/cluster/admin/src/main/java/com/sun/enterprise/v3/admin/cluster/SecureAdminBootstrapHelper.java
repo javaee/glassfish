@@ -205,6 +205,7 @@ public abstract class SecureAdminBootstrapHelper {
             this.instance = instance;
             this.logger = logger;
             remoteNodeDir = remoteNodeDir(node, remoteNodeDir);
+//            remoteNodeDir = remoteNodeDir.replaceAll("\\\\","/");
             remoteNodeDirURI = URI.create(remoteNodeDir);
             remoteInstanceURI = remoteInstanceURI(remoteNodeDir);
             domainXMLTimestamp = dasDomainXMLTimestamp(dasInstanceDir);
@@ -235,7 +236,7 @@ public abstract class SecureAdminBootstrapHelper {
              * Otherwise derive it: ${remote-install-dir}/${node-name}
              */
             return (remoteNodeDir != null ? remoteNodeDir :
-                (new StringBuilder(ensureTrailingSlash(node.getInstallDir()))
+                (new StringBuilder(ensureTrailingSlash(node.getInstallDirUnixStyle()))
                     .append("nodes/")
                     .append(node.getName())).toString());
         }
@@ -246,7 +247,7 @@ public abstract class SecureAdminBootstrapHelper {
                 remoteInstancePath.append("/");
             }
             remoteInstancePath.append(instance).append("/");
-            return URI.create(remoteInstancePath.toString());
+            return URI.create(remoteInstancePath.toString().replaceAll("\\\\","/"));
         }
 
         @Override
@@ -263,11 +264,14 @@ public abstract class SecureAdminBootstrapHelper {
                 InputStream is = null;
                 URI remoteFileURI = null;
                 try {
+//                    System.out.println("dasInstanceDir "+ dasInstanceDir.toString());
                     is = new BufferedInputStream(
                             new FileInputStream(
                                 new File(dasInstanceDir.toURI().resolve(fileRelativeURI))));
                     remoteFileURI = remoteInstanceURI.resolve(fileRelativeURI);
+                    System.out.println("creating remoteFileURI "+remoteFileURI.toString());
                     writeToFile(remoteFileURI.getPath(), is);
+//                    System.out.println("created file");
                     logger.log(Level.FINE, "Copied bootstrap file to {0}", remoteFileURI.toASCIIString());
                 } catch (Exception ex) {
                     if (logger.isLoggable(Level.FINE)) {

@@ -272,6 +272,7 @@ public class SSHLauncher {
     public int runCommand(String command, OutputStream os) throws IOException,
                                             InterruptedException 
     {
+        command = SFTPClient.normalizePath(command);
         logger.fine("Running command " + command + " on host: " + this.host);
 
         openConnection();

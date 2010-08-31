@@ -64,7 +64,7 @@ public class SFTPClient extends SFTPv3Client {
      * Checks if the given path exists.
      */
     public boolean exists(String path) throws IOException {
-        return _stat(path)!=null;
+        return _stat(normalizePath(path))!=null;
     }
 
     /**
@@ -72,7 +72,7 @@ public class SFTPClient extends SFTPv3Client {
      */
     public SFTPv3FileAttributes _stat(String path) throws IOException {
         try {
-            return stat(path);
+            return stat(normalizePath(path));
         } catch (SFTPException e) {
             int c = e.getServerErrorCode();
             if (c== ErrorCodes.SSH_FX_NO_SUCH_FILE || c==ErrorCodes.SSH_FX_NO_SUCH_PATH)
@@ -86,6 +86,7 @@ public class SFTPClient extends SFTPv3Client {
      * Makes sure that the directory exists, by creating it if necessary.
      */
     public void mkdirs(String path, int posixPermission) throws IOException {
+        path =normalizePath(path);
         SFTPv3FileAttributes atts = _stat(path);
         if (atts!=null && atts.isDirectory())
             return;
@@ -105,6 +106,7 @@ public class SFTPClient extends SFTPv3Client {
      * Creates a new file and writes to it.
      */
     public OutputStream writeToFile(String path) throws IOException {
+        path =normalizePath(path);
         final SFTPv3FileHandle h = createFile(path);
         return new OutputStream() {
             private long offset = 0;
@@ -126,6 +128,7 @@ public class SFTPClient extends SFTPv3Client {
     }
 
     public InputStream read(String file) throws IOException {
+        file =normalizePath(file);         
         final SFTPv3FileHandle h = openFileRO(file);
         return new InputStream() {
             private long offset = 0;
@@ -159,8 +162,15 @@ public class SFTPClient extends SFTPv3Client {
     }
 
     public void chmod(String path, int permissions) throws IOException {
+        path =normalizePath(path);
         SFTPv3FileAttributes atts = new SFTPv3FileAttributes();
         atts.permissions = permissions;
         setstat(path, atts);
     }
+
+    // Commands run in a shell on Windows need to have forward slashes.
+    public static String normalizePath(String path){
+        return path.replaceAll("\\\\","/");
+    }
+
 }

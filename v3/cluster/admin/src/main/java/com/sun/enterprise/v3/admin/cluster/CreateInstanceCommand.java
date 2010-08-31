@@ -237,7 +237,7 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
         } else if (rch.isRemoteConnectRequired(node)) {
             msg = Strings.get("creatingInstance", instance, node);
             logger.info(msg);
-            createInstanceRemote();
+//            createInstanceRemote();
             int status =createInstanceRemote();
             if (status == 0) {
                 bootstrapSecureAdminRemotely();

@@ -148,7 +148,6 @@ public class RemoteConnectHelper  {
                 logger.severe("Invalid installdir "+noderef);
                 return 1;
             }
-            System.out.println("install dir "+ nodeHome);
             SshConnector connector = node.getSshConnector();
             if ( connector != null)  {
                 sshL=habitat.getComponent(SSHLauncher.class);
@@ -162,8 +161,7 @@ public class RemoteConnectHelper  {
                 String prefix = nodeHome +File.separator+ "bin"+ File.separator+"asadmin " +
                         " --host " + dasHost + " --port " + dasPort +
                         " " + cmd;
-                String unixStyleSlash = prefix.replaceAll("\\\\","/");
-                System.out.println("unix Style command"+unixStyleSlash);
+                String unixStyleSlash = prefix.replaceAll("\\\\","/");     // need to remove this
                  //get the params for the command
                 // we don't validate since called by other commands directly
                 String instanceName = new String();
@@ -187,7 +185,6 @@ public class RemoteConnectHelper  {
                 fullCommand = unixStyleSlash + command + " " +  instanceName;
 
                 ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-                System.out.println("fullcommand "+ fullCommand);
                 commandStatus = sshL.runCommand(fullCommand, outStream);
                 String results = outStream.toString();
                 outputString.append(results);

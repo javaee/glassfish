@@ -170,6 +170,39 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
 
     void setSshConnector(SshConnector connector);
 
+
+    /**
+     * Returns the install dir with separators as forward slashes.  This is needed to run commands
+     * over SSH tools on Windows where the backslashes are interpruted as escape chars.
+     *
+     * @return the install dir with separators as forward slashes
+     */
+    @DuckTyped
+    String getInstallDirUnixStyle();
+
+
+    /**
+     * Returns the node dir with separators as forward slashes.  This is needed to run commands
+     * over SSH tools on Windows where the backslashes are interpruted as escape chars.
+     *
+     * @return the node dir with separators as forward slashes
+     */
+    @DuckTyped
+    String getNodeDirUnixStyle();
+
+    class Duck {
+
+        public static String getInstallDirUnixStyle(Node node) {
+            String installDir= node.getInstallDir();
+            return installDir.replaceAll("\\\\","/");
+        }
+
+        public static String getNodeDirUnixStyle(Node node) {
+            String nodeDir= node.getNodeDir();
+            return nodeDir.replaceAll("\\\\","/");
+        }
+    }
+    
     @Service
     @Scoped(PerLookup.class)
     class Decorator implements CreationDecorator<Node> {
