@@ -83,18 +83,18 @@
                         gf.restRequest(endpoint="#{pageSession.protocolHttpUrl}.json",
                                        method="get",
                                        result="#{pageSession.protocolAttrHttp}");
-                        if ("!(#{pageSession.protocolAttrHttp.data.entity['defaultVirtualServer']}=#{pageSession.previousVSName})") {
+                        if ("!(#{pageSession.protocolAttrHttp.data.extraProperties.entity['defaultVirtualServer']}=#{pageSession.previousVSName})") {
                             foreach (var="listener" list="#{pageSession.networkListeners}") {
                                 gf.restRequest(endpoint="#{pageSession.networkListenerUrl}/#{listener}.json",
                                                method="get",
                                                result="#{pageSession.networkListAttrs}");
-                                if ("#{pageSession.networkListAttrs.data.entity['protocol']}=#{pageSession.protocolAttr.data.entity['name']}") {
+                                if ("#{pageSession.networkListAttrs.data.extraProperties.entity['protocol']}=#{pageSession.protocolAttr.data.extraProperties.entity['name']}") {
                                     gf.restRequest(endpoint="#{pageSession.virtualServerUrl}/#{pageSession.previousVSName}.json",
                                                    method="get",
                                                    result="#{pageSession.vsAttrs}");
                                     setPageSessionAttribute(key="additionalSaveHandlerArgs" 
-                                                            value="vsAttrs:%23{pageSession.vsAttrs.data.entity},
-                                                                   listenerName:%23{pageSession.networkListAttrs.data.entity['name']},
+                                                            value="vsAttrs:%23{pageSession.vsAttrs.data.extraProperties.entity},
+                                                                   listenerName:%23{pageSession.networkListAttrs.data.extraProperties.entity['name']},
                                                                    addFlag:{%23false},
                                                                    result:%23{pageSession.vsAttrModified}");
                                     if (#{pageSession.additionalSaveHandler}){
@@ -104,18 +104,18 @@
                                                    attrs="#{pageSession.vsAttrModified}",
                                                    method="post");
                                     // Add the Network Listener in the current VS
-                                    gf.restRequest(endpoint="#{pageSession.virtualServerUrl}/#{pageSession.protocolAttrHttp.data.entity['defaultVirtualServer']}.json",
+                                    gf.restRequest(endpoint="#{pageSession.virtualServerUrl}/#{pageSession.protocolAttrHttp.data.extraProperties.entity['defaultVirtualServer']}.json",
                                                    method="get",
                                                    result="#{pageSession.vsAttrs}");
                                     setPageSessionAttribute(key="additionalSaveHandlerArgs"
-                                                            value="vsAttrs:%23{pageSession.vsAttrs.data.entity},
-                                                            listenerName:%23{pageSession.networkListAttrs.data.entity['name']},
+                                                            value="vsAttrs:%23{pageSession.vsAttrs.data.extraProperties.entity},
+                                                            listenerName:%23{pageSession.networkListAttrs.data.extraProperties.entity['name']},
                                                             addFlag:{%23false},
                                                             result:%23{pageSession.vsAttrModified}");
                                     if (#{pageSession.additionalSaveHandler}){
                                         gf.invokeHandler(handler="#{pageSession.additionalSaveHandler}", args="#{pageSession.additionalSaveHandlerArgs}" );
                                     }
-                                    gf.restRequest(endpoint="#{pageSession.virtualServerUrl}/#{pageSession.protocolAttrHttp.data.entity['defaultVirtualServer']}",
+                                    gf.restRequest(endpoint="#{pageSession.virtualServerUrl}/#{pageSession.protocolAttrHttp.data.extraProperties.entity['defaultVirtualServer']}",
                                                    attrs="#{pageSession.vsAttrModified}",
                                                    method="post");
                                 }
