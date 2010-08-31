@@ -52,6 +52,7 @@
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/security/msgSecurity/msgSecurity.jsf");
+        createList(size="0", result="#{pageSession.tableList}");
         createMap(result="#{pageSession.valueMap}")
         mapPut(map="#{pageSession.valueMap}" key="configName" value="#{pageSession.configName}");
         setPageSessionAttribute(key="providerSectionLabel" value="$resource{i18nc.msgSecProvider.providerConfLabel}" )
@@ -83,6 +84,9 @@
                     mapPut(map="#{pageSession.securityConfigMap}" key="providertype" value="#{pageSession.valueMap['ProviderType']}");
                     mapPut(map="#{pageSession.securityConfigMap}" key="classname" value="#{pageSession.valueMap['ClassName']}");
                     gf.createEntity(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/message-security-config" attrs="#{pageSession.securityConfigMap}");
+                    setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/message-security-config/#{pageSession.securityConfigMap['layer']}/provider-config/#{pageSession.securityConfigMap['providername']}");
+                    javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
+		    gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="POST" data="#{requestScope.tmpJSON}" result="#{requestScope.restResponse}");
                     gf.redirect(page="#{pageSession.parentPage}?configName=#{configName}")
                 />
             </sun:button>
