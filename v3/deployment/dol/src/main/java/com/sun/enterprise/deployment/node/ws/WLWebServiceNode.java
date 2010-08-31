@@ -56,7 +56,7 @@ import java.util.logging.Level;
  *
  * @author Rama Pulavarthi
  */
-class WLWebServiceNode extends DisplayableComponentNode {
+public class WLWebServiceNode extends DisplayableComponentNode {
 
     private WebService descriptor = null;
 

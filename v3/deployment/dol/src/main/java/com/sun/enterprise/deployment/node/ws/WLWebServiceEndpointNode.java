@@ -56,7 +56,7 @@ import java.util.Map;
  *
  * @author Rama Pulavarthi
  */
-class WLWebServiceEndpointNode extends DeploymentDescriptorNode {
+public class WLWebServiceEndpointNode extends DeploymentDescriptorNode {
     private WebServiceEndpoint descriptor = null;
 
     private final static XMLElement tag =
