@@ -67,6 +67,7 @@ import org.glassfish.security.common.PrincipalImpl;
 import org.glassfish.security.common.Group;
 import com.sun.enterprise.config.serverbeans.*;
 //V3:Commented import com.sun.enterprise.server.ApplicationServer;
+import com.sun.enterprise.deployment.runtime.common.WLSecurityRoleAssignment;
 import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 //import org.apache.catalina.Globals;
@@ -74,6 +75,7 @@ import com.sun.enterprise.security.SecurityRoleMapperFactoryGen;
 import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.SecurityUtil;
 import com.sun.enterprise.security.WebSecurityDeployerProbeProvider;
+import java.util.List;
 import org.glassfish.api.web.Constants; 
 
 /**
@@ -90,7 +92,7 @@ import org.glassfish.api.web.Constants;
  * AbstractSecurityManager
  */
 public class WebSecurityManager  {
-    private static Logger logger = 
+    private static final Logger logger =
     Logger.getLogger(LogDomains.SECURITY_LOGGER);
 
     /**
@@ -122,10 +124,10 @@ public class WebSecurityManager  {
     private Map protectionDomainCache = 
         Collections.synchronizedMap(new WeakHashMap());
 
-    private static WebResourcePermission allResources =
+    private static final WebResourcePermission allResources =
     new WebResourcePermission("/*",(String) null);
 
-    private static WebUserDataPermission allConnections = 
+    private static final WebUserDataPermission allConnections =
     new WebUserDataPermission("/*",null);
 
     private static Permission[] protoPerms = {
@@ -220,6 +222,20 @@ public class WebSecurityManager  {
                             }
                         }
                     }
+                    WLSecurityRoleAssignment[] sras = sunDes.getWLSecurityRoleAssignment();
+                    if(sras != null){
+                        for (WLSecurityRoleAssignment sra : sras) {
+                            List<String> principals = sra.getPrincipalNames();
+                            if (sra.isExternallyDefined()) {
+                                wsmf.ADMIN_GROUP.put(realmName + sra.getRoleName(), new Group(sra.getRoleName()));
+                                continue;
+                            }
+                            for (String principal : principals) {
+                                    wsmf.ADMIN_PRINCIPAL.put(realmName + principal, new PrincipalImpl(principal));
+                            }
+                            
+                        }
+                    }
                 }
             }
         }
@@ -229,7 +245,7 @@ public class WebSecurityManager  {
             java.net.URI uri = null;
             try{
 		if(logger.isLoggable(Level.FINE))
-		    logger.log(Level.FINE, "[Web-Security] Creating a Codebase URI with = "+CODEBASE);
+		    logger.log(Level.FINE, "[Web-Security] Creating a Codebase URI with = {0}", CODEBASE);
 		uri = new java.net.URI("file:///"+ CODEBASE);
 		if(uri != null){
 		    codesource = new CodeSource(new URL(uri.toString()), 
@@ -248,8 +264,8 @@ public class WebSecurityManager  {
         } 
 
         if(logger.isLoggable(Level.FINE)){
-            logger.fine("[Web-Security] Context id (id under which  WEB component in application will be created) = "+ CONTEXT_ID);
-            logger.fine("[Web-Security] Codebase (module id for web component) "+ CODEBASE);
+            logger.log(Level.FINE, "[Web-Security] Context id (id under which  WEB component in application will be created) = {0}", CONTEXT_ID);
+            logger.log(Level.FINE, "[Web-Security] Codebase (module id for web component) {0}", CODEBASE);
         }
 
         loadPolicyConfiguration();
@@ -379,7 +395,7 @@ public class WebSecurityManager  {
 
                 if (principals != null) {
                     for (int i=0; i<principals.length; i++){
-                        logger.log(Level.FINE, "[Web-Security] Checking with Principal : "+ principals[i].toString());
+                        logger.log(Level.FINE, "[Web-Security] Checking with Principal : {0}", principals[i].toString());
                     }
                 } else {
                     logger.log(Level.FINE, "[Web-Security] Checking with Principals: null");
@@ -391,9 +407,9 @@ public class WebSecurityManager  {
         }
 
         if(logger.isLoggable(Level.FINE)){
-            logger.log(Level.FINE, "[Web-Security] Codesource with Web URL: " + codesource.getLocation().toString());
-            logger.log(Level.FINE, "[Web-Security] Checking Web Permission with Principals : "+ principalSetToString(principalSet));
-            logger.log(Level.FINE, "[Web-Security] Web Permission = " +perm.toString());
+            logger.log(Level.FINE, "[Web-Security] Codesource with Web URL: {0}", codesource.getLocation().toString());
+            logger.log(Level.FINE, "[Web-Security] Checking Web Permission with Principals : {0}", principalSetToString(principalSet));
+            logger.log(Level.FINE, "[Web-Security] Web Permission = {0}", perm.toString());
         }
   
         return policy.implies(prdm, perm);
@@ -468,8 +484,8 @@ public class WebSecurityManager  {
         boolean isGranted = checkPermission(perm,sc.getPrincipalSet());
 	SecurityContext.setCurrent(sc);
         if(logger.isLoggable(Level.FINE)){
-            logger.log(Level.FINE,"[Web-Security] hasResource isGranted: " + isGranted);
-            logger.log(Level.FINE,"[Web-Security] hasResource perm: " + perm);
+            logger.log(Level.FINE, "[Web-Security] hasResource isGranted: {0}", isGranted);
+            logger.log(Level.FINE, "[Web-Security] hasResource perm: {0}", perm);
         }
         AuditManager auditManager = SecurityServicesUtil.getInstance().getAuditManager();
         if(auditManager !=null && auditManager.isAuditOn()){
@@ -497,8 +513,8 @@ public class WebSecurityManager  {
         WebRoleRefPermission perm = new WebRoleRefPermission(servletName, role);
         boolean isGranted = checkPermission(perm,principalSet);
         if(logger.isLoggable(Level.FINE)){
-            logger.log(Level.FINE,"[Web-Security] hasRoleRef perm: " + perm);
-            logger.log(Level.FINE,"[Web-Security] hasRoleRef isGranted: " + isGranted);
+            logger.log(Level.FINE, "[Web-Security] hasRoleRef perm: {0}", perm);
+            logger.log(Level.FINE, "[Web-Security] hasRoleRef isGranted: {0}", isGranted);
         }
         return isGranted;
     }
@@ -546,8 +562,8 @@ public class WebSecurityManager  {
         }
  
         if(logger.isLoggable(Level.FINE)){
-            logger.log(Level.FINE,"[Web-Security] hasUserDataPermission perm: " + perm);
-            logger.log(Level.FINE,"[Web-Security] hasUserDataPermission isGranted: " + isGranted);
+            logger.log(Level.FINE, "[Web-Security] hasUserDataPermission perm: {0}", perm);
+            logger.log(Level.FINE, "[Web-Security] hasUserDataPermission isGranted: {0}", isGranted);
         }
 
         AuditManager auditManager = SecurityServicesUtil.getInstance().getAuditManager();
@@ -616,8 +632,7 @@ public class WebSecurityManager  {
 	    (old == null || ctxID == null || !old.equals(ctxID))) {
   
 	    if(logger.isLoggable(Level.FINE)){
-		logger.fine("[Web-Security] Setting Policy Context ID: old = " + old + 
-			    " ctxID = " + ctxID);
+		logger.log(Level.FINE, "[Web-Security] Setting Policy Context ID: old = {0} ctxID = {1}", new Object[]{old, ctxID});
 	    }
   
 	    try {  
@@ -637,7 +652,7 @@ public class WebSecurityManager  {
 		throw cause;
 	    }
 	} else if(logger.isLoggable(Level.FINE)){
-	    logger.fine("[Web-Security] Policy Context ID was: " + old);
+	    logger.log(Level.FINE, "[Web-Security] Policy Context ID was: {0}", old);
 	}
 	return old;
     }
