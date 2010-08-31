@@ -49,7 +49,6 @@ import org.jvnet.hk2.component.RunLevelState;
  * @author Jeff Trent
  * 
  * @since 3.1
- * 
  */
 @SuppressWarnings("unchecked")
 /*public*/ class RunLevelServiceStub implements RunLevelService, RunLevelState, InhabitantListener {
@@ -68,11 +67,14 @@ import org.jvnet.hk2.component.RunLevelState;
     this.env = environment;
   }
 
+  public RunLevelService getDelegate() {
+    return delegate;
+  }
+  
   /**
    * Called when the habitat backing this RunLevelService has been fully initialized.
    */
   void activate(RunLevelService<?> realRls) {
-    assert(null == delegate);
     delegate = realRls;
     if (InhabitantListener.class.isInstance(delegate)) {
       delegateListener = InhabitantListener.class.cast(delegate);

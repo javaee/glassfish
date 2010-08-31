@@ -25,6 +25,7 @@ import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
 import org.jvnet.hk2.component.internal.runlevel.Recorder;
 import org.jvnet.hk2.junit.Hk2Runner;
 import org.jvnet.hk2.junit.Hk2RunnerOptions;
+import org.jvnet.hk2.test.runlevel.ExceptionRunLevelManagedService;
 import org.jvnet.hk2.test.runlevel.NonRunLevelWithRunLevelDepService;
 import org.jvnet.hk2.test.runlevel.RunLevelServiceBase;
 import org.jvnet.hk2.test.runlevel.RunLevelServiceNegOne;
@@ -407,8 +408,6 @@ public class RunLevelServiceTest {
 
     assertInhabitantsState(4);
     assertListenerState(true, false, true);
-    
-//    System.out.println(defRLlistener.calls);
   }
   
   /**
@@ -435,10 +434,7 @@ public class RunLevelServiceTest {
 
     assertInhabitantsState(4);
     assertListenerState(true, false, true);
-    
-//    System.out.println(defRLlistener.calls);
   }
-  
   
   /**
    * Verifies the behavior of an OnProgress recipient, calling proceedTo()
@@ -458,8 +454,68 @@ public class RunLevelServiceTest {
 
     assertInhabitantsState(4);
     assertListenerState(true, false, true);
+  }
+  
+  @Test
+  public void exceptionTypeEnvRunLevelService() throws Exception {
+    this.defRLlistener = (TestRunLevelListener) listener;
+    defRLlistener.calls.clear();
+
+    rls = new TestDefaultRunLevelService(h, false, Exception.class, recorders); 
+
+    ExceptionRunLevelManagedService.exceptionCtor = null;
+    ExceptionRunLevelManagedService.constructCount = 0;
     
-//    System.out.println(defRLlistener.calls);
+    rls.proceedTo(1);
+    
+    assertEquals(1, ExceptionRunLevelManagedService.constructCount);
+    assertEquals(0, ExceptionRunLevelManagedService.destroyCount);
+    assertEquals(defRLlistener.calls.toString(), 3, defRLlistener.calls.size());
+    assertListenerState(false, false, false);
+  }
+  
+  @Test
+  public void exceptionsEncounteredOnUpSide() throws Exception {
+    this.defRLlistener = (TestRunLevelListener) listener;
+    defRLlistener.calls.clear();
+
+    recorders = new LinkedHashMap<Integer, Recorder>();
+    rls = new TestDefaultRunLevelService(h, false, Exception.class, recorders); 
+
+    ExceptionRunLevelManagedService.exceptionCtor = 
+      RuntimeException.class.getConstructor((Class<?>[])null);
+    ExceptionRunLevelManagedService.constructCount = 0;
+    
+    rls.proceedTo(1);
+    
+    assertEquals(1, ExceptionRunLevelManagedService.constructCount);
+    assertEquals(0, ExceptionRunLevelManagedService.destroyCount);
+    assertEquals(defRLlistener.calls.toString(), 4, defRLlistener.calls.size());
+    assertListenerState(false, true, false);
+  }
+  
+  @Test
+  public void exceptionsEncounteredOnDownSide() throws Exception {
+    recorders = new LinkedHashMap<Integer, Recorder>();
+    rls = new TestDefaultRunLevelService(h, false, Exception.class, recorders); 
+
+    ExceptionRunLevelManagedService.exceptionCtor = null;
+    ExceptionRunLevelManagedService.constructCount = 0;
+
+    rls.proceedTo(5);
+
+    this.defRLlistener = (TestRunLevelListener) listener;
+    defRLlistener.calls.clear();
+
+    ExceptionRunLevelManagedService.exceptionCtor = 
+      RuntimeException.class.getConstructor((Class<?>[])null);
+    ExceptionRunLevelManagedService.destroyCount = 0;
+    
+    rls.proceedTo(0);
+    
+    assertEquals(1, ExceptionRunLevelManagedService.destroyCount);
+    assertEquals(defRLlistener.calls.toString(), 6, defRLlistener.calls.size());
+    assertListenerState(true, true, false);
   }
   
   /**
@@ -488,8 +544,6 @@ public class RunLevelServiceTest {
 
     assertInhabitantsState(4);
     assertListenerState(true, false, true);
-    
-//    System.out.println(defRLlistener.calls);
   }
 
   
@@ -504,7 +558,7 @@ public class RunLevelServiceTest {
     DefaultRunLevelService oldRLS = ((DefaultRunLevelService)rls);
     
     recorders = new LinkedHashMap<Integer, Recorder>();
-    rls = new TestDefaultRunLevelService(h, async, recorders); 
+    rls = new TestDefaultRunLevelService(h, async, Void.class, recorders); 
     r = new ExistingSingletonInhabitant<RunLevelService>(RunLevelService.class, rls);
     h.add(r);
     h.addIndex(r, RunLevelService.class.getName(), "default");
@@ -577,7 +631,11 @@ public class RunLevelServiceTest {
           sawError = true;
         }
       } else {
-        assertEquals(call.toString(), "progress", call.type);
+        if (call.type.equals("error")) {
+          sawError = true;
+        } else {
+          assertEquals(call.toString(), "progress", call.type);
+        }
       }
       
       last = call.current;
@@ -610,16 +668,17 @@ public class RunLevelServiceTest {
    */
   private void assertRecorderState() {
     assertFalse(recorders.toString(), recorders.isEmpty());
-//    System.out.println(recorders);
+    assertEquals("Belongs to a different environment", 0, ExceptionRunLevelManagedService.constructCount);
+    assertEquals("Belongs to a different environment", 0, ExceptionRunLevelManagedService.destroyCount);
     // we could really do more here...
   }
   
   
   private static class TestDefaultRunLevelService extends DefaultRunLevelService {
 
-    TestDefaultRunLevelService(Habitat habitat, boolean async,
+    TestDefaultRunLevelService(Habitat habitat, boolean async, Class<?> targetEnv,
         HashMap<Integer, Recorder> recorders) {
-      super(habitat, async, recorders);
+      super(habitat, async, targetEnv, recorders);
     }
     
   }

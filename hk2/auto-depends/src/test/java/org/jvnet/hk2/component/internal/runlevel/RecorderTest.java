@@ -79,31 +79,6 @@ public class RecorderTest {
   }
   
   @Test
-  public void activateReleaseAffects() {
-    List<Inhabitant<?>> list = new ArrayList<Inhabitant<?>>();
-    Recorder recorder = new Recorder(list, 5);
-    RunLevelState rlState = new TestRunLevelState(5, 5);
-
-    Holder.Impl cl = new Holder.Impl(getClass().getClassLoader());
-
-    Inhabitant<?> delegate = Inhabitants.createInhabitant(h, cl,
-        RunLevelFiveService.class.getName(), new MultiMap(), null,
-        Collections.singleton(Simple.class.getName()));
-    TestRunLevelInhabitant i1 = new TestRunLevelInhabitant(delegate, 0, rlState, null);
-    
-    i1.get();
-    recorder.inhabitantChanged(EventType.INHABITANT_ACTIVATED, i1);
-
-    assertEquals(1, list.size());
-    assertSame(i1, list.get(0));
-    
-    recorder.release();
-
-    assertEquals(0, list.size());
-    assertFalse(i1.isInstantiated());
-  }
-  
-  @Test
   public void affectsOfInvalidRunLevelActivations() {
     List<Inhabitant<?>> list = new ArrayList<Inhabitant<?>>();
     Recorder recorder = new Recorder(list, 10);
@@ -139,15 +114,6 @@ public class RecorderTest {
     } catch (ComponentException e) {
       // expected
     }
-
-    assertEquals("we should record even during exceptions", 3, list.size());
-    
-    recorder.release();
-
-    assertEquals(0, list.size());
-    assertFalse(low.isInstantiated());
-    assertFalse(correct.isInstantiated());
-    assertFalse(high.isInstantiated());
   }
   
   @Test
