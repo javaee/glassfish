@@ -65,7 +65,7 @@
         />
     </sun:tab>
 
-     <sun:tab id="clusterResources" immediate="$boolean{true}" text="$resource{i18ncs.cluster.ResourcesTab} (TBD)">
+     <sun:tab id="clusterResources" immediate="$boolean{true}" text="$resource{i18ncs.cluster.ResourcesTab}">
 	<!command
             setSessionAttribute(key="clusterTabs" value="clusterResources");
             gf.redirect(page="#{request.contextPath}/cluster/cluster/clusterResources.jsf?clusterName=#{encodedClusterName}");

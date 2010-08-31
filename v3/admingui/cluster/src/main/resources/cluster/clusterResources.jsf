@@ -62,7 +62,8 @@
         urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18ncs.msg.JS.confirmDeleteResources}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/cluster/cluster/clusterResources.jsf?clusterName=#{encodedClusterName}");
-        setPageSessionAttribute(key="tableTitle" value="$resource{i18ncs.cluster.resourcesTableTitle}");
+        getRequestValue(key="filterValue" value="#{pageSession.filterValue}");
+        setPageSessionAttribute(key="restURL" value="#{sessionScope.REST_URL}/clusters/cluster/#{pageSession.encodedClusterName}/resource-ref");
     />
     
     </event>
@@ -75,7 +76,9 @@
 <sun:title id="propertyContentPage" title="$resource{i18ncs.cluster.ResourcesTitle}"
                  helpText="$resource{i18ncs.cluster.ResourcesTitleHelp}" >
 </sun:title>
-#include "/cluster/cluster/clusterNameSection.inc"
+"<br/>
+#include "/common/resourceNode/targetResourceTable.inc"
+<!--#include "/cluster/cluster/clusterNameSection.inc"
 <sun:table id="table1" title="$resource{i18n.resourcesTable.resources}"  >
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableId});
@@ -136,7 +139,7 @@
 
    </sun:tableRowGroup>
 
-</sun:table>
+</sun:table>-->
 
 
 
