@@ -515,6 +515,7 @@
         <ant dir="weblogicDD/dirListing" target="all"/>
         <ant dir="weblogicDD/jspDescriptor" target="all"/>
         <ant dir="weblogicDD/runAsPrincipalName" target="all"/>
+        <ant dir="weblogicDD/referenceDescriptor" target="all"/>
     </target>
 
     <target name="clustering" depends="init-report">
