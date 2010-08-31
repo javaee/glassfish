@@ -177,6 +177,7 @@ public class CommandResourceMetaData {
             {"Server", "flush-jmsdest", "POST", "flush-jmsdest", "Flush", "target=$parent"},
             {"Server", "jms-ping", "GET", "jms-ping", "Ping JMS", "id=$parent"},
             {"Server", "delete-instance", "DELETE", "delete-instance", "Delete Instance", "id=$parent"},
+            {"Server", "migrate-timers", "POST", "migrate-timers", "Migrate Timers", "id=$parent"},
             {"Server", "start-instance", "POST", "start-instance", "Start Instance", "id=$parent"},
             {"Server", "stop-instance", "POST", "stop-instance", "Stop Instance", "id=$parent"},
             {"Server", "recover-transactions", "POST", "recover-transactions", "Recover", "id=$parent"}

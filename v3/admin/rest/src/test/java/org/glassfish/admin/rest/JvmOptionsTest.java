@@ -87,6 +87,32 @@ public class JvmOptionsTest extends RestTestBase {
         assertFalse(jvmOptions.contains(optionName+"=someValue"));
     }
 
+    @Test
+    public void createAndDeleteOptionsWithoutValues() {
+        final String option1Name = "-Doption" + generateRandomString();
+        final String option2Name = "-Doption" + generateRandomString();
+        Map<String, String> newOptions = new HashMap<String, String>() {{
+            put(option1Name, "");
+            put(option2Name, "");
+        }};
+
+        ClientResponse response = post(URL_JVM_OPTIONS, newOptions);
+        assertTrue(isSuccess(response));
+        response = get(URL_JVM_OPTIONS);
+        List<String> jvmOptions = getJvmOptions(response);
+        assertTrue(jvmOptions.contains(option1Name));
+        assertFalse(jvmOptions.contains(option1Name+"="));
+        assertTrue(jvmOptions.contains(option2Name));
+        assertFalse(jvmOptions.contains(option2Name+"="));
+
+        response = delete(URL_JVM_OPTIONS, newOptions);
+        assertTrue(isSuccess(response));
+        response = get(URL_JVM_OPTIONS);
+        jvmOptions = getJvmOptions(response);
+        assertFalse(jvmOptions.contains(option1Name));
+        assertFalse(jvmOptions.contains(option2Name));
+    }
+
     protected Map<String, String> buildJvmOptionsPayload(Map<String, String> options) {
         Map<String, String> payload = new HashMap<String, String>();
         StringBuilder sb = new StringBuilder();

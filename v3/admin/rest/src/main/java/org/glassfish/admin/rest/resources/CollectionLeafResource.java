@@ -281,9 +281,13 @@ public abstract class CollectionLeafResource {
             String sep = "";
             for (Map.Entry<String, String> entry : data.entrySet()) {
                 options.append(sep)
-                        .append(entry.getKey())
-                        .append("=")
-                        .append(entry.getValue());
+                        .append(entry.getKey());
+
+                String value = entry.getValue();
+                if ((value != null) && (!value.isEmpty())) {
+                        options.append("=")
+                                .append(entry.getValue());
+                }
                 sep = ":";
             }
 

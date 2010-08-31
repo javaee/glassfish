@@ -150,7 +150,7 @@ public class JmsTest extends RestTestBase {
     }
 
     @Test
-    public void testJmsDest() {
+    public void testJmsPhysicalDestination() {
         final String jmsDestName = "jmsDest" + generateRandomString();
         final int maxNumMsgs = generateRandomNumber(500);
         final int consumerFlowLimit = generateRandomNumber(500);
