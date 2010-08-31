@@ -73,7 +73,7 @@
             //<sun:textField id="threadpoolsid" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.resourceAdapterConfig.ThreadPoolId']}" text="#{pageSession.valueMap['threadPoolIds']}" />
             <sun:dropDown id="threadpoolsid" selected="#{pageSession.valueMap['threadPoolIds']}" labels="#{pageSession.threadPoolList}" >
                 <!beforeCreate
-                    gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/server-config/thread-pools"
+                    gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/server-config/thread-pools/thread-pool"
                         result="#{requestScope.tmpList}");
                     addEmptyFirstElement(in="#{requestScope.tmpList}" out="#{pageSession.threadPoolList}")
                 />
