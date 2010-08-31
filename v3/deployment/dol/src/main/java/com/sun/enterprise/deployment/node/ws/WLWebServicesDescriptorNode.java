@@ -161,7 +161,7 @@ public class WLWebServicesDescriptorNode extends BundleNode
         //None of the sub nodes should call addDescriptor() on this node.
         // as this configuration only supplements webservices.xml configuration and
         // does not create new web services.
-        DOLUtils.getDefaultLogger().info("Warning: WLWebServiceDescriptorNode.addDescriptor() should not have been called by" + descriptor.toString());
+        //DOLUtils.getDefaultLogger().info("Warning: WLWebServiceDescriptorNode.addDescriptor() should not have been called by" + descriptor.toString());
 
     }
 

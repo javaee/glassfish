@@ -46,6 +46,7 @@ import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.xml.WebServicesTagNames;
 import org.w3c.dom.Node;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
@@ -105,12 +106,20 @@ public class WLWebServiceNode extends DisplayableComponentNode {
                                 + "final wsdl url=" + value);
                 return;
             }
+            URL url = null;
             try {
-                URL url = new URL(value);
+                url = new URL(value);
+            } catch (MalformedURLException e) {
+                try {
+                    //try file
+                    url = new File(value).toURI().toURL();
+                } catch (MalformedURLException mue) {
+                    DOLUtils.getDefaultLogger().log(Level.INFO,
+                            "Warning : Invalid final wsdl url=" + value, mue);
+                }
+            }
+            if (url != null) {
                 descriptor.setClientPublishUrl(url);
-            } catch (MalformedURLException mue) {
-                DOLUtils.getDefaultLogger().log(Level.INFO,
-                        "Warning : Invalid final wsdl url=" + value, mue);
             }
         } else {
             super.setElementValue(element, value);
