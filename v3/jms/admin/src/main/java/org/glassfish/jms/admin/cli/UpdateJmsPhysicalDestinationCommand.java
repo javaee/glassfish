@@ -74,7 +74,7 @@ import org.jvnet.hk2.component.PerLookup;
 public class UpdateJmsPhysicalDestinationCommand extends JMSDestination implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(UpdateJmsPhysicalDestinationCommand.class);
 
-    @Param(name = "destType", shortName = "T", optional = false)
+    @Param(name = "desttype", shortName = "t", optional = false)
     String destType;
 
     @Param(name = "dest_name", primary = true)
