@@ -133,15 +133,6 @@
             <type>zip</type>
             <optional>true</optional>
         </dependency>
-
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-scripting</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-            <optional>true</optional>
-        </dependency>
-
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-common</artifactId>
