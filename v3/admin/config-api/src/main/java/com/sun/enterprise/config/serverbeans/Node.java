@@ -91,6 +91,10 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
     @Param(name="name", primary = true)
     public void setName(String value) throws PropertyVetoException;
 
+    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*",
+             message="Invalid node name. Name must start with a letter or number and may contain only letters, numbers, and certain other characters.")
+    public String getName();
+
     /**
      * points to the parent directory of the node(s) directory.
      *

@@ -92,7 +92,6 @@ public class CreateNodeConfigCommand implements AdminCommand {
         ci.parameters(map);
         ci.execute();
 
-        
+        NodeUtils.sanitizeReport(report);
     }
-
 }

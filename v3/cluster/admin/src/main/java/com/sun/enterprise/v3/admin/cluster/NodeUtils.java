@@ -43,7 +43,9 @@ package com.sun.enterprise.v3.admin.cluster;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.internal.api.RelativePathResolver;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.ExceptionUtil;
 import com.sun.enterprise.util.net.NetUtils;
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.CommandValidationException;
 import com.sun.enterprise.universal.glassfish.TokenResolver;
@@ -210,4 +212,22 @@ public class NodeUtils {
             }
         }
     }
+
+    /**
+     * Takes an action report and updates the message in the report with
+     * the message from the root cause of the report.
+     *
+     * @param report
+     */
+    static void sanitizeReport(ActionReport report) {
+        if (report != null && report.hasFailures() &&
+                              report.getFailureCause() != null) {
+            Throwable rootCause = ExceptionUtil.getRootCause(
+                    report.getFailureCause());
+            if (rootCause != null && StringUtils.ok(rootCause.getMessage())) {
+                report.setMessage(rootCause.getMessage());
+            }
+        }
+    }
+
 }

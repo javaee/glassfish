@@ -171,6 +171,8 @@ public class CreateNodeSshCommand implements AdminCommand  {
         ci.parameters(map);
         ci.execute();
 
+        NodeUtils.sanitizeReport(report);
+
         if (StringUtils.ok(report.getMessage())) {
             if (msg.length() > 0) {
                 msg.append(NL);
@@ -192,4 +194,5 @@ public class CreateNodeSshCommand implements AdminCommand  {
             installdir = NodeUtils.NODE_DEFAULT_INSTALLDIR;
         }        
     }
+
 }
