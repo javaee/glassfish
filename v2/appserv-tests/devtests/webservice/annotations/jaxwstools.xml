@@ -67,6 +67,10 @@
   <copy file="${webservices.xml}"
         tofile="${build.classes.dir}/tmp/WEB-INF/webservices.xml"
         failonerror="false"/>
+  <copy verbose="true" toDir="${build.classes.dir}/tmp/WEB-INF/">
+      <fileset dir="${basedir}" includes="weblogic-webservices.xml"/>
+  </copy>
+  
   <copy file="${wsdlfile.location}/${wsdlfile.name}"
         tofile="${build.classes.dir}/tmp/WEB-INF/wsdl/${wsdlfile.name}"
         failonerror="false"/>
@@ -97,6 +101,7 @@
       <include name="WEB-INF/web.xml"/>
       <include name="WEB-INF/sun-web.xml"/>
       <include name="WEB-INF/webservices.xml"/>
+      <include name="WEB-INF/weblogic-webservices.xml"/>  
       <include name="WEB-INF/jax-ws-catalog.xml"/>
       <include name="WEB-INF/wsdl/${wsdlfile.name}"/>
       <include name="WEB-INF/wsdl/${schemafile.name}"/>
