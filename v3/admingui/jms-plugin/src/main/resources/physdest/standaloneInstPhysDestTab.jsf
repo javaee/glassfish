@@ -40,9 +40,9 @@
 
 -->
 
-<sun:tab id="jmsPhysDest" immediate="true" text="$resource{i18njms.jmsPhysDestinations.tab}" toolTip="$resource{i18njms.jmsPhysDestinations.tab} Tab">
+<sun:tab id="jmsPhysDest" immediate="true" text="$resource{i18nc.jmsPhysDestinations.tab}" toolTip="$resource{i18nc.jmsPhysDestinations.tab} Tab">
     <!command
-        setSessionAttribute(key="serverInstTabs" value="physDest");
-        gf.redirect(page="#{request.contextPath}/jms/physdest/serverInstPhysDest.jsf?name=#{pageSession.instanceName}");
+        setSessionAttribute(key="targetType", value="instance");
+        gf.redirect(page="#{request.contextPath}/jms/physdest/standaloneInstPhysDest.jsf?target=#{pageSession.instanceName}");
     />
 </sun:tab>

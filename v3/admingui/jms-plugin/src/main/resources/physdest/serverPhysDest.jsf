@@ -52,13 +52,14 @@
 <!define name="content">
     <event>
         <!beforeCreate
-            getRequestValue(key="name" value="#{pageSession.instanceName}");
-            urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
-            setSessionAttribute(key="standaloneInstanceTabs" value="general");
-            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jms/physdest/serverInstPhysDest.jsf?name=#{pageSession.instanceName}");
+            setSessionAttribute(key="serverInstTabs" value="jmsPhysDest");
+            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jms/physdest/serverPhysDest.jsf?");
+            setPageSessionAttribute(key="target" value="server");
+            setPageSessionAttribute(key="instanceName" value="server");
+            setPageSessionAttribute(key="encodedInstanceName" value="server");
 
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/servers/server");
-            setPageSessionAttribute(key="resourceUrl", value="#{pageSession.parentUrl}/#{pageSession.encodedInstanceName}");
+            setPageSessionAttribute(key="resourceUrl", value="#{pageSession.parentUrl}/server");
             setPageSessionAttribute(key="rest-api" value="true");
 
             gf.restRequest(endpoint="#{pageSession.resourceUrl}/list-jmsdest", method="get", result="#{requestScope.result}");
@@ -67,7 +68,7 @@
     </event>
 
     <sun:form id="propertyForm">
-#include "/cluster/standalone/standaloneInstanceTabs.inc"
+#include "/common/appServer/serverInstTabs.inc"
 #include "/common/shared/alertMsg.inc"
         <sun:title id="propertyContentPage" title="$resource{i18njms.jmsPhysDestinations.pageTitle}" helpText="$resource{i18njms.jmsPhysDestinations.pageHelp}"/>
         "<br /> <br />

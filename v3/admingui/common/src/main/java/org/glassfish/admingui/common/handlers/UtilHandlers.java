@@ -56,7 +56,6 @@ import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.LayoutDefinitionManager;
-import com.sun.jsftemplating.layout.LayoutViewHandler;
 import com.sun.jsftemplating.layout.ViewRootUtil;
 import com.sun.jsftemplating.layout.descriptors.LayoutElement;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
@@ -80,7 +79,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Map;
 
-import javax.faces.context.FacesContext;
 import javax.faces.component.UIViewRoot;
 
 
@@ -244,6 +242,36 @@ public class UtilHandlers {
         Map map = (Map) handlerCtx.getInputValue("Map");
         Object key = (Object) handlerCtx.getInputValue("Key");
         handlerCtx.setOutputValue("Value", (Object) map.get(key));        
+    }
+
+    @Handler(id="mapJoin",
+        input={
+            @HandlerInput(name="map", type=Map.class, required=true),
+            @HandlerInput(name="sep", type=String.class, defaultValue=","),
+            @HandlerInput(name="skipBlankValues", type=Boolean.class, defaultValue="true")
+        },
+        output={
+            @HandlerOutput(name="result", type=String.class)
+        }
+    )
+    public static void mapJoin(HandlerContext handlerCtx) {
+        Map map = (Map)handlerCtx.getInputValue("map");
+        String sep = (String)handlerCtx.getInputValue("sep");
+        Boolean skipBlankValues = (Boolean)handlerCtx.getInputValue("skipBlankValues");
+        String sepHolder = "";
+        assert(map != null);
+        StringBuilder result = new StringBuilder();
+
+        for (Map.Entry entry : (Set<Map.Entry>)map.entrySet()) {
+            Object value = entry.getValue();
+            if (skipBlankValues && ((value == null) || (value.toString().isEmpty()))) {
+                continue;
+            }
+            result.append(sepHolder).append(entry.getKey()).append("=").append(entry.getValue());
+            sepHolder = sep;
+        }
+
+        handlerCtx.setOutputValue("result", result.toString());
     }
 
     /**

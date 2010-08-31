@@ -75,7 +75,7 @@
                 parentId="standaloneInstanceTabs"
                 type="org.glassfish.admingui:standaloneInstTab"
                 priority="300"
-                content="/physdest/serverInstPhysDestTab.jsf"
+                content="/physdest/standaloneInstPhysDestTab.jsf"
     />
     <integration-point
                 id="physDestCluster"
@@ -83,5 +83,12 @@
                 type="org.glassfish.admingui:clusterTab"
                 priority="300"
                 content="/physdest/clusterPhysDestTab.jsf"
+    />
+    <integration-point
+                id="physDestServer"
+                parentId="serverInstTabs"
+                type="org.glassfish.admingui:serverInstTab"
+                priority="300"
+                content="/physdest/serverPhysDestTab.jsf"
     />
 </console-config> 

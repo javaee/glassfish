@@ -44,7 +44,10 @@
     <!facet actionsTop>
          <sun:panelGroup id="topActionsGroup1">
             <sun:button id="newButton" text="$resource{i18n.button.New}" >
-                <!command gf.redirect(page="/jms/physdest/jmsPhysicalDestinationNew.jsf"); />
+                <!command
+                    println ("***** pageSession = #{pageSession}\n\n\n\n\n\n\n\n");
+                    gf.redirect(page="/jms/physdest/jmsPhysicalDestinationNew.jsf?target=#{pageSession.target}&parentPage=#{pageSession.selfPage}");
+                />
             </sun:button>
 
             <sun:button id="deleteButton" text="$resource{i18n.button.Delete}" disabled="#{false}" primary="#{false}"
@@ -104,7 +107,8 @@
         </sun:tableColumn>
 
         <sun:tableColumn id="col1" headerText="$resource{i18n.common.PropertyName}" sort="name" rowHeader="$boolean{true}">
-            <sun:hyperlink id="nameCol" text="#{td.value.name}" url="/jms/physdest/jmsPhysicalDestinationEdit.jsf?name=#{td.value.name}&type=#{td.value.type}" />
+            <sun:hyperlink id="nameCol" text="#{td.value.name}" 
+                url="/jms/physdest/jmsPhysicalDestinationEdit.jsf?name=#{td.value.name}&type=#{td.value.type}&target=#{pageSession.target}&parentPage=#{pageSession.selfPage}" />
         </sun:tableColumn>
 
         <sun:tableColumn id="col3" headerText="$resource{i18n.common.type.header}" sort="type" rowHeader="$boolean{true}">

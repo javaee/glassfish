@@ -59,6 +59,7 @@
 
         <sun:property id="nameProp" labelAlign="left" noWrap="true" overlapLabel="false" label="$resource{i18njms.jmsDestination.destName}" helpText="$resource{i18njms.jmsDestination.destNameHelp}">
             <sun:textField id="name" columns="55" maxLength="#{sessionScope.fieldLengths['maxLength.jmsDestination.destName']}" text="#{pageSession.physDestName}" styleClass="required" required="true" />
+            <h:outputText value="test!"/>
         </sun:property>
 
         <sun:property id="resTypeProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resType}"  >

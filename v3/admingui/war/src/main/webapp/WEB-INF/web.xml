@@ -45,7 +45,7 @@
 <web-app>
     <context-param>
         <param-name>com.sun.jsftemplating.DEBUG</param-name>
-        <param-value>false</param-value>
+        <param-value>true</param-value>
     </context-param>
     <context-param>
         <param-name>com.sun.jsftemplating.FS_DENY_PATHS</param-name>

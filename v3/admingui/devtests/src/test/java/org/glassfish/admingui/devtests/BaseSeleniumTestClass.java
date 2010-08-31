@@ -327,7 +327,7 @@ public class BaseSeleniumTestClass {
                 // Assume one row group for now and hope it doesn't bite us
                 String text = selenium.getText(tableId + ":rowGroup1:" + row + ":" + valueColId);
                 if (text.equals(value)) {
-                    selenium.click(tableId + ":rowGroup1:" + row + ":" + selectColId + ":select");
+                    selenium.check(tableId + ":rowGroup1:" + row + ":" + selectColId + ":select");
                     return;
                 }
                 row++;

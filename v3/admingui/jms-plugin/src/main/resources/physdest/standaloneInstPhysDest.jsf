@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -41,35 +41,39 @@
 -->
 
 <!initPage
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+    setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
     setResourceBundle(key="i18njms" bundle="org.glassfish.jms.admingui.Strings");
     setResourceBundle(key="helpjms" bundle="org.glassfish.jms.admingui.Helplinks")
-    setAttribute(key="edit" value="#{false}" )
 />
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.jmsPhysDestinations.newPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="" >
 <!define name="content">
     <event>
-    <!beforeCreate
-        setPageSessionAttribute(key="pageTitle" value="$resource{i18njms.jmsPhysDestinations.newPageTitle}");
-        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18njms.jmsPhysDestinations.newPageHelp}");
-        setPageSessionAttribute(key="parentPage" value="#{param.parentPage}");
-        getDefaultPhysicalDestinationValues(map="#{pageSession.valueMap}");
-        setPageSessionAttribute(key="target" value="#{param.target}");
-        
-        if ("#{targetType} = instance") {
-            setPageSessionAttribute(key="baseUrl", value="#{sessionScope.REST_URL}/servers/server/#{pageSession.target}");
-        }
-        if ("#{targetType} = cluster") {
-            setPageSessionAttribute(key="baseUrl", value="#{sessionScope.REST_URL}/clusters/cluster/#{pageSession.target}");
-        }
-    />
+        <!beforeCreate
+            getRequestValue(key="target" value="#{pageSession.instanceName}");
+            urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
+            setSessionAttribute(key="standaloneInstanceTabs" value="jmsPhysDest");
+            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jms/physdest/standaloneInstPhysDest.jsf?name=#{pageSession.instanceName}");
+            setPageSessionAttribute(key="target" value="#{param.target}");
+
+            setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/servers/server");
+            setPageSessionAttribute(key="resourceUrl", value="#{pageSession.parentUrl}/#{pageSession.encodedInstanceName}");
+            setPageSessionAttribute(key="rest-api" value="true");
+
+            gf.restRequest(endpoint="#{pageSession.resourceUrl}/list-jmsdest", method="get", result="#{requestScope.result}");
+            setPageSessionAttribute(key="destList", value="#{requestScope.result.data.extraProperties.destinations}");
+        />
     </event>
-"<h4> baseUrl = #{pageSession.baseUrl}</h4>
+
+    <sun:form id="propertyForm">
+#include "/cluster/standalone/standaloneInstanceTabs.inc"
 #include "/common/shared/alertMsg.inc"
-    <sun:form id="jmsPhysDestForm">
-#include "jmsPhysicalDestinationSheet.inc"
-        <sun:hidden id="helpKey" value="$resource{helpjms.jmsPhysicalDestinationNew}" />
+        <sun:title id="propertyContentPage" title="$resource{i18njms.jmsPhysDestinations.pageTitle}" helpText="$resource{i18njms.jmsPhysDestinations.pageHelp}"/>
+        "<br /> <br />
+#include "physDestTable.jsf
+        <sun:hidden id="helpKey" value="$resource{helpjms.jmsPhysicalDestinations}" />
     </sun:form>
-    "<br/><br/>
 </define>
 </composition>
