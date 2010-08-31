@@ -60,11 +60,9 @@ import java.util.*;
 
 import com.sun.enterprise.security.auth.login.common.PasswordCredential;
 
-import com.sun.enterprise.security.common.Util;
 import com.sun.enterprise.util.Utility;
 import java.util.logging.*;
 import com.sun.logging.*;
-import org.jvnet.hk2.component.Habitat;
 /**
  * GSSUPToken Represents the on the wire username/password credential on the 
  * client side and the server side. 
@@ -110,8 +108,8 @@ public class GSSUPToken {
      * @since 1.4
      */
     public static GSSUPToken getClientSideInstance(ORB orb, Codec codec, 
-                    PasswordCredential pwdcred, Habitat habitat){
-        return new GSSUPToken(orb, codec, pwdcred, habitat);        
+                    PasswordCredential pwdcred, CompoundSecMech mech){
+        return new GSSUPToken(orb, codec, pwdcred, mech);
     }
     /**
      * Creates a GSSUPToken instance on the server side
@@ -132,7 +130,7 @@ public class GSSUPToken {
      * PasswordCredential. This is used by a context initiator.
      * This is called on the Client Side
      */
-    private GSSUPToken(ORB orb, Codec codec, PasswordCredential pwdcred, Habitat habitat)
+    private GSSUPToken(ORB orb, Codec codec, PasswordCredential pwdcred, CompoundSecMech mech)
     {
         byte[] name_utf8      = {};  // username in UTF8 format
         byte[] password_utf8  = {};  // password in UTF8 format
@@ -177,12 +175,9 @@ public class GSSUPToken {
             _logger.log(Level.SEVERE,"iiop.password_exception",e);
         }
 
-        /* Get the target name from the IOR. The IOR is stored in the
-         * ConnectionContext object
+        /* Get the target name from the IOR. 
+         * 
          */
-        SecurityMechanismSelector sms = Lookups.getSecurityMechanismSelector(habitat);
-        ConnectionContext cc   = sms.getClientConnectionContext();
-        CompoundSecMech   mech = cc.getMechanism();
         byte[] target_name     = mech.as_context_mech.target_name;
 
         if(_logger.isLoggable(Level.FINE)){

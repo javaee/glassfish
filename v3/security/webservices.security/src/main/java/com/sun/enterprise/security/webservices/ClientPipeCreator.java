@@ -77,7 +77,9 @@ public class ClientPipeCreator extends ClientPipelineHook {
         propBag.put(PipeConstants.SERVICE, ctxt.getService());
         propBag.put(PipeConstants.BINDING, ctxt.getBinding());
         propBag.put(PipeConstants.ENDPOINT_ADDRESS, ctxt.getAddress());
-        propBag.put(PipeConstants.SERVICE_REF, svcRef);
+        if (svcRef != null) {
+            propBag.put(PipeConstants.SERVICE_REF, svcRef);
+        }
 	propBag.put(PipeConstants.NEXT_PIPE,tail);
         propBag.put(PipeConstants.CONTAINER,ctxt.getContainer());
         propBag.put(PipeConstants.ASSEMBLER_CONTEXT, ctxt);

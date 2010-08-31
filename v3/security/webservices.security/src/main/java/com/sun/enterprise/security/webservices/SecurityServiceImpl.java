@@ -115,7 +115,7 @@ public class SecurityServiceImpl implements SecurityService {
 		 desc,
 		 null);
              return serverAuthConfig;
-	} catch (com.sun.enterprise.security.jauth.AuthException ae) {
+	} catch (Exception ae) {
             _logger.log(Level.SEVERE, 
 		       "EJB Webservice security configuration Failure", ae);
 	}
@@ -128,17 +128,19 @@ public class SecurityServiceImpl implements SecurityService {
         //this method.
         boolean authenticated = false;
         try {
-            if (hreq.getUserPrincipal() == null) {
+            //calling this for a GET request WSDL query etc can cause problems
+            String method = hreq.getMethod();
+            if (method.equals("POST") && hreq.getUserPrincipal() == null) {
                 //request is not in a session so start clean
                 resetSecurityContext();
             }
+
             if (context != null) {
                 context.setUserPrincipal(null);
             }
 
             WebServiceEndpoint endpoint = epInfo.getEndpoint();
 
-            String method = hreq.getMethod();
             String rawAuthInfo = hreq.getHeader(AUTHORIZATION_HEADER);
             if (method.equals("GET") || !endpoint.hasAuthMethod()) {
             //if (method.equals("GET") || rawAuthInfo == null) {
@@ -329,7 +331,7 @@ public class SecurityServiceImpl implements SecurityService {
                 rvalue = new HandlerInfo(MessageLayerClientHandler.class, properties, headers);
             }
 
-        } catch (AuthException ex) {
+        } catch (Exception ex) {
             _logger.log(Level.SEVERE, null, ex);
             throw new RuntimeException(ex);
         }

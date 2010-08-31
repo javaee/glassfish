@@ -40,6 +40,8 @@
 
 package com.sun.enterprise.iiop.security;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Hashtable;
 
 /**
@@ -59,9 +61,27 @@ import java.util.Hashtable;
  * 
  */
 public class ConnectionExecutionContext {
-    private static final InheritableThreadLocal connCurrent= new InheritableThreadLocal();
+    
+    public static final String IIOP_CLIENT_PER_THREAD_FLAG =
+        "com.sun.appserv.iiopclient.perthreadauth";
+    private static final boolean isPerThreadAuth;
+
+    static {
+       Boolean b  = (Boolean) AccessController.doPrivileged( new PrivilegedAction(){
+            @Override
+            public Object run() {
+                 return new Boolean(Boolean.getBoolean(IIOP_CLIENT_PER_THREAD_FLAG));
+            }
+
+       });
+       isPerThreadAuth = b.booleanValue();
+    }
+
+     //private static final InheritableThreadLocal connCurrent= new InheritableThreadLocal();
+    private static final ThreadLocal connCurrent= (isPerThreadAuth) ? new ThreadLocal() : new InheritableThreadLocal();
+
     // XXX: Workaround for non-null connection object ri for local invocation.
-    private static final InheritableThreadLocal<Long> ClientThreadID = new InheritableThreadLocal<Long>();
+    private static final ThreadLocal<Long> ClientThreadID = new ThreadLocal<Long>();
 
     public static Long readClientThreadID() {
         Long ID = ClientThreadID.get();

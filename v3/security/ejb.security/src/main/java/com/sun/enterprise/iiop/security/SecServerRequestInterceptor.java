@@ -76,6 +76,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import com.sun.logging.LogDomains;
 import java.net.Socket;
+import java.util.Hashtable;
 import java.util.logging.*;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import org.jvnet.hk2.component.Habitat;
@@ -106,6 +107,8 @@ public class SecServerRequestInterceptor
     // the major and minor codes for a invalid mechanism
     private static final int INVALID_MECHANISM_MAJOR = 2;
     private static final int INVALID_MECHANISM_MINOR = 1;
+
+    public static final String SERVER_CONNECTION_CONTEXT = "ServerConnContext";
 
     /* used when inserting into service context field */
     private static final boolean  NO_REPLACE = false; 
@@ -404,7 +407,7 @@ public class SecServerRequestInterceptor
             _logger.log(Level.FINE,"No SAS context element found in service context list for operation: " + ri.operation());
         }
         int secStatus = secContextUtil.setSecurityContext(null, ri.object_id(),
-                ri.operation());
+                ri.operation(), getServerSocket());
         
         if (secStatus == SecurityContextUtil.STATUS_FAILED){
             SASContextBody sasctxbody = createContextError(INVALID_MECHANISM_MAJOR,
@@ -561,7 +564,7 @@ public class SecServerRequestInterceptor
         if(_logger.isLoggable(Level.FINE)){
             _logger.log(Level.FINE,"Invoking setSecurityContext() to set security context");
         }
-        status = secContextUtil.setSecurityContext(seccontext, ri.object_id(), ri.operation());
+        status = secContextUtil.setSecurityContext(seccontext, ri.object_id(), ri.operation(), getServerSocket());
 	if(_logger.isLoggable(Level.FINE)){
 		_logger.log(Level.FINE,"setSecurityContext() returned status code " + status);
         }
@@ -615,10 +618,10 @@ public class SecServerRequestInterceptor
             cntr = new Counter();
             counterForCalls.set(cntr);
         } 
-        if (cntr.count == 0){
+        if (cntr.count == 0) {
             //Not required
             //SecurityService secsvc  = Csiv2Manager.getSecurityService();
-            SecurityContextUtil.unsetSecurityContext();
+            SecurityContextUtil.unsetSecurityContext(isLocal());
         }
         cntr.increment();
 
@@ -636,7 +639,7 @@ public class SecServerRequestInterceptor
         } else {
             scc = new ServerConnectionContext();
         }
-        smSelector.setServerConnectionContext(scc);
+        setServerConnectionContext(scc);
     }
 
     public void send_reply(ServerRequestInfo ri)
@@ -668,11 +671,46 @@ public class SecServerRequestInterceptor
             }
             cntr.decrement();
             if (cntr.count == 0) {
-                SecurityContextUtil.unsetSecurityContext();
+                SecurityContextUtil.unsetSecurityContext(isLocal());
+
             }
         } finally {
             ConnectionExecutionContext.removeClientThreadID();
         }
+    }
+
+    private boolean isLocal() {
+        boolean local = true;
+        ServerConnectionContext scc =
+               getServerConnectionContext();
+        if (scc != null && scc.getSocket() != null) {
+            local = false;
+        }
+        Long clientID = ConnectionExecutionContext.readClientThreadID();
+        if (clientID != null && clientID == Thread.currentThread().getId()) {
+            local = true;
+        }
+        return local;
+    }
+
+    private Socket getServerSocket() {
+        ServerConnectionContext scc = getServerConnectionContext();
+        if (scc != null) {
+            return scc.getSocket();
+        }
+        return null;
+    }
+
+    private ServerConnectionContext getServerConnectionContext() {
+        Hashtable h = ConnectionExecutionContext.getContext();
+        ServerConnectionContext scc =
+            (ServerConnectionContext) h.get(SERVER_CONNECTION_CONTEXT);
+        return scc;
+    }
+
+    public static void setServerConnectionContext(ServerConnectionContext scc) {
+        Hashtable h = ConnectionExecutionContext.getContext();
+        h.put(SERVER_CONNECTION_CONTEXT, scc);
     }
 }
 

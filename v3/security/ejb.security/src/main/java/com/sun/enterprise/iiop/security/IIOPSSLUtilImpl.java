@@ -140,6 +140,7 @@ public class IIOPSSLUtilImpl implements IIOPSSLUtil {
         return SharedSecureRandom.get();
     }
     
+    @Override
      public Object getSSLPortsAsSocketInfo(Object ior) {         
           SecurityMechanismSelector selector = Lookups.getSecurityMechanismSelector(habitat);
           return selector.getSSLSocketInfo(ior);

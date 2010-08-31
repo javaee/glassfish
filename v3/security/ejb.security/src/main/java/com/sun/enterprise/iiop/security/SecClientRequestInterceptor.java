@@ -48,6 +48,7 @@ import com.sun.enterprise.common.iiop.security.SecurityContext;
 
 
 import com.sun.corba.ee.org.omg.CSI.*;
+import com.sun.corba.ee.org.omg.CSIIOP.CompoundSecMech;
 import com.sun.enterprise.security.auth.login.common.PasswordCredential;
 import com.sun.enterprise.security.auth.login.common.X509CertificateCredential;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -160,7 +161,7 @@ public class SecClientRequestInterceptor extends    org.omg.CORBA.LocalObject
      *  The client authentication token is cdr encoded.
      */
 
-    private byte[] createAuthToken(java.lang.Object cred, Class cls, ORB orb)
+    private byte[] createAuthToken(java.lang.Object cred, Class cls, ORB orb, CompoundSecMech mech)
         throws Exception
     {
         byte[] gsstoken = {};      // GSS token
@@ -171,7 +172,7 @@ public class SecClientRequestInterceptor extends    org.omg.CORBA.LocalObject
 
             /* Generate mechanism specific GSS token for the GSSUP mechanism */
             PasswordCredential pwdcred = (PasswordCredential) cred;
-	    GSSUPToken tok = GSSUPToken.getClientSideInstance(orb, codec, pwdcred, habitat);
+	    GSSUPToken tok = GSSUPToken.getClientSideInstance(orb, codec, pwdcred, mech);
             gsstoken = tok.getGSSToken();
 	}
         return gsstoken;
@@ -300,7 +301,12 @@ public class SecClientRequestInterceptor extends    org.omg.CORBA.LocalObject
             });
 
             try {
-                cAuthenticationToken = createAuthToken(cred, secctxt.authcls, orb);
+                
+                SecurityMechanismSelector sms = Lookups.getSecurityMechanismSelector(habitat);
+                ConnectionContext cc = sms.getClientConnectionContext();
+                CompoundSecMech mech = cc.getMechanism();
+
+                cAuthenticationToken = createAuthToken(cred, secctxt.authcls, orb, mech);
             } catch (Exception e) {
                 _logger.log(Level.SEVERE,"iiop.createauthtoken_exception",e);
 	        throw new SecurityException(

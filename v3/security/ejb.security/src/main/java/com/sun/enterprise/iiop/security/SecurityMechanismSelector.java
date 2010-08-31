@@ -126,7 +126,7 @@ public final class SecurityMechanismSelector implements PostConstruct {
        LogDomains.getLogger(SecurityMechanismSelector.class, LogDomains.SECURITY_LOGGER);
 
     public static final String CLIENT_CONNECTION_CONTEXT = "ClientConnContext";
-    public static final String SERVER_CONNECTION_CONTEXT = "ServerConnContext";
+    //public static final String SERVER_CONNECTION_CONTEXT = "ServerConnContext";
 
     private  Set<EjbIORConfigurationDescriptor> corbaIORDescSet = null;
     private  boolean sslRequired = false;
@@ -203,19 +203,6 @@ public final class SecurityMechanismSelector implements PostConstruct {
         } catch(Exception e) {
             _logger.log(Level.SEVERE,"iiop.Exception",e);
         }        
-    }
-
-   
-    public static ServerConnectionContext getServerConnectionContext() {
-        Hashtable h = ConnectionExecutionContext.getContext();
-        ServerConnectionContext scc = 
-            (ServerConnectionContext) h.get(SERVER_CONNECTION_CONTEXT);
-        return scc;
-    }
-
-    public static void setServerConnectionContext(ServerConnectionContext scc) {
-        Hashtable h = ConnectionExecutionContext.getContext();
-        h.put(SERVER_CONNECTION_CONTEXT, scc);
     }
 
     public ConnectionContext getClientConnectionContext() {
@@ -563,14 +550,18 @@ public final class SecurityMechanismSelector implements PostConstruct {
 	if (mechSupported == null) {
 	    return false;
 	}
-        if (mechanisms[0].length != mechSupported.length)
+        if (mechanisms == null) {
             return false;
-        for (int i=0; i<mechanisms[0].length; i++){
-            if (mechanisms[0][i] != mechSupported[i])
-                return false;
         }
-        return true;    
+
+        for (int i = 0; i < mechanisms.length; i++) {
+            if (Arrays.equals(mechSupported, mechanisms[i])) {
+                return true;
+            }
+        }
+        return false;
     }
+    
     public boolean isIdentityTypeSupported(SAS_ContextSec sas){
         int ident_token = sas.supported_identity_types;
         // the identity token matches atleast one of the types we support
@@ -1031,6 +1022,14 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
         boolean val = true;
         TLS_SEC_TRANS tls = getCtc().getSSLInformation(mech);
 
+        if (mech.sas_context_mech.supported_naming_mechanisms.length > 0
+                && !isMechanismSupported(mech.sas_context_mech)) {
+            return false;
+        } else if (mech.as_context_mech.client_authentication_mech.length > 0
+                && !isMechanismSupportedAS(mech.as_context_mech)) {
+            return false;
+        }
+
         if(tls == null) {
             return true;
         }
@@ -1041,6 +1040,24 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
             }
         }
         return val;
+    }
+    
+    private boolean isMechanismSupportedAS(AS_ContextSec as) {
+        byte[] mechanism = as.client_authentication_mech;
+        byte[] mechSupported = GSSUtils.getMechanism();
+
+        if (mechSupported == null) {
+            return false;
+        }
+        if (mechanism == null) {
+            return false;
+        }
+
+        if (Arrays.equals(mechanism,mechSupported)) {
+            return true;
+        }
+
+        return false;
     }
 
     // Returns the target_name from PasswordCredential in Subject subj
@@ -1462,11 +1479,10 @@ as_context_mech
     /**
      * Called by the target to interpret client credentials after validation. 
      */
-    public SecurityContext evaluateTrust(SecurityContext ctx, byte[] object_id)
+    public SecurityContext evaluateTrust(SecurityContext ctx, byte[] object_id, Socket socket)
         throws SecurityMechanismException
     {
         SecurityContext ssc = null;
-        Socket socket = null;
 
         // ssl_used is true if SSL was used.        
         boolean ssl_used        = false ;
@@ -1480,25 +1496,20 @@ as_context_mech
         // conformance of the client to the security policies.
         // If the test for client conformance passes, then set the
         // security context.
-
-        ServerConnectionContext scc = getServerConnectionContext();
-
-        if(scc != null) {
-            socket = scc.getSocket();
-            if ((socket != null) && (socket instanceof SSLSocket)) {
-                ssl_used = true; // SSL was used
-                // checkif there is a transport principal
-                SSLSocket sslSock = (SSLSocket) socket;
-                SSLSession sslSession = sslSock.getSession();
-                try {
-                    certChain = (X509Certificate[])sslSession.getPeerCertificates();
-                } catch(Exception e) {
-                    if (_logger.isLoggable(Level.FINE)) {
-                        _logger.log(Level.FINE, "iiop.cannot_get_peercert", e);
-                    }
+        if ((socket != null) && (socket instanceof SSLSocket)) {
+            ssl_used = true; // SSL was used
+            // checkif there is a transport principal
+            SSLSocket sslSock = (SSLSocket) socket;
+            SSLSession sslSession = sslSock.getSession();
+            try {
+                certChain = (X509Certificate[]) sslSession.getPeerCertificates();
+            } catch (Exception e) {
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "iiop.cannot_get_peercert", e);
                 }
             }
         }
+        
 
         // For a local invocation - we don't need to check the security
         // policies. The following condition guarantees the call is local

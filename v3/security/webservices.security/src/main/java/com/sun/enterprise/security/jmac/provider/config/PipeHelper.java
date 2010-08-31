@@ -129,9 +129,14 @@ public class PipeHelper extends ConfigHelper {
                 binding = endPoint.getBinding();
             }
         }
-        this.soapVersion = (binding != null) ? binding.getSOAPVersion(): SOAPVersion.SOAP_11;
-        auditManager = SecurityServicesUtil.getInstance().getAuditManager();
-        invManager = SecurityServicesUtil.getInstance().getHabitat().getComponent(InvocationManager.class);
+        this.soapVersion = (binding != null) ? binding.getSOAPVersion() : SOAPVersion.SOAP_11;
+
+        auditManager = (SecurityServicesUtil.getInstance() != null)
+                ? SecurityServicesUtil.getInstance().getAuditManager()
+                : new AuditManager();//workaround for standalone clients where no habitat
+        invManager = (SecurityServicesUtil.getInstance() != null)
+                ? SecurityServicesUtil.getInstance().getHabitat().getComponent(InvocationManager.class) : null;
+
         this.ejbDelegate = new EJBPolicyContextDelegate();
    }
 
@@ -159,23 +164,23 @@ public class PipeHelper extends ConfigHelper {
 
 	Subject s = null;
 
-        if (SecurityServicesUtil.getInstance().isACC()) {
-	    ClientSecurityContext sc = ClientSecurityContext.getCurrent();
-	    if (sc != null) {
-		s = sc.getSubject();
-	    }
-	    if (s == null) {
-		s = Subject.getSubject(AccessController.getContext());
-	    }
-	} else {
-	    SecurityContext sc = SecurityContext.getCurrent();
-	    if (sc != null && !sc.didServerGenerateCredentials()) {
-		// make sure we don't use default unauthenticated subject, 
-		// so that module cannot change this important (constant) 
-		// subject.
-		s = sc.getSubject();
-	    }
-	}
+        if ((SecurityServicesUtil.getInstance() == null) || SecurityServicesUtil.getInstance().isACC()) {
+            ClientSecurityContext sc = ClientSecurityContext.getCurrent();
+            if (sc != null) {
+                s = sc.getSubject();
+            }
+            if (s == null) {
+                s = Subject.getSubject(AccessController.getContext());
+            }
+        } else {
+            SecurityContext sc = SecurityContext.getCurrent();
+            if (sc != null && !sc.didServerGenerateCredentials()) {
+                // make sure we don't use default unauthenticated subject,
+                // so that module cannot change this important (constant)
+                // subject.
+                s = sc.getSubject();
+            }
+        }
 
 	if (s == null) {
 	    s = new Subject();
@@ -213,6 +218,10 @@ public class PipeHelper extends ConfigHelper {
 	// and move the endpoint specific check down stream
         
 	if (isEjbEndpoint) {
+            if (invManager == null){
+                throw new RuntimeException(localStrings.getLocalString("enterprise.webservice.noEjbInvocationManager",
+                        "Cannot validate request : invocation manager null for EJB WebService"));
+            }
             ComponentInvocation inv = (ComponentInvocation) invManager.getCurrentInvocation();
             // one need to copy message here, otherwise the message may be
             // consumed

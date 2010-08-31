@@ -44,6 +44,8 @@ import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
@@ -319,7 +321,20 @@ public abstract class ConfigHelper /*implements RegistrationListener*/ {
 	    this.wLock = rwLock.writeLock();
             enabled = (factory != null);
             listener = new AuthConfigRegistrationListener(layer, appCtxt);
-            delegate = Globals.get(WebServicesDelegate.class);
+            if (Globals.getDefaultHabitat() != null) {
+                delegate = Globals.get(WebServicesDelegate.class);
+            } else {
+                try {
+                    //for non HK2 environments
+                    //try to get WebServicesDelegateImpl by reflection.
+                    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+                    Class delegateClass = loader.loadClass("com.sun.enterprise.security.webservices.WebServicesDelegateImpl");
+                    delegate = (WebServicesDelegate) delegateClass.newInstance();
+                } catch (InstantiationException ex) {
+                } catch (IllegalAccessException ex) {
+                } catch (ClassNotFoundException ex) {
+                }
+            }
         }
         
         public AuthConfigRegistrationListener getListener() {

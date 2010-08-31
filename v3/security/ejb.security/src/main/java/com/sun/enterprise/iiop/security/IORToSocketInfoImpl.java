@@ -89,6 +89,7 @@ public class IORToSocketInfoImpl implements IORToSocketInfo {
         selector = Globals.get(SecurityMechanismSelector.class);
     }
     
+    @Override
     public List getSocketInfo(IOR ior, List previous) 
     {
         try {
@@ -242,7 +243,7 @@ public class IORToSocketInfoImpl implements IORToSocketInfo {
 	    }
         } catch ( Exception ex ) {
 	    _logger.log(Level.WARNING, "Exception getting SocketInfo",ex);
-	    RuntimeException rte = new RuntimeException(ex.getMessage());
+	    RuntimeException rte = new RuntimeException(ex);
 	    rte.initCause(ex);
             throw rte;
         } finally {

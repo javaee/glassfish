@@ -47,6 +47,7 @@ import com.sun.enterprise.common.iiop.security.SecurityContext;
 import com.sun.enterprise.security.CORBAObjectPermission;
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import com.sun.logging.LogDomains;
+import java.net.Socket;
 
 import java.security.Principal;
 import java.security.ProtectionDomain;
@@ -124,7 +125,6 @@ public class SecurityContextUtil implements PostConstruct {
         try {
             context = sms.selectSecurityContext(ior);
         } catch (InvalidMechanismException ime) { // let this pass ahead
-
             _logger.log(Level.SEVERE, "iiop.invalidmechanism_exception", ime);
             throw new InvalidMechanismException(ime.getMessage());
         } catch (InvalidIdentityTokenException iite) {
@@ -180,7 +180,7 @@ public class SecurityContextUtil implements PostConstruct {
      * @return the status
      */
     public int setSecurityContext(SecurityContext context, byte[] object_id,
-            String method) {
+            String method, Socket socket) {
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "ABOUT TO EVALUATE TRUST");
         }
@@ -190,7 +190,7 @@ public class SecurityContextUtil implements PostConstruct {
             // as required by the object's CSIv2 policy.
             // evaluateTrust will throw an exception if client did not
             // conform to security policy.
-            SecurityContext ssc = sms.evaluateTrust(context, object_id);
+            SecurityContext ssc = sms.evaluateTrust(context, object_id, socket);
 
             Class cls = null;
             Subject s = null;
@@ -280,21 +280,9 @@ public class SecurityContextUtil implements PostConstruct {
      * this is introduced to prevent the re-use of the thread
      * security context on re-use of the thread.
      */
-    public static void unsetSecurityContext() {
+    public static void unsetSecurityContext(boolean isLocal) {
         // logout method from LoginContext not called 
         // as we dont want to unset the appcontainer context
-
-        // First check if this is a local call.
-        boolean isLocal = true;
-        ServerConnectionContext scc =
-                SecurityMechanismSelector.getServerConnectionContext();
-        if (scc != null && scc.getSocket() != null) {
-            isLocal = false;
-        }
-        Long clientID = ConnectionExecutionContext.readClientThreadID();
-        if (clientID != null && clientID == Thread.currentThread().getId()) {
-            isLocal = true;
-        }
         if (!isLocal) {
             com.sun.enterprise.security.SecurityContext.setCurrent(null);
         }
