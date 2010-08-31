@@ -41,26 +41,26 @@
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.admin.util.ClusterOperationUtil;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.I18n;
+import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
+import org.glassfish.api.admin.config.LegacyConfigurationUpgrade;
 import org.glassfish.internal.api.Target;
-import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.config.Dom;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.ConfigBean;
-import org.jvnet.hk2.config.TransactionFailure;
-import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
-import org.glassfish.api.Param;
-import org.glassfish.api.I18n;
-import org.glassfish.api.ActionReport;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.config.ConfigBean;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.types.Property;
-import org.glassfish.api.admin.config.LegacyConfigurationUpgrade;
 
 import java.util.*;
 
@@ -69,7 +69,7 @@ import java.util.*;
  * Date: Jul 11, 2008
  * Time: 4:39:05 AM
  */
-@Service(name="set")
+@Service(name = "set")
 @ExecuteOn(RuntimeType.INSTANCE)
 @Scoped(PerLookup.class)
 @I18n("set")
@@ -107,6 +107,12 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
 
     public void execute(AdminCommandContext context) {
         for (String value : values) {
+
+            if (value.contains(".log-service.")) {
+                fail(context, localStrings.getLocalString("n", "For setting log levels use set-log-levels command."));
+                return;
+            }
+
             if (!set(context, value))
                 return;
         }
@@ -126,48 +132,48 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
         // last element from the target pattern which is supposed to be the
         // attribute name
         int lastDotIndex = trueLastIndexOf(target, '.');
-        if (lastDotIndex==-1) {
+        if (lastDotIndex == -1) {
             // error.
             //fail(context, "Invalid attribute name " + target);
             fail(context, localStrings.getLocalString("admin.set.invalid.attributename", "Invalid attribute name {0}", target));
             return false;
         }
-        String attrName = target.substring(lastDotIndex+1);
-        String pattern =  target.substring(0, lastDotIndex);
+        String attrName = target.substring(lastDotIndex + 1);
+        String pattern = target.substring(0, lastDotIndex);
         if (attrName.replace('_', '-').equals("jndi-name")) {
             //fail(context, "Cannot change a primary key\nChange of " + target + " is rejected.");
             fail(context, localStrings.getLocalString("admin.set.reject.keychange", "Cannot change a primary key\nChange of {0}", target));
             return false;
         }
         boolean isProperty = false;
-        if ("property".equals(pattern.substring(pattern.lastIndexOf('.')+1))) {
+        if ("property".equals(pattern.substring(pattern.lastIndexOf('.') + 1))) {
             // we are looking for a property, let's look it it exists already...
             pattern = target.replaceAll("\\\\\\.", "\\.");
             isProperty = true;
         }
-        
+
         // now
         // first let's get the parent for this pattern.
         TreeNode[] parentNodes = getAliasedParent(domain, pattern);
-        Map<Dom, String> dottedNames =  new HashMap<Dom, String>();
+        Map<Dom, String> dottedNames = new HashMap<Dom, String>();
         for (TreeNode parentNode : parentNodes) {
-               dottedNames.putAll(getAllDottedNodes(parentNode.node));
+            dottedNames.putAll(getAllDottedNodes(parentNode.node));
         }
 
         // reset the pattern.
-        String prefix="";
+        String prefix = "";
         if (!pattern.startsWith(parentNodes[0].relativeName)) {
-            prefix= pattern.substring(0, pattern.indexOf(parentNodes[0].relativeName));
+            prefix = pattern.substring(0, pattern.indexOf(parentNodes[0].relativeName));
         }
         pattern = parentNodes[0].relativeName;
         String targetName = prefix + pattern;
-        Map<Dom, String> matchingNodes = getMatchingNodes(dottedNames,pattern );
+        Map<Dom, String> matchingNodes = getMatchingNodes(dottedNames, pattern);
         if (matchingNodes.isEmpty()) {
             // it's possible they are trying to create a property object.. lets check this.
             // strip out the property name
-            pattern =  target.substring(0, target.lastIndexOf('.'));
+            pattern = target.substring(0, target.lastIndexOf('.'));
             if (pattern.endsWith("property")) {
-                pattern =  pattern.substring(0, pattern.lastIndexOf('.'));
+                pattern = pattern.substring(0, pattern.lastIndexOf('.'));
                 parentNodes = getAliasedParent(domain, pattern);
                 pattern = parentNodes[0].relativeName;
                 matchingNodes = getMatchingNodes(dottedNames, pattern);
@@ -177,34 +183,34 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
                     return false;
                 }
                 // need to find the right parent.
-                Dom parentNode=null;
-                for (Map.Entry<Dom,String> node : matchingNodes.entrySet()) {
+                Dom parentNode = null;
+                for (Map.Entry<Dom, String> node : matchingNodes.entrySet()) {
                     if (node.getValue().equals(pattern)) {
                         parentNode = node.getKey();
                     }
                 }
-                if (parentNode==null) {
+                if (parentNode == null) {
                     //fail(context, "No configuration found for " + targetName);
                     fail(context, localStrings.getLocalString("admin.set.configuration.notfound", "No configuration found for {0}", targetName));
                     return false;
                 }
 
                 // create and set the attribute.
-                Map<String,String> attributes  = new HashMap<String, String>();
+                Map<String, String> attributes = new HashMap<String, String>();
                 attributes.put("value", value);
                 attributes.put("name", attrName);
                 try {
-                    ConfigSupport.createAndSet((ConfigBean) parentNode, Property.class, attributes );
+                    ConfigSupport.createAndSet((ConfigBean) parentNode, Property.class, attributes);
                     success(context, targetName, value);
                     runLegacyChecks(context);
-                    if(targetService.isThisDAS() && !replicateSetCommand(context, targetName, value))
+                    if (targetService.isThisDAS() && !replicateSetCommand(context, targetName, value))
                         return false;
                     return true;
                 } catch (TransactionFailure transactionFailure) {
                     //fail(context, "Could not change the attributes: " +
                     //    transactionFailure.getMessage(), transactionFailure);
                     fail(context, localStrings.getLocalString("admin.set.attribute.change.failure", "Could not change the attributes: {0}",
-                            transactionFailure.getMessage()),transactionFailure);
+                            transactionFailure.getMessage()), transactionFailure);
                     return false;
                 }
             }
@@ -220,22 +226,22 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
             if ((value == null) || (value.length() == 0)) {
                 delProperty = true;
             }
-            attrChanges.put(attrName, value);                    
+            attrChanges.put(attrName, value);
         }
 
         for (Map.Entry<Dom, String> node : matchingNodes.entrySet()) {
             final Dom targetNode = node.getKey();
 
             for (String name : targetNode.model.getAttributeNames()) {
-                String finalDottedName = node.getValue()+"."  + name;
+                String finalDottedName = node.getValue() + "." + name;
                 if (matches(finalDottedName, pattern)) {
                     if (attrName.equals(name) ||
                             attrName.replace('_', '-').equals(name.replace('_', '-'))) {
-                        
-                        if (! isProperty) {
-                           targetName = prefix + finalDottedName;
 
-                            if (value!=null && value.length()>0) {
+                        if (!isProperty) {
+                            targetName = prefix + finalDottedName;
+
+                            if (value != null && value.length() > 0) {
                                 attrChanges.put(name, value);
                             } else {
                                 attrChanges.put(name, null);
@@ -252,7 +258,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
                             }
                             try {
                                 if (str != null) {
-                                    ConfigSupport.deleteChild((ConfigBean)targetNode.parent(), (ConfigBean)targetNode);
+                                    ConfigSupport.deleteChild((ConfigBean) targetNode.parent(), (ConfigBean) targetNode);
                                     delPropertySuccess = true;
                                 }
                             } catch (IllegalArgumentException ie) {
@@ -260,7 +266,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
                                 //    "Could not delete the property: " +
                                 //    ie.getMessage(), ie);
                                 fail(context, localStrings.getLocalString("admin.set.delete.property.failure", "Could not delete the property: {0}",
-                                    ie.getMessage()), ie);
+                                        ie.getMessage()), ie);
                                 return false;
                             } catch (TransactionFailure transactionFailure) {
                                 //fail(context,
@@ -268,7 +274,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
                                 //        transactionFailure.getMessage(),
                                 //    transactionFailure);
                                 fail(context, localStrings.getLocalString("admin.set.attribute.change.failure", "Could not change the attributes: {0}",
-                                    transactionFailure.getMessage()),transactionFailure);
+                                        transactionFailure.getMessage()), transactionFailure);
                                 return false;
                             }
                         } else {
@@ -288,7 +294,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
                 //fail(context, "Could not change the attributes: " +
                 //        transactionFailure.getMessage(), transactionFailure);
                 fail(context, localStrings.getLocalString("admin.set.attribute.change.failure", "Could not change the attributes: {0}",
-                    transactionFailure.getMessage()),transactionFailure);
+                        transactionFailure.getMessage()), transactionFailure);
                 return false;
             }
 
@@ -301,7 +307,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
                 return false;
             }
         }
-        if(targetService.isThisDAS() && !replicateSetCommand(context, targetName, value))
+        if (targetService.isThisDAS() && !replicateSetCommand(context, targetName, value))
             return false;
         return true;
     }
@@ -309,8 +315,8 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
     private String getElementFromString(String name, int index) {
         StringTokenizer token = new StringTokenizer(name, ".");
         String target = null;
-        for(int j = 0; j < index; j++) {
-            if(token.hasMoreTokens())
+        for (int j = 0; j < index; j++) {
+            if (token.hasMoreTokens())
                 target = token.nextToken();
         }
         return target;
@@ -319,14 +325,14 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
     private boolean replicateSetCommand(AdminCommandContext context, String targetName, String value) {
         String firstElementOfName = targetName.substring(0, targetName.indexOf('.'));
         Integer targetElementLocation = targetLevel.get(firstElementOfName);
-        if(targetElementLocation == null)
+        if (targetElementLocation == null)
             targetElementLocation = 1;
         List<Server> replicationInstances = null;
-        if(targetElementLocation == 0) {
-            if("resources".equals(firstElementOfName)) {
+        if (targetElementLocation == 0) {
+            if ("resources".equals(firstElementOfName)) {
                 replicationInstances = targetService.getAllInstances();
             }
-            if("applications".equals(firstElementOfName)) {
+            if ("applications".equals(firstElementOfName)) {
                 String appName = getElementFromString(targetName, 3);
                 if (appName == null) {
                     fail(context, localStrings.getLocalString("admin.set.invalid.appname",
@@ -344,12 +350,12 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
             }
             replicationInstances = targetService.getInstances(target);
         }
-        if(replicationInstances.size() != 0) {
+        if (replicationInstances.size() != 0) {
             ParameterMap params = new ParameterMap();
-            params.set("DEFAULT", targetName+"="+value);
+            params.set("DEFAULT", targetName + "=" + value);
             ActionReport.ExitCode ret = ClusterOperationUtil.replicateCommand("set", FailurePolicy.Error,
                     FailurePolicy.Warn, replicationInstances, context, params, habitat);
-            if(!ret.equals(ActionReport.ExitCode.SUCCESS))
+            if (!ret.equals(ActionReport.ExitCode.SUCCESS))
                 return false;
         }
         return true;
@@ -365,19 +371,19 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
     /**
      * Find the rightmost unescaped occurrence of specified character in target
      * string.
-     *
+     * <p/>
      * XXX Doesn't correctly interpret escaped backslash characters, e.g. foo\\.bar
-     * 
+     *
      * @param target string to search
-     * @param ch a character
+     * @param ch     a character
      * @return index index of last unescaped occurrence of specified character
-     *   or -1 if there are no unescaped occurrences of this character.
+     *         or -1 if there are no unescaped occurrences of this character.
      */
     private static int trueLastIndexOf(String target, char ch) {
         int i = target.lastIndexOf(ch);
-        while(i > 0) {
-            if(target.charAt(i-1) == '\\') {
-                i = target.lastIndexOf(ch, i-1);
+        while (i > 0) {
+            if (target.charAt(i - 1) == '\\') {
+                i = target.lastIndexOf(ch, i - 1);
             } else {
                 break;
             }
@@ -396,9 +402,9 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
      * Indicate in the action report that the command failed.
      */
     private static void fail(AdminCommandContext context, String msg,
-                                                        Exception ex) {
+                             Exception ex) {
         context.getActionReport().setActionExitCode(
-                                        ActionReport.ExitCode.FAILURE);
+                ActionReport.ExitCode.FAILURE);
         if (ex != null)
             context.getActionReport().setFailureCause(ex);
         context.getActionReport().setMessage(msg);
