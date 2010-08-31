@@ -47,6 +47,7 @@ import com.sun.enterprise.deployment.Role;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
+import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import com.sun.enterprise.deployment.node.runtime.RuntimeBundleNode;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.node.runtime.common.WLResourceDescriptionNode;
@@ -59,14 +60,17 @@ import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import com.sun.enterprise.deployment.xml.TagNames;
+import com.sun.tools.corba.se.idl.Factories;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import org.glassfish.internal.api.Globals;
 import org.glassfish.security.common.Group;
 import org.glassfish.security.common.PrincipalImpl;
+import org.jvnet.hk2.component.Habitat;
 
 
 /**
@@ -173,15 +177,32 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
         }
     }
 
+    private SecurityRoleMapper getRoleMapper(){
+        Habitat habitat = Globals.getDefaultHabitat();
+        SecurityRoleMapper srm = null;
+        if(habitat != null){
+            SecurityRoleMapperFactory srmf = habitat.getComponent(SecurityRoleMapperFactory.class);
+            if(srmf != null){
+                srm = srmf.getRoleMapper(descriptor.getModuleDescriptor().getModuleName());
+            }
+        }
+        return srm;
+    }
     public void addDescriptor(Object newDescriptor) {
         if (newDescriptor instanceof WLSecurityRoleAssignment) {
             WLSecurityRoleAssignment roleMap = (WLSecurityRoleAssignment) newDescriptor;
             if (descriptor!=null) {
-                descriptor.getApplication().addWLRoleAssignments(roleMap);
+                descriptor.getSunDescriptor().addWLSecurityRoleAssignment(roleMap);
                 Role role = new Role(roleMap.getRoleName());
-                SecurityRoleMapper rm = descriptor.getApplication().getRoleMapper();
+                Application app = descriptor.getApplication();
+                SecurityRoleMapper rm = null;
+                if (app != null) {
+                    rm = app.getRoleMapper();
+                } else {
+                    rm = getRoleMapper();
+                }
                 if (rm != null) {
-                    if(roleMap.isExternallyDefined()){
+                    if (roleMap.isExternallyDefined()) {
                         rm.assignRole(new Group(role.getName()), role, descriptor);
                     } else {
                         List<String> principals = roleMap.getPrincipalNames();
@@ -191,6 +212,7 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
                         }
                     }
                 }
+
             }
         } else if (newDescriptor instanceof ResourceRef) {
             ResourceRef resourceRef = (ResourceRef)newDescriptor;

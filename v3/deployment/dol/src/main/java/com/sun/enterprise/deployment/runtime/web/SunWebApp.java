@@ -44,6 +44,7 @@ import com.sun.enterprise.deployment.runtime.common.EjbRef;
 import com.sun.enterprise.deployment.runtime.common.ResourceEnvRef;
 import com.sun.enterprise.deployment.runtime.common.ResourceRef;
 import com.sun.enterprise.deployment.runtime.common.SecurityRoleMapping;
+import com.sun.enterprise.deployment.runtime.common.WLSecurityRoleAssignment;
 
 // BEGIN_NOI18N
 
@@ -51,6 +52,7 @@ public class SunWebApp extends WebPropertyContainer
 {
     
     static public final String SECURITY_ROLE_MAPPING = "SecurityRoleMapping";	// NOI18N
+    static public final String WL_SECURITY_ROLE_ASSIGNMENT = "WLSecurityRoleAssignment";	// NOI18N
     static public final String SERVLET = "Servlet";	// NOI18N
     static public final String SESSION_CONFIG = "SessionConfig";	// NOI18N
     static public final String RESOURCE_ENV_REF = "ResourceEnvRef";	// NOI18N
@@ -119,6 +121,51 @@ public class SunWebApp extends WebPropertyContainer
     public int removeSecurityRoleMapping(SecurityRoleMapping value)
     {
 	return this.removeValue(SECURITY_ROLE_MAPPING, value);
+    }
+
+    // This attribute is an array, possibly empty
+    public void setWLSecurityRoleAssignment(int index, WLSecurityRoleAssignment value)
+    {
+	this.setValue(WL_SECURITY_ROLE_ASSIGNMENT, index, value);
+    }
+
+    //
+    public WLSecurityRoleAssignment getWLSecurityRoleAssignment(int index)
+    {
+	return (WLSecurityRoleAssignment)this.getValue(WL_SECURITY_ROLE_ASSIGNMENT, index);
+    }
+
+    // This attribute is an array, possibly empty
+    public void setWLSecurityRoleAssignment(WLSecurityRoleAssignment[] value)
+    {
+	this.setValue(WL_SECURITY_ROLE_ASSIGNMENT, value);
+    }
+
+    //
+    public WLSecurityRoleAssignment[] getWLSecurityRoleAssignment()
+    {
+	return (WLSecurityRoleAssignment[])this.getValues(WL_SECURITY_ROLE_ASSIGNMENT);
+    }
+
+    // Return the number of properties
+    public int sizeWLSecurityRoleAssignment()
+    {
+	return this.size(WL_SECURITY_ROLE_ASSIGNMENT);
+    }
+
+    // Add a new element returning its index in the list
+    public int addWLSecurityRoleAssignment(WLSecurityRoleAssignment value)
+    {
+	return this.addValue(WL_SECURITY_ROLE_ASSIGNMENT, value);
+    }
+
+    //
+    // Remove an element using its reference
+    // Returns the index the element had in the list
+    //
+    public int removeWLSecurityRoleAssignment(WLSecurityRoleAssignment value)
+    {
+	return this.removeValue(WL_SECURITY_ROLE_ASSIGNMENT, value);
     }
     
     // This attribute is an array, possibly empty
