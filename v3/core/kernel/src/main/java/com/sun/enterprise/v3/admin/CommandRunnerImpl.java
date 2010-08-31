@@ -416,10 +416,10 @@ public class CommandRunnerImpl implements CommandRunner {
     static String getUsageText(AdminCommand command, CommandModel model) {
         StringBuffer usageText = new StringBuffer();
 
-    	String usage;
+        String usage;
         if (ok(usage = model.getUsageText())) {
-	    usageText.append(
-                adminStrings.getLocalString("adapter.usage", "Usage: "));
+            usageText.append(
+                    adminStrings.getLocalString("adapter.usage", "Usage: "));
             usageText.append(usage);
             return usageText.toString();
         } else {
@@ -549,7 +549,7 @@ public class CommandRunnerImpl implements CommandRunner {
 	cmd.addProperty("name", model.getCommandName());
 	if (model.unknownOptionsAreOperands())
 	    cmd.addProperty("unknown-options-are-operands", "true");
-	String usage = model.getLocalizedDescription();
+	String usage = model.getUsageText();
 	if (ok(usage))
 	    cmd.addProperty("usage", usage);
 	CommandModel.ParamModel primary = null;
