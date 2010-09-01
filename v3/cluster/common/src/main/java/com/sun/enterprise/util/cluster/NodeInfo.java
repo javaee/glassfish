@@ -98,12 +98,13 @@ public final class NodeInfo {
         int longestHost = HOST.length();
         int longestInstancesList = INSTANCESLIST.length();
 
+        int nullStringLen = 4;
         for (NodeInfo info : infos) {
             int namel = info.getName().length();
-            int hostl = info.getHost().length();
-            int type1 = info.getType().length();
-            int installDir1 = info.getInstallDir().length();
-            int instancesList1 = info.getInstancesList().length();
+            int hostl = info.getHost() != null ? info.getHost().length(): nullStringLen;
+            int type1 = info.getType() != null ? info.getType().length(): nullStringLen;
+            int installDir1 = info.getInstallDir() != null ? info.getInstallDir().length() : nullStringLen;
+            int instancesList1 = info.getInstancesList() != null ? info.getInstancesList().length() : nullStringLen;
 
             if (namel > longestName)
                 longestName = namel;

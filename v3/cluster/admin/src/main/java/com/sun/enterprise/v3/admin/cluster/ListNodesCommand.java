@@ -106,8 +106,8 @@ public class ListNodesCommand implements AdminCommand{
             String host = n.getNodeHost();
             String installDir = n.getInstallDir();
 
-            if (host == null)
-                host = " ";
+//            if (host == null)
+//                host = " ";
 
             if (firstNode)
                 firstNode = false;
