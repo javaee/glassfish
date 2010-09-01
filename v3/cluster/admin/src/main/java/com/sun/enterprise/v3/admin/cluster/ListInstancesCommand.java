@@ -48,6 +48,8 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.cluster.InstanceInfo;
 import java.util.*;
 import java.util.logging.*;
+
+import com.sun.enterprise.v3.common.ActionReporter;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.I18n;
@@ -190,9 +192,10 @@ public class ListInstancesCommand implements AdminCommand {
             String clusterName = (cluster != null) ? cluster.getName() : null;
             // skip DAS
             if (notDas(name)) {
+                ActionReport tReport = habitat.getComponent(ActionReport.class, "html");
                 InstanceInfo ii = new InstanceInfo(
-                        name, helper.getAdminPort(server), server.getAdminHost(),
-                        clusterName, logger, timeoutInMsec);
+                        server, helper.getAdminPort(server), server.getAdminHost(),
+                        clusterName, logger, timeoutInMsec, tReport, stateService);
                 infos.add(ii);
             }
         }
@@ -200,7 +203,7 @@ public class ListInstancesCommand implements AdminCommand {
             report.setMessage(NONE);
             return;
         }
-        
+
         StringBuilder sb = new StringBuilder();
         boolean first = true;
         Properties extraProps = new Properties();

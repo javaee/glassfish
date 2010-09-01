@@ -41,10 +41,19 @@
 package com.sun.enterprise.util.cluster;
 
 import com.sun.enterprise.admin.remote.RemoteAdminCommand;
+import com.sun.enterprise.admin.util.InstanceCommandExecutor;
+import com.sun.enterprise.admin.util.InstanceStateService;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.StringUtils;
 import java.util.*;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandException;
+import org.glassfish.api.admin.FailurePolicy;
+import org.glassfish.api.admin.InstanceCommandResult;
 import org.glassfish.api.admin.ParameterMap;
 import com.sun.enterprise.universal.Duration;
 
@@ -62,23 +71,28 @@ public final class InstanceInfo {
     }
     */
     
-    public InstanceInfo(String name0, int port0, String host0, String cluster0,
-            Logger logger0, int timeout0) {
-        if (name0 == null || host0 == null)
+    public InstanceInfo(Server svr, int port0, String host0, String cluster0,
+            Logger logger0, int timeout0, ActionReport report, InstanceStateService stateService) {
+        if (svr == null || host0 == null)
             throw new NullPointerException("null arguments");
 
-        name = name0;
+        this.svr = svr;
+        name = svr.getName();
         port = port0;
         host = host0;
         logger = logger0;
         timeoutInMsec = timeout0;
-        uptime = pingInstance();
+        this.report = report;
+        this.stateService = stateService;
+        /*
         state = uptime == -1 ? NOT_RUNNING : formatTime(uptime);
+        */
 
         if (!StringUtils.ok(cluster0))
             cluster = null;
         else
             cluster = cluster0;
+        future = pingInstance();
     }
 
     @Override
@@ -116,17 +130,41 @@ public final class InstanceInfo {
     }
 
     public final long getUptime() {
+        if(uptime == -1) {
+            getFutureResult();
+        }
         return uptime;
     }
 
     public final String getState() {
+        if(state == null) {
+            getFutureResult();
+        }
         return state;
     }
 
     public final boolean isRunning() {
+        if(state == null) {
+            getFutureResult();
+        }
         return running;
     }
 
+    private void getFutureResult() {
+        try {
+            InstanceCommandResult r = future.get(timeoutInMsec, TimeUnit.SECONDS);
+            InstanceCommandExecutor res = (InstanceCommandExecutor) r.getInstanceCommand();
+            String op = res.getCommandOutput();
+            op = op.substring(0, op.length()-1);
+            uptime = new Long(op);
+            state = formatTime(uptime);
+            running = true;
+        } catch(Exception e) {
+            uptime = -1;
+            state = NOT_RUNNING;
+            running = false;
+        }
+    }
     /////////////////////////////////////////////////////////////////////////
     ////////  static formatting stuff below   ///////////////////////////////
     /////////////////////////////////////////////////////////////////////////
@@ -208,63 +246,49 @@ public final class InstanceInfo {
     }
 
     // TODO what about security????
-    private long pingInstance() {
-        // there could be more than one instance with the same admin port
-        // let's get a positive ID!
-
-        if (!i9()) return -1;
-
+    private Future<InstanceCommandResult> pingInstance() {
         try {
-            RemoteAdminCommand rac = new RemoteAdminCommand("uptime", host, port, false, "admin", null, logger);
-            rac.setConnectTimeout(timeoutInMsec);
+            ActionReport aReport = report.addSubActionsReport();
+            InstanceCommandResult aResult = new InstanceCommandResult();
             ParameterMap map = new ParameterMap();
             map.set("type", "terse");
             map.set("milliseconds", "true");
-            running = true;
-            String uptimeStr = rac.executeCommand(map).trim();
-            return Long.parseLong(uptimeStr);
-        }
-        catch (CommandException ex) {
-            return -1;
-        }
-    }
-
-    private boolean i9() {
-        // are you really the right server?
-        // simple test -- is the server-name in the returned string?
-        try {
-            RemoteAdminCommand rac = new RemoteAdminCommand("__locations", host, port, false, "admin", null, logger);
-            rac.setConnectTimeout(timeoutInMsec);
-            ParameterMap map = new ParameterMap();
-            map.set("type", "terse");
+            InstanceCommandExecutor ice =
+                    new InstanceCommandExecutor("uptime", FailurePolicy.Ignore, FailurePolicy.Ignore,
+                            svr, host, port, logger, map, aReport, aResult);
+            return stateService.submitJob(svr, ice, aResult);
+            /*
             String ret = rac.executeCommand(map).trim();
 
-            if (ret != null && ret.endsWith("/" + name))
-                return true;
+            if (ret == null || (!ret.endsWith("/" + name)))
+                return -1;
+            running = true;
+            String uptimeStr = rac.getAttributes().get("Uptime_value");
+            return Long.parseLong(uptimeStr);
+            */
         }
         catch (CommandException ex) {
-            // handle below
+            running = false;
+            return null;
         }
-        return false;
     }
 
     private String formatTime(long uptime) {
         return Strings.get("instanceinfo.uptime", new Duration(uptime));
     }
 
-    private static String prepareFormatString() {
-        // Probably not worth the effort but what the heck...
-
-        return null;
-    }
     private final String host;
     private final int port;
     private final String name;
-    private final long uptime;
-    private final String state;
+    private long uptime = -1;
+    private String state = null;
     private final String cluster;
     private final Logger logger;
     private final int timeoutInMsec;
+    private Future<InstanceCommandResult> future;
+    private final ActionReport report;
+    private final InstanceStateService stateService;
+    private final Server svr;
     private boolean running;
     private static final String NOT_RUNNING = Strings.get("ListInstances.NotRunning");
     private static final String NAME = Strings.get("ListInstances.name");

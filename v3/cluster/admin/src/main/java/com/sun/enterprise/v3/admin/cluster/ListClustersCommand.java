@@ -149,17 +149,20 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
                 String name = server.getName();
 
                 if (name != null) {
+                    ActionReport tReport = habitat.getComponent(ActionReport.class, "html");
                     InstanceInfo ii = new InstanceInfo(
-                            name, helper.getAdminPort(server), server.getAdminHost(),
-                            clusterName, logger, timeoutInMsec);
+                            server, helper.getAdminPort(server), server.getAdminHost(),
+                            clusterName, logger, timeoutInMsec, tReport, stateService);
                     infos.add(ii);
-                    InstanceState.StateType state = (ii.isRunning()) ?
-                            (stateService.setState(name, InstanceState.StateType.RUNNING, false)) :
-                            (stateService.setState(name, InstanceState.StateType.NO_RESPONSE, false));
-                    allInstancesRunning &= ii.isRunning();
-                    if (ii.isRunning()) {
-                        atleastOneInstanceRunning = true;
-                    }
+                }
+            }
+            for(InstanceInfo ii : infos) {
+                InstanceState.StateType state = (ii.isRunning()) ?
+                        (stateService.setState(ii.getName(), InstanceState.StateType.RUNNING, false)) :
+                        (stateService.setState(ii.getName(), InstanceState.StateType.NO_RESPONSE, false));
+                allInstancesRunning &= ii.isRunning();
+                if (ii.isRunning()) {
+                    atleastOneInstanceRunning = true;
                 }
             }
 

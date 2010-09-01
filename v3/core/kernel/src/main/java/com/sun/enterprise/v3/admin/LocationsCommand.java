@@ -51,6 +51,9 @@ import org.jvnet.hk2.component.Singleton;
 import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.glassfish.bootstrap.StartupContextUtil;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+
 /**
  * Locations command to indicate where this server is installed.
  * @author Jerome Dochez
@@ -70,5 +73,20 @@ public class LocationsCommand implements AdminCommand {
         report.getTopMessagePart().addProperty("Base-Root", StartupContextUtil.getInstallRoot(env.getStartupContext()).getAbsolutePath());
         report.getTopMessagePart().addProperty("Domain-Root", env.getDomainRoot().getAbsolutePath());
         report.getTopMessagePart().addProperty("Instance-Root", env.getInstanceRoot().getAbsolutePath());
+        report.getTopMessagePart().addProperty("Uptime", ""+getUptime());
+    }
+
+    private long getUptime() {
+        RuntimeMXBean mxbean = ManagementFactory.getRuntimeMXBean();
+        long totalTime_ms = -1;
+
+        if (mxbean != null)
+            totalTime_ms = mxbean.getUptime();
+
+        if (totalTime_ms <= 0) {
+            long start = env.getStartupContext().getCreationTime();
+            totalTime_ms = System.currentTimeMillis() - start;
+        }
+        return totalTime_ms;
     }
 }
