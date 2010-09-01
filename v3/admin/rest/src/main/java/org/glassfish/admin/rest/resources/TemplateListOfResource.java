@@ -40,6 +40,7 @@
 
 package org.glassfish.admin.rest.resources;
 
+import org.glassfish.api.admin.RestRedirect;
 import org.glassfish.admin.rest.CliFailureException;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.jersey.api.core.ResourceContext;
@@ -342,6 +343,26 @@ public abstract class TemplateListOfResource {
      * on the server side (ie. just the path)
      */
     public String getPostCommand() {
+        ConfigModel.Property p = parent.model.getElement(tagName);
+
+        if (p==null){ //"*"
+            ConfigModel.Property childElement = parent.model.getElement("*");
+            if (childElement!=null) {
+                ConfigModel.Node node = (ConfigModel.Node) childElement;
+                ConfigModel childModel = node.getModel();
+                List<ConfigModel> subChildConfigModels = ResourceUtil.getRealChildConfigModels(childModel, parent.document);
+                for (ConfigModel subChildConfigModel : subChildConfigModels) {
+                    if (subChildConfigModel.getTagName().equals(tagName)) {
+                                return ResourceUtil.getCommand(RestRedirect.OpType.POST, subChildConfigModel);
+                    }
+                }
+
+                }
+        }else {
+            ConfigModel.Node n = (ConfigModel.Node) p;
+           return ResourceUtil.getCommand(RestRedirect.OpType.POST, n.getModel());
+        }
+
         return null;
     }
 
