@@ -933,6 +933,10 @@ public abstract class BaseContainer
         return ejbDescriptor.getUniqueId();
     }
     
+    final long getApplicationId() {
+        return ejbDescriptor.getApplication().getUniqueId();
+    }
+    
     
     public final EjbDescriptor getEjbDescriptor() {
         return ejbDescriptor;
@@ -3970,7 +3974,7 @@ public abstract class BaseContainer
                 ejbContainerUtilImpl.getEJBTimerService();
             if( timerService != null ) {
                 scheduleIds = timerService.recoverAndCreateSchedules(
-                        getContainerId(), schedules, deploy);
+                        getContainerId(), getApplicationId(), schedules, deploy);
             }
         }
 
@@ -4176,7 +4180,7 @@ public abstract class BaseContainer
 
                 try {
                    stopTimers();
-                   destroyTimers();
+                   //destroyTimers();
                 } catch(Exception e) {
                     _logger.log(Level.FINE, "Error destroying timers for " +
                                 ejbDescriptor.getName(), e);

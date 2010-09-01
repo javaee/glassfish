@@ -117,6 +117,10 @@ import com.sun.ejb.EJBUtils;
         query="SELECT t FROM Timer t WHERE t.ownerId = ?1 AND t.state=?2"
     ),
     @NamedQuery(
+        name="countTimersByApplication",
+        query="SELECT COUNT(t) FROM Timer t WHERE t.applicationId = ?1"
+    ),
+    @NamedQuery(
         name="countTimersByOwner",
         query="SELECT COUNT(t) FROM Timer t WHERE t.ownerId = ?1"
     ),
@@ -149,6 +153,11 @@ import com.sun.ejb.EJBUtils;
     @NamedQuery(
         name="deleteTimersByContainer",
         query="DELETE FROM Timer t WHERE t.containerId = :containerId"
+    )
+    ,
+    @NamedQuery(
+        name="deleteTimersByApplication",
+        query="DELETE FROM Timer t WHERE t.applicationId = :applicationId"
     )
 })
 @Table(name="EJB__TIMER__TBL")
@@ -184,6 +193,9 @@ public class TimerState implements Serializable {
 
     @Column(name="CONTAINERID")
     private long containerId;
+
+    @Column(name="APPLICATIONID")
+    private long applicationId;
 
     @Column(name="PKHASHCODE")
     private int pkHashCode;
@@ -264,6 +276,14 @@ public class TimerState implements Serializable {
         this.containerId = containerId;
     }
 
+    public long getApplicationId() {
+        return applicationId;
+    }
+
+    public void setApplicationId(long applicationId) {
+        this.applicationId = applicationId;
+    }
+
     public String getSchedule() {
         return schedule;
     }
@@ -313,8 +333,8 @@ public class TimerState implements Serializable {
     public TimerState () {
     }
 
-    public TimerState (String timerId, long containerId, String ownerId,
-             Object timedObjectPrimaryKey, 
+    public TimerState (String timerId, long containerId, long applicationId,
+             String ownerId, Object timedObjectPrimaryKey, 
              Date initialExpiration, long intervalDuration, 
              TimerSchedule schedule, Serializable info) throws IOException {
 
@@ -337,6 +357,7 @@ public class TimerState implements Serializable {
         }
 
         this.containerId = containerId;
+        this.applicationId = applicationId;
 
         timedObjectPrimaryKey_  = timedObjectPrimaryKey;
         info_ = info;

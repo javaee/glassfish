@@ -208,6 +208,12 @@ public class TimerBean implements TimerLocal {
     // Query methods for timer counts
     //
     
+    public int countTimersByApplication(long applicationId) {
+        Query q = em.createNamedQuery("countTimersByApplication");
+        q.setParameter(1, applicationId);
+        return ((Number)q.getSingleResult()).intValue();
+    }
+
     public int countTimersByContainer(long containerId) {
         Query q = em.createNamedQuery("countTimersByContainer");
         q.setParameter(1, containerId);
@@ -264,7 +270,7 @@ public class TimerBean implements TimerLocal {
     private transient Serializable info_;
 
     public TimerState createTimer
-        (String timerId, long containerId, String ownerId,
+        (String timerId, long containerId, long applicationId, String ownerId,
          Object timedObjectPrimaryKey, 
          Date initialExpiration, long intervalDuration, 
          TimerSchedule schedule, TimerConfig timerConfig)
@@ -272,7 +278,7 @@ public class TimerBean implements TimerLocal {
 
         TimerState timer = null;
         try {
-            timer = new TimerState (timerId, containerId, ownerId,
+            timer = new TimerState (timerId, containerId, applicationId, ownerId,
                     timedObjectPrimaryKey, initialExpiration, 
                     intervalDuration, schedule, timerConfig.getInfo());
         } catch(IOException ioe) {
@@ -284,6 +290,7 @@ public class TimerBean implements TimerLocal {
         if( logger.isLoggable(Level.FINE) ) {
             logger.log(Level.FINE, "TimerBean.createTimer() ::timerId=" +
                        timer.getTimerId() + " ::containerId=" + timer.getContainerId() + 
+                       " ::applicationId=" + timer.getApplicationId() + 
                        " ::timedObjectPK=" + timedObjectPrimaryKey +
                        " ::info=" + timerConfig.getInfo() +
                        " ::schedule=" + timer.getSchedule() +
@@ -674,6 +681,12 @@ public class TimerBean implements TimerLocal {
         return q.executeUpdate();
     }
 
+    public int deleteTimersByApplication(long applicationId) {
+        Query q = em.createNamedQuery("deleteTimersByApplication");
+        q.setParameter("applicationId", applicationId);
+        return q.executeUpdate();
+    }
+
     public static void testCreate(String timerId, EJBContext context,
                                    String ownerId,
                                   Date initialExpiration, 
@@ -684,13 +697,14 @@ public class TimerBean implements TimerLocal {
 
         EjbDescriptor ejbDesc = ((EJBContextImpl) context).getContainer().getEjbDescriptor();
         long containerId = ejbDesc.getUniqueId();
+        long applicationId = ejbDesc.getApplication().getUniqueId();
 
         Object timedObjectPrimaryKey = (context instanceof EntityContext) ?
                 ((EntityContext)context).getPrimaryKey() : null;
 
         TimerConfig timerConfig = new TimerConfig();
         timerConfig.setInfo(info);
-        timerLocal.createTimer(timerId, containerId, ownerId,
+        timerLocal.createTimer(timerId, containerId, applicationId, ownerId,
                                      timedObjectPrimaryKey, initialExpiration,
                                      intervalDuration, null, timerConfig);
         return;

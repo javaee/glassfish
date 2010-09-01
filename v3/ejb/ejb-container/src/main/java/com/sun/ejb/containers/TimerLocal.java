@@ -66,7 +66,7 @@ public interface TimerLocal {
     void cancelTimers(Collection<TimerState> timers);
 
     TimerState createTimer(String timerId,  
-                      long containerId, String ownerId,
+                      long containerId, long applicationId, String ownerId,
                       Object timedObjectPrimaryKey, 
                       Date initialExpiration, long intervalDuration, 
                       TimerSchedule schedule, TimerConfig timerConfig) 
@@ -124,6 +124,7 @@ public interface TimerLocal {
     // Queries returning counts
     //
 
+    int countTimersByApplication(long applicationId);
     int countTimersByContainer(long containerId);
     int countActiveTimersByContainer(long containerId);
     int countCancelledTimersByContainer(long containerId);    
@@ -149,8 +150,11 @@ public interface TimerLocal {
     // Migrate timers from one server instance to another via bulk update
     int migrateTimers(String fromOwnerId, String toOwnerId);
 
-    // Delete all timers owned by this EJB (aka containerID)
+    // Delete all timers owned by this EJB (aka containerId)
     int deleteTimersByContainer(long containerId);
+
+    // Delete all timers owned by this Application (aka applicationId)
+    int deleteTimersByApplication(long applicationId);
 
     // Called from the TimerWelcomeServlet
     Set findActiveNonPersistentTimersOwnedByThisServer();

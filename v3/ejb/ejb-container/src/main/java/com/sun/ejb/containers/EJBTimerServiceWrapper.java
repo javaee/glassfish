@@ -71,6 +71,7 @@ public class EJBTimerServiceWrapper implements TimerService {
     private EJBTimerService timerService_;
     private EJBContextImpl ejbContext_;
     private long containerId_;
+    private long applicationId_;
 
     private boolean entity_;
 
@@ -84,6 +85,7 @@ public class EJBTimerServiceWrapper implements TimerService {
         ejbContext_   = ejbContext;
         BaseContainer container = (BaseContainer) ejbContext.getContainer(); 
         containerId_  = container.getEjbDescriptor().getUniqueId();
+        applicationId_        = container.getEjbDescriptor().getApplication().getUniqueId();
         entity_       = false;
         timedObjectPrimaryKey_   = null;
     }
@@ -274,7 +276,7 @@ public class EJBTimerServiceWrapper implements TimerService {
         TimerPrimaryKey timerId = null;
         try {
             timerId = timerService_.createTimer
-                (containerId_, getTimedObjectPrimaryKey(), 
+                (containerId_, applicationId_, getTimedObjectPrimaryKey(), 
                 initialDuration, intervalDuration, tc);
         } catch(CreateException ce) {            
             EJBException ejbEx = new EJBException();
@@ -304,7 +306,7 @@ public class EJBTimerServiceWrapper implements TimerService {
         TimerPrimaryKey timerId = null;
         try {
             timerId = timerService_.createTimer
-                (containerId_, getTimedObjectPrimaryKey(), 
+                (containerId_, applicationId_, getTimedObjectPrimaryKey(), 
                 initialExpiration, intervalDuration, tc);
         } catch(CreateException ce) {            
             EJBException ejbEx = new EJBException();
@@ -321,7 +323,7 @@ public class EJBTimerServiceWrapper implements TimerService {
         TimerPrimaryKey timerId = null;
         try {
             timerId = timerService_.createTimer
-                (containerId_, getTimedObjectPrimaryKey(), 
+                (containerId_, applicationId_, getTimedObjectPrimaryKey(), 
                 new TimerSchedule(schedule), tc);
         } catch(CreateException ce) {            
             EJBException ejbEx = new EJBException();

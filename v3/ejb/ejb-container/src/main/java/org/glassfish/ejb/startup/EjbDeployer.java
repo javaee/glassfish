@@ -69,6 +69,7 @@ import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.Events;
 import org.glassfish.deployment.common.DeploymentException;
@@ -298,7 +299,31 @@ public class EjbDeployer
             if (cmpDeployer != null) {
                 cmpDeployer.clean(dc);
             }
+
+            Properties appProps = dc.getAppProps();
+            String uniqueAppId = appProps.getProperty(APP_UNIQUE_ID_PROP);
+            try {
+                if (uniqueAppId != null) {
+                    String target = ((params.origin.isDeploy())? 
+                            dc.getCommandParameters(DeployCommandParameters.class).target :
+                            dc.getCommandParameters(UndeployCommandParameters.class).target);
+
+                    EJBTimerService timerService = EjbContainerUtilImpl.getInstance().getEJBTimerService(target);
+                    if (_logger.isLoggable(Level.FINE)) {
+                        _logger.log( Level.FINE, "EjbDeployer APP ID? " + uniqueAppId);
+                        _logger.log( Level.FINE, "EjbDeployer TimerService: " + timerService);
+                    }
+                    timerService.destroyAllTimers(Long.parseLong(uniqueAppId));
+
+                } else {
+                    throw new RuntimeException("EJB Timer Service is not available");
+                }  
+
+            } catch (Exception e) {
+                _logger.log( Level.WARNING, "Failed to delete timers for application with id " + uniqueAppId, e);
+            }
         }
+
         //Security related cleanup is to be done for the undeploy event
         if( params.origin.isUndeploy()|| params.origin.isDeploy()) {
 
@@ -479,7 +504,8 @@ public class EjbDeployer
                 }
 
                 //TODO pass in only schedules to create.
-                timerService.recoverAndCreateSchedules(ejbDescriptor.getUniqueId(), schedules, owner, true);
+                timerService.recoverAndCreateSchedules(ejbDescriptor.getUniqueId(), 
+                        ejbDescriptor.getApplication().getUniqueId(), schedules, owner, true);
 
                 if (_logger.isLoggable(Level.FINE)) {
                     _logger.log( Level.FINE, "EjbDeployer Done With BEAN ID? " + ejbDescriptor.getUniqueId());

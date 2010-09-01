@@ -793,11 +793,30 @@ public class EJBTimerService
      * This action *can not* be rolled back.  
      */
     public void destroyTimers(long containerId) {
+        _destroyTimers(containerId, false);
+    }
+
+    /**
+     * Destroy all timers associated with a particular application.
+     * This is called when an application is undeployed.  It expunges
+     * all timers whose timed object matches the given application.  In
+     * the case of an entity bean container, all timers associated with
+     * any of that container's entity bean identities will be destroyed.
+     * This action *can not* be rolled back.  
+     */
+    public void destroyAllTimers(long applicationId) {
+        _destroyTimers(applicationId, true);
+    }
+
+    private void _destroyTimers(long id, boolean all) {
         Set<TimerPrimaryKey> timerIds = null;
 
-        if (timerLocal_.countTimersByContainer(containerId) == 0) {
+        int count = ((all)? timerLocal_.countTimersByApplication(id) : 
+                timerLocal_.countTimersByContainer(id));
+
+        if (count == 0) {
             if( logger.isLoggable(Level.INFO) ) {
-                logger.log(Level.INFO, "No timers to be deleted for containerId: " + containerId);
+                logger.log(Level.INFO, "No timers to be deleted for id: " + id);
             }
             return;
         }
@@ -813,20 +832,21 @@ public class EJBTimerService
             
             // Remove *all* timers for this ejb. Since the app is being undeployed
             // it will be called only once for all server instances.
-            int deleted = timerLocal_.deleteTimersByContainer(containerId);
+            int deleted = ((all)? timerLocal_.deleteTimersByApplication(id) : 
+                    timerLocal_.deleteTimersByContainer(id));
             if( logger.isLoggable(Level.INFO) ) {
-                logger.log(Level.INFO, "[" + deleted + "] timers deleted for containerId: " + containerId);
+                logger.log(Level.INFO, "[" + deleted + "] timers deleted for id: " + id);
             }
         } catch(Exception ex) {
             logger.log(Level.WARNING, "ejb.destroy_timers_error",
-                       new Object[] { String.valueOf(containerId) });
+                       new Object[] { String.valueOf(id) });
             logger.log(Level.WARNING, "", ex);
         } finally {
             try {
                 tm.commit();
             } catch(Exception e) {
                 logger.log(Level.WARNING, "ejb.destroy_timers_error",
-                           new Object[] { String.valueOf(containerId) });
+                           new Object[] { String.valueOf(id) });
                 logger.log(Level.WARNING, "", e);
             }
         }
@@ -1050,7 +1070,7 @@ public class EJBTimerService
      * @param primaryKey can be null if timed object is not an entity bean.
      * @return Primary key of newly created timer
      */
-    TimerPrimaryKey createTimer(long containerId, Object timedObjectPrimaryKey,
+    TimerPrimaryKey createTimer(long containerId, long applicationId, Object timedObjectPrimaryKey,
                                 long initialDuration, long intervalDuration, 
                                 TimerConfig timerConfig) throws CreateException {
 
@@ -1058,7 +1078,7 @@ public class EJBTimerService
 
         Date initialExpiration = new Date(now.getTime() + initialDuration);
 
-        return createTimer(containerId, timedObjectPrimaryKey, 
+        return createTimer(containerId, applicationId, timedObjectPrimaryKey, 
                            initialExpiration, intervalDuration, timerConfig);
     }
 
@@ -1066,32 +1086,32 @@ public class EJBTimerService
      * @param primaryKey can be null if timed object is not an entity bean.
      * @return Primary key of newly created timer
      */
-    TimerPrimaryKey createTimer(long containerId, Object timedObjectPrimaryKey,
+    TimerPrimaryKey createTimer(long containerId, long applicationId, Object timedObjectPrimaryKey,
                                 Date initialExpiration, long intervalDuration,
                                 TimerConfig timerConfig) throws CreateException {
-        return createTimer(containerId, timedObjectPrimaryKey, 
+        return createTimer(containerId, applicationId, timedObjectPrimaryKey, 
                            initialExpiration, intervalDuration, null, timerConfig);
     }
 
     /**
      * @return Primary key of newly created timer
      */
-    TimerPrimaryKey createTimer(long containerId, TimerSchedule schedule, 
+    TimerPrimaryKey createTimer(long containerId, long applicationId, TimerSchedule schedule, 
                                 TimerConfig timerConfig, String server_name) 
                                 throws CreateException {
 
-        return createTimer(containerId, null, null, 0, schedule, timerConfig, server_name);
+        return createTimer(containerId, applicationId, null, null, 0, schedule, timerConfig, server_name);
     }
 
     /**
      * @param primaryKey can be null if timed object is not an entity bean.
      * @return Primary key of newly created timer
      */
-    TimerPrimaryKey createTimer(long containerId, Object timedObjectPrimaryKey,
+    TimerPrimaryKey createTimer(long containerId, long applicationId, Object timedObjectPrimaryKey,
                                 TimerSchedule schedule, TimerConfig timerConfig) 
                                 throws CreateException {
 
-        return createTimer(containerId, timedObjectPrimaryKey, 
+        return createTimer(containerId, applicationId, timedObjectPrimaryKey, 
                            null, 0, schedule, timerConfig, ownerIdOfThisServer_);
     }
 
@@ -1099,12 +1119,12 @@ public class EJBTimerService
      * @param primaryKey can be null if timed object is not an entity bean.
      * @return Primary key of newly created timer
      */
-    private TimerPrimaryKey createTimer(long containerId, Object timedObjectPrimaryKey,
+    private TimerPrimaryKey createTimer(long containerId, long applicationId, Object timedObjectPrimaryKey,
                                 Date initialExpiration, long intervalDuration,
                                 TimerSchedule schedule, TimerConfig timerConfig) 
                                 throws CreateException {
 
-        return createTimer(containerId, timedObjectPrimaryKey, initialExpiration,
+        return createTimer(containerId, applicationId, timedObjectPrimaryKey, initialExpiration,
                 intervalDuration, schedule, timerConfig, ownerIdOfThisServer_);
     }
 
@@ -1112,7 +1132,7 @@ public class EJBTimerService
      * @param primaryKey can be null if timed object is not an entity bean.
      * @return Primary key of newly created timer
      */
-    private TimerPrimaryKey createTimer(long containerId, Object timedObjectPrimaryKey,
+    private TimerPrimaryKey createTimer(long containerId, long applicationId, Object timedObjectPrimaryKey,
                                 Date initialExpiration, long intervalDuration,
                                 TimerSchedule schedule, TimerConfig timerConfig,
                                 String server_name) 
@@ -1175,7 +1195,7 @@ public class EJBTimerService
             try {
                 if (timerConfig.isPersistent()) {
                     timerLocal_.createTimer(timerId.getTimerId(), containerId, 
-                                       server_name, timedObjectPrimaryKey, 
+                                       applicationId, server_name, timedObjectPrimaryKey, 
                                        initialExpiration, intervalDuration, 
                                        schedule, timerConfig);
                 } else {
@@ -1218,11 +1238,11 @@ public class EJBTimerService
      * this PK times out.
      */
     Map<TimerPrimaryKey, Method> recoverAndCreateSchedules(
-            long containerId, Map<Method, 
-            List<ScheduledTimerDescriptor>> schedules,
+            long containerId, long applicationId,
+            Map<Method, List<ScheduledTimerDescriptor>> schedules,
             boolean deploy) {
 
-            return recoverAndCreateSchedules(containerId, schedules, ownerIdOfThisServer_, (deploy && isDas));
+            return recoverAndCreateSchedules(containerId, applicationId, schedules, ownerIdOfThisServer_, (deploy && isDas));
     }
 
     /**
@@ -1241,8 +1261,8 @@ public class EJBTimerService
      * this PK times out.
      */
     public Map<TimerPrimaryKey, Method> recoverAndCreateSchedules(
-            long containerId, Map<Method, 
-            List<ScheduledTimerDescriptor>> schedules,
+            long containerId, long applicationId,
+            Map<Method, List<ScheduledTimerDescriptor>> schedules,
             String server_name, boolean deploy) {
 
         Map<TimerPrimaryKey, Method> result = new HashMap<TimerPrimaryKey, Method>();
@@ -1297,7 +1317,7 @@ public class EJBTimerService
                         tc.setInfo(info);
                     }
                     tc.setPersistent(persistent);
-                    TimerPrimaryKey tpk = createTimer(containerId, ts, tc, server_name);
+                    TimerPrimaryKey tpk = createTimer(containerId, applicationId, ts, tc, server_name);
                     if (startTimers) {
                         result.put(tpk, m);
                     }
