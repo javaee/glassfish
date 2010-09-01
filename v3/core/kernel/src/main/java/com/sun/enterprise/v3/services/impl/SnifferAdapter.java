@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.services.impl;
 
 import org.jvnet.hk2.annotations.Service;
@@ -59,7 +58,6 @@ import com.sun.enterprise.module.Module;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 
 /**
  * These adapters are temporarily registered to the mapper to handle static
@@ -85,7 +83,7 @@ public class SnifferAdapter implements Adapter {
 
     @Inject
     Logger logger;
-
+    
     private Sniffer sniffer;
     private ContainerMapper mapper;
     private Adapter adapter = null;
@@ -98,9 +96,10 @@ public class SnifferAdapter implements Adapter {
     // I could synchronize this method since I only start one container and do it
     // synchronously but that seems like an overkill and I would still need to handle
     // pending requests.
+    @Override
     public void service(Request req, Response resp) throws Exception {
 
-        if (adapter!=null) {
+        if (adapter != null) {
             // this is not supposed to happen, however due to multiple requests coming in, I would
             // not be surprised...
             adapter.service(req, resp);
@@ -114,20 +113,20 @@ public class SnifferAdapter implements Adapter {
         // need to synchronize on the registry to not end up starting the same container from
         // different threads.
         synchronized (containerRegistry) {
-            if (adapter!=null) {
+            if (adapter != null) {
                 // I got started in the meantime
                 adapter.service(req, resp);
                 return;
             }
-            
+
             if (containerRegistry.getContainer(sniffer.getContainersNames()[0]) != null) {
                 if (logger.isLoggable(Level.FINE)) {
                     logger.fine("Container is claimed to be started...");
                 }
                 containerRegistry.getContainer(sniffer.getContainersNames()[0]).getContainer();
             } else {
-                long startTime = System.currentTimeMillis();
-                logger.info("Attempting to start the " + sniffer.getModuleType() + " container");
+                final long startTime = System.currentTimeMillis();
+                logger.log(Level.INFO, "Attempting to start the {0} container", sniffer.getModuleType());
                 Module snifferModule = modulesRegistry.find(sniffer.getClass());
                 try {
                     Collection<EngineInfo> containersInfo = containerStarter.startContainer(sniffer, snifferModule);
@@ -135,11 +134,11 @@ public class SnifferAdapter implements Adapter {
                         // force the start on each container
                         for (EngineInfo info : containersInfo) {
                             if (logger.isLoggable(Level.FINE)) {
-                                logger.fine("Got container, deployer is " + info.getDeployer());
+                                logger.log(Level.FINE, "Got container, deployer is {0}", info.getDeployer());
                             }
                             info.getContainer();
-                            logger.info("Done with starting " + sniffer.getModuleType() + " container in "
-                                    + (System.currentTimeMillis() - startTime) + " ms");
+                            logger.log(Level.INFO, "Done with starting {0} container in {1} ms",
+                                    new Object[]{sniffer.getModuleType(), System.currentTimeMillis() - startTime});
                         }
                     } else {
                         logger.severe("Could not start container , no exception provided");
@@ -155,14 +154,14 @@ public class SnifferAdapter implements Adapter {
             MessageBytes decodedURI = req.decodedURI();
             try {
                 // Clear the previous mapped information.
-                MappingData mappingData = 
-                        (MappingData)req.getNote(ContainerMapper.MAPPING_DATA);
+                MappingData mappingData =
+                        (MappingData) req.getNote(ContainerMapper.MAPPING_DATA);
                 mappingData.recycle();
-                
-                adapter = mapper.map(req, decodedURI, null);
+
+                adapter = mapper.mapUriWithSemicolon(req, decodedURI, 0, null);
                 // If a SnifferAdapter doesn't do it's job, avoid recursion 
                 // and throw a Runtime exception.
-                if (adapter.equals(this)){
+                if (adapter.equals(this)) {
                     adapter = null;
                     throw new RuntimeException("SnifferAdapter cannot map themself.");
                 }
@@ -180,8 +179,9 @@ public class SnifferAdapter implements Adapter {
         }
     }
 
+    @Override
     public void afterService(Request request, Response response) throws Exception {
-        if (adapter!=null) {
+        if (adapter != null) {
             adapter.afterService(request, response);
         }
     }

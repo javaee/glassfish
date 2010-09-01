@@ -72,7 +72,7 @@ import org.glassfish.internal.grizzly.V3Mapper;
 import org.jvnet.hk2.component.Habitat;
 
 /**
- * Contaier's mapper which maps {@link ByteBuffer} bytes representation to an  {@link Adapter}, {@link
+ * Container's mapper which maps {@link ByteBuffer} bytes representation to an  {@link Adapter}, {@link
  * ApplicationContainer} and {@link ProtocolFilter} chain. The mapping result is stored inside {@link MappingData} which
  * is eventually shared with the {@link CoyoteAdapter}, which is the entry point with the Catalina Servlet Container.
  *
@@ -181,23 +181,14 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
             } 
             Adapter adapter = null;
             
-            // Map the request without any trailling.
-            ByteChunk uriBB = decodedURI.getByteChunk();
-            CharChunk uriCC = decodedURI.getCharChunk();
-            int start = uriBB.getStart();
-            int end = uriBB.getEnd();
-            int semicolon = uriBB.indexOf(';', 0);
-            byte[] trailer = null;
-            
-            if (semicolon > 0) {
-                trailer = new byte[end - semicolon];
-                System.arraycopy(uriBB.getBuffer(), semicolon, trailer, 0, trailer.length);
-                decodedURI.setBytes(uriBB.getBuffer(), uriBB.getStart(), semicolon);
-            }
-
             String uriEncoding = (String) grizzlyEmbeddedHttp.getProperty("uriEncoding");
             HttpRequestURIDecoder.decode(decodedURI, urlDecoder, uriEncoding, null);
-            adapter = map(req, decodedURI, mappingData);
+
+            final CharChunk decodedURICC = decodedURI.getCharChunk();
+            final int semicolon = decodedURICC.indexOf(';', 0);
+
+            // Map the request without any trailling.
+            adapter = mapUriWithSemicolon(req, decodedURI, semicolon, mappingData);
             if (adapter == null || adapter instanceof ContainerMapper) {
                 String ext = decodedURI.toString();
                 String type = "";
@@ -209,7 +200,7 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
                 if (!MimeType.contains(type) && !ext.equals("/")){
                     initializeFileURLPattern(ext);
                     mappingData.recycle();
-                    adapter = map(req, decodedURI, mappingData);
+                    adapter = mapUriWithSemicolon(req, decodedURI, semicolon, mappingData);
                 } else {
                     super.service(req, res);
                     return;
@@ -217,8 +208,8 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
             }
 
             if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Request: " + decodedURI.toString()
-                    + " was mapped to Adapter: " + adapter);
+                logger.log(Level.FINE, "Request: {0} was mapped to Adapter: {1}",
+                        new Object[]{decodedURI.toString(), adapter});
             }
 
             // The Adapter used for servicing static pages doesn't decode the
@@ -226,13 +217,6 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
             if (adapter == null || adapter instanceof ContainerMapper) {
                 super.service(req, res);
             } else {
-                // Re-set back the position.
-                if (semicolon > 0 && end != 0) {
-                    decodedURI.setBytes(uriBB.getBuffer(), start, end);
-                    for(byte b: trailer){
-                        uriCC.append((char)b);
-                    }
-                }
                 req.setNote(MAPPED_ADAPTER, adapter);
 
                 ContextRootInfo contextRootInfo = null;
@@ -292,6 +276,41 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
                     return;
                 }
             }
+        }
+    }
+
+    /**
+     * Maps the decodedURI to the corresponding Adapter, considering that URI
+     * may have a semicolon with extra data followed, which shouldn't be a part
+     * of mapping process.
+     *
+     * @param req HTTP request
+     * @param decodedURI URI
+     * @param semicolonPos semicolon position. Might be <tt>0</tt> if position wasn't resolved yet (so it will be resolved in the method), or <tt>-1</tt> if there is no semicolon in the URI.
+     * @param mappingData
+     * @return
+     * @throws Exception
+     */
+    final Adapter mapUriWithSemicolon(final Request req, final MessageBytes decodedURI,
+            int semicolonPos, final MappingData mappingData) throws Exception {
+        
+        final CharChunk charChunk = decodedURI.getCharChunk();
+        final int oldEnd = charChunk.getEnd();
+
+        if (semicolonPos == 0) {
+            semicolonPos = decodedURI.indexOf(';');
+        }
+
+        if (semicolonPos == -1) {
+            semicolonPos = oldEnd;
+        }
+
+        charChunk.setEnd(semicolonPos);
+
+        try {
+            return map(req, decodedURI, mappingData);
+        } finally {
+            charChunk.setEnd(oldEnd);
         }
     }
 
@@ -377,9 +396,8 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
             ,ApplicationContainer container) {
 
         if (logger.isLoggable(Level.FINE)) {
-            logger.fine("MAPPER(" + this + ") REGISTER contextRoot: " + contextRoot +
-                " adapter: " + adapter + " container: " + container +
-                " port: " + grizzlyEmbeddedHttp.getPort());
+            logger.log(Level.FINE, "MAPPER({0}) REGISTER contextRoot: {1} adapter: {2} container: {3} port: {4}",
+                    new Object[]{this, contextRoot, adapter, container, grizzlyEmbeddedHttp.getPort()});
         }
         /*
         * In the case of CoyoteAdapter, return, because the context will
@@ -445,7 +463,8 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
 
     public void unregister(String contextRoot) {
         if (logger.isLoggable(Level.FINE)) {
-            logger.fine("MAPPER (" + this + ") UNREGISTER contextRoot: " + contextRoot);
+            logger.log(Level.FINE, "MAPPER ({0}) UNREGISTER contextRoot: {1}",
+                    new Object[]{this, contextRoot});
         }
         for (String host : grizzlyService.hosts) {
             mapper.removeContext(host, contextRoot);
