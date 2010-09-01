@@ -56,10 +56,8 @@ public class MigrateTimersTest extends TimerTestBase {
             migrateTimersWithTarget();
             migrateTimersOutsideCluster();
         } finally {
-            //start all instances in cluster to make sure undeploy is
-            //propagated to instances
-            asadmin("start-instance", instance_name_1);
-            asadmin("start-instance", instance_name_2);
+            //all associated timers will be removed upon undeploy, even if some
+            //instances are offline. 
             undeployEjb(cluster_name);
         }
         stat.printSummary();
