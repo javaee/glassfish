@@ -38,6 +38,7 @@
 
   <target name="runtest" depends="init-common">
     <antcall target="runclient-common">
+        <param name="appclient.classpath" value="${env.APS_HOME}/devtests/connector/embeddedConnector1.5-resourcesxml/ra/generic-ra.jar"/>
 	<param name="appname" value="generic-embedded" />
     </antcall>
   </target>
