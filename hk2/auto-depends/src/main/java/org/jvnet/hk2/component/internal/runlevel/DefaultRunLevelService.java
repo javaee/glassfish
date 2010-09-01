@@ -253,7 +253,8 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
           downActiveRecorder(rl);
         }
       } else {
-        this.current = current;
+        // force closure of any orphaned higher RunLevel services
+        downActiveRecorder(runLevel+1);
       }
     } catch (Interrupt interrupt) {
       reset();
