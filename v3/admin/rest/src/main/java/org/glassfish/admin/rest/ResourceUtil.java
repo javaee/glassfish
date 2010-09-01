@@ -131,11 +131,11 @@ public class ResourceUtil {
      * @param type the given resource operation
      * @return String the associated command name for the given operation.
      */
-    public static String getCommand(RestRedirect.OpType type, Dom configBean) {
+    public static String getCommand(RestRedirect.OpType type, ConfigModel model) {
 
         Class<? extends ConfigBeanProxy> cbp = null;
         try {
-            cbp = (Class<? extends ConfigBeanProxy>) configBean.model.classLoaderHolder.get().loadClass(configBean.model.targetTypeName);
+            cbp = (Class<? extends ConfigBeanProxy>) model.classLoaderHolder.get().loadClass(model.targetTypeName);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
