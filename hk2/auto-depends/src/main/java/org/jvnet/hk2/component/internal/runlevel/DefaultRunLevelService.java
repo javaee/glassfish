@@ -198,17 +198,8 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
       throw new IllegalArgumentException();
     }
 
-    if (null != activeProceedToOp) {
-      Logger.getAnonymousLogger()
-          .log(Level.INFO,
-              "Cancelling activation to runLevel {0} and instead proceeding to {1}",
-              new Object[] { planned, runLevel });
-      activeProceedToOp.cancel(true);
-      reset();
-    }
-
-    assert (null == activeRunLevel);
-    assert (null == planned);
+    // break from any previous proceedTo()
+    handleInterrupt(runLevel);
 
     // set planned immediately
     this.planned = runLevel;
@@ -233,18 +224,40 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     }
   }
 
-  private void proceedToWorker(int runLevel) {
-    int current = (null == getCurrentRunLevel()) ? -2 : getCurrentRunLevel();
-    if (runLevel > current) {
-      for (int rl = current + 1; rl <= runLevel; rl++) {
-        upActiveRecorder(rl);
-      }
-    } else if (runLevel < current) {
-      for (int rl = current; rl > runLevel; rl--) {
-        downActiveRecorder(rl);
-      }
+  protected void handleInterrupt(final int runLevel) throws Interrupt {
+    if (null != activeProceedToOp) {
+      // async case
+      Logger.getAnonymousLogger()
+          .log(Level.INFO,
+              "Cancelling activation to runLevel {0} and instead proceeding to {1}",
+              new Object[] { planned, runLevel });
+      activeProceedToOp.cancel(true);
+      reset();
     } else {
-      this.current = current;
+      // sync case
+      if (null != planned) {
+        throw new Interrupt(runLevel);
+      }
+    }
+  }
+
+  private void proceedToWorker(int runLevel) {
+    try {
+      int current = (null == getCurrentRunLevel()) ? -2 : getCurrentRunLevel();
+      if (runLevel > current) {
+        for (int rl = current + 1; rl <= runLevel; rl++) {
+          upActiveRecorder(rl);
+        }
+      } else if (runLevel < current) {
+        for (int rl = current; rl > runLevel; rl--) {
+          downActiveRecorder(rl);
+        }
+      } else {
+        this.current = current;
+      }
+    } catch (Interrupt interrupt) {
+      reset();
+      proceedToWorker(interrupt.runLevel);
     }
   }
 
@@ -381,6 +394,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
 
   private void notify(ListenerEvent event, ServiceContext context,
       Throwable error) {
+    Interrupt lastInterrupt = null;
     Collection<RunLevelListener> activeListeners = habitat
         .getAllByContract(RunLevelListener.class);
     for (RunLevelListener listener : activeListeners) {
@@ -392,12 +406,17 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
         } else {
           listener.onError(this, context, error, true);
         }
+      } catch (Interrupt interrupt) {
+        lastInterrupt = interrupt;
       } catch (Exception e) {
-        // don't percolate the exception since it may negatively impact
-        // processing
+        // don't percolate the exception since it may negatively impact processing
         Logger.getAnonymousLogger().log(Level.WARNING,
-            "exception caught from listener:", e);
+            "exception caught from listener", e);
       }
+    }
+
+    if (null != lastInterrupt) {
+      throw lastInterrupt;
     }
   }
 
@@ -528,13 +547,21 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
 
   
   private static class RunLevelServiceThread extends Thread {
-
     private RunLevelServiceThread(Runnable r) {
       super(r);
       setDaemon(true);
       setName(getClass().getSimpleName() + "-" + System.identityHashCode(this));
     }
+  }
+  
+  
+  @SuppressWarnings("serial")
+  private static class Interrupt extends RuntimeException {
+    private int runLevel;
 
+    private Interrupt(int runLevel) {
+      this.runLevel = runLevel;
+    }
   }
 
 }

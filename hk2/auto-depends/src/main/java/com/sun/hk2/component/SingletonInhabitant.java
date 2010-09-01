@@ -64,15 +64,15 @@ public class SingletonInhabitant<T> extends AbstractWombInhabitantImpl<T> {
                   }
                   initializing = true;
                   
+                  // we do it in two steps in case there is an initialization error, we 
+                  // want to avoid recursing
+                  T object = womb.create(onBehalfOf);
                   try {
-                    // we do it in two steps in case there is an initialization error, we 
-                    // want to avoid recursing
-                    T object = womb.create(onBehalfOf);
                     womb.initialize(object, onBehalfOf);
                     this.object = object;
                   } catch (Throwable e) {
                     throw (e instanceof ComponentException) ? 
-                        (ComponentException)e : new ComponentException("problem initializing", e);
+                        (ComponentException)e : new ComponentException("problem initializing: " + object, e);
                   } finally {
                     initializing = false;
                   }
