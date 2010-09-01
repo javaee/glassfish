@@ -53,7 +53,8 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 /**
  *  This is a local command that creates a local instance.
  */
-@Service(name = "create-node-agent")
+// XXX - make this command disappear until we actually implement it
+//@Service(name = "create-node-agent")
 @Scoped(PerLookup.class)
 public final class CreateNodeAgentCommand extends CLICommand {
 
