@@ -68,6 +68,7 @@ import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 @Provider
 public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
     public static final String HEADER_DEBUG = "__debug";
+    public static final String JSONP_CALLBACK = "jsoncallback";
     @Context
     protected UriInfo uriInfo;
     @Context
@@ -104,17 +105,32 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
     public abstract String getContent(T proxy);
 
     protected int getFormattingIndentLevel() {
-        int indent = -1;
-        try {
-            List header = requestHeaders.getRequestHeader(HEADER_DEBUG);
-            indent = ((header != null) && ("true".equals(header.get(0)))) ? 4 : -1;
-        } catch (Exception e) {
-            //
+        if (isDebug()) {
+            return 4;
+        } else {
+            return -1;
         }
-
-        return indent;
     }
 
+    /* check for the __debug request geheader
+     *
+     */
+    protected boolean isDebug() {
+        List header = requestHeaders.getRequestHeader(HEADER_DEBUG);
+        return (header != null) && ("true".equals(header.get(0)));
+    }
+
+    /* if a query param of name "jsoncallback" is there, returns its value
+     * or returns null otherwise.
+     */
+    protected String getCallBackJSONP() {
+        MultivaluedMap<String, String> l = uriInfo.getQueryParameters();
+
+        if (l == null) {
+            return null;
+        }
+        return l.getFirst(JSONP_CALLBACK);
+    }
 
     protected String getXmlCommandLinks(String[][] commandResourcesPaths, String indent) {
         StringBuilder result = new StringBuilder();

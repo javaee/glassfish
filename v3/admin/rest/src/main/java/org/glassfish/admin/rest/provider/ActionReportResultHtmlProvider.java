@@ -90,7 +90,7 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
             }
             
             if ((postMetaData != null) && (entity == null)) {
-                String postCommand = getHtmlRespresentationsForCommand(postMetaData, "POST", proxy.getCommandDisplayName(), uriInfo);
+                String postCommand = getHtmlRespresentationsForCommand(postMetaData, "POST", ( proxy.getCommandDisplayName()==null )? "Create" : proxy.getCommandDisplayName(), uriInfo);
                 result.append(getHtmlForComponent(postCommand, "Create " + ar.getActionDescription(), ""));
             }
 
@@ -98,7 +98,7 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
                 String attributes = ProviderUtil.getHtmlRepresentationForAttributes(proxy.getEntity(), uriInfo);
                 result.append(ProviderUtil.getHtmlForComponent(attributes, "Attributes", ""));
 
-                String deleteCommand = ProviderUtil.getHtmlRespresentationsForCommand(proxy.getMetaData().getMethodMetaData("DELETE"), "DELETE", proxy.getCommandDisplayName(), uriInfo);
+                String deleteCommand = ProviderUtil.getHtmlRespresentationsForCommand(proxy.getMetaData().getMethodMetaData("DELETE"), "DELETE", ( proxy.getCommandDisplayName()==null ) ? "Delete" : proxy.getCommandDisplayName(), uriInfo);
                 result.append(ProviderUtil.getHtmlForComponent(deleteCommand, "Delete " + entity.model.getTagName(), ""));
             }
 
@@ -136,11 +136,11 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
 
     protected String getCommandLinks(List<Map<String, String>> commands) {
         StringBuilder result = new StringBuilder("<div>");
-
+        boolean debug = isDebug();
         for (Map<String, String> commandList : commands) {
             String command = commandList.get("command");
             String path = commandList.get("path");
-            if (path.startsWith("_")) {//hidden cli command name
+            if (path.startsWith("_")&&(debug==false)) {//hidden cli command name
                 result.append("<!--");//hide the link in a comment
             }
             result.append("<a href=\"")
@@ -148,7 +148,7 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
                     .append("\">")
                     .append(command)
                     .append("</a><br>");
-            if (path.startsWith("_")) {//hidden cli
+            if (path.startsWith("_")&&(debug==false)) {//hidden cli
                 result.append("-->");
             }
         }

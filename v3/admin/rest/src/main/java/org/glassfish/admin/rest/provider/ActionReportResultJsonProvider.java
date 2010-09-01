@@ -67,13 +67,18 @@ public class ActionReportResultJsonProvider extends BaseProvider<ActionReportRes
     @Override
     public String getContent(ActionReportResult proxy) {
         ActionReporter ar = (ActionReporter)proxy.getActionReport();
+        String JSONP=getCallBackJSONP();
         try {
             JSONObject result = processReport(ar);
             int indent = getFormattingIndentLevel();
             if (indent > -1) {
                 return result.toString(indent);
             } else {
-                return result.toString();
+                if (JSONP==null){
+                    return result.toString();
+                }else{
+                    return JSONP +"("+result.toString()+")";
+                }
             }
         } catch (JSONException ex) {
             throw new RuntimeException(ex);

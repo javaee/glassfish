@@ -105,7 +105,9 @@ public class GetResultHtmlProvider extends BaseProvider<GetResult> {
         StringBuilder result = new StringBuilder("<div>");
 
         for (String[] commandResourcePath : commandResourcesPaths) {
-            if (commandResourcePath[2].startsWith("_")){//hidden cli command name
+            boolean debug = isDebug();
+
+            if (commandResourcePath[2].startsWith("_")&&(debug==false)){//hidden cli command name
                 result.append("<!--");//hide the link in a comment
             }
                 result.append("<a href=\"")
@@ -113,7 +115,7 @@ public class GetResultHtmlProvider extends BaseProvider<GetResult> {
                                     .append("\">")
                                     .append(commandResourcePath[0])
                                     .append("</a><br>");
-            if (commandResourcePath[2].startsWith("_")){//hidden cli
+            if (commandResourcePath[2].startsWith("_")&&(debug==false)){//hidden cli
                 result.append("-->");
             }
         }

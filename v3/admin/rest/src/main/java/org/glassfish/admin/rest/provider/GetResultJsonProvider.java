@@ -47,18 +47,11 @@ import org.glassfish.admin.rest.results.GetResult;
 import org.jvnet.hk2.config.Dom;
 
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static org.glassfish.admin.rest.Util.eleminateHypen;
-import static org.glassfish.admin.rest.Util.getName;
 import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
 /**
@@ -113,11 +106,14 @@ public class GetResultJsonProvider extends BaseProvider<GetResult> {
 
     private JSONArray getCommandLinks(String[][] commandResourcesPaths) throws JSONException {
         JSONArray array = new JSONArray();
+        boolean debug = isDebug();
 
         //TODO commandResourcePath is two dimensional array. It seems the second e.x. see DomainResource#getCommandResourcesPaths().
         //The second dimension POST/GET etc. does not seem to be used. Discussed with Ludo. Need to be removed in a separate checkin.
         for (String[] commandResourcePath : commandResourcesPaths) {
-            array.put(getElementLink(uriInfo, commandResourcePath[0]));
+            if (!commandResourcePath[2].startsWith("_") || (debug == false)) {//hidden cli command name
+                array.put(getElementLink(uriInfo, commandResourcePath[0]));
+            }
         }
         return array;
     }
