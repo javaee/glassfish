@@ -246,41 +246,55 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             switch (key) {
                 case MULTICASTADDRESS:
                     if (cluster != null) {
-                        configProps.put(keyName, cluster.getGmsMulticastAddress());
+                        String value = cluster.getGmsMulticastAddress();
+                        if (value != null) {
+                            configProps.put(keyName, value);
+                        }
                     }
                     break;
 
                 case MULTICASTPORT:
                     if (cluster != null) {
-                        configProps.put(keyName, cluster.getGmsMulticastPort());
+                        String value = cluster.getGmsMulticastPort();
+                        if (value != null) {
+                            configProps.put(keyName, value);
+                        }
                     }
                     break;
 
                 case FAILURE_DETECTION_TIMEOUT:
                     if (clusterConfig != null) {
                         String  value = clusterConfig.getGroupManagementService().getFailureDetection().getHeartbeatFrequencyInMillis();
-                        configProps.put(keyName, value);
+                        if (value != null) {
+                            configProps.put(keyName, value);
+                        }
                     }
                     break;
 
                 case FAILURE_DETECTION_RETRIES:
                     if (clusterConfig != null) {
                         String  value = clusterConfig.getGroupManagementService().getFailureDetection().getMaxMissedHeartbeats();
-                        configProps.put(keyName, value);
+                        if (value != null) {
+                            configProps.put(keyName, value);
+                        }
                     }
                     break;
 
                 case FAILURE_VERIFICATION_TIMEOUT:
                     if (clusterConfig != null) {
                         String  value = clusterConfig.getGroupManagementService().getFailureDetection().getVerifyFailureWaittimeInMillis();
-                        configProps.put(keyName, value);
+                        if (value != null) {
+                            configProps.put(keyName, value);
+                        }
                     }
                     break;
 
                 case DISCOVERY_TIMEOUT:
                     if (clusterConfig != null) {
                         String  value = clusterConfig.getGroupManagementService().getGroupDiscoveryTimeoutInMillis();
-                        configProps.put(keyName, value);
+                        if (value != null) {
+                            configProps.put(keyName, value);
+                        }
                     }
                     break;
 
@@ -314,7 +328,9 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 case FAILURE_DETECTION_TCP_RETRANSMIT_TIMEOUT:
                     if (clusterConfig != null) {
                         String  value = clusterConfig.getGroupManagementService().getFailureDetection().getVerifyFailureConnectTimeoutInMillis();
-                        configProps.put(keyName, value);
+                        if (value != null) {
+                            configProps.put(keyName, value);
+                        }
                     }
                     break;
 
@@ -334,7 +350,9 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                             break;
                         }
                         String value = prop.getValue().trim();
-                        configProps.put(keyName, value);
+                        if (value != null) {
+                            configProps.put(keyName, value);
+                        }
                         /*
                         int positiveint = 0;
                         try {
@@ -376,6 +394,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             for (Property prop : props) {
                 String name = prop.getName().trim();
                 String value = prop.getValue().trim();
+                if (name == null || value == null) continue;
                 logger.config("processing group-management-service property name=" + name + " value= " + value);
                 if (value.startsWith("${")) {
                     logger.config("skipping group-management-service property name=" + name + " since value is unresolved symbolic token="+ value);
@@ -385,6 +404,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                         if (name.startsWith(GMS_PROPERTY_PREFIX)) {
                             name = name.replaceFirst(GMS_PROPERTY_PREFIX_REGEXP, "");
                         }
+                        // next line validates that name is a valid grizzly property.
                         GrizzlyConfigConstants key = GrizzlyConfigConstants.valueOf(name);
                         configProps.put(name, value);
                     } catch (IllegalArgumentException iae) {
@@ -398,6 +418,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             for (Property prop : props) {
                 String name = prop.getName().trim();
                 String value = prop.getValue().trim();
+                if (name == null || value == null) continue;
                 logger.config("processing cluster property name=" + name + " value= " + value);
                 if (value.startsWith("${")) {
                     logger.config("skipping cluster property name=" + name + " since value is unresolved symbolic token="+ value);

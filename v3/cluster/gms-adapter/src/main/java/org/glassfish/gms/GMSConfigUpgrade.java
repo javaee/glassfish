@@ -45,10 +45,7 @@ import com.sun.logging.LogDomains;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.Transaction;
-import org.jvnet.hk2.config.TransactionFailure;
-import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.*;
 import org.glassfish.api.admin.config.ConfigurationUpgrade ;
 import org.jvnet.hk2.config.types.Property;
 
@@ -121,15 +118,39 @@ public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
             //set gms-multicast-address the value obtained from heartbeat-address
             value = cluster.getHeartbeatAddress();
             if (value != null) {
-                cluster.setGmsMulticastAddress(value);
+                try {
+                    cluster.setGmsMulticastAddress(value);
+                } catch (Throwable t) {
+                    // catch RuntimeException hk2 ValidationException.  Some values from v2 may not be valid in v3.
+                }
                 cluster.setHeartbeatAddress(null);
             }
 
-            //set gms-multicast-port the value of heartbeat-port
+            // ensure this propery is set to a valid value. Either it was missing or v2 value was invalid in v3 constraints.
+            if (cluster.getGmsMulticastAddress() == null) {
+
+                // generate a valid gms multicast address. Either heartbeataddress was missing OR had an invalid value from v2 domain.xml
+                cluster.setGmsMulticastAddress(generateHeartbeatAddress());
+            }
+
+            //set gms-multicast-port the value of heartbeat-port.
             value = cluster.getHeartbeatPort();
             if (value != null) {
-                cluster.setGmsMulticastPort(value);
+                try {
+                    cluster.setGmsMulticastPort(value);
+                } catch (Throwable t) {
+                    // catch RuntimeException hk2 ValidationException. There are definitely values in v2 that are not valid in v3 for this field.
+                    // There were bugs filed that this port was randomly generated with an IANA allocated port. So v3.1 min and max are more restrictive than v2 were.
+                }
                 cluster.setHeartbeatPort(null);
+            }
+
+            // ensure this property is set to a valid value. Either the value was missing or had a value in v2 that is considered invalid in tighter constrained v3.1.
+            if (cluster.getGmsMulticastPort() == null) {
+                // generate a valid gms multicastport. Either heartbeatport was not set or was set to a value that is now invalid in v3.1.
+                // port range in v2 was quite large and outside the IANA recommended range being followed by v3.1.
+                cluster.setGmsMulticastPort(generateHeartbeatPort());
+                
             }
 
             //gms-bind-interface is an attribute of cluster in 3.1
@@ -157,7 +178,11 @@ public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
             gms = t.enroll(gms);
             String value = gms.getPingProtocolTimeoutInMillis();
             if (value != null) {
-                gms.setGroupDiscoveryTimeoutInMillis(value);
+                try {
+                    gms.setGroupDiscoveryTimeoutInMillis(value);
+                } catch (Throwable re) {
+                    // catch RuntimeException hk2 ValidationException. if v2 value is not valid for v3, just rely on v3 default
+                }
                 gms.setPingProtocolTimeoutInMillis(null);
             } // else null for server-config
 
@@ -165,25 +190,41 @@ public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
             fd = t.enroll(fd);
             value = gms.getFdProtocolTimeoutInMillis();
             if (value != null){
-                fd.setHeartbeatFrequencyInMillis(value);
+                try {
+                    fd.setHeartbeatFrequencyInMillis(value);
+                } catch (Throwable re) {
+                    // catch RuntimeException hk2 ValidationException. if v2 value is not valid for v3, just rely on v3 default
+                }
                 gms.setFdProtocolTimeoutInMillis(null);
             } // else  null for server-config
 
             value = gms.getFdProtocolMaxTries();
             if (value != null) {
-                fd.setMaxMissedHeartbeats(value);
+                try {
+                    fd.setMaxMissedHeartbeats(value);
+                } catch (Throwable re) {
+                    // catch RuntimeException hk2 ValidationException. if v2 value is not valid for v3, just rely on v3 default
+                }
                 gms.setFdProtocolMaxTries(null);
             } // else null for server config
 
             value = gms.getVsProtocolTimeoutInMillis();
             if (value != null) {
-                fd.setVerifyFailureWaittimeInMillis(value);
+                try {
+                    fd.setVerifyFailureWaittimeInMillis(value);
+                } catch (Throwable re) {
+                    // catch RuntimeException hk2 ValidationException. if v2 value is not valid for v3, just rely on v3 default
+                }
                 gms.setVsProtocolTimeoutInMillis(null);
             } // else null for server-config           
 
             Property prop = gms.getProperty("failure-detection-tcp-retransmit-timeout");
             if (prop != null && prop.getValue() != null ) {
-                fd.setVerifyFailureConnectTimeoutInMillis(prop.getValue().trim());
+                try {
+                    fd.setVerifyFailureConnectTimeoutInMillis(prop.getValue().trim());
+                } catch (Throwable re) {
+                    // catch RuntimeException hk2 ValidationException. if v2 value is not valid for v3, just rely on v3 default
+                }
                 List<Property> props = gms.getProperty();
                 props.remove(prop);
             } //else v3.1 default value for VerifyFailureConnectTimeoutInMillis is sufficient.
@@ -198,5 +239,25 @@ public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
 
             return config;
         }
+    }
+
+    // copied from config-api com.sun.enterprise.config.serverbeans.Cluster.java in order to generate a valid v3.1 value for this required properties.
+    private String generateHeartbeatPort() {
+        final long MIN_GMS_MULTICAST_PORT = 2048;
+        final long MAX_GMS_MULTICAST_PORT = 32000;
+
+        long portInterval = MAX_GMS_MULTICAST_PORT - MIN_GMS_MULTICAST_PORT;
+        return new Long(Math.round(Math.random() * portInterval) + MIN_GMS_MULTICAST_PORT).toString();
+    }
+
+    // copied from config-api com.sun.enterprise.config.serverbeans.Cluster.java in order to generate a valid v3.1 value for this required properties.
+    private String generateHeartbeatAddress() {
+        final int MAX_GMS_MULTICAST_ADDRESS_SUBRANGE = 255;
+
+        final StringBuffer heartbeatAddressBfr = new StringBuffer("228.9.");
+        heartbeatAddressBfr.append(Math.round(Math.random() * MAX_GMS_MULTICAST_ADDRESS_SUBRANGE))
+                .append('.')
+                .append(Math.round(Math.random() * MAX_GMS_MULTICAST_ADDRESS_SUBRANGE));
+        return heartbeatAddressBfr.toString();
     }
 }
