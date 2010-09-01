@@ -830,12 +830,6 @@
 
             <dependency>
                 <groupId>com.sun.grizzly</groupId>
-                <artifactId>grizzly-cometd</artifactId>
-                <version>${grizzly.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.sun.grizzly</groupId>
                 <artifactId>grizzly-comet</artifactId>
                 <version>${grizzly.version}</version>
             </dependency>
