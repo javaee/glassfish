@@ -23,10 +23,12 @@ public class TestRunLevelListener implements RunLevelListener {
 
   public final List<Call> calls = new ArrayList<Call>();
   
-  public Integer proceedToWaitFor;
-  public Integer proceedToGoTo;
-  public RunLevelService<?> proceedToRls;
+  public Integer progress_proceedToWaitFor;
+  public Integer progress_proceedToGoTo;
+  public RunLevelService<?> progress_proceedToRls;
   
+  public Integer error_proceedToGoTo;
+  public RunLevelService<?> error_proceedToRls;
   
   @Override
   public void onCancelled(RunLevelState<?> state, int previousProceedTo) {
@@ -37,22 +39,33 @@ public class TestRunLevelListener implements RunLevelListener {
   public void onError(RunLevelState<?> state, ServiceContext context,
       Throwable error, boolean willContinue) {
     calls.add(Call.onError(state, context, error, willContinue));
+    if (null != error_proceedToGoTo &&
+        null != error_proceedToRls) {
+      int pto = error_proceedToGoTo;
+      error_proceedToGoTo = null;
+      error_proceedToRls.proceedTo(pto);
+    }
   }
 
   @Override
   public void onProgress(RunLevelState<?> state) {
     Logger.getAnonymousLogger().log(Level.INFO, state.toString());
     calls.add(Call.onProgress(state));
-    if (null != proceedToWaitFor && 
-        state.getCurrentRunLevel() == proceedToWaitFor) {
-      proceedToRls.proceedTo(proceedToGoTo);
+    if (null != progress_proceedToWaitFor && 
+        state.getCurrentRunLevel() == progress_proceedToWaitFor) {
+      progress_proceedToRls.proceedTo(progress_proceedToGoTo);
     }
   }
 
   public void setProgressProceedTo(int i, int j, RunLevelService<?> rls) {
-    proceedToWaitFor = i;
-    proceedToGoTo = j;
-    proceedToRls = rls;
+    progress_proceedToWaitFor = i;
+    progress_proceedToGoTo = j;
+    progress_proceedToRls = rls;
+  }
+
+  public void setErrorProceedTo(int j, RunLevelService<?> rls) {
+    error_proceedToGoTo = j;
+    error_proceedToRls = rls;
   }
 
   

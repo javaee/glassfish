@@ -400,9 +400,9 @@ public class RunLevelServiceTest {
     defRLlistener.setProgressProceedTo(1, 4, rls);
     
     rls.proceedTo(1);
-    synchronized (rls) {
-      rls.wait(1000);
-    }
+//    synchronized (rls) {
+//      rls.wait(1000);
+//    }
     assertEquals(4, defRLS.getCurrentRunLevel());
     assertEquals(null, defRLS.getPlannedRunLevel());
 
@@ -446,9 +446,9 @@ public class RunLevelServiceTest {
     defRLlistener.setProgressProceedTo(4, 0, rls);
     rls.proceedTo(4);
     
-    synchronized (rls) {
-      rls.wait(1000);
-    }
+//    synchronized (rls) {
+//      rls.wait(1000);
+//    }
     assertEquals(0, defRLS.getCurrentRunLevel());
     assertEquals(null, defRLS.getPlannedRunLevel());
 
@@ -456,6 +456,32 @@ public class RunLevelServiceTest {
     assertListenerState(true, false, true);
   }
   
+  /**
+   * Verifies the behavior of an OnProgress recipient, calling proceedTo()
+   */
+  @Test
+  public void chainedShutdownProceedToCallsAsync() throws Exception {
+    installTestRunLevelService(true);
+
+    defRLlistener.setProgressProceedTo(4, 0, rls);
+    rls.proceedTo(4);
+    
+    synchronized (rls) {
+      rls.wait(1000);
+    }
+    if (defRLS.getCurrentRunLevel() > 0) {
+      synchronized (rls) {
+        rls.wait(100);
+      }
+    }
+    
+    assertEquals(0, defRLS.getCurrentRunLevel());
+    assertEquals(null, defRLS.getPlannedRunLevel());
+
+    assertInhabitantsState(4);
+    assertListenerState(true, false, true);
+  }
+
   @Test
   public void exceptionTypeEnvRunLevelService() throws Exception {
     this.defRLlistener = (TestRunLevelListener) listener;
@@ -517,35 +543,34 @@ public class RunLevelServiceTest {
     assertEquals(defRLlistener.calls.toString(), 6, defRLlistener.calls.size());
     assertListenerState(true, true, false);
   }
-  
+
   /**
-   * Verifies the behavior of an OnProgress recipient, calling proceedTo()
+   * Proceeds to level 5, encountering an exception along the way, and the onError
+   * nests a call to proceedTo level 1.
    */
   @Test
-  public void chainedShutdownProceedToCallsAsync() throws Exception {
-    installTestRunLevelService(true);
-    
-    installTestRunLevelService(false);
+  public void exceptionsEncounteredOnUpSideWithChainedShutdown() throws Exception {
+    recorders = new LinkedHashMap<Integer, Recorder>();
+    rls = defRLS = new TestDefaultRunLevelService(h, false, Exception.class, recorders); 
 
-    defRLlistener.setProgressProceedTo(4, 0, rls);
-    rls.proceedTo(4);
+    this.defRLlistener = (TestRunLevelListener) listener;
+    defRLlistener.calls.clear();
+    defRLlistener.setErrorProceedTo(1, rls);
+
+    ExceptionRunLevelManagedService.exceptionCtor = 
+      RuntimeException.class.getConstructor((Class<?>[])null);
+    ExceptionRunLevelManagedService.constructCount = 0;
+    ExceptionRunLevelManagedService.destroyCount = 0;
     
-    synchronized (rls) {
-      rls.wait(1000);
-    }
-    if (1 == defRLS.getCurrentRunLevel()) {
-      synchronized (rls) {
-        rls.wait(100);
-      }
-    }
+    rls.proceedTo(5);
     
-    assertEquals(0, defRLS.getCurrentRunLevel());
+    assertEquals(1, ExceptionRunLevelManagedService.constructCount);
+    assertEquals(0, ExceptionRunLevelManagedService.destroyCount);
+    assertListenerState(false, true, false);
+
+    assertEquals(1, defRLS.getCurrentRunLevel());
     assertEquals(null, defRLS.getPlannedRunLevel());
-
-    assertInhabitantsState(4);
-    assertListenerState(true, false, true);
   }
-
   
   @SuppressWarnings("unchecked")
   private void installTestRunLevelService(boolean async) {

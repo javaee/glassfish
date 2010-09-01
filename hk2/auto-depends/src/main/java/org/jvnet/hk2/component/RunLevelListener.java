@@ -79,7 +79,7 @@ public interface RunLevelListener {
   /**
    * Called when a service throws an exception during lifecycle orchestration.
    * 
-   * @param state the RunLevelService's state
+   * @param state the current RunLevelService state successfully achieved
    * @param context the of the failure (may be null)
    * @param error the error that was caught
    * @param willContinue the flag indicating whether or not the RunLevelService
