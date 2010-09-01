@@ -141,14 +141,14 @@ public abstract class DatabaseCommand extends CLICommand {
     private void checkIfDbInstalled(final File dblocation)
             throws CommandException {
         if (!dblocation.exists()) {
-            logger.printMessage(strings.get("DatabaseNotInstalled",
+            logger.info(strings.get("DatabaseNotInstalled",
                                                      dblocation));
             throw new CommandException("dblocation not found: " + dblocation);
         } else {
             File derbyJar =
                 new File(new File(dbLocation, "lib"), "derbyclient.jar");
             if (!derbyJar.exists()) {
-                logger.printMessage(strings.get("DatabaseNotInstalled",
+                logger.info(strings.get("DatabaseNotInstalled",
                                                      dblocation));
                 throw new CommandException(
                     "derbyclient.jar not found in " + dblocation);

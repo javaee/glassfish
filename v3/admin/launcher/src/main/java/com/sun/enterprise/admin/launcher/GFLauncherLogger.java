@@ -70,20 +70,13 @@ public class GFLauncherLogger {
     /////////////////////////  non-public below  //////////////////////////////
     
     static synchronized void setConsoleLevel(Level level) {
-        Logger parent = logger;
-        
-        while(parent != null) {
-            Handler[] handlers = parent.getHandlers();
-            
-            for(Handler h : handlers) {
-                if(ConsoleHandler.class.isAssignableFrom(h.getClass())) {
-                    h.setLevel(level);
-                }
+        for (Handler h : logger.getHandlers()) {
+            if (ConsoleHandler.class.isAssignableFrom(h.getClass())) {
+                h.setLevel(level);
             }
-
-            parent = parent.getParent();
         }
     }
+
     /**
      * IMPORTANT!  
      * The server's logfile is added to the *local* logger.  But it is never
@@ -127,7 +120,16 @@ public class GFLauncherLogger {
     private static FileHandler logfileHandler;
     
     static  {
+        /*
+         * Create a Logger just for the launcher that only uses
+         * the Handlers we set up.  This makes sure that when
+         * we change the log level for the Handler, we don't
+         * interfere with subsequent use of the Logger by
+         * asadmin.
+         */
         logger = Logger.getLogger(GFLauncherLogger.class.getName());
         logger.setLevel(Level.INFO);
+        logger.setUseParentHandlers(false);
+        logger.addHandler(new ConsoleHandler());
     }
 }

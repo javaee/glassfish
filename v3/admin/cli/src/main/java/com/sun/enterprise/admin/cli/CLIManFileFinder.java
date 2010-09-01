@@ -50,6 +50,7 @@ import java.util.NoSuchElementException;
 import java.util.List;
 import java.util.Collections;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 /**
  *  A utility class that gets the plain text man page for the
@@ -79,6 +80,9 @@ public class CLIManFileFinder {
     private static final String[] sections = {
         "1", "1m", "2", "2m", "3", "3m", "4", "4m", "5", "5m",
         "6", "6m", "7", "7m", "8", "8m", "9", "9m", "5asc" };
+
+    private static final Logger logger =
+        Logger.getLogger(CLIManFileFinder.class.getPackage().getName());
 
     /**
      * Get the man page for the given command, using the default locale
@@ -161,8 +165,7 @@ public class CLIManFileFinder {
                     if (i < locales.length)
                         j = 0;
                 }
-                CLILogger.getInstance().printDebugMessage(
-                                    "Trying to get this manpage: " + result);
+                logger.finer("Trying to get this manpage: " + result);
                 return result;
             }
 

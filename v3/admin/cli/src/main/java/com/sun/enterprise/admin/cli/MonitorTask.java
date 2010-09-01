@@ -42,6 +42,7 @@ package com.sun.enterprise.admin.cli;
 
 import java.util.TimerTask;
 import java.util.Timer;
+import java.util.logging.Logger;
 import java.io.File;
 
 import org.glassfish.api.admin.*;
@@ -62,6 +63,8 @@ public class MonitorTask extends TimerTask {
     private static final int NUM_ROWS = 25;
     private int counter = 0;
 
+    private static final Logger logger =
+        Logger.getLogger(MonitorTask.class.getPackage().getName());
     private final static LocalStringsImpl strings =
                             new LocalStringsImpl(MonitorTask.class);
 
@@ -92,7 +95,7 @@ public class MonitorTask extends TimerTask {
             "ec", "mt", "pt", "rc");
         } else if ("jvm".equals(type)) {
             title = String.format("%1$45s", "JVM Monitoring");
-            CLILogger.getInstance().printMessage(title);
+            logger.info(title);
             // row title
             title = null;
             if (filter != null) {
@@ -106,7 +109,7 @@ public class MonitorTask extends TimerTask {
                 // default jvm stats
                 title = String.format("%1$-35s %2$-40s", "UpTime(ms)",
                                         "Heap and NonHeap Memory(bytes)");
-                CLILogger.getInstance().printMessage(title);
+                logger.info(title);
                 title = String.format(
                     "%1$-25s %2$-10s %3$-10s %4$-10s %5$-10s %6$-10s",
                     "current", "min", "max", "low", "high", "count");
@@ -116,7 +119,7 @@ public class MonitorTask extends TimerTask {
     "%1$-5s %2$-5s %3$-5s %4$-5s %5$-5s %6$-5s %7$-5s %8$-8s %9$-10s %10$-5s",
     "asc", "ast", "rst", "st", "ajlc", "mjlc", "tjlc", "aslc", "mslc", "tslc");
         }
-        CLILogger.getInstance().printMessage(title);
+        logger.info(title);
     }
 
     void cancelMonitorTask() {
@@ -128,8 +131,7 @@ public class MonitorTask extends TimerTask {
             robot.keyPress(KeyEvent.VK_ENTER);
             robot.keyRelease(KeyEvent.VK_ENTER);
         } catch (java.awt.AWTException e) {
-            CLILogger.getInstance().printError(
-                                strings.get("awt.error", e.getMessage()));
+            logger.severe(strings.get("awt.error", e.getMessage()));
         }
     }
 
@@ -142,7 +144,7 @@ public class MonitorTask extends TimerTask {
                 }
            counter++;
         } catch (Exception e) {
-            CLILogger.getInstance().printError(
+            logger.severe(
                     strings.get("monitorCommand.errorRemote", e.getMessage()));
             cancelMonitorTask();
             exceptionMessage = e.getMessage();
@@ -154,7 +156,7 @@ public class MonitorTask extends TimerTask {
     }
  
     public void displayDetails(){
-        CLILogger.getInstance().printMessage("These are the details");
+        logger.info("These are the details");
     }
  
 /*    
@@ -169,7 +171,7 @@ public class MonitorTask extends TimerTask {
             final String unableToWriteFile =
                 strings.getString("commands.monitor.unable_to_write_to_file",
                 fileName.getName());
-            CLILogger.getInstance().printMessage(unableToWriteFile);
+            logger.info(unableToWriteFile);
             //if (verbose) {
                 //ioe.printStackTrace();
             //}

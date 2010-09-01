@@ -99,7 +99,7 @@ public class VersionCommand extends CLICommand {
             else
                 version = cmd.executeAndReturnOutput("version");
             version = version.trim();   // get rid of gratuitous newlines
-            logger.printMessage(terse ? version : strings.get("version.remote", version));
+            logger.info(terse ? version : strings.get("version.remote", version));
         } catch (Exception e) {
             // suppress all output and infer that the server is not running
             printRemoteException(e);
@@ -118,19 +118,19 @@ public class VersionCommand extends CLICommand {
 
         String fv = Version.getFullVersion();
 
-        logger.printMessage(terse ? fv : strings.get("version.local", fv));
+        logger.info(terse ? fv : strings.get("version.local", fv));
         if (verbose)
-            logger.printMessage(strings.get("version.local.java",
+            logger.info(strings.get("version.local.java",
 				    System.getProperty("java.version")));
     }
 
     private void printRemoteException(Exception e) {
         if (CLIConstants.debug())
-            logger.printMessage(strings.get("remote.version.failed.debug",
+            logger.info(strings.get("remote.version.failed.debug",
                 programOpts.getHost(), programOpts.getPort() + ""));
         else
-            logger.printMessage(strings.get("remote.version.failed.non-debug", 
+            logger.info(strings.get("remote.version.failed.non-debug", 
                 programOpts.getHost(), programOpts.getPort() + ""));
-        logger.printDebugMessage(e.getMessage());
+        logger.finer(e.getMessage());
     }
 }

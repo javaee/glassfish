@@ -94,9 +94,9 @@ public final class ListBackupsCommand extends BackupCommands {
             throws CommandException {
         try {
             ListManager mgr = new ListManager(request);
-            logger.printMessage(mgr.list());            
+            logger.info(mgr.list());            
         } catch (BackupWarningException bwe) {
-            logger.printMessage(bwe.getMessage());
+            logger.info(bwe.getMessage());
         } catch (BackupException be) {
             throw new CommandException(be);
         }

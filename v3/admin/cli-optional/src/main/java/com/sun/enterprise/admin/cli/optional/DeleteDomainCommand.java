@@ -102,7 +102,7 @@ public final class DeleteDomainCommand extends LocalDomainCommand {
 	    throw new CommandException(e.getLocalizedMessage());
         }
 
-	logger.printDetailMessage(strings.get("DomainDeleted", getDomainName()));
+	logger.fine(strings.get("DomainDeleted", getDomainName()));
         return 0;
     }
 

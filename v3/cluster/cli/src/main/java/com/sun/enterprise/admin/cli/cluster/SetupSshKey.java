@@ -104,17 +104,17 @@ public final class SetupSshKey extends CLICommand {
         Globals.setDefaultHabitat(habitat);
 
         for (String node : nodes) {
-            sshL.init(sshuser, node,  sshport, sshpassword, sshkeyfile, "", logger.getLogger());
+            sshL.init(sshuser, node,  sshport, sshpassword, sshkeyfile, "", logger);
             try {
                 sshL.setupKey(node, sshpublickeyfile);
             } catch (IOException ce) {
-                logger.printDebugMessage("SSH key setup failed: " + ce.getMessage());
+                logger.finer("SSH key setup failed: " + ce.getMessage());
                 throw new CommandException("SSH key setup failed: " + ce.getMessage());
             } catch (Exception e) {
                 //handle KeyStoreException
             }
             if (sshL.checkConnection())
-                logger.printDebugMessage("Connection SUCCEEDED!");
+                logger.finer("Connection SUCCEEDED!");
         }
         return SUCCESS;
     }

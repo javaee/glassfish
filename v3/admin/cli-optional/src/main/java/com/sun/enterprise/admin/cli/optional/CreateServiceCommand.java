@@ -44,6 +44,7 @@ import com.sun.enterprise.admin.util.ServerDirsSelector;
 import com.sun.enterprise.util.OS;
 import java.io.*;
 import java.util.*;
+import java.util.logging.*;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 import org.glassfish.api.Param;
@@ -134,7 +135,7 @@ public final class CreateServiceCommand extends CLICommand {
         try {
             final Service service = ServiceFactory.getService(dirs, getType());
             PlatformServicesInfo info = service.getInfo();
-            info.setTrace(CLILogger.isDebug());
+            info.setTrace(logger.isLoggable(Level.FINER));
             info.setDryRun(dry_run);
             info.setForce(force);
 
@@ -155,7 +156,7 @@ public final class CreateServiceCommand extends CLICommand {
             // file inside the help file thus the complications below...
             String help = service.getSuccessMessage();
             String tellUserAboutHelp = strings.get("create.service.runtimeHelp", help);
-            logger.printMessage(tellUserAboutHelp);
+            logger.info(tellUserAboutHelp);
             service.writeReadmeFile(help);
 
         }
@@ -181,7 +182,7 @@ public final class CreateServiceCommand extends CLICommand {
         if (!ok(serviceName))
             serviceName = dirs.getServerDir().getName();
 
-        logger.printDebugMessage("service name = " + serviceName);
+        logger.finer("service name = " + serviceName);
     }
 
     private void validateAsadmin() throws CommandException {

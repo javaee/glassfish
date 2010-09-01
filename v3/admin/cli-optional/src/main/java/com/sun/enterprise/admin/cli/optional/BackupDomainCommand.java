@@ -116,9 +116,9 @@ public final class BackupDomainCommand extends BackupCommands {
             throws CommandException {
         try {            
             BackupManager mgr = new BackupManager(request);
-            logger.printMessage(mgr.backup());            
+            logger.info(mgr.backup());            
         } catch (BackupWarningException bwe) {
-            logger.printMessage(bwe.getMessage());
+            logger.info(bwe.getMessage());
         } catch (BackupException be) {
             throw new CommandException(be);
         }

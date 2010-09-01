@@ -135,9 +135,9 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
         if (ok(pw)) {
             programOpts.setPassword(pw,
                             ProgramOptions.PasswordLocation.LOCAL_PASSWORD);
-            logger.printDebugMessage("Using local password");
+            logger.finer("Using local password");
         } else
-            logger.printDebugMessage("Not using local password");
+            logger.finer("Not using local password");
     }
 
     protected boolean isThisDAS(File ourDir) {

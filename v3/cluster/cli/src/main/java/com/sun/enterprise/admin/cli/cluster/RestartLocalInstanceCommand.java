@@ -79,7 +79,7 @@ public class RestartLocalInstanceCommand extends StopLocalInstanceCommand {
 
     @Override
     protected int instanceNotRunning() throws CommandException {
-        logger.printWarning(Strings.get("restart.instanceNotRunning"));
+        logger.warning(Strings.get("restart.instanceNotRunning"));
         CLICommand cmd = habitat.getComponent(CLICommand.class, "start-local-instance");
         return cmd.execute(argv);
     }

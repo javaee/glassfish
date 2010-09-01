@@ -71,13 +71,13 @@ public class UnsetCommand extends CLICommand {
         for (String name : vars) {
             // check that name is legitimate
             if (!name.startsWith(Environment.AS_ADMIN_ENV_PREFIX)) {
-                logger.printMessage(strings.get("badEnvVarUnset", name));
+                logger.info(strings.get("badEnvVarUnset", name));
                 ret = -1;
                 continue;
             }
 
             if (env.get(name) == null) {
-                logger.printMessage(strings.get("cantRemoveEnvVar", name));
+                logger.info(strings.get("cantRemoveEnvVar", name));
                 ret = -1;
             } else
                 env.remove(name);

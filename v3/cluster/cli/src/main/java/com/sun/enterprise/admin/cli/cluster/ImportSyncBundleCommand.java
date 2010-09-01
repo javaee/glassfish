@@ -203,7 +203,7 @@ public class ImportSyncBundleCommand extends LocalInstanceCommand {
             try {
                 if (in != null) in.close();
             } catch (IOException ioe) {
-                logger.printWarning(Strings.get("import.sync.bundle.closeStreamFailed",
+                logger.warning(Strings.get("import.sync.bundle.closeStreamFailed",
                             syncBundle, ioe.getLocalizedMessage()));
             }
             throw new CommandException(Strings.get("import.sync.bundle.inboundPayloadFailed",
@@ -212,7 +212,7 @@ public class ImportSyncBundleCommand extends LocalInstanceCommand {
         backupInstanceDir();
         File targetDir = this.getServerDirs().getServerDir();
         targetDir.mkdirs();
-        Perm perm = new Perm(targetDir, null, logger.getLogger());
+        Perm perm = new Perm(targetDir, null, logger);
 
         try {
             perm.processParts(payload);
@@ -227,7 +227,7 @@ public class ImportSyncBundleCommand extends LocalInstanceCommand {
             try {
                 if (in != null) in.close();
             } catch (IOException ex) {
-                logger.printWarning(Strings.get("import.sync.bundle.closeStreamFailed",
+                logger.warning(Strings.get("import.sync.bundle.closeStreamFailed",
                             syncBundle, ex.getLocalizedMessage()));
             }
         }
@@ -266,9 +266,9 @@ public class ImportSyncBundleCommand extends LocalInstanceCommand {
             setBackupDir(r.nextInt());
             File backup = getBackupDir();
             if (!f.renameTo(backup)) {
-                logger.printWarning(Strings.get("import.sync.bundle.backupInstanceDirFailed", f.getAbsolutePath(), backup.getAbsolutePath()));
+                logger.warning(Strings.get("import.sync.bundle.backupInstanceDirFailed", f.getAbsolutePath(), backup.getAbsolutePath()));
                 if (FileUtils.whack(f)) { //Ask user first before deleting?
-                    logger.printWarning(Strings.get("import.sync.bundle.deletedInstanceDir", f.getAbsolutePath()));
+                    logger.warning(Strings.get("import.sync.bundle.deletedInstanceDir", f.getAbsolutePath()));
                 }
             }
 
@@ -305,7 +305,7 @@ public class ImportSyncBundleCommand extends LocalInstanceCommand {
             RemoteCommand rc = new RemoteCommand("set", this.programOpts, this.env);
             rc.executeAndReturnOutput("set", dottedName);
         } catch (CommandException ex) {
-            logger.printWarning(Strings.get("import.sync.bundle.completeRegistrationFailed", instanceName, dottedName));
+            logger.warning(Strings.get("import.sync.bundle.completeRegistrationFailed", instanceName, dottedName));
         }
     }
 

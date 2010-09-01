@@ -224,11 +224,11 @@ public final class StartDatabaseCommand extends DatabaseCommand {
             if (dbHome != null)
                 dbLog = dbHome + File.separator + DerbyControl.DB_LOG_FILENAME;
 
-            logger.printDebugMessage("Ping Database");
+            logger.finer("Ping Database");
             cpe.execute("pingDatabaseCmd", pingDatabaseCmd(true), true);
             // if ping is unsuccesfull then database is not up and running
             if (cpe.exitValue() > 0) {
-                logger.printDebugMessage("Start Database");
+                logger.finer("Start Database");
                 cpe.execute("startDatabaseCmd", startDatabaseCmd(), false);
                 if (cpe.exitValue() != 0) {
                     throw new CommandException(strings.get("UnableToStartDatabase", dbLog));
@@ -238,7 +238,7 @@ public final class StartDatabaseCommand extends DatabaseCommand {
                 throw new CommandException(strings.get("CommandUnSuccessful", name));
             } else {
                 // database already started
-                logger.printMessage(strings.get("StartDatabaseStatus", dbHost, dbPort));
+                logger.info(strings.get("StartDatabaseStatus", dbHost, dbPort));
             }
         } catch (IllegalThreadStateException ite) {
             // IllegalThreadStateException is thrown if the 
@@ -250,7 +250,7 @@ public final class StartDatabaseCommand extends DatabaseCommand {
             try {
                 if (!programOpts.isTerse()) {
                     // try getting sysinfo
-                    logger.printDetailMessage(strings.get("database.info.msg", dbHost, dbPort));
+                    logger.fine(strings.get("database.info.msg", dbHost, dbPort));
                 }
                 cpePing.execute("pingDatabaseCmd", pingDatabaseCmd(true), true);
                 int counter = 0;
@@ -268,11 +268,11 @@ public final class StartDatabaseCommand extends DatabaseCommand {
                     }
                 }
                 if (!programOpts.isTerse()) {
-                    logger.printDebugMessage("Database SysInfo");
+                    logger.finer("Database SysInfo");
                     if (cpePing.exitValue() == 0) {
                         cpeSysInfo.execute("sysinfoCmd", sysinfoCmd(), true);
                         if (cpeSysInfo.exitValue() != 0) {
-                            logger.printMessage(strings.get("CouldNotGetSysInfo"));
+                            logger.info(strings.get("CouldNotGetSysInfo"));
                         }
                     }
                 }
@@ -280,9 +280,9 @@ public final class StartDatabaseCommand extends DatabaseCommand {
                 throw new CommandException(strings.get("CommandUnSuccessful", name), e);
             }
             if (cpePing.exitValue() == 0) {
-                logger.printMessage(strings.get("DatabaseStartMsg"));
+                logger.info(strings.get("DatabaseStartMsg"));
                 if ((new File(dbLog)).canWrite()) {
-                    logger.printMessage(strings.get("LogRedirectedTo", dbLog));
+                    logger.info(strings.get("LogRedirectedTo", dbLog));
                 }
             } else {
                 throw new CommandException(strings.get("UnableToStartDatabase", dbLog));

@@ -294,10 +294,10 @@ public class RemoteCommand extends CLICommand {
              */
             commandModel = rac.getCommandModel();
         } catch (CommandException cex) {
-            logger.printDebugMessage("RemoteCommand.prepare throws " + cex);
+            logger.finer("RemoteCommand.prepare throws " + cex);
             throw cex;
         } catch (Exception e) {
-            logger.printDebugMessage("RemoteCommand.prepare throws " + e);
+            logger.finer("RemoteCommand.prepare throws " + e);
             throw new CommandException(e.getMessage());
         }
     }
@@ -334,7 +334,7 @@ public class RemoteCommand extends CLICommand {
             if (returnAttributes)
                 attrs = rac.getAttributes();
             else if (!returnOutput)
-                logger.printMessage(output);
+                logger.info(output);
         } catch (CommandException ex) {
             // if a --help request failed, try to emulate it locally
             if (programOpts.isHelp()) {
@@ -455,7 +455,7 @@ public class RemoteCommand extends CLICommand {
      * Try to find a local version of the man page for this command.
      */
     private Reader getLocalManPage() {
-        logger.printDetailMessage(strings.get("NoRemoteManPage"));
+        logger.fine(strings.get("NoRemoteManPage"));
         String cmdClass = getCommandClass(getName());
         ClassLoader mcl = getModuleClassLoader();
         if (cmdClass != null && mcl != null) {
@@ -470,7 +470,7 @@ public class RemoteCommand extends CLICommand {
             rac = new CLIRemoteAdminCommand(name,
                 programOpts.getHost(), programOpts.getPort(),
                 programOpts.isSecure(), programOpts.getUser(),
-                programOpts.getPassword(), logger.getLogger());
+                programOpts.getPassword(), logger);
             rac.setFileOutputDirectory(outputDir);
         }
     }
@@ -484,7 +484,7 @@ public class RemoteCommand extends CLICommand {
             if (li == null)
                 return;
         } catch (StoreException se) {
-            logger.printDebugMessage(
+            logger.finer(
                     "Login info could not be read from ~/.asadminpass file");
             return;
         }
@@ -500,12 +500,12 @@ public class RemoteCommand extends CLICommand {
          */
         if (programOpts.getUser() == null) {
             // not on command line and in .asadminpass
-            logger.printDebugMessage("Getting user name from ~/.asadminpass: " +
+            logger.finer("Getting user name from ~/.asadminpass: " +
                                         li.getUser());
             programOpts.setUser(li.getUser());
             if (programOpts.getPassword() == null) {
                 // not in passwordfile and in .asadminpass
-                logger.printDebugMessage(
+                logger.finer(
                     "Getting password from ~/.asadminpass");
                 programOpts.setPassword(li.getPassword(),
                     ProgramOptions.PasswordLocation.LOGIN_FILE);
@@ -513,7 +513,7 @@ public class RemoteCommand extends CLICommand {
         } else if (programOpts.getUser().equals(li.getUser())) {
             if (programOpts.getPassword() == null) {
                 // not in passwordfile and in .asadminpass
-                logger.printDebugMessage(
+                logger.finer(
                     "Getting password from ~/.asadminpass");
                 programOpts.setPassword(li.getPassword(),
                     ProgramOptions.PasswordLocation.LOGIN_FILE);

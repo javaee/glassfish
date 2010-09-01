@@ -125,9 +125,9 @@ public final class RestoreDomainCommand extends BackupCommands {
             throws CommandException {
         try {            
             RestoreManager mgr = new RestoreManager(request);
-            logger.printMessage(mgr.restore());
+            logger.info(mgr.restore());
         } catch (BackupWarningException bwe) {
-            logger.printMessage(bwe.getMessage());
+            logger.info(bwe.getMessage());
         } catch (BackupException be) {
             throw new CommandException(be);
         }

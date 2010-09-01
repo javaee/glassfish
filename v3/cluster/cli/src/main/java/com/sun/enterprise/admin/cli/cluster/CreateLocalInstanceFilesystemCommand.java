@@ -100,7 +100,7 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
             if (!setDasDefaultsOnly) {
                 String nodeDirChildName = nodeDirChild != null ? nodeDirChild.getName() : "";
                 String nodeName = node != null ? node : nodeDirChildName;
-                logger.printMessage(Strings.get("Instance.existingDasPropertiesWarning",
+                logger.info(Strings.get("Instance.existingDasPropertiesWarning",
                     programOpts.getHost(), "" + programOpts.getPort(), nodeName));
             }
         }

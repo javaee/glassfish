@@ -71,7 +71,7 @@ public class ExportCommand extends CLICommand {
         // if no operands, print out everything
         if (vars == null || vars.size() == 0) {
             for (Map.Entry<String, String> e : env.entrySet())
-                logger.printMessage(e.getKey() + " = " + e.getValue());
+                logger.info(e.getKey() + " = " + e.getValue());
         } else {
             // otherwise, process each operand
             for (String arg : vars) {
@@ -88,7 +88,7 @@ public class ExportCommand extends CLICommand {
 
                 // check that name is legitimate
                 if (!name.startsWith(Environment.AS_ADMIN_ENV_PREFIX)) {
-                    logger.printMessage(strings.get("badEnvVarSet", name));
+                    logger.info(strings.get("badEnvVarSet", name));
                     ret = -1;
                     continue;
                 }
@@ -97,7 +97,7 @@ public class ExportCommand extends CLICommand {
                 if (value == null) {
                     String v = env.get(name);
                     if (v != null)
-                        logger.printMessage(name + " = " + v);
+                        logger.info(name + " = " + v);
                 } else
                     env.put(name, value);
             }

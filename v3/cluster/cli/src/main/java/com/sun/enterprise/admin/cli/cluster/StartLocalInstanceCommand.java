@@ -112,19 +112,19 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
     @Override
     protected int executeCommand() throws CommandException {
 
-        logger.printDebugMessage(toString());
+        logger.finer(toString());
 
         if (nosync) {
-            logger.printMessage(Strings.get("Instance.nosync"));
+            logger.info(Strings.get("Instance.nosync"));
         } else {
             if (!synchronizeInstance()) {
                 File domainXml =
                     new File(new File(instanceDir, "config"), "domain.xml");
                 if (!domainXml.exists()) {
-                    logger.printMessage(Strings.get("Instance.nodomainxml"));
+                    logger.info(Strings.get("Instance.nodomainxml"));
                     return ERROR;
                 }
-                logger.printMessage(Strings.get("Instance.syncFailed"));
+                logger.info(Strings.get("Instance.syncFailed"));
             }
         }
 
@@ -152,14 +152,14 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
 
                     switch (returnValue) {
                         case RESTART_NORMAL:
-                            logger.printMessage(Strings.get("restart"));
+                            logger.info(Strings.get("restart"));
                             break;
                         case RESTART_DEBUG_ON:
-                            logger.printMessage(Strings.get("restartChangeDebug", "on"));
+                            logger.info(Strings.get("restartChangeDebug", "on"));
                             info.setDebug(true);
                             break;
                         case RESTART_DEBUG_OFF:
-                            logger.printMessage(Strings.get("restartChangeDebug", "off"));
+                            logger.info(Strings.get("restartChangeDebug", "off"));
                             info.setDebug(false);
                             break;
                         default:

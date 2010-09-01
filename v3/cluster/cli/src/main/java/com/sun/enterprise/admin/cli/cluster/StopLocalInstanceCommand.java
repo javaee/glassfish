@@ -105,7 +105,7 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
         String serverName = getServerDirs().getServerName();
         int adminPort = getAdminPort(serverName);
         programOpts.setPort(adminPort);
-        logger.printDebugMessage("StopInstance.stoppingMessage" + adminPort);
+        logger.finer("StopInstance.stoppingMessage" + adminPort);
 
         /*
          * If we're using the local password, we don't want to prompt
@@ -117,7 +117,7 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
         if (!isThisServer(serverDir, "Instance-Root_value"))
             return instanceNotRunning();
 
-        logger.printDebugMessage("It's the correct Instance");
+        logger.finer("It's the correct Instance");
         return doRemoteCommand();
     }
 
@@ -129,7 +129,7 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
         // by definition this is not an error
         // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
 
-        logger.printWarning(Strings.get("StopInstance.instanceNotRunning"));
+        logger.warning(Strings.get("StopInstance.instanceNotRunning"));
         return 0;
     }
 
@@ -140,7 +140,7 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
     private int noSuchInstance() {
         // by definition this is not an error
         // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
-        logger.printWarning(Strings.get("Instance.noSuchInstance"));
+        logger.warning(Strings.get("Instance.noSuchInstance"));
         return 0;
     }
 

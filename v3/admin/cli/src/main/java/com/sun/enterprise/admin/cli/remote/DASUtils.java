@@ -50,6 +50,9 @@ import com.sun.enterprise.admin.cli.*;
  * Domain Admin Server utility method.
  */
 public class DASUtils {
+    private static final Logger logger =
+                        Logger.getLogger("com.sun.enterprise.admin.cli.remote");
+
     public enum Error {
         NONE, AUTHENTICATION, CONNECTION, IO, UNKNOWN
     };
@@ -78,13 +81,11 @@ public class DASUtils {
         catch (Exception ex) {
             ExceptionAnalyzer ea = new ExceptionAnalyzer(ex);
             if(ea.getFirstInstanceOf(ConnectException.class) != null) {
-                CLILogger.getInstance().printDebugMessage(
-                        "Got java.net.ConnectException");
+                logger.finer("Got java.net.ConnectException");
                 return false; // this definitely means server is not up
             }
             else if(ea.getFirstInstanceOf(IOException.class) != null) {
-                CLILogger.getInstance().printDebugMessage(
-                        "It appears that server has started, but for"
+                logger.finer("It appears that server has started, but for"
                         + " some reason the exception is thrown: "
                         + ex.getMessage());
                 return true;
@@ -113,13 +114,11 @@ public class DASUtils {
         catch (Exception ex) {
             ExceptionAnalyzer ea = new ExceptionAnalyzer(ex);
             if(ea.getFirstInstanceOf(ConnectException.class) != null) {
-                CLILogger.getInstance().printDebugMessage(
-                        "Got java.net.ConnectException");
+                logger.finer("Got java.net.ConnectException");
                 return Error.CONNECTION;
             }
             else if(ea.getFirstInstanceOf(IOException.class) != null) {
-                CLILogger.getInstance().printDebugMessage(
-                        "It appears that server has started, but for"
+                logger.finer("It appears that server has started, but for"
                         + " some reason the exception is thrown: "
                         + ex.getMessage());
                 return Error.IO;

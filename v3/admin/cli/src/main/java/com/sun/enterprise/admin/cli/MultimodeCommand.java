@@ -180,7 +180,7 @@ public class MultimodeCommand extends CLICommand {
             try {
                 args = getArgs(line);
             } catch (ArgumentTokenizer.ArgumentException ex) {
-                logger.printMessage(ex.getMessage());
+                logger.info(ex.getMessage());
                 continue;
             }
 
@@ -217,12 +217,12 @@ public class MultimodeCommand extends CLICommand {
                 cmd = CLICommand.getCommand(habitat, command);
                 rc = cmd.execute(args);
             } catch (CommandValidationException cve) {
-                logger.printError(cve.getMessage());
-                logger.printError(cmd.getUsage());
+                logger.severe(cve.getMessage());
+                logger.severe(cmd.getUsage());
                 rc = ERROR;
             } catch (InvalidCommandException ice) {
                 // find closest match with local or remote commands
-                logger.printError(ice.getMessage());
+                logger.severe(ice.getMessage());
                 try {
                     CLIUtil.displayClosestMatch(command,
                         CLIUtil.getAllCommands(habitat, po, env),
@@ -233,17 +233,17 @@ public class MultimodeCommand extends CLICommand {
             } catch (CommandException ce) {
                 if (ce.getCause() instanceof java.net.ConnectException) {
                     // find closest match with local commands
-                    logger.printError(ce.getMessage());
+                    logger.severe(ce.getMessage());
                     try {
                         CLIUtil.displayClosestMatch(command,
                             CLIUtil.getLocalCommands(habitat),
                             strings.get("ClosestMatchedLocalCommands"));
                     } catch (InvalidCommandException e) {
-                        logger.printMessage(
+                        logger.info(
                                 strings.get("InvalidRemoteCommand", command));
                     }
                 } else
-                    logger.printError(ce.getMessage());
+                    logger.severe(ce.getMessage());
                 rc = ERROR;
             } finally {
                 // restore the original program options
@@ -257,22 +257,22 @@ public class MultimodeCommand extends CLICommand {
             switch (rc) {
             case SUCCESS:
                 if (!programOpts.isTerse())
-                    logger.printDetailMessage(
+                    logger.fine(
                         strings.get("CommandSuccessful", command));
                 break;
 
             case ERROR:
-                logger.printDetailMessage(
+                logger.fine(
                     strings.get("CommandUnSuccessful", command));
                 break;
 
             case INVALID_COMMAND_ERROR:
-                logger.printDetailMessage(
+                logger.fine(
                     strings.get("CommandUnSuccessful", command));
                 break;
 
             case CONNECTION_ERROR:
-                logger.printDetailMessage(
+                logger.fine(
                     strings.get("CommandUnSuccessful", command));
                 break;
             }

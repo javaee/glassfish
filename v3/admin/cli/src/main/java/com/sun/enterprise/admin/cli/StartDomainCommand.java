@@ -124,14 +124,14 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
 
                     switch (returnValue) {
                         case RESTART_NORMAL:
-                            logger.printMessage(strings.get("restart"));
+                            logger.info(strings.get("restart"));
                             break;
                         case RESTART_DEBUG_ON:
-                            logger.printMessage(strings.get("restartChangeDebug", "on"));
+                            logger.info(strings.get("restartChangeDebug", "on"));
                             info.setDebug(true);
                             break;
                         case RESTART_DEBUG_OFF:
-                            logger.printMessage(strings.get("restartChangeDebug", "off"));
+                            logger.info(strings.get("restartChangeDebug", "off"));
                             info.setDebug(false);
                             break;
                         default:
@@ -212,7 +212,7 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
         if (upgrade || !launcher.needsUpgrade())
             return;
 
-        logger.printMessage(strings.get("upgradeNeeded"));
+        logger.info(strings.get("upgradeNeeded"));
         info.setUpgrade(true);
         launcher.setup();
         launcher.launch();
@@ -236,7 +236,7 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
                 throw new CommandException(strings.get("upgradeFailed",
                         info.getDomainName(), exitCode));
         }
-        logger.printMessage(strings.get("upgradeSuccessful"));
+        logger.info(strings.get("upgradeSuccessful"));
 
         // need a new launcher to start the domain for real
         createLauncher();

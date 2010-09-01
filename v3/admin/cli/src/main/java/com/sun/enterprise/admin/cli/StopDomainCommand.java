@@ -101,7 +101,7 @@ public class StopDomainCommand extends LocalDomainCommand {
 
             int adminPort = getAdminPort();
             programOpts.setPort(adminPort);
-            logger.printDebugMessage("Stopping local domain on port "
+            logger.finer("Stopping local domain on port "
                     + adminPort);
 
             /*
@@ -114,14 +114,14 @@ public class StopDomainCommand extends LocalDomainCommand {
 
             if(!isThisDAS(getDomainRootDir()))
                 return dasNotRunning();
-            logger.printDebugMessage("It's the correct DAS");
+            logger.finer("It's the correct DAS");
         }
         else { // remote
             // Verify that the DAS is running and reachable
             if(!DASUtils.pingDASQuietly(programOpts, env))
                 return dasNotRunning();
 
-            logger.printDebugMessage("DAS is running");
+            logger.finer("DAS is running");
             programOpts.setInteractive(false);
         }
 
@@ -144,7 +144,7 @@ public class StopDomainCommand extends LocalDomainCommand {
             throws CommandException, CommandValidationException {
         // by definition this is not an error
         // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
-        logger.printWarning(strings.get("StopDomain.dasNotRunning"));
+        logger.warning(strings.get("StopDomain.dasNotRunning"));
         return 0;
     }
 

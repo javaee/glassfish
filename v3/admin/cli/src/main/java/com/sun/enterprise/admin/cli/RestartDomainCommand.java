@@ -105,7 +105,7 @@ public class RestartDomainCommand extends StopDomainCommand {
 
         waitForRestart(pwFile, stamp, uptimeOldServer);
 
-        logger.printMessage(strings.get("restartDomain.success"));
+        logger.info(strings.get("restartDomain.success"));
     }
 
     /**
@@ -114,7 +114,7 @@ public class RestartDomainCommand extends StopDomainCommand {
     @Override
     protected int dasNotRunning()
             throws CommandException, CommandValidationException {
-        logger.printWarning(strings.get("restart.dasNotRunning"));
+        logger.warning(strings.get("restart.dasNotRunning"));
         CLICommand cmd = habitat.getComponent(CLICommand.class, "start-domain");
         // XXX - assume start-domain accepts all the same options
         return cmd.execute(argv);

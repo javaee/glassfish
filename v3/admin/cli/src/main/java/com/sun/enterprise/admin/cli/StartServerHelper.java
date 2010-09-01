@@ -51,6 +51,7 @@ import com.sun.enterprise.util.net.NetUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Logger;
 import org.glassfish.api.admin.CommandException;
 import static com.sun.enterprise.admin.cli.CLIConstants.WAIT_FOR_DAS_TIME_MS;
 
@@ -65,7 +66,7 @@ import static com.sun.enterprise.admin.cli.CLIConstants.WAIT_FOR_DAS_TIME_MS;
  * @author bnevins
  */
 public class StartServerHelper{
-    public StartServerHelper(CLILogger logger0, boolean terse0,
+    public StartServerHelper(Logger logger0, boolean terse0,
             ServerDirs serverDirs0, GFLauncher launcher0, 
             String masterPassword0, boolean debug0) {
         logger = logger0;
@@ -93,7 +94,7 @@ public class StartServerHelper{
         pinged:
         while(!timedOut(startWait)) {
             if(pidFile != null) {
-                logger.printDebugMessage("Check for pid file: " + pidFile);
+                logger.finer("Check for pid file: " + pidFile);
                 if(pidFile.exists()) {
                     alive = true;
                     break pinged;
@@ -216,7 +217,7 @@ public class StartServerHelper{
             debugPortString = "" + debugPort;
         }
 
-        logger.printMessage(strings.get(
+        logger.info(strings.get(
                     "ServerStart.SuccessMessage",
                     info.isDomain() ? "domain " : "instance",
                     serverDirs.getServerName(),
@@ -226,7 +227,7 @@ public class StartServerHelper{
                 );
 
         if(debugPort >= 0)
-            logger.printMessage(strings.get("ServerStart.DebuggerMessage", debugPortString));
+            logger.info(strings.get("ServerStart.DebuggerMessage", debugPortString));
     }
 
     /**
@@ -244,7 +245,7 @@ public class StartServerHelper{
         String err = adminPortInUse();
 
         if(err != null) {
-            logger.printWarning(err);
+            logger.warning(err);
             return false;
         }
 
@@ -255,7 +256,7 @@ public class StartServerHelper{
         String msg = serverDirs.deletePidFile();
 
         if(msg != null)
-            logger.printDebugMessage(msg);
+            logger.finer(msg);
     }
 
     private void setSecurity() {
@@ -281,7 +282,7 @@ public class StartServerHelper{
     }
     private final boolean terse;
     private final GFLauncher launcher;
-    private final CLILogger logger;
+    private final Logger logger;
     private final File pidFile;
     private final GFLauncherInfo info;
     private final Set<Integer> ports;

@@ -43,6 +43,7 @@ package com.sun.enterprise.admin.cli;
 import java.io.*;
 import java.util.*;
 import java.lang.reflect.*;
+import java.util.logging.*;
 
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
@@ -58,6 +59,7 @@ import com.sun.enterprise.admin.util.CommandModelData.ParamModelData;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
+import com.sun.logging.LogDomains;
 
 
 /**
@@ -90,6 +92,7 @@ public abstract class CLICommand implements PostConstruct {
     private static final Set<String> unsupported;
     private static final String UNSUPPORTED_CMD_FILE_NAME =
                                     "unsupported-legacy-command-names";
+    private static final String PACKAGE_NAME = "com.sun.enterprise.admin.cli";
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(CLICommand.class);
@@ -97,7 +100,8 @@ public abstract class CLICommand implements PostConstruct {
     private static final Map<String,String> systemProps = 
             Collections.unmodifiableMap(new ASenvPropertyReader().getProps());
 
-    protected static final CLILogger logger = CLILogger.getInstance();
+    protected static final Logger logger =
+            Logger.getLogger(CLICommand.class.getPackage().getName());
 
     // InjectionManager is completely stateless with only one method that
     // operates on its arguments, so we can share a single instance.
@@ -178,7 +182,7 @@ public abstract class CLICommand implements PostConstruct {
             return cmd;
 
         // nope, must be a remote command
-        logger.printDebugMessage("Assuming it's a remote command: " + name);
+        logger.finer("Assuming it's a remote command: " + name);
         return new RemoteCommand(name,
             habitat.getComponent(ProgramOptions.class),
             habitat.getComponent(Environment.class));
@@ -232,29 +236,29 @@ public abstract class CLICommand implements PostConstruct {
     public int execute(String... argv) throws CommandException {
         this.argv = argv;
         initializePasswords();
-        logger.printDebugMessage("Prepare");
+        logger.finer("Prepare");
         prepare();
-        logger.printDebugMessage("Process program options");
+        logger.finer("Process program options");
         processProgramOptions();
-        logger.printDebugMessage("Parse command options");
+        logger.finer("Parse command options");
         parse();
         if (checkHelp())
             return 0;
-        logger.printDebugMessage("Prevalidate command options");
+        logger.finer("Prevalidate command options");
         prevalidate();
-        logger.printDebugMessage("Inject command options");
+        logger.finer("Inject command options");
         inject();
-        logger.printDebugMessage("Validate command options");
+        logger.finer("Validate command options");
         validate();
         if (programOpts.isEcho()) {
-            logger.printMessage(echoCommand());
+            logger.info(echoCommand());
             // In order to avoid echoing commands used intenally to the
             // implementation of *this* command, we turn off echo after
             // having echoed this command.
             programOpts.setEcho(false);
-        } else if (logger.isDebug())
-            logger.printDebugMessage(echoCommand());
-        logger.printDebugMessage("Execute command");
+        } else if (logger.isLoggable(Level.FINER))
+            logger.finer(echoCommand());
+        logger.finer("Execute command");
         return executeCommand();
     }
 
@@ -469,7 +473,7 @@ public abstract class CLICommand implements PostConstruct {
      */
     protected void processProgramOptions() throws CommandException {
         if (!programOpts.isOptionsSet()) {
-            logger.printDebugMessage("Parsing program options");
+            logger.finer("Parsing program options");
             /*
              * asadmin options and command options are intermixed.
              * Parse the entire command line for asadmin options,
@@ -483,7 +487,7 @@ public abstract class CLICommand implements PostConstruct {
             argv = operands.toArray(new String[operands.size()]);
             if (params.size() > 0) {
                 // at least one program option specified after command name
-                logger.printDebugMessage("Update program options");
+                logger.finer("Update program options");
                 programOpts.updateOptions(params);
                 initializeLogger();
                 initializePasswords();
@@ -522,8 +526,8 @@ public abstract class CLICommand implements PostConstruct {
                         }
                     }
                     sb.append(" ").append(name).append(" [options] ...");
-                    logger.printMessage(strings.get("DeprecatedSyntax"));
-                    logger.printMessage(sb.toString());
+                    logger.info(strings.get("DeprecatedSyntax"));
+                    logger.info(sb.toString());
                 }
             }
         }
@@ -533,10 +537,12 @@ public abstract class CLICommand implements PostConstruct {
      * Initialize the state of the logger based on any program options.
      */
     protected void initializeLogger() {
-        if (programOpts.isTerse())
-            logger.setOutputLevel(java.util.logging.Level.INFO);
-        else
-            logger.setOutputLevel(java.util.logging.Level.FINE);
+        if (!logger.isLoggable(Level.FINER)) {
+            if (programOpts.isTerse())
+                logger.setLevel(Level.INFO);
+            else
+                logger.setLevel(Level.FINE);
+        }
     }
 
     /**
@@ -550,7 +556,7 @@ public abstract class CLICommand implements PostConstruct {
 
         if (ok(pwfile)) {
             passwords = CLIUtil.readPasswordFileOptions(pwfile, true);
-            logger.printDebugMessage("Passwords from password file " +
+            logger.finer("Passwords from password file " +
                                         passwords);
             String password = passwords.get(
                     Environment.AS_ADMIN_ENV_PREFIX + "PASSWORD");
@@ -603,8 +609,8 @@ public abstract class CLICommand implements PostConstruct {
                     operands.size() > 0 && operands.get(0).equals("--"))
                 operands.remove(0);
         }
-        logger.printDebugMessage("params: " + options);
-        logger.printDebugMessage("operands: " + operands);
+        logger.finer("params: " + options);
+        logger.finer("operands: " + operands);
     }
 
     /**
@@ -674,7 +680,7 @@ public abstract class CLICommand implements PostConstruct {
             if (opt.getParam().password())
                 continue;       // passwords are handled later
 	    if (opt.getParam().obsolete() && getOption(opt.getName()) != null)
-		logger.printMessage(
+		logger.info(
 			strings.get("ObsoleteOption", opt.getName()));
             if (opt.getParam().optional())
                 continue;
@@ -692,11 +698,11 @@ public abstract class CLICommand implements PostConstruct {
             // if it's still not set, that's an error
             if (getOption(opt.getName()) == null) {
                 missingOption = true;
-                logger.printMessage(
+                logger.info(
                         strings.get("missingOption", "--" + opt.getName()));
             }
 	    if (opt.getParam().obsolete())	// a required obsolete option?
-		logger.printMessage(
+		logger.info(
 			strings.get("ObsoleteOption", opt.getName()));
         }
         if (missingOption)
@@ -1004,6 +1010,29 @@ public abstract class CLICommand implements PostConstruct {
             }
         }
         // it is a supported command; do nothing
+    }
+
+    /**
+     * Prints the exception message with level as FINER.
+     *
+     * @param e the exception object to print
+     */
+    protected void printExceptionStackTrace(java.lang.Throwable e) {
+        if (!logger.isLoggable(Level.FINER))
+            return;
+	/*
+	java.lang.StackTraceElement[] ste = e.getStackTrace();
+	for (int ii = 0; ii < ste.length; ii++)
+	    printDebugMessage(ste[ii].toString());
+	*/
+    	final ByteArrayOutputStream output = new ByteArrayOutputStream(512);
+    	e.printStackTrace(new java.io.PrintStream(output));
+        try {
+            output.close();
+        } catch (IOException ex) {
+            // ignore
+        }
+        logger.finer(output.toString());
     }
 
     protected static boolean ok(String s) {

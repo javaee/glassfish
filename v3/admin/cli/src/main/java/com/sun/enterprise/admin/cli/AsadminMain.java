@@ -43,6 +43,7 @@ package com.sun.enterprise.admin.cli;
 import java.io.*;
 import java.text.*;
 import java.util.*;
+import java.util.logging.*;
 
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.*;
@@ -68,11 +69,16 @@ public class AsadminMain {
     private       static String command;
     private       static ProgramOptions po;
     private       static Habitat habitat;
+    private       static Logger logger;
 
     private final static int ERROR = 1;
     private final static int CONNECTION_ERROR = 2;
     private final static int INVALID_COMMAND_ERROR = 3;
     private final static int SUCCESS = 0;
+
+    private final static String DEBUG_FLAG = "Debug";
+    private final static String ENV_DEBUG_FLAG = "AS_DEBUG";
+
     private static final LocalStringsImpl strings =
                                 new LocalStringsImpl(AsadminMain.class);
 
@@ -90,19 +96,58 @@ public class AsadminMain {
             System.setProperty(cr, crVal);
     }
 
+    /**
+     * A ConsoleHandler that prints all non-SEVERE messages to System.out
+     * and all SEVERE messages to System.err.
+     */
+    private static class CLILoggerHandler extends ConsoleHandler {
+        public void publish(java.util.logging.LogRecord logRecord) {
+            if (!isLoggable(logRecord))
+                return;
+            if (logRecord.getLevel() == Level.SEVERE) {
+		System.err.println(logRecord.getMessage());
+            } else {
+                System.out.println(logRecord.getMessage());
+            }
+        }
+    }
+
     public static void main(String[] args) {
         int minor = JDK.getMinor();
 
         if (minor < 6) {
-            CLILogger.getInstance().printError(
-                strings.get("OldJdk", "" + minor));
+            System.err.println(strings.get("OldJdk", "" + minor));
             System.exit(ERROR);
         }
+
+        // bnevins 4-18-08 A quickly added trace. should clean up later.
+        // TODO TODO TODO TODO
+
+        // System Prop just needs to exist
+        // Env Var. needs to be set to "true"
+        String sys = System.getProperty(DEBUG_FLAG);
+        boolean env = Boolean.parseBoolean(System.getenv(ENV_DEBUG_FLAG));
+        boolean trace = Boolean.parseBoolean(System.getenv("AS_TRACE"));
+        boolean debug = sys != null || env;
+
+        logger = Logger.getLogger("");
+        if (trace)
+            logger.setLevel(Level.FINEST);
+        else if (debug)
+            logger.setLevel(Level.FINER);
+        else {
+            logger.setLevel(Level.INFO);
+            //logger.setLevel(Level.SEVERE);
+        }
+        logger.setUseParentHandlers(false);
+        for (Handler h : logger.getHandlers())
+            logger.removeHandler(h);
+        logger.addHandler(new CLILoggerHandler());
 
         if (CLIConstants.debugMode) {
             System.setProperty(CLIConstants.WALL_CLOCK_START_PROP,
                 "" + System.currentTimeMillis());
-            CLILogger.getInstance().printDebugMessage("CLASSPATH= " +
+            logger.finer("CLASSPATH= " +
                     System.getProperty("java.class.path") +
                     "\nCommands: " + Arrays.toString(args));
         }
@@ -117,16 +162,16 @@ public class AsadminMain {
             File inst = new File(System.getProperty(
                                 SystemPropertyConstants.INSTALL_ROOT_PROPERTY));
             File ext = new File(new File(inst, "lib"), "asadmin");
-            CLILogger.getInstance().printDebugMessage(
+            logger.finer(
                                     "asadmin extension directory: " + ext);
             if (ext.isDirectory())
                 ecl = new DirectoryClassLoader(ext, ecl);
             else
-                CLILogger.getInstance().printMessage(
+                logger.info(
                                             strings.get("ExtDirMissing", ext));
         } catch (IOException ex) {
             // any failure here is fatal
-            CLILogger.getInstance().printMessage(
+            logger.info(
                                     strings.get("ExtDirFailed", ex));
             System.exit(1);
         }
@@ -173,22 +218,22 @@ public class AsadminMain {
         switch (exitCode) {
         case SUCCESS:
             if (!po.isTerse())
-                CLILogger.getInstance().printDetailMessage(
+                logger.fine(
                     strings.get("CommandSuccessful", command));
             break;
 
         case ERROR:
-            CLILogger.getInstance().printDetailMessage(
+            logger.fine(
                 strings.get("CommandUnSuccessful", command));
             break;
 
         case INVALID_COMMAND_ERROR:
-            CLILogger.getInstance().printDetailMessage(
+            logger.fine(
                 strings.get("CommandUnSuccessful", command));
             break;
 
         case CONNECTION_ERROR:
-            CLILogger.getInstance().printDetailMessage(
+            logger.fine(
                 strings.get("CommandUnSuccessful", command));
             break;
         }
@@ -232,15 +277,15 @@ public class AsadminMain {
             cmd = CLICommand.getCommand(habitat, command);
             return cmd.execute(argv);
         } catch (CommandValidationException cve) {
-            CLILogger.getInstance().printError(cve.getMessage());
+            logger.severe(cve.getMessage());
             if (cmd == null)    // error parsing program options
                 printUsage();
             else
-                CLILogger.getInstance().printError(cmd.getUsage());
+                logger.severe(cmd.getUsage());
             return ERROR;
         } catch (InvalidCommandException ice) {
             // find closest match with local or remote commands
-            CLILogger.getInstance().printError(ice.getMessage());
+            logger.severe(ice.getMessage());
             try {
                 CLIUtil.displayClosestMatch(command,
                     CLIUtil.getAllCommands(habitat, po, env),
@@ -252,17 +297,17 @@ public class AsadminMain {
         } catch (CommandException ce) {
             if (ce.getCause() instanceof java.net.ConnectException) {
                 // find closest match with local commands
-                CLILogger.getInstance().printError(ce.getMessage());
+                logger.severe(ce.getMessage());
                 try {
                     CLIUtil.displayClosestMatch(command,
                         CLIUtil.getLocalCommands(habitat),
                         strings.get("ClosestMatchedLocalCommands"));
                 } catch (InvalidCommandException e) {
-                    CLILogger.getInstance().printMessage(
+                    logger.info(
                             strings.get("InvalidRemoteCommand", command));
                 }
             } else
-                CLILogger.getInstance().printError(ce.getMessage());
+                logger.severe(ce.getMessage());
             return ERROR;
         }
     }
@@ -272,7 +317,7 @@ public class AsadminMain {
      * XXX - should be derived from ProgramOptions.
      */
     private static void printUsage() {
-        CLILogger.getInstance().printError(strings.get("Asadmin.usage"));
+        logger.severe(strings.get("Asadmin.usage"));
     }
 
     private static boolean ok(String s) {

@@ -94,7 +94,7 @@ public class ChangeAdminPasswordCommand extends CLICommand {
                     programOpts.setUser(
                                     SystemPropertyConstants.DEFAULT_ADMIN_USER);
             } else {
-                //logger.printMessage(strings.get("AdminUserRequired"));
+                //logger.info(strings.get("AdminUserRequired"));
                 throw new CommandValidationException(
                     strings.get("AdminUserRequired"));
             }
@@ -129,7 +129,7 @@ public class ChangeAdminPasswordCommand extends CLICommand {
         RemoteAdminCommand rac = new RemoteAdminCommand(name,
             programOpts.getHost(), programOpts.getPort(),
             programOpts.isSecure(), programOpts.getUser(),
-            programOpts.getPassword(), logger.getLogger());
+            programOpts.getPassword(), logger);
         rac.executeCommand(params);
         return SUCCESS;
     }

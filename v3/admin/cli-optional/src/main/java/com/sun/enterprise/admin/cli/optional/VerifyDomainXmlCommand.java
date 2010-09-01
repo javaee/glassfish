@@ -88,7 +88,7 @@ public final class VerifyDomainXmlCommand extends LocalDomainCommand {
             throws CommandException, CommandValidationException {
 
         File domainXMLFile = getDomainXml();
-        logger.printDebugMessage("Domain XML file = " + domainXMLFile);
+        logger.finer("Domain XML file = " + domainXMLFile);
         try {
             Habitat habitat = Globals.getStaticHabitat();
             ConfigParser parser = new ConfigParser(habitat);

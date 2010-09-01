@@ -43,6 +43,7 @@ package com.sun.enterprise.admin.cli.optional;
 import java.io.File;
 import java.io.Console;
 import java.util.*;
+import java.util.logging.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
@@ -215,7 +216,7 @@ public final class CreateDomainCommand extends CLICommand {
                 if (ok(val))
                     programOpts.setUser(val);
             } else {
-                //logger.printMessage(strings.get("AdminUserRequired"));
+                //logger.info(strings.get("AdminUserRequired"));
                 throw new CommandValidationException(
                     strings.get("AdminUserRequired"));
             }
@@ -299,7 +300,7 @@ public final class CreateDomainCommand extends CLICommand {
             manager.validateDomain(config, false);
             verifyPortBase();
         } catch (DomainException e) {
-            logger.printDetailMessage(e.getLocalizedMessage());
+            logger.fine(e.getLocalizedMessage());
             throw new CommandException(
                 strings.get("CouldNotCreateDomain", domainName), e);
         }
@@ -330,7 +331,7 @@ public final class CreateDomainCommand extends CLICommand {
             adminPassword = passwords.get(ADMIN_ADMINPASSWORD);
             if (adminPassword != null) {
                 haveAdminPwd = true;
-                logger.printWarning(strings.get("DeprecatedAdminPassword"));
+                logger.warning(strings.get("DeprecatedAdminPassword"));
             } else {
                 haveAdminPwd = passwords.get(ADMIN_PASSWORD) != null;
                 adminPassword = getAdminPassword();
@@ -374,11 +375,11 @@ public final class CreateDomainCommand extends CLICommand {
             // saving the login information happens inside this method
             createTheDomain(domainDir, domainProperties);
         } catch (CommandException ce) {
-            logger.printMessage(ce.getLocalizedMessage());
+            logger.info(ce.getLocalizedMessage());
             throw new CommandException(
                 strings.get("CouldNotCreateDomain", domainName), ce);
         } catch (Exception e) {
-            logger.printDetailMessage(e.getLocalizedMessage());
+            logger.fine(e.getLocalizedMessage());
             throw new CommandException(
                 strings.get("CouldNotCreateDomain", domainName), e);
         }
@@ -411,7 +412,7 @@ public final class CreateDomainCommand extends CLICommand {
                 throw new CommandException(
                     strings.get("PortInUseError", domainName, portNum));
             else
-                logger.printWarning(strings.get("PortInUseWarning", portNum));
+                logger.warning(strings.get("PortInUseWarning", portNum));
             break;
 
         case noPermission:
@@ -420,7 +421,7 @@ public final class CreateDomainCommand extends CLICommand {
                     strings.get("NoPermissionForPortError", 
                     portNum, domainName));
             else
-                logger.printWarning(strings.get("NoPermissionForPortWarning", 
+                logger.warning(strings.get("NoPermissionForPortWarning", 
                     portNum, domainName));
             break;
 
@@ -428,7 +429,7 @@ public final class CreateDomainCommand extends CLICommand {
             throw new CommandException(strings.get("UnknownPortMsg", portNum));
 
         case OK:
-            logger.printDebugMessage("Port =" + portToVerify);
+            logger.finer("Port =" + portToVerify);
             break;
         }
     }
@@ -469,7 +470,7 @@ public final class CreateDomainCommand extends CLICommand {
             throw new CommandValidationException(
                 strings.get("PortBasePortInUse", portNum, portName));
         }
-        logger.printDebugMessage("Port =" + portNum);
+        logger.finer("Port =" + portNum);
     }
 
     /**
@@ -483,7 +484,7 @@ public final class CreateDomainCommand extends CLICommand {
             Properties domainProperties)
             throws DomainException, CommandValidationException {
         final Integer adminPortInt = Integer.valueOf(adminPort);
-        logger.printDetailMessage(
+        logger.fine(
             strings.get("UsingPort", "Admin", adminPort));
 
         //
@@ -588,18 +589,18 @@ public final class CreateDomainCommand extends CLICommand {
         try {
             modifyInitialDomainXml(domainConfig);
         } catch (Exception e) {
-            logger.printWarning(
+            logger.warning(
                             strings.get("CustomizationFailed",e.getMessage()));
         }
-        logger.printMessage(strings.get("DomainCreated", domainName));
-        logger.printMessage(
+        logger.info(strings.get("DomainCreated", domainName));
+        logger.info(
             strings.get("DomainPort", domainName, adminPort));
         if (adminPassword.equals(
                 SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD))
-            logger.printMessage(strings.get("DomainAllowsUnauth", domainName,
+            logger.info(strings.get("DomainAllowsUnauth", domainName,
                                                                     adminUser));
         else
-            logger.printMessage(
+            logger.info(
                 strings.get("DomainAdminUser", domainName, adminUser));
         //checkAsadminPrefsFile();
         if (saveLoginOpt) {
@@ -625,7 +626,7 @@ public final class CreateDomainCommand extends CLICommand {
         if (template != null) {
             msg = strings.get("UsingTemplate", template);
         }
-        logger.printMessage(msg);
+        logger.info(msg);
     }
 
     /**
@@ -643,18 +644,16 @@ public final class CreateDomainCommand extends CLICommand {
             if (store.exists(login.getHost(), login.getPort())) {
                 // just let the user know that the user has chosen to overwrite
                 // the login information. This is non-interactive, on purpose
-                logger.printMessage(strings.get("OverwriteLoginMsgCreateDomain",
+                logger.info(strings.get("OverwriteLoginMsgCreateDomain",
                                         login.getHost(), "" + login.getPort()));
             }
             store.store(login, true);
-            logger.printMessage(strings.get("LoginInfoStoredCreateDomain",
+            logger.info(strings.get("LoginInfoStoredCreateDomain",
                                     user, dn, store.getName()));
         } catch (final Exception e) {
-            logger.printWarning(
+            logger.warning(
                 strings.get("LoginInfoNotStoredCreateDomain", user, dn));
-            if (logger.isDebug()) {
-                logger.printExceptionStackTrace(e);
-            }
+            printExceptionStackTrace(e);
         }
     }
 
@@ -701,25 +700,25 @@ public final class CreateDomainCommand extends CLICommand {
             int newport = NetUtils.getFreePort();
             if (portNotSpecified) {
                 if (defaultPortUsed) {
-                    logger.printDetailMessage(strings.get("DefaultPortInUse",
+                    logger.fine(strings.get("DefaultPortInUse",
                             name, defaultPort, Integer.toString(newport)));
                 } else {
-                    logger.printDetailMessage(strings.get("PortNotSpecified",
+                    logger.fine(strings.get("PortNotSpecified",
                             name, Integer.toString(newport)));
                 }
             } else if (invalidPortSpecified) {
-                logger.printDetailMessage(strings.get("InvalidPortRangeMsg",
+                logger.fine(strings.get("InvalidPortRangeMsg",
                         name, Integer.toString(newport)));
             } else {
-                logger.printDetailMessage(strings.get("PortInUse",
+                logger.fine(strings.get("PortInUse",
                     name, Integer.toString(port), Integer.toString(newport)));
             }
             port = newport;
         } else if (defaultPortUsed) {
-            logger.printDetailMessage(strings.get("UsingDefaultPort",
+            logger.fine(strings.get("UsingDefaultPort",
                     name, Integer.toString(port)));
         } else {
-            logger.printDetailMessage( strings.get("UsingPort",
+            logger.fine( strings.get("UsingPort",
                     name, Integer.toString(port)));
         }
 
@@ -764,7 +763,7 @@ public final class CreateDomainCommand extends CLICommand {
         for (Integer port : ports) {
             final int p = port.intValue();
             if (p < 1024) {
-                logger.printWarning(strings.get("PortPrivilege"));
+                logger.warning(strings.get("PortPrivilege"));
                 // display this message only once.
                 // so break once this message is displayed.
                 break;
@@ -852,11 +851,11 @@ public final class CreateDomainCommand extends CLICommand {
         Collection<DomainInitializer> inits =
                 habitat.getAllByContract(DomainInitializer.class);
         if (inits.isEmpty()) {
-            logger.printMessage(strings.get("NoCustomization"));
+            logger.info(strings.get("NoCustomization"));
         }
         for (DomainInitializer inhabitant : habitat.getAllByContract(
             DomainInitializer.class)) {
-            logger.printMessage(strings.get("InvokeInitializer",
+            logger.info(strings.get("InvokeInitializer",
                                                 inhabitant.getClass()));
             Container newContainerConfig = inhabitant.getInitialConfig(ctx);
             config.getContainers().add(newContainerConfig);

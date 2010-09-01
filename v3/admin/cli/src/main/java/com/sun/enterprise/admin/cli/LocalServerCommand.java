@@ -155,7 +155,7 @@ public abstract class LocalServerCommand extends CLICommand {
             return pw.getPasswordForAlias("master-password");
         }
         catch (Exception e) {
-            logger.printDebugMessage("master password file reading error: "
+            logger.finer("master password file reading error: "
                     + e.getMessage());
             return null;
         }
@@ -171,7 +171,7 @@ public abstract class LocalServerCommand extends CLICommand {
             return true;
         }
         catch (Exception e) {
-            logger.printDebugMessage(e.getMessage());
+            logger.finer(e.getMessage());
             return false;
         }
         finally {
@@ -209,7 +209,7 @@ public abstract class LocalServerCommand extends CLICommand {
                 mpv = retry(RETRIES);
         }
         long t1 = System.currentTimeMillis();
-        logger.printDebugMessage("Time spent in master password extraction: "
+        logger.finer("Time spent in master password extraction: "
                 + (t1 - t0) + " msec");       //TODO
         return mpv;
     }
@@ -224,7 +224,7 @@ public abstract class LocalServerCommand extends CLICommand {
             throw new NullPointerException();
 
         ourDir = getUniquePath(ourDir);
-        logger.printDebugMessage("Check if server is at location " + ourDir);
+        logger.finer("Check if server is at location " + ourDir);
 
         try {
             RemoteCommand cmd =
@@ -232,7 +232,7 @@ public abstract class LocalServerCommand extends CLICommand {
             Map<String, String> attrs =
                     cmd.executeAndReturnAttributes(new String[]{"__locations"});
             String theirDirPath = attrs.get(directoryKey);
-            logger.printDebugMessage("Remote server has root directory " + theirDirPath);
+            logger.finer("Remote server has root directory " + theirDirPath);
 
             if (ok(theirDirPath)) {
                 File theirDir = getUniquePath(new File(theirDirPath));
@@ -266,7 +266,7 @@ public abstract class LocalServerCommand extends CLICommand {
             return true;
         }
         catch (Exception ex) {
-            logger.printDebugMessage("\nisRunning got exception: " + ex);
+            logger.finer("\nisRunning got exception: " + ex);
             return false;
         }
         finally {
@@ -331,7 +331,7 @@ public abstract class LocalServerCommand extends CLICommand {
             // Careful -- there is a slice of time where the file does not exist!
             try {
                 long newTimeStamp = pwFile.lastModified(); // could be 0L
-                logger.printDebugMessage("Checking timestamp of local-password.  "
+                logger.finer("Checking timestamp of local-password.  "
                         + "old: " + oldTimeStamp + ", new: " + newTimeStamp);
 
                 if (newTimeStamp > oldTimeStamp) {
@@ -363,7 +363,7 @@ public abstract class LocalServerCommand extends CLICommand {
             try {
                 Thread.sleep(CLIConstants.RESTART_CHECK_INTERVAL_MSEC);
                 long up = getUptime();
-                logger.printDebugMessage("oldserver-uptime, newserver-uptime = " + uptimeOldServer + " --- " + up);
+                logger.finer("oldserver-uptime, newserver-uptime = " + uptimeOldServer + " --- " + up);
 
                 if (up > 0 && up < uptimeOldServer) {
                     return;
@@ -389,7 +389,7 @@ public abstract class LocalServerCommand extends CLICommand {
             throw new CommandException(strings.get("restart.dasNotRunning"));
         }
 
-        logger.printDebugMessage("server uptime: " + up_ms);
+        logger.finer("server uptime: " + up_ms);
         return up_ms;
     }
 
@@ -450,7 +450,7 @@ public abstract class LocalServerCommand extends CLICommand {
             if (verifyMasterPassword(mpv))
                 return mpv;
             if (i < (times - 1))
-                logger.printMessage(strings.get("retry.mp"));
+                logger.info(strings.get("retry.mp"));
             // make them pay for typos?
             //Thread.currentThread().sleep((i+1)*10000);
         }

@@ -185,8 +185,8 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             throw new CommandException(e);
         }
 
-        logger.printDebugMessage("nodeDirChild: " + nodeDirChild);
-        logger.printDebugMessage("instanceDir: " + instanceDir);
+        logger.finer("nodeDirChild: " + nodeDirChild);
+        logger.finer("instanceDir: " + instanceDir);
     }
 
     protected final InstanceDirs getInstanceDirs() {
@@ -301,7 +301,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
     private int updateDasPort(Properties dasprops, int port, File propfile) {
         Console cons;
         if (port == 8686) {     // the old JRMP port
-            logger.printMessage(
+            logger.info(
                 Strings.get("Instance.oldDasProperties",
                     propfile.toString(), Integer.toString(port),
                     Integer.toString(programOpts.getPort())));
@@ -322,7 +322,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
                     Integer.toString(programOpts.getPort()));
             }
         } else {
-            logger.printMessage(
+            logger.info(
                 Strings.get("Instance.oldDasPropertiesWrong",
                     propfile.toString(), Integer.toString(port),
                     Integer.toString(programOpts.getPort())));
@@ -338,7 +338,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             bos.close();
             bos = null;
         } catch (IOException ex2) {
-            logger.printMessage(
+            logger.info(
                 Strings.get("Instance.dasPropertiesUpdateFailed"));
         } finally {
             if (bos != null) {
@@ -350,7 +350,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             }
         }
         // whether we were able to update the file or not, keep going
-        logger.printDebugMessage("New DAS port number: " + port);
+        logger.finer("New DAS port number: " + port);
         return port;
     }
 

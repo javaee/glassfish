@@ -42,6 +42,7 @@ package com.sun.enterprise.admin.cli.optional;
 
 import java.io.Console;
 import java.util.*;
+import java.util.logging.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.admin.*;
@@ -181,18 +182,16 @@ public class LoginCommand extends CLICommand {
             if (store.exists(login.getHost(), login.getPort())) {
                 // Let the user know that the user has chosen to overwrite the 
                 // login information. This is non-interactive, on purpose
-                logger.printMessage(strings.get("OverwriteLoginMsgCreateDomain",
+                logger.info(strings.get("OverwriteLoginMsgCreateDomain",
                                         login.getHost(), "" + login.getPort()));
             }
             store.store(login, true);
-            logger.printMessage(strings.get("LoginInfoStored", 
+            logger.info(strings.get("LoginInfoStored", 
                 user, login.getHost(), sport, store.getName()));
         } catch (final Exception e) {
-            logger.printWarning(
+            logger.warning(
                 strings.get("LoginInfoNotStored", host, sport));
-            if (logger.isDebug()) {
-                logger.printExceptionStackTrace(e);
-            }
+            printExceptionStackTrace(e);
         }
     }
 }

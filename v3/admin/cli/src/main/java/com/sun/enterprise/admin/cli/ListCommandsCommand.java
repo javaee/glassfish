@@ -122,10 +122,10 @@ public class ListCommandsCommand extends CLICommand {
             printLocalCommands();
         }
         if (!localOnly && !remoteOnly)
-            logger.printMessage("");            // a blank line between them
+            logger.info("");            // a blank line between them
         if (!localOnly)
             printRemoteCommands();
-        logger.printMessage("");
+        logger.info("");
         return 0;
     }
 
@@ -245,25 +245,25 @@ public class ListCommandsCommand extends CLICommand {
 
     void printLocalCommands() {
         if (localCommands.length == 0) {
-            logger.printMessage(
+            logger.info(
                             strings.get("listCommands.localCommandNoMatch"));
             return;
         }
-        logger.printMessage(strings.get("listCommands.localCommandHeader"));
+        logger.info(strings.get("listCommands.localCommandHeader"));
 
         for (String s : localCommands) {
-            logger.printMessage(s);
+            logger.info(s);
         }
     }
 
     void printRemoteCommands() {
         if (remoteCommands.length == 0) {
-            logger.printMessage(
+            logger.info(
                             strings.get("listCommands.remoteCommandNoMatch"));
             return;
         }
 
-        logger.printMessage(strings.get("listCommands.remoteCommandHeader"));
+        logger.info(strings.get("listCommands.remoteCommandHeader"));
         
         // there are a LOT of remote commands -- make 2 columns
         int num = remoteCommands.length;
@@ -279,7 +279,7 @@ public class ListCommandsCommand extends CLICommand {
             if (i < offset - 1)
                 sb.append(EOL);
         }
-        logger.printMessage(sb.toString());
+        logger.info(sb.toString());
     }
  
     private String justify(String s, int width) {

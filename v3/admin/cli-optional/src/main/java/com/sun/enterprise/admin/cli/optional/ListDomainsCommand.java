@@ -87,10 +87,10 @@ public final class ListDomainsCommand extends LocalDomainCommand {
             if (domainsList.length > 0) {
                 for (String dn : domainsList) {
                     String status = getStatus(dn);
-                    logger.printMessage(strings.get("list.domains.Output", dn, status));
+                    logger.info(strings.get("list.domains.Output", dn, status));
                 }
             } else {
-                logger.printDetailMessage(strings.get("NoDomainsToList"));
+                logger.fine(strings.get("NoDomainsToList"));
             }
         } catch (Exception ex) {
             throw new CommandException(ex.getLocalizedMessage());

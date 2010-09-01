@@ -42,6 +42,7 @@ package com.sun.enterprise.admin.cli;
 
 import java.io.File;
 import java.util.*;
+import java.util.logging.Logger;
 
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
@@ -83,7 +84,8 @@ public class ProgramOptions {
     public static final String SECURE           = "secure";
     public static final String HELP             = "help";
 
-    private static final CLILogger logger = CLILogger.getInstance();
+    private static final Logger logger =
+        Logger.getLogger(ProgramOptions.class.getPackage().getName());
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ProgramOptions.class);
@@ -299,7 +301,7 @@ public class ProgramOptions {
      * @param user the user to set
      */
     public void setUser(String user) {
-        logger.printDebugMessage("Setting user to: " + user);
+        logger.finer("Setting user to: " + user);
         options.set(USER, user);
     }
 
@@ -321,7 +323,7 @@ public class ProgramOptions {
      * @param password the password to set
      */
     public void setPassword(String password, PasswordLocation location) {
-        logger.printDebugMessage("Setting password to: " +
+        logger.finer("Setting password to: " +
                                     (ok(password) ? "<non-null>" : "<null>"));
         this.password = password;
         this.location = location;
