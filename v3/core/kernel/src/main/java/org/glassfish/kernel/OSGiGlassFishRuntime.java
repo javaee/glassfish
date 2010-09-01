@@ -40,8 +40,8 @@
 
 package org.glassfish.kernel;
 
-import org.glassfish.experimentalgfapi.GlassFish;
-import org.glassfish.experimentalgfapi.GlassFishRuntime;
+import org.glassfish.simpleglassfishapi.GlassFish;
+import org.glassfish.simpleglassfishapi.GlassFishRuntime;
 
 import java.util.Properties;
 

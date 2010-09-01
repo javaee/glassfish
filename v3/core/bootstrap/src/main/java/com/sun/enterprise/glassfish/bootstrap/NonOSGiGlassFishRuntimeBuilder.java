@@ -43,8 +43,8 @@ package com.sun.enterprise.glassfish.bootstrap;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
-import org.glassfish.experimentalgfapi.Constants;
-import org.glassfish.experimentalgfapi.GlassFishRuntime;
+import org.glassfish.simpleglassfishapi.Constants;
+import org.glassfish.simpleglassfishapi.GlassFishRuntime;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -86,7 +86,7 @@ public class NonOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.RuntimeB
     }
 
     public boolean handles(Properties properties) {
-        org.glassfish.experimentalgfapi.Constants.Platform platform =
+        org.glassfish.simpleglassfishapi.Constants.Platform platform =
                 Constants.Platform.valueOf(properties.getProperty(
                         Constants.PLATFORM_PROPERTY_KEY, Constants.Platform.Felix.name()));
         switch (platform) {

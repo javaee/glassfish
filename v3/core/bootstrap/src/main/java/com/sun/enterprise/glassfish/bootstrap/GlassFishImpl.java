@@ -41,7 +41,7 @@
 package com.sun.enterprise.glassfish.bootstrap;
 
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
-import org.glassfish.experimentalgfapi.GlassFish;
+import org.glassfish.simpleglassfishapi.GlassFish;
 import org.jvnet.hk2.component.Habitat;
 
 /**

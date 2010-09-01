@@ -38,13 +38,48 @@
  * holder.
  */
 
-package org.glassfish.experimentalgfapi;
-
-import java.util.Properties;
+package org.glassfish.simpleglassfishapi;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public interface Configurator {
-    void configure(Properties props);
+public class Constants {
+    public final static String PLATFORM_PROPERTY_KEY = "GlassFish_Platform";
+
+    public final static String INSTANCE_ROOT_PROP_NAME = "com.sun.aas.instanceRoot";
+    public static final String INSTALL_ROOT_PROP_NAME = "com.sun.aas.installRoot";
+    public static final String INSTALL_ROOT_URI_PROP_NAME = "com.sun.aas.installRootURI";
+    public static final String INSTANCE_ROOT_URI_PROP_NAME = "com.sun.aas.instanceRootURI";
+
+    private Constants(){}
+
+    // Supported platform we know about, not limited to.
+    public enum Platform {
+        /**
+         * Felix OSGi platform
+         */
+        Felix,
+
+        /**
+         * Equinox OSGi platform
+         */
+        Equinox,
+
+        /**
+         * Knopflerfish OSGi platform
+         */
+        Knopflerfish,
+
+        /**
+         * Generic OSGi R4.2 or higher platform.
+         * When this is chosen, we expect the framework to be set up in launcher classloader by user.
+         */
+        GenericOSGi,
+
+        /**
+         * Proprietary non-modular hk2 module system
+         */
+        Static
+    }
+
 }

@@ -38,7 +38,7 @@
  * holder.
  */
 
-package org.glassfish.experimentalgfapi;
+package org.glassfish.simpleglassfishapi;
 
 import java.util.Iterator;
 import java.util.Properties;

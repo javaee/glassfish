@@ -45,8 +45,8 @@ import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
-import org.glassfish.experimentalgfapi.GlassFish;
-import org.glassfish.experimentalgfapi.GlassFishRuntime;
+import org.glassfish.simpleglassfishapi.GlassFish;
+import org.glassfish.simpleglassfishapi.GlassFishRuntime;
 import org.jvnet.hk2.component.Habitat;
 
 import java.io.File;

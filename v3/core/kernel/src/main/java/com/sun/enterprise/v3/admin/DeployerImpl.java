@@ -43,7 +43,7 @@ package com.sun.enterprise.v3.admin;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
-import org.glassfish.experimentalgfapi.Deployer;
+import org.glassfish.simpleglassfishapi.Deployer;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;

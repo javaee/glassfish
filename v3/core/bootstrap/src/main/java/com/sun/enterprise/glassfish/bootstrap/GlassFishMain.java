@@ -40,10 +40,10 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
-import org.glassfish.experimentalgfapi.Constants;
-import org.glassfish.experimentalgfapi.Deployer;
-import org.glassfish.experimentalgfapi.GlassFish;
-import org.glassfish.experimentalgfapi.GlassFishRuntime;
+import org.glassfish.simpleglassfishapi.Constants;
+import org.glassfish.simpleglassfishapi.Deployer;
+import org.glassfish.simpleglassfishapi.GlassFish;
+import org.glassfish.simpleglassfishapi.GlassFishRuntime;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -38,11 +38,53 @@
  * holder.
  */
 
-package org.glassfish.experimentalgfapi;
+package org.glassfish.simpleglassfishapi;
 
 /**
+ * This is our primary interface to communicate with the server,
+ * It provides necessary life cycle operations as well as it acts as a component registry.
+ *
+ * Concurrency Note:
+ * This interface can be used concurrently.
+ *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public interface CommandRunner {
-    
+public interface GlassFish {
+    /**
+     * Start the server. When this method is called, all the lifecycle (aka startup) services are started.
+     */
+    void start();
+
+    /**
+     * Stop the server. When this method is called, all the lifecycle (aka startup) services are stopped.
+     * After the server is stopped, the server can be started again by calling the start method.
+     */
+    void stop();
+
+    /**
+     * Call this method if you don't need the server object any more. This method will stop the server
+     * if not already stopped. After this method is called, calling any method except {@link #getStatus}
+     * on the server object will cause an IllegalStateException to be thrown. When this method is called,
+     * any resource (like temporary files, threads, etc.) is also released.
+     */
+    void dispose();
+
+    /**
+     * @return Status of GlassFish
+     */
+    Status getStatus();
+
+    /**
+     * Look up a service
+     * @param serviceType type of component required.
+     * @param servicetName name of the component. Pass null if any component will fit the bill.
+     * @param <T>
+     * @return Return a component matching the requirement, null if no component found.
+     */
+    <T> T lookupService(Class<T> serviceType, String servicetName);
+
+    enum Status {
+        // Because server can take time to start or stop, we have STARTING and STOPPING states.
+        INIT, STARTING, STARTED, STOPPING, STOPPED, DISPOSED
+    }
 }

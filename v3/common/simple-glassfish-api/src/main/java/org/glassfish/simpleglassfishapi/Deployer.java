@@ -38,48 +38,38 @@
  * holder.
  */
 
-package org.glassfish.experimentalgfapi;
+package org.glassfish.simpleglassfishapi;
+
+import java.io.File;
+import java.net.URI;
+import java.util.Map;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class Constants {
-    public final static String PLATFORM_PROPERTY_KEY = "GlassFish_Platform";
+public interface Deployer {
+    /**
+     * Deploys a jar file or an exploded directory to the server using the supplied deployment command parameters.
+     *
+     * @param archive jar file or directory of the application
+     * @param params deployment command parameters
+     * @return the deployed application name
+     */
+    String deploy(File archive, Map<String, String> params);
 
-    public final static String INSTANCE_ROOT_PROP_NAME = "com.sun.aas.instanceRoot";
-    public static final String INSTALL_ROOT_PROP_NAME = "com.sun.aas.installRoot";
-    public static final String INSTALL_ROOT_URI_PROP_NAME = "com.sun.aas.installRootURI";
-    public static final String INSTANCE_ROOT_URI_PROP_NAME = "com.sun.aas.instanceRootURI";
+    // TODO(Sahoo): Add more documentation about how to use 
+    /**
+     * Deploys an application identified by a URI. Please note, there is no separate deployment parameters
+     * in this method signature. All the information is encapsulated in the URI as query components.
+     * We prefer this approach as opposed to taking a separate properties argument, because one can then
+     * easily deploy from an interactive shell by encoding everything as one URI string.
+     * GlassFish does not care about what URI scheme is used as long as there is a URL handler installed
+     * in the server runtime to handle the URI scheme and a JarInputStream can be obtained from the URI.
+     *  
+     * @param archive
+     * @return
+     */
+    String deploy(URI archive);
 
-    private Constants(){}
-
-    // Supported platform we know about, not limited to.
-    public enum Platform {
-        /**
-         * Felix OSGi platform
-         */
-        Felix,
-
-        /**
-         * Equinox OSGi platform
-         */
-        Equinox,
-
-        /**
-         * Knopflerfish OSGi platform
-         */
-        Knopflerfish,
-
-        /**
-         * Generic OSGi R4.2 or higher platform.
-         * When this is chosen, we expect the framework to be set up in launcher classloader by user.
-         */
-        GenericOSGi,
-
-        /**
-         * Proprietary non-modular hk2 module system
-         */
-        Static
-    }
-
+    void undeploy(String appName, Map<String, String> params);
 }

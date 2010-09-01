@@ -45,11 +45,10 @@ import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
-import org.glassfish.experimentalgfapi.GlassFish;
-import org.glassfish.experimentalgfapi.GlassFishRuntime;
+import org.glassfish.simpleglassfishapi.GlassFish;
+import org.glassfish.simpleglassfishapi.GlassFishRuntime;
 import org.jvnet.hk2.component.Habitat;
 import org.osgi.framework.*;
-import org.osgi.framework.Constants;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.util.tracker.ServiceTracker;
 
