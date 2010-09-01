@@ -90,7 +90,7 @@ public class ClusterSetupTest extends AdminBaseDevTest {
         // start the instances
         report(tn + "start-local-instance1", asadmin("start-local-instance", i1name));
         report(tn + "start-local-instance2", asadmin("start-local-instance", i2name));
-        System.out.println("Watiing for 5 sec...");
+        System.out.println("Waiting for 5 sec...");
 	Thread.currentThread().sleep(5000);
         // check that the instances are there
         report(tn + "list-instances", asadmin("list-instances"));
