@@ -88,6 +88,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.*;
 import java.net.URL;
+import java.net.URI;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -731,18 +732,21 @@ public class DefaultServlet
             // WEB-INF/lib/[*.jar]/META-INF/resources
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             String metaInfResPath = Globals.META_INF_RESOURCES + path;
-            final URL resourceUrl = cl.getResource(metaInfResPath);
-            if (resourceUrl != null) {
-                if (cl instanceof WebappClassLoader) {
+            if (cl instanceof WebappClassLoader) {
+                WebappClassLoader wcl = (WebappClassLoader)cl;
+                final URL resourceUrl = wcl.getResourceFromJars(metaInfResPath);
+                if (resourceUrl != null) {
                     // XXX Remove dependency on WebappClassLoader
                     ConcurrentHashMap<String, ResourceEntry> resourceEntries =
-                        ((WebappClassLoader)cl).getResourceEntries();
+                        wcl.getResourceEntries();
                     ResourceEntry resourceEntry = resourceEntries.get(metaInfResPath);
                     if (resourceEntry != null) {
                         // create a CacheEntry to continue the processing
                         cacheEntry = new CacheEntry();
                         try {
-                            if ((new File(resourceUrl.toURI())).isDirectory()) {
+                            URI resourceUri = resourceUrl.toURI();
+                            if ("file".equals(resourceUri.getScheme()) &&
+                                    (new File(resourceUri)).isDirectory()) {
                                 if (!path.endsWith("/")) {
                                     response.sendRedirect(
                                         response.encodeRedirectUrl(

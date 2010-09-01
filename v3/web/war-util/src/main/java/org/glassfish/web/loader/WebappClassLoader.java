@@ -1015,6 +1015,10 @@ public class WebappClassLoader
      */
     @Override
     public URL findResource(String name) {
+        return findResource(name, false);
+    }
+
+    private URL findResource(String name, boolean fromJarsOnly) {
 
         if (logger.isLoggable(Level.FINER))
             logger.finer("    findResource(" + name + ")");
@@ -1027,7 +1031,7 @@ public class WebappClassLoader
 
         ResourceEntry entry = resourceEntries.get(name);
         if (entry == null) {
-            entry = findResourceInternal(name, name);
+            entry = findResourceInternal(name, name, fromJarsOnly);
         }
         if (entry != null) {
             url = entry.source;
@@ -1096,6 +1100,15 @@ public class WebappClassLoader
     }
 
     /**
+     * From the resource with the given name.  This is the same as findResouce
+     * except that the resources from the local files are excluded.  This is
+     * primarily used form locating resources in /META-INF/resources/ in jars.
+     */
+    public URL getResourceFromJars(String name) {
+        return getResource(name, true);
+    }
+
+    /**
      * Find the resource with the given name.  A resource is some data
      * (images, audio, text, etc.) that can be accessed by class code in a
      * way that is independent of the location of the code.  The name of a
@@ -1119,7 +1132,10 @@ public class WebappClassLoader
      */
     @Override
     public URL getResource(String name) {
+        return getResource(name, false);
+    }
 
+    private URL getResource(String name, boolean fromJarsOnly) {
         if (logger.isLoggable(Level.FINER))
             logger.finer("getResource(" + name + ")");
         URL url = null;
@@ -1150,7 +1166,7 @@ public class WebappClassLoader
         }
 
         // (2) Search local repositories
-        url = findResource(name);
+        url = findResource(name, fromJarsOnly);
         if (url != null) {
             // Locating the repository for special handling in the case
             // of a JAR
@@ -2047,6 +2063,11 @@ public class WebappClassLoader
      * @return the loaded resource, or null if the resource isn't found
      */
     protected ResourceEntry findResourceInternal(String name, String path) {
+        return findResourceInternal(name, path, false);
+    }
+
+    private ResourceEntry findResourceInternal(String name, String path,
+                                               boolean fromJarsOnly) {
 
         if (!started) {
             String msg = rb.getString("webappClassLoader.notStarted");
@@ -2065,7 +2086,10 @@ public class WebappClassLoader
             return null;
         }
 
-        entry = findResourceInternalFromRepositories(name, path);
+        if (! fromJarsOnly) {
+            entry = findResourceInternalFromRepositories(name, path);
+        }
+
         if (entry == null) {
             synchronized (jarFiles) {
                 entry = findResourceInternalFromJars(name, path);
@@ -2098,7 +2122,6 @@ public class WebappClassLoader
      */
     private ResourceEntry findResourceInternalFromRepositories(String name,
                                                                String path) {
-
         ResourceEntry entry = null;
         int contentLength = -1;
         InputStream binaryStream = null;
