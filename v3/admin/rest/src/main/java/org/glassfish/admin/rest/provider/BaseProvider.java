@@ -116,6 +116,9 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
      *
      */
     protected boolean isDebug() {
+        if (requestHeaders == null) {
+            return true; 
+        }
         List header = requestHeaders.getRequestHeader(HEADER_DEBUG);
         return (header != null) && ("true".equals(header.get(0)));
     }
@@ -124,6 +127,10 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
      * or returns null otherwise.
      */
     protected String getCallBackJSONP() {
+        if (uriInfo == null) {
+            return null;
+        }
+        
         MultivaluedMap<String, String> l = uriInfo.getQueryParameters();
 
         if (l == null) {
