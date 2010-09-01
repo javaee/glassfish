@@ -29,6 +29,8 @@ public class ExceptionRunLevelManagedService implements RunLevelContract, PostCo
         throw e;
       } catch (Exception e) {
         throw new RuntimeException(e);
+      } finally {
+        exceptionCtor = null;
       }
     }
   }
@@ -42,6 +44,8 @@ public class ExceptionRunLevelManagedService implements RunLevelContract, PostCo
         throw e;
       } catch (Exception e) {
         throw new RuntimeException(e);
+      } finally {
+        exceptionCtor = null;
       }
     }
   }

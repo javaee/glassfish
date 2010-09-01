@@ -26,7 +26,9 @@ import org.jvnet.hk2.component.internal.runlevel.Recorder;
 import org.jvnet.hk2.junit.Hk2Runner;
 import org.jvnet.hk2.junit.Hk2RunnerOptions;
 import org.jvnet.hk2.test.runlevel.ExceptionRunLevelManagedService;
+import org.jvnet.hk2.test.runlevel.ExceptionRunLevelManagedService2b;
 import org.jvnet.hk2.test.runlevel.NonRunLevelWithRunLevelDepService;
+import org.jvnet.hk2.test.runlevel.RunLevelContract;
 import org.jvnet.hk2.test.runlevel.RunLevelServiceBase;
 import org.jvnet.hk2.test.runlevel.RunLevelServiceNegOne;
 import org.jvnet.hk2.test.runlevel.ServiceA;
@@ -489,7 +491,6 @@ public class RunLevelServiceTest {
 
     rls = new TestDefaultRunLevelService(h, false, Exception.class, recorders); 
 
-    ExceptionRunLevelManagedService.exceptionCtor = null;
     ExceptionRunLevelManagedService.constructCount = 0;
     
     rls.proceedTo(1);
@@ -525,7 +526,6 @@ public class RunLevelServiceTest {
     recorders = new LinkedHashMap<Integer, Recorder>();
     rls = new TestDefaultRunLevelService(h, false, Exception.class, recorders); 
 
-    ExceptionRunLevelManagedService.exceptionCtor = null;
     ExceptionRunLevelManagedService.constructCount = 0;
 
     rls.proceedTo(5);
@@ -543,7 +543,7 @@ public class RunLevelServiceTest {
     assertEquals(defRLlistener.calls.toString(), 6, defRLlistener.calls.size());
     assertListenerState(true, true, false);
   }
-
+  
   /**
    * Proceeds to level 5, encountering an exception along the way, and the onError
    * nests a call to proceedTo level 1.
@@ -570,6 +570,44 @@ public class RunLevelServiceTest {
 
     assertEquals(1, defRLS.getCurrentRunLevel());
     assertEquals(null, defRLS.getPlannedRunLevel());
+  }
+  
+  /**
+   * Imagine the situation where you are at current run level 0, and you issue a proceedTo(2).
+   * 
+   * RunLevel 1 was successfully reached, but RunLevel 2 experienced an error in one of the
+   * RunLevel annotated services for that run level (leaving it in an indeterminate state).
+   * 
+   * onError() calling proceedTo(1 --- the last good run level) should close down all services
+   * at level 2 and above that were successfully started.
+   */
+  @Test
+  public void exceptionsEncounteredOnUpSideWithChainedShutdownToLastGoodRunLevel() throws Exception {
+    recorders = new LinkedHashMap<Integer, Recorder>();
+    rls = defRLS = new TestDefaultRunLevelService(h, false, Exception.class, recorders); 
+
+    this.defRLlistener = (TestRunLevelListener) listener;
+    defRLlistener.calls.clear();
+    defRLlistener.setErrorProceedTo(1, rls);
+
+    ExceptionRunLevelManagedService2b.exceptionCtor = 
+      RuntimeException.class.getConstructor((Class<?>[])null);
+    ExceptionRunLevelManagedService2b.constructCount = 0;
+    ExceptionRunLevelManagedService2b.destroyCount = 0;
+    
+    rls.proceedTo(2);
+    
+    assertEquals(1, defRLS.getCurrentRunLevel());
+    assertEquals(null, defRLS.getPlannedRunLevel());
+    
+    Collection<Inhabitant<?>> coll = h.getInhabitantsByContract(RunLevelContract.class.getCanonicalName());
+    assertTrue(coll.size() >= 3);
+    for (Inhabitant<?> i : coll) {
+      String typeName = i.typeName();
+      if (typeName.contains("ExceptionRunLevelManagedService2")) {
+        assertFalse("expected to be in released state: " + i, i.isInstantiated());
+      }
+    }
   }
   
   @SuppressWarnings("unchecked")
