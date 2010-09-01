@@ -51,7 +51,6 @@ import org.glassfish.api.admin.CommandValidationException;
 import org.glassfish.api.admin.CommandRunner.CommandInvocation;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
-import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import java.util.logging.Logger;
 
 /**
@@ -113,7 +112,6 @@ public class CreateNodeSshCommand implements AdminCommand  {
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
         StringBuilder msg = new StringBuilder();
-        SSHLauncher sshL=habitat.getComponent(SSHLauncher.class);
 
         logger = context.getLogger();
 
@@ -152,7 +150,7 @@ public class CreateNodeSshCommand implements AdminCommand  {
 
         try {
             NodeUtils nodeUtils = new NodeUtils(habitat, logger);
-            nodeUtils.validate(map, sshL);
+            nodeUtils.validate(map);
         } catch (CommandValidationException e) {
             String m1 = Strings.get("node.ssh.invalid.params");
             if (!force) {

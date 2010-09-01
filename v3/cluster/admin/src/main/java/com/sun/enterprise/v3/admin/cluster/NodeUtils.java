@@ -42,6 +42,9 @@ package com.sun.enterprise.v3.admin.cluster;
 
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.internal.api.RelativePathResolver;
+import com.sun.enterprise.config.serverbeans.Node;
+import com.sun.enterprise.config.serverbeans.SshConnector;
+import com.sun.enterprise.config.serverbeans.SshAuth;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.ExceptionUtil;
 import com.sun.enterprise.util.net.NetUtils;
@@ -51,11 +54,14 @@ import org.glassfish.api.admin.CommandValidationException;
 import com.sun.enterprise.universal.glassfish.TokenResolver;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import java.util.logging.Logger;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.util.Map;
 import java.util.HashMap;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * Utility methods for operating on Nodes
@@ -86,6 +92,8 @@ public class NodeUtils {
     private Logger logger = null;
     private Habitat habitat = null;
 
+    private SSHLauncher sshL = null;
+
     NodeUtils(Habitat habitat, Logger logger) {
         this.logger = logger;
         this.habitat = habitat;
@@ -94,17 +102,75 @@ public class NodeUtils {
         Map<String, String> systemPropsMap =
                 new HashMap<String, String>((Map)(System.getProperties()));
         resolver = new TokenResolver(systemPropsMap);
+        sshL = habitat.getComponent(SSHLauncher.class);
+    }
+
+    static boolean isSSHNode(Node node) {
+        if (node == null)
+            return false;
+       return node.getType().equals("SSH");
+    }
+
+    /**
+     * Get the version string from a glassfish installation on the node.
+     * @param node
+     * @return version string
+     */
+    String getGlassFishVersionOnNode(Node node) throws CommandValidationException {
+        if (node == null)
+            return "";
+
+        sshL.init(node, logger);
+
+        String command = node.getInstallDir() +
+                "/bin/asadmin version --local --terse";
+
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        try {
+            int commandStatus = sshL.runCommand(command, outStream);
+            if (commandStatus != 0) {
+                return "unknown version";
+            }
+            return outStream.toString().trim();
+        } catch (Exception e) {
+            throw new CommandValidationException(
+                    Strings.get("failed.to.run", command,
+                                    node.getNodeHost()), e);
+        }
+    }
+
+    void validate(Node node) throws
+            CommandValidationException {
+
+        // Put node values into parameter map and validate
+        ParameterMap map = new ParameterMap();
+        map.add("DEFAULT", node.getName());
+        map.add(NodeUtils.PARAM_INSTALLDIR, node.getInstallDir());
+        map.add(NodeUtils.PARAM_NODEHOST, node.getNodeHost());
+        map.add(NodeUtils.PARAM_NODEDIR, node.getNodeDir());
+
+        SshConnector sshc = node.getSshConnector();
+        if (sshc != null) {
+            map.add(NodeUtils.PARAM_SSHPORT, sshc.getSshPort());
+            SshAuth ssha = sshc.getSshAuth();
+            map.add(NodeUtils.PARAM_SSHUSER, ssha.getUserName());
+            map.add(NodeUtils.PARAM_SSHKEYFILE, ssha.getKeyfile());
+            map.add(NodeUtils.PARAM_SSHPASSWORD, ssha.getPassword());
+            map.add(NodeUtils.PARAM_SSHKEYPASSPHRASE, ssha.getKeyPassphrase());
+            map.add(NodeUtils.PARAM_TYPE,"SSH");
+        }
+
+        validate(map);
+        return;
     }
 
     /**
      * Validate all the parameters used to create an ssh node
      * @param map   Map with all parameters used to create an ssh node.
      *              The map values can contain system property tokens.
-     * @param sshL  SSHLauncher to test SSH connection. If null no SSH
-     *              connection will be tested.
      * @throws CommandValidationException
      */
-    void validate(ParameterMap map, SSHLauncher sshL) throws
+    void validate(ParameterMap map) throws
             CommandValidationException {
 
         String sshkeyfile = map.getOne(PARAM_SSHKEYFILE);
@@ -131,8 +197,27 @@ public class NodeUtils {
         validatePassword(map.getOne(PARAM_SSHPASSWORD));
         validatePassword(map.getOne(PARAM_SSHKEYPASSPHRASE));
 
+        validateHostName(map.getOne(PARAM_NODEHOST));
+
         if (sshL != null) {
-            validateSSHConnection(map, sshL);
+            validateSSHConnection(map);
+        }
+    }
+
+    private void validateHostName(String hostName)
+            throws CommandValidationException {
+
+        if (! StringUtils.ok(hostName)) {
+            throw new CommandValidationException(
+                    Strings.get("unknown.host", hostName));
+        }
+        try {
+            // Check if hostName is valid by looking up it's address
+            InetAddress addr = InetAddress.getByName(hostName);
+        } catch (UnknownHostException e) {
+            throw new CommandValidationException(
+                    Strings.get("unknown.host", hostName),
+                    e);
         }
     }
 
@@ -160,10 +245,41 @@ public class NodeUtils {
         }
     }
 
-    private void validateSSHConnection(ParameterMap map, SSHLauncher sshL) throws
+    /**
+     * Make sure we can make an SSH connection using an existing node.
+     *
+     * @param node  Node to connect to
+     * @throws CommandValidationException
+     */
+    void pingSSHConnection(Node node) throws
+            CommandValidationException {
+
+        validateHostName(node.getNodeHost());
+
+        try {
+            sshL.init(node, logger);
+            sshL.pingConnection();
+        } catch (Exception e) {
+            String m1 = e.getMessage();
+            String m2 = "";
+            Throwable e2 = e.getCause();
+            if (e2 != null) {
+                m2 = e2.getMessage();
+            }
+            String msg = Strings.get("ssh.bad.connect", node.getNodeHost());
+            logger.warning(StringUtils.cat(": ", msg, m1, m2,
+                                            sshL.toString()));
+            throw new CommandValidationException(StringUtils.cat(NL,
+                                           msg, m1, m2));
+        }
+    }
+
+
+    private void validateSSHConnection(ParameterMap map) throws
             CommandValidationException {
 
 
+        final String LANDMARK_FILE = "/modules/admin-cli.jar";
         String nodehost = map.getOne(PARAM_NODEHOST);
         String installdir = map.getOne(PARAM_INSTALLDIR);
         String nodedir = map.getOne(PARAM_NODEDIR);
@@ -184,13 +300,16 @@ public class NodeUtils {
         try {
             // sshpassword and sshkeypassphrase may be password alias.
             // Those aliases are handled by sshLauncher
+            String resolvedInstallDir = resolver.resolve(installdir);
             sshL.validate(resolver.resolve(nodehost),
                           port,
                           resolver.resolve(sshuser),
                           sshpassword,      
                           resolver.resolve(sshkeyfile),
                           sshkeypassphrase, 
-                          resolver.resolve(installdir),
+                          resolvedInstallDir,
+                          // Landmark file to ensure valid GF install
+                          resolvedInstallDir + LANDMARK_FILE,
                           logger);
         } catch (IOException e) {
             String m1 = e.getMessage();

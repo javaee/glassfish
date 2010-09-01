@@ -286,28 +286,64 @@ public class SSHLauncher {
         return status;
     }
 
+    public void pingConnection() throws IOException, InterruptedException
+    {
+        logger.fine("Pinging connection for host: " + this.host);
+        openConnection();
+        SSHUtil.unregister(connection);
+        connection = null;
+    }
+
     public void validate(String host, int port,
                              String userName, String password,
                              String keyFile, String keyPassPhrase,
-                             String nodeHome, Logger logger) throws IOException
+                             String nodeHome, String landmarkPath,
+                             Logger logger) throws IOException
     {
         boolean validNodeHome = false;
         init(userName, host,  port, password, keyFile, keyPassPhrase, logger);
 
         openConnection();
         logger.fine("Connection settings valid");
-        //Validate if nodeHome exists
-        SFTPClient sftpClient = new SFTPClient(connection);
-        validNodeHome = sftpClient.exists(nodeHome);
-        logger.fine("Node home validated");
-        SSHUtil.unregister(connection);
+        String testPath = nodeHome;
+        if (StringUtils.ok(testPath)) {
+            // Validate if nodeHome exists
+            SFTPClient sftpClient = new SFTPClient(connection);
+            if (sftpClient.exists(testPath)) {
+                // Nodehome exists. Now check for landmark if provided
+                if (StringUtils.ok(landmarkPath)) {
+                    File f = new File(landmarkPath);
+                    if (f.isAbsolute()) {
+                        testPath = landmarkPath;
+                    } else {
+                        testPath = nodeHome + "/" + landmarkPath;
+                    }
+                }
+                validNodeHome = sftpClient.exists(testPath);
+            } else {
+                validNodeHome = false;
+            }
+            SSHUtil.unregister(connection);
+            connection = null;
 
-        connection = null;
-
-        if (!validNodeHome) {
-            throw new FileNotFoundException("Could not find " +
-                    nodeHome + " on " + host);
+            if (!validNodeHome) {
+                String msg = "Invalid install directory: could not find " +
+                        testPath + " on " + host;
+                logger.warning(msg);
+                throw new FileNotFoundException(msg);
+            }
+            logger.fine("Node home validated");
         }
+    }
+
+    public void validate(String host, int port,
+                             String userName, String password,
+                             String keyFile, String keyPassPhrase,
+                             String nodeHome, Logger logger) throws IOException
+    {
+        // Validate with no landmark file
+        validate(host, port, userName, password, keyFile, keyPassPhrase,
+                             nodeHome, null, logger);
     }
 
     public SFTPClient getSFTPClient() throws IOException {
