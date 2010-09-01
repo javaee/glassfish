@@ -52,7 +52,6 @@ import org.glassfish.api.deployment.DeploymentContext;
 public class DeployCommandSupplementalInfo {
 
     private DeploymentContext dc = null;
-    private boolean appRefExists = false;
     
     public void setDeploymentContext(final DeploymentContext dc) {
         this.dc = dc;
@@ -60,13 +59,5 @@ public class DeployCommandSupplementalInfo {
 
     public DeploymentContext deploymentContext() {
         return dc;
-    }
-
-    public void setAppRefExists(final boolean refExists) {
-        appRefExists = refExists;
-    }
-
-    public boolean isAppRefExists() {
-        return appRefExists;
     }
 }

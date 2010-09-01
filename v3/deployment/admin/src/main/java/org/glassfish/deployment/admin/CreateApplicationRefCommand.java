@@ -40,6 +40,7 @@
 
 package org.glassfish.deployment.admin;
 
+import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.Param;
@@ -79,14 +80,18 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import org.glassfish.api.admin.FailurePolicy;
+import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.deployment.common.ApplicationConfigInfo;
 import org.glassfish.deployment.versioning.VersioningException;
 import org.glassfish.deployment.versioning.VersioningSyntaxException;
 import org.glassfish.deployment.versioning.VersioningUtils;
 import org.glassfish.deployment.versioning.VersioningWildcardException;
 import org.glassfish.deployment.versioning.VersioningService;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Create application ref command
@@ -135,6 +140,10 @@ public class CreateApplicationRefCommand implements AdminCommand {
 
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     protected Server server;
+
+    @Inject
+    private Habitat habitat;
+
 
     /**
      * Entry point from the framework into the command execution
@@ -187,12 +196,8 @@ public class CreateApplicationRefCommand implements AdminCommand {
             }
         }
 
-        final DeployCommandSupplementalInfo suppInfo =
-              new DeployCommandSupplementalInfo();
-        context.getActionReport().
-              setResultType(DeployCommandSupplementalInfo.class, suppInfo);
-
         ActionReport.MessagePart part = report.getTopMessagePart();
+        boolean isVersionExpression = VersioningUtils.isVersionExpression(name);
 
         // for each matched version
         Iterator it = matchedVersions.iterator();
@@ -202,11 +207,9 @@ public class CreateApplicationRefCommand implements AdminCommand {
 
             ApplicationRef applicationRef = domain.getApplicationRefInTarget(appName, target);
             if ( applicationRef != null ) {
-                suppInfo.setAppRefExists(true);
-                
                 // we provides warning messages
                 // if a versioned name has been provided to the command
-                if( VersioningUtils.isVersionExpression(name) ){
+                if( isVersionExpression ){
                     ActionReport.MessagePart childPart = part.addChild();
                     childPart.setMessage(localStrings.getLocalString("appref.already.exists",
                             "Application reference {0} already exists in target {1}.", appName, target));
@@ -294,16 +297,33 @@ public class CreateApplicationRefCommand implements AdminCommand {
                         ActionReport.ExitCode.SUCCESS)) {
                         try {
                             deployment.registerAppInDomainXML(null, deploymentContext, t, true);
-                            suppInfo.setDeploymentContext(deploymentContext);
                         } catch(TransactionFailure e) {
                             logger.warning("failed to create application ref for " + appName);
                         }
                     }
 
+                    // if the target is DAS, we do not need to do anything more
+                    if (!isVersionExpression && DeploymentUtils.isDASTarget(target)) {
+                        return;
+                    }
+
+                    final ParameterMap paramMap =
+                            deployment.prepareInstanceDeployParamMap(deploymentContext);
+                    final List<String> targets =
+                            new ArrayList<String>(Arrays.asList(commandParams.target.split(",")));
+
+                    ClusterOperationUtil.replicateCommand(
+                        "_deploy",
+                        FailurePolicy.Error,
+                        FailurePolicy.Warn,
+                        targets,
+                        context,
+                        paramMap,
+                        habitat);
+
                 } catch(Exception e) {
                     logger.log(Level.SEVERE, "Error during creating application ref ", e);
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    report.setMessage(e.getMessage());
                 } finally {
                     try {
                         archive.close();
