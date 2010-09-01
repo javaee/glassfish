@@ -121,6 +121,13 @@ public class InstanceDeployCommand extends InstanceDeployCommandParameters imple
 
         this.previousContextRoot = preservedcontextroot;
 
+        if (previousVirtualServers != null) {
+            String vs = previousVirtualServers.getProperty(target);
+            if (vs != null) {
+                this.virtualservers = vs;  
+            }
+        }
+
         try {
             if (!path.exists()) {
                 report.setMessage(localStrings.getLocalString("fnf","File not found", path.getAbsolutePath()));

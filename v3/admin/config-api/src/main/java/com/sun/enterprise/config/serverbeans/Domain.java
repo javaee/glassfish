@@ -457,6 +457,9 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
     List<Application> getApplicationsInTarget(String target);
 
     @DuckTyped
+    String getVirtualServersForApplication(String target, String appName);
+
+    @DuckTyped
     ReferenceContainer getReferenceContainerNamed(String name);
 
     @DuckTyped
@@ -837,6 +840,17 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
                 }
             }
             return apps;
+         }
+
+         public static String getVirtualServersForApplication(Domain d, 
+             String target, String appName) {
+             ApplicationRef appRef = d.getApplicationRefInTarget(
+                 appName, target);
+             if (appRef != null) {
+                return appRef.getVirtualServers();
+             } else {
+                return null;
+             }
          }
 
          public static ReferenceContainer getReferenceContainerNamed(Domain d, String name) {

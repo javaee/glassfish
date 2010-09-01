@@ -44,6 +44,7 @@ import java.io.File;
 import java.util.Properties;
 import org.glassfish.api.Param;
 import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.deployment.common.DeploymentProperties;
 
 /**
  * Parameters for the remote instance deploy command, beyond the ones already
@@ -61,6 +62,9 @@ public class InstanceDeployCommandParameters extends DeployCommandParameters {
 
     @Param(name=ParameterNames.PRESERVED_CONTEXTROOT, optional=true)
     public String preservedcontextroot = null;
+
+    @Param(name=DeploymentProperties.PREVIOUS_VIRTUAL_SERVERS, separator=':', optional=true)
+    public Properties previousVirtualServers = null;
 
     public static class ParameterNames {
         public static final String GENERATED_CONTENT = "generatedcontent";

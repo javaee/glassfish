@@ -143,6 +143,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
     private File originalPathValue;
     private boolean isRedeploy = false;
     private List<String> previousTargets = new ArrayList<String>();
+    private Properties previousVirtualServers = new Properties();
 
     public DeployCommand() {
         origin = Origin.deploy;
@@ -335,7 +336,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
             savedAppConfig.store(appProps);
 
-            deploymentContext.addTransientAppMetaData("previousTargets", previousTargets);
+            deploymentContext.addTransientAppMetaData(DeploymentProperties.PREVIOUS_TARGETS, previousTargets);
+            deploymentContext.addTransientAppMetaData(DeploymentProperties.PREVIOUS_VIRTUAL_SERVERS, previousVirtualServers);
 
             Transaction t = deployment.prepareAppConfigChanges(deploymentContext);
 
@@ -397,11 +399,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                         path.getAbsolutePath()), e);
             }
             if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
-                if (report.hasWarnings()) {
-                    report.setMessage(localStrings.getLocalString("deploy.command.successwithwarning","Application deployed successfully with name {0} and with the following warning(s):", name));
-                } else {
-                    report.setMessage(localStrings.getLocalString("deploy.command.success","Application deployed successfully with name {0}", name));
-                }
+                report.setMessage(localStrings.getLocalString("deploy.command.success","Application deployed with name {0}", name));
 
                 logger.info(localStrings.getLocalString(
                         "deploy.done", 
@@ -667,10 +665,19 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             if (libraries == null) {
                 libraries = app.getLibraries();
             }
+
+            previousTargets = domain.getAllReferencedTargetsForApplication(name);
             if (virtualservers == null) {
-                virtualservers = ConfigBeansUtilities.getVirtualServers(
-                    target, name);
+                if (DeploymentUtils.isDomainTarget(target)) {
+                    for (String tgt : previousTargets) {
+                        previousVirtualServers.put(tgt, domain.getVirtualServersForApplication(tgt, name));
+                    }
+                } else {
+                    virtualservers = domain.getVirtualServersForApplication(
+                        target, name);
+                }
             }
+
             String compatProp = app.getDeployProperties().getProperty(
                 DeploymentProperties.COMPATIBILITY);
             if (compatProp != null) {
@@ -683,8 +690,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                     properties.setProperty(DeploymentProperties.COMPATIBILITY, compatProp);
                 }
             }
-
-            previousTargets = domain.getAllReferencedTargetsForApplication(name);
+            
         }
     }
 

@@ -929,17 +929,30 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 }
 
                 List<String> targets = new ArrayList<String>();
-                if (!deployParams.target.equals("domain")) {
+                if (!DeploymentUtils.isDomainTarget(deployParams.target)) {
                     targets.add(deployParams.target);    
                 } else {
-                    List<String> previousTargets = context.getTransientAppMetaData("previousTargets", List.class);
-                    if (previousTargets == null) {
+                    List<String> previousTargets = context.getTransientAppMetaData(DeploymentProperties.PREVIOUS_TARGETS, List.class);
+		    if (previousTargets == null) {
                         previousTargets = domain.getAllReferencedTargetsForApplication(deployParams.name);
                     }
                     targets = previousTargets;
                 }
 
+                String origVS = deployParams.virtualservers;
+		Properties previousVirtualServers = context.getTransientAppMetaData(DeploymentProperties.PREVIOUS_VIRTUAL_SERVERS, Properties.class);
                 for (String target : targets) {
+                    // first reset the virtualservers
+                    deployParams.virtualservers = origVS;
+                    // now if the target is domain target, 
+                    // restore the previous virtualservers if 
+                    // applicable
+                    if (DeploymentUtils.isDomainTarget(deployParams.target)) {
+                        String vs = previousVirtualServers.getProperty(target);
+                        if (vs != null) {
+                            deployParams.virtualservers = vs;
+                        }
+                    }
                     Server servr = domain.getServerNamed(target); 
                     if (servr != null) {
                         // adding the application-ref element to the standalone
@@ -1427,7 +1440,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
      * of __asadmin)
      */
     private String getVirtualServers(String target) {
-        if (env.isDas() && target.equals("domain")) {
+        if (env.isDas() && DeploymentUtils.isDomainTarget(target)) {
             target = "server";
         }
         StringBuilder sb = new StringBuilder();
@@ -1521,9 +1534,9 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
         throws Exception {
         final DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
         final Collection<String> excludedParams = new ArrayList<String>();
-        excludedParams.add("path");
-        excludedParams.add("deploymentplan");
-        excludedParams.add("upload"); // We'll force it to true ourselves.
+        excludedParams.add(DeploymentProperties.PATH);
+        excludedParams.add(DeploymentProperties.DEPLOYMENT_PLAN);
+        excludedParams.add(DeploymentProperties.UPLOAD); // We'll force it to true ourselves.
 
         final ParameterMap paramMap;
         final ParameterMapExtractor extractor = new ParameterMapExtractor(params);
@@ -1551,19 +1564,24 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
         // but not directories.  Note that we prepare a zip file containing
         // the generated directories and pass that as a single parameter so it
         // will be uploaded even though a deployment directory is not.
-        paramMap.set("upload", "true");
+        paramMap.set(DeploymentProperties.UPLOAD, "true");
 
         // pass the params we restored from the previous deployment in case of
         // redeployment
         if (params.previousContextRoot != null) {
-            paramMap.set("preservedcontextroot", params.previousContextRoot);
+            paramMap.set(DeploymentProperties.PRESERVED_CONTEXT_ROOT, params.previousContextRoot);
         }
 
         // pass the app props so we have the information to persist in the
         // domain.xml
         Properties appProps = dc.getAppProps();
-        appProps.remove("appConfig");
-        paramMap.set("appprops", extractor.propertiesValue(appProps, ':'));
+        appProps.remove(DeploymentProperties.APP_CONFIG);
+        paramMap.set(DeploymentProperties.APP_PROPS, extractor.propertiesValue(appProps, ':'));
+
+        Properties previousVirtualServers = dc.getTransientAppMetaData(DeploymentProperties.PREVIOUS_VIRTUAL_SERVERS, Properties.class);
+        if (previousVirtualServers != null) {
+            paramMap.set(DeploymentProperties.PREVIOUS_VIRTUAL_SERVERS, extractor.propertiesValue(previousVirtualServers, ':'));
+        }
 
         return paramMap;
     }
@@ -1827,7 +1845,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
         final Properties appProps = context.getAppProps();
         if (commandParams.enabled) {
             // if the current instance match with the target
-            if (domain.isCurrentInstanceMatchingTarget(commandParams.target, commandParams.name(), server.getName(), context.getTransientAppMetaData("previousTargets", List.class))) {
+            if (domain.isCurrentInstanceMatchingTarget(commandParams.target, commandParams.name(), server.getName(), context.getTransientAppMetaData(DeploymentProperties.PREVIOUS_TARGETS, List.class))) {
                 return true;
             }
             if (server.isDas()) {

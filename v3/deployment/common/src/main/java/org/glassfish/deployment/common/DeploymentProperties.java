@@ -533,6 +533,12 @@ public class DeploymentProperties extends Properties {
     public static final String SYSTEM_ADMIN = "system-admin";
     public static final String SYSTEM_ALL = "system-all";
     
+    public static final String PREVIOUS_TARGETS = "previousTargets";
+    public static final String PREVIOUS_VIRTUAL_SERVERS = 
+        "previousVirtualServers";
+    public static final String PRESERVED_CONTEXT_ROOT = "preservedcontextroot";
+    public static final String APP_PROPS = "appprops";
+
     // internal use - from .reload support
     public static final String KEEP_REPOSITORY_DIRECTORY = "keepreposdir";
     // internal user - for redeploy support
