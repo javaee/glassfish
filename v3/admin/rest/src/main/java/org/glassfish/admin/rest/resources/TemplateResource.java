@@ -316,9 +316,7 @@ public class TemplateResource {
         this.parent = parent;
         this.tagName = tagName;
         entity = parent.nodeElement(tagName);
-        if (entity == null) {
-            //create it on the fly
-            // jerome will change the domain.xml writer to not emit empty tags
+        if (entity == null) {           
             try {
                 Class<? extends ConfigBeanProxy> proxy = TemplateListOfResource.getElementTypeByName(parent, tagName);
                 ConfigBean theParent = (ConfigBean) parent;
@@ -500,7 +498,7 @@ public class TemplateResource {
     protected String getDeleteCommand() {
         if (entity==null)
             return null;
-        return ResourceUtil.getCommand(RestRedirect.OpType.DELETE, getEntity());
+        return ResourceUtil.getCommand(RestRedirect.OpType.DELETE, getEntity().model);
     }
 
     private ActionReport runCommand(String commandName, HashMap<String, String> data) {
