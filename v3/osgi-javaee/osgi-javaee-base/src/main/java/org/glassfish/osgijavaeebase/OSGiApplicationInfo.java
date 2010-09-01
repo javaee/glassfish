@@ -42,6 +42,7 @@ package org.glassfish.osgijavaeebase;
 
 import org.glassfish.internal.data.ApplicationInfo;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.ServiceReference;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -51,6 +52,7 @@ public class OSGiApplicationInfo
     private ApplicationInfo appInfo;
     private boolean isDirectoryDeployment;
     private Bundle bundle;
+    private ServiceReference osgiDeployerRef;
 
     public OSGiApplicationInfo(ApplicationInfo appInfo, boolean directoryDeployment, Bundle bundle) {
         this.appInfo = appInfo;
@@ -80,5 +82,13 @@ public class OSGiApplicationInfo
 
     public void setBundle(Bundle bundle) {
         this.bundle = bundle;
+    }
+
+    public ServiceReference getDeployer() {
+        return osgiDeployerRef;
+    }
+
+    public void setDeployer(ServiceReference osgiDeployerRef) {
+        this.osgiDeployerRef = osgiDeployerRef;
     }
 }

@@ -42,6 +42,8 @@ package org.glassfish.osgiweb;
 
 import com.sun.enterprise.web.WebModuleDecorator;
 import com.sun.enterprise.web.WebModule;
+import org.glassfish.osgijavaeebase.OSGiContainer;
+import org.glassfish.osgijavaeebase.OSGiDeploymentRequest;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Bundle;
 import org.glassfish.osgijavaeebase.OSGiBundleArchive;
@@ -66,17 +68,12 @@ import java.util.ArrayList;
  */
 public class OSGiWebModuleDecorator implements WebModuleDecorator
 {
-    private volatile OSGiWebContainer wc;
-
-    public OSGiWebModuleDecorator(OSGiWebContainer wc)
-    {
-        this.wc = wc;
-    }
+    private boolean active = true;
 
     public void decorate(WebModule module)
     {
-        if (wc != null) {
-            BundleContext bctx = wc.getCurrentBundleContext();
+        if (isActive()) {
+            BundleContext bctx = OSGiWebDeploymentRequest.getCurrentBundleContext();
             if (bctx != null) {
                 final ServletContext sc = module.getServletContext();
                 sc.setAttribute(Constants.BUNDLE_CONTEXT_ATTR, bctx);
@@ -89,9 +86,13 @@ public class OSGiWebModuleDecorator implements WebModuleDecorator
         }
     }
 
-    /* package */ void setWc(OSGiWebContainer wc)
+    private synchronized boolean isActive() {
+        return active;
+    }
+
+    /* package */ synchronized void deActivate()
     {
-        this.wc = wc;
+        this.active = false;
     }
 
     /**

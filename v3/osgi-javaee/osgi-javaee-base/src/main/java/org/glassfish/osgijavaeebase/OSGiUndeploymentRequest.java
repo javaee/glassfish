@@ -84,8 +84,13 @@ public abstract class OSGiUndeploymentRequest
         this.osgiAppInfo = osgiAppInfo;
     }
 
+    protected void preUndeploy() {}
+
+    protected void postUndeploy() {}
+
     public void execute()
     {
+        preUndeploy();
         // TODO(Sahoo): There may be side effect of creating a deployment context
         // as that leads to creation of class loaders again.
         OSGiDeploymentContext dc;
@@ -114,9 +119,7 @@ public abstract class OSGiUndeploymentRequest
             // because we would have expanded the app during deployment.
             cleanup(dc.getSourceDir());
         }
-        logger.logp(Level.INFO, "OSGiUndeploymentRequest", "undeploy",
-                "Undeployed bundle {0} from {1}", new Object[]{osgiAppInfo.getBundle(),
-                dc.getSource().getURI()});
+        postUndeploy();
     }
 
     protected abstract OSGiDeploymentContext getDeploymentContextImpl(ActionReport reporter, Logger logger, ReadableArchive source, UndeployCommandParameters undeployParams, ServerEnvironmentImpl env, Bundle bundle) throws Exception;

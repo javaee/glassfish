@@ -51,6 +51,7 @@ import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 
 import java.io.File;
 import java.io.IOException;
@@ -77,6 +78,7 @@ public abstract class OSGiDeploymentRequest
     private ServerEnvironmentImpl env;
     private ReadableArchive archive;
     private OSGiDeploymentContext dc;
+    private OSGiApplicationInfo result;
 
     public OSGiDeploymentRequest(Deployment deployer,
                                    ArchiveFactory archiveFactory,
@@ -91,6 +93,10 @@ public abstract class OSGiDeploymentRequest
         this.b = b;
     }
 
+    protected void preDeploy() {}
+
+    protected void postDeploy() {}
+
     /**
      * Deploys a web application bundle in GlassFish Web container.
      * It properly rolls back if something goes wrong.
@@ -98,6 +104,7 @@ public abstract class OSGiDeploymentRequest
      */
     public OSGiApplicationInfo execute()
     {
+        preDeploy();
         // This is where the fun is...
         try
         {
@@ -112,8 +119,12 @@ public abstract class OSGiDeploymentRequest
             return null;
         }
 
-        // Now actual deployment begins
-        return deploy();
+        try {
+            // Now actual deployment begins
+            return (result = deploy());
+        } finally {
+            postDeploy();
+        }
     }
 
     private void prepare() throws Exception
@@ -285,5 +296,9 @@ public abstract class OSGiDeploymentRequest
 
     public ReadableArchive getArchive() {
         return archive;
+    }
+
+    public OSGiApplicationInfo getResult() {
+        return result;
     }
 }

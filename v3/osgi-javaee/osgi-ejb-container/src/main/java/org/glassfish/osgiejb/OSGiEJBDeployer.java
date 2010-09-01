@@ -40,21 +40,15 @@
 
 package org.glassfish.osgiejb;
 
-import org.glassfish.osgijavaeebase.OSGiContainer;
-import org.glassfish.osgijavaeebase.OSGiUndeploymentRequest;
-import org.glassfish.osgijavaeebase.OSGiApplicationInfo;
-import org.glassfish.osgijavaeebase.OSGiDeploymentRequest;
+import org.glassfish.osgijavaeebase.*;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.internal.data.ModuleInfo;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.ActionReport;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
-import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EjbDescriptor;
@@ -67,14 +61,14 @@ import java.util.*;
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiEJBContainer extends OSGiContainer {
+public class OSGiEJBDeployer extends AbstractOSGiDeployer implements OSGiDeployer {
 
     private EJBTracker ejbTracker;
 
     private final InitialContext ic;
 
-    public OSGiEJBContainer(BundleContext ctx) {
-        super(ctx);
+    public OSGiEJBDeployer(BundleContext ctx) {
+        super(ctx, Integer.MIN_VALUE);
         try {
             ic = new InitialContext();
         } catch (NamingException e) {
@@ -84,12 +78,30 @@ public class OSGiEJBContainer extends OSGiContainer {
         ejbTracker.open(true);
     }
 
-    protected OSGiUndeploymentRequest createOSGiUndeploymentRequest(Deployment deployer, ServerEnvironmentImpl env, ActionReport reporter, OSGiApplicationInfo osgiAppInfo) {
+    public OSGiUndeploymentRequest createOSGiUndeploymentRequest(Deployment deployer, ServerEnvironmentImpl env, ActionReport reporter, OSGiApplicationInfo osgiAppInfo) {
         return new OSGiEJBUndeploymentRequest(deployer, env, reporter, osgiAppInfo);
     }
 
-    protected OSGiDeploymentRequest createOSGiDeploymentRequest(Deployment deployer, ArchiveFactory archiveFactory, ServerEnvironmentImpl env, ActionReport reporter, Bundle b) {
+    public OSGiDeploymentRequest createOSGiDeploymentRequest(Deployment deployer, ArchiveFactory archiveFactory, ServerEnvironmentImpl env, ActionReport reporter, Bundle b) {
         return new OSGiEJBDeploymentRequest(deployer, archiveFactory, env, reporter, b);
+    }
+
+    public boolean handles(Bundle bundle) {
+        return isEJBBundle(bundle); 
+    }
+
+    /**
+     * Determines if a bundle represents a EJB application or not.
+     * We determine this by looking at presence of Application-Type manifest header.
+     *
+     * @param b
+     * @return
+     */
+    private boolean isEJBBundle(Bundle b)
+    {
+        final Dictionary headers = b.getHeaders();
+        return headers.get(Constants.EXPORT_EJB) != null &&
+                headers.get(org.osgi.framework.Constants.FRAGMENT_HOST) == null;
     }
 
     class EJBTracker extends ServiceTracker {

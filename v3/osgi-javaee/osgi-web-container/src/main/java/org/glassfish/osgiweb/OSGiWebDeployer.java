@@ -40,37 +40,52 @@
 
 package org.glassfish.osgiweb;
 
-import org.glassfish.osgijavaeebase.OSGiUndeploymentRequest;
-import org.glassfish.osgijavaeebase.OSGiDeploymentContext;
-import org.glassfish.osgijavaeebase.OSGiApplicationInfo;
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.UndeployCommandParameters;
-import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.osgijavaeebase.*;
+import org.glassfish.server.ServerEnvironmentImpl;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 
+import java.util.Dictionary;
 import java.util.logging.Logger;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiWebUndeploymentRequest extends OSGiUndeploymentRequest {
+public class OSGiWebDeployer extends AbstractOSGiDeployer implements OSGiDeployer {
+    private static final Logger logger =
+            Logger.getLogger(OSGiWebDeployer.class.getPackage().getName());
 
-    public OSGiWebUndeploymentRequest(Deployment deployer, ServerEnvironmentImpl env, ActionReport reporter, OSGiApplicationInfo osgiAppInfo) {
-        super(deployer, env, reporter, osgiAppInfo);
+    public OSGiWebDeployer(BundleContext context) {
+        super(context, Integer.MAX_VALUE);
     }
 
-    protected OSGiDeploymentContext getDeploymentContextImpl(ActionReport reporter, Logger logger, ReadableArchive source, UndeployCommandParameters undeployParams, ServerEnvironmentImpl env, Bundle bundle) throws Exception {
-        return new OSGiWebDeploymentContext(reporter, logger, source, undeployParams, env, bundle);
+    public OSGiUndeploymentRequest createOSGiUndeploymentRequest(Deployment deployer, ServerEnvironmentImpl env, ActionReport reporter, OSGiApplicationInfo osgiAppInfo) {
+        return new OSGiWebUndeploymentRequest(deployer, env, reporter, osgiAppInfo);
     }
 
-    @Override
-    protected void postUndeploy() {
-        unregisterService();
+    public OSGiDeploymentRequest createOSGiDeploymentRequest(Deployment deployer, ArchiveFactory archiveFactory, ServerEnvironmentImpl env, ActionReport reporter, Bundle b) {
+        return new OSGiWebDeploymentRequest(deployer, archiveFactory, env, reporter, b);
     }
 
-    private void unregisterService() {
-        //TODO(Sahoo): Not Yet Implemented
+    public boolean handles(Bundle bundle) {
+        return isWebBundle(bundle);
+    }
+
+    /**
+     * Determines if a bundle represents a web application or not.
+     * As per rfc #66, a web container extender recognizes a web application
+     * bundle by looking for the presence of Web-contextPath manifest header
+     *
+     * @param b
+     * @return
+     */
+    private boolean isWebBundle(Bundle b)
+    {
+        final Dictionary headers = b.getHeaders();
+        return headers.get(Constants.WEB_CONTEXT_PATH) != null &&
+                headers.get(org.osgi.framework.Constants.FRAGMENT_HOST) == null;
     }
 }

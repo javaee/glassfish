@@ -40,28 +40,31 @@
 
 package org.glassfish.osgijavaeebase;
 
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import org.glassfish.api.ActionReport;
+import org.glassfish.internal.api.Globals;
+import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.server.ServerEnvironmentImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
-import org.glassfish.internal.deployment.Deployment;
-import org.glassfish.internal.api.Globals;
-import org.glassfish.server.ServerEnvironmentImpl;
-import org.glassfish.api.ActionReport;
+import org.osgi.util.tracker.ServiceTracker;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.logging.Logger;
-import java.util.logging.Level;
 import java.net.URI;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import static org.osgi.framework.Constants.ACTIVATION_LAZY;
+import static org.osgi.framework.Constants.BUNDLE_ACTIVATIONPOLICY;
 
 /**
+ * This class is primarily responsbile for depoyment and undeployment of EE artifacts of an OSGi bundle.
+ *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public abstract class OSGiContainer {
+public class OSGiContainer {
 
     // Context in which this object is operating.
     private BundleContext context;
@@ -69,6 +72,16 @@ public abstract class OSGiContainer {
     protected Map<Bundle, OSGiApplicationInfo> applications =
             new HashMap<Bundle, OSGiApplicationInfo>();
     protected Map<OSGiApplicationInfo, ServiceRegistration> regs = new HashMap<OSGiApplicationInfo, ServiceRegistration>();
+
+    private ServiceTracker deployerTracker;
+
+    /**
+     * Sorted in descending order of service ranking
+     */
+    private List<ServiceReference/*OSGiDeployer*/> sortedDeployerRefs = new ArrayList();
+
+    private boolean shutdown = false;
+
     private static final Logger logger =
             Logger.getLogger(OSGiContainer.class.getPackage().getName());
 
@@ -76,13 +89,40 @@ public abstract class OSGiContainer {
     private ArchiveFactory archiveFactory = Globals.get(ArchiveFactory.class);
     private ServerEnvironmentImpl env = Globals.get(ServerEnvironmentImpl.class);
 
-    protected OSGiContainer(BundleContext ctx) {
+    protected OSGiContainer(final BundleContext ctx) {
         this.context = ctx;
+        deployerTracker = new OSGiDeployerTracker();
     }
 
-    protected BundleContext getBundleContext() {
-        return context;
+    protected void init() {
+        // no need to deployAll, as that will happen when tracker is notified of each deployer.
+        deployerTracker.open();
     }
+
+    protected synchronized void shutdown() {
+        undeployAll();
+        assert(applications.isEmpty() && regs.isEmpty());
+        applications.clear();
+        regs.clear();
+        sortedDeployerRefs.clear();
+        shutdown = true;
+        deployerTracker.close();
+        deployerTracker = null;
+        context = null;
+    }
+
+    public boolean isShutdown() {
+        return shutdown;
+    }
+
+    private synchronized void redeploy(Bundle b) throws Exception {
+        if (isShutdown()) return;
+        if (isDeployed(b)) {
+            undeploy(b);
+        }
+        deploy(b);
+    }
+
     /**
      * Deploys an application bundle in underlying application container in GlassFish.
      * This method is synchronized because we don't know if GlassFish
@@ -91,26 +131,41 @@ public abstract class OSGiContainer {
      * @param b Bundle to be deployed.
      */
     public synchronized void deploy(Bundle b) throws Exception {
-        preDeploy(b);
+        if (isShutdown()) return;
         OSGiApplicationInfo osgiAppInfo = applications.get(b);
         if (osgiAppInfo != null) {
             logger.logp(Level.WARNING, "OSGiContainer", "deploy",
                     "Bundle {0} is already deployed at {1} ", new Object[]{b,
-                    osgiAppInfo.getAppInfo().getSource()});
+                            osgiAppInfo.getAppInfo().getSource()});
             return;
         }
+        ServiceReference/*OSGiDeployer*/ osgiDeployerRef = selectDeployer(b);
+        if (osgiDeployerRef == null) {
+            // No deployer recognises this bundle, so return
+            return;
+        }
+        OSGiDeployer osgiDeployer = (OSGiDeployer) context.getService(osgiDeployerRef);
+        if (osgiDeployer == null) {
+            logger.logp(Level.WARNING, "OSGiContainer", "deploy",
+                    "Bundle {0} can't be deployed because corresponding deployer {1} has vanished!!!", new Object[]{b,
+                            osgiDeployer});
+            return;
+        }
+
         // deploy the java ee artifacts
         ActionReport report = getReport();
-        osgiAppInfo = deployJavaEEArtifacts(b, report);
+        OSGiDeploymentRequest request = osgiDeployer.createOSGiDeploymentRequest(deployer, archiveFactory, env, report, b);
+        osgiAppInfo = request.execute();
+        osgiAppInfo.setDeployer(osgiDeployerRef);
+
         if (osgiAppInfo == null) {
             throw new Exception("Deployment of " + b + " failed because of following reason: " + report.getMessage(),
                     report.getFailureCause());
         }
+        applications.put(b, osgiAppInfo);
         try {
-            applications.put(b, osgiAppInfo);
             ServiceRegistration reg = context.registerService(OSGiApplicationInfo.class.getName(), osgiAppInfo, new Properties());
             regs.put(osgiAppInfo, reg);
-            postDeploy(osgiAppInfo);
             logger.logp(Level.INFO, "OSGiContainer", "deploy",
                     "deployed bundle {0} at {1}",
                     new Object[]{osgiAppInfo.getBundle(), osgiAppInfo.getAppInfo().getSource().getURI()});
@@ -122,27 +177,31 @@ public abstract class OSGiContainer {
     }
 
     /**
-     * Undeploys a web application bundle.
+     * Undeploys a Java EE application bundle.
      * This method is synchronized because we don't know if GlassFish
      * deployment framework can handle concurrent requests or not.
      *
      * @param b Bundle to be undeployed
      */
-    public synchronized void undeploy(Bundle b) throws Exception
-    {
+    public synchronized void undeploy(Bundle b) throws Exception {
+        if (isShutdown()) return;
         OSGiApplicationInfo osgiAppInfo = applications.get(b);
-        if (osgiAppInfo == null)
-        {
+        if (osgiAppInfo == null) {
             throw new RuntimeException("No applications for bundle " + b);
         }
         applications.remove(b);
         regs.remove(osgiAppInfo).unregister();
-        preUndeploy(osgiAppInfo);
         ActionReport report = getReport();
-        undeployJavaEEArtifacts(osgiAppInfo, report);
+        ServiceReference osgiDeployerRef = osgiAppInfo.getDeployer();
+        OSGiDeployer osgiDeployer = (OSGiDeployer) context.getService(osgiDeployerRef);
+        if (osgiDeployer == null) {
+            report.failure(logger, "Failed to undeploy " + b + ", because corresponding deployer does not exist");
+            return;
+        }
+        OSGiUndeploymentRequest request = osgiDeployer.createOSGiUndeploymentRequest(deployer, env, report, osgiAppInfo);
+        request.execute();
         URI location = osgiAppInfo.getAppInfo().getSource().getURI();
-        switch (report.getActionExitCode())
-        {
+        switch (report.getActionExitCode()) {
             case FAILURE:
                 logger.logp(Level.WARNING, "OSGiContainer", "undeploy",
                         "Failed to undeploy {0} from {1}. See previous messages for " +
@@ -153,77 +212,146 @@ public abstract class OSGiContainer {
                         "Undeployed bundle {0} from {1}", new Object[]{b, location});
                 break;
         }
-        postUndeploy(osgiAppInfo);
     }
 
-    public void undeployAll()
-    {
+    public synchronized void undeployAll() {
         // Take a copy of the entries as undeploy changes the underlying map.
-        for (Bundle b : new HashSet<Bundle>(applications.keySet()))
-        {
-            try
-            {
+        for (Bundle b : new HashSet<Bundle>(applications.keySet())) {
+            try {
                 undeploy(b);
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 logger.logp(Level.SEVERE, "OSGiContainer", "undeployAll",
-                        "Exception undeploying bundle {0}",
-                        new Object[]{b.getLocation()});
-                logger.logp(Level.SEVERE, "OSGiContainer", "undeployAll",
-                        "Exception Stack Trace", e);
+                        "Exception undeploying bundle " + b,
+                        e);
             }
         }
     }
 
-    protected void preDeploy(Bundle b) throws Exception {}
-
-    protected void postDeploy(OSGiApplicationInfo osgiApplicationInfo) throws Exception {}
-
-    protected void preUndeploy(OSGiApplicationInfo osgiApplicationInfo) throws Exception {}
-
-    protected void postUndeploy(OSGiApplicationInfo osgiApplicationInfo) throws Exception {}
-
-    /**
-     * Does necessary deployment in Java EE container
-     * @param b
-     * @param report
-     * @return
-     */
-    private OSGiApplicationInfo deployJavaEEArtifacts(Bundle b, ActionReport report)
-    {
-        OSGiDeploymentRequest request = createOSGiDeploymentRequest(
-                deployer, archiveFactory, env, report, b);
-        return request.execute();
-    }
-
-    /**
-     * Does necessary undeployment in Java EE container
-     * @param osgiAppInfo
-     * @param report
-     * @return
-     */
-    protected ActionReport undeployJavaEEArtifacts(OSGiApplicationInfo osgiAppInfo,
-                                                 ActionReport report)
-    {
-        OSGiUndeploymentRequest request = createOSGiUndeploymentRequest(
-                deployer, env, report, osgiAppInfo);
-        request.execute();
-        return report;
-    }
-
-    protected ActionReport getReport()
-    {
+    protected ActionReport getReport() {
         return Globals.getDefaultHabitat().getComponent(ActionReport.class,
                 "plain");
     }
 
-    public boolean isDeployed(Bundle bundle)
-    {
+    public synchronized boolean isDeployed(Bundle bundle) {
         return applications.containsKey(bundle);
     }
 
-    protected abstract OSGiUndeploymentRequest createOSGiUndeploymentRequest(Deployment deployer, ServerEnvironmentImpl env, ActionReport reporter, OSGiApplicationInfo osgiAppInfo);
+    /*package*/
 
-    protected abstract OSGiDeploymentRequest createOSGiDeploymentRequest(Deployment deployer, ArchiveFactory archiveFactory, ServerEnvironmentImpl env, ActionReport reporter, Bundle b);
+    boolean isReady(Bundle b) {
+        final int state = b.getState();
+        final boolean isActive = (state & Bundle.ACTIVE) != 0;
+        final boolean isStarting = (state & Bundle.STARTING) != 0;
+        final boolean isReady = isActive || (isLazy(b) && isStarting);
+        return isReady;
+    }
+
+    /*package*/
+
+    static boolean isLazy(Bundle bundle) {
+        return ACTIVATION_LAZY.equals(
+                bundle.getHeaders().get(BUNDLE_ACTIVATIONPOLICY));
+    }
+
+    private ServiceReference/*OSGiDeployer*/ selectDeployer(Bundle b) {
+        // deployerRefs is already sorted in descending order of ranking
+        for (ServiceReference deployerRef : sortedDeployerRefs) {
+            OSGiDeployer deployer = OSGiDeployer.class.cast(context.getService(deployerRef));
+            if (deployer != null) {
+                if (deployer.handles(b)) {
+                    return deployerRef;
+                }
+            }
+        }
+        return null;
+    }
+
+    public synchronized OSGiApplicationInfo[] getDeployedApps() {
+        // must return a snapshot, because it is used from DeployerRemovedThread.
+        return applications.values().toArray(new OSGiApplicationInfo[0]);
+    }
+
+    private class OSGiDeployerTracker extends ServiceTracker {
+
+        public OSGiDeployerTracker() {
+            super(OSGiContainer.this.context, OSGiDeployer.class.getName(), null);
+        }
+
+        @Override
+        public Object addingService(ServiceReference reference) {
+            deployerAdded(reference);
+            return super.addingService(reference);
+        }
+
+        @Override
+        public void removedService(ServiceReference reference, Object service) {
+            deployerRemoved(reference);
+            super.removedService(reference, service);
+        }
+
+    }
+
+    private synchronized void deployerAdded(ServiceReference/*OSGiDeployer*/ reference) {
+        if(isShutdown()) return;
+        sortedDeployerRefs.add(reference);
+        Collections.sort(sortedDeployerRefs, Collections.reverseOrder()); // descending order
+        new DeployerAddedThread(reference).start();
+    }
+
+    private void deployerRemoved(ServiceReference reference) {
+        if(isShutdown()) return;
+        sortedDeployerRefs.remove(reference);
+        new DeployerRemovedThread(reference).start();
+    }
+
+    private class DeployerAddedThread extends Thread {
+
+        ServiceReference newDeployerRef;
+
+        private DeployerAddedThread(ServiceReference newDeployerRef) {
+            this.newDeployerRef = newDeployerRef;
+        }
+
+        @Override
+        public void run() {
+            synchronized (OSGiContainer.this) {
+                OSGiDeployer newDeployer = (OSGiDeployer) context.getService(newDeployerRef);
+                if (newDeployer == null) return;
+                for (Bundle b : context.getBundles()) {
+                    if (isReady(b) && newDeployer.handles(b)) {
+                        try {
+                            redeploy(b);
+                        } catch (Exception e) {
+                            logger.logp(Level.WARNING, "OSGiContainer", "addingService", "Exception redeploying bundle " + b, e);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private class DeployerRemovedThread extends Thread {
+        ServiceReference oldDeployerRef;
+
+        private DeployerRemovedThread(ServiceReference oldDeployerRef) {
+            this.oldDeployerRef = oldDeployerRef;
+        }
+
+        @Override
+        public void run() {
+            synchronized (OSGiContainer.this) {
+                // getDeployedApps returns a snapshot which is essential because redeploy() changes the collection.
+                for (OSGiApplicationInfo osgiApplicationInfo : getDeployedApps()) {
+                    if (osgiApplicationInfo.getDeployer() == oldDeployerRef) {
+                        try {
+                            redeploy(osgiApplicationInfo.getBundle());
+                        } catch (Exception e) {
+                            logger.logp(Level.WARNING, "DeployerRemovedThread", "run", "Exception redeploying bundle " + osgiApplicationInfo.getBundle(), e);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

@@ -40,144 +40,36 @@
 
 package org.glassfish.osgiejb;
 
-import org.osgi.framework.*;
-
-import static org.osgi.framework.Constants.ACTIVATION_LAZY;
-import static org.osgi.framework.Constants.BUNDLE_ACTIVATIONPOLICY;
 import org.glassfish.osgijavaeebase.Extender;
+import org.osgi.framework.BundleContext;
 
 import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.Dictionary;
 
 /**
- * An extender that listens to OSGi application bundle's lifecycle
- * events and does the necessary deployment/undeployment.
+ * An extender that registers a deployer capable of deploying/undeploying
+ * OSGi/EJB bundles.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class EJBExtender implements Extender, BundleListener
-{
-    private OSGiEJBContainer c;
+public class EJBExtender implements Extender {
     private static final Logger logger =
             Logger.getLogger(EJBExtender.class.getPackage().getName());
     private BundleContext context;
-    private AtomicBoolean started = new AtomicBoolean(false);
-    private ServiceRegistration urlHandlerService;
+    private OSGiEJBDeployer deployer;
 
-    public EJBExtender(BundleContext context)
-    {
+    public EJBExtender(BundleContext context) {
         this.context = context;
     }
 
-    public void start() {
-        started.set(true);
-        c = new OSGiEJBContainer(context);
-        context.addBundleListener(this);
-
-        // EJB Container bundle can come into existence after
-        // ejb application bundles, so we must go through existing bundles
-        // to see if there are any ejb application bundles is already in "ready" state.
-        for (Bundle b : context.getBundles())
-        {
-            if (isEJBBundle(b) && isReady(b))
-            {
-                deploy(b);
-            }
-        }
+    public synchronized void start() {
+        deployer = new OSGiEJBDeployer(context);
+        deployer.register();
     }
 
-    public void stop() {
-        if (started.getAndSet(false)) {
-            context.removeBundleListener(this);
-            if (c !=null) c.undeployAll();
-        }
-    }
-
-    public void bundleChanged(BundleEvent event)
-    {
-        Bundle bundle = event.getBundle();
-        switch (event.getType())
-        {
-            case BundleEvent.STARTED:
-                if (!isLazy(bundle) && isEJBBundle(bundle))
-                {
-                    deploy(bundle);
-                }
-                break;
-            case BundleEvent.LAZY_ACTIVATION:
-                if (isEJBBundle(bundle))
-                {
-                    deploy(bundle);
-                }
-                break;
-            case BundleEvent.STOPPED:
-                if (isEJBBundle(bundle) && c.isDeployed(bundle))
-                {
-                    undeploy(bundle);
-                }
-                break;
-        }
-    }
-
-    private boolean isLazy(Bundle bundle)
-    {
-        return ACTIVATION_LAZY.equals(
-                bundle.getHeaders().get(BUNDLE_ACTIVATIONPOLICY));
-    }
-
-    private boolean isReady(Bundle b) {
-        final int state = b.getState();
-        final boolean isActive = (state & Bundle.ACTIVE) != 0;
-        final boolean isStarting = (state & Bundle.STARTING) != 0;
-        final boolean isReady = isActive || (isLazy(b) && isStarting);
-        return isReady;
-    }
-
-    /**
-     * Determines if a bundle represents a EJB application or not.
-     * We determine this by looking at presence of Application-Type manifest header.
-     *
-     * @param b
-     * @return
-     */
-    private boolean isEJBBundle(Bundle b)
-    {
-        final Dictionary headers = b.getHeaders();
-        return headers.get(Constants.EXPORT_EJB) != null &&
-                headers.get(org.osgi.framework.Constants.FRAGMENT_HOST) == null;
-    }
-
-    private void deploy(Bundle b)
-    {
-        try
-        {
-            c.deploy(b);
-        }
-        catch (Exception e)
-        {
-            logger.logp(Level.SEVERE, "EJBExtender", "deploy",
-                    "Exception deploying bundle {0}",
-                    new Object[]{b.getLocation()});
-            logger.logp(Level.SEVERE, "EJBExtender", "deploy",
-                    "Exception Stack Trace", e);
-        }
-    }
-
-    private void undeploy(Bundle b)
-    {
-        try
-        {
-            c.undeploy(b);
-        }
-        catch (Exception e)
-        {
-            logger.logp(Level.SEVERE, "EJBExtender", "undeploy",
-                    "Exception undeploying bundle {0}",
-                    new Object[]{b.getLocation()});
-            logger.logp(Level.SEVERE, "EJBExtender", "undeploy",
-                    "Exception Stack Trace", e);
+    public synchronized void stop() {
+        if (deployer != null) {
+            deployer.unregister();
+            deployer = null;
         }
     }
 

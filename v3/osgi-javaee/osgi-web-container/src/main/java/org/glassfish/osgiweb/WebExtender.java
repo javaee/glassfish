@@ -40,25 +40,19 @@
 
 package org.glassfish.osgiweb;
 
-import org.osgi.framework.*;
-
-import static org.osgi.framework.Constants.ACTIVATION_LAZY;
-import static org.osgi.framework.Constants.BUNDLE_ACTIVATIONPOLICY;
-import org.osgi.service.url.URLConstants;
-import org.osgi.service.url.URLStreamHandlerService;
+import com.sun.enterprise.web.WebModuleDecorator;
+import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.osgijavaeebase.Extender;
 import org.glassfish.osgijavaeebase.ExtenderManager;
 import org.jvnet.hk2.component.Inhabitant;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.url.URLConstants;
+import org.osgi.service.url.URLStreamHandlerService;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
 import java.util.Properties;
-import java.util.Dictionary;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import com.sun.enterprise.web.WebModuleDecorator;
-import com.sun.hk2.component.ExistingSingletonInhabitant;
+import java.util.logging.Logger;
 
 /**
  * An extender that listens to web application bundle's lifecycle
@@ -66,140 +60,43 @@ import com.sun.hk2.component.ExistingSingletonInhabitant;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class WebExtender implements Extender, BundleListener
-{
-    private OSGiWebContainer wc;
+public class WebExtender implements Extender {
     private static final Logger logger =
             Logger.getLogger(ExtenderManager.class.getPackage().getName());
     private BundleContext context;
-    private AtomicBoolean started = new AtomicBoolean(false);
     private ServiceRegistration urlHandlerService;
     private OSGiWebModuleDecorator wmd;
+    private OSGiWebDeployer deployer;
 
-    public WebExtender(BundleContext context)
-    {
+    public WebExtender(BundleContext context) {
         this.context = context;
     }
 
-    public void start() {
-        if (started.getAndSet(true)) {
-            return;
-        }
-        wc = new OSGiWebContainer(context);
+    public synchronized void start() {
         registerWmd();
-        context.addBundleListener(this);
-
-        // Web Container bundle can come into existence after
-        // web application bundles, so we must go through existing bundles
-        // to see if there are any web application bundles already started.
-        for (Bundle b : context.getBundles())
-        {
-            if (isWebBundle(b) && isReady(b))
-            {
-                deploy(b);
-            }
-        }
+        registerDeployer();
         addURLHandler();
     }
 
-    public void stop() {
-        if (started.getAndSet(false)) {
-            removeURLHandler();
-            context.removeBundleListener(this);
-            unregisterWmd();
-            if (wc!=null) wc.undeployAll();
+    public synchronized void stop() {
+        removeURLHandler();
+        unregisterDeployer();
+        unregisterWmd();
+    }
+
+    private void registerDeployer() {
+        deployer = new OSGiWebDeployer(context);
+        deployer.register();
+    }
+
+    private void unregisterDeployer() {
+        if (deployer != null) {
+            deployer.unregister();
+            deployer = null;
         }
     }
 
-    public void bundleChanged(BundleEvent event)
-    {
-        Bundle bundle = event.getBundle();
-        switch (event.getType())
-        {
-            case BundleEvent.STARTED:
-                if (!isLazy(bundle) && isWebBundle(bundle))
-                {
-                    deploy(bundle);
-                }
-                break;
-            case BundleEvent.LAZY_ACTIVATION:
-                if (isWebBundle(bundle))
-                {
-                    deploy(bundle);
-                }
-                break;
-            case BundleEvent.STOPPED:
-                if (isWebBundle(bundle) && wc.isDeployed(bundle))
-                {
-                    undeploy(bundle);
-                }
-                break;
-        }
-    }
-
-    private boolean isLazy(Bundle bundle)
-    {
-        return ACTIVATION_LAZY.equals(
-                bundle.getHeaders().get(BUNDLE_ACTIVATIONPOLICY));
-    }
-
-    private boolean isReady(Bundle b) {
-        final int state = b.getState();
-        final boolean isActive = (state & Bundle.ACTIVE) != 0;
-        final boolean isStarting = (state & Bundle.STARTING) != 0;
-        final boolean isReady = isActive || (isLazy(b) && isStarting);
-        return isReady;
-    }
-
-    /**
-     * Determines if a bundle represents a web application or not.
-     * As per rfc #66, a web container extender recognizes a web application
-     * bundle by looking for the presence of Web-contextPath manifest header
-     *
-     * @param b
-     * @return
-     */
-    private boolean isWebBundle(Bundle b)
-    {
-        final Dictionary headers = b.getHeaders();
-        return headers.get(Constants.WEB_CONTEXT_PATH) != null &&
-                headers.get(org.osgi.framework.Constants.FRAGMENT_HOST) == null;
-    }
-
-    private void deploy(Bundle b)
-    {
-        try
-        {
-            wc.deploy(b);
-        }
-        catch (Exception e)
-        {
-            logger.logp(Level.SEVERE, "WebExtender", "deploy",
-                    "Exception deploying bundle {0}",
-                    new Object[]{b.getLocation()});
-            logger.logp(Level.SEVERE, "WebExtender", "deploy",
-                    "Exception Stack Trace", e);
-        }
-    }
-
-    private void undeploy(Bundle b)
-    {
-        try
-        {
-            wc.undeploy(b);
-        }
-        catch (Exception e)
-        {
-            logger.logp(Level.SEVERE, "WebExtender", "undeploy",
-                    "Exception undeploying bundle {0}",
-                    new Object[]{b.getLocation()});
-            logger.logp(Level.SEVERE, "WebExtender", "undeploy",
-                    "Exception Stack Trace", e);
-        }
-    }
-
-    private void addURLHandler()
-    {
+    private void addURLHandler() {
         Properties p = new Properties();
         p.put(URLConstants.URL_HANDLER_PROTOCOL,
                 new String[]{Constants.WEB_BUNDLE_SCHEME});
@@ -210,25 +107,25 @@ public class WebExtender implements Extender, BundleListener
     }
 
     private void removeURLHandler() {
-        if (urlHandlerService !=null) {
+        if (urlHandlerService != null) {
             urlHandlerService.unregister();
         }
     }
 
-    private void registerWmd()
-    {
-        assert(wc != null);
-        wmd = new OSGiWebModuleDecorator(wc);
+    private void registerWmd() {
+        wmd = new OSGiWebModuleDecorator();
         Inhabitant i = new ExistingSingletonInhabitant(wmd);
         String fqcn = WebModuleDecorator.class.getName();
-        Globals.getDefaultHabitat().addIndex(i, fqcn , wmd.getClass().getSimpleName());
+        Globals.getDefaultHabitat().addIndex(i, fqcn, wmd.getClass().getSimpleName());
     }
 
     private void unregisterWmd() {
+        if (wmd == null) return;
         // Since there is no public API to remove an inhabitant, we
         // nullify the fields and that ensures that this decorator
         // is as good as removed.
-        wmd.setWc(null);
+        wmd.deActivate();
     }
 
 }
+

@@ -151,6 +151,7 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
          */
         public WABClassLoader(ClassLoader parent) {
             super(parent);
+            setDelegate(true); // we always delegate. The default is false in WebappClassLoader!!!
             FileDirContext r = new FileDirContext();
             File base = getSourceDir();
             r.setDocBase(base.getAbsolutePath());

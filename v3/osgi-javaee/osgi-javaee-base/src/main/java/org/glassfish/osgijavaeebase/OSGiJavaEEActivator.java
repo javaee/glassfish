@@ -63,6 +63,12 @@ public class OSGiJavaEEActivator implements BundleActivator {
         addURLHandler(context);
         extenderManager = new ExtenderManager(context);
         extenderManager.start();
+        addExtender(context);
+    }
+
+    private void addExtender(BundleContext context) {
+        JavaEEExtender extender = new JavaEEExtender(context);
+        context.registerService(Extender.class.getName(), extender, null);
     }
 
     public void stop(BundleContext context) throws Exception {

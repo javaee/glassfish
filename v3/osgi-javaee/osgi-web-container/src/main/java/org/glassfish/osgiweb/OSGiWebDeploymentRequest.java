@@ -40,6 +40,12 @@
 
 package org.glassfish.osgiweb;
 
+import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.web.*;
+import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.data.EngineRef;
+import org.glassfish.internal.data.ModuleInfo;
+import org.glassfish.osgijavaeebase.OSGiApplicationInfo;
 import org.glassfish.osgijavaeebase.OSGiDeploymentRequest;
 import org.glassfish.osgijavaeebase.OSGiDeploymentContext;
 import org.glassfish.api.ActionReport;
@@ -51,6 +57,9 @@ import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.api.Globals;
 import org.osgi.framework.Bundle;
 
+import java.util.Properties;
+import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -60,12 +69,26 @@ import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.config.serverbeans.*;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.packageadmin.PackageAdmin;
+import org.osgi.util.tracker.ServiceTracker;
+
+import javax.servlet.ServletContext;
+
+import static org.osgi.framework.Constants.BUNDLE_VERSION;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
+
+    // TODO(Sahoo): Integration with event admin service
+
+    private static final Logger logger =
+            Logger.getLogger(OSGiWebDeployer.class.getPackage().getName());
+
+    // Set the current bundle context in a thread local for use during web module decoration
+    private static ThreadLocal<BundleContext> currentBundleContext = new ThreadLocal<BundleContext>();
 
     public OSGiWebDeploymentRequest(Deployment deployer, ArchiveFactory archiveFactory, ServerEnvironmentImpl env, ActionReport reporter, Bundle b) {
         super(deployer, archiveFactory, env, reporter, b);
@@ -170,4 +193,71 @@ public class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
         com.sun.grizzly.config.dom.NetworkListener nl = Globals.get(com.sun.grizzly.config.dom.NetworkListener.class);
         return nl.findHttpProtocol().getHttp().getDefaultVirtualServer();
     }
+
+    @Override
+    public void preDeploy() {
+        currentBundleContext.set(getBundle().getBundleContext());
+    }
+
+    @Override
+    public void postDeploy() {
+        OSGiApplicationInfo osgiAppInfo = getResult();
+        if (osgiAppInfo == null) return;
+        ServletContext sc = getServletContext(osgiAppInfo.getAppInfo());
+        assert(sc.getAttribute(Constants.BUNDLE_CONTEXT_ATTR) == osgiAppInfo.getBundle().getBundleContext());
+        ServiceRegistration scReg = registerService(osgiAppInfo.getBundle(), sc);
+        // TODO(Sahoo): Unregister scReg when we go down
+    }
+
+    private ServletContext getServletContext(ApplicationInfo appInfo)
+    {
+        if (appInfo.getModuleInfos().size() == 1)
+        {
+            ModuleInfo m = appInfo.getModuleInfos().iterator().next();
+            EngineRef e = m.getEngineRefForContainer(com.sun.enterprise.web.WebContainer.class);
+            assert (e != null);
+            WebApplication a = (WebApplication) e.getApplicationContainer();
+            Set<com.sun.enterprise.web.WebModule> wms = a.getWebModules();
+            assert (wms.size() == 1); // we only deploy to default virtual server
+            if (wms.size() == 1)
+            {
+                return wms.iterator().next().getServletContext();
+            }
+        }
+        return null;
+    }
+
+    private ServiceRegistration registerService(Bundle b, ServletContext sc)
+    {
+        Properties props = new Properties();
+        props.setProperty(Constants.OSGI_WEB_SYMBOLIC_NAME, b.getSymbolicName());
+        String cpath = (String) b.getHeaders().get(Constants.WEB_CONTEXT_PATH);
+        props.setProperty(Constants.OSGI_WEB_CONTEXTPATH, cpath);
+        String version = (String) b.getHeaders().get(BUNDLE_VERSION);
+        if (version != null)
+        {
+            props.setProperty(Constants.OSGI_WEB_VERSION, version);
+        }
+        BundleContext bctx = b.getBundleContext();
+        if (bctx != null) {
+            // This null check is required until we upgrade to Felix 1.8.1.
+            // Felix 1.8.0 returns null when bundle is in starting state.
+            ServiceRegistration scReg = bctx.registerService(
+                    ServletContext.class.getName(),
+                    sc, props);
+            logger.logp(Level.INFO, "OSGiWebContainer", "registerService",
+                    "Registered ServletContext as a service with properties: {0} ",
+                    new Object[]{props});
+            return scReg;
+        } else {
+            logger.logp(Level.WARNING, "OSGiWebContainer", "registerService",
+                    "Not able to register ServletContext as a service as bctx is null");
+        }
+        return null;
+    }
+
+    /* package */ static BundleContext getCurrentBundleContext() {
+        return currentBundleContext.get();
+    }
+
 }
