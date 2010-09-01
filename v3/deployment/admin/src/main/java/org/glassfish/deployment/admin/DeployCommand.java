@@ -144,6 +144,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
     private boolean isRedeploy = false;
     private List<String> previousTargets = new ArrayList<String>();
     private Properties previousVirtualServers = new Properties();
+    private Properties previousEnabledAttributes = new Properties();
 
     public DeployCommand() {
         origin = Origin.deploy;
@@ -239,16 +240,6 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 }
             }
             
-            if (!DeploymentUtils.isDomainTarget(target) && enabled) {
-                // try to disable the enabled version, if exist
-                try {
-                    versioningService.handleDisable(name,target, report);
-                } catch (VersioningSyntaxException e) {
-                    report.failure(logger, e.getMessage());
-                    return;
-                }
-            } 
-
             boolean isRegistered = deployment.isRegistered(name);
             isRedeploy = isRegistered && force;
             deployment.validateDeploymentTarget(target, name, isRedeploy);
@@ -259,11 +250,24 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             ApplicationConfigInfo savedAppConfig = 
                     new ApplicationConfigInfo(apps.getModule(Application.class, name));
             Properties undeployProps = handleRedeploy(name, report);
+            if (enabled == null) {
+                enabled = Boolean.TRUE;
+            }
 
             // clean up any left over repository files
             if ( ! keepreposdir.booleanValue()) {
                 FileUtils.whack(new File(env.getApplicationRepositoryPath(), VersioningUtils.getRepositoryName(name)));
             }
+
+            if (!DeploymentUtils.isDomainTarget(target) && enabled) {
+                // try to disable the enabled version, if exist
+                try {
+                    versioningService.handleDisable(name,target, report);
+                } catch (VersioningSyntaxException e) {
+                    report.failure(logger, e.getMessage());
+                    return;
+                }
+            } 
 
             File source = new File(archive.getURI().getSchemeSpecificPart());
             boolean isDirectoryDeployed = true;
@@ -338,6 +342,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
             deploymentContext.addTransientAppMetaData(DeploymentProperties.PREVIOUS_TARGETS, previousTargets);
             deploymentContext.addTransientAppMetaData(DeploymentProperties.PREVIOUS_VIRTUAL_SERVERS, previousVirtualServers);
+            deploymentContext.addTransientAppMetaData(DeploymentProperties.PREVIOUS_ENABLED_ATTRIBUTES, previousEnabledAttributes);
 
             Transaction t = deployment.prepareAppConfigChanges(deploymentContext);
 
@@ -675,6 +680,17 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 } else {
                     virtualservers = domain.getVirtualServersForApplication(
                         target, name);
+                }
+            }
+
+            if (enabled == null) {
+                if (DeploymentUtils.isDomainTarget(target)) {
+                    for (String tgt : previousTargets) {
+                        previousEnabledAttributes.put(tgt, domain.getEnabledForApplication(tgt, name));
+                    }
+                } else {
+                    enabled = Boolean.valueOf(domain.getEnabledForApplication(
+                        target, name));
                 }
             }
 

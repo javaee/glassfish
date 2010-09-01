@@ -536,6 +536,8 @@ public class DeploymentProperties extends Properties {
     public static final String PREVIOUS_TARGETS = "previousTargets";
     public static final String PREVIOUS_VIRTUAL_SERVERS = 
         "previousVirtualServers";
+    public static final String PREVIOUS_ENABLED_ATTRIBUTES = 
+        "previousEnabledAttributes";
     public static final String PRESERVED_CONTEXT_ROOT = "preservedcontextroot";
     public static final String APP_PROPS = "appprops";
 

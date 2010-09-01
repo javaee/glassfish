@@ -66,6 +66,9 @@ public class InstanceDeployCommandParameters extends DeployCommandParameters {
     @Param(name=DeploymentProperties.PREVIOUS_VIRTUAL_SERVERS, separator=':', optional=true)
     public Properties previousVirtualServers = null;
 
+    @Param(name=DeploymentProperties.PREVIOUS_ENABLED_ATTRIBUTES, separator=':', optional=true)
+    public Properties previousEnabledAttributes = null;
+
     public static class ParameterNames {
         public static final String GENERATED_CONTENT = "generatedcontent";
         public static final String APP_PROPS = "appprops";

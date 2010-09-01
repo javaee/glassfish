@@ -128,6 +128,13 @@ public class InstanceDeployCommand extends InstanceDeployCommandParameters imple
             }
         }
 
+        if (previousEnabledAttributes != null) {
+            String enabledAttr = previousEnabledAttributes.getProperty(target);
+            if (enabledAttr != null) {
+                this.enabled = Boolean.valueOf(enabledAttr);
+            }
+        }
+
         try {
             if (!path.exists()) {
                 report.setMessage(localStrings.getLocalString("fnf","File not found", path.getAbsolutePath()));

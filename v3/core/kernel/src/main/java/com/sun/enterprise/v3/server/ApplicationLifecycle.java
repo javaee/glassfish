@@ -242,6 +242,10 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 commandParams.target);
         }
         
+        if (commandParams.enabled == null) {
+            commandParams.enabled = Boolean.TRUE;
+        }
+
         ProgressTracker tracker = new ProgressTracker() {
             public void actOn(Logger logger) {
                 appRegistry.remove(appName);
@@ -392,8 +396,8 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
-            report.failure(logger, "Exception while deploying the app", e);
+            logger.log(Level.WARNING,  localStrings.getLocalString("error.deploying.app", "Exception while deploying the app [{0}]", appName), e);
+            report.failure(logger, localStrings.getLocalString("error.deploying.app", "Exception while deploying the app [{0}]", appName), e);
             tracker.actOn(logger);
             return null;
         } finally {
@@ -940,18 +944,28 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 }
 
                 String origVS = deployParams.virtualservers;
+                Boolean origEnabled = deployParams.enabled;
 		Properties previousVirtualServers = context.getTransientAppMetaData(DeploymentProperties.PREVIOUS_VIRTUAL_SERVERS, Properties.class);
+		Properties previousEnabledAttributes = context.getTransientAppMetaData(DeploymentProperties.PREVIOUS_ENABLED_ATTRIBUTES, Properties.class);
                 for (String target : targets) {
-                    // first reset the virtualservers
+                    // first reset the virtualservers, enabled attribute
                     deployParams.virtualservers = origVS;
+                    deployParams.enabled = origEnabled;
                     // now if the target is domain target, 
-                    // restore the previous virtualservers if 
+                    // restore the previous attributes if 
                     // applicable
                     if (DeploymentUtils.isDomainTarget(deployParams.target)) {
                         String vs = previousVirtualServers.getProperty(target);
                         if (vs != null) {
                             deployParams.virtualservers = vs;
                         }
+                        String enabledAttr = previousEnabledAttributes.getProperty(target);
+                        if (enabledAttr != null) {
+                            deployParams.enabled = Boolean.valueOf(enabledAttr);
+                        }
+                    }
+                    if (deployParams.enabled == null) {
+                        deployParams.enabled = Boolean.TRUE;
                     }
                     Server servr = domain.getServerNamed(target); 
                     if (servr != null) {
@@ -1581,6 +1595,11 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
         Properties previousVirtualServers = dc.getTransientAppMetaData(DeploymentProperties.PREVIOUS_VIRTUAL_SERVERS, Properties.class);
         if (previousVirtualServers != null) {
             paramMap.set(DeploymentProperties.PREVIOUS_VIRTUAL_SERVERS, extractor.propertiesValue(previousVirtualServers, ':'));
+        }
+
+        Properties previousEnabledAttributes = dc.getTransientAppMetaData(DeploymentProperties.PREVIOUS_ENABLED_ATTRIBUTES, Properties.class);
+        if (previousEnabledAttributes != null) {
+            paramMap.set(DeploymentProperties.PREVIOUS_ENABLED_ATTRIBUTES, extractor.propertiesValue(previousEnabledAttributes, ':'));
         }
 
         return paramMap;

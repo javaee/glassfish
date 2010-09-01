@@ -93,8 +93,8 @@ public class DeployCommandParameters extends OpsParams {
     @Param(name=ParameterNames.DEPLOYMENT_PLAN, optional=true)
     public File deploymentplan = null;
 
-    @Param(name=ParameterNames.ENABLED, optional=true, defaultValue="true")
-    public Boolean enabled=true;
+    @Param(name=ParameterNames.ENABLED, optional=true)
+    public Boolean enabled = null;
 
     @Param(optional=true, defaultValue="false")
     public Boolean generatermistubs = false;
