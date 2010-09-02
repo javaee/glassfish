@@ -41,8 +41,12 @@
 package com.sun.gjc.spi;
 
 
+import com.sun.logging.LogDomains;
+
 import javax.resource.ResourceException;
 import javax.resource.spi.LocalTransactionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <code>LocalTransaction</code> implementation for Generic JDBC Connector.
@@ -53,6 +57,11 @@ import javax.resource.spi.LocalTransactionException;
 public class LocalTransaction implements javax.resource.spi.LocalTransaction {
 
     private ManagedConnection mc;
+    protected final static Logger _logger;
+
+    static {
+        _logger = LogDomains.getLogger(ManagedConnection.class, LogDomains.RSR_LOGGER);
+    }
 
     /**
      * Constructor for <code>LocalTransaction</code>.
@@ -78,7 +87,10 @@ public class LocalTransaction implements javax.resource.spi.LocalTransaction {
         try {
             mc.getActualConnection().setAutoCommit(false);
         } catch (java.sql.SQLException sqle) {
-            throw new LocalTransactionException(sqle.getMessage());
+            if(_logger.isLoggable(Level.FINEST)){
+                _logger.finest("Exception during begin() : " + sqle);
+            }
+            throw new LocalTransactionException(sqle.getMessage(), sqle);
         }
     }
 
@@ -94,7 +106,10 @@ public class LocalTransaction implements javax.resource.spi.LocalTransaction {
             mc.getActualConnection().commit();
             mc.getActualConnection().setAutoCommit(true);
         } catch (java.sql.SQLException sqle) {
-            throw new LocalTransactionException(sqle.getMessage());
+            if(_logger.isLoggable(Level.FINEST)){
+                _logger.finest("Exception during commit() : " + sqle);
+            }
+            throw new LocalTransactionException(sqle.getMessage(), sqle);
         } finally {
             //GJCINT
             mc.transactionCompleted();
@@ -113,7 +128,10 @@ public class LocalTransaction implements javax.resource.spi.LocalTransaction {
             mc.getActualConnection().rollback();
             mc.getActualConnection().setAutoCommit(true);
         } catch (java.sql.SQLException sqle) {
-            throw new LocalTransactionException(sqle.getMessage());
+            if(_logger.isLoggable(Level.FINEST)){
+                _logger.finest("Exception during rollback() : " + sqle);
+            }
+            throw new LocalTransactionException(sqle.getMessage(), sqle);
         } finally {
             //GJCINT
             mc.transactionCompleted();
