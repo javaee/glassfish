@@ -60,7 +60,7 @@ import java.util.logging.Level;
 public class WLWebServiceNode extends DisplayableComponentNode {
 
     private WebService descriptor = null;
-
+    private String serviceDescriptionName;
     private final static XMLElement tag =
             new XMLElement(WLWebServicesTagNames.WEB_SERVICE);
 
@@ -98,31 +98,36 @@ public class WLWebServiceNode extends DisplayableComponentNode {
                 (element.getQName())) {
             WebServicesDescriptor webServices = (WebServicesDescriptor) getParentNode().getDescriptor();
             descriptor = webServices.getWebServiceByName(value);
-        } else if (WLWebServicesTagNames.WSDL_PUBLISH_FILE.equals
-                (element.getQName())) {
-            if (descriptor == null) {
-                DOLUtils.getDefaultLogger().info
-                        ("Warning : WebService descriptor is null for "
-                                + "final wsdl url=" + value);
-                return;
-            }
-            URL url = null;
-            try {
-                url = new URL(value);
-            } catch (MalformedURLException e) {
-                try {
-                    //try file
-                    url = new File(value).toURI().toURL();
-                } catch (MalformedURLException mue) {
-                    DOLUtils.getDefaultLogger().log(Level.INFO,
-                            "Warning : Invalid final wsdl url=" + value, mue);
-                }
-            }
-            if (url != null) {
-                descriptor.setClientPublishUrl(url);
-            }
+            serviceDescriptionName = value;
         } else {
-            super.setElementValue(element, value);
+            if (descriptor == null) {
+                    DOLUtils.getDefaultLogger().severe
+                            ("Warning : WebService descriptor cannot be found webservice-description-name "
+                                    + serviceDescriptionName);
+                    throw new RuntimeException("DeploymentException: WebService descriptor cannot be found for webservice-description-name:" +
+                            serviceDescriptionName +" specified in weblogic-webservices.xml");
+            }
+
+            if (WLWebServicesTagNames.WSDL_PUBLISH_FILE.equals
+                    (element.getQName())) {
+                URL url = null;
+                try {
+                    url = new URL(value);
+                } catch (MalformedURLException e) {
+                    try {
+                        //try file
+                        url = new File(value).toURI().toURL();
+                    } catch (MalformedURLException mue) {
+                        DOLUtils.getDefaultLogger().log(Level.INFO,
+                                "Warning : Invalid final wsdl url=" + value, mue);
+                    }
+                }
+                if (url != null) {
+                    descriptor.setClientPublishUrl(url);
+                }
+            } else {
+                super.setElementValue(element, value);
+            }
         }
     }
 
