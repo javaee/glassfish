@@ -155,7 +155,13 @@ public final class Transactions implements PostConstruct, PreDestroy {
                     while (latch.getCount()>0) {
                         try {
                             final FutureTask job = pendingJobs.take();
-                            job.run();                            
+                            // when listeners start a transaction themselves, several jobs try to get published
+                            // simultaneously so we cannot block the pump while delivering the messages. 
+                            executor.submit(new Runnable() {
+                                public void run() {
+                                    job.run();
+                                }
+                            });
                         }
 
                         catch (InterruptedException e) {
