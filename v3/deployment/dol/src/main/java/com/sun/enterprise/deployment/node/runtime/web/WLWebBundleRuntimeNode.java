@@ -50,13 +50,16 @@ import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import com.sun.enterprise.deployment.node.runtime.RuntimeBundleNode;
 import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.node.runtime.common.WLEjbReferenceDescriptionNode;
 import com.sun.enterprise.deployment.node.runtime.common.WLResourceDescriptionNode;
 import com.sun.enterprise.deployment.node.runtime.common.WLResourceEnvDescriptionNode;
 import com.sun.enterprise.deployment.node.runtime.common.WLSecurityRoleAssignmentNode;
 import com.sun.enterprise.deployment.runtime.common.WLSecurityRoleAssignment;
+import com.sun.enterprise.deployment.runtime.common.EjbRef;
 import com.sun.enterprise.deployment.runtime.common.ResourceRef;
 import com.sun.enterprise.deployment.runtime.common.ResourceEnvRef;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
+import com.sun.enterprise.deployment.types.EjbReference;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import com.sun.enterprise.deployment.xml.TagNames;
@@ -111,6 +114,8 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
                 WLResourceDescriptionNode.class);
         registerElementHandler(new XMLElement(RuntimeTagNames.RESOURCE_ENV_DESCRIPTION),
                 WLResourceEnvDescriptionNode.class);
+        registerElementHandler(new XMLElement(RuntimeTagNames.EJB_REFERENCE_DESCRIPTION),
+                WLEjbReferenceDescriptionNode.class);
         registerElementHandler(new XMLElement(RuntimeTagNames.SESSION_DESCRIPTOR),
                 WLSessionDescriptorNode.class);
         registerElementHandler(new XMLElement(RuntimeTagNames.JSP_DESCRIPTOR),
@@ -226,8 +231,17 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
             ResourceEnvRef resourceEnvRef = (ResourceEnvRef)newDescriptor;
             descriptor.getSunDescriptor().addResourceEnvRef(resourceEnvRef);
             try {
-                JmsDestinationReferenceDescriptor  rrd = descriptor.getJmsDestinationReferenceByName(resourceEnvRef.getResourceEnvRefName());
+                JmsDestinationReferenceDescriptor rrd = descriptor.getJmsDestinationReferenceByName(resourceEnvRef.getResourceEnvRefName());
                 rrd.setJndiName(resourceEnvRef.getJndiName());
+            } catch (IllegalArgumentException iae) {
+                DOLUtils.getDefaultLogger().warning(iae.getMessage());
+            }
+        } else if (newDescriptor instanceof EjbRef) {
+            EjbRef ejbRef = (EjbRef) newDescriptor;
+            descriptor.getSunDescriptor().addEjbRef(ejbRef);
+            try {
+                EjbReference ref = descriptor.getEjbReference(ejbRef.getEjbRefName());
+                ref.setJndiName(ejbRef.getJndiName());
             } catch (IllegalArgumentException iae) {
                 DOLUtils.getDefaultLogger().warning(iae.getMessage());
             }
@@ -273,6 +287,15 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
                 node.writeDescriptor(root, RuntimeTagNames.RESOURCE_ENV_DESCRIPTION, resourceEnvRef);
             }
         }
+
+        //ejb-reference-description*
+        EjbRef[] ejbRefs = sunWebApp.getEjbRef();
+        if (ejbRefs != null && ejbRefs.length > 0) {
+            WLEjbReferenceDescriptionNode node = new WLEjbReferenceDescriptionNode();
+            for (EjbRef ejbRef : ejbRefs) {
+                node.writeDescriptor(root, RuntimeTagNames.EJB_REF, ejbRef);
+            }
+        } 
 
         // session-descriptor
         WLSessionDescriptorNode sessionDescriptorNode = new WLSessionDescriptorNode();
