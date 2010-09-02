@@ -84,7 +84,7 @@ public class WebServicesArchivist extends ExtensionsArchivist {
         if (bundleDescriptor != null) {
             return bundleDescriptor.getWebServices();
         } else {
-            return null;
+            return BundleDescriptor.class.cast(descriptor).getWebServices();
         }
     }
 
