@@ -334,7 +334,7 @@ public class ASenvPropertyReader {
                 SystemPropertyConstants.JAVA_ROOT_PROPERTY);
         envToPropMap.put("AS_DEF_DOMAINS_PATH",
                 SystemPropertyConstants.DOMAINS_ROOT_PROPERTY);
-        envToPropMap.put("AS_DEF_NODEAGENTS_PATH",
+        envToPropMap.put("AS_DEF_NODES_PATH",
                 SystemPropertyConstants.AGENT_ROOT_PROPERTY);
     }
     private Map<String, String> envToPropMap = new HashMap<String, String>();

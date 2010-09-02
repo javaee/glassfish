@@ -89,7 +89,7 @@ public final class CreateNodeAgentCommand extends CLICommand {
         } else {
             String agentRoot = getSystemProperty(
                                 SystemPropertyConstants.AGENT_ROOT_PROPERTY);
-            // AS_DEF_NODEAGENTS_PATH might not be set on upgraded domains
+            // AS_DEF_NODES_PATH might not be set on upgraded domains
             if (agentRoot != null)
                 agentsDir = new File(agentRoot);
             else

@@ -43,5 +43,5 @@ set AS_IMQ_BIN=..\..\mq\bin
 set AS_CONFIG=..\config
 set AS_INSTALL=..
 set AS_DEF_DOMAINS_PATH=..\domains
-set AS_DEF_NODEAGENTS_PATH=..\nodes
+set AS_DEF_NODES_PATH=..\nodes
 set AS_DERBY_INSTALL=..\..\javadb
