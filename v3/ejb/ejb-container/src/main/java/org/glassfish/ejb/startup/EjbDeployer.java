@@ -127,6 +127,7 @@ public class EjbDeployer
 
     // Property used to persist unique id across server restart.
     private static final String APP_UNIQUE_ID_PROP = "org.glassfish.ejb.container.application_unique_id";
+    private static final String IS_TIMEOUT_APP_PROP = "org.glassfish.ejb.container.is_timeout_application";
 
     private AtomicLong uniqueIdCounter;
     
@@ -254,6 +255,12 @@ public class EjbDeployer
 
         ejbApp.loadContainers(dc);
 
+        if (ejbApp.containsTimedObject()) {
+            // Mark application as a timeout application, so that the clean() call removes the timers.
+            Properties appProps = dc.getAppProps();
+            appProps.setProperty(IS_TIMEOUT_APP_PROP, "true");
+        }
+
         return ejbApp;
     }
 
@@ -302,8 +309,9 @@ public class EjbDeployer
 
             Properties appProps = dc.getAppProps();
             String uniqueAppId = appProps.getProperty(APP_UNIQUE_ID_PROP);
+            boolean isTimeOutApp = Boolean.parseBoolean(appProps.getProperty(IS_TIMEOUT_APP_PROP));
             try {
-                if (uniqueAppId != null) {
+                if (isTimeOutApp && uniqueAppId != null) {
                     String target = ((params.origin.isDeploy())? 
                             dc.getCommandParameters(DeployCommandParameters.class).target :
                             dc.getCommandParameters(UndeployCommandParameters.class).target);
@@ -313,12 +321,12 @@ public class EjbDeployer
                         _logger.log( Level.FINE, "EjbDeployer APP ID? " + uniqueAppId);
                         _logger.log( Level.FINE, "EjbDeployer TimerService: " + timerService);
                     }
-                    timerService.destroyAllTimers(Long.parseLong(uniqueAppId));
-
-                } else {
-                    throw new RuntimeException("EJB Timer Service is not available");
-                }  
-
+                    if (timerService != null) {
+                        timerService.destroyAllTimers(Long.parseLong(uniqueAppId));
+                    } else {
+                        throw new RuntimeException("EJB Timer Service is not available");
+                    }  
+                }
             } catch (Exception e) {
                 _logger.log( Level.WARNING, "Failed to delete timers for application with id " + uniqueAppId, e);
             }
@@ -435,17 +443,29 @@ public class EjbDeployer
 
             Map<String, ExtendedDeploymentContext> deploymentContexts = context.getModuleDeploymentContexts();
 
+            boolean isTimedApp = false;
             for (DeploymentContext dc : deploymentContexts.values()) {
                 EjbBundleDescriptor ejbBundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
-                checkEjbBundleForTimers(ejbBundle, dcp.target, dc.getClassLoader());
+                if (checkEjbBundleForTimers(ejbBundle, dcp.target, dc.getClassLoader())) {
+                    isTimedApp = true;
+                }
             }
     
             EjbBundleDescriptor ejbBundle = context.getModuleMetaData(EjbBundleDescriptor.class);
-            checkEjbBundleForTimers(ejbBundle, dcp.target, context.getClassLoader());
+            if (checkEjbBundleForTimers(ejbBundle, dcp.target, context.getClassLoader())) {
+                isTimedApp = true;
+            }
+
+            if (isTimedApp) {
+                // Mark application as a timeout application, so that the clean() call removes the timers.
+                Properties appProps = context.getAppProps();
+                appProps.setProperty(IS_TIMEOUT_APP_PROP, "true");
+            }
         }
     }
 
-    private void checkEjbBundleForTimers(EjbBundleDescriptor ejbBundle, String target, ClassLoader cl) {
+    private boolean checkEjbBundleForTimers(EjbBundleDescriptor ejbBundle, String target, ClassLoader cl) {
+        boolean result = false;
         if (ejbBundle != null) {
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.log( Level.FINE, "EjbDeployer.checkEjbBundleForTimers in BUNDLE: " + ejbBundle.getName());
@@ -458,11 +478,12 @@ public class EjbDeployer
                 }
 
                 if (ejbDescriptor.isTimedObject()) {
+                    result = true;
                     createAutomaticPersistentTimersForEJB(ejbDescriptor, target);
                 }
             }
         }
-
+        return result;
     }
 
 

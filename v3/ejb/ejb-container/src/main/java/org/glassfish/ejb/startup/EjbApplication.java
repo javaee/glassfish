@@ -300,6 +300,17 @@ public class EjbApplication
         return ejbAppClassLoader;
     }
 
+    /**
+     * Returns true if at least one of the containers represents a timed object
+     */
+    boolean containsTimedObject() {
+        for (Container container : containers) {
+            if (container.isTimedObject()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Called when an exception is thrown from either the load phase or the start phase.
