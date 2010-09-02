@@ -1,5 +1,6 @@
 -exportcontents: \
                             org.jvnet.hk2.component; \
+                            org.jvnet.hk2.tracing; \
                             org.jvnet.hk2.component.matcher; \
                             org.jvnet.hk2.annotations; \
                             org.glassfish.hk2.classmodel.reflect; \

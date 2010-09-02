@@ -36,6 +36,8 @@
  */
 package com.sun.hk2.component;
 
+import org.jvnet.hk2.tracing.TracingThreadLocal;
+import org.jvnet.hk2.tracing.TracingUtilities;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import sun.misc.BASE64Decoder;
@@ -58,7 +60,14 @@ public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T>  {
     private Collection<Inhabitant> companions;
 
     public final T get() {
-        return get(this);
+        try {
+            if (TracingUtilities.isEnabled())
+                TracingThreadLocal.get().push(this);
+            return get(this);
+        } finally {
+            if (TracingUtilities.isEnabled())
+                TracingThreadLocal.get().pop();
+        }
     }
 
     public <T> T getSerializedMetadata(final Class<T> type, String key) {

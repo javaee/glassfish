@@ -38,6 +38,7 @@
 
 package org.jvnet.hk2.osgiadapter;
 
+import com.sun.enterprise.module.common_impl.TracingUtilities;
 import org.osgi.framework.*;
 import org.osgi.service.packageadmin.PackageAdmin;
 import static org.jvnet.hk2.osgiadapter.Logger.logger;
@@ -77,6 +78,9 @@ public class OSGiModulesRegistryImpl
 
     private static final String HK2_CACHE_DIR = "com.sun.enterprise.hk2.cacheDir";
     private static final String INHABITANTS_CACHE = "inhabitants";
+
+    private static final boolean traceResolution = Boolean.getBoolean("org.glassfish.hk2.module.traceresolution");
+
 
     /*package*/ OSGiModulesRegistryImpl(BundleContext bctx) {
         super(null);
@@ -500,6 +504,24 @@ public class OSGiModulesRegistryImpl
     }
 
     public void register(final ModuleLifecycleListener listener) {
+        if (TracingUtilities.isEnabled()) {
+            bctx.addBundleListener(new SynchronousBundleListener() {
+            public void bundleChanged(BundleEvent event) {
+                switch (event.getType()) {
+                    case BundleEvent.RESOLVED:
+                        TracingUtilities.traceResolution(OSGiModulesRegistryImpl.this,
+                                event.getBundle().getBundleId(),
+                                event.getBundle().getSymbolicName());
+                         break;
+                    case BundleEvent.STARTED:
+                        TracingUtilities.traceStarted(OSGiModulesRegistryImpl.this,
+                                event.getBundle().getBundleId(),
+                                event.getBundle().getSymbolicName());
+                        break;
+                 }
+            }
+            });
+        }
         // This is purposefully made an asyncronous bundle listener
         BundleListener bundleListener = new BundleListener() {
             public void bundleChanged(BundleEvent event) {
