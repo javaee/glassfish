@@ -1,5 +1,4 @@
-<html>
-<!--
+<%--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
@@ -39,8 +38,9 @@
     only if the new code is made subject to such option by the copyright
     holder.
 
--->
+--%>
 
+<html>
   <head/>
   <body>
     <p><% out.print("Hello World!"); %></p>

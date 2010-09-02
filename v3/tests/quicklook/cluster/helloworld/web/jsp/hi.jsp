@@ -1,6 +1,4 @@
-<html>
-<head>
-<!--
+<%--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
@@ -40,8 +38,10 @@
     only if the new code is made subject to such option by the copyright
     holder.
 
--->
+--%>
 
+<html>
+<head>
 <title>JSP Test</title>
 <%!
 String message = "Hello, World.";

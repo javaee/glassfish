@@ -1,7 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
-<html>
-<head>
-<!--
+<%--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
@@ -41,8 +38,11 @@
     only if the new code is made subject to such option by the copyright
     holder.
 
--->
+--%>
 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
 <META HTTP-EQUIV="pragma" CONTENT="no-cache">
 
 <title>simple auth quicklook test</title>

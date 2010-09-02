@@ -1,4 +1,4 @@
-<!--
+<%--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
@@ -38,7 +38,7 @@
     only if the new code is made subject to such option by the copyright
     holder.
 
--->
+--%>
 
 <%@ taglib prefix="h" uri="http://java.sun.com/jsf/html"%>
 <%@ taglib prefix="f" uri="http://java.sun.com/jsf/core"%>
