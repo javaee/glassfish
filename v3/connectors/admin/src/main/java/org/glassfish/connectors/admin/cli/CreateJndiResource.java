@@ -104,9 +104,6 @@ public class CreateJndiResource implements AdminCommand {
     private String jndiName;
 
     @Inject
-    private Resources resources;
-
-    @Inject
     private Domain domain;
 
     @Inject
@@ -122,7 +119,7 @@ public class CreateJndiResource implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         // ensure we don't already have one of this name
-        if (resources.getResourceByName(BindableResource.class, jndiName) != null){
+        if (domain.getResources().getResourceByName(BindableResource.class, jndiName) != null){
             report.setMessage(localStrings.getLocalString(
                     "create.jndi.resource.duplicate.1",
                     "Resource named {0} already exists.",
@@ -164,7 +161,7 @@ public class CreateJndiResource implements AdminCommand {
                     param.getResources().add(newResource);
                     return newResource;
                 }
-            }, resources);
+            }, domain.getResources());
 
             resourceUtil.createResourceRef(jndiName, enabledValueForTarget.toString(), target);
             report.setMessage(localStrings.getLocalString(

@@ -85,9 +85,6 @@ public class DeleteJndiResource implements AdminCommand {
     private String jndiName;
 
     @Inject
-    private Resources resources;
-
-    @Inject
     private Domain domain;
 
     @Inject
@@ -107,7 +104,7 @@ public class DeleteJndiResource implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         // ensure we already have this resource
-        if (!isResourceExists(resources, jndiName)) {
+        if (!isResourceExists(domain.getResources(), jndiName)) {
             report.setMessage(localStrings.getLocalString(
                     "delete.jndi.resource.notfound",
                     "A jndi resource named {0} does not exist.", jndiName));
@@ -157,13 +154,13 @@ public class DeleteJndiResource implements AdminCommand {
                 public Object run(Resources param) throws PropertyVetoException,
                         TransactionFailure {
                     ExternalJndiResource resource = (ExternalJndiResource)
-                            resources.getResourceByName(ExternalJndiResource.class, jndiName);
+                            domain.getResources().getResourceByName(ExternalJndiResource.class, jndiName);
                     if (resource.getJndiName().equals(jndiName)) {
                         return param.getResources().remove(resource);
                     }
                     return null;
                 }
-            }, resources);
+            }, domain.getResources());
 
             report.setMessage(localStrings.getLocalString("" +
                     "delete.jndi.resource.success",

@@ -98,9 +98,6 @@ public class CreateResourceAdapterConfig implements AdminCommand {
     private String objectType;
 
     @Inject
-    private Resources resources;
-
-    @Inject
     private Applications applications;
 
     @Inject
@@ -153,7 +150,7 @@ public class CreateResourceAdapterConfig implements AdminCommand {
 
         ResourceAdapterConfigManager resAdapterConfigMgr = new ResourceAdapterConfigManager();
         try {
-            rs = resAdapterConfigMgr.create(resources, attrList, properties, target);
+            rs = resAdapterConfigMgr.create(domain.getResources(), attrList, properties, target);
         } catch (Exception ex) {
             Logger.getLogger(CreateResourceAdapterConfig.class.getName()).log(
                     Level.SEVERE,

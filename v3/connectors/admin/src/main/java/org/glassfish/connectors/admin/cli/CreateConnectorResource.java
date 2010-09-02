@@ -107,7 +107,7 @@ public class CreateConnectorResource implements AdminCommand {
     private String jndiName;
 
     @Inject
-    private Resources resources;
+    private Domain domain;
 
     @Inject
     private ConnectorResourceManager connResMgr;
@@ -131,7 +131,7 @@ public class CreateConnectorResource implements AdminCommand {
         ResourceStatus rs;
 
         try {
-            rs = connResMgr.create(resources, attrList, properties, target);
+            rs = connResMgr.create(domain.getResources(), attrList, properties, target);
         } catch(Exception e) {
             Logger.getLogger(CreateConnectorResource.class.getName()).log(Level.SEVERE,
                     "Unable to create connector resource " + jndiName, e);

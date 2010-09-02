@@ -157,9 +157,6 @@ public class CreateConnectorConnectionPool implements AdminCommand {
     String poolname;
 
     @Inject
-    private Resources resources;
-
-    @Inject
     private Domain domain;
 
     @Inject
@@ -207,7 +204,7 @@ public class CreateConnectorConnectionPool implements AdminCommand {
 
         try {
             ConnectorConnectionPoolManager connPoolMgr = habitat.getComponent(ConnectorConnectionPoolManager.class);
-            rs = connPoolMgr.create(resources, attrList, properties, target);
+            rs = connPoolMgr.create(domain.getResources(), attrList, properties, target);
         } catch(Exception e) {
             Logger.getLogger(CreateConnectorConnectionPool.class.getName()).log(Level.SEVERE,
                     "Unable to create connector connection pool " + poolname, e);

@@ -85,9 +85,6 @@ public class DeleteConnectorWorkSecurityMap implements AdminCommand {
     private String mapName;
 
     @Inject
-    private Resources resources;
-
-    @Inject
     private Domain domain;
 
     /**
@@ -126,7 +123,7 @@ public class DeleteConnectorWorkSecurityMap implements AdminCommand {
                     }
                     return workSecurityMaps;
                 }
-            }, resources);
+            }, domain.getResources());
 
         } catch (TransactionFailure tfe) {
             Logger.getLogger(DeleteConnectorWorkSecurityMap.class.getName()).log(Level.SEVERE,
@@ -144,7 +141,7 @@ public class DeleteConnectorWorkSecurityMap implements AdminCommand {
     }
 
     private boolean isResourceExists() {
-        for (Resource resource : resources.getResources()) {
+        for (Resource resource : domain.getResources().getResources()) {
             if (resource instanceof WorkSecurityMap) {
                 if (((WorkSecurityMap) resource).getName().equals(mapName) &&
                         ((WorkSecurityMap) resource).getResourceAdapterName().equals(raName))

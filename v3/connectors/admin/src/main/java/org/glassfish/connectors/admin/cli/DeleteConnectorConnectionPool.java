@@ -86,7 +86,7 @@ public class DeleteConnectorConnectionPool implements AdminCommand {
     private String poolname;
     
     @Inject
-    private Resources resources;
+    private Domain domain;
     
     @Inject
     private Server[] servers;
@@ -108,7 +108,7 @@ public class DeleteConnectorConnectionPool implements AdminCommand {
         }
 
         // ensure we already have this resource
-        if(resources.getResourceByName(ConnectorConnectionPool.class, poolname) == null){
+        if(domain.getResources().getResourceByName(ConnectorConnectionPool.class, poolname) == null){
             report.setMessage(localStrings.getLocalString("delete.connector.connection.pool.notfound",
                     "A connector connection pool named {0} does not exist.", poolname));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -119,7 +119,7 @@ public class DeleteConnectorConnectionPool implements AdminCommand {
 
             // if cascade=true delete all the resources associated with this pool
             // if cascade=false don't delete this connection pool if a resource is referencing it
-            Object obj = deleteAssociatedResources(servers, resources,
+            Object obj = deleteAssociatedResources(servers, domain.getResources(),
                     cascade, poolname);
             if (obj instanceof Integer &&
                     (Integer) obj == ResourceStatus.FAILURE) {
@@ -135,14 +135,14 @@ public class DeleteConnectorConnectionPool implements AdminCommand {
             if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
                     ConnectorConnectionPool cp = (ConnectorConnectionPool)
-                            resources.getResourceByName(ConnectorConnectionPool.class, poolname);
+                            domain.getResources().getResourceByName(ConnectorConnectionPool.class, poolname);
                     if(cp != null){
                         return param.getResources().remove(cp);
                     }
                     // not found
                     return null;
                 }
-            }, resources) == null) {
+            }, domain.getResources()) == null) {
                 report.setMessage(localStrings.getLocalString("delete.connector.connection.pool.notfound",
                                 "A connector connection pool named {0} does not exist.", poolname));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);

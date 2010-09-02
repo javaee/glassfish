@@ -121,7 +121,7 @@ public class CreateJavaMailResource implements AdminCommand {
 
 
     @Inject
-    private Resources resources;
+    private Domain domain;
 
     @Inject
     private JavaMailResourceManager mailResMgr;
@@ -152,7 +152,7 @@ public class CreateJavaMailResource implements AdminCommand {
         ResourceStatus rs;
 
         try {
-            rs = mailResMgr.create(resources, attributes, properties, target);
+            rs = mailResMgr.create(domain.getResources(), attributes, properties, target);
         } catch(Exception e) {
             Logger.getLogger(CreateJavaMailResource.class.getName()).log(Level.SEVERE,
                     "Unable to create Mail Resource " + jndiName, e);

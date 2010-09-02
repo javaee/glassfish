@@ -76,9 +76,6 @@ public class ListConnectorWorkSecurityMaps implements AdminCommand {
     String raName;
 
     @Inject
-    Resources resources;
-
-    @Inject
     Domain domain;
 
     /**

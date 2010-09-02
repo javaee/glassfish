@@ -60,9 +60,6 @@ import java.util.Map;
 public class ListResources implements AdminCommand {
 
     @Inject
-    private Resources resources;
-
-    @Inject
     private Applications applications;
 
     @Param(optional = false, name="appname")

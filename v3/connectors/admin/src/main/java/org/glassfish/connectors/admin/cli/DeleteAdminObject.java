@@ -84,9 +84,6 @@ public class DeleteAdminObject implements AdminCommand {
     private String jndiName;
 
     @Inject
-    private Resources resources;
-
-    @Inject
     private ResourceUtil resourceUtil;
 
     @Inject
@@ -113,7 +110,7 @@ public class DeleteAdminObject implements AdminCommand {
         }
 
         // ensure we already have this resource
-        if (!isResourceExists(resources, jndiName)) {
+        if (!isResourceExists(domain.getResources(), jndiName)) {
             report.setMessage(localStrings.getLocalString("delete.admin.object.notfound",
                     "An administered object named {0} does not exist.", jndiName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -158,10 +155,10 @@ public class DeleteAdminObject implements AdminCommand {
             // delete admin-object-resource
             if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                    Resource resource = resources.getResourceByName(AdminObjectResource.class, jndiName);
+                    Resource resource = domain.getResources().getResourceByName(AdminObjectResource.class, jndiName);
                     return param.getResources().remove(resource);
                 }
-            }, resources) == null) {
+            }, domain.getResources()) == null) {
                 report.setMessage(localStrings.getLocalString("delete.admin.object.fail",
                                 "Unable to delete administered object {0}", jndiName));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);

@@ -97,9 +97,6 @@ public class CreateJdbcResource implements AdminCommand {
     private String jndiName;
     
     @Inject
-    private Resources resources;
-    
-    @Inject
     private Domain domain;
 
     @Inject
@@ -122,7 +119,7 @@ public class CreateJdbcResource implements AdminCommand {
         ResourceStatus rs;
  
         try {
-            rs = jdbcMgr.create(resources, attrList, properties, target);
+            rs = jdbcMgr.create(domain.getResources(), attrList, properties, target);
         } catch(Exception e) {
             report.setMessage(localStrings.getLocalString("create.jdbc.resource.failed",
                     "JDBC resource {0} creation failed", jndiName));

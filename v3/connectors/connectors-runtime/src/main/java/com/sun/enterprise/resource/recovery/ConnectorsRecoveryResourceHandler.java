@@ -87,7 +87,7 @@ import org.jvnet.hk2.component.Habitat;
 public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandler {
 
     @Inject
-    private Resources resources;
+    private Domain domain;
 
     @Inject
     private Applications applications;
@@ -109,9 +109,9 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
     private static Logger _logger = LogDomains.getLogger(ConnectorsRecoveryResourceHandler.class, LogDomains.RSR_LOGGER);
 
 
-    private Collection<ConnectorResource> getConnectorResources() {
+    private Collection<ConnectorResource> getAllConnectorResources() {
         Collection<ConnectorResource> allResources = new ArrayList<ConnectorResource>();
-        Collection<ConnectorResource> connectorResources = resources.getResources(ConnectorResource.class);
+        Collection<ConnectorResource> connectorResources = domain.getResources().getResources(ConnectorResource.class);
         allResources.addAll(connectorResources);
          for(Application app : applications.getApplications()){
              if(ResourcesUtil.createInstance().isEnabled(app)){
@@ -139,7 +139,7 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
     private void loadAllConnectorResources() {
 
         try {
-            Collection<ConnectorResource> connResources = getConnectorResources();
+            Collection<ConnectorResource> connResources = getAllConnectorResources();
             InitialContext ic = new InitialContext();
             for (ConnectorResource connResource : connResources) {
                 if(getResourcesUtil().isEnabled(connResource)) {
@@ -204,7 +204,7 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
      */
     public void loadXAResourcesAndItsConnections(List xaresList, List connList) {
 
-        Collection<ConnectorResource> connectorResources = resources.getResources(ConnectorResource.class);
+        Collection<ConnectorResource> connectorResources = getAllConnectorResources();
 
         if (connectorResources == null || connectorResources.size() == 0) {
             return;

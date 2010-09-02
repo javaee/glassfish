@@ -84,9 +84,6 @@ public class DeleteConnectorResource implements AdminCommand {
     private String jndiName;
 
     @Inject
-    private Resources resources;
-    
-    @Inject
     private ResourceUtil resourceUtil;
     
     @Inject
@@ -113,7 +110,7 @@ public class DeleteConnectorResource implements AdminCommand {
         }
 
         // ensure we already have this resource
-        if (!isResourceExists(resources, jndiName)) {
+        if (!isResourceExists(domain.getResources(), jndiName)) {
             report.setMessage(localStrings.getLocalString("delete.connector.resource.notfound",
                     "A connector resource named {0} does not exist.", jndiName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -160,10 +157,10 @@ public class DeleteConnectorResource implements AdminCommand {
             if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
                     ConnectorResource resource = (ConnectorResource)
-                            resources.getResourceByName(ConnectorResource.class, jndiName );
+                            domain.getResources().getResourceByName(ConnectorResource.class, jndiName );
                     return param.getResources().remove(resource);
                 }
-            }, resources) == null) {
+            }, domain.getResources()) == null) {
                 report.setMessage(localStrings.getLocalString("delete.connector.resource.fail",
                                 "Connector resource {0} delete failed ", jndiName));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);

@@ -82,9 +82,6 @@ public class DeleteCustomResource implements AdminCommand {
     private String jndiName;
 
     @Inject
-    private Resources resources;
-
-    @Inject
     private Domain domain;
 
     @Inject
@@ -104,7 +101,7 @@ public class DeleteCustomResource implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         // ensure we already have this resource
-        if(resources.getResourceByName(CustomResource.class, jndiName) == null){
+        if(domain.getResources().getResourceByName(CustomResource.class, jndiName) == null){
             report.setMessage(localStrings.getLocalString(
                     "delete.custom.resource.notfound",
                     "A custom resource named {0} does not exist.", jndiName));
@@ -154,13 +151,13 @@ public class DeleteCustomResource implements AdminCommand {
                 public Object run(Resources param) throws PropertyVetoException,
                         TransactionFailure {
                     CustomResource resource = (CustomResource)
-                            resources.getResourceByName(CustomResource.class, jndiName);
+                            domain.getResources().getResourceByName(CustomResource.class, jndiName);
                         if (resource != null && resource.getJndiName().equals(jndiName)) {
                             return param.getResources().remove(resource);
                         }
                     return null;
                 }
-            }, resources);
+            }, domain.getResources());
 
             report.setMessage(localStrings.getLocalString("delete.custom.resource.success",
                     "Custom resource {0} deleted", jndiName));

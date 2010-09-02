@@ -86,9 +86,6 @@ public class AddResources implements AdminCommand {
     private File xmlFile;
     
     @Inject
-    private Resources resources;
-    
-    @Inject
     private Domain domain;
 
     @Inject
@@ -113,7 +110,7 @@ public class AddResources implements AdminCommand {
         
         try {
             final ArrayList results = ResourcesManager.createResources(
-                    resources, xmlFile, target, resourceFactory);
+                    domain.getResources(), xmlFile, target, resourceFactory);
             final Iterator resultsIter = results.iterator();
             report.getTopMessagePart().setChildrenType("Command");
             boolean isSuccess = false;

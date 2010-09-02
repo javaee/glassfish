@@ -56,6 +56,7 @@ package com.sun.enterprise.resource.deployer;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.config.serverbeans.BindableResource;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
@@ -111,7 +112,7 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
     private ConnectorRuntime runtime;
 
     @Inject(optional=true) //we need it only in server mode
-    private Resources resources;
+    private Domain domain;
 
     static private StringManager sm = StringManager.getManager(
             JdbcConnectionPoolDeployer.class);
@@ -885,7 +886,8 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
 
         recreatePool(connConnPool);
 
-        Collection<BindableResource> resourcesList = resources.getResourcesOfPool(connConnPool.getName());
+        //TODO ASR need to handle app-scoped-resources also
+        Collection<BindableResource> resourcesList = domain.getResources().getResourcesOfPool(connConnPool.getName());
         for (BindableResource bindableResource : resourcesList) {
 
             ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(bindableResource);

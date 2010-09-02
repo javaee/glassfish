@@ -99,7 +99,7 @@ public class CreateCustomResource implements AdminCommand {
     private String jndiName;
 
     @Inject
-    private Resources resources;
+    private Domain domain;
 
     @Inject
     private CustomResourceManager customResMgr;
@@ -123,7 +123,7 @@ public class CreateCustomResource implements AdminCommand {
         ResourceStatus rs;
 
         try {
-            rs = customResMgr.create(resources, attrList, properties, target);
+            rs = customResMgr.create(domain.getResources(), attrList, properties, target);
         } catch(Exception e) {
             Logger.getLogger(CreateCustomResource.class.getName()).log(Level.SEVERE,
                     "Unable to create custom resource " + jndiName, e);

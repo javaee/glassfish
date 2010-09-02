@@ -96,7 +96,7 @@ public class CreateConnectorWorkSecurityMap implements AdminCommand {
     private String mapName;
 
     @Inject
-    private Resources resources;
+    private Domain domain;
 
     @Inject
     private Applications applications;
@@ -147,7 +147,7 @@ public class CreateConnectorWorkSecurityMap implements AdminCommand {
         }
 
         // ensure we don't already have one of this name
-        if (hasDuplicate(resources, report)) return;
+        if (hasDuplicate(domain.getResources(), report)) return;
 
         //TODO ASR : need similar validation while creating app-scoped-resource of w-s-m
         String appName = raName;
@@ -210,7 +210,7 @@ public class CreateConnectorWorkSecurityMap implements AdminCommand {
                     param.getResources().add(workSecurityMap);
                     return workSecurityMap;
                 }
-            }, resources);
+            }, domain.getResources());
             
         } catch (TransactionFailure tfe) {
             Logger.getLogger(CreateConnectorWorkSecurityMap.class.getName()).log(Level.SEVERE,

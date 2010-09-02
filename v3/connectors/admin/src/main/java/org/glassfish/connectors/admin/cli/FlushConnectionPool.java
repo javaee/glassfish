@@ -68,7 +68,7 @@ public class FlushConnectionPool implements AdminCommand {
     private String poolName;
 
     @Inject
-    private Resources resources;
+    private Domain domain;
 
     @Param(name="appname", optional=true)
     private String applicationName;
@@ -88,7 +88,7 @@ public class FlushConnectionPool implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
-        Resources resources = this.resources;
+        Resources resources = domain.getResources();
         String scope = "";
         if(moduleName != null){
             if(!poolUtil.isValidModule(applicationName, moduleName, poolName, report)){

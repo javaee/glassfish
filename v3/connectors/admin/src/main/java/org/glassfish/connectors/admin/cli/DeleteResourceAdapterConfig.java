@@ -77,7 +77,7 @@ public class DeleteResourceAdapterConfig implements AdminCommand {
     private String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
     @Inject
-    private Resources resources;
+    private Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -96,7 +96,7 @@ public class DeleteResourceAdapterConfig implements AdminCommand {
         }
 
         // ensure we already have this resource
-        if(resources.getResourceByName(ResourceAdapterConfig.class, raName) == null){
+        if(domain.getResources().getResourceByName(ResourceAdapterConfig.class, raName) == null){
             report.setMessage(localStrings.getLocalString("delete.resource.adapter.config.notfound",
                     "Resource-Adapter-Config for {0} does not exist.", raName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -108,14 +108,14 @@ public class DeleteResourceAdapterConfig implements AdminCommand {
             if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
                     ResourceAdapterConfig resource = (ResourceAdapterConfig)
-                            resources.getResourceByName(ResourceAdapterConfig.class, raName);
+                            domain.getResources().getResourceByName(ResourceAdapterConfig.class, raName);
                     if (resource != null && resource.getResourceAdapterName().equals(raName)) {
                         return param.getResources().remove(resource);
                     }
                     // not found
                     return null;
                 }
-            }, resources) == null) {
+            }, domain.getResources()) == null) {
                 report.setMessage(localStrings.getLocalString("delete.resource.adapter.config.fail",
                                 "Unable to delete resource adapter config {0}", raName));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);

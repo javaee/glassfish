@@ -102,10 +102,9 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
     private ApplicationScopedResourcesManager asrManager;
 
     @Inject
-    private Resources resources;
-
-    @Inject
     private Domain domain;
+
+    private Resources resources;
 
     @Inject
     private Events events;
@@ -419,6 +418,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
      * will be placed into commission by the subsystem.
      */
     public void postConstruct() {
+        resources = domain.getResources();
     }
 
     public void logFine(String message) {

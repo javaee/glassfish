@@ -112,9 +112,6 @@ public class CreateAdminObject implements AdminCommand {
     private String jndiName;
     
     @Inject
-    private Resources resources;
-    
-    @Inject
     private Domain domain;
 
     @Inject
@@ -141,7 +138,7 @@ public class CreateAdminObject implements AdminCommand {
 
         try {
             AdminObjectManager adminObjMgr = habitat.getComponent(AdminObjectManager.class);
-            rs = adminObjMgr.create(resources, attrList, properties, target);
+            rs = adminObjMgr.create(domain.getResources(), attrList, properties, target);
         } catch(Exception e) {
             Logger.getLogger(CreateAdminObject.class.getName()).log(Level.SEVERE,
                     "Something went wrong in create-admin-object", e);

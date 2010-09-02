@@ -81,7 +81,7 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
     private TransactionService txService;
 
     @Inject
-    private Resources resources;
+    private Domain domain;
 
     @Inject
     private Applications applications;
@@ -97,7 +97,7 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
 
         _logger.log(Level.FINEST, "loadAllJdbcResources start");
         try {
-            Collection<JdbcResource> jdbcResources = getJdbcResources();
+            Collection<JdbcResource> jdbcResources = getAllJdbcResources();
             InitialContext ic = new InitialContext();
             for (Resource resource : jdbcResources) {
                 JdbcResource jdbcResource = (JdbcResource) resource;
@@ -122,9 +122,9 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
         _logger.log(Level.FINEST, "loadAllJdbcResources end");
     }
 
-    private Collection<JdbcResource> getJdbcResources() {
+    private Collection<JdbcResource> getAllJdbcResources() {
         Collection<JdbcResource> allResources = new ArrayList<JdbcResource>();
-        Collection<JdbcResource> jdbcResources = resources.getResources(JdbcResource.class);
+        Collection<JdbcResource> jdbcResources = domain.getResources().getResources(JdbcResource.class);
         allResources.addAll(jdbcResources);
          for(Application app : applications.getApplications()){
              if(ResourcesUtil.createInstance().isEnabled(app)){
@@ -158,7 +158,7 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
      */
     public void loadXAResourcesAndItsConnections(List xaresList, List connList) {
 
-        Collection<JdbcResource> jdbcResources = getJdbcResources();
+        Collection<JdbcResource> jdbcResources = getAllJdbcResources();
 
         if (jdbcResources == null || jdbcResources.size() == 0) {
             if (_logger.isLoggable(Level.FINEST)) {

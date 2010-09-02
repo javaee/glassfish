@@ -87,7 +87,7 @@ public class UpdateConnectorWorkSecurityMap implements AdminCommand {
     String securityMapName;
 
     @Inject
-    Resources resources;
+    Domain domain;
 
 
     public void execute(AdminCommandContext context) {
@@ -101,14 +101,14 @@ public class UpdateConnectorWorkSecurityMap implements AdminCommand {
             return;
         }
 
-        if (!WorkSecurityMapHelper.doesResourceAdapterNameExist(raName, resources)) {
+        if (!WorkSecurityMapHelper.doesResourceAdapterNameExist(raName, domain.getResources())) {
             report.setMessage(localStrings.getLocalString("update.connector.work.security.map.noSuchRAFound",
                     "Resource Adapter {0} does not exist. Please specify a resource adapter name.", raName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
 
-        if (!WorkSecurityMapHelper.doesMapNameExist(raName, securityMapName, resources)) {
+        if (!WorkSecurityMapHelper.doesMapNameExist(raName, securityMapName, domain.getResources())) {
             report.setMessage(localStrings.getLocalString("update.connector.work.security.map.mapNotExist",
                     "WorkSecurity map {0} does not exist for resource adapter {1}. Please give a valid map name.",
                     securityMapName, raName));
@@ -157,7 +157,7 @@ public class UpdateConnectorWorkSecurityMap implements AdminCommand {
             }
         }
 
-        WorkSecurityMap map = WorkSecurityMapHelper.getSecurityMap(securityMapName, raName, resources);
+        WorkSecurityMap map = WorkSecurityMapHelper.getSecurityMap(securityMapName, raName, domain.getResources());
         final List<PrincipalMap> existingPrincipals = new ArrayList(map.getPrincipalMap());
         final List<GroupMap> existingUserGroups = new ArrayList(map.getGroupMap());
 

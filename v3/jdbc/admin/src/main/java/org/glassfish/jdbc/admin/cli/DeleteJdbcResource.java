@@ -82,9 +82,6 @@ public class DeleteJdbcResource implements AdminCommand {
     private String jndiName;
 
     @Inject
-    private Resources resources;
-    
-    @Inject
     private Domain domain;
 
     @Inject
@@ -100,7 +97,7 @@ public class DeleteJdbcResource implements AdminCommand {
 
         final ActionReport report = context.getActionReport();
         try {
-            ResourceStatus rs = jdbcResMgr.delete(resources, jndiName, target);
+            ResourceStatus rs = jdbcResMgr.delete(domain.getResources(), jndiName, target);
             if (rs.getStatus() == ResourceStatus.SUCCESS) {
                 report.setActionExitCode(ActionReport.ExitCode.SUCCESS);       
             } else {

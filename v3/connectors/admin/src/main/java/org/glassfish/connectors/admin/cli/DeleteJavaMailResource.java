@@ -87,9 +87,6 @@ public class DeleteJavaMailResource implements AdminCommand {
     private String jndiName;
 
     @Inject
-    private Resources resources;
-
-    @Inject
     private Domain domain;
 
     @Inject
@@ -109,7 +106,7 @@ public class DeleteJavaMailResource implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         // ensure we already have this resource
-        if (!isResourceExists(resources, jndiName)) {
+        if (!isResourceExists(domain.getResources(), jndiName)) {
             report.setMessage(localStrings.getLocalString(
                     "delete.mail.resource.notfound",
                     "A Mail resource named {0} does not exist.", jndiName));
@@ -157,10 +154,10 @@ public class DeleteJavaMailResource implements AdminCommand {
             ConfigSupport.apply(new SingleConfigCode<Resources>() {
                 public Object run(Resources param) throws PropertyVetoException,
                         TransactionFailure {
-                    MailResource resource = (MailResource)resources.getResourceByName(MailResource.class, jndiName);
+                    MailResource resource = (MailResource)domain.getResources().getResourceByName(MailResource.class, jndiName);
                     return param.getResources().remove(resource);
                 }
-            }, resources);
+            }, domain.getResources());
 
             report.setMessage(localStrings.getLocalString(
                     "delete.mail.resource.success",

@@ -75,7 +75,7 @@ public class PingConnectionPool implements AdminCommand {
     private ConnectorRuntime connRuntime;
 
     @Inject
-    private Resources resources;
+    private Domain domain;
 
     @Param(name="appname", optional=true)
     private String applicationName;
@@ -101,7 +101,7 @@ public class PingConnectionPool implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
         boolean status = false;
-        Resources resources = this.resources;
+        Resources resources = domain.getResources();
         String scope = "";
         if(moduleName != null){
             if(!poolUtil.isValidModule(applicationName, moduleName, poolName, report)){

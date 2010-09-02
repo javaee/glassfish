@@ -88,9 +88,6 @@ public class CreateResourceRef implements AdminCommand {
     private Domain domain;
     
     @Inject
-    private Resources resources;
-
-    @Inject
     private ServerEnvironment environment;
 
     @Inject
@@ -162,6 +159,6 @@ public class CreateResourceRef implements AdminCommand {
 
     private boolean isResourceExists(String jndiName) {
         //resource-ref is created only for a BindableResource
-        return resources.getResourceByName(BindableResource.class, jndiName) != null;
+        return domain.getResources().getResourceByName(BindableResource.class, jndiName) != null;
     }
 }
