@@ -45,6 +45,7 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.ThreadPool;
 import org.jvnet.hk2.config.types.Property;
 import org.glassfish.server.ServerEnvironmentImpl;
 
@@ -69,6 +70,7 @@ public final class AdminEndpointDecider {
     
     private int port;  // both asadmin and admin GUI are on same port
     private InetAddress address;
+    private int maxThreadPoolSize = 5;
     private Config cfg;
     private Logger log;
     
@@ -89,7 +91,11 @@ public final class AdminEndpointDecider {
     public InetAddress getListenAddress() {
         return address;
     }
-    
+
+    public int getMaxThreadPoolSize() {
+        return maxThreadPoolSize;
+    }
+
     public List<String> getAsadminHosts() {
         return asadminHosts;
     }
@@ -110,6 +116,13 @@ public final class AdminEndpointDecider {
         asadminContextRoot = AdminAdapter.PREFIX_URI;  //can't change
         //asadminHosts       = Collections.emptyList();  //asadmin is handled completely by the adapter, no VS needed
         NetworkListener nl = cfg.getAdminListener();
+        ThreadPool tp = nl.findThreadPool();
+        if (tp != null) {
+            try {
+                maxThreadPoolSize = Integer.valueOf(tp.getMaxThreadPoolSize());
+            } catch (NumberFormatException ne) {
+            }
+        }
         String dvs     = nl.findHttpProtocol().getHttp().getDefaultVirtualServer();
         guiHosts       = Collections.unmodifiableList(Arrays.asList(dvs));
         asadminHosts   = guiHosts;  //same for now

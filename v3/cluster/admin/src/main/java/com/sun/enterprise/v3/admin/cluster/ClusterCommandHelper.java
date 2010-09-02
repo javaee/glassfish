@@ -62,6 +62,7 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.v3.admin.adapter.AdminEndpointDecider;
 import com.sun.grizzly.config.dom.ThreadPool;
 
 
@@ -165,7 +166,7 @@ class ClusterCommandHelper {
 
         // Make the thread pool use the smaller of the number of instances
         // or half the admin thread pool size.
-        int adminThreadPoolSize = getAdminThreadPoolSize();
+        int adminThreadPoolSize = getAdminThreadPoolSize(logger);
         int threadPoolSize = Math.min(nInstances, adminThreadPoolSize / 2);
         if (threadPoolSize < 1)
             threadPoolSize = 1;
@@ -275,7 +276,7 @@ class ClusterCommandHelper {
     /**
      * Get the size of the admin threadpool
      */
-    private int getAdminThreadPoolSize() {
+    private int getAdminThreadPoolSize(Logger logger) {
 
         final int DEFAULT_POOL_SIZE = 5;
 
@@ -284,24 +285,8 @@ class ClusterCommandHelper {
         if (config == null)
             return DEFAULT_POOL_SIZE;
 
-        // Get the list of thread pools
-        List<ThreadPool> pools = config.getThreadPools().getThreadPool();
-
-        // Find the http-thread-pool
-        ThreadPool target = null;
-        for (ThreadPool pool : pools) {
-            if ("http-thread-pool".equals(pool.getName())) {
-                target = pool;
-            }
-        }
-
-        if (target == null && !pools.isEmpty()) {
-            target = pools.get(0);
-        }
-
-        int n = Integer.parseInt(target.getMaxThreadPoolSize());
-
-        return n;
+        AdminEndpointDecider aed = new AdminEndpointDecider(config, logger);
+        return aed.getMaxThreadPoolSize();
     }
 
     /**

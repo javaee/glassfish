@@ -226,13 +226,14 @@
         <network-listeners>
           <network-listener port="%%%HTTP_PORT%%%" protocol="http-listener-1" transport="tcp" name="http-listener-1" thread-pool="http-thread-pool"></network-listener>
           <network-listener port="%%%HTTP_SSL_PORT%%%" protocol="http-listener-2" transport="tcp" name="http-listener-2" thread-pool="http-thread-pool"></network-listener>
-          <network-listener port="%%%ADMIN_PORT%%%" protocol="admin-listener" transport="tcp" name="admin-listener" thread-pool="http-thread-pool"></network-listener>
+          <network-listener port="%%%ADMIN_PORT%%%" protocol="admin-listener" transport="tcp" name="admin-listener" thread-pool="admin-thread-pool"></network-listener>
         </network-listeners>
         <transports>
           <transport name="tcp"></transport>
         </transports>
       </network-config>
       <thread-pools>
+          <thread-pool name="admin-thread-pool" max-thread-pool-size="50" max-queue-size="256"></thread-pool>
           <thread-pool name="http-thread-pool" max-queue-size="4096"></thread-pool>
           <thread-pool name="thread-pool-1" max-thread-pool-size="200"/>
       </thread-pools>
