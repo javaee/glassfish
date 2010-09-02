@@ -48,6 +48,10 @@ import com.sun.gjc.monitoring.JdbcStatsProvider;
 import com.sun.gjc.util.SQLTraceDelegator;
 import com.sun.gjc.util.SecurityUtils;
 import com.sun.logging.LogDomains;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -85,13 +89,13 @@ import org.glassfish.resource.common.PoolInfo;
 public abstract class ManagedConnectionFactory implements javax.resource.spi.ManagedConnectionFactory,
         javax.resource.spi.ValidatingManagedConnectionFactory, 
         MCFLifecycleListener, ResourceAdapterAssociation,
-        java.io.Serializable {
+        java.io.Serializable, Externalizable {
 
     protected DataSourceSpec spec = new DataSourceSpec();
     protected transient DataSourceObjectBuilder dsObjBuilder;
 
     protected java.io.PrintWriter logWriter = null;
-    protected javax.resource.spi.ResourceAdapter ra = null;
+    protected transient javax.resource.spi.ResourceAdapter ra = null;
 
     private static Logger _logger;
     protected boolean statementWrapping;
@@ -1419,5 +1423,12 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
                         + statementLeakReclaim + " for pool : " + getPoolMonitoringSubTreeRoot());
             }
         }
+    }
+
+    public void writeExternal(ObjectOutput out) throws IOException {
+    }
+
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        ra = com.sun.gjc.spi.ResourceAdapter.getInstance();
     }
 }

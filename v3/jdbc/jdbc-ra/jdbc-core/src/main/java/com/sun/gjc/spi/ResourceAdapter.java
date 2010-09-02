@@ -71,9 +71,21 @@ import javax.transaction.xa.XAResource;
     }
 )
 public class ResourceAdapter implements javax.resource.spi.ResourceAdapter {
+    private static ResourceAdapter ra;
     private BootstrapContext bootstrapContext;
     private Timer timer;
     private static Logger _logger = LogDomains.getLogger(ResourceAdapter.class, LogDomains.RSR_LOGGER);
+
+    public ResourceAdapter() {
+        ra = this;
+    }
+
+    public static ResourceAdapter getInstance() {
+        if(ra == null) {
+            throw new IllegalStateException("ResourceAdapter not initialized");
+        }
+        return ra;
+    }
 
     /**
      * Empty method implementation for endpointActivation
