@@ -392,7 +392,7 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
         if (descriptor instanceof BundleDescriptor) {
             ((BundleDescriptor)descriptor).setApplication(app);
         }
-
+        descriptor.setHabitat(habitat);
         ModuleDescriptor newModule = createModuleDescriptor(descriptor);
         newModule.setArchiveUri(contentArchive.getURI().getSchemeSpecificPart());
         return readRestDeploymentDescriptors(descriptor, descriptorArchive, contentArchive, app);
