@@ -92,10 +92,9 @@ public class EntityManagerFactoryReferenceDescriptor extends
     }    
     
     boolean isConflict(EntityManagerFactoryReferenceDescriptor other) {
-        return (!(getName().equals(other.getName()) &&
-                DOLUtils.equals(getUnitName(), other.getUnitName()))
-                ) ||
-            isConflictResourceGroup(other);
+        return (getName().equals(other.getName())) &&
+            (!DOLUtils.equals(getUnitName(), other.getUnitName())
+            || isConflictResourceGroup(other));
     }
 }
 

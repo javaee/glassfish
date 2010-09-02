@@ -419,11 +419,12 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
     }
 
     boolean isConflict(EnvironmentProperty other) {
-        return (!(getName().equals(other.getName()) &&
+        return (getName().equals(other.getName())) &&
+            (!(
                 DOLUtils.equals(getType(), other.getType()) &&
-                getValue().equals(other.getValue()))
+                getValue().equals(other.getValue())
                 ) ||
-            isConflictResourceGroup(other);
+            isConflictResourceGroup(other));
     }
 
     protected boolean isConflictResourceGroup(EnvironmentProperty other) {

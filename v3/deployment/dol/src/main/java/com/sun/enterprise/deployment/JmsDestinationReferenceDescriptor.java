@@ -147,10 +147,9 @@ public class JmsDestinationReferenceDescriptor extends EnvironmentProperty imple
     }
 
     boolean isConflict(ResourceReferenceDescriptor other) {
-        return (!(getName().equals(other.getName()) &&
-                DOLUtils.equals(getType(), other.getType()))
-                ) ||
-            isConflictResourceGroup(other);
+        return (getName().equals(other.getName())) &&
+            (!DOLUtils.equals(getType(), other.getType())
+            || isConflictResourceGroup(other));
     }
 
     /* Equality on name. */

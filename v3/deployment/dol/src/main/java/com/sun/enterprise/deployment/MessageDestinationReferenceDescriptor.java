@@ -257,12 +257,13 @@ public class MessageDestinationReferenceDescriptor extends EnvironmentProperty
     }
 
     boolean isConflict(MessageDestinationReferenceDescriptor other) {
-        return (!(getName().equals(other.getName()) &&
+        return getName().equals(other.getName()) &&
+            (!(
                 DOLUtils.equals(getDestinationType(), other.getDestinationType()) &&
                 DOLUtils.equals(getUsage(), other.getUsage()) &&
-                DOLUtils.equals(getMessageDestinationLinkName(), other.getMessageDestinationLinkName()))
+                DOLUtils.equals(getMessageDestinationLinkName(), other.getMessageDestinationLinkName())
                 ) ||
-            isConflictResourceGroup(other);
+            isConflictResourceGroup(other));
     }
     
     /* Equality on name. */

@@ -121,12 +121,13 @@ public class EntityManagerReferenceDescriptor extends
     }  
 
     boolean isConflict(EntityManagerReferenceDescriptor other) {
-        return (!(getName().equals(other.getName()) &&
+        return getName().equals(other.getName()) &&
+            (!(
                 DOLUtils.equals(getUnitName(), other.getUnitName()) &&
                 DOLUtils.equals(getPersistenceContextType(), other.getPersistenceContextType()) &&
-                properties.equals(other.properties))
+                properties.equals(other.properties)
                 ) ||
-            isConflictResourceGroup(other);
+            isConflictResourceGroup(other));
     }
 }
 

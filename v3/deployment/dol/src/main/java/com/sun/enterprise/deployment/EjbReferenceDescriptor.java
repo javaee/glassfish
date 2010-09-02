@@ -436,12 +436,13 @@ public class EjbReferenceDescriptor extends EnvironmentProperty implements com.s
     }
 
     boolean isConflict(EjbReferenceDescriptor other) {
-        return (!(getName().equals(other.getName()) &&
+        return (getName().equals(other.getName())) &&
+            (!(
                 DOLUtils.equals(getType(), other.getType()) &&
                 DOLUtils.equals(getEjbHomeInterface(), other.getEjbHomeInterface()) &&
                 DOLUtils.equals(getEjbInterface(), other.getEjbInterface()) &&
-                DOLUtils.equals(getLinkName(), other.getLinkName()))
+                DOLUtils.equals(getLinkName(), other.getLinkName())
                 ) ||
-            isConflictResourceGroup(other);
+            isConflictResourceGroup(other));
     }
 }

@@ -376,7 +376,8 @@ public class DataSourceDefinitionDescriptor extends Descriptor implements java.i
     }
 
     boolean isConflict(DataSourceDefinitionDescriptor other) {
-        return !(getName().equals(other.getName()) &&
+        return (getName().equals(other.getName())) &&
+            !(
                 DOLUtils.equals(getClassName(), other.getClassName()) &&
                 DOLUtils.equals(getServerName(), other.getServerName()) &&
                 getPortNumber() == other.getPortNumber() &&
@@ -392,6 +393,7 @@ public class DataSourceDefinitionDescriptor extends Descriptor implements java.i
                 getMinPoolSize() == other.getMinPoolSize() &&
                 getMaxPoolSize() == other.getMaxPoolSize() &&
                 getMaxIdleTime() == other.getMaxIdleTime() &&
-                getMaxStatements() == other.getMaxStatements());
+                getMaxStatements() == other.getMaxStatements()
+            );
     }
 }

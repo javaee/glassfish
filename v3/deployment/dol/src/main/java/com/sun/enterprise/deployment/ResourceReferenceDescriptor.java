@@ -515,11 +515,11 @@ public class ResourceReferenceDescriptor extends EnvironmentProperty
     // END OF IASRI 4718559, 4729298
 
     boolean isConflict(ResourceReferenceDescriptor other) {
-        return (!(getName().equals(other.getName()) &&
-                DOLUtils.equals(getType(), other.getType()) &&
+        return (getName().equals(other.getName())) &&
+            (!(DOLUtils.equals(getType(), other.getType()) &&
                 getAuthorization().equals(other.getAuthorization()) &&
-                getSharingScope().equals(other.getSharingScope()))
+                getSharingScope().equals(other.getSharingScope())
                 ) ||
-            isConflictResourceGroup(other);
+            isConflictResourceGroup(other));
     }
 }
