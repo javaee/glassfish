@@ -95,7 +95,8 @@ public class WebTest {
                 String line = null;
                 String lastLine = null;
                 while ((line = bis.readLine()) != null) {
-                    lastLine = line;
+                    if (line.trim().length() != 0)
+                        lastLine = line;
                 }
 
                 if (!EXPECTED.equals(lastLine)) {

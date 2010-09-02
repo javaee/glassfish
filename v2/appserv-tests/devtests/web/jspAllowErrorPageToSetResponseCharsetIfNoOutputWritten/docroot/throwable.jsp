@@ -39,5 +39,5 @@
     holder.
 
 --%>
-<%-- make sure no newline at end of file carriage --%>
-<% throw new Throwable(); %>
+<% if (true) throw new Throwable(); %>
+

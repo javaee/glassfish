@@ -40,4 +40,4 @@
 
 --%>
 
-<% throw new java.sql.SQLException(); %>
+<% if (true) throw new java.sql.SQLException(); %>

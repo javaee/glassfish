@@ -39,5 +39,5 @@
     holder.
 
 --%>
-<%-- make sure no new line at end of file --%>
 <% response.sendError(403); %>
+

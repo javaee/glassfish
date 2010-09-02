@@ -46,3 +46,4 @@
 <%! int counter=0; %>
 Counter value: <%= ++counter %>
 </my:custom>
+
