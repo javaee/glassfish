@@ -253,6 +253,10 @@ public class LBCommandsTest extends AdminBaseDevTest {
         asadmin("create-http-lb", DEVICEHOST_OPTION, LOCALHOST,
                 DEVICEPORT_OPTION, "9000", TARGET_OPTION, CLUSTER, LB_NAME);
 
+        //set dummy host for load-balancer xml generation
+        asadmin("set", "nodes.node." + LB_NODE1 + ".node-host=" + LB_NODE_HOST1);
+        asadmin("set", "nodes.node." + LB_NODE2 + ".node-host=" + LB_NODE_HOST2);
+
         //export-httplb-config tests
         deleteXML(loadbalancerXml);
         asadmin("export-http-lb-config",LB_NAME_OPTION, LB_NAME,
@@ -304,6 +308,10 @@ public class LBCommandsTest extends AdminBaseDevTest {
 
         deleteXML(loadbalancerXml);
 
+        //revert dummy host setting
+        asadmin("set", "nodes.node." + LB_NODE1 + ".node-host=" + LOCALHOST);
+        asadmin("set", "nodes.node." + LB_NODE2 + ".node-host=" + LOCALHOST);
+
         //delete-lb
         asadmin("delete-http-lb", LB_NAME);
 
@@ -317,9 +325,9 @@ public class LBCommandsTest extends AdminBaseDevTest {
 
 
     private void createInstances() {
-        asadmin("create-node-ssh", NODE_HOST_OPTION, LB_NODE_HOST1, FORCE_OPTION,
+        asadmin("create-node-ssh", NODE_HOST_OPTION, LOCALHOST, FORCE_OPTION,
                 TRUE, LB_NODE1);
-        asadmin("create-node-ssh", NODE_HOST_OPTION, LB_NODE_HOST2, FORCE_OPTION,
+        asadmin("create-node-ssh", NODE_HOST_OPTION, LOCALHOST, FORCE_OPTION,
                 TRUE, LB_NODE2);
 
         asadmin("create-cluster", CLUSTER);
@@ -448,8 +456,8 @@ public class LBCommandsTest extends AdminBaseDevTest {
     private static final String TARGETS_OPTION="--lbtargets";
     private static final String TARGET_OPTION="--target";
 
-    private static final String CHECKSUM1 = "b6f78293559fac1b27a9c97723e870b0";
-    private static final String CHECKSUM2 = "34711b07ae91258280209534cf1bd7d3";
-    private static final String CHECKSUM3 = "2a5458856cc726a415846213a67bf167";
-    private static final String CHECKSUM4 = "3d114f4f3a9c434e57e86ef82b5daa31";
+    private static final String CHECKSUM1 = "55b3b5ecb57abbc4e26a243c23cd6f25";
+    private static final String CHECKSUM2 = "43508091a420a793861e4794d69d821a";
+    private static final String CHECKSUM3 = "770224183380313c439c47872c3b3027";
+    private static final String CHECKSUM4 = "c068e5072562b0ffbd792bfa9e5964df";
 }
