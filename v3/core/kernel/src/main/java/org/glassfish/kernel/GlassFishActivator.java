@@ -45,6 +45,9 @@ import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
+import org.glassfish.api.event.EventListener;
+import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.Events;
 import org.glassfish.simpleglassfishapi.GlassFish;
 import org.glassfish.simpleglassfishapi.GlassFishRuntime;
 import org.jvnet.hk2.component.Habitat;
@@ -64,9 +67,10 @@ import java.util.Properties;
  *         It also starts any bundles that's necessary for glassfish to function (e.g., file install, config admin)
  */
 
-public class GlassFishActivator implements BundleActivator {
+public class GlassFishActivator implements BundleActivator, EventListener {
 
     private BundleContext bundleContext;
+    private Events events;
 
     public void start(final BundleContext context) throws Exception {
         this.bundleContext = context;
@@ -91,6 +95,8 @@ public class GlassFishActivator implements BundleActivator {
                 final ModuleStartup gfKernel = main.findStartupService(mr, habitat, null, startupContext);
                 System.out.println("gfKernel = " + gfKernel);
                 GlassFish glassFish = new GlassFishImpl(gfKernel, habitat);
+                events = habitat.getComponent(Events.class);
+                events.register(GlassFishActivator.this);
                 // register GlassFish in service registry
                 bundleContext.registerService(GlassFish.class.getName(), glassFish, properties);
                 return glassFish;
@@ -209,5 +215,15 @@ public class GlassFishActivator implements BundleActivator {
             if (bsn.equals(b.getSymbolicName())) return b;
         }
         return null;
+    }
+
+    public void event(Event event) {
+        if (event.is(EventTypes.SERVER_STARTUP)) {
+            startPostStartupBundles();
+            if (events != null) {
+                events.unregister(this);
+                events = null;
+            }
+        }
     }
 }
