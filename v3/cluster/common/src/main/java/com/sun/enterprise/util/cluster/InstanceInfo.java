@@ -158,12 +158,11 @@ public final class InstanceInfo {
             InstanceCommandExecutor res = (InstanceCommandExecutor) r.getInstanceCommand();
             String instanceLocation = res.getCommandOutput();
             if(instanceLocation != null) {
-                instanceLocation = instanceLocation.substring(instanceLocation.lastIndexOf(File.separator)+1,
-                        instanceLocation.length());
+				// Remove the pesky \n out
                 instanceLocation = instanceLocation.substring(0, instanceLocation.length()-1);
             } else
                 instanceLocation = "";
-            if((!instanceLocation.equals(res.getServer().getName())) ||
+            if((!instanceLocation.endsWith(res.getServer().getName())) ||
                     (res.getReport().getActionExitCode() != ActionReport.ExitCode.SUCCESS)) {
                 uptime = -1;
                 state = NOT_RUNNING;

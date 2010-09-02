@@ -106,7 +106,8 @@ public class InstanceCommandExecutor extends RemoteAdminCommand implements Runna
                 if(key.endsWith("_value"))
                     continue;
                 if(!key.endsWith("_name")) {
-                    aReport.getTopMessagePart().addProperty(key, attributes.get(key));
+                    if(attributes.get(key) != null)
+                        aReport.getTopMessagePart().addProperty(key, attributes.get(key));
                     continue;
                 }
                 String keyWithoutSuffix = key.substring(0, key.indexOf("_name"));
