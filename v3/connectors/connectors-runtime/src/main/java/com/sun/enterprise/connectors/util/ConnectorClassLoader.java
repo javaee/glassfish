@@ -60,7 +60,7 @@ import java.util.logging.Logger;
 public class ConnectorClassLoader extends ASURLClassLoader
 {
 
-    private static final Logger _logger = LogDomains.getLogger(ConnectorClassLoader.class, LogDomains.CORE_LOGGER);
+    private static final Logger _logger = LogDomains.getLogger(ConnectorClassLoader.class, LogDomains.RSR_LOGGER);
 
     private static ConnectorClassLoader classLoader = null;
 
@@ -164,10 +164,8 @@ public class ConnectorClassLoader extends ASURLClassLoader
             classLoaderToRemove = null;
             _logger.log(
                     Level.WARNING,
-                    "The Connector module "
-                            + moduleName
-                            + "  has been removed. Please redeploy all applications that "
-                            + "are using this connector module's resources");
+                    "enterprise_util.remove_connector", 
+                    moduleName);
         }
     }
 
