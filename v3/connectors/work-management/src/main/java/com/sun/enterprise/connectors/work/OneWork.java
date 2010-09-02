@@ -40,9 +40,11 @@
 
 package com.sun.enterprise.connectors.work;
 
+import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 
 import javax.resource.spi.work.Work;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.sun.enterprise.connectors.work.context.WorkContextHandler;
 
@@ -59,7 +61,11 @@ public final class OneWork implements com.sun.corba.ee.spi.orbutil.threadpool.Wo
     private WorkContextHandler contextHandler;
     private static final Logger logger =
             LogDomains.getLogger(OneWork.class, LogDomains.RSR_LOGGER);
+    private StringManager localStrings =
+            StringManager.getManager(OneWork.class);
+
     private String name = "Resource adapter work";
+    private boolean nameSet = false;
 
     /**
      * Creates a work object that can be submitted to a workqueue.
@@ -85,6 +91,8 @@ public final class OneWork implements com.sun.corba.ee.spi.orbutil.threadpool.Wo
         if (coordinator.proceed()) {
             try {
                 coordinator.setupContext(this);
+                //work-name will be set (if specified via HintsContext "javax.resources.spi.HintsContext.NAME_HINT")
+                log("Start of Work");
             } catch (Throwable e) {
                 coordinator.setException(e);
             }
@@ -94,13 +102,24 @@ public final class OneWork implements com.sun.corba.ee.spi.orbutil.threadpool.Wo
         if(coordinator.proceed()){
             try {
                 work.run();
+                log("Work Executed");
             } catch (Throwable t) {
+                log("Execution has thrown exception " + t.getMessage());
                 coordinator.setException(t);
             }
         }
 
         if(!timedOut){
             coordinator.postInvoke();
+        }
+        log("End of Work");
+    }
+
+    public void log(String message){
+        if(nameSet){
+            Object args[] = new Object[]{name, message};
+            String msg = localStrings.getString("log.work.hint", args);
+            logger.log(Level.INFO,msg);
         }
     }
 
@@ -133,6 +152,7 @@ public final class OneWork implements com.sun.corba.ee.spi.orbutil.threadpool.Wo
 
     public void setName(String name){
         this.name = name;
+        nameSet = true;
     }
 
     /**
@@ -141,6 +161,11 @@ public final class OneWork implements com.sun.corba.ee.spi.orbutil.threadpool.Wo
      * @return String representation of work.
      */
     public String toString() {
-        return (work.toString());
+        StringBuffer result = new StringBuffer();
+        if(nameSet){
+            result.append("[Work : " + name + "] ");
+        }
+        result.append(work.toString());
+        return result.toString();
     }
 }
