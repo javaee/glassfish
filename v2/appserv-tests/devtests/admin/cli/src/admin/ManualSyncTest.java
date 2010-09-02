@@ -227,7 +227,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
         report("check-bundle-"+i, bundle.isFile());
         report("import-sync-bundle-"+i, asadmin("import-sync-bundle", "--file", bundle.getPath(), i));
         String s = get("servers.server."+i+".property.rendezvousOccurred");
-        report("check-rendezvous-"+i, s.equals("true"));
+        report("check-rendezvous-"+i, s != null && s.equals("true"));
         report("check-domainxml-"+i, instDomainXml.exists());
         long instDomainXmlTS = instDomainXml.lastModified();
         report("check-timestamp-"+i, dasDomainXmlTS == instDomainXmlTS);
