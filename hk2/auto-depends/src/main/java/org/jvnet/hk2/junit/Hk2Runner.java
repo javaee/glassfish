@@ -36,7 +36,9 @@
  */
 package org.jvnet.hk2.junit;
 
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -49,7 +51,9 @@ import org.jvnet.hk2.component.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -64,7 +68,11 @@ public class Hk2Runner extends Runner {
     final Description description;
     final Map<Description, Method> testMethods = 
           new LinkedHashMap<Description, Method>();
-    
+    final List<Method> beforeMethods =
+          new ArrayList<Method>();
+    final List<Method> afterMethods =
+        new ArrayList<Method>();
+
     private Object instance;
 
     private final Hk2RunnerOptions options;
@@ -80,6 +88,14 @@ public class Hk2Runner extends Runner {
                 Description testDescription = Description.createTestDescription(testClass, m.getName());
                 description.addChild(testDescription);
                 testMethods.put(testDescription, m);
+            }
+            
+            if (m.getAnnotation(Before.class) != null) {
+                beforeMethods.add(m);
+            }
+            
+            if (m.getAnnotation(After.class) != null) {
+                afterMethods.add(m);
             }
         }
     }
@@ -104,10 +120,10 @@ public class Hk2Runner extends Runner {
                 try {
                     m.invoke(null);
                 } catch (IllegalAccessException e) {
-                    Failure failure = new Failure(null, e);
+                    Failure failure = new Failure(Description.createTestDescription(testClass, m.getName()), e);
                     notifier.fireTestFailure(failure);
                 } catch (InvocationTargetException e) {
-                    Failure failure = new Failure(null, e);
+                    Failure failure = new Failure(Description.createTestDescription(testClass, m.getName()), e);
                     notifier.fireTestFailure(failure);
                 }
             }
@@ -128,7 +144,13 @@ public class Hk2Runner extends Runner {
                 notifier.fireTestIgnored(testDescription);
                 continue;
             }
-          
+
+            try {
+                runBefores(notifier);
+            } catch (Throwable e1) {
+                throw new RuntimeException(e1);
+            }
+            
             notifier.fireTestStarted(testDescription);
             try {
                 m.invoke(instance);
@@ -142,6 +164,12 @@ public class Hk2Runner extends Runner {
             
             notifier.fireTestFinished(testDescription);
 
+            try {
+                runAfters(notifier);
+            } catch (Throwable e1) {
+                throw new RuntimeException(e1);
+            }
+            
             if (reinitPerTest) {
                 try {
                     wombInit();
@@ -160,16 +188,39 @@ public class Hk2Runner extends Runner {
                 try {
                     m.invoke(null);
                 } catch (IllegalAccessException e) {
-                    Failure failure = new Failure(null, e);
+                    Failure failure = new Failure(Description.createTestDescription(testClass, m.getName()), e);
                     notifier.fireTestFailure(failure);
                 } catch (InvocationTargetException e) {
-                    Failure failure = new Failure(null, e);
+                    Failure failure = new Failure(Description.createTestDescription(testClass, m.getName()), e);
                     notifier.fireTestFailure(failure);
                 }
             }
         }
     }
 
+    private void runMethods(RunNotifier notifier, List<Method> methods) throws Throwable {
+        for (Method m: methods) {
+           if (m.getAnnotation(Ignore.class) != null) continue;
+           
+           try {
+            m.invoke(instance);
+           } catch (InvocationTargetException e) {
+               Throwable cause = e.getCause();
+               Failure failure = new Failure(Description.createTestDescription(testClass, m.getName()), cause);
+               notifier.fireTestFailure(failure);
+               throw cause;
+           } 
+        }
+    }
+    
+    private void runBefores(RunNotifier notifier) throws Throwable {
+        runMethods(notifier, beforeMethods);        
+    }
+    
+    private void runAfters(RunNotifier notifier) throws Throwable {
+        runMethods(notifier, afterMethods);
+    }
+    
     public static Habitat getHabitat() {
         return singleton.getHabitat();
     }
