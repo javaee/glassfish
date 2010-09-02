@@ -83,13 +83,13 @@
 
     <sun:tab id="clusterProps" immediate="$boolean{true}" text="$resource{i18ncs.cluster.PropertiesTab} (TBD)">
 	<!command
-            setSessionAttribute(key="clusterTabs" value="clusterConfigProps");
-            gf.redirect(page="#{request.contextPath}/cluster/cluster/clusterConfigProperties.jsf?clusterName=#{encodedClusterName}");
+            setSessionAttribute(key="clusterTabs" value="clusterSystemProps");
+            gf.redirect(page="#{request.contextPath}/cluster/cluster/clusterSystemProperties.jsf?clusterName=#{encodedClusterName}");
         />
-	<sun:tab id="clusterConfigProps" immediate="$boolean{true}" text="$resource{i18ncs.cluster.SystemPropertiesTab}">
+	<sun:tab id="clusterSystemProps" immediate="$boolean{true}" text="$resource{i18ncs.cluster.SystemPropertiesTab}">
 	    <!command
-                setSessionAttribute(key="clusterTabs" value="clusterConfigProps");
-                gf.redirect(page="#{request.contextPath}/cluster/cluster/clusterConfigProperties.jsf?clusterName=#{encodedClusterName}");
+                setSessionAttribute(key="clusterTabs" value="clusterSystemProps");
+                gf.redirect(page="#{request.contextPath}/cluster/cluster/clusterSystemProperties.jsf?clusterName=#{encodedClusterName}");
 	    />
 	</sun:tab>
         <sun:tab id="clusterInstanceProps" immediate="$boolean{true}" text="$resource{i18ncs.cluster.ClusterProperties}">
