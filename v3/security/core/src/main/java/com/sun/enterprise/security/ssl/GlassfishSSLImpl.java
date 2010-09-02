@@ -46,11 +46,13 @@ import com.sun.grizzly.util.net.ServerSocketFactory;
 import java.net.Socket;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLSocket;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  *
  * @author Sudarsan Sridhar
  */
+@Service
 public class GlassfishSSLImpl extends SSLImplementation {
     public GlassfishSSLImpl() {
     }
