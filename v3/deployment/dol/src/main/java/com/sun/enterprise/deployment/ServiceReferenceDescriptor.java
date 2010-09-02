@@ -680,7 +680,8 @@ public class ServiceReferenceDescriptor extends EnvironmentProperty
     }
 
     boolean isConflict(ServiceReferenceDescriptor other) {
-        return (!(getName().equals(other.getName()) &&
+        return (getName().equals(other.getName())) &&
+            (!(
                 DOLUtils.equals(getServiceInterface(), other.getServiceInterface()) &&
                 DOLUtils.equals(getWsdlFileUri(), other.getWsdlFileUri()) &&
                 DOLUtils.equals(getMappingFileUri(), other.getMappingFileUri()) 
@@ -688,7 +689,7 @@ public class ServiceReferenceDescriptor extends EnvironmentProperty
                 // handler
                 // handle-chains
                 // port-component-info
-                )) ||
-            !isConflictResourceGroup(other);
+                ) ||
+            isConflictResourceGroup(other));
     }
 }
