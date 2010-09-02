@@ -65,6 +65,7 @@ public class WLWebServiceEndpointNode extends DeploymentDescriptorNode {
     public WLWebServiceEndpointNode() {
         registerElementHandler(new XMLElement(WLWebServicesTagNames.WSDL),
                         WSDLNode.class);
+        registerElementHandler(new XMLElement(WLWebServicesTagNames.SERVICE_ENDPOINT_ADDRESS), ServiceEndpointAddressNode.class);
 
     }
 
@@ -250,7 +251,7 @@ public class WLWebServiceEndpointNode extends DeploymentDescriptorNode {
                     contextPath = value;
                 }
             } else if (WLWebServicesTagNames.WEBSERVICE_SERVICEURI.equals(elementName)) {
-                String serviceuri =  elementName;
+                String serviceuri =  value;
                 serviceuri = (serviceuri.startsWith("/")?"":"/") + serviceuri;
                 descriptor.setEndpointAddressUri(contextPath+serviceuri);
 
