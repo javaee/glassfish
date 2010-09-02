@@ -45,6 +45,8 @@ import com.sun.enterprise.admin.util.InstanceCommandExecutor;
 import com.sun.enterprise.admin.util.InstanceStateService;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.StringUtils;
+
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -154,11 +156,24 @@ public final class InstanceInfo {
         try {
             InstanceCommandResult r = future.get(timeoutInMsec, TimeUnit.SECONDS);
             InstanceCommandExecutor res = (InstanceCommandExecutor) r.getInstanceCommand();
-            String op = res.getCommandOutput();
-            op = op.substring(0, op.length()-1);
-            uptime = new Long(op);
-            state = formatTime(uptime);
-            running = true;
+            String instanceLocation = res.getCommandOutput();
+            if(instanceLocation != null) {
+                instanceLocation = instanceLocation.substring(instanceLocation.lastIndexOf(File.separator)+1,
+                        instanceLocation.length());
+                instanceLocation = instanceLocation.substring(0, instanceLocation.length()-1);
+            } else
+                instanceLocation = "";
+            if((!instanceLocation.equals(res.getServer().getName())) ||
+                    (res.getReport().getActionExitCode() != ActionReport.ExitCode.SUCCESS)) {
+                uptime = -1;
+                state = NOT_RUNNING;
+                running = false;
+            } else {
+                String uptimeStr = res.getReport().getTopMessagePart().getProps().getProperty("Uptime");
+                uptime = new Long(uptimeStr);
+                state = formatTime(uptime);
+                running = true;
+            }
         } catch(Exception e) {
             uptime = -1;
             state = NOT_RUNNING;
@@ -252,9 +267,8 @@ public final class InstanceInfo {
             InstanceCommandResult aResult = new InstanceCommandResult();
             ParameterMap map = new ParameterMap();
             map.set("type", "terse");
-            map.set("milliseconds", "true");
             InstanceCommandExecutor ice =
-                    new InstanceCommandExecutor("uptime", FailurePolicy.Ignore, FailurePolicy.Ignore,
+                    new InstanceCommandExecutor("__locations", FailurePolicy.Error, FailurePolicy.Error,
                             svr, host, port, logger, map, aReport, aResult);
             return stateService.submitJob(svr, ice, aResult);
             /*

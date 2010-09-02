@@ -51,6 +51,7 @@ import org.jvnet.hk2.annotations.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -99,7 +100,18 @@ public class InstanceCommandExecutor extends RemoteAdminCommand implements Runna
             executeCommand(params);
             aReport.setActionExitCode(ActionReport.ExitCode.SUCCESS);
             if(StringUtils.ok(getCommandOutput()))
-                aReport.setMessage(getServer().getName() + " :\n" + getCommandOutput() + "\n\n");
+                aReport.setMessage(getServer().getName() + " :\n" + getCommandOutput() + "\n");
+            Map<String, String> attributes = this.getAttributes();
+            for(String key : attributes.keySet()) {
+                if(key.endsWith("_value"))
+                    continue;
+                if(!key.endsWith("_name")) {
+                    aReport.getTopMessagePart().addProperty(key, attributes.get(key));
+                    continue;
+                }
+                String keyWithoutSuffix = key.substring(0, key.indexOf("_name"));
+                aReport.getTopMessagePart().addProperty(keyWithoutSuffix, attributes.get(keyWithoutSuffix+"_value"));
+            }
             /*
             else
                 aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.commandSuccessful",
