@@ -19,6 +19,7 @@ cd "$APS_HOME"
 (jps |grep Main |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
 cd "$APS_HOME/devtests/admin/cli"
 # run the tests twice -- e.g. Issue # 12127
+ant clean
 time ant all
 # don't run twice if we already failed!
 egrep 'FAILED *0' "$APS_HOME/count.txt" >/dev/null || exit 1
@@ -29,5 +30,6 @@ egrep 'FAILED *0' "$APS_HOME/count.txt" >/dev/null || exit 1
 # Also we really don't care how long these tests take
 # of course it is not an issue on Hudson.
 (jps |grep Main |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
+ant clean
 time ant -Dnum_tests=45 all 
 egrep 'FAILED *0' "$APS_HOME/count.txt" >/dev/null

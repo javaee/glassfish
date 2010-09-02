@@ -45,6 +45,8 @@ import javax.xml.xpath.XPathConstants;
  */
 public class ClusterTest extends AdminBaseDevTest {
 
+    boolean runGMSTests = true;
+
     public static void main(String[] args) {
         new ClusterTest().runTests();
     }
@@ -56,6 +58,8 @@ public class ClusterTest extends AdminBaseDevTest {
 
     public void runTests() {
         startDomain();
+        checkIfMulticastIsAvailable();
+
         String xpathExpr = "count" + "(" + "/domain/clusters/cluster" + ")";
         double startingNumberOfClusters = 0.0;
         Object o = evalXPath(xpathExpr, XPathConstants.NUMBER);
@@ -128,6 +132,8 @@ public class ClusterTest extends AdminBaseDevTest {
      * may take a few seconds to be sent.
      */
     private void testGetHealthStopRestartInstance(String c, String i) {
+        if (!runGMSTests) return;
+
         final String stopped = "Stopped";
         final String started = "Started";
         final int tries = 6;
@@ -165,6 +171,8 @@ public class ClusterTest extends AdminBaseDevTest {
      * method expects that they're all in Started state.
      */
     private void testGetHealthRestartedDomain(String c, String i) {
+        if (!runGMSTests) return;
+
         final int tries = 6;
         final int sleepSeconds = 10;
         final String started = "Started";
@@ -182,6 +190,8 @@ public class ClusterTest extends AdminBaseDevTest {
     }
 
     private void testGetHealthInstancesNotStarted(String c) {
+        if (!runGMSTests) return;
+        
         final String state = "Not started";
         String out = asadminWithOutput("get-health", c).outAndErr;
         boolean success = out.indexOf(state) > 0;
@@ -208,6 +218,19 @@ public class ClusterTest extends AdminBaseDevTest {
         report("get-health-empty-cluster", success);
     }
 
+    /*
+     * Use the validate-multicast command to see if multicast is working for the 
+     * local machine.  It is known not to work on Oracle VPN. If it's not 
+     * working, skip the GMS tests.
+     */
+    private void checkIfMulticastIsAvailable() {
+         AsadminReturn retVal = asadminWithOutput("validate-multicast", "--timeout", "1");
+         final String expected = "Received data from";
+         if (retVal.outAndErr.indexOf(expected) == -1) {
+             runGMSTests = false;
+             System.out.println("WARNING: multicast unavailable, skipping GMS tests.");
+         }
+    }
 
     private void testListClusters(){
         final String testName = "issue12249-";
