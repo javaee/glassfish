@@ -27,7 +27,7 @@
   a DOCTYPE as follows:
 
   <!DOCTYPE resources PUBLIC "-//Sun Microsystems, Inc.//DTD Application Server
-9.0 Resource Definitions //EN"
+9.0 Resource Definitions//EN"
 "http://www.sun.com/software/appserver/dtds/sun-resources_1_2.dtd">
 -->
 
