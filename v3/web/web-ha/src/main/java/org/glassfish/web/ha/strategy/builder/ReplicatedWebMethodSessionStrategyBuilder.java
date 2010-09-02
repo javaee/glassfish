@@ -81,7 +81,6 @@ public class ReplicatedWebMethodSessionStrategyBuilder extends BasePersistenceSt
         ReplicationStore store = null;
         HashMap<String, Object> vendorMap = new HashMap<String, Object>();
         boolean asyncReplicationValue = serverConfigLookup.getAsyncReplicationFromConfig((WebModule)ctx);
-        System.out.println("async replication is " + asyncReplicationValue);
         vendorMap.put("async.replication", asyncReplicationValue);
         if (this.getPersistenceScope().equals("session")) {
             rwepMgr.setSessionFactory(new FullSessionFactory());
