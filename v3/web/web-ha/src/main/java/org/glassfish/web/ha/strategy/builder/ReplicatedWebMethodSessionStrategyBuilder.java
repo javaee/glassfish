@@ -40,6 +40,7 @@
 
 package org.glassfish.web.ha.strategy.builder;
 
+import com.sun.enterprise.web.WebModule;
 import com.sun.enterprise.container.common.spi.util.JavaEEIOUtils;
 import com.sun.enterprise.deployment.runtime.web.SessionManager;
 import com.sun.enterprise.web.BasePersistenceStrategyBuilder;
@@ -50,6 +51,8 @@ import org.glassfish.web.ha.session.management.*;
 import org.glassfish.web.valve.GlassFishValve;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+
+import java.util.HashMap;
 
 /**
  * @author Rajiv Mordani
@@ -76,18 +79,22 @@ public class ReplicatedWebMethodSessionStrategyBuilder extends BasePersistenceSt
         super.initializePersistenceStrategy(ctx, smBean, serverConfigLookup);
         //super.setPassedInPersistenceType("replicated");
         ReplicationStore store = null;
+        HashMap<String, Object> vendorMap = new HashMap<String, Object>();
+        boolean asyncReplicationValue = serverConfigLookup.getAsyncReplicationFromConfig((WebModule)ctx);
+        System.out.println("async replication is " + asyncReplicationValue);
+        vendorMap.put("async.replication", asyncReplicationValue);
         if (this.getPersistenceScope().equals("session")) {
             rwepMgr.setSessionFactory(new FullSessionFactory());
             store = new ReplicationStore(serverConfigLookup, ioUtils);
-            rwepMgr.createBackingStore(this.getPassedInPersistenceType(), ctx.getPath(), SimpleMetadata.class);
+            rwepMgr.createBackingStore(this.getPassedInPersistenceType(), ctx.getPath(), SimpleMetadata.class, vendorMap);
         } else if (this.getPersistenceScope().equals("modified-session")) {
             rwepMgr.setSessionFactory(new ModifiedSessionFactory());
             store = new ReplicationStore(serverConfigLookup, ioUtils);
-            rwepMgr.createBackingStore(this.getPassedInPersistenceType(), ctx.getPath(), SimpleMetadata.class);
+            rwepMgr.createBackingStore(this.getPassedInPersistenceType(), ctx.getPath(), SimpleMetadata.class, vendorMap);
         } else if (this.getPersistenceScope().equals("modified-attribute")) {
             rwepMgr.setSessionFactory(new ModifiedAttributeSessionFactory());
             store = new ReplicationAttributeStore(serverConfigLookup, ioUtils);
-            rwepMgr.createBackingStore(this.getPassedInPersistenceType(), ctx.getPath(), CompositeMetadata.class);
+            rwepMgr.createBackingStore(this.getPassedInPersistenceType(), ctx.getPath(), CompositeMetadata.class, vendorMap);
         }
         rwepMgr.setStore(store);
 

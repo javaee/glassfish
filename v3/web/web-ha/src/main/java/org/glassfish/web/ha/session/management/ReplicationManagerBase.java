@@ -45,6 +45,7 @@ import org.apache.catalina.session.PersistentManagerBase;
 import org.glassfish.ha.store.api.BackingStore;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 /**
  * @author Rajiv Mordani
@@ -60,7 +61,7 @@ public abstract class ReplicationManagerBase extends PersistentManagerBase {
         return this.backingStore;
     }
 
-    public abstract <T extends Serializable> void createBackingStore(String persistenceType, String storeName, Class<T> metadataClass);
+    public abstract <T extends Serializable> void createBackingStore(String persistenceType, String storeName, Class<T> metadataClass, HashMap vendorMap);
     
     public Session createNewSession() {
         return sessionFactory.createSession(this);

@@ -69,6 +69,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.io.File;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -300,7 +301,7 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
 
 
     @Override
-    public <T extends Serializable> void  createBackingStore(String persistenceType, String storeName, Class<T> metadataClass) {
+    public <T extends Serializable> void  createBackingStore(String persistenceType, String storeName, Class<T> metadataClass, HashMap vendorMap) {
         _logger.info("Create backing store invoked with persistence type " + persistenceType + " and store name " + storeName);
         BackingStoreFactory factory = habitat.getComponent(BackingStoreFactory.class, "replication");
         BackingStoreConfiguration<String, T> conf = new BackingStoreConfiguration<String, T>();
@@ -314,9 +315,9 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
                 .setInstanceName(instanceName)
                 .setStoreType(persistenceType)
                 .setKeyClazz(String.class).setValueClazz(metadataClass);
-
-        Map<String, Object> vendorMap = conf.getVendorSpecificSettings();
-        vendorMap.put("async.replication", true); 
+        if (vendorMap != null) {
+            conf.getVendorSpecificSettings().putAll(vendorMap);
+        }
 
         try {
             _logger.info("About to create backing store " + conf);

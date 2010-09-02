@@ -56,6 +56,7 @@ import java.util.concurrent.CountDownLatch;
 /**
  *
  * @author Larry White
+ * @author Rajiv Mordani
  */
 public interface ReplicationManager {
     
