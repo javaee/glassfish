@@ -54,7 +54,6 @@ public class WLWebServicesTagNames {
     public static final String WEB_SERVICE_DESCRIPTION_NAME = "webservice-description-name";
     public static final String WSDL_PUBLISH_FILE = "wsdl-publish-file";
     public static final String WEBSERVICE_TYPE = "webservice-type";
-    public static final String WEBSERVICE_SECURITY = "webservice-security";
     public static final String SERVICE_ENDPOINT_ADDRESS = "service-endpoint-address";
     public static final String WEBSERVICE_CONTEXTPATH = "webservice-contextpath";
     public static final String WEBSERVICE_SERVICEURI="webservice-serviceuri";
@@ -62,5 +61,13 @@ public class WLWebServicesTagNames {
     public static final String WSDL_EXPOSED = "exposed";
     public static final String STREAM_ATTACHMENTS = "stream-attachments";
     public static final String VALIDATE_REQUEST = "validate-request";
+
+    public static final String WEBSERVICE_SECURITY = "webservice-security";
+    public static final String DEPLOYMENT_LISTENER_LIST = "deployment-listener-list";
+    public static final String TRANSACTION_TIMEOUT="transaction-tiemout";
+    public static final String CALLBACK_PROTOCOL = "callback-protocol";
+    public static final String HTTP_FLUSH_RESPONSE = "http-flush-resposne";
+    public static final String HTTP_RESPONSE_BUFFERSIZE = "http-response-buffersize";
+
 
 }

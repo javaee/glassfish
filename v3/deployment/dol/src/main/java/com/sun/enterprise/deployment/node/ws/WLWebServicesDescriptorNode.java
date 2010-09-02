@@ -64,9 +64,8 @@ public class WLWebServicesDescriptorNode extends BundleNode
         parentDescriptor = descriptor;
         registerElementHandler(new XMLElement(WLWebServicesTagNames.WEB_SERVICE),
                 WLWebServiceNode.class);
-//TODO remove
-//        registerElementHandler(new XMLElement(WLWebServicesTagNames.WEBSERVICE_SECURITY),
-//                WLUnSupportedNode.class);
+        registerElementHandler(new XMLElement(WLWebServicesTagNames.WEBSERVICE_SECURITY),
+                WLUnSupportedNode.class);
 
     }
 
@@ -145,11 +144,8 @@ public class WLWebServicesDescriptorNode extends BundleNode
 
     @Override
     public XMLNode getHandlerFor(XMLElement element) {
-        String elementName = element.getQName();
-        if (WLWebServicesTagNames.WEBSERVICE_SECURITY.equals(elementName)) {
-            DeploymentDescriptorNode node = new WLUnSupportedNode(new XMLElement(WLWebServicesTagNames.WEBSERVICE_SECURITY));
-            node.setParentNode(this);
-            return node;
+        if (WLWebServicesTagNames.WEBSERVICE_SECURITY.equals(element.getQName())) {
+            throw new UnsupportedConfigurationException(element + " configuration in weblogic-webservices.xml is not supported.");
         } else {
             return super.getHandlerFor(element);
         }

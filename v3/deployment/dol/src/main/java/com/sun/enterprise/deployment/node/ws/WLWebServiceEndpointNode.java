@@ -49,6 +49,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -62,11 +64,21 @@ public class WLWebServiceEndpointNode extends DeploymentDescriptorNode {
     private final static XMLElement tag =
             new XMLElement(WebServicesTagNames.PORT_COMPONENT);
 
+    public static List<String> UNSUPPORTED_TAGS = new ArrayList();
+    static {
+        UNSUPPORTED_TAGS.add(WLWebServicesTagNames.DEPLOYMENT_LISTENER_LIST);
+        UNSUPPORTED_TAGS.add(WLWebServicesTagNames.TRANSACTION_TIMEOUT);
+        UNSUPPORTED_TAGS.add(WLWebServicesTagNames.CALLBACK_PROTOCOL);
+        UNSUPPORTED_TAGS.add(WLWebServicesTagNames.HTTP_FLUSH_RESPONSE);
+        UNSUPPORTED_TAGS.add(WLWebServicesTagNames.HTTP_RESPONSE_BUFFERSIZE);
+    }
     public WLWebServiceEndpointNode() {
         registerElementHandler(new XMLElement(WLWebServicesTagNames.WSDL),
                         WSDLNode.class);
         registerElementHandler(new XMLElement(WLWebServicesTagNames.SERVICE_ENDPOINT_ADDRESS), ServiceEndpointAddressNode.class);
-
+        for(String unsupportedTag: UNSUPPORTED_TAGS) {
+            registerElementHandler( new XMLElement(unsupportedTag), WLUnSupportedNode.class);
+        }
     }
 
     @Override
@@ -100,7 +112,9 @@ public class WLWebServiceEndpointNode extends DeploymentDescriptorNode {
     public XMLNode getHandlerFor(XMLElement element) {
         String elementName = element.getQName();
         DeploymentDescriptorNode node = null;
-        if (WLWebServicesTagNames.WSDL.equals(elementName)) {
+        if (UNSUPPORTED_TAGS.contains(element.getQName())) {
+            node = new WLUnSupportedNode(element);            
+        } else if (WLWebServicesTagNames.WSDL.equals(elementName)) {
             node = new WSDLNode(descriptor);
             node.setParentNode(this);
         } else if (WLWebServicesTagNames.SERVICE_ENDPOINT_ADDRESS.equals(elementName)) {
