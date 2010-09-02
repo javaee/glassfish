@@ -123,7 +123,7 @@
                              <artifactItem>
                                <groupId>org.apache.felix</groupId>
                                <artifactId>org.apache.felix.shell.remote</artifactId>
-                               <version>1.0.4</version>
+                               <version>1.1.0</version>
                                <type>jar</type>
                                <outputDirectory>${glassfish.modulesdir}</outputDirectory>
                              </artifactItem>
