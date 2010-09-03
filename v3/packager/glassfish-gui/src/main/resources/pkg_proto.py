@@ -54,6 +54,7 @@ pkg = {
                       },
     "depends"       : { 
                         "pkg:/glassfish-registration" : {"type" : "require" },
+                        "pkg:/glassfish-management" : {"type" : "require" },
                         "pkg:/glassfish-web" : {"type" : "require" },
 			"pkg:/glassfish-jsf" : {"type" : "require" },
                       },
