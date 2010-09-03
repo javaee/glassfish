@@ -36,9 +36,13 @@
  */
 package org.jvnet.hk2.component.internal.runlevel;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -141,19 +145,21 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
 
   private RunLevelState<Void> delegate;
 
-  private volatile Integer current;
+  private Integer current;
 
-  private volatile Integer planned;
+  private Integer planned;
 
   private final HashMap<Integer, Recorder> recorders;
 
-  private volatile Recorder activeRecorder;
+  private Recorder activeRecorder;
 
-  private volatile Integer activeRunLevel;
+  private Integer activeRunLevel;
 
-  private volatile Boolean upSide;
+  private Boolean upSide;
+  
+  private boolean cancelIssued;
 
-  private volatile Future<?> activeProceedToOp;
+  private Future<?> activeProceedToOp;
 
   
   private enum ListenerEvent {
@@ -236,6 +242,11 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     } else {
       // sync case
       if (null != planned) {
+        if (!cancelIssued) {
+          cancelIssued = true;
+          notify(ListenerEvent.CANCEL, null, null);
+        }
+        reset();
         throw new Interrupt(runLevel);
       }
     }
@@ -257,7 +268,6 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
         downActiveRecorder(runLevel+1);
       }
     } catch (Interrupt interrupt) {
-      reset();
       proceedToWorker(interrupt.runLevel);
     }
   }
@@ -268,6 +278,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     this.activeRunLevel = null;
     this.planned = null;
     this.activeProceedToOp = null;
+    this.cancelIssued = false;
   }
 
   private synchronized void upActiveRecorder(int runLevel) {
@@ -356,27 +367,29 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     upSide = false;
     activeRunLevel = runLevel;
 
-    // activeRecorder should really just be used on upSide
-    Recorder downRecorder = recorders.remove(runLevel);
-    if (null != downRecorder) {
-      // Causes release of the entire activationSet.  Release occurs in the inverse
-      // order of the recordings.  So A->B->C will have startUp ordering be (C,B,A)
-      // because of dependencies.  The shutdown ordering will b (A,B,C).
-      int pos = downRecorder.activations.size();
-      while (--pos >= 0) {
-        Inhabitant<?> i = downRecorder.activations.get(pos);
-        try {
-          i.release();
-        } catch (Exception e) {
-          // don't percolate the exception since it may negatively impact processing
-          Logger.getAnonymousLogger().log(Level.WARNING,
-              "exception caught during release: " + i, e);
-
-          notify(ListenerEvent.ERROR, serviceContext(e, i), e);
+    List<Integer> downRecorders = getRecordersToRelease(recorders, runLevel);
+    for (int current : downRecorders) {
+      Recorder downRecorder = recorders.remove(current);
+      if (null != downRecorder) {
+        // Causes release of the entire activationSet.  Release occurs in the inverse
+        // order of the recordings.  So A->B->C will have startUp ordering be (C,B,A)
+        // because of dependencies.  The shutdown ordering will b (A,B,C).
+        int pos = downRecorder.activations.size();
+        while (--pos >= 0) {
+          Inhabitant<?> i = downRecorder.activations.get(pos);
+          try {
+            i.release();
+          } catch (Exception e) {
+            // don't percolate the exception since it may negatively impact processing
+            Logger.getAnonymousLogger().log(Level.WARNING,
+                "exception caught during release: " + i, e);
+  
+            notify(ListenerEvent.ERROR, serviceContext(e, i), e);
+          }
         }
+        
+        downRecorder.activations.clear();
       }
-      
-      downRecorder.activations.clear();
     }
 
     // don't set current until we've actually reached it
@@ -391,6 +404,23 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
 
     // notify listeners that we are complete
     notify(ListenerEvent.PROGRESS, null, null);
+  }
+
+  protected List<Integer> getRecordersToRelease(
+      HashMap<Integer, Recorder> list,
+      int runLevel) {
+    List<Integer> qualifying = new ArrayList<Integer>();
+    for (Entry<Integer, Recorder> entry : recorders.entrySet()) {
+      if (entry.getKey() >= runLevel) {
+        qualifying.add(entry.getKey());
+      }
+    }
+    
+    // return in order of highest to lowest
+    Collections.sort(qualifying);
+    Collections.reverse(qualifying);
+
+    return qualifying;
   }
 
   private void notify(ListenerEvent event, ServiceContext context,

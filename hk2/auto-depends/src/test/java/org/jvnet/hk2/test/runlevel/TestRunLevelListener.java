@@ -30,9 +30,18 @@ public class TestRunLevelListener implements RunLevelListener {
   public Integer error_proceedToGoTo;
   public RunLevelService<?> error_proceedToRls;
   
+  public Integer cancel_proceedToGoTo;
+  public RunLevelService<?> cancel_proceedToRls;
+  
   @Override
   public void onCancelled(RunLevelState<?> state, int previousProceedTo) {
     calls.add(Call.onCancelled(state, previousProceedTo));
+    if (null != cancel_proceedToGoTo &&
+        null != cancel_proceedToRls) {
+      int pto = cancel_proceedToGoTo;
+      cancel_proceedToGoTo = null;
+      cancel_proceedToRls.proceedTo(pto);
+    }
   }
 
   @Override
@@ -68,6 +77,10 @@ public class TestRunLevelListener implements RunLevelListener {
     error_proceedToRls = rls;
   }
 
+  public void setCancelProceedTo(int j, RunLevelService<?> rls) {
+    cancel_proceedToGoTo = j;
+    cancel_proceedToRls = rls;
+  }
   
   public static class Call {
     public final String type;

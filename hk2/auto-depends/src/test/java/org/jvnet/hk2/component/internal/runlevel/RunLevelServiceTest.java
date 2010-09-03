@@ -251,7 +251,7 @@ public class RunLevelServiceTest {
     assertEquals(null, defRLS.getPlannedRunLevel());
 
     assertInhabitantsState(11);
-    assertListenerState(true, true, true);
+    assertListenerState(true, true, false);
     assertRecorderState();
   }
   
@@ -409,7 +409,7 @@ public class RunLevelServiceTest {
     assertEquals(null, defRLS.getPlannedRunLevel());
 
     assertInhabitantsState(4);
-    assertListenerState(true, false, true);
+    assertListenerState(true, false, false);
   }
   
   /**
@@ -425,7 +425,7 @@ public class RunLevelServiceTest {
     synchronized (rls) {
       rls.wait(1000);
     }
-    if (1 == defRLS.getCurrentRunLevel()) {
+    if (4 != defRLS.getCurrentRunLevel()) {
       synchronized (rls) {
         rls.wait(100);
       }
@@ -435,7 +435,7 @@ public class RunLevelServiceTest {
     assertEquals(null, defRLS.getPlannedRunLevel());
 
     assertInhabitantsState(4);
-    assertListenerState(true, false, true);
+    assertListenerState(true, false, false);
   }
   
   /**
@@ -448,14 +448,11 @@ public class RunLevelServiceTest {
     defRLlistener.setProgressProceedTo(4, 0, rls);
     rls.proceedTo(4);
     
-//    synchronized (rls) {
-//      rls.wait(1000);
-//    }
     assertEquals(0, defRLS.getCurrentRunLevel());
     assertEquals(null, defRLS.getPlannedRunLevel());
 
     assertInhabitantsState(4);
-    assertListenerState(true, false, true);
+    assertListenerState(true, false, false);
   }
   
   /**
@@ -481,7 +478,7 @@ public class RunLevelServiceTest {
     assertEquals(null, defRLS.getPlannedRunLevel());
 
     assertInhabitantsState(4);
-    assertListenerState(true, false, true);
+    assertListenerState(true, false, false);
   }
 
   @Test
@@ -570,6 +567,53 @@ public class RunLevelServiceTest {
 
     assertEquals(1, defRLS.getCurrentRunLevel());
     assertEquals(null, defRLS.getPlannedRunLevel());
+  }
+  
+  @Test
+  public void testGetRecordersToRelease() {
+    recorders = new LinkedHashMap<Integer, Recorder>();
+    recorders.put(1, null);
+    recorders.put(3, null);
+    recorders.put(2, null);
+    recorders.put(0, null);
+    defRLS = new TestDefaultRunLevelService(h, false, Exception.class, recorders); 
+    
+    List<Integer> list = defRLS.getRecordersToRelease(recorders, 2);
+    assertNotNull(list);
+    assertEquals("size", 2, list.size());
+    assertEquals(3, list.get(0));
+    assertEquals(2, list.get(1));
+  }
+  
+  /**
+   * Proceeds to level 5, encountering an exception along the way, and the onError
+   * nests a call to proceedTo level 1.  But the onCancelled even that gets called
+   * after the onError also issues a proceedTo level 0.  The last proceedTo (in
+   * this case onCancelled) should take precedence.
+   */
+  @Test
+  public void exceptionsEncounteredOnUpSideWithOnError() throws Exception {
+    recorders = new LinkedHashMap<Integer, Recorder>();
+    rls = defRLS = new TestDefaultRunLevelService(h, false, Exception.class, recorders); 
+
+    this.defRLlistener = (TestRunLevelListener) listener;
+    defRLlistener.calls.clear();
+    defRLlistener.setErrorProceedTo(1, rls);
+    defRLlistener.setCancelProceedTo(0, rls);
+
+    ExceptionRunLevelManagedService.exceptionCtor = 
+      RuntimeException.class.getConstructor((Class<?>[])null);
+    ExceptionRunLevelManagedService.constructCount = 0;
+    ExceptionRunLevelManagedService.destroyCount = 0;
+    
+    rls.proceedTo(5);
+    
+    assertEquals("current run level", 0, defRLS.getCurrentRunLevel());
+    assertEquals(null, defRLS.getPlannedRunLevel());
+    
+    assertEquals(1, ExceptionRunLevelManagedService.constructCount);
+    assertEquals(0, ExceptionRunLevelManagedService.destroyCount);
+    assertListenerState(false, true, true);
   }
   
   /**
@@ -717,11 +761,7 @@ public class RunLevelServiceTest {
     }
     
     if (expectCancelled) {
-//      assertEquals(defRLlistener.calls.toString(), 1, sawCancel);
-      // race conditions prevents us from doing the assert
-      if (1 != sawCancel) {
-        Logger.getAnonymousLogger().log(Level.WARNING, "Expected to have seen cancel: " + defRLlistener.calls);
-      }
+      assertEquals("expected to see cancel in: " + defRLlistener.calls, 1, sawCancel);
     }
   }
 
