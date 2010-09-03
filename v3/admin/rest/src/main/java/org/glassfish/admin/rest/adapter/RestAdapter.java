@@ -181,12 +181,6 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
                         // i18n
                         message = "Request returned " + status;
                     }
-//                    res.setStatus(status);
-//                    res.setHeader("Content-Length", Integer.toString(message.length()));
-//                    res.setContentType("text/html");
-//                    res.getOutputStream().write(message.getBytes());
-//                    res.getOutputStream().flush();
-//                    res.finishResponse();
 
                     reportError(req, res, status, message);
                 }
@@ -436,7 +430,6 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
             } else {
                 provider = new ActionReportResultHtmlProvider();
             }
-
             res.setStatus(statusCode);
             res.setContentType(report.getContentType());
             res.getOutputStream().write(provider.getContent(new ActionReportResult(report)).getBytes());

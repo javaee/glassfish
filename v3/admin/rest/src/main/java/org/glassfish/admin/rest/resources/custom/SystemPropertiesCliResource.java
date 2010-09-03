@@ -49,15 +49,15 @@ import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
 import org.glassfish.admin.rest.CliFailureException;
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
@@ -67,9 +67,12 @@ import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.results.OptionsResult;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.ActionReport.MessagePart;
 import org.glassfish.api.admin.ParameterMap;
+import org.jvnet.hk2.config.ConfigBean;
+import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.ValidationException;
 
 /**
  *
@@ -78,15 +81,12 @@ import org.jvnet.hk2.config.Dom;
 @Produces({"text/html;qs=2", MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
 @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
 public class SystemPropertiesCliResource extends TemplateExecCommand {
+    protected static final String TAG_SYSTEM_PROPERTY = "system-property";
 
-    @Context
-    protected HttpHeaders requestHeaders;
-    @Context
-    protected UriInfo uriInfo;
     @Context
     protected ResourceContext resourceContext;
     protected Dom entity;
-    protected Dom parent;
+//    protected Dom parent;
 
     public SystemPropertiesCliResource() {
         super(SystemPropertiesCliResource.class.getSimpleName(), "", "", "", "", true);
@@ -127,34 +127,18 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
 
     @POST
     public ActionReportResult create(HashMap<String, String> data) {
-//        processCommandParams(data);
-//        addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
-//        adjustParameters(data);
+        return clearThenSaveProperties(data);
+    }
 
-        String propertiesString = convertPropertyMapToString(data);
-        data = new HashMap<String, String>();
-        data.put("DEFAULT", propertiesString);
-
-        RestActionReporter actionReport = ResourceUtil.runCommand("create-system-properties", data, RestService.getHabitat(), "");
-        ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
-        ActionReportResult results = new ActionReportResult(commandName, actionReport, new OptionsResult());
-
-        if (exitCode != ActionReport.ExitCode.FAILURE) {
-            results.setStatusCode(200); /*200 - ok*/
-        } else {
-            Throwable ex = actionReport.getFailureCause();
-            throw (ex == null)
-                    ? new CliFailureException(actionReport.getMessage())
-                    : new CliFailureException(actionReport.getMessage(), ex);
-        }
-
-        return results;
+    @PUT
+    public ActionReportResult update(HashMap<String, String> data) {
+        return clearThenSaveProperties(data);
     }
 
     @Path("{Name}/")
     public SystemPropertyResource getSystemPropertyResource(@PathParam("Name") String id) {
-        Dom server = getEntity();
-        for (Dom child : server.nodeElements("system-property")) {
+        Dom parent = getEntity();
+        for (Dom child : parent.nodeElements(TAG_SYSTEM_PROPERTY)) {
             if (child.getKey().equals(id)) {
                 SystemPropertyResource resource = resourceContext.getResource(SystemPropertyResource.class);
                 resource.setEntity(child);
@@ -176,4 +160,44 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
 
         return options.toString();
     }
+
+    protected ActionReportResult clearThenSaveProperties(HashMap<String, String> data) {
+        try {
+            deleteExistingProperties();
+            String propertiesString = convertPropertyMapToString(data);
+
+            data = new HashMap<String, String>();
+            data.put("DEFAULT", propertiesString);
+            data.put("target", getParent(uriInfo));
+
+            RestActionReporter actionReport = ResourceUtil.runCommand("create-system-properties", data, RestService.getHabitat(), "");
+            ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
+            ActionReportResult results = new ActionReportResult(commandName, actionReport, new OptionsResult());
+
+            if (exitCode != ActionReport.ExitCode.FAILURE) {
+                results.setStatusCode(200); /*200 - ok*/
+            } else {
+                Throwable ex = actionReport.getFailureCause();
+                throw (ex == null)
+                        ? new CliFailureException(actionReport.getMessage())
+                        : new CliFailureException(actionReport.getMessage(), ex);
+            }
+
+            return results;
+        } catch (Exception ex) {
+            if (ex.getCause() instanceof ValidationException) {
+                return ResourceUtil.getActionReportResult(400, ex.getMessage(), requestHeaders, uriInfo);
+            } else {
+                throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
+            }
+        }
+    }
+
+    protected void deleteExistingProperties() throws TransactionFailure {
+        Dom parent = getEntity();
+        for (Dom existingProp : parent.nodeElements(TAG_SYSTEM_PROPERTY)) {
+            ConfigSupport.deleteChild((ConfigBean) parent, (ConfigBean) existingProp);
+        }
+    }
+
 }

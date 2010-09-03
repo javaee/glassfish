@@ -475,6 +475,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
 
     private static final String[][] configBeanCustomResources = {
         // ConfigBean, Custom Resource Class, path
+        {"Cluster", "SystemPropertiesCliResource", "system-properties"},
         {"NetworkListener", "FindHttpProtocolResource", "find-http-protocol"},
         {"Server", "SystemPropertiesCliResource", "system-properties"}
     };

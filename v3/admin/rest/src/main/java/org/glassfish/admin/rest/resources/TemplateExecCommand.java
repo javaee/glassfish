@@ -193,4 +193,11 @@ public class TemplateExecCommand {
             }
         }
     }
+
+    protected String getParent(UriInfo uriInfo) {
+        List<PathSegment> segments = uriInfo.getPathSegments(true);
+        String parent = segments.get(segments.size()-2).getPath();
+
+        return parent;
+    }
 }
