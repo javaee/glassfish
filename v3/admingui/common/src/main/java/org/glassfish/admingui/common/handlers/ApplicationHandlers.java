@@ -178,7 +178,7 @@ public class ApplicationHandlers {
                 endpoint = endpoint + "/servers/server/" + target;
             }
         }
-        handlerCtx.setOutputValue("configName", RestApiHandlers.getAttributesMap(endpoint).get("ConfigRef"));
+        handlerCtx.setOutputValue("configName", RestApiHandlers.getAttributesMap(endpoint).get("configRef"));
     }
 
 
