@@ -679,8 +679,8 @@ public final class CSIV2TaggedComponentInfo
         TransportAddress[] listTa = new TransportAddress[socketInfos.size()];
 	for(int i=0; i<socketInfos.size(); i++){
             SocketInfo socketInfo = socketInfos.get(i);
-            int sslport = socketInfo.port;
-            String host = socketInfo.host;
+            int sslport = socketInfo.port();
+            String host = socketInfo.host();
             short short_port = Utility.intToShort(sslport);
             TransportAddress ta = new TransportAddress(host, short_port);
             listTa[i] = ta;

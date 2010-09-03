@@ -41,16 +41,11 @@
 package com.sun.enterprise.naming.impl;
 
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 
 import org.jvnet.hk2.component.PostConstruct;
 import org.glassfish.api.naming.ClientNamingConfigurator;
-import javax.naming.*;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.*;
 
 
 

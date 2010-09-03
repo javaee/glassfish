@@ -42,19 +42,14 @@ package org.glassfish.enterprise.iiop.api;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Habitat;
 import org.omg.CORBA.ORB;
 import org.omg.PortableInterceptor.ServerRequestInfo;
 
 import org.glassfish.api.admin.ProcessEnvironment;
-import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
-
 
 import org.glassfish.api.naming.GlassfishNamingManager;
-import org.glassfish.internal.grizzly.LazyServiceInitializer;
 import org.glassfish.internal.api.ORBLocator;
-
 
 import java.util.Properties;
 import java.rmi.Remote;

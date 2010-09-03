@@ -52,10 +52,8 @@ import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.api.naming.JNDIBinding;
 import org.glassfish.api.naming.NamingObjectProxy;
-import javax.naming.InitialContext;
 
 import com.sun.enterprise.naming.util.LogFacade;
-import com.sun.hk2.component.*;
 
 import org.omg.CORBA.ORB;
 import java.rmi.RemoteException;
@@ -79,7 +77,7 @@ import java.util.*;
 public final class  GlassfishNamingManagerImpl
         implements GlassfishNamingManager {
 
-    static Logger _logger = LogFacade.getLogger();
+    static final Logger _logger = LogFacade.getLogger();
 
     public static final String IIOPOBJECT_FACTORY =
             "com.sun.enterprise.naming.util.IIOPObjectFactory";

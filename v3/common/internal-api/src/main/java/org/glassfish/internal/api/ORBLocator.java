@@ -50,9 +50,19 @@ import org.jvnet.hk2.annotations.*;
  */
 @Contract
 public interface ORBLocator {
-    public static final String JNDI_CORBA_ORB_PROPERTY = "java.naming.corba.orb";
-    public static final String OMG_ORB_INIT_HOST_PROPERTY = "org.omg.CORBA.ORBInitialHost";
-    public static final String OMG_ORB_INIT_PORT_PROPERTY = "org.omg.CORBA.ORBInitialPort";
+    public static final String JNDI_CORBA_ORB_PROPERTY =
+        "java.naming.corba.orb";
+    public static final String JNDI_PROVIDER_URL_PROPERTY =
+        "java.naming.provider.url";
+    public static final String OMG_ORB_INIT_HOST_PROPERTY =
+        "org.omg.CORBA.ORBInitialHost";
+    public static final String OMG_ORB_INIT_PORT_PROPERTY =
+        "org.omg.CORBA.ORBInitialPort";
+
+    // Same as ORBConstants.FOLB_CLIENT_GROUP_INFO_SERVICE,
+    // but we can't reference ORBConstants from the naming bundle!
+    public static final String FOLB_CLIENT_GROUP_INFO_SERVICE =
+        "FolbClientGroupInfoService" ;
 
     public static final String DEFAULT_ORB_INIT_HOST = "localhost";
     public static final String DEFAULT_ORB_INIT_PORT = "3700";

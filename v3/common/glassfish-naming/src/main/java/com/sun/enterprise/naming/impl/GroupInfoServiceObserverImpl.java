@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,15 +38,55 @@
  * holder.
  */
 
-package org.glassfish.enterprise.iiop.impl;
 
-import org.glassfish.enterprise.iiop.api.HandleDelegateFacade;
-import org.jvnet.hk2.annotations.Service;
-import javax.ejb.spi.HandleDelegate;
+package com.sun.enterprise.naming.impl;
 
-@Service
-public class HandleDelegateFacadeImpl implements HandleDelegateFacade {
-    public HandleDelegate getHandleDelegate() {
-        return IIOPHandleDelegate.getHandleDelegate();
+import java.util.List;
+
+import com.sun.corba.ee.spi.folb.GroupInfoServiceObserver;
+import com.sun.corba.ee.spi.folb.GroupInfoService;
+import com.sun.corba.ee.spi.folb.ClusterInstanceInfo;
+
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import com.sun.logging.LogDomains;
+
+
+/**
+ * Called when the GroupInfoService that you register with
+ * has a change.  You should call the GroupInfoService
+ * <code>getClusterInstanceInfo</code> method to get
+ * updated info.
+ * @author Sheetal Vartak
+ */
+public class GroupInfoServiceObserverImpl 
+    implements GroupInfoServiceObserver {
+
+    protected static final Logger _logger = LogDomains.getLogger(
+        GroupInfoServiceObserverImpl.class, LogDomains.JNDI_LOGGER);
+
+    private GroupInfoService gis;
+
+    private SerialInitContextFactory ctxFactory ;
+
+    public GroupInfoServiceObserverImpl(GroupInfoService gis,
+        SerialInitContextFactory factory ) {
+	this.gis = gis;
+        ctxFactory = factory ;
     }
+
+    @Override
+    public void membershipChange() {
+	try {	 	    
+	    List<ClusterInstanceInfo> instanceInfoList =
+                gis.getClusterInstanceInfo((String[])null);
+	    if (instanceInfoList != null && instanceInfoList.size() > 0) {
+	        ctxFactory.getRRPolicy().setClusterInstanceInfo(instanceInfoList);
+	    }
+	} catch(Exception e) {
+	    _logger.log(Level.SEVERE,
+                "groupinfoservice.membership.notification.problem", new Object[] {e});
+	}
+    }
+
 }

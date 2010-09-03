@@ -40,6 +40,7 @@
 
 package org.glassfish.enterprise.iiop.impl;
 
+import com.sun.enterprise.ee.cms.core.GroupManagementService;
 import org.glassfish.enterprise.iiop.api.GlassFishORBFactory;
 import org.glassfish.enterprise.iiop.util.IIOPUtils;
 import org.jvnet.hk2.annotations.Inject;
@@ -50,6 +51,7 @@ import org.omg.CORBA.ORB;
 import org.omg.PortableInterceptor.ServerRequestInfo;
 
 import java.util.Properties;
+import org.glassfish.gms.bootstrap.GMSAdapterService;
 
 /**
  * @author Mahesh Kannan
@@ -67,41 +69,51 @@ public class GlassFishORBFactoryImpl
 
     private GlassFishORBManager gfORBManager;
 
+    @Override
     public void postConstruct() {
         gfORBManager = new GlassFishORBManager(habitat);
+
         IIOPUtils.setInstance(iiopUtils);
         //iiopUtils.setGlassFishORBManager(gfORBManager);
     }
 
+    @Override
     public int getOTSPolicyType() {
         return POARemoteReferenceFactory.OTS_POLICY_TYPE;
     }
 
+    @Override
     public int getCSIv2PolicyType() {
         return POARemoteReferenceFactory.CSIv2_POLICY_TYPE;
     }
 
+    @Override
     public ORB createORB(Properties props) {
         // TODO change this to a create call
        return gfORBManager.getORB(props);
     }
 
+    @Override
     public Properties getCSIv2Props() {
         return gfORBManager.getCSIv2Props();
     }
 
+    @Override
     public void setCSIv2Prop(String name, String value) {
         gfORBManager.setCSIv2Prop(name, value);
     }
 
+    @Override
     public int getORBInitialPort() {
         return gfORBManager.getORBInitialPort();
     }
 
+    @Override
     public String getORBHost(ORB orb) {
         return ((com.sun.corba.ee.spi.orb.ORB) orb).getORBData().getORBInitialHost();
     }
 
+    @Override
     public int getORBPort(ORB orb) {
         return ((com.sun.corba.ee.spi.orb.ORB) orb).getORBData().getORBInitialPort();
     }
@@ -115,6 +127,7 @@ public class GlassFishORBFactoryImpl
      * With this check, we consider the calls that are only new incoming ejb
      * method calls as new request starts.
      */
+    @Override
     public boolean isEjbCall (ServerRequestInfo sri) {
         return (gfORBManager.isEjbAdapterName(sri.adapter_name()) &&
                 (!gfORBManager.isIsACall(sri.operation())));
