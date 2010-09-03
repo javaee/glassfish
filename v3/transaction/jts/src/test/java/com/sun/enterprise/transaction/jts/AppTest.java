@@ -668,6 +668,39 @@ public class AppTest extends TestCase {
         }
     }
 
+    public void testCommitOnePhaseWithXAER_RMERR() {
+        System.out.println("**Testing TX XAER_RMERR exception code in 1PC ===>");
+        try {
+            // Suppress warnings from 1PC logging
+            LogDomains.getLogger(OTSResourceImpl.class, LogDomains.TRANSACTION_LOGGER).setLevel(Level.SEVERE);
+
+            System.out.println("**Starting transaction ....");
+            t.begin();
+            Transaction tx = t.getTransaction();
+
+            TestResource theResource = new TestResource();
+            t.enlistResource(tx, new TestResourceHandle(theResource));
+
+            theResource.setCommitErrorCode(XAException.XAER_RMERR);
+            t.delistResource(tx, new TestResourceHandle(theResource), XAResource.TMSUCCESS);
+
+            System.out.println("**Calling TX commit ===>");
+            try {
+                tx.commit();
+                assert (false);
+            } catch (RollbackException ex) {
+                System.out.println("**Caught expected exception...");
+            }
+            System.out.println("**Status after commit: "
+                    + JavaEETransactionManagerSimplified.getStatusAsString(tx.getStatus())
+                    + " <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+    }
+
     public void testCommitOnePhaseWithHeuristicExc() {
         System.out.println("**Testing TM with HeuristicExc during 1PC commit ===>");
         try {

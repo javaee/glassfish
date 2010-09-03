@@ -208,6 +208,11 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
 				throw hazex;
 	    	}
 			//IASRI END 4722883
+            if (e.errorCode == XAException.XAER_RMERR) {
+                _logger.log(Level.WARNING, "jts.unexpected_error_occurred_twopc_commit", ex);
+                throw new TRANSACTION_ROLLEDBACK(0, CompletionStatus.COMPLETED_NO);
+            }
+
             INTERNAL internal =  new INTERNAL(0,CompletionStatus.COMPLETED_MAYBE);
             internal.initCause(ex);
             _logger.log(Level.WARNING, "jts.unexpected_error_occurred_twopc_commit", ex);
