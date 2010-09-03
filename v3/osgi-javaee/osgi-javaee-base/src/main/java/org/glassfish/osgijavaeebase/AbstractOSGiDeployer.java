@@ -1,4 +1,4 @@
-package org.glassfish.osgijavaeebase;/*
+/*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
  * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
@@ -38,6 +38,7 @@ package org.glassfish.osgijavaeebase;/*
  * holder.
  */
 
+package org.glassfish.osgijavaeebase;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
