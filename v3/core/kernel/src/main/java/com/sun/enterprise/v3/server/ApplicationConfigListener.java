@@ -64,6 +64,7 @@ import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Cluster;
+import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -126,10 +127,17 @@ public class ApplicationConfigListener implements TransactionListener,
                     } else if (parent instanceof ApplicationRef) {
                         appName = ((ApplicationRef)parent).getRef();
                     }
-                    if (event.getPropertyName().equals("enabled")) {
+                    // if it's not a user application, let's not do
+                    // anything
+                    if (applications.getApplication(appName) == null) {
+                        return;
+                    }
+                    if (event.getPropertyName().equals(ServerTags.ENABLED)) {
+                        // enable or disable application accordingly
                         handleAppEnableChange(event.getSource(), 
                             appName, Boolean.valueOf((String)newValue));
-                    } else {
+                    } else if (event.getPropertyName().equals(ServerTags.CONTEXT_ROOT) || event.getPropertyName().equals(ServerTags.VIRTUAL_SERVERS)) {
+                        // for other changes, reload the application
                         handleOtherAppConfigChanges(event.getSource(), 
                             appName);
                     }
