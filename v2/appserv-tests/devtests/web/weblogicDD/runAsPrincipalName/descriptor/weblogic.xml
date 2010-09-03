@@ -47,6 +47,11 @@
         <principal-name>aprincipal</principal-name>
     </security-role-assignment>
 
+    <security-role-assignment>
+        <role-name>javaee</role-name>
+        <principal-name>javaee</principal-name>
+    </security-role-assignment>
+
     <servlet-descriptor>
         <servlet-name>testServlet</servlet-name>
         <run-as-principal-name>aprincipal</run-as-principal-name>
