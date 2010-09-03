@@ -139,7 +139,7 @@
         <uc-pkg-client.version>1.122-38.2791</uc-pkg-client.version>
         <uc-pkg-bootstrap.version>1.122-38.2791</uc-pkg-bootstrap.version>
         
-        <webservices.version>2.1-b11</webservices.version>
+        <webservices.version>2.1-b12</webservices.version>
         <woodstox.version>3.2.1.1</woodstox.version>
         <jaxb-api.version>2.2.2-promoted-b92</jaxb-api.version>
         <jaxb.version>2.2.2-promoted-b92</jaxb.version>
@@ -908,6 +908,11 @@
             <dependency>
                 <groupId>com.sun.xml.ws</groupId>
                 <artifactId>webservices-osgi</artifactId>
+                <version>${webservices.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.ws</groupId>
+                <artifactId>webservices-extra-jdk-packages</artifactId>
                 <version>${webservices.version}</version>
             </dependency>
             <dependency>

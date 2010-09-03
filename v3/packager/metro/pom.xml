@@ -100,6 +100,10 @@
            <artifactId>webservices-osgi</artifactId>
        </dependency>
        <dependency>
+          <groupId>com.sun.xml.ws</groupId>
+           <artifactId>webservices-extra-jdk-packages</artifactId>
+       </dependency>
+       <dependency>
           <groupId>javax.xml</groupId>
            <artifactId>webservices-api-osgi</artifactId>
        </dependency>

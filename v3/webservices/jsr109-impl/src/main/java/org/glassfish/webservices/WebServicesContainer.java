@@ -40,7 +40,7 @@
 
 package org.glassfish.webservices;
 
-import com.sun.xml.ws.assembler.dev.HighAvailabilityProvider;
+import com.sun.xml.ws.api.ha.HighAvailabilityProvider;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.webservices.deployment.WebServicesDeploymentMBean;
