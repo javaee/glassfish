@@ -564,13 +564,8 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                         ejbRef.setLinkName(ejbLinkName);
 
                     } else {
-                        String msg = "Cannot resolve reference " + ejbRef +
-                            " because there are " + numMatches + " ejbs " +
-                            " in the application with interface " + 
-                            interfaceToMatch;
-
-                        DOLUtils.getDefaultLogger().severe(msg);
-                        throw new RuntimeException(msg);
+                        String msg = localStrings.getLocalString("enterprise.deployment.util.multiple_ejbs_with_interface", "Cannot resolve reference {0} because there are {1} ejbs in the application with interface {2}.", new Object[] {ejbRef, numMatches, interfaceToMatch});
+                        throw new IllegalArgumentException(msg);
                     }
                 }                          
             } 
