@@ -56,9 +56,12 @@ import com.sun.enterprise.tools.verifier.util.VerifierConstants;
 import com.sun.enterprise.tools.verifier.web.WebVerifier;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
+import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.InstalledLibrariesResolver;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -83,7 +86,7 @@ import java.util.logging.Logger;
  */
 @Service
 @Scoped(PerLookup.class)
-public class Verifier
+public class Verifier implements org.glassfish.internal.deployment.Verifier
 {
     @Inject
     private DescriptorFactory descriptorFactory;
@@ -121,6 +124,43 @@ public class Verifier
 //                                                            "logs" + // NOI18N
 //                                                            File.separator +
 //                                                            "verifier-results"); // NOI18N
+    }
+
+    public void verify(DeploymentContext context) {
+        com.sun.enterprise.tools.verifier.VerifierFrameworkContext verifierFrameworkContext = new com.sun.enterprise.tools.verifier.VerifierFrameworkContext();
+        verifierFrameworkContext.setArchive(context.getSource());
+        verifierFrameworkContext.setApplication(context.getModuleMetaData(com.sun.enterprise.deployment.Application.class));
+        verifierFrameworkContext.setJarFileName(context.getSourceDir().getAbsolutePath());
+        verifierFrameworkContext.setJspOutDir(context.getScratchDir("jsp"));
+        //verifierFrameworkContext.setIsBackend(true);
+        verifierFrameworkContext.setOutputDirName(env.getDomainRoot().getAbsolutePath()+"/logs/verifier-results");
+        com.sun.enterprise.tools.verifier.ResultManager rm = verifierFrameworkContext.getResultManager();
+
+        try {
+            init(verifierFrameworkContext);
+            verify();
+        } catch (Exception e) {
+            LogRecord logRecord = new LogRecord(Level.SEVERE,
+                                "Could not verify successfully.");
+            logRecord.setThrown(e);
+            verifierFrameworkContext.getResultManager().log(logRecord);
+        }
+
+        try {
+            generateReports();
+        } catch (IOException ioe) {
+            context.getLogger().log(
+                Level.WARNING, "Can not generate verifier report: {0}", ioe.getMessage());
+        }
+        int failedCount = rm.getFailedCount() + rm.getErrorCount();
+        if (failedCount != 0) {
+            ((ExtendedDeploymentContext)context).clean();
+            throw new DeploymentException(smh.getLocalString("deploy.failverifier","Some verifier tests failed. Aborting deployment"));
+        }        
+    }
+
+    public void deployed(DeploymentContext context) {
+        
     }
 
     public void init(VerifierFrameworkContext verifierFrameworkContext) throws IOException

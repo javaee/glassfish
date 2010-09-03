@@ -69,6 +69,7 @@ import org.glassfish.internal.deployment.SnifferManager;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.internal.deployment.Verifier;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -715,60 +716,13 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
         if (event.is(Deployment.APPLICATION_PREPARED)) {
             DeploymentContext context = (DeploymentContext)event.hook();
             if (verify) {
-                if (!isVerifierInstalled()) {
+                Verifier verifier = habitat.getByContract(Verifier.class);
+                if (verifier != null) {
+                    verifier.verify(context);
+                } else  {
                     context.getLogger().warning("Verifier is not installed yet. Install verifier module.");
-                } else {
-                    invokeVerifier(context);
                 }
             }
         }
     }
-
-    private void invokeVerifier(DeploymentContext context) 
-        throws DeploymentException {
-        com.sun.enterprise.tools.verifier.Verifier verifier = habitat.getComponent(com.sun.enterprise.tools.verifier.Verifier.class);
-        com.sun.enterprise.tools.verifier.VerifierFrameworkContext verifierFrameworkContext = new com.sun.enterprise.tools.verifier.VerifierFrameworkContext();
-        verifierFrameworkContext.setArchive(context.getSource());
-        verifierFrameworkContext.setApplication(context.getModuleMetaData(com.sun.enterprise.deployment.Application.class));
-        verifierFrameworkContext.setJarFileName(context.getSourceDir().getAbsolutePath());
-        verifierFrameworkContext.setJspOutDir(context.getScratchDir("jsp"));
-        //verifierFrameworkContext.setIsBackend(true);
-        verifierFrameworkContext.setOutputDirName(env.getDomainRoot().getAbsolutePath()+"/logs/verifier-results");
-        com.sun.enterprise.tools.verifier.ResultManager rm = verifierFrameworkContext.getResultManager();
-
-        try { 
-            verifier.init(verifierFrameworkContext);
-            verifier.verify();
-        } catch (Exception e) {
-            LogRecord logRecord = new LogRecord(Level.SEVERE,
-                                "Could not verify successfully.");
-            logRecord.setThrown(e);
-            verifierFrameworkContext.getResultManager().log(logRecord);
-        }  
-       
-        try {
-            verifier.generateReports();
-        } catch (IOException ioe) {
-            context.getLogger().log(
-                Level.WARNING, "Can not generate verifier report: {0}", ioe.getMessage());
-        }
-        int failedCount = rm.getFailedCount() + rm.getErrorCount();
-        if (failedCount != 0) {
-            ((ExtendedDeploymentContext)context).clean();
-            throw new DeploymentException(localStrings.getLocalString("deploy.failverifier","Some verifier tests failed. Aborting deployment"));
-        }
-    }
-
-    private boolean isVerifierInstalled() {
-        try {
-            Class.forName("com.sun.enterprise.tools.verifier.Verifier");
-            return true;
-        } catch (ClassNotFoundException cnfe) {
-            Logger.getAnonymousLogger().log(Level.FINE, 
-                "Verifier class not found: ", cnfe); 
-            return false;
-        }
-    }
-
-    
 }

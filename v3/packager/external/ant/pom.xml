@@ -85,6 +85,7 @@
                         TODO(Sahoo): To find out why bnd is generating such dependencies.
                         -->
                         <Import-Package>
+                        	!images,
                             !org.apache.tools.ant.util.java15,
                             !org.apache.tools.ant.taskdefs.optional,
                             !org.apache.env,

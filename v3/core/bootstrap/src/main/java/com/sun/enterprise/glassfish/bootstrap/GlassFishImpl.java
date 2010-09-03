@@ -65,6 +65,7 @@ public class GlassFishImpl implements GlassFish {
             status = Status.STARTING;
             gfKernel.start();
             status = Status.STARTED;
+
         } catch (Exception e) {
             throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
         }
