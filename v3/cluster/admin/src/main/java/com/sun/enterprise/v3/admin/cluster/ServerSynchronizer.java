@@ -65,6 +65,7 @@ import com.sun.enterprise.util.cluster.SyncRequest;
 import com.sun.enterprise.util.cluster.SyncRequest.ModTime;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.deployment.versioning.VersioningUtils;
 
 /**
  * The core server synchronization logic.  Given a request from
@@ -367,7 +368,7 @@ public class ServerSynchronizer implements PostConstruct {
                 logger.finest("ServerSynchronizer: skipping directory " +
                                 "deployed app: " + app.getName());
             else
-                apps.put(app.getName(), app);
+                apps.put(VersioningUtils.getRepositoryName(app.getName()), app);
         }
         return apps;
     }
