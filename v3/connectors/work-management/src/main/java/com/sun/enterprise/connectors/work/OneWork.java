@@ -66,6 +66,10 @@ public final class OneWork implements com.sun.corba.ee.spi.orbutil.threadpool.Wo
 
     private String name = "Resource adapter work";
     private boolean nameSet = false;
+    
+    //Store the client's TCC so that when the work is executed,
+    //TCC is set appropriately.
+    private ClassLoader tcc = null;
 
     /**
      * Creates a work object that can be submitted to a workqueue.
@@ -73,16 +77,22 @@ public final class OneWork implements com.sun.corba.ee.spi.orbutil.threadpool.Wo
      * @param work Actual work submitted by Resource adapter.
      * @param coordinator <code>WorkCoordinator</code> object.
      */
-    OneWork (Work work, WorkCoordinator coordinator, WorkContextHandler contextHandler) {
+    OneWork (Work work, WorkCoordinator coordinator, WorkContextHandler contextHandler, ClassLoader tcc) {
         this.work = work;
         this.coordinator = coordinator;
         this.contextHandler = contextHandler;
+        this.tcc = tcc;
     }
 
     /**
      * This method is executed by thread pool as the basic work operation.
      */
     public void doWork() {
+        ClassLoader callerCL = Thread.currentThread().getContextClassLoader();
+        if(tcc != null && tcc != callerCL){
+            Thread.currentThread().setContextClassLoader(tcc);
+        }
+        try{
         coordinator.preInvoke(); // pre-invoke will set work state to "started",
         boolean timedOut = coordinator.isTimedOut();
 
@@ -113,6 +123,13 @@ public final class OneWork implements com.sun.corba.ee.spi.orbutil.threadpool.Wo
             coordinator.postInvoke();
         }
         log("End of Work");
+        }finally{
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            if(cl != callerCL){
+                Thread.currentThread().setContextClassLoader(callerCL);
+            }
+            tcc = null;
+        }
     }
 
     public void log(String message){

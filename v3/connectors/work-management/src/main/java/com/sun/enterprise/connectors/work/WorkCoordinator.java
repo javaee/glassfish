@@ -146,7 +146,7 @@ public final class WorkCoordinator {
             probeProvider.workSubmitted(raName);
             probeProvider.workQueued(raName);
         }
-        queue.addWork( new OneWork(work, this, contextHandler));
+        queue.addWork(new OneWork(work, this, contextHandler, Thread.currentThread().getContextClassLoader()));
     }
 
     /**
@@ -235,11 +235,9 @@ public final class WorkCoordinator {
 
                     //If exception is not null, the work has already been rejected.
                     if (listener != null) {
-                        if (!isTimedOut()) {
-                            listener.workCompleted(
-                                    new WorkEvent(this, WorkEvent.WORK_COMPLETED, work,
-                                            getException()));
-                        }
+                        listener.workCompleted(
+                                new WorkEvent(this, WorkEvent.WORK_COMPLETED, work,
+                                        getException()));
                     }
                 }
 
