@@ -43,6 +43,7 @@ package org.glassfish.javaee.full.deployment;
 import java.util.*;
 
 import com.sun.enterprise.loader.ASURLClassLoader;
+import org.glassfish.internal.api.DelegatingClassLoader;
 import org.jvnet.hk2.component.PreDestroy;
 
 /**
@@ -84,19 +85,31 @@ public class EarClassLoader extends ASURLClassLoader
             for (ClassLoaderHolder clh : moduleClassLoaders) {
                 // destroy all the module classloaders
                 if ( !(clh.loader instanceof EarLibClassLoader) &&  
-                     !(clh.loader instanceof EarClassLoader)) {
+                     !(clh.loader instanceof EarClassLoader) && 
+                     !isRARCL(clh.loader)) {
                     try {
                         PreDestroy.class.cast(clh.loader).preDestroy();
                     } catch (Exception e) {
                         // ignore, the class loader does not need to be 
-                        // explicitely stopped.
+                        // explicitly stopped.
                     }
                 }
             }
 
             // destroy itself
             super.preDestroy();
- 
+
+            //now destroy embedded Connector CLs
+            DelegatingClassLoader dcl = (DelegatingClassLoader)this.getParent();
+            for(DelegatingClassLoader.ClassFinder cf : dcl.getDelegates()){
+                try {
+                    PreDestroy.class.cast(cf).preDestroy();
+                } catch (Exception e) {
+                    // ignore, the class loader does not need to be 
+                    // explicitly stopped.
+                }
+            }
+
             // now destroy the EarLibClassLoader
             PreDestroy.class.cast(this.getParent().getParent()).preDestroy();
 
@@ -106,6 +119,11 @@ public class EarClassLoader extends ASURLClassLoader
         }
 
         isPreDestroyCalled = true;
+    }
+
+    private boolean isRARCL(ClassLoader loader) {
+        DelegatingClassLoader connectorCL = (DelegatingClassLoader) this.getParent();
+        return connectorCL.getDelegates().contains(loader);
     }
 
     private class ClassLoaderHolder {
