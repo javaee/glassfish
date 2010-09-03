@@ -86,12 +86,10 @@
             <sun:panelGroup id="topButtons">
                 <sun:button id="saveButton" text="$resource{i18n.button.OK}">
                     <!command
-                        println ("\n\n\n\n\n\n\n\nBOO\n\n\n\n\n\n\n\n");
                         createMap(result="#{requestScope.attrs}");
                         mapPut(map="#{requestScope.attrs}", key="target", value="#{pageSession.destInstance}");
                         mapPut(map="#{requestScope.attrs}", key="id", value="#{pageSession.sourceInstance}");
                         gf.restRequest(endpoint="#{pageSession.resourceUrl}/migrate-timers", attrs="#{requestScope.attrs}", method="post", result="#{requestScope.results}");
-                        println("***** requestScope.results = #{requestScope.results}");
                         prepareSuccessfulMsg();
                         gf.redirect(page="#{parentPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                     />
