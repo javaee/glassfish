@@ -57,6 +57,23 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * This {@link GlassFishRuntime.RuntimeBuilder} is responsible for setting up a
+ * {@link GlassFishRuntime} when the user has a regular installation of GlassFish
+ * and they want to launch GlassFish in Static Mode pointing to their regular
+ * installation of GlassFish. Hence this will be used in the following cases:
+ *
+ * (1) java -DGlassFish_Platform=Static -jar glassfish.jar
+ * (2) Server.Builder().build() pointing to regular installation.
+ *
+ * It sets up the runtime like this:
+ *
+ * (1) Creates a URLClassLoader containing all the jar files in installRoot/modules directory.
+ * (2) Creates SingleModuleRegistry with the newly created URLClassLoader.
+ * (3) Creates a NonOSGIGlassFishRuntime using SingleModuleRegistry
+ *
+ * @see #build(java.util.Properties)
+ * @see #handles(java.util.Properties)
+ *
  * @author bhavanishankar@dev.java.net
  */
 
@@ -68,7 +85,7 @@ public class NonOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.RuntimeB
     public GlassFishRuntime build(Properties properties) throws Exception {
         /* Step 1. Build the classloader. */
         // The classloades should contain installRoot/modules/**/*.jar files.
-        String installRoot = ASMainHelper.findInstallRoot().getAbsolutePath();
+        String installRoot = properties.getProperty(Constants.INSTALL_ROOT_PROP_NAME);
         List<URL> moduleJarURLs = getModuleJarURLs(installRoot);
         ClassLoader cl = new StaticClassLoader(getClass().getClassLoader(), moduleJarURLs);
 
@@ -86,17 +103,24 @@ public class NonOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.RuntimeB
     }
 
     public boolean handles(Properties properties) {
-        org.glassfish.simpleglassfishapi.Constants.Platform platform =
-                Constants.Platform.valueOf(properties.getProperty(
-                        Constants.PLATFORM_PROPERTY_KEY, Constants.Platform.Felix.name()));
-        switch (platform) {
-            case Static:
+        try {
+            if (!Constants.Platform.Static.toString().equals(
+                    properties.getProperty(Constants.PLATFORM_PROPERTY_KEY))) {
+                return false;
+            }
+            String installRoot = properties.getProperty(Constants.INSTALL_ROOT_PROP_NAME);
+            String instanceRoot = properties.getProperty(Constants.INSTANCE_ROOT_PROP_NAME);
+            if(isValidInstallRoot(installRoot)) {
+                ASMainHelper.verifyDomainRoot(new File(instanceRoot));
                 return true;
+            }
+        } catch (Exception ex) {
         }
         return false;
     }
 
     public void destroy() throws Exception {
+        // TODO : do any clean up
     }
 
     private List<URL> getModuleJarURLs(String installRoot) {
@@ -120,6 +144,19 @@ public class NonOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.RuntimeB
         return moduleJarURLs;
     }
 
+    private boolean isValidInstallRoot(String installRootPath) {
+        if(installRootPath == null || !new File(installRootPath).exists()) {
+            return false;
+        }
+        if(!new File(installRootPath, "modules").exists()) {
+            return false;
+        }
+        if(!new File(installRootPath, "lib/dtds").exists()) {
+            return false;
+        }
+        return true;
+    }
+    
     private class StaticClassLoader extends URLClassLoader {
         public StaticClassLoader(ClassLoader parent, List<URL> moduleJarURLs) {
             super(moduleJarURLs.toArray(new URL[0]), parent);

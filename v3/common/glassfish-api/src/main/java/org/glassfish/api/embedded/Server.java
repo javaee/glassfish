@@ -1,31 +1,27 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
- * may not use this file except in compliance with the License.  You can
- * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
- * or packager/legal/LICENSE.txt.  See the License for the specific
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at packager/legal/LICENSE.txt.
- *
- * GPL Classpath Exception:
- * Oracle designates this particular file as subject to the "Classpath"
- * exception as provided by Oracle in the GPL Version 2 section of the License
- * file that accompanied this code.
- *
- * Modifications:
- * If applicable, add the following below the License Header, with the fields
- * enclosed by brackets [] replaced by your own identifying information:
- * "Portions Copyright [year] [name of copyright owner]"
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
  *
  * Contributor(s):
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -40,33 +36,33 @@
 
 package org.glassfish.api.embedded;
 
+import com.sun.hk2.component.ExistingSingletonInhabitant;
+import org.glassfish.api.container.Sniffer;
+import org.glassfish.simpleglassfishapi.Constants;
+import org.glassfish.simpleglassfishapi.GlassFish;
+import org.glassfish.simpleglassfishapi.GlassFishRuntime;
+import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.annotations.Contract;
-import org.glassfish.api.container.Sniffer;
+import org.jvnet.hk2.component.Inhabitants;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
-import java.util.*;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.io.File;
-import java.io.IOException;
-
-import com.sun.enterprise.module.bootstrap.PlatformMain;
-import com.sun.enterprise.module.bootstrap.StartupContext;
-import com.sun.enterprise.module.bootstrap.ModuleStartup;
-import com.sun.hk2.component.ExistingSingletonInhabitant;
-import java.net.URL;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -230,6 +226,36 @@ public class Server {
     private final Inhabitant<EmbeddedFileSystem> fileSystem;
     private final Habitat habitat;
     private final List<Container> containers = new ArrayList<Container>();
+    private final GlassFish glassfish;
+    private final GlassFishRuntime glassfishRuntime;
+
+    private static final Logger logger = Logger.getLogger("maven-embedded-glassfish-plugin");
+
+    private void setProperties(EmbeddedFileSystem fs, Properties props) {
+        props.setProperty("GlassFish_Platform", "Static");
+        if (fs != null) {
+            String instanceRoot = fs.instanceRoot != null ? fs.instanceRoot.getAbsolutePath() : null;
+            String installRoot = fs.installRoot != null ? fs.installRoot.getAbsolutePath() : instanceRoot;
+            if (installRoot != null) {
+                props.setProperty(Constants.INSTALL_ROOT_PROP_NAME, installRoot);
+                props.setProperty(Constants.INSTALL_ROOT_URI_PROP_NAME,
+                        new File(installRoot).toURI().toString());
+            }
+            if (instanceRoot != null) {
+                props.setProperty(Constants.INSTANCE_ROOT_PROP_NAME, fs.instanceRoot.getAbsolutePath());
+                props.setProperty(Constants.INSTANCE_ROOT_URI_PROP_NAME,
+                        new File(instanceRoot).toURI().toString());
+            }
+        }
+        try {
+            URL url = (fs != null && fs.configFile != null) ? fs.configFile.toURI().toURL() :
+                    getClass().getClassLoader().getResource("org/glassfish/embed/domain.xml");
+            props.setProperty(Constants.CONFIG_FILE_URI_PROP_NAME, url.toURI().toString());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        // TODO :: Support modification of jmxPort
+    }
 
     private Server(Builder builder, Properties properties) {
         serverName = builder.serverName;
@@ -238,132 +264,40 @@ public class Server {
         loggerFile = builder.loggerFile;
         jmxPort = builder.jmxPort;
 
-        EmbeddedFileSystem fs;
-        File instanceRoot=null;
+        try {
+            if(properties == null) {
+                properties = new Properties();
+            }
+            EmbeddedFileSystem fs = builder.fileSystem;
+            setProperties(fs, properties);
+            glassfishRuntime = GlassFishRuntime.bootstrap(properties,
+                    getClass().getClassLoader());
 
-        if (builder.fileSystem==null || builder.fileSystem.instanceRoot==null) {
-            File f;
-            try {
-                String tmpDir = System.getProperty("glassfish.embedded.tmpdir");
-                if (tmpDir==null) {
-                    tmpDir = System.getProperty("user.dir");
+            glassfish = glassfishRuntime.newGlassFish(properties);
+            glassfish.start();
+            if(fs == null ||  fs.installRoot == null || fs.instanceRoot == null) {
+                EmbeddedFileSystem.Builder fsBuilder = new EmbeddedFileSystem.Builder();
+                fsBuilder.instanceRoot(new File(properties.getProperty(Constants.INSTANCE_ROOT_PROP_NAME)));
+                fsBuilder.installRoot(new File(properties.getProperty(Constants.INSTALL_ROOT_PROP_NAME)));
+                fsBuilder.autoDelete(fs == null || fs.instanceRoot ==null);
+                if(fs != null) {
+                    fs.copy(fsBuilder);
                 }
-                f = File.createTempFile("gfembed", "tmp", new File(tmpDir));            }
-            catch (IOException e) {
-                throw new RuntimeException(e);
+                fs = fsBuilder.build();
             }
-            f.delete();
-            instanceRoot = new File(f.getParent(), f.getName());
-            EmbeddedFileSystem.Builder fsBuilder = new EmbeddedFileSystem.Builder();
-
-            // not pretty, revisit when more time is available.
-            if (builder.fileSystem!=null) {
-                fsBuilder.installRoot(builder.fileSystem.installRoot, builder.fileSystem.cookedMode);
-                fsBuilder.configurationFile(builder.fileSystem.configFile);
-                fsBuilder.readOnly=builder.fileSystem.readOnlyConfigFile;
-            }
-
-            fsBuilder.instanceRoot(instanceRoot);
-            fsBuilder.autoDelete(true);
-            fs = fsBuilder.build();
-        } else {
-            fs = builder.fileSystem;
-        }
-        if (!fs.instanceRoot.exists()) {
-            fs.instanceRoot.mkdirs();
-        }
-        // todo : dochez : temporary fix for docroot
-        File f = new File(fs.instanceRoot, "docroot");
-        if (!f.mkdirs()) {
-            if (Logger.getAnonymousLogger().isLoggable(Level.FINE)) {
-                Logger.getAnonymousLogger().fine("Cannot create docroot embedded directory at "
-                    + f.getAbsolutePath());
-            }
-        }
-        f = new File(fs.instanceRoot, "config");
-        if (!f.mkdirs()) {
-            if (Logger.getAnonymousLogger().isLoggable(Level.FINE)) {
-                Logger.getAnonymousLogger().fine("Cannot create config embedded directory at "
-                    + f.getAbsolutePath());
-            }
-        }
-        
-        fileSystem = new ExistingSingletonInhabitant<EmbeddedFileSystem>(fs);
-        preProcessDomainXML();
-
-        final PlatformMain embedded = getMain();
-        if (embedded==null) {
-            throw new RuntimeException("Embedded startup not found, classpath is probably incomplete");
-        }
-
-        Properties startupContextProps = new Properties();
-        if (properties!=null) {
-            if (properties.containsKey(StartupContext.STARTUP_MODULESTARTUP_NAME)) {
-                startupContextProps.setProperty(StartupContext.STARTUP_MODULESTARTUP_NAME,
-                        properties.getProperty(StartupContext.STARTUP_MODULESTARTUP_NAME));
-            }
-        }
-        String installRoot =
-                (fs.installRoot != null) ? fs.installRoot.getAbsolutePath() : fs.instanceRoot.getAbsolutePath();
-        System.setProperty("com.sun.aas.installRoot", installRoot);
-        startupContextProps.setProperty("com.sun.aas.installRoot", installRoot);
-        System.setProperty("com.sun.aas.instanceRoot", fs.instanceRoot.getAbsolutePath());
-        startupContextProps.setProperty("com.sun.aas.instanceRoot", fs.instanceRoot.getAbsolutePath());
-        startupContextProps.setProperty("-type", "EMBEDDED");
-        embedded.setContext(new StartupContext(startupContextProps));
-        embedded.setContext(this);
-        embedded.setLogger(Logger.getAnonymousLogger());
-        try {
-            embedded.start(startupContextProps);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-
-        habitat = embedded.getStartedService(Habitat.class);
-        habitat.addIndex(fileSystem, EmbeddedFileSystem.class.getName(), null);
-
-
-        for (EmbeddedLifecycle lifecycle : habitat.getAllByContract(EmbeddedLifecycle.class)) {
-            try {
-                lifecycle.creation(this);
-            } catch(Exception e) {
-                Logger.getAnonymousLogger().log(Level.WARNING,"Exception while notifying of embedded server startup",e);
-            }
+            // Add the neccessary inhabitants.
+            habitat = glassfish.lookupService(Habitat.class, null);
+            habitat.add(Inhabitants.create(this));
+            fileSystem = new ExistingSingletonInhabitant<EmbeddedFileSystem>(fs);
+            habitat.addIndex(fileSystem, EmbeddedFileSystem.class.getName(), null);
+            
+            logger.logp(Level.INFO, "Server", "<init>", "Created GlassFish = {0}, " +
+                    "GlassFish Status = {1}", new Object[]{glassfish, glassfish.getStatus()});
+        } catch (Throwable ex) {
+            throw new RuntimeException(ex);
         }
     }
 
-    private boolean modifyJMXPort(Document domainXmlDocument) throws XPathExpressionException {
-        if (jmxPort <= 0)
-            return false;
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        DomBuilder domBuilder =
-                new DomBuilder((Element) xpath.evaluate("//admin-service/jmx-connector", domainXmlDocument, XPathConstants.NODE));
-        domBuilder.attribute("port", jmxPort).attribute("enabled", true);
-        return true;
-    }
-
-    private void preProcessDomainXML() {
-        // if user specifed domain.xml, then do not pre-process.
-        if (getFileSystem().configFile != null) {
-            return;
-        }
-        //only jmx port is supported at this time, so return quickly if a port has not been specified.
-        if (jmxPort <=0)
-            return;
-        URL url = getClass().getClassLoader().getResource("org/glassfish/embed/domain.xml");
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        try {
-            Document domainXmlDocument = dbf.newDocumentBuilder().parse(url.toExternalForm());
-            if (!modifyJMXPort(domainXmlDocument))
-                return;
-            // config directory should exist at this time
-            File f = new File(getFileSystem().instanceRoot, "config");
-            Transformer t = TransformerFactory.newInstance().newTransformer();
-            t.transform(new DOMSource(domainXmlDocument), new StreamResult(new File(f, "domain.xml")));
-        } catch(Exception ex) {
-            ex.printStackTrace();
-        }
-    }
     /**
      * Returns the list of existing embedded instances
      *
@@ -612,20 +546,10 @@ public class Server {
      * @throws LifecycleException if the server cannot be started propertly
      */
     public synchronized void start() throws LifecycleException {
-        if (status.isStarted()) {
-            return;
+        if(glassfish != null) {
+            glassfish.start();
+            logger.info("GlassFish has been started");
         }
-
-        for (Container c : containers) {
-            try {
-                c.container.start();
-                c.started=true;
-            } catch (LifecycleException e) {
-                Logger.getAnonymousLogger().log(Level.SEVERE, "Cannot start embedded container", e);
-                c.started=false;
-            }
-        }
-        status.started();
     }
 
     /**
@@ -637,51 +561,23 @@ public class Server {
      * @throws LifecycleException if the server cannot shuts down properly
      */
     public synchronized void stop() throws LifecycleException {
-
         try {
-            if (status.isStopped()) {
-                return;
+            if (glassfish != null) {
+                glassfish.stop();
+                logger.info("GlassFish has been stopped");
             }
-            for (Container c : containers) {
-                try {
-                    if (c.started) {
-                            c.container.stop();
-                    }
-                } catch(Exception e) {
-                    Logger.getAnonymousLogger().log(Level.WARNING,"Exception while closing a embedded container",e);
-                } finally {
-                    c.started=false;
-                }
+            if (glassfishRuntime != null) {
+                GlassFishRuntime.shutdown();
+                logger.info("GlassFishruntime has been shutdown");
             }
-
-            Ports ports = habitat.getComponent(Ports.class);
-            if (ports != null) {
-                Collection<Port> coll = ports.getPorts();
-                for (Port port:coll) {
-                    port.close();
-                }
-            }
-            ModuleStartup ms = habitat.getComponent(ModuleStartup.class, habitat.DEFAULT_NAME);
-            if (ms!=null) {
-                ms.stop();
-            }
+        } catch (Exception ex) {
+            logger.log(Level.WARNING, ex.getMessage(), ex);
+        } finally {
             synchronized(servers) {
                 servers.remove(serverName);
             }
-            //todo : change to DEAD
-            status.stopped();
-
-            for (EmbeddedLifecycle lifecycle : habitat.getAllByContract(EmbeddedLifecycle.class)) {
-                try {
-                    lifecycle.destruction(this);
-                } catch(Exception e) {
-                    Logger.getAnonymousLogger().log(Level.WARNING,"Exception while notifying of embedded server destruction",e);
-                }
-            }
-        } finally {
             fileSystem.get().preDestroy();
         }
-        
     }
 
     /**
@@ -693,26 +589,6 @@ public class Server {
     public EmbeddedDeployer getDeployer() {
         return habitat.getByContract(EmbeddedDeployer.class);
     }
-
-    private PlatformMain getMain() {
-
-        String platformName = "Embedded";
-        if (fileSystem.get().installRoot!=null && fileSystem.get().installRoot.exists()) {
-            if (!fileSystem.get().cookedMode) {
-                platformName = "Static";
-            }
-        }
-
-        ServiceLoader<PlatformMain> mains = ServiceLoader.load(PlatformMain.class, Server.class.getClassLoader());
-        for (PlatformMain main : mains) {
-            if (platformName.equals(main.getName())) {
-                return main;
-            }
-        }
-        return null;
-    }
-
-
 
 
 }

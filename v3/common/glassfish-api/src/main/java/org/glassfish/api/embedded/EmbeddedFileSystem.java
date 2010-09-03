@@ -171,6 +171,12 @@ public class EmbeddedFileSystem implements PreDestroy {
             return new EmbeddedFileSystem(this);
         }
 
+        @Override
+        public String toString() {
+            return "EmbeddedFileSystem>>installRoot = " + installRoot + ", instanceRoot=" +
+                    instanceRoot + ",configFile=" + configFile + ",autoDelete=" + autoDelete;
+        }
+
     }
 
     public final boolean autoDelete;
@@ -209,4 +215,12 @@ public class EmbeddedFileSystem implements PreDestroy {
         }
         f.delete();
     }
+
+    void copy(Builder that) {
+        that.autoDelete(autoDelete);
+        that.configurationFile(configFile, readOnlyConfigFile);
+        that.installRoot(installRoot, cookedMode);
+        that.instanceRoot(instanceRoot);
+    }
+
 }

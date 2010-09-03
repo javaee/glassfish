@@ -50,6 +50,7 @@ public class Constants {
     public static final String INSTALL_ROOT_PROP_NAME = "com.sun.aas.installRoot";
     public static final String INSTALL_ROOT_URI_PROP_NAME = "com.sun.aas.installRootURI";
     public static final String INSTANCE_ROOT_URI_PROP_NAME = "com.sun.aas.instanceRootURI";
+    public static final String CONFIG_FILE_URI_PROP_NAME = "com.sun.aas.configFileURI";
 
     private Constants(){}
 

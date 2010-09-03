@@ -67,6 +67,12 @@
     </developers>
     <dependencies>
         <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>simple-glassfish-api</artifactId>
+	    <version>${project.version}</version>
+	    <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
         </dependency>
