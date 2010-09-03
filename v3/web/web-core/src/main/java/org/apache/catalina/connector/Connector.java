@@ -1307,7 +1307,6 @@ public class Connector
         this.initialized = true;
                 
         // If the Mapper is null, do not fail and creates one by default. 
-        // This is the case when mod_jk is used.
         if (mapper == null){
             mapper = new Mapper();
         }

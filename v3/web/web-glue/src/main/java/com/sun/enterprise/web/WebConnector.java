@@ -68,10 +68,11 @@ public class WebConnector extends PECoyoteConnector {
 
     @Override
     public void initialize() throws LifecycleException {
-        // When mod_jk is used, the Mapper is always mull.
+
         if (mapper == null){
             mapper = new V3Mapper();
         }
+        
         super.initialize();
         ((V3Mapper) mapper).setAdapter(getAdapter());
     }
