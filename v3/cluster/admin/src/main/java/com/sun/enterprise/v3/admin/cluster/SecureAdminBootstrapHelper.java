@@ -264,14 +264,11 @@ public abstract class SecureAdminBootstrapHelper {
                 InputStream is = null;
                 URI remoteFileURI = null;
                 try {
-//                    System.out.println("dasInstanceDir "+ dasInstanceDir.toString());
                     is = new BufferedInputStream(
                             new FileInputStream(
                                 new File(dasInstanceDir.toURI().resolve(fileRelativeURI))));
                     remoteFileURI = remoteInstanceURI.resolve(fileRelativeURI);
-                    System.out.println("creating remoteFileURI "+remoteFileURI.toString());
                     writeToFile(remoteFileURI.getPath(), is);
-//                    System.out.println("created file");
                     logger.log(Level.FINE, "Copied bootstrap file to {0}", remoteFileURI.toASCIIString());
                 } catch (Exception ex) {
                     if (logger.isLoggable(Level.FINE)) {

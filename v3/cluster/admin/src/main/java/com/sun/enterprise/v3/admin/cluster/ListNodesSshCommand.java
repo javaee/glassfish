@@ -63,10 +63,10 @@ import java.util.logging.Logger;
 import java.util.List;
 import java.util.LinkedList;
 
-@Service(name = "list-nodes")
+@Service(name = "list-nodes-ssh")
 @Scoped(PerLookup.class)
-@I18n("list.nodes.command")
-public class ListNodesCommand implements AdminCommand{
+@I18n("list.nodes.ssh.command")
+public class ListNodesSshCommand implements AdminCommand{
 
     @Inject
     Servers servers;
@@ -88,7 +88,7 @@ public class ListNodesCommand implements AdminCommand{
 
         Logger logger = context.getLogger();
 
-        ListNodesHelper lnh = new ListNodesHelper(logger, servers, nodes, "ALL", verbose, terse);
+        ListNodesHelper lnh = new ListNodesHelper(logger, servers, nodes, "SSH", verbose, terse);
 
         String nodeList = lnh.getNodeList();
 

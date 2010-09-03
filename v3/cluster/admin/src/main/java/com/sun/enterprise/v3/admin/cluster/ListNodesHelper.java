@@ -49,52 +49,90 @@ import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.cluster.NodeInfo;
 
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.ActionReport.ExitCode;
-import org.glassfish.api.I18n;
-import org.glassfish.api.Param;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.*;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.component.PostConstruct;
 import org.glassfish.api.admin.config.ReferenceContainer;
 import org.jvnet.hk2.component.*;
 import java.util.logging.Logger;
 import java.util.List;
 import java.util.LinkedList;
 
-@Service(name = "list-nodes")
-@Scoped(PerLookup.class)
-@I18n("list.nodes.command")
-public class ListNodesCommand implements AdminCommand{
 
-    @Inject
-    Servers servers;
-    @Inject
-    private Nodes nodes;
-    
-    @Param(optional = true, defaultValue = "false")
-    private boolean verbose;
-    @Param(optional = true)
-    private boolean terse;
-   
-    private ActionReport report;
+public class ListNodesHelper {
+
+
+    private Servers servers;
+
+    private static final String EOL = "\n";
+
     Logger logger;
 
-    @Override
-    public void execute(AdminCommandContext context) {
+    String listType;
+    boolean verbose;
+    boolean terse;
+    List<Node>  nodeList;
+    List<NodeInfo> infos = new LinkedList<NodeInfo>();
 
-        report = context.getActionReport();
+    public ListNodesHelper(Logger _logger, Servers servers, Nodes nodes, String type, boolean verbose, boolean terse) {
+        logger = _logger;
+        this.listType = type;
+        this.verbose = verbose;
+        this.terse = terse;
+        this.servers = servers;
+        nodeList=nodes.getNode();
+        infos = new LinkedList<NodeInfo>();
+    }
 
-        Logger logger = context.getLogger();
+    public String getNodeList() {
 
-        ListNodesHelper lnh = new ListNodesHelper(logger, servers, nodes, "ALL", verbose, terse);
+        StringBuilder sb = new StringBuilder();
+        boolean firstNode = true;
 
-        String nodeList = lnh.getNodeList();
+        for (Node n : nodeList) {
 
-         report.setMessage(nodeList);
+            String name = n.getName();
+            String nodeType = n.getType();
+            String host = n.getNodeHost();
+            String installDir = n.getInstallDir();
+
+            if (!listType.equals(nodeType) && !listType.equals("ALL"))
+                continue;
+
+            if (firstNode)
+                firstNode = false;
+            else
+                sb.append(EOL);
+
+            if (terse)
+                sb.append(name);
+            else if (!verbose)
+                sb.append(name + "  "+ nodeType + "  "+ host);
+
+            if (verbose){
+                List<Server> serverList=servers.getServer();
+                //check if node is referenced in an instance
+                String instanceList= new String();
+                if (serverList.size() > 0) {
+                    for (Server server: serverList){
+                        if (name.equals(server.getNode())){
+                            instanceList = instanceList.concat( " "+ server.getName() + ","); 
+                        }
+                    }
+                    logger.warning(instanceList);
+                }
+                NodeInfo ni = new NodeInfo( name,  host,  installDir,  nodeType,  instanceList);
+                infos.add(ni);
+
+            }
+
+        }
+        if (verbose)
+            return  NodeInfo.format(infos);
+        else
+            return sb.toString();
         
-        report.setActionExitCode(ExitCode.SUCCESS);
-
     }
 }

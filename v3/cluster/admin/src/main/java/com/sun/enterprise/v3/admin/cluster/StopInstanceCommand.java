@@ -163,6 +163,7 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
 
         try {
             // TODO username password ????
+            logger.info(Strings.get("stop.instance.init", instanceName));
             RemoteAdminCommand rac = new RemoteAdminCommand("_stop-instance",
                     host, port, false, "admin", null, logger);
 
