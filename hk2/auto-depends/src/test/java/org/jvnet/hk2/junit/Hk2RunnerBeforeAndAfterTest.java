@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +19,8 @@ import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.Suite;
+import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.PreDestroy;
 
 /**
  * A suite of tests for testing {link @Before} and {link @After} test
@@ -27,7 +31,23 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses( { Hk2RunnerBeforeAndAfterTest.PositiveTest.class,
         Hk2RunnerBeforeAndAfterTest.ExceptionTest.class })
 public class Hk2RunnerBeforeAndAfterTest {
+  
+    static boolean beforeClassCalled; 
+    static boolean afterClassCalled; 
 
+    @BeforeClass
+    public static void beforeClass() {
+        assertFalse("beforeClassCalled", beforeClassCalled);
+        assertFalse("afterClassCalled", afterClassCalled);
+    }
+    
+    @AfterClass
+    public static void afterClass() {
+        assertTrue("beforeClassCalled", beforeClassCalled);
+        assertTrue("afterClassCalled", afterClassCalled);
+    }
+
+    
     /**
      * Test for correct behavior when a method annotated with {link @Before}
      * or {link @Before} throws an exception
@@ -88,7 +108,7 @@ public class Hk2RunnerBeforeAndAfterTest {
             notifier.addListener(rl);
 
             try {
-                new Hk2Runner(TestClassWithBeforeException.class).run(notifier);
+                new Hk2Runner(TestClassWithAfterException.class).run(notifier);
                 fail("Expected exception due to exception in @After method");
             } catch (Exception ex) {
                 // expected
@@ -134,11 +154,47 @@ public class Hk2RunnerBeforeAndAfterTest {
      * test and all {@link @After} methods are called after each test
      */
     @RunWith(Hk2Runner.class)
-    public static class PositiveTest {
+    public static class PositiveTest implements PostConstruct, PreDestroy {
 
+        static int postConstructCalls;
+        static int preDestroyCalls;
+      
         String beforeTestString = "";
         String afterTestString = "";
 
+        @BeforeClass
+        public static void beforeClass() {
+            beforeClassCalled = true;
+            assertEquals("postConstructCalls", 0, postConstructCalls);
+            assertEquals("preDestroyCalls", 0, preDestroyCalls);
+        }
+  
+        @BeforeClass
+        @Ignore
+        public static void beforeClassIgnored() {
+            fail("test should be ignored");
+        }
+        
+        @AfterClass
+        public static void afterClass() {
+            afterClassCalled = true;
+            assertEquals("postConstructCalls", 1, postConstructCalls);
+            // TODO: we may want to reconsider calling preDestroy after a test run
+            assertEquals("preDestroyCalls", 0, preDestroyCalls);
+        }
+        
+        @AfterClass
+        @Ignore
+        public static void afterClassIgnored() {
+            fail("test should be ignored");
+        }
+        
+        @Before
+        public void before0() {
+            assertEquals("postConstructCalls", 1, postConstructCalls);
+            assertEquals("preDestroyCalls", 0, preDestroyCalls);
+        }
+        
         @Before
         public void before1() {
             beforeTestString += " b1 ";
@@ -148,13 +204,19 @@ public class Hk2RunnerBeforeAndAfterTest {
         void before2() {
             beforeTestString += " b2 ";
         }
-
+        
         @Before
         @Ignore
         void beforeIgnored() {
             beforeTestString += " Ignore ";
         }
 
+        @After
+        void after0() {
+            assertEquals("postConstructCalls", 1, postConstructCalls);
+            assertEquals("preDestroyCalls", 0, preDestroyCalls);
+        }
+        
         @After
         void after1() {
             afterTestString += " a1 ";
@@ -189,6 +251,16 @@ public class Hk2RunnerBeforeAndAfterTest {
             assertTrue("Missing @After call", afterTestString.contains("a1"));
             assertTrue("Missing @After call", afterTestString.contains("a2"));
             assertFalse("Unexpected call to @After with @Ignore", afterTestString.contains("Ignore"));
+        }
+        
+        @Override
+        public void postConstruct() {
+            postConstructCalls++;
+        }
+
+        @Override
+        public void preDestroy() {
+            preDestroyCalls++;
         }
     }
 }
