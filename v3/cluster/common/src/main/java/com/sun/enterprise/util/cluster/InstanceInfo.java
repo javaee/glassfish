@@ -157,12 +157,10 @@ public final class InstanceInfo {
             InstanceCommandResult r = future.get(timeoutInMsec, TimeUnit.SECONDS);
             InstanceCommandExecutor res = (InstanceCommandExecutor) r.getInstanceCommand();
             String instanceLocation = res.getCommandOutput();
-            if(instanceLocation != null) {
-				// Remove the pesky \n out
-                instanceLocation = instanceLocation.substring(0, instanceLocation.length()-1);
-            } else
-                instanceLocation = "";
-            if((!instanceLocation.endsWith(res.getServer().getName())) ||
+            // Remove the pesky \n out
+            instanceLocation = (instanceLocation == null) ? "" : instanceLocation.trim();
+            
+            if ((!instanceLocation.endsWith(res.getServer().getName())) ||
                     (res.getReport().getActionExitCode() != ActionReport.ExitCode.SUCCESS)) {
                 uptime = -1;
                 state = NOT_RUNNING;
