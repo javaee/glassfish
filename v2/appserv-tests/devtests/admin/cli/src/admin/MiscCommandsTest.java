@@ -93,21 +93,21 @@ public class MiscCommandsTest extends AdminBaseDevTest {
         time1 = System.currentTimeMillis();
         String out = ret.outAndErr;
         report("validate-multicast-params", ret.returnValue);
-        report("vaidalte-multicast-param-port",
+        report("validate-multicast-param-port",
             out.contains(port));
-        report("vaidalte-multicast-param-address",
+        report("validate-multicast-param-address",
             out.contains(address));
-        report("vaidalte-multicast-param-period",
+        report("validate-multicast-param-period",
             out.contains(period));
-        report("vaidalte-multicast-param-seconds",
+        report("validate-multicast-param-seconds",
             out.contains(String.valueOf(seconds)));
 
         // should only take a little over 5 seconds
         int atLeast = seconds - 1;
-        int notThisLong = seconds + 5; // wide berth here
-        report("vaidalte-multicast-param-timing-under",
+        int notThisLong = seconds + 8; // wide berth here
+        report("validate-multicast-param-timing-under",
             (time1-time0) > 1000*atLeast);
-        report("vaidalte-multicast-param-timing-over",
+        report("validate-multicast-param-timing-over",
             (time1-time0) < 1000*notThisLong);
     }
 }
