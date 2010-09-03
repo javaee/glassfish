@@ -43,7 +43,6 @@ package com.sun.enterprise.deployment;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.XModuleType;
-import org.jvnet.hk2.component.Habitat;
 
 import javax.enterprise.deploy.shared.ModuleType;
 import java.util.*;
@@ -100,7 +99,6 @@ public abstract class RootDeploymentDescriptor extends Descriptor {
     private boolean fullFlag = false;
     private boolean fullAttribute = false;
     private final static List<?> emptyList = new ArrayList();
-    protected Habitat hab;
 
     /**
      * Construct a new RootDeploymentDescriptor 
@@ -410,12 +408,5 @@ public abstract class RootDeploymentDescriptor extends Descriptor {
             }
     }    
 
-    public void setHabitat(Habitat habitat) {
-        this.hab = habitat;
-    }
-
-    public Habitat getHabitat(Habitat habitat) {
-        return hab;
-    }
 }
 
