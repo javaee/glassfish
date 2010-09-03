@@ -60,7 +60,7 @@
         <sun:button id="addSharedTableButton" disabled="#{false}" text="$resource{i18n.button.AddProperty}" >   
             <!command
                 getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                addRowToTable(TableRowGroup="$attribute{tableRowGroup}", NameList={"Name", "Value"});
+                addRowToTable(TableRowGroup="$attribute{tableRowGroup}", NameList={"name", "value"}, DefaultValueList={"", ""});
             />                                 
         </sun:button>
         <sun:button id="button1" text="$resource{i18n.button.DeleteProperties}" disabled="#{true}" primary="#{false}">
@@ -68,15 +68,37 @@
                 getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{trg});   
                 getSelectedTableRowKeys(tableRowGroup="${trg}" rowKeys=>$attribute{rowKeys});
                 deleteTableRows(tableRowGroup="${trg}" rowKeys="${rowKeys}");
-		commitTableRowGroup(tableRowGroup="${trg}");  
+                commitTableRowGroup(tableRowGroup="${trg}");
             />                                
         </sun:button>
     </sun:panelGroup>
     </facet>       
-    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{tableList}"}  sourceVar="td">
-        <!afterCreate
-         getClientId(component="$this{component}" clientId=>$page{propertyTableRowGroupId});
-        />
+    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$pageSession{tableList}", "$pageSession{tableList2}"}  sourceVar="td">
+        <ui:event type="beforeCreate">
+            // Ensure all required fields exist
+            if ("#{pageSession.tableList[0].name}") {
+                if ("!#{pageSession.tableList[0].value}") {
+                    mapPut(map="#{pageSession.tableList[0]}" key="value" value="");
+                }
+                if ("!#{pageSession.tableList[0].description}") {
+                    mapPut(map="#{pageSession.tableList[0]}" key="description" value="");
+                }
+            }
+
+            // Add extra table properties...
+            createList(size="0", result="#{pageSession.tableList2}");
+            foreach(var="row" list="#{pageSession.tableList}") {
+                selectiveEncode(value="#{row.name}" result="#{requestScope.tlEncName}");
+                gf.createAttributeMap(
+                    keys={"selected", "encodedName", "description"},
+                    values={"$boolean{false}", "$attribute{tlEncName}", ""},
+                    map="#{requestScope.tlMap}");
+                listAdd(list="#{pageSession.tableList2}", value="#{requestScope.tlMap}");
+            }
+        </ui:event>
+        <ui:event type="afterCreate">
+            getClientId(component="$this{component}" clientId=>$page{propertyTableRowGroupId});
+        </ui:event>
         <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col1">
             <sun:checkbox id="select" 
                 selected="#{td.value.selected}" 
@@ -85,10 +107,10 @@
             />
         </sun:tableColumn>                    
         <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" sort="name" rowHeader="$boolean{false}" id="col2">
-            <sun:textField columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.common.PropertyName']}" id="col1St" value="#{td.value.name}" />
+            <sun:textField columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.common.PropertyName']}" id="col1St" value="#{td.value.name}" />
         </sun:tableColumn>
         <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="value" rowHeader="$boolean{false}" id="col3">
-            <sun:textField columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.common.PropertyValue']}" id="col1St" value="#{td.value.value}" />
+            <sun:textField columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.common.PropertyValue']}" id="col1St" value="#{td.value.value}" />
         </sun:tableColumn>
         "<br/>
     </sun:tableRowGroup>

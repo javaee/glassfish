@@ -738,6 +738,9 @@ public class RestApiHandlers {
 	if (contentType == null) {
 	    contentType = MediaType.APPLICATION_JSON;
 	}
+        if (payload instanceof Map) {
+            payload = buildMultivalueMap((Map<String, Object>)payload);
+        }
         ClientResponse cr = webResource.header("Content-Type", contentType).
 		accept(RESPONSE_TYPE).post(ClientResponse.class, payload);
         //checkStatusForSuccess(cr);
