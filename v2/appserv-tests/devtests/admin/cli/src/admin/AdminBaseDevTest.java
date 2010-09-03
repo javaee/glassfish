@@ -42,6 +42,7 @@ package admin;
 
 import com.sun.appserv.test.BaseDevTest;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
@@ -295,6 +296,27 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
             }
         }
         return false;
+    }
+
+    /*
+     * Delete the directories for a local node (since delete-node-* doesn't do this
+     */
+    public boolean deleteNodeDirectory(String node) {
+        return deleteDirectory(new File(new File(getGlassFishHome(), "nodes"), node));
+    }
+
+    public boolean deleteDirectory(File path) {
+        if (path.exists()) {
+            File[] files = path.listFiles();
+            for (File f : files) {
+                if (f.isDirectory()) {
+                    deleteDirectory(f);
+                } else {
+                    f.delete();
+                }
+            }
+        }
+        return (path.delete());
     }
 
     final boolean ok(String s) {

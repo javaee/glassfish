@@ -367,6 +367,8 @@ public class LBCommandsTest extends AdminBaseDevTest {
 
         asadmin("delete-node-ssh", LB_NODE1);
         asadmin("delete-node-ssh", LB_NODE2);
+        deleteNodeDirectory(LB_NODE1);
+        deleteNodeDirectory(LB_NODE2);
     }
 
     private void runTest(String tName, boolean status) {

@@ -477,20 +477,6 @@ public class InstanceTest extends AdminBaseDevTest {
         }
     }
 
-    public boolean deleteDirectory(File path) {
-        if (path.exists()) {
-            File[] files = path.listFiles();
-            for (File f : files) {
-                if (f.isDirectory()) {
-                    deleteDirectory(f);
-                } else {
-                    f.delete();
-                }
-            }
-        }
-        return (path.delete());
-    }
-
 
     private final String host;
     private final File glassFishHome;
