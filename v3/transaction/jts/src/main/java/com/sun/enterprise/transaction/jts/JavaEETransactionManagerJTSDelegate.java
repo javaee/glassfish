@@ -44,6 +44,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -57,6 +58,7 @@ import javax.resource.spi.XATerminator;
 import javax.resource.spi.work.WorkException;
 
 import com.sun.jts.jta.TransactionManagerImpl;
+import com.sun.jts.jta.TransactionServiceProperties;
 import com.sun.jts.CosTransactions.Configuration;
 import com.sun.jts.CosTransactions.RecoveryManager;
 import com.sun.jts.CosTransactions.DelegatedRecoveryManager;
@@ -67,26 +69,19 @@ import com.sun.enterprise.config.serverbeans.TransactionService;
 
 import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
-import com.sun.enterprise.transaction.api.RecoveryResourceRegistry;
 import com.sun.enterprise.transaction.api.TransactionAdminBean;
 import com.sun.enterprise.transaction.api.XAResourceWrapper;
 import com.sun.enterprise.transaction.spi.JavaEETransactionManagerDelegate;
-import com.sun.enterprise.transaction.spi.RecoveryEventListener;
 import com.sun.enterprise.transaction.spi.TransactionalResource;
 import com.sun.enterprise.transaction.spi.TransactionInternal;
 
 import com.sun.enterprise.transaction.jts.recovery.OracleXAResource;
 import com.sun.enterprise.transaction.jts.recovery.SybaseXAResource;
+import com.sun.enterprise.transaction.jts.recovery.GMSCallBack;
+import com.sun.enterprise.transaction.jts.iiop.TransactionIIOPInterceptorFactory;
 
 import com.sun.enterprise.transaction.JavaEETransactionManagerSimplified;
 import com.sun.enterprise.transaction.JavaEETransactionImpl;
-
-import org.glassfish.gms.bootstrap.GMSAdapter;
-import org.glassfish.gms.bootstrap.GMSAdapterService;
-import com.sun.enterprise.ee.cms.core.CallBack;
-import com.sun.enterprise.ee.cms.core.GMSConstants;
-import com.sun.enterprise.ee.cms.core.FailureRecoverySignal;
-import com.sun.enterprise.ee.cms.core.Signal;
 
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
@@ -527,7 +522,16 @@ public class JavaEETransactionManagerJTSDelegate
                     if (_logger.isLoggable(Level.FINE))
                         _logger.log(Level.FINE,"TM: Registering for GMS notification callback");
 
-                    new GMSCallBack();
+                    int waitTime = 60;
+                    value = txnService.getPropertyValue("wait-time-before-recovery-insec");
+                    if (value != null) {
+                        try {
+                            waitTime = Integer.parseInt(value);
+                        } catch(Exception e) {
+                            _logger.log(Level.WARNING,"error_wait_time_before_recovery",e);
+                        }
+                    }
+                    new GMSCallBack(waitTime, habitat);
                 }
     
                 // Other Properties from EjbServiceGroup.initJTSProperties are initialized 
@@ -635,51 +639,6 @@ public class JavaEETransactionManagerJTSDelegate
 
     public void initXA() {
         setTransactionManager();
-    }
-
-    class GMSCallBack implements CallBack {
-
-        private static final String component = "TRANSACTION-RECOVERY-SERVICE";
-
-        GMSCallBack() {
-            if (habitat != null) {
-                GMSAdapterService gmsAdapterService = habitat.getComponent(GMSAdapterService.class);
-                if (gmsAdapterService != null) {
-                    GMSAdapter gmsAdapter = gmsAdapterService.getGMSAdapter();
-                    if (gmsAdapter != null) {
-                        gmsAdapter.registerFailureRecoveryListener(component, this);
-                    }
-                }
-            }
-        }
-
-        @Override
-        public void processNotification(Signal signal) {
-            if (signal instanceof FailureRecoverySignal) {
-                if (_logger.isLoggable(Level.INFO)) {
-                    _logger.log(Level.INFO, "[GMSCallBack] failure recovery signal: " + signal);
-                }
-                String instance = signal.getMemberToken();
-                RecoveryResourceRegistry recoveryListenersRegistry = habitat.getComponent(RecoveryResourceRegistry.class);
-
-                // TODO: support recovery to be a no-op when no XA transactions were running.
-                Set<RecoveryEventListener> listeners = recoveryListenersRegistry.getEventListeners();
-                for (RecoveryEventListener erl : listeners) {
-                    erl.beforeRecovery(instance);
-                }
-
-                // TODO
-                _logger.log(Level.WARNING, "[GMSCallBack] Automatic delegated transaction recovery is not yet supported");
-
-                for (RecoveryEventListener erl : listeners) {
-                    erl.afterRecovery(true, instance);
-                }
-            } else {
-                if (_logger.isLoggable(Level.FINE)) {
-                    _logger.log(Level.FINE, "[GMSCallBack] ignoring signal: " + signal);
-                }
-            }
-        }
     }
 
     private static class ReadWriteLock implements Lock {

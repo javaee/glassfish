@@ -215,8 +215,10 @@ public class TransactionServiceProperties {
                         }
                         logdir += File.separator + instanceName + File.separator + "tx";
     
-                        _logger.log(Level.FINE,"JTS log directory: " + logdir);
-                        _logger.log(Level.FINE,"JTS Server id " + jtsServerId);
+                        if(_logger.isLoggable(Level.FINE)) {
+                            _logger.log(Level.FINE,"JTS log directory: " + logdir);
+                            _logger.log(Level.FINE,"JTS Server id " + jtsServerId);
+                        }
 
                         (new File(logdir)).mkdirs();
                         jtsProperties.put(Configuration.LOG_DIRECTORY, logdir);

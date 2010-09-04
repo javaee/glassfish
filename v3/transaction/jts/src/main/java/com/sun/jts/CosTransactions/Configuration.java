@@ -331,13 +331,13 @@ public class Configuration extends Object {
         serverName = name;
 	      serverNameByteArray = (name == null) ? null : serverName.getBytes();
         recoverable = recoverableServer;
-        if(recoverable)
+        if(recoverable) {
             RecoveryManager.createRecoveryFile(serverName);
-		if(_logger.isLoggable(Level.FINE))
-        {
-			_logger.logp(Level.FINE,"Configuration" ,"setServerName()",
-					" serverName = " +
-					 serverName + "; isRecoverable = " + recoverable);
+        }
+
+        if(_logger.isLoggable(Level.FINE)) {
+	    _logger.logp(Level.FINE,"Configuration" ,"setServerName()",
+		    " serverName = " + serverName + "; isRecoverable = " + recoverable);
         }
     }
 
@@ -425,8 +425,7 @@ public class Configuration extends Object {
         else if (newProp != null)
             prop.putAll(newProp);
 
-		if(_logger.isLoggable(Level.FINE))
-        {
+	if(_logger.isLoggable(Level.FINE)) {
 	      String propertiesList = LogFormatter.convertPropsToString(prop);			   
          _logger.logp(Level.FINE,"Configuration","setProperties()",
 		 		" Properties set are :"+ propertiesList);

@@ -195,47 +195,7 @@ public class DefaultTransactionService implements TransactionService,
         // transient server, then the server is recoverable.
 
         if( !poasCreated ) {
-            //String serverId = properties.getProperty("com.sun.corba.ee.internal.POA.ORBServerId"/*#Frozen*/);
-            String serverId = properties.getProperty(JTS_SERVER_ID);
-            if (serverId == null) {
-                serverId = 
-                    properties.getProperty("com.sun.CORBA.POA.ORBServerId"/*#Frozen*/);
-            }
-            if (serverId != null) {
-                    _logger.log(Level.INFO,"jts.startup_msg",serverId);
-            }
-            String serverName = "UnknownHost"/*#Frozen*/;
-            if(properties.getProperty(JTS_XA_SERVER_NAME) != null) {
-                 serverName = properties.getProperty(JTS_XA_SERVER_NAME);
-                 if (_logger.isLoggable(Level.FINE))
-                     _logger.log(Level.FINE,"DTR: Got serverName from JTS_XA_SERVER_NAME");
-
-            } else {
-                try {
-                    serverName = InetAddress.getLocalHost().getHostName();
-                    if (_logger.isLoggable(Level.FINE))
-                        _logger.log(Level.FINE,"DTR: Got serverName from InetAddress.getLocalHost().getHostName()");
-
-                } catch (UnknownHostException ex) {
-                }
-            }
-            if( serverId != null ) {
-                Configuration.setServerName(getAdjustedServerName(serverName + "," +
-                        Configuration.getPropertyValue(Configuration.INSTANCE_NAME) +
-                        ",P" + serverId/*#Frozen*/), true);
-                if (_logger.isLoggable(Level.FINE))
-                    _logger.log(Level.FINE,"DTR: Recoverable Server");
-
-                recoverable = true;
-            } else {
-                long timestamp = System.currentTimeMillis();
-                Configuration.setServerName(getAdjustedServerName(serverName + 
-                         ",T" + String.valueOf(timestamp)/*#Frozen*/), false);
-                if (_logger.isLoggable(Level.FINE))
-                    _logger.log(Level.FINE,"DTR: Non-Recoverable Server");
-
-            }
-
+            setServerName(properties);
             // Set up the POA objects for transient and persistent references.
 
             try {
@@ -313,6 +273,52 @@ public class DefaultTransactionService implements TransactionService,
             }
 
             active = true; // transaction manager is alive and available
+    }
+
+    public static void setServerName(Properties properties) {
+        if( !poasCreated ) {
+            Configuration.setProperties(properties);
+
+            //String serverId = properties.getProperty("com.sun.corba.ee.internal.POA.ORBServerId"/*#Frozen*/);
+            String serverId = properties.getProperty(JTS_SERVER_ID);
+            if (serverId == null) {
+                serverId = 
+                    properties.getProperty("com.sun.CORBA.POA.ORBServerId"/*#Frozen*/);
+            }
+            if (serverId != null) {
+                    _logger.log(Level.INFO,"jts.startup_msg",serverId);
+            }
+            String serverName = "UnknownHost"/*#Frozen*/;
+            if(properties.getProperty(JTS_XA_SERVER_NAME) != null) {
+                 serverName = properties.getProperty(JTS_XA_SERVER_NAME);
+                 if (_logger.isLoggable(Level.FINE))
+                     _logger.log(Level.FINE,"DTR: Got serverName from JTS_XA_SERVER_NAME");
+
+            } else {
+                try {
+                    serverName = InetAddress.getLocalHost().getHostName();
+                    if (_logger.isLoggable(Level.FINE))
+                        _logger.log(Level.FINE,"DTR: Got serverName from InetAddress.getLocalHost().getHostName()");
+
+                } catch (UnknownHostException ex) {
+                }
+            }
+            if( serverId != null ) {
+                Configuration.setServerName(getAdjustedServerName(serverName + "," +
+                        Configuration.getPropertyValue(Configuration.INSTANCE_NAME) +
+                        ",P" + serverId/*#Frozen*/), true);
+                if (_logger.isLoggable(Level.FINE))
+                    _logger.log(Level.FINE,"DTR: Recoverable Server");
+
+                recoverable = true;
+            } else {
+                long timestamp = System.currentTimeMillis();
+                Configuration.setServerName(getAdjustedServerName(serverName + 
+                         ",T" + String.valueOf(timestamp)/*#Frozen*/), false);
+                if (_logger.isLoggable(Level.FINE))
+                    _logger.log(Level.FINE,"DTR: Non-Recoverable Server");
+            }
+        }
     }
 
     /**Request the transaction service to stop any further transactional activity.
