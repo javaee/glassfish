@@ -50,5 +50,6 @@
     <name>OSGi repackaging of HK2 dependencies</name>
     <modules>
 	    <module>asm-all</module>
+	    <module>bean-validator</module>
     </modules>
 </project>
