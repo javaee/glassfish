@@ -218,12 +218,19 @@ public class GlassFishActivator implements BundleActivator, EventListener {
     }
 
     public void event(Event event) {
-        if (event.is(EventTypes.SERVER_STARTUP)) {
-            startPostStartupBundles();
+        if (event.is(EventTypes.SERVER_READY)) {
             if (events != null) {
                 events.unregister(this);
                 events = null;
             }
+            // This is a synchronous event. So, spawn a new thread to start all the post startup bundles
+            // as we don't want to do such optional activity in the kernel main thread.
+            new Thread() {
+                @Override
+                public void run() {
+                    startPostStartupBundles();
+                }
+            }.start();
         }
     }
 }
