@@ -69,8 +69,6 @@ import java.util.logging.Logger;
  *
  * @author Jagadish Ramu
  */
-@Service
-@Scoped(Singleton.class)
 public class ResourceProviderService implements ConfigListener {
 
     private Habitat habitat;
@@ -83,6 +81,7 @@ public class ResourceProviderService implements ConfigListener {
     private ObservableBean resourcesConfigBean;
 
     private BundleContext bundleContext;
+    private ResourceHelper resourceHelper;
 
     private static final Logger logger = Logger.getLogger(
             ResourceProviderService.class.getPackage().getName());
@@ -92,6 +91,7 @@ public class ResourceProviderService implements ConfigListener {
         this.bundleContext = bundleContext;
         servers = habitat.getComponent(Servers.class);
         resources = habitat.getComponent(Domain.class).getResources();
+        resourceHelper = new ResourceHelper(habitat);
         postConstruct();
     }
 
@@ -317,15 +317,20 @@ public class ResourceProviderService implements ConfigListener {
      */
     private Collection<ResourceManager> getAllResourceManagers() {
         Collection<ResourceManager> resourceManagers;
-        resourceManagers = getHabitat().getAllByContract(ResourceManager.class);
-        if (resourceManagers == null) {
+        //resourceManagers = getHabitat().getAllByContract(ResourceManager.class);
+        //if (resourceManagers == null) {
+            Habitat habitat = getHabitat();
             resourceManagers = new ArrayList<ResourceManager>();
-        }
+            resourceManagers.add(new JDBCResourceManager(habitat));
+            resourceManagers.add(new JMSResourceManager(habitat));
+            resourceManagers.add(new JMSDestinationResourceManager(habitat));
+        //}
         return resourceManagers;
     }
 
     private ResourceHelper getResourceHelper() {
-        return habitat.getComponent(ResourceHelper.class);
+        return resourceHelper;
+        //return habitat.getComponent(ResourceHelper.class);
     }
 
 

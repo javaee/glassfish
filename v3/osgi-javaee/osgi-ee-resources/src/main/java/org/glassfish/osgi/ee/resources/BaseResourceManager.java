@@ -64,15 +64,19 @@ import java.util.logging.Logger;
  *
  * @author Jagadish Ramu
  */
-@Service
 public class BaseResourceManager {
 
-    @Inject
     private Habitat habitat;
 
     protected List<ServiceRegistration> services = new ArrayList<ServiceRegistration>();
     protected static final Logger logger = Logger.getLogger(
             BaseResourceManager.class.getPackage().getName());
+    protected ResourceHelper resourceHelper ;
+
+    public BaseResourceManager(Habitat habitat){
+        this.habitat = habitat;
+        resourceHelper = new ResourceHelper(habitat);
+    }
 
     protected void unRegisterResource(ServiceRegistration serviceRegistration, BundleContext context) {
         debug("unregistering resource [" + serviceRegistration.getReference().getProperty(Constants.JNDI_NAME) + "]");
@@ -115,12 +119,11 @@ public class BaseResourceManager {
     }
 
     protected ResourceHelper getResourceHelper() {
-        return habitat.getComponent(ResourceHelper.class);
+        return resourceHelper;
     }
 
-    //TODO avoid using connector-class-loader ?
     protected ClassLoader getClassLoader() {
-        return getHabitat().getComponent(ClassLoaderHierarchy.class).getConnectorClassLoader(null);
+        return this.getClass().getClassLoader();
     }
 
     protected void registerResourceAsService(BundleContext bundleContext, BindableResource bindableResource,

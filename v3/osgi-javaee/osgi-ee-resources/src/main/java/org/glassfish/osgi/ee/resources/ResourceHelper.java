@@ -55,12 +55,13 @@ import java.util.List;
 /**
  * @author Jagadish Ramu
  */
-@Service
-@Scoped(Singleton.class)
 public class ResourceHelper {
 
-    @Inject
     Habitat habitat;
+
+    ResourceHelper(Habitat habitat){
+        this.habitat = habitat;
+    }
 
     /**
      * retrieves <i>resource-ref</i> from configuration

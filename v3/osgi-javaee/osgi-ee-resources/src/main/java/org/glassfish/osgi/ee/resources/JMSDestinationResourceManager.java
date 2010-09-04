@@ -41,11 +41,7 @@
 package org.glassfish.osgi.ee.resources;
 
 import com.sun.enterprise.config.serverbeans.*;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Singleton;
 import org.osgi.framework.BundleContext;
 
 import javax.jms.*;
@@ -58,11 +54,13 @@ import java.util.Hashtable;
  *
  * @author Jagadish Ramu
  */
-@Service
-@Scoped(Singleton.class)
 public class JMSDestinationResourceManager extends BaseResourceManager implements ResourceManager {
-    @Inject
+
     private Habitat habitat;
+
+    public JMSDestinationResourceManager(Habitat habitat){
+        super(habitat);
+    }
 
     /**
      * {@inheritDoc}

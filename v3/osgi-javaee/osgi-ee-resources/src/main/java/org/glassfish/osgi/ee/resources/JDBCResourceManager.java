@@ -41,9 +41,7 @@
 package org.glassfish.osgi.ee.resources;
 
 import com.sun.enterprise.config.serverbeans.*;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.component.Habitat;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.framework.BundleContext;
 
@@ -54,9 +52,11 @@ import java.util.*;
  *
  * @author Jagadish Ramu
  */
-@Service
-@Scoped(Singleton.class)
 public class JDBCResourceManager extends BaseResourceManager implements ResourceManager {
+
+    public JDBCResourceManager(Habitat habitat){
+        super(habitat);
+    }
 
     public void registerResources(BundleContext context) {
         registerJdbcResources(context);

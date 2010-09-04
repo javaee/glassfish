@@ -65,11 +65,8 @@ public class ResourceProxy implements InvocationHandler, Invalidate {
         Object result = null;
         if (method.getName().equals("invalidate")) {
             invalidate();
-        }//TODO Remove this once hk-2 related issue is fixed as hk-2 seems to call these methods even after "invalidate"
-        else if(method.getName().equals("equals") || method.getName().equals("hashcode") || method.getName().equals("toString")){
-            result = method.invoke(getActualObject(true), args);
-        }else {
-            result = method.invoke(getActualObject(false), args);
+        } else {
+            result = method.invoke(getActualObject(), args);
         }
         return result;
     }
@@ -78,8 +75,8 @@ public class ResourceProxy implements InvocationHandler, Invalidate {
      * It is possible that reconfiguration of resource will happen.<br>
      * Always do lookup.
      */
-    private Object getActualObject(boolean ignoreValidation) {
-        if (!invalidated || ignoreValidation) {
+    private Object getActualObject() {
+        if (!invalidated) {
             try {
                 return new InitialContext().lookup(jndiName);
             } catch (NamingException e) {
