@@ -263,12 +263,9 @@ public class OSGiModulesRegistryImpl
         // BundleListener.
         super.remove(module);
 
-        // Update cache and delete the underlying file so that
-        // it gets created during subsequent startup.
+        // Update cache. 
         final URI location = module.getModuleDefinition().getLocations()[0];
-        if (cachedData.remove(location) != null) {
-            deleteCache();
-        }
+        cachedData.remove(location);
     }
 
     // factory method
