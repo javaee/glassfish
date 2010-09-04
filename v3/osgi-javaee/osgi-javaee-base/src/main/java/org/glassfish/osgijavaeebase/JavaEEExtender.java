@@ -53,6 +53,15 @@ import java.util.logging.Logger;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class JavaEEExtender implements Extender, BundleListener {
+    /*
+     * Implementation Note: All methods are synchronized, because we don't allow the extender to stop while it
+     * is deploying or undeploying something. Similarly, while it is being stopped, we don't want it to deploy
+     * or undeploy something.
+     * Because this is an asynchronous bundle listener, it is possible that this listener is scheduled
+     * to receive a bundleChanged event and before the event is delivered, some other thread stopped the
+     * listener.
+     */
+
     private OSGiContainer c;
     private static final Logger logger =
             Logger.getLogger(JavaEEExtender.class.getPackage().getName());
@@ -64,19 +73,19 @@ public class JavaEEExtender implements Extender, BundleListener {
     }
 
     public synchronized void start() {
-        context.addBundleListener(this);
         c = new OSGiContainer(context);
         c.init();
         reg = context.registerService(OSGiContainer.class.getName(), c, null);
+        context.addBundleListener(this);
     }
 
     public synchronized void stop() {
         if (c == null) return;
         context.removeBundleListener(this);
-        reg.unregister();
-        reg = null;
         if (c != null) c.shutdown();
         c = null;
+        reg.unregister();
+        reg = null;
     }
 
     public void bundleChanged(BundleEvent event) {
@@ -96,7 +105,8 @@ public class JavaEEExtender implements Extender, BundleListener {
         }
     }
 
-    private void deploy(Bundle b) {
+    private synchronized void deploy(Bundle b) {
+        if (!isStarted()) return;
         try {
             c.deploy(b);
         }
@@ -109,7 +119,8 @@ public class JavaEEExtender implements Extender, BundleListener {
         }
     }
 
-    private void undeploy(Bundle b) {
+    private synchronized void undeploy(Bundle b) {
+        if (!isStarted()) return;
         try {
             if (c.isDeployed(b)) {
                 c.undeploy(b);
@@ -124,4 +135,7 @@ public class JavaEEExtender implements Extender, BundleListener {
         }
     }
 
+    private synchronized boolean isStarted() {
+        return c!= null;
+    }
 }

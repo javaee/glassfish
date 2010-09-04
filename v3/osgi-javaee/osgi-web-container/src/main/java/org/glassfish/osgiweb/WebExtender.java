@@ -44,7 +44,6 @@ import com.sun.enterprise.web.WebModuleDecorator;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.osgijavaeebase.Extender;
-import org.glassfish.osgijavaeebase.ExtenderManager;
 import org.jvnet.hk2.component.Inhabitant;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -62,7 +61,7 @@ import java.util.logging.Logger;
  */
 public class WebExtender implements Extender {
     private static final Logger logger =
-            Logger.getLogger(ExtenderManager.class.getPackage().getName());
+            Logger.getLogger(WebExtender.class.getPackage().getName());
     private BundleContext context;
     private ServiceRegistration urlHandlerService;
     private OSGiWebModuleDecorator wmd;

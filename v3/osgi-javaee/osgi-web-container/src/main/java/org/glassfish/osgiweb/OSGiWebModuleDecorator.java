@@ -42,8 +42,6 @@ package org.glassfish.osgiweb;
 
 import com.sun.enterprise.web.WebModuleDecorator;
 import com.sun.enterprise.web.WebModule;
-import org.glassfish.osgijavaeebase.OSGiContainer;
-import org.glassfish.osgijavaeebase.OSGiDeploymentRequest;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Bundle;
 import org.glassfish.osgijavaeebase.OSGiBundleArchive;
@@ -57,12 +55,12 @@ import java.util.ArrayList;
 
 /**
  * This class is responsible for setting
- * a) an attribute called {@link Constants.BUNDLE_CONTEXT_ATTR} in ServletContext of the web app
+ * a) an attribute called {@link Constants#BUNDLE_CONTEXT_ATTR} in ServletContext of the web app
  * associated with the current OSGi bundle.
  * b) discovering JSF faces config resources and setting them in an attribute called
- * {@link Constants.FACES_CONFIG_ATTR}.
+ * {@link Constants#FACES_CONFIG_ATTR}.
  * b) discovering JSF facelet config resources and setting them in an attribute called
- * {@link Constants.FACELET_CONFIG_ATTR}.
+ * {@link Constants#FACELET_CONFIG_ATTR}.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */

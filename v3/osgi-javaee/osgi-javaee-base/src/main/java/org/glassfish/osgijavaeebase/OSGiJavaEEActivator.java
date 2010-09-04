@@ -58,6 +58,7 @@ public class OSGiJavaEEActivator implements BundleActivator {
 
     private ExtenderManager extenderManager;
     private ServiceRegistration urlHandlerServiceRegistration;
+    private ServiceRegistration javaeeExtenderServiceRegistration;
 
     public void start(BundleContext context) throws Exception {
         addURLHandler(context);
@@ -66,14 +67,19 @@ public class OSGiJavaEEActivator implements BundleActivator {
         addExtender(context);
     }
 
-    private void addExtender(BundleContext context) {
-        JavaEEExtender extender = new JavaEEExtender(context);
-        context.registerService(Extender.class.getName(), extender, null);
-    }
-
     public void stop(BundleContext context) throws Exception {
+        removeExtender();
         extenderManager.stop();
         removeURLHandler(context);
+    }
+
+    private void addExtender(BundleContext context) {
+        JavaEEExtender extender = new JavaEEExtender(context);
+        javaeeExtenderServiceRegistration = context.registerService(Extender.class.getName(), extender, null);
+    }
+
+    private void removeExtender() {
+        javaeeExtenderServiceRegistration.unregister();
     }
 
     private void addURLHandler(BundleContext context) {

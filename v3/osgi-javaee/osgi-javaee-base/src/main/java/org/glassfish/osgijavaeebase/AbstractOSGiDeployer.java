@@ -98,17 +98,21 @@ public abstract class AbstractOSGiDeployer {
     public void undeployAll() {
         ServiceTracker st = new ServiceTracker(bundleContext, OSGiContainer.class.getName(), null);
         st.open();
-        OSGiContainer c = (OSGiContainer) st.getService();
-        if (c == null) return;
-        ServiceReference deployerRef = serviceReg.getReference();
-        for(OSGiApplicationInfo app : c.getDeployedApps()) {
-            if (app.getDeployer() == deployerRef) {
-                try {
-                    c.undeploy(app.getBundle());
-                } catch (Exception e) {
-                    logger.logp(Level.WARNING, "WebExtender", "undeployAll", "Failed to undeploy bundle " + app.getBundle(), e);
+        try {
+            OSGiContainer c = (OSGiContainer) st.getService();
+            if (c == null) return;
+            ServiceReference deployerRef = serviceReg.getReference();
+            for(OSGiApplicationInfo app : c.getDeployedApps()) {
+                if (app.getDeployer() == deployerRef) {
+                    try {
+                        c.undeploy(app.getBundle());
+                    } catch (Exception e) {
+                        logger.logp(Level.WARNING, "WebExtender", "undeployAll", "Failed to undeploy bundle " + app.getBundle(), e);
+                    }
                 }
             }
+        } finally {
+            st.close();
         }
     }
 

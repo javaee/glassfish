@@ -63,7 +63,7 @@ import java.util.logging.Logger;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class ExtenderManager
+class ExtenderManager
 {
     private static final Logger logger =
             Logger.getLogger(ExtenderManager.class.getPackage().getName());
@@ -78,55 +78,48 @@ public class ExtenderManager
         this.context = context;
     }
 
-    public void start() throws Exception
+    public synchronized void start() throws Exception
     {
+        logger.logp(Level.INFO, "ExtenderManager", "start", "ExtenderManager starting");
         glassFishServerTracker = new GlassFishServerTracker(context);
         glassFishServerTracker.open();
     }
 
-    public void stop() throws Exception
+    public synchronized void stop() throws Exception
     {
+        logger.logp(Level.INFO, "ExtenderManager", "start", "ExtenderManager stopping");
         unregisterGlassFishShutdownHook();
         if (glassFishServerTracker != null) {
             glassFishServerTracker.close();
             glassFishServerTracker = null;
         }
-        if (extenderTracker != null) {
-            extenderTracker.close();
-            extenderTracker = null;
-        }
         stopExtenders();
     }
 
-    public synchronized void startExtenders() {
+    private synchronized void startExtenders() {
+        logger.entering("ExtenderManager", "startExtenders");
+
         // Because of a race condition, we can be started multiple times, so check if already started
         if (extenderTracker != null) return;
+
+        // open will call addingService for each existing extender
+        // and there by we will start each extender.
         extenderTracker = new ExtenderTracker(context);
         extenderTracker.open();
     }
 
-    private void stopExtenders()
+    private synchronized void stopExtenders()
     {
-        try
-        {
-            final ServiceReference[] refs = context.getServiceReferences(Extender.class.getName(), null);
-            if (refs != null) {
-                for (ServiceReference ref : refs) {
-                    Extender e = Extender.class.cast(context.getService(ref));
-                    try {
-                        e.stop();
-                    } finally {
-                        context.ungetService(ref);
-                    }
-                }
-            }
-        }
-        catch (InvalidSyntaxException e)
-        {
-            logger.logp(Level.WARNING, "ExtenderManager", "stopExtenders",
-                    "Not able to stop all extenders", e);
-        }
+        logger.entering("ExtenderManager", "stopExtenders");
 
+        // Because of a race condition, we can be stopped multiple times, so check if already started
+        // more over, extenderTracker will be null until server is started, so to avoid NPE, null check is needed.
+        if (extenderTracker == null) return;
+
+        // close will call removedService for each tracked extender
+        // and there by we will stop each extender.
+        extenderTracker.close();
+        extenderTracker = null;
     }
 
     private void unregisterGlassFishShutdownHook() {
@@ -145,6 +138,7 @@ public class ExtenderManager
         public Object addingService(ServiceReference reference)
         {
             Extender e = Extender.class.cast(context.getService(reference));
+            logger.logp(Level.INFO, "ExtenderManager$ExtenderTracker", "addingService", "Starting extender called {0}", new Object[]{e});
             e.start();
             return e;
         }
@@ -152,6 +146,7 @@ public class ExtenderManager
         @Override
         public void removedService(ServiceReference reference, Object service) {
             Extender e = Extender.class.cast(context.getService(reference));
+            logger.logp(Level.INFO, "ExtenderManager$ExtenderTracker", "removedService", "Stopping extender called {0}", new Object[]{e});
             e.stop();
         }
     }
@@ -169,27 +164,30 @@ public class ExtenderManager
         @Override
         public Object addingService(ServiceReference reference)
         {
-            logger.logp(Level.FINE, "ExtenderManager$GlassFishServerTracker", "addingService", "Habitat has been created");
-            ServiceReference habitatServiceRef = context.getServiceReference(Habitat.class.getName());
-            Habitat habitat = Habitat.class.cast(context.getService(habitatServiceRef));
-            events = habitat.getComponent(Events.class);
-            listener = new EventListener() {
-                public void event(Event event)
-                {
-                    if (EventTypes.SERVER_READY.equals(event.type())) {
-                        startExtenders();
-                    } else if (EventTypes.PREPARE_SHUTDOWN.equals(event.type())) {
-                        stopExtenders();
+            try {
+                logger.logp(Level.FINE, "ExtenderManager$GlassFishServerTracker", "addingService", "Habitat has been created");
+                ServiceReference habitatServiceRef = context.getServiceReference(Habitat.class.getName());
+                Habitat habitat = Habitat.class.cast(context.getService(habitatServiceRef));
+                events = habitat.getComponent(Events.class);
+                listener = new EventListener() {
+                    public void event(Event event)
+                    {
+                        if (EventTypes.SERVER_READY.equals(event.type())) {
+                            startExtenders();
+                        } else if (EventTypes.PREPARE_SHUTDOWN.equals(event.type())) {
+                            stopExtenders();
+                        }
                     }
+                };
+                events.register(listener);
+                // We can get into infinite waiting loop if server is already started. So check the status once.
+                if (habitat.getComponent(ServerEnvironment.class).getStatus() == ServerEnvironment.Status.started) {
+                    startExtenders();
                 }
-            };
-            events.register(listener);
-            // We can get into infinite waiting loop if server is already started. So check the status once.
-            if (habitat.getComponent(ServerEnvironment.class).getStatus() == ServerEnvironment.Status.started) {
-                startExtenders();
+                return super.addingService(reference);
+            } finally {
+                close(); // no need to track any more
             }
-            close(); // no need to track any more
-            return super.addingService(reference);
         }
     }
 }

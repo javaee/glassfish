@@ -175,6 +175,7 @@ public class OSGiEJBDeployer extends AbstractOSGiDeployer implements OSGiDeploye
             Collection<EjbDescriptor> ejbs = app.getEjbDescriptors();
             System.out.println("removedService: Found " + ejbs.size() + " no. of EJBs");
             for (EjbDescriptor ejb : ejbs) {
+                // TODO(Sahoo): Unregister
             }
         }
     }

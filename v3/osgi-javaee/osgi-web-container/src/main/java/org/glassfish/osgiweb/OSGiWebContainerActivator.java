@@ -43,7 +43,6 @@ package org.glassfish.osgiweb;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.glassfish.osgijavaeebase.Extender;
-import org.glassfish.osgijavaeebase.ExtenderManager;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
