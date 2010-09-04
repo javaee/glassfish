@@ -38,17 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
-/*
- * TokenReplacementTester.java
- *
- * Created on March 6, 2003, 5:11 PM
- */
-
 package com.sun.enterprise.admin.util.test;
 
 import com.sun.enterprise.admin.util.LineTokenReplacer;

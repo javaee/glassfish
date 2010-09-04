@@ -38,17 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
-/*
- * PWCDnsStats.java
- *
- * Created on April 2, 2004, 10:37 AM
- */
-
 package com.sun.enterprise.admin.monitor.stats;
 
 /**

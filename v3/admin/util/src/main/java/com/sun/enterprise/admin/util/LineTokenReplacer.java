@@ -38,15 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
-/*
-* LineTokeReplacer.java
-*/
-
 package com.sun.enterprise.admin.util;
 
 import java.io.File;

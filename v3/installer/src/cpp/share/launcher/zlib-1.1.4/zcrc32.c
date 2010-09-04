@@ -4,8 +4,8 @@
  */
 
 /*
- * Portions Copyright 2002 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ * Portions Copyright (c) 2002-2010 Oracle and/or its affiliates.
+ * All rights reserved.
  */
 
 /* crc32.c -- compute the CRC-32 of a data stream

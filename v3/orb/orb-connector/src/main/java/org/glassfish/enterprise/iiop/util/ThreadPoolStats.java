@@ -38,17 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
-/*
- * $Id: ThreadPoolStats.java,v 1.4 2007/05/05 05:25:48 tcfujii Exp $
- * $Date: 2007/05/05 05:25:48 $
- * $Revision: 1.4 $
- */
-
 package org.glassfish.enterprise.iiop.util;
 
 import org.glassfish.external.statistics.CountStatistic;
@@ -62,7 +51,6 @@ import org.glassfish.external.statistics.Stats;
  * in the server runtime is introduced.
  * @author Kedar Mhaswade
  * @since S1AS8.0
- * @version $Revision: 1.4 $
  */
 
 public interface ThreadPoolStats extends Stats {

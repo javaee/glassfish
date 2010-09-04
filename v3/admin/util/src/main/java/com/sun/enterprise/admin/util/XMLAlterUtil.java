@@ -38,10 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
 package com.sun.enterprise.admin.util;
 
 import org.w3c.dom.*;

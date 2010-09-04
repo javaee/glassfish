@@ -38,17 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
-/* MutableTimeStatisticImpl.java
- * $Id: MutableTimeStatisticImpl.java,v 1.2 2005/12/25 03:52:20 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2005/12/25 03:52:20 $
- */
-
 package com.sun.enterprise.admin.monitor.stats;
 import org.glassfish.j2ee.statistics.TimeStatistic;
 import org.glassfish.j2ee.statistics.Statistic;

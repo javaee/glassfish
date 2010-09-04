@@ -38,20 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-/*
- * @(#)SubCoordinator.java	1.10 00/11/09
- *
- * Copyright 1995-1999 Sun Microsystems, Inc. All Rights Reserved.
- * 
- * This software is the proprietary information of Sun Microsystems, Inc.  
- * Use is subject to license terms.
- * 
- */
-
 //----------------------------------------------------------------------------
 //
 // Module:      SubCoordinator.java

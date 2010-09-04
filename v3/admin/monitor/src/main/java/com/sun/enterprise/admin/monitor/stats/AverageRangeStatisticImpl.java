@@ -38,17 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
-/*
- * AverageRangeStatisticImpl.java
- *
- * Created on May 11, 2004, 3:06 PM
- */
-
 package com.sun.enterprise.admin.monitor.stats;
 
 import org.glassfish.j2ee.statistics.BoundedRangeStatistic;

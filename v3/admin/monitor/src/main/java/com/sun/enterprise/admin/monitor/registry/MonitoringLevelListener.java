@@ -38,17 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
-/*
- * MonitoringLevelListener.java
- *
- * Created on August 13, 2003, 2:15 PM
- */
-
 package com.sun.enterprise.admin.monitor.registry;
 
 /**

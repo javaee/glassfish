@@ -51,8 +51,8 @@
   <short-name>appserv-tags</short-name>
   <uri>Sun ONE Application Server Tags</uri>
   <description>
-    This tag library is part of the Sun ONE Application Server.
-    Copyright (c) 2002 by Sun Microsystems, Inc. All Rights Reserved. 
+    This tag library is part of the GlassFish Application Server.
+    Copyright (c) 2002-2010 Oracle and/or its affiliates. All Rights Reserved. 
     Use is subject to license terms. 
   </description>
 

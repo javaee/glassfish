@@ -38,11 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
 package com.sun.enterprise.admin.monitor.stats;
 import org.glassfish.j2ee.statistics.CountStatistic;
 

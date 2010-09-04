@@ -41,11 +41,6 @@
 
 -->
 
-<!--
- Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- Use is subject to license terms.
--->
-
 <ejb-jar xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version ="3.0" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_0.xsd">
   <enterprise-beans>
     <session>

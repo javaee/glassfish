@@ -38,17 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
-/*
- * MonitoringRegistrationException.java
- *
- * Created on August 10, 2003, 9:12 AM
- */
-
 package com.sun.enterprise.admin.monitor.registry;
 
 /**

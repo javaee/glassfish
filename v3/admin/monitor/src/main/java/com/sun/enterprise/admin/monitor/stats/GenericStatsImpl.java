@@ -38,17 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
-/*
- * $Id: GenericStatsImpl.java,v 1.2 2005/12/25 03:52:14 tcfujii Exp $
- * $Date: 2005/12/25 03:52:14 $
- * $Revision: 1.2 $
- */
-
 package com.sun.enterprise.admin.monitor.stats;
 
 import java.lang.reflect.Method;

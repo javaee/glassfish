@@ -38,26 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
-/* __NAME__.java
- * $Id: StatsHolder.java,v 1.2 2005/12/25 03:52:08 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2005/12/25 03:52:08 $
- * Indentation Information:
- * 0. Please (try to) preserve these settings.
- * 1. Tabs are preferred over spaces.
- * 2. In vi/vim - 
- *		:set tabstop=4 :set shiftwidth=4 :set softtabstop=4
- * 3. In S1 Studio - 
- *		1. Tools->Options->Editor Settings->Java Editor->Tab Size = 4
- *		2. Tools->Options->Indentation Engines->Java Indentation Engine->Expand Tabs to Spaces = False.
- *		3. Tools->Options->Indentation Engines->Java Indentation Engine->Number of Spaces per Tab = 4.
- */
-
 package com.sun.enterprise.admin.monitor.registry;
 
 import org.glassfish.j2ee.statistics.Stats;

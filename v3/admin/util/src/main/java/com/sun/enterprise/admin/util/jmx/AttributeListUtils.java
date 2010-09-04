@@ -39,15 +39,6 @@
  */
 
 /*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
-/*
- * JmxNamedAttributeList.java
- * $Id: AttributeListUtils.java,v 1.2 2005/12/25 03:53:18 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2005/12/25 03:53:18 $
  * Indentation Information:
  * 0. Please (try to) preserve these settings.
  * 1. Tabs are preferred over spaces.

@@ -38,13 +38,6 @@
  * holder.
  */
 
-/**
- * PROPRIETARY/CONFIDENTIAL.  Use of this product is subject to license terms.
- *
- * Copyright 2000-2001 by iPlanet/Sun Microsystems, Inc.,
- * 901 San Antonio Road, Palo Alto, California, 94303, U.S.A.
- * All rights reserved.
- */
 package org.glassfish.internal.api;
 
 import org.jvnet.hk2.annotations.Contract;

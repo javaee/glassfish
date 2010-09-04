@@ -38,18 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
-/*
- * $Id: ConnectionPoolStats.java,v 1.3 2007/01/12 16:21:48 sirajg Exp $
- * $Date: 2007/01/12 16:21:48 $
- * $Revision: 1.3 $
- *
- */
-
 package com.sun.enterprise.admin.monitor.stats;
 import org.glassfish.j2ee.statistics.Stats;
 import org.glassfish.j2ee.statistics.RangeStatistic;

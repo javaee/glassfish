@@ -38,17 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
-/*
- * $Id: GenericStatsImpl.java,v 1.3 2007/05/05 05:25:47 tcfujii Exp $
- * $Date: 2007/05/05 05:25:47 $
- * $Revision: 1.3 $
- */
-
 package org.glassfish.enterprise.iiop.util;
 
 import java.lang.reflect.Method;

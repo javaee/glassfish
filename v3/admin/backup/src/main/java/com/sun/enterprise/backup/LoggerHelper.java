@@ -38,26 +38,6 @@
  * holder.
  */
 
-/* 
- * LoggerHelper.java
- *
- * Created on January 20, 2004, 5:55 PM
- * 
- * @author  bnevins
- * <BR> <I>$Source: /cvs/glassfish/admin/backup/src/java/com/sun/enterprise/config/backup/LoggerHelper.java,v $
- *
- * Copyright 2000-2001 by iPlanet/Sun Microsystems, Inc., 
- * 901 San Antonio Road, Palo Alto, California, 94303, U.S.A. 
- * All rights reserved. 
- * 
- * This software is the confidential and proprietary information 
- * of iPlanet/Sun Microsystems, Inc. ("Confidential Information"). 
- * You shall not disclose such Confidential Information and shall 
- * use it only in accordance with the terms of the license 
- * agreement you entered into with iPlanet/Sun Microsystems. 
- *
- */
-
 package com.sun.enterprise.backup;
 
 import java.util.logging.*;

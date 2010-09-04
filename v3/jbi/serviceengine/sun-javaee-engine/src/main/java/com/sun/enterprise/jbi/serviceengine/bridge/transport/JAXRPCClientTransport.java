@@ -38,14 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- *
- *NMClientTransport.java
- *
- * Created on May 4, 2005, 1:32 PM
- */
 package com.sun.enterprise.jbi.serviceengine.bridge.transport;
 
 import javax.xml.namespace.QName;

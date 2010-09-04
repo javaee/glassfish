@@ -38,12 +38,6 @@
  * holder.
  */
 
-/**
- * Copyright 2000-2001 by iPlanet/Sun Microsystems, Inc.,
- * 901 San Antonio Road, Palo Alto, California, 94303, U.S.A.
- * All rights reserved.
- */
- 
 package com.sun.appserv.util.cache;
 
 import com.sun.logging.LogDomains;

@@ -38,17 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
-/*
- * PWCFileCacheStats.java
- *
- * Created on April 2, 2004, 10:40 AM
- */
-
 package com.sun.enterprise.admin.monitor.stats;
 
 /**

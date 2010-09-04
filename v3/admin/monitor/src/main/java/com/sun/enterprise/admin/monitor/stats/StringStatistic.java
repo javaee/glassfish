@@ -38,17 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
-/*
- * $Id: StringStatistic.java,v 1.2 2005/12/25 03:52:26 tcfujii Exp $
- * $Date: 2005/12/25 03:52:26 $
- * $Revision: 1.2 $
- */
-
 package com.sun.enterprise.admin.monitor.stats;
 import org.glassfish.j2ee.statistics.Statistic;
 

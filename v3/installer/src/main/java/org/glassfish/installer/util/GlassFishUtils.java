@@ -61,7 +61,7 @@ public class GlassFishUtils {
             "@echo off\n"
             + "REM DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n"
             + "REM\n"
-            + "REM Copyright 2010 Sun Microsystems, Inc. All rights reserved.\n"
+            + "REM Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.\n"
             + "REM\n"
             + "REM Use is subject to License Terms\n"
             + "REM\n";
@@ -72,7 +72,7 @@ public class GlassFishUtils {
             + "#\n"
             + "# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n"
             + "#\n"
-            + "# Copyright 2010 Sun Microsystems, Inc. All rights reserved.\n"
+            + "# Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.\n"
             + "#\n"
             + "# Use is subject to License Terms\n"
             + "#\n";

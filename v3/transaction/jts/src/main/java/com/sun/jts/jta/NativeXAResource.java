@@ -38,11 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
  package com.sun.jts.jta;
  
  import javax.transaction.xa.*;

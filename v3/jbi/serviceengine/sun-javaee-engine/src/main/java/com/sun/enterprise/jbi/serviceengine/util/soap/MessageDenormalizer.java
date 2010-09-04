@@ -38,16 +38,6 @@
  * holder.
  */
 
-// Copyright (c) 2004-2005 Sun Microsystems Inc., All Rights Reserved.
-
-/*
- * MessageDenormalizer.java
- *
- * SUN PROPRIETARY/CONFIDENTIAL.
- * This software is the proprietary information of Sun Microsystems, Inc.
- * Use is subject to license terms.
- *
- */
 package com.sun.enterprise.jbi.serviceengine.util.soap;
 
 import javax.jbi.messaging.Fault;

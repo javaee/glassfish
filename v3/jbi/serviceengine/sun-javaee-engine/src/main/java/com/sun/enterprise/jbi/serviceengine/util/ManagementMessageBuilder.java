@@ -38,12 +38,6 @@
  * holder.
  */
 
-/*
- * @(#)ManagementMessageBuilderImpl.java - ver 1.1 - 01/04/2006
- *
- * Copyright 2004-2006 Sun Microsystems, Inc. All Rights Reserved.
- */
-
 package com.sun.enterprise.jbi.serviceengine.util;
 
 import org.w3c.dom.Document;

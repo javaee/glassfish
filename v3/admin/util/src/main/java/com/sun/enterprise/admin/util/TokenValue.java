@@ -38,17 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
-/*
- * TokenValue.java
- *
- * Created on March 6, 2003, 1:25 PM
- */
-
 package com.sun.enterprise.admin.util;
 
 /**

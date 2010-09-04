@@ -38,13 +38,6 @@
  * holder.
  */
 
-/*
- * @(#) MailResourceDeployer.java
- *
- * Copyright 2002 by iPlanet/Sun Microsystems, Inc.,
- * 901 San Antonio Road, Palo Alto, California, 94303, U.S.A.
- * All rights reserved.
- */
 package com.sun.enterprise.resource.deployer;
 
 import com.sun.appserv.connectors.internal.api.*;

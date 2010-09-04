@@ -41,12 +41,6 @@
 
 -->
 
-<!--
- Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- Use is subject to license terms.
--->
-
-
 <ejb-jar xmlns="http://java.sun.com/xml/ns/j2ee" version="2.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/ejb-jar_2_1.xsd">
   <display-name>MEJB JAR</display-name>
   <enterprise-beans>

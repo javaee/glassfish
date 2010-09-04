@@ -38,18 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
-/*
- * $Id: BoundedRangeStatisticImpl.java,v 1.3 2007/04/13 20:32:07 llc Exp $
- * $Date: 2007/04/13 20:32:07 $
- * $Revision: 1.3 $
- */
-
-
 package com.sun.enterprise.admin.monitor.stats;
 import org.glassfish.j2ee.statistics.BoundedRangeStatistic;
 import com.sun.enterprise.util.i18n.StringManager;

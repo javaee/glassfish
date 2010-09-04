@@ -38,16 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-/*
- * AdminConstants.java
- *
- * Created on October 9, 2003, 8:51 AM
- */
-
 package com.sun.enterprise.admin.util;
 
 import com.sun.enterprise.util.SystemPropertyConstants;

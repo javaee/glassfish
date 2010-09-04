@@ -38,17 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
- 
-/*
- * $Header: /cvs/glassfish/admin-core/util/src/java/com/sun/enterprise/admin/util/TokenizerException.java,v 1.2 2005/12/25 03:53:14 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2005/12/25 03:53:14 $
- */
-
 package com.sun.enterprise.admin.util;
 
 

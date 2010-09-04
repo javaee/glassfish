@@ -38,25 +38,6 @@
  * holder.
  */
 
-/* 
- * FileUtils.java
- *
- * Created on November 16, 2001, 6:44 PM
- * 
- * @author  bnevins
- *
- * Copyright 2000-2001 by iPlanet/Sun Microsystems, Inc., 
- * 901 San Antonio Road, Palo Alto, California, 94303, U.S.A. 
- * All rights reserved. 
- * 
- * This software is the confidential and proprietary information 
- * of iPlanet/Sun Microsystems, Inc. ("Confidential Information"). 
- * You shall not disclose such Confidential Information and shall 
- * use it only in accordance with the terms of the license 
- * agreement you entered into with iPlanet/Sun Microsystems. 
- *
- */
-
 /*
  * KEDAR/MURALI has made some changes to this class
  * so that it works with installer(LogDomains esp.).
