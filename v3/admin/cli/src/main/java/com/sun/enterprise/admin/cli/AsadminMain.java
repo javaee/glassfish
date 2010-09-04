@@ -136,13 +136,15 @@ public class AsadminMain {
         else if (debug)
             logger.setLevel(Level.FINER);
         else {
-            logger.setLevel(Level.INFO);
+            logger.setLevel(Level.FINE);
             //logger.setLevel(Level.SEVERE);
         }
         logger.setUseParentHandlers(false);
         for (Handler h : logger.getHandlers())
             logger.removeHandler(h);
-        logger.addHandler(new CLILoggerHandler());
+        Handler h = new CLILoggerHandler();
+        h.setLevel(logger.getLevel());
+        logger.addHandler(h);
 
         if (CLIConstants.debugMode) {
             System.setProperty(CLIConstants.WALL_CLOCK_START_PROP,
