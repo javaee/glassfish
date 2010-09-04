@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+*
+* Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+*
+* The contents of this file are subject to the terms of either the GNU
+* General Public License Version 2 only ("GPL") or the Common Development
+* and Distribution License("CDDL") (collectively, the "License").  You
+* may not use this file except in compliance with the License. You can obtain
+* a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+* or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+* language governing permissions and limitations under the License.
+*
+* When distributing the software, include this License Header Notice in each
+* file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+* Sun designates this particular file as subject to the "Classpath" exception
+* as provided by Sun in the GPL Version 2 section of the License file that
+* accompanied this code.  If applicable, add the following below the License
+* Header, with the fields enclosed by brackets [] replaced by your own
+* identifying information: "Portions Copyrighted [year]
+* [name of copyright owner]"
+*
+* Contributor(s):
+*
+* If you wish your version of this file to be governed by only the CDDL or
+* only the GPL Version 2, indicate your decision by adding "[Contributor]
+* elects to include this software in this distribution under the [CDDL or GPL
+* Version 2] license."  If you don't indicate a single choice of license, a
+* recipient has the option to distribute your version of this file under
+* either the CDDL, the GPL Version 2 or to extend the choice of license to
+* its licensees as provided above.  However, if you add GPL Version 2 code
+* and therefore, elected the GPL Version 2 license, then the option applies
+* only if the new code is made subject to such option by the copyright
+* holder.
+*/
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>com.sun.enterprise</groupId>
+        <artifactId>hk2-parent</artifactId>
+        <version>1.0.46-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+    <groupId>org.glassfish.hk2.external</groupId>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>bean-validator</artifactId>
+    <!-- Don't use bundle packaging. There are issues in using
+         maven-bundle-plugin and hk2-maven-plugin together -->
+    <packaging>jar</packaging>
+    <properties>
+      <hibernate-validator.version>4.0.2.GA</hibernate-validator.version>
+      <javax.validation.version>1.0</javax.validation.version>
+      <slf4j.version>1.5.6</slf4j.version>
+    </properties>
+    <name>Validation API (JSR 303) version ${javax.validation.version}, Hibernate Validator version ${hibernate-validator.version} and its dependencies repackaged as OSGi bundle</name>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <!-- READ THIS: 
+                             1. how slf4j is handled:
+                             We optionally import slf4j APIs (i.e. packages that are part of slf4j-api.jar).
+                             We also bundle them privately along with the jdk14-logging binding. 
+                             This allows us to function even when there is no separate slf4j bundle.
+                             When there is a separate slf4j bundle, because of our optional Import-Package header,
+                             we will get wired to that bundle. Please also note that we don't import impl package,
+                             as it is sufficient to import just the api. In some other environment, user can
+                             deploy slf4j-api bundle and their desired binding bundle. The binding bundle is
+                             a fragement which attaches itself to the api bundle. We will get wired to the 
+                             api bundle and everything will work.
+                             We also bundle all the slf4j extension to avoid having dependency
+                             on foreign bundles.
+
+                             2. how com.googlecode.jtype is handled:
+                             Although hibernate validator uses maven-shade-plugin to repackage com.googlecode.jtype classes
+                             bu org.hibernate.validator.jtype classes, the shade plugin seems to leave behind some 
+                             constant pool entries referring to google classes, so we need to package google jtype classes as well.
+                        -->
+                        <Embed-Dependency>
+                            <!-- Only specify root artifacts that need to be embedded, everything else
+                                 will be pulled in automatically based on Private-Package settings. -->
+                            *; artifactId=hibernate-validator|slf4j-api|slf4j-jdk14; inline=true
+                        </Embed-Dependency>
+                        <Export-Package>
+                             <!-- 
+                                 Actually there is no need to any of the implementation stuff, but 
+                                 because of a bug in Hibernate Validator, where in it uses thread's context
+                                 class loader to load implementation classes, we have to export implementation
+                                 packages so that our special context class loader can find them.
+                                 See http://opensource.atlassian.com/projects/hibernate/browse/HV-363
+                             -->
+                             javax.validation.*; version=${javax.validation.version}, 
+                             org.hibernate.validator.*; version=${hibernate-validator.version}
+                        </Export-Package>
+
+                        <Private-Package>
+                             <!-- Have a private copy of external non-standard dependencies -->
+                             org.slf4j.*; com.googlecode.jtype.*
+                        </Private-Package>
+
+                        <Import-Package>
+                           <!-- 
+                               even though we bundle slf4j api, we want to import it optionally as well. 
+                               read previous comments.
+                           -->
+                           org.slf4j; org.slf4j.spi; org.slf4j.helpers; version=${slf4j.version}; resolution:=optional,
+                           *
+                       </Import-Package>
+                    </instructions>
+                    <!-- Maven uses the output directory (target/classes)
+                    rather than the final bundle, when compiling against
+                    projects in the same reactor (ie. the same build).
+                    Since this jar comprises of classes that come from
+                    some other jar and other modules depend on this
+                    artifact, we need to unpack.
+                    -->
+                    <unpackBundle>true</unpackBundle>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>osgi-bundle</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <!-- Mark them as optional so that GF distribution mechanism
+             won't package them. It is sufficient to package the wrapped jar.
+        -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate-validator.version}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <!-- 
+                Although hibernate validator uses maven-shade-plugin to repackage com.googlecode.jtype classes
+                bu org.hibernate.validator.jtype classes, the shade plugin seems to leave behind some 
+                constant pool entries referring to google classes, so we need to package google jtype classes as well.
+                I have asked Emmanuel Bernad about this. It appears to be a bug in shade plugin or HV.
+                Because of shade-plugin, the dependency is remove from hibernate-validator pom, so we need to add it
+                here so that we can package these classes.
+            -->
+            <groupId>com.googlecode.jtype</groupId>
+            <artifactId>jtype</artifactId>
+            <version>0.1.0</version>
+        </dependency>
+
+        <!-- We bundle jdk binding inside this OSGi bundle -->
+        <dependency>
+           <groupId>org.slf4j</groupId>
+           <artifactId>slf4j-jdk14</artifactId>
+           <version>${slf4j.version}</version>
+           <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
+    <developers>
+        <developer>
+            <id>ss141213</id>
+            <name>Sahoo</name>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+</project>
