@@ -196,10 +196,10 @@ public class EmbeddedFileSystem implements PreDestroy {
     }
 
     public void preDestroy() {
-        Logger.getAnonymousLogger().fine("delete " + instanceRoot + " = " + autoDelete);
+        Logger.getAnonymousLogger().finer("delete " + instanceRoot + " = " + autoDelete);
         if (autoDelete) {
             // recursively delete instanceRoot directory
-            Logger.getAnonymousLogger().fine("Deleting recursively" + instanceRoot);
+            Logger.getAnonymousLogger().finer("Deleting recursively" + instanceRoot);
             deleteAll(instanceRoot);
         }
 

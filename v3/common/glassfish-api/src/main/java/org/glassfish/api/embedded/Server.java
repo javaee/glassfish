@@ -49,18 +49,7 @@ import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.Inhabitants;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -281,12 +270,12 @@ public class Server {
             glassfish.start();
             if(fs == null ||  fs.installRoot == null || fs.instanceRoot == null) {
                 EmbeddedFileSystem.Builder fsBuilder = new EmbeddedFileSystem.Builder();
-                fsBuilder.instanceRoot(new File(properties.getProperty(Constants.INSTANCE_ROOT_PROP_NAME)));
-                fsBuilder.installRoot(new File(properties.getProperty(Constants.INSTALL_ROOT_PROP_NAME)));
-                fsBuilder.autoDelete(fs == null || fs.instanceRoot ==null);
                 if(fs != null) {
                     fs.copy(fsBuilder);
                 }
+                fsBuilder.instanceRoot(new File(properties.getProperty(Constants.INSTANCE_ROOT_PROP_NAME)));
+                fsBuilder.installRoot(new File(properties.getProperty(Constants.INSTALL_ROOT_PROP_NAME)));
+                fsBuilder.autoDelete(fs == null || fs.instanceRoot ==null);
                 fs = fsBuilder.build();
             }
             // Add the neccessary inhabitants.
@@ -295,7 +284,7 @@ public class Server {
             fileSystem = new ExistingSingletonInhabitant<EmbeddedFileSystem>(fs);
             habitat.addIndex(fileSystem, EmbeddedFileSystem.class.getName(), null);
             
-            logger.logp(Level.INFO, "Server", "<init>", "Created GlassFish = {0}, " +
+            logger.logp(Level.FINER, "Server", "<init>", "Created GlassFish = {0}, " +
                     "GlassFish Status = {1}", new Object[]{glassfish, glassfish.getStatus()});
         } catch (Throwable ex) {
             throw new RuntimeException(ex);
@@ -552,7 +541,7 @@ public class Server {
     public synchronized void start() throws LifecycleException {
         if(glassfish != null) {
             glassfish.start();
-            logger.info("GlassFish has been started");
+            logger.finer("GlassFish has been started");
         }
     }
 
@@ -568,11 +557,11 @@ public class Server {
         try {
             if (glassfish != null) {
                 glassfish.stop();
-                logger.info("GlassFish has been stopped");
+                logger.finer("GlassFish has been stopped");
             }
             if (glassfishRuntime != null) {
                 GlassFishRuntime.shutdown();
-                logger.info("GlassFishruntime has been shutdown");
+                logger.finer("GlassFishruntime has been shutdown");
             }
         } catch (Exception ex) {
             logger.log(Level.WARNING, ex.getMessage(), ex);
