@@ -51,6 +51,10 @@ import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -70,6 +74,7 @@ import java.util.logging.Logger;
 public class EmbeddedNonOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.RuntimeBuilder {
 
     private static Logger logger = Util.getLogger();
+    private static final String JAR_EXT = ".jar";
 
     public boolean handles(Properties properties) {
         boolean handles = false;
@@ -80,7 +85,7 @@ public class EmbeddedNonOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.
             try {
                 ASMainHelper.verifyDomainRoot(new File(instanceRoot));
                 // instanceRoot is valid, let us check if installRoot is valid.
-                if(!isValidInstallRoot(installRoot)) {
+                if (!isValidInstallRoot(installRoot)) {
                     // installRoot is not pointing to existing installation, so we handle.
                     handles = true;
                 }
@@ -94,29 +99,30 @@ public class EmbeddedNonOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.
 
     public GlassFishRuntime build(Properties properties) throws Exception {
         // Create installRoot & instanceRoot directories.
-        String installRoot = properties.getProperty(Constants.INSTALL_ROOT_PROP_NAME);
-        if (installRoot == null) {
-            installRoot = createDefaultInstallRoot();
-            properties.setProperty(Constants.INSTALL_ROOT_PROP_NAME, installRoot);
-            properties.setProperty(Constants.INSTALL_ROOT_URI_PROP_NAME,
-                    new File(installRoot).toURI().toString());
-        }
-        provisionInstallRoot(new File(installRoot));
-
         String instanceRoot = properties.getProperty(Constants.INSTANCE_ROOT_PROP_NAME);
         if (instanceRoot == null) {
-            instanceRoot = createDefaultInstanceRoot(installRoot);
+            instanceRoot = createDefaultInstanceRoot();
             properties.setProperty(Constants.INSTANCE_ROOT_PROP_NAME, instanceRoot);
             properties.setProperty(Constants.INSTANCE_ROOT_URI_PROP_NAME,
                     new File(instanceRoot).toURI().toString());
         }
         provisionInstanceRoot(new File(instanceRoot), properties);
 
+        String installRoot = properties.getProperty(Constants.INSTALL_ROOT_PROP_NAME);
+        if (installRoot == null) {
+            installRoot = createDefaultInstallRoot(instanceRoot);
+            properties.setProperty(Constants.INSTALL_ROOT_PROP_NAME, installRoot);
+            properties.setProperty(Constants.INSTALL_ROOT_URI_PROP_NAME,
+                    new File(installRoot).toURI().toString());
+        }
+        provisionInstallRoot(new File(installRoot));
+
         // Copy the configFile to the instanceRoot/config
         copyConfigFile(properties.getProperty(Constants.CONFIG_FILE_URI_PROP_NAME), instanceRoot);
 
         /* Step 1. Build the classloader. */
-        ClassLoader cl = getClass().getClassLoader(); // nothing to build, use the parent classloader.
+        List<URL> moduleJarURLs = getModuleJarURLs(installRoot);
+        ClassLoader cl = new StaticClassLoader(getClass().getClassLoader(), moduleJarURLs);
 
         // Step 2. Setup the module subsystem.
         Main main = new EmbeddedMain();
@@ -127,7 +133,7 @@ public class EmbeddedNonOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.
         // Step 3. Create NonOSGIGlassFishRuntime
         GlassFishRuntime glassFishRuntime = new NonOSGiGlassFishRuntime(main);
 
-        logger.logp(Level.INFO, getClass().getName(), "build", "Created GlassFishRuntime {0} " +
+        logger.logp(Level.FINER, getClass().getName(), "build", "Created GlassFishRuntime {0} " +
                 "with Bootstrap Properties {1}", new Object[]{glassFishRuntime, properties});
         return glassFishRuntime;
     }
@@ -153,32 +159,32 @@ public class EmbeddedNonOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.
         return true;
     }
 
-    private String createDefaultInstallRoot() throws Exception {
+    private String createDefaultInstanceRoot() throws Exception {
         String tmpDir = System.getProperty("glassfish.embedded.tmpdir");
         if (tmpDir == null) {
             tmpDir = System.getProperty("user.dir");
         }
-        File installRoot = File.createTempFile("gfembed", "tmp", new File(tmpDir));
-        installRoot.delete();
-        installRoot.mkdir(); // convert the file into a directory.
-        return installRoot.getAbsolutePath();
+        File instanceRoot = File.createTempFile("gfembed", "tmp", new File(tmpDir));
+        instanceRoot.delete();
+        instanceRoot.mkdir(); // convert the file into a directory.
+        return instanceRoot.getAbsolutePath();
     }
 
     private void provisionInstallRoot(File installRoot) {
         // If the regular installation location can be discovered,
         // discover it and copy the necessary configuration files.
         File discoveredInstallRoot = ASMainHelper.findInstallRoot();
-        if (isValidInstallRoot(discoveredInstallRoot)) {
+        if (!discoveredInstallRoot.equals(installRoot) && isValidInstallRoot(discoveredInstallRoot)) {
             copy(discoveredInstallRoot, installRoot, "lib/dtds", "lib/schemas");
         }
     }
 
-    private String createDefaultInstanceRoot(String installRoot) throws Exception {
+    private String createDefaultInstallRoot(String instanceRoot) throws Exception {
         // File instanceRoot = new File(installRoot, "domains/domain1");
         // instanceRoot.mkdirs();
         // Ideally instanceRoot should be different from installRoot, but the existing Server.Builder uses the same for both.
-        File instanceRoot = new File(installRoot);
-        return instanceRoot.getAbsolutePath();
+        File installRoot = new File(instanceRoot);
+        return installRoot.getAbsolutePath();
     }
 
     private void provisionInstanceRoot(File instanceRoot, Properties props) {
@@ -189,13 +195,16 @@ public class EmbeddedNonOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.
             // discover it and copy the necessary configuration files.
             File discoveredInstallRoot = ASMainHelper.findInstallRoot();
             File discoveredInstanceRoot = ASMainHelper.findInstanceRoot(discoveredInstallRoot, props);
-            copy(discoveredInstanceRoot, instanceRoot, "config", "docroot");
+            if (!discoveredInstanceRoot.equals(instanceRoot)) {
+                copy(discoveredInstanceRoot, instanceRoot, "config", "docroot");
+            }
         } catch (Exception ex) {
             logger.warning(ex.getMessage());
         }
     }
 
     // Copy the subDirs under srcDir to dstDir
+
     private void copy(final File srcDir, final File dstDir, final String... subDirs) {
         srcDir.listFiles(new FileFilter() {
             public boolean accept(File path) {
@@ -228,15 +237,44 @@ public class EmbeddedNonOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.
             URI configFile = URI.create(configFileURI);
             InputStream stream = configFile.toURL().openConnection().getInputStream();
             File domainXml = new File(instanceRoot, "config/domain.xml");
-            System.out.println("domainXML uri = " + configFileURI + ", size = " + stream.available());
-            if(!domainXml.toURI().equals(configFile)) {
-            Util.copy(stream, new FileOutputStream(domainXml), stream.available());
-                System.out.println("Created " + domainXml);
+            logger.finer("domainXML uri = " + configFileURI + ", size = " + stream.available());
+            if (!domainXml.toURI().equals(configFile)) {
+                Util.copy(stream, new FileOutputStream(domainXml), stream.available());
+                logger.finer("Created " + domainXml);
             } else {
-                System.out.println("Skipped creation of " + domainXml);
+                logger.finer("Skipped creation of " + domainXml);
             }
 
         }
     }
 
+    private List<URL> getModuleJarURLs(String installRoot) {
+        File modulesDir = new File(installRoot, "modules/");
+        final File autostartModulesDir = new File(modulesDir, "autostart/");
+        final List<URL> moduleJarURLs = new ArrayList<URL>();
+        if (modulesDir.exists()) {
+            modulesDir.listFiles(new FileFilter() {
+                public boolean accept(File pathname) {
+                    if (pathname.isDirectory() && !pathname.equals(autostartModulesDir)) {
+                        pathname.listFiles(this);
+                    } else if (pathname.getName().endsWith(JAR_EXT)) {
+                        try {
+                            moduleJarURLs.add(pathname.toURI().toURL());
+                        } catch (Exception ex) {
+                            logger.warning(ex.getMessage());
+                        }
+                    }
+                    return false;
+                }
+            });
+        }
+        return moduleJarURLs;
+    }
+
+    private class StaticClassLoader extends URLClassLoader {
+        public StaticClassLoader(ClassLoader parent, List<URL> moduleJarURLs) {
+            super(moduleJarURLs.toArray(new URL[0]), parent);
+        }
+    }
+    
 }

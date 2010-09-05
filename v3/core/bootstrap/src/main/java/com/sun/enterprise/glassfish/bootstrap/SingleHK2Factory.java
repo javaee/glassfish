@@ -63,10 +63,10 @@ public class SingleHK2Factory extends AbstractFactory {
 
     public static synchronized void initialize(ClassLoader cl) {
         if (Instance != null) {
-            logger.warning("Singleton already initialized as " + getInstance());
+            logger.finer("Singleton already initialized as " + getInstance());
         }
         Instance = new SingleHK2Factory(cl);
-        logger.info("Reinitialized singleton as " + getInstance());
+        logger.finer("Reinitialized singleton as " + getInstance());
     }
 
     public SingleHK2Factory(ClassLoader cl) {
