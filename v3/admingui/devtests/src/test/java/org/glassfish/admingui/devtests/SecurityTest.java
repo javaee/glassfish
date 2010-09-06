@@ -198,7 +198,8 @@ public class SecurityTest extends BaseSeleniumTestClass {
         deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", LAYER_NAME);
     }
 
-    @Test
+    // commented because this test will cause all other tests to fail, uncomment once Issue 13185 is fixed
+    /*@Test
     public void testNewAdminPassword() {
         final String userPassword = "admin" + generateRandomString();
 
@@ -207,5 +208,5 @@ public class SecurityTest extends BaseSeleniumTestClass {
         selenium.type("propertyForm:propertySheet:propertSectionTextField:newPasswordProp:NewPassword", userPassword);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:confirmPasswordProp:ConfirmPassword", userPassword);
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", ADMIN_PWD_SUCCESS);
-    }
+    }*/
 }
