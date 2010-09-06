@@ -109,6 +109,20 @@ public class OSGiEJBDeployer extends AbstractOSGiDeployer implements OSGiDeploye
                 headers.get(org.osgi.framework.Constants.FRAGMENT_HOST) == null;
     }
 
+    /**
+     * An EJBTracker is responsible for registering the desired EJBs in OSGi service registry.
+     * It is only applicable for OSGi enabled EJB bundles. Everytime such a bundle gets
+     * deployed, OSGiContainer registers an {@link org.glassfish.osgijavaeebase.OSGiApplicationInfo}.
+     * This class tracks such an object and queries its manifest for {@link Constants#EXPORT_EJB} header.
+     * Based on the value of the header, it selects EJBs to be registered as OSGi services. To keep the
+     * implementation simple at this point, we only support mapping of stateless EJBs with local business interface
+     * views to OSGi services. When an EJB is registered as service, the service properties include
+     * the portable JNDI name of the EJB in a service property names {@link #JNDI_NAME_PROP}.
+     * All the services are registered under the bundle context of the OSGi/EJB bundle which hosts the EJBs.
+     * While registering the EJBs, thread's context class loader is also set to the application class loader of
+     * the OSGi/EJB bundle application so that any service tracker (like CDI producer methods) listening
+     * to service events will get called in an appropriate context.
+     */
     class EJBTracker extends ServiceTracker {
         // TODO(Sahoo): More javadoc needed about service properties and service registration
         private final String JNDI_NAME_PROP = "jndi-name";
@@ -148,11 +162,29 @@ public class OSGiEJBDeployer extends AbstractOSGiDeployer implements OSGiDeploye
                     }
                 }
                 b2ss.put(osgiApplicationInfo.getBundle().getBundleId(), new ArrayList<ServiceRegistration>());
-                for (EjbDescriptor ejb : ejbsToBeExported) {
-                    registerEjbAsService(ejb, osgiApplicationInfo.getBundle());
+                ClassLoader oldTCC = switchTCC(osgiApplicationInfo);
+                try {
+                    for (EjbDescriptor ejb : ejbsToBeExported) {
+                        registerEjbAsService(ejb, osgiApplicationInfo.getBundle());
+                    }
+                } finally {
+                    Thread.currentThread().setContextClassLoader(oldTCC);
                 }
             }
             return osgiApplicationInfo;
+        }
+
+        /**
+         *
+         * @param osgiApplicationInfo application which just got deployed
+         * @return the old thread context classloader
+         */
+        private ClassLoader switchTCC(OSGiApplicationInfo osgiApplicationInfo) {
+            ClassLoader newTCC = osgiApplicationInfo.getClassLoader();
+            final Thread thread = Thread.currentThread();
+            ClassLoader oldTCC = thread.getContextClassLoader();
+            thread.setContextClassLoader(newTCC);
+            return oldTCC;
         }
 
         private void registerEjbAsService(EjbDescriptor ejb, Bundle bundle) {

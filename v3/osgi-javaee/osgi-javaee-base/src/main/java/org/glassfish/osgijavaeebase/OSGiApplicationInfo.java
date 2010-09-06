@@ -52,12 +52,14 @@ public class OSGiApplicationInfo
     private ApplicationInfo appInfo;
     private boolean isDirectoryDeployment;
     private Bundle bundle;
+    private final ClassLoader classLoader;
     private ServiceReference osgiDeployerRef;
 
-    public OSGiApplicationInfo(ApplicationInfo appInfo, boolean directoryDeployment, Bundle bundle) {
+    public OSGiApplicationInfo(ApplicationInfo appInfo, boolean directoryDeployment, Bundle bundle, ClassLoader classLoader) {
         this.appInfo = appInfo;
         isDirectoryDeployment = directoryDeployment;
         this.bundle = bundle;
+        this.classLoader = classLoader;
     }
 
     public ApplicationInfo getAppInfo() {
@@ -90,5 +92,9 @@ public class OSGiApplicationInfo
 
     public void setDeployer(ServiceReference osgiDeployerRef) {
         this.osgiDeployerRef = osgiDeployerRef;
+    }
+
+    public ClassLoader getClassLoader() {
+        return classLoader;
     }
 }

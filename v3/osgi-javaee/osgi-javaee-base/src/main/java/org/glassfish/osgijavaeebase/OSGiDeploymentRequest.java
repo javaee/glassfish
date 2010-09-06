@@ -183,7 +183,11 @@ public abstract class OSGiDeploymentRequest
             appInfo = deployer.deploy(dc);
             if (appInfo != null)
             {
-                return new OSGiApplicationInfo(appInfo, dirDeployment, b);
+                // Pass in the final classloader so that it can be used to set appropriate context
+                // while using underlying EE components in pure OSGi context like registering EJB as services.
+                // This won't be needed if we figure out a way of navigating to the final classloader from
+                // an EE component like EJB.
+                return new OSGiApplicationInfo(appInfo, dirDeployment, b, dc.getFinalClassLoader());
             }
             else
             {
