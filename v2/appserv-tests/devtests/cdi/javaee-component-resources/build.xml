@@ -98,6 +98,8 @@
             <ant dir="javaee-component-resource-typesafe-injection" target="${javaee-comp-target}"/>
             <ant dir="jpa-resource-injection" target="${javaee-comp-target}"/>
             <ant dir="no-interface-ejb" target="${javaee-comp-target}"/>
+            <ant dir="jms-resource-producer-field" target="${javaee-comp-target}"/>
+            <ant dir="jms-resource-producer-field-in-library-jar" target="${javaee-comp-target}"/>
         <record name="javaee-comp.output" action="stop" />
     </target>
 
