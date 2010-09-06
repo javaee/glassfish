@@ -110,6 +110,7 @@ public class OSGiEJBDeployer extends AbstractOSGiDeployer implements OSGiDeploye
     }
 
     class EJBTracker extends ServiceTracker {
+        // TODO(Sahoo): More javadoc needed about service properties and service registration
         private final String JNDI_NAME_PROP = "jndi-name";
 
         /**
@@ -189,17 +190,33 @@ public class OSGiEJBDeployer extends AbstractOSGiDeployer implements OSGiDeploye
 
         @Override
         public void removedService(ServiceReference reference, Object service) {
+            /*
+             * When the OSGi-EJB container goes away, the ejb bundle remains in ACTIVE state, so
+             * we must unregister the services that OSGi-EJB container has registered on that bundle's behalf.
+             */
+
             OSGiApplicationInfo osgiApplicationInfo = OSGiApplicationInfo.class.cast(service);
             ApplicationInfo ai = osgiApplicationInfo.getAppInfo();
             Application app = ai.getMetaData(Application.class);
             Collection<EjbDescriptor> ejbs = app.getEjbDescriptors();
             logger.info("removedService: Found " + ejbs.size() + " no. of EJBs");
-            for (ServiceRegistration reg : b2ss.get(osgiApplicationInfo.getBundle().getBundleId())) {
-                if (reg != null) {
-                    reg.unregister();
+            final Collection<ServiceRegistration> regs = b2ss.get(osgiApplicationInfo.getBundle().getBundleId());
+            if (regs != null) { // it can be null if this bundle is not an OSGi-EJB bundle.
+                for (ServiceRegistration reg : regs) {
+                    if (reg != null) {
+                        try {
+                            reg.unregister();
+                        } catch (Exception e) {
+                            // If the underlying bundle is stopped, then the services registered for that context
+                            // would have already been unregistered, so an IllegalStateException can be raised here.
+                            // log it in FINE level and ignore.
+                            logger.logp(Level.FINE, "OSGiEJBDeployer$EJBTracker", "removedService",
+                                    "Exception unregistering " + reg, e);
+                        }
+                    }
                 }
             }
-            context.ungetService(reference);
+            super.removedService(reference, service);
         }
     }
 }
