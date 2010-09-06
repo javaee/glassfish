@@ -388,6 +388,11 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                     poolLifeCycleListener.connectionAcquired(result.getId());
                     elapsedWaitTime = System.currentTimeMillis() - startTime;
                     poolLifeCycleListener.connectionRequestServed(elapsedWaitTime);
+                    if (_logger.isLoggable( Level.FINE) ) {
+                        _logger.log(Level.FINE, "Resource Pool: elapsed time " +
+                                "(ms) to get connection for [" + spec + "] : " +
+                                elapsedWaitTime);
+                    }
                 }
                 //got one - seems we are not doing validation or matching
                 //return it
@@ -878,10 +883,19 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
     protected ResourceHandle createSingleResource(ResourceAllocator resourceAllocator) throws PoolingException {
         ResourceHandle resourceHandle;
         int count = 0;
+        long startTime = 0;
         while (true) {
             try {
                 count++;
+                startTime = System.currentTimeMillis();
                 resourceHandle = resourceAllocator.createResource();
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "Time taken to create a single "
+                            + "resource : "
+                            + resourceHandle.getResourceSpec().getResourceId()
+                            + " and adding to the pool (ms) : "
+                            + (System.currentTimeMillis() - startTime));
+                }
                 if (validation || validateAtmostEveryIdleSecs)
                     resourceHandle.setLastValidated(System.currentTimeMillis());
                 break;
