@@ -21,7 +21,7 @@
        <class-name>org.apache.derby.jdbc.ClientXADataSource</class-name>
        <server-name>localhost</server-name>
        <port-number>1527</port-number>
-       <database-name>application-level-global-datasource</database-name>
+       <database-name>testdb</database-name>
        <user>APP</user>
        <password>APP</password>
        <property>
@@ -36,7 +36,7 @@
        <class-name>org.apache.derby.jdbc.ClientXADataSource</class-name>
        <server-name>localhost</server-name>
        <port-number>1527</port-number>
-       <database-name>application-level-app-datasource</database-name>
+       <database-name>testdb</database-name>
        <user>APP</user>
        <password>APP</password>
        <property>

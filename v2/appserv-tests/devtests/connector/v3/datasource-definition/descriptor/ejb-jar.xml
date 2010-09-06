@@ -13,7 +13,7 @@
         <class-name>org.apache.derby.jdbc.ClientXADataSource</class-name>
         <server-name>localhost</server-name>
         <port-number>1527</port-number>
-        <database-name>hello-stateful-ejb-global-dd</database-name>
+        <database-name>testdb</database-name>
         <password>APP</password>
         <property>
           <name>connectionAttributes</name>
@@ -25,7 +25,7 @@
         <class-name>org.apache.derby.jdbc.ClientXADataSource</class-name>
         <server-name>localhost</server-name>
         <port-number>1527</port-number>
-        <database-name>hello-stateful-ejb-comp-dd</database-name>
+        <database-name>testdb</database-name>
         <user>APP</user>
         <password>APP</password>
         <property>
@@ -42,7 +42,7 @@
       <data-source>
         <name>java:comp/env/HelloEJB_DD_DataSource</name>
         <class-name>org.apache.derby.jdbc.EmbeddedXADataSource</class-name>
-        <database-name>hello-ejb-comp-dd</database-name>
+        <database-name>testdb</database-name>
         <user>APP</user>
         <password>APP</password>
         <property>
@@ -53,7 +53,7 @@
       <data-source>
         <name>java:global/env/HelloEJB_DD_DataSource</name>
         <class-name>org.apache.derby.jdbc.EmbeddedXADataSource</class-name>
-        <database-name>hello-ejb-global-dd</database-name>
+        <database-name>testdb</database-name>
         <user>APP</user>
         <password>APP</password>
         <property>
