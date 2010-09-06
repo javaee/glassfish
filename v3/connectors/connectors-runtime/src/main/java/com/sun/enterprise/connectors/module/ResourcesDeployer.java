@@ -519,7 +519,6 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                                 boolean embedded) throws Exception {
         for(com.sun.enterprise.config.serverbeans.Resource configBeanResource : configBeanResources){
             if(configBeanResource instanceof ResourcePool){
-/*
                 ResourcePool resourcePool = (ResourcePool)configBeanResource;
 
                 if(embedded){
@@ -531,7 +530,6 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                         getResourceDeployer(resourcePool).deployResource(resourcePool, applicationName, moduleName);
                     }
                 }
-*/
             }else if(configBeanResource instanceof BindableResource) {
                 BindableResource resource = (BindableResource)configBeanResource;
                 ResourceInfo resourceInfo = new ResourceInfo(resource.getJndiName(), applicationName, moduleName);
