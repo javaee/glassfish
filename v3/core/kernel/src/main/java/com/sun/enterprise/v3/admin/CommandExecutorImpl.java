@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,37 +38,59 @@
  * holder.
  */
 
-package org.glassfish.simpleglassfishapi;
+package com.sun.enterprise.v3.admin;
+
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ParameterMap;
+import org.jvnet.hk2.annotations.ContractProvided;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 
 import java.util.Map;
 
 /**
- * Interface for executing advanced commands in {@link GlassFish}
- *
- * This interface supports programatically executing the commands which
- * will otherwise be done via asadmin utility.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
+ * @author bhavanishankar@dev.java.net
  */
-public interface CommandRunner {
+@Service()
+@ContractProvided(org.glassfish.simpleglassfishapi.CommandRunner.class)
+// bcos CommandRunner interface can't depend on HK2, we need ContractProvided here.
 
-    /**
-     * Execute an administrative command in {@link GlassFish} using the supplied
-     * command arguments.
-     *
-     * Example : To add an additional http listener:
-     *
-     *      Map&lt;String, String>&gt args = new HashMap();
-     *      args.put("listenerport", "9090");
-     *      args.put("listeneraddress", "localhost");
-     *      args.put("securityenabled", "false");
-     *      args.put("default-virtual-server", "server");
-     *      args.put("listener_id", "my-http-listener-1");
-     *      commandRunner.run("create-http-listener", args);
-     *
-     * @param command command to be executed.
-     * @param args command arguments.
-     * @return true if the command is successfully, false otherwise.
-     */
-    boolean run(String command, Map<String, String> args);
+public class CommandExecutorImpl implements org.glassfish.simpleglassfishapi.CommandRunner {
+
+    @Inject
+    CommandRunner commandRunner;
+
+    @Inject
+    Habitat habitat;
+
+    public boolean run(String command, Map<String, String> args) {
+        ActionReport actionReport = createActionReport();
+
+        org.glassfish.api.admin.CommandRunner.CommandInvocation inv =
+                commandRunner.getCommandInvocation(command, actionReport);
+        ParameterMap commandParams = new ParameterMap();
+
+        for (Map.Entry<String, String> e : args.entrySet()) {
+            commandParams.add(e.getKey(), e.getValue());
+        }
+
+        inv.parameters(commandParams).execute();
+
+        if (actionReport.hasFailures()) {
+            try {
+                actionReport.writeReport(System.err);
+            } catch (Exception ex) {
+            }
+        }
+
+        return !actionReport.hasFailures();
+
+    }
+
+    private ActionReport createActionReport() {
+        return habitat.getComponent(ActionReport.class, "plain");
+    }
+
 }

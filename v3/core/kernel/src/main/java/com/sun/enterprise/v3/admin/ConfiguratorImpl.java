@@ -38,76 +38,63 @@
  * holder.
  */
 
-package com.sun.enterprise.glassfish.bootstrap;
+package com.sun.enterprise.v3.admin;
 
-import com.sun.enterprise.module.bootstrap.ModuleStartup;
+import org.glassfish.simpleglassfishapi.CommandRunner;
 import org.glassfish.simpleglassfishapi.Configurator;
-import org.glassfish.simpleglassfishapi.GlassFish;
+import org.glassfish.simpleglassfishapi.Constants;
+import org.jvnet.hk2.annotations.ContractProvided;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 
+import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * @author bhavanishankar@dev.java.net
  */
+@Service()
+@ContractProvided(Configurator.class)
+// bcos Deployer interface can't depend on HK2, we need ContractProvided here.
+public class ConfiguratorImpl implements Configurator {
 
-public class GlassFishImpl implements GlassFish {
+    @Inject
+    Habitat habitat;
 
-    private ModuleStartup gfKernel;
-    private Habitat habitat;
-    volatile Status status = Status.INIT;
+    private static final Map<String, String> simpleConfigurators = new HashMap();
 
-    public GlassFishImpl(ModuleStartup gfKernel, Habitat habitat, Properties bootstrapProps) {
-        this.gfKernel = gfKernel;
-        this.habitat = habitat;
-
-        // If there are custom configurations like http.port, https.port, jmx.port then configure them.
-        Configurator configurator = habitat.getComponent(Configurator.class);
-        if(configurator != null) {
-            configurator.configure(bootstrapProps);
-        }
+    static {
+        simpleConfigurators.put(Constants.HTTP_PORT,
+                "server.network-config.network-listeners.network-listener.http-listener-1.port={0}");
+        simpleConfigurators.put(Constants.HTTPS_PORT,
+                "server.network-config.network-listeners.network-listener.http-listener-2.port={0}");
+        // TODO :: support other simple configurations like jmx.port and jms.port
     }
 
-    public synchronized void start() {
-        if (status == Status.STARTED) return;
-        try {
-            status = Status.STARTING;
-            gfKernel.start();
-            status = Status.STARTED;
+    private static final String COMMA_SEPARATED_VALUE = "{0},{1}";
 
-        } catch (Exception e) {
-            throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
-        }
-    }
+    public void configure(Properties bootstrapProps) {
 
-    public synchronized void stop() {
-        if (status != Status.STARTED) return;
-        try {
-            status = Status.STOPPING;
-            gfKernel.stop();
-            status = Status.STOPPED;
-        } catch (Exception e) {
-            throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
-        }
-    }
-
-    public synchronized void dispose() {
-        throw new UnsupportedOperationException();
-    }
-
-    public synchronized Status getStatus() {
-        return status;
-    }
-
-    public synchronized <T> T lookupService(Class<T> serviceType, String serviceName) {
-        if (status != Status.STARTED) {
-            throw new IllegalArgumentException("Server is not started yet. It is in " + status + "state");
+        String setValues = null;
+        for (String key : simpleConfigurators.keySet()) {
+            String configuredVal = bootstrapProps.getProperty(key);
+            if (configuredVal != null) {
+                String formatted = MessageFormat.format(simpleConfigurators.get(key),
+                        configuredVal);
+                setValues = setValues == null ? formatted : MessageFormat.format(
+                        COMMA_SEPARATED_VALUE, setValues, formatted);
+            }
         }
 
-        // Habitat.getComponent(Class) searches both contract and type maps, but
-        // getComponent(Class, String) only searches contract map.
-        return serviceName != null ? habitat.getComponent(serviceType, serviceName) :
-                habitat.getComponent(serviceType);
-    }
+        if (setValues != null) {
+            CommandRunner commandRunner = habitat.getComponent(CommandRunner.class);
+            Map<String, String> args = new HashMap();
+            args.put("values", setValues);
+            commandRunner.run("set", args);
+        }
 
+    }
 }

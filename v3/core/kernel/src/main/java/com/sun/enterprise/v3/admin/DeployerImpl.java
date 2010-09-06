@@ -51,6 +51,7 @@ import org.jvnet.hk2.component.Habitat;
 
 import java.io.File;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -70,6 +71,12 @@ public class DeployerImpl implements Deployer {
     CommandRunner commandRunner;
     @Inject
     Habitat habitat;
+
+    public String deploy(File archive) {
+        Map<String, String> params = new HashMap();
+        params.put("name", archive.getName());
+        return deploy(archive, params);
+    }
 
     public String deploy(File archive, Map<String, String> params) {
         ActionReport actionReport = createActionReport();
@@ -113,6 +120,10 @@ public class DeployerImpl implements Deployer {
         return null;  //TODO(Sahoo): Not Yet Implemented
     }
 
+    public void undeploy(String appName) {
+        undeploy(appName, new HashMap<String,String>());
+    }
+    
     public void undeploy(String appName, Map<String, String> params) {
         ActionReport actionReport = createActionReport();
         CommandRunner.CommandInvocation inv =

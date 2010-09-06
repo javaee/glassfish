@@ -94,7 +94,7 @@ public class GlassFishActivator implements BundleActivator, EventListener {
                 final Habitat habitat = main.createHabitat(mr, startupContext);
                 final ModuleStartup gfKernel = main.findStartupService(mr, habitat, null, startupContext);
                 System.out.println("gfKernel = " + gfKernel);
-                GlassFish glassFish = new GlassFishImpl(gfKernel, habitat);
+                GlassFish glassFish = new GlassFishImpl(gfKernel, habitat, properties);
                 events = habitat.getComponent(Events.class);
                 events.register(GlassFishActivator.this);
                 // register GlassFish in service registry

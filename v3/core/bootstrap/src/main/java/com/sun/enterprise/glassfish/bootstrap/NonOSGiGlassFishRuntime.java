@@ -73,7 +73,7 @@ public class NonOSGiGlassFishRuntime extends GlassFishRuntime {
         ModulesRegistry modulesRegistry = AbstractFactory.getInstance().createModulesRegistry();
         final Habitat habitat = main.createHabitat(modulesRegistry, startupContext);
         final ModuleStartup gfKernel = main.findStartupService(modulesRegistry, habitat, null, startupContext);
-        return new GlassFishImpl(gfKernel, habitat);
+        return new GlassFishImpl(gfKernel, habitat, properties);
     }
 
     private void setEnv(Properties properties) {

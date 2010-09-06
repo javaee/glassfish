@@ -48,6 +48,17 @@ import java.util.Map;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public interface Deployer {
+
+    /**
+     * Deploys a jar file or an exploded directory to {@link GlassFish}.
+     *
+     * Example : deployer.deploy("myapp.war");
+     * 
+     * @param archive jar file or directory of the application
+     * @return the deployed application name
+     */
+    String deploy(File archive);
+
     /**
      * Deploys a jar file or an exploded directory to the server using the supplied deployment command parameters.
      *
@@ -71,5 +82,28 @@ public interface Deployer {
      */
     String deploy(URI archive);
 
+    /**
+     * Undeploys an application from {@link GlassFish}
+     *
+     * Example : deployer.undeploy("myapp");
+     *
+     * @param appName Identifier of the application to be undeployed.
+     *
+     */
+    void undeploy(String appName);
+
+    /**
+     * Undeploys an application from {@link GlassFish} using the supplied
+     * undeployment command parameters.
+     *
+     * Example:
+     *
+     *      Map&lt;String, String>&gt params = new HashMap();
+     *      param.put("externally-managed", "true");
+     *      deployer.undeploy("myapp", params);
+     *
+     * @param appName Identifier of the application to be undeployed.
+     * @param params Undeployment parameters.
+     */
     void undeploy(String appName, Map<String, String> params);
 }

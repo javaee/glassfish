@@ -133,7 +133,7 @@ public class EmbeddedNonOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.
         // Step 3. Create NonOSGIGlassFishRuntime
         GlassFishRuntime glassFishRuntime = new NonOSGiGlassFishRuntime(main);
 
-        logger.logp(Level.FINER, getClass().getName(), "build", "Created GlassFishRuntime {0} " +
+        logger.logp(Level.INFO, getClass().getName(), "build", "Created GlassFishRuntime {0} " +
                 "with Bootstrap Properties {1}", new Object[]{glassFishRuntime, properties});
         return glassFishRuntime;
     }
@@ -183,7 +183,10 @@ public class EmbeddedNonOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.
         // File instanceRoot = new File(installRoot, "domains/domain1");
         // instanceRoot.mkdirs();
         // Ideally instanceRoot should be different from installRoot, but the existing Server.Builder uses the same for both.
-        File installRoot = new File(instanceRoot);
+        File installRoot = ASMainHelper.findInstallRoot();
+        if (!isValidInstallRoot(installRoot)) {
+            installRoot = new File(instanceRoot);
+        }
         return installRoot.getAbsolutePath();
     }
 
