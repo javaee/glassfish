@@ -238,6 +238,21 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
                 String[] dbUserPassword = getdbUserPasswordOfJdbcConnectionPool(jdbcConnectionPool);
                 String dbUser = dbUserPassword[0];
                 String dbPassword = dbUserPassword[1];
+                if (dbPassword == null) {
+                    dbPassword = "";
+                    if (_logger.isLoggable(Level.FINEST)) {
+                        _logger.log(Level.FINEST,
+                                "datasource.xadatasource_nullpassword_error", poolInfo);
+                    }
+                }
+                if (dbUser == null) {
+                    dbUser = "";
+                    if (_logger.isLoggable(Level.FINEST)) {
+                        _logger.log(Level.FINEST,
+                                "datasource.xadatasource_nulluser_error", poolInfo);
+                    }
+                }
+
                 ManagedConnectionFactory fac =
                         crt.obtainManagedConnectionFactory(poolInfo);
                 Subject subject = new Subject();

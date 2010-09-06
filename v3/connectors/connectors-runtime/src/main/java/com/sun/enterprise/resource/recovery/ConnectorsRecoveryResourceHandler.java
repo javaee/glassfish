@@ -257,14 +257,18 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
                 //username [pointbase interprets this as "root"]/password.
                 if (dbPassword == null) {
                     dbPassword = "";
-                    _logger.log(Level.WARNING,
-                            "datasource.xadatasource_nullpassword_error", poolInfo);
+                    if (_logger.isLoggable(Level.FINEST)) {
+                        _logger.log(Level.FINEST,
+                                "datasource.xadatasource_nullpassword_error", poolInfo);
+                    }
                 }
 
                 if (dbUser == null) {
                     dbUser = "";
-                    _logger.log(Level.WARNING,
-                            "datasource.xadatasource_nulluser_error", poolInfo);
+                    if (_logger.isLoggable(Level.FINEST)) {
+                        _logger.log(Level.FINEST,
+                                "datasource.xadatasource_nulluser_error", poolInfo);
+                    }
                 }
                 String rarName = connPool.getResourceAdapterName();
                 //TODO V3 JMS-RA ??
