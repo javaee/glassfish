@@ -97,6 +97,9 @@
         <record name="javaee-comp.output" action="start" />
             <ant dir="javaee-component-resource-typesafe-injection" target="${javaee-comp-target}"/>
             <ant dir="jpa-resource-injection" target="${javaee-comp-target}"/>
+            <ant dir="jpa-resource-injection-non-serializable" target="${javaee-comp-target}"/>
+            <ant dir="jpa-resource-injection-passivating-scope" target="${javaee-comp-target}"/>
+            <ant dir="jpa-resource-injection-with-singleton-ejb-producer" target="${javaee-comp-target}"/>
             <ant dir="no-interface-ejb" target="${javaee-comp-target}"/>
             <ant dir="jms-resource-producer-field" target="${javaee-comp-target}"/>
             <ant dir="jms-resource-producer-field-in-library-jar" target="${javaee-comp-target}"/>

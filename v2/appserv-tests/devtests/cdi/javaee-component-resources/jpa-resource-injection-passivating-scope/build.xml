@@ -59,21 +59,6 @@
 	</target>
 
 	<target name="compile" depends="clean">
-        <!-- compile and create library jar -->
-        <mkdir dir="tmp"/>
-        <mkdir dir="tmp/META-INF"/>
-        <javac srcdir="producer-library-jar" destdir="tmp" classpath="${s1astest.classpath}" debug="on" failonerror="true"/>
-        <copy file="descriptor/beans.xml" todir="tmp/META-INF"/>
-
-        <mkdir dir="lib"/>
-        <jar jarfile="lib/producer-library.jar" update="true">
-            <fileset dir="tmp" casesensitive="yes">
-              <include name="**/*class*"/>
-              <include name="META-INF/beans.xml"/> <!-- include a beans.xml in the library jar for it to be considered as a bean archive -->
-            </fileset>
-        </jar>
-        <echo message="created library jar at lib/producer-library.jar"/>
-
 		<antcall target="compile-common">
 			<param name="src" value="servlet" />
 		</antcall>
@@ -96,17 +81,15 @@
 		<antcall target="deploy-war-common" />
 	</target>
 
-    <target name="create-resources" depends="init-common">
-        <antcall target="asadmin-batch-common">
-          <param name="asadmin.file" value="create_resources.asadmin"/>
-        </antcall>
-    </target>
-    
-    <target name="delete-resources" depends="init-common">
-        <antcall target="asadmin-batch-common">
-          <param name="asadmin.file" value="delete_resources.asadmin"/>
-        </antcall>
-    </target>
+	<target name="create-resources" depends="init-common">
+		<antcall target="create-jdbc-connpool-common">
+			<param name="jdbc.connpool.name" value="jdbc-dev-test-pool" />
+		</antcall>
+		<antcall target="create-jdbc-resource-common">
+			<param name="jdbc.connpool.name" value="jdbc-dev-test-pool" />
+			<param name="jdbc.resource.name" value="jdbc/jdbc-dev-test-resource" />
+		</antcall>
+	</target>
 
 
 	<target name="run" depends="init-common">
@@ -123,7 +106,16 @@
 
 	<target name="undeploy" depends="init-common">
 		<antcall target="undeploy-war-common" />
-        <delete file="lib/producer-library.jar"/>
+	</target>
+
+	<target name="delete-resources" depends="init-common">
+		<antcall target="delete-jdbc-resource-common">
+			<param name="jdbc.resource.name" value="jdbc/jdbc-dev-test-resource" />
+		</antcall>
+
+		<antcall target="delete-jdbc-connpool-common">
+			<param name="jdbc.connpool.name" value="jdbc-dev-test-pool" />
+		</antcall>
 	</target>
 
 	<target name="usage">
