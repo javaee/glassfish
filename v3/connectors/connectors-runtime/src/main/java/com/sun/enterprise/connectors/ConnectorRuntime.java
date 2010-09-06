@@ -440,6 +440,12 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     public Object lookupPMResource(ResourceInfo resourceInfo, boolean force) throws NamingException{
         Object result ;
         try{
+            if(!resourceInfo.getName().endsWith(PM_JNDI_SUFFIX)){
+                ResourceInfo tmpInfo = new ResourceInfo(resourceInfo.getName()+PM_JNDI_SUFFIX,
+                        resourceInfo.getApplicationName(), resourceInfo.getModuleName());
+                resourceInfo = tmpInfo;
+            }
+            
             result = connectorResourceAdmService.lookup(resourceInfo);
         }catch(NamingException ne){
             if(force && isDAS()){
@@ -456,7 +462,6 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * {@inheritDoc}
      */
     public Object lookupPMResource(String jndiName, boolean force) throws NamingException {
-        jndiName = jndiName + PM_JNDI_SUFFIX;
         ResourceInfo resourceInfo = new ResourceInfo(jndiName);
         return lookupPMResource(resourceInfo, force);
     }
@@ -465,8 +470,6 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * {@inheritDoc}
      */
     public Object lookupNonTxResource(String jndiName, boolean force) throws NamingException {
-        jndiName = jndiName + NON_TX_JNDI_SUFFIX;
-
         ResourceInfo resourceInfo = new ResourceInfo(jndiName);
         return lookupNonTxResource(resourceInfo, force);
     }
@@ -478,6 +481,11 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
 
         Object result ;
         try{
+            if(!resourceInfo.getName().endsWith(NON_TX_JNDI_SUFFIX)){
+                ResourceInfo tmpInfo = new ResourceInfo(resourceInfo.getName()+NON_TX_JNDI_SUFFIX,
+                        resourceInfo.getApplicationName(), resourceInfo.getModuleName());
+                resourceInfo = tmpInfo;
+            }
             result = connectorResourceAdmService.lookup(resourceInfo);
         }catch(NamingException ne){
             if(force && isDAS()){
