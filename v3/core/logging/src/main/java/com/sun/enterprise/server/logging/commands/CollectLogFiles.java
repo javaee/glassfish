@@ -126,15 +126,35 @@ public class CollectLogFiles implements AdminCommand {
             // This loop if target instance is DAS
 
             String zipFile = "";
-
-            File tempDirectory = new File(outputFilePath + File.separator + "server");
-            tempDirectory.mkdir();
-
-            copyLogFilesForLocalhost(env.getDomainRoot() + File.separator + "logs",
-                    tempDirectory.getAbsolutePath(), report, targetServer.getName());
+            File tempDirectory = null;
 
             try {
-                zipFile = loggingConfig.createZipFile(outputFile.getAbsolutePath());
+                tempDirectory = File.createTempFile("downloaded", "log");
+                tempDirectory.delete();
+                tempDirectory.mkdirs();
+            } catch (Exception ex) {
+                final String errorMsg = localStrings.getLocalString(
+                        "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files.");
+                logger.log(Level.SEVERE, errorMsg, ex);
+                report.setMessage(errorMsg);
+                report.setFailureCause(ex);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }
+
+            String targetDirPath = tempDirectory.getAbsolutePath() + File.separator + "logs";
+            File targetDir = new File(targetDirPath);
+            if (!targetDir.exists())
+                targetDir.mkdir();
+            targetDirPath = tempDirectory.getAbsolutePath() + File.separator + "logs" + File.separator + targetServer.getName();
+            targetDir = new File(targetDirPath);
+            targetDir.mkdir();
+
+            copyLogFilesForLocalhost(env.getDomainRoot() + File.separator + "logs",
+                    targetDir.getAbsolutePath(), report, targetServer.getName());
+
+            try {
+                zipFile = loggingConfig.createZipFile(tempDirectory.getAbsolutePath());
                 if (zipFile == null || new File(zipFile) == null) {
                     // Failure during zip
                     final String errorMsg = localStrings.getLocalString(
@@ -152,6 +172,33 @@ public class CollectLogFiles implements AdminCommand {
                 logger.log(Level.SEVERE, errorMsg, e);
                 report.setMessage(errorMsg);
                 report.setFailureCause(e);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }
+
+            // Playing with outbound payload to attach zip file..
+            Payload.Outbound outboundPayload = context.getOutboundPayload();
+
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, "About to download artifact " + zipFile);
+            }
+
+            //code to attach zip file to output directory
+            try {
+                File moveZipFile = new File(zipFile);
+                outboundPayload.attachFile(
+                        "application/octet-stream",
+                        tempDirectory.toURI().relativize(moveZipFile.toURI()),
+                        "files",
+                        props,
+                        moveZipFile);
+            }
+            catch (Exception ex) {
+                final String errorMsg = localStrings.getLocalString(
+                        "collectlogfiles.copyingZip", "Error while copying zip file to " + outputFilePath + ".");
+                logger.log(Level.SEVERE, errorMsg, ex);
+                report.setMessage(errorMsg);
+                report.setFailureCause(ex);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }

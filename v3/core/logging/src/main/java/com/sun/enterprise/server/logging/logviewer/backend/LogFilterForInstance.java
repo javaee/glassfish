@@ -64,7 +64,7 @@ import java.util.logging.Logger;
 public class LogFilterForInstance {
 
     public File downloadGivenInstanceLogFile(Habitat habitat, Server targetServer, Domain domain, Logger logger,
-                                   String instanceName, String domainRoot, String logFileName) throws IOException {
+                                             String instanceName, String domainRoot, String logFileName) throws IOException {
 
         File instanceLogFile = null;
 
@@ -72,8 +72,7 @@ public class LogFilterForInstance {
         // for Instance it's going through this loop. This will use ssh utility to get file from instance machine(remote machine) and
         // store in domains/domain1/logs/<instance name> which is used to get LogFile object.
         // Right now user needs to go through this URL to setup and configure ssh http://wikis.sun.com/display/GlassFish/3.1SSHSetup
-
-        SSHLauncher sshL = habitat.getComponent(SSHLauncher.class);
+        SSHLauncher sshL = getSSHL(habitat);
         String sNode = targetServer.getNode();
         Nodes nodes = domain.getNodes();
         Node node = nodes.getNode(sNode);
@@ -113,8 +112,7 @@ public class LogFilterForInstance {
         // for Instance it's going through this loop. This will use ssh utility to get file from instance machine(remote machine) and
         // store in  tempDirectoryOnServer which is used to create zip file.
         // Right now user needs to go through this URL to setup and configure ssh http://wikis.sun.com/display/GlassFish/3.1SSHSetup
-
-        SSHLauncher sshL = habitat.getComponent(SSHLauncher.class);
+        SSHLauncher sshL = getSSHL(habitat);
         String sNode = targetServer.getNode();
         Nodes nodes = domain.getNodes();
         Node node = nodes.getNode(sNode);
@@ -147,7 +145,7 @@ public class LogFilterForInstance {
                                           String instanceName) throws IOException {
 
         // helper method to get all log file names for given instance
-        SSHLauncher sshL = habitat.getComponent(SSHLauncher.class);
+        SSHLauncher sshL = getSSHL(habitat);
         String sNode = targetServer.getNode();
         Nodes nodes = domain.getNodes();
         Node node = nodes.getNode(sNode);
@@ -168,5 +166,16 @@ public class LogFilterForInstance {
         }
 
         return instanceLogFileNames;
+    }
+
+    private SSHLauncher getSSHL(Habitat habitat) throws IOException {
+        SSHLauncher sshL = null;
+        try {
+            sshL = habitat.getComponent(SSHLauncher.class);
+        }
+        catch (NoClassDefFoundError ex) {
+            throw new IOException(ex);
+        }
+        return sshL;
     }
 }
