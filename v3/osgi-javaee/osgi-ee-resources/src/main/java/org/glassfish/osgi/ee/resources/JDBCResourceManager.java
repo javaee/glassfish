@@ -104,7 +104,7 @@ public class JDBCResourceManager extends BaseResourceManager implements Resource
                 Class[] intf = new Class[]{javax.sql.DataSource.class, Invalidate.class};
                 Object proxy = getProxy(resource.getJndiName(), intf, getClassLoader());
                 Dictionary properties = new Hashtable();
-                properties.put(DataSourceFactory.JDBC_DRIVER_CLASS, className);
+                properties.put(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS, className);
                 properties.put(Constants.JNDI_NAME, resource.getJndiName());
 
                 registerResourceAsService(bundleContext, resource, Constants.DS,

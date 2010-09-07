@@ -95,7 +95,7 @@ public class JDBCJarManifestProcessor {
                 attrs.putValue(key, value);
             }
 
-            attrs.putValue((DataSourceFactory.JDBC_DRIVER_CLASS.replace('.', '_')),
+            attrs.putValue((DataSourceFactory.OSGI_JDBC_DRIVER_CLASS.replace('.', '_')),
                     (String) properties.get(Constants.DRIVER));
 
             attrs.putValue(OSGI_RFC_122, "TRUE");

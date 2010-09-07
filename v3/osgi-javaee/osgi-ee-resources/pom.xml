@@ -79,15 +79,13 @@
         </dependency>
 
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>osgi-jdbc</artifactId>
-            <version>${project.parent.version}</version>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.enterprise</artifactId>
         </dependency>
         
         <dependency>
             <groupId>javax.jms</groupId>
             <artifactId>jms-api</artifactId>
-            <version>${jms-api.version}</version>
         </dependency>
     </dependencies>
 </project>

@@ -122,17 +122,17 @@ public class JDBCExtender implements Extender, SynchronousBundleListener {
                     dataSourceFactories.add(dsfi);
 
                     Properties serviceProperties = new Properties();
-                    serviceProperties.put(DataSourceFactory.JDBC_DRIVER_CLASS,
+                    serviceProperties.put(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS,
                             header.get(Constants.DRIVER.replace(".", "_")));
 
                     String implVersion = (String) header.get(Constants.IMPL_VERSION);
                     if (implVersion != null) {
-                        serviceProperties.put(DataSourceFactory.JDBC_DRIVER_VERSION, implVersion);
+                        serviceProperties.put(DataSourceFactory.OSGI_JDBC_DRIVER_VERSION, implVersion);
                     }
 
                     String implTitle = (String) header.get(Constants.IMPL_TITLE);
                     if (implTitle != null) {
-                        serviceProperties.put(DataSourceFactory.JDBC_DRIVER_NAME, implTitle);
+                        serviceProperties.put(DataSourceFactory.OSGI_JDBC_DRIVER_NAME, implTitle);
                     }
                     debug(" registering service for driver [" +
                             header.get(Constants.DRIVER.replace(".", "_")) + "]");
