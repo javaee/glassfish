@@ -78,6 +78,8 @@ import org.glassfish.admingui.common.util.GuiUtil;
  *	<li>expanded -- Whether the root TreeNode should be expanded by
  *	    default (true/false)</li>
  *	<li>rendered -- The JSF rendered flag for the root TreeNode.</li>
+ *	<li>childNameKey -- When the child is represented by a Map, the "key"
+ *	    used to extract the name of the TreeNode from the Map.</li>
  *	<li>childURL -- The child TreeNode URL.</li>
  *	<li>childImageURL -- The child TreeNode Image URL.</li>
  *	<li>childCommand -- The child TreeNode JSFTemplating command.</li>
@@ -231,9 +233,13 @@ public class ListTreeAdaptor extends TreeAdaptorBase {
 	} else {
 	    // This case deals with the children
 	    if (nodeObject instanceof Map) {
-		// FIXME: TBD... (applications case?)
-		setProperty(props, "text", ((Map) nodeObject).get("message"));
+		String key = (String) desc.getOption("childNameKey");
+		if (key == null) {
+		    key = "name";
+		}
+		setProperty(props, "text", ((Map) nodeObject).get(key));
 	    } else {
+		// Use the object itself...
 		setProperty(props, "text", nodeObject);
 	    }
 
