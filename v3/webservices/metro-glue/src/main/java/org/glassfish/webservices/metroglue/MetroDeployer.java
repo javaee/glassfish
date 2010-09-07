@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,73 +38,62 @@
  * holder.
  */
 
-package org.glassfish.webservices.connector;
+package org.glassfish.webservices.metroglue;
 
-import org.glassfish.internal.deployment.GenericSniffer;
-import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.ApplicationContainer;
+import org.glassfish.api.deployment.ApplicationContext;
+import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.deployment.common.DeploymentException;
+import org.glassfish.deployment.common.SimpleDeployer;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.Singleton;
-
-import java.io.IOException;
 
 /**
- * This is the Sniffer for Webservices
- * @author Bhakti Mehta
+ *
+ * @author Marek Potociar (marek.potociar at sun.com)
  */
-@Service(name="webservices")
-@Scoped(Singleton.class)
-public class WebServicesSniffer extends GenericSniffer {
+@Service
+public class MetroDeployer extends SimpleDeployer<MetroContainer, MetroDeployer.MetroApplicationContainer> {
 
-    private static final Class[]  handledAnnotations = new Class[] {javax.jws.WebService.class,
-            javax.xml.ws.WebServiceProvider.class, javax.xml.ws.WebServiceRef.class};
+    public static final class MetroApplicationContainer implements ApplicationContainer<Object> {
 
-    final String[] containers = {
-        "org.glassfish.webservices.WebServicesContainer",
-        "org.glassfish.webservices.metroglue.MetroContainer"
-    };
-
-    public WebServicesSniffer() {
-        super("webservices", null, null);
-    }
-
-    /**
-     * .ear (the resource can be present in lib dir of the ear)
-     * Returns true if the archive contains webservices.xml either in WEB-INF or META-INF directories
-     */
-    @Override
-    public boolean handles(ReadableArchive location, ClassLoader loader) {
-        return isEntryPresent(location, "WEB-INF/webservices.xml") ||
-                isEntryPresent(location, "META-INF/webservices.xml");
-    }
-
-    private boolean isEntryPresent(ReadableArchive location, String entry) {
-        boolean entryPresent = false;
-        try {
-            entryPresent = location.exists(entry);
-        } catch (IOException e) {
-            // ignore
+        @Override
+        public Object getDescriptor() {
+            return null;
         }
-        return entryPresent;
+
+        @Override
+        public boolean start(ApplicationContext startupContxt) {
+            return true;
+        }
+
+        @Override
+        public boolean stop(ApplicationContext stopContext) {
+            return true;
+        }
+
+        @Override
+        public boolean suspend() {
+            return true;
+        }
+
+        @Override
+        public boolean resume() {
+            return true;
+        }
+
+        @Override
+        public ClassLoader getClassLoader() {
+            return null;
+        }
     }
 
     @Override
-    public String[] getContainersNames() {
-        return containers;
+    protected void generateArtifacts(DeploymentContext dc) throws DeploymentException {
+        // noop
     }
 
     @Override
-    public Class<? extends java.lang.annotation.Annotation>[] getAnnotationTypes() {
-        return handledAnnotations;
-    }
-
-    @Override
-    public boolean isUserVisible() {
-        return true;
-    }
-
-    @Override
-    public String[] getURLPatterns() {
-        return null;
+    protected void cleanArtifacts(DeploymentContext dc) throws DeploymentException {
+        // noop
     }
 }

@@ -40,19 +40,16 @@
 
 package org.glassfish.webservices;
 
-import com.sun.xml.ws.api.ha.HighAvailabilityProvider;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.Deployer;
-import org.glassfish.webservices.deployment.WebServicesDeploymentMBean;
+import org.glassfish.external.amx.AMXGlassfish;
 import org.glassfish.gmbal.ManagedObjectManager;
 import org.glassfish.gmbal.ManagedObjectManagerFactory;
-import org.glassfish.gms.bootstrap.GMSAdapterService;
-import org.glassfish.external.amx.AMXGlassfish;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
+import org.glassfish.webservices.deployment.WebServicesDeploymentMBean;
 import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.PreDestroy;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Singleton;
 
 import javax.management.ObjectName;
@@ -65,12 +62,6 @@ import java.io.IOException;
 @Service(name="org.glassfish.webservices.WebServicesContainer")
 @Scoped(Singleton.class)
 public class WebServicesContainer implements Container, PostConstruct, PreDestroy {
-//    @Inject
-//    private Habitat habitat;
-
-    @Inject
-    GMSAdapterService gmsAdapterService;
-
     private final WebServicesDeploymentMBean deploymentBean = new WebServicesDeploymentMBean();
     private ManagedObjectManager mom;
 
@@ -87,13 +78,6 @@ public class WebServicesContainer implements Container, PostConstruct, PreDestro
             mom.setJMXRegistrationDebug(false);
             mom.stripPackagePrefix();
             mom.createRoot(deploymentBean, "webservices-deployment");
-        }
-
-        if(gmsAdapterService.isGmsEnabled()) {
-            final String clusterName = gmsAdapterService.getGMSAdapter().getClusterName();
-            final String instanceName = gmsAdapterService.getGMSAdapter().getModule().getInstanceName();
-            
-            HighAvailabilityProvider.INSTANCE.initHaEnvironment(clusterName, instanceName);
         }
     }
 
@@ -113,7 +97,7 @@ public class WebServicesContainer implements Container, PostConstruct, PreDestro
                 mom.close();
             }
         } catch(IOException ioe) {
-            // nothing much can be done
+            // ignored nothing much can be done
         }
     }
 }
