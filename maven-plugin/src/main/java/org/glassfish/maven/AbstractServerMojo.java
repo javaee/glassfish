@@ -1,28 +1,31 @@
-
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
- * may not use this file except in compliance with the License. You can obtain
- * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
- * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
- * Sun designates this particular file as subject to the "Classpath" exception
- * as provided by Sun in the GPL Version 2 section of the License file that
- * accompanied this code.  If applicable, add the following below the License
- * Header, with the fields enclosed by brackets [] replaced by your own
- * identifying information: "Portions Copyrighted [year]
- * [name of copyright owner]"
+ * file and include the License file at packager/legal/LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
  *
  * Contributor(s):
- *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -37,56 +40,85 @@
 
 package org.glassfish.maven;
 
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
+import org.apache.maven.artifact.resolver.ArtifactResolutionException;
+import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-
-
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
-import org.apache.maven.project.ProjectBuildingException;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactResolver;
-import org.apache.maven.artifact.resolver.ArtifactResolutionException;
-import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
-import org.apache.maven.artifact.versioning.VersionRange;
-import org.apache.maven.model.Dependency;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.glassfish.api.embedded.ContainerBuilder;
 
-import java.util.*;
 import java.io.File;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Properties;
 
-public abstract class AbstractServerMojo extends AbstractMojo {
 /**
- * @parameter expression="${serverID}" default-value="maven"
-*/
+ * @author bhavanishankar@dev.java.net
+ */
+public abstract class AbstractServerMojo extends AbstractMojo {
+
+    // Only PluginUtil has access to org.glassfish.simpleglassfishapi.Constants
+    // Hence declare the param names here.
+    public final static String INSTANCE_ROOT_PROP_NAME = "com.sun.aas.instanceRoot";
+    public static final String INSTALL_ROOT_PROP_NAME = "com.sun.aas.installRoot";
+    public static final String INSTALL_ROOT_URI_PROP_NAME = "com.sun.aas.installRootURI";
+    public static final String INSTANCE_ROOT_URI_PROP_NAME = "com.sun.aas.instanceRootURI";
+    public static final String CONFIG_FILE_URI_PROP_NAME = "com.sun.aas.configFileURI";
+    public static final String HTTP_PORT = "http.port";
+
+    public static String thisArtifactId = "org.glassfish:maven-embedded-glassfish-plugin";
+
+    private static String SHELL_JAR = "lib/embedded/glassfish-embedded-shell.jar";
+    private static String FELIX_JAR = "osgi/felix/bin/felix.jar";
+
+//    private static final String UBER_JAR_URI = "org.glassfish.embedded.osgimain.jarURI";
+
+//    public static final String AUTO_START_BUNDLES =
+//            "org.glassfish.embedded.osgimain.autostartBundles";
+
+    /**
+     * The remote repositories where artifacts are located
+     *
+     * @parameter expression="${project.remoteArtifactRepositories}"
+     */
+    protected List remoteRepositories;
+
+    /**
+     * @parameter expression="${serverID}" default-value="maven"
+     */
     protected String serverID;
 
-/**
- * @parameter expression="${port}" default-value="-1"
-*/
+    /**
+     * @parameter expression="${port}" default-value="-1"
+     */
     protected int port;
 
 
-/**
- * @parameter expression="${installRoot}"
-*/
+    /**
+     * @parameter expression="${installRoot}"
+     */
     protected String installRoot;
 
-/**
- * @parameter expression="${instanceRoot}"
-*/
+    /**
+     * @parameter expression="${instanceRoot}"
+     */
     protected String instanceRoot;
-/**
- * @parameter expression="${configFile}"
-*/
+    /**
+     * @parameter expression="${configFile}"
+     */
     protected String configFile;
 
-/**
- * @parameter expression="${autoDelete}"
-*/
+    /**
+     * @parameter expression="${autoDelete}"
+     */
     protected Boolean autoDelete;
 
     /**
@@ -112,94 +144,140 @@ public abstract class AbstractServerMojo extends AbstractMojo {
     /**
      * @component
      */
-    protected ArtifactResolver artifactResolver;
+    protected ArtifactResolver resolver;
 
     /**
      * Used to construct artifacts for deletion/resolution...
      *
      * @component
      */
-    private ArtifactFactory factory;
+    protected ArtifactFactory factory;
 
-/**
- * @parameter expression="${containerType}" default-value="all"
-*/
+    /**
+     * @parameter expression="${containerType}" default-value="all"
+     */
     protected String containerType;
 
+//    protected GlassFish gf;
+
+    // HashMap with Key=serverId, Value=Bootstrap ClassLoader
+    protected static HashMap<String, URLClassLoader> classLoaders = new HashMap();
 
     public abstract void execute() throws MojoExecutionException, MojoFailureException;
 
-
-    void setClassPathProperty() throws ProjectBuildingException {
-        String prop = System.getProperty("java.class.path");
-        String classPath = getEmbeddedDependenciesClassPath();
-        if (classPath != null && classPath.length() > 0) {
-            if (prop != null && prop.length() > 0)
-                prop = prop + File.pathSeparator;
-            System.setProperty("java.class.path", prop + classPath);
+    protected URLClassLoader getClassLoader() throws MojoExecutionException {
+        URLClassLoader classLoader = classLoaders.get(serverID);
+        if (classLoader != null) {
+            printClassPaths("Using Existing Bootstrap ClassLoader. ServerId = " + serverID +
+                    ", ClassPaths = ", classLoader);
+            return classLoader;
+        }
+        try {
+            classLoader = hasGlassFishInstallation() ? getInstalledGFClassLoader() : getUberGFClassLoader();
+            classLoaders.put(serverID, classLoader);
+            printClassPaths("Created New Bootstrap ClassLoader. ServerId = " + serverID
+                    + ", ClassPaths = ", classLoader);
+            return classLoader;
+        } catch (Exception ex) {
+            throw new MojoExecutionException(ex.getMessage(), ex);
         }
     }
 
-    private String getEmbeddedDependenciesClassPath() throws ProjectBuildingException {
-        String classPath = "";
+    protected void cleanupClassLoader(String serverId) {
+        URLClassLoader cl = classLoaders.remove(serverID);
+        System.out.println("Cleaned up ClassLoader for ServerID " + serverID);
+    }
 
-        for( Artifact a : (Set<Artifact>)project.getPluginArtifacts()) {
-            String version = a.getVersion();
-            // version should be specified in pom.xml, as a good practice. Default to 3.0 if none was specified ??.
-            if (version == null || version.equals("RELEASE"))
-                a.setVersion("3.0");
-            
-            // get the plugin artifact and find the MavenProject (POM)
-            MavenProject pluginProject = projectBuilder.buildFromRepository(a, project.getRemoteArtifactRepositories(), localRepository);
-            List ea = resolveEmbeddedArtifacts(pluginProject);
-            for ( Iterator it = ea.iterator(); it.hasNext(); ) {
-                Artifact artifact = (Artifact) it.next();
-                File f = artifact.getFile();
-                if (f != null && f.getName().contains("glassfish-embedded")) {
-                    classPath = classPath + f + File.pathSeparator;
+    private void printClassPaths(String msg, URLClassLoader classLoader) {
+        System.out.println(msg);
+        for (URL u : classLoader.getURLs()) {
+            System.out.println("ClassPath Element : " + u);
+        }
+    }
+
+    // checks if the glassfish installation is present in the specified installRoot
+
+    private boolean hasGlassFishInstallation() {
+        return installRoot != null ? new File(installRoot, SHELL_JAR).exists()
+                && new File(installRoot, FELIX_JAR).exists() : false;
+    }
+
+    private URLClassLoader getInstalledGFClassLoader() throws Exception {
+        File gfJar = new File(installRoot, SHELL_JAR);
+        File felixJar = new File(installRoot, FELIX_JAR);
+        Artifact gfMvnPlugin = (Artifact) project.getPluginArtifactMap().get(thisArtifactId);
+        resolver.resolve(gfMvnPlugin, remoteRepositories, localRepository);
+        URLClassLoader classLoader = new URLClassLoader(
+                new URL[]{gfJar.toURI().toURL(), felixJar.toURI().toURL(), gfMvnPlugin.getFile().toURI().toURL()});
+        return classLoader;
+    }
+
+    private URLClassLoader getUberGFClassLoader() throws Exception {
+        // Use the version user has configured in the plugin.
+        Artifact gfMvnPlugin = (Artifact) project.getPluginArtifactMap().get(thisArtifactId);
+        Artifact gfUber = factory.createArtifact("org.glassfish.extras", "glassfish-uber",
+                "3.1-SNAPSHOT", "compile", "jar");
+        resolver.resolve(gfUber, remoteRepositories, localRepository);
+        try {
+            resolver.resolve(gfMvnPlugin, remoteRepositories, localRepository);
+        } catch (ArtifactResolutionException e) {
+            e.printStackTrace();
+        } catch (ArtifactNotFoundException e) {
+            e.printStackTrace();
+        }
+        URLClassLoader classLoader = new URLClassLoader(
+                new URL[]{gfUber.getFile().toURI().toURL(), gfMvnPlugin.getFile().toURI().toURL()});/* {
+            @Override
+            public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+                if ("org.glassfish.maven.Util".equals(name)) {
+                    InputStream is = getResourceAsStream(name.replace('.', '/')+".class");
+                    byte[] buf = new byte[8192];
+                    int count = 0;
+                    try {
+                        count=is.read(buf); // TODO :: read the entire class file.
+                    } catch (IOException e) {
+                        throw ClassNotFoundException(e.getMessage());
+                    }
+                    return defineClass(name, buf , 0, count);
+                } else {
+                    return super.loadClass(name, resolve);
                 }
             }
-        }
-        return classPath;
+        };*/
+        return classLoader;
     }
 
-    private List resolveEmbeddedArtifacts( MavenProject project )  {
-	List artifactList = new ArrayList();
-        List dependencies = project.getDependencies();
-        Set dependencyArtifacts = new HashSet();
-        for ( Iterator it = dependencies.iterator(); it.hasNext(); ) {
-            Dependency dependency = (Dependency) it.next();
-            VersionRange vr = VersionRange.createFromVersion( dependency.getVersion() );
-            Artifact artifact = factory.createDependencyArtifact( dependency.getGroupId(), dependency.getArtifactId(), vr, dependency.getType(), dependency.getClassifier(), dependency.getScope() );
-            dependencyArtifacts.add( artifact );
+    protected Properties getBootStrapProperties() {
+        Properties props = new Properties();
+        props.setProperty("GlassFish_Platform", "Felix");
+        if (installRoot != null) {
+            props.setProperty(INSTALL_ROOT_PROP_NAME, new File(installRoot).getAbsolutePath());
+            props.setProperty(INSTALL_ROOT_URI_PROP_NAME,
+                    new File(installRoot).toURI().toString());
         }
-	for ( Iterator it = dependencyArtifacts.iterator(); it.hasNext(); ) {
-            Artifact artifact = (Artifact) it.next();
+        if (instanceRoot != null) {
+            props.setProperty(INSTANCE_ROOT_PROP_NAME, new File(instanceRoot).getAbsolutePath());
+            props.setProperty(INSTANCE_ROOT_URI_PROP_NAME,
+                    new File(instanceRoot).toURI().toString());
+//                props.setProperty("org.osgi.framework.storage", instanceRoot + "/osgi-cache/Felix");
+        }
+
+        if (configFile != null) {
             try {
-                //resolve artifact from localRepository
-                artifactResolver.resolve( artifact, Collections.EMPTY_LIST, localRepository );
-		artifactList.add( artifact);
-	    } catch ( ArtifactResolutionException e ) {
-                // cannot resolve artifact
-            } catch ( ArtifactNotFoundException e ) {
-                //artifact not found..
-	    }
+                // if it is a java.net.URI pointing to file: or jar: or http: then use it as is.
+                props.setProperty(CONFIG_FILE_URI_PROP_NAME, URI.create(configFile).toString());
+            } catch (Exception ex) {
+                // if the supplied parameter is not a java.net.URI, assume it is a file.
+                props.setProperty(CONFIG_FILE_URI_PROP_NAME, new File(configFile).toURI().toString());
+            }
         }
-        return artifactList;
-    }
 
-    ContainerBuilder.Type getContainerBuilderType() {
-        if (containerType == null || containerType.equalsIgnoreCase("all"))
-            return ContainerBuilder.Type.all;
-        else if (containerType.equalsIgnoreCase("web"))
-            return ContainerBuilder.Type.web;
-        else if (containerType.equalsIgnoreCase("ejb"))
-            return ContainerBuilder.Type.ejb;
-        else if (containerType.equalsIgnoreCase("jpa"))
-            return ContainerBuilder.Type.jpa;
-        else if (containerType.equalsIgnoreCase("webservices"))
-            return ContainerBuilder.Type.webservices;
-        return ContainerBuilder.Type.all;
+        if (port != -1) {
+            props.setProperty(HTTP_PORT, String.valueOf(port));
+        }
+
+        // TODO :: take care of other config props containerType, autoDelete
+        return props;
     }
 
 }

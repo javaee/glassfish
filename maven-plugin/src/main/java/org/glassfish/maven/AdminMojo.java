@@ -1,28 +1,31 @@
-
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
- * may not use this file except in compliance with the License. You can obtain
- * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
- * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
- * Sun designates this particular file as subject to the "Classpath" exception
- * as provided by Sun in the GPL Version 2 section of the License file that
- * accompanied this code.  If applicable, add the following below the License
- * Header, with the fields enclosed by brackets [] replaced by your own
- * identifying information: "Portions Copyrighted [year]
- * [name of copyright owner]"
+ * file and include the License file at packager/legal/LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
  *
  * Contributor(s):
- *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -40,54 +43,44 @@ package org.glassfish.maven;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
-import org.glassfish.api.embedded.Server;
-import org.glassfish.api.admin.CommandRunner;
-import org.glassfish.api.admin.ParameterMap;
-import org.glassfish.api.ActionReport;
-
-import java.util.*;
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.Properties;
 
 /**
+ * Mojo for running the administration commands.
+ *
+ * @author bhavanishankar@dev.java.net
  * @goal admin
  */
-public class AdminMojo extends AbstractServerMojo  {
 
-/**
- * @parameter expression="${command}"
- * @required
- */
+public class AdminMojo extends AbstractServerMojo {
+
+    /**
+     * @parameter expression="${command}"
+     */
     protected String command;
 
-/**
- * @parameter
- */
-    protected Map commandParameters;
+    /**
+     * @parameter expression="${args}"
+     */
+    protected Map<String, String> args;
 
+    @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-
-        Server server = Server.getServer(serverID);
-        if (server ==  null) {
-            throw new MojoExecutionException("Embedded Server[" + serverID + "] not running" );
+        try {
+            runCommand(serverID, getClassLoader(), command, args);
+        } catch (Exception ex) {
+            throw new MojoExecutionException(ex.getMessage(), ex);
         }
-        CommandRunner runner = server.getHabitat().getComponent(CommandRunner.class);
-        ActionReport report = server.getHabitat().getComponent(ActionReport.class);
-        runner.getCommandInvocation(command, report).
-                parameters(getParameterMap()).execute();
-        if (report.hasFailures())
-            throw new MojoExecutionException(report.getMessage());
-        if (report.hasWarnings())
-            System.out.println(report.getMessage());
     }
 
-    private ParameterMap getParameterMap() {
-        ParameterMap pMap = new ParameterMap();
-        if (commandParameters != null) {
-            Iterator iter = commandParameters.keySet().iterator();
-            while(iter.hasNext()) {
-                String key = (String)iter.next();
-                pMap.add(key, (String)commandParameters.get(key));
-            }
-        }
-        return pMap;
+    public void runCommand(String serverId, ClassLoader cl,
+                           String command, Map<String, String> args) throws Exception {
+        Class clazz = cl.loadClass(PluginUtil.class.getName());
+        Method m = clazz.getMethod("runCommand", new Class[]{
+                String.class, Properties.class, Map.class});
+        m.invoke(null, new Object[]{serverId, command, args});
     }
+
 }
