@@ -6,8 +6,7 @@ connectors/javax.resource/src/main/java/connector_1_5.dtd
 /yui/
 /zlib-1.1.4/
 tests/community/web/jruby/helloapp/public/javascripts/
-osgi-javaee/osgi-jdbc/src/main/java/org/osgi/service/jdbc/DataSourceFactory.java
-admingui/common/src/main/resources/security/realms/checkpswd.js 
+admingui/common/src/main/resources/security/realms/checkpswd.js
 admingui/common/src/main/resources/images/node.jsf
 admingui/war/src/main/webapp/3rd-party-license
 /MANIFEST.MF
@@ -20,7 +19,7 @@ packager/ApacheLicense.txt
 packager/JAVAHELP_BCL.txt
 web/weld-integration/manifest.mf
 common/common-util/src/test/resources/process/lots_o_text.txt
-common/annotation-framework/src/main/java/org/glassfish/apf/skip-annotation-class-list 
+common/annotation-framework/src/main/java/org/glassfish/apf/skip-annotation-class-list
 appclient/client/acc/src/test/resources/topSecret.stuff
 admin/cli/src/main/resources/supported-legacy-command-names
 admin/cli/src/main/resources/unsupported-legacy-command-names
@@ -29,6 +28,7 @@ tests/quicklook/web/jruby/helloapp/public/javascripts/effects.js
 tests/quicklook/web/jruby/helloapp/public/javascripts/prototype.js
 tests/quicklook/web/jruby/helloapp/public/javascripts/dragdrop.js
 jbi/serviceengine/sun-javaee-engine/src/main/resources/com.sun.xml.ws.api.pipe.TransportPipeFactory
+security/core/src/main/resources/config/secure.seed
 .gif
 .jpg
 .png
@@ -37,6 +37,7 @@ jbi/serviceengine/sun-javaee-engine/src/main/resources/com.sun.xml.ws.api.pipe.T
 .jar
 .zip
 .war
+.ear
 .sql
 .jks
 .json
