@@ -62,12 +62,12 @@
                 <configuration>
                     <tasks>
                         <if test="${do.compression}">
-			    <property name="compression" value="true" />
-			</if>
+                            <property name="compression" value="true" />
+                        </if>
                         <ant dir="." antfile="build.xml" target="create.package"/>
                     </tasks>
-                </configuration>               
-             </plugin>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -76,77 +76,88 @@
         <!--
           modules to be included in this bundle
 	  --> 
-	   <dependency>
-	    <groupId>org.glassfish.webservices</groupId>
-	    <artifactId>webservices-connector</artifactId>
-	    <version>${project.version}</version>
-       </dependency>	  
-       <dependency>	         
-	    <groupId>org.glassfish.webservices</groupId>
-	    <artifactId>jsr109-impl</artifactId>
-	    <version>${project.version}</version>
-       </dependency>
-       <dependency>
-	    <groupId>org.glassfish.webservices</groupId>
-	    <artifactId>soap-tcp</artifactId>
-	    <version>${project.version}</version>
-       </dependency>
-       <dependency>
-          <groupId>com.ctc.wstx</groupId>
-           <artifactId>woodstox-osgi</artifactId>
-       </dependency>
-       <dependency>
-          <groupId>com.sun.xml.ws</groupId>
-           <artifactId>webservices-osgi</artifactId>
-       </dependency>
-       <dependency>
-          <groupId>com.sun.xml.ws</groupId>
-           <artifactId>webservices-extra-jdk-packages</artifactId>
-       </dependency>
-       <dependency>
-          <groupId>javax.xml</groupId>
-           <artifactId>webservices-api-osgi</artifactId>
-       </dependency>
-       <dependency>
-           <groupId>org.glassfish.security</groupId>
-           <artifactId>webservices.security</artifactId>
-           <version>${project.version}</version>
-       </dependency> 
-       <dependency>
+        <dependency>
+            <groupId>org.glassfish.webservices</groupId>
+            <artifactId>metro-glue</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.webservices</groupId>
+            <artifactId>webservices-connector</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.webservices</groupId>
+            <artifactId>jsr109-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.webservices</groupId>
+            <artifactId>soap-tcp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ctc.wstx</groupId>
+            <artifactId>woodstox-osgi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>webservices-osgi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>webservices-extra-jdk-packages</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml</groupId>
+            <artifactId>webservices-api-osgi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>webservices.security</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.webservices</groupId>
             <artifactId>webservices-scripts</artifactId>
-	    <version>${project.version}</version>
-	    <type>distribution-fragment</type>
+            <version>${project.version}</version>
+            <type>distribution-fragment</type>
         </dependency>
-       <dependency>
+        <dependency>
+            <groupId>org.glassfish.webservices</groupId>
+            <artifactId>metro-fragments</artifactId>
+            <version>${project.version}</version>
+            <type>distribution-fragment</type>
+        </dependency>
+        <dependency>
             <groupId>com.sun.grizzly</groupId>
-	    <artifactId>grizzly-http-servlet</artifactId>
+            <artifactId>grizzly-http-servlet</artifactId>
         <!--
             'jersey' exclusions added to workaround an issue integrating
             Grizzly 19.19.  These are test dependencies defined in the
             Grizzy POMs, however, if they aren't excluded, a StackOverflowError
             occurs in the antrun-extended plugin.
         -->
-        <exclusions>
-            <exclusion>
-                <groupId>com.sun.jersey</groupId>
-                <artifactId>jersey-client</artifactId>
-            </exclusion>
-            <exclusion>
-                <groupId>com.sun.jersey</groupId>
-                <artifactId>jersey-server</artifactId>
-            </exclusion>
-       </exclusions>
-       </dependency>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.sun.jersey</groupId>
+                    <artifactId>jersey-client</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.jersey</groupId>
+                    <artifactId>jersey-server</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
        	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
      
-       <dependency>        
-           <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-cmp</artifactId>
-           <version>${project.version}</version>
-	   <type>zip</type>
-       </dependency>
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-cmp</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
     </dependencies>
 
     <profiles>
@@ -155,32 +166,32 @@
                 Activate this profile with "mvn -Drepo.url=<ips-repository> -Dpython=<python> -P ips"
              -->
             <id>ips</id>
-	    <activation>
-	       <activeByDefault>false</activeByDefault> 
-	    </activation>
-	    <build>
-            <plugins>
-                <plugin>
-                    <groupId>org.jvnet.updatecenter2</groupId>
-                    <artifactId>maven-makepkgs-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>package</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <remoteRepository>${repo.url}</remoteRepository>
-                        <python>${python}</python>
-                        <proto>src/main/resources/pkg_proto.py</proto>
-                        <baseDirectory>target/stage/${install.dir.name}/</baseDirectory>
-                     </configuration>
-                </plugin>
-            </plugins>
-	    </build>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jvnet.updatecenter2</groupId>
+                        <artifactId>maven-makepkgs-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>package</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <remoteRepository>${repo.url}</remoteRepository>
+                            <python>${python}</python>
+                            <proto>src/main/resources/pkg_proto.py</proto>
+                            <baseDirectory>target/stage/${install.dir.name}/</baseDirectory>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
-   </profiles>        
+    </profiles>
 
 </project>
 
