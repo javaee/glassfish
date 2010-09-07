@@ -86,7 +86,6 @@ public abstract class BaseHASession extends StandardSession
      */
     public void setId(String id) {
         super.setId(id);
-//        extraParams = new HttpSessionExtraParams(this);
     } 
 
     /**
@@ -94,40 +93,6 @@ public abstract class BaseHASession extends StandardSession
      *
      * @return The name of the instance that previously owned this HttpSession
      */
-
-    public String getPreviousOwnerInstanceName() {
-        throw new RuntimeException("Not yet implemented");
-    }
-
-
-    /**
-     * Gets the name of the instance.that currently owns this HttpSession.
-     *
-     * @return The name of the instance that currently owns this HttpSession
-     */
-
-    public String getCurrentOwnerInstanceName() {
-        throw new RuntimeException("Not yet implemented");
-    }
-
-
-    /**
-     * Gets whether this session is suspect (not trusted value)
-     *
-     * @return whether this session is suspect (not trusted value)
-     */
-    public boolean isSuspect() {
-        return isSuspect.get();
-    }
-    
-    /**
-     * Sets whether this session is suspect (not trusted value)
-     *
-     * @param value whether this session is suspect (not trusted value)
-     */
-    public void setSuspect(boolean value) {
-        isSuspect.set(value);
-    }    
 
     /**
      * always return true for isDirty()
@@ -186,10 +151,7 @@ public abstract class BaseHASession extends StandardSession
         return persistentFlag;
     }
     
-//    public HttpSessionExtraParams getExtraParameters() {
-//        return extraParams;
-//    }
-    
+
     public void recycle() {
         super.recycle();
         userName = "";
@@ -266,7 +228,6 @@ public abstract class BaseHASession extends StandardSession
 
         // Write the scalar instance variables
         stream.writeObject(userName);
-//        stream.writeObject(currentOwnerInstanceName);
     }
     
     /**
