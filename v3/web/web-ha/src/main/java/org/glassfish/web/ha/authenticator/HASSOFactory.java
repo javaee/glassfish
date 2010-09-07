@@ -71,13 +71,12 @@ import org.jvnet.hk2.component.PerLookup;
 @Service
 @Scoped(PerLookup.class)
 public class HASSOFactory implements SSOFactory {
+    private static final String STORE_NAME = "SSOStore";
+
     private static BackingStore ssoEntryMetadataBackingStore = null;
 
     @Inject
     private Habitat habitat;
-
-    @Inject
-    private GMSAdapterService gmsAdapterService;
 
     @Inject
     private ServerConfigLookup serverConfigLookup;
@@ -93,8 +92,10 @@ public class HASSOFactory implements SSOFactory {
     @Override
     public GlassFishSingleSignOn createSingleSignOnValve(String virtualServerName) {
         if (isSsoFailoverEnabled()) {
-            //XXX hard code file
-            return new HASingleSignOn(ioUtils, getSsoEntryMetadataBackingStore("file", "SSOStore"));
+            //XXX hard code as there is no other alternative in this moment
+            String persistenceType = "replication";
+            return new HASingleSignOn(ioUtils,
+                    getSsoEntryMetadataBackingStore(persistenceType, STORE_NAME, habitat));
         } else {
             return new GlassFishSingleSignOn();
         }
@@ -114,14 +115,17 @@ public class HASSOFactory implements SSOFactory {
         return isSsoFailoverEnabled && webContainerAvailabilityEnabled;
     }    
 
-    protected synchronized BackingStore getSsoEntryMetadataBackingStore(String persistenceType, String storeName) {
+    protected static synchronized BackingStore getSsoEntryMetadataBackingStore(
+            String persistenceType, String storeName, Habitat habitat) {
+
         if (ssoEntryMetadataBackingStore == null) {
-            //XXX hard coded replication
-            BackingStoreFactory factory = habitat.getComponent(BackingStoreFactory.class, "replication");
-            BackingStoreConfiguration<String, HASingleSignOnEntryMetadata> conf = new BackingStoreConfiguration<String, HASingleSignOnEntryMetadata>();
+            BackingStoreFactory factory = habitat.getComponent(BackingStoreFactory.class, persistenceType);
+            BackingStoreConfiguration<String, HASingleSignOnEntryMetadata> conf =
+                    new BackingStoreConfiguration<String, HASingleSignOnEntryMetadata>();
 
             String clusterName = "";
             String instanceName = "";
+            GMSAdapterService gmsAdapterService = habitat.getComponent(GMSAdapterService.class);
             if(gmsAdapterService.isGmsEnabled()) {
                 clusterName = gmsAdapterService.getGMSAdapter().getClusterName();
                 instanceName = gmsAdapterService.getGMSAdapter().getModule().getInstanceName();
