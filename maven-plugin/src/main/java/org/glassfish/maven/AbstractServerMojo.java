@@ -76,7 +76,7 @@ public abstract class AbstractServerMojo extends AbstractMojo {
 
     public static String thisArtifactId = "org.glassfish:maven-embedded-glassfish-plugin";
 
-    private static String SHELL_JAR = "lib/embedded/glassfish-embedded-shell.jar";
+    private static String SHELL_JAR = "lib/embedded/glassfish-embedded-static-shell.jar";
     private static String FELIX_JAR = "osgi/felix/bin/felix.jar";
 
 //    private static final String UBER_JAR_URI = "org.glassfish.embedded.osgimain.jarURI";
