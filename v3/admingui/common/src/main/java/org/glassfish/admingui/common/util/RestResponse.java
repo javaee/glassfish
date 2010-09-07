@@ -150,6 +150,7 @@ class JerseyRestResponse extends RestResponse {
         // Add the Response Code
         result.put("responseCode", getResponseCode());
         // Add the Response Body
+// FIXME: Do not put responseBody into the Map... too big, not needed
         result.put("responseBody", getResponseBody());
 
         String contentType = response.getHeaders().getFirst("Content-type");
