@@ -199,7 +199,7 @@ public class RestApiHandlers {
         handlerCtx.setOutputValue("result",  restRequest(endpoint, attrs, method, handlerCtx));
     }
 
-    public static Map restRequest(String endpoint, Map<String, Object> attrs, String method, HandlerContext handlerCtx) {
+    public static Map<String, Object> restRequest(String endpoint, Map<String, Object> attrs, String method, HandlerContext handlerCtx) {
 	boolean useData = false;
 
 	Object data = null;
