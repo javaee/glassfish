@@ -226,6 +226,7 @@ public class Server {
 
     private void setProperties(EmbeddedFileSystem fs, Properties props) {
         props.setProperty("GlassFish_Platform", "Static");
+        props.setProperty("-type", "EMBEDDED");
         if (fs != null) {
             String instanceRoot = fs.instanceRoot != null ? fs.instanceRoot.getAbsolutePath() : null;
             String installRoot = fs.installRoot != null ? fs.installRoot.getAbsolutePath() : instanceRoot;
