@@ -133,6 +133,6 @@
                     </sun:propertySheet>    
                         <sun:hidden id="helpKey" value="$resource{help_common.manageUserNew}" />
             </sun:form>
-#include "checkpswd.js"
+#include "checkpswd.inc"
 </define>
 </composition>
