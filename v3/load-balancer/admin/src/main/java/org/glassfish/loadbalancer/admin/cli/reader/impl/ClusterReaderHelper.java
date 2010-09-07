@@ -61,8 +61,10 @@ import org.glassfish.loadbalancer.admin.cli.reader.api.LbReaderException;
 
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Level;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.loadbalancer.admin.cli.LbLogUtil;
 
 /**
  * Impl class for ClusterReader. This provides loadbalancer 
@@ -89,6 +91,7 @@ public class ClusterReaderHelper {
             List<ApplicationRef> refs, String target) {
 
         List<WebModuleReader> list = new ArrayList<WebModuleReader>();
+        Set<String> contextRoots = new HashSet<String>();
 
         Iterator<ApplicationRef> refAppsIter = refs.iterator();
         HashMap<String, ApplicationRef> refferedApps =
@@ -112,7 +115,8 @@ public class ClusterReaderHelper {
             }
             ApplicationInfo appInfo = appRegistry.get(appName);
             if (appInfo == null) {
-                System.out.println("Unable to get appInfo for application " + appName);
+                String msg = LbLogUtil.getStringManager().getString("UnableToGetAppInfo", appName);
+                LbLogUtil.getLogger().log(Level.WARNING, msg);
                 continue;
             }
             com.sun.enterprise.deployment.Application depApp = appInfo.getMetaData(com.sun.enterprise.deployment.Application.class);
@@ -120,10 +124,14 @@ public class ClusterReaderHelper {
 
             while (bundleDescriptorIter.hasNext()) {
                 BundleDescriptor bundleDescriptor = bundleDescriptorIter.next();
+                try{
                 if (bundleDescriptor instanceof WebBundleDescriptor) {
                     WebModuleReader wmr = new WebModuleReaderImpl(appName, refferedApps.get(appName),
                             app, (WebBundleDescriptor) bundleDescriptor);
-                    list.add(wmr);
+                    if(!contextRoots.contains(wmr.getContextRoot())){
+                        contextRoots.add(wmr.getContextRoot());
+                        list.add(wmr);
+                    }
                 } else if (bundleDescriptor instanceof EjbBundleDescriptor) {
                     EjbBundleDescriptor ejbBundleDescriptor = (EjbBundleDescriptor) bundleDescriptor;
                     if (!ejbBundleDescriptor.hasWebServices()) {
@@ -132,11 +140,22 @@ public class ClusterReaderHelper {
                     Iterator<WebServiceEndpoint> wsIter = ejbBundleDescriptor.getWebServices().getEndpoints().iterator();
                     while (wsIter.hasNext()) {
                         WebServiceEndpointReaderImpl wsr = new WebServiceEndpointReaderImpl(appName, refferedApps.get(appName), app, wsIter.next());
-                        list.add(wsr);
+                        if(!contextRoots.contains(wsr.getContextRoot())){
+                            contextRoots.add(wsr.getContextRoot());
+                            list.add(wsr);
+                        }
+                    }
+                }
+                }catch(LbReaderException ex){
+                    String msg = LbLogUtil.getStringManager().getString("UnableToGetContextRoot", appName, ex.getMessage());
+                    LbLogUtil.getLogger().log(Level.WARNING, msg);
+                    if (LbLogUtil.getLogger().isLoggable(Level.FINE)) {
+                        LbLogUtil.getLogger().log(Level.FINE, "Exception when getting context root for application", ex);
                     }
                 }
             }
         }
+        contextRoots.clear();
         // returns the web module reader as array
         WebModuleReader[] webModules = new WebModuleReader[list.size()];
         return (WebModuleReader[]) list.toArray(webModules);

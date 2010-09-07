@@ -110,7 +110,6 @@ public class ApplyHttpLbChanges implements AdminCommand {
         LoadBalancer lb = LbConfigHelper.getLoadBalancer(domain, lbName);
         String lbHost = lb.getDeviceHost();
         String lbPort = lb.getDevicePort();
-        System.out.println("Host : " + lbHost + ", port : " + lbPort);
         String lbProxyHost = null;
         String lbProxyPort = null;
         Property lbProxyHostProperty = lb.getProperty(SSL_PROXY_HOST_PROPERTY);
