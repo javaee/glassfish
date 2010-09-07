@@ -63,4 +63,4 @@ The pom files contain the following information:
 * scm
 * developers
 
-This information is pertinent for syncting the artifacts to the Maven Central repository.
+This information is pertinent for syncing the artifacts to the Maven Central repository.
