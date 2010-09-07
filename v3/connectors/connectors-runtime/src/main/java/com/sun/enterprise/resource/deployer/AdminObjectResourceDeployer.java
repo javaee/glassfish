@@ -121,23 +121,32 @@ public class AdminObjectResourceDeployer extends GlobalResourceDeployer
     /**
      * {@inheritDoc}
      */
+    public void undeployResource(Object resource, String applicationName, String moduleName) throws Exception{
+        final AdminObjectResource aor = (AdminObjectResource) resource;
+        ResourceInfo resourceInfo = new ResourceInfo(aor.getJndiName(), applicationName, moduleName);
+        deleteAdminObjectResource(resourceInfo);
+    }
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void undeployResource(Object resource)
             throws Exception {
-
         final AdminObjectResource aor = (AdminObjectResource) resource;
-
         ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(aor);
+        deleteAdminObjectResource(resourceInfo);
+    }
+
+    private void deleteAdminObjectResource(ResourceInfo resourceInfo) throws ConnectorRuntimeException {
         _logger.log(Level.FINE, "Calling backend to delete adminObject", resourceInfo);
         runtime.deleteAdminObject(resourceInfo);
         _logger.log(Level.FINE, "Deleted adminObject in backend", resourceInfo);
 
         //unregister the managed object
-/* TODO Not needed any more ?
+    /* TODO Not needed any more ?
         final ManagementObjectManager mgr =
                 getAppServerSwitchObject().getManagementObjectManager();
         mgr.unregisterAdminObjectResource(aor.getJndiName(), aor.getResType());
-*/
-
+    */
     }
 
     /**

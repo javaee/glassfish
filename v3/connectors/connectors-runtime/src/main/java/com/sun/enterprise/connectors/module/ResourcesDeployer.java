@@ -376,21 +376,6 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                     resources.getResources().add(configBeanResource);
                     resourceConfigs.add(configBeanResource);
                 }
-/*
-                com.sun.enterprise.config.serverbeans.Resource configBeanResource =
-                        rm.createConfigBean(resources, attrList, props);
-                if (configBeanResource != null) {
-                    if(embedded &&
-                            isEmbeddedRarResource(configBeanResource, resources.getResources()) == TriState.TRUE){
-                        resources.getResources().add(configBeanResource);
-                        resourceConfigs.add(configBeanResource);
-                    }else if(!embedded &&
-                            isEmbeddedRarResource(configBeanResource, resources.getResources()) == TriState.FALSE){
-                        resources.getResources().add(configBeanResource);
-                        resourceConfigs.add(configBeanResource);
-                    }
-                }
-*/
             } catch (Exception e) {
                 throw new ResourceException(e);
             }
@@ -478,12 +463,31 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
 
                 Collection<Resource> resourceConfigurations =
                         createConfig(asc, resources, embedded);
+                String appName = app.getName();
+                preserveResources(asc, appName, appName);
                 deployResources(app.getName(), null, resourceConfigurations, embedded);
             }
         } catch (Exception e) {
             Object params[] = new Object[]{app.getName(), e};
             _logger.log(Level.SEVERE, "gf.resources.app.scope.deployment.failure", params);
             throw new ResourceException(e);
+        }
+    }
+
+    /**
+     * preserve the resources such that they can be undeployed during deployment failure.
+     * @param resources resources
+     * @param appName application-name
+     * @param moduleName module-name
+     */
+    private static void preserveResources(Resources resources, String appName, String moduleName) {
+        Map<String, Resources> allResources = resourceConfigurations.get(appName);
+        if(allResources != null){
+            allResources.put(moduleName, resources);
+        }else{
+            allResources = new HashMap<String, Resources>();
+            allResources.put(moduleName, resources);
+            resourceConfigurations.put(appName, allResources);
         }
     }
 
@@ -505,6 +509,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
 
                 Collection<Resource> resourceConfigurations =
                         createConfig(msc, resources, embedded);
+                preserveResources(msc, app.getName(), module.getName());
                 deployResources(app.getName(), module.getName(), resourceConfigurations, embedded);
             }
         } catch (Exception e) {
@@ -667,31 +672,6 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
         }
     }
 
-    /*
-    public void retrieveAllResourcesXMLs(Map<String, String> fileNames, String path) throws IOException {
-        File file = new File(path);
-        File[] files = file.listFiles();
-        if(files != null){
-            for(int i=0; i < files.length ; i++){
-                String entry = files[i].getAbsolutePath();
-                if (entry.endsWith("META-INF/glassfish-resources.xml")) {
-                    if (!files[i].isDirectory()) {
-                        String name = file.getParentFile().getName();
-                        fileNames.put(name, files[i].getAbsolutePath());
-                    }
-                } else if(entry.endsWith("WEB-INF/glassfish-resources.xml")){
-                    if (!files[i].isDirectory()) {
-                        String name = file.getParentFile().getName();
-                        fileNames.put(name, files[i].getAbsolutePath());
-                    }
-                } else if(files[i].isDirectory()){
-                    retrieveAllResourcesXMLs(fileNames, files[i].getAbsolutePath());
-                }
-            }
-        }
-    }
-    */
-
     /**
      * Given a <i>resource</i> instance, appropriate deployer will be provided
      *
@@ -724,13 +704,20 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
             final UndeployCommandParameters undeployCommandParameters =
                     dc.getCommandParameters(UndeployCommandParameters.class);
             preserveResources(dc, undeployCommandParameters);
-        }/*else if(Deployment.UNDEPLOYMENT_FAILURE.equals(event.type())){
+        }else if(Deployment.UNDEPLOYMENT_FAILURE.equals(event.type())){
             DeploymentContext dc = (DeploymentContext) event.hook();
             cleanupPreservedResources(dc, event);
         }else if(Deployment.DEPLOYMENT_FAILURE.equals(event.type())){
             DeploymentContext dc = (DeploymentContext) event.hook();
+            String appName = getAppNameFromDeployCmdParams(dc);
+            cleanupResources(appName, dc.getCommandParameters(DeployCommandParameters.class).origin);
+            //TODO ASR call this only when the flag is on ? --properties preserveAppScopedResources=true
             cleanupPreservedResources(dc, event);
-        }*/
+        }else if(Deployment.DEPLOYMENT_SUCCESS.equals(event.type())){
+            DeploymentContext dc = (DeploymentContext) event.hook();
+            String appName = getAppNameFromDeployCmdParams(dc);
+            resourceConfigurations.remove(appName);
+        }
     }
 
     private void processResources(DeploymentContext dc, DeployCommandParameters deployParams) {
@@ -871,7 +858,72 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
         }
     }
 
-/*
+    /**
+     * clean up resources due to deployment failure.
+     * @param appName application-name
+     * @param deploymentPhase deployment-phase (deploy/load etc.,)
+     */
+    private void cleanupResources(String appName, OpsParams.Origin deploymentPhase){
+        try{
+            if (deploymentPhase == OpsParams.Origin.deploy) {
+                Map<String, Resources> allResources = resourceConfigurations.remove(appName);
+                if(allResources != null){
+                    for(Map.Entry<String, Resources> entry : allResources.entrySet()){
+                        String moduleName = entry.getKey();
+                        Resources resources = entry.getValue();
+                        String actualModuleName = moduleName;
+                        //for app-scoped-resources, no module name is needed
+                        if(appName.equals(moduleName)){
+                            actualModuleName = null;
+                        }
+                        undeployResources(resources, appName, actualModuleName );
+                    }
+                }
+            }else if(deploymentPhase == OpsParams.Origin.load){
+
+                Application application = applications.getApplication(appName);
+                if(application != null){
+                    Resources appScopedResources = application.getResources();
+                    undeployResources(appScopedResources, appName, null);
+
+                    List<Module> modules = application.getModule();
+                    if(modules != null){
+                        for(Module module : modules){
+                            Resources moduleScopedResources = module.getResources();
+                            undeployResources(moduleScopedResources, appName, module.getName());
+                        }
+                    }
+                }
+            }
+        }catch(Exception e){
+            _logger.log(Level.WARNING, "Exception while cleaning-up resources during deployment failure", e);
+        }
+    }
+
+    private void undeployResources(Resources resources, String appName, String moduleName) {
+
+        if(resources != null){
+            for(Resource resource : resources.getResources()){
+                try{
+                    //delete pools after resources
+                    if(!(resource instanceof ResourcePool)){
+                        getResourceDeployer(resource).undeployResource(resource, appName, moduleName);
+                    }
+                }catch(Exception e){
+                    //ignore as this is cleanup
+                }
+            }
+            Collection<ResourcePool> pools= resources.getResources(ResourcePool.class);
+            for(ResourcePool pool : pools){
+                try{
+                    getResourceDeployer(pool).undeployResource(pool, appName, moduleName);
+                }catch(Exception e){
+                    //ignore as this is cleanup
+                }
+            }
+        }
+    }
+
     private void cleanupPreservedResources(DeploymentContext dc, Event event) {
         if (Deployment.DEPLOYMENT_FAILURE.equals(event.type())) {
             final DeployCommandParameters deployCommandParameters =
@@ -901,7 +953,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
             }
         }
     }
-*/
+
 
     /**
      * preserve the old application's resources so that they can be registered during deploy.
@@ -916,26 +968,12 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                     String preserve = properties.getProperty(DeploymentProperties.PRESERVE_APP_SCOPED_RESOURCES);
                     if(preserve != null && Boolean.valueOf(preserve)){
                         debug("Preserve app scoped resources enabled");
-                        Map<String, Resources> allResources = new HashMap<String, Resources>();
                         final UndeployCommandParameters commandParams =
                                 dc.getCommandParameters(UndeployCommandParameters.class);
                         String appName = commandParams.name();
                         Application app = applications.getApplication(appName);
-                        Resources appScopedResources = app.getResources();
-                        if(appScopedResources != null){
-                            allResources.put(appName, appScopedResources);
-                        }
-                        List<Module> modules = app.getModule();
-                        if(modules != null){
-                            for(Module module : modules){
-                                Resources moduleScopedResources = module.getResources();
-                                if(moduleScopedResources != null){
-                                    allResources.put(module.getName(), moduleScopedResources);
-                                }
-                            }
-                        }
-                        //store the resource-configuration and application (for module information ie., sniffer type)
-                        resourceConfigurations.put(appName, allResources);
+                        preserveResources(app);
+                        //store application info (for module information ie., sniffer type)
                         preservedApps.put(appName, app);
                     }
                 }
@@ -945,6 +983,26 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
             // in the event notification infrastructure
             throw new DeploymentException(e.getMessage(), e);
         }
+    }
+
+    private void preserveResources(Application app) {
+        String appName = app.getName();
+        Map<String, Resources> allResources = new HashMap<String, Resources>();
+        Resources appScopedResources = app.getResources();
+        if(appScopedResources != null){
+            allResources.put(appName, appScopedResources);
+        }
+        List<Module> modules = app.getModule();
+        if(modules != null){
+            for(Module module : modules){
+                Resources moduleScopedResources = module.getResources();
+                if(moduleScopedResources != null){
+                    allResources.put(module.getName(), moduleScopedResources);
+                }
+            }
+        }
+        //store the resource-configuration
+        resourceConfigurations.put(appName, allResources);
     }
 
     private static void debug(String message){

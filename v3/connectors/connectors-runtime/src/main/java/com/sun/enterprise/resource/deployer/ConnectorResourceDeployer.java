@@ -105,10 +105,22 @@ public class ConnectorResourceDeployer implements ResourceDeployer {
     /**
      * {@inheritDoc}
      */
+    public void undeployResource(Object resource, String applicationName, String moduleName) throws Exception{
+        ConnectorResource domainResource = (ConnectorResource) resource;
+        ResourceInfo resourceInfo = new ResourceInfo(domainResource.getJndiName(), applicationName, moduleName);
+        deleteConnectorResource(domainResource, resourceInfo);
+    }
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void undeployResource(Object resource)
             throws Exception {
         ConnectorResource domainResource = (ConnectorResource) resource;
         ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(domainResource);
+        deleteConnectorResource(domainResource, resourceInfo);
+    }
+
+    private void deleteConnectorResource(ConnectorResource domainResource, ResourceInfo resourceInfo) throws Exception {
         runtime.deleteConnectorResource(resourceInfo);
 
         //Since 8.1 PE/SE/EE - if no more resource-ref to the pool

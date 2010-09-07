@@ -62,6 +62,8 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Singleton;
 
+import javax.naming.NamingException;
+
 /**
  * Handles mail resource events in the server instance.
  * <p/>
@@ -146,16 +148,29 @@ public class MailResourceDeployer extends GlobalResourceDeployer
     /**
      * {@inheritDoc}
      */
-    public synchronized void undeployResource(Object resource)
-            throws Exception {
-
+    public void undeployResource(Object resource, String applicationName, String moduleName) throws Exception{
         com.sun.enterprise.config.serverbeans.MailResource mailRes =
                 (com.sun.enterprise.config.serverbeans.MailResource) resource;
+        // converts the config data to j2ee resource
+        ResourceInfo resourceInfo = new ResourceInfo(mailRes.getJndiName(), applicationName, moduleName);
+        deleteResource(mailRes, resourceInfo);
+    }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    public synchronized void undeployResource(Object resource) throws Exception {
+        com.sun.enterprise.config.serverbeans.MailResource mailRes =
+                (com.sun.enterprise.config.serverbeans.MailResource) resource;
         // converts the config data to j2ee resource
         ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(mailRes);
-        //JavaEEResource javaEEResource = toMailJavaEEResource(mailRes, resourceInfo);
+        deleteResource(mailRes, resourceInfo);
+    }
 
+    private void deleteResource(com.sun.enterprise.config.serverbeans.MailResource mailRes, ResourceInfo resourceInfo)
+            throws NamingException {
+        //JavaEEResource javaEEResource = toMailJavaEEResource(mailRes, resourceInfo);
         // removes the resource from jndi naming
         namingService.unpublishObject(resourceInfo, mailRes.getJndiName());
 

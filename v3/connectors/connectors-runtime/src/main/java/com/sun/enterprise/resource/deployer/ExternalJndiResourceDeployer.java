@@ -135,16 +135,29 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
     /**
      * {@inheritDoc}
      */
+    public void undeployResource(Object resource, String applicationName, String moduleName) throws Exception{
+        com.sun.enterprise.config.serverbeans.ExternalJndiResource jndiRes =
+            (com.sun.enterprise.config.serverbeans.ExternalJndiResource) resource;
+        ResourceInfo resourceInfo = new ResourceInfo(jndiRes.getJndiName(), applicationName, moduleName);
+        deleteResource(jndiRes, resourceInfo);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
 	public synchronized void undeployResource(Object resource)
             throws Exception {
 
         com.sun.enterprise.config.serverbeans.ExternalJndiResource jndiRes =
             (com.sun.enterprise.config.serverbeans.ExternalJndiResource) resource;
-
-        // converts the config data to j2ee resource
         ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(jndiRes);
-        JavaEEResource j2eeResource = toExternalJndiJavaEEResource(jndiRes, resourceInfo);
+        deleteResource(jndiRes, resourceInfo);
+    }
 
+    private void deleteResource(com.sun.enterprise.config.serverbeans.ExternalJndiResource jndiRes,
+                                ResourceInfo resourceInfo) {
+        // converts the config data to j2ee resource
+        JavaEEResource j2eeResource = toExternalJndiJavaEEResource(jndiRes, resourceInfo);
         // un-installs the resource
         uninstallExternalJndiResource(j2eeResource, resourceInfo);
     }

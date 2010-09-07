@@ -89,6 +89,13 @@ public class ResourceAdapterConfigDeployer implements ResourceDeployer {
     /**
      * {@inheritDoc}
      */
+    public void undeployResource(Object resource, String applicationName, String moduleName) throws Exception{
+        undeployResource(resource);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void undeployResource(Object resource)
             throws Exception {
         ResourceAdapterConfig domainConfig =

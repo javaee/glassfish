@@ -63,6 +63,10 @@ public class ConnectorWorkSecurityMapDeployer implements ResourceDeployer {
         //no-op
     }
 
+    public void undeployResource(Object resource, String applicationName, String moduleName) throws Exception{
+        //no-op
+    }
+
     public void redeployResource(Object resource) throws Exception {
         //no-op
     }

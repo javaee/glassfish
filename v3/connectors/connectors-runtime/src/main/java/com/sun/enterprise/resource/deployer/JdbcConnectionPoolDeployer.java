@@ -174,10 +174,23 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
     /**
      * {@inheritDoc}
      */
+    public void undeployResource(Object resource, String applicationName, String moduleName) throws Exception{
+        _logger.fine(" JdbcConnectionPoolDeployer - unDeployResource : " +
+                "calling actualUndeploy of " + resource);
+        JdbcConnectionPool jdbcConnPool = (JdbcConnectionPool) resource;
+        PoolInfo poolInfo = new PoolInfo(jdbcConnPool.getName(), applicationName, moduleName);
+        actualUndeployResource(poolInfo);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void undeployResource(Object resource) throws Exception {
         _logger.fine(" JdbcConnectionPoolDeployer - unDeployResource : " +
                 "calling actualUndeploy of " + resource);
-        actualUndeployResource(resource);
+        JdbcConnectionPool jdbcConnPool = (JdbcConnectionPool) resource;
+        PoolInfo poolInfo = ConnectorsUtil.getPoolInfo(jdbcConnPool);
+        actualUndeployResource(poolInfo);
     }
 
     /**
@@ -209,11 +222,7 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
      * @throws UnsupportedOperationException Currently we are not supporting this method.
      */
 
-    public synchronized void actualUndeployResource(Object resource) throws Exception {
-        _logger.fine(" JdbcConnectionPoolDeployer - unDeployResource : " + resource);
-
-        JdbcConnectionPool jdbcConnPool = (JdbcConnectionPool) resource;
-        PoolInfo poolInfo = ConnectorsUtil.getPoolInfo(jdbcConnPool); 
+    private synchronized void actualUndeployResource(PoolInfo poolInfo) throws Exception {
         runtime.deleteConnectorConnectionPool(poolInfo);
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest("Pool Undeployed");
@@ -873,8 +882,14 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
 
         recreatePool(connConnPool);
 
-        //TODO ASR need to handle app-scoped-resources also
-        Collection<BindableResource> resourcesList = domain.getResources().getResourcesOfPool(connConnPool.getName());
+        Collection<BindableResource> resourcesList ;
+        if(!connConnPool.isApplicationScopedResource()){
+            resourcesList = domain.getResources().getResourcesOfPool(connConnPool.getName());
+        }else{
+            PoolInfo poolInfo = connConnPool.getPoolInfo();
+            Resources resources = ResourcesUtil.createInstance().getResources(poolInfo);
+            resourcesList = resources.getResourcesOfPool(connConnPool.getName());
+        }
         for (BindableResource bindableResource : resourcesList) {
 
             ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(bindableResource);

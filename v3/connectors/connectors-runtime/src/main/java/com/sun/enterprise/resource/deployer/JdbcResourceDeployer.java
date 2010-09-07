@@ -128,12 +128,23 @@ public class JdbcResourceDeployer implements ResourceDeployer {
     /**
      * {@inheritDoc}
      */
+    public void undeployResource(Object resource, String applicationName, String moduleName) throws Exception{
+        JdbcResource jdbcRes = (JdbcResource) resource;
+        ResourceInfo resourceInfo = new ResourceInfo(jdbcRes.getJndiName(), applicationName, moduleName);
+        deleteResource(jdbcRes, resourceInfo);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void undeployResource(Object resource)
             throws Exception {
-
         JdbcResource jdbcRes = (JdbcResource) resource;
         ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(jdbcRes);
+        deleteResource(jdbcRes, resourceInfo);
+    }
 
+    private void deleteResource(JdbcResource jdbcRes, ResourceInfo resourceInfo) throws Exception {
         runtime.deleteConnectorResource(resourceInfo);
         ConnectorRegistry.getInstance().removeResourceFactories(resourceInfo);
         //In-case the resource is explicitly created with a suffix (__nontx or __PM), no need to delete one

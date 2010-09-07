@@ -79,6 +79,16 @@ public interface ResourceDeployer {
      * @throws Exception thrown if fail
      */
     void undeployResource(Object resource) throws Exception;
+
+    /**
+     * Undeploy the resource from the server's runtime naming context
+     *
+     * @param resource a resource object (eg. JmsResource)
+     * @param applicationName application-name
+     * @param moduleName module-name
+     * @throws Exception thrown if fail
+     */
+    void undeployResource(Object resource, String applicationName, String moduleName) throws Exception;
     
     /**
      * Redeploy the resource into the server's runtime naming context

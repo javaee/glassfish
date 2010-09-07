@@ -115,6 +115,10 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
         return new DataSourceProperty(name, value);
     }
 
+    public void undeployResource(Object resource, String applicationName, String moduleName) throws Exception {
+        //TODO ASR
+    }
+
     public void undeployResource(Object resource) throws Exception {
 
         final DataSourceDefinitionDescriptor desc = (DataSourceDefinitionDescriptor) resource;

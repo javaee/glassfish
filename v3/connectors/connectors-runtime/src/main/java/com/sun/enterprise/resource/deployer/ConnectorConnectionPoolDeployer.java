@@ -149,6 +149,18 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
     /**
      * {@inheritDoc}
      */
+    public void undeployResource(Object resource, String applicationName, String moduleName) throws Exception{
+        _logger.fine("ConnectorConnectionPoolDeployer : undeployResource : ");
+        final com.sun.enterprise.config.serverbeans.ConnectorConnectionPool
+                domainCcp =
+                (com.sun.enterprise.config.serverbeans.ConnectorConnectionPool) resource;
+        PoolInfo poolInfo = new PoolInfo(domainCcp.getName(), applicationName, moduleName);
+        actualUndeployResource(domainCcp, poolInfo);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void undeployResource(Object resource)
             throws Exception {
         _logger.fine("ConnectorConnectionPoolDeployer : undeployResource : ");
@@ -157,6 +169,11 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
                 (com.sun.enterprise.config.serverbeans.ConnectorConnectionPool) resource;
         PoolInfo poolInfo = ConnectorsUtil.getPoolInfo(domainCcp);
 
+        actualUndeployResource(domainCcp, poolInfo);
+    }
+
+    private void actualUndeployResource(com.sun.enterprise.config.serverbeans.ConnectorConnectionPool domainCcp,
+                                        PoolInfo poolInfo) throws ConnectorRuntimeException {
         _logger.log(Level.FINE, "Calling backend to delete ConnectorConnectionPool", domainCcp);
         runtime.deleteConnectorConnectionPool(poolInfo);
         _logger.log(Level.FINE, "Deleted ConnectorConnectionPool in backend", domainCcp);
@@ -168,7 +185,6 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
                 getAppServerSwitchObject().getManagementObjectManager();
             mgr.unregisterJMSResource(domainCcp.getName());
         }*/
-
     }
 
     /**
