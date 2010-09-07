@@ -45,8 +45,7 @@
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="help_cs" bundle="org.glassfish.cluster.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.cluster.GeneralTitle}"
-        guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:clusterTreeNode');" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.cluster.GeneralTitle}">
 <!define name="content">
     <event>
     <!beforeCreate
