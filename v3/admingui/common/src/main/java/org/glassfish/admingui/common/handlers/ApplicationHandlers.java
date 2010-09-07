@@ -97,32 +97,34 @@ public class ApplicationHandlers {
         }
         List result = new ArrayList();
 
-        for(String oneAppName : appPropsMap.keySet()){
+	if (appPropsMap != null) {
+	    for(String oneAppName : appPropsMap.keySet()){
 
-            String engines = appPropsMap.get(oneAppName);
-            if (GuiUtil.isEmpty(engines)){
-                //this is life cycle, do not display in the applications table.
-                continue;
-            }
-            HashMap oneRow = new HashMap();
-            oneRow.put("name", oneAppName);
-            oneRow.put("selected", false);
-            oneRow.put("enableURL", DeployUtil.getTargetEnableInfo(oneAppName, true, true));
-            oneRow.put("sniffers", engines);
+		String engines = appPropsMap.get(oneAppName);
+		if (GuiUtil.isEmpty(engines)){
+		    //this is life cycle, do not display in the applications table.
+		    continue;
+		}
+		HashMap oneRow = new HashMap();
+		oneRow.put("name", oneAppName);
+		oneRow.put("selected", false);
+		oneRow.put("enableURL", DeployUtil.getTargetEnableInfo(oneAppName, true, true));
+		oneRow.put("sniffers", engines);
 
-            List sniffersList = GuiUtil.parseStringList(engines, ",");
-            oneRow.put("sniffersList", sniffersList);
-            for(int ix=0; ix< sniffersList.size(); ix++)
-                filters.add(sniffersList.get(ix));
-            if (filterValue != null){
-                if (! sniffersList.contains(filterValue))
-                    continue;
-            }
+		List sniffersList = GuiUtil.parseStringList(engines, ",");
+		oneRow.put("sniffersList", sniffersList);
+		for(int ix=0; ix< sniffersList.size(); ix++)
+		    filters.add(sniffersList.get(ix));
+		if (filterValue != null){
+		    if (! sniffersList.contains(filterValue))
+			continue;
+		}
 
-            getLaunchInfo(serverName, oneAppName, oneRow);
+		getLaunchInfo(serverName, oneAppName, oneRow);
 
-            result.add(oneRow);
-        }
+		result.add(oneRow);
+	    }
+	}
         handlerCtx.setOutputValue("result", result);
         handlerCtx.setOutputValue("filters", new ArrayList(filters));
     }
