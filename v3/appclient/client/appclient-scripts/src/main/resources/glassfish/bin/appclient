@@ -1,5 +1,4 @@
 #!/bin/sh
-# set -x
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
@@ -39,7 +38,6 @@
 # only if the new code is made subject to such option by the copyright
 # holder.
 #
-#
 
 # Create a java command to launch an app client, based on the user's input.
 # The client to run can be specified in several ways.
@@ -71,6 +69,7 @@
 # so using the fast feature that is built in to the java launcher.
 #
 
+# set -x
 
 # accMainArgs contains agent arguments that let the ACC know
 # how the java launcher chose which main class to start and ACC arguments

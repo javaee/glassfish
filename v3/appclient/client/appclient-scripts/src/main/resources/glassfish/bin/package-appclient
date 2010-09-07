@@ -1,5 +1,4 @@
 #!/bin/sh
-# set -x
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
@@ -40,6 +39,7 @@
 # holder.
 #
 
+# set -x
 AS_INSTALL=`dirname $0`/..
 AS_INSTALL_MOD=$AS_INSTALL/modules
 java  -classpath "$AS_INSTALL_MOD/gf-client.jar" org.glassfish.appclient.client.packageappclient.PackageAppClient "$@"
