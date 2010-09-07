@@ -134,8 +134,8 @@ public class ClusterTest extends AdminBaseDevTest {
     private void testGetHealthStopRestartInstance(String c, String i) {
         if (!runGMSTests) return;
 
-        final String stopped = "Stopped";
-        final String started = "Started";
+        final String stopped = "stopped";
+        final String started = "started";
         final int tries = 6;
         final int sleepSeconds = 10;
         boolean success = false;
@@ -175,7 +175,7 @@ public class ClusterTest extends AdminBaseDevTest {
 
         final int tries = 6;
         final int sleepSeconds = 10;
-        final String started = "Started";
+        final String started = "started";
         boolean success = false;
 
         asadmin("restart-domain");
@@ -192,7 +192,7 @@ public class ClusterTest extends AdminBaseDevTest {
     private void testGetHealthInstancesNotStarted(String c) {
         if (!runGMSTests) return;
         
-        final String state = "Not started";
+        final String state = "not started";
         String out = asadminWithOutput("get-health", c).outAndErr;
         boolean success = out.indexOf(state) > 0;
         report("get-health-instances-not-running", success);
@@ -205,7 +205,7 @@ public class ClusterTest extends AdminBaseDevTest {
     private boolean checkInstanceHealth(String cluster,
         String instanceName, String status) {
 
-        final String expected = String.format("Instance %s %s",
+        final String expected = String.format("%s %s",
             instanceName, status);
         String out = asadminWithOutput("get-health", cluster).outAndErr;
         return out.indexOf(expected) >= 0;
