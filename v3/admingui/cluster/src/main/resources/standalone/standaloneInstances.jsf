@@ -49,8 +49,7 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18ncs.standaloneInstances.PageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:standaloneInstances');"
->
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:standaloneTreeNode');">
 
 #include "/cluster/shared/instancesExtraButtons.inc"
 
