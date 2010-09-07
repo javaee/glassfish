@@ -311,7 +311,7 @@ public final class CompositeMetadata implements Storeable {
                 int len = dis.readInt();
                 if (len > 0) {
                     state = new byte[len];
-                    dis.read(state);
+                    readData(dis, state);
                 }
             }
 
@@ -319,7 +319,7 @@ public final class CompositeMetadata implements Storeable {
                 int len = dis.readInt();
                 if (len > 0) {
                     byte[] sd = new byte[len];
-                    dis.read(sd);
+                    readData(dis, sd);
                     stringExtraParam = new String(sd);
                 }
             }
@@ -330,13 +330,13 @@ public final class CompositeMetadata implements Storeable {
 
                     int opNameLen = dis.readInt();
                     byte[] opnameData = new byte[opNameLen];
-                    dis.read(opnameData);
+                    readData(dis, opnameData);
                     String opName = new String(opnameData);
 
                     int attrNameLen = dis.readInt();
                     if (attrNameLen > 0) {
                         byte[] sd = new byte[attrNameLen];
-                        dis.read(sd);
+                        readData(dis, sd);
                         String attrName = new String(sd);
 
                         SessionAttributeMetadata.Operation smdOpcode = SessionAttributeMetadata.Operation.valueOf(opName);
@@ -345,7 +345,7 @@ public final class CompositeMetadata implements Storeable {
                             case UPDATE:
                                 int dataLen = dis.readInt();
                                 byte[] attrData = new byte[dataLen];
-                                dis.read(attrData);
+                                readData(dis, attrData);
                                 attributesMap.put(attrName, new SessionAttributeMetadata(attrName, smdOpcode, attrData));
                                 System.out.println("CompositeMetadata: " + smdOpcode + " Attribute name " + attrName);
                                 break;
@@ -365,6 +365,21 @@ public final class CompositeMetadata implements Storeable {
             } catch (Exception ex) {
             }
         }
+    }
+
+    private void readData(InputStream is, byte[] data)
+        throws IOException {
+        int len = data.length;
+        int index = 0;
+        for (int remaining = len; remaining > 0;) {
+                int count = is.read(state, index, remaining);
+                if (count < 0) {
+                    throw new IOException("EOF while still (" + remaining + "/" + len + ") more bytes to read");
+                }
+
+                remaining -= count;
+                index += count;
+            }
     }
 
 
