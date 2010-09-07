@@ -94,12 +94,8 @@
     setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
     setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
 
-    setPageSessionAttribute(key="childType2", value="resource-ref");
-    setPageSessionAttribute(key="selfUrl2", value="#{sessionScope.REST_URL}/servers/server/server/#{pageSession.childType2}/#{pageSession.encodedName}");
-    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}", valueMap="#{pageSession.valueMap2}");
     setPageSessionAttribute(key="convertToFalseList2" value={"enabled"});
-    setPageSessionAttribute(key="has2Objects" value="#{true}" );
-
+    
     />
 </event>
 <sun:form id="form">

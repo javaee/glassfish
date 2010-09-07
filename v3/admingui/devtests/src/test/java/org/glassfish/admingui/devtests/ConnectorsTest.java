@@ -194,7 +194,17 @@ public class ConnectorsTest extends BaseSeleniumTestClass {
                 TRIGGER_EDIT_CONNECTOR_RESOURCE,
                 enableStatus);
 
-        manageTargets(instanceName, testConnector);
+        testManageTargets("treeForm:tree:resources:Connectors:connectorResources:connectorResources_link",
+                          "propertyForm:resourcesTable",
+                          "propertyForm:targetTable:topActionsGroup1:button2",
+                          "propertyForm:targetTable:topActionsGroup1:button3",
+                          "propertyForm:propertySheet:propertSectionTextField:statusProp2:enabledStr",
+                          "propertyForm:resEditTabs:general",
+                          "propertyForm:resEditTabs:targetTab",
+                          TRIGGER_CONNECTOR_RESOURCE,
+                          TRIGGER_EDIT_CONNECTOR_RESOURCE,
+                          testConnector,
+                          instanceName);
 
         // Delete connector resource
         deleteRow("propertyForm:resourcesTable:topActionsGroup1:button1", "propertyForm:resourcesTable", testConnector);
@@ -255,49 +265,5 @@ public class ConnectorsTest extends BaseSeleniumTestClass {
         // Delete connector connection pool
         clickAndWait("treeForm:tree:resources:Connectors:connectorConnectionPools:connectorConnectionPools_link", TRIGGER_CONNECTOR_CONNECTION_POOLS);
         deleteRow("propertyForm:poolTable:topActionsGroup1:button1", "propertyForm:poolTable", testPool);        
-    }
-
-    private void manageTargets(String instanceName, String jndiName) {
-        final String TRIGGER_EDIT_RESOURCE_TARGETS = "Resource Targets";
-        final String enableStatus = "Enabled on All Targets";
-        final String disableStatus = "Disabled on All Targets";
-        final String TRIGGER_MANAGE_TARGETS = "Manage Targets";
-        final String TRIGGGER_VALUES_SAVED = "New values successfully saved.";
-
-        clickAndWait("treeForm:tree:resources:Connectors:connectorResources:connectorResources_link", TRIGGER_CONNECTOR_RESOURCE);
-        clickAndWait(getLinkIdByLinkText("propertyForm:resourcesTable", jndiName), TRIGGER_EDIT_CONNECTOR_RESOURCE);
-        //Click on the target tab and verify whether the target is in the target table or not.
-        clickAndWait("propertyForm:resEditTabs:targetTab", TRIGGER_EDIT_RESOURCE_TARGETS);
-        assertTrue(selenium.isTextPresent(instanceName));
-
-        //Enable all targets
-        testEnableOrDisableTarget("propertyForm:targetTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image",
-                "propertyForm:targetTable:topActionsGroup1:button2",
-                "propertyForm:resEditTabs:general",
-                "propertyForm:resEditTabs:targetTab",
-                "propertyForm:propertySheet:propertSectionTextField:statusProp2:enabledStr",
-                TRIGGER_EDIT_CONNECTOR_RESOURCE,
-                TRIGGER_EDIT_RESOURCE_TARGETS,
-                enableStatus);
-
-        //Disable all targets
-        testEnableOrDisableTarget("propertyForm:targetTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image",
-                "propertyForm:targetTable:topActionsGroup1:button3",
-                "propertyForm:resEditTabs:general",
-                "propertyForm:resEditTabs:targetTab",
-                "propertyForm:propertySheet:propertSectionTextField:statusProp2:enabledStr",
-                TRIGGER_EDIT_CONNECTOR_RESOURCE,
-                TRIGGER_EDIT_RESOURCE_TARGETS,
-                disableStatus);
-
-        //Test the manage targets
-        clickAndWait("propertyForm:targetTable:topActionsGroup1:manageTargetButton", TRIGGER_MANAGE_TARGETS);
-        //Remove the created instance from the selected targets.
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_selected", "label=" + instanceName);
-        selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
-        clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGGER_VALUES_SAVED);
-        assertFalse(selenium.isTextPresent(instanceName));
-        //Go Back to Resources Page
-        clickAndWait("treeForm:tree:resources:Connectors:connectorResources:connectorResources_link", TRIGGER_CONNECTOR_RESOURCE);
     }   
 }

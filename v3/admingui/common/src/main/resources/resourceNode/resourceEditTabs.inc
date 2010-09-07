@@ -49,10 +49,21 @@
         if(#{pageSession.showTargetSection}) {
             setPageSessionAttribute(key="useString" value="#{true}");
             setPageSessionAttribute(key="useCheckBox" value="#{false}");
+            setPageSessionAttribute(key="has2Objects" value="#{false}");
         }
         if(!#{pageSession.showTargetSection}) {
             setPageSessionAttribute(key="useString" value="#{false}");
-            setPageSessionAttribute(key="useCheckBox" value="#{true}");
+            setPageSessionAttribute(key="useCheckBox" value="#{true}");            
+            if ("#{pageSession.childType2} = connector-resource") {
+                setPageSessionAttribute(key="resourceRefUrl", value="#{sessionScope.REST_URL}/servers/server/server/resource-ref/#{pageSession.encodedName}");
+                gf.getEntityAttrs(endpoint="#{pageSession.resourceRefUrl}",  valueMap="#{pageSession.resourceRef}");
+                setPageSessionAttribute(key="has2Objects" value="#{true}");
+            }
+            if ("!(#{pageSession.childType2} = connector-resource)") {
+                setPageSessionAttribute(key="childType2", value="resource-ref");
+                setPageSessionAttribute(key="selfUrl2", value="#{sessionScope.REST_URL}/servers/server/server/resource-ref/#{pageSession.encodedName}");
+                gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}", valueMap="#{pageSession.valueMap2}");
+            }            
         }
     />
     <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" >

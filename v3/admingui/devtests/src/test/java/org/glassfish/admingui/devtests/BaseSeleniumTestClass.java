@@ -327,7 +327,7 @@ public class BaseSeleniumTestClass {
                 // Assume one row group for now and hope it doesn't bite us
                 String text = selenium.getText(tableId + ":rowGroup1:" + row + ":" + valueColId);
                 if (text.equals(value)) {
-                    selenium.check(tableId + ":rowGroup1:" + row + ":" + selectColId + ":select");
+                    selenium.click(tableId + ":rowGroup1:" + row + ":" + selectColId + ":select");
                     return;
                 }
                 row++;
@@ -440,6 +440,83 @@ public class BaseSeleniumTestClass {
         Assert.assertEquals(state, selenium.getText(statusId));
 
         clickAndWait(targetTabId, targetTriggerText);
+    }
+
+    protected void testManageTargets(String resourcesLinkId,
+            String resourcesTableId,
+            String enableButtonId,
+            String disableButtonId,
+            String enableOrDisableTextFieldId,
+            String resGeneralTabId,
+            String resTargetTabId,
+            String resourcesTriggerText,
+            String resEditTriggerText,
+            String jndiName,
+            String instanceName) {
+        final String TRIGGER_EDIT_RESOURCE_TARGETS = "Resource Targets";
+        final String enableStatus = "Enabled on All Targets";
+        final String disableStatus = "Disabled on All Targets";
+        final String TRIGGER_MANAGE_TARGETS = "Manage Targets";
+        final String TRIGGGER_VALUES_SAVED = "New values successfully saved.";
+        final String DEFAULT_SERVER = "server";
+
+        clickAndWait(resourcesLinkId, resourcesTriggerText);
+        clickAndWait(getLinkIdByLinkText(resourcesTableId, jndiName), resEditTriggerText);
+        //Click on the target tab and verify whether the target is in the target table or not.
+        clickAndWait(resTargetTabId, TRIGGER_EDIT_RESOURCE_TARGETS);
+        Assert.assertTrue(selenium.isTextPresent(instanceName));
+
+        //Disable all targets
+        testEnableOrDisableTarget("propertyForm:targetTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image",
+                disableButtonId,
+                resGeneralTabId,
+                resTargetTabId,
+                enableOrDisableTextFieldId,
+                resEditTriggerText,
+                TRIGGER_EDIT_RESOURCE_TARGETS,
+                disableStatus);
+
+        //Enable all targets
+        testEnableOrDisableTarget("propertyForm:targetTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image",
+                enableButtonId,
+                resGeneralTabId,
+                resTargetTabId,
+                enableOrDisableTextFieldId,
+                resEditTriggerText,
+                TRIGGER_EDIT_RESOURCE_TARGETS,
+                enableStatus);
+
+        //Test the manage targets : Remove the server from targets.
+        clickAndWait("propertyForm:targetTable:topActionsGroup1:manageTargetButton", TRIGGER_MANAGE_TARGETS);
+        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_selected", "label=" + DEFAULT_SERVER);
+        selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
+        clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGGER_VALUES_SAVED);
+
+        //Test the issue : 13280
+        //If server instance is not one of the target, edit resource was failing. Fixed that and added a test
+        clickAndWait(resourcesLinkId, resourcesTriggerText);
+        clickAndWait(getLinkIdByLinkText(resourcesTableId, jndiName), resEditTriggerText);
+        Assert.assertTrue(selenium.isTextPresent(jndiName));
+        clickAndWait(resTargetTabId, TRIGGER_EDIT_RESOURCE_TARGETS);
+
+        //Test the manage targets : Remove the instance and add the server.
+        clickAndWait("propertyForm:targetTable:topActionsGroup1:manageTargetButton", TRIGGER_MANAGE_TARGETS);
+        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_selected", "label=" + instanceName);
+        waitForButtonEnabled("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
+        selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
+        waitForButtonDisabled("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
+        selenium.removeAllSelections("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available");
+
+        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + DEFAULT_SERVER);
+        waitForButtonEnabled("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
+        selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
+        waitForButtonDisabled("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
+        clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGGER_VALUES_SAVED);
+        Assert.assertFalse(selenium.isTextPresent(instanceName));
+        Assert.assertTrue(selenium.isTextPresent(DEFAULT_SERVER));
+
+        //Go Back to Resources Page
+        clickAndWait(resourcesLinkId, resourcesTriggerText);
     }
 
     private static String getParameter(String paramName, String defaultValue) {

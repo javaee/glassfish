@@ -141,51 +141,22 @@ public class JndiTest extends BaseSeleniumTestClass {
                 TRIGGER_CUSTOM_RESOURCES,
                 TRIGGER_EDIT_CUSTOM_RESOURCE,
                 ENABLE_STATUS);
-        manageCustomResourceTargets(instanceName, resourceName);
+        testManageTargets("treeForm:tree:resources:jndi:customResources:customResources_link",
+                          "propertyForm:resourcesTable",
+                          "propertyForm:targetTable:topActionsGroup1:button2",
+                          "propertyForm:targetTable:topActionsGroup1:button3",
+                          "form1:propertySheet:propertSectionTextField:statusProp2:enabledStr",
+                          "propertyForm:resEditTabs:general",
+                          "form1:resEditTabs:targetTab",
+                          TRIGGER_CUSTOM_RESOURCES,
+                          TRIGGER_EDIT_CUSTOM_RESOURCE,
+                          resourceName,
+                          instanceName);
         deleteRow("propertyForm:resourcesTable:topActionsGroup1:button1", "propertyForm:resourcesTable", resourceName);
         //Delete the instance
         clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", instanceTest.TRIGGER_INSTANCES_PAGE);
         deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
         assertFalse(selenium.isTextPresent(instanceName));
-    }
-
-    private void manageCustomResourceTargets(String instanceName, String jndiName) {
-        
-        clickAndWait("treeForm:tree:resources:jndi:customResources:customResources_link", TRIGGER_CUSTOM_RESOURCES);
-        clickAndWait(getLinkIdByLinkText("propertyForm:resourcesTable", jndiName), TRIGGER_EDIT_CUSTOM_RESOURCE);
-        //Click on the target tab and verify whether the target is in the target table or not.
-        clickAndWait("form1:resEditTabs:targetTab", TRIGGER_EDIT_RESOURCE_TARGETS);
-        assertTrue(selenium.isTextPresent(instanceName));
-
-        //Enable all targets
-        testEnableOrDisableTarget("propertyForm:targetTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image",
-                "propertyForm:targetTable:topActionsGroup1:button2",
-                "propertyForm:resEditTabs:general",
-                "form1:resEditTabs:targetTab",
-                "form1:propertySheet:propertSectionTextField:statusProp2:enabledStr",
-                TRIGGER_EDIT_CUSTOM_RESOURCE,
-                TRIGGER_EDIT_RESOURCE_TARGETS,
-                ENABLE_STATUS);
-
-        //Disable all targets
-        testEnableOrDisableTarget("propertyForm:targetTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image",
-                "propertyForm:targetTable:topActionsGroup1:button3",
-                "propertyForm:resEditTabs:general",
-                "form1:resEditTabs:targetTab",
-                "form1:propertySheet:propertSectionTextField:statusProp2:enabledStr",
-                TRIGGER_EDIT_CUSTOM_RESOURCE,
-                TRIGGER_EDIT_RESOURCE_TARGETS,
-                DISABLE_STATUS);
-
-        //Test the manage targets
-        clickAndWait("propertyForm:targetTable:topActionsGroup1:manageTargetButton", TRIGGER_MANAGE_TARGETS);
-        //Remove the created instance from the selected targets.
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_selected", "label=" + instanceName);
-        selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
-        clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGGER_VALUES_SAVED);
-        assertFalse(selenium.isTextPresent(instanceName));
-        //Go Back to Resources Page
-        clickAndWait("treeForm:tree:resources:jndi:customResources:customResources_link", TRIGGER_CUSTOM_RESOURCES);
     }
     
     @Test
@@ -294,51 +265,22 @@ public class JndiTest extends BaseSeleniumTestClass {
                 TRIGGER_EDIT_EXTERNAL_RESOURCE,
                 ENABLE_STATUS);
 
-        manageExternalResourceTargets(instanceName, resourceName);
+        testManageTargets("treeForm:tree:resources:jndi:externalResources:externalResources_link",
+                          "propertyForm:resourcesTable",
+                          "propertyForm:targetTable:topActionsGroup1:button2",
+                          "propertyForm:targetTable:topActionsGroup1:button3",
+                          "form:propertySheet:propertSectionTextField:statusProp2:enabledStr",
+                          "propertyForm:resEditTabs:general",
+                          "form:resEditTabs:targetTab",
+                          TRIGGER_EXTERNAL_RESOURCES,
+                          TRIGGER_EDIT_EXTERNAL_RESOURCE,
+                          resourceName,
+                          instanceName);
         //Delete the External resource
         deleteRow("propertyForm:resourcesTable:topActionsGroup1:button1", "propertyForm:resourcesTable", resourceName);
         //Delete the instance
         clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", instanceTest.TRIGGER_INSTANCES_PAGE);
         deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
         assertFalse(selenium.isTextPresent(instanceName));
-    }
-
-    private void manageExternalResourceTargets(String instanceName, String jndiName) {
-
-        clickAndWait("treeForm:tree:resources:jndi:externalResources:externalResources_link", TRIGGER_EXTERNAL_RESOURCES);
-        clickAndWait(getLinkIdByLinkText("propertyForm:resourcesTable", jndiName), TRIGGER_EDIT_EXTERNAL_RESOURCE);
-        //Click on the target tab and verify whether the target is in the target table or not.
-        clickAndWait("form:resEditTabs:targetTab", TRIGGER_EDIT_RESOURCE_TARGETS);
-        assertTrue(selenium.isTextPresent(instanceName));
-
-        //Enable all targets
-        testEnableOrDisableTarget("propertyForm:targetTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image",
-                "propertyForm:targetTable:topActionsGroup1:button2",
-                "propertyForm:resEditTabs:general",
-                "form:resEditTabs:targetTab",
-                "form:propertySheet:propertSectionTextField:statusProp2:enabledStr",
-                TRIGGER_EDIT_EXTERNAL_RESOURCE,
-                TRIGGER_EDIT_RESOURCE_TARGETS,
-                ENABLE_STATUS);
-
-        //Disable all targets
-        testEnableOrDisableTarget("propertyForm:targetTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image",
-                "propertyForm:targetTable:topActionsGroup1:button3",
-                "propertyForm:resEditTabs:general",
-                "form:resEditTabs:targetTab",
-                "form:propertySheet:propertSectionTextField:statusProp2:enabledStr",
-                TRIGGER_EDIT_EXTERNAL_RESOURCE,
-                TRIGGER_EDIT_RESOURCE_TARGETS,
-                DISABLE_STATUS);
-
-        //Test the manage targets
-        clickAndWait("propertyForm:targetTable:topActionsGroup1:manageTargetButton", TRIGGER_MANAGE_TARGETS);
-        //Remove the created instance from the selected targets.
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_selected", "label=" + instanceName);
-        selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
-        clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGGER_VALUES_SAVED);
-        assertFalse(selenium.isTextPresent(instanceName));
-        //Go Back to Resources Page
-        clickAndWait("treeForm:tree:resources:jndi:externalResources:externalResources_link", TRIGGER_EXTERNAL_RESOURCES);
     }
 }

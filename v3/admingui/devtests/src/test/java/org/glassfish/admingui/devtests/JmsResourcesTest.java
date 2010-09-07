@@ -125,50 +125,22 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         selenium.click("propertyForm:resourcesTable:topActionsGroup1:enableButton");
         waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:enableButton");
 
-        manageJmsConnectionTargets(instanceName, poolName);
+        testManageTargets("treeForm:tree:resources:jmsResources:jmsConnectionFactories:jmsConnectionFactories_link",
+                          "propertyForm:resourcesTable",
+                          "propertyForm:targetTable:topActionsGroup1:button2",
+                          "propertyForm:targetTable:topActionsGroup1:button3",
+                          "propertyForm:propertyContentPage:propertySheet:generalPropertySheet:statusProp2:enabledStr",
+                          "propertyForm:resEditTabs:general",
+                          "propertyForm:resEditTabs:targetTab",
+                          TRIGGER_JMS_CONNECTION_FACTORIES,
+                          TRIGGER_EDIT_JMS_CONN_FACT,
+                          poolName,
+                          instanceName);
         deleteRow("propertyForm:resourcesTable:topActionsGroup1:deleteConnButton", "propertyForm:resourcesTable", poolName, "colSelect", "colPoolName");
         //Delete the instance
         clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", instanceTest.TRIGGER_INSTANCES_PAGE);
         deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
         assertFalse(selenium.isTextPresent(instanceName));
-    }
-
-    private void manageJmsConnectionTargets(String instanceName, String jndiName) {
-
-        clickAndWait("treeForm:tree:resources:jmsResources:jmsConnectionFactories:jmsConnectionFactories_link", TRIGGER_JMS_CONNECTION_FACTORIES);
-        clickAndWait(getLinkIdByLinkText("propertyForm:resourcesTable", jndiName), TRIGGER_EDIT_JMS_CONN_FACT);
-        //Click on the target tab and verify whether the target is in the target table or not.
-        clickAndWait("propertyForm:resEditTabs:targetTab", TRIGGER_EDIT_RESOURCE_TARGETS);
-        assertTrue(selenium.isTextPresent(instanceName));
-
-        //Enable all targets
-        testEnableOrDisableTarget("propertyForm:targetTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image",
-                "propertyForm:targetTable:topActionsGroup1:button2",
-                "propertyForm:resEditTabs:general",
-                "propertyForm:resEditTabs:targetTab",
-                "propertyForm:propertyContentPage:propertySheet:generalPropertySheet:statusProp2:enabledStr",
-                TRIGGER_EDIT_JMS_CONN_FACT,
-                TRIGGER_EDIT_RESOURCE_TARGETS,
-                ENABLE_STATUS);
-
-        //Disable all targets
-        testEnableOrDisableTarget("propertyForm:targetTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image",
-                "propertyForm:targetTable:topActionsGroup1:button3",
-                "propertyForm:resEditTabs:general",
-                "propertyForm:resEditTabs:targetTab",
-                "propertyForm:propertyContentPage:propertySheet:generalPropertySheet:statusProp2:enabledStr",
-                TRIGGER_EDIT_JMS_CONN_FACT,
-                TRIGGER_EDIT_RESOURCE_TARGETS,
-                DISABLE_STATUS);
-        //Test the manage targets
-        clickAndWait("propertyForm:targetTable:topActionsGroup1:manageTargetButton", TRIGGER_MANAGE_TARGETS);
-        //Remove the created instance from the selected targets.
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_selected", "label=" + instanceName);
-        selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
-        clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGGER_VALUES_SAVED);
-        assertFalse(selenium.isTextPresent(instanceName));
-        //Go Back to Resources Page
-        clickAndWait("treeForm:tree:resources:jmsResources:jmsConnectionFactories:jmsConnectionFactories_link", TRIGGER_JMS_CONNECTION_FACTORIES);
     }
 
     @Test
@@ -234,50 +206,22 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         selenium.click("propertyForm:resourcesTable:topActionsGroup1:enableButton");
         waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:enableButton");
 
-        manageJmsDestinationTargets(instanceName, resourceName);
+        testManageTargets("treeForm:tree:resources:jmsResources:jmsDestinationResources:jmsDestinationResources_link",
+                          "propertyForm:resourcesTable",
+                          "propertyForm:targetTable:topActionsGroup1:button2",
+                          "propertyForm:targetTable:topActionsGroup1:button3",
+                          "propertyForm:propertySheet:propertSectionTextField:statusProp2:enabledStr",
+                          "propertyForm:resEditTabs:general",
+                          "propertyForm:resEditTabs:targetTab",
+                          TRIGGER_JMS_DESTINATION_RESOURCES,
+                          TRIGGER_EDIT_JMS_DEST_RES,
+                          resourceName,
+                          instanceName);
         deleteRow("propertyForm:resourcesTable:topActionsGroup1:deleteDestButton", "propertyForm:resourcesTable", resourceName, "colSelect", "colName");
         //Delete the instance
         clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", instanceTest.TRIGGER_INSTANCES_PAGE);
         deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
         assertFalse(selenium.isTextPresent(instanceName));
-    }
-
-    private void manageJmsDestinationTargets(String instanceName, String jndiName) {
-
-        clickAndWait("treeForm:tree:resources:jmsResources:jmsDestinationResources:jmsDestinationResources_link", TRIGGER_JMS_DESTINATION_RESOURCES);
-        clickAndWait(getLinkIdByLinkText("propertyForm:resourcesTable", jndiName), TRIGGER_EDIT_JMS_DEST_RES);
-        //Click on the target tab and verify whether the target is in the target table or not.
-        clickAndWait("propertyForm:resEditTabs:targetTab", TRIGGER_EDIT_RESOURCE_TARGETS);
-        assertTrue(selenium.isTextPresent(instanceName));
-
-        //Enable all targets
-        testEnableOrDisableTarget("propertyForm:targetTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image",
-                "propertyForm:targetTable:topActionsGroup1:button2",
-                "propertyForm:resEditTabs:general",
-                "propertyForm:resEditTabs:targetTab",
-                "propertyForm:propertySheet:propertSectionTextField:statusProp2:enabledStr",
-                TRIGGER_EDIT_JMS_DEST_RES,
-                TRIGGER_EDIT_RESOURCE_TARGETS,
-                ENABLE_STATUS);
-
-        //Disable all targets
-        testEnableOrDisableTarget("propertyForm:targetTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image",
-                "propertyForm:targetTable:topActionsGroup1:button3",
-                "propertyForm:resEditTabs:general",
-                "propertyForm:resEditTabs:targetTab",
-                "propertyForm:propertySheet:propertSectionTextField:statusProp2:enabledStr",
-                TRIGGER_EDIT_JMS_DEST_RES,
-                TRIGGER_EDIT_RESOURCE_TARGETS,
-                DISABLE_STATUS);
-        //Test the manage targets
-        clickAndWait("propertyForm:targetTable:topActionsGroup1:manageTargetButton", TRIGGER_MANAGE_TARGETS);
-        //Remove the created instance from the selected targets.
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_selected", "label=" + instanceName);
-        selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
-        clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGGER_VALUES_SAVED);
-        assertFalse(selenium.isTextPresent(instanceName));
-        //Go Back to Resources Page
-        clickAndWait("treeForm:tree:resources:jmsResources:jmsDestinationResources:jmsDestinationResources_link", TRIGGER_JMS_DESTINATION_RESOURCES);
     }
 
 /*

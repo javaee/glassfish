@@ -176,53 +176,22 @@ public class JdbcTest extends BaseSeleniumTestClass {
                 TRIGGER_JDBC_RESOURCES,
                 TRIGGER_EDIT_JDBC_RESOURCE,
                 enableStatus);
-        manageTargets(instanceName, jndiName);
+        testManageTargets("treeForm:tree:resources:JDBC:jdbcResources:jdbcResources_link",
+                          "propertyForm:resourcesTable",
+                          "propertyForm:targetTable:topActionsGroup1:button2",
+                          "propertyForm:targetTable:topActionsGroup1:button3",
+                          "propertyForm:propertySheet:propertSectionTextField:statusProp2:enabledStr",
+                          "propertyForm:resEditTabs:general",
+                          "propertyForm:resEditTabs:targetTab",
+                          TRIGGER_JDBC_RESOURCES,
+                          TRIGGER_EDIT_JDBC_RESOURCE,
+                          jndiName,
+                          instanceName);
+                          
         deleteRow("propertyForm:resourcesTable:topActionsGroup1:button1", "propertyForm:resourcesTable", jndiName);
         //Delete the instance
         clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", instanceTest.TRIGGER_INSTANCES_PAGE);
         deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
         assertFalse(selenium.isTextPresent(instanceName));
-    }
-
-    public void manageTargets(String instanceName, String jndiName) {
-        final String TRIGGER_EDIT_RESOURCE_TARGETS = "Resource Targets";
-        final String enableStatus = "Enabled on All Targets";
-        final String disableStatus = "Disabled on All Targets";
-        final String TRIGGER_MANAGE_TARGETS = "Manage Targets";
-        final String TRIGGGER_VALUES_SAVED = "New values successfully saved.";
-        
-        clickAndWait("treeForm:tree:resources:JDBC:jdbcResources:jdbcResources_link", TRIGGER_JDBC_RESOURCES);
-        clickAndWait(getLinkIdByLinkText("propertyForm:resourcesTable", jndiName), TRIGGER_EDIT_JDBC_RESOURCE);
-        //Click on the target tab and verify whether the target is in the target table or not.
-	clickAndWait("propertyForm:resEditTabs:targetTab", TRIGGER_EDIT_RESOURCE_TARGETS);
-        assertTrue(selenium.isTextPresent(instanceName));
-
-        //Enable all targets
-        testEnableOrDisableTarget("propertyForm:targetTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image",
-                              "propertyForm:targetTable:topActionsGroup1:button2",
-                              "propertyForm:resEditTabs:general",
-                              "propertyForm:resEditTabs:targetTab",                              
-                              "propertyForm:propertySheet:propertSectionTextField:statusProp2:enabledStr",
-                              TRIGGER_EDIT_JDBC_RESOURCE,
-                              TRIGGER_EDIT_RESOURCE_TARGETS,
-                              enableStatus);
-
-        //Disable all targets
-        testEnableOrDisableTarget("propertyForm:targetTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image",
-                              "propertyForm:targetTable:topActionsGroup1:button3",
-                              "propertyForm:resEditTabs:general",
-                              "propertyForm:resEditTabs:targetTab",                              
-                              "propertyForm:propertySheet:propertSectionTextField:statusProp2:enabledStr",
-                              TRIGGER_EDIT_JDBC_RESOURCE,
-                              TRIGGER_EDIT_RESOURCE_TARGETS,
-                              disableStatus);
-
-        //Test the manage targets
-        clickAndWait("propertyForm:targetTable:topActionsGroup1:manageTargetButton", TRIGGER_MANAGE_TARGETS);
-	selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_selected", "label="+instanceName);
-	selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
-	clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGGER_VALUES_SAVED);
-        //Go Back to Resources Page
-        clickAndWait("treeForm:tree:resources:JDBC:jdbcResources:jdbcResources_link", TRIGGER_JDBC_RESOURCES);
     }
 }
