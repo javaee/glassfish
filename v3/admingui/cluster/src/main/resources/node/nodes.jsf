@@ -49,8 +49,7 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18ncs.nodes.PageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:nodes');"
->
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:nodeTreeNode');">
 
 <!define name="listTableDeleteButton">
     <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"

@@ -40,14 +40,21 @@
 
 -->
 
-<sun:treeNode
-    id="nodeTreeNode"
-    text="$resource{i18ncs.tree.nodes}"
-    url="/cluster/node/nodes.jsf"
-    imageURL="/resource/cluster/images/nodes.gif"
-    >
-    <!beforeCreate
-        setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
-    />
-</sun:treeNode>
-
+<dynamicTreeNode id="nodeTreeNode"
+	treeAdaptorClass="org.glassfish.admingui.common.tree.ListTreeAdaptor"
+	children="#{requestScope.children}"
+	childImageURL="/resource/cluster/images/nodes.gif"
+	childExpanded="false"
+	childURL="#{request.contextPath}/cluster/node/nodeEdit.jsf?nodeName=#{$this{valueBinding}.text}"
+	childNameKey="name"
+	text="$resource{i18ncs.tree.nodes}"
+	url="/cluster/node/nodes.jsf">
+    <ui:event type="beforeCreate">
+	setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings");
+	gf.restRequest(endpoint="#{sessionScope.REST_URL}/nodes/node.json" method="get" result="#{requestScope.resp}"); 
+	setAttribute(key="children" value="#{requestScope.resp.data.extraProperties.childResources}");
+    </ui:event>
+    <!facet image>
+	<sun:iconHyperlink id="treeIcon" icon="TREE_FOLDER" url="/cluster/standalone/standaloneInstances.jsf" alt="$resource{i18ncs.tree.nodes}" border="0" immediate="true" />
+    </facet>
+</dynamicTreeNode>
