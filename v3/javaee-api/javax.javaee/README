@@ -47,8 +47,8 @@ To execute the profile, use the maven syntax:  "mvn -P api", "mvn -P web-api" or
 Note that the jar assembled includes the impl classes.  You will need to execute maven from the directory, compact.  Please read compact/README.
 
 There are two pom files in this directory that is used to pushed the artifact to maven repository:
-(1) javaee-api.pom
-(2) javaee-web-api.pom
+(1) javaee-api.pom.xml
+(2) javaee-web-api.pom.xml
 
 The pom files contain the following information:
 * modelVersion
