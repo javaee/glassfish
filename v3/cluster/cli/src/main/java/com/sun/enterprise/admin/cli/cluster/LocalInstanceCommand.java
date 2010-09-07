@@ -260,12 +260,24 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
                     whackee));
         }
 
-        FileUtils.whack(whackee);
+        // Rename the instance directory to a temporary name to ensure that
+        // the directory tree can be deleted on Windows.
+        // The FileUtils.renameFile method has a retry built in.
+        try {
+            File tmpwhackee = File.createTempFile("oldinst", null, whackee.getParentFile());
+            tmpwhackee.delete();
+            FileUtils.renameFile(whackee, tmpwhackee);
+            FileUtils.whack(tmpwhackee);
 
+        }
+        catch (IOException ioe) {
+            throw new CommandException(Strings.get("DeleteInstance.badWhack",
+                    whackee));
+        }
         if (whackee.isDirectory())
             throw new CommandException(Strings.get("DeleteInstance.badWhack",
                     whackee));
-    }
+   }
 
     /**
      * Gets the GlassFish installation root (using property com.sun.aas.installRoot),
