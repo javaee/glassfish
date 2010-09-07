@@ -41,20 +41,19 @@
 -->
 
 <dynamicTreeNode id="virtualServers"
-    treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-    objectName="amx:pp=/domain/configs/config[${configName}],type=http-service"
-    amxChildType="virtual-server"
-    attributeName="name"
-    childImageURL="/resource/web/images/http.gif"
-    childExpanded="$boolean{false}"
-    childURL="/web/configuration/virtualServerEdit.jsf?name=#{$this{valueBinding}.text}&configName=${configName}"
-    text="$resource{i18n_web.tree.virtualServers}"
-    url="/web/configuration/virtualServers.jsf?configName=${configName}"
-    >
-    <!facet image>
-        <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/configuration/virtualServers.jsf?configName=${configName}" border="0" immediate="true" />
-    </facet>
-    <!beforeCreate
+	treeAdaptorClass="org.glassfish.admingui.common.tree.ListTreeAdaptor"
+	children="#{requestScope.children}"
+	childImageURL="/resource/web/images/http.gif"
+	childExpanded="false"
+	childURL="/web/configuration/virtualServerEdit.jsf?name=#{$this{valueBinding}.text}&configName=${configName}"
+	text="$resource{i18n_web.tree.virtualServers}"
+	url="/web/configuration/virtualServers.jsf?configName=${configName}">
         setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
-    />
+    <ui:event type="beforeCreate">
+	gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/${configName}/http-service/virtual-server.json" method="get" result="#{requestScope.resp}");
+	setAttribute(key="children" value="#{requestScope.resp.data.extraProperties.childResources}");
+    </ui:event>
+    <!facet image>
+        <sun:iconHyperlink id="treeIcon" icon="TREE_FOLDER" url="/web/configuration/virtualServers.jsf?configName=${configName}" border="0" immediate="true" />
+    </facet>
 </dynamicTreeNode>

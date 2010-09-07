@@ -40,21 +40,20 @@
 
 -->
 
-    <dynamicTreeNode id="resourceAdapterConfigs"
-        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="amx:pp=/domain,type=resources"
-        amxChildType="resource-adapter-config"
-        attributeName="name"
-        childImageURL="/resource/jca/images/connector.png"
-        childExpanded="$boolean{false}"
-        childURL="/jca/resourceAdapterConfigEdit.jsf?name=#{$this{valueBinding}.attributes.encodedText}"
-        text="$resource{i18njca.tree.resourceAdapterConfigs}"
-        url="/jca/resourceAdapterConfigs.jsf"
-        >
-        <!facet image>
-            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jca/resourceAdapterConfigs.jsf"  border="$int{0}" immediate="$boolean{true}" />
-        </facet>
-        <!beforeCreate
-            setResourceBundle(key="i18njca" bundle="org.glassfish.jca.admingui.Strings");
-        />
-    </dynamicTreeNode>
+<dynamicTreeNode id="resourceAdapterConfigs"
+	treeAdaptorClass="org.glassfish.admingui.common.tree.ListTreeAdaptor"
+	children="#{requestScope.children}"
+	childImageURL="/resource/jca/images/connector.png"
+	childExpanded="false"
+	childURL="/jca/resourceAdapterConfigEdit.jsf?name=#{$this{valueBinding}.attributes.encodedText}"
+	text="$resource{i18njca.tree.resourceAdapterConfigs}"
+	url="/jca/resourceAdapterConfigs.jsf">
+    <ui:event type="beforeCreate">
+	setResourceBundle(key="i18njca" bundle="org.glassfish.jca.admingui.Strings");
+	gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/resource-adapter-config.json" method="get" result="#{requestScope.resp}");
+	setAttribute(key="children" value="#{requestScope.resp.data.extraProperties.childResources}");
+    </ui:event>
+    <!facet image>
+	<sun:iconHyperlink id="treeIcon" icon="TREE_FOLDER" url="/jca/resourceAdapterConfigs.jsf"  border="0" immediate="true" />
+    </facet>
+</dynamicTreeNode>

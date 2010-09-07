@@ -45,35 +45,50 @@
 <!--  ===================================== Applications ======================  -->
 <dynamicTreeNode
 	id="applications"
-	treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-	objectName="amx:pp=/domain,type=applications"
+	treeAdaptorClass="org.glassfish.admingui.common.tree.ListTreeAdaptor"
+	children="#{requestScope.children}"
 	text="$resource{i18n.tree.applications}"
 	url="/common/applications/applications.jsf"
 	expanded="false"
-	attributeName="name"
 	childImageURL="/resource/images/webModule.gif"
 	childExpanded="false"
 	childURL="/common/applications/applicationEdit.jsf?appName=#{$this{valueBinding}.text}">
+    <ui:event type="beforeCreate">
+	gf.restRequest(endpoint="#{sessionScope.REST_URL}/applications/application/list-components.json" method="get" result="#{requestScope.resp}");
+	setAttribute(key="children" value="#{requestScope.resp.data.properties}");
+    </ui:event>
     <!facet image>
-	<sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/common/applications/applications.jsf" alt="$resource{i18n.tree.applications}"
-	    border="0" immediate="true" />
+	<sun:iconHyperlink id="treeLink" icon="TREE_FOLDER"
+		url="/common/applications/applications.jsf"
+		alt="$resource{i18n.tree.applications}"
+		border="0" immediate="true" />
     </facet>
-    <!filterTree filterOutLifecycle() />
+    <!--
+	FIXME: Update...
+	<!filterTree filterOutLifecycle() />
+    -->
 </dynamicTreeNode>
+
 <dynamicTreeNode
 	id="lifecycle"
-	treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-	objectName="amx:pp=/domain,type=applications"
+	treeAdaptorClass="org.glassfish.admingui.common.tree.ListTreeAdaptor"
+	children="#{requestScope.children}"
 	text="$resource{i18n.tree.lifecycle}"
 	url="/common/applications/lifecycles.jsf"
 	expanded="false"
-	attributeName="name"
 	childImageURL="/resource/images/webModule.gif"
 	childExpanded="false"
 	childURL="/common/applications/lifecycleEdit.jsf?appName=#{$this{valueBinding}.text}">
+    <ui:event type="beforeCreate">
+	gf.restRequest(endpoint="#{sessionScope.REST_URL}/applications/application/list-components.json" method="get" result="#{requestScope.resp}");
+	setAttribute(key="children" value="#{requestScope.resp.data.properties}");
+    </ui:event>
     <!facet image>
-	<sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/common/applications/lifecycles.jsf"
+	<sun:iconHyperlink id="treeLink" icon="TREE_FOLDER" url="/common/applications/lifecycles.jsf"
 	    alt="$resource{i18n.tree.lifecycle}" border="0" immediate="true" />
     </facet>
+    <!--
+	FIXME: Update...
     <!filterTree filterOutNonLifecycle() />
+    -->
 </dynamicTreeNode>

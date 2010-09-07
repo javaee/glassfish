@@ -41,19 +41,19 @@
 -->
 
 <dynamicTreeNode id="threadPools"
-    treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-    objectName="amx:pp=/domain/configs/config[${configName}],type=thread-pools"
-    attributeName="name"
-    childImageURL="/resource/web/images/threadPool.gif"
-    childExpanded="$boolean{false}"
-    childURL="/web/configuration/threadPoolEdit.jsf?name=#{$this{valueBinding}.text}&configName=${configName}"
-    text="$resource{i18n_web.tree.threadPools}"
-    url="/web/configuration/threadPools.jsf?configName=${configName}"
-    >
-    <!facet image>
-        <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/configuration/threadPools.jsf?configName=${configName}" border="0" immediate="true" />
-    </facet>
-    <!beforeCreate
+	treeAdaptorClass="org.glassfish.admingui.common.tree.ListTreeAdaptor"
+	children="#{requestScope.children}"
+	childImageURL="/resource/web/images/threadPool.gif"
+	childExpanded="false"
+	childURL="/web/configuration/threadPoolEdit.jsf?name=#{$this{valueBinding}.text}&configName=${configName}"
+	text="$resource{i18n_web.tree.threadPools}"
+	url="/web/configuration/threadPools.jsf?configName=${configName}">
+    <ui:event type="beforeCreate">
         setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
-    />
+	gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/${configName}/thread-pools/thread-pool.json" method="get" result="#{requestScope.resp}");
+	setAttribute(key="children" value="#{requestScope.resp.data.extraProperties.childResources}");
+    </ui:event>
+    <!facet image>
+        <sun:iconHyperlink id="treeIcon" icon="TREE_FOLDER" url="/web/configuration/threadPools.jsf?configName=${configName}" border="0" immediate="true" />
+    </facet>
 </dynamicTreeNode>

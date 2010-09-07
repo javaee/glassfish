@@ -46,19 +46,19 @@
             url="#{request.contextPath}/jms/jmsService.jsf?configName=${configName}"
 	    icon="#{request.contextPath}/resource/images/jms.gif">
     <dynamicTreeNode id="jmsHosts"
-        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="amx:pp=/domain/configs/config[${configName}],type=jms-service"
-        amxChildType="jms-host"
-        attributeName="name"
-        childImageURL="/resource/jms/images/canister.gif"
-        childExpanded="$boolean{false}"
-        childURL="/jms/jmsHostEdit.jsf?name=#{$this{valueBinding}.text}&configName=${configName}"
-        text="$resource{i18n.tree.jmsHosts}"
-        url="#{request.contextPath}/jms/jmsHosts.jsf?configName=${configName}"
-        >
+	    treeAdaptorClass="org.glassfish.admingui.common.tree.ListTreeAdaptor"
+	    children="#{requestScope.children}"
+	    childImageURL="/resource/jms/images/canister.gif"
+	    childExpanded="false"
+	    childURL="/jms/jmsHostEdit.jsf?name=#{$this{valueBinding}.text}&configName=${configName}"
+	    text="$resource{i18n.tree.jmsHosts}"
+	    url="#{request.contextPath}/jms/jmsHosts.jsf?configName=${configName}">
+	<ui:event type="beforeCreate">
+	    gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/${configName}/jms-service/jms-host.json" method="get" result="#{requestScope.resp}");
+	    setAttribute(key="children" value="#{requestScope.resp.data.extraProperties.childResources}");
+	</ui:event>
         <!facet image>
-            <sun:iconHyperlink icon="TREE_FOLDER" url="#{request.contextPath}/jms/jmsHosts.jsf?configName=${configName}" border="0" immediate="true"
-                alt="$resource{i18n.tree.jmsHosts}"/>
+            <sun:iconHyperlink id="treeIcon" icon="TREE_FOLDER" url="#{request.contextPath}/jms/jmsHosts.jsf?configName=${configName}" border="0" immediate="true" alt="$resource{i18n.tree.jmsHosts}"/>
         </facet>
     </dynamicTreeNode>
 </gf:navNode>

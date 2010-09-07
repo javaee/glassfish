@@ -47,18 +47,19 @@
     imageURL="/resource/corba/images/orb.gif"
     >
     <dynamicTreeNode id="iiopListeners"
-        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="amx:pp=/domain/configs/config[server-config],type=iiop-service"
-        amxChildType="iiop-listener"
-        attributeName="name"
-        childImageURL="/resource/corba/images/orb.gif"
-        childExpanded="$boolean{false}"
-        childURL="/corba/iiopListenerEdit.jsf?name=#{$this{valueBinding}.text}&configName=${configName}"
-        text="$resource{i18n.tree.iiopListeners}"
-        url="/corba/iiopListeners.jsf?configName=${configName}"
-        >
+	    treeAdaptorClass="org.glassfish.admingui.common.tree.ListTreeAdaptor"
+	    children="#{requestScope.children}"
+	    childImageURL="/resource/corba/images/orb.gif"
+	    childExpanded="false"
+	    childURL="/corba/iiopListenerEdit.jsf?name=#{$this{valueBinding}.text}&configName=${configName}"
+	    text="$resource{i18n.tree.iiopListeners}"
+	    url="/corba/iiopListeners.jsf?configName=${configName}">
+	<ui:event type="beforeCreate">
+	    gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/${configName}/iiop-service/iiop-listener.json" method="get" result="#{requestScope.resp}");
+	    setAttribute(key="children" value="#{requestScope.resp.data.extraProperties.childResources}");
+	</ui:event>
         <!facet image>
-            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/corba/iiopListeners.jsf?configName=${configName}"  border="0" immediate="true" alt="$resource{i18n.tree.iiopListeners}"/>
+            <sun:iconHyperlink id="treeIcon" icon="TREE_FOLDER" url="/corba/iiopListeners.jsf?configName=${configName}"  border="0" immediate="true" alt="$resource{i18n.tree.iiopListeners}"/>
         </facet>
     </dynamicTreeNode>
     <!beforeCreate

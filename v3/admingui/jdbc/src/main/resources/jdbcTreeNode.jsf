@@ -43,46 +43,40 @@
 <sun:treeNode id="JDBC"
         text="$resource{i18njdbc.tree.jdbc}"
         url="/jdbc/jdbc.jsf"
-        imageURL="/resource/jdbc/images/JDBC.gif"
-        >
-        <dynamicTreeNode id="jdbcResources"
-        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="amx:pp=/domain,type=resources"
-        amxChildType="jdbc-resource"
-        attributeName="name"
-        childImageURL="/resource/jdbc/images/JDBC.gif"
-        childExpanded="$boolean{false}"
-        childURL="/jdbc/jdbcResourceEdit.jsf?name=#{$this{valueBinding}.text}"
-        text="$resource{i18njdbc.tree.jdbcResources}"
-        url="/jdbc/jdbcResources.jsf"
-        >
+        imageURL="/resource/jdbc/images/JDBC.gif">
+    <dynamicTreeNode id="jdbcResources"
+	    treeAdaptorClass="org.glassfish.admingui.common.tree.ListTreeAdaptor"
+	    children="#{requestScope.children}"
+	    childImageURL="/resource/jdbc/images/JDBC.gif"
+	    childExpanded="false"
+	    childURL="/jdbc/jdbcResourceEdit.jsf?name=#{$this{valueBinding}.text}"
+	    text="$resource{i18njdbc.tree.jdbcResources}"
+	    url="/jdbc/jdbcResources.jsf">
+	<ui:event type="beforeCreate">
+	    gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/jdbc-resource.json" method="get" result="#{requestScope.resp}");
+	    setAttribute(key="children" value="#{requestScope.resp.data.extraProperties.childResources}");
+	</ui:event>
         <!facet image>
-            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jdbc/jdbcResources.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18njdbc.tree.jdbcResources}"/>
+            <sun:iconHyperlink id="treeIcon" icon="TREE_FOLDER" url="/jdbc/jdbcResources.jsf"  border="0" immediate="true" alt="$resource{i18njdbc.tree.jdbcResources}"/>
         </facet>
-        <!beforeCreate
-            setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings");
-        />
     </dynamicTreeNode>
-        <dynamicTreeNode id="connectionPoolResources"
-            treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-            objectName="amx:pp=/domain,type=resources"
-            amxChildType="jdbc-connection-pool"  
-            attributeName="name"
+    <dynamicTreeNode id="connectionPoolResources"
+	    treeAdaptorClass="org.glassfish.admingui.common.tree.ListTreeAdaptor"
+	    children="#{requestScope.children}"
             childImageURL="/resource/jdbc/images/JDBC.gif"
-            childExpanded="$boolean{false}"
+            childExpanded="false"
             childURL="/jdbc/jdbcConnectionPoolEdit.jsf?name=#{$this{valueBinding}.text}"
             text="$resource{i18njdbc.tree.connectionPools}"
-            url="/jdbc/jdbcConnectionPools.jsf"
-            >
-            <!facet image>
-                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jdbc/jdbcConnectionPools.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18njdbc.tree.connectionPools}"/>
-            </facet>
-            <!beforeCreate
-                setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings");
-            />
-        </dynamicTreeNode>
+            url="/jdbc/jdbcConnectionPools.jsf">
+	<ui:event type="beforeCreate">
+	    gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/jdbc-connection-pool.json" method="get" result="#{requestScope.resp}");
+	    setAttribute(key="children" value="#{requestScope.resp.data.extraProperties.childResources}");
+	</ui:event>
+	<!facet image>
+	    <sun:iconHyperlink id="treeIcon" icon="TREE_FOLDER" url="/jdbc/jdbcConnectionPools.jsf"  border="0" immediate="true" alt="$resource{i18njdbc.tree.connectionPools}"/>
+	</facet>
+    </dynamicTreeNode>
     <!beforeCreate
         setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings");
     />
- </sun:treeNode>
-    
+</sun:treeNode>

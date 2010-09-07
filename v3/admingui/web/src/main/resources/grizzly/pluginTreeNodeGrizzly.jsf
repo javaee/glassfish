@@ -44,67 +44,59 @@
     id="networkConfig"
     text="$resource{i18n_web.tree.grizzly.networkConfig}"
     url="/web/grizzly/networkConfig.jsf?configName=${configName}"
-    imageURL="/resource/web/images/httpservice.gif"
-    >
+    imageURL="/resource/web/images/httpservice.gif">
 
     <dynamicTreeNode id="networkListeners"
-        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="amx:pp=/domain/configs/config[${configName}]/network-config,type=network-listeners"
-        useV3AMX="true"
-        attributeName="name"
-        childImageURL="/resource/web/images/http.gif"
-        childExpanded="$boolean{false}"
-        childURL="/web/grizzly/networkListenerEdit.jsf?name=#{$this{valueBinding}.text}&configName=${configName}"
-        text="$resource{i18n_web.tree.grizzly.networkListeners}"
-        url="/web/grizzly/networkListeners.jsf?configName=${configName}"
-        >
+	    treeAdaptorClass="org.glassfish.admingui.common.tree.ListTreeAdaptor"
+	    children="#{requestScope.children}"
+	    childImageURL="/resource/web/images/http.gif"
+	    childExpanded="false"
+	    childURL="/web/grizzly/networkListenerEdit.jsf?name=#{$this{valueBinding}.text}&configName=${configName}"
+	    text="$resource{i18n_web.tree.grizzly.networkListeners}"
+	    url="/web/grizzly/networkListeners.jsf?configName=${configName}">
+	<ui:event type="beforeCreate">
+	    gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/${configName}/network-config/network-listeners/network-listener.json" method="get" result="#{requestScope.resp}");
+	    setAttribute(key="children" value="#{requestScope.resp.data.extraProperties.childResources}");
+	</ui:event>
         <!facet image>
-            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/grizzly/networkListeners.jsf?configName=${configName}" border="0" immediate="true" alt="$resource{i18n_web.tree.grizzly.networkListeners}"/>
+            <sun:iconHyperlink id="treeIcon" icon="TREE_FOLDER" url="/web/grizzly/networkListeners.jsf?configName=${configName}" border="0" immediate="true" alt="$resource{i18n_web.tree.grizzly.networkListeners}"/>
         </facet>
-        <!beforeCreate
-            setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
-        />
     </dynamicTreeNode>
 
     <dynamicTreeNode id="protocols"
-        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="amx:pp=/domain/configs/config[${configName}]/network-config,type=protocols"
-        useV3AMX="true"
-        attributeName="name"
-        childImageURL="/resource/web/images/http.gif"
-        childExpanded="$boolean{false}"
-        childURL="/web/grizzly/protocolEdit.jsf?name=#{$this{valueBinding}.text}&configName=${configName}"
-        text="$resource{i18n_web.tree.grizzly.protocols}"
-        url="/web/grizzly/protocols.jsf?configName=${configName}"
-        >
+	    treeAdaptorClass="org.glassfish.admingui.common.tree.ListTreeAdaptor"
+	    children="#{requestScope.children}"
+	    childImageURL="/resource/web/images/http.gif"
+	    childExpanded="false"
+	    childURL="/web/grizzly/protocolEdit.jsf?name=#{$this{valueBinding}.text}&configName=${configName}"
+	    text="$resource{i18n_web.tree.grizzly.protocols}"
+	    url="/web/grizzly/protocols.jsf?configName=${configName}">
+	<ui:event type="beforeCreate">
+	    gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/${configName}/network-config/protocols/protocol.json" method="get" result="#{requestScope.resp}");
+	    setAttribute(key="children" value="#{requestScope.resp.data.extraProperties.childResources}");
+	</ui:event>
         <!facet image>
-            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/grizzly/protocols.jsf?configName=${configName}" border="0" immediate="true" alt="$resource{i18n_web.tree.grizzly.protocols}"/>
+            <sun:iconHyperlink id="treeIcon" icon="TREE_FOLDER" url="/web/grizzly/protocols.jsf?configName=${configName}" border="0" immediate="true" alt="$resource{i18n_web.tree.grizzly.protocols}"/>
         </facet>
-        <!beforeCreate
-            setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
-        />
     </dynamicTreeNode>
 
     <dynamicTreeNode id="transports"
-        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="amx:pp=/domain/configs/config[${configName}]/network-config,type=transports"
-        useV3AMX="true"
-        attributeName="name"
-        childImageURL="/resource/web/images/http.gif"
-        childExpanded="$boolean{false}"
-        childURL="/web/grizzly/transportEdit.jsf?name=#{$this{valueBinding}.text}&configName=${configName}"
-        text="$resource{i18n_web.tree.grizzly.transports}"
-        url="/web/grizzly/transports.jsf?configName=${configName}"
-        >
+	    treeAdaptorClass="org.glassfish.admingui.common.tree.ListTreeAdaptor"
+	    children="#{requestScope.children}"
+	    childImageURL="/resource/web/images/http.gif"
+	    childExpanded="false"
+	    childURL="/web/grizzly/transportEdit.jsf?name=#{$this{valueBinding}.text}&configName=${configName}"
+	    text="$resource{i18n_web.tree.grizzly.transports}"
+	    url="/web/grizzly/transports.jsf?configName=${configName}">
+	<ui:event type="beforeCreate">
+	    gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/${configName}/network-config/transports/transport.json" method="get" result="#{requestScope.resp}");
+	    setAttribute(key="children" value="#{requestScope.resp.data.extraProperties.childResources}");
+	</ui:event>
         <!facet image>
-            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/grizzly/transports.jsf?configName=${configName}" border="0" immediate="true" alt="$resource{i18n_web.tree.grizzly.transports}"/>
+            <sun:iconHyperlink id="treeIcon" icon="TREE_FOLDER" url="/web/grizzly/transports.jsf?configName=${configName}" border="0" immediate="true" alt="$resource{i18n_web.tree.grizzly.transports}"/>
         </facet>
-        <!beforeCreate
-            setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
-        />
     </dynamicTreeNode>
     <!beforeCreate
         setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
     />
 </sun:treeNode>
-
