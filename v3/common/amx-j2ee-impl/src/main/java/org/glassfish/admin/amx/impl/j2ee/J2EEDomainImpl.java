@@ -49,6 +49,7 @@ import org.glassfish.admin.amx.j2ee.J2EETypes;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import java.util.Map;
 
 /**
  * Base implementation for the J2EEDomain for DAS and non-DAS server instances.
@@ -70,6 +71,9 @@ public class J2EEDomainImpl extends J2EEManagedObjectImplBase {
      * @return String representation of the ObjectName
      */
     public String[] getservers() {
+
+        //Map serverMap = getDomainConfig().getServers().getServer();
+        //return (String[]) serverMap.keySet().toArray(new String[serverMap.size()]);
         return getChildrenAsStrings(J2EETypes.J2EE_SERVER);
     }
 
@@ -91,11 +95,14 @@ public class J2EEDomainImpl extends J2EEManagedObjectImplBase {
         final ObjectNameBuilder builder = getObjectNames();
 
         final MetadataImpl meta = defaultChildMetadata();
-        meta.setCorrespondingConfig(getDomainConfig().getServers().getServer().get(getServerName()).objectName());
+        Map serverMap = getDomainConfig().getServers().getServer();
+        for (Object serverKey : serverMap.keySet()) {
 
-        final DASJ2EEServerImpl impl = new DASJ2EEServerImpl(getObjectName(), meta);
-        ObjectName serverObjectName = getObjectNames().buildChildObjectName(J2EETypes.J2EE_SERVER, getServerName());
-        serverObjectName = registerChild(impl, serverObjectName);
+            meta.setCorrespondingConfig(getDomainConfig().getServers().getServer().get(serverKey).objectName());
+            final DASJ2EEServerImpl impl = new DASJ2EEServerImpl(getObjectName(), meta);
+            ObjectName serverObjectName = getObjectNames().buildChildObjectName(J2EETypes.J2EE_SERVER, serverKey.toString());
+            serverObjectName = registerChild(impl, serverObjectName);
+        }
         //ImplUtil.getLogger().info( "Registered J2EEDomain as " + getObjectName() + " with J2EEServer of " + serverObjectName);
     }
 

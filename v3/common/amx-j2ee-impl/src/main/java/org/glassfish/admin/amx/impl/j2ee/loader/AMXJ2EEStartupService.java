@@ -41,10 +41,13 @@
 package org.glassfish.admin.amx.impl.j2ee.loader;
 
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.Servers;
+import com.sun.logging.LogDomains;
 import org.glassfish.admin.amx.base.DomainRoot;
 import org.glassfish.admin.amx.config.AMXConfigConstants;
 import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.core.proxy.ProxyFactory;
+import org.glassfish.admin.amx.impl.j2ee.DASJ2EEServerImpl;
 import org.glassfish.admin.amx.impl.j2ee.J2EEDomainImpl;
 import org.glassfish.admin.amx.impl.j2ee.Metadata;
 import org.glassfish.admin.amx.impl.j2ee.MetadataImpl;
@@ -59,10 +62,15 @@ import org.glassfish.internal.data.ApplicationRegistry;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.*;
 
 import javax.management.JMException;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import java.beans.PropertyChangeEvent;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.logging.Logger;
 
 
 /**
@@ -73,7 +81,8 @@ import javax.management.ObjectName;
 public final class AMXJ2EEStartupService
         implements org.jvnet.hk2.component.PostConstruct,
         org.jvnet.hk2.component.PreDestroy,
-        AMXJ2EEStartupServiceMBean {
+        AMXJ2EEStartupServiceMBean, ConfigListener {
+
     private static void debug(final String s) {
         System.out.println(s);
     }
@@ -83,6 +92,12 @@ public final class AMXJ2EEStartupService
 
     @Inject
     InjectedValues mCore;
+
+    @Inject
+    private com.sun.enterprise.config.serverbeans.Domain domain;
+
+    private static final Logger logger =
+            LogDomains.getLogger(AMXJ2EEStartupService.class, LogDomains.AMX_LOGGER);
 
     public InjectedValues getCore() {
         return mCore;
@@ -106,15 +121,95 @@ public final class AMXJ2EEStartupService
     public void postConstruct() {
         try {
             /*
-            final StandardMBean mbean = new StandardMBean(this, AMXJ2EEStartupServiceMBean.class);
-            mMBeanServer.registerMBean( mbean, OBJECT_NAME );
-            */
+                    final StandardMBean mbean = new StandardMBean(this, AMXJ2EEStartupServiceMBean.class);
+                    mMBeanServer.registerMBean( mbean, OBJECT_NAME );
+                    */
             mMBeanServer.registerMBean(this, OBJECT_NAME);
+
+            addListenerToServer();
         }
         catch (JMException e) {
             throw new Error(e);
         }
         //debug( "AMXJ2EEStartupService.postConstruct(): registered: " + OBJECT_NAME);
+    }
+
+    private void addListenerToServer() {
+        Servers servers = domain.getServers();
+        ObservableBean bean = (ObservableBean) ConfigSupport.getImpl((ConfigBeanProxy) servers);
+        bean.addListener(this);
+    }
+
+    @Override
+    public UnprocessedChangeEvents changed(PropertyChangeEvent[] propertyChangeEvents) {       
+        return ConfigSupport.sortAndDispatch(propertyChangeEvents, new PropertyChangeHandler(propertyChangeEvents), logger);
+    }
+
+    class PropertyChangeHandler implements Changed {
+
+        PropertyChangeEvent[] events;
+
+        private PropertyChangeHandler(PropertyChangeEvent[] events) {
+            this.events = events;
+        }
+
+        /**
+         * Notification of a change on a configuration object
+         *
+         * @param type            type of change : ADD mean the changedInstance was added to the parent
+         *                        REMOVE means the changedInstance was removed from the parent, CHANGE means the
+         *                        changedInstance has mutated.
+         * @param changedType     type of the configuration object
+         * @param changedInstance changed instance.
+         */
+        public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> changedType, T changedInstance) {
+            switch (type) {
+                case ADD:
+                    if (changedInstance instanceof Server) {
+                        Server server = (Server) changedInstance;
+                        String serverName = server.getName();
+
+                        DomainRoot domainRootProxy = ProxyFactory.getInstance(mMBeanServer).getDomainRootProxy(false);
+
+                        MetadataImpl meta = new MetadataImpl();
+                        meta.setCorrespondingConfig(domainRootProxy.getDomain().as(Domain.class).getServers().getServer().get(serverName).objectName());
+                        final DASJ2EEServerImpl impl = new DASJ2EEServerImpl(getJ2EEDomain(), meta);
+                        ObjectName serverObjectName = new ObjectNameBuilder(mMBeanServer, getJ2EEDomain()).buildChildObjectName(J2EETypes.J2EE_SERVER, serverName);
+                        try {
+                            serverObjectName = mMBeanServer.registerMBean(impl, serverObjectName).getObjectName();
+                        }
+                        catch (JMException e) {
+                            throw new Error(e);
+                        }
+                    }
+                    break;
+
+                case REMOVE:
+                    if (changedInstance instanceof Server) {
+                        Server server = (Server) changedInstance;
+                        String serverName = server.getName();
+
+                        ObjectName serverObjectName = new ObjectNameBuilder(mMBeanServer, getJ2EEDomain()).buildChildObjectName(J2EETypes.J2EE_SERVER, serverName);
+
+                        try {
+                            Set serverSet = mMBeanServer.queryNames(new ObjectName(serverObjectName.toString() + ",*"), null);
+                            Iterator it = serverSet.iterator();
+                            while (it.hasNext()) {
+                                ObjectName element = (ObjectName) it.next();
+                                mMBeanServer.unregisterMBean(element);
+                            }
+                        }
+                        catch (JMException e) {
+                            throw new Error(e);
+                        }
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+            return null;
+        }
     }
 
     public void preDestroy() {
