@@ -43,10 +43,16 @@ package org.glassfish.uberjar.bootstrap;
 import org.glassfish.simpleglassfishapi.GlassFish;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -136,4 +142,25 @@ public class Util {
         }
         return moduleJarURLs;
     }
+
+    static void copyWithoutClose(InputStream in, FileOutputStream out, long size) throws IOException {
+
+        ReadableByteChannel inChannel = Channels.newChannel(in);
+        FileChannel outChannel = out.getChannel();
+        outChannel.transferFrom(inChannel, 0, size);
+
+    }
+
+    static void copy(InputStream in, FileOutputStream out, long size) throws IOException {
+
+        try {
+            copyWithoutClose(in, out, size);
+        } finally {
+            if (in != null)
+                in.close();
+            if (out != null)
+                out.close();
+        }
+    }
+    
 }

@@ -50,6 +50,8 @@ import org.osgi.framework.launch.Framework;
 import org.osgi.util.tracker.ServiceTracker;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -122,6 +124,8 @@ public class UberJarOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.Runt
                     new File(instanceRoot).toURI().toString());
 
         }
+
+        copyConfigFile(props.getProperty(Constants.CONFIG_FILE_URI_PROP_NAME), instanceRoot);
 
         String platform = props.getProperty(Constants.PLATFORM_PROPERTY_KEY);
         if (platform == null) {
@@ -210,6 +214,22 @@ public class UberJarOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.Runt
             return type.cast(tracker.waitForService(0));
         } finally {
             tracker.close(); // no need to track further
+        }
+    }
+
+    private void copyConfigFile(String configFileURI, String instanceRoot) throws Exception {
+        if (configFileURI != null && instanceRoot != null) {
+            URI configFile = URI.create(configFileURI);
+            InputStream stream = configFile.toURL().openConnection().getInputStream();
+            File domainXml = new File(instanceRoot, "config/domain.xml");
+            logger.info("domainXML uri = " + configFileURI + ", size = " + stream.available());
+            if (!domainXml.toURI().equals(configFile)) {
+                Util.copy(stream, new FileOutputStream(domainXml), stream.available());
+                logger.info("Created " + domainXml);
+            } else {
+                logger.info("Skipped creation of " + domainXml);
+            }
+
         }
     }
 
