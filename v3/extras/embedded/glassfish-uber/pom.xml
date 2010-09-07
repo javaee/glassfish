@@ -142,7 +142,6 @@
             <plugin>
                 <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
                 <artifactId>maven-antrun-extended-plugin</artifactId>
-		<version>1.41</version>
                 <executions>
                     <execution>
                         <phase>compile</phase>
