@@ -71,11 +71,11 @@
     </sun:tableColumn>
 
 
-    <sun:tableColumn headerText="#{resHeader}" sort="ResourceAdapterName" rowHeader="$boolean{true}" id="col22">
+    <sun:tableColumn headerText="#{resHeader}" sort="resourceAdapterName" rowHeader="$boolean{true}" id="col22">
         <sun:staticText escape="true" id="resAdap"  value="#{td.value.resourceAdapterName}" />
     </sun:tableColumn>
     
-    <sun:tableColumn headerText="#{extraInfoHeader}" sort="ConnectionDefinitionName"   rowHeader="$boolean{true}" id="col3">
+    <sun:tableColumn headerText="#{extraInfoHeader}" sort="connectionDefinitionName"   rowHeader="$boolean{true}" id="col3">
         <sun:staticText escape="true" id="connDef"  value="#{td.value.connectionDefinitionName}" />
     </sun:tableColumn>  
     

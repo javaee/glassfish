@@ -62,19 +62,19 @@
                           onClick="setTimeout('admingui.table.toggleButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"/>
         </sun:tableColumn>
 
-        <sun:tableColumn id="colName" headerText="$resource{i18njms.resourcesTable.colJndiName}" rendered="#{!isConnPage}" sort="Name" rowHeader="$boolean{true}">
+        <sun:tableColumn id="colName" headerText="$resource{i18njms.resourcesTable.colJndiName}" rendered="#{!isConnPage}" sort="name" rowHeader="$boolean{true}">
             <sun:hyperlink id="link" text="#{td.value.name}" url="#{pageSession.editLink}?name=#{td.value.name}" />
         </sun:tableColumn>
 
-        <sun:tableColumn id="colPoolName" headerText="$resource{i18njms.resourcesTable.colPoolName}" rendered="#{isConnPage}" sort="Name" rowHeader="$boolean{true}">
+        <sun:tableColumn id="colPoolName" headerText="$resource{i18njms.resourcesTable.colPoolName}" rendered="#{isConnPage}" sort="name" rowHeader="$boolean{true}">
             <sun:hyperlink id="link" text="#{td.value.name}" url="#{pageSession.editLink}?name=#{td.value.name}&jndiName=#{td.value.name}" />
         </sun:tableColumn>
 
-        <sun:tableColumn id="jndiName" headerText="$resource{i18njms.resourcesTable.colJndiName}" rendered="#{isConnPage}" sort="Name" rowHeader="$boolean{true}">
+        <sun:tableColumn id="jndiName" headerText="$resource{i18njms.resourcesTable.colJndiName}" rendered="#{isConnPage}" sort="name" rowHeader="$boolean{true}">
             <sun:staticText id="jndi" text="#{td.value.name}"  />
         </sun:tableColumn>
 
-        <sun:tableColumn id="colEnabled1" headerText="$resource{i18njms.resourcesTable.colEnabled}" rendered="#{isConnPage}" sort="Enabled" rowHeader="$boolean{true}">
+        <sun:tableColumn id="colEnabled1" headerText="$resource{i18njms.resourcesTable.colEnabled}" rendered="#{isConnPage}" sort="enabled" rowHeader="$boolean{true}">
             <staticText id="enabled" value="#{td.value.enabled}">
                 <!event type="beforeEncode">
                         urlencode(value="#{td.value.name}" encoding="UTF-8" result="#{pageSession.encodedName}");
@@ -87,7 +87,7 @@
             </staticText>
         </sun:tableColumn>
 
-        <sun:tableColumn id="colEnabled2" headerText="$resource{i18njms.resourcesTable.colEnabled}" rendered="#{!isConnPage}" sort="Enabled" rowHeader="$boolean{true}">
+        <sun:tableColumn id="colEnabled2" headerText="$resource{i18njms.resourcesTable.colEnabled}" rendered="#{!isConnPage}" sort="enabled" rowHeader="$boolean{true}">
             <staticText id="enabled" value="#{td.value.enabled}">
                 <!event type="beforeEncode">
                        urlencode(value="#{td.value.name}" encoding="UTF-8" result="#{pageSession.encodedName}");
@@ -97,15 +97,15 @@
             </staticText>
         </sun:tableColumn>
 
-        <sun:tableColumn id="colConnDefName" headerText="$resource{i18njms.resourcesTable.colResType}" sort="ConnectionDefinitionName" rendered="#{isConnPage}" rowHeader="$boolean{true}">
+        <sun:tableColumn id="colConnDefName" headerText="$resource{i18njms.resourcesTable.colResType}" sort="connectionDefinitionName" rendered="#{isConnPage}" rowHeader="$boolean{true}">
             <h:outputText id="connDefName" value="#{td.value.connectionDefinitionName}" />
         </sun:tableColumn>
 
-        <sun:tableColumn id="colResType" headerText="$resource{i18njms.resourcesTable.colResType}" sort="ResType" rendered="#{!isConnPage}" rowHeader="$boolean{true}">
+        <sun:tableColumn id="colResType" headerText="$resource{i18njms.resourcesTable.colResType}" sort="resType" rendered="#{!isConnPage}" rowHeader="$boolean{true}">
             <h:outputText id="resType" value="#{td.value.resType}"/>
         </sun:tableColumn>
 
-        <sun:tableColumn id="colTypeDesc" headerText="$resource{i18njms.resourcesTable.colDesc}" sort="Description" rendered="#{!isConnPage}" rowHeader="$boolean{true}">
+        <sun:tableColumn id="colTypeDesc" headerText="$resource{i18njms.resourcesTable.colDesc}" sort="description" rendered="#{!isConnPage}" rowHeader="$boolean{true}">
             <h:outputText id="typeDesc" value="#{td.value.description}" />
         </sun:tableColumn>
 

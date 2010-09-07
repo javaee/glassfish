@@ -65,17 +65,17 @@
             />
     </sun:tableColumn>    
 
-    <sun:tableColumn headerText="$resource{i18njdbc.resourcesTable.colPoolName}" sort="Name" rowHeader="$boolean{true}" id="col1">
+    <sun:tableColumn headerText="$resource{i18njdbc.resourcesTable.colPoolName}" sort="name" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="link" text="#{td.value.name}" 
             url="#{pageSession.editLink}?name=#{td.value.name}" />
     </sun:tableColumn>
 
 
-    <sun:tableColumn headerText="#{resHeader}" sort="ResType" rowHeader="$boolean{true}" id="col22">
+    <sun:tableColumn headerText="#{resHeader}" sort="resType" rowHeader="$boolean{true}" id="col22">
         <sun:staticText escape="true" id="resType"  value="#{td.value.resType}" />
     </sun:tableColumn>
     
-    <sun:tableColumn headerText="$resource{i18njdbc.resourcesTable.colClassname}"  rowHeader="$boolean{true}" id="col3">
+    <sun:tableColumn headerText="$resource{i18njdbc.resourcesTable.colClassname}" sort="datasourceClassname" rowHeader="$boolean{true}" id="col3">
         <sun:staticText escape="true" id="datasourceClassname"  value="#{td.value.datasourceClassname}#{td.value.driverClassname}" />
     </sun:tableColumn>  
     

@@ -65,7 +65,7 @@
             />
     </sun:tableColumn>    
 
-    <sun:tableColumn headerText="$resource{i18njca.resourcesTable.colJndiName}" sort="Name" rowHeader="$boolean{true}" id="col1">
+    <sun:tableColumn headerText="$resource{i18njca.resourcesTable.colJndiName}" sort="name" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="link" text="#{td.value.name}" 
             url="#{pageSession.editLink}?name=#{td.value.name}" />
     </sun:tableColumn>
@@ -75,15 +75,15 @@
         <sun:hyperlink rendered="#{supportCluster}" id="targetLink" text="#{td.value.enabled}" url="#{targetLink}?name=#{td.value.name}" />
     </sun:tableColumn>-->
 
-    <sun:tableColumn headerText="$resource{i18n.deployTable.colEnabled}" sort="Enabled" rowHeader="$boolean{true}" id="col22">
+    <sun:tableColumn headerText="$resource{i18n.deployTable.colEnabled}" sort="enabled" rowHeader="$boolean{true}" id="col22">
         <sun:staticText escape="true" id="typeCol" value="#{td.value.enabled}" />
     </sun:tableColumn>
     
-    <sun:tableColumn headerText="$resource{i18njca.resourcesTable.colPool}" sort="PoolName" rendered="#{pageSession.hasPool}"  rowHeader="$boolean{true}" id="col3">
+    <sun:tableColumn headerText="$resource{i18njca.resourcesTable.colPool}" sort="poolName" rendered="#{pageSession.hasPool}"  rowHeader="$boolean{true}" id="col3">
         <sun:hyperlink id="pool" text="#{td.value.poolName}" url="#{pageSession.editPoolLink}?name=#{td.value.poolName}" />
     </sun:tableColumn>
     
-    <sun:tableColumn headerText="$resource{i18njca.resourcesTable.colResType}" sort="ResType" rendered="#{pageSession.hasResType}"  rowHeader="$boolean{true}" id="coltype">
+    <sun:tableColumn headerText="$resource{i18njca.resourcesTable.colResType}" sort="resType" rendered="#{pageSession.hasResType}"  rowHeader="$boolean{true}" id="coltype">
         <sun:staticText escape="true" id="typeCol" rendered="#{pageSession.hasResType}" value="#{td.value.resType}" />
     </sun:tableColumn>
 
