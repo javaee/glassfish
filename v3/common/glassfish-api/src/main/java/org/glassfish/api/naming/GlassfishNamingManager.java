@@ -50,6 +50,7 @@ import java.util.Collection;
 import org.omg.CORBA.ORB;
 
 import java.rmi.Remote;
+import java.util.Hashtable;
 import java.util.Map;
 
 /**
@@ -80,10 +81,11 @@ public interface GlassfishNamingManager {
      * Lookup a naming entry in a particular application's namespace
      * @param appName application-name
      * @param name name of the object
+     * @param env Environment
      * @return Object found by the name
      * @throws javax.naming.NamingException when unable to find the object
      */
-    public Object lookupFromAppNamespace(String appName, String name) throws NamingException ;
+    public Object lookupFromAppNamespace(String appName, String name, Hashtable env) throws NamingException ;
 
     /**
      *
@@ -91,10 +93,12 @@ public interface GlassfishNamingManager {
      * @param appName application-name
      * @param moduleName module-name
      * @param name name of the object
+     * @param env Environment
      * @return Object found by the name
      * @throws javax.naming.NamingException when unable to find the object
      */
-    public Object lookupFromModuleNamespace(String appName, String moduleName, String name) throws NamingException ;
+    public Object lookupFromModuleNamespace(String appName, String moduleName, String name, Hashtable env)
+            throws NamingException ;
 
     /**
      * Publish an object in the naming service.

@@ -101,7 +101,7 @@ public class ResourceNamingService implements ConnectorConstants {
             }else{
                 try {
                     alreadyBoundObject = namingManager.lookupFromModuleNamespace(applicationName,
-                            moduleName, getModuleScopedName(jndiName));
+                            moduleName, getModuleScopedName(jndiName), null);
                 } catch (NameNotFoundException e) {
                     //ignore
                 }
@@ -131,7 +131,7 @@ public class ResourceNamingService implements ConnectorConstants {
             }else{
                 try {
                     alreadyBoundObject = namingManager.lookupFromAppNamespace(applicationName,
-                            getAppScopedName(jndiName));
+                            getAppScopedName(jndiName), null);
                 } catch (NameNotFoundException e) {
                     //ignore
                 }
@@ -201,10 +201,10 @@ public class ResourceNamingService implements ConnectorConstants {
         moduleName = ConnectorsUtil.getActualModuleName(moduleName);
 
         if(!isGlobalName(resourceInfo.getName()) && applicationName != null && moduleName != null){
-            return namingManager.lookupFromModuleNamespace(applicationName, moduleName, getModuleScopedName(name));
+            return namingManager.lookupFromModuleNamespace(applicationName, moduleName, getModuleScopedName(name), env);
         }else if(!isGlobalName(resourceInfo.getName()) && applicationName != null) {
             if(pe.getProcessType().isServer() || pe.getProcessType().isEmbedded()){
-                return namingManager.lookupFromAppNamespace(applicationName, getAppScopedName(name));
+                return namingManager.lookupFromAppNamespace(applicationName, getAppScopedName(name), env);
             }else{
                 String internalGlobalJavaAppName =
                         cnu.composeInternalGlobalJavaAppName(applicationName, getAppScopedName(name));

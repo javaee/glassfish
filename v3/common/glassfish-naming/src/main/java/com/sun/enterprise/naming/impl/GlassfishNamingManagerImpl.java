@@ -388,7 +388,7 @@ public final class  GlassfishNamingManagerImpl
         return namespace;
     }
 
-    private Object lookupFromNamespace(String name, Map namespace) throws NamingException {
+    private Object lookupFromNamespace(String name, Map namespace, Hashtable env) throws NamingException {
         Object o = namespace.get(name);
         if (o == null) {
             throw new NameNotFoundException("No object bound to name " + name);
@@ -398,7 +398,7 @@ public final class  GlassfishNamingManagerImpl
                 o = namingProxy.create(initialContext);
             } else if (o instanceof Reference) {
                 try {
-                    o = getObjectInstance(name, o);
+                    o = getObjectInstance(name, o, env);
                 } catch (Exception e) {
                     _logger.log(Level.FINEST,"Unable to get Object instance from Reference for name ["+name+"]. " +
                             "Hence returning the Reference object ", e);
@@ -411,26 +411,27 @@ public final class  GlassfishNamingManagerImpl
     /**
      * @inheritDoc
      */
-    public Object lookupFromAppNamespace(String appName, String name) throws NamingException {
+    public Object lookupFromAppNamespace(String appName, String name, Hashtable env) throws NamingException {
         Map namespace = getAppNamespace(appName);
-        return lookupFromNamespace(name, namespace);
+        return lookupFromNamespace(name, namespace, env);
     }
 
     /**
      * @inheritDoc
      */
-    public Object lookupFromModuleNamespace(String appName, String moduleName, String name) throws NamingException {
+    public Object lookupFromModuleNamespace(String appName, String moduleName, String name, Hashtable env) 
+            throws NamingException {
         AppModuleKey appModuleKey = new AppModuleKey(appName, moduleName);
         Map namespace = getModuleNamespace(appModuleKey);
-        return lookupFromNamespace(name, namespace);
+        return lookupFromNamespace(name, namespace, env);
     }
     
-    private Object getObjectInstance(String name, Object obj) throws Exception {
-            Object retObj = javax.naming.spi.NamingManager
-                    .getObjectInstance(obj, new CompositeName(name), null,
-                            new Hashtable());
+    private Object getObjectInstance(String name, Object obj, Hashtable env) throws Exception {
 
-            return retObj;
+        if(env == null){
+            env = new Hashtable();
+        }
+        return javax.naming.spi.NamingManager.getObjectInstance(obj, new CompositeName(name), null, env);
     }
 
      private Map getAppNamespace(String appName)
