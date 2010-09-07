@@ -46,11 +46,13 @@
 
 package com.sun.ejb.spi.sfsb.store;
 
+import com.sun.enterprise.naming.util.ObjectInputStreamWithLoader;
 import org.glassfish.ha.store.annotations.Attribute;
 import org.glassfish.ha.store.annotations.StoreEntry;
 import org.glassfish.ha.store.api.Storeable;
 
 import java.io.*;
+import java.util.Random;
 
 /**
  * @author Mahesh Kannan
@@ -182,6 +184,7 @@ public class SFSBBeanState
             oos.writeLong(lastAccess);
             oos.writeLong(maxIdleTime);
             oos.writeBoolean(isNew);
+
             oos.writeInt(state.length);
             oos.write(state);
         } finally {
@@ -191,20 +194,51 @@ public class SFSBBeanState
 
     @Override
     public void _storeable_readState(InputStream is) throws IOException {
-        ObjectInputStream ois = new ObjectInputStream(is);
+        ObjectInputStream ois = new ObjectInputStreamWithLoader(is, SFSBBeanState.class.getClassLoader());
+
         try {
             sessionId = (Serializable) ois.readObject();
             version = ois.readLong();
             lastAccess = ois.readLong();
             maxIdleTime = ois.readLong();
             isNew = ois.readBoolean();
+            
             int len = ois.readInt();
             state = new byte[len];
-            ois.read(state);
+            int index = 0;
+
+            for (int remaining = len; remaining > 0;) {
+                int count = ois.read(state, index, remaining);
+                if (count < 0) {
+                    throw new IOException("EOF while still (" + remaining + "/" + len + ") more bytes to read");
+                }
+                
+                remaining -= count;
+                index += count;
+            }
         } catch (ClassNotFoundException cnfEx) {
             throw new IOException(cnfEx);
         } finally {
             try { ois.close(); } catch (Exception ex) {}
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("SFSBBeanState{ ")
+                .append("sessionId=").append(sessionId)
+                .append(", lastAccess=").append(lastAccess)
+                .append(", isNew=").append(isNew)
+                .append(", state.length=").append(state.length)
+                .append(", version=").append(version)
+                .append(", maxIdleTime=").append(maxIdleTime)
+                .append("}");
+
+//        for (int i=0; i<state.length; i++) {
+//            byte b = state[i];
+//            sb.append("_" + b);
+//        }
+
+        return sb.toString();
     }
 }
