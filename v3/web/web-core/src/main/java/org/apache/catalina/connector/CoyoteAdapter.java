@@ -506,6 +506,7 @@ public class CoyoteAdapter
             // for an Adapter other than the CoyoteAdapter
             final Adapter toInvoke = ((ContextRootInfo) context).getAdapter();
             toInvoke.service(req, res);
+            toInvoke.afterService(req, res);
             return false;
         }
 
