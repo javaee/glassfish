@@ -42,7 +42,6 @@ package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Server;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -58,7 +57,6 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
 import java.util.Date;
-import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -157,14 +155,14 @@ public class GetHealthCommand implements AdminCommand {
 
         // order by instance name and output
         SortedSet<String> names = new TreeSet<String>(history.getInstances());
-        String formatState = "Instance %s %s";
-        String formatTime = " since %s";
         for(String name : names) {
             HealthHistory.InstanceHealth ih = history.getHealthByInstance(name);
-            result.append(String.format(formatState, name, ih.state));
-            if (HealthHistory.NOTIME != ih.time) {
-                result.append(String.format(formatTime,
-                    new Date(ih.time).toString()));
+            if (HealthHistory.NOTIME == ih.time) {
+                result.append(Strings.get("get.health.instance.state",
+                    name, ih.state));
+            } else {
+                result.append(Strings.get("get.health.instance.state.since",
+                    name, ih.state, new Date(ih.time).toString()));
             }
             result.append("\n");
         }
