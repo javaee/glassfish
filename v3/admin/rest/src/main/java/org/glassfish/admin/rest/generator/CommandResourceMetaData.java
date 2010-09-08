@@ -107,7 +107,7 @@ public class CommandResourceMetaData {
             {"Cluster", "list-instances", "GET", "list-instances", "List Cluster Instances", "id=$parent"},
             {"Cluster", "list-jmsdest", "GET", "list-jmsdest", "List JMS Destinations", "id=$parent"},
             {"Cluster", "jms-ping", "GET", "jms-ping", "Ping JMS", "id=$parent"},
-            {"Cluster", "migrate-timers", "POST", "migrate-timers", "Migrate Timers", "id=$parent"},
+            {"Cluster", "migrate-timers", "POST", "migrate-timers", "Migrate Timers"},
             {"Cluster", "start-cluster", "POST", "start-cluster", "Start Cluster", "id=$parent"},
             {"Cluster", "stop-cluster", "POST", "stop-cluster", "Stop Cluster", "id=$parent"},
             {"Config", "delete-config", "POST", "delete-config", "Delete Config", "id=$parent"},
