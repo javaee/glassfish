@@ -99,6 +99,7 @@ public class SetLogLevel implements AdminCommand {
     Domain domain;
 
     String[] validLevels = {"SEVERE", "WARNING", "INFO", "FINE", "FINER", "FINEST"};
+
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(SetLogLevel.class);
 
 
@@ -109,6 +110,9 @@ public class SetLogLevel implements AdminCommand {
         boolean isCluster = false;
         boolean isDas = false;
         boolean isInstance = false;
+        String successMsg = "";
+        boolean success = false;
+        boolean invalidLogLevels = false;
 
         Map<String, String> m = new HashMap<String, String>();
         try {
@@ -121,54 +125,68 @@ public class SetLogLevel implements AdminCommand {
                     if (s.equals(level)) {
                         m.put(logger_name + ".level", level);
                         vlvl = true;
-                        break;
+                        successMsg += localStrings.getLocalString(
+                                "set.log.level.properties", logger_name + " package set with log level " + level + ".\n");
                     }
                 }
                 if (!vlvl) {
                     report.setMessage(localStrings.getLocalString("set.log.level.invalid",
                             "Invalid logger level found {0}.  Valid levels are: SEVERE, WARNING, INFO, FINE, FINER, FINEST", level));
+                    invalidLogLevels = true;
+                    break;
                 }
             }
 
-            Server targetServer = domain.getServerNamed(target);
-
-            if (targetServer != null && targetServer.isDas()) {
-                isDas = true;
-            } else {
-                com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
-                if (cluster != null) {
-                    isCluster = true;
-                } else {
-                    isInstance = true;
-                }
-            }
-
-            if (isCluster || isInstance) {
-                loggingConfig.updateLoggingProperties(m, target);
-            } else if (isDas) {
-                loggingConfig.updateLoggingProperties(m);
-            } else {
+            if (invalidLogLevels) {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                String clusterName = "";
-                String msg = localStrings.getLocalString("invalid.target.sys.props",
-                        "Invalid target: {0}. Valid default target is a server named ''server'' (default) or cluster name.", target);
+            } else {
 
-                if (targetServer != null && targetServer.isInstance()) {
-                    clusterName = targetServer.getCluster().getName();
-                    msg = localStrings.getLocalString("invalid.target.sys.props",
-                            "Instance {0} is part of the Cluster so valid target value is '" + clusterName + "'.", target);
+                Server targetServer = domain.getServerNamed(target);
+
+                if (targetServer != null && targetServer.isDas()) {
+                    isDas = true;
+                } else {
+                    com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+                    if (cluster != null) {
+                        isCluster = true;
+                    } else {
+                        isInstance = true;
+                    }
                 }
 
-                report.setMessage(msg);
-                return;
-            }
+                if (isCluster || isInstance) {
+                    loggingConfig.updateLoggingProperties(m, target);
+                    success = true;
+                } else if (isDas) {
+                    loggingConfig.updateLoggingProperties(m);
+                    success = true;
+                } else {
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    String clusterName = "";
+                    String msg = localStrings.getLocalString("invalid.target.sys.props",
+                            "Invalid target: {0}. Valid default target is a server named ''server'' (default) or cluster name.", target);
 
-            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+                    if (targetServer != null && targetServer.isInstance()) {
+                        clusterName = targetServer.getCluster().getName();
+                        msg = localStrings.getLocalString("invalid.target.sys.props",
+                                "Instance {0} is part of the Cluster so valid target value is '" + clusterName + "'.", target);
+                    }
+
+                    report.setMessage(msg);
+                    return;
+                }
+
+                if (success) {
+                    successMsg += localStrings.getLocalString(
+                            "set.log.level.success", "These logging levels are set for " + target + ".");
+                    report.setMessage(successMsg);
+                    report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+                }
+            }
 
         } catch (IOException e) {
-            report.setMessage("Could not set logger levels ");
             report.setMessage(localStrings.getLocalString("set.log.level.failed",
-                    "Could not set logger levels."));
+                    "Could not set logger levels for " + target + "."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
         }
     }
