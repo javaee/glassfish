@@ -687,7 +687,7 @@
       <application-ref disable-timeout-in-minutes="30" enabled="true" lb-enabled="false" ref="JBIFramework"/>
       <application-ref disable-timeout-in-minutes="30" enabled="true" lb-enabled="false" ref="WSTCPConnectorLCModule"/>
     </cluster>
-    <cluster config-ref="testUpgradeClusterNonDefaultGMSProperties-config" heartbeat-address="228.8.83.98" heartbeat-enabled="true" heartbeat-port="18348" name="testUpgradeClusterNonDefaultGMSProperties">
+    <cluster config-ref="testUpgradeClusterNonDefaultGMSProperties-config" heartbeat-address="228.8.83.98" heartbeat-enabled="true" heartbeat-port="33000" name="testUpgradeClusterNonDefaultGMSProperties">
       <resource-ref enabled="true" ref="jdbc/__CallFlowPool"/>
       <application-ref disable-timeout-in-minutes="30" enabled="true" lb-enabled="false" ref="__ejb_container_timer_app"/>
       <application-ref disable-timeout-in-minutes="30" enabled="true" lb-enabled="false" ref="__JWSappclients"/>
