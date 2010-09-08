@@ -74,7 +74,7 @@
       <antcall target="package-war">
         <param name="destfile" value="${basedir}/generated/${appname}.war"/>
         <param name="build.classes.dir" value="${basedir}/src"/>
-        <param name="manifest.mf" value="${basedir}/manifest"/>
+        <param name="manifest.mf" value="${basedir}/MANIFEST.MF"/>
       </antcall>
     </target>
 
