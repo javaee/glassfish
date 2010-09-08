@@ -102,7 +102,7 @@ public class ServletContainerInitializerUtil {
 
             // Create a new List of URLs with missing fragments removed from
             // the currentUrls
-            ArrayList<URL> newClassLoaderUrlList = new ArrayList<URL>();
+            List<URL> newClassLoaderUrlList = new ArrayList<URL>();
             for (URL classLoaderUrl : webAppCl.getURLs()) {
                 // Check that the URL is using file protocol, else ignore it
                 if (!"file".equals(classLoaderUrl.getProtocol())) {
@@ -151,19 +151,19 @@ public class ServletContainerInitializerUtil {
      * @return Mapping of classes to list of ServletContainerInitializers
      * interested in them
      */
-    public static Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> getInterestList(Iterable<ServletContainerInitializer> initializers) {
+    public static Map<Class<?>, List<Class<? extends ServletContainerInitializer>>> getInterestList(Iterable<ServletContainerInitializer> initializers) {
 
         if (null == initializers) {
             return null;
         }
 
-        Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> interestList = null;
+        Map<Class<?>, List<Class<? extends ServletContainerInitializer>>> interestList = null;
 
         // Build a list of the classes / annotations in which the
         // initializers are interested
         for (ServletContainerInitializer sc : initializers) {
             if(interestList == null) {
-                interestList = new HashMap<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>>();
+                interestList = new HashMap<Class<?>, List<Class<? extends ServletContainerInitializer>>>();
             }
             Class sciClass = sc.getClass();
             HandlesTypes ann = (HandlesTypes) sciClass.getAnnotation(HandlesTypes.class);
@@ -171,10 +171,10 @@ public class ServletContainerInitializerUtil {
                 // This initializer does not contain @HandlesTypes
                 // This means it should always be called for all web apps
                 // So map it with a special token
-                ArrayList<Class<? extends ServletContainerInitializer>> currentInitializerList =
+                List<Class<? extends ServletContainerInitializer>> currentInitializerList =
                         interestList.get(ServletContainerInitializerUtil.class);
                 if(currentInitializerList == null) {
-                    ArrayList<Class<? extends ServletContainerInitializer>> arr =
+                    List<Class<? extends ServletContainerInitializer>> arr =
                             new ArrayList<Class<? extends ServletContainerInitializer>>();
                     arr.add(sciClass);
                     interestList.put(ServletContainerInitializerUtil.class, arr);
@@ -185,10 +185,10 @@ public class ServletContainerInitializerUtil {
                 Class[] interestedClasses = ann.value();
                 if( (interestedClasses != null) && (interestedClasses.length != 0) ) {
                     for(Class c : interestedClasses) {
-                        ArrayList<Class<? extends ServletContainerInitializer>> currentInitializerList =
+                        List<Class<? extends ServletContainerInitializer>> currentInitializerList =
                                 interestList.get(c);
                         if(currentInitializerList == null) {
-                            ArrayList<Class<? extends ServletContainerInitializer>> arr =
+                            List<Class<? extends ServletContainerInitializer>> arr =
                                     new ArrayList<Class<? extends ServletContainerInitializer>>();
                             arr.add(sciClass);
                             interestList.put(c, arr);
@@ -211,13 +211,13 @@ public class ServletContainerInitializerUtil {
      * were discovered
      * @param interestList The interestList built by the previous util method
      * @param cl The classloader to be used to load classes in WAR
-     * @return Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>>
+     * @return Map&lt;Class&lt;? extends ServletContainerInitializer&gt;, Set&lt;Class&lt;?&gt;&gt;&gt;
      *                          A Map of ServletContainerInitializer classes to be called and arguments to be passed
      *                          to them
      */
-    public  static Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> getInitializerList(
+    public  static Map<Class<? extends ServletContainerInitializer>, Set<Class<?>>> getInitializerList(
             Iterable<ServletContainerInitializer> initializers,
-            Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> interestList,
+            Map<Class<?>, List<Class<? extends ServletContainerInitializer>>> interestList,
             Types types,
             ClassLoader cl) {
 
@@ -227,13 +227,13 @@ public class ServletContainerInitializerUtil {
 
         // This contains the final list of initializers and the set of
         // classes to be passed to them as arg
-        Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> initializerList = null;
+        Map<Class<? extends ServletContainerInitializer>, Set<Class<?>>> initializerList = null;
 
         // If an initializer was present without any @HandleTypes, it 
         // must be called with a null set of classes
         if(interestList.containsKey(ServletContainerInitializerUtil.class)) {
-            initializerList = new HashMap<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>>();
-            ArrayList<Class<? extends ServletContainerInitializer>> initializersWithoutHandleTypes =
+            initializerList = new HashMap<Class<? extends ServletContainerInitializer>, Set<Class<?>>>();
+            List<Class<? extends ServletContainerInitializer>> initializersWithoutHandleTypes =
                     interestList.get(ServletContainerInitializerUtil.class);
             for(Class c : initializersWithoutHandleTypes) {
                 initializerList.put(c, null);
@@ -405,10 +405,10 @@ public class ServletContainerInitializerUtil {
      * the initializer list
      *
      */
-    private static Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> checkAgainstInterestList(
+    private static Map<Class<? extends ServletContainerInitializer>, Set<Class<?>>> checkAgainstInterestList(
                                 Types classInfo,
-                                Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> interestList,
-                                Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> initializerList,
+                                Map<Class<?>, List<Class<? extends ServletContainerInitializer>>> interestList,
+                                Map<Class<? extends ServletContainerInitializer>, Set<Class<?>>> initializerList,
                                 ClassLoader cl) {
 
         if (classInfo==null) {
@@ -419,7 +419,7 @@ public class ServletContainerInitializerUtil {
             if (type==null)
                 continue;
 
-            HashSet<Class<?>> resultSet = new HashSet<Class<?>>();
+            Set<Class<?>> resultSet = new HashSet<Class<?>>();
             if (type instanceof AnnotationType) {
                 for (AnnotatedElement ae : ((AnnotationType) type).allAnnotatedTypes()) {
                     try {
@@ -452,11 +452,11 @@ public class ServletContainerInitializerUtil {
                 }
             }
             if(initializerList == null) {
-                initializerList = new HashMap<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>>();
+                initializerList = new HashMap<Class<? extends ServletContainerInitializer>, Set<Class<?>>>();
             }
-            ArrayList<Class<? extends ServletContainerInitializer>> containerInitializers = interestList.get(c);
+            List<Class<? extends ServletContainerInitializer>> containerInitializers = interestList.get(c);
             for(Class<? extends ServletContainerInitializer> initializer : containerInitializers) {
-                HashSet<Class<?>> classSet = initializerList.get(initializer);
+                Set<Class<?>> classSet = initializerList.get(initializer);
                 if(classSet == null) {
                     classSet = new HashSet<Class<?>>();
                 }
@@ -478,17 +478,17 @@ public class ServletContainerInitializerUtil {
      * @param cl the ClassLoader to be used to load the class
      * @return the updated initializer list
      */
-    private static Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> checkAgainstInterestList(
+    private static Map<Class<? extends ServletContainerInitializer>, Set<Class<?>>> checkAgainstInterestList(
                                 ClassDependencyBuilder classInfo,
-                                Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> interestList,
-                                Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> initializerList,
+                                Map<Class<?>, List<Class<? extends ServletContainerInitializer>>> interestList,
+                                Map<Class<? extends ServletContainerInitializer>, Set<Class<?>>> initializerList,
                                 ClassLoader cl) {
         for(Class c : interestList.keySet()) {
             Set<String> resultFromClassInfo = classInfo.computeResult(c.getName());
             if(resultFromClassInfo.isEmpty()) {
                 continue;
             }
-            HashSet<Class<?>> resultSet = new HashSet<Class<?>>();
+            Set<Class<?>> resultSet = new HashSet<Class<?>>();
             for(Iterator<String> iter = resultFromClassInfo.iterator(); iter.hasNext();) {
                 String className = iter.next().replace('/', '.');
                 try {
@@ -503,11 +503,11 @@ public class ServletContainerInitializerUtil {
                 }
             }
             if(initializerList == null) {
-                initializerList = new HashMap<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>>();
+                initializerList = new HashMap<Class<? extends ServletContainerInitializer>, Set<Class<?>>>();
             }
-            ArrayList<Class<? extends ServletContainerInitializer>> containerInitializers = interestList.get(c);
+            List<Class<? extends ServletContainerInitializer>> containerInitializers = interestList.get(c);
             for(Class<? extends ServletContainerInitializer> initializer : containerInitializers) {
-                HashSet<Class<?>> classSet = initializerList.get(initializer);
+                Set<Class<?>> classSet = initializerList.get(initializer);
                 if(classSet == null) {
                     classSet = new HashSet<Class<?>>();
                 }

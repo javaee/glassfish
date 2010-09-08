@@ -5386,10 +5386,10 @@ public class StandardContext
 
         // Get the list of ServletContainerInitializers and the classes
         // they are interested in
-        Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> interestList =
+        Map<Class<?>, List<Class<? extends ServletContainerInitializer>>> interestList =
             ServletContainerInitializerUtil.getInterestList(
                 servletContainerInitializers);
-        Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> initializerList =
+        Map<Class<? extends ServletContainerInitializer>, Set<Class<?>>> initializerList =
             ServletContainerInitializerUtil.getInitializerList(
                 servletContainerInitializers, interestList,
                 getTypes(),
