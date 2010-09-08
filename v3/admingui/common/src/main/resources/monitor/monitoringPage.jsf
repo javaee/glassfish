@@ -57,10 +57,10 @@
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
         setPageSessionAttribute(key="rest-api" value="true");
-        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
         setPageSessionAttribute(key="convertToFalseList" value={"dtraceEnabled", "monitoringEnabled", "mbeanEnabled"});
         // REST - TODO
-        getMonitorLevels(endpoint="#{pageSession.selfUrl}" monitorCompList="#{requestScope.tableList}")
+        getMonitorLevels(endpoint="#{pageSession.parentUrl}" monitorCompList="#{requestScope.tableList}")
         //getValidMonitorLevels(monitorLevelList="#{pageSession.levelList}")
         
     />

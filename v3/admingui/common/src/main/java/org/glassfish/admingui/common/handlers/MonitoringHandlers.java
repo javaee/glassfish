@@ -88,14 +88,13 @@ public class MonitoringHandlers {
         List result = new ArrayList();
         try {
             String monitoringServiceEndPoint = endpoint + "/monitoring-service";
-            Map attrs = RestApiHandlers.getEntityAttrs(monitoringServiceEndPoint, "entitiy");
+            Map<String,Object> attrs = RestApiHandlers.getEntityAttrs(monitoringServiceEndPoint+"/container-monitoring", "entitiy");
 
-            ObjectName[] pnames = (ObjectName[]) attrs.get("ContainerMonitoring");
-            if (pnames != null) {
-                for (int i = 0; i < pnames.length; i++) {
+            if (attrs != null) {
+                for (String prop : attrs.keySet()) {
                     Map oneRow = new HashMap();
                     String cname = null;
-                    String pname = pnames[i].getKeyProperty("name");
+                    String pname = prop;
                     ListIterator ci = containerDispList.listIterator();
                     ListIterator vi = containerNameList.listIterator();
                     while (ci.hasNext() && vi.hasNext()) {
@@ -106,15 +105,15 @@ public class MonitoringHandlers {
                         }
                     }
                     oneRow.put("monCompName", (cname == null) ? pname : cname);
-                    oneRow.put("level", V3AMX.getAttribute(pnames[i], "Level"));
+                    oneRow.put("level", attrs.get(prop));
                     oneRow.put("selected", false);
                     result.add(oneRow);
                 }
             }
 
-            String monitoringLevelsEndPoint = endpoint + "/module-monitoring-levels";
+            String monitoringLevelsEndPoint = monitoringServiceEndPoint + "/module-monitoring-levels";
             attrs = RestApiHandlers.getEntityAttrs(monitoringLevelsEndPoint, "entity");
-            for (Object oneMonComp : attrs.keySet()) {
+            for (String oneMonComp : attrs.keySet()) {
                 Map oneRow = new HashMap();
                 String name = null;
                 ListIterator ni = monDisplayList.listIterator();
@@ -127,7 +126,7 @@ public class MonitoringHandlers {
                     }
                 }
                 if (name == null) {
-                    name = (String) oneMonComp;
+                    name = oneMonComp;
                 }
                 oneRow.put("monCompName", name);
                 oneRow.put("level", attrs.get(oneMonComp));
@@ -303,15 +302,15 @@ public class MonitoringHandlers {
                                 details = details + monAttrs.get("environment") + " " + monAttrs.get("jrubyversion");
                             }
 
-                            statMap.put("Name", mname);
-                            statMap.put("StartTime", start);
-                            statMap.put("LastTime", last);
-                            statMap.put("Description", desc);
-                            statMap.put("Value", (val == null) ? "" : val);
-                            statMap.put("Details", (details == null) ? "--" : details);
-                            statMap.put("Thresholds", (thresholds == null) ? "--" : thresholds);
-                            statMap.put("QueueSize", (queuesize == null) ? "--" : queuesize);
-                            statMap.put("Runtimes", (runtimes == null) ? "--" : runtimes);
+                            statMap.put("name", mname);
+                            statMap.put("startTime", start);
+                            statMap.put("lastTime", last);
+                            statMap.put("description", desc);
+                            statMap.put("value", (val == null) ? "" : val);
+                            statMap.put("details", (details == null) ? "--" : details);
+                            statMap.put("thresholds", (thresholds == null) ? "--" : thresholds);
+                            statMap.put("queueSize", (queuesize == null) ? "--" : queuesize);
+                            statMap.put("runtimes", (runtimes == null) ? "--" : runtimes);
                             result.add(statMap);
                         }
                     }
@@ -562,16 +561,16 @@ public class MonitoringHandlers {
                             val = apptype;
                         }
                         if (nostatskey) {
-                            statMap.put("Name", (mname != null) ? mname : monName);
-                            statMap.put("Thresholds", (thresholds == null) ? "--" : thresholds);
-                            statMap.put("QueueSize", (queuesize == null) ? "--" : queuesize);
-                            statMap.put("Runtimes", (runtimes == null) ? "--" : runtimes);
-                            statMap.put("Current", current);
-                            statMap.put("StartTime", start);
-                            statMap.put("LastTime", last);
-                            statMap.put("Description", desc);
-                            statMap.put("Value", (val == null) ? "" : val);
-                            statMap.put("Details", (details == null) ? "--" : details);
+                            statMap.put("name", (mname != null) ? mname : monName);
+                            statMap.put("thresholds", (thresholds == null) ? "--" : thresholds);
+                            statMap.put("queueSize", (queuesize == null) ? "--" : queuesize);
+                            statMap.put("runtimes", (runtimes == null) ? "--" : runtimes);
+                            statMap.put("current", current);
+                            statMap.put("startTime", start);
+                            statMap.put("lastTime", last);
+                            statMap.put("description", desc);
+                            statMap.put("value", (val == null) ? "" : val);
+                            statMap.put("details", (details == null) ? "--" : details);
 
                             result.add(statMap);
                         }
@@ -1166,21 +1165,21 @@ public class MonitoringHandlers {
     
     final private static List monNamesList = new ArrayList();
     static{
-        monNamesList.add("Jvm");
-        monNamesList.add("WebContainer");
-        monNamesList.add("HttpService");
-        monNamesList.add("ThreadPool");
-        monNamesList.add("JdbcConnectionPool");
-        monNamesList.add("ConnectorConnectionPool");
-        monNamesList.add("EjbContainer");
-        monNamesList.add("TransactionService");
-        monNamesList.add("Orb");
-        monNamesList.add("ConnectorService");
-        monNamesList.add("JmsService");
-        monNamesList.add("WebServicesContainer");
-        monNamesList.add("Jpa");
-        monNamesList.add("Security");
-        monNamesList.add("Jersey");
+        monNamesList.add("jvm");
+        monNamesList.add("webContainer");
+        monNamesList.add("httpService");
+        monNamesList.add("threadPool");
+        monNamesList.add("jdbcConnectionPool");
+        monNamesList.add("connectorConnectionPool");
+        monNamesList.add("ejbContainer");
+        monNamesList.add("transactionService");
+        monNamesList.add("orb");
+        monNamesList.add("connectorService");
+        monNamesList.add("jmsService");
+        monNamesList.add("webServicesContainer");
+        monNamesList.add("jpa");
+        monNamesList.add("security");
+        monNamesList.add("jersey");
     }
 
     final private static List containerDispList= new ArrayList();
