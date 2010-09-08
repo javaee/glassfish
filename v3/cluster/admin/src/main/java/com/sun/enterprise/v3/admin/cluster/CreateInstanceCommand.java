@@ -109,8 +109,8 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
     @Param(name="cluster", optional=true)
     String clusterName;
 
-    @Param(name="lbenabled", optional=true, defaultValue=ServerRef.LBENABLED_DEFAULT_VALUE)
-    private Boolean lbEnabled;
+    @Param(name="lbenabled", optional = true, acceptableValues = "true,false")
+    private String lbEnabled;
 
     @Param(name = "checkports", optional = true, defaultValue = "true")
     private boolean checkPorts;

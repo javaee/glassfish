@@ -78,8 +78,8 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
     @Param(name = CLUSTER, optional = true)
     private String clusterName;
 
-    @Param(name="lbenabled", optional=true, defaultValue = ServerRef.LBENABLED_DEFAULT_VALUE)
-    private Boolean lbEnabled;
+    @Param(name="lbenabled", optional = true, acceptableValues = "true,false")
+    private String lbEnabled;
 
     @Param(name = "systemproperties", optional = true, separator = ':')
     private String systemProperties;     // XXX - should it be a Properties?

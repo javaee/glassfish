@@ -69,6 +69,7 @@ import org.glassfish.quality.ToDo;
 import java.beans.PropertyVetoException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -90,6 +91,8 @@ import org.glassfish.api.admin.CommandRunner;
 @Configured
 @SuppressWarnings("unused")
 public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer, RefContainer {
+
+    String lbEnabledSystemProperty = "org.glassfish.lb-enabled-default";
 
     @Param(name = "name", primary = true)
     public void setName(String value) throws PropertyVetoException;
@@ -535,6 +538,29 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                         newServerRef.setRef(instanceName);
                         if(lbEnabled != null){
                             newServerRef.setLbEnabled(lbEnabled);
+                        } else {
+                            //check whether all instances in cluster had lb-enabled set to false
+                            List<ServerRef> serverRefs = c.getServerRef();
+                            Iterator<ServerRef> serverRefIter = serverRefs.iterator();
+                            boolean allLBEnabled = false;
+                            while (!allLBEnabled && serverRefIter.hasNext()) {
+                                ServerRef serverRef = serverRefIter.next();
+                                allLBEnabled = allLBEnabled
+                                        || Boolean.parseBoolean(serverRef.getLbEnabled());
+                            }
+                            //if there are existing instances in cluster
+                            //and they all have lb-enabled to false, set it
+                            //false for new instance as well
+                            if (!allLBEnabled && serverRefs.size() > 0) {
+                                newServerRef.setLbEnabled("false");
+                            } else {
+                                //check if system property exists and use that
+                                String lbEnabledDefault =
+                                        System.getProperty(lbEnabledSystemProperty);
+                                if(lbEnabledDefault != null){
+                                    newServerRef.setLbEnabled(lbEnabledDefault);
+                                }
+                            }
                         }
                         c.getServerRef().add(newServerRef);
                     }
