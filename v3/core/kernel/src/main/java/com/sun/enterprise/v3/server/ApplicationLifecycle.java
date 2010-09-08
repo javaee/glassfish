@@ -254,18 +254,30 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 appRegistry.remove(appName);
 
                 for (EngineRef module : get("started", EngineRef.class)) {
-                    module.stop(context);
+                    try {
+                        module.stop(context);
+                    } catch (Exception e) {
+                        // ignore
+                    }
                 }
                 try {
                     PreDestroy.class.cast(context).preDestroy();
                 } catch (Exception e) {
-
+                    // ignore
                 }                
                 for (EngineRef module : get("loaded", EngineRef.class)) {
-                    module.unload(context);
+                    try {
+                        module.unload(context);
+                    } catch (Exception e) {
+                        // ignore
+                    }
                 }
                 for (EngineRef module : get("prepared", EngineRef.class)) {
-                    module.clean(context);
+                    try {
+                        module.clean(context);
+                    } catch (Exception e) {
+                        // ignore
+                    }
                 }
                 if (!commandParams.keepfailedstubs) {
                     context.clean();
