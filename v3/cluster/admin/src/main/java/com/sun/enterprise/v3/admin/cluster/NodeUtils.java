@@ -42,6 +42,7 @@ package com.sun.enterprise.v3.admin.cluster;
 
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.internal.api.RelativePathResolver;
+import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.SshConnector;
 import com.sun.enterprise.config.serverbeans.SshAuth;
