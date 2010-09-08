@@ -98,7 +98,7 @@ public final class CommonWorkManager implements WorkManager {
     public CommonWorkManager(String threadPoolId, ConnectorRuntime runtime, String raName, ClassLoader cl)
             throws ConnectorRuntimeException {
 
-        if (runtime.isServer()) {
+        if (runtime.isServer() || runtime.isEmbedded()) {
             this.runtime = runtime;
             this.raName = raName;
             this.rarClassLoader = cl;

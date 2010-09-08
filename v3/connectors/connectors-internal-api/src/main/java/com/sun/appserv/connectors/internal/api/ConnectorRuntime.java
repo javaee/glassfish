@@ -306,9 +306,16 @@ public interface ConnectorRuntime extends ConnectorConstants{
     /**
      * Checks whether the executing environment is application server
      * @return true if execution environment is server
-     *         false if it is client
+     *         false if it is not server
      */
     boolean isServer();
+
+    /**
+     * Checks whether the executing environment is embedded runtime 
+     * @return true if execution environment is embedded mode
+     *         false if it non-embedded
+     */
+    boolean isEmbedded() ;
 
     /**
      * Initializes the execution environment. If the execution environment
