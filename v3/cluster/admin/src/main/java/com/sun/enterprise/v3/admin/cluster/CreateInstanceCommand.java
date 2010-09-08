@@ -44,7 +44,6 @@ import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.Nodes;
-import com.sun.enterprise.config.serverbeans.ServerRef;
 import com.sun.enterprise.universal.process.ProcessManagerException;
 import com.sun.enterprise.util.StringUtils;
 import java.io.IOException;
@@ -151,6 +150,14 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
         theNode = nodes.getNode(node);
         if (theNode == null) {
             String msg = Strings.get("noSuchNode", node);
+            logger.warning(msg);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);
+            return;
+        }
+
+        if (lbEnabled != null && clusterName == null) {
+            String msg = Strings.get("lbenabledNotForStandaloneInstance");
             logger.warning(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);

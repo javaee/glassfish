@@ -53,7 +53,6 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.admin.util.SecureAdminClientManager;
-import com.sun.enterprise.config.serverbeans.ServerRef;
 import com.sun.enterprise.admin.servermgmt.KeystoreManager;
 import com.sun.enterprise.admin.util.CommandModelData.ParamModelData;
 import com.sun.enterprise.security.store.PasswordAdapter;
@@ -114,6 +113,11 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         if (configName != null && clusterName != null) {
             throw new CommandException(
                     Strings.get("ConfigClusterConflict"));
+        }
+
+        if (lbEnabled != null && clusterName == null) {
+            throw new CommandException(
+                    Strings.get("lbenabledNotForStandaloneInstance"));
         }
 
         setDasDefaultsOnly = true; //Issue 12847 - Call super.validate to setDasDefaults only
