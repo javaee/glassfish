@@ -287,7 +287,7 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
 
         WeldBootstrap bootstrap = (WeldBootstrap)context.getTransientAppMetaData(WELD_BOOTSTRAP,
                 WeldBootstrap.class);
-        if (null == bootstrap) {
+        if ( bootstrap == null) {
             bootstrap = new WeldBootstrap();
             Application app = context.getModuleMetaData(Application.class);
             appToBootstrap.put(app, bootstrap);
@@ -310,7 +310,7 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
 
         // Create a Deployment Collecting Information From The ReadableArchive (archive)
 
-        if (null == deploymentImpl) {
+        if (deploymentImpl == null) {
             
             deploymentImpl = new DeploymentImpl(archive, ejbs, context);
 
@@ -331,13 +331,15 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
             ProxyServices proxyServices = new ProxyServicesImpl();
             deploymentImpl.getServices().add(ProxyServices.class, proxyServices);
 
-            if( ejbBundle != null ) {
-                // EJB Services is registered as a top-level service
-                deploymentImpl.getServices().add(EjbServices.class, ejbServices);
-            }
         } else {
             deploymentImpl.scanArchive(archive, ejbs, context);
         }
+        
+        if( ejbBundle != null && (!deploymentImpl.getServices().contains(EjbServices.class))) {
+            // EJB Services is registered as a top-level service
+            deploymentImpl.getServices().add(EjbServices.class, ejbServices);
+        }
+        
 
         WebBundleDescriptor wDesc = context.getModuleMetaData(WebBundleDescriptor.class);
         if( wDesc != null) {
