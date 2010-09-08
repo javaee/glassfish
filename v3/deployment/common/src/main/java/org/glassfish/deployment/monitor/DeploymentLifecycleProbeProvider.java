@@ -56,12 +56,14 @@ public class DeploymentLifecycleProbeProvider {
      *
      * @param appName the name of the application has been deployed
      * @param appType the type of the application has been deployed
+     * @param loadTime the time it took for this application to load
      *
      */
     @Probe(name="applicationDeployedEvent")
     public void applicationDeployedEvent(
         @ProbeParam("appName") String appName,
-        @ProbeParam("appType") String appType) {}
+        @ProbeParam("appType") String appType, 
+        @ProbeParam("loadTime") String loadTime) {}
 
 
     /**

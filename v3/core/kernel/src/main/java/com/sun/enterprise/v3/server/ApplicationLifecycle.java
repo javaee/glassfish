@@ -48,6 +48,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.Calendar;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -221,6 +222,8 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
     }
 
     public ApplicationInfo deploy(Collection<Sniffer> sniffers, final ExtendedDeploymentContext context) {
+
+        long operationStartTime = Calendar.getInstance().getTimeInMillis();
 
         events.send(new Event<DeploymentContext>(Deployment.DEPLOYMENT_START, context));
         final ActionReport report = context.getActionReport();
@@ -403,8 +406,8 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
         } finally {
             if (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS) {
                 events.send(new Event<ApplicationInfo>(Deployment.DEPLOYMENT_SUCCESS, appInfo));
-                deploymentLifecycleProbeProvider.applicationDeployedEvent(appName, getApplicationType(appInfo));
-
+                long operationTime = Calendar.getInstance().getTimeInMillis() - operationStartTime;
+                deploymentLifecycleProbeProvider.applicationDeployedEvent(appName, getApplicationType(appInfo), String.valueOf(operationTime));
             } else {
                 events.send(new Event<DeploymentContext>(Deployment.DEPLOYMENT_FAILURE, context));
             }
@@ -1892,20 +1895,17 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
     }
 
     private String getApplicationType(ApplicationInfo appInfo) {
-        for (Sniffer sniffer : appInfo.getSniffers()) {
-            String moduleType = sniffer.getModuleType();
-            if (moduleType.equals(Application.EAR_SNIFFER_TYPE)) {
-                return Application.EAR_SNIFFER_TYPE;
-            } else if (moduleType.equals(Application.WEB_SNIFFER_TYPE)) {
-                return Application.WEB_SNIFFER_TYPE;
-            } else if (moduleType.equals(Application.EJB_SNIFFER_TYPE)) {
-                return Application.EJB_SNIFFER_TYPE;
-            } else if (moduleType.equals(Application.APPCLIENT_SNIFFER_TYPE)) {
-                return Application.APPCLIENT_SNIFFER_TYPE;
-            } else if (moduleType.equals(Application.CONNECTOR_SNIFFER_TYPE)) {
-                return Application.CONNECTOR_SNIFFER_TYPE;
+        StringBuffer sb = new StringBuffer();
+        if (appInfo.getSniffers().size() > 0) {
+            for (Sniffer sniffer : appInfo.getSniffers()) {
+                if (sniffer.isUserVisible()) {
+                    sb.append(sniffer.getModuleType() + ", ");
+                }
             }
         }
-        return Application.EXTERNAL_MODULE_TYPE;
+        if (sb.length() > 2) {
+            return sb.substring(0, sb.length()-2);
+        }
+        return sb.toString();
     }
 }

@@ -42,12 +42,16 @@ package org.glassfish.deployment.monitor;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Map;
+import java.util.HashMap;
 import com.sun.logging.LogDomains;
 import org.glassfish.external.statistics.CountStatistic;
 import org.glassfish.external.statistics.RangeStatistic;
+import org.glassfish.external.statistics.StringStatistic;
 import org.glassfish.external.statistics.impl.CountStatisticImpl;
 import org.glassfish.external.statistics.impl.RangeStatisticImpl;
 import org.glassfish.external.statistics.impl.StatisticImpl;
+import org.glassfish.external.statistics.impl.StringStatisticImpl;
 import org.glassfish.external.probe.provider.annotations.*;
 import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
@@ -71,8 +75,24 @@ public class DeploymentLifecycleStatsProvider {
     private static final String TOTAL_APPLICATIONS_DEPLOYED_DESCRIPTION =
         "Total number of applications ever deployed";
 
+    private static final String APPLICATIONS_INFORMATION_DESCRIPTION =
+        "Information about deployed applications";
+
+    private static final String MODULE_TYPE = "moduleType";
+    private static final String LOADING_TIME = "loadingTime";
+
+    private static final int COLUMN_LENGTH = 25;
+    private static final String LINE_BREAK = "%%%EOL%%%";
+
     private RangeStatisticImpl activeApplicationsDeployedCount;
     private CountStatisticImpl totalApplicationsDeployedCount;
+
+    private StringStatisticImpl appsInfoStat = new StringStatisticImpl(
+        "ApplicationsInformation", "List", 
+        APPLICATIONS_INFORMATION_DESCRIPTION);
+
+    private Map<String, Map<String, String>> appsInfoMap = 
+        new HashMap<String, Map<String, String>>(); 
 
     public DeploymentLifecycleStatsProvider() {
         long curTime = System.currentTimeMillis();
@@ -96,15 +116,59 @@ public class DeploymentLifecycleStatsProvider {
         return totalApplicationsDeployedCount;
     }
 
+    @ManagedAttribute(id="applicationsinfo")
+    @Description(APPLICATIONS_INFORMATION_DESCRIPTION)
+    public StringStatistic getApplicationsInfo() {
+        StringBuffer strBuf = new StringBuffer(1024);
+        if (!appsInfoMap.isEmpty()) {
+            // Set the headings for the tabular output
+            int appNameLength = COLUMN_LENGTH;
+            int moduleTypeLength = COLUMN_LENGTH;
+            for (String appName : appsInfoMap.keySet()) {
+                if (appName.length() > appNameLength) {
+                    appNameLength = appName.length() + 1;
+                }
+                String moduleType = appsInfoMap.get(appName).get(MODULE_TYPE); 
+                if (moduleType.length() > moduleTypeLength) {
+                    moduleTypeLength = moduleType.length() + 1;
+                }
+            }
+
+            strBuf.append(LINE_BREAK).append(LINE_BREAK);
+            appendColumn(strBuf, "Application Name", appNameLength);
+	    appendColumn(strBuf, "Module Type", moduleTypeLength);
+            appendColumn(strBuf, "Loading Time (ms)", COLUMN_LENGTH);
+            strBuf.append(LINE_BREAK);
+
+            for (String appName : appsInfoMap.keySet()) {
+                appendColumn(strBuf, appName, appNameLength);
+                Map<String, String> appInfoMap = appsInfoMap.get(appName);
+                String moduleType = appInfoMap.get(MODULE_TYPE);
+                String loadingTime = appInfoMap.get(LOADING_TIME);
+		appendColumn(strBuf, moduleType, COLUMN_LENGTH);
+                appendColumn(strBuf, loadingTime, COLUMN_LENGTH);
+                strBuf.append(LINE_BREAK);
+            }
+        }
+        appsInfoStat.setCurrent((strBuf == null)? "" : strBuf.toString());
+        return appsInfoStat.getStatistic();
+    }
+
     @ProbeListener("glassfish:deployment:lifecycle:applicationDeployedEvent")
     public void applicationDeployedEvent(
                     @ProbeParam("appName") String appName,
-                    @ProbeParam("appType") String appType) {
+                    @ProbeParam("appType") String appType,
+                    @ProbeParam("loadTime") String loadTime) {
         if (logger.isLoggable(Level.FINEST)) {
             logger.finest("Application deployed event received - " +
                           "appName = " + appName +
-                          ": appType = " + appType);
+                          ": appType = " + appType + 
+                          ": loadTime = " + loadTime);
         }
+        Map<String, String> appInfoMap = new HashMap<String, String>(); 
+        appInfoMap.put(MODULE_TYPE, appType);
+        appInfoMap.put(LOADING_TIME, loadTime);
+        appsInfoMap.put(appName, appInfoMap);
         synchronized (activeApplicationsDeployedCount) {
             activeApplicationsDeployedCount.setCurrent(
                 activeApplicationsDeployedCount.getCurrent() + 1);
@@ -121,9 +185,17 @@ public class DeploymentLifecycleStatsProvider {
                           "appName = " + appName +
                           ": appType = " + appType);
         }
+        appsInfoMap.remove(appName);
         synchronized (activeApplicationsDeployedCount) {
             activeApplicationsDeployedCount.setCurrent(
                 activeApplicationsDeployedCount.getCurrent() - 1);
+        }
+    }
+
+    private void appendColumn(StringBuffer buf, String text, int length) {
+        buf.append(text);
+        for (int i=text.length(); i<length; i++){
+            buf.append(" ");
         }
     }
 }
