@@ -56,9 +56,16 @@ import java.util.Collections;
  *
  * @author Kohsuke Kawaguchi
  */
+@SuppressWarnings("unchecked")
 public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T>  {
     private Collection<Inhabitant> companions;
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "-" + System.identityHashCode(this) + 
+            "(" + typeName() + ")";
+    }
+    
     public final T get() {
         try {
             if (TracingUtilities.isEnabled())

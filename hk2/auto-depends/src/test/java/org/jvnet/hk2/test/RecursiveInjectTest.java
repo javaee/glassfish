@@ -2,6 +2,7 @@ package org.jvnet.hk2.test;
 
 import static org.junit.Assert.*;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hk2.annotations.Inject;
@@ -24,6 +25,7 @@ import org.jvnet.hk2.test.impl.RecursiveB2OptA;
 @RunWith(Hk2Runner.class)
 @Hk2RunnerOptions(reinitializePerTest=true)
 // TODO: cover Holder<> behavior with recursion
+@Ignore("any and all recursion is not supported")
 public class RecursiveInjectTest {
 
   @Inject

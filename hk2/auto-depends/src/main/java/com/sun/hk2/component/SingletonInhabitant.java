@@ -36,7 +36,6 @@
  */
 package com.sun.hk2.component;
 
-import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Womb;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.component.Inhabitant;
@@ -46,54 +45,33 @@ import org.jvnet.hk2.component.Inhabitant;
  * @author Kohsuke Kawaguchi
  */
 public class SingletonInhabitant<T> extends AbstractWombInhabitantImpl<T> {
-    private volatile T object;
-    private volatile boolean initializing;
+  private volatile T object;
 
-    public SingletonInhabitant(Womb<T> womb) {
-        super(womb);
-    }
+  public SingletonInhabitant(Womb<T> womb) {
+      super(womb);
+  }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public T get(Inhabitant onBehalfOf) {
-        if (object==null) {
-            synchronized(this) {
-                if (object==null) {
-                  // we do it in two steps in case there is an initialization error, we 
-                  // want to avoid recursing
-                  object = womb.create(onBehalfOf);
-                  try {
-                    initializing = true;
-                    womb.initialize(object, onBehalfOf);
-                  } catch (Throwable e) {
-                    object = null;
-                    throw (e instanceof ComponentException) ? 
-                        (ComponentException)e : new ComponentException("problem initializing: " + object, e);
-                  } finally {
-                    initializing = false;
-                  }
-                }
-            }
-        } else if (initializing) {
-            synchronized(this) {
-                if (initializing) {
-                  throw new ComponentException("problem initializing - cycle detected involving: " + this);
-                }
-            }
-        }
-        return object;
-    }
+  @SuppressWarnings("unchecked")
+  public T get(Inhabitant onBehalfOf) {
+      if(object==null) {
+          synchronized(this) {
+              if(object==null)
+                  object =womb.get(onBehalfOf);
+          }
+      }
+      return object;
+  }
 
-    @Override
-    public synchronized void release() {
-        if (object!=null) {
-            dispose(object);
-            object=null;
-        }
-    }
+  public void release() {
+      if (object!=null) {
+          synchronized (this) {
+              dispose(object);
+              object=null;
+          }
+      }
+  }
 
-    @Override
-    public boolean isInstantiated() {
-        return object!=null;
-    }
+  public boolean isInstantiated() {
+      return object!=null;
+  }
 }
