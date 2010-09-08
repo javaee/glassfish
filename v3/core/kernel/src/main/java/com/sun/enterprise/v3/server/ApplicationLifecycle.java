@@ -1517,7 +1517,16 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
             }
             appRef.setVirtualServers(sb.toString());
         }
-        appRef.setLbEnabled(deployParams.lbenabled.toString());
+        if(deployParams.lbenabled != null){
+            appRef.setLbEnabled(deployParams.lbenabled);
+        } else {
+            //check if system property exists and use that
+            String lbEnabledDefault =
+                    System.getProperty(Server.lbEnabledSystemProperty);
+            if (lbEnabledDefault != null) {
+                appRef.setLbEnabled(lbEnabledDefault);
+            }
+        }
         appRef.setEnabled(deployParams.enabled.toString());
     }        
 
