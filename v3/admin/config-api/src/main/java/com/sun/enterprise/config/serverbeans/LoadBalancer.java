@@ -153,6 +153,25 @@ public interface LoadBalancer extends ConfigBeanProxy, Injectable, PropertyBag {
     public void setDevicePort(String value) throws PropertyVetoException;
     
     /**
+     * Gets the value of the auto apply enabled property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute(dataType=Boolean.class)
+    @Deprecated
+    public String getAutoApplyEnabled();
+
+    /**
+     * Sets the value of the auto apply enabled property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    @Deprecated 
+    public void setAutoApplyEnabled(String value) throws PropertyVetoException;
+
+    /**
      *Properties as per {@link org.jvnet.hk2.config.types.PropertyBag}
      *
      * Known properties:
