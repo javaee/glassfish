@@ -76,6 +76,9 @@ public class ListLifecycleModulesCommand implements AdminCommand  {
     @Param(primary=true, optional=true)
     public String target = "server";
 
+    @Param(optional=true, defaultValue="false", shortName="t")
+    public Boolean terse = false;
+
     @Inject
     Domain domain;
 
@@ -86,12 +89,18 @@ public class ListLifecycleModulesCommand implements AdminCommand  {
         ActionReport report = context.getActionReport();
         ActionReport.MessagePart part = report.getTopMessagePart();
 
+        boolean found = false;
         for (Application app : domain.getApplicationsInTarget(target)) {
             if (Boolean.valueOf(app.getDeployProperties().getProperty
                 (ServerTags.IS_LIFECYCLE))) {
                 ActionReport.MessagePart childPart = part.addChild();
                 childPart.setMessage(app.getName());
+                found = true;
             }
+        }
+
+        if (!found && !terse) {
+            part.setMessage(localStrings.getLocalString("list.components.no.elements.to.list", "Nothing to List."));
         }
 
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);

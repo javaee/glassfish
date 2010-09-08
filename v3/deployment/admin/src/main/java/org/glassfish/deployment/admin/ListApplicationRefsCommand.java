@@ -81,6 +81,9 @@ public class ListApplicationRefsCommand implements AdminCommand {
     @Param(optional=true, defaultValue="false", shortName="v")
     public Boolean verbose = false;
 
+    @Param(optional=true, defaultValue="false", shortName="t")
+    public Boolean terse = false;
+
     @Inject
     Domain domain;
 
@@ -104,7 +107,7 @@ public class ListApplicationRefsCommand implements AdminCommand {
             childPart.setMessage(message);
             numOfApplications++;
         }
-        if (numOfApplications == 0) {
+        if (numOfApplications == 0 && !terse) {
             part.setMessage(localStrings.getLocalString("list.components.no.elements.to.list", "Nothing to List."));
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);

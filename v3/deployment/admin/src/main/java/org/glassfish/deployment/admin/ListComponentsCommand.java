@@ -71,7 +71,7 @@ import java.util.*;
 @Scoped(PerLookup.class)
 @ExecuteOn(value={RuntimeType.DAS})
 @TargetType(value={CommandTarget.DOMAIN, CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
-public class ListComponentsCommand  implements AdminCommand {
+public class ListComponentsCommand implements AdminCommand {
 
     @Param(optional=true)
     String type = null;
@@ -81,6 +81,9 @@ public class ListComponentsCommand  implements AdminCommand {
 
     @Param(optional=true, defaultValue="false", shortName="v")
     public Boolean verbose = false;
+
+    @Param(optional=true, defaultValue="false", shortName="t")
+    public Boolean terse = false;
 
     @Param(optional=true, defaultValue="false")
     public Boolean subcomponents = false;
@@ -106,7 +109,7 @@ public class ListComponentsCommand  implements AdminCommand {
         ActionReport.MessagePart part = report.getTopMessagePart();        
         int numOfApplications = 0;
         for (Application app : domain.getApplicationsInTarget(target)) {
-                if (app.getObjectType().equals("user")) {
+                if (!Boolean.valueOf(app.getDeployProperties().getProperty(ServerTags.IS_LIFECYCLE))) {
                     if (type==null || isApplicationOfThisType(app, type)) {
                         ActionReport.MessagePart childPart = part.addChild();
                         String message = app.getName() + " "
@@ -128,7 +131,7 @@ public class ListComponentsCommand  implements AdminCommand {
                     }
                 }
         }
-        if (numOfApplications == 0) {
+        if (numOfApplications == 0 && !terse) {
             part.setMessage(localStrings.getLocalString("list.components.no.elements.to.list", "Nothing to List."));            
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
@@ -279,7 +282,7 @@ public class ListComponentsCommand  implements AdminCommand {
 
         final ParameterMap parameters = new ParameterMap();
         parameters.add("DEFAULT", appName);
-        parameters.add("suppressNilOutput", "true");
+        parameters.add("terse", "true");
         parameters.add("resources", resources.toString());
 
         inv.parameters(parameters).execute();
