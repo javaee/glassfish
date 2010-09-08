@@ -48,6 +48,8 @@
         setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
         setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
         setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings");
+        getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
+
     />
     <sun:html id="html2"> 
         <sun:head id="propertyhead" title="#{pageTitle}" >
@@ -75,7 +77,14 @@
                     <sun:propertySheet id="propertySheet">	
                         <event>
                             <!beforeCreate
-                                getJvmReport( type="#{viewVal}", report="#{pageSession.report}");
+                                gf.createAttributeMap(keys={"target", "type"}
+                                    values={"server", "summary"},
+                                    map="#{requestScope.attrs}");
+
+                                    gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/server-config/java-config/generate-jvm-report.json",
+                                    method="POST",
+                                    attrs="#{requestScope.attrs}",
+                                    result="#{pageSession.report}");
                             />
                         </event>
 
@@ -88,7 +97,7 @@
                                         setAttribute(key="click" value="$this{component}");
                                         setAttribute(key="viewVal" value="#{click.selected}")
                                         setAttribute(key="instanceName" value="#{instanceName}")
-                                        setAttribute(key="pageTitle" value="#{pageTitle}")
+                                        setAttribute(key="pageTitle" value="#{pageTitle} - #{instanceName}")
                                         gf.navigate(page="#{request.contextPath}/common/appServer/jvmReport.jsf");
                                     />
                                 </sun:dropDown>
@@ -96,9 +105,9 @@
                         </sun:propertySheetSection>
                         <sun:propertySheetSection id="reportPropertySection">
                             <sun:property id="ReportProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" readOnly="#{true)" >
-                            "<pre><font size="3" />
+                             "<pre><font size="3" /> 
                                 <sun:staticText id="Report" text="#{pageSession.report}"/>
-                            "</pre>    
+                             "</pre>
                             </sun:property>                  
                         </sun:propertySheetSection>
                     </sun:propertySheet>
