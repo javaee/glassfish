@@ -64,11 +64,8 @@
 
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18ncs.clusterInstance.PageTitle}" >
-
-            
-
             <sun:button id="startInstance" text="$resource{i18n.button.Start}"  primary="#{false}"
-            onClick="if ( getConfirm(this, '$resource{i18n.msg.JS.confirmRestartInstance}') )
+                onClick="if ( getConfirm(this, '$resource{i18n.msg.JS.confirmRestartInstance}') )
                       { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');}
                         else {return false;} " >
                  <!command
@@ -78,7 +75,7 @@
              />
             </sun:button>
 
-             <sun:button id="stopInstance" text="$resource{i18n.button.Stop}" primary="#{false}"
+            <sun:button id="stopInstance" text="$resource{i18n.button.Stop}" primary="#{false}"
                 onClick="if ( getConfirm(this, '$resource{i18n.msg.JS.confirmStopInstance}') )
                       { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');}
                         else {return false;} " >

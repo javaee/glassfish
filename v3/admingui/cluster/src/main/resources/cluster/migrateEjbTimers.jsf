@@ -45,7 +45,7 @@
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="help_cs" bundle="org.glassfish.cluster.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.cluster.MigrateEjbTimers}"
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.cluster.migrateEjbTimers}"
         guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:clusterTreeNode');" >
 <!define name="content">
     <event>
@@ -54,7 +54,8 @@
         getRequestValue(key="clusterName" value="#{pageSession.clusterName}");
         urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/cluster/migrateEjbTimers.jsf?clusterName=#{pageSession.encodedClusterName}");
-        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/cluster/clusters.jsf?clusterName=#{pageSession.encodedClusterName}");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/cluster/cluster/clusterGeneral.jsf?clusterName=#{pageSession.encodedClusterName}");
+
         setPageSessionAttribute(key="resourceUrl", value="#{sessionScope.REST_URL}/clusters/cluster/#{pageSession.encodedClusterName}");
         setPageSessionAttribute(key="rest-api" value="true");
 
@@ -65,6 +66,7 @@
 
         gf.restRequest(endpoint="#{pageSession.resourceUrl}/list-instances", method="get", result="#{requestScope.results}");
         setPageSessionAttribute(key="clusterInstances", value="#{requestScope.results.data.extraProperties.instanceList}");
+        println("***** requestScope.results.data.extraProperties.instanceList = #{requestScope.results.data.extraProperties.instanceList}");
         createList(result="#{pageSession.runningInstances}", size="0");
         createList(result="#{pageSession.notRunningInstances}", size="0");
         foreach (var="instance", list="#{pageSession.clusterInstances}") {
@@ -75,23 +77,25 @@
                 listAdd(list="#{pageSession.runningInstances}", value="#{instance.name}");
             }
         }
+
+        setAttribute(key="instancesAvailable", value="#{!empty runningInstances}");
     />
     </event>
     <sun:form id="propertyForm">
 #include "/cluster/cluster/clusterTabs.inc"
 #include "/common/shared/alertMsg.inc"
-    <!-- Page Title -->
-    <sun:title id="propertyContentPage" title="$resource{i18ncs.cluster.MigreateEjbTimers}" helpText="$resource{i18ncs.cluster.MigrateEjbTimersHelp}">
+<!-- Page Title -->
+    <sun:title id="propertyContentPage" title="$resource{i18ncs.cluster.migrateEjbTimers}" helpText="$resource{i18ncs.cluster.migrateEjbTimersHelp}">
         <!facet pageButtonsTop>
             <sun:panelGroup id="topButtons">
-                <sun:button id="saveButton" text="$resource{i18n.button.OK}">
+                <sun:button id="saveButton" text="$resource{i18n.button.OK}" disabled="#{empty runningInstances}">
                     <!command
                         createMap(result="#{requestScope.attrs}");
                         mapPut(map="#{requestScope.attrs}", key="target", value="#{pageSession.destInstance}");
                         mapPut(map="#{requestScope.attrs}", key="id", value="#{pageSession.sourceInstance}");
-                        gf.restRequest(endpoint="#{pageSession.resourceUrl}/migrate-timers", attrs="#{requestScope.attrs}", method="post", result="#{requestScope.results}");
-                        prepareSuccessfulMsg();
-                        gf.redirect(page="#{parentPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                        gf.restRequest(endpoint="#{pageSession.resourceUrl}/migrate-timers.json", attrs="#{requestScope.attrs}", method="post", result="#{requestScope.results}");
+                        prepareAlertMsg(type="success", summary="#{requestScope.results.data.subReports[0].message}");
+                        gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                     />
                 </sun:button>
                 <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
@@ -103,17 +107,22 @@
         </facet>
     </sun:title>
 
-    <sun:propertySheet id="propertySheet">
-        <!-- Text Field section -->
-        <sun:propertySheetSection id="propertSectionTextField">
-            <sun:property id="clusterSourceProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.SourceCluster}" >
-                <sun:dropDown id="source" selected="#{pageSession.sourceInstance}"labels="#{pageSession.notRunningInstances}"/>
-            </sun:property>
-            <sun:property id="clusterDestProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.cluster.DestCluster}" >
-                <sun:dropDown id="dest" selected="#{pageSession.destInstance}" labels="#{pageSession.runningInstances}"/>
-            </sun:property>
-        </sun:propertySheetSection>
-    </sun:propertySheet>
+    <h:panelGroup rendered="#{!empty runningInstances}">
+        <sun:propertySheet id="propertySheet">
+            <!-- Text Field section -->
+            <sun:propertySheetSection id="propertSectionTextField">
+                <sun:property id="clusterSourceProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.sourceCluster}" >
+                    <sun:dropDown id="source" selected="#{pageSession.sourceInstance}"labels="#{pageSession.notRunningInstances}"/>
+                </sun:property>
+                <sun:property id="clusterDestProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.destCluster}" >
+                    <sun:dropDown id="dest" selected="#{pageSession.destInstance}" labels="#{pageSession.runningInstances}"/>
+                </sun:property>
+            </sun:propertySheetSection>
+        </sun:propertySheet>
+    </h:panelGroup>
+    <h:panelGroup rendered="#{empty runningInstances}">
+        "<em>$resource{i18ncs.cluster.migrateEjbTimersNoRunningInstance}</em>
+    </h:panelGroup>
 
     <sun:hidden id="helpKey" value="$resource{help_cs.clusterMigrateEjbTimers}" />
 </sun:form>
