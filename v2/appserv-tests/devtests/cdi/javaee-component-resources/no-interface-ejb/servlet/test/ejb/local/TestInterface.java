@@ -34,8 +34,8 @@
  * holder.
  */
 
-package test.beans;
+package test.ejb.local;
 
-public interface TestBeanInterface {
-    public String runTests();
+public interface TestInterface {
+    public boolean m1DefinedInInterface();
 }

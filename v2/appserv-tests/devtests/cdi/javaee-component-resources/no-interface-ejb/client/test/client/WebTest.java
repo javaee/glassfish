@@ -51,7 +51,7 @@ public class WebTest {
 
     private static SimpleReporterAdapter stat = new SimpleReporterAdapter(
             "appserv-tests");
-    private static final String TEST_NAME = "injection-of-no-interface-EJB";
+    private static final String TEST_NAME = "injection-of-no-interface-bean-view-and-EJB-with-local-view";
 
     private static final String EXPECTED_RESPONSE = "Hello from Servlet 3.0.";
 

@@ -34,8 +34,25 @@
  * holder.
  */
 
-package test.beans;
+package test.ejb.nointerfacebeanview;
 
-public interface TestBeanInterface {
-    public String runTests();
+import javax.enterprise.inject.Alternative;
+
+ 
+//marked as Alternative, otherwise there would
+//an ambiguous definition for TestLocalInterface between this
+//super class and the TestLocalEJB
+public @Alternative class TestSuperClass implements TestInterface{
+
+    @Override
+    public boolean m1DefinedInInterface() {
+        System.out.println("no interface bean: m1");
+        return true;
+    }
+    
+    public boolean m2DefinedInSuperClass(){
+        System.out.println("no interface bean: m2");
+        return true;
+    }
+
 }

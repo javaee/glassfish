@@ -34,26 +34,22 @@
  * holder.
  */
 
-package test.beans.nonmock;
+package test.beans.artifacts;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE;
 
-import test.beans.artifacts.InjectViaAtInject;
-import test.ejb.TestNoInterfaceEJB;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
+import javax.inject.Qualifier;
 
-@RequestScoped
-@InjectViaAtInject
-@Named
-public class TestEJBInjectionViaInject extends TestBeanSuper {
-    @Inject TestNoInterfaceEJB tnie;
-
-    @Override
-    TestNoInterfaceEJB getTestEJB() {
-        return tnie;
-    }
-
-
+@Qualifier
+@Target({ TYPE, METHOD, PARAMETER, FIELD })
+@Retention(RetentionPolicy.RUNTIME)
+public @interface LocalEJB {
 }
+

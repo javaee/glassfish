@@ -1,3 +1,5 @@
+package test.beans.nonmock.nointerfacebeanview;
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -34,8 +36,21 @@
  * holder.
  */
 
-package test.beans;
+import test.beans.TestBeanInterface;
+import test.ejb.nointerfacebeanview.TestNoInterfaceEJB;
 
-public interface TestBeanInterface {
-    public String runTests();
+abstract class TestBeanSuper implements TestBeanInterface {
+    
+    abstract TestNoInterfaceEJB getTestEJB();
+
+    @Override
+    public String runTests() {
+        String s = "";
+        if (!getTestEJB().m2DefinedInSuperClass())
+            s += "Cannot call method defined in super class";
+        if (!getTestEJB().m3DefinedInEJB())
+            s += "Cannot call method defined in EJB";
+        return s;
+    }
+
 }

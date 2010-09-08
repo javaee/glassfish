@@ -34,8 +34,16 @@
  * holder.
  */
 
-package test.beans;
+package test.ejb.nointerfacebeanview;
 
-public interface TestBeanInterface {
-    public String runTests();
+import javax.ejb.Stateless;
+
+
+@Stateless
+public class TestNoInterfaceEJB extends TestSuperClass {
+    public boolean m3DefinedInEJB() {
+        System.out.println("no interface ejb: m3");
+        return true;
+    }
+
 }

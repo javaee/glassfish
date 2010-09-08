@@ -34,15 +34,28 @@
  * holder.
  */
 
-package test.ejb;
+package test.beans.nonmock.local;
 
-import javax.ejb.Stateless;
+import javax.ejb.EJB;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Named;
 
-@Stateless
-public class TestNoInterfaceEJB extends TestSuperClass {
-    public String m2() {
-        System.out.println("TestNoInterfaceEJB::m2");
-        return "Hello:m2";
+import test.beans.artifacts.InjectViaAtEJB;
+import test.beans.artifacts.LocalEJB;
+import test.ejb.local.TestInterface;
+
+
+
+@RequestScoped
+@InjectViaAtEJB
+@LocalEJB
+
+public class TestEJBInjectionViaAtEJB extends TestBeanSuper{
+    @EJB TestInterface tnie;
+
+    @Override
+    TestInterface getTestEJB() {
+        return tnie;
     }
 
 }

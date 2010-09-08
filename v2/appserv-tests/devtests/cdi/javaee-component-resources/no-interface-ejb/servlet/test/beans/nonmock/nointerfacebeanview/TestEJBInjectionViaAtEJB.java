@@ -34,8 +34,27 @@
  * holder.
  */
 
-package test.beans;
+package test.beans.nonmock.nointerfacebeanview;
 
-public interface TestBeanInterface {
-    public String runTests();
+import javax.ejb.EJB;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Named;
+
+import test.beans.artifacts.InjectViaAtEJB;
+import test.beans.artifacts.NoInterfaceBeanView;
+import test.ejb.nointerfacebeanview.TestNoInterfaceEJB;
+
+
+@RequestScoped
+@InjectViaAtEJB
+@NoInterfaceBeanView
+
+public class TestEJBInjectionViaAtEJB extends TestBeanSuper{
+    @EJB TestNoInterfaceEJB tnie;
+
+    @Override
+    TestNoInterfaceEJB getTestEJB() {
+        return tnie;
+    }
+
 }

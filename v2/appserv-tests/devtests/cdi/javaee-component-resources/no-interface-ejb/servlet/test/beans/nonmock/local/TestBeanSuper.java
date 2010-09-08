@@ -1,3 +1,5 @@
+package test.beans.nonmock.local;
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -34,11 +36,21 @@
  * holder.
  */
 
-package test.ejb;
+import test.beans.TestBeanInterface;
+import test.ejb.local.TestInterface;
+import test.ejb.local.TestLocalEJB;
 
-public class TestSuperClass {
-    public String m1(){
-        System.out.println("***************TestSuperClass::m1");
-        return "Hello:m1";
+abstract class TestBeanSuper implements TestBeanInterface {
+
+    abstract TestInterface getTestEJB();
+
+    @Override
+    public String runTests() {
+        String s = "";
+        if (!getTestEJB().m1DefinedInInterface())
+            s += "Cannot call method defined in the local EJB's interface";
+        return s;
+
     }
+
 }

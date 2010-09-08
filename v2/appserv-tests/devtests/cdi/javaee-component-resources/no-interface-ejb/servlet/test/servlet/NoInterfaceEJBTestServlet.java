@@ -48,38 +48,77 @@ import javax.servlet.http.HttpServletResponse;
 import test.beans.TestBeanInterface;
 import test.beans.artifacts.InjectViaAtEJB;
 import test.beans.artifacts.InjectViaAtInject;
+import test.beans.artifacts.LocalEJB;
+import test.beans.artifacts.NoInterfaceBeanView;
+import test.ejb.nointerfacebeanview.TestInterface;
+import test.ejb.nointerfacebeanview.TestSuperClass;
 
 @WebServlet(name = "mytest", urlPatterns = { "/myurl" })
 public class NoInterfaceEJBTestServlet extends HttpServlet {
 
     @Inject
     @InjectViaAtInject
+    @NoInterfaceBeanView
     TestBeanInterface testBeanInject;
 
     @Inject
     @InjectViaAtEJB
+    @NoInterfaceBeanView
     TestBeanInterface testBeanEJB;
 
+    @Inject
+    @InjectViaAtInject
+    @LocalEJB
+    TestBeanInterface testLocalBeanInject;
+
+    @Inject
+    @InjectViaAtEJB
+    @LocalEJB
+    TestBeanInterface testLocalBeanEJB;
+    
+    @Inject
+    TestInterface ti;
+    
+    @Inject
+    TestSuperClass ti1;
+    
     protected void doGet(HttpServletRequest request,
             HttpServletResponse response) throws ServletException,
             IOException {
         PrintWriter writer = response.getWriter();
         writer.write("Hello from Servlet 3.0.");
+        
         String msg = "";
         //test EJB injection via @EJB
-        if (!testBeanEJB.m2())
-            msg += "Invocation on no-interface EJB -- obtained through @EJB -- (method defined in EJB) failed";
-        if (!testBeanEJB.m1())
-            msg += "Invocation on no-interface EJB -- obtained through @EJB -- (method defined in super class) failed";
-
+        String m = testBeanEJB.runTests();
+        if (!m.equals(""))
+            msg += "Invocation on no-interface EJB -- obtained through @EJB -- failed. Failed tests" + m;
+        
         //test EJB injection via @Inject
-        if (!testBeanInject.m2())
-            msg += "Invocation on no-interface EJB -- obtained through @Inject -- (method defined in EJB)  failed";
+        m = testBeanInject.runTests();
+        if (!m.equals(""))
+            msg += "Invocation on no-interface EJB -- obtained through @Inject -- failed. Failed tests" + m;
 
-        //TODO: This fails currently
-        if (!testBeanInject.m1())
+        //test No-Interface EJB injection via @Inject of an interface the 
+        //no-interface bean is implementing
+        if (ti != null && !(ti.m1DefinedInInterface()))
+            msg += "Invocation on no-interface EJB -- obtained through @Inject -- (method defined in super interface) failed";
+        
+        //test No-Interface EJB injection via @Inject of an interface the 
+        //no-interface bean is implementing
+        if (ti1 != null && !(ti1.m2DefinedInSuperClass()))
             msg += "Invocation on no-interface EJB -- obtained through @Inject -- (method defined in super class) failed";
         
+        //test local EJB injection via @EJB
+        m = testLocalBeanEJB.runTests();
+        if (!m.equals(""))
+            msg += "Invocation on local EJB -- obtained through @EJB -- failed. Failed tests" + m;
+        
+        //test EJB injection via @Inject
+        m = testLocalBeanInject.runTests();
+        if (!m.equals(""))
+            msg += "Invocation on local EJB -- obtained through @Inject -- failed. Failed tests" + m;
+
         writer.write(msg + "\n");
 
     }

@@ -34,29 +34,22 @@
  * holder.
  */
 
-package test.beans.nonmock;
+package test.beans.artifacts;
 
-import javax.inject.Inject;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE;
 
-import test.beans.TestBeanInterface;
-import test.ejb.TestNoInterfaceEJB;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-abstract class TestBeanSuper implements TestBeanInterface {
-    
-    abstract TestNoInterfaceEJB getTestEJB();
+import javax.inject.Qualifier;
 
-    @Override
-    public boolean m1() {
-        System.out.println("TestBean::m1 called");
-        return getTestEJB().m1().equals("Hello:m1");
-    }
-
-    @Override
-    public boolean m2() {
-        System.out.println("TestBean::m2 called");
-        System.out.println("Calling TestNoInterfaceEJB from TestBean");
-        return getTestEJB().m2().equals("Hello:m2");
-    }
-
+@Qualifier
+@Target({ TYPE, METHOD, PARAMETER, FIELD })
+@Retention(RetentionPolicy.RUNTIME)
+public @interface NoInterfaceBeanView {
 
 }
