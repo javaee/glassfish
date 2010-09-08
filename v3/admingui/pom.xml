@@ -101,8 +101,10 @@
         <module>corba</module>
         <module>full</module>
         <module>updatecenter</module>
-        <module>jruby</module>
-        <module>jython</module>
+        <!--  this has been removed from the distribution, no need to build this at all.
+            <module>jruby</module>
+            <module>jython</module>
+        -->
         <module>war</module>
         <module>dist-fragment</module>
     </modules>
