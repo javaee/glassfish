@@ -90,6 +90,7 @@ class LogControl {
     private final static String EXTENT_NAME  = "extent."/*#Frozen*/;
     private final static String CONTROL_NAME = "control"/*#Frozen*/;
     public final static String RECOVERY_STRING_FILE_NAME = "recoveryfile"/*#Frozen*/;
+    public final static String RECOVERY_LOCK_FILE_NAME = "recoverylockfile"/*#Frozen*/;
 	//START IASRI 4721336
     //private final static String LOG_EXTENSION = ".ld"/*#Frozen*/;
     private final static String LOG_EXTENSION = ""/*#Frozen*/;
@@ -908,6 +909,11 @@ class LogControl {
 
     final static File recoveryIdentifierFile(String logId, String logDir) {
         File result = new File(directory(logId,logDir),RECOVERY_STRING_FILE_NAME);
+        return result;
+    }
+
+    final static File recoveryLockFile(String logId, String logDir) {
+        File result = new File(directory(logId,logDir),RECOVERY_LOCK_FILE_NAME);
         return result;
     }
 }

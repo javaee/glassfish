@@ -1612,6 +1612,8 @@ public class RecoveryManager {
             raf.writeBytes(serverName);
             raf.setLength(serverName.length());
             raf.close();
+            File recoveryLockFile = LogControl.recoveryLockFile(serverName,logPath);
+            recoveryLockFile.createNewFile();
         } catch (Exception ex) {
             _logger.log(Level.WARNING,"jts.exception_in_recovery_file_handling",ex);
         }
