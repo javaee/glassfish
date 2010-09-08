@@ -205,7 +205,6 @@ public abstract class SecureAdminBootstrapHelper {
             this.instance = instance;
             this.logger = logger;
             remoteNodeDir = remoteNodeDir(node, remoteNodeDir);
-//            remoteNodeDir = remoteNodeDir.replaceAll("\\\\","/");
             remoteNodeDirURI = URI.create(remoteNodeDir);
             remoteInstanceURI = remoteInstanceURI(remoteNodeDir);
             domainXMLTimestamp = dasDomainXMLTimestamp(dasInstanceDir);

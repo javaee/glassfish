@@ -303,7 +303,7 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
         final File nodeDirFile = (nodeDir != null ?
             new File(nodeDir) :
             defaultLocalNodeDirFile());
-        InstanceDirs instanceDirs = new InstanceDirs(nodeDirFile.getParent(), nodeDirFile.getName(), instance);
+        InstanceDirs instanceDirs = new InstanceDirs(nodeDirFile.toString(), theNode.getName(), instance);
         return instanceDirs.getInstanceDir();
     }
 
@@ -323,7 +323,7 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
                 installDir == null
                     ? serverContext.getInstallRoot()
                     : new File(installDir));
-        return new File(new File(nodeParentDir, "nodes"), node);
+        return new File(nodeParentDir, "nodes");
     }
 
     private File getDomainInstanceDir() {
@@ -415,13 +415,15 @@ public class CreateInstanceCommand implements AdminCommand, PostConstruct  {
      */
     private int bootstrapSecureAdminRemotely() {
         ActionReport report = ctx.getActionReport();
-
+        // nodedir is the root of where all the node dirs will be created.  
+        // add the name of the node as that is where the instance files should be created
+        String thisNodeDir = nodeDir + "/" + node;
         try {
             final SecureAdminBootstrapHelper bootHelper =
                 SecureAdminBootstrapHelper.getRemoteHelper(
                     habitat,
                     getDomainInstanceDir(),
-                    nodeDir,
+                    thisNodeDir,
                     instance,
                     chooseNode(nodeList, node), logger);
             bootHelper.bootstrapInstance();
