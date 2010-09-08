@@ -6,8 +6,6 @@ connectors/javax.resource/src/main/java/connector_1_5.dtd
 /yui/
 /zlib-1.1.4/
 tests/community/web/jruby/helloapp/public/javascripts/
-admingui/common/src/main/resources/security/realms/checkpswd.js
-admingui/common/src/main/resources/images/node.jsf
 admingui/war/src/main/webapp/3rd-party-license
 /MANIFEST.MF
 /META-INF/services/
@@ -28,7 +26,6 @@ tests/quicklook/web/jruby/helloapp/public/javascripts/effects.js
 tests/quicklook/web/jruby/helloapp/public/javascripts/prototype.js
 tests/quicklook/web/jruby/helloapp/public/javascripts/dragdrop.js
 jbi/serviceengine/sun-javaee-engine/src/main/resources/com.sun.xml.ws.api.pipe.TransportPipeFactory
-security/core/src/main/resources/config/secure.seed
 .gif
 .jpg
 .png
