@@ -59,7 +59,7 @@
         createMap(result="#{pageSession.valueMap}")
         setPageSessionAttribute(key="title" value="$resource{i18ncs.node.NewPageTitle}");
         setPageSessionAttribute(key="titleHelp" value="$resource{i18ncs.node.NewPageTitleHelp}");
-        setPageSessionAttribute(key="hasPropertySheet" value="force");
+        setPageSessionAttribute(key="convertToFalseList" value="force");
     />
     </event>
 <sun:form id="propertyForm">

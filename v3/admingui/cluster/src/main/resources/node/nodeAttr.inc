@@ -51,13 +51,15 @@
                     gf.restRequest(endpoint="#{sessionScope.REST_URL}/nodes/node/#{pageSession.encodedNodeName}/_update-node" method="post" attrs="#{pageSession.valueMap}")
                     prepareSuccessfulMsg();
                     gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
-
-                    />
+                />
             </sun:button>
 
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
+                if (!#{pageSession.valueMap['force']}){
+                    mapPut(map="#{pageSession.valueMap}"  key="force" value="false");
+                }
                 gf.restRequest( endpoint="#{sessionScope.REST_URL}/nodes/create-node.json" attrs="#{pageSession.valueMap}" method="post" )
                 gf.redirect(page="#{request.contextPath}/cluster/node/nodes.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
              />
@@ -110,3 +112,4 @@
             </sun:property>
         </sun:propertySheetSection>
     </sun:propertySheet>
+         "<br /><br /><br />
