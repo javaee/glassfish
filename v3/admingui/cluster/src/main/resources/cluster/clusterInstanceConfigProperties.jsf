@@ -42,31 +42,64 @@
 
 <!-- cluster/clusterInstanceConfigProperties.jsf -->
 
-
 <!initPage
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="" >
+<!composition template="/templates/default.layout"  guiTitle="Cluster #{pageSession.clusterName} Instance #{pageSession.instanceName} System Properties" >
 <!define name="content">
     <event>
-    <!beforeCreate
-        getRequestValue(key="clusterName" value="#{pageSession.clusterName}");
-        urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
-        getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
-        urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
-        setSessionAttribute(key="clusterInstanceTabs" value="configProps");
+        <!beforeCreate
+            getRequestValue(key="clusterName" value="#{pageSession.clusterName}");
+            urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
+            getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
+            urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
+            setSessionAttribute(key="clusterTabs" value="clusterSystemProps");
+            setSessionAttribute(key="clusterInstanceTabs" value="configProps");
 
+            setPageSessionAttribute(key="parentPage", value="#{request.contextPath}/cluster/cluster/clusterInstances.jsf?clusterName=#{pageSession.encodedClusterName}");
+            setPageSessionAttribute(key="selfPage", value="#{request.contextPath}/cluster/cluster/clusterInstanceConfigProperties.jsf?clusterName=#{encodedClusterName}&instanceName=#{pageSession.encodedInstanceName}");
+            setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/servers/server/#{pageSession.encodedInstanceName}");
+            setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/system-properties");
+
+            setPageSessionAttribute(key="rest-api" value="true");
+            setPageSessionAttribute(key="edit" value="#{true}" );
+            setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
+            setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
+
+            gf.restRequest(endpoint="#{pageSession.selfUrl}", method="GET", result="#{requestScope.propTable}");
+            setPageSessionAttribute(key="tableList", value="#{requestScope.propTable.data.extraProperties.systemProperties}");
         />
     </event>
-            <sun:form id="propertyForm">
-
+    <sun:form id="propertyForm">
 #include "/cluster/cluster/clusterInstanceTabs.inc"
-"<br/>
-" ClusterName = #{pageSession.clusterName}
-"<br/>
-" InstanceName = #{pageSession.instanceName}
-            </sun:form>
+    <sun:title id="propertyContentPage" title="$resource{i18ncs.cluster.instance.SystemPropertiesTitle}" >
+        <!facet pageButtonsTop>
+            <sun:panelGroup id="topButtons">
+                <sun:button id="saveButton" text="$resource{i18n.button.Save}" >
+                    <!command
+                        createMap(result="#{requestScope.data}");
+                        foreach (var="row" list="#{pageSession.tableList}") {
+                            mapPut(map="#{requestScope.data}", key="#{row.name}", value="#{row.value}");
+                        }
+                        gf.restRequest(endpoint="#{pageSession.selfUrl}", method="POST", data="#{requestScope.data}", contentType="application/x-www-form-urlencoded", result="#{requestScope.restResponse}");
+                        prepareSuccessfulMsg();
+                        gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                    />
+                </sun:button>
+
+                <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
+                    <!command
+                        gf.redirect(page="#{parentPage}?configName=#{configName}");
+                    />
+                </sun:button>
+            </sun:panelGroup>
+        </facet>
+    </sun:title>
+#include "/common/shared/alertMsg.inc"
+#include "/common/shared/propertyTable.inc"
+    </sun:form>
+#include "/common/shared/changeButtonsJS.inc"
 </define>
 </composition>
