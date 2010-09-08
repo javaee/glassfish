@@ -57,6 +57,8 @@ public abstract class EjbAbstractDescriptor extends Descriptor implements NamedD
 
     private Set<String> remoteBusinessClassNames = new HashSet<String>();
     private Set<String> localBusinessClassNames = new HashSet<String>();
+    private Set<String> noInterfaceLocalBeanClassNames = new HashSet<String>();
+    
 
     // This is the value of the EJB 2.1 deployment descriptor entry
     // for service endpoint interface.
@@ -157,7 +159,24 @@ public abstract class EjbAbstractDescriptor extends Descriptor implements NamedD
     public String getLocalClassName() {
         return localClassName;
     }
-
+    
+    /**
+     * Add a classname for a no-interface view of the local ejb
+     * 
+     * @param localClassName fully qualified class name for the interface
+     */
+    public void addNoInterfaceLocalBeanClass(String className) {
+        this.noInterfaceLocalBeanClassNames.add(className);
+    }
+    
+    /**
+     * @return all the public classes of this no-interface local ejb
+     */
+    public Set<String> getNoInterfaceLocalBeanClasses() {
+        return this.noInterfaceLocalBeanClassNames;
+    }
+    
+    
     public void addRemoteBusinessClassName(String className) {
         remoteBusinessClassNames.add(className);
     }

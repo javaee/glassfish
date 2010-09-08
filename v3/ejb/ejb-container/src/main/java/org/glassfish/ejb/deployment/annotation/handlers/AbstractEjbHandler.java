@@ -529,10 +529,25 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
                 (ejbClass.getAnnotation(javax.jws.WebService.class) == null)) ) ) {
             ejbDesc.setLocalBean(true);
         }
+        
+        //If this is a no-Interface local EJB, set all classes for this bean
+        if (ejbDesc.isLocalBean()) {
+            addNoInterfaceLocalBeanClasses(ejbDesc, ejbClass);
+        }
+
 
         return getDefaultProcessedResult();       
     }
 
+    private void addNoInterfaceLocalBeanClasses(EjbDescriptor ejbDesc, Class ejbClass) {
+        Class nextClass = ejbClass;
+        //The session bean's no-interface view can be accessed via the bean class
+        //and all its super classes
+        while ((nextClass != Object.class) && (nextClass != null)) {
+            ejbDesc.addNoInterfaceLocalBeanClass(nextClass.getName());
+            nextClass = nextClass.getSuperclass();
+        }
+    }
     private Class getComponentIntfFromHome(Class homeIntf) {
 
         Class componentIntf = null;

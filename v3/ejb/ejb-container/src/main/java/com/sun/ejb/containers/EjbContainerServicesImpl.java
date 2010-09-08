@@ -87,20 +87,25 @@ public class EjbContainerServicesImpl implements EjbContainerServices {
         EjbDescriptor ejbDesc = container.getEjbDescriptor();
 
         S businessObject = null;
-
+        
         if (businessInterface != null) {
             String intfName = businessInterface.getName();
-
             if ((localObjectImpl != null) &&
                     ejbDesc.getLocalBusinessClassNames().contains(intfName)) {
 
                 // Get proxy corresponding to this business interface.
                 businessObject = (S) localObjectImpl.getClientObject(intfName);
 
-            } else if( ejbDesc.isLocalBean() && intfName.equals( ejbDesc.getEjbClassName() ) ) {
-
-                businessObject = (S) localObjectImpl.getClientObject(ejbDesc.getEjbClassName());
-
+            } else if( ejbDesc.isLocalBean()) {
+                //If this is a no-interface view session bean, the bean
+                //can be accessed through interfaces in its superclass as well
+                boolean isValidBusinessInterface =
+                    ejbDesc.getNoInterfaceLocalBeanClasses().contains(intfName);
+                if ((intfName.equals(ejbDesc.getEjbClassName())) 
+                        || isValidBusinessInterface) {  
+                    businessObject = (S) localObjectImpl.getClientObject(ejbDesc.getEjbClassName());
+                }
+                
             }
         }
 
