@@ -54,9 +54,9 @@
 #include "/common/shared/listTableButtons.inc"
 
 <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
-        <!afterCreate
+    <!afterCreate
         getClientId(component="$this{component}" clientId=>$page{tableRowGroupId});
-       />
+    />
 
     <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">
         <sun:checkbox id="select"
@@ -65,7 +65,6 @@
             onClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"
         />
     </sun:tableColumn>
-
     <sun:tableColumn headerText="$resource{i18n.common.name.header}" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="link" text="#{td.value.name}" url="#{pageSession.editLink}&instanceName=#{td.value.name}" />
     </sun:tableColumn>
@@ -78,23 +77,24 @@
     <sun:tableColumn headerText="$resource{i18ncs.common.NodeCol}" rowHeader="$boolean{true}" id="col5">
         <sun:hyperlink id="nodeAgentlink" text="#{td.value.node}"  url="#{request.contextPath}/cluster/node/nodeEdit.jsf?nodeName=#{td.value.node}" />
     </sun:tableColumn>
-   <sun:tableColumn headerText="$resource{i18n.common.Status}" rowHeader="$boolean{true}" id="col6">
+    <sun:tableColumn headerText="$resource{i18n.common.Status}" rowHeader="$boolean{true}" id="col6">
         <staticText id="statusCol" value="#{requestScope.statusString}" >
             <!beforeEncode
                 createMap(result="#{pageSession.statusAttrs}")
-                mapPut(map="#{pageSession.statusAttrs}" key="DEFAULT" value="#{td.value.name}" );
+                mapPut(map="#{pageSession.statusAttrs}" key="id" value="#{td.value.name}" );
                 setAttribute(key="in", value="#{td.value.name}" );
                 gf.callRestAndExtractMsgProps(
-                    endpoint="#{sessionScope.REST_URL}/list-instances.xml"
+                    endpoint="#{sessionScope.REST_URL}/list-instances"
                     attrs="#{pageSession.statusAttrs}"
                     method="GET"
                     propsMap="#{pageSession.propsMap}");
                 gf.restRequest(
-                    endpoint="#{sessionScope.REST_URL}/list-instances.xml"
+                    endpoint="#{sessionScope.REST_URL}/list-instances"
                     attrs="#{pageSession.attrs}"
                     method="GET"
                     result="#{pageSession.listInstanceResult}");
-                setAttribute(key="status" value="#{pageSession.listInstanceResult['data']['properties']['${in}']}");
+                println ("***** pageSession.listInstanceResult.data.extraProperties.instanceList[0].status = #{pageSession.listInstanceResult.data.extraProperties.instanceList[0].status}");
+                setAttribute(key="status" value="#{pageSession.listInstanceResult.data.extraProperties.instanceList[0].status}");
                 setAttribute(key="statusString" value="$resource{i18nc.status.$attribute{status}}  &nbsp; $resource{i18nc.status.image.$attribute{status}}");
                 />
         </staticText>
