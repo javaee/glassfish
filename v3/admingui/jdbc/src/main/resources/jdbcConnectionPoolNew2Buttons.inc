@@ -64,13 +64,14 @@
                     convertToFalse="#{pageSession.convertToFalseList}"
                     result => $attribute{resultEndPoint});
             if (#{pageSession.hasPropertyTable}){
-                getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                println("***** setProxyProperties needs to be implemented. Bug filed. Nag inserted.");
-                setAttribute(key="objStr", value="#{pageSession.restObjStr},name=#{wizardMap['Name']}");
-                setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
+                urlencode(value="#{wizardMap['Name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
+                gf.restRequest(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodeName}/property.json"
+                               method="POST"
+                               data="#{requestScope.tmpJSON}"
+                               result="#{requestScope.restResponse}");
             }
-            if ("#{wizardMap['Ping']}") {
+            if ("#{wizardMap['ping']}") {
                 urlencode(value="#{wizardMap['Name']}" encoding="UTF-8" result="#{pageSession.encodedName}");
                 gf.createAttributeMap(keys={"id"} values={"$pageSession{encodedName}"} map="#{requestScope.attrMap}");
                 gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/ping-connection-pool.json"
@@ -88,7 +89,7 @@
                 setSessionAttribute(key="wizardPoolProperties" value="#{null}")
                 gf.redirect(page="#{parentPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
             }
-            if ("!#{wizardMap['Ping']}") {
+            if ("!#{wizardMap['ping']}") {
                 setSessionAttribute(key="wizardMap" value="#{null}")
                 setSessionAttribute(key="wizardPoolExtra" value="#{null}")
                 setSessionAttribute(key="wizardPoolProperties" value="#{null}")
