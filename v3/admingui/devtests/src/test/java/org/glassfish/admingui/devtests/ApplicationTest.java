@@ -73,6 +73,9 @@ public class ApplicationTest extends BaseSeleniumTestClass {
     private static final String ELEMENT_UPLOAD_BUTTON = "form:title:topButtons:uploadButton";
     private static final String ELEMENT_FILE_FIELD = "form:sheet1:section1:prop1:fileupload";
     private static final String ELEMENT_DEPLOY_BUTTON = "propertyForm:deployTable:topActionsGroup1:deployButton";
+    private static final String TRIGGER_SUCCESS = "New values successfully saved";
+    private static final String TRIGGER_DOMAIN_ATTRIBUTES = "Domain Attributes";
+    private static final String TRIGGER_APPLICATION_CONFIGURATION = "Enable reloading so that changes to deployed applications";
 
     @Test
     public void testDeployWar() {
@@ -131,5 +134,23 @@ public class ApplicationTest extends BaseSeleniumTestClass {
         waitForPageLoad(applicationName, true);
         int postUndeployCount = this.getTableRowCount(ELEMENT_DEPLOY_TABLE);
         assertTrue (preCount == postUndeployCount);
+    }
+
+    @Test
+    public void testApplicationConfiguration() {
+        final String adminTimeout = Integer.toString(generateRandomNumber(100));
+        clickAndWait("treeForm:tree:nodes:nodes_link", TRIGGER_DOMAIN_ATTRIBUTES);
+        clickAndWait("propertyForm:domainTabs:appConfig", TRIGGER_APPLICATION_CONFIGURATION);
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:AdminTimeoutProp:AdminTimeout", adminTimeout);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_SUCCESS);
+        assertEquals(adminTimeout, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:AdminTimeoutProp:AdminTimeout"));
+    }
+
+    @Test
+    public void testDomainAttributes() {
+        clickAndWait("treeForm:tree:nodes:nodes_link", TRIGGER_DOMAIN_ATTRIBUTES);
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:localeProp:Locale", "en_UK");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_SUCCESS);
+        assertEquals("en_UK", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:localeProp:Locale"));
     }
 }
