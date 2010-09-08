@@ -48,15 +48,15 @@
         <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" rowHeader="$boolean{false}" id="col3">
             <staticText  id="col2Value" value="#{td.value.value}" />
         </sun:tableColumn>
-        <sun:tableColumn headerText="$resource{web.monitoring.startTimeCol}" nowrap="$boolean{true}" rowHeader="$boolean{false}" id="col4">
+        <sun:tableColumn headerText="$resource{i18nc.monitoring.startTimeCol}" nowrap="$boolean{true}" rowHeader="$boolean{false}" id="col4">
             <staticText  id="col3Value" value="#{td.value.startTime}" />
         </sun:tableColumn>
-        <sun:tableColumn headerText="$resource{web.monitoring.lastTimeCol}" nowrap="$boolean{true}" rowHeader="$boolean{false}" id="col5">
+        <sun:tableColumn headerText="$resource{i18nc.monitoring.lastTimeCol}" nowrap="$boolean{true}" rowHeader="$boolean{false}" id="col5">
             <staticText  id="col4Value" value="#{td.value.lastTime}" />
         </sun:tableColumn>
-        <sun:tableColumn headerText="$resource{web.monitoring.DetailsCol}" rowHeader="$boolean{false}" id="col6">
+        <sun:tableColumn headerText="$resource{i18nc.monitoring.DetailsCol}" rowHeader="$boolean{false}" id="col6">
             <staticText  id="col5Value" value="#{td.value.details}" />
         </sun:tableColumn>
-        <sun:tableColumn headerText="$resource{web.monitoring.DescCol}" nowrap="$boolean{true}" rowHeader="$boolean{false}" id="col7">
+        <sun:tableColumn headerText="$resource{i18nc.monitoring.DescCol}" nowrap="$boolean{true}" rowHeader="$boolean{false}" id="col7">
             <staticText  id="col5Value" value="#{td.value.description}" />
         </sun:tableColumn>

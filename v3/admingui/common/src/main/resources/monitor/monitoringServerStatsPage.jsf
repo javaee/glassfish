@@ -43,12 +43,12 @@
 <!-- monitor/monitoringStatsPage.jsf -->
 
 <!initPage
-    setResourceBundle(key="web" bundle="org.glassfish.common.admingui.Strings")
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
     setResourceBundle(key="help_web" bundle="org.glassfish.common.admingui.Helplinks")
 
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{web.serverMonitor}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.serverMonitor}" >
 <!define name="content">
 <event>
     <!beforeCreate
@@ -105,8 +105,8 @@
             <sun:form id="propertyForm">
 #include "/appServer/serverInstTabs.inc"
 #include "/shared/alertMsg.inc"
-                 <sun:title id="propertyContentPage" title="$resource{web.serverMonitor}"
-                 helpText="$resource{web.monitoring.webContainer.PageHelp}">
+                 <sun:title id="propertyContentPage" title="$resource{i18nc.serverMonitor}"
+                 helpText="$resource{i18nc.monitoring.webContainer.PageHelp}">
             <!facet pageButtonsTop>
                 <sun:panelGroup id="topButtons">
                     <sun:button id="refreshButton"
@@ -125,7 +125,7 @@
                     <sun:propertySheetSection id="viewPropertySection">
             <sun:property id="VsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}">
 
-                <sun:dropDown id="View" label="$resource{web.monitoring.View} : " selected="#{viewVal}" items="$attribute{monitorList}" submitForm="#{true}" immediate="#{true}" >
+                <sun:dropDown id="View" label="$resource{i18nc.monitoring.View} : " selected="#{viewVal}" items="$attribute{monitorList}" submitForm="#{true}" immediate="#{true}" >
                                 <!command
                                     setAttribute(key="click" value="$this{component}");
                                     setAttribute(key="viewVal" value="#{click.selected}");
@@ -140,12 +140,12 @@
                 </sun:propertySheet>
 
 <!-- Table .... -->
-<sun:table id="basicTable"  itemsText="$resource{web.monitoring.statistics}" style="padding: 10pt" title="$resource{web.monitoring}"  >
+<sun:table id="basicTable"  itemsText="$resource{i18nc.monitoring.statistics}" style="padding: 10pt" title="$resource{i18nc.monitoring}"  >
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableId});
         />
-    <sun:tableRowGroup id="virtualServerStats" rendered="#{hasStatsVS}" data={"$attribute{virtualServerStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.virtualServerStatistics} : #{viewVal}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+    <sun:tableRowGroup id="virtualServerStats" rendered="#{hasStatsVS}" data={"$attribute{virtualServerStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.virtualServerStatistics} : #{viewVal}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
         <!beforeCreate
             getStats(endpoint="#{sessionScope.MONITOR_URL}/server/http-service/#{viewVal}", result=>$attribute{virtualServerStatsList} hasStats=>$attribute{hasStatsVS});
 
@@ -154,8 +154,8 @@
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-    <sun:tableRowGroup id="httpServiceStats" rendered="#{hasStatsHTTP}" data={"$attribute{httpServiceStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.requestStatisticsHttp} : #{viewVal}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+    <sun:tableRowGroup id="httpServiceStats" rendered="#{hasStatsHTTP}" data={"$attribute{httpServiceStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.requestStatisticsHttp} : #{viewVal}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
         <!beforeCreate
             getStats(endpoint="#{sessionScope.MONITOR_URL}/server/http-service/#{viewVal}/request", result=>$attribute{httpServiceStatsList} hasStats=>$attribute{hasStatsHTTP});
 
@@ -164,8 +164,8 @@
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-        <sun:tableRowGroup id="fileCacheStats" rendered="#{hasStatsFC}" data={"$attribute{fileCacheStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.FileCacheStats} : #{viewVal}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <sun:tableRowGroup id="fileCacheStats" rendered="#{hasStatsFC}" data={"$attribute{fileCacheStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.FileCacheStats} : #{viewVal}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
         <!beforeCreate
             getStats(endpoint="#{sessionScope.MONITOR_URL}/server/network/#{viewVal}/file-cache", result=>$attribute{fileCacheStatsList} hasStats=>$attribute{hasStatsFC});
 
@@ -174,8 +174,8 @@
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-    <sun:tableRowGroup id="keepAliveStats" rendered="#{hasStatsKA}" data={"$attribute{keepAliveStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.KeepAliveStats} : #{viewVal}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+    <sun:tableRowGroup id="keepAliveStats" rendered="#{hasStatsKA}" data={"$attribute{keepAliveStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.KeepAliveStats} : #{viewVal}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
         <!beforeCreate
             getStats(endpoint="#{sessionScope.MONITOR_URL}/server/network/#{viewVal}/keep-alive", result=>$attribute{keepAliveStatsList} hasStats=>$attribute{hasStatsKA});
 
@@ -184,8 +184,8 @@
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-        <sun:tableRowGroup id="connectionQueueStats" rendered="#{hasStatsCQ}" data={"$attribute{connectionQueueStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.ConnectionQueueStats} : #{viewVal}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <sun:tableRowGroup id="connectionQueueStats" rendered="#{hasStatsCQ}" data={"$attribute{connectionQueueStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.ConnectionQueueStats} : #{viewVal}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
         <!beforeCreate
             getStats(endpoint="#{sessionScope.MONITOR_URL}/server/network/#{viewVal}/connection-queue", result=>$attribute{connectionQueueStatsList} hasStats=>$attribute{hasStatsCQ});
 
@@ -194,8 +194,8 @@
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-         <sun:tableRowGroup id="connectionsStats" rendered="#{hasStatsConnections}" data={"$attribute{connectionStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.ConnectionsStats} : #{viewVal}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+         <sun:tableRowGroup id="connectionsStats" rendered="#{hasStatsConnections}" data={"$attribute{connectionStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.ConnectionsStats} : #{viewVal}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
         <!beforeCreate
             getStats(endpoint="#{sessionScope.MONITOR_URL}/server/network/#{viewVal}/connections", result=>$attribute{connectionStatsList} hasStats=>$attribute{hasStatsConnections});
 
@@ -204,8 +204,8 @@
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-         <sun:tableRowGroup id="threadPoolStats" rendered="#{hasStatsThreadPool}" data={"$attribute{threadPoolStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.ThreadPoolStatistics} : #{viewVal}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+         <sun:tableRowGroup id="threadPoolStats" rendered="#{hasStatsThreadPool}" data={"$attribute{threadPoolStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.ThreadPoolStatistics} : #{viewVal}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
         <!beforeCreate
             getStats(endpoint="#{sessionScope.MONITOR_URL}/server/network/#{viewVal}/thread-pool", result=>$attribute{threadPoolStatsList} hasStats=>$attribute{hasStatsThreadPool});
 
@@ -215,8 +215,8 @@
         "<br/>
     </sun:tableRowGroup>
 
-    <sun:tableRowGroup id="jvmThreadInfoStats" rendered="#{hasStatsJVMThreadInfo}" data={"$attribute{jvmThreadInfoStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.ThreadInfo}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}"  extraHeaderHtml="colspan='6'">
+    <sun:tableRowGroup id="jvmThreadInfoStats" rendered="#{hasStatsJVMThreadInfo}" data={"$attribute{jvmThreadInfoStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.ThreadInfo}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}"  extraHeaderHtml="colspan='6'">
         <!beforeCreate
             getStats(endpoint="#{sessionScope.MONITOR_URL}/server/jvm/thread-system/#{viewVal}", result=>$attribute{jvmThreadInfoStatsList}  hasStats=>$attribute{hasStatsJVMThreadInfo});
 
@@ -225,8 +225,8 @@
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-    <sun:tableRowGroup id="gcStats" rendered="#{hasStatsGC}" data={"$attribute{gcStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.garbageCollectorsStats} : #{viewVal}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}"  extraHeaderHtml="colspan='6'">
+    <sun:tableRowGroup id="gcStats" rendered="#{hasStatsGC}" data={"$attribute{gcStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.jvm.garbageCollectorsStats} : #{viewVal}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}"  extraHeaderHtml="colspan='6'">
         <!beforeCreate
             getStats(endpoint="#{sessionScope.MONITOR_URL}/server/jvm/garbage-collectors/#{viewVal}", result=>$attribute{gcStatsList}  hasStats=>$attribute{hasStatsGC});
 
@@ -235,106 +235,106 @@
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-        <sun:tableRowGroup id="txnServiceStats" rendered="#{hasStatsTXN}" data={"$attribute{txnServiceStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.transaction}"
-            groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <sun:tableRowGroup id="txnServiceStats" rendered="#{hasStatsTXN}" data={"$attribute{txnServiceStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.transaction}"
+            groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
 
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-        <sun:tableRowGroup id="ejbContainerStats" rendered="#{hasStatsEJB}" data={"$attribute{ejbStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.ejb}"
-            groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <sun:tableRowGroup id="ejbContainerStats" rendered="#{hasStatsEJB}" data={"$attribute{ejbStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.ejb}"
+            groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
 
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-        <sun:tableRowGroup id="securityRealm" rendered="#{hasStatsRealm}" data={"$attribute{realmStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.realm}"
-            groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <sun:tableRowGroup id="securityRealm" rendered="#{hasStatsRealm}" data={"$attribute{realmStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.realm}"
+            groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
 
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-    <sun:tableRowGroup id="jvmMemStats" rendered="#{hasStatsJVMM}" data={"$attribute{jvmMemStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.memoryJvm}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}"  extraHeaderHtml="colspan='6'">
+    <sun:tableRowGroup id="jvmMemStats" rendered="#{hasStatsJVMM}" data={"$attribute{jvmMemStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.jvm.memoryJvm}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}"  extraHeaderHtml="colspan='6'">
 
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-    <sun:tableRowGroup id="osStats" rendered="#{hasStatsOS}" data={"$attribute{osStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.operatingSystemJvm}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}"  extraHeaderHtml="colspan='6'">
+    <sun:tableRowGroup id="osStats" rendered="#{hasStatsOS}" data={"$attribute{osStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.jvm.operatingSystemJvm}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}"  extraHeaderHtml="colspan='6'">
 
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-    <sun:tableRowGroup id="clStats" rendered="#{hasStatsJVMCL}" data={"$attribute{clStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.classLoadingJvm}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}"  extraHeaderHtml="colspan='6'">
+    <sun:tableRowGroup id="clStats" rendered="#{hasStatsJVMCL}" data={"$attribute{clStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.jvm.classLoadingJvm}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}"  extraHeaderHtml="colspan='6'">
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-    <sun:tableRowGroup id="comStats" rendered="#{hasStatsJVMCOM}" data={"$attribute{comStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.compilationJvm}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+    <sun:tableRowGroup id="comStats" rendered="#{hasStatsJVMCOM}" data={"$attribute{comStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.jvm.compilationJvm}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
 
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-    <sun:tableRowGroup id="runtimeStats" rendered="#{hasStatsJVMR}" data={"$attribute{runtimeStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.runtimeJvm}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+    <sun:tableRowGroup id="runtimeStats" rendered="#{hasStatsJVMR}" data={"$attribute{runtimeStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.jvm.runtimeJvm}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
 
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-    <sun:tableRowGroup id="jvmThreadStats" rendered="#{hasStatsJVMThread}" data={"$attribute{jvmThreadStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.ThreadSystem}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}"  extraHeaderHtml="colspan='6'">
+    <sun:tableRowGroup id="jvmThreadStats" rendered="#{hasStatsJVMThread}" data={"$attribute{jvmThreadStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.ThreadSystem}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}"  extraHeaderHtml="colspan='6'">
 
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-    <sun:tableRowGroup id="servletsWeb" rendered="#{hasStatsWSS}" data={"$attribute{servletWebList}"}  sourceVar="td" headerText="$resource{web.monitoring.servletStatisticsWeb} "
-        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+    <sun:tableRowGroup id="servletsWeb" rendered="#{hasStatsWSS}" data={"$attribute{servletWebList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.servletStatisticsWeb} "
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
 
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
 
-    <sun:tableRowGroup id="sessionWeb" rendered="#{hasStatsWSSP}" data={"$attribute{sessionWebList}"}  sourceVar="td" headerText="$resource{web.monitoring.sessionStatisticsWeb} "
-        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+    <sun:tableRowGroup id="sessionWeb" rendered="#{hasStatsWSSP}" data={"$attribute{sessionWebList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.sessionStatisticsWeb} "
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
 
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-    <sun:tableRowGroup id="requestWebStats" rendered="#{hasStatsWRS}" data={"$attribute{requestWebStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.requestStatisticsWeb}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+    <sun:tableRowGroup id="requestWebStats" rendered="#{hasStatsWRS}" data={"$attribute{requestWebStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.requestStatisticsWeb}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
 
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-    <sun:tableRowGroup id="jspWebStats" rendered="#{hasStatsJsp}" data={"$attribute{jspWebStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jspStatisticsWeb}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+    <sun:tableRowGroup id="jspWebStats" rendered="#{hasStatsJsp}" data={"$attribute{jspWebStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.jspStatisticsWeb}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
 
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-     <sun:tableRowGroup id="webSecurity" rendered="#{hasStatsWSD}" data={"$attribute{webSecurityStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.webSecurityStats}"
-            groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+     <sun:tableRowGroup id="webSecurity" rendered="#{hasStatsWSD}" data={"$attribute{webSecurityStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.webSecurityStats}"
+            groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-     <sun:tableRowGroup id="jms" rendered="#{hasStatsJMS}" data={"$attribute{JMSStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jmsStats}"
-            groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+     <sun:tableRowGroup id="jms" rendered="#{hasStatsJMS}" data={"$attribute{JMSStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.jmsStats}"
+            groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-    <sun:tableRowGroup id="orbInStats" rendered="#{hasStatsORBIn}" data={"$attribute{ORBInStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.ORBInStatistics}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+    <sun:tableRowGroup id="orbInStats" rendered="#{hasStatsORBIn}" data={"$attribute{ORBInStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.ORBInStatistics}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-    <sun:tableRowGroup id="orbOutStats" rendered="#{hasStatsORBOut}" data={"$attribute{ORBOutStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.ORBOutStatistics}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+    <sun:tableRowGroup id="orbOutStats" rendered="#{hasStatsORBOut}" data={"$attribute{ORBOutStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.ORBOutStatistics}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-    <sun:tableRowGroup id="webServices" rendered="#{hasStatsWS}" data={"$attribute{webServicesStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.webServicesStats}"
-            groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+    <sun:tableRowGroup id="webServices" rendered="#{hasStatsWS}" data={"$attribute{webServicesStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.webServicesStats}"
+            groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>

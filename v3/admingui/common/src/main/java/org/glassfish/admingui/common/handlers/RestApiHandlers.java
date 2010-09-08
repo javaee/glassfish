@@ -707,11 +707,13 @@ public class RestApiHandlers {
         Map<String, String> childElements = new TreeMap<String, String>();
         Map responseMap = restRequest(endpoint, new HashMap<String, Object>(), "get", null);
         Map data = (Map) responseMap.get("data");
-        Map extraProperties = (Map) data.get("extraProperties");
-        if (extraProperties != null) {
-            childElements = (Map<String, String>) extraProperties.get("childResources");
-            if (childElements == null) {
-                childElements = new TreeMap<String, String>();
+        if (data != null) {
+            Map extraProperties = (Map) data.get("extraProperties");
+            if (extraProperties != null) {
+                childElements = (Map<String, String>) extraProperties.get("childResources");
+                if (childElements == null) {
+                    childElements = new TreeMap<String, String>();
+                }
             }
         }
 
