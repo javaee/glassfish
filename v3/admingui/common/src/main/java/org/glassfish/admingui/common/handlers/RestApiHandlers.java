@@ -219,8 +219,7 @@ public class RestApiHandlers {
         }
         method = method.toLowerCase();
 
-// FIXME: Move to fine level later.
-        GuiUtil.getLogger().log(Level.INFO, "restRequest: endpoint={0}\nattrs={1}\nmethod={2}", new Object[]{endpoint, attrs, method});
+        GuiUtil.getLogger().log(Level.FINE, "restRequest: endpoint={0}\nattrs={1}\nmethod={2}", new Object[]{endpoint, attrs, method});
 
 	// Execute the request...
         RestResponse response = null;
