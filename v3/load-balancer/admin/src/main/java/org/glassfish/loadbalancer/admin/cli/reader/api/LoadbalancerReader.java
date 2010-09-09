@@ -88,7 +88,7 @@ public interface LoadbalancerReader extends BaseReader {
     public static final String NUM_HEALTH_CHECK = "number-healthcheck-retries";
     public static final String REWRITE_LOCATION = "rewrite-location";
     public static final String REWRITE_COOKIES = "rewrite-cookies";
-    public static final String REWRITE_COOKIES_VALUE = "true";
+    public static final String REWRITE_COOKIES_VALUE = "false";
     public static final String PREFERRED_FAILOVER_INSTANCE = "preferred-failover-instance";
     public static final String PREFERRED_FAILOVER_INSTANCE_VALUE = "true";
     
