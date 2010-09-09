@@ -124,6 +124,7 @@ public class CommandResourceMetaData {
             {"Domain", "uptime", "GET", "uptime", "Uptime"},
             {"Domain", "version", "GET", "version", "Version"},
             {"Domain", "_get-runtime-info", "GET", "get-runtime-info", "Get Runtime Info"},
+            {"Domain", "__list-webservices", "GET", "list-webservices", "List Webservices"},
             {"Domain", "__locations", "GET", "location", "Location"},
             {"IiopListener", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=iiop-listener"},
             {"IiopListener", "delete-ssl", "DELETE", "delete-ssl", "Delete", "id=$parent", "type=iiop-listener"},
