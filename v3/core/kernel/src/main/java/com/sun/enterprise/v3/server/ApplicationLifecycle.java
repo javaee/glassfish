@@ -1189,54 +1189,56 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 // get the transaction
                 Transaction t = Transaction.getTransaction(param);
                 if (t!=null) {
-                    if (enabled || target.equals("domain")) {
+                    if (enabled || DeploymentUtils.isDomainTarget(target)) {
                         Application app = ((Domain)param).getApplications().getApplication(appName);
                         ConfigBeanProxy app_w = t.enroll(app);
                        ((Application)app_w).setEnabled(String.valueOf(enabled));
 
                     }
 
-                    // for target domain, only update the application enable
-                    // attribute, for the rest of the targets, update the
-                    // application-ref enable attribute as well
-                    if (target.equals("domain")) {
-                        return Boolean.TRUE;
+                    List<String> targets = new ArrayList<String>();
+                    if (!DeploymentUtils.isDomainTarget(target)) {
+                        targets.add(target);
+                    } else {
+                        targets = domain.getAllReferencedTargetsForApplication(appName);
                     }
 
-                    Server servr = ((Domain)param).getServerNamed(target);
-                    if (servr != null) {
-                        // update the application-ref from standalone
-                        // server instance
-                        for (ApplicationRef appRef :
-                            servr.getApplicationRef()) {
-                            if (appRef.getRef().equals(appName)) {
-                                ConfigBeanProxy appRef_w = t.enroll(appRef);
-                                ((ApplicationRef)appRef_w).setEnabled(String.valueOf(enabled));
-                                break;
-                            }
-                        }
-                        updateClusterAppRefWithInstanceUpdate(t, servr, appName, enabled);
-                    }
-                    Cluster cluster = ((Domain)param).getClusterNamed(target);
-                    if (cluster != null) {
-                        // update the application-ref from cluster
-                        for (ApplicationRef appRef :
-                            cluster.getApplicationRef()) {
-                            if (appRef.getRef().equals(appName)) {
-                                ConfigBeanProxy appRef_w = t.enroll(appRef);
-                                ((ApplicationRef)appRef_w).setEnabled(String.valueOf(enabled));
-                                break;
-                            }
-                        }
-
-                        // update the application-ref from cluster instances
-                        for (Server svr : cluster.getInstances() ) {
+                    for (String target : targets) {
+                        Server servr = ((Domain)param).getServerNamed(target);
+                        if (servr != null) {
+                            // update the application-ref from standalone
+                            // server instance
                             for (ApplicationRef appRef :
-                                svr.getApplicationRef()) {
+                                servr.getApplicationRef()) {
                                 if (appRef.getRef().equals(appName)) {
                                     ConfigBeanProxy appRef_w = t.enroll(appRef);
                                     ((ApplicationRef)appRef_w).setEnabled(String.valueOf(enabled));
                                     break;
+                                }
+                            }
+                            updateClusterAppRefWithInstanceUpdate(t, servr, appName, enabled);
+                        }
+                        Cluster cluster = ((Domain)param).getClusterNamed(target);
+                        if (cluster != null) {
+                            // update the application-ref from cluster
+                            for (ApplicationRef appRef :
+                                cluster.getApplicationRef()) {
+                                if (appRef.getRef().equals(appName)) {
+                                    ConfigBeanProxy appRef_w = t.enroll(appRef);
+                                    ((ApplicationRef)appRef_w).setEnabled(String.valueOf(enabled));
+                                    break;
+                                }
+                            }
+
+                            // update the application-ref from cluster instances
+                            for (Server svr : cluster.getInstances() ) {
+                                for (ApplicationRef appRef :
+                                    svr.getApplicationRef()) {
+                                    if (appRef.getRef().equals(appName)) {
+                                        ConfigBeanProxy appRef_w = t.enroll(appRef);
+                                        ((ApplicationRef)appRef_w).setEnabled(String.valueOf(enabled));
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -1787,8 +1789,15 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
         ReadableArchive archive = null; 
         try {
             DeployCommandParameters commandParams = app.getDeployParameters(appRef);
+            // if the application is already loaded, do not load again
+            ApplicationInfo appInfo = appRegistry.get(commandParams.name);
+            if (appInfo != null && appInfo.isLoaded()) {
+                return;
+            }
+
             commandParams.origin = DeployCommandParameters.Origin.load;
             commandParams.target = target;
+            commandParams.enabled = Boolean.TRUE;
             Properties contextProps = app.getDeployProperties();
             Map<String, Properties> modulePropsMap = app.getModulePropertiesMap();
             ApplicationConfigInfo savedAppConfig = new ApplicationConfigInfo(app);

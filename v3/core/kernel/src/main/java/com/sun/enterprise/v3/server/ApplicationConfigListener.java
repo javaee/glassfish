@@ -212,16 +212,6 @@ public class ApplicationConfigListener implements TransactionListener,
             return;
         }
 
-        ApplicationInfo appInfo = appRegistry.get(appName);
-        if (appInfo == null) {
-            return;
-        }
-
-        // if the application is already loaded, do not load again
-        if (appInfo.isLoaded()) {
-            return;
-        }
-
         long operationStartTime = 
             Calendar.getInstance().getTimeInMillis();
 

@@ -81,7 +81,7 @@ import org.jvnet.hk2.config.TransactionFailure;
  */
 public class ModuleInfo {
 
-    final static protected Logger logger = LogDomains.getLogger(ApplicationInfo.class, LogDomains.CORE_LOGGER);
+    final static protected Logger logger = LogDomains.getLogger(ModuleInfo.class, LogDomains.CORE_LOGGER);
     
     protected Set<EngineRef> engines = new LinkedHashSet<EngineRef>();
     final protected Map<Class<? extends Object>, Object> metaData = new HashMap<Class<? extends Object>, Object>();

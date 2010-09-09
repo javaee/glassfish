@@ -788,13 +788,18 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
                 appName);
             if (application != null && 
                 Boolean.valueOf(application.getEnabled())) {
-                if (target.equals("domain")) {
-                    return true;
+                List<String> targets = new ArrayList<String>();
+                if (!target.equals("domain")) {
+                    targets.add(target);
                 } else {
-                    if (isAppRefEnabledInTarget(me, appName, target)) {
-                        return true;
+                    targets = getAllReferencedTargetsForApplication(me, appName);
+                }
+                for (String tgt : targets) {
+                    if (!isAppRefEnabledInTarget(me, appName, tgt)) {
+                        return false;
                     }
                 }
+                return true;
             }
             return false;
         }
