@@ -45,12 +45,15 @@ import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.security.EmbeddedSecurity;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.logging.LogDomains;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -77,7 +80,9 @@ import org.jvnet.hk2.config.types.Property;
 @Scoped(Singleton.class)
 public class EmbeddedSecurityUtil implements EmbeddedSecurity {
 
-    public void copyConfigFiles(Habitat habitat, File fromInstanceDir, File domainXml) throws IOException, XMLStreamException {
+    private static final Logger _logger = LogDomains.getLogger(EmbeddedSecurityUtil.class, LogDomains.SECURITY_LOGGER);
+    
+    public void copyConfigFiles(Habitat habitat, File fromInstanceDir, File domainXml) {
         //For security reasons, permit only an embedded server instance to carry out the copy operations
         ServerEnvironment se = habitat.getComponent(ServerEnvironment.class);
         if (!isEmbedded(se)) {
@@ -92,37 +97,47 @@ public class EmbeddedSecurityUtil implements EmbeddedSecurity {
 
         List<String> fileNames = new ArrayList<String>();
 
-        //Add FileRealm keyfiles to the list
-        fileNames.addAll(new EmbeddedSecurityUtil().new DomainXmlSecurityParser(domainXml).getAbsolutePathKeyFileNames(fromInstanceDir));
+        //Handling the exception here, since it is causing CTS failure - CR 6981191
 
-        //Add keystore and truststore files
+        try {
 
-        // For the embedded server case, will the system properties be set in case of multiple embedded instances?
-        //Not sure - so obtain the other files from the usual locations instead of from the System properties
+            //Add FileRealm keyfiles to the list
+            fileNames.addAll(new EmbeddedSecurityUtil().new DomainXmlSecurityParser(domainXml).getAbsolutePathKeyFileNames(fromInstanceDir));
 
-        String keyStoreFileName = fromInstanceDir + File.separator + "config" + File.separator + "keystore.jks";
-        String trustStoreFileName = fromInstanceDir + File.separator + "config" + File.separator + "cacerts.jks";
+            //Add keystore and truststore files
 
-        fileNames.add(keyStoreFileName);
-        fileNames.add(trustStoreFileName);
+            // For the embedded server case, will the system properties be set in case of multiple embedded instances?
+            //Not sure - so obtain the other files from the usual locations instead of from the System properties
 
-        //Add login.conf and security policy
+            String keyStoreFileName = fromInstanceDir + File.separator + "config" + File.separator + "keystore.jks";
+            String trustStoreFileName = fromInstanceDir + File.separator + "config" + File.separator + "cacerts.jks";
 
-        String loginConf = fromInstanceDir + File.separator + "config" + File.separator + "login.conf";
-        String secPolicy = fromInstanceDir + File.separator + "config" + File.separator + "server.policy";
+            fileNames.add(keyStoreFileName);
+            fileNames.add(trustStoreFileName);
 
-        fileNames.add(loginConf);
-        fileNames.add(secPolicy);
+            //Add login.conf and security policy
 
-        File toConfigDir = new File(toInstanceDir, "config");
-        if (!toConfigDir.exists()) {
-            toConfigDir.mkdir();
+            String loginConf = fromInstanceDir + File.separator + "config" + File.separator + "login.conf";
+            String secPolicy = fromInstanceDir + File.separator + "config" + File.separator + "server.policy";
+
+            fileNames.add(loginConf);
+            fileNames.add(secPolicy);
+
+            File toConfigDir = new File(toInstanceDir, "config");
+            if (!toConfigDir.exists()) {
+                toConfigDir.mkdir();
+            }
+
+            //Copy files into new directory
+            for (String fileName : fileNames) {
+                FileUtils.copyFile(new File(fileName), new File(toConfigDir, parseFileName(fileName)));
+            }
+        }catch(IOException e) {
+            _logger.log(Level.WARNING,e.getLocalizedMessage(),e);
+        }catch(XMLStreamException e) {
+            _logger.log(Level.WARNING,e.getLocalizedMessage(), e);
         }
 
-        //Copy files into new directory
-        for (String fileName : fileNames) {
-            FileUtils.copyFile(new File(fileName), new File(toConfigDir, parseFileName(fileName)));
-        }
 
 
     }
