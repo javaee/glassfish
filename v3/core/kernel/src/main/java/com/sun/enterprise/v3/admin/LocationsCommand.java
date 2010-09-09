@@ -42,6 +42,7 @@ package com.sun.enterprise.v3.admin;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.jvnet.hk2.annotations.Service;
@@ -60,6 +61,7 @@ import java.lang.management.RuntimeMXBean;
  */
 @Service(name="__locations")
 @Scoped(Singleton.class)
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("locations.command")
 public class LocationsCommand implements AdminCommand {
     

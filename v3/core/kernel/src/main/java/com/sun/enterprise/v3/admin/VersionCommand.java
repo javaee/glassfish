@@ -42,6 +42,7 @@ package com.sun.enterprise.v3.admin;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport.ExitCode;
@@ -60,6 +61,7 @@ import org.glassfish.api.Param;
  */
 @Service(name="version")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("version.command")
 public class VersionCommand implements AdminCommand {
     

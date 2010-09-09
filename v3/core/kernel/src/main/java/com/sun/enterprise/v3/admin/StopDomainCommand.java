@@ -63,6 +63,7 @@ import java.util.Collection;
  */
 @Service(name="stop-domain")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @Async
 @I18n("stop.domain.command")
 @ExecuteOn(RuntimeType.DAS)
