@@ -89,7 +89,7 @@ public class GMSAdapterService implements Startup, PostConstruct, ConfigListener
     @Inject
     Habitat habitat;
 
-    static private Object lock = new Object();
+    static private final Object lock = new Object();
 
     List<GMSAdapter> gmsAdapters = new LinkedList<GMSAdapter>();
 
