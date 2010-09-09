@@ -65,7 +65,7 @@ public class WLWebServiceEndpointNode extends DeploymentDescriptorNode {
     private final static XMLElement tag =
             new XMLElement(WebServicesTagNames.PORT_COMPONENT);
 
-    public static List<String> UNSUPPORTED_TAGS = new ArrayList();
+    private static final List<String> UNSUPPORTED_TAGS = new ArrayList();
     static {
         UNSUPPORTED_TAGS.add(WLWebServicesTagNames.DEPLOYMENT_LISTENER_LIST);
         UNSUPPORTED_TAGS.add(WLWebServicesTagNames.TRANSACTION_TIMEOUT);
