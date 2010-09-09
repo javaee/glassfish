@@ -126,7 +126,7 @@ public class EjbDeployer
     private static Random random = new Random();
 
     // Property used to persist unique id across server restart.
-    private static final String APP_UNIQUE_ID_PROP = "org.glassfish.ejb.container.application_unique_id";
+    static final String APP_UNIQUE_ID_PROP = "org.glassfish.ejb.container.application_unique_id";
     private static final String IS_TIMEOUT_APP_PROP = "org.glassfish.ejb.container.is_timeout_application";
 
     private AtomicLong uniqueIdCounter;
@@ -281,7 +281,7 @@ public class EjbDeployer
                 cmpDeployer.unload(ejbBundle.getClassLoader());
             }
         }
-
+        
         // All the other work is done in EjbApplication. 
 
     }

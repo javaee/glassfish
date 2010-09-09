@@ -42,10 +42,7 @@ package org.glassfish.ejb.startup;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 import java.util.List;
-import java.util.logging.Logger;
-import java.util.logging.Level;
 
 import com.sun.ejb.Container;
 import com.sun.ejb.ContainerFactory;
@@ -68,6 +65,11 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
 import com.sun.enterprise.security.PolicyLoader;
+import com.sun.logging.LogDomains;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.glassfish.api.deployment.UndeployCommandParameters;
 
 /**
  * This class represents a logical collection of EJB components contained in one ejb-jar
@@ -79,6 +81,9 @@ import com.sun.enterprise.security.PolicyLoader;
 @Scoped(PerLookup.class)
 public class EjbApplication
         implements ApplicationContainer<Collection<EjbDescriptor>> {
+
+    private static final Logger _logger =
+                LogDomains.getLogger(EjbApplication.class, LogDomains.EJB_LOGGER);
 
     private EjbBundleDescriptor ejbBundle;
     private Collection<EjbDescriptor> ejbs;
@@ -240,6 +245,20 @@ public class EjbApplication
     }
 
     public boolean stop(ApplicationContext stopContext) {
+        if (stopContext instanceof DeploymentContext) {
+            DeploymentContext depc = (DeploymentContext) stopContext;
+            if (isKeepState(depc, false, ejbBundle)) {
+                Properties appProps = depc.getAppProps();
+                Object appId = appProps.get(EjbDeployer.APP_UNIQUE_ID_PROP);
+                Properties actionReportProps = depc.getActionReport().getExtraProperties();
+                if (actionReportProps != null) {
+                    actionReportProps.put(EjbDeployer.APP_UNIQUE_ID_PROP, appId);
+                    ejbBundle.setKeepState(String.valueOf(true));
+                    _logger.log(Level.INFO, "keepstate is true, saving appId {0} for application {1}.",
+                            new Object[]{appId, this});
+                }
+            }
+        }
 
         OpsParams params = ((DeploymentContext)stopContext).
                 getCommandParameters(OpsParams.class);
@@ -329,4 +348,28 @@ public class EjbApplication
         }
 
     }
+
+    private boolean isKeepState(DeploymentContext deployContext, boolean isDeploy,
+            EjbBundleDescriptor bundleDesc) {
+        Boolean keepState = null;
+        if (isDeploy) {
+            DeployCommandParameters dcp = deployContext.getCommandParameters(DeployCommandParameters.class);
+            if (dcp != null) {
+                keepState = dcp.keepstate;
+            }
+        } else {
+            UndeployCommandParameters ucp = deployContext.getCommandParameters(UndeployCommandParameters.class);
+            if (ucp != null) {
+                keepState = ucp.keepstate;
+            }
+        }
+
+        if (keepState == null) {
+            Application app = bundleDesc.getApplication();
+            keepState = app.getKeepState();
+        }
+
+        return keepState;
+    }
+
 }
