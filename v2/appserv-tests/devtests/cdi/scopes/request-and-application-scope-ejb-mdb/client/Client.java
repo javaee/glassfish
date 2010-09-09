@@ -61,7 +61,7 @@ public class Client {
 
     private static SimpleReporterAdapter stat = new SimpleReporterAdapter(
             "appserv-tests");
-    private static final String TEST_NAME = "cmt main";
+    private static final String TEST_NAME = "request-and-application-scope-ejb-mdb";
 
     public static void main(String[] args) {
         Client client = new Client(args);

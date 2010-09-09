@@ -53,7 +53,6 @@ public class JMSResourcesProducer {
 
     @SuppressWarnings("unused")
     @Produces
-    @ApplicationScoped
     @Resource(mappedName = "jms/Queue")
     private Queue queue;
 

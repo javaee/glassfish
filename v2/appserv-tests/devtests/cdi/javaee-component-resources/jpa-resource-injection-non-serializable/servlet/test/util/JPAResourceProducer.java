@@ -49,18 +49,10 @@ import test.beans.artifacts.TestDatabase;
 @Singleton
 public class JPAResourceProducer {
     @Produces @PersistenceUnit(unitName="pu2")
-    @TestDatabase @ConversationScoped
+    @TestDatabase 
     EntityManagerFactory customerDatabasePersistenceUnit;
 
     @Produces @PersistenceContext(unitName="pu2")
-    @TestDatabase @ConversationScoped
+    @TestDatabase 
     EntityManager customerDatabasePersistenceContext;
-    
-//    @Produces
-//    @SessionScoped //a passivating scope
-//    @TestDatabase
-//    public EntityManager create() {
-//        return customerDatabasePersistenceUnit.createEntityManager();
-//    }
-
 }
