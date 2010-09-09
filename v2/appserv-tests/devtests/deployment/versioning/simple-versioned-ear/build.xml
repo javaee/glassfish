@@ -69,5 +69,6 @@
 -->
     <target name="main-all">
       <antcall target="xml.version.information"/>
+      <antcall target="clean.scenario"/>
     </target>
 </project>

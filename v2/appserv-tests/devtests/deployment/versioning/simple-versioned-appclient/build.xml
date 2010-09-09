@@ -64,7 +64,7 @@
     </javac>
 
     <!--
-        generation of the property from witch the servlet read the
+        generation of the property from witch the class client read the
         version information.
     -->
     <propertyfile file="${build}/${testPackage}/${versionInfos}">
@@ -94,5 +94,6 @@
     <antcall target="undeployment"/>
     <antcall target="deactivation"/>
     <antcall target="redeployment"/>-->
+    <antcall target="clean.scenario"/>
   </target>
 </project>

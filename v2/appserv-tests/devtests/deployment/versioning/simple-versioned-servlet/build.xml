@@ -77,8 +77,9 @@
         <antcall target="undeployment"/>
         <antcall target="samples.scenarios"/>
         <antcall target="switch"/>
-	<antcall target="xml.version.information"/>
+        <antcall target="xml.version.information"/>
         <antcall target="client-stubs"/>
+        <antcall target="clean.scenario"/>
 <!--        <antcall target="rolling-upgrade.scenario"/>-->
     </target>
 
