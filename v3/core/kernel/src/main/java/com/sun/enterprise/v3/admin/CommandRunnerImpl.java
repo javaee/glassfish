@@ -539,9 +539,6 @@ public class CommandRunnerImpl implements CommandRunner {
      */
     private void getMetadata(AdminCommand command, CommandModel model,
 	    ActionReport report) {
-        LocalStringManagerImpl localStrings =
-		new LocalStringManagerImpl(command.getClass());
-
 	ActionReport.MessagePart top = report.getTopMessagePart();
 	ActionReport.MessagePart cmd = top.addChild();
 	// <command name="name">
