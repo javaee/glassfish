@@ -108,18 +108,20 @@ public class BaseSeleniumTestClass {
     @AfterClass
     public static void captureLog() {
         try {
-            URL url = new URL("http://localhost:" + getParameter("admin.port", "4848") + "/management/domain/view-log");
-//            URLConnection urlC = url.openConnection();
-            InputStream is = url.openStream();
-            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("target/surefire-reports/" + currentTestClass + "-server.log")));
-            BufferedReader in = new BufferedReader(new InputStreamReader(is));
-            String line = in.readLine();
-            while (line != null) {
-                out.write(line+System.getProperty("line.separator"));
-                line = in.readLine();
+            if (!currentTestClass.isEmpty()) {
+                URL url = new URL("http://localhost:" + getParameter("admin.port", "4848") + "/management/domain/view-log");
+    //            URLConnection urlC = url.openConnection();
+                InputStream is = url.openStream();
+                PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("target/surefire-reports/" + currentTestClass + "-server.log")));
+                BufferedReader in = new BufferedReader(new InputStreamReader(is));
+                String line = in.readLine();
+                while (line != null) {
+                    out.write(line+System.getProperty("line.separator"));
+                    line = in.readLine();
+                }
+                in.close();
+                out.close();
             }
-            in.close();
-            out.close();
         } catch (Exception ex) {
             Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.INFO, null, ex);
         }
