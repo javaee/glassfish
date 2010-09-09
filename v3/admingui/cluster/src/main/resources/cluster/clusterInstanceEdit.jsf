@@ -58,7 +58,7 @@
         setSessionAttribute(key="selfPage" value="#{request.contextPath}/cluster/clusterInstanceEdit.jsf?clusterName=#{pageSession.encodedClusterName}&instanceName=#{pageSession.encodedInstanceName}");
     />
     </event>
-            <sun:form id="propertyForm">
+    <sun:form id="propertyForm">
 
 #include "/cluster/cluster/clusterInstanceTabs.inc"
 
@@ -98,9 +98,9 @@
             </sun:button>
 
 
-            <sun:button id="recoverTrans" text="$resource{i18n.button.recoverTrans} TBD" primary="#{false}" disabled="true">
+            <sun:button id="recoverTrans" text="$resource{i18n.button.recoverTrans}" primary="#{false}">
                 <!command
-                    //gf.redirect(page="recoverTransactions.jsf?instanceName=$pageSession{instanceName}&pageName=$pageSession{pageName}");
+                    gf.redirect(page="recoverTransactions.jsf?clusterName=#{pageSession.encodedClusterName}&instanceName=$pageSession{instanceName}&pageName=$pageSession{pageName}");
                 />
             </sun:button>
     </sun:title>

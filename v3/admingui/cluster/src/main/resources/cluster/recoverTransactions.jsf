@@ -45,18 +45,20 @@
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="help_cs" bundle="org.glassfish.cluster.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.cluster.migrateEjbTimers}"
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.cluster.recoverTransactions}"
         guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:clusterTreeNode');" >
 <!define name="content">
     <event>
     <!beforeCreate
         setSessionAttribute(key="clusterTabs" value="general");
         getRequestValue(key="clusterName" value="#{pageSession.clusterName}");
+        getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
         urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/cluster/migrateEjbTimers.jsf?clusterName=#{pageSession.encodedClusterName}");
-        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/cluster/cluster/clusterGeneral.jsf?clusterName=#{pageSession.encodedClusterName}");
+        urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/cluster/recoverTransactions.jsf?&instanceName=#{pageSession.encodedInstanceName}");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/cluster/cluster/clusterInstanceEdit.jsf?&instanceName=#{pageSession.encodedInstanceName}");
 
-        setPageSessionAttribute(key="resourceUrl", value="#{sessionScope.REST_URL}/clusters/cluster/#{pageSession.encodedClusterName}");
+        setPageSessionAttribute(key="resourceUrl", value="#{sessionScope.REST_URL}/servers/server/#{pageSession.encodedInstanceName}");
         setPageSessionAttribute(key="rest-api" value="true");
 
         //set the following for including buttons.inc
@@ -64,14 +66,10 @@
         setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
 
-        gf.restRequest(endpoint="#{pageSession.resourceUrl}/list-instances", method="get", result="#{requestScope.results}");
-        setPageSessionAttribute(key="clusterInstances", value="#{requestScope.results.data.extraProperties.instanceList}");
-        createList(result="#{pageSession.runningInstances}", size="0");
-        createList(result="#{pageSession.notRunningInstances}", size="0");
-        foreach (var="instance", list="#{pageSession.clusterInstances}") {
-            if ('#{instance.status} = NOT_RUNNING') {
-                listAdd(list="#{pageSession.notRunningInstances}", value="#{instance.name}");
-            }
+        gf.restRequest(endpoint="#{sessionScope.REST_URL}/list-instances", method="get", result="#{requestScope.results}");
+        createList(result="#{pageSession.runningInstances}", size="1");
+        listAdd(list="#{pageSession.runningInstances}", value="server");
+        foreach (var="instance", list="#{requestScope.results.data.extraProperties.instanceList}") {
             if ('!(#{instance.status} = NOT_RUNNING)') {
                 listAdd(list="#{pageSession.runningInstances}", value="#{instance.name}");
             }
@@ -82,16 +80,16 @@
 #include "/cluster/cluster/clusterTabs.inc"
 #include "/common/shared/alertMsg.inc"
 <!-- Page Title -->
-    <sun:title id="propertyContentPage" title="$resource{i18ncs.cluster.migrateEjbTimers}" helpText="$resource{i18ncs.cluster.migrateEjbTimersHelp}">
+    <sun:title id="propertyContentPage" title="$resource{i18ncs.cluster.recoverTransactions}">
         <!facet pageButtonsTop>
             <sun:panelGroup id="topButtons">
                 <sun:button id="saveButton" text="$resource{i18n.button.OK}" disabled="#{empty runningInstances}">
                     <!command
                         createMap(result="#{requestScope.attrs}");
-                        mapPut(map="#{requestScope.attrs}", key="target", value="#{pageSession.destInstance}");
-                        mapPut(map="#{requestScope.attrs}", key="id", value="#{pageSession.sourceInstance}");
-                        gf.restRequest(endpoint="#{pageSession.resourceUrl}/migrate-timers.json", attrs="#{requestScope.attrs}", method="post", result="#{requestScope.results}");
-                        prepareAlertMsg(type="success", summary="#{requestScope.results.data.subReports[0].message}");
+                        mapPut(map="#{requestScope.attrs}", key="transactionlogdir", value="#{pageSession.txnLogDir}");
+                        mapPut(map="#{requestScope.attrs}", key="destination", value="#{pageSession.destInstance}");
+                        gf.restRequest(endpoint="#{pageSession.resourceUrl}/recover-transactions", attrs="#{requestScope.attrs}", method="post", result="#{requestScope.results}");
+                        prepareAlertMsg(type="success", summary="#{requestScope.results.data.message}");
                         gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                     />
                 </sun:button>
@@ -103,25 +101,25 @@
             </sun:panelGroup>
         </facet>
     </sun:title>
+"<h2>#{alertSummary}</h2>
+"<hr/>
+"<h2>#{requestScope.alertSummary}</h2>
+"<hr/>
+    <sun:propertySheet id="propertySheet">
+        <!-- Text Field section -->
+        <sun:propertySheetSection id="propertSectionTextField">
+            <sun:property id="instanceDestProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.instance.destServer}"
+                helpText="$resource{i18ncs.cluster.instance.destServerHelp}">
+                <sun:dropDown id="source" selected="#{pageSession.sourceInstance}" labels="#{pageSession.runningInstances}"/>
+            </sun:property>
+            <sun:property id="txnLogProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.instance.txnLogDir}"
+                helpText="$resource{i18ncs.cluster.instance.txnLogDirHelp}">
+                <sun:textField id="txnLogDir" text="#{pageSession.txnLogDir}" columns="$int{60}"/>
+            </sun:property>
+        </sun:propertySheetSection>
+    </sun:propertySheet>
 
-    <h:panelGroup rendered="#{!empty runningInstances}">
-        <sun:propertySheet id="propertySheet">
-            <!-- Text Field section -->
-            <sun:propertySheetSection id="propertSectionTextField">
-                <sun:property id="clusterSourceProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.sourceCluster}" >
-                    <sun:dropDown id="source" selected="#{pageSession.sourceInstance}"labels="#{pageSession.notRunningInstances}"/>
-                </sun:property>
-                <sun:property id="clusterDestProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.destCluster}" >
-                    <sun:dropDown id="dest" selected="#{pageSession.destInstance}" labels="#{pageSession.runningInstances}"/>
-                </sun:property>
-            </sun:propertySheetSection>
-        </sun:propertySheet>
-    </h:panelGroup>
-    <h:panelGroup rendered="#{empty runningInstances}">
-        "<em>$resource{i18ncs.cluster.migrateEjbTimersNoRunningInstance}</em>
-    </h:panelGroup>
-
-    <sun:hidden id="helpKey" value="$resource{help_cs.clusterMigrateEjbTimers}" />
+    <sun:hidden id="helpKey" value="$resource{help_cs.clusterrecoverTransactions}" />
 </sun:form>
 </define>
 </composition>
