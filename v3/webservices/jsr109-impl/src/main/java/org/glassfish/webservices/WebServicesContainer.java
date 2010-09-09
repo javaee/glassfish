@@ -81,7 +81,7 @@ public class WebServicesContainer implements Container, PostConstruct, PreDestro
         }
     }
 
-    /* package */ WebServicesDeploymentMBean getDeploymentBean() {
+    public WebServicesDeploymentMBean getDeploymentBean() {
         return deploymentBean;
     }
 

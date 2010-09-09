@@ -50,8 +50,10 @@ import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
 
 import javax.xml.namespace.QName;
+import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
 
 /**
  * 109 and sun-jaxws.xml style deployed endpoint's info.
@@ -60,7 +62,7 @@ import java.util.HashMap;
  */
 @ManagedData
 @Description("109 deployed endpoint info")
-public class DeployedEndpointData extends StatisticImpl {
+public class DeployedEndpointData extends StatisticImpl implements Map {
 
     @ManagedAttribute
     @Description("Application Name")
@@ -166,4 +168,63 @@ public class DeployedEndpointData extends StatisticImpl {
         infoMap.put("deploymentType", deploymentType);
     }
 
+    @Override
+    public int size() {
+        return infoMap.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return infoMap.isEmpty();
+    }
+
+    @Override
+    public boolean containsKey(Object key) {
+        return infoMap.containsKey(key);
+    }
+
+    @Override
+    public boolean containsValue(Object value) {
+        return infoMap.containsValue(value);
+    }
+
+    @Override
+    public Object get(Object key) {
+        return infoMap.get(key);
+    }
+
+    @Override
+    public Object put(Object key, Object value) {
+        throw new UnsupportedOperationException("DeployedEndpointData is a read-only map");
+    }
+
+    @Override
+    public Object remove(Object key) {
+        throw new UnsupportedOperationException("DeployedEndpointData is a read-only map");
+    }
+
+    @Override
+    public void putAll(Map m) {
+        throw new UnsupportedOperationException("DeployedEndpointData is a read-only map");
+    }
+
+    @Override
+    public void clear() {
+        throw new UnsupportedOperationException("DeployedEndpointData is a read-only map");
+    }
+
+    @Override
+    public Set keySet() {
+        return infoMap.keySet();
+    }
+
+    @Override
+    public Collection values() {
+        return infoMap.values();
+    }
+
+    @Override
+    public Set entrySet() {
+        return infoMap.entrySet();
+    }
 }

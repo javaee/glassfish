@@ -40,11 +40,9 @@
 
 package org.glassfish.webservices.deployment;
 
-import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
 import org.glassfish.gmbal.*;
-import org.glassfish.webservices.deployment.DeployedEndpointData;
 
 import java.util.*;
 
@@ -60,11 +58,8 @@ import java.util.*;
 @ManagedObject
 @Description("Deployed Web Services")
 public class WebServicesDeploymentMBean {
-
-    // All 109 endpoints
-    // appName+moduleName+endpointName --> deployed data
-    private final Map<String, DeployedEndpointData> endpoints =
-            new HashMap<String, DeployedEndpointData>();
+    // appName --> Application
+    private final Map<String, Application> applications = new HashMap<String, Application>();
 
     // 109 Servlet Endpoints
     private final Map<Servlet109Endpoint, DeployedEndpointData> servletEndpoints =
@@ -74,15 +69,178 @@ public class WebServicesDeploymentMBean {
     private final Map<EJB109Endpoint, DeployedEndpointData> ejbEndpoints =
             new HashMap<EJB109Endpoint, DeployedEndpointData>();
 
+    private static class Application {
+        final String appName;
+        final Map<String, Module> modules;
+
+        Application(String appName) {
+            this.appName = appName;
+            modules = new HashMap<String, Module>();
+        }
+
+        // moduleName --> <endpointName --> DeployedEndpointData>
+        Map<String, Map<String, DeployedEndpointData>> getDeployedEndpointData() {
+            Map<String, Map<String, DeployedEndpointData>> tempEndpoints =
+                    new HashMap<String, Map<String, DeployedEndpointData>>();
+            for(Map.Entry<String, Module> e : modules.entrySet()) {
+                tempEndpoints.put(e.getKey(), e.getValue().getDeployedEndpointData());
+
+            }
+            return tempEndpoints;
+        }
+
+        // moduleName --> <endpointName --> DeployedEndpointData>
+        Map<String, Map<String, DeployedEndpointData>> getDeployedEndpointData(String moduleName) {
+            Module module = modules.get(moduleName);
+            if (module == null) {
+                return Collections.emptyMap();
+            }
+            Map<String, Map<String, DeployedEndpointData>> tempEndpoints =
+                    new HashMap<String, Map<String, DeployedEndpointData>>();
+            tempEndpoints.put(moduleName, module.getDeployedEndpointData());
+            return tempEndpoints;
+        }
+
+        // moduleName --> <endpointName --> DeployedEndpointData>
+        Map<String, Map<String, DeployedEndpointData>> getDeployedEndpointData(String moduleName, String endpointName) {
+            Module module = modules.get(moduleName);
+            if (module == null) {
+                return Collections.emptyMap();
+            }
+            Map<String, Map<String, DeployedEndpointData>> tempEndpoints =
+                    new HashMap<String, Map<String, DeployedEndpointData>>();
+            tempEndpoints.put(moduleName, module.getDeployedEndpointData(endpointName));
+            return tempEndpoints;
+        }
+
+        void addEndpoint(String moduleName, String endpointName, DeployedEndpointData endpointData) {
+            Module module = modules.get(moduleName);
+            if (module == null) {
+                module = new Module(appName, moduleName);
+                modules.put(moduleName, module);
+            }
+            module.addEndpoint(endpointName, endpointData);
+        }
+
+        void removeEndpoint(String moduleName, String endpointName) {
+            Module module = modules.get(moduleName);
+            if (module != null) {
+                module.removeEndpoint(endpointName);
+                if (module.isEmpty()) {
+                    modules.remove(moduleName);
+                }
+            }
+        }
+
+        boolean isEmpty() {
+            return modules.isEmpty();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof Application) {
+                Application other = (Application)obj;
+                if (appName.equals(other.appName))
+                    return true;
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return appName.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return appName;
+        }
+    }
+
+    private static class Module {
+        final String moduleName;
+        final Map<String, Endpoint> endpoints;
+        final String appName;
+
+        Module(String appName, String moduleName) {
+            this.appName = appName;
+            this.moduleName = moduleName;
+            endpoints = new HashMap<String, Endpoint>();
+        }
+
+        // endpointName --> DeployedEndpointData
+        Map<String, DeployedEndpointData> getDeployedEndpointData() {
+            Map<String, DeployedEndpointData> tempEndpoints = new HashMap<String, DeployedEndpointData>();
+            for(Map.Entry<String, Endpoint> e : endpoints.entrySet()) {
+                tempEndpoints.put(e.getKey(), e.getValue().getDeployedEndpointData());
+
+            }
+            return tempEndpoints;
+        }
+
+        // endpointName --> DeployedEndpointData
+        Map<String, DeployedEndpointData> getDeployedEndpointData(String endpointName) {
+            Endpoint endpoint = endpoints.get(endpointName);
+            if (endpoint == null) {
+                return Collections.emptyMap();
+            }
+            Map<String, DeployedEndpointData> tempEndpoints = new HashMap<String, DeployedEndpointData>();
+            tempEndpoints.put(endpointName, endpoint.getDeployedEndpointData());
+            return tempEndpoints;
+        }
+
+        void addEndpoint(String endpointName, DeployedEndpointData endpointData) {
+            Endpoint endpoint = endpoints.get(endpointName);
+            if (endpoint == null) {
+                endpoint = new Endpoint(appName, moduleName, endpointName, endpointData);
+                endpoints.put(endpointName, endpoint);
+            }
+        }
+
+        void removeEndpoint(String endpointName) {
+            endpoints.remove(endpointName);
+        }
+
+        boolean isEmpty() {
+            return endpoints.isEmpty();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof Module) {
+                Module other = (Module)obj;
+                if (appName.equals(other.appName) && moduleName.equals(other.moduleName))
+                    return true;
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return appName.hashCode()+moduleName.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return appName+"#"+moduleName;
+        }
+    }
+
     private static class Endpoint {
         final String appName;
         final String moduleName;
         final String endpointName;
+        final DeployedEndpointData endpointData;
 
-        Endpoint(String appName, String moduleName, String endpointName) {
+        Endpoint(String appName, String moduleName, String endpointName, DeployedEndpointData endpointData) {
             this.appName = appName;
             this.moduleName = moduleName;
             this.endpointName = endpointName;
+            this.endpointData = endpointData;
+        }
+
+        DeployedEndpointData getDeployedEndpointData() {
+            return endpointData;
         }
 
         @Override
@@ -162,19 +320,22 @@ public class WebServicesDeploymentMBean {
 
     public synchronized void deploy(@ProbeParam("endpoint")WebServiceEndpoint endpoint) {
         // add to [appName+moduleName+endpointName --> deployed data]
-        Application app = endpoint.getBundleDescriptor().getApplication();
+        com.sun.enterprise.deployment.Application app = endpoint.getBundleDescriptor().getApplication();
         String appName = app.getAppName();
         String moduleName = endpoint.getBundleDescriptor().getModuleName();
         String endpointName = endpoint.getEndpointName();
 
         // path (context path+url-pattern) --> deployed data
-        String id = new Endpoint(appName, moduleName, endpointName).toString();
+        //String id = new Endpoint(appName, moduleName, endpointName).toString();
         String path = endpoint.getEndpointAddressPath();
-        DeployedEndpointData data = endpoints.get(id);
-        if (data == null) {
-            data = new DeployedEndpointData(path, app, endpoint);
-            endpoints.put(id, data);
+        DeployedEndpointData data = new DeployedEndpointData(path, app, endpoint);
+
+        Application application = applications.get(appName);
+        if (application == null) {
+            application = new Application(appName);
+            applications.put(appName, application);            
         }
+        application.addEndpoint(moduleName, endpointName, data);
 
         // store in servletEndpoints, ejbEndpoints
         if (endpoint.getWebComponentLink() != null) {
@@ -195,12 +356,18 @@ public class WebServicesDeploymentMBean {
 
     public synchronized void undeploy(@ProbeParam("endpoint")WebServiceEndpoint endpoint) {
         // remove from [appName+moduleName+endpointName --> deployed data]
-        Application app = endpoint.getBundleDescriptor().getApplication();
+        com.sun.enterprise.deployment.Application app = endpoint.getBundleDescriptor().getApplication();
         String appName = app.getAppName();
         String moduleName = endpoint.getBundleDescriptor().getModuleName();
         String endpointName = endpoint.getEndpointName();
-        String id = new Endpoint(appName, moduleName, endpointName).toString();
-        endpoints.remove(id);
+
+        Application application = applications.get(appName);
+        if (application != null) {
+            application.removeEndpoint(moduleName, endpointName);
+            if (application.isEmpty()) {
+                applications.remove(appName);
+            }
+        }
 
         // remove from servletEndpoints, ejbEndpoints
         if (endpoint.getWebComponentLink() != null) {
@@ -215,11 +382,54 @@ public class WebServicesDeploymentMBean {
         }
     }
 
-    @ManagedAttribute
-    @Description("Deployed Web Service Endpoints")
-    public synchronized Map<String, DeployedEndpointData> getEndpoints() {
-        // Give a snapshot of all the endpoints
-        return new HashMap<String, DeployedEndpointData>(endpoints);
+    // Give a snapshot of all the endpoints
+    public synchronized Map<String, Map<String, Map<String, DeployedEndpointData>>> getEndpoints() {
+        if (applications.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        Map<String, Map<String, Map<String, DeployedEndpointData>>> endpoints =
+                new HashMap<String, Map<String, Map<String, DeployedEndpointData>>>();
+        for(Map.Entry<String, Application> e : applications.entrySet()) {
+            endpoints.put(e.getKey(), e.getValue().getDeployedEndpointData());
+        }
+        return endpoints;
+    }
+
+    // Returns a snapshot of all the endpoints in an application
+    // returns non-null collection of endpoints. If there are no endpoints for
+    // this application, it returns an empty collection
+    public synchronized Map<String, Map<String, Map<String, DeployedEndpointData>>> getEndpoints(String appName) {
+        Application app = applications.get(appName);
+        if (app == null) {
+            return Collections.emptyMap();
+        }
+        Map<String, Map<String, Map<String, DeployedEndpointData>>> endpoints =
+                new HashMap<String, Map<String, Map<String, DeployedEndpointData>>>();
+        endpoints.put(appName, app.getDeployedEndpointData());
+        return endpoints;
+    }
+
+    // Returns a snapshot of all the endpoints in an application's module
+    public synchronized Map<String, Map<String, Map<String, DeployedEndpointData>>> getEndpoints(String appName, String moduleName) {
+        Application app = applications.get(appName);
+        if (app == null) {
+            return Collections.emptyMap();
+        }
+        Map<String, Map<String, Map<String, DeployedEndpointData>>> endpoints =
+                new HashMap<String, Map<String, Map<String, DeployedEndpointData>>>();
+        endpoints.put(appName, app.getDeployedEndpointData(moduleName));
+        return endpoints;
+    }
+
+    public synchronized Map<String, Map<String, Map<String, DeployedEndpointData>>> getEndpoint(String appName, String moduleName, String endpointName) {
+        Application app = applications.get(appName);
+        if (app == null) {
+            return Collections.emptyMap();
+        }
+        Map<String, Map<String, Map<String, DeployedEndpointData>>> endpoints =
+                new HashMap<String, Map<String, Map<String, DeployedEndpointData>>>();
+        endpoints.put(appName, app.getDeployedEndpointData(moduleName, endpointName));
+        return endpoints;
     }
 
     // Returns the 109 servlet endpoint for appName+moduleName+servletLink
