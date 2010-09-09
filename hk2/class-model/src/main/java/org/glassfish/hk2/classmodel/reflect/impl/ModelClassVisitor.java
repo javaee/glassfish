@@ -75,6 +75,10 @@ public class ModelClassVisitor implements ClassVisitor {
 
         String parentName = (superName!=null?org.objectweb.asm.Type.getObjectType(superName).getClassName():null);
         TypeProxy parent = (parentName!=null?typeBuilder.getHolder(parentName, typeBuilder.getType(access)):null);
+        if (parent!=null) {
+            // put a temporary parent until we eventually visit it. 
+            parent.set(typeBuilder.getType(access, parentName, null));
+        }
         String className = org.objectweb.asm.Type.getObjectType(name).getClassName();
         URI classDefURI=null;
         try {
