@@ -60,6 +60,7 @@ import org.jvnet.hk2.component.PerLookup;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -137,7 +138,6 @@ public class CollectLogFiles implements AdminCommand {
                         "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files.");
                 logger.log(Level.SEVERE, errorMsg, ex);
                 report.setMessage(errorMsg);
-                report.setFailureCause(ex);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
@@ -150,8 +150,15 @@ public class CollectLogFiles implements AdminCommand {
             targetDir = new File(targetDirPath);
             targetDir.mkdir();
 
-            copyLogFilesForLocalhost(env.getDomainRoot() + File.separator + "logs",
-                    targetDir.getAbsolutePath(), report, targetServer.getName());
+            try {
+                copyLogFilesForLocalhost(env.getDomainRoot() + File.separator + "logs",
+                        targetDir.getAbsolutePath(), report, targetServer.getName());
+            } catch (Exception ex) {
+                final String errorMsg = localStrings.getLocalString(
+                        "collectlogfiles.errInstanceDownloading", "Error while downloading log files from " + target + ".");
+                logger.log(Level.SEVERE, errorMsg, ex);
+            }
+
 
             try {
                 zipFile = loggingConfig.createZipFile(tempDirectory.getAbsolutePath());
@@ -171,7 +178,6 @@ public class CollectLogFiles implements AdminCommand {
                         "collectlogfiles.creatingZip", "Error while creating zip file " + zipFile + ".");
                 logger.log(Level.SEVERE, errorMsg, e);
                 report.setMessage(errorMsg);
-                report.setFailureCause(e);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
@@ -198,7 +204,6 @@ public class CollectLogFiles implements AdminCommand {
                         "collectlogfiles.copyingZip", "Error while copying zip file to " + outputFilePath + ".");
                 logger.log(Level.SEVERE, errorMsg, ex);
                 report.setMessage(errorMsg);
-                report.setFailureCause(ex);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
@@ -223,7 +228,6 @@ public class CollectLogFiles implements AdminCommand {
                         "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files.");
                 logger.log(Level.SEVERE, errorMsg, ex);
                 report.setMessage(errorMsg);
-                report.setFailureCause(ex);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
@@ -252,7 +256,6 @@ public class CollectLogFiles implements AdminCommand {
                         "collectlogfiles.errInstanceDownloading", "Error while downloading log files from " + instanceName + ".");
                 logger.log(Level.SEVERE, errorMsg, ex);
                 report.setMessage(errorMsg);
-                report.setFailureCause(ex);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
@@ -275,7 +278,6 @@ public class CollectLogFiles implements AdminCommand {
                         "collectlogfiles.creatingZip", "Error while creating zip file " + zipFile + ".");
                 logger.log(Level.SEVERE, errorMsg, ex);
                 report.setMessage(errorMsg);
-                report.setFailureCause(ex);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
@@ -302,7 +304,6 @@ public class CollectLogFiles implements AdminCommand {
                         "collectlogfiles.copyingZip", "Error while copying zip file to " + outputFilePath + ".");
                 logger.log(Level.SEVERE, errorMsg, ex);
                 report.setMessage(errorMsg);
-                report.setFailureCause(ex);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
@@ -325,7 +326,6 @@ public class CollectLogFiles implements AdminCommand {
                         "collectlogfiles.creatingTempDirectory", "Error while creating temp directory on server for downloading log files.");
                 logger.log(Level.SEVERE, errorMsg, ex);
                 report.setMessage(errorMsg);
-                report.setFailureCause(ex);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
@@ -374,8 +374,7 @@ public class CollectLogFiles implements AdminCommand {
             report.setMessage(finalMessage);
 
             try {
-                // Creating zip file and returning zip file absolute path.
-                zipFileName = loggingConfig.createZipFile(tempDirectory.getAbsolutePath());
+                // Creating zip file and returning zip file absolute path.                zipFileName = loggingConfig.createZipFile(tempDirectory.getAbsolutePath());
                 if (zipFileName == null || new File(zipFileName) == null) {
                     // Failure during zip
                     final String errorMsg = localStrings.getLocalString(
@@ -391,7 +390,6 @@ public class CollectLogFiles implements AdminCommand {
                         "collectlogfiles.creatingZip", "Error while creating zip file " + zipFileName + ".");
                 logger.log(Level.SEVERE, errorMsg, ex);
                 report.setMessage(errorMsg);
-                report.setFailureCause(ex);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
@@ -415,7 +413,6 @@ public class CollectLogFiles implements AdminCommand {
                         "collectlogfiles.copyingZip", "Error while copying zip file to " + outputFilePath + ".");
                 logger.log(Level.SEVERE, errorMsg, ex);
                 report.setMessage(errorMsg);
-                report.setFailureCause(ex);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
@@ -426,10 +423,13 @@ public class CollectLogFiles implements AdminCommand {
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 
-    private void copyLogFilesForLocalhost(String sourceDir, String targetDir, ActionReport report, String instanceName) {
+    private void copyLogFilesForLocalhost(String sourceDir, String targetDir, ActionReport report, String instanceName) throws IOException {
         // Getting all Log Files
         File logsDir = new File(sourceDir);
         File allLogFileNames[] = logsDir.listFiles();
+        if (allLogFileNames == null) {
+            throw new IOException("");
+        }
         for (File logFile : allLogFileNames) {
             // File to copy in output file path.
             File toFile = new File(targetDir, logFile.getName());
@@ -452,7 +452,6 @@ public class CollectLogFiles implements AdminCommand {
                         "collectlogfiles.errInstanceDownloading", "Error while downloading log file from " + instanceName + ".");
                 logger.log(Level.SEVERE, errorMsg, ex);
                 report.setMessage(errorMsg);
-                report.setFailureCause(ex);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }

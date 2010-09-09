@@ -44,6 +44,7 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.Nodes;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.trilead.ssh2.SCPClient;
 import com.trilead.ssh2.SFTPv3DirectoryEntry;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
@@ -62,6 +63,8 @@ import java.util.logging.Logger;
  * To change this template use File | Settings | File Templates.
  */
 public class LogFilterForInstance {
+
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(LogFilterForInstance.class);
 
     public File downloadGivenInstanceLogFile(Habitat habitat, Server targetServer, Domain domain, Logger logger,
                                              String instanceName, String domainRoot, String logFileName) throws IOException {
@@ -168,13 +171,14 @@ public class LogFilterForInstance {
         return instanceLogFileNames;
     }
 
-    private SSHLauncher getSSHL(Habitat habitat) throws IOException {
+    private SSHLauncher getSSHL(Habitat habitat) {
         SSHLauncher sshL = null;
         try {
             sshL = habitat.getComponent(SSHLauncher.class);
         }
         catch (NoClassDefFoundError ex) {
-            throw new IOException(ex);
+            throw new NoClassDefFoundError(localStrings.getLocalString(
+                        "collectlogfiles.missingclusterlibraries", "Missing Cluster libraries in your ClassPath."));
         }
         return sshL;
     }
