@@ -133,9 +133,9 @@ public class EmbeddedSecurityUtil implements EmbeddedSecurity {
                 FileUtils.copyFile(new File(fileName), new File(toConfigDir, parseFileName(fileName)));
             }
         }catch(IOException e) {
-            _logger.log(Level.WARNING,e.getLocalizedMessage(),e);
+            _logger.log(Level.WARNING,"",e);
         }catch(XMLStreamException e) {
-            _logger.log(Level.WARNING,e.getLocalizedMessage(), e);
+            _logger.log(Level.WARNING,"", e);
         }
 
 
