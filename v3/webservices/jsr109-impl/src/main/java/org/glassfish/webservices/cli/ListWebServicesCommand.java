@@ -72,12 +72,6 @@ public class ListWebServicesCommand implements AdminCommand {
     String moduleName;
 
     @Param(optional=true)
-    String servletLink;
-
-    @Param(optional=true)
-    String ejbLink;
-
-    @Param(optional=true)
     String endpointName;
 
     @Override
@@ -85,13 +79,12 @@ public class ListWebServicesCommand implements AdminCommand {
         ActionReport report = context.getActionReport();
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         WebServicesContainer container = habitat.getComponent(WebServicesContainer.class);
+        if (container == null) {
+            return;
+        }
         WebServicesDeploymentMBean bean = container.getDeploymentBean();
 
-        if (applicationName != null && moduleName != null && servletLink != null) {
-            // TODO
-        } else if (applicationName != null && moduleName != null && ejbLink != null) {
-            // TODO
-        } else if (applicationName != null && moduleName != null && endpointName != null) {
+        if (applicationName != null && moduleName != null && endpointName != null) {
             Map<String, Map<String, Map<String, DeployedEndpointData>>> endpoints =
                     bean.getEndpoint(applicationName, moduleName, endpointName);
             fillAllEndpoints(report, endpoints);
