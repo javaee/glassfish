@@ -81,7 +81,7 @@ public class InstanceDirUtils{
         final File nodeDirFile = (nodeDir != null ?
             new File(nodeDir) :
             defaultLocalNodeDirFile());
-        InstanceDirs instanceDirs = new InstanceDirs(nodeDirFile.getParent(), nodeDirFile.getName(), instance);
+        InstanceDirs instanceDirs = new InstanceDirs(nodeDirFile.toString(), node.getName(), instance);
         return instanceDirs.getInstanceDir();
     }
 
@@ -103,7 +103,7 @@ public class InstanceDirUtils{
                 installDir == null
                     ? serverContext.getInstallRoot()
                     : new File(installDir));
-        return new File(new File(nodeParentDir, "nodes"), nodeName);
+        return new File(nodeParentDir, "nodes");
     }
    
 }

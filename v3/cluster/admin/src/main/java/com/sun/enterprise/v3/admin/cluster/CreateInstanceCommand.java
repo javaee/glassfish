@@ -135,6 +135,7 @@ public class CreateInstanceCommand implements AdminCommand {
     private String nodeDir = null;
     private String installDir = null;
     private String registerInstanceMessage = null;
+    private InstanceDirUtils insDU;
 
     @Override
     public void execute(AdminCommandContext context) {
@@ -282,7 +283,9 @@ public class CreateInstanceCommand implements AdminCommand {
         ActionReport report = ctx.getActionReport();
         // nodedir is the root of where all the node dirs will be created.  
         // add the name of the node as that is where the instance files should be created
-        String thisNodeDir = nodeDir + "/" + node;
+        String thisNodeDir = null;
+        if (nodeDir != null)
+            thisNodeDir = nodeDir + "/" + node;
         try {
             final SecureAdminBootstrapHelper bootHelper =
                 SecureAdminBootstrapHelper.getRemoteHelper(
