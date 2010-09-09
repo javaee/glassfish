@@ -84,7 +84,7 @@ public class JarSigner {
     private final MessageDigest md;
     private final String digestAlgorithm;
     private final String keyAlgorithm;
-    private static final SecuritySupport secSupp = new SecuritySupportImpl();
+    private static final SecuritySupport secSupp = SecuritySupport.getDefaultInstance();
 
     public JarSigner(String digestAlgorithm, String keyAlgorithm)
             throws NoSuchAlgorithmException {

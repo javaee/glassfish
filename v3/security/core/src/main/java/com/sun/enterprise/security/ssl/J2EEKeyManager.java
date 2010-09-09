@@ -68,6 +68,7 @@ import java.security.PrivilegedAction;
 import java.util.Set;
 import javax.net.ssl.X509ExtendedKeyManager;
 import javax.security.auth.login.LoginContext;
+import com.sun.enterprise.security.ssl.manager.UnifiedX509KeyManager;
 
 /**
  * This a J2EE specific Key Manager class that is used to select 

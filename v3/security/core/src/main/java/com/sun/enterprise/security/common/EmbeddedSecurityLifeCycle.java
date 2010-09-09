@@ -43,6 +43,7 @@ package com.sun.enterprise.security.common;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.security.EmbeddedSecurity;
 import com.sun.enterprise.security.embedded.EmbeddedSecurityUtil;
+import com.sun.enterprise.server.pluggable.SecuritySupport;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import java.io.File;
@@ -101,7 +102,16 @@ public class EmbeddedSecurityLifeCycle
             FileUtils.getManagedFile("config" + File.separator + "server.policy", instanceRoot);
             FileUtils.getManagedFile("config" + File.separator + "cacerts.jks", instanceRoot);
             FileUtils.getManagedFile("config" + File.separator + "keystore.jks", instanceRoot);
-            
+            String keystoreFile = null;
+            String truststoreFile = null;
+            try {
+                keystoreFile = Util.writeConfigFileToTempDir("keystore.jks").getAbsolutePath();
+                truststoreFile = Util.writeConfigFileToTempDir("cacerts.jks").getAbsolutePath();
+            } catch (IOException ex) {
+                _logger.log(Level.SEVERE, "Error obtaining keystore and truststore files for embedded server", ex);
+            }
+            System.setProperty(SecuritySupport.keyStoreProp, keystoreFile);
+            System.setProperty(SecuritySupport.trustStoreProp, truststoreFile);
         }catch(IOException ioEx) {
            _logger.log(Level.WARNING,"IOException", ioEx);
         }

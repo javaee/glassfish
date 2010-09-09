@@ -96,7 +96,6 @@ import com.sun.enterprise.security.auth.realm.certificate.CertificateRealm;
 import com.sun.enterprise.security.jmac.config.CallbackHandlerConfig;
 import com.sun.enterprise.security.jmac.config.GFServerConfigProvider;
 import com.sun.enterprise.security.jmac.config.HandlerContext;
-import com.sun.enterprise.security.ssl.SecuritySupportImpl;
 import org.glassfish.security.common.MasterPassword;
 import com.sun.enterprise.security.store.PasswordAdapter;
 import com.sun.enterprise.server.pluggable.SecuritySupport;
@@ -135,7 +134,7 @@ abstract class BaseContainerCallbackHandler
     protected BaseContainerCallbackHandler() {
         if(Globals.getDefaultHabitat() == null){
             sslUtils = new SSLUtils();
-            secSup = new SecuritySupportImpl();
+            secSup = SecuritySupport.getDefaultInstance();
             masterPasswordHelper = null;
             sslUtils.postConstruct();
         } else {

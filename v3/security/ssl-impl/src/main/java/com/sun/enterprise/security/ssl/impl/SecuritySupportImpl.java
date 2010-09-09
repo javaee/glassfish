@@ -37,10 +37,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package com.sun.enterprise.security.ssl.impl;
 
-package com.sun.enterprise.security.ssl;
-
-import com.sun.enterprise.security.common.Util;
+import com.sun.enterprise.security.ssl.manager.UnifiedX509KeyManager;
+import com.sun.enterprise.security.ssl.manager.UnifiedX509TrustManager;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -48,6 +48,7 @@ import java.security.UnrecoverableKeyException;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,12 +58,34 @@ import java.security.Provider;
 //V3:Commented import com.sun.enterprise.config.ConfigContext;
 import com.sun.enterprise.server.pluggable.SecuritySupport;
 import com.sun.logging.LogDomains;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.AccessControlException;
+import java.security.AccessController;
 import java.security.Key;
+import java.security.Permission;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.PropertyPermission;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509KeyManager;
+import javax.net.ssl.X509TrustManager;
+import org.glassfish.api.admin.ProcessEnvironment;
+import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
+import org.glassfish.api.embedded.Server;
 import org.glassfish.internal.api.Globals;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Singleton;
 
 /**
@@ -73,22 +96,25 @@ import org.jvnet.hk2.component.Singleton;
 // we create Habitat we'll select which SecuritySupport implementation to use.
 @Service
 @Scoped(Singleton.class)
-public class SecuritySupportImpl implements SecuritySupport {
+public class SecuritySupportImpl extends SecuritySupport {
+    private static final String DEFAULT_KEYSTORE_PASS = "changeit";
+    private static final String DEFAULT_TRUSTSTORE_PASS = "changeit";
 
-    private static final String keyStoreProp = "javax.net.ssl.keyStore";
-    private static final String trustStoreProp = "javax.net.ssl.trustStore";
-    
     protected static final Logger _logger =
             LogDomains.getLogger(SecuritySupportImpl.class, LogDomains.SECURITY_LOGGER);
-
     protected static boolean initialized = false;
     protected static final List<KeyStore> keyStores = new ArrayList<KeyStore>();
     protected static final List<KeyStore> trustStores = new ArrayList<KeyStore>();
     protected static final List<char[]> keyStorePasswords = new ArrayList<char[]>();
     protected static final List<String> tokenNames = new ArrayList<String>();
-
     private MasterPasswordImpl masterPasswordHelper = null;
     private static boolean instantiated = false;
+    private Date initDate = new Date();
+
+    @Inject
+    private static Habitat habitat;
+    @Inject
+    private ProcessEnvironment penv;
 
     public SecuritySupportImpl() {
         this(true);
@@ -104,17 +130,8 @@ public class SecuritySupportImpl implements SecuritySupport {
         String keyStoreFileName = null;
         String trustStoreFileName = null;
 
-        if (Util.isEmbeddedServer()) {
-            try {
-                keyStoreFileName = Util.writeConfigFileToTempDir("keystore.jks").getAbsolutePath();
-                trustStoreFileName = Util.writeConfigFileToTempDir("cacerts.jks").getAbsolutePath();
-            } catch (IOException ex) {
-                _logger.log(Level.SEVERE, "Error obtaining keystore and truststore files for embedded server", ex);
-            }
-        } else {
-            keyStoreFileName = System.getProperty(keyStoreProp);
-            trustStoreFileName = System.getProperty(trustStoreProp);
-        }
+        keyStoreFileName = System.getProperty(keyStoreProp);
+        trustStoreFileName = System.getProperty(trustStoreProp);
 
         char[] keyStorePass = null;
         char[] trustStorePass = null;
@@ -128,26 +145,34 @@ public class SecuritySupportImpl implements SecuritySupport {
             }
         }
         if (keyStorePass == null) {
-            keyStorePass = System.getProperty(SSLUtils.KEYSTORE_PASS_PROP, SSLUtils.DEFAULT_KEYSTORE_PASS).toCharArray();
-            trustStorePass = System.getProperty(SSLUtils.TRUSTSTORE_PASS_PROP, SSLUtils.DEFAULT_TRUSTSTORE_PASS).toCharArray();
+            keyStorePass = System.getProperty(KEYSTORE_PASS_PROP, DEFAULT_KEYSTORE_PASS).toCharArray();
+            trustStorePass = System.getProperty(TRUSTSTORE_PASS_PROP, DEFAULT_TRUSTSTORE_PASS).toCharArray();
         }
 
         if (!initialized) {
             loadStores(
-                    null, 
-                    null, 
-                   keyStoreFileName, 
+                    null,
+                    null,
+                    keyStoreFileName,
                     keyStorePass,
-                    SSLUtils.getKeyStoreType(),
-                    trustStoreFileName, 
+                    System.getProperty(KEYSTORE_TYPE_PROP, KeyStore.getDefaultType()),
+                    trustStoreFileName,
                     trustStorePass,
-                    SSLUtils.getTrustStoreType());
+                    System.getProperty(TRUSTSTORE_TYPE_PROP, KeyStore.getDefaultType()));
             Arrays.fill(keyStorePass, ' ');
             Arrays.fill(trustStorePass, ' ');
             initialized = true;
         }
     }
-    
+
+    private boolean isEmbeddedServer() {
+        List<String> servers = Server.getServerNames();
+        if (!servers.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
     private static synchronized boolean isInstantiated() {
         if (!instantiated) {
             instantiated = true;
@@ -169,29 +194,29 @@ public class SecuritySupportImpl implements SecuritySupport {
      * @param trustStoreType
      */
     /*protected synchronized static void loadStores(String tokenName, 
-            String storeType, Provider provider,
-            String keyStoreFile, String keyStorePass, 
-            String trustStoreFile, String trustStorePass) {*/
+    String storeType, Provider provider,
+    String keyStoreFile, String keyStorePass,
+    String trustStoreFile, String trustStorePass) {*/
     protected synchronized static void loadStores(
-                       String tokenName,
-                       Provider provider,
-                       String keyStoreFile,
-                       char[] keyStorePass,
-                       String keyStoreType,
-                       String trustStoreFile,
-                       char[] trustStorePass,
-                       String trustStoreType) {
+            String tokenName,
+            Provider provider,
+            String keyStoreFile,
+            char[] keyStorePass,
+            String keyStoreType,
+            String trustStoreFile,
+            char[] trustStorePass,
+            String trustStoreType) {
 
         try {
             KeyStore keyStore = loadKS(keyStoreType, provider, keyStoreFile,
-                keyStorePass);
-            KeyStore trustStore = loadKS(trustStoreType, provider,trustStoreFile,
-                trustStorePass);
+                    keyStorePass);
+            KeyStore trustStore = loadKS(trustStoreType, provider, trustStoreFile,
+                    trustStorePass);
             keyStores.add(keyStore);
             trustStores.add(trustStore);
             keyStorePasswords.add(Arrays.copyOf(keyStorePass, keyStorePass.length));
             tokenNames.add(tokenName);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw new IllegalStateException(ex);
         }
     }
@@ -207,9 +232,8 @@ public class SecuritySupportImpl implements SecuritySupport {
      * @retun keystore loaded
      */
     private static KeyStore loadKS(String keyStoreType, Provider provider,
-		    String keyStoreFile, char[] keyStorePass)
-		    throws Exception
-    {
+            String keyStoreFile, char[] keyStorePass)
+            throws Exception {
         KeyStore ks = null;
         if (provider != null) {
             ks = KeyStore.getInstance(keyStoreType, provider);
@@ -225,7 +249,7 @@ public class SecuritySupportImpl implements SecuritySupport {
                 if (_logger.isLoggable(Level.FINE)) {
                     _logger.log(Level.FINE, "Loading keystoreFile = {0}, keystorePass = {1}",
                             new Object[]{keyStoreFile, keyStorePass});
-	        }
+                }
                 istream = new FileInputStream(keyStoreFile);
                 bstream = new BufferedInputStream(istream);
             }
@@ -233,24 +257,92 @@ public class SecuritySupportImpl implements SecuritySupport {
             ks.load(bstream, passphrase);
         } finally {
             if (bstream != null) {
-	        bstream.close();
+                bstream.close();
             }
             if (istream != null) {
-	        istream.close();
+                istream.close();
             }
         }
-	return ks;
+        return ks;
     }
 
-
     // --- implements SecuritySupport ---
-
     /**
      * This method returns an array of keystores containing keys and
      * certificates.
      */
     public KeyStore[] getKeyStores() {
         return keyStores.toArray(new KeyStore[keyStores.size()]);
+    }
+
+    public KeyStore loadNullStore(String type, int index) throws KeyStoreException,
+            IOException, NoSuchAlgorithmException, CertificateException {
+        KeyStore ret = KeyStore.getInstance(type);
+        ret.load(null, keyStorePasswords.get(index));
+        return ret;
+    }
+
+    public KeyManager[] getKeyManagers(String algorithm) throws IOException,
+            KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
+        KeyStore[] kstores = getKeyStores();
+        ArrayList<KeyManager> keyManagers = new ArrayList<KeyManager>();
+        for (int i = 0; i < kstores.length; i++) {
+            checkCertificateDates(kstores[i]);
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance(
+                    (algorithm != null) ? algorithm : KeyManagerFactory.getDefaultAlgorithm());
+            kmf.init(kstores[i], keyStorePasswords.get(i));
+            KeyManager[] kmgrs = kmf.getKeyManagers();
+            if (kmgrs != null) {
+                keyManagers.addAll(Arrays.asList(kmgrs));
+            }
+        }
+
+        KeyManager keyManager = new UnifiedX509KeyManager(
+                keyManagers.toArray(new X509KeyManager[keyManagers.size()]),
+                getTokenNames());
+        return new KeyManager[]{keyManager};
+    }
+
+    public TrustManager[] getTrustManagers(String algorithm) throws IOException,
+            KeyStoreException, NoSuchAlgorithmException {
+        KeyStore[] tstores = getTrustStores();
+        ArrayList<TrustManager> trustManagers = new ArrayList<TrustManager>();
+        for (KeyStore tstore : tstores) {
+            checkCertificateDates(tstore);
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(
+                    (algorithm != null) ? algorithm : TrustManagerFactory.getDefaultAlgorithm());
+            tmf.init(tstore);
+            TrustManager[] tmgrs = tmf.getTrustManagers();
+            if (tmgrs != null) {
+                trustManagers.addAll(Arrays.asList(tmgrs));
+            }
+        }
+        TrustManager trustManager;
+        if (trustManagers.size() == 1) {
+            trustManager = trustManagers.get(0);
+        } else {
+            trustManager = new UnifiedX509TrustManager(trustManagers.toArray(new X509TrustManager[trustManagers.size()]));
+        }
+        return new TrustManager[]{trustManager};
+    }
+    /*
+     * Check X509 certificates in a store for expiration.
+     */
+
+    private void checkCertificateDates(KeyStore store)
+            throws KeyStoreException {
+
+        Enumeration<String> aliases = store.aliases();
+        while (aliases.hasMoreElements()) {
+            Certificate cert = store.getCertificate(aliases.nextElement());
+            if (cert instanceof X509Certificate) {
+                if (((X509Certificate) cert).getNotAfter().before(initDate)) {
+                    _logger.log(Level.SEVERE,
+                            "java_security.expired_certificate",
+                            cert);
+                }
+            }
+        }
     }
 
     /**
@@ -260,12 +352,8 @@ public class SecuritySupportImpl implements SecuritySupport {
         return trustStores.toArray(new KeyStore[trustStores.size()]);
     }
 
-    /**
-     * This method returns an array of passwords in order corresponding to
-     * array of keystores.
-     */
-    List<char[]> getKeyStorePasswords() {
-        return keyStorePasswords;
+    public boolean verifyMasterPassword(final char[] masterPass) {
+        return Arrays.equals(masterPass, keyStorePasswords.get(0));
     }
 
     /**
@@ -275,18 +363,6 @@ public class SecuritySupportImpl implements SecuritySupport {
     public String[] getTokenNames() {
         return tokenNames.toArray(new String[tokenNames.size()]);
     }
-
-    /**
-     * This method synchronize key file for given realm.
-     * @param configContext the ConfigContextx
-     * @param fileRealmName
-     * @exception
-     */
-    /*V3:Commented
-    public void synchronizeKeyFile(ConfigContext configContext,
-            String fileRealmName) throws Exception {
-        // no op
-    }*/
 
     /**
      * @param  token 
@@ -311,40 +387,54 @@ public class SecuritySupportImpl implements SecuritySupport {
         }
         return trustStores.get(idx);
     }
-   
-    /**
-     * @param  token
-     * @return the password for this token
-     */
-//    public String getKeyStorePassword(String token) {
-//        SSLUtils.checkPermission(SSLUtils.KEYSTORE_PASS_PROP);
-//        int idx = getTokenIndex(token);
-//        if (idx < 0) {
-//            return null;
-//        }
-//        return keyStorePasswords.get(idx);
-//    }
 
     /**
      * @return returned index 
-     */ 
+     */
     private int getTokenIndex(String token) {
         int idx = -1;
-        if (token!=null) {
+        if (token != null) {
             idx = tokenNames.indexOf(token);
             if (idx < 0 && _logger.isLoggable(Level.FINEST)) {
                 _logger.log(Level.FINEST, "token {0} is not found", token);
             }
         }
-        return idx;        
+        return idx;
     }
 
     public void synchronizeKeyFile(Object configContext, String fileRealmName) throws Exception {
         //throw new UnsupportedOperationException("Not supported yet in V3.");
     }
 
+    public void checkPermission(String key) {
+        try {
+            // Checking a random permission to check if it is server.
+            if(isEmbeddedServer() || habitat == null
+                    || isACC() || isNotServerORACC()){
+                return;
+            }
+            Permission perm = new RuntimePermission("SSLPassword");
+            AccessController.checkPermission(perm);
+        } catch (AccessControlException e) {
+            String message = e.getMessage();
+            Permission perm = new PropertyPermission(key, "read");
+            if (message != null) {
+                message = message.replace(e.getPermission().toString(), perm.toString());
+            }
+            throw new AccessControlException(message, perm);
+        }
+    }
+
+    public boolean isACC() {
+        return penv.getProcessType().equals(ProcessType.ACC);
+    }
+
+    public boolean isNotServerORACC() {
+        return penv.getProcessType().equals(ProcessType.Other);
+    }
+
     public PrivateKey getPrivateKeyForAlias(String alias, int keystoreIndex) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
-        SSLUtils.checkPermission(SSLUtils.KEYSTORE_PASS_PROP);
+        checkPermission(KEYSTORE_PASS_PROP);
         Key key = keyStores.get(keystoreIndex).getKey(alias, keyStorePasswords.get(keystoreIndex));
         if (key instanceof PrivateKey) {
             return (PrivateKey) key;

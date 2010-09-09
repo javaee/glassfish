@@ -38,7 +38,7 @@
  * holder.
  */
 
-package com.sun.enterprise.security.ssl;
+package com.sun.enterprise.security.ssl.manager;
 
 import java.net.Socket;
 import java.util.ArrayList;
@@ -149,13 +149,13 @@ public class UnifiedX509KeyManager implements X509KeyManager {
 
     // ---------- end of implements X509KeyManager ----------
 
-    X509KeyManager[] getX509KeyManagers() {
+    public X509KeyManager[] getX509KeyManagers() {
         X509KeyManager[] kmgrs = new X509KeyManager[mgrs.length];
         System.arraycopy(mgrs, 0, kmgrs, 0, mgrs.length);
         return kmgrs;
     }
 
-    String[] getTokenNames() {
+    public String[] getTokenNames() {
         String[] tokens = new String[tokenNames.length];
         System.arraycopy(tokenNames, 0, tokens, 0, tokenNames.length);
         return tokens;

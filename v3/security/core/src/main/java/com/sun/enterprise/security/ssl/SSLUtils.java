@@ -48,21 +48,15 @@ import java.security.KeyStore.PrivateKeyEntry;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.Enumeration;
-import java.util.Arrays;
 import java.security.cert.Certificate;
-import java.security.cert.X509Certificate;
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509KeyManager;
-import javax.net.ssl.X509TrustManager;
 
 
 //V3:Commented import com.sun.enterprise.config.clientbeans.Ssl
@@ -74,7 +68,6 @@ import com.sun.logging.*;
 import java.security.AccessControlException;
 import java.security.AccessController;
 import java.security.Permission;
-import java.util.List;
 import java.util.PropertyPermission;
 import javax.net.ssl.SSLSocketFactory;
 import org.jvnet.hk2.annotations.Service;
@@ -92,15 +85,8 @@ import org.jvnet.hk2.component.Singleton;
 @Service
 @Scoped(Singleton.class)
 public final class SSLUtils implements PostConstruct {
-    static final String DEFAULT_KEYSTORE_PASS = "changeit";
-    static final String DEFAULT_TRUSTSTORE_PASS = "changeit";
-
-    static final String KEYSTORE_PASS_PROP = "javax.net.ssl.keyStorePassword";
-    static final String TRUSTSTORE_PASS_PROP = "javax.net.ssl.trustStorePassword";
     private static final String DEFAULT_OUTBOUND_KEY_ALIAS = "s1as";
     public static final String HTTPS_OUTBOUND_KEY_ALIAS = "com.sun.enterprise.security.httpsOutboundKeyAlias";
-    private static final String KEYSTORE_TYPE_PROP = "javax.net.ssl.keyStoreType";
-    private static final String TRUSTSTORE_TYPE_PROP = "javax.net.ssl.trustStoreType";
     private static final String DEFAULT_SSL_PROTOCOL = "TLS";
 
     private static final Logger _logger = LogDomains.getLogger(SSLUtils.class, LogDomains.SECURITY_LOGGER);
@@ -109,10 +95,7 @@ public final class SSLUtils implements PostConstruct {
     private SecuritySupport secSupp;
 
     private boolean hasKey = false;
-    private KeyManager keyManager = null;
-    private TrustManager trustManager = null;
     private KeyStore mergedTrustStore = null;
-    private Date initDate;
     private AppClientSSL appclientSsl = null;
     private SSLContext ctx = null;
     
@@ -120,9 +103,8 @@ public final class SSLUtils implements PostConstruct {
         try {
             //TODO: To check the right implementation once we support EE.
             if(secSupp == null){
-                secSupp = new SecuritySupportImpl();
+                secSupp = SecuritySupport.getDefaultInstance();
             }
-            initDate = new Date();
             KeyStore[] keyStores = getKeyStores();
             if (keyStores != null) {
                 for (KeyStore keyStore : keyStores) {
@@ -177,6 +159,10 @@ public final class SSLUtils implements PostConstruct {
         return ctx;
     }
 
+    public boolean verifyMasterPassword(final char[] masterPass) {
+        return secSupp.verifyMasterPassword(masterPass);
+    }
+
     public KeyStore[] getKeyStores() throws IOException{
         return secSupp.getKeyStores();
     }
@@ -204,46 +190,16 @@ public final class SSLUtils implements PostConstruct {
     public KeyManager[] getKeyManagers() throws Exception{
         return getKeyManagers(null);
     }
-    public KeyManager[] getKeyManagers(String algorithm) throws Exception{
-        KeyStore[] kstores = getKeyStores();
-        List<char[]> pwds = ((SecuritySupportImpl)secSupp).getKeyStorePasswords();
-        ArrayList<KeyManager> keyManagers = new ArrayList<KeyManager>();
-        for (int i = 0; i < kstores.length; i++) {
-            checkCertificateDates(kstores[i]);
-	    KeyManagerFactory kmf = KeyManagerFactory.getInstance(
-                    (algorithm != null)? algorithm: KeyManagerFactory.getDefaultAlgorithm());
-            kmf.init(kstores[i], pwds.get(i));
-            KeyManager[] kmgrs = kmf.getKeyManagers();
-            if (kmgrs != null)
-                keyManagers.addAll(Arrays.asList(kmgrs));
-        }
-
-        keyManager = new UnifiedX509KeyManager(
-                keyManagers.toArray(new X509KeyManager[keyManagers.size()]),
-            secSupp.getTokenNames());
-        return new KeyManager[] { keyManager };
+    public KeyManager[] getKeyManagers(String algorithm) throws IOException,
+            KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException{
+        return secSupp.getKeyManagers(algorithm);
     } 
     public TrustManager[] getTrustManagers() throws Exception{
         return getTrustManagers(null);
     }
-    public TrustManager[] getTrustManagers(String algorithm) throws Exception{
-        KeyStore[] tstores = getTrustStores();
-        ArrayList<TrustManager> trustManagers = new ArrayList<TrustManager>();
-        for (KeyStore tstore : tstores) {
-            checkCertificateDates(tstore);
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(
-                    (algorithm != null)? algorithm: TrustManagerFactory.getDefaultAlgorithm());
-            tmf.init(tstore);
-            TrustManager[] tmgrs = tmf.getTrustManagers();
-            if (tmgrs != null)
-                trustManagers.addAll(Arrays.asList(tmgrs));
-        }
-        if (trustManagers.size() == 1) {
-            trustManager = trustManagers.get(0);
-        } else {
-            trustManager = new UnifiedX509TrustManager(trustManagers.toArray(new X509TrustManager[trustManagers.size()]));
-        }
-        return new TrustManager[] { trustManager };
+    public TrustManager[] getTrustManagers(String algorithm) throws IOException,
+            KeyStoreException, NoSuchAlgorithmException{
+        return secSupp.getTrustManagers(algorithm);
     }
 
     
@@ -256,11 +212,11 @@ public final class SSLUtils implements PostConstruct {
     }
 
     public static String getKeyStoreType() {
-        return System.getProperty(KEYSTORE_TYPE_PROP, KeyStore.getDefaultType());
+        return System.getProperty(SecuritySupport.KEYSTORE_TYPE_PROP, KeyStore.getDefaultType());
     }
 
     public static String getTrustStoreType() {
-        return System.getProperty(TRUSTSTORE_TYPE_PROP, KeyStore.getDefaultType());
+        return System.getProperty(SecuritySupport.TRUSTSTORE_TYPE_PROP, KeyStore.getDefaultType());
     }
 
     /**
@@ -316,7 +272,7 @@ public final class SSLUtils implements PostConstruct {
      */ 
     public PrivateKeyEntry getPrivateKeyEntryFromTokenAlias(
             String certNickname) throws Exception {
-        checkPermission(SSLUtils.KEYSTORE_PASS_PROP);
+        checkPermission(SecuritySupport.KEYSTORE_PASS_PROP);
         PrivateKeyEntry privKeyEntry = null;
         if (certNickname != null) {
             int ind = certNickname.indexOf(':');
@@ -389,12 +345,10 @@ public final class SSLUtils implements PostConstruct {
             NoSuchAlgorithmException, CertificateException {
         KeyStore mergedStore;
         try {
-            mergedStore = KeyStore.getInstance("CaseExactJKS");
+            mergedStore = secSupp.loadNullStore("CaseExactJKS", secSupp.getKeyStores().length - 1);
         } catch(KeyStoreException ex) {
-            mergedStore = KeyStore.getInstance("JKS");
+            mergedStore = secSupp.loadNullStore("JKS", secSupp.getKeyStores().length - 1);
         }
-        List<char[]> passwords = ((SecuritySupportImpl)secSupp).getKeyStorePasswords();
-        mergedStore.load(null, passwords.get(passwords.size() - 1));
 
         String[] tokens = secSupp.getTokenNames();
         for (int i = 0; i < trustStores.length; i++) {
@@ -424,25 +378,6 @@ public final class SSLUtils implements PostConstruct {
         }
         return mergedStore;
      }
-    
-    /*
-     * Check X509 certificates in a store for expiration.
-     */
-    private void checkCertificateDates(KeyStore store)
-        throws KeyStoreException {
-        
-        Enumeration<String> aliases = store.aliases();
-        while (aliases.hasMoreElements()) {
-            Certificate cert = store.getCertificate(aliases.nextElement());
-            if (cert instanceof X509Certificate) {
-                if (((X509Certificate) cert).getNotAfter().before(initDate)) {
-                    _logger.log(Level.SEVERE,
-                        "java_security.expired_certificate",
-                        cert);
-                }
-            }
-        }
-    }
 
     /**
      * 

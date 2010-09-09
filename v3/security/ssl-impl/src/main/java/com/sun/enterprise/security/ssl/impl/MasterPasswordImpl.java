@@ -38,9 +38,8 @@
  * holder.
  */
 
-package com.sun.enterprise.security.ssl;
+package com.sun.enterprise.security.ssl.impl;
 
-import org.glassfish.security.common.MasterPassword;
 import org.glassfish.security.common.MasterPassword;
 import com.sun.enterprise.security.store.PasswordAdapter;
 import java.io.IOException;
@@ -65,12 +64,10 @@ public class MasterPasswordImpl implements MasterPassword, PreDestroy {
 
     private char[] _masterPassword;
 
-    @Override
     public void setMasterPassword(char[] masterPassword) {
         _masterPassword = Arrays.copyOf(masterPassword, masterPassword.length);
     }
 
-    @Override
     public PasswordAdapter getMasterPasswordAdapter() throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException {
         PasswordAdapter passwordAdapter = new PasswordAdapter(_masterPassword);
         return passwordAdapter;
@@ -83,7 +80,6 @@ public class MasterPasswordImpl implements MasterPassword, PreDestroy {
         return Arrays.copyOf(_masterPassword, _masterPassword.length);
     }
 
-    @Override
     public void preDestroy() {
         Arrays.fill(_masterPassword, ' ');
     }

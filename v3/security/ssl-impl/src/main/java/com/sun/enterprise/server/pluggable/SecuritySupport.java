@@ -40,12 +40,17 @@
 
 package com.sun.enterprise.server.pluggable;
 
+import com.sun.enterprise.security.ssl.impl.SecuritySupportImpl;
+import java.io.IOException;
 import java.security.KeyStore;
 //V3:Commented import com.sun.enterprise.config.ConfigContext;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.TrustManager;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -54,36 +59,82 @@ import org.jvnet.hk2.annotations.Contract;
  * @author Shing Wai Chan
  */
 @Contract
-public interface SecuritySupport {
+public abstract class SecuritySupport {
+
+    public static final String KEYSTORE_PASS_PROP = "javax.net.ssl.keyStorePassword";
+    public static final String TRUSTSTORE_PASS_PROP = "javax.net.ssl.trustStorePassword";
+    public static final String KEYSTORE_TYPE_PROP = "javax.net.ssl.keyStoreType";
+    public static final String TRUSTSTORE_TYPE_PROP = "javax.net.ssl.trustStoreType";
+    public static final String keyStoreProp = "javax.net.ssl.keyStore";
+    public static final String trustStoreProp = "javax.net.ssl.trustStore";
+
+    private static SecuritySupport defaultInstance = null;
+
+    public static SecuritySupport getDefaultInstance() {
+        if (defaultInstance == null) {
+            defaultInstance = new SecuritySupportImpl();
+        }
+        return defaultInstance;
+    }
+
 
     /**
      * This method returns an array of keystores containing keys and
      * certificates.
      */
-    public KeyStore[] getKeyStores();
+    abstract public KeyStore[] getKeyStores();
 
     /**
      * This method returns an array of truststores containing certificates.
      */
-    public KeyStore[] getTrustStores();
+    abstract public KeyStore[] getTrustStores();
 
     /**
      * @param  token 
      * @return a keystore. If token is null, return the the first keystore.
      */
-    public KeyStore getKeyStore(String token);
+    abstract public KeyStore getKeyStore(String token);
 
     /**
      * @param  token 
      * @return a truststore. If token is null, return the first truststore.
      */
-    public KeyStore getTrustStore(String token);
+    abstract public KeyStore getTrustStore(String token);
 
     /**
-     * @param  token
-     * @return the password for this token.
+     * @param type
+     * @param index
+     * @return load a null keystore of given type.
      */
-    //public String getKeyStorePassword(String token);
+    abstract public KeyStore loadNullStore(String type, int index) throws KeyStoreException,
+            IOException, NoSuchAlgorithmException, CertificateException;
+
+    /**
+     * @param masterPass
+     * @return result whether the given master password is correct.
+     */
+    abstract public boolean verifyMasterPassword(final char[] masterPass);
+
+    /**
+     * @param algorithm
+     * @return KeyManagers for the specified algorithm.
+     * @throws IOException
+     * @throws KeyStoreException
+     * @throws NoSuchAlgorithmException
+     * @throws UnrecoverableKeyException
+     */
+    abstract public KeyManager[] getKeyManagers(String algorithm) throws IOException,
+            KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException;
+
+    /**
+     * @param algorithm
+     * @return TrustManagers for the specified algorithm.
+     * @throws IOException
+     * @throws KeyStoreException
+     * @throws NoSuchAlgorithmException
+     */
+    abstract public TrustManager[] getTrustManagers(String algorithm) throws IOException,
+            KeyStoreException, NoSuchAlgorithmException;
 
     /**
      * Gets the PrivateKey for specified alias from the corresponding keystore
@@ -96,13 +147,14 @@ public interface SecuritySupport {
      * @throws NoSuchAlgorithmException
      * @throws UnrecoverableKeyException
      */
-    public PrivateKey getPrivateKeyForAlias(String alias, int keystoreIndex) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException;
+    abstract public PrivateKey getPrivateKeyForAlias(String alias, int keystoreIndex)
+            throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException;
 
     /**
      * This method returns an array of token names in order corresponding to
      * array of keystores.
      */
-    public String[] getTokenNames();
+    abstract public String[] getTokenNames();
 
     /**
      * This method synchronize key file for given realm.
@@ -113,7 +165,13 @@ public interface SecuritySupport {
      */
     /** TODO:V3:Cluster ConfigContext is no longer present so find out what this needs to be */
     //public void synchronizeKeyFile(ConfigContext config, String fileRealmName)
-    public void synchronizeKeyFile(Object configContext, String fileRealmName)
+    abstract public void synchronizeKeyFile(Object configContext, String fileRealmName)
         throws Exception;
+
+    /**
+     * Check permission for the given key.
+     * @param key
+     */
+    abstract public void checkPermission(String key);
     
 }

@@ -41,7 +41,6 @@
 package com.sun.enterprise.security.common;
 
 import com.sun.enterprise.security.integration.AppServSecurityContext;
-import com.sun.enterprise.security.*;
 import java.security.Principal;
 import javax.security.auth.Subject;
 

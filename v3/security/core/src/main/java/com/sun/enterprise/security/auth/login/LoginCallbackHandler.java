@@ -44,8 +44,8 @@ import java.io.*;
 import javax.security.auth.callback.*;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.security.ssl.TextLoginDialog;
-import com.sun.enterprise.security.ssl.GUILoginDialog;
+import com.sun.enterprise.security.TextLoginDialog;
+import com.sun.enterprise.security.GUILoginDialog;
 
 /**
  * This is the default callback handler provided by the application

@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -41,29 +41,43 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish</groupId>
-        <artifactId>glassfish-parent</artifactId>
+        <artifactId>securitymodule</artifactId>
+        <groupId>org.glassfish.security</groupId>
         <version>3.1-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>        
     </parent>
     <groupId>org.glassfish.security</groupId>
-    <artifactId>securitymodule</artifactId>
-    <packaging>pom</packaging>
-    <name>GlassFish Security Infrastructure and Technology Integration Modules</name>  
-    <modules>
-        <module>webintegration</module>
-        <module>ssl-impl</module>
-        <module>core</module>
-        <module>security-all</module>
-        <module>inmemory.jacc.provider</module>
-        <module>javax.security.jacc</module>
-        <module>javax.security.auth.message</module>
-        <module>webservices.security</module>
-	<module>ejb.security</module>
-        <module>appclient.security</module>
-  </modules>
+    <artifactId>ssl-impl</artifactId>
+    <packaging>hk2-jar</packaging>
+    <version>3.1-SNAPSHOT</version>
+    <name>GlassFish SSL Implementation Module</name>
+    <developers>
+        <developer>
+            <id>nasradu8</id>
+            <name>Sudarsan Sridhar</name>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>internal-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>common-util</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>hk2</artifactId>
+        </dependency>
+    </dependencies>
 </project>

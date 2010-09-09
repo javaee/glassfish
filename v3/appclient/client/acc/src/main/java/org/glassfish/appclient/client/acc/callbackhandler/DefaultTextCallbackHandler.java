@@ -40,7 +40,7 @@
 
 package org.glassfish.appclient.client.acc.callbackhandler;
 
-import com.sun.enterprise.security.ssl.TextLoginDialog;
+import com.sun.enterprise.security.TextLoginDialog;
 import java.io.IOException;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;

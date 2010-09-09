@@ -38,12 +38,10 @@
  * holder.
  */
 
-package com.sun.enterprise.security.ssl;
+package com.sun.enterprise.security;
 
 
-import com.sun.enterprise.security.GUIErrorDialog;
-import com.sun.enterprise.security.LoginDialog;
-import org.glassfish.security.common.MasterPassword;
+import com.sun.enterprise.security.ssl.SSLUtils;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -250,7 +248,7 @@ class PassphraseDialog extends JDialog
 	    kpPanel.add (lbl);
 	    kpPanel.add (keystorePassword);
 	    /* get the keystore password */
-	    final char[] keystorePass = ((MasterPasswordImpl) Globals.get(MasterPassword.class)).getMasterPassword();
+	    final SSLUtils sslUtils = Globals.get(SSLUtils.class);
 	    // ok button For keystore password
 	    okForKP = new
 		JButton(localStrings.getLocalString
@@ -260,7 +258,7 @@ class PassphraseDialog extends JDialog
 	    okForKP.addActionListener (new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 		    char[] passKPFromUser = keystorePassword.getPassword();
-		    if (Arrays.equals(passKPFromUser, keystorePass)) {
+		    if (sslUtils.verifyMasterPassword(passKPFromUser)) {
 			okForKP.setEnabled (false);
 			cancelForKP.setEnabled (false);
 			keystorePassword.setEditable (false);
@@ -271,7 +269,6 @@ class PassphraseDialog extends JDialog
 			GUIErrorDialog guierr = new GUIErrorDialog(errmessage);
 			guierr.setVisible(true);
 		    }
-                    Arrays.fill(keystorePass, ' ');
                     Arrays.fill(passKPFromUser, ' ');
 		}
 	    });            
