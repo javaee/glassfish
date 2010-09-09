@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,6 +28,7 @@ import org.jvnet.hk2.junit.Hk2Runner;
 import org.jvnet.hk2.junit.Hk2RunnerOptions;
 import org.jvnet.hk2.test.runlevel.ExceptionRunLevelManagedService;
 import org.jvnet.hk2.test.runlevel.ExceptionRunLevelManagedService2b;
+import org.jvnet.hk2.test.runlevel.InterruptRunLevelManagedService;
 import org.jvnet.hk2.test.runlevel.NonRunLevelWithRunLevelDepService;
 import org.jvnet.hk2.test.runlevel.RunLevelContract;
 import org.jvnet.hk2.test.runlevel.RunLevelServiceBase;
@@ -646,12 +648,69 @@ public class RunLevelServiceTest {
     
     Collection<Inhabitant<?>> coll = h.getInhabitantsByContract(RunLevelContract.class.getCanonicalName());
     assertTrue(coll.size() >= 3);
+    boolean gotOne = false;
     for (Inhabitant<?> i : coll) {
       String typeName = i.typeName();
       if (typeName.contains("ExceptionRunLevelManagedService2")) {
+        gotOne = true;
         assertFalse("expected to be in released state: " + i, i.isInstantiated());
       }
     }
+    assertTrue(gotOne);
+  }
+  
+  /**
+   * This is testing the non-async version of RLS in the following scenario:
+   * 
+   *  - Thread #1 issues a proceedTo(whatever)
+   *  - Thread #2 (a watchdog thread) find that Thread #1 is hung, and issues a proceedTo(whatever)
+   *  
+   *  @see InterruptRunLevelManagedService
+   */
+  @SuppressWarnings("unchecked")
+  @Test
+  public void multiThreadedInterrupt() throws Exception {
+    recorders = new LinkedHashMap<Integer, Recorder>();
+    rls = defRLS = new TestDefaultRunLevelService(h, false, String.class, recorders); 
+
+    this.defRLlistener = (TestRunLevelListener) listener;
+    defRLlistener.calls.clear();
+
+    final List problems = new ArrayList();
+    Thread watchDog = new Thread() {
+      @Override
+      public void run() {
+        try {
+          sleep(400);
+          Logger.getAnonymousLogger().log(Level.INFO, "issuing proceedTo(0) interrupt from thread: " + this);
+          rls.proceedTo(0);
+        } catch (Exception e) {
+          problems.add(e);
+        }
+      }
+    };
+    watchDog.start();
+    
+    Logger.getAnonymousLogger().log(Level.INFO, "issuing proceedTo(1) from main thread: " + this);
+    rls.proceedTo(1);
+    
+    assertTrue("problems: " + problems, problems.isEmpty());
+    assertEquals(0, defRLS.getCurrentRunLevel());
+    assertEquals(null, defRLS.getPlannedRunLevel());
+    
+    Collection<Inhabitant<?>> coll = h.getInhabitantsByContract(RunLevelContract.class.getCanonicalName());
+    assertTrue(coll.size() >= 1);
+    boolean gotOne = false;
+    for (Inhabitant<?> i : coll) {
+      String typeName = i.typeName();
+      if (typeName.contains("InterruptRunLevelManagedService")) {
+        gotOne = true;
+        assertFalse("expected to be in released state: " + i, i.isInstantiated());
+      }
+    }
+    assertTrue(gotOne);
+
+    assertListenerState(false, false, true);
   }
   
   @SuppressWarnings("unchecked")
