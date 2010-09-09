@@ -40,6 +40,9 @@
 
 -->
 
+<!initPage
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+/>
 <sun:tab id="jmsPhysDest" immediate="true" text="$resource{i18nc.jmsPhysDestinations.tab}" toolTip="$resource{i18nc.jmsPhysDestinations.tab} Tab">
     <!command
         setSessionAttribute(key="targetType", value="instance");
