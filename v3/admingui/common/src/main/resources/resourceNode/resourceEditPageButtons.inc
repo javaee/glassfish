@@ -161,7 +161,8 @@
                         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                         javaToJSON(obj="#{newList}" json="#{requestScope.tmpJSON}");
-                        gf.restRequest(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.valueMap['name']}/property.json" method="POST" data="#{requestScope.tmpJSON}" result="#{requestScope.restResponse}");
+                        urlencode(value="#{pageSession.valueMap['name']}" encoding="UTF-8" result="#{requestScope.encodeName}");
+                        gf.restRequest(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}/#{requestScope.encodeName}/property.json" method="POST" data="#{requestScope.tmpJSON}" result="#{requestScope.restResponse}");
                     }
 
                     if (#{pageSession.additionalSaveHandler}){
