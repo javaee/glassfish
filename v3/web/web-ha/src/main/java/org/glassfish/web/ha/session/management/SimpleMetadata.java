@@ -90,7 +90,7 @@ public class SimpleMetadata  implements Serializable {
         this.state = state;
     }
 
-    public SimpleMetadata(long version, long lastAccesstime) {
+    public SimpleMetadata(long version, long lastAccessTime) {
         this.version = version;
         this.lastAccessTime = lastAccessTime;
     }
