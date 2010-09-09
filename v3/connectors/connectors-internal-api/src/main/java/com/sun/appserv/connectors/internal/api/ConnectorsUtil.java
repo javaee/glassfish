@@ -534,10 +534,14 @@ public class ConnectorsUtil {
                 //domain.xml and hence going with the default time-out
                 shutdownTimeout =
                         ConnectorConstants.DEFAULT_RESOURCE_ADAPTER_SHUTDOWN_TIMEOUT;
-                _logger.log(Level.FINE, "Shutdown timeout set to "+  shutdownTimeout + " through default");
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "Shutdown timeout set to "+  shutdownTimeout + " through default");
+                }
             } else {
                 shutdownTimeout = Integer.parseInt(connectorService.getShutdownTimeoutInSeconds());
-                _logger.log(Level.FINE, "Shutdown timeout set to " + shutdownTimeout + " from domain.xml");
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "Shutdown timeout set to " + shutdownTimeout + " from domain.xml");
+                }
             }
         } catch (Exception e) {
             _logger.log(Level.WARNING, "error_reading_connectorservice_elt", e);
@@ -718,7 +722,9 @@ public class ConnectorsUtil {
             URL[] extensionListLibraries = ASClassLoaderUtil.getLibrariesAsURLs(extensionList, env);
             for (URL url : extensionListLibraries) {
                 libURIs.add(url.toURI());
-                _logger.log(Level.FINEST, "adding URL [ "+url+" ] to installedLibraries");
+                if(_logger.isLoggable(Level.FINEST)) {
+                    _logger.log(Level.FINEST, "adding URL [ "+url+" ] to installedLibraries");
+                }
             }
         }catch(IOException ioe){
             ConnectorRuntimeException cre = new ConnectorRuntimeException(ioe.getMessage());

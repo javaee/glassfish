@@ -276,7 +276,9 @@ public class AppSpecificConnectorClassLoaderUtil {
             }
 
             if (!found) {
-                DOLUtils.getDefaultLogger().log(Level.FINEST, "could not find resource by name : " + jndiName);
+                if(DOLUtils.getDefaultLogger().isLoggable(Level.FINEST)) {
+                    DOLUtils.getDefaultLogger().log(Level.FINEST, "could not find resource by name : " + jndiName);
+                }
             }
         }
     }

@@ -243,6 +243,8 @@ public class ResourceNamingService implements ConnectorConstants {
     }
 
     private void debug(String message) {
-        _logger.finest("[ASR] [ResourceNamingService] : " + message);
+        if(_logger.isLoggable(Level.FINEST)) {
+            _logger.finest("[ASR] [ResourceNamingService] : " + message);
+        }
     }
 }

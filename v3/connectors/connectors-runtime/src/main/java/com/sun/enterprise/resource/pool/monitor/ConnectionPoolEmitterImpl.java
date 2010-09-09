@@ -295,8 +295,10 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
             ic = new InitialContext();
             appName = (String) ic.lookup("java:app/AppName");
         } catch (NamingException ex) {
-            _logger.log(Level.FINE, "Unable to get application name using "
-                    + "java:app/AppName method");
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Unable to get application name using "
+                        + "java:app/AppName method");
+            }
             appName = resourceAppAssociationMap.remove(resourceHandleId);
         }
         resourceAppAssociationMap.put(resourceHandleId, appName);

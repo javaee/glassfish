@@ -171,7 +171,9 @@ public class ConnectorXAResource implements XAResource {
     }
     
     public void forget(Xid xid) throws XAException {
-	_logger.fine("Well, forget is called for xid :"+xid);
+        if(_logger.isLoggable(Level.FINE)) {
+	    _logger.fine("Well, forget is called for xid :"+xid);
+        }
         // no-op
     }
 

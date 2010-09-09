@@ -113,7 +113,9 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
 
         if ((ccp == null) || (cdd == null) || (rarName == null)) {
 
-            _logger.log(Level.FINE, "Wrong parameters for pool creation ");
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Wrong parameters for pool creation ");
+            }
             String i18nMsg = localStrings.getString("ccp_adm.wrong_params_for_create");
             throw new ConnectorRuntimeException(i18nMsg);
         }
@@ -176,7 +178,9 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
 
         PoolInfo poolInfo = connectorPoolObj.getPoolInfo();
         if (connectorPoolObj == null || poolInfo == null) {
-            _logger.log(Level.FINE, "Wrong parameters for pool creation ");
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Wrong parameters for pool creation ");
+            }
             String i18nMsg = localStrings.getString("ccp_adm.wrong_params_for_create");
             throw new ConnectorRuntimeException(i18nMsg);
         }
@@ -206,7 +210,9 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             try {
                 _runtime.getResourceNamingService().unpublishObject(poolInfo, jndiNameForPool);
             } catch (NamingException ne) {
-                _logger.log(Level.FINE, "Failed to unbind connection pool object  ", poolInfo);
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "Failed to unbind connection pool object  ", poolInfo);
+                }
             }
 
             String i18nMsg = localStrings.getString("ccp_adm.failed_to_register_mcf", poolInfo);
@@ -232,7 +238,9 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             ConnectorConnectionPool connectorPoolObj, String security,
             Set configProperties) throws ConnectorRuntimeException {
         if (connectorPoolObj == null || configProperties == null) {
-            _logger.log(Level.FINE, "Wrong parameters for pool creation ");
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Wrong parameters for pool creation ");
+            }
             String i18nMsg = localStrings.getString("ccp_adm.wrong_params_for_create");
             throw new ConnectorRuntimeException(i18nMsg);
         }
@@ -342,7 +350,9 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         boolean result = _registry.removeManagedConnectionFactory(poolInfo);
 
         if (!result) {
-            _logger.log(Level.FINE, "rardeployment.mcf_removal_failure", poolInfo);
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "rardeployment.mcf_removal_failure", poolInfo);
+            }
             return;
         }
 
@@ -697,7 +707,9 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
                 try {
                     runtime.getResourceDeployer(poolToDeploy).undeployResource(poolToDeploy);
                 } catch (Exception e) {
-                    _logger.fine("getUnpooledConnection: error undeploying pool");
+                    if(_logger.isLoggable(Level.FINE)) {
+                        _logger.fine("getUnpooledConnection: error undeploying pool");
+                    }
                 }
                 logFine("getUnpooledConnection :: done.. force undeploy of pool");
             }
@@ -947,10 +959,10 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             ConnectorRuntimeException cre = new
                 ConnectorRuntimeException( i18nMsg);
             cre.initCause(ne);
-            _logger.log(Level.FINE,"rardeployment.jndi_lookup_failed",
-                               poolInfo);
-            if (_logger.isLoggable( Level.FINE ) ) {
-                _logger.log(Level.FINE,"",cre);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "rardeployment.jndi_lookup_failed",
+                        poolInfo);
+                _logger.log(Level.FINE, "", cre);
             }
             //_logger.log(Level.SEVERE,"",cre);
             throw cre;
@@ -1087,8 +1099,8 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             ConnectorRuntimeException cre = new
                     ConnectorRuntimeException(i18nMsg);
             cre.initCause(ne);
-            _logger.log(Level.FINE, "rardeployment.jndi_lookup_failed", poolInfo);
-            if (_logger.isLoggable(Level.FINE)) {
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "rardeployment.jndi_lookup_failed", poolInfo);
                 _logger.log(Level.FINE, "", cre);
             }
             throw cre;
@@ -1385,7 +1397,9 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
                     "ccp_adm.wrong_params_for_create", poolInfo);
             ConnectorRuntimeException cre = new
                     ConnectorRuntimeException(i18nMsg);
-            _logger.log(Level.FINE, "", cre);
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "", cre);
+            }
             throw cre;
         }
         try {
@@ -1400,7 +1414,9 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             _logger.log(Level.SEVERE,
                     "rardeployment.connectionpool_removal_from_jndi_error",
                     poolInfo);
-            _logger.log(Level.FINE, "", cre);
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "", cre);
+            }
             throw cre;
         }
 
@@ -1427,7 +1443,9 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
 
         if ((ccp == null) || (connectionDefinitionName == null)
                 || (rarName == null)) {
-            _logger.log(Level.FINE, "Wrong parameters for pool creation ");
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Wrong parameters for pool creation ");
+            }
             String i18nMsg = localStrings.getString(
                     "ccp_adm.wrong_params_for_create");
             throw new ConnectorRuntimeException(i18nMsg);

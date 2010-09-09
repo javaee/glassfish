@@ -81,8 +81,10 @@ public class PoolTxHelper {
             try {
                 enforceDelistment(h);
             } catch (SystemException se) {
-                _logger.log(Level.FINE, "Exception while delisting the local resource [ of pool : "+ poolInfo +" ] " +
-                        "forcibily from transaction", se);
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "Exception while delisting the local resource [ of pool : " + poolInfo + " ] "
+                            + "forcibily from transaction", se);
+                }
                 return result;
             }
             h.getResourceState().setEnlisted(false);
@@ -119,8 +121,10 @@ public class PoolTxHelper {
                 result = txn.isLocalTx();
             }
         } catch (SystemException e) {
-            _logger.log(Level.FINE, "Exception while checking whether a local " +
-                    "transaction is in progress while using pool : "+ poolInfo, e);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Exception while checking whether a local "
+                        + "transaction is in progress while using pool : " + poolInfo, e);
+            }
         }
         return result;
     }
@@ -137,8 +141,10 @@ public class PoolTxHelper {
             if (txn != null)
                 result = isNonXAResourceInTransaction(txn, h);
         } catch (SystemException e) {
-            _logger.log(Level.FINE, "Exception while checking whether the resource [ of pool : "+ poolInfo +" ] " +
-                    "is nonxa and is enlisted in transaction : ", e);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Exception while checking whether the resource [ of pool : " + poolInfo + " ] "
+                        + "is nonxa and is enlisted in transaction : ", e);
+            }
         }
         return result;
     }
@@ -192,8 +198,10 @@ public class PoolTxHelper {
             }
             set.add(resource);
         } catch (ClassCastException e) {
-            _logger.log(Level.FINE, "Pool [ "+ poolInfo +" ]: resourceEnlisted:" +
-                    "transaction is not J2EETransaction but a " + tran.getClass().getName(), e);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Pool [ " + poolInfo + " ]: resourceEnlisted:"
+                        + "transaction is not J2EETransaction but a " + tran.getClass().getName(), e);
+            }
         }
         ResourceState state = resource.getResourceState();
         state.setEnlisted(true);
@@ -215,8 +223,10 @@ public class PoolTxHelper {
         try {
              j2eetran = (JavaEETransaction) tran;
         } catch (ClassCastException e) {
-            _logger.log(Level.FINE, "Pool: transactionCompleted: " +
-                    "transaction is not J2EETransaction but a " + tran.getClass().getName(), e);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Pool: transactionCompleted: "
+                        + "transaction is not J2EETransaction but a " + tran.getClass().getName(), e);
+            }
             return delistedResources;
         }
         Set set = j2eetran.getResources(poolInfo);

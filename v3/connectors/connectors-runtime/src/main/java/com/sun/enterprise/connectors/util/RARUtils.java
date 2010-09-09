@@ -192,7 +192,9 @@ public class RARUtils {
         Method[] m = c.getMethods();
         Map hMap = new HashMap();
         for (int i = 0; i < m.length; i++) {
-            _logger.finer(m[i].getName());
+            if(_logger.isLoggable(Level.FINER)) {
+                _logger.finer(m[i].getName());
+            }
             if(m[i].getName().startsWith("get") 
                     && isValidRABeanConfigProperty(m[i].getReturnType())) {
                 hMap.put(m[i].getName().substring(3), m[i].getReturnType());
@@ -228,9 +230,13 @@ public class RARUtils {
     
     private static void printClassDetails(Class c) {
         Method[] m = c.getMethods();
-        _logger.finer("Methods in " + c.getName());
+        if(_logger.isLoggable(Level.FINER)) {
+            _logger.finer("Methods in " + c.getName());
+        }
         for (int i = 0; i < m.length; i++) {
-            _logger.finer(m[i].toString());
+            if(_logger.isLoggable(Level.FINER)) {
+                _logger.finer(m[i].toString());
+            }
         }
     }
     
@@ -312,8 +318,10 @@ public class RARUtils {
             return cls;
         } catch (ClassNotFoundException e) {
             _logger.info(e.getMessage());
-            _logger.log(Level.FINE, "Unable to find class while trying to read connector" +
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Unable to find class while trying to read connector" +
                     "descriptor to get resource-adapter properties", e);
+            }
             ConnectorRuntimeException cre = new ConnectorRuntimeException("unable to find class : " + beanClassName);
             cre.setStackTrace(e.getStackTrace());
             throw cre;
@@ -344,8 +352,10 @@ public class RARUtils {
             return cl;
         } catch (IOException ioe) {
             _logger.info(ioe.getMessage());
-            _logger.log(Level.FINE, "IO Error while trying to read connector" +
-                    "descriptor to get resource-adapter properties", ioe);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "IO Error while trying to read connector"
+                        + "descriptor to get resource-adapter properties", ioe);
+            }
             ConnectorRuntimeException cre = new ConnectorRuntimeException("unable to read connector descriptor from : " + file);
             cre.setStackTrace(ioe.getStackTrace());
             throw cre;

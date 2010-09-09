@@ -642,15 +642,24 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
             try{
                 statementCacheSize = Integer.valueOf(cacheSize);
                 //TODO-SC FINE log-level with Pool Name (if possible)
-                _logger.log(Level.FINE, "StatementCaching Size : " + statementCacheSize);
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "StatementCaching Size : " + statementCacheSize);
+                }
                 if(cacheType == null || cacheType.trim().equals("")) {
-                    _logger.fine(" Default StatementCaching Type : " + localStrings.getString("jdbc.statement-cache.default.datastructure"));
+                    if(_logger.isLoggable(Level.FINE)) {
+                        _logger.fine(" Default StatementCaching Type : " +
+                                localStrings.getString("jdbc.statement-cache.default.datastructure"));
+                    }
                 } else {
-                    _logger.fine("StatementCaching Type : " + cacheType);
+                    if(_logger.isLoggable(Level.FINE)) {
+                        _logger.fine("StatementCaching Type : " + cacheType);
+                    }
                 }
             }catch(NumberFormatException nfe){
-                _logger.fine("Exception while setting StatementCacheSize : " + 
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("Exception while setting StatementCacheSize : " +
                         nfe.getMessage());
+                }
                 //ignore
             }
         } 
@@ -1347,7 +1356,9 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         return jdbcObjectsFactory;
     }
     protected void logFine(String logMessage){
-        _logger.log(Level.FINE, logMessage);
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, logMessage);
+        }
     }
 
     @Override
@@ -1377,7 +1388,9 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
                 //monitoring is turned OFF.
             }
         }
-        _logger.finest("MCF Created");
+        if(_logger.isLoggable(Level.FINEST)) {
+            _logger.finest("MCF Created");
+        }
         if (statementCacheSize > 0 ||
                 (sqlTraceListeners != null && !sqlTraceListeners.equals("null")) ||
                 statementLeakTimeout > 0) {
@@ -1389,25 +1402,35 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
                     PluginPoint.SERVER,
                     poolMonitoringSubTreeRoot, jdbcStatsProvider);
             if(jdbcStatsProvider.getSqlTraceCache() != null) {
-                _logger.finest("Scheduling timer task for sql trace caching");
+                if(_logger.isLoggable(Level.FINEST)) {
+                    _logger.finest("Scheduling timer task for sql trace caching");
+                }
                 Timer timer = ((com.sun.gjc.spi.ResourceAdapter) ra).getTimer();
                 jdbcStatsProvider.getSqlTraceCache().scheduleTimerTask(timer);
             }
-            _logger.finest("Registered JDBCRA Stats Provider");
+            if(_logger.isLoggable(Level.FINEST)) {
+                _logger.finest("Registered JDBCRA Stats Provider");
+            }
         }
     }
 
     @Override
     public void mcfDestroyed() {
-        _logger.finest("MCF Destroyed");
+        if(_logger.isLoggable(Level.FINEST)) {
+            _logger.finest("MCF Destroyed");
+        }
         if(jdbcStatsProvider != null) {
             if(jdbcStatsProvider.getSqlTraceCache() != null) {
-                _logger.finest("Canceling timer task for sql trace caching");
+                if(_logger.isLoggable(Level.FINEST)) {
+                    _logger.finest("Canceling timer task for sql trace caching");
+                }
                 jdbcStatsProvider.getSqlTraceCache().cancelTimerTask();
             }
             StatsProviderManager.unregister(jdbcStatsProvider);
             jdbcStatsProvider = null;
-            _logger.finest("Unregistered JDBCRA Stats Provider");
+            if(_logger.isLoggable(Level.FINEST)) {
+                _logger.finest("Unregistered JDBCRA Stats Provider");
+            }
         }
     }
 

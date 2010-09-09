@@ -46,6 +46,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -104,7 +105,9 @@ public class SQLTraceCache {
 
             timer.scheduleAtFixedRate(sqlTraceTimerTask, timeToKeepQueries, timeToKeepQueries);
         }
-        _logger.finest("Scheduled Sql Trace Caching timer task");
+        if(_logger.isLoggable(Level.FINEST)) {
+            _logger.finest("Scheduled Sql Trace Caching timer task");
+        }
     }
 
     /**
@@ -112,7 +115,9 @@ public class SQLTraceCache {
      */
     public synchronized void cancelTimerTask() {
 
-        _logger.finest("Cancelling Sql Trace Caching timer task");
+        if(_logger.isLoggable(Level.FINEST)) {
+            _logger.finest("Cancelling Sql Trace Caching timer task");
+        }
         if (sqlTraceTimerTask != null) {
             sqlTraceTimerTask.cancel();
         }
@@ -125,7 +130,9 @@ public class SQLTraceCache {
      * @return SQLTraceTimerTask
      */
     private SQLTraceTimerTask initializeTimerTask() {
-        _logger.finest("Initializing Sql Trace Caching timer task");
+        if(_logger.isLoggable(Level.FINEST)) {
+            _logger.finest("Initializing Sql Trace Caching timer task");
+        }
         return new SQLTraceTimerTask(this);
     }
 
@@ -172,7 +179,9 @@ public class SQLTraceCache {
             while (i.hasNext()) {
                 SQLTrace cacheObj = (SQLTrace) i.next();
                 if (list.size() > numTopQueriesToReport) {
-                    _logger.finest("removing sql=" + cacheObj.getQueryName());
+                    if(_logger.isLoggable(Level.FINEST)) {
+                        _logger.finest("removing sql=" + cacheObj.getQueryName());
+                    }
                     i.remove();
                 } else {
                     break;

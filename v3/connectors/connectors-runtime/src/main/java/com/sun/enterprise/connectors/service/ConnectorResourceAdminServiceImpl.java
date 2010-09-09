@@ -166,8 +166,10 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
             }
             */
             if (ne instanceof NameNotFoundException) {
-                _logger.log(Level.FINE, "rardeployment.connectorresource_removal_from_jndi_error", resourceInfo);
-                _logger.log(Level.FINE, "", ne);
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "rardeployment.connectorresource_removal_from_jndi_error", resourceInfo);
+                    _logger.log(Level.FINE, "", ne);
+                }
                 return;
             }
             ConnectorRuntimeException cre = new ConnectorRuntimeException

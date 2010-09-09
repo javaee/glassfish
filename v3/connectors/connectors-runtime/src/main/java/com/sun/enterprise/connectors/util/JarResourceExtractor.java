@@ -46,6 +46,7 @@ import java.util.logging.Logger;
 import java.util.zip.*;
 
 import com.sun.logging.LogDomains;
+import java.util.logging.Level;
 
 
 /**
@@ -79,7 +80,9 @@ public final class JarResourceExtractor {
      *            a resource name.
      */
     public byte[] getResource(String name) {
-        _logger.finer("getResource: " + name);
+        if(_logger.isLoggable(Level.FINER)) {
+            _logger.finer("getResource: " + name);
+        }
         return (byte[]) htJarContents.get(name);
     }
     
@@ -104,7 +107,9 @@ public final class JarResourceExtractor {
     private void extractResources(ZipInputStream zis) throws FileNotFoundException, IOException {
         ZipEntry ze = null;
         while ((ze = zis.getNextEntry()) != null) {
-            _logger.finer("ExtractResources : " + ze.getName());
+            if(_logger.isLoggable(Level.FINER)) {
+                _logger.finer("ExtractResources : " + ze.getName());
+            }
             extractZipEntryContents(ze, zis);
         }
     }
@@ -117,24 +122,32 @@ public final class JarResourceExtractor {
             if (ze.isDirectory()) {
                 return;
             }
-            
-            _logger.finer("ze.getName()=" + ze.getName() + ","
+
+            if(_logger.isLoggable(Level.FINER)) {
+                _logger.finer("ze.getName()=" + ze.getName() + ","
                         + "getSize()=" + ze.getSize());
+            }
 
             byte[] b = getZipEntryContents(ze,zis);
             //If it is a jar go RECURSIVE !!
             if(ze.getName().trim().endsWith(".jar")){
-                _logger.finer("JAR - going into it !!");
+                if(_logger.isLoggable(Level.FINER)) {
+                    _logger.finer("JAR - going into it !!");
+                }
                 BufferedInputStream bis = new BufferedInputStream( (new ByteArrayInputStream(b)));
                 extractResources(new ZipInputStream(bis));
             } else {
                 //add to internal resource hashtable
                 htJarContents.put(ze.getName(), b );
-                if (ze.getName().trim().endsWith("class")){ 
-                    _logger.finer("CLASS added " + ze.getName());
+                if (ze.getName().trim().endsWith("class")){
+                    if(_logger.isLoggable(Level.FINER)) {
+                        _logger.finer("CLASS added " + ze.getName());
+                    }
                 }
-                _logger.finer(ze.getName() + ",size="
+                if(_logger.isLoggable(Level.FINER)) {
+                    _logger.finer(ze.getName() + ",size="
                         + b.length + ",csize=" + ze.getCompressedSize());
+                }
             }
     }
     
@@ -166,7 +179,9 @@ public final class JarResourceExtractor {
             }
             Byte[] btArr = (Byte[])al.toArray(new Byte[]{});
             b = new byte[btArr.length];
-            _logger.finer("ByteArray length" + btArr.length);
+            if(_logger.isLoggable(Level.FINER)) {
+                _logger.finer("ByteArray length" + btArr.length);
+            }
             for (int i = 0; i < btArr.length; i++) {
                 b[i] = btArr[i].byteValue();
             }

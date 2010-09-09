@@ -104,6 +104,8 @@ public class DefaultPoolWaitQueue implements PoolWaitQueue {
     }
 
     protected void debug(String debugStatement) {
-        _logger.log(Level.FINE, debugStatement);
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, debugStatement);
+        }
     }
 }

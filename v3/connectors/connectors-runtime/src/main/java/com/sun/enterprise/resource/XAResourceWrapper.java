@@ -134,7 +134,9 @@ public class XAResourceWrapper implements XAResource {
     }
 
     private void print(String s) {
-        _logger.log(Level.FINE,s);
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE,s);
+        }
     }
 
     private static String xidToString(Xid xid) {

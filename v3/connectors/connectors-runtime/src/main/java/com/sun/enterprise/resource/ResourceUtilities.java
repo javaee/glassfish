@@ -256,7 +256,9 @@ public class ResourceUtilities {
             message.append(entry.getValue());
             message.append(" ");
         }
-        _logger.fine(localStrings.getString("resource.attributes",
-                message.toString()));
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine(localStrings.getString("resource.attributes",
+                    message.toString()));
+        }
     }
 }

@@ -117,7 +117,9 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
             try {
                listener.poolCreated(poolInfo);
             } catch (Exception ex) {
-	        _logger.log(Level.FINE, "Exception thrown on pool listener");
+                if(_logger.isLoggable(Level.FINE)) {
+	            _logger.log(Level.FINE, "Exception thrown on pool listener");
+                }
             }
         }
         //notify mcf-create
@@ -293,8 +295,10 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
         try {
             tran.registerSynchronization(sync);
         } catch (Exception ex) {
-            _logger.fine("Error adding syncListener : " +
-                    (ex.getMessage() != null ? ex.getMessage() : " "));
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("Error adding syncListener : "
+                        + (ex.getMessage() != null ? ex.getMessage() : " "));
+            }
         }
     }
 
@@ -492,8 +496,10 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
                            }
                        }
                    } catch (Exception e) {
-                       _logger.fine("Error killing pool : " + poolInfo + " :: "
-                               + (e.getMessage() != null ? e.getMessage() : " "));
+                       if (_logger.isLoggable(Level.FINE)) {
+                           _logger.fine("Error killing pool : " + poolInfo + " :: "
+                                   + (e.getMessage() != null ? e.getMessage() : " "));
+                       }
                    }
                }
            }
@@ -641,8 +647,10 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
             try {
                 transactionCompleted(tran, status);
             } catch (Exception ex) {
-                _logger.fine("Exception in afterCompletion : " +
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("Exception in afterCompletion : " +
                         (ex.getMessage() != null ? ex.getMessage() : " "));
+                }
             }
         }
 

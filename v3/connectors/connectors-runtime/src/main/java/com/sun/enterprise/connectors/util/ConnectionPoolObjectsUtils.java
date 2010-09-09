@@ -117,7 +117,9 @@ public final class ConnectionPoolObjectsUtils {
         try {
             connectorPoolObj.setTransactionSupport(getTransactionSupportFromRaXml(rarName));
         } catch (Exception ex) {
-            _logger.fine("error in setting txSupport");
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.fine("error in setting txSupport");
+            }
         }
         return connectorPoolObj;
     }
@@ -174,7 +176,9 @@ public final class ConnectionPoolObjectsUtils {
         try {
             connectorPoolObj.setTransactionSupport(getTransactionSupportFromRaXml(rarName));
         } catch (Exception ex) {
-            _logger.fine("error in setting txSupport");
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.fine("error in setting txSupport");
+            }
         }
 
         boolean validateAtmostEveryIdleSecs = false;
@@ -182,7 +186,9 @@ public final class ConnectionPoolObjectsUtils {
         //For SunRAPool, get the value of system property VALIDATE_ATMOST_EVERY_IDLE_SECS.
         if (validateAtmostEveryIdleSecsProperty != null && validateAtmostEveryIdleSecsProperty.equalsIgnoreCase("TRUE")) {
             validateAtmostEveryIdleSecs = true;
-            _logger.log(Level.FINE, "CCP.ValidateAtmostEveryIdleSecs.Set", poolInfo);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "CCP.ValidateAtmostEveryIdleSecs.Set", poolInfo);
+            }
         }
         connectorPoolObj.setValidateAtmostEveryIdleSecs(validateAtmostEveryIdleSecs);
 
@@ -302,7 +308,9 @@ public final class ConnectionPoolObjectsUtils {
             Method m = mcf.getClass().getMethod("get" + prop, (java.lang.Class[]) null);
             result = (String) m.invoke(mcf, (java.lang.Object[]) null);
         } catch (Throwable t) {
-            _logger.log(Level.FINE, t.getMessage(), t);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, t.getMessage(), t);
+            }
         }
 
         return result == null ? "" : result;

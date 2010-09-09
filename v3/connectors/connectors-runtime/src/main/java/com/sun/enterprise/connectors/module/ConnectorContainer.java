@@ -92,6 +92,8 @@ public class ConnectorContainer implements Container, PostConstruct, PreDestroy 
     }
 
     public void logFine(String message) {
-        _logger.log(Level.FINE, message);
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, message);
+        }
     }
 }

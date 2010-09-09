@@ -112,10 +112,14 @@ public class AdminObjectResourceDeployer extends GlobalResourceDeployer
                 */
 
 
-        _logger.log(Level.FINE, "Calling backend to add adminObject", resourceInfo);
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "Calling backend to add adminObject", resourceInfo);
+        }
         runtime.addAdminObject(null, aor.getResAdapter(), resourceInfo,
                 aor.getResType(), aor.getClassName(),  transformProps(aor.getProperty()));
-        _logger.log(Level.FINE,"Added adminObject in backend", resourceInfo);
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE,"Added adminObject in backend", resourceInfo);
+        }
     }
 
     /**
@@ -137,9 +141,13 @@ public class AdminObjectResourceDeployer extends GlobalResourceDeployer
     }
 
     private void deleteAdminObjectResource(ResourceInfo resourceInfo) throws ConnectorRuntimeException {
-        _logger.log(Level.FINE, "Calling backend to delete adminObject", resourceInfo);
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "Calling backend to delete adminObject", resourceInfo);
+        }
         runtime.deleteAdminObject(resourceInfo);
-        _logger.log(Level.FINE, "Deleted adminObject in backend", resourceInfo);
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "Deleted adminObject in backend", resourceInfo);
+        }
 
         //unregister the managed object
     /* TODO Not needed any more ?

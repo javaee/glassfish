@@ -95,7 +95,9 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
 
     private void loadAllJdbcResources() {
 
-        _logger.log(Level.FINEST, "loadAllJdbcResources start");
+        if(_logger.isLoggable(Level.FINEST)) {
+            _logger.log(Level.FINEST, "loadAllJdbcResources start");
+        }
         try {
             Collection<JdbcResource> jdbcResources = getAllJdbcResources();
             InitialContext ic = new InitialContext();
@@ -119,7 +121,9 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
                 _logger.log(Level.FINE, ne.toString(), ne);
             }
         }
-        _logger.log(Level.FINEST, "loadAllJdbcResources end");
+        if(_logger.isLoggable(Level.FINEST)) {
+            _logger.log(Level.FINEST, "loadAllJdbcResources end");
+        }
     }
 
     private Collection<JdbcResource> getAllJdbcResources() {
@@ -296,12 +300,16 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
                     }
                 } catch (ResourceException ex) {
                     _logger.log(Level.WARNING, "datasource.xadatasource_error", poolInfo);
-                    _logger.log(Level.FINE, "datasource.xadatasource_error_excp", ex);
+                    if(_logger.isLoggable(Level.FINE)) {
+                        _logger.log(Level.FINE, "datasource.xadatasource_error_excp", ex);
+                    }
                     // ignored. Not at XA_TRANSACTION level
                 }
             } catch (Exception ex) {
                 _logger.log(Level.WARNING, "datasource.xadatasource_error", poolInfo);
-                _logger.log(Level.FINE, "datasource.xadatasource_error_excp", ex);
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "datasource.xadatasource_error_excp", ex);
+                }
             }
         }
     }

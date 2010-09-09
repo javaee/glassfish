@@ -79,11 +79,15 @@ public class ResourceAdapterConfigDeployer implements ResourceDeployer {
                 (com.sun.enterprise.config.serverbeans.ResourceAdapterConfig) resource;
         String rarName = domainConfig.getResourceAdapterName();
         ConnectorRuntime crt = ConnectorRuntime.getRuntime();
-        _logger.log(Level.FINE,
-                "Calling backend to add resource adapterConfig ", rarName);
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE,
+                    "Calling backend to add resource adapterConfig ", rarName);
+        }
         crt.addResourceAdapterConfig(rarName, domainConfig);
-        _logger.log(Level.FINE,
-                "Added resource adapterConfig in backend", rarName);
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE,
+                    "Added resource adapterConfig in backend", rarName);
+        }
     }
 
     /**

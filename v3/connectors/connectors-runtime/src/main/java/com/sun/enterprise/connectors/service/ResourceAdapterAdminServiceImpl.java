@@ -158,12 +158,16 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
                                                          String moduleName, String moduleDir, ClassLoader loader)
             throws ConnectorRuntimeException {
 
-        _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA "
-                + moduleName + " at " + moduleDir);
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA "
+                    + moduleName + " at " + moduleDir);
+        }
 
         ActiveResourceAdapter activeResourceAdapter = _registry.getActiveResourceAdapter(moduleName);
         if (activeResourceAdapter != null) {
-            _logger.log(Level.FINE, "rardeployment.resourceadapter.already.started", moduleName);
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "rardeployment.resourceadapter.already.started", moduleName);
+            }
             return;
         }
 
@@ -173,15 +177,19 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
             try {
                 loader = connectorDescriptor.getClassLoader();
             } catch (Exception ex) {
-                _logger.log(Level.FINE, "No classloader available with connector descriptor");
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "No classloader available with connector descriptor");
+                }
                 loader = null;
             }
         }
         ConnectorRuntime connectorRuntime = ConnectorRuntime.getRuntime();
         ModuleDescriptor moduleDescriptor = null;
         Application application = null;
-        _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA "
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA "
                 + moduleName + " at " + moduleDir + " loader :: " + loader);
+        }
         //class-loader can not be null for standalone rar as deployer should have provided one.
         //class-laoder can (may) be null for system-rars as they are not actually deployed.
         //TODO V3 don't check for system-ra if the resource-adapters are not loaded before recovery
@@ -202,22 +210,28 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
             activeResourceAdapter =
                     connectorRuntime.getActiveRAFactory().
                             createActiveResourceAdapter(connectorDescriptor, moduleName, loader);
-            _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA " +
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA " +
                     moduleName + " at " + moduleDir +
                     " adding to registry " + activeResourceAdapter);
+            }
             _registry.addActiveResourceAdapter(moduleName, activeResourceAdapter);
-            _logger.fine("ResourceAdapterAdminServiceImpl:: createActiveRA " +
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.fine("ResourceAdapterAdminServiceImpl:: createActiveRA " +
                     moduleName + " at " + moduleDir
                     + " env =server ? " + (connectorRuntime.isServer()));
+            }
 
             if (connectorRuntime.isServer()) {
                 //Update RAConfig in Connector Descriptor and bind in JNDI
                 //so that ACC clients could use RAConfig
                 updateRAConfigInDescriptor(connectorDescriptor, moduleName);
                 String descriptorJNDIName = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForDescriptor(moduleName);
-                _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA "
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA "
                         + moduleName + " at " + moduleDir
                         + " publishing descriptor " + descriptorJNDIName);
+                }
                 _runtime.getNamingManager().publishObject(descriptorJNDIName, connectorDescriptor, true);
 
                 activeResourceAdapter.setup();
@@ -275,7 +289,9 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
             raConfigProps = raConfig.getProperty();
         }
 
-        _logger.fine("current RAConfig In Descriptor " + connectorDescriptor.getConfigProperties());
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.fine("current RAConfig In Descriptor " + connectorDescriptor.getConfigProperties());
+        }
 
         if (raConfigProps != null) {
             Set mergedProps = ConnectorDDTransformUtils.mergeProps(
@@ -283,7 +299,9 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
             Set actualProps = connectorDescriptor.getConfigProperties();
             actualProps.clear();
             actualProps.addAll(mergedProps);
-            _logger.fine("updated RAConfig In Descriptor " + connectorDescriptor.getConfigProperties());
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.fine("updated RAConfig In Descriptor " + connectorDescriptor.getConfigProperties());
+            }
         }
 
     }
@@ -304,7 +322,9 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         ActiveResourceAdapter activeResourceAdapter =
                 _registry.getActiveResourceAdapter(moduleName);
         if (activeResourceAdapter != null) {
-            _logger.log(Level.FINE, "rardeployment.resourceadapter.already.started", moduleName);
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "rardeployment.resourceadapter.already.started", moduleName);
+            }
             return;
         }
 
@@ -426,13 +446,17 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
      * @param raName resource-adapter name
      */
     public void stopActiveResourceAdapter(String raName) {
-        _logger.log(Level.FINE, "Stopping RA : ", raName);
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "Stopping RA : ", raName);
+        }
         try {
             destroyActiveResourceAdapter(raName);
         } catch (ConnectorRuntimeException cre) {
             Object params[] = new Object[]{raName, cre.getMessage()};
             _logger.log(Level.WARNING, "unable.to.stop.ra", params);
-            _logger.log(Level.FINE, "unable to stop resource adapter [ " + raName + " ]", cre);
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "unable to stop resource adapter [ " + raName + " ]", cre);
+            }
         }
     }
 
@@ -515,11 +539,15 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         Future future = null;
         boolean stopSuccessful = false;
         try {
-            _logger.log(Level.FINE, "scheduling stop for RA [ " + raName +" ] ");
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "scheduling stop for RA [ " + raName +" ] ");
+            }
             future = execService.submit(rast);
             future.get(timeout, TimeUnit.MILLISECONDS);
-            _logger.log(Level.FINE, "stop() Complete for active 1.5 compliant RAR " +
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "stop() Complete for active 1.5 compliant RAR " +
                     "[ "+ raName  +" ]");
+            }
             stopSuccessful = true;
         } catch (TimeoutException e) {
             Object params[] = new Object[]{raName, e};
@@ -558,7 +586,9 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         }
 
         public void run() {
-            _logger.log(Level.FINE, "Calling RA [ " + ra.getModuleName() + " ] shutdown ");
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Calling RA [ " + ra.getModuleName() + " ] shutdown ");
+            }
             this.ra.destroy();
         }
     }

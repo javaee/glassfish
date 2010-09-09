@@ -155,9 +155,11 @@ public class ConnectorDDTransformUtils {
                     }
                 }
 
-                _logger.log(Level.FINER,
+                if(_logger.isLoggable(Level.FINER)) {
+                    _logger.log(Level.FINER,
                         "After merging props with defaultMCFProps: envPropName: "
                                 + ep.getName() + " envPropValue : " + ep.getValue());
+                }
                 mergedSet.remove(ep);
             }
             mergedSet.add(ep);
@@ -264,12 +266,16 @@ public class ConnectorDDTransformUtils {
             return cd.getResourceAdapterClass();
         } catch (IOException e) {
             _logger.info(e.getMessage());
-            _logger.log(Level.FINE, "Error while trying to read connector" +
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Error while trying to read connector" +
                     "descriptor to get resource-adapter properties", e);
+            }
         } catch (SAXParseException e) {
             _logger.info(e.getMessage());
-            _logger.log(Level.FINE, "Error while trying to read connector" +
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Error while trying to read connector" +
                     "descriptor to get resource-adapter properties", e);
+            }
         }
         return null;
     }

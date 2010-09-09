@@ -181,9 +181,11 @@ public class MessageListenerConfigParserImpl implements
         }
 
         if(messageListener == null) {
-            _logger.log(Level.FINE,
-                    "No such MessageListener found in ra.xml", 
-                    messageListenerType);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE,
+                        "No such MessageListener found in ra.xml",
+                        messageListenerType);
+            }
             throw new ConnectorRuntimeException(
                   "No such MessageListener found in ra.xml : " + 
                   messageListenerType);
@@ -239,9 +241,11 @@ public class MessageListenerConfigParserImpl implements
         }
 
         if(messageListener == null) {
-            _logger.log(Level.FINE,
-                    "No such MessageListener found in ra.xml", 
-                    messageListenerType);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE,
+                        "No such MessageListener found in ra.xml",
+                        messageListenerType);
+            }
             throw new ConnectorRuntimeException(
                   "No such MessageListener found in ra.xml : " + 
                   messageListenerType);

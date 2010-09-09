@@ -56,6 +56,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -154,6 +155,8 @@ public class DynamicResourceReconfigurator implements InvocationHandler, Dynamic
     }
 
     private void debug(String message){
-        _logger.finest("[DRC] : " + message);
+        if(_logger.isLoggable(Level.FINEST)) {
+            _logger.finest("[DRC] : " + message);
+        }
     }
 }

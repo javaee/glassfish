@@ -159,9 +159,11 @@ public class MCFConfigParserImpl implements MCFConfigParser {
         }
 
         if(connectionDefFound == false) {
-            _logger.log(Level.FINE,
-                    "No such connectiondefinition found in ra.xml", 
-                    connectionDefName);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE,
+                        "No such connectiondefinition found in ra.xml",
+                        connectionDefName);
+            }
             throw new ConnectorRuntimeException(
                   "No such connectiondefinition found in ra.xml : " + 
                   connectionDefName);

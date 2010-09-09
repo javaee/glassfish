@@ -363,7 +363,9 @@ public class ResourcesUtil {
                     "error.finding.resources.references",
                     resourceInfo);
             _logger.log(Level.WARNING, message + e.getMessage());
-            _logger.log(Level.FINE, message + e.getMessage(), e);
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, message + e.getMessage(), e);
+            }
         }
 
 
@@ -416,7 +418,9 @@ public class ResourcesUtil {
         } catch (Exception e) {
             String message = localStrings.getString("error.finding.resources.references", resourceInfo);
             _logger.log(Level.WARNING, message + e.getMessage());
-            _logger.log(Level.FINE,message + e.getMessage(), e);
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE,message + e.getMessage(), e);
+            }
         }
 
         JdbcResource jdbcResource = (JdbcResource) getResources(resourceInfo).getResourceByName(JdbcResource.class,
@@ -472,7 +476,9 @@ public class ResourcesUtil {
                     "error.finding.resources.references",
                     resourceInfo);
             _logger.log(Level.WARNING, message + e.getMessage());
-            _logger.log(Level.FINE,message + e.getMessage(), e);
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE,message + e.getMessage(), e);
+            }
         }
 
         AdminObjectResource adminObjectResource = (AdminObjectResource)
@@ -663,7 +669,9 @@ public class ResourcesUtil {
      * @since 8.1 PE/SE/EE
      */
     public boolean isEnabled(Resource resource) {
-        _logger.fine("ResourcesUtil :: isEnabled");
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.fine("ResourcesUtil :: isEnabled");
+        }
         if (resource == null){
             return false;
         }else if (resource instanceof BindableResource) {
@@ -757,10 +765,14 @@ public class ResourcesUtil {
     private boolean isApplicationReferenceEnabled(String appName) {
         ApplicationRef appRef = getServer().getApplicationRef(appName);
         if (appRef == null) {
-            _logger.fine("ResourcesUtil :: isApplicationReferenceEnabled null ref");
-                return false;
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("ResourcesUtil :: isApplicationReferenceEnabled null ref");
+            }
+            return false;
         }
-        _logger.fine("ResourcesUtil :: isApplicationReferenceEnabled appRef enabled ?" + appRef.getEnabled());
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.fine("ResourcesUtil :: isApplicationReferenceEnabled appRef enabled ?" + appRef.getEnabled());
+        }
         return ConnectorsUtil.parseBoolean(appRef.getEnabled());
     }
 
@@ -840,17 +852,23 @@ public class ResourcesUtil {
             if (appRef != null) {
                 enabled = appRef.getEnabled();
             } else {
-                _logger.fine("ResourcesUtil :: isResourceReferenceEnabled null app-ref");
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("ResourcesUtil :: isResourceReferenceEnabled null app-ref");
+                }
             }
         } else {
             ResourceRef ref = getServer().getResourceRef(resourceInfo.getName());
             if (ref != null) {
                 enabled = ref.getEnabled();
             } else {
-                _logger.fine("ResourcesUtil :: isResourceReferenceEnabled null ref");
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("ResourcesUtil :: isResourceReferenceEnabled null ref");
+                }
             }
         }
-        _logger.fine("ResourcesUtil :: isResourceReferenceEnabled ref enabled ?" + enabled);
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.fine("ResourcesUtil :: isResourceReferenceEnabled ref enabled ?" + enabled);
+        }
 
         return ConnectorsUtil.parseBoolean(enabled);
     }
@@ -941,15 +959,21 @@ public class ResourcesUtil {
         Collection<ConnectorResource> connectorResources = getRuntime().getResources(poolInfo).
                 getResources(ConnectorResource.class);
         for (ConnectorResource resource : connectorResources) {
-            _logger.fine("poolname " + resource.getPoolName() + "resource " + resource.getJndiName());
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.fine("poolname " + resource.getPoolName() + "resource " + resource.getJndiName());
+            }
             ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(resource);
             if ((resource.getPoolName().equalsIgnoreCase(poolInfo.getName())) && isReferenced(resourceInfo)){
-                _logger.fine("Connector resource "  + resource.getJndiName() + "refers "
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("Connector resource "  + resource.getJndiName() + "refers "
                         + poolInfo + "in this server instance");
+                }
                 return true;
             }
         }
-        _logger.fine("No Connector resource refers [ " + poolInfo + " ] in this server instance");
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.fine("No Connector resource refers [ " + poolInfo + " ] in this server instance");
+        }
         return false;
     }
 
@@ -968,15 +992,19 @@ public class ResourcesUtil {
             ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(resource);
             //Have to check isReferenced here!
             if ((resource.getPoolName().equalsIgnoreCase(poolInfo.getName())) && isReferenced(resourceInfo)){
-                _logger.fine("pool " + poolInfo + "resource " + resourceInfo
-                + " referred " + isReferenced(resourceInfo));
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("pool " + poolInfo + "resource " + resourceInfo
+                            + " referred " + isReferenced(resourceInfo));
 
-                _logger.fine("JDBC resource "  + resource.getJndiName() + "refers " + poolInfo +
-                        "in this server instance");
+                    _logger.fine("JDBC resource " + resource.getJndiName() + "refers " + poolInfo
+                            + "in this server instance");
+                }
                 return true;
             }
         }
-        _logger.fine("No JDBC resource refers [ " + poolInfo + " ] in this server instance");
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.fine("No JDBC resource refers [ " + poolInfo + " ] in this server instance");
+        }
         return false;
     }
 

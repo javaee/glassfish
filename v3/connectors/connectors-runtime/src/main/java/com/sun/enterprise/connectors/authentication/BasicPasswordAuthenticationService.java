@@ -84,7 +84,9 @@ public class BasicPasswordAuthenticationService
     public BasicPasswordAuthenticationService(String rarName, PoolInfo poolInfo) {
         rarName_ = rarName;
         poolInfo_ = poolInfo;
-        _logger.log(Level.FINE, "Contructor:BasicPasswordAuthenticationService");
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "Constructor:BasicPasswordAuthenticationService");
+        }
     }
 
     /**
@@ -133,7 +135,7 @@ public class BasicPasswordAuthenticationService
      * returned else null is returned .
      */
     private Principal doMap(String principalName, List groupNames,
-                            String roleName, RuntimeSecurityMap runtimeSecurityMap) {
+            String roleName, RuntimeSecurityMap runtimeSecurityMap) {
 
         // Policy: 
         // user_1, user_2, ... user_n
@@ -158,24 +160,26 @@ public class BasicPasswordAuthenticationService
 
         // If ejb, use isCallerInRole  
         if (isContainerContextAEJBContainerObject() && roleName == null) {
-        	ComponentInvocation componentInvocation =
-                ConnectorRuntime.getRuntime().getInvocationManager().getCurrentInvocation();
+            ComponentInvocation componentInvocation =
+                    ConnectorRuntime.getRuntime().getInvocationManager().getCurrentInvocation();
             EJBInvocation ejbInvocation = (EJBInvocation) componentInvocation;
-        	EJBContext ejbcontext = ejbInvocation.getEJBContext();
-        	Set s = groupNameSecurityMap.keySet();
-        	Iterator i = s.iterator();
-        	while (i.hasNext()){
-        		String entry = (String)i.next();
-          		boolean isInRole = false; 
-          		try{
-          			isInRole = ejbcontext.isCallerInRole(entry);
-          		} catch (Exception ex){
-          			_logger.log(Level.FINE,"asciPasswordAuthentication::caller not in role "+entry);
-          		}
-          		if (isInRole){
-          			return (Principal)groupNameSecurityMap.get(entry);
-          		}
-        	}
+            EJBContext ejbcontext = ejbInvocation.getEJBContext();
+            Set s = groupNameSecurityMap.keySet();
+            Iterator i = s.iterator();
+            while (i.hasNext()) {
+                String entry = (String) i.next();
+                boolean isInRole = false;
+                try {
+                    isInRole = ejbcontext.isCallerInRole(entry);
+                } catch (Exception ex) {
+                    if(_logger.isLoggable(Level.FINE)) {
+                        _logger.log(Level.FINE, "BasicPasswordAuthentication::caller not in role " + entry);
+                    }
+                }
+                if (isInRole) {
+                    return (Principal) groupNameSecurityMap.get(entry);
+                }
+            }
         }
 
         // Check if caller's group(s) is/are present in the Group Map
@@ -203,7 +207,7 @@ public class BasicPasswordAuthenticationService
 
         String roleName = null;
 
-        WebBundleDescriptor wbd = (WebBundleDescriptor)getComponentEnvManager().getCurrentJndiNameEnvironment();
+        WebBundleDescriptor wbd = (WebBundleDescriptor) getComponentEnvManager().getCurrentJndiNameEnvironment();
 
         SecurityRoleMapperFactory securityRoleMapperFactory = getSecurityRoleMapperFactory();
         SecurityRoleMapper securityRoleMapper =
@@ -223,7 +227,7 @@ public class BasicPasswordAuthenticationService
         return "";
     }
 
-    private ComponentEnvManager getComponentEnvManager(){
+    private ComponentEnvManager getComponentEnvManager() {
         return ConnectorRuntime.getRuntime().getComponentEnvManager();
     }
 

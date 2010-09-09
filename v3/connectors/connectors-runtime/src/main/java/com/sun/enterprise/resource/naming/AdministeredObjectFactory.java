@@ -75,8 +75,10 @@ public class AdministeredObjectFactory implements ObjectFactory {
 				    Hashtable env) throws Exception {
 
 	Reference ref = (Reference) obj;
-	logger.fine("AdministeredObjectFactory: " + ref +
-		    " Name:" + name);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("AdministeredObjectFactory: " + ref
+                    + " Name:" + name);
+        }
 
         AdministeredObjectResource aor =
             (AdministeredObjectResource) ref.get(0).getContent();
@@ -95,8 +97,10 @@ public class AdministeredObjectFactory implements ObjectFactory {
                         getReservePrefixedJNDINameForDescriptor(moduleName);
                 connectorDescriptor = (ConnectorDescriptor) ic.lookup(descriptorJNDIName);
             } catch (NamingException ne) {
-                logger.log(Level.FINE, "Failed to look up ConnectorDescriptor " +
-                        "from JNDI", moduleName);
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.log(Level.FINE, "Failed to look up ConnectorDescriptor "
+                            + "from JNDI", moduleName);
+                }
                 throw new ConnectorRuntimeException("Failed to look up " +
                         "ConnectorDescriptor from JNDI");
             }
@@ -110,7 +114,9 @@ public class AdministeredObjectFactory implements ObjectFactory {
 
 	    }
 
-	logger.fine("[AdministeredObjectFactory] ==> Got AdministeredObjectResource = " + aor);
+        if(logger.isLoggable(Level.FINE)) {
+	    logger.fine("[AdministeredObjectFactory] ==> Got AdministeredObjectResource = " + aor);
+        }
 
     // all RARs except system RARs should have been available now.
         if(ConnectorsUtil.belongsToSystemRA(moduleName)) {

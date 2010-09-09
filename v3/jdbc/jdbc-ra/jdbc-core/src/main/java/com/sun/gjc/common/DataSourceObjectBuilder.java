@@ -314,7 +314,10 @@ public class DataSourceObjectBuilder implements java.io.Serializable {
             Class.forName("java.sql.Wrapper");
             jdbc40 = true;
         } catch (ClassNotFoundException cnfe) {
-            _logger.log(Level.FINEST, "could not find Wrapper(available in jdbc-40), jdk supports only jdbc-30");
+            if(_logger.isLoggable(Level.FINEST)) {
+                _logger.log(Level.FINEST,
+                    "could not find Wrapper(available in jdbc-40), jdk supports only jdbc-30");
+            }
         }
         return jdbc40;
     }

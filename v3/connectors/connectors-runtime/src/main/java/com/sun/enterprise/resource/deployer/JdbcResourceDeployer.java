@@ -110,7 +110,9 @@ public class JdbcResourceDeployer implements ResourceDeployer {
                         resourceInfo.getApplicationName(), resourceInfo.getModuleName());
                 runtime.createConnectorResource( pmResourceInfo, poolInfo, null);
             }
-            _logger.finest("deployed resource " + jndiName);
+            if(_logger.isLoggable(Level.FINEST)) {
+                _logger.finest("deployed resource " + jndiName);
+            }
         } else {
             _logger.log(Level.INFO, "core.resource_disabled",
                     new Object[]{jdbcRes.getJndiName(), ConnectorConstants.RES_TYPE_JDBC});
@@ -225,8 +227,10 @@ public class JdbcResourceDeployer implements ResourceDeployer {
                 boolean poolReferred =
                     ResourcesUtil.createInstance().isJdbcPoolReferredInServerInstance(poolInfo);
                 if (!poolReferred) {
-                    _logger.fine("Deleting JDBC pool [" + poolName + " ] as there are no more " +
+                    if(_logger.isLoggable(Level.FINE)) {
+                        _logger.fine("Deleting JDBC pool [" + poolName + " ] as there are no more " +
                             "resource-refs to the pool in this server instance");
+                    }
 
                     JdbcConnectionPool jcp = (JdbcConnectionPool)
                             resources.getResourceByName(JdbcConnectionPool.class, poolName);
@@ -235,7 +239,9 @@ public class JdbcResourceDeployer implements ResourceDeployer {
                 }
             } catch (Exception ce) {
                 _logger.warning(ce.getMessage());
-                _logger.fine("Exception while deleting pool [ "+poolName+" ] : " + ce );
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("Exception while deleting pool [ "+poolName+" ] : " + ce );
+                }
                 throw ce;
             }
         }

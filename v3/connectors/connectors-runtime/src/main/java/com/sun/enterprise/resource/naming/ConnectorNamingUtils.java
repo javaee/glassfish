@@ -79,8 +79,10 @@ public class ConnectorNamingUtils {
         } catch (Exception e) {
             // Assuming that connector runtime is always available in SERVER and APPCLIENT mode and
             // hence this is CLIENT mode
-            _logger.log(Level.FINEST, "unable to get Connector Runtime due to the following exception, " +
+            if(_logger.isLoggable(Level.FINEST)) {
+                _logger.log(Level.FINEST, "unable to get Connector Runtime due to the following exception, " +
                     "trying client mode", e);
+            }
             runtime = getHabitat().getComponent(ConnectorRuntime.class);
         }
         return runtime;

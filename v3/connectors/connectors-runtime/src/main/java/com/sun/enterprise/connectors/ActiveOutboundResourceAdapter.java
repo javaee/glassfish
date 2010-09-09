@@ -237,7 +237,9 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
         if (isServer() && !isSystemRar(moduleName_)) {
             createAllConnectorResources();
         }
-        _logger.log(Level.FINE, "Completed Active Resource adapter setup", moduleName_);
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "Completed Active Resource adapter setup", moduleName_);
+        }
     }
 
     /**
@@ -255,7 +257,9 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
     private void stopResourceAdapter() {
         if (resourceadapter_ != null) {
             try {
-                _logger.fine("Calling Resource Adapter stop" + this.getModuleName());
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("Calling Resource Adapter stop" + this.getModuleName());
+                }
                 resourceadapter_.stop();
                 if(_logger.isLoggable(Level.FINE)){
                     _logger.fine("Resource Adapter stop call of " + this.getModuleName() + " returned successfully");

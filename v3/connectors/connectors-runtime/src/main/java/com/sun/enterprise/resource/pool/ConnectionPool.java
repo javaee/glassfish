@@ -152,7 +152,9 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         initializePoolWaitQueue();
         poolTxHelper = new PoolTxHelper(this.poolInfo);
         gateway = ResourceGateway.getInstance(resourceGatewayClass);
-        _logger.log(Level.FINE, "Connection Pool : " + this.poolInfo);
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "Connection Pool : " + this.poolInfo);
+        }
     }
 
     protected void initializePoolWaitQueue() throws PoolingException {
@@ -452,7 +454,9 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                     synchronized (reconfigWaitMonitor) {
                         try {
                             if(reconfigWaitTime > 0){
-                                _logger.finest("[DRC] getting into reconfig wait queue for time ["+reconfigWaitTime+"]");
+                                if(_logger.isLoggable(Level.FINEST)) {
+                                    _logger.finest("[DRC] getting into reconfig wait queue for time ["+reconfigWaitTime+"]");
+                                }
                                 reconfigWaitMonitor.wait(reconfigWaitTime);
                             }
                         } catch (InterruptedException ex) {
@@ -462,12 +466,16 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                         //try to remove in case that the monitor has timed
                         // out.  We don't expect the queue to grow to great numbers
                         // so the overhead for removing inexistent objects is low.
-                        _logger.log(Level.FINEST, "[DRC] removing wait monitor from reconfig-wait-queue: " +
+                        if(_logger.isLoggable(Level.FINEST)) {
+                            _logger.log(Level.FINEST, "[DRC] removing wait monitor from reconfig-wait-queue: " +
                                 reconfigWaitMonitor);
+                        }
 
                         reconfigWaitQueue.removeFromQueue(reconfigWaitMonitor);
 
-                        _logger.log(Level.FINEST, "[DRC] throwing Retryable-Unavailable-Exception");
+                        if(_logger.isLoggable(Level.FINEST)) {
+                            _logger.log(Level.FINEST, "[DRC] throwing Retryable-Unavailable-Exception");
+                        }
                         RetryableUnavailableException rue = new RetryableUnavailableException("Pool Reconfigured, " +
                                 "Connection Factory can retry the lookup");
                         rue.setErrorCode(BadConnectionEventListener.POOL_RECONFIGURED_ERROR_CODE);
@@ -599,8 +607,10 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                 }
             }
         } catch (ClassCastException e) {
-            _logger.log(Level.FINE, "Pool: getResource : " +
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Pool: getResource : " +
                     "transaction is not JavaEETransaction but a " + tran.getClass().getName(), e);
+            }
         }
         return result;
     }
@@ -900,8 +910,10 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                     resourceHandle.setLastValidated(System.currentTimeMillis());
                 break;
             } catch (Exception ex) {
-                _logger.log(Level.FINE, "Connection creation failed for " + count + " time. It will be retried, "
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "Connection creation failed for " + count + " time. It will be retried, "
                         + "if connection creation retrial is enabled.", ex);
+                }
                 if (!connectionCreationRetry_ || count >= connectionCreationRetryAttempts_)
                     throw new PoolingException(ex);
                 try {

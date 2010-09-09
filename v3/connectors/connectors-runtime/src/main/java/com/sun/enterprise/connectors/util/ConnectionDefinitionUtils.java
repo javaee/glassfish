@@ -117,8 +117,10 @@ public class ConnectionDefinitionUtils {
                boolean property1Removed = removePropertyFromMap("connectionCachingEnabled", map);
                boolean property2Removed = removePropertyFromMap("fastConnectionFailoverEnabled",map);
                if(property1Removed || property2Removed){
-                   _logger.log(Level.FINE, "Removing properties 'connectionCachingEnabled'," +
-                       " 'fastConnectionFailoverEnabled' from Datasource : " + className );
+                   if (_logger.isLoggable(Level.FINE)) {
+                       _logger.log(Level.FINE, "Removing properties 'connectionCachingEnabled',"
+                               + " 'fastConnectionFailoverEnabled' from Datasource : " + className);
+                   }
                }
            }
        }

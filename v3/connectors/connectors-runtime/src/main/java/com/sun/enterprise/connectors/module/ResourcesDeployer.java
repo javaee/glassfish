@@ -1006,6 +1006,8 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
     }
 
     private static void debug(String message){
-        _logger.finest("[ASR] ResourceDeployer : " + message);
+        if(_logger.isLoggable(Level.FINEST)) {
+            _logger.finest("[ASR] ResourceDeployer : " + message);
+        }
     }
 }

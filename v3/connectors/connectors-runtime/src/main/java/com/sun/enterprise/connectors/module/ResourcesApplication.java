@@ -43,6 +43,7 @@ package com.sun.enterprise.connectors.module;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.logging.LogDomains;
+import java.util.logging.Level;
 import org.glassfish.api.deployment.*;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.javaee.services.ApplicationScopedResourcesManager;
@@ -124,7 +125,9 @@ public class ResourcesApplication implements ApplicationContainer{
         return null;
     }
     private void  debug(String message){
-        _logger.finest("[ResourcesApplication] " + message);
+        if(_logger.isLoggable(Level.FINEST)) {
+            _logger.finest("[ResourcesApplication] " + message);
+        }
     }
 
 }

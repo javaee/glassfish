@@ -97,9 +97,15 @@ public class ConnectorResourceDeployer implements ResourceDeployer {
     }
 
     private void createConnectorResource(ResourceInfo resourceInfo, PoolInfo poolInfo) throws ConnectorRuntimeException {
-        _logger.log(Level.FINE, "Calling backend to add connector resource", resourceInfo);
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "Calling backend to add connector resource",
+                    resourceInfo);
+        }
         runtime.createConnectorResource(resourceInfo, poolInfo, null);
-        _logger.log(Level.FINE, "Added connector resource in backend", resourceInfo);
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "Added connector resource in backend",
+                    resourceInfo);
+        }
     }
 
     /**
@@ -190,14 +196,18 @@ public class ConnectorResourceDeployer implements ResourceDeployer {
             boolean poolReferred =
                 ResourcesUtil.createInstance().isPoolReferredInServerInstance(poolInfo);
             if (!poolReferred) {
-                _logger.fine("Deleting pool [" + poolName + "] as there are no more " +
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("Deleting pool [" + poolName + "] as there are no more " +
                         "resource-refs to the pool in this server instance");
+                }
                 //Delete/Undeploy Pool
                 runtime.getResourceDeployer(ccp).undeployResource(ccp);
             }
         } catch (Exception ce) {
             _logger.warning(ce.getMessage());
-            _logger.fine("Exception while deleting pool [ "+poolName+" ] : " + ce );
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.fine("Exception while deleting pool [ "+poolName+" ] : " + ce );
+            }
             throw ce;
         }
     }

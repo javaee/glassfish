@@ -110,9 +110,11 @@ public class ConnectorAdminObjectAdminServiceImpl extends
             }
             */
             if (ne instanceof NameNotFoundException) {
-                _logger.log(Level.FINE,
-                        "rardeployment.admin_object_delete_failure", resourceInfo);
-                _logger.log(Level.FINE, "", ne);
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE,
+                            "rardeployment.admin_object_delete_failure", resourceInfo);
+                    _logger.log(Level.FINE, "", ne);
+                }
                 return;
             }
             ConnectorRuntimeException cre = new ConnectorRuntimeException(

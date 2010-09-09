@@ -130,7 +130,9 @@ public class ConnectorService implements ConnectorConstants {
                                         String raName)
             throws ConnectorRuntimeException {
         String resname = ConnectorAdminServiceUtils.getOriginalResourceName(resourceName);
-        _logger.fine("ConnectorService :: checkAndLoadResource resolved to load " + resname);
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.fine("ConnectorService :: checkAndLoadResource resolved to load " + resname);
+        }
 
         DeferredResourceConfig defResConfig = getResourcesUtil().getDeferredResourceConfig(resource, pool, resourceType, raName);
         //DeferredResourceConfig defResConfig = resUtil.getDeferredResourceConfig(resname);

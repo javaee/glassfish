@@ -154,7 +154,9 @@ public class ConnectorAllocator extends AbstractConnectorAllocator {
         } catch (ResourceException ex) {
             Object[] params = new Object[]{spec.getPoolInfo(), ex.toString()};
             _logger.log(Level.WARNING,"poolmgr.create_resource_error",params);
-            _logger.log(Level.FINE,"Resource Exception while creating resource",ex);
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE,"Resource Exception while creating resource",ex);
+            }
             
             if (ex.getLinkedException() != null) {
                 _logger.log(Level.WARNING,

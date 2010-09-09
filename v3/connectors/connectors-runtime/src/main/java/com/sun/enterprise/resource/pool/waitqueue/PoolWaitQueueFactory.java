@@ -94,11 +94,15 @@ public class PoolWaitQueueFactory {
         PoolWaitQueue waitQueue;
         Class class1 = Thread.currentThread().getContextClassLoader().loadClass(className);
         waitQueue = (PoolWaitQueue) class1.newInstance();
-        _logger.log(Level.FINEST, "Using Pool Wait Queue class : ", className);
+        if(_logger.isLoggable(Level.FINEST)) {
+            _logger.log(Level.FINEST, "Using Pool Wait Queue class : ", className);
+        }
         return waitQueue;
     }
 
     private static void debug(String debugStatement) {
-        _logger.log(Level.FINE, debugStatement);
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, debugStatement);
+        }
     }
 }

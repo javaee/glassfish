@@ -129,7 +129,9 @@ public class StatementLeakDetector {
                 registerListener(stmt, listener);
                 if (timer != null) {
                     timer.schedule(statementLeakTask, statementLeakTimeoutInMillis);
-                    _logger.finest("Scheduled Statement leak tracing timer task");
+                    if(_logger.isLoggable(Level.FINEST)) {
+                        _logger.finest("Scheduled Statement leak tracing timer task");
+                    }
                 }
             }
         }
@@ -149,7 +151,9 @@ public class StatementLeakDetector {
                         statementLeakTimerTaskHashMap.remove(stmt);
                 statementLeakTask.cancel();
                 timer.purge();
-                _logger.finest("Stopped Statement leak tracing timer task");
+                if(_logger.isLoggable(Level.FINEST)) {
+                    _logger.finest("Stopped Statement leak tracing timer task");
+                }
                 unRegisterListener(stmt);
             }
         }

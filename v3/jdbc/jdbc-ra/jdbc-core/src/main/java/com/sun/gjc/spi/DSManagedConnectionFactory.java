@@ -117,7 +117,9 @@ public class DSManagedConnectionFactory extends ManagedConnectionFactory {
             }
         } catch (java.sql.SQLException sqle) {
             //_logger.log(Level.WARNING, "jdbc.exc_create_conn", sqle.getMessage());
-            _logger.log(Level.FINE, "jdbc.exc_create_conn", sqle.getMessage());
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "jdbc.exc_create_conn", sqle.getMessage());
+            }
             StringManager localStrings =
                     StringManager.getManager(DataSourceObjectBuilder.class);
             String msg = localStrings.getString("jdbc.cannot_allocate_connection"

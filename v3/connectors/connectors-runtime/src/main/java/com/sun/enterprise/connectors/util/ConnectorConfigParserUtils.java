@@ -174,9 +174,11 @@ public class ConnectorConfigParserUtils {
         } catch (Exception e) {
             _logger.log(Level.WARNING,
                             "rardeployment.error_associating_ra",e);
-            _logger.log(Level.FINE,
-                            "Exception while associating the resource adapter" +
-                            "to the JavaBean",e);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE,
+                        "Exception while associating the resource adapter"
+                        + "to the JavaBean", e);
+            }
         }
         return introspectJavaBean(loadedInstance, ddPropsSet);
     }
@@ -216,7 +218,9 @@ public class ConnectorConfigParserUtils {
         }
 
         for(int i=0; i<methods.length;++i) {
-            _logger.fine("Method -> " + methods[i].getName() + ":" + methods[i].getReturnType());
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.fine("Method -> " + methods[i].getName() + ":" + methods[i].getReturnType());
+            }
             if(isProperty(methods[i]) && !presentInDDProps(methods[i],ddProps)
                                       && isValid(methods[i], loadedClass)) {  
                 name = getPropName(methods[i]);
@@ -401,11 +405,15 @@ public class ConnectorConfigParserUtils {
             try {
                 retValue = getMethod.invoke(loadedInstance, (java.lang.Object[])null);
             } catch (IllegalAccessException ie) {
-                _logger.log(Level.FINE,
-                     "rardeployment.illegalaccess_error",loadedClass.getName());
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE,
+                            "rardeployment.illegalaccess_error", loadedClass.getName());
+                }
             } catch (InvocationTargetException ie) {
-                _logger.log(Level.FINE,
-                     "Failed to invoke the method",loadedClass.getName());
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE,
+                            "Failed to invoke the method", loadedClass.getName());
+                }
             }
         }
         return convertToString(retValue); 
@@ -489,13 +497,17 @@ public class ConnectorConfigParserUtils {
         try {
             return loadedClass.newInstance();
         } catch(InstantiationException ie) {
-            _logger.log(Level.FINE,
-                 "rardeployment.class_instantiation_error",loadedClass.getName());
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE,
+                        "rardeployment.class_instantiation_error", loadedClass.getName());
+            }
             throw new ConnectorRuntimeException(
                      "Could not instantiate class : " + loadedClass.getName());
         } catch (IllegalAccessException ie) {
-            _logger.log(Level.FINE,
-                 "rardeployment.illegalaccess_error",loadedClass.getName());
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE,
+                        "rardeployment.illegalaccess_error", loadedClass.getName());
+            }
             throw new ConnectorRuntimeException(
                        "Couldnot access class : "+loadedClass.getName());
         } 

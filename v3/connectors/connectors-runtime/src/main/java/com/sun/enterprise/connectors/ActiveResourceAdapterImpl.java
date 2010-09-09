@@ -133,7 +133,9 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
         if (isServer() && !isSystemRar(moduleName_)) {
             createAllConnectorResources();
         }
-        _logger.log(Level.FINE, "Completed Active Resource adapter setup", moduleName_);
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "Completed Active Resource adapter setup", moduleName_);
+        }
     }
 
     /**
@@ -183,14 +185,18 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
             //Connector deployment should _not_ fail if default connector
             //connector pool and resource creation fails.
             _logger.log(Level.SEVERE, "rardeployment.defaultpoolresourcecreation.failed", cre);
-            _logger.log(Level.FINE, "Error while trying to create the default connector" +
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Error while trying to create the default connector" +
                     "connection pool and resource", cre);
+            }
         } catch (Exception e) {
             //Connector deployment should _not_ fail if default connector
             //connector pool and resource creation fails.
             _logger.log(Level.SEVERE, "rardeployment.defaultpoolresourcecreation.failed", e);
-            _logger.log(Level.FINE, "Error while trying to create the default connector" +
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Error while trying to create the default connector" +
                     "connection pool and resource", e);
+            }
         }
     }
 
@@ -253,7 +259,9 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
                 connectorRuntime_.deleteConnectorResource(resourceInfo);
             } catch (ConnectorRuntimeException cre) {
                 _logger.log(Level.WARNING, "rar.undeployment.default_resource_delete_fail", resourceJndiName);
-                _logger.log(Level.FINE, "Error while trying to delete the default connector resource", cre);
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "Error while trying to delete the default connector resource", cre);
+                }
             }
         }
     }
@@ -342,23 +350,33 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
             SetMethodAction setMethodAction = new SetMethodAction
                     (mcf, ccp.getConnectorDescriptorInfo().getMCFConfigProperties());
             setMethodAction.run();
-            _logger.log(Level.FINE, "Created MCF object : ", mcfClass);
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Created MCF object : ", mcfClass);
+            }
             return mcf;
         } catch (ClassNotFoundException Ex) {
             _logger.log(Level.SEVERE, "rardeployment.class_not_found", new Object[]{mcfClass, Ex.getMessage()});
-            _logger.log(Level.FINE, "rardeployment.class_not_found", Ex);
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "rardeployment.class_not_found", Ex);
+            }
             return null;
         } catch (InstantiationException Ex) {
             _logger.log(Level.SEVERE, "rardeployment.class_instantiation_error", new Object[]{mcfClass, Ex.getMessage()});
-            _logger.log(Level.FINE, "rardeployment.class_instantiation_error", Ex);
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "rardeployment.class_instantiation_error", Ex);
+            }
             return null;
         } catch (IllegalAccessException Ex) {
             _logger.log(Level.SEVERE, "rardeployment.illegalaccess_error", new Object[]{mcfClass, Ex.getMessage()});
-            _logger.log(Level.FINE, "rardeployment.illegalaccess_error", Ex);
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "rardeployment.illegalaccess_error", Ex);
+            }
             return null;
         } catch (Exception Ex) {
             _logger.log(Level.SEVERE, "rardeployment.mcfcreation_error", new Object[]{mcfClass, Ex.getMessage()});
-            _logger.log(Level.FINE, "rardeployment.mcfcreation_error", Ex);
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "rardeployment.mcfcreation_error", Ex);
+            }
             return null;
         }
     }
@@ -376,7 +394,9 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
         } catch (Exception e) {
             Object[] params = new Object[]{mcf.getClass().getName(), e.toString()};
             _logger.log(Level.WARNING, "rardeployment.logwriter_error", params);
-            _logger.log(Level.FINE, "Unable to set LogWriter for ManagedConnectionFactory : " + mcf.getClass().getName(), e);
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Unable to set LogWriter for ManagedConnectionFactory : " + mcf.getClass().getName(), e);
+            }
         }
     }
 
@@ -415,7 +435,9 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
             connectorRuntime_.createConnectorResource(resourceInfo, poolInfo, null);
             desc_.addDefaultResourceName(resourceName);
 
-            _logger.log(Level.FINE, "Created default connector resource [ " + resourceName + " ] " );
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Created default connector resource [ " + resourceName + " ] " );
+            }
         }
     }
 
@@ -450,7 +472,9 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
 
             connectorPoolObj.setConnectorDescriptorInfo(connectorDescriptorInfo);
             connectorRuntime_.createConnectorConnectionPool(connectorPoolObj);
-            _logger.log(Level.FINE, "Created default connection pool [ "+ poolInfo + " ] ");
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Created default connection pool [ "+ poolInfo + " ] ");
+            }
         }
     }
 
@@ -477,13 +501,17 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
 
         connectorPoolObj.setConnectorDescriptorInfo(connectorDescriptorInfo);
         connectorRuntime_.createConnectorConnectionPool(connectorPoolObj);
-        _logger.log(Level.FINE, "Created SUN-RA connection pool:", poolInfo);
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "Created SUN-RA connection pool:", poolInfo);
+        }
 
         String jndiName = (String) desc_.getSunDescriptor().
                 getResourceAdapter().getValue(ResourceAdapter.JNDI_NAME);
         ResourceInfo resourceInfo = new ResourceInfo(jndiName);
         connectorRuntime_.createConnectorResource(resourceInfo, poolInfo, null);
-        _logger.log(Level.FINE, "Created SUN-RA connector resource : ", resourceInfo);
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "Created SUN-RA connector resource : ", resourceInfo);
+        }
 
     }
 

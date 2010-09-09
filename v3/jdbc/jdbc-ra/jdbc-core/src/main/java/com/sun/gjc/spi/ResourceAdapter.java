@@ -135,7 +135,9 @@ public class ResourceAdapter implements javax.resource.spi.ResourceAdapter {
      * Empty implementation of stop method
      */
     public void stop() {
-        _logger.finest("Cancelling the timer");
+        if(_logger.isLoggable(Level.FINEST)) {
+            _logger.finest("Cancelling the timer");
+        }
         if(timer != null) {
             timer.purge();
             timer.cancel();
@@ -145,7 +147,9 @@ public class ResourceAdapter implements javax.resource.spi.ResourceAdapter {
     public Timer getTimer() {
         if(bootstrapContext != null) {
             if (timer == null) {
-                _logger.finest("Creating the timer");
+                if(_logger.isLoggable(Level.FINEST)) {
+                    _logger.finest("Creating the timer");
+                }
                 try {
                     timer = bootstrapContext.createTimer();
                 } catch (UnavailableException ex) {

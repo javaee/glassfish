@@ -119,7 +119,9 @@ public class XAManagedConnectionFactory extends ManagedConnectionFactory {
 
         } catch (java.sql.SQLException sqle) {
             //_logger.log(Level.WARNING, "jdbc.exc_create_xa_conn",sqle);
-            _logger.log(Level.FINE, "jdbc.exc_create_xa_conn", sqle);
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "jdbc.exc_create_xa_conn", sqle);
+            }
             StringManager sm = StringManager.getManager(
                     DataSourceObjectBuilder.class);
             String msg = sm.getString("jdbc.cannot_allocate_connection", sqle.getMessage());

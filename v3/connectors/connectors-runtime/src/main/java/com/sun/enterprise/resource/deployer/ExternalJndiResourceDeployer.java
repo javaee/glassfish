@@ -317,8 +317,10 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
             //END OF IASRI 4660565
             */
         } catch (javax.naming.NamingException e) {
-            _logger.log(Level.FINE,
-                    "Error while unpublishing resource: " + resourceInfo, e);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE,
+                        "Error while unpublishing resource: " + resourceInfo, e);
+            }
         }
     }
 

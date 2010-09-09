@@ -130,11 +130,15 @@ public class DriverLoader implements ConnectorConstants {
                     fis.close();
                 }
             } catch (IOException ioe) {
-                logger.fine("IO Exception during properties load : " +
-                        dbVendorFile.getAbsolutePath());
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.fine("IO Exception during properties load : "
+                            + dbVendorFile.getAbsolutePath());
+                }
             }
         } else {
-            logger.fine("File not found : " + dbVendorFile.getAbsolutePath());
+            if(logger.isLoggable(Level.FINE)) {
+                logger.fine("File not found : " + dbVendorFile.getAbsolutePath());
+            }
         }
         
         Enumeration e = fileProperties.propertyNames();
@@ -171,11 +175,15 @@ public class DriverLoader implements ConnectorConstants {
                     fis.close();
                 }
             } catch (IOException ioe) {
-                logger.fine("IO Exception during properties load : " +
+                if(logger.isLoggable(Level.FINE)) {
+                    logger.fine("IO Exception during properties load : " +
                         mappingFile.getAbsolutePath());
+                }
             }
         } else {
-            logger.fine("File not found : " + mappingFile.getAbsolutePath());
+            if(logger.isLoggable(Level.FINE)) {
+                logger.fine("File not found : " + mappingFile.getAbsolutePath());
+            }
         }
         return fileProperties.getProperty(
                 dbVendor.toUpperCase());
@@ -304,7 +312,9 @@ public class DriverLoader implements ConnectorConstants {
                                     }
                                 }
                             }
-                            logger.finest("Driver loader : implClass = " + implClass);
+                            if(logger.isLoggable(Level.FINEST)) {
+                                logger.finest("Driver loader : implClass = " + implClass);
+                            }
                             
                         }
                     }
@@ -334,8 +344,10 @@ public class DriverLoader implements ConnectorConstants {
                 try {
                     jarFile.close();
                 } catch (IOException ex) {
-                    logger.log(Level.FINE, "Exception while closing JarFile '"
-                            + jarFile.getName() + "' :", ex);
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.log(Level.FINE, "Exception while closing JarFile '"
+                                + jarFile.getName() + "' :", ex);
+                    }
                 }
             }
         }
@@ -355,7 +367,9 @@ public class DriverLoader implements ConnectorConstants {
         StringTokenizer st = new StringTokenizer(extDirStr, File.pathSeparator);
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
-            logger.log(Level.FINE,"Ext Dir : " + token);
+            if(logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE,"Ext Dir : " + token);
+            }
             extDirs.addElement(token);
         }
        
@@ -371,7 +385,9 @@ public class DriverLoader implements ConnectorConstants {
     private Set<String> introspectAndLoadJar(File f, String resType, 
             String dbVendor, String origDbVendor) {
 
-        logger.finest("DriverLoader : introspectAndLoadJar ");
+        if(logger.isLoggable(Level.FINEST)) {
+            logger.finest("DriverLoader : introspectAndLoadJar ");
+        }
        
         return getImplClassesByIteration(f, resType, dbVendor, origDbVendor);
                 
@@ -402,20 +418,26 @@ public class DriverLoader implements ConnectorConstants {
                 driverClassName = line;
             }
         } catch(IOException ioex) {
-             logger.finest("DriverLoader : exception while processing " +
-                     "META-INF directory for DriverClassName " + ioex);
+            if (logger.isLoggable(Level.FINEST)) {
+                logger.finest("DriverLoader : exception while processing "
+                        + "META-INF directory for DriverClassName " + ioex);
+            }
         } finally {
             try {
                 if(buffReader != null)
                     buffReader.close();
             } catch (IOException ex) {
-                logger.log(Level.FINE, "Error while closing File handles after reading META-INF files : ", ex);
+                if(logger.isLoggable(Level.FINE)) {
+                    logger.log(Level.FINE, "Error while closing File handles after reading META-INF files : ", ex);
+                }
             }
             try {
                 if(reader != null)
                     reader.close();
             } catch (IOException ex) {
-                logger.log(Level.FINE, "Error while closing File handles after reading META-INF files : ", ex);
+                if(logger.isLoggable(Level.FINE)) {
+                    logger.log(Level.FINE, "Error while closing File handles after reading META-INF files : ", ex);
+                }
             }
         }
         return driverClassName;
@@ -615,8 +637,10 @@ public class DriverLoader implements ConnectorConstants {
                 try {
                     jarFile.close();
                 } catch (IOException ex) {
-                    logger.log(Level.FINE, "Exception while closing JarFile '"
-                            + jarFile.getName() + "' :", ex);
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.log(Level.FINE, "Exception while closing JarFile '"
+                                + jarFile.getName() + "' :", ex);
+                    }
                 }
             }
         }

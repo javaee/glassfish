@@ -335,8 +335,10 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
                      type = ConnectorConstants.JAVA_SQL_DRIVER;
                  }
             } catch (ClassNotFoundException e) {
-                _logger.log(Level.FINEST, "Unable to load class [ " + desc.getClassName() + " ] to " +
+                if(_logger.isLoggable(Level.FINEST)) {
+                    _logger.log(Level.FINEST, "Unable to load class [ " + desc.getClassName() + " ] to " +
                         "determine its res-type, defaulting to ["+ConnectorConstants.JAVAX_SQL_DATASOURCE+"]");
+                }
                 // ignore and default to "javax.sql.DataSource"
             }
             return type;

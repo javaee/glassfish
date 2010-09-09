@@ -208,8 +208,10 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
                 cr.cleanUpResourcesAndShutdownAllActiveRAs();
             }
         } else {
-            logger.finest("ConnectorRuntime not initialized, hence skipping " +
+            if(logger.isLoggable(Level.FINEST)) {
+                logger.finest("ConnectorRuntime not initialized, hence skipping " +
                     "resource-adapters shutdown, resources, pools cleanup");
+            }
         }
         removeListenerForResources();
         removeListenerForResourceRefs();
@@ -298,17 +300,23 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
                 Thread.currentThread().setContextClassLoader(ccl);
                 switch (type) {
                     case ADD:
-                        logger.fine("A new " + changedType.getName() + " was added : " + changedInstance);
+                        if(logger.isLoggable(Level.FINE)) {
+                            logger.fine("A new " + changedType.getName() + " was added : " + changedInstance);
+                        }
                         np = handleAddEvent(changedInstance);
                         break;
 
                     case CHANGE:
-                        logger.fine("A " + changedType.getName() + " was changed : " + changedInstance);
+                        if(logger.isLoggable(Level.FINE)) {
+                            logger.fine("A " + changedType.getName() + " was changed : " + changedInstance);
+                        }
                         np = handleChangeEvent(changedInstance);
                         break;
 
                     case REMOVE:
-                        logger.fine("A " + changedType.getName() + " was removed : " + changedInstance);
+                        if(logger.isLoggable(Level.FINE)) {
+                            logger.fine("A " + changedType.getName() + " was removed : " + changedInstance);
+                        }
                         np = handleRemoveEvent(changedInstance);
                         break;
 

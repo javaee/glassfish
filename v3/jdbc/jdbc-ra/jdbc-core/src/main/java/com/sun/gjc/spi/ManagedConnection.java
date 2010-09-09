@@ -203,14 +203,18 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
     }
 
     private void executeInitSql(String initSql) {
-        _logger.log(Level.FINE, "jdbc.execute_init_sql_start");
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "jdbc.execute_init_sql_start");
+        }
         java.sql.PreparedStatement stmt = null;
         
         if (initSql != null && !initSql.equalsIgnoreCase("null") &&
                 !initSql.equals("")) {
         try {
                 stmt = actualConnection.prepareStatement(initSql);
-                _logger.log(Level.FINE, "jdbc.executing_init_sql", initSql);
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "jdbc.executing_init_sql", initSql);
+                }
                 stmt.execute();
             } catch (SQLException sqle) {
                 _logger.log(Level.WARNING, "jdbc.exc_init_sql_error", initSql);
@@ -221,12 +225,16 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
                         stmt.close();
                     }
                 } catch (Exception e) {
-                    _logger.log(Level.FINE, "jdbc.exc_init_sql_error_stmt_close", e.getMessage());
+                    if(_logger.isLoggable(Level.FINE)) {
+                        _logger.log(Level.FINE, "jdbc.exc_init_sql_error_stmt_close", e.getMessage());
+                    }
                 }
             }
             initSqlExecuted = true;
         }
-        _logger.log(Level.FINE, "jdbc.execute_init_sql_end");       
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "jdbc.execute_init_sql_end");
+        }
     }
 
     private void tuneStatementCaching(PoolInfo poolInfo, int statementCacheSize,
@@ -353,7 +361,9 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
 
     private void clearStatementCache() {
         if (statementCache != null) {
-            _logger.fine("Closing statements in statement cache");
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.fine("Closing statements in statement cache");
+            }
             statementCache.flushCache();
             statementCache.clearCache();
         }
@@ -612,7 +622,9 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
                 }
             }
         } catch (java.lang.NullPointerException e) {
-            _logger.log(Level.FINE, "jdbc.duplicateTxCompleted");
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "jdbc.duplicateTxCompleted");
+            }
         }
 
         if (markedForRemoval) {
@@ -887,7 +899,9 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         lastTransactionIsolationLevel = isolationLevel;
     }
     private void logFine(String logMessage){
-        _logger.log(Level.FINE, logMessage);
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, logMessage);
+        }
     }
     
     public PreparedStatement prepareCachedStatement(

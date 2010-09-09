@@ -277,9 +277,13 @@ public class Resizer extends TimerTask {
                 debug("No. of invalid connections received from RA : " + invalidConnectionsCount);
             }
         } catch (ResourceException re) {
-            _logger.log(Level.FINE, "ResourceException while trying to get invalid connections from MCF", re);
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "ResourceException while trying to get invalid connections from MCF", re);
+            }
         } catch (Exception e) {
-            _logger.log(Level.FINE, "Exception while trying to get invalid connections from MCF", e);
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Exception while trying to get invalid connections from MCF", e);
+            }
         }
     }
 

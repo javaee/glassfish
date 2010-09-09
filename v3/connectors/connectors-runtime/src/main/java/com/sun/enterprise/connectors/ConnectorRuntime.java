@@ -449,7 +449,9 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
             result = connectorResourceAdmService.lookup(resourceInfo);
         }catch(NamingException ne){
             if(force && isDAS()){
-                _logger.log(Level.FINE, "jdbc.unable_to_lookup_resource",new Object[] {resourceInfo});
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "jdbc.unable_to_lookup_resource",new Object[] {resourceInfo});
+                }
                 result = lookupDataSourceInDAS(resourceInfo);
             }else{
                 throw ne;
@@ -489,7 +491,9 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
             result = connectorResourceAdmService.lookup(resourceInfo);
         }catch(NamingException ne){
             if(force && isDAS()){
-                _logger.log(Level.FINE, "jdbc.unable_to_lookup_resource",new Object[] {resourceInfo});
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "jdbc.unable_to_lookup_resource",new Object[] {resourceInfo});
+                }
                 result = lookupDataSourceInDAS(resourceInfo);
             }else{
                 throw ne;

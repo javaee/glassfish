@@ -96,10 +96,12 @@ public final class SetMethodAction implements PrivilegedExceptionAction {
                 try {
                     meth = getMutatorMethod(propName, type);
                     if (meth != null) {
-                        logger.log(Level.FINER, "Invoking" + meth + " on "
+                        if(logger.isLoggable(Level.FINER)) {
+                            logger.log(Level.FINER, "Invoking" + meth + " on "
                                 + bean.getClass().getName() + "with " +
                                 "value [" + prop.getResolvedValueObject().getClass()
                                 + "  , " + getFilteredPropValue(prop) + " ] ");
+                        }
                         meth.invoke(bean, new Object[]{prop.getResolvedValueObject()});
                     } else {
                         //log WARNING, deployment can continue.
@@ -107,18 +109,22 @@ public final class SetMethodAction implements PrivilegedExceptionAction {
                                 new Object[]{prop.getName(), bean.getClass().getName()});
                     }
                 } catch (IllegalArgumentException ia) {
-                    logger.log(Level.FINE, "IllegalException while trying to set " +
-                            prop.getName() + " and value " + getFilteredPropValue(prop),
-                            ia + " on an instance of " + bean.getClass() +
-                                    " -- trying again with the type from bean");
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.log(Level.FINE, "IllegalException while trying to set "
+                                + prop.getName() + " and value " + getFilteredPropValue(prop),
+                                ia + " on an instance of " + bean.getClass()
+                                + " -- trying again with the type from bean");
+                    }
                     boolean prevBoundsChecking = EnvironmentProperty.isBoundsChecking();
                     try {
                         EnvironmentProperty.setBoundsChecking(false);
                         prop.setType(type.getName());
-                        logger.log(Level.FINE, "2nd try :: Invoking" + meth + " on "
-                                + bean.getClass().getName() + "with value ["
-                                + prop.getResolvedValueObject().getClass()
-                                + "  , " + getFilteredPropValue(prop) + " ] ");
+                        if (logger.isLoggable(Level.FINE)) {
+                            logger.log(Level.FINE, "2nd try :: Invoking" + meth + " on "
+                                    + bean.getClass().getName() + "with value ["
+                                    + prop.getResolvedValueObject().getClass()
+                                    + "  , " + getFilteredPropValue(prop) + " ] ");
+                        }
                         meth.invoke(bean, new Object[]{prop.getResolvedValueObject()});
                     } catch (Exception e) {
                         handleException(e, prop, bean);
@@ -138,9 +144,11 @@ public final class SetMethodAction implements PrivilegedExceptionAction {
         logger.log(Level.WARNING, "rardeployment.exception_on_invoke_setter",
                 new Object[]{prop.getName(), getFilteredPropValue(prop),
                         ex.getMessage()});
-        logger.log(Level.FINE, "Exception while trying to set " +
-                prop.getName() + " and value " + getFilteredPropValue(prop),
-                ex + " on an instance of " + bean.getClass());
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "Exception while trying to set "
+                    + prop.getName() + " and value " + getFilteredPropValue(prop),
+                    ex + " on an instance of " + bean.getClass());
+        }
         throw(ConnectorRuntimeException)
                 (new ConnectorRuntimeException(ex.getMessage()).initCause(ex));
     }
@@ -181,8 +189,10 @@ public final class SetMethodAction implements PrivilegedExceptionAction {
                 Class[] paramTypes = setterMethods[i].getParameterTypes();
                 if (paramTypes.length > 0) {
                     if (paramTypes[0].equals(type) && paramTypes.length == 1) {
-                        logger.log(Level.FINER, "Method " + methods[i] +
+                        if(logger.isLoggable(Level.FINER)) {
+                            logger.log(Level.FINER, "Method " + methods[i] +
                                 "matches with the right arg type");
+                        }
                         m = setterMethods[i];
                     }
                 }
@@ -213,8 +223,10 @@ public final class SetMethodAction implements PrivilegedExceptionAction {
             return accessorMeth.getReturnType();
         }
         //not having a getter is not a WARNING.
-        logger.log(Level.FINE, "method.name.nogetterforproperty",
-                new Object[]{prop.getName(), bean.getClass()});
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "method.name.nogetterforproperty",
+                    new Object[]{prop.getName(), bean.getClass()});
+        }
         return null;
     }
 

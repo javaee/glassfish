@@ -463,8 +463,10 @@ public class ConnectionHolder40 extends ConnectionHolder {
                     // Connection Holder instead of physical connection.
                     if (method.getName().equals("close")
                             && method.getParameterTypes().length == 0) {
-                        String msg = localStrings.getString("jdbc.close_called_on_proxy_object", actualObject);
-                        _logger.log(Level.FINE, msg);
+                        if (_logger.isLoggable(Level.FINE)) {
+                            String msg = localStrings.getString("jdbc.close_called_on_proxy_object", actualObject);
+                            _logger.log(Level.FINE, msg);
+                        }
                         ConnectionHolder40.this.close();
                         return null;
                     }

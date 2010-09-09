@@ -71,8 +71,10 @@ public class DefaultConnectionValidation implements ConnectionValidation {
             isValid = stmt.execute(SQL);
         } catch (SQLException sqle) {
             isValid = false;
-            Logger.getLogger(LogDomains.RSR_LOGGER).log(Level.FINEST,
+            if(Logger.getLogger(LogDomains.RSR_LOGGER).isLoggable(Level.FINEST)) {
+                Logger.getLogger(LogDomains.RSR_LOGGER).log(Level.FINEST,
                     "connection_validation_exception", sqle);
+            }
         } finally {
             if (stmt != null) {
                 try {

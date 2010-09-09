@@ -235,7 +235,9 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
         }
         loadAllConnectorResources();
 
-        _logger.log(Level.FINE, "Recovering pools : " + connPools.size());
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "Recovering pools : " + connPools.size());
+        }
 
         for(ConnectorConnectionPool connPool : connPools){
 
@@ -273,7 +275,9 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
                 String rarName = connPool.getResourceAdapterName();
                 //TODO V3 JMS-RA ??
                 if (ConnectorAdminServiceUtils.isJMSRA(rarName)) {
-                    _logger.log(Level.FINE, "Performing recovery for JMS RA, poolName  " + poolInfo);
+                    if(_logger.isLoggable(Level.FINE)) {
+                        _logger.log(Level.FINE, "Performing recovery for JMS RA, poolName  " + poolInfo);
+                    }
                     ManagedConnectionFactory[] mcfs =
                             crt.obtainManagedConnectionFactories(poolInfo);
                     _logger.log(Level.INFO, "JMS resource recovery has created CFs = " + mcfs.length);
@@ -321,11 +325,15 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
             } catch (Exception ex) {
                 _logger.log(Level.WARNING, "datasource.xadatasource_error",
                         poolInfo);
-                _logger.log(Level.FINE, "datasource.xadatasource_error_excp", ex);
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "datasource.xadatasource_error_excp", ex);
+                }
             }
         }
-        _logger.log(Level.FINE, "Total XAResources identified for recovery is " + xaresList.size());
-        _logger.log(Level.FINE, "Total connections identified for recovery is " + connList.size());
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "Total XAResources identified for recovery is " + xaresList.size());
+            _logger.log(Level.FINE, "Total connections identified for recovery is " + connList.size());
+        }
     }
 
     /**
@@ -349,7 +357,9 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
         } catch (ConnectorRuntimeException cre) {
             Object params[] = new Object[]{pool.getResourceAdapterName(), cre};
             _logger.log(Level.WARNING, "error.retrieving.tx-support.from.rar", params);
-            _logger.finest("setting no-tx-support as tx-support-level for pool : " + pool.getName());
+            if(_logger.isLoggable(Level.FINEST)) {
+                _logger.finest("setting no-tx-support as tx-support-level for pool : " + pool.getName());
+            }
             txSupport = ConnectorConstants.NO_TRANSACTION_TX_SUPPORT_STRING;
         }
 

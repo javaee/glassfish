@@ -422,7 +422,9 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
     }
 
     public void logFine(String message) {
-        _logger.log(Level.FINE, message);
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, message);
+        }
     }
 
     private void registerBeanValidator(String rarName, ReadableArchive archive, ClassLoader classLoader) {
@@ -452,8 +454,10 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                         beanValidator = validatorContext.getValidator();
 
                     } catch (IOException e) {
-                        _logger.log(Level.FINE, "Exception while processing xml files for detecting " +
+                        if(_logger.isLoggable(Level.FINE)) {
+                            _logger.log(Level.FINE, "Exception while processing xml files for detecting " +
                                 "bean-validation-mapping", e);
+                        }
                     } finally {
                         try {
                             if (inputStream != null) {
@@ -505,8 +509,10 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                         }
                     }
                 } catch (IOException e) {
-                    _logger.log(Level.FINE, "Exception while processing xml file [ " + fileName + " ] " +
+                    if(_logger.isLoggable(Level.FINE)) {
+                        _logger.log(Level.FINE, "Exception while processing xml file [ " + fileName + " ] " +
                             "for detecting bean-validation-mapping", e);
+                    }
                 } finally {
                     if (reader != null) {
                         try {

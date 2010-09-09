@@ -129,7 +129,9 @@ public abstract class AbstractConnectorAllocator
                     re.getMessage() };
             _logger.log(Level.WARNING,
                     "pool.get_invalid_connections_resourceexception", args);
-            _logger.log(Level.FINE, "", re);
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "", re);
+            }
         }
 
         if ((invalids != null && invalids.size() > 0) ||

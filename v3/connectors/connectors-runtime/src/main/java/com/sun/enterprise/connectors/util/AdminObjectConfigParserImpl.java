@@ -156,7 +156,9 @@ public class AdminObjectConfigParserImpl implements AdminObjectConfigParser {
                     StringManager.getManager(AdminObjectConfigParserImpl.class);
             String msg = localStrings.getString(
                     "no_adminobject_interface_found_in_raxml", adminObjectInterface);
-            _logger.log(Level.FINE, msg);
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, msg);
+            }
             throw new ConnectorRuntimeException(msg);
         }
         mergedVals = getMergedValues(adminObject, mergedVals, rarName);

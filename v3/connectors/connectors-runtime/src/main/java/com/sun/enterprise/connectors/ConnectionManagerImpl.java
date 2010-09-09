@@ -175,7 +175,9 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
 
         //TODO V3 refactor all the 3 cases viz, no res-ref, app-auth, cont-auth.
         if (ref == null) {
-            getLogger().log(Level.FINE, "poolmgr.no_resource_reference", jndiNameToUse);
+            if(getLogger().isLoggable(Level.FINE)) {
+                getLogger().log(Level.FINE, "poolmgr.no_resource_reference", jndiNameToUse);
+            }
             return internalGetConnection(mcf, defaultPrin, cxRequestInfo,
                     resourceShareable, jndiNameToUse, conn, true);
         }
@@ -212,10 +214,11 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
             if (prin == null) {
                 prin = ref.getResourcePrincipal();
                 if (prin == null) {
-                    getLogger().log(Level.FINE, "default-resource-principal not" +
-                            "specified for " + jndiNameToUse + ". Defaulting to" +
-                            " user/password specified in the pool");
-
+                    if (getLogger().isLoggable(Level.FINE)) {
+                        getLogger().log(Level.FINE, "default-resource-principal not"
+                                + "specified for " + jndiNameToUse + ". Defaulting to"
+                                + " user/password specified in the pool");
+                    }
                     prin = defaultPrin;
                 } else if (!prin.equals(defaultPrin)) {
                     ConnectorRuntime.getRuntime().switchOnMatching(rarName, poolInfo);

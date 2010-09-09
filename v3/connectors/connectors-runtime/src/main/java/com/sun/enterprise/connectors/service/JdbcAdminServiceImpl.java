@@ -129,7 +129,9 @@ public class JdbcAdminServiceImpl extends ConnectorService {
                     mc.destroy();
                 }
             } catch(Exception ex) {
-                _logger.log(Level.FINEST, "pool.get_validation_table_names_mc_destroy", poolInfo);
+                if(_logger.isLoggable(Level.FINEST)) {
+                    _logger.log(Level.FINEST, "pool.get_validation_table_names_mc_destroy", poolInfo);
+                }
             }
         }
     }

@@ -101,12 +101,16 @@ public class LRUCacheImpl implements Cache {
         if(entry != null) {
             //Cache hit
             result = entry.entryObj;
-            _logger.finest("Cache Hit");
+            if(_logger.isLoggable(Level.FINEST)) {
+                _logger.finest("Cache Hit");
+            }
             //TODO-SC Busy cache hits?
             probeProvider.statementCacheHitEvent(poolInfo.getName(), poolInfo.getApplicationName(), poolInfo.getModuleName());
         } else {
             //Cache miss
-            _logger.finest("Cache Miss");
+            if(_logger.isLoggable(Level.FINEST)) {
+                _logger.finest("Cache Miss");
+            }
             probeProvider.statementCacheMissEvent(poolInfo.getName(), poolInfo.getApplicationName(), poolInfo.getModuleName());
         }
         return result;
@@ -135,7 +139,9 @@ public class LRUCacheImpl implements Cache {
      * Clears the statement cache
      */
     public void clearCache(){
-       _logger.fine("clearing objects in cache");
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("clearing objects in cache");
+        }
        list.clear();
     }
 

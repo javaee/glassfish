@@ -82,7 +82,7 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
         _logger = LogDomains.getLogger(DMManagedConnectionFactory.class, LogDomains.RSR_LOGGER);
     }
 
-    private boolean debug = false;
+    private boolean debug = _logger.isLoggable(Level.FINE);
 
     /**
      * Creates a new physical connection to the underlying EIS resource

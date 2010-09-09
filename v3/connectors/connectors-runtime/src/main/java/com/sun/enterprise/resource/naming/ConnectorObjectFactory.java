@@ -107,7 +107,11 @@ public class ConnectorObjectFactory implements ObjectFactory {
             try {
                 getRuntime().createActiveResourceAdapter(connectorDescriptor, moduleName, null);
             } catch (ConnectorRuntimeException e) {
-                _logger.log(Level.FINE, "Failed to look up ConnectorDescriptor from JNDI", moduleName);
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE,
+                            "Failed to look up ConnectorDescriptor from JNDI",
+                            moduleName);
+                }
                 NamingException ne = new NamingException("Failed to look up ConnectorDescriptor from JNDI");
                 ne.setRootCause(e);
                 throw ne;
@@ -124,7 +128,9 @@ public class ConnectorObjectFactory implements ObjectFactory {
         try {
             ManagedConnectionFactory mcf = getRuntime().obtainManagedConnectionFactory(poolInfo, env);
             if (mcf == null) {
-                _logger.log(Level.FINE, "Failed to create MCF ", poolInfo);
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "Failed to create MCF ", poolInfo);
+                }
                 throw new ConnectorRuntimeException("Failed to create MCF");
             }
 

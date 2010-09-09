@@ -151,12 +151,16 @@ public class ResourceManagerImpl implements ResourceManager {
  	 	    try{            
  	 	        tm.enlistResource(tran, handle);
  	 	    } catch (Exception ex) {
- 	 	        _logger.fine("Exception whle trying to enlist resource " + ex.getMessage());
+                        if(_logger.isLoggable(Level.FINE)) {
+ 	 	            _logger.fine("Exception whle trying to enlist resource " + ex.getMessage());
+                        }
  	 	        //If transactional, remove the connection handle from the
  	 	        //component's resource list as there has been exception attempting
  	 	        //to enlist the resource
  	 	        if(inv != null) {
- 	 	            _logger.fine("Attempting to unregister component resource");
+                            if(_logger.isLoggable(Level.FINE)) {
+ 	 	                _logger.fine("Attempting to unregister component resource");
+                            }
  	 	            tm.unregisterComponentResource(handle);
  	 	        }
  	 	        throw ex;
