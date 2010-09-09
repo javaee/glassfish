@@ -784,6 +784,7 @@ public class UtilHandlers {
 
 		    // Ignore whats returned by the handler... we need to return
 		    // false anyway to prevent children from being executed again
+// FIXME: Consider supporting a "break" type of functionality
 		    elt.dispatchHandlers(handlerCtx, handlers);
 		}
 	    }
