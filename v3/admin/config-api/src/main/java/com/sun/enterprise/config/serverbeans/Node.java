@@ -42,6 +42,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.util.net.NetUtils;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
@@ -190,6 +191,13 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
     @DuckTyped
     String getNodeDirUnixStyle();
 
+    /**
+     * True if the node's nodeHost is local to this
+     * @return
+     */
+    @DuckTyped
+    boolean isLocal();
+
     class Duck {
 
         public static String getInstallDirUnixStyle(Node node) {
@@ -200,6 +208,18 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
         public static String getNodeDirUnixStyle(Node node) {
             String nodeDir= node.getNodeDir();
             return nodeDir.replaceAll("\\\\","/");
+        }
+
+        public static boolean isLocal(Node node) {
+            // Short circuit common case for efficiency
+            if (node.getName().equals("localhost")) {
+                return true;
+            }
+            String nodeHost = node.getNodeHost();
+            if (nodeHost == null || nodeHost.length() == 0) {
+                return false;
+            }
+            return NetUtils.IsThisHostLocal(nodeHost);
         }
     }
     

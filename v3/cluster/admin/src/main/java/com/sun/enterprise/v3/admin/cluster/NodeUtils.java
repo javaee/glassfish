@@ -42,6 +42,7 @@ package com.sun.enterprise.v3.admin.cluster;
 
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.internal.api.RelativePathResolver;
+import com.sun.enterprise.universal.process.ProcessManagerException;
 import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.SshConnector;
@@ -54,12 +55,14 @@ import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.CommandValidationException;
 import com.sun.enterprise.universal.glassfish.TokenResolver;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
+import org.glassfish.cluster.ssh.connect.NodeRunner;
 import java.util.logging.Logger;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.util.Map;
+import java.util.List;
 import java.util.HashMap;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -350,4 +353,87 @@ public class NodeUtils {
         }
     }
 
+  /**
+     * Run on admin command on a node and handle setting the message in the
+     * ActionReport on an error. Note that on success no message is set in
+     * the action report
+     *
+     * @param node  The node to run the command on. Can be local or remote
+     * @param command  asadmin command to run. The list must contain all
+     *                  parameters to asadmin, but not "asadmin" itself.
+     * @param context   The command context. The ActionReport in this
+     *                  context will be updated on an error to contain an
+     *                  appropriate error message.
+     * @param firstErrorMessage The first message to use if an error is
+     *                          encountered. Usually something like
+     *                          "Could not start instance".
+     * @param humanCommand  The command the user should run on the node if
+     *                      we failed to run the passed command.
+     * @param output        Output from the run command.
+     */
+   void runAdminCommandOnNode(Node node, List<String> command,
+           AdminCommandContext context, String firstErrorMessage,
+           String humanCommand, StringBuilder output) {
+
+        ActionReport report = context.getActionReport();
+        boolean failure = true;
+        String msg1 = firstErrorMessage;
+        String msg2 = "";
+        String msg3 = "";
+        String nodeHost = node.getNodeHost();
+        String nodeName = node.getName();
+        String installDir = node.getInstallDir();
+
+        if (StringUtils.ok(humanCommand)) {
+            msg3 = Strings.get("node.ssh.tocomplete",
+                        nodeHost, installDir, humanCommand);
+        }
+
+        NodeRunner nr = new NodeRunner(habitat, logger);
+        try {
+            int status = nr.runAdminCommandOnNode(node, output, command);
+            if (status != 0) {
+                // Command ran, but didn't succeed. Log full information
+                msg2 = Strings.get("node.command.failed", nodeName,
+                        nodeHost, output.toString().trim(), nr.getLastCommandRun());
+                logger.warning(StringUtils.cat(": ", msg1, msg2));
+                // Don't expose command name to user in case it is a hidden command
+                msg2 = Strings.get("node.command.failed.short", nodeName,
+                        nodeHost, output.toString().trim());
+            } else {
+                failure = false;
+                logger.info(output.toString().trim());
+            }
+        } catch (SSHCommandExecutionException ec) {
+            msg2 = Strings.get("node.ssh.bad.connect",
+                        nodeName, nodeHost, ec.getMessage());
+            // Log some extra info
+            String msg = Strings.get("node.command.failed.ssh.details",
+                    nodeName, nodeHost, ec.getCommandRun(), ec.getMessage(),
+                    ec.getSSHSettings());
+            logger.warning(StringUtils.cat(": ", msg1, msg));
+        } catch (ProcessManagerException ex) {
+            msg2 = Strings.get("node.command.failed.local.details",
+                    ex.getMessage(), nr.getLastCommandRun());
+            logger.warning(StringUtils.cat(": ", msg1, msg2));
+            // User message doesn't have command that was run
+            msg2 = Strings.get("node.command.failed.local.exception",
+                    ex.getMessage());
+        } catch (UnsupportedOperationException e) {
+            msg2 = Strings.get("node.not.ssh", nodeName, nodeHost);
+            logger.warning(StringUtils.cat(": ", msg1, msg2));
+        } catch (IllegalArgumentException e) {
+            msg2 = e.getMessage();
+            logger.warning(StringUtils.cat(": ", msg1, msg2));
+        }
+
+        if (failure) {
+            report.setMessage(StringUtils.cat(NL, msg1, msg2, msg3));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+        } else {
+            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+       }
+
+       return;
+   }
 }

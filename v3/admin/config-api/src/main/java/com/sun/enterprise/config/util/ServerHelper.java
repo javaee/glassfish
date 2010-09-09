@@ -47,11 +47,13 @@ import com.sun.enterprise.config.serverbeans.Nodes;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.SystemProperty;
 import com.sun.enterprise.config.serverbeans.ServerTags;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.net.NetUtils;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
 import java.util.List;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.GlassFishConfigBean;
 import org.glassfish.config.support.PropertyResolver;
 import org.jvnet.hk2.config.Dom;
@@ -104,13 +106,22 @@ public class ServerHelper {
             return addr;
         }
 
+        Dom serverDom = Dom.unwrap(server);
+        Nodes nodes = serverDom.getHabitat().getComponent(Nodes.class);
+        ServerEnvironment env =
+                serverDom.getHabitat().getComponent(ServerEnvironment.class);
+
         if (server.isDas()) {
-            return null;    // IT 12778 -- it is impossible to know
+            if (env.isDas()) {
+                // We are the DAS. Return our hostname
+                return System.getProperty(
+                        SystemPropertyConstants.HOST_NAME_PROPERTY);
+            } else {
+                return null;    // IT 12778 -- it is impossible to know
+            }
         }
 
         String hostName = null;
-        Dom serverDom = Dom.unwrap(server);
-        Nodes nodes = serverDom.getHabitat().getComponent(Nodes.class);
 
         // Get it from the node associated with the server
         String nodeName = server.getNode();

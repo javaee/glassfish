@@ -41,9 +41,7 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.universal.process.ProcessManagerException;
 import com.sun.enterprise.util.StringUtils;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -56,16 +54,12 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import com.sun.enterprise.universal.process.LocalAdminCommand;
-import org.glassfish.api.admin.ParameterMap;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Habitat;
 
-import org.glassfish.cluster.ssh.connect.RemoteConnectHelper;
 import com.sun.enterprise.config.serverbeans.Node;
-import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 
 
 /**
@@ -80,21 +74,18 @@ import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 @CommandLock(CommandLock.LockType.NONE) // don't prevent _synchronize-files
 @Scoped(PerLookup.class)
 @I18n("start.instance.command")
-public class StartInstanceCommand implements AdminCommand, PostConstruct {
+public class StartInstanceCommand implements AdminCommand {
     @Inject
     Habitat habitat;
-
-    @Inject
-    Node[] nodeList;
 
     @Inject
     private Nodes nodes;
 
     @Inject
-    private CommandRunner cr;
+    private ServerEnvironment env;
 
     @Inject
-    private ServerEnvironment env;
+    private Servers servers;
     
     @Param(optional = true, primary = true)
     private String instanceName;
@@ -108,13 +99,16 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
     @Param(optional = true, defaultValue = "false")
     private boolean debug;
 
+    @Param(optional = true, defaultValue = "false")
+    private boolean terse;
+
     @Param(optional = true, obsolete = true)
     private String setenv;
 
     private Logger logger;
-    private RemoteInstanceCommandHelper helper;
 
     private AdminCommandContext ctx;
+    private Node   node;
     private String noderef;
     private String nodedir;
     private String nodeHost;
@@ -137,7 +131,7 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
             report.setMessage(msg);
             return;
         }
-        instance = helper.getServer(instanceName);
+        instance = servers.getServer(instanceName);
         if(instance == null) {
             msg = Strings.get("start.instance.noSuchInstance", instanceName);
             logger.severe(msg);
@@ -153,25 +147,24 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
             return;
         }
 
-        noderef = helper.getNode(instance);
+        noderef = instance.getNode();
         if(!StringUtils.ok(noderef)) {
             msg = Strings.get("missingNodeRef", instanceName);
             logger.severe(msg);
             report.setMessage(msg);
             return;
         }
-        if (nodes != null) {
-            Node n = nodes.getNode(noderef);
-            if (n != null) {
-                nodedir = n.getNodeDir();
-                nodeHost = n.getNodeHost();
-                installDir = n.getInstallDir();
-            } else {
-                msg = Strings.get("missingNode", noderef);
-                logger.severe(msg);
-                report.setMessage(msg);
-                return;
-            }
+        
+        node = nodes.getNode(noderef);
+        if (node != null) {
+            nodedir = node.getNodeDir();
+            nodeHost = node.getNodeHost();
+            installDir = node.getInstallDir();
+        } else {
+            msg = Strings.get("missingNode", noderef);
+            logger.severe(msg);
+            report.setMessage(msg);
+            return;
         }
 
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
@@ -195,144 +188,74 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
         }
     }
 
-    @Override
-    public void postConstruct() {
-        helper = new RemoteInstanceCommandHelper(habitat);
-    }
 
-    private void startLocalInstance()  {
-        LocalAdminCommand lac = null;
+    private void startInstance() {
+        NodeUtils nodeUtils = new NodeUtils(habitat, logger);
+        Server dasServer =
+                servers.getServer(SystemPropertyConstants.DAS_SERVER_NAME);
+        String dasHost = dasServer.getAdminHost();
+        String dasPort = Integer.toString(dasServer.getAdminPort());
+
         ArrayList<String> command = new ArrayList<String>();
-        ActionReport report = ctx.getActionReport();
+        String humanCommand = null;
+
+        /*
+        command.add("--host");
+        command.add(dasHost);
+        command.add("--port");
+        command.add(dasPort);
+         *
+         */
+
+        command.add("start-local-instance");
 
         command.add("--node");
         command.add(noderef);
 
-        if (StringUtils.ok(nodedir)) {
+        if (nodedir != null) {
             command.add("--nodedir");
-            command.add(nodedir);
+            command.add(nodedir); //XXX escape space?
         }
+
         if (fullsync) {
             command.add("--fullsync");
         }
+
         if (nosync) {
             command.add("--nosync");
         }
+
         if (debug) {
             command.add("--debug");
         }
 
         command.add(instanceName);
 
-        StringBuilder humanVersionOfCommand = new StringBuilder();
-        for (String s : command) {
-            humanVersionOfCommand.append(s);
-            humanVersionOfCommand.append(" ");
-        }
+        // Convert the command into a string representing the command
+        // a human should run.
+        humanCommand = makeCommandHuman(command);
 
-        String[] commandArray = new String[command.size()];
-        lac = new LocalAdminCommand("start-local-instance",
-                                    command.toArray(commandArray));
-
-        try {
-            lac.waitForReaderThreads(false);
-            int status = lac.execute();
-            if (status != 0) {
-                String msg = Strings.get("nonzero.status",
-                            humanVersionOfCommand,
-                            "localhost");
-                logger.warning(msg);
-                report.setMessage(msg);
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            }
-        } catch (ProcessManagerException ex) {
-            String msg = Strings.get("start.instance.failed",
+        // First error message displayed if we fail
+        String firstErrorMessage = Strings.get("start.instance.failed",
                         instanceName, noderef, nodeHost );
-            logger.warning(msg);
-            String msg2 = Strings.get("node.command.failed",
-                    noderef, nodeHost, humanVersionOfCommand,
-                    ex.getMessage());
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(msg + NL + msg2);
-        }
-    }
 
-    private void startInstance() {
-        int dasPort = helper.getAdminPort(SystemPropertyConstants.DAS_SERVER_NAME);
-        String dasHost = System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY);
-        RemoteConnectHelper rch = new RemoteConnectHelper(habitat, nodeList,
-                logger, dasHost, dasPort);
+        StringBuilder output = new StringBuilder();
+
+        // Run the command on the node and handle errors.
+        nodeUtils.runAdminCommandOnNode(node, command, ctx, firstErrorMessage,
+                humanCommand, output);
+
         ActionReport report = ctx.getActionReport();
-
-        StringBuilder humanVersionOfCommand = new StringBuilder(
-            "asadmin start-local-instance");
-
-        if (rch.isLocalhost(nodes.getNode(noderef))) {
-            startLocalInstance();
-        } else if (rch.isRemoteConnectRequired(noderef)) {  // check if needs a remote connection
-            // this command will run over ssh
-            StringBuilder output = new StringBuilder();
-            ParameterMap map = new ParameterMap();
-            map.set("DEFAULT", instanceName);
-            map.set("--node", noderef);
-            humanVersionOfCommand.append(" --node " + noderef);
-            if (nodedir != null) {
-                map.set("--nodedir", nodedir);
-                humanVersionOfCommand.append(" --nodedir ");
+        if (report.getActionExitCode() == ActionReport.ExitCode.SUCCESS) {
+            // If it was successful say so and display the command output
+            String msg = Strings.get("start.instance.success",
+                    instanceName, nodeHost);
+            if (!terse) {
+                msg = StringUtils.cat(NL, output.toString().trim(), msg);
             }
-            if (fullsync) {
-                map.set("--fullsync", "true");
-                humanVersionOfCommand.append(" --fullsync ");
-            }
-            if (nosync) {
-                map.set("--nosync", "true");
-                humanVersionOfCommand.append(" --nosync ");
-            }
-            if (debug) {
-                map.set("--debug", "true");
-                humanVersionOfCommand.append(" --debug ");
-            }
-            humanVersionOfCommand.append(" " + instanceName);
-            try {
-                int status = rch.runCommand(noderef, "start-local-instance",
-                     map, output);
-                if (output.length() > 0) {
-                     logger.info(output.toString());
-                }
-                if (status != 0){
-                    String msg1 = Strings.get("node.command.failed", noderef,
-                        nodeHost, output.toString(), rch.getLastCommandRun());
-                    logger.warning(msg1);
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    report.setMessage(msg1);
-                }
-            } catch (SSHCommandExecutionException ec) {
-                String msg1 = Strings.get("start.instance.failed",
-                        instanceName, noderef, nodeHost );
-                String msg2 = Strings.get("node.ssh.bad.connect",
-                        noderef, nodeHost, ec.getMessage());
-                String msg3 = Strings.get("node.ssh.tocomplete",
-                        nodeHost, installDir, humanVersionOfCommand);
-                report.setMessage(msg1 + " " + msg2 + NL + NL + msg3);
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                // Log some extra info
-                msg1 = Strings.get("node.command.failed.ssh.details",
-                    noderef, nodeHost, ec.getCommandRun(), ec.getMessage(),
-                    ec.getSSHSettings());
-                logger.warning(msg1);
-            }
-        } else {
-            humanVersionOfCommand.append(" " + instanceName);
-            String msg1 = Strings.get("start.instance.failed",
-                        instanceName, noderef, nodeHost );
-            logger.warning(msg1);
-            String msg2= Strings.get("node.not.ssh", noderef, nodeHost);
-            logger.warning(msg2);
-            String msg3 = Strings.get("node.ssh.tocomplete",
-                        nodeHost, installDir, humanVersionOfCommand);
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(msg1 + " " + msg2 + NL + NL + msg3);
+            report.setMessage(msg);
         }
+
     }
 
     // return null means A-OK
@@ -351,5 +274,18 @@ public class StartInstanceCommand implements AdminCommand, PostConstruct {
             }
         }
         return Strings.get("start.instance.timeout", instanceName);
+    }
+
+    private String makeCommandHuman(List<String> command) {
+        StringBuilder fullCommand = new StringBuilder();
+
+        fullCommand.append("asadmin ");
+
+        for (String s : command) {
+            fullCommand.append(" ");
+            fullCommand.append(s);
+        }
+
+        return fullCommand.toString();
     }
 }

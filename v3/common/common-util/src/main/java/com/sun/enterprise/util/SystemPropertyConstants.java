@@ -306,16 +306,22 @@ public class SystemPropertyConstants
      * the INSTALL_ROOT_PROPERTY is not defined
      */
     public static final String getAsAdminScriptLocation() {
+        return getAsAdminScriptLocation(SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
+    }
+
+    public static final String getAsAdminScriptLocation(String installRoot) {
         final StringBuilder sb = new StringBuilder();
         final String ext = OS.isWindows() ? OS.WINDOWS_BATCH_FILE_EXTENSION : "";
         final String ASADMIN = "asadmin";
         final String suffix = new StringBuilder("bin").append(System.getProperty("file.separator")).append(ASADMIN).append(ext).toString();
-        sb.append(System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY));
+        sb.append(installRoot);
         final String fs = System.getProperty("file.separator");
         if (!sb.toString().endsWith(fs))
             sb.append(fs);
         sb.append(suffix);
-        
+
         return ( sb.toString() );
     }
+
+
 }
