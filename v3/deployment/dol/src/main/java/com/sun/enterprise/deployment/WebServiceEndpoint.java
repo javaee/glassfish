@@ -50,6 +50,7 @@ package com.sun.enterprise.deployment;
 
 
 import com.sun.enterprise.deployment.runtime.common.MessageSecurityBindingDescriptor;
+import com.sun.enterprise.deployment.runtime.ws.ReliabilityConfig;
 import com.sun.enterprise.deployment.types.HandlerChainContainer;
 import com.sun.enterprise.deployment.web.SecurityConstraint;
 import com.sun.enterprise.deployment.web.UserDataConstraint;
@@ -185,6 +186,9 @@ public class WebServiceEndpoint extends Descriptor
 
     // message-security-binding
     private MessageSecurityBindingDescriptor messageSecBindingDesc = null;
+
+    //reliability-config
+    private ReliabilityConfig reliabilityConfig = null;
 
     // should debugging be allowed on this endpoint
     private String debuggingEnabled = "true";
@@ -439,6 +443,14 @@ public class WebServiceEndpoint extends Descriptor
         return messageSecBindingDesc;
     }
 
+
+    public ReliabilityConfig getReliabilityConfig() {
+        return reliabilityConfig;
+    }
+
+    public void setReliabilityConfig(ReliabilityConfig reliabilityConfig) {
+        this.reliabilityConfig = reliabilityConfig;
+    }
 
     /**
      * Convert the contents of the ejb-link or servlet-link element to

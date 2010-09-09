@@ -43,6 +43,7 @@ package com.sun.enterprise.deployment.node.ws;
 import com.sun.enterprise.deployment.WebService;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.node.*;
+import com.sun.enterprise.deployment.runtime.ws.ReliabilityConfig;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import com.sun.enterprise.deployment.xml.WebServicesTagNames;
 import org.w3c.dom.Document;
@@ -119,6 +120,14 @@ public class WLWebServiceEndpointNode extends DeploymentDescriptorNode {
             node.setParentNode(this);
         } else if (WLWebServicesTagNames.SERVICE_ENDPOINT_ADDRESS.equals(elementName)) {
             node = new ServiceEndpointAddressNode(descriptor);
+            node.setParentNode(this);
+        } else if(WLWebServicesTagNames.RELIABILITY_CONFIG.equals(elementName)) {
+            ReliabilityConfig reliabilityConfig = descriptor.getReliabilityConfig();
+            if(reliabilityConfig == null) {
+                reliabilityConfig = new ReliabilityConfig();
+                descriptor.setReliabilityConfig(reliabilityConfig);
+            }
+            node = new ReliabilityConfigNode(reliabilityConfig);
             node.setParentNode(this);
         }
         return node;

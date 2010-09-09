@@ -62,6 +62,16 @@ public class WLWebServicesTagNames {
     public static final String STREAM_ATTACHMENTS = "stream-attachments";
     public static final String VALIDATE_REQUEST = "validate-request";
 
+    public static final String RELIABILITY_CONFIG = "reliability-config";
+    public static final String INACTIVITY_TIMEOUT = "inactivity-timeout";
+    public static final String BASE_RETRANSMISSION_INTERVAL = "base-retransmission-interval";
+    public static final String RETRANSMISSION_EXPONENTIAL_BACKOFF = "retransmission-exponential-backoff";
+    public static final String ACKNOWLEDGEMENT_INTERVAL = "acknowledgement-interval";
+    public static final String SEQUENCE_EXPIRATION = "sequence-expiration";
+    public static final String BUFFER_RETRY_COUNT = "buffer-retry-count";
+    public static final String BUFFER_RETRY_DELAY = "buffer-retry-delay";
+
+    //Unsupported config
     public static final String WEBSERVICE_SECURITY = "webservice-security";
     public static final String DEPLOYMENT_LISTENER_LIST = "deployment-listener-list";
     public static final String TRANSACTION_TIMEOUT="transaction-tiemout";
