@@ -1788,6 +1788,13 @@ public class Response
             }
             // END SJSAS 6337561
 
+            String replicaLocation =
+                    (String) request.getAttribute("jreplicaLocation");
+            if (replicaLocation != null) {
+                sb.append(";jreplica=");
+                sb.append(replicaLocation);
+            }
+
             if (sessionVersion != null) {
                 sb.append(Globals.SESSION_VERSION_PARAMETER);
                 sb.append(sessionVersion);

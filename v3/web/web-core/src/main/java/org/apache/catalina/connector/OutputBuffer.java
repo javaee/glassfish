@@ -674,6 +674,8 @@ public class OutputBuffer extends Writer
         addSessionCookieWithJvmRoute(req, ctx);
         addSessionCookieWithJReplica(req,ctx);
         addPersistedSessionCookie(req, ctx);
+        addJrouteCookieIfNecessary(req, ctx);
+        
     }
 
     /**
@@ -761,6 +763,42 @@ public class OutputBuffer extends Writer
             response.addHeader(SET_COOKIE_HEADER,
                     coyoteResponse.getCookieString(cookie));
         }
+    }
+
+    private void addJrouteCookieIfNecessary(Request request, StandardContext ctx) {
+
+        String jrouteId = request.getHeader(Constants.PROXY_JROUTE);
+
+        if (jrouteId == null) {
+            // Load-balancer plugin is not front-ending this instance
+            return;
+        }
+
+        Session sess = request.getSessionInternal(false);
+        if (sess == null) {
+            // No session exists
+            return;
+        }
+
+        if (request.getJrouteId() == null
+                || !request.getJrouteId().equals(jrouteId)) {
+            // Initial request or failover
+            Cookie cookie = new Cookie(Constants.JROUTE_COOKIE, jrouteId);
+            request.configureSessionCookie(cookie);
+            if (request.isRequestedSessionIdFromCookie()) {
+                /*
+                 * Have the JSESSIONIDVERSION cookie inherit the
+                 * security setting of the JSESSIONID cookie to avoid
+                 * session loss when switching from HTTPS to HTTP,
+                 * see IT 7414
+                 */
+                cookie.setSecure(
+                        request.isRequestedSessionIdFromSecureCookie());
+            }
+            response.addHeader(SET_COOKIE_HEADER,
+                    coyoteResponse.getCookieString(cookie));
+        }
+
     }
 
     // START PWC 6512276
