@@ -40,6 +40,8 @@
 
 package org.glassfish.admin.rest.provider;
 
+import org.glassfish.admin.rest.RestConfig;
+import org.glassfish.admin.rest.RestService;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -112,10 +114,16 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
         }
     }
 
-    /* check for the __debug request geheader
+    /* check for the __debug request header
      *
      */
     protected boolean isDebug() {
+        RestConfig rg = RestService.getDomain().getConfigNamed("server-config").getExtensionByType(
+                RestConfig.class);
+        if ((rg != null) && (rg.getDebug().equalsIgnoreCase("true"))) {
+            return true;
+        }
+
         if (requestHeaders == null) {
             return true; 
         }
