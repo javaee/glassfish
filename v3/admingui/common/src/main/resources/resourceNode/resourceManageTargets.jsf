@@ -107,7 +107,7 @@
                                 setAttribute(key="endpoint" value="#{serverEndpoint}/#{newTarget}/resource-ref");
                             }
                             createMap(result="#{requestScope.resAttrsMap}");
-                            mapPut(map="#{requestScope.resAttrsMap}" key="id" value="#{pageSession.encodedResName}");
+                            mapPut(map="#{requestScope.resAttrsMap}" key="id" value="#{pageSession.resName}");
                             mapPut(map="#{requestScope.resAttrsMap}" key="target" value="#{newTarget}");
                             gf.restRequest(endpoint="#{endpoint}" attrs="#{requestScope.resAttrsMap}", method="post");
                         }
