@@ -91,12 +91,7 @@
 #include "/common/resourceNode/resourceEditTabs.inc"
 #include "/common/shared/alertMsg.inc"
     <sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}">
-        <!-- Buttons  -->
-        <sun:button id="loadDefaults" style="margin-left: 8pt" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >
-            <!command
-                gf.getDefaultValues(endpoint="#{pageSession.selfUrl2}" orig="#{pageSession.valueMap2}" valueMap="#{pageSession.valueMap2}")
-            />
-        </sun:button>
+#include "/common/shared/editPageLoadDefaultButton.inc"
         <!facet pageButtonsTop>
             <sun:panelGroup id="topButtons">
 #include "/jms/jmsDestinationButtons.inc"

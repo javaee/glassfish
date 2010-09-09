@@ -70,7 +70,6 @@
     setPageSessionAttribute(key="tableList" value="#{requestScope.propTable.data.extraProperties.properties}");
     //set the following for including buttons.inc
     setPageSessionAttribute(key="edit" value="#{true}" );
-    setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
     setPageSessionAttribute(key="showCancelButton" value="#{true}" );
     setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
     setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
@@ -84,14 +83,7 @@
 #include "/common/shared/alertMsg.inc"
     
     <!-- Page Title -->
-    <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcResource.editPageTitle}" helpText="$resource{i18njdbc.jdbcResource.editPageTitleHelp}" >
-        <sun:button style="margin-left: 8pt" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.LoadDefaults}"
-            onClick="submitAndDisable(this, '$resource{i18n.button.Processing}'); return false;" >
-            <!command
-                gf.getDefaultValues(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", valueMap="#{pageSession.valueMap}");
-                gf.getDefaultValues(endpoint="#{pageSession.parentUrl2}/#{pageSession.childType2}", valueMap="#{pageSession.valueMap2}");
-            />
-        </sun:button>
+    <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcResource.editPageTitle}" helpText="$resource{i18njdbc.jdbcResource.editPageTitleHelp}" >        
 #include "/common/resourceNode/resourceEditPageButtons.inc"
     </sun:title>
     "<br><br>

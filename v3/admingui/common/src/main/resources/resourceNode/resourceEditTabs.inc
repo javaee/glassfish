@@ -46,22 +46,26 @@
     <!beforeCreate
         //To set the showTargetSection        
 #include "/common/shared/targetsList.inc"
+        setPageSessionAttribute(key="rest-api" value="true");
         if(#{pageSession.showTargetSection}) {
             setPageSessionAttribute(key="useString" value="#{true}");
             setPageSessionAttribute(key="useCheckBox" value="#{false}");
             setPageSessionAttribute(key="has2Objects" value="#{false}");
+            setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
         }
         if(!#{pageSession.showTargetSection}) {
             setPageSessionAttribute(key="useString" value="#{false}");
-            setPageSessionAttribute(key="useCheckBox" value="#{true}");            
+            setPageSessionAttribute(key="useCheckBox" value="#{true}");
+            setPageSessionAttribute(key="parentUrl2", value="#{sessionScope.REST_URL}/servers/server/server");
+            setPageSessionAttribute(key="childType2", value="resource-ref");
             if ("#{pageSession.childType2} = connector-resource") {
-                setPageSessionAttribute(key="resourceRefUrl", value="#{sessionScope.REST_URL}/servers/server/server/resource-ref/#{pageSession.encodedName}");
+                setPageSessionAttribute(key="resourceRefUrl", value="#{pageSession.parentUrl2}/#{pageSession.childType2}/#{pageSession.encodedName}");
                 gf.getEntityAttrs(endpoint="#{pageSession.resourceRefUrl}",  valueMap="#{pageSession.resourceRef}");
-                setPageSessionAttribute(key="has2Objects" value="#{true}");
             }
             if ("!(#{pageSession.childType2} = connector-resource)") {
-                setPageSessionAttribute(key="childType2", value="resource-ref");
-                setPageSessionAttribute(key="selfUrl2", value="#{sessionScope.REST_URL}/servers/server/server/resource-ref/#{pageSession.encodedName}");
+                setPageSessionAttribute(key="has2Objects" value="#{true}");
+                setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+                setPageSessionAttribute(key="selfUrl2", value="#{pageSession.parentUrl2}/#{pageSession.childType2}/#{pageSession.encodedName}");
                 gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}", valueMap="#{pageSession.valueMap2}");
             }            
         }

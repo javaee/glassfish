@@ -40,6 +40,7 @@
 
 -->
 
+#include "/common/shared/editPageLoadDefaultButton.inc"
 <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
@@ -67,7 +68,7 @@
                     gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="POST" data="#{requestScope.tmpJSON}" result="#{requestScope.restResponse}");
                 }
                 prepareSuccessfulMsg();
-                gf.redirect(page="#{selfPage}?name=#{pageSession.encodedName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
