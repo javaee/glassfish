@@ -40,13 +40,11 @@
 
 package org.glassfish.ha.store.adapter.file;
 
-import org.glassfish.ha.store.api.BackingStore;
-import org.glassfish.ha.store.api.BackingStoreConfiguration;
-import org.glassfish.ha.store.api.BackingStoreException;
-import org.glassfish.ha.store.api.Storeable;
+import org.glassfish.ha.store.api.*;
 
 import java.io.*;
 
+import java.util.Map;
 import java.util.logging.*;
 
 /**
@@ -68,6 +66,10 @@ public class FileBackingStore<K extends Serializable, V extends Serializable>
     private static Level TRACE_LEVEL = Level.FINE;
 
     private String debugStr;
+
+    private FileBackingStoreFactory factory;
+
+    private int defaultMaxIdleTimeoutInSeconds = 10 * 60;
 
     /**
      * No arg constructor
@@ -98,6 +100,22 @@ public class FileBackingStore<K extends Serializable, V extends Serializable>
         } catch (Exception ex) {
             logger.log(Level.WARNING, debugStr + " Exception during initialization", ex);
         }
+
+        try {
+            Map<String, Object> vendorMap = conf.getVendorSpecificSettings();
+            defaultMaxIdleTimeoutInSeconds = Integer.valueOf(
+                    (String) vendorMap.get("max.idle.timeout.in.seconds"));
+        } catch (Exception ex) {
+            //Ignore. Use default
+        }
+    }
+
+    /*package*/ void setFileBackingStoreFactory(FileBackingStoreFactory factory) {
+        this.factory = factory;
+    }
+
+    public BackingStoreFactory getBackingStoreFactory() {
+        return factory;
     }
 
     @Override
@@ -176,7 +194,11 @@ public class FileBackingStore<K extends Serializable, V extends Serializable>
         }
     }
 
-    @Override
+    public int removeExpired() {
+        return removeExpired(defaultMaxIdleTimeoutInSeconds * 1000);
+    }
+
+    //TODO: deprecate after next shoal integration   
     public int removeExpired(long idleForMillis) {
         long threshold = System.currentTimeMillis() - idleForMillis;
         int expiredSessions = 0;
@@ -244,7 +266,12 @@ public class FileBackingStore<K extends Serializable, V extends Serializable>
         return getBackingStoreConfiguration().getInstanceName();
     }
 
-    @Override
+    //TODO: deprecate after next shoal integration
+    public void updateTimeStamp(K k, String version, long timeStamp)
+            throws BackingStoreException {
+        updateTimestamp(k, timeStamp);
+    }
+    
     public void updateTimestamp(K sessionKey, long time)
             throws BackingStoreException {
         if (logger.isLoggable(TRACE_LEVEL)) {

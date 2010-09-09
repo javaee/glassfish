@@ -77,7 +77,7 @@ public class FileBackingStoreFactory
                 throws BackingStoreException {
         FileBackingStore<K, V> fs = new FileBackingStore<K, V>();
         fs.initialize(conf);
-
+        fs.setFileBackingStoreFactory(this);
         _stores.put(conf.getStoreName(), fs);
         return fs;
     }
