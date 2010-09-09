@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.impl.mbean;
 
 import javax.management.ObjectName;
@@ -45,6 +44,7 @@ import org.glassfish.admin.amx.monitoring.ServerMon;
 
 public class ServerMonitoringImpl extends AMXImplBase // implements ServerMonitoringImpl
 {
+
     public ServerMonitoringImpl(final ObjectName parent) {
         super(parent, ServerMon.class);
     }

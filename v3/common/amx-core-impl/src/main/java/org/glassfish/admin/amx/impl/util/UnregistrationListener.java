@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.impl.util;
 
 import javax.management.*;
@@ -50,38 +49,31 @@ import org.glassfish.admin.amx.util.jmx.JMXUtil;
 Blocks until an MBean is UNregistered using a CountdownLatch (highly efficient).
 
  */
-public final class UnregistrationListener implements NotificationListener
-{
+public final class UnregistrationListener implements NotificationListener {
+
     final MBeanServerConnection mMBeanServer;
-
     final ObjectName mObjectName;
-
     final CountDownLatch mLatch;
 
-    public UnregistrationListener(final MBeanServerConnection conn, final ObjectName objectName)
-    {
+    public UnregistrationListener(final MBeanServerConnection conn, final ObjectName objectName) {
         mMBeanServer = conn;
         mObjectName = objectName;
         mLatch = new CountDownLatch(1);
         // DO NOT listen here; thread-safety problem
     }
 
-    public void handleNotification(final Notification notifIn, final Object handback)
-    {
-        if (notifIn instanceof MBeanServerNotification)
-        {
+    public void handleNotification(final Notification notifIn, final Object handback) {
+        if (notifIn instanceof MBeanServerNotification) {
             final MBeanServerNotification notif = (MBeanServerNotification) notifIn;
 
             if (notif.getType().equals(MBeanServerNotification.UNREGISTRATION_NOTIFICATION) &&
-                mObjectName.equals(notif.getMBeanName()))
-            {
+                    mObjectName.equals(notif.getMBeanName())) {
                 mLatch.countDown();
             }
         }
     }
 
-    private static void cdebug(final String s)
-    {
+    private static void cdebug(final String s) {
         System.out.println(s);
     }
 
@@ -89,56 +81,38 @@ public final class UnregistrationListener implements NotificationListener
     Wait (block) until the MBean is unregistered.
     @return true if unregistered, false if an error
      */
-    public boolean waitForUnregister(final long timeoutMillis)
-    {
+    public boolean waitForUnregister(final long timeoutMillis) {
         boolean unregisteredOK = false;
 
-        try
-        {
+        try {
             // could have already been unregistered
-            if (mMBeanServer.isRegistered(mObjectName))
-            {
-                try
-                {
+            if (mMBeanServer.isRegistered(mObjectName)) {
+                try {
                     // CAUTION: we must register first to avoid a race condition
                     JMXUtil.listenToMBeanServerDelegate(mMBeanServer, this, null, mObjectName);
 
-                    if (mMBeanServer.isRegistered(mObjectName))
-                    {
+                    if (mMBeanServer.isRegistered(mObjectName)) {
                         // block
                         final boolean unlatched = mLatch.await(timeoutMillis, TimeUnit.MILLISECONDS);
                         unregisteredOK = unlatched; // otherwise it timed-out
-                    }
-                    else
-                    {
+                    } else {
                         unregisteredOK = true;
                     }
-                }
-                catch (final java.lang.InterruptedException e)
-                {
+                } catch (final java.lang.InterruptedException e) {
                     throw new RuntimeException(e);
-                }
-                catch (final InstanceNotFoundException e)
-                {
+                } catch (final InstanceNotFoundException e) {
                     // fine, we're expecting it to be unregistered anyway
-                }
-                finally
-                {
+                } finally {
                     mMBeanServer.removeNotificationListener(JMXUtil.getMBeanServerDelegateObjectName(), this);
                 }
-            }
-            else
-            {
+            } else {
                 unregisteredOK = true;
             }
-        }
-        catch (final Exception e)
-        {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
         return unregisteredOK;
     }
-
 }
 
 

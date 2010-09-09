@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.impl.mbean;
 
 import org.glassfish.admin.amx.core.Util;
@@ -62,27 +61,23 @@ import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 
 /**
  */
-public class QueryMgrImpl extends AMXImplBase   // implements Query
+public class QueryMgrImpl extends AMXImplBase // implements Query
 {
-    public QueryMgrImpl(final ObjectName parentObjectName)
-    {
+
+    public QueryMgrImpl(final ObjectName parentObjectName) {
         super(parentObjectName, Query.class);
     }
 
-    public ObjectName[] queryProps(final String props)
-    {
+    public ObjectName[] queryProps(final String props) {
         return queryPattern(Util.newObjectNamePattern(getJMXDomain(), props));
     }
 
     public ObjectName[] queryTypes(final Set<String> types)
-            throws IOException
-    {
+            throws IOException {
         final Set<ObjectName> result = new HashSet<ObjectName>();
 
-        for (final ObjectName objectName : queryAll())
-        {
-            if (types.contains(Util.getTypeProp(objectName)))
-            {
+        for (final ObjectName objectName : queryAll()) {
+            if (types.contains(Util.getTypeProp(objectName))) {
                 result.add(objectName);
             }
         }
@@ -90,18 +85,15 @@ public class QueryMgrImpl extends AMXImplBase   // implements Query
         return asArray(result);
     }
 
-    public ObjectName[] queryType(final String type)
-    {
+    public ObjectName[] queryType(final String type) {
         return queryProps(Util.makeTypeProp(type));
     }
 
-    public ObjectName[] queryName(final String name)
-    {
+    public ObjectName[] queryName(final String name) {
         return queryProps(Util.makeNameProp(name));
     }
 
-    public ObjectName[] queryPattern(final ObjectName pattern)
-    {
+    public ObjectName[] queryPattern(final ObjectName pattern) {
         return asArray(JMXUtil.queryNames(getMBeanServer(), pattern, null));
     }
 
@@ -110,21 +102,17 @@ public class QueryMgrImpl extends AMXImplBase   // implements Query
      */
     public ObjectName[] queryTypeName(
             final String type,
-            final String name)
-    {
+            final String name) {
         return queryProps(Util.makeRequiredProps(type, name));
     }
 
-    private static String[] convertToRegex(String[] wildExprs)
-    {
+    private static String[] convertToRegex(String[] wildExprs) {
         String[] regexExprs = null;
 
-        if (wildExprs != null)
-        {
+        if (wildExprs != null) {
             regexExprs = new String[wildExprs.length];
 
-            for (int i = 0; i < wildExprs.length; ++i)
-            {
+            for (int i = 0; i < wildExprs.length; ++i) {
                 final String expr = wildExprs[i];
 
                 final String regex = expr == null ? null : RegexUtil.wildcardToJavaRegex(expr);
@@ -138,8 +126,7 @@ public class QueryMgrImpl extends AMXImplBase   // implements Query
     private Set<ObjectName> matchWild(
             final Set<ObjectName> candidates,
             final String[] wildKeys,
-            final String[] wildValues)
-    {
+            final String[] wildValues) {
         final String[] regexNames = convertToRegex(wildKeys);
         final String[] regexValues = convertToRegex(wildValues);
 
@@ -151,16 +138,14 @@ public class QueryMgrImpl extends AMXImplBase   // implements Query
 
     public ObjectName[] queryWildAll(
             final String[] wildKeys,
-            final String[] wildValues)
-    {
+            final String[] wildValues) {
         final ObjectName[] candidates = queryAll();
         final Set<ObjectName> candidatesSet = SetUtil.newSet(candidates);
 
         return asArray(matchWild(candidatesSet, wildKeys, wildValues));
     }
 
-    public ObjectName[] queryAll()
-    {
+    public ObjectName[] queryAll() {
         final ObjectName pat = Util.newObjectNamePattern(getJMXDomain(), "");
 
         final Set<ObjectName> names = JMXUtil.queryNames(getMBeanServer(), pat, null);
@@ -168,53 +153,42 @@ public class QueryMgrImpl extends AMXImplBase   // implements Query
         return asArray(names);
     }
 
-    private final ObjectName[] asArray(final Set<ObjectName> items)
-    {
+    private final ObjectName[] asArray(final Set<ObjectName> items) {
         return CollectionUtil.toArray(items, ObjectName.class);
     }
-    
-    
-    public ObjectName[] getGlobalSingletons()
-    {
+
+    public ObjectName[] getGlobalSingletons() {
         final ObjectName[] all = queryAll();
         final List<ObjectName> globalSingletons = new ArrayList<ObjectName>();
-        
+
         final ProxyFactory proxyFactory = getProxyFactory();
-        for( final ObjectName candidate : all )
-        {
+        for (final ObjectName candidate : all) {
             final MBeanInfo mbeanInfo = proxyFactory.getMBeanInfo(candidate);
-            if ( mbeanInfo != null && AMXProxyHandler.globalSingleton(mbeanInfo) )
-            {
+            if (mbeanInfo != null && AMXProxyHandler.globalSingleton(mbeanInfo)) {
                 globalSingletons.add(candidate);
             }
         }
-        
+
         return CollectionUtil.toArray(globalSingletons, ObjectName.class);
     }
-    
-    public ObjectName getGlobalSingleton( final String type)
-    {
+
+    public ObjectName getGlobalSingleton(final String type) {
         final ObjectName[] gs = getGlobalSingletons();
-        for( final ObjectName objectName : gs )
-        {
-            if ( Util.getTypeProp(objectName).equals(type) )
-            {
+        for (final ObjectName objectName : gs) {
+            if (Util.getTypeProp(objectName).equals(type)) {
                 return objectName;
             }
         }
         return null;
     }
-    
-        public ObjectName[]
-    queryDescendants( final ObjectName parentObjectName)
-    {
+
+    public ObjectName[] queryDescendants(final ObjectName parentObjectName) {
         final AMXProxy parent = getProxyFactory().getProxy(parentObjectName);
-        
-        final List<AMXProxy>  items = ParentChildren.hierarchy(parent).asList();    
-        
+
+        final List<AMXProxy> items = ParentChildren.hierarchy(parent).asList();
+
         return Util.toObjectNamesArray(items);
     }
-
 }
 
 

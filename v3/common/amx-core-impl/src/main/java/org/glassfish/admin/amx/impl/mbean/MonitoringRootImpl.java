@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.impl.mbean;
 
 import java.util.Map;
@@ -52,33 +51,31 @@ import org.glassfish.admin.amx.core.Util;
 
 public class MonitoringRootImpl extends AMXImplBase // implements MonitoringRoot
 {
+
     public MonitoringRootImpl(final ObjectName parent) {
         super(parent, MonitoringRoot.class);
     }
-    
+
     @Override
-        protected final void
-    registerChildren()
-    {
+    protected final void registerChildren() {
         super.registerChildren();
 
-        final ObjectName    self = getObjectName();
-        final MBeanServer   server = getMBeanServer();
-        final ObjectNameBuilder	objectNames	= new ObjectNameBuilder( server, self );
+        final ObjectName self = getObjectName();
+        final MBeanServer server = getMBeanServer();
+        final ObjectNameBuilder objectNames = new ObjectNameBuilder(server, self);
 
         ObjectName childObjectName = null;
         Object mbean = null;
 
         // when clustering comes along, some other party will need to register MBeans
         // for each non-DAS instance
-        childObjectName	= objectNames.buildChildObjectName( ServerMon.class, AMXGlassfish.DEFAULT.dasName() );
-        mbean	= new ServerMonitoringImpl(self);
-        registerChild( mbean, childObjectName );
+        childObjectName = objectNames.buildChildObjectName(ServerMon.class, AMXGlassfish.DEFAULT.dasName());
+        mbean = new ServerMonitoringImpl(self);
+        registerChild(mbean, childObjectName);
     }
-    
-    public ObjectName[] getServerMon()
-    {
-        return getChildren( ServerMon.class );
+
+    public ObjectName[] getServerMon() {
+        return getChildren(ServerMon.class);
     }
 }
 

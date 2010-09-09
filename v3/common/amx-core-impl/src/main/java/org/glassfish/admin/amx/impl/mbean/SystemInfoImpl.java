@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.impl.mbean;
 
 import org.glassfish.admin.amx.base.SystemInfo;
@@ -55,18 +54,16 @@ import org.glassfish.external.amx.AMXGlassfish;
 /**
 Loaded as MBean "amx:j2eeType=X-SystemInfo,name=na"
  */
-public final class SystemInfoImpl extends AMXImplBase
-//implements SystemInfo
+public final class SystemInfoImpl extends AMXImplBase //implements SystemInfo
 {
-    private final MBeanServer mServer;
 
+    private final MBeanServer mServer;
     //public static final String	NAME_PROP_VALUE	= "system-info";
     private final ConcurrentMap<String, Boolean> mFeatures;
 
     public SystemInfoImpl(
-            final MBeanServer server)
-    {
-        super( AMXGlassfish.DEFAULT.domainRoot(), SystemInfo.class);
+            final MBeanServer server) {
+        super(AMXGlassfish.DEFAULT.domainRoot(), SystemInfo.class);
 
         mServer = server;
 
@@ -78,25 +75,22 @@ public final class SystemInfoImpl extends AMXImplBase
     Advertise the presence of a feature.  For consistency, feature names should normally be
     of the form <description>_FEATURE.  For example: "HELLO-WORLD_FEATURE".
     <p>
-    To change a featureÕs availability to unavailable, pass 'false' for 'available' (there is no
+    To change a featureï¿½s availability to unavailable, pass 'false' for 'available' (there is no
     removeFeature() call).  This is discouraged unless dynamic presence/absence is an inherent
     characteristic of the feature; clients might check only once for presence or absence.
 
     @param featureName name of the feature
     @param available  should be 'true' unless an explicit 'false' (unavailable) is desired
      */
-    public void addFeature(final String featureName, final boolean available)
-    {
-        if (featureName == null || featureName.length() == 0)
-        {
+    public void addFeature(final String featureName, final boolean available) {
+        if (featureName == null || featureName.length() == 0) {
             throw new IllegalArgumentException();
         }
 
         mFeatures.put(featureName, Boolean.valueOf(available));
     }
 
-    public String[] getFeatureNames()
-    {
+    public String[] getFeatureNames() {
         // make a copy so that we can reliably call List.size()
         // According to Brian Goetz, this approach is thread safe for using the keySet.
         final List<String> nameList = new ArrayList<String>(mFeatures.keySet());
@@ -106,13 +100,11 @@ public final class SystemInfoImpl extends AMXImplBase
         return names;
     }
 
-    public boolean supportsFeature(final String key)
-    {
+    public boolean supportsFeature(final String key) {
         boolean supports = false;
 
         Boolean result = mFeatures.get(key);
-        if (result == null)
-        {
+        if (result == null) {
             result = Boolean.FALSE;
         }
 
@@ -139,30 +131,24 @@ public final class SystemInfoImpl extends AMXImplBase
     return result;
     }
      */
-    public Map<String, Long> getPerformanceMillis()
-    {
+    public Map<String, Long> getPerformanceMillis() {
         return new HashMap<String, Long>();
     }
 
-    private void _refresh()
-    {
+    private void _refresh() {
     }
-
     private static long LAST_REFRESH = 0;
 
     /**
     How will this ever be called?
      */
-    private synchronized void refresh()
-    {
+    private synchronized void refresh() {
         final long REFRESH_MILLIS = 5 * 1000; // 5 seconds
         final long elapsed = System.currentTimeMillis() - LAST_REFRESH;
-        if (elapsed > REFRESH_MILLIS)
-        {
+        if (elapsed > REFRESH_MILLIS) {
             _refresh();
         }
     }
-
 }
 
 

@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.impl.util;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,26 +48,21 @@ Otherwise it is recorded for future checks.  This facility exists because of
 ugly framework requirements for singletons to offer public constructors, which can allow
 more than one instance of a class to be instantiated.
  */
-public final class SingletonEnforcer
-{
+public final class SingletonEnforcer {
+
     private static final ConcurrentMap<Class<?>, Object> mItems = new ConcurrentHashMap<Class<?>, Object>();
 
-    private SingletonEnforcer()
-    {
+    private SingletonEnforcer() {
     }
 
-    public static <T> T get(final Class<T> theClass)
-    {
+    public static <T> T get(final Class<T> theClass) {
         return theClass.cast(mItems.get(theClass));
     }
 
-    public static void register(final Class<?> theClass, final Object theInstance)
-    {
-        if (mItems.putIfAbsent(theClass, theInstance) != null)
-        {
+    public static void register(final Class<?> theClass, final Object theInstance) {
+        if (mItems.putIfAbsent(theClass, theInstance) != null) {
             throw new IllegalArgumentException("Illegal to register more than one instance of " + theClass.getName());
         }
     }
-
 }
 

@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.impl.util;
 
 import java.util.Collections;
@@ -46,31 +45,25 @@ import java.util.Set;
 
 /**
  */
-public final class Issues
-{
+public final class Issues {
+
     private final Set<String> mIssues = Collections.synchronizedSet(new HashSet<String>());
 
-    private Issues()
-    {
+    private Issues() {
         // disallow instantiation
     }
-
     private static final Issues AMX_ISSUES = new Issues();
 
-    public static Issues getAMXIssues()
-    {
+    public static Issues getAMXIssues() {
         return AMX_ISSUES;
     }
 
-    public void notDone(final String description)
-    {
+    public void notDone(final String description) {
         final boolean wasMissing = mIssues.add(description);
-        if (wasMissing)
-        {
+        if (wasMissing) {
             ImplUtil.getLogger().fine("NOT DONE: " + description);
         }
     }
-
 }
 
 

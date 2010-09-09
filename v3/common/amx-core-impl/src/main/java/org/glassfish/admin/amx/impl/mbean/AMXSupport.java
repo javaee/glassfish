@@ -37,16 +37,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.impl.mbean;
 
-
 /**
-	This marker interface indicates that the object is one of the support
-	MBeans for AMX.
+This marker interface indicates that the object is one of the support
+MBeans for AMX.
  */
-public interface AMXSupport
-{
+public interface AMXSupport {
 }
 
 

@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.impl.mbean;
 
 import javax.management.ObjectName;
@@ -46,14 +45,12 @@ import org.glassfish.admin.amx.base.Ext;
 /**
 Extensions.
  */
-public class ExtImpl extends AMXImplBase
-// implements Ext
+public class ExtImpl extends AMXImplBase // implements Ext
 {
-    public ExtImpl(final ObjectName parentObjectName)
-    {
+
+    public ExtImpl(final ObjectName parentObjectName) {
         super(parentObjectName, Ext.class);
     }
-
     //  children are added elsewhere, by other modules
 }
 

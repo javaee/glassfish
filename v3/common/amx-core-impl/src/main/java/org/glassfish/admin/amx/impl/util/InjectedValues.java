@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.impl.util;
 
 import org.jvnet.hk2.annotations.Inject;
@@ -63,76 +62,60 @@ because many AMX MBeans and support code don't have any access to injection.
  */
 @Service
 @Async
-public class InjectedValues
-{
+public class InjectedValues {
+
     @Inject
     Habitat mHabitat;
-
     @Inject
     private MBeanServer mMBeanServer;
-
     @Inject
     private ServerEnvironmentImpl mServerEnvironment;
-
     @Inject
     UnprocessedConfigListener mUnprocessedConfigListener;
-
     @Inject
     ModulesRegistry mModulesRegistry;
-    
     @Inject
-    Domain   mDomain;
+    Domain mDomain;
 
-    public MBeanServer getMBeanServer()
-    {
+    public MBeanServer getMBeanServer() {
         return mMBeanServer;
     }
 
     /** might return null */
-    public AmxPref getAMXPrefs()
-    {
+    public AmxPref getAMXPrefs() {
         final AmxPref prefs = mDomain.getAmxPref();
-        if ( prefs == null )
-        {
+        if (prefs == null) {
             // create one?
         }
         return prefs;
     }
 
-    public Habitat getHabitat()
-    {
+    public Habitat getHabitat() {
         return mHabitat;
     }
 
-    public ServerEnvironmentImpl getServerEnvironment()
-    {
+    public ServerEnvironmentImpl getServerEnvironment() {
         return mServerEnvironment;
     }
 
-    public UnprocessedConfigListener getUnprocessedConfigListener()
-    {
+    public UnprocessedConfigListener getUnprocessedConfigListener() {
         return mUnprocessedConfigListener;
     }
 
-    public ModulesRegistry getModulesRegistry()
-    {
+    public ModulesRegistry getModulesRegistry() {
         return mModulesRegistry;
     }
 
-    public static Habitat getDefaultHabitat()
-    {
+    public static Habitat getDefaultHabitat() {
         return Globals.getDefaultHabitat();
     }
 
-    public static InjectedValues getInstance()
-    {
+    public static InjectedValues getInstance() {
         return getDefaultHabitat().getByType(InjectedValues.class);
     }
 
-    public InjectedValues()
-    {
+    public InjectedValues() {
     }
-
 }
 
 

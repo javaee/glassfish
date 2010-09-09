@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.impl.mbean;
 
 import static org.glassfish.admin.amx.base.SystemInfo.*;
@@ -47,45 +46,38 @@ import javax.management.MBeanServer;
 import org.glassfish.admin.amx.impl.util.Issues;
 
 /**
-    Single-use utility class to contain the  details of initializing various
-    SystemInfo data.  Appropriate code can be added here, but can be implemented just as
-    well elsewhere, most properly within the module that wishes to advertised presence of
-    a feature.
+Single-use utility class to contain the  details of initializing various
+SystemInfo data.  Appropriate code can be added here, but can be implemented just as
+well elsewhere, most properly within the module that wishes to advertised presence of
+a feature.
  */
-final class SystemInfoIniter
-{
+final class SystemInfoIniter {
+
     private final SystemInfoImpl mSystemInfo;
-	private final MBeanServer	 mServer;
-    
-    SystemInfoIniter( final MBeanServer mbeanServer, final SystemInfoImpl systemInfo )
-    {
-        mServer     = mbeanServer;
+    private final MBeanServer mServer;
+
+    SystemInfoIniter(final MBeanServer mbeanServer, final SystemInfoImpl systemInfo) {
+        mServer = mbeanServer;
         mSystemInfo = systemInfo;
-        Issues.getAMXIssues().notDone( "How to implement supportsClusters()" );
-        Issues.getAMXIssues().notDone( "How to implement isRunningInDomainAdminServer()" );
-    }
-    
-        public void
-    init()
-    {
-		final boolean	supportsClusters	= supportsClusters( );
-		
-		mSystemInfo.addFeature( CLUSTERS_FEATURE, supportsClusters );
-		mSystemInfo.addFeature( MULTIPLE_SERVERS_FEATURE, supportsClusters );
-		mSystemInfo.addFeature( RUNNING_IN_DAS_FEATURE, isRunningInDomainAdminServer() );
+        Issues.getAMXIssues().notDone("How to implement supportsClusters()");
+        Issues.getAMXIssues().notDone("How to implement isRunningInDomainAdminServer()");
     }
 
-    		private final boolean
-	supportsClusters( )
-	{
+    public void init() {
+        final boolean supportsClusters = supportsClusters();
+
+        mSystemInfo.addFeature(CLUSTERS_FEATURE, supportsClusters);
+        mSystemInfo.addFeature(MULTIPLE_SERVERS_FEATURE, supportsClusters);
+        mSystemInfo.addFeature(RUNNING_IN_DAS_FEATURE, isRunningInDomainAdminServer());
+    }
+
+    private final boolean supportsClusters() {
         return false;
-	}
-	
-		private boolean
-	isRunningInDomainAdminServer()
-	{
-		return true;
-	}
+    }
+
+    private boolean isRunningInDomainAdminServer() {
+        return true;
+    }
 }
 
 

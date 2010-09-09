@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.impl.util;
 
 import java.util.ArrayList;
@@ -57,26 +56,21 @@ import static org.glassfish.external.amx.AMX.*;
 /**
 Class used to build ObjectNameBuilder for AMX MBeans.
  */
-public final class ObjectNameBuilder
-{
+public final class ObjectNameBuilder {
+
     private final MBeanServer mMBeanServer;
-
     private final String mJMXDomain;
-
     private final ObjectName mParent;
 
-    public ObjectNameBuilder(final MBeanServer mbeanServer, final String jmxDomain)
-    {
+    public ObjectNameBuilder(final MBeanServer mbeanServer, final String jmxDomain) {
         mMBeanServer = mbeanServer;
         mJMXDomain = jmxDomain;
         mParent = null;
     }
 
-    public ObjectNameBuilder(final MBeanServer mbeanServer, final ObjectName parent)
-    {
+    public ObjectNameBuilder(final MBeanServer mbeanServer, final ObjectName parent) {
         mMBeanServer = mbeanServer;
-        if (parent == null)
-        {
+        if (parent == null) {
             throw new IllegalArgumentException("null ObjecName for parent");
         }
 
@@ -84,29 +78,24 @@ public final class ObjectNameBuilder
         mJMXDomain = parent.getDomain();
     }
 
-    private static void debug(final Object o)
-    {
+    private static void debug(final Object o) {
         System.out.println("" + o);
         //AMXDebug.getInstance().getOutput( "org.glassfish.admin.amx.support.ObjectNameBuilder" ).println( o );
     }
 
-    public String getJMXDomain()
-    {
+    public String getJMXDomain() {
         return (mJMXDomain);
     }
-
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     /**
     Append the formatted props to the JMX domain and return the ObjectName
      */
-    private ObjectName newObjectName(String props)
-    {
+    private ObjectName newObjectName(String props) {
         return (Util.newObjectName(getJMXDomain(), props));
     }
 
-    public static String makeWild(String props)
-    {
+    public static String makeWild(String props) {
         return (Util.concatenateProps(props, JMXUtil.WILD_PROP));
     }
 
@@ -115,15 +104,13 @@ public final class ObjectNameBuilder
      */
     public static List<ObjectName> getAncestors(
             final MBeanServer server,
-            final ObjectName start)
-    {
+            final ObjectName start) {
         //debug( "ObjectNameBuilder.getAncestors(): type = " + start );
         AMXProxy amx = ProxyFactory.getInstance(server).getProxy(start, AMXProxy.class);
         final List<ObjectName> ancestors = new ArrayList<ObjectName>();
 
         AMXProxy parent = null;
-        while ((parent = amx.parent()) != null)
-        {
+        while ((parent = amx.parent()) != null) {
             ancestors.add(parent.extra().objectName());
             amx = parent;
         }
@@ -138,25 +125,21 @@ public final class ObjectNameBuilder
     public ObjectName buildChildObjectName(
             final ObjectName parent,
             final String type,
-            final String childName)
-    {
+            final String childName) {
         return buildChildObjectName(mMBeanServer, parent, type, childName);
     }
 
     public ObjectName buildChildObjectName(
             final String type,
-            final String childName)
-    {
+            final String childName) {
         return buildChildObjectName(mMBeanServer, mParent, type, childName);
     }
 
-    public ObjectName buildChildObjectName(final Class<?> intf)
-    {
+    public ObjectName buildChildObjectName(final Class<?> intf) {
         return buildChildObjectName(mMBeanServer, mParent, intf);
     }
 
-    public ObjectName buildChildObjectName(final Class<?> intf, final String name)
-    {
+    public ObjectName buildChildObjectName(final Class<?> intf, final String name) {
         return buildChildObjectName(mMBeanServer, mParent, intf, name);
     }
 
@@ -174,8 +157,7 @@ public final class ObjectNameBuilder
             final MBeanServer server,
             final ObjectName parent,
             final String type,
-            final String childName)
-    {
+            final String childName) {
         //debug( "ObjectNameBuilder.buildChildObjectName(): type = " + type + ", name = " + childName + ", parent = " + parent );
         String props = Util.makeRequiredProps(type, childName);
 
@@ -197,8 +179,7 @@ public final class ObjectNameBuilder
             final MBeanServer server,
             final ObjectName parent,
             final Class<?> intf,
-            final String name)
-    {
+            final String name) {
         final String type = Util.deduceType(intf);
         //final String pathType = Util.getPathType(intf);
 
@@ -208,16 +189,13 @@ public final class ObjectNameBuilder
     public static ObjectName buildChildObjectName(
             final MBeanServer server,
             final ObjectName parent,
-            final Class<?> intf)
-    {
+            final Class<?> intf) {
         return buildChildObjectName(server, parent, intf, null);
     }
 
-    private static String toString(final Object o)
-    {
+    private static String toString(final Object o) {
         return (SmartStringifier.toString(o));
     }
-
 }
 
 

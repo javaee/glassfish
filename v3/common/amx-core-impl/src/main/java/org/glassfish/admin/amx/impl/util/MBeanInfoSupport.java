@@ -78,30 +78,24 @@ import static org.glassfish.external.amx.AMX.*;
  *
  * @author llc
  */
-public final class MBeanInfoSupport
-{
-    private MBeanInfoSupport()
-    {
+public final class MBeanInfoSupport {
+
+    private MBeanInfoSupport() {
     }
 
-    private static void debug(final Object o)
-    {
+    private static void debug(final Object o) {
         System.out.println(o.toString());
     }
-
     private static MBeanInfo amxspiMBeanInfo = null;
 
-    public static synchronized MBeanInfo getAMX_SPIMBeanInfo()
-    {
-        if (amxspiMBeanInfo == null)
-        {
+    public static synchronized MBeanInfo getAMX_SPIMBeanInfo() {
+        if (amxspiMBeanInfo == null) {
             amxspiMBeanInfo = MBeanInfoSupport.getMBeanInfo(AMX_SPI.class);
         }
         return amxspiMBeanInfo;
     }
 
-    public static <T extends AMX_SPI> MBeanInfo getMBeanInfo(final Class<T> intf)
-    {
+    public static <T extends AMX_SPI> MBeanInfo getMBeanInfo(final Class<T> intf) {
         final Map<String, Method> getters = new HashMap<String, Method>();
         final Map<String, Method> setters = new HashMap<String, Method>();
         final Map<String, Method> getterSetters = new HashMap<String, Method>();
@@ -109,8 +103,7 @@ public final class MBeanInfoSupport
 
         findInterfaceMethods(intf, getters, setters, getterSetters, operations);
 
-        if (!AMX_SPI.class.isAssignableFrom(intf))
-        {
+        if (!AMX_SPI.class.isAssignableFrom(intf)) {
             findInterfaceMethods(AMX_SPI.class, getters, setters, getterSetters, operations);
         }
 
@@ -128,13 +121,12 @@ public final class MBeanInfoSupport
 
         final boolean globalSingleton = meta != null && meta.globalSingleton();
         final boolean singleton = Singleton.class.isAssignableFrom(intf) || globalSingleton ||
-                                  (meta != null && meta.singleton());
+                (meta != null && meta.singleton());
         final String group = GROUP_OTHER;
         final boolean isLeaf = meta != null && meta.leaf();
         final boolean supportsAdoption = !isLeaf;
 
-        if (isLeaf)
-        {
+        if (isLeaf) {
             JMXUtil.remove(attrsList, ATTR_CHILDREN);
         }
 
@@ -166,71 +158,55 @@ public final class MBeanInfoSupport
     }
 
     public static void findInterfaceMethods(final Class<?> intf,
-                                            final Map<String, Method> getters,
-                                            final Map<String, Method> setters,
-                                            final Map<String, Method> getterSetters,
-                                            final Set<Method> operations)
-    {
+            final Map<String, Method> getters,
+            final Map<String, Method> setters,
+            final Map<String, Method> getterSetters,
+            final Set<Method> operations) {
         final Method[] methods = intf.getMethods();
 
-        for (final Method method : methods)
-        {
+        for (final Method method : methods) {
             final String methodName = method.getName();
 
             final ManagedAttribute managedAttr = method.getAnnotation(ManagedAttribute.class);
             final ManagedOperation managedOp = method.getAnnotation(ManagedOperation.class);
 
-            if (managedAttr != null)
-            {
+            if (managedAttr != null) {
                 String attrName = null;
                 final int numArgs = method.getParameterTypes().length;
-                if ( managedOp != null )
-                {
-                    ImplUtil.getLogger().warning( "MBeanInfoSupport:  @ManagedAttribute cannot also be @ManagedOperation: " + intf.getName() + "." + method.getName() + "()");
-                }
-                else if (numArgs == 0 && JMXUtil.isIsOrGetter(method))
-                {
+                if (managedOp != null) {
+                    ImplUtil.getLogger().warning("MBeanInfoSupport:  @ManagedAttribute cannot also be @ManagedOperation: " + intf.getName() + "." + method.getName() + "()");
+                } else if (numArgs == 0 && JMXUtil.isIsOrGetter(method)) {
                     attrName = JMXUtil.getAttributeName(method);
                     getters.put(attrName, method);
                     //debug( "findInterfaceMethods: getter: " + attrName );
-                }
-                else if ( numArgs == 1 && JMXUtil.isSetter(method))
-                {
+                } else if (numArgs == 1 && JMXUtil.isSetter(method)) {
                     attrName = JMXUtil.getAttributeName(method);
                     setters.put(attrName, method);
                     //debug( "findInterfaceMethods: setter: " + attrName );
-                }
-                else
-                {
-                    ImplUtil.getLogger().warning( "MBeanInfoSupport:  @ManagedAttribute not a getter or setter: " + intf.getName() + "." + method.getName() + "()");
+                } else {
+                    ImplUtil.getLogger().warning("MBeanInfoSupport:  @ManagedAttribute not a getter or setter: " + intf.getName() + "." + method.getName() + "()");
                     // ignore
                 }
 
                 if ((attrName != null) &&
-                    getters.containsKey(attrName) &&
-                    setters.containsKey(attrName))
-                {
+                        getters.containsKey(attrName) &&
+                        setters.containsKey(attrName)) {
                     final Method getter = getters.get(attrName);
                     final Class<?> getterType = getter.getReturnType();
                     final Class<?> setterType = setters.get(attrName).getParameterTypes()[ 0];
 
-                    if (getterType == setterType)
-                    {
+                    if (getterType == setterType) {
                         getters.remove(attrName);
                         setters.remove(attrName);
                         getterSetters.put(attrName, getter);
                         //debug( "findInterfaceMethods: getter/setter: " + attrName );
-                    }
-                    else
-                    {
+                    } else {
                         throw new IllegalArgumentException("Attribute " + attrName +
-                                                           "has type " + getterType.getName() + " as getter but type " +
-                                                           setterType.getName() + " as setter");
+                                "has type " + getterType.getName() + " as getter but type " +
+                                setterType.getName() + " as setter");
                     }
                 }
-            }
-            else if (managedOp != null)
-            {
+            } else if (managedOp != null) {
                 operations.add(method);
             }
         }
@@ -264,11 +240,9 @@ public final class MBeanInfoSupport
      * @param m
      * @return
      */
-    public static MBeanAttributeInfo attributeInfo(final Method m)
-    {
+    public static MBeanAttributeInfo attributeInfo(final Method m) {
         final ManagedAttribute managed = m.getAnnotation(ManagedAttribute.class);
-        if (managed == null)
-        {
+        if (managed == null) {
             return null;
         }
 
@@ -289,30 +263,24 @@ public final class MBeanInfoSupport
         return info;
     }
 
-    public static Class<?> translatedType(final Class<?> clazz)
-    {
+    public static Class<?> translatedType(final Class<?> clazz) {
         Class<?> type = clazz;
-        if (AMXProxy.class.isAssignableFrom(clazz))
-        {
+        if (AMXProxy.class.isAssignableFrom(clazz)) {
             type = ObjectName.class;
-        }
-        else if ( clazz.isArray() && AMXProxy.class.isAssignableFrom( clazz.getComponentType() ) )
-        {
+        } else if (clazz.isArray() && AMXProxy.class.isAssignableFrom(clazz.getComponentType())) {
             type = ObjectName[].class;
         }
-        
+
         return type;
     }
 
     private static List<MBeanAttributeInfo> generateAttributeInfos(
             final Collection<Method> methods,
             final boolean read,
-            final boolean write)
-    {
+            final boolean write) {
         final List<MBeanAttributeInfo> infos = new ArrayList<MBeanAttributeInfo>();
 
-        for (final Method m : methods)
-        {
+        for (final Method m : methods) {
             final String methodName = m.getName();
 
             final String description = getDescription(m);
@@ -322,8 +290,7 @@ public final class MBeanInfoSupport
 
             // methods returning AMXProxy should return ObjectName
             Class<?> returnType = m.getReturnType();
-            if (AMXProxy.class.isAssignableFrom(returnType))
-            {
+            if (AMXProxy.class.isAssignableFrom(returnType)) {
                 returnType = ObjectName.class;
             }
 
@@ -344,8 +311,7 @@ public final class MBeanInfoSupport
     public static List<MBeanAttributeInfo> generateMBeanAttributeInfos(
             final Collection<Method> getterSetters,
             final Collection<Method> getters,
-            final Collection<Method> setters)
-    {
+            final Collection<Method> setters) {
         final List<MBeanAttributeInfo> attrsList = new ArrayList<MBeanAttributeInfo>();
 
         attrsList.addAll(generateAttributeInfos(getterSetters, true, true));
@@ -355,14 +321,11 @@ public final class MBeanInfoSupport
         return (attrsList);
     }
 
-    public static <T extends Annotation> T getAnnotation(final Annotation[] annotations, final Class<T> clazz)
-    {
+    public static <T extends Annotation> T getAnnotation(final Annotation[] annotations, final Class<T> clazz) {
         T result = null;
 
-        for (final Annotation a : annotations)
-        {
-            if (a.annotationType() == clazz)
-            {
+        for (final Annotation a : annotations) {
+            if (a.annotationType() == clazz) {
                 result = (T) a;
                 break;
             }
@@ -370,22 +333,19 @@ public final class MBeanInfoSupport
         return result;
     }
 
-    private static String getDescription(final AnnotatedElement o)
-    {
+    private static String getDescription(final AnnotatedElement o) {
         final Description d = o.getAnnotation(Description.class);
         return d == null ? "" : d.value();
     }
 
-    public static MBeanParameterInfo[] parameterInfos(final Method method)
-    {
+    public static MBeanParameterInfo[] parameterInfos(final Method method) {
         final Class<?>[] sig = method.getParameterTypes();
         final Annotation[][] paramAnnotations = method.getParameterAnnotations();
 
         final MBeanParameterInfo[] infos = new MBeanParameterInfo[sig.length];
 
-        for (int i = 0; i < sig.length; ++i)
-        {
-            final Class<?> paramClass = translatedType( sig[i] );
+        for (int i = 0; i < sig.length; ++i) {
+            final Class<?> paramClass = translatedType(sig[i]);
             final Annotation[] annotations = paramAnnotations[i];
 
             final Param p = getAnnotation(annotations, Param.class);
@@ -393,8 +353,7 @@ public final class MBeanInfoSupport
 
             final Description d = getAnnotation(annotations, Description.class);
             String description = "";
-            if (d != null && d.value().length() != 0)
-            {
+            if (d != null && d.value().length() != 0) {
                 description = d.value();
             }
 
@@ -407,13 +366,11 @@ public final class MBeanInfoSupport
         return (infos);
     }
 
-    public static MBeanOperationInfo[] generateMBeanOperationInfos(final Collection<Method> methods)
-    {
+    public static MBeanOperationInfo[] generateMBeanOperationInfos(final Collection<Method> methods) {
         final MBeanOperationInfo[] infos = new MBeanOperationInfo[methods.size()];
 
         int i = 0;
-        for (final Method m : methods)
-        {
+        for (final Method m : methods) {
             final ManagedOperation managed = m.getAnnotation(ManagedOperation.class);
 
             final String methodName = m.getName();
@@ -445,12 +402,10 @@ public final class MBeanInfoSupport
             final boolean globalSingleton,
             final String group,
             final boolean supportsAdoption,
-            final String[] subTypes)
-    {
+            final String[] subTypes) {
         final DescriptorSupport desc = new DescriptorSupport();
 
-        if (intf == null || !intf.isInterface())
-        {
+        if (intf == null || !intf.isInterface()) {
             throw new IllegalArgumentException("interface class must be an interface");
         }
 
@@ -461,14 +416,12 @@ public final class MBeanInfoSupport
         desc.setField(DESC_GROUP, group);
         desc.setField(DESC_SUPPORTS_ADOPTION, supportsAdoption);
 
-        if (subTypes != null)
-        {
+        if (subTypes != null) {
             desc.setField(DESC_SUB_TYPES, subTypes);
         }
 
         return desc;
     }
-
 }
 
 

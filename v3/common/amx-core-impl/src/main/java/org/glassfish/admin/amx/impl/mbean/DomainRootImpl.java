@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.impl.mbean;
 
 import java.util.Map;
@@ -75,125 +74,112 @@ import org.glassfish.admin.amx.util.jmx.JMXUtil;
 
 /**
  */
-public class DomainRootImpl extends AMXImplBase
-// implements DomainRoot
+public class DomainRootImpl extends AMXImplBase // implements DomainRoot
 {
-	private final String	mAppserverDomainName;
-	private final File      mInstanceRoot;
 
+    private final String mAppserverDomainName;
+    private final File mInstanceRoot;
     private volatile ComplianceMonitor mCompliance;
 
-    public DomainRootImpl()
-    {
+    public DomainRootImpl() {
         super(null, DomainRoot.class);
-        
-        mInstanceRoot        =  new File( System.getProperty( "com.sun.aas.instanceRoot" ) );
+
+        mInstanceRoot = new File(System.getProperty("com.sun.aas.instanceRoot"));
         mAppserverDomainName = mInstanceRoot.getName();
     }
 
-    public void stopDomain()
-    {
+    public void stopDomain() {
         getDomainRootProxy().getRuntime().stopDomain();
     }
 
-    public ObjectName getQueryMgr()
-    {
+    public ObjectName getQueryMgr() {
         return child(Query.class);
     }
-    
-    public ObjectName getJ2EEDomain()
-    {
-        return child( "J2EEDomain" );
+
+    public ObjectName getJ2EEDomain() {
+        return child("J2EEDomain");
     }
-    
-    public ObjectName getMonitoringRoot()
-    {
-        return child( MonitoringRoot.class );
+
+    public ObjectName getMonitoringRoot() {
+        return child(MonitoringRoot.class);
     }
-    
-    public ObjectName getPathnames()
-    {
+
+    public ObjectName getPathnames() {
         return child(Pathnames.class);
     }
 
-    public ObjectName getSystemStatus()
-    {
+    public ObjectName getSystemStatus() {
         return child(SystemStatus.class);
     }
 
-    public ObjectName getBulkAccess()
-    {
+    public ObjectName getBulkAccess() {
         return child(BulkAccess.class);
     }
 
-    protected ObjectName preRegisterHook(final MBeanServer server, final ObjectName selfObjectName)
-            throws Exception
-    {
+    protected ObjectName preRegisterHook(final MBeanServer server,
+            final ObjectName selfObjectName)
+            throws Exception {
         // DomainRoot has not yet been registered; any MBeans that exist are non-compliant
         // because they cannot have a Parent.
         final Set<ObjectName> existing = JMXUtil.queryAllInDomain(server, selfObjectName.getDomain());
-        if (existing.size() != 0)
-        {
-            ImplUtil.getLogger().info("MBeans exist in AMX domain prior to DomainRoot (violates Parent requirement): " + CollectionUtil.toString(existing, ", "));
+        if (existing.size() != 0) {
+            ImplUtil.getLogger().info(
+                    "MBeans exist in AMX domain prior to DomainRoot (violates Parent requirement): " +
+                        CollectionUtil.toString(existing, ", "));
         }
 
         return selfObjectName;
     }
 
     public void preRegisterDone()
-            throws Exception
-    {
+            throws Exception {
         super.preRegisterDone();
     }
 
     @Override
-    protected void postRegisterHook(final Boolean registrationSucceeded)
-    {
+    protected void postRegisterHook(final Boolean registrationSucceeded) {
         super.postRegisterHook(registrationSucceeded);
-        
+
         // Start compliance after everything else; it uses key MBeans like Paths
-        if ( registrationSucceeded.booleanValue() )
-        {
+        if (registrationSucceeded.booleanValue()) {
             // start compliance monitoring immediately, even before children are registered
             mCompliance = ComplianceMonitor.getInstance(getDomainRootProxy());
             mCompliance.start();
         }
     }
-    
-    public Map<ObjectName,List<String>> getComplianceFailures() {
-        final Map<ObjectName, AMXValidator.ProblemList> failures = mCompliance.getComplianceFailures();
+
+    public Map<ObjectName, List<String>> getComplianceFailures() {
+        final Map<ObjectName, AMXValidator.ProblemList> failures =
+                mCompliance.getComplianceFailures();
         final Map<ObjectName, List<String>> result = MapUtil.newMap();
-        
-        for( final ObjectName failed : failures.keySet() )
-        {
+
+        for (final ObjectName failed : failures.keySet()) {
             final AMXValidator.ProblemList problems = failures.get(failed);
-            result.put( failed, problems.getProblems() );
+            result.put(failed, problems.getProblems());
         }
-        
+
         return result;
     }
 
-    public String getAppserverDomainName()
-    {
+    public String getAppserverDomainName() {
         return (mAppserverDomainName);
     }
 
     @Override
-    protected final void registerChildren()
-    {
+    protected final void registerChildren() {
         super.registerChildren();
 
         final ObjectName self = getObjectName();
-        final ObjectNameBuilder objectNames = new ObjectNameBuilder(getMBeanServer(), self);
+        final ObjectNameBuilder objectNames =
+                new ObjectNameBuilder(getMBeanServer(), self);
 
         ObjectName childObjectName = null;
         Object mbean = null;
         final MBeanServer server = getMBeanServer();
 
         /**
-            Follow this order: some later MBeans might depend on others.
+        Follow this order: some later MBeans might depend on others.
          */
-         
         childObjectName = objectNames.buildChildObjectName(Pathnames.class);
         mbean = new PathnamesImpl(self);
         registerChild(mbean, childObjectName);
@@ -225,63 +211,51 @@ public class DomainRootImpl extends AMXImplBase
         registerChild(mbean, childObjectName);
     }
 
-
-    public boolean getAMXReady()
-    {
+    public boolean getAMXReady() {
         // just block until ready, no need to support polling
         waitAMXReady();
         return true;
     }
 
-    public void waitAMXReady()
-    {
+    public void waitAMXReady() {
         FeatureAvailability.getInstance().waitForFeature(FeatureAvailability.AMX_READY_FEATURE, this.getClass().getName());
     }
 
-    public String getDebugPort()
-    {
+    public String getDebugPort() {
         Issues.getAMXIssues().notDone("DomainRootImpl.getDebugPort");
         return "" + 9999;
     }
 
-    public String getApplicationServerFullVersion()
-    {
+    public String getApplicationServerFullVersion() {
         return Version.getFullVersion();
     }
 
-    public String getInstanceRoot()
-    {
+    public String getInstanceRoot() {
         return SmartFile.sanitize("" + System.getProperty("com.sun.aas.instanceRoot"));
     }
 
-    public String getDomainDir()
-    {
+    public String getDomainDir() {
         return SmartFile.sanitize(mInstanceRoot.toString());
     }
 
-    public String getConfigDir()
-    {
+    public String getConfigDir() {
         return getDomainDir() + "/" + "config";
     }
 
-    public String getInstallDir()
-    {
+    public String getInstallDir() {
         return SmartFile.sanitize("" + System.getProperty("com.sun.aas.installRoot"));
     }
 
-    public Object[] getUptimeMillis()
-    {
+    public Object[] getUptimeMillis() {
         final ServerEnvironmentImpl env = InjectedValues.getInstance().getServerEnvironment();
 
         final long elapsed = System.currentTimeMillis() - env.getStartupContext().getCreationTime();
         final Duration duration = new Duration(elapsed);
 
-        return new Object[]
-                {
+        return new Object[]{
                     elapsed, duration.toString()
                 };
     }
-
 }
 
 

@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.impl.mbean;
 
 import java.util.ArrayList;
@@ -67,220 +66,177 @@ import org.glassfish.admin.amx.impl.util.InjectedValues;
 /**
 Validates AMX MBeans as they are registered.  Problems are emitted as WARNING to the server log.
  */
-public final class ComplianceMonitor implements NotificationListener
-{
+public final class ComplianceMonitor implements NotificationListener {
+
     private static ComplianceMonitor INSTANCE = null;
-
     private final DomainRoot mDomainRoot;
-
     private final MBeanServer mServer;
-
     private volatile boolean mStarted = false;
-    
     private volatile String mValidationLevel;
-    private volatile boolean  mUnregisterNonCompliant;
-    private volatile boolean  mLogInaccessibleAttributes;
-
+    private volatile boolean mUnregisterNonCompliant;
+    private volatile boolean mLogInaccessibleAttributes;
     /** offloads the validation so as not to block during Notifications */
     private final ValidatorThread mValidatorThread;
-    
-    private ComplianceMonitor(final DomainRoot domainRoot)
-    {
+
+    private ComplianceMonitor(final DomainRoot domainRoot) {
         mDomainRoot = domainRoot;
 
         mServer = (MBeanServer) domainRoot.extra().mbeanServerConnection();
-        
+
         final AmxPref amxPrefs = InjectedValues.getInstance().getAMXPrefs();
-        if ( amxPrefs == null )
-        {
-            mValidationLevel           = AmxPref.VALIDATION_LEVEL_FULL;
-            mUnregisterNonCompliant    = false;
+        if (amxPrefs == null) {
+            mValidationLevel = AmxPref.VALIDATION_LEVEL_FULL;
+            mUnregisterNonCompliant = false;
             mLogInaccessibleAttributes = true;
-        }
-        else
-        {
-            mValidationLevel           = amxPrefs.getValidationLevel();
-            mUnregisterNonCompliant    = Boolean.valueOf(amxPrefs.getUnregisterNonCompliant());
+        } else {
+            mValidationLevel = amxPrefs.getValidationLevel();
+            mUnregisterNonCompliant = Boolean.valueOf(amxPrefs.getUnregisterNonCompliant());
             mLogInaccessibleAttributes = Boolean.valueOf(amxPrefs.getLogInaccessibleAttributes());
         }
 
         mValidatorThread = new ValidatorThread(mServer, mValidationLevel, mUnregisterNonCompliant, mLogInaccessibleAttributes);
-        
-        ImplUtil.getLogger().info(  "AMX ComplianceMonitor: ValidationLevel = " + mValidationLevel +
-                                    ", UnregisterNonCompliant = " + mUnregisterNonCompliant +
-                                    ", LogInaccessibleAttributes = " + mLogInaccessibleAttributes );
+
+        ImplUtil.getLogger().info("AMX ComplianceMonitor: ValidationLevel = " + mValidationLevel +
+                ", UnregisterNonCompliant = " + mUnregisterNonCompliant +
+                ", LogInaccessibleAttributes = " + mLogInaccessibleAttributes);
     }
-        
+
     public Map<ObjectName, AMXValidator.ProblemList> getComplianceFailures() {
         return mValidatorThread.getComplianceFailures();
     }
 
-    private void listen()
-    {
-        try
-        {
+    private void listen() {
+        try {
             JMXUtil.listenToMBeanServerDelegate(mServer, this, null, null);
 
-        }
-        catch (final Exception e)
-        {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
 
         // queue all existing MBeans
         final Set<ObjectName> existing = JMXUtil.queryAllInDomain(mServer, mDomainRoot.objectName().getDomain());
-        for (final ObjectName objectName : existing)
-        {
+        for (final ObjectName objectName : existing) {
             //debug( "Queueing for validation: " + objectName );
             validate(objectName);
         }
     }
-    
-    boolean shouldValidate() { return ! AmxPref.VALIDATION_LEVEL_OFF.equals(mValidationLevel); }
 
-    private void validate(final ObjectName objectName)
-    {
-        if ( shouldValidate() )
-        {
+    boolean shouldValidate() {
+        return !AmxPref.VALIDATION_LEVEL_OFF.equals(mValidationLevel);
+    }
+
+    private void validate(final ObjectName objectName) {
+        if (shouldValidate()) {
             mValidatorThread.add(objectName);
         }
     }
 
-    public static synchronized ComplianceMonitor getInstance(final DomainRoot domainRoot)
-    {
-        if (INSTANCE == null)
-        {
+    public static synchronized ComplianceMonitor getInstance(final DomainRoot domainRoot) {
+        if (INSTANCE == null) {
             INSTANCE = new ComplianceMonitor(domainRoot);
             INSTANCE.listen(); // to start queuing immediately
         }
         return INSTANCE;
     }
 
-    public void start()
-    {
-        if (shouldValidate() && !mStarted)
-        {
+    public void start() {
+        if (shouldValidate() && !mStarted) {
             mValidatorThread.start();
         }
     }
 
-    public void handleNotification(final Notification notifIn, final Object handback)
-    {
+    public void handleNotification(final Notification notifIn, final Object handback) {
         if ((notifIn instanceof MBeanServerNotification) &&
-            notifIn.getType().equals(MBeanServerNotification.REGISTRATION_NOTIFICATION))
-        {
+                notifIn.getType().equals(MBeanServerNotification.REGISTRATION_NOTIFICATION)) {
             final MBeanServerNotification notif = (MBeanServerNotification) notifIn;
             final ObjectName objectName = notif.getMBeanName();
-            if (objectName.getDomain().equals(mDomainRoot.objectName().getDomain()))
-            {
+            if (objectName.getDomain().equals(mDomainRoot.objectName().getDomain())) {
                 validate(objectName);
             }
         }
     }
 
-    private static final class ValidatorThread extends Thread
-    {
+    private static final class ValidatorThread extends Thread {
+
         private final MBeanServer mServer;
-
         private final LinkedBlockingQueue<ObjectName> mMBeans = new LinkedBlockingQueue<ObjectName>();
-
         /** total number of failures */
-        private final AtomicInteger   mComplianceFailures = new AtomicInteger();
-
+        private final AtomicInteger mComplianceFailures = new AtomicInteger();
         private final boolean mUnregisterNonCompliant;
         private volatile String mValidationLevel;
         private volatile boolean mLogInaccessibleAttributes;
-        
+
         ValidatorThread(
-            final MBeanServer server,
-            final String validationLevel,
-            final boolean unregisterNonCompliant,
-            final boolean logInaccessibleAttributes)
-        {
+                final MBeanServer server,
+                final String validationLevel,
+                final boolean unregisterNonCompliant,
+                final boolean logInaccessibleAttributes) {
             super("ComplianceMonitor.ValidatorThread");
             mServer = server;
             mValidationLevel = validationLevel;
             mUnregisterNonCompliant = unregisterNonCompliant;
             mLogInaccessibleAttributes = logInaccessibleAttributes;
-            
-            mFailures = new ConcurrentHashMap<ObjectName,AMXValidator.ProblemList>();
+
+            mFailures = new ConcurrentHashMap<ObjectName, AMXValidator.ProblemList>();
         }
-        
         /** queue poison pill */
         private static final ObjectName QUIT = JMXUtil.newObjectName("quit:type=quit");
+        private final ConcurrentHashMap<ObjectName, AMXValidator.ProblemList> mFailures;
 
-        private final ConcurrentHashMap<ObjectName,AMXValidator.ProblemList>  mFailures;
-        public Map<ObjectName, AMXValidator.ProblemList> getComplianceFailures()
-        {
+        public Map<ObjectName, AMXValidator.ProblemList> getComplianceFailures() {
             return mFailures;
         }
-        
-        void quit()
-        {
+
+        void quit() {
             add(QUIT);
         }
 
-        public void add(final ObjectName objectName)
-        {
+        public void add(final ObjectName objectName) {
             mMBeans.add(objectName);
         }
 
-        public void run()
-        {
-            try
-            {
+        public void run() {
+            try {
                 doRun();
-            }
-            catch ( final Throwable t)
-            {
-                ImplUtil.getLogger().log( Level.SEVERE, "AMX ComplianceMonitor thread has unexpectedly quit", t );
+            } catch (final Throwable t) {
+                ImplUtil.getLogger().log(Level.SEVERE, "AMX ComplianceMonitor thread has unexpectedly quit", t);
             }
         }
 
-        protected void doRun() throws InterruptedException
-        {
+        protected void doRun() throws InterruptedException {
             //debug( "ValidatorThread.doRun(): started" );                
-            while (true)
-            {
+            while (true) {
                 final ObjectName next = mMBeans.take(); // BLOCK until ready
                 final List<ObjectName> toValidate = new ArrayList<ObjectName>();
                 toValidate.add(next);
                 mMBeans.drainTo(toValidate);    // efficiently get any additional ones
-                if (mMBeans.contains(QUIT))
-                {
+                if (mMBeans.contains(QUIT)) {
                     break;  // poison, quit;
                 }
 
                 // process available MBeans as a group so we can emit summary information as a group.
                 final AMXValidator validator = new AMXValidator(mServer, mValidationLevel, mUnregisterNonCompliant, mLogInaccessibleAttributes);
-                try
-                {
+                try {
                     //debug( "VALIDATING MBeans: " + toValidate.size() );
                     final ObjectName[] objectNames = new ObjectName[toValidate.size()];
                     toValidate.toArray(objectNames);
                     final AMXValidator.ValidationResult result = validator.validate(objectNames);
-                    if (result.numFailures() != 0)
-                    {
-                        mFailures.putAll( result.failures() );
-                        
-                        mComplianceFailures.addAndGet( result.numFailures() );
+                    if (result.numFailures() != 0) {
+                        mFailures.putAll(result.failures());
+
+                        mComplianceFailures.addAndGet(result.numFailures());
                         ImplUtil.getLogger().info(result.toString());
                     }
-                }
-                catch ( final Throwable t)
-                {
-                    ImplUtil.getLogger().log( Level.WARNING, "Exception validating MBean " + next, t );
+                } catch (final Throwable t) {
+                    ImplUtil.getLogger().log(Level.WARNING, "Exception validating MBean " + next, t);
                 }
             }
         }
-
     }
 
-    private static void debug(final Object o)
-    {
+    private static void debug(final Object o) {
         System.out.println(o.toString());
     }
-
 }
 
 

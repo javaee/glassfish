@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.impl.mbean;
 
 import javax.management.MBeanServer;
@@ -46,8 +45,8 @@ import javax.management.MBeanServer;
 Factory to create the org.glassfish.admin.amx.base.SystemInfo implementation.
 For now, only one implementation instance is allowed.
  */
-public final class SystemInfoFactory
-{
+public final class SystemInfoFactory {
+
     static SystemInfoImpl INSTANCE = null;
 
     /**
@@ -56,8 +55,7 @@ public final class SystemInfoFactory
 
     @return the SystemInfoImpl, *or null if not yet initialized*
      */
-    public static synchronized SystemInfoImpl getInstance()
-    {
+    public static synchronized SystemInfoImpl getInstance() {
         return INSTANCE;
     }
 
@@ -65,21 +63,16 @@ public final class SystemInfoFactory
     Create the singleton instance.  Intended for exclusive use by the appropriate code
     to initialize once at startup.
      */
-    public static synchronized SystemInfoImpl createInstance(final MBeanServer server)
-    {
-        if (INSTANCE == null)
-        {
+    public static synchronized SystemInfoImpl createInstance(final MBeanServer server) {
+        if (INSTANCE == null) {
             INSTANCE = new SystemInfoImpl(server);
 
             new SystemInfoIniter(server, INSTANCE).init();
-        }
-        else
-        {
+        } else {
             throw new RuntimeException("can only initialize once--bug");
         }
         return INSTANCE;
     }
-
 }
 
 
