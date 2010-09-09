@@ -78,7 +78,7 @@ public class ClusterHandler {
      */
     @Handler(id = "gf.getClusterStatusSummary",
         input = {
-            @HandlerInput(name = "listInstancePropsMap", type = Map.class, required = true)
+            @HandlerInput(name = "statusMap", type = Map.class, required = true)
         },
         output = {
             @HandlerOutput(name = "numRunning", type = String.class),
@@ -86,12 +86,12 @@ public class ClusterHandler {
             @HandlerOutput(name = "status", type = String.class)
         })
     public static void getClusterStatusSummary(HandlerContext handlerCtx) {
-        Map propsMap = (Map) handlerCtx.getInputValue("listInstancePropsMap");
+        Map statusMap = (Map) handlerCtx.getInputValue("statusMap");
         int running=0;
         int notRunning=0;
         try{
 
-            for (Iterator it=propsMap.values().iterator(); it.hasNext(); ) {
+            for (Iterator it=statusMap.values().iterator(); it.hasNext(); ) {
                 Object value = it.next();
                 if (value.toString().equals(RUNNING)){
                     running++;
@@ -368,6 +368,53 @@ public class ClusterHandler {
             return null;
         }
     }
+
+
+
+    @Handler(id = "gf.listInstances",
+        input = {
+            @HandlerInput(name="optionKeys", type=List.class, required=true),
+            @HandlerInput(name="optionValues", type=List.class, required=true)
+        },
+        output = {
+            @HandlerOutput(name = "instances", type = List.class),
+            @HandlerOutput(name = "statusMap", type = Map.class),
+            @HandlerOutput(name = "uptimeMap", type = Map.class),
+            @HandlerOutput(name = "listEmpty", type = Boolean.class)
+        })
+    public static void listInstances(HandlerContext handlerCtx) {
+
+        List instances = new ArrayList();
+        Map statusMap = new HashMap();
+        Map uptimeMap = new HashMap();
+        List<String> keys = (List<String>) handlerCtx.getInputValue("optionKeys");
+        List values = (List) handlerCtx.getInputValue("optionValues");
+        Map<String, Object> attrs = new HashMap<String, Object>();
+        if (keys != null && values != null) {
+            for (int i = 0; i < keys.size(); i++) {
+                attrs.put(keys.get(i), values.get(i));
+            }
+        }
+        String endpoint = GuiUtil.getSessionValue("REST_URL")+"/list-instances";
+        try{
+            Map responseMap = RestApiHandlers.restRequest( endpoint , attrs, "GET" , handlerCtx);
+            List<Map> instanceList = (List)((Map)((Map)responseMap.get("data")).get("extraProperties")).get("instanceList");
+
+            for(Map oneInstance : instanceList){
+                instances.add(oneInstance.get("name"));
+                statusMap.put(oneInstance.get("name"), oneInstance.get("status"));
+                uptimeMap.put(oneInstance.get("name"), oneInstance.get("uptime"));
+            }
+        }catch (Exception ex){
+            GuiUtil.getLogger().severe("Error in listInstances ; \nendpoint = " + endpoint + "attrs=" + attrs);
+            //we don't need to call GuiUtil.handleError() because thats taken care of in restRequest() when we pass in the handler.
+        }
+        handlerCtx.setOutputValue("instances", instances);
+        handlerCtx.setOutputValue("statusMap", statusMap);
+        handlerCtx.setOutputValue("uptimeMap", uptimeMap);
+        handlerCtx.setOutputValue("listEmpty", instances.isEmpty());
+    }
+
 
 
     public static String CLUSTER_RESOURCE_NAME = "org.glassfish.cluster.admingui.Strings";
