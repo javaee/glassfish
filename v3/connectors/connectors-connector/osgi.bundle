@@ -37,6 +37,4 @@
 # only if the new code is made subject to such option by the copyright
 # holder.
 #
-
--exportcontents: com.sun.enterprise.connectors.connector.module; version=${project.osgi.version}
-
+-exportcontents: !*

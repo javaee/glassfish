@@ -38,5 +38,4 @@
 # holder.
 #
 
--exportcontents: \
-                        org.glassfish.connectors.admin.cli; version=${project.osgi.version}
+-exportcontents: !*
