@@ -133,7 +133,7 @@ public class EmbeddedNonOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.
         // Step 3. Create NonOSGIGlassFishRuntime
         GlassFishRuntime glassFishRuntime = new NonOSGiGlassFishRuntime(main);
 
-        logger.logp(Level.INFO, getClass().getName(), "build", "Created GlassFishRuntime {0} " +
+        logger.logp(Level.FINER, getClass().getName(), "build", "Created GlassFishRuntime {0} " +
                 "with Bootstrap Properties {1}", new Object[]{glassFishRuntime, properties});
         return glassFishRuntime;
     }
