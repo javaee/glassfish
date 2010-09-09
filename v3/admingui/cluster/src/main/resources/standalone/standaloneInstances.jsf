@@ -64,16 +64,9 @@
         setPageSessionAttribute(key="clusterList" value="#{false}" )
         setPageSessionAttribute(key="parentUrl" value="#{sessionScope.REST_URL}/servers");
         setPageSessionAttribute(key="childType" value="server");
-        createMap(result="#{pageSession.attrs}")
-        mapPut(map="#{pageSession.attrs}" key="standaloneonly" value="true" );
-        gf.restRequest(
-            endpoint="#{sessionScope.REST_URL}/list-instances.xml"
-            attrs="#{pageSession.attrs}"
-            method="GET"
-            result="#{pageSession.listInstanceResult}");
-        gf.getDeploymentTargets(listInstanceProps="#{pageSession.listInstanceResult['data']['extraProperties']['instanceList']}" result="#{pageSession.standalone}" );
-        gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", 
-                includeList="#{pageSession.standalone}" skipList={"server"}
+        gf.listInstances(optionKeys={"standaloneonly"} optionValues={"true"}, instances="#{pageSession.standalone}");
+        gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}",
+                includeList="#{pageSession.standalone}" 
                 result="#{requestScope.listOfRows}");
     />
     

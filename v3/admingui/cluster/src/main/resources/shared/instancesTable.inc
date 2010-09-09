@@ -80,21 +80,9 @@
     <sun:tableColumn headerText="$resource{i18n.common.Status}" rowHeader="$boolean{true}" id="col6">
         <staticText id="statusCol" value="#{requestScope.statusString}" >
             <!beforeEncode
-                createMap(result="#{pageSession.statusAttrs}")
-                mapPut(map="#{pageSession.statusAttrs}" key="id" value="#{td.value.name}" );
-                setAttribute(key="in", value="#{td.value.name}" );
-                gf.callRestAndExtractMsgProps(
-                    endpoint="#{sessionScope.REST_URL}/list-instances"
-                    attrs="#{pageSession.statusAttrs}"
-                    method="GET"
-                    propsMap="#{pageSession.propsMap}");
-                gf.restRequest(
-                    endpoint="#{sessionScope.REST_URL}/list-instances"
-                    attrs="#{pageSession.attrs}"
-                    method="GET"
-                    result="#{pageSession.listInstanceResult}");
-                println ("***** pageSession.listInstanceResult.data.extraProperties.instanceList[0].status = #{pageSession.listInstanceResult.data.extraProperties.instanceList[0].status}");
-                setAttribute(key="status" value="#{pageSession.listInstanceResult.data.extraProperties.instanceList[0].status}");
+                setAttribute(key="tmp" value="#{td.value.name}");
+                gf.listInstances(optionKeys={"id"} optionValues={"$attribute{tmp}"}, statusMap="#{requestScope.statusMap}");
+                setAttribute(key="status" value="#{requestScope.statusMap['$attribute{tmp}']}");
                 setAttribute(key="statusString" value="$resource{i18nc.status.$attribute{status}}  &nbsp; $resource{i18nc.status.image.$attribute{status}}");
                 />
         </staticText>

@@ -45,19 +45,9 @@
 <sun:propertySheet id="targetSection">
     <!beforeCreate
         gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/clusters/cluster", result="#{requestScope.clusterList}");
-        
-        createMap(result="#{requestScope.stAttrs}");
-        mapPut(map="#{requestScope.stAttrs}" key="standaloneonly" value="true" );
-        gf.restRequest(
-            endpoint="#{sessionScope.REST_URL}/list-instances"
-            attrs="#{requestScope.stAttrs}"
-            method="GET"
-            result="#{pageSession.restMap}");
-        gf.getMessageProps(messageListProps="#{pageSession.restMap.data.extraProperties.instanceList}"
-                           keyList="#{pageSession.targetList}");
-         
-         gf.listCombine(list="#{pageSession.targetList}",  list2="#{requestScope.clusterList}");
-         listAdd(list="#{pageSession.targetList}", value="server" index="0");
+        gf.listInstances(optionKeys={"standaloneonly"} optionValues={"true"}, instances="#{pageSession.targetList}" );
+        gf.listCombine(list="#{pageSession.targetList}",  list2="#{requestScope.clusterList}");
+        listAdd(list="#{pageSession.targetList}", value="server" index="0");
 
         setAttribute(key="one" value="$int{1}");
 	setAttribute(key="targetSize" value="#{pageSession.targetList.size()}");

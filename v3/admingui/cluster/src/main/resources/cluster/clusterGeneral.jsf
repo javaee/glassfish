@@ -132,18 +132,8 @@
             <sun:property id="instanceStatusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}" >
                 <event>
                 <!beforeCreate
-                    createMap(result="#{pageSession.statusAttrs}")
-                    mapPut(map="#{pageSession.statusAttrs}" key="DEFAULT" value="#{pageSession.clusterName}" );
-/*
-                    gf.callRestAndExtractMsgProps(
-                        endpoint="#{sessionScope.REST_URL}/list-instances"
-                        attrs="#{pageSession.statusAttrs}"
-                        method="GET"
-                        propsMap="#{pageSession.propsMap}");
-*/
-                    gf.restRequest(endpoint="#{sessionScope.REST_URL}/list-instances", attrs="#{pageSession.statusAttrs}"
-                        method="GET", result="#{requestScope.result}");
-                    gf.getClusterStatusSummary(listInstancePropsMap="#{requestScope.result['data']['properties']}" ,
+                    gf.listInstances(optionKeys={"id"} optionValues={"$pageSession{clusterName}"}, statusMap="#{requestScope.statusMap}");
+                    gf.getClusterStatusSummary(statusMap ="#{requestScope.statusMap}" ,
                         numRunning="#{pageSession.numRunning}"  numNotRunning="#{pageSession.numNotRunning}"  );
                 />
                 </event>

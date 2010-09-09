@@ -77,7 +77,7 @@
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/cluster/node/nodeEdit.jsf");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18ncs.nodes.TableTitle}");
         createMap(result="#{pageSession.nodeInstanceMap}");
-
+        gf.listInstances(optionKeys={"standaloneonly"} optionValues={"true"}, instances="#{pageSession.standaloneList}");
     />
     </event>
 "    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+"nodes");</script>
@@ -110,7 +110,7 @@
         />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18n.common.name.header}" rowHeader="$boolean{true}" id="col1">
+    <sun:tableColumn headerText="$resource{i18n.common.name.header}" rowHeader="$boolean{true}" valign="top" id="col1">
         <event>
             <!beforeEncode
                 setPageSessionAttribute(key="nodeName" value="#{td.value.name}");
@@ -119,20 +119,14 @@
         <sun:hyperlink id="link" text="#{td.value.name}" url="#{pageSession.editLink}?nodeName=#{td.value.name}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18ncs.node.nodeHostCol}"  rowHeader="$boolean{true}" id="col2">
+    <sun:tableColumn headerText="$resource{i18ncs.node.nodeHostCol}"  rowHeader="$boolean{true}" valign="top" id="col2">
         <sun:staticText escape="true" id="nodeHostCol" value="#{td.value.nodeHost}" />
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18ncs.clusters.instanceCol}" rowHeader="$boolean{true}" id="col3">
          <event>
             <!beforeEncode
-                createMap(result="#{pageSession.statusAttrs}");
-                mapPut(map="#{pageSession.statusAttrs}" key="DEFAULT" value="#{pageSession.nodeName}" );
-                gf.callRestAndExtractMsgProps(
-                    endpoint="#{sessionScope.REST_URL}/list-instances.xml"
-                    attrs="#{pageSession.statusAttrs}"
-                    method="GET"
-                    keyList="#{requestScope.instanceList}" propsMap="#{requestScope.propsMap}");
+                gf.listInstances(optionKeys={"id"} optionValues={"$pageSession{nodeName}"}, instances="#{requestScope.instanceList}" statusMap="#{requestScope.statusMap}");
                 mapPut(map="#{pageSession.nodeInstanceMap}" key="#{pageSession.nodeName}" value="#{requestScope.instanceList}");
             />
          </event>
@@ -140,11 +134,11 @@
             <foreach key="instance" list="#{requestScope.instanceList}">
                 <event>
                 <!beforeEncode
-                    setAttribute(key="status" value="#{requestScope.propsMap[ '${instance}']}");
+                    setAttribute(key="status" value="#{requestScope.statusMap[ '${instance}']}");
                     gf.containedIn(list="#{pageSession.standaloneList}" testStr="#{requestScope.instance}" contain="#{requestScope.isStandalone}" );
                     urlencode(value="#{requestScope.instance}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
                     if (#{requestScope.isStandalone}){
-                        setAttribute(key="iurl" value="#{request.contextPath}/cluster/standalone/standaloneInstanceEdit.jsf?instanceName=#{pageSession.encodedInstanceName}");
+                        setAttribute(key="iurl" value="#{request.contextPath}/cluster/standalone/standaloneInstanceGeneral.jsf?instanceName=#{pageSession.encodedInstanceName}");
                     }
 
                     if ( !#{requestScope.isStandalone}){
