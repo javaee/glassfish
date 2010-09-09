@@ -40,8 +40,8 @@
 
 package org.glassfish.appclient.server.core.jws;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -185,6 +185,8 @@ public class DeveloperContentHandler {
             final InputStream devJNLPStream = JavaWebStartInfo.openEntry(appClientArchive, devJNLPDoc);
             if (devJNLPStream != null) {
                 result = db.parse(devJNLPStream);
+            } else {
+                throw new FileNotFoundException(devJNLPDoc);
             }
         }
         return result;

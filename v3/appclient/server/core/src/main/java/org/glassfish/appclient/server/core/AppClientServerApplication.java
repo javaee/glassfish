@@ -127,7 +127,14 @@ public class AppClientServerApplication implements
     public AppClientDeployerHelper helper() {
         return helper;
     }
-    
+
+    public boolean matches(final String appName, final String moduleName) {
+        return (appName.equals(deployedAppName)
+                && (moduleName != null && 
+                    (moduleName.equals(acDesc.getModuleName())
+                     || acDesc.getModuleName().equals(moduleName + ".jar"))));
+    }
+
     public boolean start(ApplicationContext startupContext) throws Exception {
         return start();
     }

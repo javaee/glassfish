@@ -474,7 +474,7 @@ public class JWSAdapterManager implements PostConstruct {
         return adapter;
     }
 
-    static String userFriendlyContextRoot(final AppClientServerApplication contributor) {
+    public static String userFriendlyContextRoot(final AppClientServerApplication contributor) {
         return userFriendlyContextRoot(contributor.getDescriptor(), 
                 contributor.dc().getAppProps());
     }

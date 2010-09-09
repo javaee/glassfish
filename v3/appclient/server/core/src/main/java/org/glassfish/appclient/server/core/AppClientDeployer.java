@@ -250,6 +250,10 @@ public class AppClientDeployer
         return newACServerApp;
     }
 
+    public Set<AppClientServerApplication> appClientApps() {
+        return appClientApps;
+    }
+    
     private AppClientServerApplication newACServerApp(
             final DeploymentContext dc, final AppClientDeployerHelper helper) {
         final AppClientServerApplication result = habitat.getComponent(AppClientServerApplication.class);
