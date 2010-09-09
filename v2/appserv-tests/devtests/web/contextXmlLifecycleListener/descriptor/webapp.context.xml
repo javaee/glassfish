@@ -46,6 +46,6 @@
             type="javax.sql.DataSource"
      description="Default Database"/>
 
-  <Listener className="test.TestListener" debug="10" name="test">
+  <Listener className="test.TestListener" debug="10" name="test"/>
 
 </Context>
