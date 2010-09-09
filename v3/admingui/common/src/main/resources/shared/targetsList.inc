@@ -42,17 +42,7 @@
 
 <!-- /common/shared/targetsList.inc -->
 gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/clusters/cluster", result="#{pageSession.clusterList}");
-
-createMap(result="#{requestScope.stAttrs}");
-mapPut(map="#{requestScope.stAttrs}" key="standaloneonly" value="true" );
-gf.restRequest(
-    endpoint="#{sessionScope.REST_URL}/list-instances"
-    attrs="#{requestScope.stAttrs}"
-    method="GET"
-    result="#{pageSession.restMap}");
-gf.getMessageProps(messageListProps="#{pageSession.restMap.data.extraProperties.instanceList}"
-                           keyList="#{pageSession.targetList}");
-
+gf.listInstances(optionKeys={"standaloneonly"} optionValues={"true"}, instances="#{pageSession.targetList}" );
  gf.listCombine(list="#{pageSession.targetList}",  list2="#{pageSession.clusterList}");
  listAdd(list="#{pageSession.targetList}", value="server" index="0");
 
