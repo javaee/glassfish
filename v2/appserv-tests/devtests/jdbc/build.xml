@@ -104,6 +104,7 @@
 	<ant dir="connleakreclaimnotify" target="all"/>
 	<ant dir="stmtCaching_hit_miss.monitoring" target="all"/>
 	<ant dir="transparent-pool-reconfig" target="all"/>
+	<ant dir="transparent-pool-reconfig-resources-xml" target="all"/>
 	<ant dir="sqltracemonitoring" target="all"/>
 	<ant dir="statementleakdetection" target="all"/>
 	<ant dir="appbasedMonitoring" target="all"/>
@@ -151,6 +152,7 @@
 	<ant dir="stmtCaching_hit_miss" target="all"/>
 	<ant dir="pooling" target="all"/>
 	<ant dir="transparent-pool-reconfig" target="all"/>
+	<ant dir="transparent-pool-reconfig-resources-xml" target="all"/>
         <record name="jdbc.output" action="stop"/>
     </target>
 
@@ -413,6 +415,11 @@
 	<record name="transparent-pool-reconfig.output" action="start"/>
 	<ant dir="transparent-pool-reconfig" target="all"/>
 	<record name="transparent-pool-reconfig.output" action="stop"/>
+    </target>
+    <target name="transparent-pool-reconfig-resources-xml">
+	<record name="transparent-pool-reconfig-resources-xml.output" action="start"/>
+	<ant dir="transparent-pool-reconfig-resources-xml" target="all"/>
+	<record name="transparent-pool-reconfig-resources-xml.output" action="stop"/>
     </target>
 
     <target name="usage">
