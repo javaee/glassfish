@@ -64,9 +64,11 @@ public class RestMonitoringAdapter extends RestAdapter {
     protected  Set<Class<?>> getResourcesConfig(boolean useASM){
         final Set<Class<?>> r = new HashSet<Class<?>>();
         r.add(org.glassfish.admin.rest.resources.MonitoringResource.class);
-        r.add(org.glassfish.admin.rest.provider.TreeNodeJsonProvider.class);
-        r.add(org.glassfish.admin.rest.provider.TreeNodeXmlProvider.class);
-        r.add(org.glassfish.admin.rest.provider.TreeNodeHtmlProvider.class);
+
+        r.add(org.glassfish.admin.rest.provider.ActionReportResultHtmlProvider.class);
+        r.add(org.glassfish.admin.rest.provider.ActionReportResultJsonProvider.class);
+        r.add(org.glassfish.admin.rest.provider.ActionReportResultXmlProvider.class);
+
         return r;
     }
     public static final String CONTEXT = "/monitoring";

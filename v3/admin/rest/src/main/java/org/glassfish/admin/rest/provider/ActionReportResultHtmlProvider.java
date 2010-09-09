@@ -43,7 +43,6 @@ package org.glassfish.admin.rest.provider;
 import org.glassfish.api.ActionReport.ExitCode;
 import com.sun.enterprise.v3.common.ActionReporter;
 import org.glassfish.admin.rest.results.ActionReportResult;
-import org.glassfish.admin.rest.results.GetResult;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport;
 import org.jvnet.hk2.config.ConfigBean;
@@ -55,6 +54,7 @@ import java.util.*;
 
 import static org.glassfish.admin.rest.provider.ProviderUtil.getHtmlForComponent;
 import static org.glassfish.admin.rest.provider.ProviderUtil.getHtmlRespresentationsForCommand;
+import static org.glassfish.admin.rest.provider.ProviderUtil.getHint;
 
 /**
  * @author Ludovic Champenois
@@ -98,8 +98,66 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
                 String attributes = ProviderUtil.getHtmlRepresentationForAttributes(proxy.getEntity(), uriInfo);
                 result.append(ProviderUtil.getHtmlForComponent(attributes, "Attributes", ""));
 
-                String deleteCommand = ProviderUtil.getHtmlRespresentationsForCommand(proxy.getMetaData().getMethodMetaData("DELETE"), "DELETE", ( proxy.getCommandDisplayName()==null ) ? "Delete" : proxy.getCommandDisplayName(), uriInfo);
+                String deleteCommand = ProviderUtil.getHtmlRespresentationsForCommand(proxy.getMetaData().getMethodMetaData("DELETE"), "DELETE", (proxy.getCommandDisplayName() == null) ? "Delete" : proxy.getCommandDisplayName(), uriInfo);
                 result.append(ProviderUtil.getHtmlForComponent(deleteCommand, "Delete " + entity.model.getTagName(), ""));
+
+            } else { //This is a monitoring result!!!
+
+                final Map vals = (Map) ar.getExtraProperties().get("entity");
+
+                if ((vals != null) && (!vals.isEmpty())) {
+                    result.append("<ul>");
+
+                    for (Map.Entry entry : (Set<Map.Entry>) vals.entrySet()) {
+
+                        Object object = entry.getValue();
+                        if (object == null) {
+                            //do nothing
+                        } else if (object instanceof Collection) {
+                            if (!((Collection) object).isEmpty()) {
+                                Collection c = ((Collection) object);
+                                Iterator i = c.iterator();
+                                result.append("<li>").append(entry.getKey());
+                                result.append("<ul>");
+
+                                while (i.hasNext()) {
+                                    result.append("<li>").append(getHtmlRepresentation(i.next())).append("</li>");
+                                }
+                                result.append("</ul>");
+                                result.append("</li>");
+
+                            }
+                        } else if (object instanceof Map) {
+                            if (!((Map) object).isEmpty()) {
+                                Map m = (Map) object;
+                                result.append("<li>").append(entry.getKey());
+                                result.append("<ul>");
+
+                                for (Map.Entry anEntry : (Set<Map.Entry>) m.entrySet()) {
+                                    final String htmlRepresentation = getHtmlRepresentation(anEntry.getValue());
+                                    if (htmlRepresentation != null) {
+                                        result.append("<li>").append(anEntry.getKey()).append(" : ").append(htmlRepresentation).append("</li>");
+                                    }
+                                }
+                                result.append("</ul>");
+                                result.append("</li>");
+
+
+                            }
+                        } else {
+                            result.append("<li>").append(entry.getKey()).append(" : ").append(object.toString()).append("</li>");
+                        }
+                    }
+                    result.append("</ul>");
+
+                } else {//no values to show... give an hint
+                    if ((childResources == null) || (childResources.isEmpty())) {
+                        if (uriInfo.getPath().equalsIgnoreCase("domain")) {
+                            result.append(getHint(uriInfo, MediaType.TEXT_HTML));
+                        }
+                    }
+
+                }
             }
 
             if ((childResources != null)&&(!childResources.isEmpty())) {
@@ -163,13 +221,10 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
                 .append(" output:</h2><h3>")
                 .append(ar.getMessage() != null ? "<pre>"+ar.getMessage()+"</pre>" : "")
                 .append("</h3>");
-        if ((ar.getMessage() == null)
-                || (ar.getMessage().equals(""))
-                || (ar.getActionExitCode() != ExitCode.SUCCESS)) {
+        if (ar.getActionExitCode() != ExitCode.SUCCESS) {
             result.append("<h3>Exit Code: " + ar.getActionExitCode().toString() + "</h3>");
 
         }
-        result.append("<hr>");
 
         Properties properties = ar.getTopMessagePart().getProps();
         if (!properties.isEmpty()) {

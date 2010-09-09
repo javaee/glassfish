@@ -84,7 +84,7 @@ public class ProviderUtil {
      * Produce a string in double quotes with backslash sequences in all the
      * right places.
      */
-    protected static String quote(String string) {
+    public static String quote(String string) {
         if (string == null || string.length() == 0) {
             return "\"\"";
         }
@@ -181,7 +181,7 @@ public class ProviderUtil {
         return result;
     }
 
-    static protected Map getStatistics(Statistic statistic) throws 
+    static public Map getStatistics(Statistic statistic) throws
             IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         HashMap results = new HashMap();
         Class classObject = statistic.getClass();
@@ -209,7 +209,7 @@ public class ProviderUtil {
         return results;
     }
 
-    static protected Map<String, Object> getStatistic(Statistic statistic) {
+    static public Map<String, Object> getStatistic(Statistic statistic) {
         Map<String,Object> statsMap;
         // Most likely we will get the proxy of the StatisticImpl,
         // reconvert that so you can access getStatisticAsMap method
@@ -436,7 +436,7 @@ public class ProviderUtil {
        return result;
     }
 
-    static protected String jsonValue(Object value) {
+    static public String jsonValue(Object value) {
         String result ="";
 
         if (value.getClass().getName().equals("java.lang.String")) {
