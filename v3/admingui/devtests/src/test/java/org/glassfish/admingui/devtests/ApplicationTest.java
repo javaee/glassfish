@@ -77,6 +77,9 @@ public class ApplicationTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_DOMAIN_ATTRIBUTES = "Domain Attributes";
     private static final String TRIGGER_APPLICATION_CONFIGURATION = "Enable reloading so that changes to deployed applications";
 
+    //The following test will pass ONLY if there is no cluster or standalone instance.  This is for "PE" profile
+    //TODO: We may need to DELETE all cluster and standalone instance in the beginning of this test.
+
     @Test
     public void testDeployWar() {
         final String applicationName = generateRandomString();
