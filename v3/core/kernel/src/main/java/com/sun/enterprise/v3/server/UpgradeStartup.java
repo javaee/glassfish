@@ -421,16 +421,19 @@ public class UpgradeStartup implements ModuleStartup {
         while (e.hasMoreElements()) {
             String entryName = e.nextElement();
             if (! entriesToExclude.contains(entryName)) {
-                InputStream is = new BufferedInputStream(source.getEntry(entryName));
-                OutputStream os = null;
-                try {
-                    os = target.putNextEntry(entryName);
-                    FileUtils.copy(is, os, source.getEntrySize(entryName));
-                } finally {
-                    if (os!=null) {
-                        target.closeEntry();
+                InputStream sis = source.getEntry(entryName);
+                if (sis != null) {
+                    InputStream is = new BufferedInputStream(sis);
+                    OutputStream os = null;
+                    try {
+                        os = target.putNextEntry(entryName);
+                        FileUtils.copy(is, os, source.getEntrySize(entryName));
+                    } finally {
+                        if (os!=null) {
+                            target.closeEntry();
+                        }
+                        is.close();
                     }
-                    is.close();
                 }
             }
         }
@@ -471,16 +474,19 @@ public class UpgradeStartup implements ModuleStartup {
         Enumeration<String> e = source.entries();
         while (e.hasMoreElements()) {
             String entryName = e.nextElement();
-            InputStream is = new BufferedInputStream(source.getEntry(entryName));
-            OutputStream os = null;
-            try {
-                os = target.putNextEntry(entryName);
-                FileUtils.copy(is, os, source.getEntrySize(entryName));
-            } finally {
-                if (os!=null) {
-                    target.closeEntry();
+            InputStream sis = source.getEntry(entryName);
+            if (sis != null) {
+                InputStream is = new BufferedInputStream(sis);
+                OutputStream os = null;
+                try {
+                    os = target.putNextEntry(entryName);
+                    FileUtils.copy(is, os, source.getEntrySize(entryName));
+                } finally {
+                    if (os!=null) {
+                        target.closeEntry();
+                    }
+                    is.close();
                 }
-                is.close();
             }
         }
 
