@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hk2.annotations.Inject;
@@ -726,6 +727,8 @@ public class RunLevelServiceTest {
     assertTrue(gotOne);
     assertTrue(gotTwo);
 
+    assertNeverGotToRunLevel(2);
+    
     assertListenerState(false, false, true);
   }
   
@@ -797,7 +800,98 @@ public class RunLevelServiceTest {
     assertTrue(gotOne);
     assertTrue(gotTwo);
 
+    assertNeverGotToRunLevel(2);
+    
     assertListenerState(true, false, 2);
+  }
+  
+  /**
+   * This is testing the async version of RLS in the following scenario:
+   * 
+   *  - Thread #1 issues a proceedTo(whatever)
+   *  - One of the services activated {@link InterruptRunLevelManagedService1a} calls
+   *      proceedTo(2)
+   *  - A service {@link InterruptRunLevelManagedService2b} hangs, but in
+   *      a way that can't be interrupted
+   *  - Thread #2 (a watchdog thread) finds that Thread #1 is hung, and issues a proceedTo(0)
+   */
+  @SuppressWarnings("unchecked")
+  // TODO:
+  @Test @Ignore
+  public void multiThreadedInterrupt3Async() throws Exception {
+    recorders = new LinkedHashMap<Integer, Recorder>();
+    rls = defRLS = new TestDefaultRunLevelService(h, true, String.class, recorders); 
+
+    this.defRLlistener = (TestRunLevelListener) listener;
+    defRLlistener.calls.clear();
+    
+    // we want 1a to not be involved in this test
+    InterruptRunLevelManagedService1a.rls = rls;
+
+    InterruptRunLevelManagedService2b.i = 0;
+    InterruptRunLevelManagedService2b.doSleep = false;
+    try {
+      final List problems = new ArrayList();
+      Thread watchDog = new Thread() {
+        @Override
+        public void run() {
+          try {
+            sleep(400);
+            Logger.getAnonymousLogger().log(Level.INFO, "issuing proceedTo(0) interrupt from thread: " + this);
+            // this will hang {@link InterruptRunLevelManagedService2b}
+            rls.proceedTo(0);
+          } catch (Exception e) {
+            problems.add(e);
+          }
+        }
+      };
+      watchDog.start();
+      
+      Logger.getAnonymousLogger().log(Level.INFO, "issuing proceedTo(1) from main thread: " + this);
+      // this main thread will be interrupted to go to 0 but only after proceedTo(2) is sent (see above)
+      rls.proceedTo(1);
+      
+      watchDog.join();
+
+      if (null != rls.getState().getPlannedRunLevel()) {
+        try {
+          synchronized (rls) {
+            rls.wait(100);
+          }
+        } catch (Exception e) {
+          // eat it
+        }
+      }
+      
+      assertTrue("problems: " + problems, problems.isEmpty());
+      assertEquals(0, defRLS.getCurrentRunLevel());
+      assertEquals(null, defRLS.getPlannedRunLevel());
+      assertTrue("hanging service not reached", InterruptRunLevelManagedService2b.i > 0);
+      
+      Collection<Inhabitant<?>> coll = h.getInhabitantsByContract(RunLevelContract.class.getCanonicalName());
+      assertTrue(coll.size() >= 3);
+      boolean gotOne = false;
+      boolean gotTwo = false;
+      for (Inhabitant<?> i : coll) {
+        String typeName = i.typeName();
+        if (typeName.contains("InterruptRunLevelManagedService1")) {
+          gotOne = true;
+          assertFalse("expected to be in released state: " + i, i.isInstantiated());
+        }
+        if (typeName.contains("InterruptRunLevelManagedService2")) {
+          gotTwo = true;
+          assertFalse("expected to be in released state: " + i, i.isInstantiated());
+        }
+      }
+      assertTrue(gotOne);
+      assertTrue(gotTwo);
+  
+      assertNeverGotToRunLevel(2);
+      
+      assertListenerState(true, false, 2);
+    } finally {
+      InterruptRunLevelManagedService2b.doSleep = true;
+    }
   }
   
   @SuppressWarnings("unchecked")
@@ -915,6 +1009,12 @@ public class RunLevelServiceTest {
     }
   }
 
+  private void assertNeverGotToRunLevel(int runLevel) {
+    for (TestRunLevelListener.Call call : defRLlistener.calls) {
+      assertTrue("Should never have reached runLevel: " + runLevel + " but we did in " + defRLlistener.calls,
+          call.current < runLevel);
+    }
+  }
 
   /**
    * Verifies that the recorder is always consistent.
