@@ -70,7 +70,7 @@ public class ServerProviderContainerContractInfo extends ProviderContainerContra
        boolean isDas;
 
        public ServerProviderContainerContractInfo(DeploymentContext deploymentContext, ConnectorRuntime connectorRuntime, boolean isDas) {
-           super(connectorRuntime);
+           super(connectorRuntime, deploymentContext);
            this.deploymentContext = deploymentContext;
            // Cache finalClassLoader as deploymentContext.getFinalClassLoader() is expected to be called only once during deployment.
            this.finalClassLoader = deploymentContext.getFinalClassLoader();

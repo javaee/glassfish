@@ -610,13 +610,13 @@ public class Java2DBProcessorHelper {
      * @return a Connection.
      * @throws SQLException if can not get a Connection.
      */
-    public static Connection getConnection(String jndiName) throws Exception {
+    private Connection getConnection(String jndiName) throws Exception {
         // TODO - pass Habitat or ConnectorRuntime as an argument.
         // TODO - remove duplication with DeploymentHelper
 
         Habitat habitat = Globals.getDefaultHabitat();
         ConnectorRuntime connectorRuntime = habitat.getByContract(ConnectorRuntime.class);
-        DataSource ds = DataSource.class.cast(connectorRuntime.lookupNonTxResource(jndiName, true));
+        DataSource ds = PersistenceHelper.lookupNonTxResource(connectorRuntime, ctx, jndiName);
         return ds.getConnection();
     }
 
@@ -654,18 +654,18 @@ public class Java2DBProcessorHelper {
         }
     }
     
-    /** 
+    /**
      * Provide a generic warning message to the user.
      */
     public void logI18NInfoMessage(
-            String errorCode, String regName, 
+            String errorCode, String regName,
             String fileName, Throwable ex) {
-        String msg = getI18NMessage(errorCode, 
+        String msg = getI18NMessage(errorCode,
                 regName, fileName, ex);
         logger.info(msg);
     }
-    
-    /** 
+
+    /**
      * Provide a generic warning message to the user.
      */
     public void logI18NWarnMessage(

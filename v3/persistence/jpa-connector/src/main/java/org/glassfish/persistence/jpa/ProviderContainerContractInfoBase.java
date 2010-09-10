@@ -41,6 +41,8 @@
 package org.glassfish.persistence.jpa;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.persistence.common.PersistenceHelper;
 
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -52,19 +54,26 @@ import javax.sql.DataSource;
 public abstract class ProviderContainerContractInfoBase implements ProviderContainerContractInfo {
 
     private ConnectorRuntime connectorRuntime;
+    private DeploymentContext context;
 
     public ProviderContainerContractInfoBase(ConnectorRuntime connectorRuntime) {
-        this.connectorRuntime = connectorRuntime;
+        //This ctor is currently called only by ACC impl of ProviderContainerContractInfo which which will not deal with app/module scoped resources
+        this.connectorRuntime = connectorRuntime; 
+    }
+
+    public ProviderContainerContractInfoBase(ConnectorRuntime connectorRuntime, DeploymentContext context) {
+        this(connectorRuntime);
+        this.context = context;
     }
 
     @Override
     public DataSource lookupDataSource(String dataSourceName) throws NamingException {
-        return DataSource.class.cast(connectorRuntime.lookupPMResource(dataSourceName, true));
+        return DataSource.class.cast(PersistenceHelper.lookupPMResource(connectorRuntime, context, dataSourceName) );
     }
 
     @Override
     public DataSource lookupNonTxDataSource(String dataSourceName) throws NamingException {
-        return DataSource.class.cast(connectorRuntime.lookupNonTxResource(dataSourceName, true));
+        return DataSource.class.cast(PersistenceHelper.lookupNonTxResource(connectorRuntime, context, dataSourceName) );
     }
 
     @Override

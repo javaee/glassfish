@@ -50,7 +50,6 @@ import javax.naming.NamingException;
 import javax.validation.ValidatorFactory;
 
 import org.glassfish.persistence.jpa.PersistenceUnitInfoImpl;
-import org.glassfish.persistence.jpa.ProviderContainerContractInfo;
 import org.glassfish.api.deployment.InstrumentableClassLoader;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.persistence.jpa.ProviderContainerContractInfoBase;
