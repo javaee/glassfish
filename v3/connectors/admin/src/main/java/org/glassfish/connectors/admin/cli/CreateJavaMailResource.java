@@ -89,18 +89,16 @@ public class CreateJavaMailResource implements AdminCommand {
     @Param(name="jndi_name", primary=true)
     private String jndiName;
 
-    @Param(name="storeprotocol", optional=true, defaultValue="imap")
+    @Param(name="storeprotocol", optional=true, defaultValue="imap", alias="storeProtocol")
     private String storeProtocol;
 
-    @Param(name="storeprotocolclass", optional=true,
-    defaultValue="com.sun.mail.imap.IMAPStore" )
+    @Param(name="storeprotocolclass", optional=true, defaultValue="com.sun.mail.imap.IMAPStore", alias="storeProtocolClass")
     private String storeProtocolClass;
 
-    @Param(name="transprotocol", optional=true, defaultValue="smtp")
+    @Param(name="transprotocol", optional=true, defaultValue="smtp", alias="transportProtocol")
     private String transportProtocol;
 
-    @Param(name="transprotocolclass", optional=true,
-    defaultValue="com.sun.mail.smtp.SMTPTransport")
+    @Param(name="transprotocolclass", optional=true, defaultValue="com.sun.mail.smtp.SMTPTransport", alias="transportProtocolClass")
     private String transportProtocolClass;
 
     @Param(optional=true, defaultValue="true")
