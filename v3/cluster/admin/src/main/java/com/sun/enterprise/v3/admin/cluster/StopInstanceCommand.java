@@ -225,6 +225,9 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
         if (port < 0)
             return Strings.get("stop.instance.noPort", instanceName);
 
+        if(!instance.isRunning())
+            return Strings.get("stop.instance.notRunning", instanceName);
+
         try {
             // TODO username password ????
             logger.info(Strings.get("stop.instance.init", instanceName));
