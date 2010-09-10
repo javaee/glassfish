@@ -134,6 +134,7 @@ public class CommandResourceMetaData {
             {"JavaConfig", "create-profiler", "POST", "create-profiler", "Create Profiler"},
             {"JavaConfig", "generate-jvm-report", "POST", "generate-jvm-report", "Generate Report"},
             {"ListApplication", "_get-context-root", "GET", "get-context-root", "Get Context Root"},
+            {"ListApplication", "_get-relative-jws-uri", "GET", "_get-relative-jws-uri", "Get Relative JWS URI" },
             {"ListApplication", "list-sub-components", "GET", "list-sub-components", "List Subcomponents"},
             {"ListApplication", "list-components", "GET", "list-components", "List Components" },
             {"ListAuthRealm", "__list-predefined-authrealm-classnames", "GET", "list-predefined-authrealm-classnames", "List Auth Realms"},
