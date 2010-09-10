@@ -1,0 +1,53 @@
+
+asadmin Utility Subcommands                      list-http-lbs(1)
+
+NAME
+     list-http-lbs  - lists load balancers
+
+SYNOPSIS
+     list-http-lbs [--help]
+
+DESCRIPTION
+     Use the  list-http-lbs  subcommand  to  list  physical  load
+     balancers.
+
+     Note -
+
+       This subcommand is only  applicable  to  Oracle  GlassFish
+       Server.  This  subcommand  is  not applicable to GlassFish
+       Server Open Source Edition.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+EXAMPLES
+     Example 1 Listing Physical Load Balancers for a Domain
+
+     This example lists all physical load balancers defined for a
+     domain.
+
+       asadmin> list-http-lbs
+       lb1
+       lb2
+       Command list-http-lbs executed successfully.
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     create-http-lb(1), delete-http-lb(1)
+
+Java EE 6           Last change: 26 Aug 2010                    1
+
+asadmin Utility Subcommands                      list-http-lbs(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 26 Aug 2010                    2
+

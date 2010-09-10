@@ -5,9 +5,7 @@ NAME
      list-file-users - lists the file users
 
 SYNOPSIS
-     list-file-users
-     [--help]
-      [ --authrealmname  auth_realm_name]
+     list-file-users [--help] [--authrealmname auth_realm_name] [--target target]
 
 DESCRIPTION
      The list-file-users subcommand displays a list of file users
@@ -23,8 +21,7 @@ OPTIONS
          Lists only the users  in  the  specified  authentication
          realm.
 
-OPERANDS
-     target
+     --target
 
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
@@ -46,11 +43,12 @@ EXIT STATUS
 
      1                           error in executing the command
 
+SEE ALSO
+
 Java EE 6          Last change: 28 August 2009                  1
 
 asadmin Utility Subcommands                    list-file-users(1)
 
-SEE ALSO
      create-file-user(1),    delete-file-user(1),    update-file-
      user(1), list-file-groups(1)
 

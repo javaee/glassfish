@@ -6,14 +6,12 @@ NAME
      selected HTTP listener, IIOP listener, or IIOP service
 
 SYNOPSIS
-     create-ssl
-     [--help]
-
-      --type  listener_or_service_type  --certname cert_name
-     [--ssl2enabled=false  ] [--ssl2ciphers ss12ciphers ]
-     [--ssl3enabled=true ] [--tlsenabled=true ]
-     [--ssl3tlsciphers ssl3tlsciphers ] [--tlsrollbackenabled=true ]
-     [--clientauthenabled=false  ] [listener_id]
+     create-ssl [--help]
+     --type listener_or_service_type --certname cert_name
+     [--ssl2enabled={false|true}] [--ssl2ciphers ss12ciphers]
+     [--ssl3enabled={true|false}] [--tlsenabled={true|false}]
+     [--ssl3tlsciphers ssl3tlsciphers] [tlsrollbackenabled={true|false}]
+     [clientauthenabled={false|true}] [listener_id]
 
 DESCRIPTION
      The create-ssl subcommand creates  and  configures  the  SSL
@@ -50,13 +48,13 @@ OPTIONS
              o    iiop-listener
 
              o    iiop-service
+         When the type  is  iiop-service,  the  ssl-client-config
+         along  with  the  embedded  ssl  element  is  created in
 
 Java EE 6           Last change: 28 Aug 2009                    1
 
 asadmin Utility Subcommands                         create-ssl(1)
 
-         When the type  is  iiop-service,  the  ssl-client-config
-         along  with  the  embedded  ssl  element  is  created in
          domain.xml.
 
      --certname
@@ -102,17 +100,19 @@ asadmin Utility Subcommands                         create-ssl(1)
          In  the  event  SSL3  encryption  fails, the server then
          tries SSL2 encryption.
 
+     --tlsenabled
+
+         Set this property to false to disable TLS.  The  default
+
 Java EE 6           Last change: 28 Aug 2009                    2
 
 asadmin Utility Subcommands                         create-ssl(1)
 
-     --tlsenabled
-
-         Set this property to false to disable TLS.  The  default
          value  is  true It is good practice to enable TLS, which
          is a more secure version of SSL.
 
      --ssl3tlsciphers
+
          A comma-separated list of the SSL3 and/or TLS ciphers to
          be  used.  Use  the prefix + to enable or - to disable a
          particular cipher. Allowed values are:
@@ -134,30 +134,29 @@ asadmin Utility Subcommands                         create-ssl(1)
          assumed to be enabled.
 
      --tlsrollbackenabled
-
          Set to true (default) to enable TLS rollback. TLS  roll-
          back  should  be enabled for Microsoft Internet Explorer
          5.0  and  5.5.  This   option   is   only   valid   when
          -tlsenabled=true.
 
      --clientauthenabled
+
          Set to true if you want  SSL3 client authentication per-
          formed  on every request independent of ACL-based access
          control. Default value is false.
 
 OPERANDS
      listener_id
-
           The ID of the HTTP or IIOP listener for which  the  SSL
          element  is  to  be  created.  The  listener_id  is  not
          required if the --type is iiop-service.
 
+EXAMPLES
+     Example 1 Creating an SSL element for an HTTP listener
+
 Java EE 6           Last change: 28 Aug 2009                    3
 
 asadmin Utility Subcommands                         create-ssl(1)
-
-EXAMPLES
-     Example 1 Creating an SSL element for an HTTP listener
 
      The following example shows how to create an SSL element for
      an HTTP listener named http-listener-1.

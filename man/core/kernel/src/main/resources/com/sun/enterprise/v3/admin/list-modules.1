@@ -2,15 +2,15 @@
 asadmin Utility Subcommands                       list-modules(1)
 
 NAME
-     list-modules - lists Enterprise Server modules
+     list-modules - lists GlassFish Server modules
 
 SYNOPSIS
      list-modules [--help]
 
 DESCRIPTION
      The list-modules subcommand displays a list of modules  that
-     are  accessible  to the Enterprise Server module subsystem .
-     The version of each module is shown.
+     are accessible to the GlassFish Server module subsystem. The
+     version of each module is shown.
 
      This subcommand is supported in remote mode only.
 
@@ -21,17 +21,17 @@ OPTIONS
          Displays the help text for the subcommand.
 
 EXAMPLES
-     Example 1 Listing the Enterprise Server Modules
+     Example 1 Listing GlassFish Server Modules
 
      This example provides a partial listing of modules that  are
-     accessible to the Enterprise Server module subsystem
+     accessible to the GlassFish Server module subsystem
 
        asadmin> list-modules
        List Of Modules
 
        Module : org.glassfish.transaction.jts:3.0.0.b66
            Module Characteristics : List of Jars implementing the module
-               Jar : file:/home/dixiep/GlassFish/glassfishv3/glassfish/modules/jts.jar
+               Jar : file:/home/gfuser/GlassFish/glassfishv3/glassfish/modules/jts.jar
            Module Characteristics : Provides to following services
            Module Characteristics : List of imported modules
                Imports : org.glassfish.transaction.jts:3.0.0.b66
@@ -42,10 +42,10 @@ EXAMPLES
            Module Characteristics : List of imported modules
                Imports : org.glassfish.core.kernel:3.0.0.b66
            Module Characteristics : List of Jars implementing the module
-               Jar : file:/home/dixiep/GlassFish/glassfishv3/glassfish/modules/kernel.jar
+               Jar : file:/home/gfuser/GlassFish/glassfishv3/glassfish/modules/kernel.jar
        Module : org.glassfish.common.util:3.0.0.b66
            Module Characteristics : List of Jars implementing the module
-               Jar : file:/home/dixiep/GlassFish/glassfishv3/glassfish/modules/common-util.jar
+               Jar : file:/home/gfuser/GlassFish/glassfishv3/glassfish/modules/common-util.jar
            Module Characteristics : Provides to following services
            Module Characteristics : List of imported modules
                Imports : org.glassfish.common.util:3.0.0.b66

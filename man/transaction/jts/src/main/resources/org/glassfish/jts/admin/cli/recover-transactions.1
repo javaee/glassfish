@@ -6,15 +6,33 @@ NAME
      tions
 
 SYNOPSIS
-     recover-transactions
-     [--help]
-      [ --txlogdir  transaction_log_dir ] [--destination destination_server_name ]
-      server_name
+     recover-transactions  [--help] [--txlogdir transaction_log_dir ]
+     [--target target_server_name ] server_name
 
 DESCRIPTION
      The recover-transactions subcommand manually recovers  pend-
-     ing  transactions.  This  subcommand  is used in remote mode
-     only.
+     ing transactions.
+
+     For a stand-alone server, do  not  use  this  subcommand  to
+     recover  transactions  after  a server failure. For a stand-
+     alone  server,  the  recover-transactions   subcommand   can
+     recover  transactions  only  when  a resource fails, but the
+     server is still running. If a stand-alone server fails, only
+     the  full  startup recovery process can recover transactions
+     that were pending when the server failed.
+
+     For an installation of multiple server  instances,  you  can
+     run  the  recover-transactions  subcommand  from a surviving
+     server instance  to  recover  transactions  after  a  server
+     failure.  To  use this subcommand in this way, the following
+     conditions must be met:
+
+         o    Delegated transaction recovery is enabled.
+
+         o    Transaction logs are stored on a shared file system
+              that is accessible to all server instances.
+
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
@@ -30,26 +48,41 @@ OPTIONS
          If the failed server's transaction logs  are  copied  to
          some  other  location to make it available to the surro-
          gate recovery server, use this option to specify the new
+
+Java EE 6            Last change: 8 Sep 2010                    1
+
+asadmin Utility Subcommands               recover-transactions(1)
+
          location of the transaction logs. If the failed server's
          transaction service tx-log-dir property is  modified  to
          reflect   a  new  location,  then  this  option  is  not
          required.
 
-     --destination
+     --target
 
-         The name of the destination server on which the  pending
-         transactions need to be recovered.
+         The target server that performs  the  recovery  for  the
+         server that is specified by the server_name operand. The
+         target server should be running.
+
+     --destination
+         This option is deprecated. It works exactly  as  the  --
+         target option does.
 
 OPERANDS
      server_name
-         The name of the server that failed. The in-flight  tran-
-         sactions  on  this  server will be recovered. For stand-
-         alone servers the value of  this  operand  is  typically
-         server.
 
-Java EE 6           Last change: 29 Sep 2009                    1
+         For a stand-alone server, the value of this  operand  is
+         typically  server.  Transactions are recovered only if a
+         resource fails, but the server is still running.
 
-asadmin Utility Subcommands               recover-transactions(1)
+         For an installation of multiple server  instances,   the
+         value  of  this  operand  is  the name of the server for
+         which the recovery is required. The  in-flight  transac-
+         tions  on  this server will be recovered. If this server
+         is running, recovery is performed by the same server. In
+         this  situation,  the  --txlogdir  and  --target options
+         should be omitted. If the server is not running, the  --
+         txlogdir and --target options are required.
 
 EXAMPLES
      Example 1 Using recover-transactions
@@ -63,16 +96,20 @@ EXIT STATUS
      1    error in executing the command
 
 SEE ALSO
+
+Java EE 6            Last change: 8 Sep 2010                    2
+
+asadmin Utility Subcommands               recover-transactions(1)
+
      freeze-transaction-service(1),         unfreeze-transaction-
      service(1), rollback-transaction(1)
 
      asadmin(1M)
 
-     Chapter 15, Using the Transaction Service, in Sun  GlassFish
-     Enterprise Server v3 Application Development Guide
+     Chapter 15, Using the Transaction Service, in Oracle GlassF-
+     ish Server 3.1 Application Development Guide
 
-     Chapter 29, Transactions, in The Java EE 6 Tutorial,  Volume
-     I
+     Chapter 28, Transactions, in The Java EE 6 Tutorial
 
-Java EE 6           Last change: 29 Sep 2009                    2
+Java EE 6            Last change: 8 Sep 2010                    3
 

@@ -2,17 +2,16 @@
 asadmin Utility Subcommands                            version(1)
 
 NAME
-     version - displays the Enterprise Server version information
+     version - displays version information forGlassFish Server
 
 SYNOPSIS
      version [--help] [--verbose={false|true}]
 
 DESCRIPTION
-     Use the version subcommand to display the  version  informa-
-     tion for Enterprise Server. If the subcommand cannot commun-
-     icate  with   Enterprise   Server   by   using   the   given
-     user/password   and  host/port,  then  the  subcommand  will
-     retrieve the version locally and display a warning message.
+     The version  subcommand  displays  version  information  for
+     GlassFish  Server. If the subcommand cannot communicate with
+     GlassFish  Server,  the  subcommand  retrieves  the  version
+     information locally and displays a warning message.
 
      This subcommand is supported in remote mode and local mode.
 
@@ -23,24 +22,27 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --verbose
-         If this flag is set to true, the  version  of  the  Java
-         Runtime  Environment  (JRE) that the server runs is pro-
-         vided. Default is false.
+         If this option is set to true, the  subcommand  provides
+         the  version  of the Java Runtime Environment (JRE) that
+         the server is running. The default is false.
 
 EXAMPLES
-     Example 1 Displaying Enterprise Server Version Information
+     Example 1  Version  Information  From  a  Running  GlassFish
+     Server Instance
 
        asadmin> version
-       GlassFish v3  (build b59)
+       Oracle GlassFish Server 3.0.1 (build 19)
        Command version executed successfully.
 
-     If the server cannot be reached, you might receive  informa-
-     tion similar to the following.
+     Example 2 Version Information From a Server That  Cannot  be
+     Reached
 
+       asadmin> version
        Version string could not be obtained from Server [localhost:4848] for some reason.
-       (Turn debugging on to see details).
-       Locally retrieved version string from version class
-       (com.sun.appserv.server.util.Version) is [GlassFish v3.0-b59  (build 59)]
+       (Turn debugging on e.g. by setting AS_DEBUG=true in your environment, to see the
+        details).
+       Using locally retrieved version string from version class.
+       Version = Oracle GlassFish Server 3.0.1 (build 19)
        Command version executed successfully.
 
 Java EE 6           Last change: 29 Sep 2009                    1

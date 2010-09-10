@@ -8,16 +8,18 @@ SYNOPSIS
      create-virtual-server
      [--help]
      [ --target  target]
-     --hosts hosts [--httplisteners http_listeners]
+     --hosts hosts
+     [--httplisteners http_listeners]
      [--networklisteners network_listeners]
      [--defaultwebmodule default_web_module]
-     [--state={on|off}] [ --logfile  log_file]
+     [--state={on|off}]
+     [ --logfile  log_file]
      [--property (name=value)[:name=value]*]
      virtual_server_id
 
 DESCRIPTION
      The create-virtual-server subcommand creates the named  vir-
-     tual  server. Virtualization in the Enterprise Server allows
+     tual server. Virtualization in the GlassFishTM Server allows
      multiple URL domains to be served by a  single  HTTP  server
      process that is listening on multiple host addresses. If the
      application is available at two virtual servers, they  still
@@ -45,36 +47,36 @@ OPTIONS
          Each virtual server that is configured to the same  con-
          nection group must have a unique host for that group.
 
-     --httplisteners
-         A  comma-separated  (,)  list  of  HTTP  listener   IDs.
-         Required  only  for  a  virtual  server  that is not the
-
-Java EE 6           Last change: 15 Sep 2009                    1
+Java EE 6           Last change: 19 May 2010                    1
 
 asadmin Utility Subcommands;             create-virtual-server(1)
 
+     --httplisteners
+
+         A  comma-separated  (,)  list  of  HTTP  listener   IDs.
+         Required  only  for  a  virtual  server  that is not the
          default virtual server. HTTP listeners are converted  to
          network  listeners.  This option is deprecated but main-
          tained    for    backward    compatibility.    Use    --
          networklisteners instead.
 
      --networklisteners
-
          A comma-separated (,)  list  of  network  listener  IDs.
          Required  only  for  a  virtual  server  that is not the
          default virtual server.
 
      --defaultwebmodule
+
          The standalone web module associated with  this  virtual
          server by default.
 
      --state
-
          Determines whether a virtual server is  active  (on)  or
          inactive  (off  or  disabled). Default is on. When inac-
          tive, the virtual server does not service requests.
 
      --logfile
+
          Name of the file where  log  entries  for  this  virtual
          server are to be written. By default, this is the server
          log. The file and directory in which the access  log  is
@@ -82,11 +84,11 @@ asadmin Utility Subcommands;             create-virtual-server(1)
          the server runs.
 
      --property
-
          Optional property name/value pairs for  configuring  the
          virtual server. The following properties are available:
 
          sso-max-inactive-seconds
+
              Specifies the number of seconds after which a user's
              single  sign-on  record becomes eligible for purging
              if no client  activity  is  received.  Since  single
@@ -98,7 +100,7 @@ asadmin Utility Subcommands;             create-virtual-server(1)
              users, but at the expense of more memory use on  the
              server.
 
-Java EE 6           Last change: 15 Sep 2009                    2
+Java EE 6           Last change: 19 May 2010                    2
 
 asadmin Utility Subcommands;             create-virtual-server(1)
 
@@ -150,7 +152,7 @@ asadmin Utility Subcommands;             create-virtual-server(1)
              address  must match for this request to be accepted.
              If this property is not specified, all requests will
 
-Java EE 6           Last change: 15 Sep 2009                    3
+Java EE 6           Last change: 19 May 2010                    3
 
 asadmin Utility Subcommands;             create-virtual-server(1)
 
@@ -202,7 +204,7 @@ asadmin Utility Subcommands;             create-virtual-server(1)
              application's web.xml  file  overrides  the  virtual
              server's realm.
 
-Java EE 6           Last change: 15 Sep 2009                    4
+Java EE 6           Last change: 19 May 2010                    4
 
 asadmin Utility Subcommands;             create-virtual-server(1)
 
@@ -213,21 +215,19 @@ asadmin Utility Subcommands;             create-virtual-server(1)
              loads using SSL work properly in Internet Explorer.
 
              You can set this property for a specific web  appli-
-             cation.  For details, see sun-web-app in Sun GlassF-
-             ish  Enterprise  Server  v3  Application  Deployment
-             Guide.
+             cation. For details, see glassfish-web-app in Oracle
+             GlassFish Server 3.1 Application Deployment Guide.
 
          contextXmlDefault
              Specifies the location, relative to  domain-dir,  of
              the context.xml file for this virtual server, if one
              is used. For more information about the  context.xml
-             file,  see Using a context.xml File in Sun GlassFish
-             Enterprise Server v3 Application  Development  Guide
-             and          The          Context          Container
-             (http://tomcat.apache.org/tomcat-5.5-
-             doc/config/context.html).     Context    parameters,
-             environment entries,  and  resource  definitions  in
-             context.xml are supported in the Enterprise Server.
+             file, see Using a context.xml File in Oracle GlassF-
+             ish Server 3.1 Application Development Guide and The
+             Context  Container (http://tomcat.apache.org/tomcat-
+             5.5-doc/config/context.html).  Context   parameters,
+             environment  entries,  and  resource  definitions in
+             context.xml are supported in the GlassFish Server.
 
          alternatedocroot_n
 
@@ -257,13 +257,12 @@ asadmin Utility Subcommands;             create-virtual-server(1)
              alternate  docroots.  The  URI  pattern of the first
              alternate docroot uses an exact match,  whereas  the
              URI  patterns  of  the  second  and  third alternate
-
-Java EE 6           Last change: 15 Sep 2009                    5
-
-asadmin Utility Subcommands;             create-virtual-server(1)
-
              docroots  use  extension  and  longest  path  prefix
              matches, respectively.
+
+Java EE 6           Last change: 19 May 2010                    5
+
+asadmin Utility Subcommands;             create-virtual-server(1)
 
                <property name="alternatedocroot_1"
                   value="from=/my.jpg dir=/srv/images/jpg"/>
@@ -280,9 +279,8 @@ asadmin Utility Subcommands;             create-virtual-server(1)
              the dir component.
 
              You can set this property for a specific web  appli-
-             cation.  For details, see sun-web-app in Sun GlassF-
-             ish  Enterprise  Server  v3  Application  Deployment
-             Guide.
+             cation. For details, see glassfish-web-app in Oracle
+             GlassFish Server 3.1 Application Deployment Guide.
 
          send-error_n
 
@@ -314,14 +312,13 @@ asadmin Utility Subcommands;             create-virtual-server(1)
 
              This example property definition causes the contents
              of   /myhost/401.html   to   be  returned  with  401
-
-Java EE 6           Last change: 15 Sep 2009                    6
-
-asadmin Utility Subcommands;             create-virtual-server(1)
-
              responses, along with this response line:
 
                HTTP/1.1 401 MY-401-REASON
+
+Java EE 6           Last change: 19 May 2010                    6
+
+asadmin Utility Subcommands;             create-virtual-server(1)
 
          redirect_n
 
@@ -349,28 +346,22 @@ asadmin Utility Subcommands;             create-virtual-server(1)
              valve,  where  n  is  a positive integer that allows
              specification of more than one. The valve class must
              implement  the  org.apache.catalina.Valve  interface
-             from Tomcat or previous  Enterprise Server releases,
-             or    the     org.glassfish.web.valve.GlassFishValve
-             interface  from  the   current   Enterprise   Server
-             release. For example:
+             from Tomcat or previous  GlassFish Server  releases,
+             or the org.glassfish.web.valve.GlassFishValve inter-
+             face from the current GlassFish Server release.  For
+             example:
 
                <property name="valve_1"
                   value="org.glassfish.extension.Valve"/>
 
              You can set this property for a specific web  appli-
-             cation.  For details, see sun-web-app in Sun GlassF-
-             ish  Enterprise  Server  v3  Application  Deployment
-             Guide.
+             cation. For details, see glassfish-web-app in Oracle
+             GlassFish Server 3.1 Application Deployment Guide.
 
          listener_n
 
              Specifies a fully qualified class name of  a  custom
              Catalina  listener,  where  n  is a positive integer
-
-Java EE 6           Last change: 15 Sep 2009                    7
-
-asadmin Utility Subcommands;             create-virtual-server(1)
-
              that allows specification  of  more  than  one.  The
              listener      class      must      implement     the
              org.apache.catalina.ContainerListener             or
@@ -380,10 +371,13 @@ asadmin Utility Subcommands;             create-virtual-server(1)
                <property name="listener_1"
                   value="org.glassfish.extension.MyLifecycleListener"/>
 
+Java EE 6           Last change: 19 May 2010                    7
+
+asadmin Utility Subcommands;             create-virtual-server(1)
+
              You can set this property for a specific web  appli-
-             cation.  For details, see sun-web-app in Sun GlassF-
-             ish  Enterprise  Server  v3  Application  Deployment
-             Guide.
+             cation. For details, see glassfish-web-app in Oracle
+             GlassFish Server 3.1 Application Deployment Guide.
 
          docroot
 
@@ -420,7 +414,14 @@ asadmin Utility Subcommands;             create-virtual-server(1)
              virtual-server attribute, sso-cookie-secure, that is
              accessible using the get, set, and list subcommands.
 
-Java EE 6           Last change: 15 Sep 2009                    8
+         errorReportValve
+             Specifies a fully qualified class name of  a  custom
+             valve that produces default error pages for applica-
+             tions on  this  virtual  server.  Specify  an  empty
+             string  to  disable the default error page mechanism
+             for this virtual server.
+
+Java EE 6           Last change: 19 May 2010                    8
 
 asadmin Utility Subcommands;             create-virtual-server(1)
 
@@ -453,5 +454,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 15 Sep 2009                    9
+Java EE 6           Last change: 19 May 2010                    9
 

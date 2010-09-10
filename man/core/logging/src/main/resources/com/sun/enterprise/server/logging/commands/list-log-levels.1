@@ -1,19 +1,18 @@
 
-asadmin Utility Subcommands                 list-logger-levels(1)
+asadmin Utility Subcommands                    list-log-levels(1)
 
 NAME
-     list-logger-levels - lists the loggers and their log levels
+     list-log-levels - lists the loggers and their log levels
 
 SYNOPSIS
-     list-logger-levels [--help]
+     list-log-levels [--help] [--target target]
 
 DESCRIPTION
-     The list-logger-levels subcommand lists the  current  Enter-
-     prise  Server  loggers and their log levels. This subcommand
-     reports  on  all  the  loggers  that  are  listed   in   the
-     logging.properties  file.   In some cases, loggers that have
-     not been created by the respective containers will appear in
-     the list.
+     The list-log-levels subcommand lists the current GlassFishTM
+     Server loggers and their log levels. This subcommand reports
+     on all the loggers that are listed in the logging.properties
+     file.   In some cases, loggers that have not been created by
+     the respective containers will appear in the list.
 
      This subcommand is supported in remote mode only.
 
@@ -23,16 +22,35 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
+     --target
+         The server instance or cluster for which log levels will
+         be listed.
+
+OPERANDS
+     target    The server instance or cluster for which log  lev-
+               els will be listed. Valid values are:
+
+                   o    cluster_name- The name of a target  clus-
+                        ter.
+
+                   o    instance_name-  The  name  of  a   target
+                        server instance.
+
 EXAMPLES
      Example 1 Listing the Log Levels
 
      This example lists the existing loggers  and  indicates  how
      their log levels are set.
 
-       asadmin> list-logger-levels
+       asadmin> list-log-levels
        javax.enterprise.system.container.cmp: INFO
        javax.enterprise.system.tools.admin: INFO
        java.util.logging.ConsoleHandler: FINEST
+
+Java EE 6           Last change: 30 Aug 2010                    1
+
+asadmin Utility Subcommands                    list-log-levels(1)
+
        javax.enterprise.system.container.web: INFO
        javax.enterprise.system.util: INFO
        javax.enterprise.resource.webcontainer.jsf.timing: INFO
@@ -49,11 +67,6 @@ EXAMPLES
        javax.enterprise.system.webservices.registry: INFO
        javax.enterprise.system.tools.deployment: INFO
        javax.enterprise.resource.jms: INFO
-
-Java EE 6           Last change: 06 Nov 2009                    1
-
-asadmin Utility Subcommands                 list-logger-levels(1)
-
        javax.enterprise.system: INFO
        javax.enterprise.system.webservices.saaj: INFO
        org.apache.jasper: INFO
@@ -83,12 +96,16 @@ EXIT STATUS
                                  mand
 
 SEE ALSO
-     rotate-log(1), set-log-level(1)
+     rotate-log(1), set-log-levels(1)
+
+Java EE 6           Last change: 30 Aug 2010                    2
+
+asadmin Utility Subcommands                    list-log-levels(1)
 
      asadmin(1M)
 
-     Chapter 7, Administering the Logging Service, in Sun GlassF-
-     ish Enterprise Server v3 Administration Guide
+     Chapter 7, Administering  the  Logging  Service,  in  Oracle
+     GlassFish Server 3.1 Administration Guide
 
-Java EE 6           Last change: 06 Nov 2009                    2
+Java EE 6           Last change: 30 Aug 2010                    3
 

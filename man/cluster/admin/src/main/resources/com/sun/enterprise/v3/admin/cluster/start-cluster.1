@@ -1,0 +1,83 @@
+
+asadmin Utility Subcommands                      start-cluster(1)
+
+NAME
+     start-cluster - starts a cluster
+
+SYNOPSIS
+     start-cluster
+     [--help]
+      [ --autohadboverride={true|false} ]
+      cluster_name
+
+DESCRIPTION
+     Note -
+
+       This command is available only in domains that are config-
+       ured to support clusters, such as domains that are created
+       with the cluster profile or the  enterprise  profile.  For
+       information about profiles, see Usage Profiles in Sun Java
+       System Application Server 9.1 Administration Guide.
+
+     The start-cluster command attempts to start all  non-running
+     instances  in  the  cluster that are reachable through their
+     node agent. In  other  words,  some  instances  may  not  be
+     started  if  their  node  agent  is  not running. If HADB is
+     installed, this command can also  start  the  HADB  database
+     associated  with  a  cluster,  depending  upon the cluster's
+     autohadb setting and whether  you  override  it  using  this
+     command's autohadboverride option.
+
+     This command is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --autohadboverride
+         This option is  valid  only  if  the  HADB  software  is
+         installed.   The   autohadboverride   option  determines
+         whether  to  override  the  cluster's  setting  for  the
+         autohadb  option.  When  the  cluster  was  created, the
+         autohadb option was set to signal whether the HADB data-
+         base  associated  with  the  cluster  would  be started,
+         stopped,  or  deleted  when  the  cluster  was  started,
+         stopped,  or  deleted. You can override this value using
+         the autohadboverride option. If autohadboverride is  set
+         to  true,  the HADB database is started when the cluster
+         is started. If set to false, the HADB  database  is  not
+         started   when   the   cluster   is   started.   If  the
+
+Java EE 6           Last change: 27 Jul 2007                    1
+
+asadmin Utility Subcommands                      start-cluster(1)
+
+         autohadboverride option is not set, the  default  is  to
+         use the cluster's autohadb setting.
+
+OPERANDS
+     cluster_name                The name of the  cluster  to  be
+                                 started.
+
+EXAMPLES
+     Example 1 Using the start-cluster command
+
+     The following command starts the cluster named MyCluster.
+
+       asadmin> start-cluster --user admin1
+       --passwordfile passwords.txt MyCluster
+       Command start-cluster executed successfully.
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     stop-cluster(1),    create-cluster(1),     list-clusters(1),
+     delete-cluster(1)
+
+Java EE 6           Last change: 27 Jul 2007                    2
+

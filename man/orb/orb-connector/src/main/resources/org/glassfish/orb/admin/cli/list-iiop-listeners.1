@@ -5,8 +5,7 @@ NAME
      list-iiop-listeners - lists the existing IIOP listeners
 
 SYNOPSIS
-     list-iiop-listeners
-     [--help]
+     list-iiop-listeners [--help]
      [target]
 
 DESCRIPTION
@@ -21,17 +20,33 @@ OPTIONS
 
 OPERANDS
      target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         This operand specifies the target  for  which  the  IIOP
+         listeners are to be listed. Valid values are:
+
+         server
+
+             Lists the listeners in the default  server  instance
+             server and is the default value.
+
+         configuration_name
+             Lists the listeners in the specified configuration.
+
+         cluster_name
+
+             Lists the listeners in the specified cluster.
+
+         instance_name
+             Lists the listeners in a particular server instance.
 
 EXAMPLES
      Example 1 Using the list-iiop-listeners subcommand
 
      The following command lists all the IIOP listeners  for  the
      server instance:
+
+Java EE 6           Last change: 18 Aug 2010                    1
+
+asadmin Utility Subcommands                list-iiop-listeners(1)
 
        asadmin> list-iiop-listeners
        orb-listener-1
@@ -45,14 +60,10 @@ EXIT STATUS
 
      1                           error in executing the command
 
-Java EE 6           Last change: 16 Apr 2009                    1
-
-asadmin Utility Subcommands                list-iiop-listeners(1)
-
 SEE ALSO
      create-iiop-listener(1), delete-iiop-listener(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 16 Apr 2009                    2
+Java EE 6           Last change: 18 Aug 2010                    2
 

@@ -6,9 +6,7 @@ NAME
      tem
 
 SYNOPSIS
-     freeze-transaction-service
-     [--help]
-      [ --target  target]
+     freeze-transaction-service [--help] [-- target target]
 
 DESCRIPTION
      The freeze-transaction-service subcommand freezes the  tran-
@@ -25,36 +23,36 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         The target server instance on which  the  subcommand  is
-         run.
+         This option specifies the target on which you are freez-
+         ing the transaction service. Valid values are:
 
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         server
 
-OPERANDS
-     target
+             Freezes the  transaction  service  for  the  default
+             server instance server and is the default value.
 
-         The  name  of  the  target  server  instance,  typically
-         server.
+         configuration_name
+             Freezes the transaction service for the named confi-
+             guration.
 
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         cluster_name
+
+             Freezes the transaction  service  for  every  server
+             instance in the cluster.
+
+         instance_name
+             Freezes the transaction  service  for  a  particular
+             server instance.
 
 EXAMPLES
-     Example 1 Using freeze-transaction-service
 
-       % asadmin freeze-transaction-service
-
-Java EE 6           Last change: 29 Sep 2009                    1
+Java EE 6            Last change: 8 Sep 2010                    1
 
 asadmin Utility Subcommands         freeze-transaction-service(1)
 
+     Example 1 Using freeze-transaction-service
+
+       % asadmin freeze-transaction-service
        Command freeze-transaction-service executed successfully
 
 EXIT STATUS
@@ -68,11 +66,10 @@ SEE ALSO
 
      asadmin(1M)
 
-     Chapter 15, Using the Transaction Service, in Sun  GlassFish
-     Enterprise Server v3 Application Development Guide
+     Chapter 15, Using the Transaction Service, in Oracle GlassF-
+     ish Server 3.1 Application Development Guide
 
-     Chapter 29, Transactions, in The Java EE 6 Tutorial,  Volume
-     I
+     Chapter 28, Transactions, in The Java EE 6 Tutorial
 
-Java EE 6           Last change: 29 Sep 2009                    2
+Java EE 6            Last change: 8 Sep 2010                    2
 

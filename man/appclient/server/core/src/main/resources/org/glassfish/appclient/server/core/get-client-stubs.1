@@ -5,13 +5,12 @@ NAME
      get-client-stubs - retrieves the client stub JAR file.
 
 SYNOPSIS
-     get-client-stubs
-     [--help]
-      --appname  application_name[--target target] [local_directory_path]
+     get-client-stubs [--help] --appname application_name [--target target]
+     [local_directory_path]
 
 DESCRIPTION
      The get-client-stubs  subcommand  copies  the  required  JAR
-     files  for an AppClient stand-alone module or each AppClient
+     files  for  an AppClient standalone module or each AppClient
      module in an application from  the  server  machine  to  the
      local  directory.  Each  client's stub JAR file is retrieved
      separately, along with any required supporting JAR  files  .
@@ -31,13 +30,40 @@ OPTIONS
          The  name  of  the  application  or  stand-alone  client
          module.
 
+         The name can include  an  optional  version  identifier,
+         which follows the name and is separated from the name by
+         a colon (:). The version identifier must  begin  with  a
+         letter or number. It can contain alphanumeric characters
+         plus underscore (_), dash (-), and  period  (.)  charac-
+         ters.  For more information about module and application
+         versions, see the Oracle GlassFish Server  3.1  Applica-
+         tion Deployment Guide.
+
      --target
 
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+          Specifies the target for which  you  are  creating  the
+         HTTP listener. Valid values are
+
+         server
+             Creates the listener for the default server instance
+             server and is the default value.
+
+Java EE 6            Last change: 2 Sep 2010                    1
+
+asadmin Utility Subcommands                   get-client-stubs(1)
+
+         configuration_name
+
+             Creates the listener for the named configuration.
+
+         cluster_name
+             Creates the listener for every  server  instance  in
+             the cluster.
+
+         stand-alone_instance_name
+
+             Creates the listener  for  a  particular  standalone
+             server instance.
 
 OPERANDS
      local_directory_path
@@ -47,10 +73,6 @@ OPERANDS
 
 EXAMPLES
      Example 1 Using get-client-stubs
-
-Java EE 6           Last change: 15 Sep 2009                    1
-
-asadmin Utility Subcommands                   get-client-stubs(1)
 
        asadmin> get-client-stubs --appname myapplication /sample/example
        Command get-client-stubs executed successfully
@@ -65,5 +87,7 @@ SEE ALSO
 
      appclient(1M), asadmin(1M), package-appclient(1M)
 
-Java EE 6           Last change: 15 Sep 2009                    2
+     Oracle GlassFish Server 3.1 Application Deployment Guide
+
+Java EE 6            Last change: 2 Sep 2010                    2
 

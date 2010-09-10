@@ -5,7 +5,9 @@ NAME
      list-components - lists deployed components
 
 SYNOPSIS
-     list-components [--help] [--type type] [target]
+     list-components [--help]
+     [--verbose={false|true}] [--resources] [--subcomponents]
+     [--type type] [target]
 
 DESCRIPTION
      The list-components subcommand lists all  deployed  Java  EE
@@ -16,6 +18,13 @@ DESCRIPTION
      type. The possible types are listed in the  Options  section
      in this help page.
 
+     If  multiple  versions  of  a  module  or  application   are
+     deployed,  this subcommand lists all versions. To list which
+     version is enabled, set the --verbose option  to  true.  For
+     more  information about module and application versions, see
+     the  Oracle  GlassFish  Server  3.1  Application  Deployment
+     Guide.
+
      This subcommand is supported in remote mode only.
 
 OPTIONS
@@ -24,7 +33,32 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
+     --verbose
+         If true, displays whether  each  module  or  application
+         listed is enabled. The default is false.
+
+     --resources
+
+         Lists the application-scoped  resources  for  each  com-
+         ponent.  If  the  --subcomponents  option  is also used,
+         lists the application-scoped  resources  for  each  com-
+         ponent within an application.
+
+     --subcomponents
+         Lists  the  subcomponents   of   each   component.   The
+
+Java EE 6            Last change: 2 Sep 2010                    1
+
+asadmin Utility Subcommands                    list-components(1)
+
+         subcomponents  listed  depend on the component type. For
+         example, for a Java EE application (EAR  file),  modules
+         are  listed.  For  a  web  application, servlets and JSP
+         pages are listed. For an EJB module,  EJB  subcomponents
+         are listed.
+
      --type
+
          Specifies the type of the  components  that  are  to  be
          listed. The options are as follows:
 
@@ -45,17 +79,29 @@ OPTIONS
 
 OPERANDS
      target
+         This is the name of the target upon which the subcommand
+         operates. The valid values are:
 
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error  does  not  occur.  Instead,  the
+         server
 
-Java EE 6           Last change: 14 Sep 2009                    1
+             Lists the components for the default server instance
+             server and is the default value.
+
+         domain_name
+             Lists the components for the named domain.
+
+         cluster_name
+
+             Lists the components for every  server  instance  in
+             the cluster.
+
+         instance_name
+             Lists  the  components  for  a   particular   server
+             instance.
+
+Java EE 6            Last change: 2 Sep 2010                    2
 
 asadmin Utility Subcommands                    list-components(1)
-
-         subcommand  runs successfully and the option is silently
-         ignored.
 
 EXAMPLES
      Example 1 Listing Components
@@ -77,8 +123,7 @@ SEE ALSO
 
      asadmin(1M)
 
-     Sun GlassFish Enterprise Server  v3  Application  Deployment
-     Guide
+     Oracle GlassFish Server 3.1 Application Deployment Guide
 
-Java EE 6           Last change: 14 Sep 2009                    2
+Java EE 6            Last change: 2 Sep 2010                    3
 

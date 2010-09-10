@@ -1,12 +1,12 @@
 
-Enterprise Server Concepts                     dotted-names(5ASC)
+GlassFish Server Concepts                      dotted-names(5ASC)
 
 NAME
      dotted-names - syntax for using  periods  to  separate  name
      elements
 
 DESCRIPTION
-     A dotted name is an identifier for a  particular  Enterprise
+     A dotted name is an identifier for  a  particular  GlassFish
      Server  element,  such  as  a  configurable or a monitorable
      object. A dotted name uses the period (.), known as dot,  as
      a  delimiter  to  separate the parts of an element name. The
@@ -49,7 +49,7 @@ DESCRIPTION
 
 Java EE 6           Last change: 14 Sep 2009                    1
 
-Enterprise Server Concepts                     dotted-names(5ASC)
+GlassFish Server Concepts                      dotted-names(5ASC)
 
               name.  For  example,  server-config (default confi-
               guration),  server  (default  server),  or  domain1
@@ -106,7 +106,7 @@ Enterprise Server Concepts                     dotted-names(5ASC)
 
 Java EE 6           Last change: 14 Sep 2009                    2
 
-Enterprise Server Concepts                     dotted-names(5ASC)
+GlassFish Server Concepts                      dotted-names(5ASC)
 
                   For  example,  the  following command lists all
                   the web modules deployed to the domain  or  the
@@ -153,7 +153,7 @@ EXAMPLES
 
 Java EE 6           Last change: 14 Sep 2009                    3
 
-Enterprise Server Concepts                     dotted-names(5ASC)
+GlassFish Server Concepts                      dotted-names(5ASC)
 
        configs.config.server-config.ejb-container
        configs.config.server-config.ejb-container.ejb-timer-service
@@ -204,7 +204,7 @@ Enterprise Server Concepts                     dotted-names(5ASC)
 
 Java EE 6           Last change: 14 Sep 2009                    4
 
-Enterprise Server Concepts                     dotted-names(5ASC)
+GlassFish Server Concepts                      dotted-names(5ASC)
 
      Output similar to the following is displayed:
 

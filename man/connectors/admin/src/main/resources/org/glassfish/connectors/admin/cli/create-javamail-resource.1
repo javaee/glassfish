@@ -59,26 +59,26 @@ asadmin Utility Subcommands           create-javamail-resource(1)
 
          The mail server store protocol.  The  default  is  imap.
          Change  this  value  only  if  you have reconfigured the
-         Application Server's mail provider to use a  non-default
+         GlassFish Server's mail provider to  use  a  non-default
          store protocol.
 
      --storeprotocolclass
          The mail server store protocol class name.  The  default
          is  com.sun.mail.imap.IMAPStore.  Change this value only
-         if you have reconfigured the Application  Server's  mail
+         if you have reconfigured  the  GlassFish  Server's  mail
          provider to use a nondefault store protocol.
 
      --transprotocol
 
          The mail server transport protocol. The default is smtp.
          Change  this  value  only  if  you have reconfigured the
-         Application Server's mail provider to use  a  nondefault
+         GlassFish Server's mail provider  to  use  a  nondefault
          transport protocol.
 
      --transprotocolclass
          The mail  server  transport  protocol  class  name.  The
          default  is com.sun.mail.smtp.SMTPTransport. Change this
-         value only if  you  have  reconfigured  the  Application
+         value  only  if  you  have  reconfigured  the  GlassFish
          Server's  mail  provider  to  use a nondefault transport
          protocol.
 
@@ -105,10 +105,10 @@ asadmin Utility Subcommands           create-javamail-resource(1)
      --property
 
          Optional attribute name/value pairs for configuring  the
-         JavaMail resource. Enterprise Server-specific mail- pre-
-         fix is converted to standard mail prefix.  The  JavaMail
-         API documentation lists the properties you might want to
-         set.
+         JavaMail  resource.  The GlassFish Server-specific mail-
+         prefix is converted to the  standard  mail  prefix.  The
+         JavaMail  API  documentation  lists  the  properties you
+         might want to set.
 
 OPERANDS
      jndi-name

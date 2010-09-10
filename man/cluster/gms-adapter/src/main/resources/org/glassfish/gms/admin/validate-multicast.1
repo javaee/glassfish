@@ -1,0 +1,95 @@
+
+asadmin Utility Subcommands                 validate-multicast(1)
+
+NAME
+     validate-multicast - validates that multicast  transport  is
+     available for clusters
+
+SYNOPSIS
+     validate-multicast
+     [--help]
+     [--multicastport multicastport]
+     [--multicastaddress multicastaddress]
+     [--bindinterface bindinterface]
+     [--sendperiod sendperiod]
+     [--timeout timeout]
+     [--verbose={false|true}]
+
+DESCRIPTION
+     The validate-multicast subcommand validates  that  multicast
+     transport  is  available for clusters. Note that GMS must be
+     enabled or this command does nothing.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --multicastport
+         The port for the multicast socket.  Specify  a  standard
+         UDP port number. The default is 2048.
+
+     --multicasaddress
+
+         The address for the multicast socket. Specify a class  D
+         IP  address.  Class  D  IP  addresses  are  in the range
+         224.0.0.0 to  239.255.255.255,  inclusive.  The  address
+         224.0.0.0  is  reserved  and  should  not  be  used. The
+         default is 228.9.3.1.
+
+     --bindinterface
+         The local interface to receive multicast datagram  pack-
+         ets. The default is null, which uses all available bind-
+         ing interfaces.
+
+     --sendperiod
+
+         The number of milliseconds between  test  messages  sent
+         between nodes. The default is 2000.
+
+Java EE 6            Last change: 9 Sep 2010                    1
+
+asadmin Utility Subcommands                 validate-multicast(1)
+
+     --timeout
+
+         The number of seconds before the  subcommand  times  out
+         and  exits.  The  default  is 20. You can also exit this
+         subcommand using Ctrl-C.
+
+     --verbose
+         If true, provides additional debugging information.  The
+         default is false.
+
+EXAMPLES
+     Example 1 Validating multicast transport
+
+       asadmin> validate-multicast
+       Will use port 2,048
+       Will use address 228.9.3.1
+       Will use bind interface null
+       Will use wait period 2,000 (in milliseconds)
+
+       Listening for data...
+       Sending message with content
+       "sr1-jurassic-03|e2bc5340-eb78-41f9-a8ca-5a15012f6a68" (hostname|UUID) every
+       2,000 milliseconds
+       Received data from sr1-jurassic-03|e2bc5340-eb78-41f9-a8ca-5a15012f6a68 (loopback)
+       Exiting after 20 seconds. To change this timeout, use the --timeout command line
+       option.
+       Received no data (ignoring loopback messages)
+       Command validate-multicast executed successfully
+
+EXIT STATUS
+     0                   command executed successfully
+
+     1                   error in executing the command
+
+SEE ALSO
+     get-health(1)
+
+     asadmin(1M)
+
+Java EE 6            Last change: 9 Sep 2010                    2
+

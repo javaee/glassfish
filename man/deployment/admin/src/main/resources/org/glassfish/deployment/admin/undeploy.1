@@ -5,7 +5,7 @@ NAME
      undeploy - removes a deployed component
 
 SYNOPSIS
-     undeploy [--help] [--target target]  [--droptables={true|false}]
+     undeploy [--help] [--target target] [--keepreposdir={false|true}] [--droptables={true|false}]
      [--cascade={false|true}] name
 
 DESCRIPTION
@@ -44,25 +44,60 @@ OPTIONS
          true.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
+         Specifies the target from  which  you  are  undeploying.
+         Valid values are:
 
-Java EE 6            Last change: 6 Nov 2009                    1
+Java EE 6            Last change: 2 Sep 2010                    1
 
 asadmin Utility Subcommands                           undeploy(1)
 
-         ignored.
+         server
+
+             Undeploys the  component  from  the  default  server
+             instance server and is the default value.
+
+         domain
+             Undeploys the component from the domain.
+
+         cluster_name
+
+             Undeploys the component from every  server  instance
+             in the cluster.
+
+         instance_name
+             Undeploys the  component  from  a  particular  sever
+             instance.
+
+     --keepreposdir
+
+         When this option is set to true,  the  application  bits
+         are  kept in the repository for debugging purposes (usu-
+         ally the bits are deleted as part of the  undeployment).
+         Default value is false.
 
 OPERANDS
-     name                        Name of the deployed component.
+     name
+         Name of the deployed component.
+
+         The name can include  an  optional  version  identifier,
+         which follows the name and is separated from the name by
+         a colon (:). The version identifier must  begin  with  a
+         letter or number. It can contain alphanumeric characters
+         plus underscore (_), dash (-), and  period  (.)  charac-
+         ters. To delete multiple versions, you can use an aster-
+         isk (*) as a wildcard character.  For  more  information
+         about  module  and  application versions, see the Oracle
+         GlassFish Server 3.1 Application Deployment Guide.
 
 EXAMPLES
      Example 1 Undeploying an Enterprise Application
 
      This  example  undeploys  an  enterprise  application  named
      Cart.ear.
+
+Java EE 6            Last change: 2 Sep 2010                    2
+
+asadmin Utility Subcommands                           undeploy(1)
 
        asadmin> undeploy Cart
        Command undeploy executed successfully.
@@ -91,17 +126,12 @@ EXIT STATUS
      1                           error in executing  the  subcom-
                                  mand
 
-Java EE 6            Last change: 6 Nov 2009                    2
-
-asadmin Utility Subcommands                           undeploy(1)
-
 SEE ALSO
      deploy(1), redeploy(1), list-components(1)
 
      asadmin(1M)
 
-     Sun GlassFish Enterprise Server  v3  Application  Deployment
-     Guide
+     Oracle GlassFish Server 3.1 Application Deployment Guide
 
-Java EE 6            Last change: 6 Nov 2009                    3
+Java EE 6            Last change: 2 Sep 2010                    3
 

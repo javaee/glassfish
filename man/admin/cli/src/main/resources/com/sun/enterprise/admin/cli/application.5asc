@@ -1,5 +1,5 @@
 
-Enterprise Server Concepts                      application(5ASC)
+GlassFishTM Server Concepts                     application(5ASC)
 
 NAME
      application - server-side Java applications and web services
@@ -7,7 +7,7 @@ NAME
 DESCRIPTION
      The Java EE platform enables applications to access  systems
      that  are  outside  of  the application server. Applications
-     connect to these systems through resources.  The  Enterprise
+     connect to these systems through  resources.  The  GlassFish
      Server  infrastructure supports the deployment of many types
      of distributed applications and is an ideal  foundation  for
      building  applications  based  on Service Oriented Architec-
@@ -15,5 +15,8 @@ DESCRIPTION
      the reuse of application services. These features enable you
      to run scalable and highly available Java EE applications.
 
-Java EE 6           Last change: 24 Sep 2008                    1
+SEE ALSO
+     create-application-ref(1), deploy(1), list-applications(1)
+
+Java EE 6            Last change: 2 Sep 2010                    1
 

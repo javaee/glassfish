@@ -6,10 +6,8 @@ NAME
      to delete a message security provider
 
 SYNOPSIS
-     delete-message-security-provider
-     [--help]
-        --layer    message_layer
-      provider_name
+     delete-message-security-provider [--help] [--target target] --layer message_layer
+     provider_name
 
 DESCRIPTION
      The  delete-message-security-provider   subcommand   enables
@@ -19,7 +17,7 @@ DESCRIPTION
      provider-config  sub-element  for  the  given  message layer
      (message-security-config element of domain.xml  is  deleted.
      The  domain.xmlfile  specifies  parameters and properties to
-     the Enterprise Server). The options specified  in  the  list
+     the GlassFish Server). The options  specified  in  the  list
      below apply to attributes within the message-security-config
      and provider-config sub-elements of the domain.xml file.
 
@@ -46,17 +44,18 @@ OPTIONS
          command  runs  successfully  and  the option is silently
          ignored.
 
-Java EE 6            Last change: 28 Aug2009                    1
-
-asadmin Utility Subcommands   delete-message-security-provider(1)
-
       --layer
 
          The message-layer from which  the  provider  has  to  be
          deleted. The default value is HttpServlet.
 
+Java EE 6            Last change: 28 Aug2009                    1
+
+asadmin Utility Subcommands   delete-message-security-provider(1)
+
 OPERANDS
      provider_name
+
          The  name  of  the  provider  used  to   reference   the
          provider-config element.
 

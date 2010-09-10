@@ -5,10 +5,7 @@ NAME
      delete-iiop-listener - removes an IIOP listener
 
 SYNOPSIS
-     delete-iiop-listener
-     [--help]
-      [ --target  target]
-      listener_id
+     delete-iiop-listener [--help] [--target target] listener_id
 
 DESCRIPTION
      The delete-iiop-listener subcommand  removes  the  specified
@@ -22,11 +19,25 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         Specifies the target from which  you  are  deleting  the
+         IIOP listener. Valid values are
+
+         server
+
+             Deletes  the  listener  from  the   default   server
+             instance server and is the default value.
+
+         configuration_name
+             Deletes the listener from the named configuration.
+
+         cluster_name
+
+             Deletes the listener from every server  instance  in
+             the cluster.
+
+         instance_name
+             Deletes  the  listener  from  a  particular   server
+             instance.
 
 OPERANDS
      listener_id
@@ -34,8 +45,12 @@ OPERANDS
          The unique  identifier  for  the  IIOP  listener  to  be
          deleted.
 
+Java EE 6           Last change: 18 Aug 2010                    1
+
+asadmin Utility Subcommands               delete-iiop-listener(1)
+
 EXAMPLES
-     Example 1 Using the delete-iiop-listener subcommand
+     Example 1 Deleting an IIOP Listener
 
      The  following  command  deletes  the  IIOP  listener  named
      sample_iiop_listener:
@@ -44,11 +59,6 @@ EXAMPLES
        Command delete-iiop-listener executed successfully.
 
 EXIT STATUS
-
-Java EE 6           Last change: 16 Apr 2009                    1
-
-asadmin Utility Subcommands               delete-iiop-listener(1)
-
      0                           command executed successfully
 
      1                           error in executing the command
@@ -58,5 +68,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 16 Apr 2009                    2
+Java EE 6           Last change: 18 Aug 2010                    2
 

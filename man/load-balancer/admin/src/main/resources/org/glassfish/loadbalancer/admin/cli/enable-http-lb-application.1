@@ -1,0 +1,69 @@
+
+asadmin Utility Subcommands         enable-http-lb-application(1)
+
+NAME
+     enable-http-lb-application - enables  a  previously-disabled
+     application managed by a load balancer
+
+SYNOPSIS
+     enable-http-lb-application [--help] --name application_name target
+
+DESCRIPTION
+      The  enable-http-lb-application  subcommand  enables   load
+     balancing for applications deployed on a standalone instance
+     or cluster. You can enable load balancing for  an   applica-
+     tion  on  all  instances  in a cluster, or on a single stan-
+     dalone  server  instance.  By  default,  load  balancing  is
+     enabled for applications.
+
+     Note -
+
+       This subcommand is only  applicable  to  Oracle  GlassFish
+       Server.  This  subcommand  is  not applicable to GlassFish
+       Server Open Source Edition.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --name
+         The name of the application to be enabled.
+
+OPERANDS
+     target
+
+         This operand specifies on which server instance or clus-
+         ter to enable the application. Valid values are:
+
+             o    cluster_name- The name of a target cluster.
+
+             o    instance_name- The  name  of  a  target  server
+                  instance.
+
+EXAMPLES
+     Example 1 Enabling Load Balancing for an Application
+
+     This example enables an application named webapps-simple  to
+     use load balancing on a cluster named mycluster.
+
+Java EE 6           Last change: 26 Aug 2010                    1
+
+asadmin Utility Subcommands         enable-http-lb-application(1)
+
+       asadmin> enable-http-lb-application --name webapps-simple mycluster
+       Command enable-http-lb-application executed successfully.
+
+EXIT STATUS
+     0    subcommand executed successfully
+
+     1    error in executing the subcommand
+
+SEE ALSO
+     disable-http-lb-application(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 26 Aug 2010                    2
+

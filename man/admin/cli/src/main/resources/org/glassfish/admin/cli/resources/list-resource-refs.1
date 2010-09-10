@@ -1,0 +1,58 @@
+
+asadmin Utility Subcommands                 list-resource-refs(1)
+
+NAME
+     list-resource-refs - lists the existing resource references
+
+SYNOPSIS
+     list-resource-refs [--help] [target]
+
+DESCRIPTION
+     The list-resource-refs subcommand lists all resource  refer-
+     ences  in  a server instance. This effectively lists all the
+     resources (for example, JDBC  resources)  available  in  the
+     JNDI tree.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+OPERANDS
+     target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+EXAMPLES
+     Example 1 Using the list-resource-refs subcommand
+
+     The following command lists resource references.
+
+       asadmin> list-resource-refs --user admin
+       --passwordfile passwords.txt
+       jms/Topic
+       Command list-resource-refs executed successfully.
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+Java EE 6           Last change: 09 Oct 2009                    1
+
+asadmin Utility Subcommands                 list-resource-refs(1)
+
+SEE ALSO
+     create-resource-ref(1), delete-resource-ref(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 09 Oct 2009                    2
+

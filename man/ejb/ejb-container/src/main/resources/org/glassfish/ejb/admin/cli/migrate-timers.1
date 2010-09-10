@@ -1,0 +1,64 @@
+
+asadmin Utility Subcommands                     migrate-timers(1)
+
+NAME
+     migrate-timers - moves EJB timers  when  a  server  instance
+     stops
+
+SYNOPSIS
+     migrate-timers  [--help] [--target target_server_name]
+      server_name
+
+DESCRIPTION
+     The migrate-timers subcommand moves EJB timers to  a  speci-
+     fied  server  when  a  server instance stops or fails abnor-
+     mally. This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         This is the target server instance. If  this  option  is
+         not  specified,  then DAS will find a server instance or
+         multiple server instances. A migration notification will
+         be sent to the selected server instances.
+
+     --destination
+
+         This option is deprecated. It works exactly  as  the  --
+         target option does.
+
+OPERANDS
+     server_name
+         This is the server instance  on  which  the  timers  are
+         currently  located.  This  server instance should not be
+         active during the migration process.
+
+EXAMPLES
+     Example 1 Migrating Timers
+
+     This example shows how to migrate  timers  from  the  server
+     named server to a server named dance.
+
+       asadmin>migrate-timers --target dance server
+       This command was successfully executed.
+
+Java EE 6           Last change: 11 Aug 2010                    1
+
+asadmin Utility Subcommands                     migrate-timers(1)
+
+EXIT STATUS
+     0                   command executed successfully
+
+     1                   error in executing the command
+
+SEE ALSO
+     list-timers(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 11 Aug 2010                    2
+

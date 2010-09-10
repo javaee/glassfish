@@ -7,17 +7,16 @@ NAME
      SOAP messages will be secured.
 
 SYNOPSIS
-     create-message-security-provider
-     [--help]
-
-       --classname   provider_class
-      [--layer   message_layer ] [--providertype provider_type ]
-      [--requestauthsource  request_auth_source  ]
-      [--requestauthrecipient  request_auth_recipient ]
-      [--responseauthsource  response_auth_source  ]
-      [--responseauthrecipient  response_auth_recipient ]
-      [--isdefaultprovider] [ --property  name=value[:name=value]*  ]
-      provider_name
+     create-message-security-provider [--help]
+     [--target target]
+     --classname provider_class
+     [--layer message_layer] [--providertype provider_type]
+     [--requestauthsource request_auth_source ]
+     [--requestauthrecipient request_auth_recipient ]
+     [--responseauthsource response_auth_source ]
+     [--responseauthrecipient response_auth_recipient ]
+     [--isdefaultprovider] [--property name=value[:name=value]*]
+     provider_name
 
 DESCRIPTION
      The create-message-security-provider subcommand enables  the
@@ -50,12 +49,12 @@ OPTIONS
          Client   authentication  providers  must  implement  the
          com.sun.enterprise.      security.jauth.ClientAuthModule
          interface.  Server-side  providers  must  implement  the
+         com.sun.enterprise.security       jauth.ServerAuthModule
 
 Java EE 6           Last change: 28 Aug 2009                    1
 
 asadmin Utility Subcommands   create-message-security-provider(1)
 
-         com.sun.enterprise.security       jauth.ServerAuthModule
          interface. A provider may implement both interfaces, but
          it must implement the  interface  corresponding  to  its
          provider type.
@@ -101,12 +100,12 @@ asadmin Utility Subcommands   create-message-security-provider(1)
      --responseauthrecipient
          The auth-recipient attribute defines a  requirement  for
          message-layer  authentication  of  the  receiver  of the
+         response message to its sender (e.g. by XML encryption).
 
 Java EE 6           Last change: 28 Aug 2009                    2
 
 asadmin Utility Subcommands   create-message-security-provider(1)
 
-         response message to its sender (e.g. by XML encryption).
          Possible values are before-content or after-content. The
          default value is after-content.
 

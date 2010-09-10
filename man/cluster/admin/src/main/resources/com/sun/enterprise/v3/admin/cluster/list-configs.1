@@ -1,0 +1,78 @@
+
+asadmin Utility Subcommands                       list-configs(1)
+
+NAME
+     list-configs  - lists named configurations
+
+SYNOPSIS
+     list-configs [--help] [target]
+
+DESCRIPTION
+     The list-configs subcommand lists  named  configurations  in
+     the  configuration of the domain administration server (DAS)
+     in the domain.xml file. The list can be filtered by  cluster
+     or instance.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+OPERANDS
+     target
+         Filters the list of configurations. Valid values are  as
+         follows:
+
+         domain
+
+             Lists  all  named  configurations  in  the   current
+             domain.
+
+         cluster-name
+             Lists the named configuration that defines the  con-
+             figuration of instances in the specified cluster.
+
+         instance-name
+
+             Lists the named configuration that defines the  con-
+             figuration of the specified instance.
+
+EXAMPLES
+     Example 1 Listing All Named Configurations in a Domain
+
+     This example lists all named configurations in  the  current
+     domain.
+
+Java EE 6            Last change: 9 Sep 2010                    1
+
+asadmin Utility Subcommands                       list-configs(1)
+
+       asadmin> list-configs
+       server-config
+       default-config
+       pmdclust-config
+       pmdsharedconfig
+       pmdcpinst-config
+       ymlclust-config
+       il1-config
+       il2-config
+
+       Command list-configs executed successfully.
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     copy-config(1), delete-config(1)
+
+     asadmin(1M)
+
+     configuration(5ASC)
+
+Java EE 6            Last change: 9 Sep 2010                    2
+

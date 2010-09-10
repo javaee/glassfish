@@ -1,0 +1,68 @@
+
+asadmin Utility Subcommands                      stop-instance(1)
+
+NAME
+     stop-instance - stops a server instance
+
+SYNOPSIS
+     [--help]
+      instance_name
+
+DESCRIPTION
+     Note -
+
+       This command is available only in domains that are config-
+       ured to support clusters, such as domains that are created
+       with the cluster profile or the  enterprise  profile.  For
+       information about profiles, see Usage Profiles in Sun Java
+       System Application Server 9.1 Administration Guide.
+
+     Use the stop-instance to stop the instance with the instance
+     name  specified.  The  stop-instance can be run both locally
+     and remotely. The named instance must already  exist  within
+     the given domain; and the instance must be running.
+
+OPTIONS
+     --help                      Displays the help text  for  the
+     -?                          subcommand.
+
+OPERANDS
+     instance_name               This is the name of  the  server
+                                 instance to stop.
+
+EXAMPLES
+     Example 1 Using stop-instance in local mode
+
+       asadmin> stop-instance --local --domain domain1 server1
+       Instance server1 stopped
+
+     Where: the server1  instance  associated  with  the  domain1
+     domain is stopped locally.
+
+     Example 2 Using stop-instance in remote mode
+
+       asadmin> stop-instance --user admin --password bluestar --host localhost --port 4848 server1
+       Instance server1 stopped
+
+Java EE 6           Last change: 13 Jul 2004                    1
+
+asadmin Utility Subcommands                      stop-instance(1)
+
+     Where: the server1 instance associated with the named  user,
+     password, host and port is deleted from the remote machine.
+
+EXIT STATUS
+     0    command executed successfully
+
+     1    error in executing the command
+
+INTERFACE EQUIVALENT
+     Server Instance page
+
+SEE ALSO
+     delete-instance(1), start-instance(1), create-instance(1), ,
+     start-appserv(1),  stop-appserv(1),  start-domain(1),  stop-
+     domain(1)
+
+Java EE 6           Last change: 13 Jul 2004                    2
+

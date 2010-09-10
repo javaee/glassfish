@@ -10,9 +10,9 @@ SYNOPSIS
 
 DESCRIPTION
      The start-database subcommand starts the Java DB server that
-     is  available  for  use  with  Enterprise Server. Java DB is
-     based upon Apache Derby. Use this subcommand only for  work-
-     ing with applications deployed to the server.
+     is available for use with GlassFish Server. Java DB is based
+     upon Apache Derby. Use this subcommand only for working with
+     applications deployed to the server.
 
      When you start Java DB server by  using  the  start-database
      subcommand, the database server is started in Network Server
@@ -93,14 +93,16 @@ OPTIONS
 EXAMPLES
      Example 1 Starting Java DB
 
-     This example starts Java DB on the host host1 and port 5001:
+     This example starts Java DB on the host host1 and port 5001.
 
        asadmin> start-database --dbhost host1 --dbport 5001 --terse=true
-       Starting database in the background.  Log redirected to /opt/SUNWappserver/databases/derby.log.
+       Starting database in the background.  Log redirected to
 
 Java EE 6            Last change: 8 Oct 2009                    2
 
 asadmin Utility Subcommands                     start-database(1)
+
+       /opt/SUNWappserver/databases/derby.log.
 
 EXIT STATUS
      The exit status applies to errors in executing  the  asadmin
@@ -120,8 +122,8 @@ SEE ALSO
 
      asadmin(1M)
 
-     Chapter 15, Administering Database  Connectivity  ,  in  Sun
-     GlassFish Enterprise Server v3 Administration Guide
+     Chapter 14, Administering Database Connectivity , in  Oracle
+     GlassFish Server 3.1 Administration Guide
 
 Java EE 6            Last change: 8 Oct 2009                    3
 

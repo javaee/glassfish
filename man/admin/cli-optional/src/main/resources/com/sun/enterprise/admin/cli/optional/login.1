@@ -10,37 +10,37 @@ SYNOPSIS
 DESCRIPTION
      The purpose of  the  login  subcommand  is  to  ease  domain
      administration  by letting you log into a particular domain.
-     If Enterprise Server domains are created on various machines
+     If GlassFish Server domains are created on various  machines
      (locally), you can run the asadmin utility from any of these
      machines and manage domains  located  elsewhere  (remotely).
      This  is  especially  useful  when  a  particular machine is
      chosen as an administration  client  that  manages  multiple
      domains and servers.
 
-     The login subcommand prompts you for the admin user name and
-     password.  After  successful login, the .asadminpass file is
-     created in your home directory. (This is the same file  that
-     is  modified  when you run the create-domain subcommand with
-     the --savelogin option.) The literal host  name  is  stored,
-     and  no resolution with the DNS is attempted. If a domain is
-     being administered from other machines, it is sufficient  to
-     run  the  login  subcommand once. You do not need to specify
-     the asadmin utility options --user and  --passwordfile  when
-     you  run additional remote subcommands on that domain. After
-     you have logged into a domain, you still need to provide the
-     host  and  port for any subsequent remote subcommands unless
-     you chose the default values for --host (localhost)  and  --
-     port (4848) options.
+     The login subcommand prompts you for the administrator  user
+     name  and password. After successful login, the .asadminpass
+     file is created in your home directory. (This  is  the  same
+     file that is modified when you run the create-domain subcom-
+     mand with the --savelogin option.) The literal host name  is
+     stored,  and  no  resolution with the DNS is attempted. If a
+     domain is being administered from other machines, it is suf-
+     ficient to run the login subcommand once. You do not need to
+     specify  the  asadmin  utility   options   --user   and   --
+     passwordfile  when  you run additional remote subcommands on
+     that domain. After you have logged into a domain, you  still
+     need  to provide the host and port for any subsequent remote
+     subcommands unless you chose the default values  for  --host
+     (localhost) and --port (4848) options.
 
      Subsequent use of same subcommand with the  same  parameters
      will  result in overwriting the contents of the .asadminpass
-     file for the given admin host and port. You  can  decide  to
-     overwrite the file or to reject such a login.
+     file for the given administration host  and  port.  You  can
+     decide to overwrite the file or to reject such a login.
 
      Login information is  saved  permanently  and  can  be  used
      across multiple domain restarts.
 
-     There is no logout subcommand.  If  you  want  to  login  to
+     There is no logout subcommand. If you  want  to  log  in  to
      another  domain,  run  the  login subcommand and specify new
      values for the asadmin utility options --host and --port.
 

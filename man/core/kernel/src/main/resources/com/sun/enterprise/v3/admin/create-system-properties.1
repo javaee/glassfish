@@ -14,17 +14,17 @@ DESCRIPTION
      tem  properties  that  can  be  referenced  elsewhere on the
      server.
 
-     Enterprise Server provides hooks where tokens  (system  pro-
-     perties)  can  be  specified. Because Enterprise Server does
-     not have multiple server elements, you can specify a partic-
-     ular  token  at  any  level. When a domain supports multiple
-     servers, the override potential can  be  exploited.  When  a
-     domain  is  started or restarted, all <system-property> ele-
-     ments are resolved and available to the Java Virtual Machine
-     by using the System.setProperty() call on each of them (with
-     its name and value derived from the corresponding attributes
-     of  the  element). This is analogous to sending the elements
-     as -D parameters on the Java command line.
+     GlassFish Server provides hooks where tokens (system proper-
+     ties)  can  be  specified. Because GlassFish Server does not
+     have multiple server elements, you can specify a  particular
+     token at any level. When a domain supports multiple servers,
+     the override potential can be exploited. When  a  domain  is
+     started  or  restarted,  all  <system-property> elements are
+     resolved and available to the Java Virtual Machine by  using
+     the System.setProperty() call on each of them (with its name
+     and value derived from the corresponding attributes  of  the
+     element).  This  is  analogous to sending the elements as -D
+     parameters on the Java command line.
 
      This subcommand is supported in remote mode only.
 

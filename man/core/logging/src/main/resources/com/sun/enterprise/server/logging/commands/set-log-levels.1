@@ -1,14 +1,14 @@
 
-asadmin Utility Subcommands                      set-log-level(1)
+asadmin Utility Subcommands                     set-log-levels(1)
 
 NAME
-     set-log-level - sets the log level for one or more loggers
+     set-log-levels - sets the log level for one or more loggers
 
 SYNOPSIS
-     set-log-level [--help] logger-name=logger-level[:logger-name=logger-level]*
+     set-log-levels [--help] logger-name=logger-level[:logger-name=logger-level]*
 
 DESCRIPTION
-     The set-log-level subcommand sets the log level for  one  or
+     The set-log-levels subcommand sets the log level for one  or
      more  loggers.  Changes  take  effect  dynamically, that is,
      server restart is not required.
 
@@ -38,20 +38,20 @@ EXAMPLES
       This example sets the log level of the web container logger
      to WARNING.
 
-       asadmin> set-log-level javax.enterprise.system.container.web=WARNING
+       asadmin> set-log-levels javax.enterprise.system.container.web=WARNING
        Command set-log-level executed successfully.
 
      Example 2 Setting the Log Level for Multiple Loggers
 
-Java EE 6           Last change: 06 Nov 2009                    1
+Java EE 6           Last change: 31 Aug 2010                    1
 
-asadmin Utility Subcommands                      set-log-level(1)
+asadmin Utility Subcommands                     set-log-levels(1)
 
      This example sets the log level of the web container  logger
      to  FINE  and  the  log level of the EJB container logger to
      SEVERE:
 
-       asadmin set-log-level javax.enterprise.system.container.web=FINE:
+       asadmin set-log-levels javax.enterprise.system.container.web=FINE:
        javax.enterprise.system.container.ejb=SEVERE
        Command set-log-level executed successfully.
 
@@ -62,12 +62,12 @@ EXIT STATUS
                                  mand
 
 SEE ALSO
-     list-logger-levels(1), rotate-log(1)
+     list-log-levels(1), rotate-log(1)
 
      asadmin(1M)
 
-     Chapter 7, Administering the Logging Service, in Sun GlassF-
-     ish Enterprise Server v3 Administration Guide
+     Chapter 7, Administering  the  Logging  Service,  in  Oracle
+     GlassFish Server 3.1 Administration Guide
 
-Java EE 6           Last change: 06 Nov 2009                    2
+Java EE 6           Last change: 31 Aug 2010                    2
 

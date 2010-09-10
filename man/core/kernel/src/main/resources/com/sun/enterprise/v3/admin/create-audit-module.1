@@ -5,24 +5,24 @@ NAME
      create-audit-module - adds an audit module
 
 SYNOPSIS
-     create-audit-module   --classname classname
-     [--help]
-
-      [ --property (name=value)[:name=value]*]
-       audit_module_name
+     create-audit-module  --classname classname [--help]
+     [--property(name=value)[:name=value]*]
+     audit_module_name
 
 DESCRIPTION
-     This subcommand adds the named audit module for the  plug-in
-     module that implements the audit capabilities. Audit modules
-     collect  and  store   information   on   incoming   requests
-     (servlets, EJB components) and outgoing responses. This sub-
-     command is supported in remote mode only.
+     The create-audit-module  subcommand  adds  the  named  audit
+     module for the Java class that implements the audit capabil-
+     ities. Audit modules collect and store information on incom-
+     ing  requests  (from,  for  example,  servlets  and EJB com-
+     ponents) and outgoing responses.
+
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --classname
 
          The name of the Java class that  implements  this  audit
-         module.     If     not     specified,     defaults    to
+         module.  If  not  specified,  this  option  defaults  to
          com.sun.enterprise.security.Audit.
 
      --help
@@ -31,27 +31,34 @@ OPTIONS
 
      --property
 
-         Optional attributes name/value pairs of provider  imple-
-         mentation specific attributes.
+         Optional keyword-value  pairs  that  specify  additional
+         properties for the audit module.
+                                                               TM
+         Audit module properties that are defined by  GlassFish
+         Server are as follows:
 
-          The only valid property is auditOn, which can be speci-
-         fied  as  true  or false. If true, causes the loading of
-         the audit module and ensures that it is  called  by  the
-         Enterprise Server's audit library at audit points.
+         auditOn
+             If true, specifies that the audit module  is  loaded
+             and  called by the GlassFish Server audit library at
+             audit points.
+
+         Other available properties are determined by the  imple-
+         mentation of the audit module.
 
      --target
+
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
-
-OPERANDS
 
 Java EE 6          Last change: 28 August 2009                  1
 
 asadmin Utility Subcommands                create-audit-module(1)
 
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+OPERANDS
      audit_module_name
 
          The name of this audit module.

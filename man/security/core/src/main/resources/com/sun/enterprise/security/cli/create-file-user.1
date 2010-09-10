@@ -5,12 +5,8 @@ NAME
      create-file-user - creates a new file user
 
 SYNOPSIS
-     create-file-user
-     [--help]
-
-      [ --authrealmname  auth_realm_name]
-     [--groups user_groups[:user_groups]*]
-      user_name
+     create-file-user [--help] [--authrealmname auth_realm_name]
+     [--groups user_groups[:user_groups]*] user_name
 
 DESCRIPTION
      The create-file-user subcommand creates an entry in the key-
@@ -47,12 +43,12 @@ OPERANDS
      user_name                   This is the name of file user to
                                  be created.
 
+EXAMPLES
+     Example 1 Creating a User in the File Realm
+
 Java EE 6          Last change: 28 August 2009                  1
 
 asadmin Utility Subcommands                   create-file-user(1)
-
-EXAMPLES
-     Example 1 Creating a User in the File Realm
 
      It is assumed that an authentication realm has already  been
      created using the create-auth-realm subcommand.

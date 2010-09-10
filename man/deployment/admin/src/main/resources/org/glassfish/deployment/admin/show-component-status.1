@@ -21,16 +21,44 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         This option specifies the target on which you are  show-
+         ing the component status. Valid values are:
+
+         server
+
+             Shows the component status for  the  default  server
+             instance server and is the default value.
+
+         domain_name
+             Shows the component status for the named domain.
+
+         cluster_name
+
+             Shows the component status for every server instance
+             in the cluster.
+
+         instance_name
+             Shows the component status for a  particular  server
+             instance.
 
 OPERANDS
      component-name
 
          The name of the component whose status is to be listed.
+
+Java EE 6            Last change: 2 Sep 2010                    1
+
+asadmin Utility Subcommands              show-component-status(1)
+
+         The name can include  an  optional  version  identifier,
+         which follows the name and is separated from the name by
+         a colon (:). The version identifier must  begin  with  a
+         letter or number. It can contain alphanumeric characters
+         plus underscore (_), dash (-), and  period  (.)  charac-
+         ters. To list multiple versions, you can use an asterisk
+         (*) as a wildcard character. For more information  about
+         module  and application versions, see the Oracle GlassF-
+         ish Server 3.1 Application Deployment Guide.
 
 EXAMPLES
      Example 1 Showing the Status of a Component
@@ -44,10 +72,6 @@ EXAMPLES
 EXIT STATUS
      0                   subcommand executed successfully
 
-Java EE 6           Last change: 11 Sep 2009                    1
-
-asadmin Utility Subcommands              show-component-status(1)
-
      1                   error in executing the subcommand
 
 SEE ALSO
@@ -55,8 +79,7 @@ SEE ALSO
 
      asadmin(1M)
 
-     Sun GlassFish Enterprise Server  v3  Application  Deployment
-     Guide
+     Oracle GlassFish Server 3.1 Application Deployment Guide
 
-Java EE 6           Last change: 11 Sep 2009                    2
+Java EE 6            Last change: 2 Sep 2010                    2
 

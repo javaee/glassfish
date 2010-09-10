@@ -242,7 +242,7 @@ asadmin Utility Subcommands        create-jdbc-connection-pool(1)
 
          If connection leak tracing is enabled, you can  use  the
          Administration  Console to enable monitoring of the JDBC
-         connection pool to get statistics on the number  of con-
+         connection pool to get statistics on the number of  con-
          nection  leaks.  The  default value is 0, which disables
          connection leak tracing.
 
@@ -266,11 +266,11 @@ asadmin Utility Subcommands        create-jdbc-connection-pool(1)
              pool.
 
      --creationretryattempts
-
-         Specifies the maximum number of  times  that  Enterprise
+                                                               TM
+         Specifies the maximum number of times  that  GlassFish
          Server  retries  to  create  a connection if the initial
          attempt fails. The default value is 0,  which  specifies
-         that Enterprise Server does not retry to create the con-
+         that  GlassFish Server does not retry to create the con-
          nection.
 
      --creationretryinterval
@@ -299,7 +299,7 @@ asadmin Utility Subcommands        create-jdbc-connection-pool(1)
          query to hang. To  prevent  this  occurrence,  use  this
          option  set  a  timeout  for all statements that will be
          created from the connection pool that you are  creating.
-         When  creating  a  statement, Enterprise Server sets the
+         When  creating  a  statement,  GlassFish Server sets the
          QueryTimeout property on the statement to the length  of
          time  that  is specified. The default value is -1, which
 
@@ -428,9 +428,9 @@ asadmin Utility Subcommands        create-jdbc-connection-pool(1)
          when the value of validationmethod is custom-validation.
          This       class        must        implement        the
          org.glassfish.api.jdbc.ConnectionValidation   interface,
-         and it must be accessible  to  the  application  server.
-         This  option  is  mandatory if the connection validation
-         type is set to custom validation.
+         and it must be  accessible  to  GlassFish  Server.  This
+         option is mandatory if the connection validation type is
+         set to custom validation.
 
      --wrapjdbcobjects
 

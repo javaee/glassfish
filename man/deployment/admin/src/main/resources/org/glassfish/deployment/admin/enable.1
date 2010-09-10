@@ -22,15 +22,54 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         This option specifies the target on which you  are  ena-
+         bling the component. Valid values are:
+
+         server
+
+             Enables the default server instance  server  and  is
+             the default value.
+
+         domain_name
+             Enables the named domain.
+
+         cluster_name
+
+             Enables every server instance in the cluster.
+
+         instance_name
+             Enables a particular server instance.
 
 OPERANDS
      component_name              name  of  the  component  to  be
                                  enabled.
+
+                                 The name can include an optional
+
+Java EE 6            Last change: 2 Sep 2010                    1
+
+asadmin Utility Subcommands                             enable(1)
+
+                                 version  identifier,  which fol-
+                                 lows the name and  is  separated
+                                 from  the  name  by a colon (:).
+                                 The  version   identifier   must
+                                 begin  with  a letter or number.
+                                 It  can   contain   alphanumeric
+                                 characters  plus underscore (_),
+                                 dash (-), and period (.) charac-
+                                 ters. For more information about
+                                 module and application versions,
+                                 see  the Oracle GlassFish Server
+                                 3.1    Application    Deployment
+                                 Guide.
+
+                                 At most one version of a  module
+                                 or application can be enabled on
+                                 a  server  instance.  All  other
+                                 versions  are disabled. Enabling
+                                 one version  automatically  dis-
+                                 ables all others.
 
 EXAMPLES
      Example 1 Enabling a Component
@@ -43,10 +82,6 @@ EXAMPLES
 EXIT STATUS
      0                   subcommand executed successfully
 
-Java EE 6           Last change: 11 Sep 2009                    1
-
-asadmin Utility Subcommands                             enable(1)
-
      1                   error in executing the subcommand
 
 SEE ALSO
@@ -54,8 +89,7 @@ SEE ALSO
 
      asadmin(1M)
 
-     Sun GlassFish Enterprise Server  v3  Application  Deployment
-     Guide
+     Oracle GlassFish Server 3.1 Application Deployment Guide
 
-Java EE 6           Last change: 11 Sep 2009                    2
+Java EE 6            Last change: 2 Sep 2010                    2
 

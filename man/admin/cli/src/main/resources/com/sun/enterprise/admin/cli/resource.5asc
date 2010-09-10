@@ -1,11 +1,11 @@
 
-Enterprise Server Concepts                         resource(5ASC)
+GlassFish Server Concepts                          resource(5ASC)
 
 NAME
      resources - Provide connectivity to various types of EIS .
 
 DESCRIPTION
-     Enterprise Server provides support for JDBC, JMS,  and  JNDI
+     GlassFish Server provides support for JDBC,  JMS,  and  JNDI
      resources.
 
 SEE ALSO

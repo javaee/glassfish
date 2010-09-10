@@ -12,9 +12,9 @@ SYNOPSIS
 DESCRIPTION
      The  create-jvm-options  subcommand   creates   command-line
      options  that  are  passed  to the Java application launcher
-     when Enterprise Server is started.  The  options  that  this
+     when GlassFishTM Server is started. The  options  that  this
      subcommand  creates  are in addition to the options that are
-     preset with Enterprise  Server.  Java  application  launcher
+     preset with  GlassFish  Server.  Java  application  launcher
      options  are  stored  in  the Java configuration java-config
      element or the profiler profiler element of  the  domain.xml
      file.  The options are sent to the command line in the order
@@ -61,9 +61,9 @@ asadmin Utility Subcommands                 create-jvm-options(1)
        such an invalid option can cause startup to fail.
 
      An option can be verified by examining the server log  after
-     Enterprise  Server  starts. Options for the Java application
+     GlassFish  Server  starts.  Options for the Java application
      launcher are written to the server.log file before any other
-     information when Enterprise Server starts.
+     information when GlassFish Server starts.
 
      The addition of some options requires a server  restart  for
      changes  to  become effective. Other options are set immedi-
@@ -209,8 +209,8 @@ SEE ALSO
      see the reference page for the operating system that you are
      using:
 
-         o    SolarisTM Operating System (Solaris OS) and  Linux:
-              java    -    the    Java    application    launcher
+         o    Oracle SolarisTM and Linux: java - the Java  appli-
+              cation                                     launcher
               (http://java.sun.com/javase/6/docs/technotes/tools/solaris/java.html)
 
          o    Windows:  java  -  the  Java  application  launcher

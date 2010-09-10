@@ -1,20 +1,19 @@
 
-Enterprise Server Concepts                         security(5ASC)
+GlassFish Server Concepts                          security(5ASC)
 
 NAME
-     security - secure and administer application server applica-
+     security - secure and administer GlassFish  Server  applica-
      tions
 
 DESCRIPTION
      Security is about protecting data: how to prevent  unauthor-
-     ized  access  or  damage  to  it  in storage or transit. The
-     Enterprise Server has a dynamic, extensible security  archi-
-     tecture  based  on  the  Java EE standard. Built in security
-     features include cryptography, authentication and authoriza-
-     tion,  and  public key infrastructure. The Enterprise Server
-     is built on the Java security model, which  uses  a  sandbox
-     where applications can run safely, without potential risk to
-     systems or users.
+     ized access or damage to it in storage or transit. GlassFish
+     Server has a dynamic, extensible security architecture based
+     on  the Java EE standard. Built in security features include
+     cryptography, authentication and authorization,  and  public
+     key  infrastructure.  GlassFish  Server is built on the Java
+     security model, which uses a sandbox where applications  can
+     run safely, without potential risk to systems or users.
 
 SEE ALSO
      change-admin-password(1),         change-master-password(1),

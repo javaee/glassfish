@@ -27,7 +27,7 @@ SYNOPSIS
      [--maxconnectionusagecount=count]
      [--validateatmostonceperiod=interval]
      [--transactionsupport transactionsupport]
-     [--description description]
+     [--descrip[tion description]
      [--ping {false|true}]
      [--pooling {true|false}]
      [--property (name=value)[:name=value]*]
@@ -49,7 +49,7 @@ DESCRIPTION
      password, or other connection information, or by  specifying
      the connection information in the XML descriptor file.
 
-Java EE 6           Last change: 06 Nov 2009                    1
+Java EE 6            Last change: 9 Sep 2010                    1
 
 asadmin Utility Subcommands   create-connector-connection-pool(1)
 
@@ -98,7 +98,7 @@ OPTIONS
          creationretryinterval  option  is ignored. Default value
          is 10.
 
-Java EE 6           Last change: 06 Nov 2009                    2
+Java EE 6            Last change: 9 Sep 2010                    2
 
 asadmin Utility Subcommands   create-connector-connection-pool(1)
 
@@ -149,7 +149,7 @@ asadmin Utility Subcommands   create-connector-connection-pool(1)
              A physical connection is associated with the logical
              connection  only  when  the  physical  connection is
 
-Java EE 6           Last change: 06 Nov 2009                    3
+Java EE 6            Last change: 9 Sep 2010                    3
 
 asadmin Utility Subcommands   create-connector-connection-pool(1)
 
@@ -177,10 +177,10 @@ asadmin Utility Subcommands   create-connector-connection-pool(1)
          nection leaks in a connection pool are to be traced.
 
          If connection leak tracing is enabled, you can  use  the
-         Admin  Console  to enable monitoring of the JDBC connec-
-         tion pool to get statistics on the number  of connection
-         leaks.  Default  value  is  0, which disables connection
-         leak tracing.
+         Administration  Console to enable monitoring of the JDBC
+         connection pool to get statistics on the number of  con-
+         nection  leaks.  Default value is 0, which disables con-
+         nection leak tracing.
 
      --matchconnections
 
@@ -199,7 +199,7 @@ asadmin Utility Subcommands   create-connector-connection-pool(1)
              A connection should not be matched with the resource
              adaptor.
 
-Java EE 6           Last change: 06 Nov 2009                    4
+Java EE 6            Last change: 9 Sep 2010                    4
 
 asadmin Utility Subcommands   create-connector-connection-pool(1)
 
@@ -208,11 +208,9 @@ asadmin Utility Subcommands   create-connector-connection-pool(1)
          Specifies the maximum number of times that a  connection
          can be reused.
 
-         When this limit is reached, the connection is closed. By
-         limiting  the  maximum number of times that a connection
-         can be reused, you can avoid  statement  leaks.  Default
-         value  is  0,  which specifies no limit on the number of
-         times that a connection can be reused.
+         When this limit is reached, the  connection  is  closed.
+         Default  value  is  0,  which  specifies no limit on the
+         number of times that a connection can be reused.
 
      --maxpoolsize
          The maximum number of connections that can be created to
@@ -248,42 +246,43 @@ asadmin Utility Subcommands   create-connector-connection-pool(1)
          ensured.  Possible  values  are  from  0 to MAX_INTEGER.
          Default value is 2.
 
-Java EE 6           Last change: 06 Nov 2009                    5
-
-asadmin Utility Subcommands   create-connector-connection-pool(1)
-
      --property
 
          Optional attribute name/value pairs for configuring  the
          pool.
 
+Java EE 6            Last change: 9 Sep 2010                    5
+
+asadmin Utility Subcommands   create-connector-connection-pool(1)
+
          LazyConnectionEnlistment
+
              Deprecated. Use the equivalent option. Default value
              is false.
 
          LazyConnectionAssociation
-
              Deprecated. Use the equivalent option. Default value
              is false.
 
          AssociateWithThread
+
              Deprecated. Use the equivalent option. Default value
              is false.
 
          MatchConnections
-
              Deprecated. Use the equivalent option. Default value
              is false.
 
      --raname
+
          The name of the resource adapter.
 
      --steadypoolsize
-
          The minimum and initial number of connections maintained
          in the pool. Default value is 8.
 
      --target
+
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
@@ -291,20 +290,18 @@ asadmin Utility Subcommands   create-connector-connection-pool(1)
          ignored.
 
      --transactionsupport
-
          Indicates the level of  transaction  support  that  this
          pool  will  have.  Possible  values  are  XATransaction,
          LocalTransaction and NoTransaction. This  attribute  can
          have  a value lower than or equal to but not higher than
          the resource adapter's  transaction  support  attribute.
-
-Java EE 6           Last change: 06 Nov 2009                    6
-
-asadmin Utility Subcommands   create-connector-connection-pool(1)
-
          The resource adapter's transaction support attribute has
          an order of values, where XATransaction is the  highest,
          and NoTransaction the lowest.
+
+Java EE 6            Last change: 9 Sep 2010                    6
+
+asadmin Utility Subcommands   create-connector-connection-pool(1)
 
      --validateatmostonceperiod
 
@@ -342,5 +339,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 06 Nov 2009                    7
+Java EE 6            Last change: 9 Sep 2010                    7
 

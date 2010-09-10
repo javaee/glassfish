@@ -1,0 +1,48 @@
+
+asadmin Utility Subcommands                         get-health(1)
+
+NAME
+     get-health - provides information on the cluster health
+
+SYNOPSIS
+     get-health
+     [--help]
+      [--target cluster_name]
+
+DESCRIPTION
+     The get-health subcommand gets information about the  health
+     of  the  cluster. Note that if GMS is not enabled, the basic
+     information about whether the server instances in this clus-
+     ter are running or not running is not returned.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         The name of the cluster for which you  want  the  health
+         information.
+
+EXAMPLES
+     Example 1 Checking the health of server instances in a clus-
+     ter
+
+       asadmin> get-health --target cluster1
+       instance1 started since 09/09/10 09:53 am
+       instance2 failed since 09/09/10 10:22 am
+       Command get-health executed successfully
+
+EXIT STATUS
+     0                   command executed successfully
+
+     1                   error in executing the command
+
+SEE ALSO
+     validate-multicast(1)
+
+     asadmin(1M)
+
+Java EE 6            Last change: 9 Sep 2010                    1
+

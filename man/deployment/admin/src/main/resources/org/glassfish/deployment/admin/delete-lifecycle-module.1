@@ -5,10 +5,7 @@ NAME
      delete-lifecycle-module - removes the lifecycle module
 
 SYNOPSIS
-     delete-lifecycle-module
-     [--help]
-      [ --target  target]
-      module_name
+     delete-lifecycle-module [--help] [--target target] module_name
 
 DESCRIPTION
      The delete-lifecycle-module subcommand removes  a  lifecycle
@@ -24,11 +21,25 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         Indicates the location where the lifecycle module is  to
+         be deleted. Valid values are
+
+             o    server- Specifies the default  server  instance
+                  as   the  target  for  deleting  the  lifecycle
+                  module. server  is  the  name  of  the  default
+                  server  instance  and  is the default value for
+                  this option.
+
+             o    cluster_name- Specifies a particular cluster as
+                  the target for deleting the lifecycle module.
+
+             o    instance_name- Specifies  a  particular  server
+                  instance as the target for deleting the lifecy-
+                  cle module.
+
+             o    configuration_name- Specifies a particular con-
+                  figuration  as  the  target  for  deleting  the
+                  lifecycle module.
 
 OPERANDS
      module_name
@@ -37,16 +48,18 @@ OPERANDS
          server lifecycle event listener module.
 
 EXAMPLES
-     Example 1 Using delete-lifecycle-module
+
+Java EE 6           Last change: 11 Aug 2010                    1
+
+asadmin Utility Subcommands            delete-lifecycle-module(1)
+
+     Example 1 Deleting a Lifecycle Module
+
+     The following example deletes a lifecycle module named  cus-
+     tomSetup.
 
        asadmin> delete-lifecycle-module customSetup
        Command delete-lifecycle-module executed successfully
-
-     Where: customSetup is the lifecycle module deleted.
-
-Java EE 6            Last change: 2 Sep 2009                    1
-
-asadmin Utility Subcommands            delete-lifecycle-module(1)
 
 EXIT STATUS
      0                           command executed successfully
@@ -58,5 +71,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6            Last change: 2 Sep 2009                    2
+Java EE 6           Last change: 11 Aug 2010                    2
 

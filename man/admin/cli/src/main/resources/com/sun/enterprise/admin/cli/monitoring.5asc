@@ -1,20 +1,20 @@
 
-Enterprise Server Concepts                       monitoring(5ASC)
+GlassFish Server Concepts                        monitoring(5ASC)
 
 NAME
      monitoring - reviewing the runtime state of  components  and
-     services deployed in Enterprise Server
+     services deployed in GlassFish Server
 
 DESCRIPTION
      Monitoring is the process of reviewing the statistics  of  a
      system to improve performance or solve problems. By monitor-
      ing the state of various components and services deployed in
-     Enterprise  Server,  performance  bottlenecks can be identi-
-     fied, failures can be anticipated, and runtime standards can
-     be established and observed. Data gathered by monitoring can
+     GlassFish Server, performance bottlenecks can be identified,
+     failures can be anticipated, and runtime  standards  can  be
+     established  and  observed.  Data gathered by monitoring can
      also be useful in performance tuning and capacity planning.
 
-     The Enterprise  Server  monitoring  service  is  enabled  by
+     The  GlassFish  Server  monitoring  service  is  enabled  by
      default,  that  is,  the monitoring-enabled attribute of the
      monitoring-service element is set to true. Once the monitor-
      ing  service  is  enabled,  a  deployed  module  can then be
@@ -38,7 +38,7 @@ DESCRIPTION
               data.  Both use dotted names to specify monitorable
               objects.
 
-     Alternate tools for monitoring Enterprise Server  components
+     Alternate tools for monitoring GlassFish  Server  components
      and services include JConsole and the REST interface.
 
      The Monitoring Scripting Client or DTrace Monitoring can  be
@@ -51,7 +51,7 @@ SEE ALSO
 
 Java EE 6           Last change: 21 Oct 2009                    1
 
-Enterprise Server Concepts                       monitoring(5ASC)
+GlassFish Server Concepts                        monitoring(5ASC)
 
      monitor(1),   enable-monitoring(1),   disable-monitoring(1),
      list(1), get(1), set(1)
@@ -60,8 +60,8 @@ Enterprise Server Concepts                       monitoring(5ASC)
 
      asadmin(1M)
 
-     Chapter 8, Administering  the  Monitoring  Service,  in  Sun
-     GlassFish Enterprise Server v3 Administration Guide
+     Chapter 8, Administering the Monitoring Service,  in  Oracle
+     GlassFish Server 3.1 Administration Guide
 
 Java EE 6           Last change: 21 Oct 2009                    2
 

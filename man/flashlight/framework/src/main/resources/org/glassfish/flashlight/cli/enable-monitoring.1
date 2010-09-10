@@ -15,7 +15,7 @@ SYNOPSIS
 
 DESCRIPTION
      The enable-monitoring subcommand is used to turn on monitor-
-     ing  for  Enterprise Server or for particular modules during
+     ing  for  GlassFish  Server or for particular modules during
      runtime. Changes are dynamic, that is, server restart is not
      required.
 
@@ -53,9 +53,9 @@ asadmin Utility Subcommands                  enable-monitoring(1)
 
      --dtrace
 
-         Only usable if tTM DTrace Monitoring module is  present.
-         Enables  Solaris    DTrace  monitoring. Default value is
-         false.
+         Only usable if the DTracTMMonitoring module is  present.
+         Enables  Oracle  Solaris    DTrace  monitoring.  Default
+         value is false.
 
      --modules
          Enables specified module or modules by indicating  moni-
@@ -77,12 +77,12 @@ asadmin Utility Subcommands                  enable-monitoring(1)
 
      --pid
 
-         Specifies the Enterprise Server JVM  process  identifier
+         Specifies the GlassFish Server  JVM  process  identifier
          (PID).  When  monitoring is enabled, the btrace-agent is
          attached, based on the specified PID.  Need  to  specify
          only  in exceptional cases when the system cannot deter-
          mine the PID. In this situation, the subcommand  prompts
-         for  the  PID of the corresponding Enterprise Serverpro-
+         for  the  PID  of the corresponding GlassFish Serverpro-
          cess.
 
      --options
@@ -94,16 +94,16 @@ asadmin Utility Subcommands                  enable-monitoring(1)
              false.
 
 EXAMPLES
-     Example 1 Enabling the  Monitoring  Service  for  Enterprise
+     Example 1 Enabling  the  Monitoring  Service  for  GlassFish
      Server
 
 Java EE 6           Last change: 30 Oct 2009                    2
 
 asadmin Utility Subcommands                  enable-monitoring(1)
 
-     This example enables monitoring  for  Enterprise  Server  in
-     general  by  setting  the  enable-monitoring  flag  to  true
-     (default is true).
+     This example enables monitoring for GlassFish Server in gen-
+     eral  by setting the enable-monitoring flag to true (default
+     is true).
 
        asadmin> enable-monitoring
        Command enable-monitoring executed successfully
@@ -141,8 +141,8 @@ Java EE 6           Last change: 30 Oct 2009                    3
 
 asadmin Utility Subcommands                  enable-monitoring(1)
 
-     Chapter 8, Administering  the  Monitoring  Service,  in  Sun
-     GlassFish Enterprise Server v3 Administration Guide
+     Chapter 8, Administering the Monitoring Service,  in  Oracle
+     GlassFish Server 3.1 Administration Guide
 
 Java EE 6           Last change: 30 Oct 2009                    4
 

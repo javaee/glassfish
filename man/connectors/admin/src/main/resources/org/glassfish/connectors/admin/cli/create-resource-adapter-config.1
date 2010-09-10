@@ -6,9 +6,9 @@ NAME
      information for the connector module
 
 SYNOPSIS
-     create-resource-adapter-config [--help] [--threadpoolid threadpool] [--objecttype user]
-     [--property (property-name=value)[:name=value]*]
-      raname
+     create-resource-adapter-config [--help] [--threadpoolid threadpool]
+     [--objecttype object-type] [--property (property-name=value)[:name=value]*]
+     raname
 
 DESCRIPTION
      The create-resource-adapter-config subcommand creates confi-
@@ -22,7 +22,7 @@ DESCRIPTION
      create-threadpool subcommand, and then identify that  thread
      pool value as the ID in the --threadpoolid option.
 
-     This command is supported in remote mode only.
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
@@ -39,18 +39,21 @@ OPTIONS
          thread. This option takes only one thread pool ID.
 
      --objecttype
+         The default is user.
 
      --property
 
-         This option specifies the  configuration  properties  of
-         the  resource  adapter  java bean. The properties can be
-         specified as name value pairs separated by a colon  (:).
-         Names  of  setter methods of the class referenced by the
-         resourceadapter-class element in the ra.xml file.
+         Keyword-value pairs that specify  additional  configura-
+         tion  properties  of the resource adapter Java bean. The
+         keyword-value pairs are separated by a  colon  (:).  The
+         properties  are the names of setter methods of the class
+         that is referenced by the resourceadapter-class  element
 
 Java EE 6            Last change: 7 Oct 2009                    1
 
 asadmin Utility Subcommands     create-resource-adapter-config(1)
+
+         in the ra.xml file.
 
 OPERANDS
      raname

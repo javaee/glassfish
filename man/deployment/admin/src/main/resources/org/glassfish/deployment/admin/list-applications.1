@@ -5,7 +5,9 @@ NAME
      list-applications - lists deployed applications
 
 SYNOPSIS
-     list-applications [--help] [--type type]
+     list-applications [--help]
+     [--verbose={false|true}] [--resources] [--subcomponents]
+     [--type type] [target]
 
 DESCRIPTION
      The list-applications  subcommand  lists  deployed  Java  EE
@@ -17,6 +19,13 @@ DESCRIPTION
      type. The possible types are listed in the  Options  section
      of this help page.
 
+     If  multiple  versions  of  a  module  or  application   are
+     deployed,  this subcommand lists all versions. To list which
+     version is enabled, set the --verbose option  to  true.  For
+     more  information about module and application versions, see
+     the  Oracle  GlassFish  Server  3.1  Application  Deployment
+     Guide.
+
      This subcommand is supported in remote mode only.
 
 OPTIONS
@@ -24,6 +33,30 @@ OPTIONS
      -?
 
          Displays the help text for the subcommand.
+
+     --verbose
+         If true, displays whether  each  module  or  application
+         listed is enabled. The default is false.
+
+     --resources
+
+         Lists the application-scoped resources for each applica-
+         tion.  If the --subcomponents option is also used, lists
+         the  application-scoped  resources  for  each  component
+         within the application.
+
+Java EE 6            Last change: 2 Sep 2010                    1
+
+asadmin Utility Subcommands                  list-applications(1)
+
+     --subcomponents
+
+         Lists the subcomponents of each application. The subcom-
+         ponents listed depend on the application type. For exam-
+         ple, for a Java EE application (EAR file),  modules  are
+         listed.  For  a  web application, servlets and JSP pages
+         are listed. For an EJB  module,  EJB  subcomponents  are
+         listed.
 
      --type
          Specifies the type of the applications that  are  to  be
@@ -44,15 +77,37 @@ OPTIONS
              o    webservice
          If no type is specified, all applications are listed.
 
+OPERANDS
+     --target
+
+         This is the name of the target upon which the subcommand
+         operates. The valid values are as follows:
+
+         server
+             Lists  the  applications  for  the  default   server
+             instance server and is the default value.
+
+         domain_name
+
+             Lists the applications for the named domain.
+
+         cluster_name
+             Lists the applications for every server instance  in
+             the cluster.
+
+Java EE 6            Last change: 2 Sep 2010                    2
+
+asadmin Utility Subcommands                  list-applications(1)
+
+         instance_name
+
+             Lists  the  applications  for  a  particular  server
+             instance.
+
 EXAMPLES
      Example 1 Listing the Web Applications
 
        asadmin> list-applications --type web
-
-Java EE 6           Last change: 11 Sep 2009                    1
-
-asadmin Utility Subcommands                  list-applications(1)
-
        hellojsp <web>
        Command list-applications executed successfully
 
@@ -67,8 +122,7 @@ SEE ALSO
 
      asadmin(1M)
 
-     Sun GlassFish Enterprise Server  v3  Application  Deployment
-     Guide
+     Oracle GlassFish Server 3.1 Application Deployment Guide
 
-Java EE 6           Last change: 11 Sep 2009                    2
+Java EE 6            Last change: 2 Sep 2010                    3
 

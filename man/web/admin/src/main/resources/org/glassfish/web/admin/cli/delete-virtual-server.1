@@ -5,10 +5,7 @@ NAME
      delete-virtual-server  - removes a virtual server
 
 SYNOPSIS
-     delete-virtual-server
-     [--help]
-      [ --target  target]
-     virtual_server_id
+     delete-virtual-server [--help] [--target target] virtual_server_id
 
 DESCRIPTION
      The delete-virtual-server  subcommand  removes  the  virtual
@@ -44,11 +41,11 @@ EXAMPLES
 EXIT STATUS
      0                           command executed successfully
 
+     1                           error in executing the command
+
 Java EE 6            Last change: 2 Sep 2008                    1
 
 asadmin Utility Subcommands;             delete-virtual-server(1)
-
-     1                           error in executing the command
 
 SEE ALSO
      create-virtual-server(1), list-virtual-servers(1)

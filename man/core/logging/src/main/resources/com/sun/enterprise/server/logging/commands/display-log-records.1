@@ -6,23 +6,23 @@ NAME
      given module at a given timestamp
 
 SYNOPSIS
-     display-log-records
-     [--help]
-      --errorlevel {SEVERE|WARNING}   --timestamp  timestamp [--target target] {module-id  [ module-id]*}
+     display-log-records [--help] --errorlevel {SEVERE|WARNING} --timestamp timestamp [--target instance] {module-id  [ module-id]*}
 
 DESCRIPTION
-     This command displays all the error  messages  for  a  given
-     module at a given timestamp. This command can run remotely.
+     The display-log-records subcommand displays  all  the  error
+     messages  for a given module at a given timestamp. This sub-
+     command can run remotely.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
      --target
-         This is the name of the target upon which the command is
-         operating.  The  valid  targets  for  this  command  are
-         instance and cluster. The default is instance.
+         The name of the target  upon  which  the  subcommand  is
+         operating.  The  valid  targets  for this subcommand are
+         instance and cluster.
 
      --errorlevel
 
@@ -38,26 +38,27 @@ OPERANDS
          Module for which the error logs are to be displayed.
 
 EXAMPLES
-     Example 1 Using display-log-records
+     Example 1 Displaying Server Log Records
 
-     Before  using  the  display-log-records  command,  use   the
-     display-error-statistics  and the display-error-distribution
-     command to get the timestamp and module identity, which  are
-     required operands for the  display-log-records command.
+     This   example   displays   the   log   records   for    the
+     javax.enterprise.system.container.web   module.   Because  a
+     timestamp and module ID are required  for  the  display-log-
+     records   subcommand,   the   display-error-statistics   and
+     display-error-distribution subcommands are  used  to  gather
+     the required values.
 
-       asadmin> display-error-statistics
-
-Java EE 6           Last change: 24 Jul 2007                    1
+Java EE 6           Last change: 30 Aug 2010                    1
 
 asadmin Utility Subcommands                display-log-records(1)
 
+       asadmin> display-error-statistics
        Timestamp                               Severity  Warning
        ---------------------------------------------------------
-       1185340505312(Jul 25, 2007 10:45:05 AM)     1        20
-       1185336905312(Jul 25, 2007 9:45:05 AM)      0        0
-       1185333305312(Jul 25, 2007 8:45:05 AM)      0        0
-       1185329705312(Jul 25, 2007 7:45:05 AM)      0        0
-       1185326105312(Jul 25, 2007 6:45:05 AM)      0        0
+       1185340505312(Jul 25, 2010 10:45:05 AM)     1        20
+       1185336905312(Jul 25, 2010 9:45:05 AM)      0        0
+       1185333305312(Jul 25, 2010 8:45:05 AM)      0        0
+       1185329705312(Jul 25, 2010 7:45:05 AM)      0        0
+       1185326105312(Jul 25, 2010 6:45:05 AM)      0        0
        ---------------------------------------------------------
        Command display-error-statistics executed successfully.
 
@@ -71,13 +72,11 @@ asadmin Utility Subcommands                display-log-records(1)
        *****************************************************************
        Command display-error-distribution executed successfully.
 
-       asadmin> display-log-records --passwordfile
-       passwords --user admin --target server --host localhost --timestamp 1185340505312
-       --port 4848 javax.enterprise.system.container.web
+       asadmin> display-log-records --target server --timestamp 1185340505312 javax.enterprise.system.container.web
 
        ----------------------------------------------------------------------
        RecNumber = 5849
-       dateTime = Wed Jul 25 10:45:05 AM PST 2007
+       dateTime = Wed Jul 25 10:45:05 AM PST 2010
        msgId = WEB0335
        level = WARNING
        productName = sun-appserver-9.1
@@ -86,7 +85,7 @@ asadmin Utility Subcommands                display-log-records(1)
        message =  http-listener attribute family not supported
        ----------------------------------------------------------------------
        RecNumber = 5848
-       dateTime = Wed Jul 25 10:45:05 AM PST 2007
+       dateTime = Wed Jul 25 10:45:05 AM PST 2010
        msgId = WEB0334
        level = WARNING
        productName = sun-appserver-9.1
@@ -96,19 +95,23 @@ asadmin Utility Subcommands                display-log-records(1)
        ----------------------------------------------------------------------
        Command display-log-records executed successfully.
 
-Java EE 6           Last change: 24 Jul 2007                    2
+EXIT STATUS
+
+Java EE 6           Last change: 30 Aug 2010                    2
 
 asadmin Utility Subcommands                display-log-records(1)
 
-EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      display-error-distribution(1)
 
      , display-error-statistics(1)
 
-Java EE 6           Last change: 24 Jul 2007                    3
+     asadmin(1M)
+
+Java EE 6           Last change: 30 Aug 2010                    3
 

@@ -2,23 +2,22 @@
 asadmin Utility Subcommands            create-lifecycle-module(1)
 
 NAME
-     create-lifecycle-module - adds a lifecycle module
+     create-lifecycle-module - creates a lifecycle module
 
 SYNOPSIS
-     create-lifecycle-module
-     [--help]
-       --classname  classname
-      [--enabled={true|false}] [ --target  target]
+     create-lifecycle-module [--help] --classname classname
+      [--enabled={true|false}] [--target target]
       [--classpath classpath] [--loadorder loadorder]
-      [--failurefatal={false|true} ] [ --description  description]
+      [--failurefatal={false|true} ] [--description description]
       [--property (name=value)[:name=value]*]
       module_name
 
 DESCRIPTION
-     Creates a lifecycle module. A lifecycle  module  provides  a
-     means of running a short or long duration Java-based task at
-     a specific stage in the server life cycle.  This  subcommand
-     is supported in remote mode only.
+     The create-lifecycle-module subcommand creates  a  lifecycle
+     module.  A  lifecycle  module  provides a means of running a
+     short or long duration Java-based task at a  specific  stage
+     in  the  server  life cycle. This subcommand is supported in
+     remote mode only.
 
 OPTIONS
      --help
@@ -31,28 +30,42 @@ OPTIONS
 
      --target
 
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         Indicates the location where the lifecycle module is  to
+         be created. Valid values are
+
+             o    server- Specifies the default  server  instance
+                  as   the  target  for  creating  the  lifecycle
+                  module. server  is  the  name  of  the  default
+                  server  instance  and  is the default value for
+                  this option.
+
+             o    cluster_name- Specifies a particular cluster as
+                  the target for creating the lifecycle module.
+
+             o    instance_name- Specifies  a  particular  server
+                  instance as the target for creating the lifecy-
+                  cle module.
+
+             o    configuration_name- Specifies a particular con-
+                  figuration  as  the  target  for  creating  the
+                  lifecycle module.
+
+Java EE 6           Last change: 11 Aug 2010                    1
+
+asadmin Utility Subcommands            create-lifecycle-module(1)
 
      --classpath
+
          This option indicates  where  this  module  is  actually
-         located  if  it is not under the applicationsroot direc-
+         located  if it is not under the applications root direc-
          tory.
 
      --loadorder
-
          This option represents an integer value that can be used
          to  force  the order in which deployed lifecycle modules
          are loaded at server startup. Smaller  numbered  modules
          are  loaded  sooner. Order is unspecified if two or more
          lifecycle modules have the same load-order value.
-
-Java EE 6            Last change: 2 Sep 2009                    1
-
-asadmin Utility Subcommands            create-lifecycle-module(1)
 
      --failurefatal
 
@@ -82,7 +95,14 @@ OPERANDS
          server lifecycle event listener module.
 
 EXAMPLES
-     Example 1 Using create-lifecycle-module
+     Example 1 Creating a Lifecycle Module
+
+Java EE 6           Last change: 11 Aug 2010                    2
+
+asadmin Utility Subcommands            create-lifecycle-module(1)
+
+     The following example creates a lifecycle module named  cus-
+     tomSetup.
 
        asadmin> create-lifecycle-module --classname "com.acme.CustomSetup"
        --classpath "/export/customSetup" --loadorder 1 --failurefatal=true
@@ -90,16 +110,12 @@ EXAMPLES
        --property rmi="Server=acme1:7070":timeout=30 customSetup
        Command create-lifecycle-module executed successfully
 
-     Where: customSetup is  the  lifecycle  module  created.  The
-     escape  character \fR is used in the property option to dis-
-     tinguish the colons (:).
+     The escape character \fR is used in the property  option  to
+     specify  that  the  equal sign (=) and colon (:) are part of
+     the rmi property value.
 
 EXIT STATUS
      0                           command executed successfully
-
-Java EE 6            Last change: 2 Sep 2009                    2
-
-asadmin Utility Subcommands            create-lifecycle-module(1)
 
      1                           error in executing the command
 
@@ -108,5 +124,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6            Last change: 2 Sep 2009                    3
+Java EE 6           Last change: 11 Aug 2010                    3
 

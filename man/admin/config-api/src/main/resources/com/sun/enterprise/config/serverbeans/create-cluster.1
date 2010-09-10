@@ -1,0 +1,264 @@
+
+asadmin Utility Subcommands                     create-cluster(1)
+
+NAME
+     create-cluster - creates a cluster
+
+SYNOPSIS
+     create-cluster
+     [--help]
+     [ --config  config_name]
+     [--systemproperties (name=value)[:name=value]*]
+     [--hosts hadb-host-list]
+     [--haagentport port_number]
+     [--haadminpassword password]
+     [--haadminpasswordfile file_name] [--devicesize devicesize ]
+     [--haproperty (name=value)[:name=value]*]
+     [--autohadb=false] [--portbase port_number]
+     cluster_name
+
+DESCRIPTION
+     Note -
+
+       This command is available only in domains that are config-
+       ured to support clusters, such as domains that are created
+       with the cluster profile or the  enterprise  profile.  For
+       information about profiles, see Usage Profiles in Sun Java
+       System Application Server 9.1 Administration Guide.
+
+     The create-cluster  command  creates  a  new  cluster.  When
+     created,  a  cluster  must reference a configuration (or, as
+     with an unclustered server instance, a configuration can  be
+     implicitly  created).  Initially  the  cluster has no server
+     instances, applications, or resources.
+
+     If you do not use the --config option, the command creates a
+     standalone  cluster with a configuration named cluster_name-
+     config.
+
+     If the HADB software is installed, you can create  the  HADB
+     database  associated with the cluster. To create it, specify
+     the HADB hosts option. In addition, optionally  specify  any
+     other  HADB  options such as haagentport and devicesize. The
+     created database has the  same  name  as  the  cluster,  and
+     includes all the correct tables.
+
+     The cluster must be a standalone cluster in  order  to  suc-
+     cessfully  associate  an  HADB  database with it. standalone
+     cluster does not share its configuration with another  clus-
+     ter  or  another  standalone  instance. A standalone cluster
+     does not share its configuration  with  another  cluster  or
+
+Java EE 6           Last change: 27 Jul 2007                    1
+
+asadmin Utility Subcommands                     create-cluster(1)
+
+     another standalone instance.
+
+     If you prefer to associate the HADB database to the  cluster
+     later, use configure-ha-cluster.
+
+     To add new instances to the cluster, use the create-instance
+     command with the --cluster option. Use the stop-instance and
+     delete-instance commands to delete server instances from the
+     cluster at any time.
+
+     To associate new applications and resources with the cluster
+     regardless  of  the number of instances in the cluster, per-
+     form any of the following operations:
+
+         o    Use the deploy command  with  the  option  --target
+              cluster_name.
+
+         o    Use  resource-creation   commands   (for   example,
+              create-jdbc-resource)   with  the  option  --target
+              cluster_name.
+
+         o    Use reference  management  commands  (for  example,
+              create-application-ref  or  create-resource-ref) if
+              the application is already deployed in  other  tar-
+              gets  or  the  resource is already created in other
+              targets.
+
+     This command is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --config
+         Creates a shared cluster.  The  specified  configuration
+         name  must  exist  and  must  not be default-config (the
+         standalone cluster configuration template)  or  a  stan-
+         dalone configuration (including server-config).  If this
+         option is omitted, a standalone cluster is created.
+
+     --systemproperties
+
+         Defines system properties for the configuration  created
+         for  by  the cluster. These properties override the pro-
+         perty values in the  default-config  configuration.  The
+
+Java EE 6           Last change: 27 Jul 2007                    2
+
+asadmin Utility Subcommands                     create-cluster(1)
+
+         following properties are available:
+
+         HTTP_LISTENER_PORT
+
+             This property specifies the port  number  for  http-
+             listener-1.  Valid  values  are  1-65535.  On  UNIX,
+             creating  sockets  that  listen  on   ports   1-1024
+             requires superuser privileges.
+
+         HTTP_SSL_LISTENER_PORT
+             This property specifies the port  number  for  http-
+             listener-2.  Valid  values  are  1-65535.  On  UNIX,
+             creating  sockets  that  listen  on   ports   1-1024
+             requires superuser privileges.
+
+         IIOP_LISTENER_PORT
+
+             This property specifies which ORB listener port  for
+             IIOP connections orb-listener-1 listens on.
+
+         IIOP_SSL_LISTENER_PORT
+             This property specifies which ORB listener port  for
+             IIOP   connections  the  IIOP  listener  called  SSL
+             listens on.
+
+         IIOP_SSL_MUTUALAUTH_PORT
+
+             This property specifies which ORB listener port  for
+             IIOP    connections   the   IIOP   listener   called
+             SSL_MUTUALAUTH listens on.
+
+         JMX_SYSTEM_CONNECTOR_PORT
+             This property specifies the port number on which the
+             JMX  connector listens. Valid values are 1-65535. On
+             UNIX, creating sockets that listen on  ports  1-1024
+             requires superuser privileges.
+
+     --hosts
+
+         This option is  valid  only  if  the  HADB  software  is
+         installed.  A  list  of comma-separated host names where
+         the HADB instance is configured.  The  number  of  hosts
+         must  be  greater than 1 and must be an even number. The
+         same host names can  be  repeated.  Use  fully-qualified
+         hostnames when specifying the hostlist interfaces expli-
+         citly for hosts with multiple network interfaces.
+
+Java EE 6           Last change: 27 Jul 2007                    3
+
+asadmin Utility Subcommands                     create-cluster(1)
+
+     --haagentport
+
+         This option is  valid  only  if  the  HADB  software  is
+         installed.  The number of the HA agent port. The default
+         is 1862.
+
+     --haadminpassword
+         This option is  valid  only  if  the  HADB  software  is
+         installed.  The  HA  administrator's  password.  If  not
+         specified, the Domain Administration Server password  is
+         used.
+
+     --haadminpasswordfile
+
+         This option is  valid  only  if  the  HADB  software  is
+         installed.  The  file  containing  the high-availability
+         password associated with  the  administrative  instance.
+         The password is defined in the following form:
+
+           HADBM_ADMINPASSWORD=password
+           HADBM_DBPASSWORD=password
+           HADBM_SYSTEMPASSWORD=password
+
+         Where password is the actual HA  administrator  password
+         for  the domain. If the HA administrator password is not
+         specified, the Domain Administration Server password  is
+         used.
+
+     --devicesize
+         This option is  valid  only  if  the  HADB  software  is
+         installed.  Configure the device size for use with HADB.
+         The value is in megabytes (Mbytes). The valid  range  is
+         between 64 Mbytes and 8,000+ gigabytes (GBytes).
+
+     --haproperty
+
+         This option is  valid  only  if  the  HADB  software  is
+         installed.  The  high-availability  property  name/value
+         pairs separated by a colon.
+
+     --autohadb
+         This option is  valid  only  if  the  HADB  software  is
+         installed.  If set to true, the HADB database associated
+         with the cluster is automatically started,  stopped,  or
+         deleted  if  you start, stop, or delete the cluster. The
+         default is false. To override this setting, use the had-
+         boverride  option  in  start-cluster,  stop-cluster,  or
+
+Java EE 6           Last change: 27 Jul 2007                    4
+
+asadmin Utility Subcommands                     create-cluster(1)
+
+         delete-cluster.
+
+     --portbase
+
+         This option is  valid  only  if  the  HADB  software  is
+         installed. The starting port number for the HADB server.
+         Default is 15200. Valid values  are  between  10000  and
+         63000.
+
+OPERANDS
+     cluster_name                A  unique  identifier  for   the
+                                 cluster to be created.
+
+EXAMPLES
+     Example 1 Using the create-cluster command
+
+     The following command creates  a  cluster  named  MyCluster,
+     overriding  the  default  configuration's  SSL  port  value.
+     Because the --config option is not  specified,  the  command
+     makes  a  copy of the default-config and names it MyCluster-
+     config.
+
+       asadmin> create-cluster --user admin1
+       --passwordfile passwords.txt --systemproperties
+       IIOP_SSL_LISTENER_PORT=1169 MyCluster
+       Command create-cluster executed successfully.
+
+     Example 2 Creating HADB when creating cluster
+
+     This example requires the HADB software and a domain that is
+     created with theenterprise profile.
+
+     The following command creates  an  HADB  database  on  hosts
+     host1 and host2 while creating the cluster cluster1:
+
+       asadmin> create-cluster --user admin1
+       --passwordfile passwords.txt --hosts hos1,host2 cluster1
+       Command create-cluster executed successfully.
+
+Java EE 6           Last change: 27 Jul 2007                    5
+
+asadmin Utility Subcommands                     create-cluster(1)
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     delete-cluster(1),    list-clusters(1),    start-cluster(1),
+     stop-cluster(1), create-instance(1)
+
+Java EE 6           Last change: 27 Jul 2007                    6
+

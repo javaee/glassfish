@@ -1,18 +1,18 @@
 
-Enterprise Server Concepts                          logging(5ASC)
+GlassFish Server Concepts                           logging(5ASC)
 
 NAME
-     logging - capturing information on Enterprise Server runtime
+     logging - capturing information on GlassFish Server  runtime
      events
 
 DESCRIPTION
-     Logging is the process by which Enterprise  Server  captures
-     data about events that occur during Enterprise Server opera-
-     tion. Enterprise  Server  components  and  application  com-
-     ponents  generate logging data, which is saved in the server
-     log, typically domain-dir/logs/server.log. The server log is
-     the  first  source of information if Enterprise Server prob-
-     lems occur.
+     Logging is the process by which  GlassFish  Server  captures
+     data  about events that occur during GlassFish Server opera-
+     tion. GlassFish Server components and application components
+     generate  logging  data,  which  is saved in the server log,
+     typically domain-dir/logs/server.log. The server log is  the
+     first  source  of  information  if GlassFish Server problems
+     occur.
 
      The server log is rotated when the file reaches  the  speci-
      fied  size  in bytes, or the specified time has elapsed. The
@@ -44,8 +44,8 @@ SEE ALSO
 
      asadmin(1M)
 
-     Chapter 7, Administering the Logging Service, in Sun GlassF-
-     ish Enterprise Server v3 Administration Guide
+     Chapter 7, Administering  the  Logging  Service,  in  Oracle
+     GlassFish Server 3.1 Administration Guide
 
 Java EE 6            Last change: 8 Oct 2009                    1
 

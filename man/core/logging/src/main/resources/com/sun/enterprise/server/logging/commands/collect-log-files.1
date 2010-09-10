@@ -1,0 +1,87 @@
+
+asadmin Utility Subcommands                  collect-log-files(1)
+
+NAME
+     collect-log-files - collects all  available  log  files  and
+     creates a ZIP archive
+
+SYNOPSIS
+     collect-log-files [--help] [--target target]
+     [--outputfilepath pathname]
+
+DESCRIPTION
+     The collect-log-files subcommand collects all available  log
+     files  for a specified GlassFish Server instance or cluster,
+     and compiles the logs into a single ZIP archive.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         The server instance or cluster for which log levels will
+         be listed.
+
+     --outputfilepath
+
+         The name of the directory in which the ZIP archive  will
+         be saved.
+
+OPERANDS
+     target      The server instance or  cluster  for  which  log
+                 files  will  be  gathered. The default target is
+                 all server  instances  in  all  clusters.  Valid
+                 values are:
+
+                     o    cluster_name-  The  name  of  a  target
+                          cluster.
+
+                     o    instance_name- The  name  of  a  target
+                          server instance.
+
+     pathname    The name of  the  directory  in  which  the  ZIP
+                 archive  will  be saved. The ZIP file is name is
+                 constructed from the target  and  timestamp,  as
+                 follows:
+
+                   target_yyyy-mm-dd_hh-min-sec.zip
+
+Java EE 6           Last change: 31 Aug 2010                    1
+
+asadmin Utility Subcommands                  collect-log-files(1)
+
+EXAMPLES
+     Example 1 Collecting Log Files into a ZIP  Archive  for  All
+     Logs in a Cluster
+
+     This example generates a ZIP archive from the log files  for
+     a  cluster named c1. The ZIP archive is saved in a directory
+     named /space/output. In this example, the  cluster  c1  con-
+     tains three server instances, named in1, in2, and in3.
+
+       asadmin> collect-log-files --target c1 --outputfilepath /space/output
+
+       Log files are downloaded for in1.
+       Log files are downloaded for in2.
+       Log files are downloaded for in3.
+
+       Command collect-log-files executed successfully.
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     rotate-log(1), set-log-levels(1)
+
+     asadmin(1M)
+
+     Chapter 7, Administering  the  Logging  Service,  in  Oracle
+     GlassFish Server 3.1 Administration Guide
+
+Java EE 6           Last change: 31 Aug 2010                    2
+

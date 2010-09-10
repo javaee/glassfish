@@ -1,0 +1,67 @@
+
+asadmin Utility Subcommands                     list-instances(1)
+
+NAME
+     list-instances - lists all the server instances while  indi-
+     cating if they are running or not.
+
+SYNOPSIS
+     list-instances
+     [--help]
+      [target]
+
+DESCRIPTION
+     Use the list-instances  to  list  all  the  instances  in  a
+     server.  To  list remote instances, the named administration
+     server must be running  on  the  hostname  and  port  number
+     specified. The user authenticates using the password identi-
+     fied for the administration server.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+OPERANDS
+     target
+         This is the name of the target  domain  associated  with
+         the instances you want listed. Valid values are:
+
+             o    server- Specifies the default  server  instance
+                  as  the  target.   server  is  the  name of the
+                  default server  instance  and  is  the  default
+                  value.
+
+             o    nodeagent_name- Specifies a  certain  nodeagent
+                  as the target.
+
+             o    cluster_name- Specifies a  certain  cluster  as
+                  the target.
+
+             o    instance_name-  Specifies  a   certain   server
+                  instance as the target.
+
+EXAMPLES
+     Example 1 Using list-instances:
+
+       asadmin> list-instances --user admin --passwordfile passwords.txt
+       --host pigeon --port 4848
+       i1 not running
+       i2 not running
+       Command list-instances executed successfully.
+
+Java EE 6           Last change: 13 Jul 2007                    1
+
+asadmin Utility Subcommands                     list-instances(1)
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     create-instance(1)
+
+Java EE 6           Last change: 13 Jul 2007                    2
+
