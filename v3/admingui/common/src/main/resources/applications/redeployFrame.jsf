@@ -54,6 +54,10 @@
         createMap(result="#{pageSession.deployMap}")
         mapPut(map="#{pageSession.deployMap}", key="appName", value="#{pageSession.appName}");
         setPageSessionAttribute(key="convertToFalse" value={"keepSessions", "precompilejsp", "verify"})
+
+        setPageSessionAttribute(key="listPageLink" value="#{gf_application_list_page}");
+        setPageSessionAttribute(key="extraArgs" value="#{gf_application_extra_args}");
+        setPageSessionAttribute(key="cancelPage" value="#{gf_application_cancel_page}");
     />
     </event>
 <sun:form id="form" method="POST" enctype="multipart/form-data">  
@@ -88,7 +92,7 @@
                 />
         </sun:button>
         <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}" immediate="true"
-            onClick="top.admingui.ajax.loadPage({url:'#{request.contextPath}/#{pageSession.listPageLink}'}); return false;">
+            onClick="top.admingui.ajax.loadPage({url:'#{request.contextPath}/#{pageSession.cancelPage}?#{pageSession.extraArgs}'}); return false;">
         //    <!command
         //        println("cancel");
         //        gf.navigate(page="{request.contextPath}/common/applications/applications.jsf");
