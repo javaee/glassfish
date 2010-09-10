@@ -54,7 +54,9 @@
 	childExpanded="false"
 	childURL="/common/applications/applicationEdit.jsf?appName=#{$this{valueBinding}.text}">
     <ui:event type="beforeCreate">
-	gf.restRequest(endpoint="#{sessionScope.REST_URL}/applications/application/list-components.json" method="get" result="#{requestScope.resp}");
+        createMap(result="#{requestScope.attrsMap}");
+        mapPut(map="#{requestScope.attrsMap}"  key="target" value="domain");
+	gf.restRequest(endpoint="#{sessionScope.REST_URL}/applications/application/list-components.json" attrs="#{requestScope.attrsMap}" method="get" result="#{requestScope.resp}");
 	setAttribute(key="children" value="#{requestScope.resp.data.properties}");
     </ui:event>
     <!facet image>
