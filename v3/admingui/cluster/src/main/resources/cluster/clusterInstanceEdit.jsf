@@ -69,7 +69,6 @@
                       { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');}
                         else {return false;} " >
                  <!command
-                    //println("========== restart instance #{pageSession.instanceName}");
                     gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server/#{pageSession.instanceName}/start-instance" );
                     gf.redirect("#{pageSession.selfPage}");
              />
@@ -113,7 +112,9 @@
                 getClientId(component="$this{component}" clientId=>$attribute{sheetId});
             />
             <sun:property id="clusterName"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.ClusterName}" >
-                <sun:staticText id="clusterName" text="#{pageSession.clusterName}" />
+                <sun:hyperlink id="clusterName" text="#{pageSession.clusterName}"
+                    url="#{request.contextPath}/cluster/cluster/clusterGeneral.jsf?clusterName=#{pageSession.clusterName}" />
+
             </sun:property>
 
             <sun:property id="instanceName"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.instanceName}" >

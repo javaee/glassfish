@@ -107,7 +107,7 @@
         <!-- Text Field section -->
         <sun:propertySheetSection id="propertSectionTextField">
             <sun:property id="clusterNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.ClusterName}" >
-                <sun:staticText id="clusterName"text="#{encodedClusterName}" />
+                <sun:staticText id="clusterName"text="#{pageSession.clusterName}" />
             </sun:property>
             <sun:property id="configNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Configuration}" >
                 <sun:hyperlink id="configlink" text="#{pageSession.valueMap['configRef']}"
