@@ -57,6 +57,7 @@ import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -418,6 +419,30 @@ public class ClusterHandler {
     }
 
 
+    @Handler(id = "gf.getClusterNameForInstance",
+        input = {
+            @HandlerInput(name="instanceName", type=String.class, required=true)},
+        output = {
+            @HandlerOutput(name = "clusterName", type = String.class)})
+    public static void getClusterNameForInstance(HandlerContext handlerCtx) {
+
+        String instanceName = (String) handlerCtx.getInputValue("instanceName");
+        try{
+            List<String> clusterList = new ArrayList(RestApiHandlers.getChildMap(GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster").keySet());
+            for(String oneCluster : clusterList){
+                String encodedClusterName = URLEncoder.encode(oneCluster, "UTF-8");
+                List<String> serverRefs = new ArrayList (RestApiHandlers.getChildMap(GuiUtil.getSessionValue("REST_URL")+ "/clusters/cluster/" +
+                        URLEncoder.encode(oneCluster, "UTF-8") + "/server-ref").keySet());
+                if (serverRefs.contains(instanceName)){
+                    handlerCtx.setOutputValue("clusterName", oneCluster);
+                    return;
+                }
+            }
+        }catch(Exception ex){
+            GuiUtil.getLogger().info("Error occurs at getClusterNameForInstance");
+            ex.printStackTrace();
+        }
+    }
 
     public static final String CLUSTER_RESOURCE_NAME = "org.glassfish.cluster.admingui.Strings";
 
