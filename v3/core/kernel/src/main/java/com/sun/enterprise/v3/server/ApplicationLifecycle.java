@@ -900,7 +900,6 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
         throws TransactionFailure {
         final Properties appProps = context.getAppProps();
         final DeployCommandParameters deployParams = context.getCommandParameters(DeployCommandParameters.class);
-
         Transaction t = new Transaction();
 
         try {
@@ -908,7 +907,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
             ConfigBean newBean = ((ConfigBean)ConfigBean.unwrap(applications)).allocate(Application.class);
             Application app = newBean.createProxy();
             Application app_w = t.enroll(app);
-            setInitialAppAttributes(app_w, deployParams, appProps);
+            setInitialAppAttributes(app_w, deployParams, appProps, context);
             context.addTransientAppMetaData(Application.APPLICATION, app_w);
         } catch(TransactionFailure e) {
             t.rollback();
@@ -1038,8 +1037,10 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
     // application attributes that are set in the beginning of the deployment
     // that will not be changed in the course of the deployment
     private void setInitialAppAttributes(Application app, 
-        DeployCommandParameters deployParams, Properties appProps)
+        DeployCommandParameters deployParams, Properties appProps, 
+        DeploymentContext context)
         throws PropertyVetoException {
+        Properties previousEnabledAttributes = context.getTransientAppMetaData(DeploymentProperties.PREVIOUS_ENABLED_ATTRIBUTES, Properties.class);
         // various attributes
         app.setName(deployParams.name);
         if (deployParams.libraries != null) {
@@ -1053,7 +1054,17 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                     app.setLocation(appProps.getProperty(
                 ServerTags.LOCATION));
             // always set the enable attribute of application to true
+            // unless for redeploy to domain where we preserve the enable
+            // attribute
             app.setEnabled(String.valueOf(true));
+            if (DeploymentUtils.isDomainTarget(deployParams.target)) {
+                if (previousEnabledAttributes != null) {
+                    String enabledAttr = previousEnabledAttributes.getProperty(DeploymentUtils.DOMAIN_TARGET_NAME);
+                    if (enabledAttr != null) {
+                        app.setEnabled(enabledAttr);
+                    }
+                }
+            }
             app.setAvailabilityEnabled(deployParams.availabilityenabled.toString());
             app.setAsyncReplication(deployParams.asyncreplication.toString());
         } else {

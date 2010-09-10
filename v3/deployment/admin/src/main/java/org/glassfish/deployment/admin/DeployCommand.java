@@ -689,9 +689,14 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
             if (enabled == null) {
                 if (DeploymentUtils.isDomainTarget(target)) {
+                    // save the enable attributes of the application-ref
                     for (String tgt : previousTargets) {
                         previousEnabledAttributes.put(tgt, domain.getEnabledForApplication(tgt, name));
                     }
+                    // save the enable attribute of the application
+                    previousEnabledAttributes.put(DeploymentUtils.DOMAIN_TARGET_NAME, app.getEnabled());
+                    // set the enable command param for DAS
+                    enabled = deployment.isAppEnabled(app);
                 } else {
                     enabled = Boolean.valueOf(domain.getEnabledForApplication(
                         target, name));

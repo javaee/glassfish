@@ -61,6 +61,7 @@ import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.deployment.SnifferManager;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -131,7 +132,8 @@ public class InstanceDeployCommand extends InstanceDeployCommandParameters imple
         if (previousEnabledAttributes != null) {
             String enabledAttr = previousEnabledAttributes.getProperty(target);
             if (enabledAttr != null) {
-                this.enabled = Boolean.valueOf(enabledAttr);
+                String enabledAttrForApp = previousEnabledAttributes.getProperty(DeploymentUtils.DOMAIN_TARGET_NAME);
+                this.enabled = Boolean.valueOf(enabledAttr) && Boolean.valueOf(enabledAttrForApp);
             }
         }
 
