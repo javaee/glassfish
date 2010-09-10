@@ -47,7 +47,7 @@
     setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="Cluster #{pageSession.clusterName} Instance #{pageSession.instanceName} System Properties" >
+<!composition template="/templates/default.layout"  guiTitle="Cluster #{pageSession.clusterName} Instance #{pageSession.instanceName} $resource{i18ncs.SystemPropertiesTitle}" >
 <!define name="content">
     <event>
         <!beforeCreate
@@ -74,7 +74,7 @@
     </event>
     <sun:form id="propertyForm">
 #include "/cluster/cluster/clusterInstanceTabs.inc"
-    <sun:title id="propertyContentPage" title="$resource{i18ncs.cluster.instance.SystemPropertiesTitle}" >
+    <sun:title id="propertyContentPage" title="$resource{i18ncs.SystemPropertiesTitle}" >
         <!facet pageButtonsTop>
             <sun:panelGroup id="topButtons">
                 <sun:button id="saveButton" text="$resource{i18n.button.Save}" >

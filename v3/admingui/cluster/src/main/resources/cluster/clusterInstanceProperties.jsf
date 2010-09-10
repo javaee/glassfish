@@ -42,13 +42,12 @@
 
 <!-- cluster/clusterInstanceConfigProperties.jsf -->
 
-
 <!initPage
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="Cluster #{pageSession.clusterName} Instance #{pageSession.instanceName} Properties" >
+<!composition template="/templates/default.layout"  guiTitle="Cluster #{pageSession.clusterName} Instance #{pageSession.instanceName} $resource{i18ncs.PropertiesTitle}" >
 <!define name="content">
     <event>
         <!beforeCreate
@@ -75,7 +74,7 @@
     </event>
     <sun:form id="propertyForm">
 #include "/cluster/cluster/clusterInstanceTabs.inc"
-    <sun:title id="propertyContentPage" title="$resource{i18ncs.cluster.instance.PropertiesTitle}" >
+    <sun:title id="propertyContentPage" title="$resource{i18ncs.PropertiesTitle}" >
 #include "/common/shared/editPageButtons.inc"
     </sun:title>
 #include "/common/shared/alertMsg.inc"
