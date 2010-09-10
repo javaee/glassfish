@@ -120,6 +120,8 @@ public class UpdateNodeConfigCommand implements AdminCommand  {
             map.add(NodeUtils.PARAM_NODEDIR, nodedir);
         }
 
+        map.add(NodeUtils.PARAM_TYPE, "CONFIG");
+
         if (map.size() > 1) {
             CommandInvocation ci = cr.getCommandInvocation("_update-node", report);
             ci.parameters(map);
