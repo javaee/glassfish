@@ -4,55 +4,52 @@
 <!--
 DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright (c) 2009, 2010 Oracle and/or its affiliates. All rights reserved.
 
 Use is subject to License Terms
 -->
 <head>
 <style type="text/css">  body{margin-top:0}   body,td,p,div,span,a,ul,ul li, ol, ol li, ol li b, dl,h1,h2,h3,h4,h5,h6,li {     font-family:geneva,helvetica,arial,"lucida sans",sans-serif;     font-size:10pt   }   h1 {font-size:18pt}   h2 {font-size:14pt}   h3 {font-size:12pt}   code,kbd,tt,pre {     font-family:monaco,courier,"courier new";     font-size:10pt;   }   li {padding-bottom: 8px;}   p.copy, p.copy a {     font-family:geneva,helvetica,arial,"lucida sans",sans-serif;     font-size:8pt     }   p.copy {text-align: center}      table.grey1,tr.grey1,td.grey1{background:#f1f1f1}   th {     color:#ffffff;     font-family:geneva,helvetica,arial,"lucida sans",sans-serif;     font-size:12pt   }   td.insidehead {     font-weight:bold;     background:white;     text-align: left;   }   a {text-decoration:none; color:#3E6B8A}   a:visited{color:#917E9C}   a:hover {text-decoration:underline}      p.feature, li.feature  {margin-left: 0.3in}   
 </style>
-<title>Sun GlassFish Enterprise Server v3 - Features and Resources</title>
+<title>GlassFish Server 3.0.1 - Features and Resources</title>
 </head>
 <body bgcolor="#ffffff" text="#000000" link="#594fbf" vlink="#1005fb"
 alink="#333366"> <table width="100%" border="0" cellspacing="4" cellpadding="2">
 <tbody>
 <tr>
-<td align="right" valign="top">        <a href="http://www.sun.com"><img
-src="graphics/logo_sun.gif" border="0"></a>       </td>
+<td align="right" valign="top">        <a href="http://www.oracle.com">oracle.com
+</a>       </td>
 </tr>
 <tr>
-<td align="left" valign="top" bgcolor="#587993">       <font color="#ffffff"><b>Sun
-GlassFish Enterprise Server v3</b></font>&nbsp;       </td>
+<td align="left" valign="top" bgcolor="#587993">       <font color="#ffffff"><b>GlassFish
+Server 3.1</b></font>&nbsp;       </td>
 </tr>
 </tbody>
-</table>  <h1>Features and Resources </h1><p>Sun GlassFish&trade; Enterprise
-Server v3 (GlassFish server) provides a server for
-the development  and deployment of Java&trade; Platform Enterprise Edition (Java EE) applications and Java Web Services.
-Key features include scalable transaction management, container-managed persistence
-runtime, high performance web  services, <!--clustering, high availability, -->security,
-and  integration capabilities.</p><p>This page contains the following topics:</p> <ul>
+</table>  <h1>Features and Resources </h1><p>GlassFish Server 3.1 provides
+a server for the development and deployment of Java&trade; Platform Enterprise
+Edition (Java EE) applications and Java Web Services. Key features include
+modularity and extensibility, Java EE support, rapid iterative development,
+Web Services Interoperability Technologies (WSIT) support, high performance
+web  services, clustering, high availability, security, and integration capabilities.
+</p><p>This page contains the following topics:</p> <ul>
 <li><a href="#key-features">Key Features</a>   </li>
 <li><a href="#resources">Resources</a></li>
 </ul>   <a name="key-features"></a><h2>Key Features</h2><h3>Modularity and
-Extensibility</h3><p>The modular architecture of the GlassFish server enables
-you to download and install only the modules that you require for the applications
-that you are deploying. As a result, start-up times, memory consumption, and
-disk space requirements are all minimized. This modular architecture also
-enables the extension of the GlassFish server's basic functionality through
-addition of components through the <a
-href="http://wikis.sun.com/display/IpsBestPractices/Examples+and+Screenshots"
-target=" blank">Update Tool</a>. The Update Tool is developed through the <a
-href="http://wiki.updatecenter.java.net/" target="blank">Update Center</a> project.
-</p> <h3>Scripting Language Support</h3><p>GlassFish server supports the following
-scripting languages:</p><ul>
-<li>Ruby by providing native support for JRuby</li>
-<li>Groovy on Grails</li>
-</ul><p>This support enables the GlassFish server to be applied beyond developments
-that are centred on Java technology.</p><h3>Java EE Support</h3>  <p>GlassFish
-server complies fully with the latest Java EE specification to deliver one
-of the best application runtimes for next-generation enterprise applications
-and web services. The v3 release of GlassFish server implements the following Java EE standards:</p><ul>
+Extensibility</h3><p>The modular architecture of the GlassFish Server is based
+on OSGi Alliance standards and ensures that GlassFish Server starts only the
+modules that are required for the applications that you are deploying. As
+a result, start-up times and memory consumption, are minimized. </p><p>The
+modular architecture of GlassFish Server also enables the extension of the
+GlassFish Server's basic functionality through addition of components through
+the <a href="http://wikis.sun.com/display/IpsBestPractices/">Update Tool</a>.
+The Update Tool is developed through the <a
+href="http://wikis.sun.com/display/updatecenter">Update Center</a> project.</p> <h3>
+Java EE Support</h3>  <p>GlassFish Server complies fully with the latest Java
+EE specification to deliver one of the best application runtimes for next-generation
+enterprise applications and web services. The 3.1 release of GlassFish Server
+implements the following Java EE standards:</p><ul>
 <li>Enterprise Java Beans 3.1</li>
+<li>Contexts and Dependency Injection for Java EE 1.0</li>
 <li>Java Architecture for XML Binding (JAXB) 2.2</li>
 <li>Java Persistence API 2.0</li>
 <li>Java Server Faces 2.0</li>
@@ -60,80 +57,88 @@ and web services. The v3 release of GlassFish server implements the following Ja
 <li>Java Server Pages Standard Tag Library (JSTL) 2.2</li>
 <li>Java Servlet 3.0</li>
 <li>Java API for RESTful Web Services (JAX-RS)</li>
+<li>Java EE Connector Architecture 1.6</li>
 <li>Bean Validation</li>
 <li>Streaming API for XML (StAX)</li>
 <!--Web Services Metadata-->
 <li>Java API for XML based Web Services 2.1 (JAX-WS 2.1)</li>
 <li>Common Annotations for the Java Platform 1.0 (CAJ 1.0)</li>
 </ul><p>For a complete list of the Java EE technologies included, see the <a
-href="http://docs.sun.com/doc/820-7688"><cite>Release Notes</cite></a>.</p> 
- <h3>Web Services Interoperability Technologies (WSIT) Support</h3><p> Sun
-is working closely with Microsoft to ensure interoperability of  Web services
+href="http://docs.sun.com/doc/821-1759 "><cite>Release Notes</cite></a>.</p> 
+ <h3>Rapid Iterative Development</h3><p>Using popular IDEs such as NetBeans
+and Eclipse, the web application development cycle is simplified to edit-save-refresh
+browser. GlassFish Server enables such a simple development cycle by preserving
+HTTP session information when an existing application is redeployed.</p><h3>Web
+Services Interoperability Technologies (WSIT) Support</h3><p>WSIT is a product
+of a joint effort with Microsoft to ensure interoperability of web services
 enterprise technologies such as message optimization, reliable  messaging,
-and security. WSIT is a product of this  joint effort. WSIT is an implementation
-of a number of open web services  specifications to support enterprise features.
-In addition to message  optimization, reliable messaging, and security, WSIT
-includes a bootstrapping  and configuration technology. Starting with the
-core XML support currently  built into the Java platform, WSIT uses or extends
-existing features and  adds new support for interoperable web services, including:
-</p> <ul>
+and security. WSIT is an implementation of a number of open web services 
+specifications to support enterprise features. In addition to message  optimization,
+reliable messaging, and security, WSIT includes a bootstrapping  and configuration
+technology. Starting with the core XML support currently  built into the Java
+platform, WSIT uses or extends existing features and  adds new support for
+interoperable web services, including:</p> <ul>
 <li>Bootstrapping and Configuration</li>
 <li>Message Optimization Technology</li>
 <li>Reliable Messaging Technology</li>
 <li>Security Technology</li>
-</ul>  <!--Java Business Integration (JBI) Support JBI extends Java EE with business integration Service Provider  Interfaces (SPI). These SPI enable developers to create or implement  a Java business integration environment for specifications such as  WSCI, BPEL4WS and the W3C Choreography Working Group. A JBI  implementation is installed directly by the Application Server  installer, mostly in the as-install/jbi directory.  This directory contains all common JAR files and system components  for the JBI including a lifecycle module that starts the JBI framework in the Application Server JVM.--
->  <!--In-Memory Replication Support In-memory replication on other servers provides lightweight  storage of session state data without the need to obtain a  separate database, such as HADB. This type of replication  uses memory on other servers for high availability storage  of HTTP session and stateful session bean data. Clustered  server instances replicate session state in a ring of  topology. Each backup instance stores the replicated data  in memory. Replication of session state data in memory on  other servers enables sessions to be distributed. The use of in-memory replication requires the Group Management  Service (GMS) to be enabled.--
-><!--Usage Profiles Support Every administrative domain is associated with a usage profile  which identifies the capabilities of that domain. Application  Server 9.1 Update 2 provides the following profiles:Developer Use this profile if you are running your  domain in a development environment and if your applications  do not need the NSS keystore or clustering features, such as  load balancing, high availability, and session replication.Cluster Use this profile if you need to create  clusters but do not require the high-availability database (HADB)  or the NSS keystore.Enterprise Use this profile if you need HADB and NSS. This profile is not usable unless you install HADB and NSS  separately or install the Application Server as part of the  Java Enterprise System (Java ES).-->
-<!--Load Balancing Enhancements Several enhancements have been added to the load balancing  plugin including:Weighted Round Robin An optional attribute called  weight has been added to the instance Loadbalancer.xml file. This option enables the load balancer plugin to route requests according  to the weight. For example, for every 500 requests, 100 will go to instance1 and 400 would go to instance2. The default weight is 100. The weight is assigned to each instance from the Administration Console or command-line. In addition, the  server domain.xml file identifies an attribute for every instance  indicating the weight. User-Defined Load Balancer Decision Enables users to define custom logic for load balancing; for example, user identity-based redirects and mime-based load balancing. This feature is implemented by means of user-defined shared library  that gets loaded by the load balancer. This custom shared library implements the  interface as defined in loadbalancer.h, which is placed in  as-install/lib/install/templates/. Administration Enhancements Previous versions of Application Server  required that the loadbalancer.xml file be manually copied to the  particular server's config directory. GlassFish v3 Application Server includes  push automations for performing such copies between the Web Server and the  Application Server. The load balancer itself is configured in the server's  domain.xml file.-->
-<h3>Open Source and GlassFish Community</h3><p> In June 2005, Sun launched
-the <a href="http://java.sun.com/javaee/glassfish/">GlassFish</a>  community
-with the goal of developing a free, open source, commercial-grade application
-server that implements the newest features of the Java EE platform and related
-enterprise  technologies. GlassFish server is based on the source code that
-is developed by the GlassFish community.</p><p>Discussion within the GlassFish
-community is conducted through the following channels:</p><ul>
-<li><a href="http://forums.java.net/jive/category.jspa?categoryID=58"
-target="blank">Forums for the GlassFish community</a></li>
-<li><a href="https://glassfish.dev.java.net/servlets/ProjectMailingListList"
-target="balnk">Mailing lists for GlassFish community</a></li>
-</ul>  <h2><a name="resources"></a>Resources</h2>
-<!--h3>Feedback Submittal
+</ul><p>WSIT is delivered as part of the <a href="https://metro.dev.java.net/">Metro
+</a> web service stack.</p>   <h3>High Availability Clusters</h3><p>GlassFish
+Server enables multiple GlassFish Server instances to be clustered to provide
+high availability through failover and load balancing. The clustering framework
+of GlassFish Server is developed through the <a
+href="https://shoal.dev.java.net/">GlassFish Shoal</a> project.</p><h3>In-Memory
+Replication Support</h3> <p>GlassFish Server uses in-memory replication on
+other servers for high availability storage  of HTTP session and stateful
+session bean data. Each backup instance stores the replicated data  in memory.
+Replication of session state data in memory on other servers enables sessions
+to be distributed. The use of in-memory replication requires the Group Management
+ Service (GMS) to be enabled.</p> <!--Load Balancing Enhancements Several enhancements have been added to the load balancing  plugin including:Weighted Round Robin An optional attribute called  weight has been added to the instance Loadbalancer.xml file. This option enables the load balancer plugin to route requests according  to the weight. For example, for every 500 requests, 100 will go to instance1 and 400 would go to instance2. The default weight is 100. The weight is assigned to each instance from the Administration Console or command-line. In addition, the  server domain.xml file identifies an attribute for every instance  indicating the weight. User-Defined Load Balancer Decision Enables users to define custom logic for load balancing; for example, user identity-based redirects and mime-based load balancing. This feature is implemented by means of user-defined shared library  that gets loaded by the load balancer. This custom shared library implements the  interface as defined in loadbalancer.h, which is placed in  as-install/lib/install/templates/. Administration Enhancements Previous versions of Application Server  required that the loadbalancer.xml file be manually copied to the  particular server's config directory. GlassFish v3 Application Server includes  push automations for performing such copies between the Web Server and the  Application Server. The load balancer itself is configured in the server's domain.xml file.--
+> <h3>Open Source and GlassFish Community</h3><?Pub Caret1><p> In June 2005,
+Sun launched the <a href="http://glassfish.org">GlassFish</a>  community with
+the goal of developing an open source, commercial-grade application server
+that implements the newest features of the Java EE platform and related enterprise
+technologies. GlassFish Server is based on the source code that is developed
+within the GlassFish community.</p><p>Discussion within the GlassFish community
+is conducted through the following channels:</p><ul>
+<li><a href="http://forums.java.net/jive/category.jspa?categoryID=58">Forums
+for the GlassFish community</a></li>
+<li><a href="https://glassfish.dev.java.net/servlets/ProjectMailingListList">Mailing
+lists for GlassFish community</a></li>
+</ul>  <h2><a name="resources"></a>Resources</h2> <!--h3>Feedback Submittal
 Form</h3><p> Use the <a
 href="http://java.sun.com/docs/forms/javaeesubmittalform.html">Java EE SDK
-Feedback Submittal Form</a> to submit feedback on this product.</p-->
-<h3>GlassFish
-Community</h3><p class="resources">GlassFish server is based on the source
-code that is developed through the <a href="http://java.sun.com/javaee/glassfish">
-GlassFish</a> open source project and community. The GlassFish community is
-building a free, open source application server which implements the newest
-features in the Java EE platform.</p> <h3>Java Enterprise Community</h3><p
-class="resources">Part of <a href="http://java.net/">java.net</a>, the <a
+Feedback Submittal Form</a> to submit feedback on this product.</p--><h3>GlassFish
+Community</h3><p class="resources">GlassFish Server is based on the source
+code that is developed through the <a href="http://glassfish.org">GlassFish</a> open
+source project and community. The GlassFish community is building an open
+source application server which implements the newest features in the Java
+EE platform.</p> <h3>Java Enterprise Community</h3><p class="resources">Part
+of <a href="http://java.net/">java.net</a>, the <a
 href="http://community.java.net/java-enterprise/">Java Enterprise Community</a> is
-centered around Java EE applications, components, and tools.</p>  <h3>Sun
-Technology Forums</h3><p class="resources">The <a
-href="http://developers.sun.com/forums/">Sun Developer Forums</a> are interactive
-message boards for sharing knowledge and questions about technologies and
-programming techniques. Use the <a
-href="http://forums.sun.com/category.jspa?categoryID=64">Application &amp;
-Integration Servers</a> forum for discussions related to the GlassFish server.</p>  <h3>
-Sun Software Support Service</h3><p class="resources"><a
-href="http://www.sun.com/service/support/software/standard.html"> Sun Software
-Support Service Standard</a> contracts for the commercially available counterparts
-of earlier releases of the GlassFish server are available for purchase. </p>  <h3>
-Sun Developer Network</h3><p class="resources">For further help and to keep
-on top of the latest developments, join the <a
+centered around Java EE applications, components, and tools.</p>  <h3>Oracle
+Forums</h3><p class="resources">The <a href="
+	http://forums.sun.com/">Oracle Forums</a> are interactive message boards
+for sharing knowledge and questions about technologies and programming techniques.
+Use the <a href="http://forums.sun.com/category.jspa?categoryID=64">Application &amp;
+Integration Servers</a> forum for discussions related to the GlassFish Server.</p>  <h3>
+Oracle Support</h3><p class="resources"><a
+href="
+	http://www.oracle.com/us/support/index.htm">Oracle Support</a> contracts
+for Oracle GlassFish Server, the commercially available counterpart of GlassFish
+Server Open Source Edition, are available for purchase. </p>  <h3>Sun Developer
+Network</h3><p class="resources">For further help and to keep on top of the
+latest developments, join the <a
 href="http://developers.sun.com/user_registration/whyregister.html">Sun Developer
-Network</a>. </p>  <h3>BigAdmin System Administrator Resources and Community</h3><p
-class="resources">Join this <a href="http://www.sun.com/bigadmin/home/index.html">
-System Administration Portal</a> to learn more about the <a
-href="http://www.sun.com/bigadmin/hubs/aps/overview/index.jsp">Sun Java System
-Application Server Platform Suite</a> which includes the GlassFish server.
- </p><h3>Release Notes and Product Documentation</h3><p class="resources">The <a
-href="http://docs.sun.com/doc/820-7688"><cite>Release Notes</cite></a>, <a
-href="http://docs.sun.com/doc/820-7690"><cite>Installation Guide</cite></a>,
-and other product documentation are available in the <a
-href="http://docs.sun.com/coll/1343.9">Sun GlassFish Enterprise Server v3</a> collection on the docs.sun.com<sup>SM</sup> site.</p> <!-- Data sheets, press information, news, and other information are available at the Sun Java System Application Server home page. --
+Network</a>.</p><h3>Release Notes and Product Documentation</h3><p
+class="resources">The <a href="http://docs.sun.com/doc/821-1759"><cite>Release
+Notes</cite></a>, <a href="http://docs.sun.com/doc/821-1756"><cite>Installation
+Guide</cite></a>, and other product documentation are available in the <a
+href="http://docs.sun.com/coll/1343.13">Oracle GlassFish Server 3.0.1</a> collection
+on the docs.sun.com site.</p> <!-- Data sheets, press information, news, and other information are available at the Sun Java System Application Server home page. --
 > <hr style="width: 80%; height: 2px;"> <p class="copy"><a
-href="http://wwws.sun.com/company/">Company Info</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a
-href="http://wwws.sun.com/contact/">Contact</a> &nbsp;&nbsp;|&nbsp;&nbsp;
-Copyright 2009 Sun Microsystems</p></body></html>
+href="http://www.oracle.com/corporate/">Company Info</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a
+href="http://www.oracle.com/corporate/contact/">Contact</a> &nbsp;&nbsp;|&nbsp;&nbsp;
+Copyright &copy; 2010 Oracle Corporation &nbsp;&nbsp;|&nbsp;&nbsp; <a
+href="./copyright.html">Legal Notices</a></p></body></html>
+<?Pub *0000011063 0>

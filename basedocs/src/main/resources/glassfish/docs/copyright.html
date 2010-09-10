@@ -4,113 +4,73 @@
 <!--
 DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright (c) 2009, 2010 Oracle and/or its affiliates. All rights reserved.
+
 
 Use is subject to License Terms
 -->
-<?Pub Caret>
 <head>
-<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
-<!-- ident      "%Z%%M% %I%     %E% SMI" -->
-<title>Sun GlassFish Enterprise Server v3</title>
-<link href="css/default.css" type="text/css" rel="stylesheet"></head>
+<style type="text/css">  body,td,p,div,span,a,ul,ul li, ol, ol li, ol li b, dl,h1,h2,h3,h4,h5,h6,li {     font-family:geneva,helvetica,arial,"lucida sans",sans-serif;     font-size:10pt   }      body{margin-top:0}      h1 {font-size:18pt}   h2 {font-size:14pt}   h3 {font-size:12pt}   code,kbd,tt,pre {     font-family:monaco,courier,"courier new";     font-size:10pt;   }   li {padding-bottom: 8px}   p.copy, p.copy a {     font-family:geneva,helvetica,arial,"lucida sans",sans-serif;     font-size:8pt     }   p.copy {text-align: center}    table.grey1,tr.grey1,td.grey1{background:#f1f1f1}   th {     color:#ffffff;     font-family:geneva,helvetica,arial,"lucida sans",sans-serif;     font-size:12pt   }   td.insidehead {     font-weight:bold;     background:white;     text-align: left;   }   a {text-decoration:none; color:#3E6B8A}   a:visited{color:#917E9C}   a:hover {text-decoration:underline}   
+</style>
+<title>GlassFish Server 3.0.1</title>
+</head>
 <body><table width="100%" border="0" cellspacing="4" cellpadding="2">
 <tbody>
 <tr>
-<td align="right" valign="top"> <a href="http://www.sun.com"><img
-src="graphics/logo_sun.gif" border="0"></a>      </td>
+<td align="right" valign="top"> <a href="http://www.oracle.com">oracle.com</a> 
+    </td>
 </tr>
 <tr>
 <td align="left" valign="top" bgcolor="#587993"> <font color="#ffffff">&nbsp;&nbsp;<b>
-Sun GlassFish Enterprise Server v3</b></font>&nbsp; </td>
+GlassFish Server 3<?Pub Caret>.1</b></font>&nbsp; </td>
 </tr>
 </tbody>
-</table>             <!--startindex--><p>Sun Microsystems, Inc. <br>4150 Network
-Circle<br>Santa Clara, CA  95054 <br>U.S.A.</p><p>Copyright 2009, Sun Microsystems,
-Inc.</p>Sun Microsystems, Inc. has intellectual property rights relating to
-technology embodied in the product that is described in this document. In
-particular, and without limitation, these intellectual property rights may
-include one or more U.S. patents or pending patent applications in the U.S.
-and in other countries.<p>U.S. Government Rights &ndash; Commercial software.
- Government users are subject to the Sun Microsystems, Inc. standard license
-agreement and applicable provisions of the FAR and its supplements.</p><p>This
-distribution may include materials developed by third parties.</p><p>Parts
-of the product may be derived from Berkeley BSD systems, licensed from the
-University of California. UNIX is a registered trademark in the U.S. and other
-countries, exclusively licensed through X/Open Company, Ltd.</p><p>Sun, Sun
-Microsystems, the Sun logo, the Solaris logo, the Java Coffee Cup logo, docs.sun.com,
- Enterprise JavaBeans, EJB, GlassFish, J2EE, J2SE, Java Naming and Directory
-Interface, JavaBeans, Javadoc, JDBC, JDK, JavaScript, JavaServer Pages, JSP,
-JVM, NetBeans, SunSolve,  Java, and Solaris are trademarks or registered trademarks
-of Sun Microsystems, Inc. or its subsidiaries in the U.S. and other countries.
-All SPARC trademarks are used under license and are trademarks or registered
-trademarks of SPARC International, Inc. in the U.S. and other countries. Products
-bearing SPARC trademarks are based upon an architecture developed by Sun Microsystems,
-Inc. </p><p>The OPEN LOOK and Sun<sup>TM</sup> Graphical User Interface was
-developed by Sun Microsystems, Inc. for its users and licensees. Sun acknowledges
-the pioneering efforts of Xerox in researching and developing the concept
-of visual or graphical user interfaces for the computer industry. Sun holds
-a non-exclusive license from Xerox to the Xerox Graphical User Interface,
-which license also covers Sun's licensees who implement OPEN LOOK GUIs and
-otherwise comply with Sun's written license agreements.</p><p>Products covered
-by and information contained in this publication are controlled by U.S. Export
-Control laws and may be subject to the export or import laws in other countries.
-Nuclear, missile, chemical or biological weapons or nuclear maritime end uses
-or end users, whether direct or indirect, are strictly prohibited. Export
-or reexport to countries subject to U.S. embargo or to entities identified
-on U.S. export exclusion lists, including, but not limited to, the denied
-persons and specially designated nationals lists is strictly prohibited.</p><p>DOCUMENTATION
-IS PROVIDED &ldquo;AS IS&rdquo; AND ALL EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS
-AND WARRANTIES, INCLUDING ANY IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS
-FOR A PARTICULAR PURPOSE OR NON-INFRINGEMENT, ARE DISCLAIMED, EXCEPT TO THE
-EXTENT THAT SUCH DISCLAIMERS ARE HELD TO BE LEGALLY INVALID.</p><p></p><p>Sun
-Microsystems, Inc. d&eacute;tient les droits de propri&eacute;t&eacute; intellectuelle
-relatifs &agrave; la technologie incorpor&eacute;e dans le produit qui est
-d&eacute;crit dans ce document. En particulier, et ce sans limitation, ces
-droits de propri&eacute;t&eacute; intellectuelle peuvent inclure un ou plusieurs
-brevets am&eacute;ricains ou des applications de brevet en attente aux Etats-Unis
-et dans d'autres pays.</p><p>Cette distribution peut comprendre des composants
-d&eacute;velopp&eacute;s par des tierces personnes.</p><p>Certaines composants
-de ce produit peuvent &ecirc;tre d&eacute;riv&eacute;es du logiciel Berkeley
-BSD, licenci&eacute;s par l'Universit&eacute; de Californie. UNIX est une
-marque d&eacute;pos&eacute;e aux Etats-Unis et dans d'autres pays; elle est
-licenci&eacute;e exclusivement par X/Open Company, Ltd.</p><p>Sun, Sun Microsystems,
-le logo Sun, le logo Solaris, le logo Java Coffee Cup, docs.sun.com,  Enterprise
-JavaBeans, EJB, GlassFish, J2EE, J2SE, Java Naming and Directory Interface,
-JavaBeans, Javadoc, JDBC, JDK, JavaScript, JavaServer Pages, JSP, JVM, NetBeans,
-SunSolve,   Java et Solaris sont des marques de fabrique ou des marques d&eacute;pos&eacute;es
-de Sun Microsystems, Inc., ou ses filiales, aux Etats-Unis et dans d'autres
-pays. Toutes les marques SPARC sont utilis&eacute;es sous licence et sont
-des marques de fabrique ou des marques d&eacute;pos&eacute;es de SPARC International,
-Inc. aux Etats-Unis et dans d'autres pays. Les produits portant les marques
-SPARC sont bas&eacute;s sur une architecture d&eacute;velopp&eacute;e par
-Sun Microsystems, Inc.</p><p>L'interface d'utilisation graphique OPEN LOOK
-et Sun a &eacute;t&eacute; d&eacute;velopp&eacute;e par Sun Microsystems,
-Inc. pour ses utilisateurs et licenci&eacute;s. Sun reconna&icirc;t les efforts
-de pionniers de Xerox pour la recherche et le d&eacute;veloppement du concept
-des interfaces d'utilisation visuelle ou graphique pour l'industrie de l'informatique.
-Sun d&eacute;tient une licence non exclusive de Xerox sur l'interface d'utilisation
-graphique Xerox, cette licence couvrant &eacute;galement les licenci&eacute;s
-de Sun qui mettent en place l'interface d'utilisation graphique OPEN LOOK
-et qui, en outre, se conforment aux licences &eacute;crites de Sun.</p><p>Les
-produits qui font l'objet de cette publication et les informations qu'il contient
-sont r&eacute;gis par la legislation am&eacute;ricaine en mati&egrave;re de
-contr&ocirc;le des exportations et peuvent &ecirc;tre soumis au droit d'autres
-pays dans le domaine des exportations et importations. Les utilisations finales,
-ou utilisateurs finaux, pour des armes nucl&eacute;aires, des missiles, des
-armes chimiques ou biologiques ou pour le nucl&eacute;aire maritime, directement
-ou indirectement, sont strictement interdites. Les exportations ou r&eacute;exportations
-vers des pays sous embargo des Etats-Unis, ou vers des entit&eacute;s figurant
-sur les listes d'exclusion d'exportation am&eacute;ricaines, y compris, mais
-de mani&egrave;re non exclusive, la liste de personnes qui font objet d'un
-ordre de ne pas participer, d'une fa&ccedil;on directe ou indirecte, aux exportations
-des produits ou des services qui sont r&eacute;gis par la legislation am&eacute;ricaine
-en mati&egrave;re de contr&ocirc;le des exportations et la liste de ressortissants
-sp&eacute;cifiquement design&eacute;s, sont rigoureusement interdites.</p><p>LA
-DOCUMENTATION EST FOURNIE "EN L'ETAT" ET TOUTES AUTRES CONDITIONS, DECLARATIONS
-ET GARANTIES EXPRESSES OU TACITES SONT FORMELLEMENT EXCLUES, DANS LA MESURE
-AUTORISEE PAR LA LOI APPLICABLE, Y COMPRIS NOTAMMENT TOUTE GARANTIE IMPLICITE
-RELATIVE A LA QUALITE MARCHANDE, A L'APTITUDE A UNE UTILISATION PARTICULIERE
-OU A L'ABSENCE DE CONTREFACON. </p>              <!--stopindex--> <p><a
-href="quickstart.html">Quick Start</a> </p></body></html>
-<?Pub *0000007864 0>
+</table>             <!--startindex--><p>Copyright &copy; 2010 Oracle Corporation
+</p><p>This software and related documentation are provided under a license
+agreement containing restrictions on use and disclosure and are protected
+by intellectual property laws. Except as expressly permitted in your license
+agreement or allowed by law, you may not use, copy, reproduce, translate,
+broadcast, modify, license, transmit, distribute, exhibit, perform, publish,
+or display any part, in any form, or by any means. Reverse engineering, disassembly,
+or decompilation of this software, unless required by law for interoperability,
+is prohibited.</p><p>The information contained herein is subject to change
+without notice and is not warranted to be error-free. If you find any errors,
+please report them to us in writing.</p><p>If this is software or related
+software documentation that is delivered to the U.S. Government or anyone
+licensing it on behalf of the U.S. Government, the following notice is applicable:
+</p><p>U.S. GOVERNMENT RIGHTS Programs, software, databases, and related documentation
+and technical data delivered to U.S. Government customers are &ldquo;commercial
+computer software&rdquo; or &ldquo;commercial technical data&rdquo; pursuant
+to the applicable Federal Acquisition Regulation and agency-specific supplemental
+regulations. As such, the use, duplication, disclosure, modification, and
+adaptation shall be subject to the restrictions and license terms set forth
+in the applicable Government contract, and, to the extent applicable by the
+terms of the Government contract, the additional rights set forth in FAR 52.227-19,
+Commercial Computer Software License (December 2007). Oracle USA, Inc., 500
+Oracle Parkway, Redwood City, CA 94065.</p><p>This software or hardware is
+developed for general use in a variety of information management applications.
+It is not developed or intended for use in any inherently dangerous applications,
+including applications which may create a risk of personal injury. If you
+use this software or hardware in dangerous applications, then you shall be
+responsible to take all appropriate fail-safe, backup, redundancy, and other
+measures to ensure the safe use. Oracle Corporation and its affiliates disclaim
+any liability for any damages caused by use of this software or hardware in
+dangerous applications.</p><p>Oracle and Java are registered trademarks of
+Oracle and/or its affiliates. Other names may be trademarks of their respective
+owners.</p><p>AMD, Opteron, the AMD logo, and the AMD Opteron logo are trademarks
+or registered trademarks of Advanced Micro Devices. Intel and Intel Xeon are
+trademarks or registered trademarks of Intel Corporation. All SPARC trademarks
+are used under license and are trademarks or registered trademarks of SPARC
+International, Inc. UNIX is a registered trademark licensed through X/Open
+Company, Ltd.</p><p>This software or hardware and documentation may provide
+access to or information on content, products, and services from third parties.
+Oracle Corporation and its affiliates are not responsible for and expressly
+disclaim all warranties of any kind with respect to third- party content,
+products, and services. Oracle Corporation and its affiliates will not be
+responsible for any loss, costs, or damages incurred due to your access to
+or use of third- party content, products, or services.</p>              <!--stopindex--> <hr
+style="width: 80%; height: 2px;"> <p class="copy"><a
+href="http://www.oracle.com/corporate/">Company Info</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a
+href="http://www.oracle.com/corporate/contact/">Contact</a> &nbsp;&nbsp;|&nbsp;&nbsp;
+Copyright &copy; 2010 Oracle Corporation</p></body></html>
+<?Pub *0000005327 0>
