@@ -77,7 +77,7 @@
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/cluster/node/nodeEdit.jsf");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18ncs.nodes.TableTitle}");
         createMap(result="#{pageSession.nodeInstanceMap}");
-        gf.listInstances(optionKeys={"standaloneonly", "nostatus" } optionValues={"true", "true"}, instances="#{pageSession.standaloneList}");
+        gf.listInstances(optionKeys={"standaloneonly" } optionValues={"true"}, instances="#{pageSession.standaloneList}");
     />
     </event>
 "    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+"nodes");</script>
@@ -142,7 +142,9 @@
                     }
 
                     if ( !#{requestScope.isStandalone}){
-                        setAttribute(key="iurl" value="#{request.contextPath}/cluster/cluster/clusterInstanceEdit.jsf?instanceName=#{pageSession.encodedInstanceName}" );
+                        gf.getClusterNameForInstance(instanceName="#{requestScope.instance}"  clusterName="#{requestScope.clusterName}");
+                        urlencode(value="#{requestScope.clusterName}" encoding="UTF-8" result="#{requestScope.encodedClusterName}");
+                        setAttribute(key="iurl" value="#{request.contextPath}/cluster/cluster/clusterInstanceEdit.jsf?clusterName=#{requestScope.encodedClusterName}&instanceName=#{pageSession.encodedInstanceName}" );
                     }
                     setAttribute(key="statusString" value="$resource{i18nc.status.$attribute{status}}  &nbsp; $resource{i18nc.status.image.$attribute{status}}");
                 />
