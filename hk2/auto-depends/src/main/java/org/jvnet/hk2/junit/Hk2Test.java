@@ -36,6 +36,8 @@
  */
 package org.jvnet.hk2.junit;
 
+import java.util.logging.Logger;
+
 import org.junit.runner.RunWith;
 
 /**
@@ -46,6 +48,6 @@ import org.junit.runner.RunWith;
 @RunWith(Hk2Runner.class)
 public class Hk2Test {
     public Hk2Test() {
-        System.out.println("Test created");
+        Logger.getAnonymousLogger().info("Test created");
     }
 }

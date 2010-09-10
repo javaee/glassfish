@@ -28,7 +28,8 @@ import org.jvnet.hk2.junit.Hk2Runner;
 import org.jvnet.hk2.junit.Hk2RunnerOptions;
 import org.jvnet.hk2.test.runlevel.ExceptionRunLevelManagedService;
 import org.jvnet.hk2.test.runlevel.ExceptionRunLevelManagedService2b;
-import org.jvnet.hk2.test.runlevel.InterruptRunLevelManagedService;
+import org.jvnet.hk2.test.runlevel.InterruptRunLevelManagedService1a;
+import org.jvnet.hk2.test.runlevel.InterruptRunLevelManagedService2b;
 import org.jvnet.hk2.test.runlevel.NonRunLevelWithRunLevelDepService;
 import org.jvnet.hk2.test.runlevel.RunLevelContract;
 import org.jvnet.hk2.test.runlevel.RunLevelServiceBase;
@@ -563,7 +564,7 @@ public class RunLevelServiceTest {
     
     rls.proceedTo(5);
     
-    assertEquals(1, ExceptionRunLevelManagedService.constructCount);
+    assertEquals(2, ExceptionRunLevelManagedService.constructCount);
     assertEquals(0, ExceptionRunLevelManagedService.destroyCount);
     assertListenerState(false, true, false);
 
@@ -663,9 +664,8 @@ public class RunLevelServiceTest {
    * This is testing the non-async version of RLS in the following scenario:
    * 
    *  - Thread #1 issues a proceedTo(whatever)
-   *  - Thread #2 (a watchdog thread) find that Thread #1 is hung, and issues a proceedTo(whatever)
-   *  
-   *  @see InterruptRunLevelManagedService
+   *  - A service {@link InterruptRunLevelManagedService2b} hangs
+   *  - Thread #2 (a watchdog thread) finds that Thread #1 is hung, and issues a proceedTo(whatever)
    */
   @SuppressWarnings("unchecked")
   @Test
@@ -675,7 +675,83 @@ public class RunLevelServiceTest {
 
     this.defRLlistener = (TestRunLevelListener) listener;
     defRLlistener.calls.clear();
+    
+    // we want 1a to not be involved in this test
+    InterruptRunLevelManagedService1a.rls = null;
 
+    InterruptRunLevelManagedService2b.i = 0;
+    
+    final List problems = new ArrayList();
+    Thread watchDog = new Thread() {
+      @Override
+      public void run() {
+        try {
+          sleep(400);
+          Logger.getAnonymousLogger().log(Level.INFO, "issuing proceedTo(1) interrupt from thread: " + this);
+          // this will hang {@link InterruptRunLevelManagedService2b}
+          rls.proceedTo(1);
+        } catch (Exception e) {
+          problems.add(e);
+        }
+      }
+    };
+    watchDog.start();
+    
+    Logger.getAnonymousLogger().log(Level.INFO, "issuing proceedTo(2) from main thread: " + this);
+    // this main thread will be interrupted to go to 1 (see above)
+    rls.proceedTo(2);
+    
+    watchDog.join();
+    
+    assertTrue("problems: " + problems, problems.isEmpty());
+    assertEquals(1, defRLS.getCurrentRunLevel());
+    assertEquals(null, defRLS.getPlannedRunLevel());
+    assertTrue("hanging service not reached", InterruptRunLevelManagedService2b.i > 0);
+    
+    Collection<Inhabitant<?>> coll = h.getInhabitantsByContract(RunLevelContract.class.getCanonicalName());
+    assertTrue(coll.size() >= 3);
+    boolean gotOne = false;
+    boolean gotTwo = false;
+    for (Inhabitant<?> i : coll) {
+      String typeName = i.typeName();
+      if (typeName.contains("InterruptRunLevelManagedService1")) {
+        gotOne = true;
+        assertTrue("expected to be in active state: " + i, i.isInstantiated());
+      }
+      if (typeName.contains("InterruptRunLevelManagedService2")) {
+        gotTwo = true;
+        assertFalse("expected to be in released state: " + i, i.isInstantiated());
+      }
+    }
+    assertTrue(gotOne);
+    assertTrue(gotTwo);
+
+    assertListenerState(false, false, true);
+  }
+  
+  /**
+   * This is testing the non-async version of RLS in the following scenario:
+   * 
+   *  - Thread #1 issues a proceedTo(whatever)
+   *  - One of the services activated {@link InterruptRunLevelManagedService1a} calls
+   *      proceedTo(2)
+   *  - A service {@link InterruptRunLevelManagedService2b} hangs
+   *  - Thread #2 (a watchdog thread) finds that Thread #1 is hung, and issues a proceedTo(0)
+   */
+  @SuppressWarnings("unchecked")
+  @Test
+  public void multiThreadedInterrupt2() throws Exception {
+    recorders = new LinkedHashMap<Integer, Recorder>();
+    rls = defRLS = new TestDefaultRunLevelService(h, false, String.class, recorders); 
+
+    this.defRLlistener = (TestRunLevelListener) listener;
+    defRLlistener.calls.clear();
+    
+    // we want 1a to not be involved in this test
+    InterruptRunLevelManagedService1a.rls = rls;
+
+    InterruptRunLevelManagedService2b.i = 0;
+    
     final List problems = new ArrayList();
     Thread watchDog = new Thread() {
       @Override
@@ -683,6 +759,7 @@ public class RunLevelServiceTest {
         try {
           sleep(400);
           Logger.getAnonymousLogger().log(Level.INFO, "issuing proceedTo(0) interrupt from thread: " + this);
+          // this will hang {@link InterruptRunLevelManagedService2b}
           rls.proceedTo(0);
         } catch (Exception e) {
           problems.add(e);
@@ -692,25 +769,35 @@ public class RunLevelServiceTest {
     watchDog.start();
     
     Logger.getAnonymousLogger().log(Level.INFO, "issuing proceedTo(1) from main thread: " + this);
+    // this main thread will be interrupted to go to 0 but only after proceedTo(2) is sent (see above)
     rls.proceedTo(1);
+    
+    watchDog.join();
     
     assertTrue("problems: " + problems, problems.isEmpty());
     assertEquals(0, defRLS.getCurrentRunLevel());
     assertEquals(null, defRLS.getPlannedRunLevel());
+    assertTrue("hanging service not reached", InterruptRunLevelManagedService2b.i > 0);
     
     Collection<Inhabitant<?>> coll = h.getInhabitantsByContract(RunLevelContract.class.getCanonicalName());
-    assertTrue(coll.size() >= 1);
+    assertTrue(coll.size() >= 3);
     boolean gotOne = false;
+    boolean gotTwo = false;
     for (Inhabitant<?> i : coll) {
       String typeName = i.typeName();
-      if (typeName.contains("InterruptRunLevelManagedService")) {
+      if (typeName.contains("InterruptRunLevelManagedService1")) {
         gotOne = true;
+        assertFalse("expected to be in released state: " + i, i.isInstantiated());
+      }
+      if (typeName.contains("InterruptRunLevelManagedService2")) {
+        gotTwo = true;
         assertFalse("expected to be in released state: " + i, i.isInstantiated());
       }
     }
     assertTrue(gotOne);
+    assertTrue(gotTwo);
 
-    assertListenerState(false, false, true);
+    assertListenerState(true, false, 2);
   }
   
   @SuppressWarnings("unchecked")
@@ -769,6 +856,10 @@ public class RunLevelServiceTest {
    * Verifies the listener was indeed called, and the ordering is always consistent.
    */
   private void assertListenerState(boolean expectDownSide, boolean expectErrors, boolean expectCancelled) {
+    assertListenerState(expectDownSide, expectErrors, expectCancelled ? 1 : 0);
+  }
+  
+  private void assertListenerState(boolean expectDownSide, boolean expectErrors, int expectCancelled) {
     assertTrue(defRLlistener.calls.size() > 0);
     int last = -2;
     boolean upSide = true;
@@ -786,7 +877,7 @@ public class RunLevelServiceTest {
           }
         }
       } else {
-        assertTrue(call.toString(), call.current >= last);
+        assertTrue(call.toString() + " and last was " + last, call.current >= last);
       }
 
       if (upSide) {
@@ -819,8 +910,8 @@ public class RunLevelServiceTest {
       assertTrue(defRLlistener.calls.toString(), sawError);
     }
     
-    if (expectCancelled) {
-      assertEquals("expected to see cancel in: " + defRLlistener.calls, 1, sawCancel);
+    if (expectCancelled > 0) {
+      assertEquals("expected to see cancel in: " + defRLlistener.calls, expectCancelled, sawCancel);
     }
   }
 

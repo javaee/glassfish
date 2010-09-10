@@ -43,6 +43,14 @@
                 <role>developer</role>
             </roles>
         </developer>
+        <developer>
+            <id>jeff_trent</id>
+            <name>Jeff Trent</name>
+            <organization>Oracle</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
     </developers>
 
     <mailingLists>
@@ -138,6 +146,20 @@
                       that don't need to be published.
                     -->
                     <arguments>-P release</arguments>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!--forkMode>always</forkMode-->
+                    <argLine>-enableassertions</argLine>
+                    <systemProperties>
+                        <property>
+                            <name>java.util.logging.config.file</name>
+                            <value>logging.properties</value>
+                        </property>
+                    </systemProperties>
                 </configuration>
             </plugin>
         </plugins>
