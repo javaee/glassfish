@@ -195,6 +195,14 @@ public class EjbNode extends DeploymentDescriptorNode {
         table.put(RuntimeTagNames.RESOURCE_ADAPTER_MID, "setResourceAdapterMid");                
         return table;
     }
+
+    @Override
+    public boolean endElement(XMLElement element) {
+        if(RuntimeTagNames.EJB.equals(element.getQName())) {
+            descriptor.getIASEjbExtraDescriptors().parseCheckpointedMethods(descriptor);
+        }
+        return super.endElement(element);
+    }
     
     /**
      * Adds  a new DOL descriptor instance to the descriptor instance associated with 
@@ -330,8 +338,6 @@ public class EjbNode extends DeploymentDescriptorNode {
 	}
 
         // checkpointed-methods
-        ejbDescriptor.getIASEjbExtraDescriptors().parseCheckpointedMethods(ejbDescriptor);
-
         // checkpoint-at-end-of-method
         CheckpointAtEndOfMethodDescriptor checkpointMethodDesc = ejbDescriptor.getIASEjbExtraDescriptors().getCheckpointAtEndOfMethodDescriptor();
         if (checkpointMethodDesc!=null) {
