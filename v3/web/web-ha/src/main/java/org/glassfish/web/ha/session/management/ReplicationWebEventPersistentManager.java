@@ -303,7 +303,7 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
     @Override
     public <T extends Serializable> void  createBackingStore(String persistenceType, String storeName, Class<T> metadataClass, HashMap vendorMap) {
         _logger.info("Create backing store invoked with persistence type " + persistenceType + " and store name " + storeName);
-        BackingStoreFactory factory = habitat.getComponent(BackingStoreFactory.class, "replication");
+        BackingStoreFactory factory = habitat.getComponent(BackingStoreFactory.class, persistenceType);
         BackingStoreConfiguration<String, T> conf = new BackingStoreConfiguration<String, T>();
 
         if(gmsAdapterService.isGmsEnabled()) {
@@ -325,7 +325,7 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
         } catch (BackingStoreException e) {
             e.printStackTrace();  
         }
-        Object obj = vendorMap.get("key.mapper");
+        Object obj = conf.getVendorSpecificSettings().get("key.mapper");
         if (obj != null && obj instanceof GlassFishHAReplicaPredictor) {
             predictor = (GlassFishHAReplicaPredictor)obj;
             System.out.println("ReplicatedManager.keymapper is " + predictor);
