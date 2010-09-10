@@ -210,9 +210,9 @@ public class ApplicationHandlers {
             Map attrs = new HashMap();
             String endpoint = (String) oneRow.get("endpoint");
             if(forLB){
-                attrs.put("LbEnabled", Enabled);
+                attrs.put("lbEnabled", Enabled);
             }else{
-                attrs.put("Enabled", Enabled);
+                attrs.put("enabled", Enabled);
             }
             RestApiHandlers.restRequest(prefix+endpoint, attrs, "post", handlerCtx);
         }
@@ -235,7 +235,7 @@ public class ApplicationHandlers {
         standalone.add("server");
 
         Map attrs = new HashMap();
-        attrs.put("ref", appName);
+        attrs.put("id", appName);
         List<String> associatedTargets = DeployUtil.getApplicationTarget(appName, "application-ref");
         for(String newTarget :  selectedTargets){
             String endpoint;
@@ -249,6 +249,7 @@ public class ApplicationHandlers {
                 }else{
                     endpoint = serverEndpoint + newTarget + "/application-ref" ;
                 }
+                attrs.put("target", newTarget);
                 RestApiHandlers.restRequest(endpoint, attrs, "post", handlerCtx);
             }
          }
@@ -339,8 +340,8 @@ public class ApplicationHandlers {
             oneRow.put("selected", false);
             oneRow.put("endpoint", endpoint);
             oneRow.put("targetName", oneTarget);
-            oneRow.put("enabled", attrs.get("Enabled"));
-            oneRow.put("lbEnabled", attrs.get("LbEnabled"));
+            oneRow.put("enabled", attrs.get("enabled"));
+            oneRow.put("lbEnabled", attrs.get("lbEnabled"));
             result.add(oneRow);
         }
         handlerCtx.setOutputValue("result", result);
