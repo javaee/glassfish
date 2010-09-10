@@ -136,6 +136,8 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
 
   static final boolean ASYNC_ENABLED = false;
   
+  private static final Logger logger = Logger.getLogger(DefaultRunLevelService.class.getName());
+  
   private final Object lock = new Object();
 
   private final boolean asyncMode;
@@ -216,12 +218,8 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
       return;
     }
 
-    // set planned immediately
-    synchronized (lock) {
-      this.planned = runLevel;
-      this.activeThread = Thread.currentThread();
-    }
-
+    plan(runLevel);
+    
     if (null != exec) {
       activeProceedToOp = exec.submit(new Runnable() {
         @Override
@@ -242,15 +240,75 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     }
   }
 
+  protected void plan(final int runLevel) {
+    synchronized (lock) {
+      this.planned = runLevel;
+      this.activeThread = Thread.currentThread();
+    }
+  }
+
+  protected void proceedToWorker(int runLevel) {
+    logger.log(Level.FINE, "proceedTo({0}) called for env {1}",
+        new Object[] {runLevel, targetEnv});
+
+    plan(runLevel);
+    
+    try {
+      int current = (null == getCurrentRunLevel()) ? -2 : getCurrentRunLevel();
+      if (runLevel > current) {
+        for (int rl = current + 1; rl <= runLevel; rl++) {
+          upActiveRecorder(rl);
+        }
+      } else if (runLevel < current) {
+        for (int rl = current; rl > runLevel; rl--) {
+          downActiveRecorder(rl);
+        }
+      } else {
+        // force closure of any orphaned higher RunLevel services
+        downActiveRecorder(runLevel+1);
+      }
+    } catch (Interrupt interrupt) {
+      // same thread interrupts (from onError, onProgress, etc.)
+      logger.log(Level.FINE, "Interrupt caught");
+      proceedToWorker(interrupt.runLevel);
+    }
+  }
+
+  protected void handleInterruptException(Exception e) {
+    if (e instanceof Interrupt) {
+      throw (Interrupt)e;
+    }
+    
+    Throwable t = e;
+    while (null != t.getCause() && t != t.getCause()) {
+      t = t.getCause();
+    }
+  
+    if (t instanceof InterruptedException || t instanceof ClosedByInterruptException) {
+      // out of band/thread exceptions
+      logger.log(Level.FINE, "another thread interrupted");
+      
+      synchronized (lock) {
+        Integer next = nextPlannedAfterInterrupt;
+        if (null != next) {
+          nextPlannedAfterInterrupt = null;
+          handleInterrupt(next);
+        } else {
+          throw (RuntimeException)e;
+        }
+      }
+    }
+  }
+
   /**
    * Returns true if the current proceedTo() call should proceed.
    */
   protected boolean handleInterrupt(final int runLevel) throws Interrupt {
     if (null != activeProceedToOp) {
       // async case
-      Logger.getAnonymousLogger()
-          .log(Level.INFO,
-              "Cancelling proceedTo {0} and instead going to {1}",
+      logger
+          .log(Level.FINE,
+              "Cancelling proceedTo({0}) and instead going to {1}",
               new Object[] { planned, runLevel });
       activeProceedToOp.cancel(true);
       reset();
@@ -282,28 +340,9 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     return true;
   }
 
-  private void proceedToWorker(int runLevel) {
-    try {
-      int current = (null == getCurrentRunLevel()) ? -2 : getCurrentRunLevel();
-      if (runLevel > current) {
-        for (int rl = current + 1; rl <= runLevel; rl++) {
-          upActiveRecorder(rl);
-        }
-      } else if (runLevel < current) {
-        for (int rl = current; rl > runLevel; rl--) {
-          downActiveRecorder(rl);
-        }
-      } else {
-        // force closure of any orphaned higher RunLevel services
-        downActiveRecorder(runLevel+1);
-      }
-    } catch (Interrupt interrupt) {
-      // same thread interrupts (from onError, onProgress, etc.)
-      proceedToWorker(interrupt.runLevel);
-    }
-  }
-
   private void reset() {
+    logger.log(Level.FINE, "resetting");
+    
     synchronized (lock) {
       this.planned = null;
       this.nextPlannedAfterInterrupt = null;
@@ -353,37 +392,17 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
         RunLevelInhabitant<?,?> rli = RunLevelInhabitant.class.cast(ai);
         checkBinding(rli);
         
-        Logger.getAnonymousLogger().log(Level.FINE, "activating {0}", rli);
+        logger.log(Level.FINE, "activating {0}", rli);
 
         try {
           rli.get();
           assert (rli.isInstantiated());
         } catch (Exception e) {
           // don't percolate the exception since it may negatively impact processing
-          Logger.getAnonymousLogger().log(Level.WARNING,
+          handleInterruptException(e);
+          logger.log(Level.WARNING,
               "exception caught from activation: " + rli, e);
-          handleOutOfThreadInterrupts(e);
           notify(ListenerEvent.ERROR, serviceContext(e, rli), e);
-        }
-      }
-    }
-  }
-
-  protected void handleOutOfThreadInterrupts(Exception e) {
-    Throwable t = e;
-    while (null != t.getCause() && t != t.getCause()) {
-      t = t.getCause();
-    }
-  
-    if (t instanceof InterruptedException || t instanceof ClosedByInterruptException) {
-      // out of band/thread exceptions
-      synchronized (lock) {
-        Integer next = nextPlannedAfterInterrupt;
-        if (null != next) {
-          nextPlannedAfterInterrupt = null;
-          handleInterrupt(next);
-        } else {
-          throw (RuntimeException)e;
         }
       }
     }
@@ -418,7 +437,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     }
   }
 
-  private synchronized void downActiveRecorder(int runLevel) {
+  protected synchronized void downActiveRecorder(int runLevel) {
     upSide = false;
     activeRunLevel = runLevel;
 
@@ -432,13 +451,16 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
         int pos = downRecorder.activations.size();
         while (--pos >= 0) {
           Inhabitant<?> i = downRecorder.activations.get(pos);
+          
+          logger.log(Level.FINE, "releasing {0}", i);
+          
           try {
             i.release();
           } catch (Exception e) {
+            handleInterruptException(e);
             // don't percolate the exception since it may negatively impact processing
-            Logger.getAnonymousLogger().log(Level.WARNING,
+            logger.log(Level.WARNING,
                 "exception caught during release: " + i, e);
-            handleOutOfThreadInterrupts(e);
             notify(ListenerEvent.ERROR, serviceContext(e, i), e);
           }
         }
@@ -478,8 +500,10 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     return qualifying;
   }
 
-  private void notify(ListenerEvent event, ServiceContext context,
-      Throwable error) {
+  private void notify(ListenerEvent event, ServiceContext context, Throwable error) {
+    logger.log(Level.FINE, "event {0} at cl {1} for env {2}",
+        new Object[] {event, getCurrentRunLevel(), targetEnv});
+    
     Interrupt lastInterrupt = null;
     Collection<RunLevelListener> activeListeners = habitat
         .getAllByContract(RunLevelListener.class);
@@ -496,7 +520,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
         lastInterrupt = interrupt;
       } catch (Exception e) {
         // don't percolate the exception since it may negatively impact processing
-        Logger.getAnonymousLogger().log(Level.WARNING,
+        logger.log(Level.WARNING,
             "exception caught from listener", e);
       }
     }

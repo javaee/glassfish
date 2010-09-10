@@ -50,6 +50,8 @@ import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Services available to junit tests running with the {@link Hk2Runner} runner.
@@ -61,6 +63,8 @@ public class Hk2TestServices {
     private Habitat habitat;
     
     private final HabitatFactory habitatFactory;
+    
+    private final Logger logger = Logger.getLogger(Hk2TestServices.class.getName());
     
     public Hk2TestServices() {
         this(null);
@@ -78,12 +82,16 @@ public class Hk2TestServices {
           }
       }
       
-      System.out.println("Singleton created");
+//      System.out.println("Singleton created");
+      logger.log(Level.FINE, "Singleton created");
+      
       String classPath = System.getProperty("surefire.test.class.path");
       if (classPath==null) {
           classPath = System.getProperty("java.class.path");
       }
-      System.out.println("classpath is " + classPath);
+//      System.out.println("classpath is " + classPath);
+      logger.log(Level.FINER, "classpath is {0}", classPath);
+      
       ParsingContext.Builder builder = new ParsingContext.Builder();
       final Set<String> annotations = new HashSet<String>();
       annotations.add("org.jvnet.hk2.annotations.Contract");
@@ -133,7 +141,9 @@ public class Hk2TestServices {
           File f = new File(fileName);
           if (f.exists()) {
               try {
-                  System.out.println("Beginning parsing " + fileName);
+//                  System.out.println("Beginning parsing " + fileName);
+                  logger.log(Level.FINE, "Beginning parsing {0}", fileName);
+                  
                   if (f.isFile()) {
                       JarFile jarFile = new JarFile(f);
                       // TODO : add support for other habitat than default.
@@ -146,7 +156,9 @@ public class Hk2TestServices {
                           } finally {
                               in.close();
                           }
-                          System.out.println("Using meta-inf file for " + f.getPath());
+//                          System.out.println("Using meta-inf file for " + f.getPath());
+                          logger.log(Level.FINE, "Using meta-inf file for {0}", f.getPath());
+
                           metaInfScanners.add(new InhabitantsScanner(new ByteArrayInputStream(buf),
                               "jar:"+f.toURL()+"!/"+entry.getName()));
                       } else {
@@ -158,7 +170,9 @@ public class Hk2TestServices {
                       // directory, for now, always parse.
                       File inhabitantFile = new File(f, InhabitantsFile.PATH+File.separator+"default");
                       if (inhabitantFile.exists()) {
-                          System.out.println("Using meta-inf file for " + f.getPath());
+//                          System.out.println("Using meta-inf file for " + f.getPath());
+                          logger.log(Level.FINE, "Using meta-inf file for {0}", f.getPath());
+                          
                           metaInfScanners.add(new InhabitantsScanner(new BufferedInputStream(
                                   new FileInputStream(inhabitantFile)),
                                   inhabitantFile.getPath()));
@@ -176,7 +190,9 @@ public class Hk2TestServices {
       } catch (InterruptedException e) {
           throw new RuntimeException(e);
       }
-      System.out.println("Starting to introspect");
+//      System.out.println("Starting to introspect");
+      logger.log(Level.FINE, "Starting to introspect");
+      
       final InhabitantsParser ip = new InhabitantsParser(habitat);
       IntrospectionScanner is = new IntrospectionScanner(context);
       try {
@@ -184,9 +200,11 @@ public class Hk2TestServices {
       } catch (IOException e) {
           throw new RuntimeException(e);
       }
-      System.out.println("finished introspecting");
+//      System.out.println("finished introspecting");
+      logger.log(Level.FINE, "finished introspecting");
 
-      System.out.println("Starting to introspect");
+//      System.out.println("Starting to introspect");
+      logger.log(Level.FINE, "Starting to introspect");
       for (InhabitantsScanner scanner : metaInfScanners) {
           try {
               ip.parse(scanner, holder);
@@ -195,14 +213,17 @@ public class Hk2TestServices {
               throw new RuntimeException(e);
           }
       }
-      System.out.println("finished introspecting");
+//      System.out.println("finished introspecting");
+      logger.log(Level.FINE, "finished introspecting");
 
       Iterator<String> contracts = habitat.getAllContracts();
       while (contracts.hasNext()) {
           String contract = contracts.next();
-          System.out.println("Found contract : " + contract);
+//          System.out.println("Found contract : " + contract);
+          logger.log(Level.FINE, "Found contract: {0}", contract);
           for (Inhabitant<?> t : habitat.getInhabitantsByContract(contract)) {
-              System.out.println(" --> " + t.typeName() + " "+ t.metadata());
+//              System.out.println(" --> " + t.typeName() + " "+ t.metadata());
+            logger.log(Level.FINE, " --> {0} {1}", new Object[] {t.typeName(), t.metadata()});
           }
       }
       
@@ -306,7 +327,8 @@ public class Hk2TestServices {
         if (manifest!=null) {
             String imports = manifest.getMainAttributes().getValue("Import-Package");
             if (imports==null || imports.indexOf("hk2")==-1) {
-                System.out.println("Ignoring service-less " + f.getName());
+//                System.out.println("Ignoring service-less " + f.getName());
+                logger.log(Level.FINE, "ignoring service-less {0}", f.getName());
                 return;
             }
         }
@@ -317,7 +339,8 @@ public class Hk2TestServices {
     private void parseAlways(Parser parser, final File f) throws IOException {
       parser.parse(f, new Runnable() {
           public void run() {
-              System.out.println("Finished introspecting " + f.getName());
+//              System.out.println("Finished introspecting " + f.getName());
+              logger.log(Level.FINE, "Finished introspecting {0}", f.getName());
           }
       });
     }

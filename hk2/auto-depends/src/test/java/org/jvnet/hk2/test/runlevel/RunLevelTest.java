@@ -48,6 +48,7 @@ import org.jvnet.hk2.junit.Hk2Test;
 
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
+import java.util.logging.Logger;
 
 /**
  * Test the @RunLevel annotation
@@ -76,19 +77,19 @@ public class RunLevelTest extends Hk2Test {
     @Test
     public void run() {
         HashSet<Inhabitant<?>> annotated = new HashSet<Inhabitant<?>>(habitat.getInhabitantsByContract(RunLevel.class.getName()));
-        assertEquals(annotated.toString(), 19, annotated.size());
+        assertEquals(annotated.toString(), 21, annotated.size());
         for (Inhabitant<?> i : annotated) {
-            System.out.println(i.typeName() + " is annotated with " + RunLevel.class.getName());
+            Logger.getAnonymousLogger().fine(i.typeName() + " is annotated with " + RunLevel.class.getName());
 
             RunLevel rl = getAnnotation(i.type());
             assertNotNull(rl);
-            System.out.println("and its level is " + rl.value());
+            Logger.getAnonymousLogger().fine("and its level is " + rl.value());
         }
 
         annotated = new HashSet<Inhabitant<?>>(habitat.getInhabitantsByContract(ARunLevel.class.getName()));
         assertEquals(annotated.toString(), 1, annotated.size());
         for (Inhabitant<?> i : annotated) {
-            System.out.println(i.typeName() + " is annotated with " + ARunLevel.class.getName());
+            Logger.getAnonymousLogger().fine(i.typeName() + " is annotated with " + ARunLevel.class.getName());
             assertEquals(SomeOtherServerService.class.getName(), i.typeName());
 
             RunLevel rl = getAnnotation(i.type());

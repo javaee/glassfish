@@ -58,7 +58,7 @@ public class TestRunLevelListener implements RunLevelListener {
 
   @Override
   public void onProgress(RunLevelState<?> state) {
-    Logger.getAnonymousLogger().log(Level.INFO, state.toString());
+    Logger.getAnonymousLogger().log(Level.FINE, state.toString());
     calls.add(Call.onProgress(state));
     if (null != progress_proceedToWaitFor && 
         state.getCurrentRunLevel() == progress_proceedToWaitFor) {
