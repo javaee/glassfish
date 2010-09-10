@@ -81,6 +81,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import javax.ws.rs.core.MediaType;
 import org.glassfish.admin.rest.CliFailureException;
 import org.glassfish.admin.rest.provider.ActionReportResultHtmlProvider;
 import org.glassfish.admin.rest.provider.ActionReportResultJsonProvider;
@@ -424,14 +425,16 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
             BaseProvider<ActionReportResult> provider;
             String type = getAcceptedMimeType(req);
             if ("xml".equals(type)) {
+                res.setContentType(MediaType.APPLICATION_XML);
                 provider = new ActionReportResultXmlProvider();
             } else if ("json".equals(type)) {
+                res.setContentType(MediaType.APPLICATION_JSON);
                 provider = new ActionReportResultJsonProvider();
             } else {
+                res.setContentType(MediaType.TEXT_HTML);
                 provider = new ActionReportResultHtmlProvider();
             }
             res.setStatus(statusCode);
-            res.setContentType(report.getContentType());
             res.getOutputStream().write(provider.getContent(new ActionReportResult(report)).getBytes());
             res.getOutputStream().flush();
             res.finishResponse();
