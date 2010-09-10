@@ -106,10 +106,8 @@ public class MonitoringResource {
         if ((path.equals("")) || (path.equals("/"))) {
             //Return the sub-resource list of root nodes
 
-            //FIXME - No MonitoringRuntimeDataRegistry API available to get hold of
-            //all the root nodes. We need this in case of clustering. We need to
-            //get hold of root nodes for all the server instances.
-            TreeNode serverNode = monitoringRegistry.get("server");
+            String instanceName = System.getProperty("com.sun.aas.instanceName");
+            TreeNode serverNode = monitoringRegistry.get(instanceName);
             if (serverNode != null) {
                 //check to make sure we do not display empty server resource
                 //    - http://host:port/monitoring/domain/server
