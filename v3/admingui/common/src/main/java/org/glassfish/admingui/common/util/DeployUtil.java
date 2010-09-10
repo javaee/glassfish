@@ -73,7 +73,7 @@ public class DeployUtil {
         boolean status = invokeDeploymentFacility(targets, deploymentProps, location, handlerCtx);
         if(status){
             //String mesg = GuiUtil.getMessage("msg.deploySuccess", new Object[] {"", "deployed"});
-            //GuiUtil.prepareAlert(handlerCtx, "success", mesg, null);
+            //GuiUtil.prepareAlert("success", mesg, null);
         }
     }
      
@@ -114,13 +114,13 @@ public class DeployUtil {
             if (stopProcessing) 
                 GuiUtil.handleError(handlerCtx, statusString);
             else
-                GuiUtil.prepareAlert(handlerCtx,"error", GuiUtil.getMessage("msg.Error"), statusString);
+                GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), statusString);
                 
             return false;
          }
          if (status!=null && status.getStatus() == DFDeploymentStatus.Status.WARNING){
             //We may need to log this mesg.
-            GuiUtil.prepareAlert(handlerCtx, "warning", GuiUtil.getMessage("deploy.warning"),statusString);
+            GuiUtil.prepareAlert("warning", GuiUtil.getMessage("deploy.warning"),statusString);
             return false;
          }
          return true;

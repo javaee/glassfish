@@ -378,7 +378,7 @@ public class GuiUtil {
      * saved sucessfully message will be displayed during refresh.
      */
     public static void prepareSuccessful(HandlerContext handlerCtx) {
-        prepareAlert(handlerCtx, "success", GuiUtil.getMessage("msg.saveSuccessful"), null);
+        prepareAlert("success", GuiUtil.getMessage("msg.saveSuccessful"), null);
     }
 
     /* This method sets up the attributes of the <sun:alert> message box. It is similar 
@@ -386,7 +386,7 @@ public class GuiUtil {
      */
     public static void prepareException(HandlerContext handlerCtx, Throwable ex) {
         Throwable rootException = getRootCause(ex);
-        prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), rootException.getMessage());
+        prepareAlert("error", GuiUtil.getMessage("msg.Error"), rootException.getMessage());
 	GuiUtil.getLogger().log(Level.SEVERE, "Exception Occurred: ", ex);
     }
 
@@ -394,7 +394,7 @@ public class GuiUtil {
      * alert message of any type will be displayed during refresh.
      * If type is not specified, it will be "information" by default.
      */
-    public static void prepareAlert(HandlerContext handlerCtx, String type, String summary, String detail) {
+    public static void prepareAlert(String type, String summary, String detail) {
         Map attrMap = FacesContext.getCurrentInstance().getExternalContext().getRequestMap();
         if (isEmpty(type)) {
             attrMap.put("alertType", "information");
@@ -439,7 +439,7 @@ public class GuiUtil {
     }
 
     public static void handleError(HandlerContext handlerCtx, String detail) {
-        prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), detail);
+        prepareAlert("error", GuiUtil.getMessage("msg.Error"), detail);
         handlerCtx.getFacesContext().renderResponse();
     }
 

@@ -79,7 +79,7 @@ public class MiscUtil {
             Document doc = db.parse(new ByteArrayInputStream(input.getBytes()));
             return doc;
         } catch (Exception ex) {
-            GuiUtil.handleError(null, ex.getMessage() + ": " + input);
+            GuiUtil.prepareAlert("error", ex.getMessage() + ": " + input, null);
             return null;
         }
     }

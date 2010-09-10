@@ -431,7 +431,7 @@ public class UtilHandlers {
         String summary = (String) handlerCtx.getInputValue("summary");
         String type = (String) handlerCtx.getInputValue("type");
         String detail = (String) handlerCtx.getInputValue("detail");
-        GuiUtil.prepareAlert(handlerCtx, type, summary, detail);
+        GuiUtil.prepareAlert(type, summary, detail);
     }
      
     /**

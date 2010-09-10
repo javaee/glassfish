@@ -472,7 +472,7 @@ public class CommonHandlers {
     )
     public void handleError(HandlerContext handlerCtx) {
         String detail = (String)handlerCtx.getInputValue("detail");
-        GuiUtil.prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), detail);
+        GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), detail);
         handlerCtx.getFacesContext().renderResponse();
     }
 

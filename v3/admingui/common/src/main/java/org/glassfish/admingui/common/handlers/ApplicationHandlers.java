@@ -276,7 +276,7 @@ public class ApplicationHandlers {
     public static void reloadApplication(HandlerContext handlerCtx) {
         String appName = (String) handlerCtx.getInputValue("appName");
         if (DeployUtil.reloadApplication(appName, "domain",  handlerCtx)){
-            GuiUtil.prepareAlert(handlerCtx, "success", GuiUtil.getMessage("org.glassfish.web.admingui.Strings", "restart.successPE"), null);
+            GuiUtil.prepareAlert("success", GuiUtil.getMessage("org.glassfish.web.admingui.Strings", "restart.successPE"), null);
         }
     }
 

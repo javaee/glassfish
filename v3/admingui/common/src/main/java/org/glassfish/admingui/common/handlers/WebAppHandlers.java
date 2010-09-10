@@ -441,7 +441,7 @@ public class WebAppHandlers {
                 V3AMX.getInstance().getApplicationRef("server", appName).setEnabled(status);
                 V3AMX.getInstance().getApplication(appName).setEnabled(status);
                 String msg = GuiUtil.getMessage((enabled) ? "msg.enableSuccessfulLifecycle" : "msg.disableSuccessfulLifecycle");
-                GuiUtil.prepareAlert(handlerCtx, "success", msg, null);
+                GuiUtil.prepareAlert("success", msg, null);
             }
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);

@@ -498,7 +498,7 @@ public class SecurityHandler {
                 }
             }
             if (error != null){
-                GuiUtil.prepareAlert(handlerCtx, "error", error, null);
+                GuiUtil.prepareAlert("error", error, null);
             }
         }catch(Exception ex){
             GuiUtil.handleException(handlerCtx, ex);

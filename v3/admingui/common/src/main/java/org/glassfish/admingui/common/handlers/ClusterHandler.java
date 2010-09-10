@@ -64,6 +64,7 @@ import java.util.Iterator;
 
 import java.util.Map;
 import java.util.List;
+import javax.faces.context.FacesContext;
 import org.glassfish.admingui.common.util.GuiUtil;
 
 public class ClusterHandler {
@@ -254,7 +255,7 @@ public class ClusterHandler {
             String nodeName = (String) oneRow.get("name");
             List instancesList = (List)nodeInstanceMap.get(nodeName);
             if ( instancesList!= null && (instancesList.size()) != 0){
-                GuiUtil.prepareAlert(handlerCtx, "error",  GuiUtil.getMessage("msg.Error"),
+                GuiUtil.prepareAlert("error",  GuiUtil.getMessage("msg.Error"),
                         GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "nodes.instanceExistError", new String[]{ nodeInstanceMap.get(nodeName).toString(), nodeName}));
                 return;
             }
@@ -281,7 +282,7 @@ public class ClusterHandler {
         }
         if (errorInstances.size() > 0){
             String details = GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "node.error.delete" , new String[]{""+errorInstances});
-            GuiUtil.prepareAlert(handlerCtx, "error",  GuiUtil.getMessage("msg.Error"), details);
+            GuiUtil.prepareAlert("error",  GuiUtil.getMessage("msg.Error"), details);
         }
      }
 
@@ -418,6 +419,78 @@ public class ClusterHandler {
         handlerCtx.setOutputValue("listEmpty", instances.isEmpty());
     }
 
+    @Handler(id = "gf.getInstanceInfo",
+        input = {
+            @HandlerInput(name="instanceName", type=String.class, required=true)
+        },
+        output = {
+            @HandlerOutput(name = "info", type = Map.class)
+        })
+    public static void getInstanceInfoHandler(HandlerContext handlerCtx) {
+        String instanceName = (String)handlerCtx.getInputValue("instanceName");
+
+        handlerCtx.setOutputValue("info", getInstanceInfo(instanceName));
+    }
+
+    public static Map<String, String> getInstanceInfo(final String instanceName) {
+        Map<String, String> info = new HashMap<String, String>();
+        final String REST_URL = (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("REST_URL");
+        final String instanceUrl = REST_URL + "/servers/server/" + instanceName;
+        Map<String, Object> result = RestApiHandlers.restRequest(instanceUrl, null, "get", null);
+        String instanceConfig = (String)((Map)getExtraPropertiesEntry(result, "entity")).get("configRef");
+
+        // Server status
+        result = RestApiHandlers.restRequest(REST_URL+"/list-instances", new HashMap<String, Object>() {{ put ("id", instanceName); }}, "get", null);
+        List instanceList = (List)getExtraPropertiesEntry(result, "instanceList");
+        String serverStatus = (String) ((Map)instanceList.get(0)).get("status");
+
+        // Config object
+        String configUrl = REST_URL+ "/configs/config/" + instanceConfig;
+        result = RestApiHandlers.restRequest(configUrl, null, "get", null);
+        Map<String, Object> config = (Map<String, Object>)((Map<String, Object>)result.get("data")).get("extraProperties");
+
+        // Server version
+        result = RestApiHandlers.restRequest(configUrl + "/java-config/generate-jvm-report", null, "post", null);
+        Map<String, String> jvmReport = buildExtraProperties((String)((Map<String, Object>)result.get("data")).get("message"));
+        String version = (String)jvmReport.get("glassfish.version");
+        String configRoot = (String)jvmReport.get("com.sun.aas.configRoot");
+
+        // Debug
+        result = RestApiHandlers.restRequest(configUrl + "/java-config", null, "get", null);
+        Map<String, String> entity = (Map)getExtraPropertiesEntry(result, "entity");
+
+        info.put("config", instanceConfig);
+        info.put("status", serverStatus);
+        info.put("version", version);
+        info.put("configRoot", configRoot);
+        info.put("debugEnabled", (String)entity.get("debugEnabled"));
+        return info;
+    }
+
+    protected static Object getExtraPropertiesEntry(Map<String, Object> responseMap, String epKey) {
+        Map<String, Object> data = (Map<String, Object>)responseMap.get("data");
+        Map<String, Object> ep =  (Map<String, Object>)data.get("extraProperties");
+        return ep.get(epKey);
+    }
+
+    private static Map<String, String> buildExtraProperties(String jvmReport) {
+        final String SEP = System.getProperty("line.separator");
+        Map<String, String> report = new HashMap<String, String>();
+        String lines[] = jvmReport.split(SEP);
+        for (String line : lines) {
+            int valueSepIdx = line.indexOf("=");
+            if (valueSepIdx == -1) {
+                valueSepIdx = line.indexOf(":");
+            }
+            if (valueSepIdx > -1) {
+                String key = line.substring(0, valueSepIdx).trim();
+                String value = line.substring(valueSepIdx+1).trim();
+                report.put(key, value);
+            }
+        }
+
+        return report;
+    }
 
     @Handler(id = "gf.getClusterNameForInstance",
         input = {

@@ -246,41 +246,50 @@ public class RestApiHandlers {
         if (response != null) {
             try {
                 int status = response.getResponseCode();
+                Map responseMap = response.getResponse();
                 if ((status != 200) && (status != 201)) {
-                    GuiUtil.getLogger().severe(
-                            "RestResponse.getResponse() failed.  endpoint = '"
-                                    + endpoint + "'; attrs = '" + attrs + "'; RestResponse: "
-                                    + response);
+                    GuiUtil.getLogger().log(
+                            Level.SEVERE, "RestResponse.getResponse() failed.  endpoint = ''{0}''; attrs = ''{1}''; RestResponse: {2}",
+                            new Object[]{endpoint, attrs, response.getResponseBody()});
                     // If this is called from jsf, stop processing/show error.
                     if (handlerCtx != null) {
-                        Object msgs = response.getResponse().get("messages");
-                        if (msgs == null) {
-                            GuiUtil.handleError(handlerCtx, "REST Request '"
-                                    + endpoint + "' failed with response code '"
-                                    + status + "'.");
-                        } else if (msgs instanceof List) {
-                            StringBuilder builder = new StringBuilder("");
-                            for (Object obj : ((List<Object>) msgs)) {
-                                if ((obj instanceof Map) && ((Map<String, Object>) obj).containsKey("message")) {
-                                    obj = ((Map<String, Object>) obj).get("message");
-                                }
-                                builder.append(obj.toString());
-                            }
-                            GuiUtil.handleError(handlerCtx, builder.toString());
-                        } else if (msgs instanceof Map) {
-                            GuiUtil.handleError(handlerCtx,
-                                    ((Map<String, Object>) msgs).get("message").toString());
+                        // I don't get this code at all.  I'm going to leave it intact, though,
+                        // and put what I think is the correct code, given the current structure
+                        // of the returned data above it, allowing processing to fall through
+                        // in the (non-existent?) cases where things aren't what I expect.
+                        String message = (String)((Map)responseMap.get("data")).get("message");
+                        if (message != null) {
+                            GuiUtil.handleError(handlerCtx, message);
+
                         } else {
-                            throw new RuntimeException("Unexpected message type.");
+                            Object msgs = responseMap.get("message");
+
+                            if (msgs == null) {
+                                GuiUtil.handleError(handlerCtx, "REST Request '"
+                                        + endpoint + "' failed with response code '"
+                                        + status + "'.");
+                            } else if (msgs instanceof List) {
+                                StringBuilder builder = new StringBuilder("");
+                                for (Object obj : ((List<Object>) msgs)) {
+                                    if ((obj instanceof Map) && ((Map<String, Object>) obj).containsKey("message")) {
+                                        obj = ((Map<String, Object>) obj).get("message");
+                                    }
+                                    builder.append(obj.toString());
+                                }
+                                GuiUtil.handleError(handlerCtx, builder.toString());
+                            } else if (msgs instanceof Map) {
+                                GuiUtil.handleError(handlerCtx, ((Map<String, Object>) msgs).get("message").toString());
+                            } else {
+                                throw new RuntimeException("Unexpected message type.");
+                            }
                         }
                     }
                 }
-                return response.getResponse();
+                return responseMap;
             } catch (Exception ex) {
-                GuiUtil.getLogger().severe(
-                        "RestResponse.getResponse() failed.  endpoint = '"
-                                + endpoint + "'; attrs = '" + attrs + "'; RestResponse: "
-                                + response);
+                GuiUtil.getLogger().log(
+                        Level.SEVERE, "RestResponse.getResponse() failed.  endpoint = ''{0}''; attrs = ''{1}''; RestResponse: {2}",
+                        new Object[]{endpoint, attrs, response.getResponseBody()});
                 if (handlerCtx != null) {
                     //If this is called from the jsf as handler, we want to stop processing and show error
                     //instead of dumping the exception on screen.

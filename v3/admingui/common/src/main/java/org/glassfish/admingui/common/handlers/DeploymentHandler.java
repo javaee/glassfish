@@ -294,7 +294,7 @@ public class DeploymentHandler {
         }
         removeFromDefaultWebModule(undeployedAppList);
         if (errorList.size() > 0){
-            GuiUtil.prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), GuiUtil.getMessage("msg.deploy.UndeployError") + " " + GuiUtil.listToString(errorList, ","));
+            GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), GuiUtil.getMessage("msg.deploy.UndeployError") + " " + GuiUtil.listToString(errorList, ","));
         }
     }
 
@@ -345,7 +345,7 @@ public class DeploymentHandler {
             String appName = (String) oneRow.get("name");
             if (DeployUtil.enableApp(appName, target, handlerCtx, enabled)){
                 String msg = GuiUtil.getMessage((enabled) ? "msg.enableSuccessfulPE" : "msg.disableSuccessfulPE");
-                GuiUtil.prepareAlert(handlerCtx, "success", msg, null);
+                GuiUtil.prepareAlert("success", msg, null);
             }else{
                 //stop changing other app status.
                 break;
