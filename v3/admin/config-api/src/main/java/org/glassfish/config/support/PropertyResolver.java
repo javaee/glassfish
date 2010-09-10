@@ -55,6 +55,17 @@ import com.sun.enterprise.config.serverbeans.SystemProperty;
 import java.util.List;
 
 /**
+ * Utility for getting the value of a system-property of an instance, particularly 
+ * for an instance that is not the current running instance.  The current running 
+ * instance automatically has tokens in the config resolved.  The value returned is
+ * the value of the system property which has the highest precedence.  
+ * The system-property defined at higher precedence levels
+ * overrides system-property defined at lower precedence levels.  
+ * The order of precedence from highest to lowest is
+ * 1. server
+ * 2. cluster
+ * 3. config
+ * 4. domain
  *
  * @author  kebbs
  * @author  Jennifer Chou
@@ -89,9 +100,13 @@ public class PropertyResolver {
     
     /**
      * Given a property name, return its corresponding value as defined in
-     * the domain, configuration, cluster, or server element. Return property name if the property
+     * the domain, configuration, cluster, or server element. Return null if the property
      * is not found. Property values at the server override those at the configuration
      * which override those at the domain level.
+     * Does not check if the property is available in java.lang.System.
+     * This restriction is to prevent incorrect values being returned when trying
+     * to retrieve properties for instances other than the currently running server (such as DAS).
+     * In this case, we don't want to incorrectly return the DAS java.lang.System property.
      */
     public String getPropertyValue(String propName) {
         if (propName.startsWith("${") && propName.endsWith("}")) {
