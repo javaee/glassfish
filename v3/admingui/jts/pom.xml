@@ -52,7 +52,7 @@
     <artifactId>console-jts-plugin</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Admin Console JTS Plugin</name>
-    <description>Transaction Service plugin bundle for Glassfish V3 Admin Console</description>
+    <description>Transaction Service plugin bundle for GlassFish V3 Admin Console</description>
 
     <developers>
         <developer>

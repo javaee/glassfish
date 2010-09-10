@@ -52,7 +52,7 @@
     <artifactId>console-ejb-lite-plugin</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Admin Console EJB Local (Lite) Plugin</name>
-    <description>EJB Local (Lite) plugin bundle for Glassfish V3 Admin Console</description>
+    <description>EJB Local (Lite) plugin bundle for GlassFish V3 Admin Console</description>
 
     <developers>
         <developer>

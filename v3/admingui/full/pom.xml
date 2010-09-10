@@ -52,7 +52,7 @@
     <artifactId>console-common-full-plugin</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Admin Console Full distribution plugin</name>
-    <description>Plugin bundle for Glassfish v3 Admin Console common-full package</description>
+    <description>Plugin bundle for GlassFish v3 Admin Console common-full package</description>
 
     <developers>
         <developer>

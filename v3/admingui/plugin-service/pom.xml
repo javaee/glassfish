@@ -53,7 +53,7 @@
     <artifactId>console-plugin-service</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Admin Console Integration</name>
-    <description>Glassfish V3 Admin Console Integration</description>
+    <description>GlassFish V3 Admin Console Integration</description>
 
     <developers>
         <developer>

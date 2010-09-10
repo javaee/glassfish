@@ -42,7 +42,7 @@
 
 <sun:masthead id="Masthead" productImageURL="#{request.contextPath}/resource/community-theme/images/masthead-product_name_open1.png" 
               style="border-width: 0px"
-              productImageDescription="Glassfish v3 Administration Console"
+              productImageDescription="GlassFish v3 Administration Console"
               productImageWidth="324"
               productImageHeight="23"
               userInfo="#{userName}"  userInfoLabel="$resource{i18n.masthead.userInfoLabel}"

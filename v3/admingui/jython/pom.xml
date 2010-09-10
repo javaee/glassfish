@@ -52,7 +52,7 @@
     <artifactId>console-jython-plugin</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Admin Console Jython Plugin</name>
-    <description>Jython bundle for Glassfish V3 Admin Console</description>
+    <description>Jython bundle for GlassFish V3 Admin Console</description>
 
     <developers>
         <developer>

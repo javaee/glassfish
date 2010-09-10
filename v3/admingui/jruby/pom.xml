@@ -52,7 +52,7 @@
     <artifactId>console-jruby-plugin</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Admin Console Jruby Plugin</name>
-    <description>Jruby bundle for Glassfish V3 Admin Console</description>
+    <description>Jruby bundle for GlassFish V3 Admin Console</description>
 
     <developers>
         <developer>
