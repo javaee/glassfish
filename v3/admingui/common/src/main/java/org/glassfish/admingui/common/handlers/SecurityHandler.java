@@ -887,6 +887,28 @@ public class SecurityHandler {
         return Boolean.FALSE;
     }
 
+    @Handler(id="getSecurityManagerValue2",
+         input={
+            @HandlerInput(name="endpoint", type=String.class),
+            @HandlerInput(name="attrs", type=Map.class, required=false)},
+        output={
+            @HandlerOutput(name="value", type=String.class)}
+     )
+     public static void getSecurityManagerValue2(HandlerContext handlerCtx){
+        ArrayList<String> list = InstanceHandler.getJvmOptions(handlerCtx);
+        handlerCtx.setOutputValue("value",  isSecurityManagerEnabled(list).toString());
+    }
+
+    private static Boolean isSecurityManagerEnabled(List<String> jvmOptions){
+        for(String jvmOption : jvmOptions){
+            if (jvmOption.trim().equals(JVM_OPTION_SECURITY_MANAGER) ||
+                    jvmOption.trim().startsWith(JVM_OPTION_SECURITY_MANAGER_WITH_EQUAL)){
+                return Boolean.TRUE;
+            }
+        }
+        return Boolean.FALSE;
+    }
+
     private static MessageSecurityConfig getMsgSecurityProxy(String msgSecurityName){
         Set<AMXProxy> pSet = V3AMX.getInstance().getDomainRoot().getQueryMgr().queryTypeName("message-security-config", msgSecurityName);
         for(AMXProxy msgProxy : pSet){
