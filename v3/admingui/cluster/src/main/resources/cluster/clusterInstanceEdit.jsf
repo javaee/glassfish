@@ -92,7 +92,6 @@
 
             <sun:button id="rotateLog" text="$resource{i18n.button.rotateLog} TBD" disabled="true" primary="#{false}">
                 <!command
-                    println("============ rotate log of #{pageSession.encodedInstanceName} ");
                     //# gf.restExecuteCommmand( .... rotate log command)
                 />
             </sun:button>

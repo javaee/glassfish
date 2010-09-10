@@ -64,13 +64,20 @@
         createMap(result="#{pageSession.attrs}")
         mapPut(map="#{pageSession.attrs}"  key="target"  value="#{pageSession.instanceName}")
         gf.restRequest( endpoint="#{sessionScope.REST_URL}/applications/application/list-components.json" , method="GET"  attrs="#{pageSession.attrs}" result="#{requestScope.result}");
-        gf.getDeployedAppsInfo(appPropsMap="#{requestScope.result.data.properties}" filterValue="#{pageSession.filterValue}", filters=>$attribute{filters} result=>$attribute{listOfRows} );
+        setPageSessionAttribute(key="appRefEndpoint" value="/servers/server/#{pageSession.encodedInstanceName}/application-ref/");
+        gf.getSingleTargetAppsInfo(appPropsMap="#{requestScope.result.data.properties}" appRefEndpoint="#{pageSession.appRefEndpoint}" target="#{pageSession.instanceName}" filterValue="#{pageSession.filterValue}", filters="#{requestScope.filters}" result="#{requestScope.listOfRows}" );
         setPageSessionAttribute(key="editLink" value="/common/applications/applicationEdit.jsf");
-        setPageSessionAttribute(key="listPageLink" value="/cluster/standalone/standaloneApplications.jsf?instanceName=#{pageSession.encodedInstanceName}");
+        setPageSessionAttribute(key="listPageLink" value="/cluster/standalone/standaloneApplications.jsf");
+        setPageSessionAttribute(key="extraArgs" value="instanceName=#{pageSession.encodedInstanceName}");
         setPageSessionAttribute(key="targetLink" value="/common/applications/targetListing.jsf");
-        setPageSessionAttribute(key="nextPageLink" value="/common/applications/upload.jsf?listPageLink=#{listPageLink}");
+        setPageSessionAttribute(key="nextPageLink" value="/common/applications/upload.jsf?listPageLink=#{listPageLink}&extraListArgs=#{pageSession.extraArgs}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmUndeploy}");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18ncs.clusterApplications.TableTitle}");
+
+        setSessionAttribute(key="gf_application_list_page" value="#{pageSession.listPageLink}");
+        setSessionAttribute(key="gf_application_cancel_page" value="#{pageSession.listPageLink}");
+        setSessionAttribute(key="gf_application_extra_args" value="#{pageSession.extraArgs}");
+        setSessionAttribute(key="gf_application_predefine_target" value="#{pageSession.instanceName}");
     />
     
  </event>
@@ -86,7 +93,7 @@
 
 #include "/cluster/standalone/instanceNameSection.inc"
 
-#include "/common/applications/deployTable.inc"
+#include "/cluster/shared/appSingleTargetTable.inc"
 <sun:hidden id="helpKey" value="$resource{help_cluster.standaloneApplications}" />
 
             </sun:form>

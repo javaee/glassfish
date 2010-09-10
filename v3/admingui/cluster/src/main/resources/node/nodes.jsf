@@ -77,7 +77,7 @@
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/cluster/node/nodeEdit.jsf");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18ncs.nodes.TableTitle}");
         createMap(result="#{pageSession.nodeInstanceMap}");
-        gf.listInstances(optionKeys={"standaloneonly"} optionValues={"true"}, instances="#{pageSession.standaloneList}");
+        gf.listInstances(optionKeys={"standaloneonly", "nostatus" } optionValues={"true", "true"}, instances="#{pageSession.standaloneList}");
     />
     </event>
 "    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+"nodes");</script>
