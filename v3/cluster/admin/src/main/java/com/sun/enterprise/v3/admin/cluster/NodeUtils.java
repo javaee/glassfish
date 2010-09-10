@@ -428,7 +428,7 @@ public class NodeUtils {
         }
 
         if (failure) {
-            report.setMessage(StringUtils.cat(NL, msg1, msg2, msg3));
+            report.setMessage(StringUtils.cat(NL + NL, msg1, msg2, msg3));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
         } else {
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);

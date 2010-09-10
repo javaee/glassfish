@@ -43,12 +43,15 @@ package com.sun.enterprise.admin.cli.cluster;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import static com.sun.enterprise.admin.cli.CLIConstants.*;
+import com.sun.enterprise.util.net.NetUtils;
 
 /**
  *  This is a local command that creates a local instance.
@@ -109,6 +112,7 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         DASPort = programOpts.getPort();
         dasIsSecure = programOpts.isSecure();
         DASProtocol = "http";
+
     }
 
     /**
@@ -116,6 +120,11 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
     @Override
     protected int executeCommand()
             throws CommandException {
+
+        // Even though this is a local only command, we don't want to
+        // bake the DAS host and port into das.properties if it does not
+        // appear to be valid. So we check it. See IT bug 12943
+        checkDASCoordinates();
         
         return createDirectories();
     }
@@ -162,4 +171,37 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         dasProperties.store(fos, Strings.get("Instance.dasPropertyComment"));
         fos.close();
     }
+
+   /**
+    * Makes sure something is running at the DASHost and DASPort.
+    * We intentionally do not do an operation that requires authentication
+    * since we may be called in a context where authentication is not
+    * provided (like over SSH).
+    * This method assumes that _create_instance_filesystem is being called
+    * by the DAS via SSH -- so the DAS should be running.
+    *
+    * @throws CommandException
+    */
+    private void checkDASCoordinates() throws CommandException {
+        // See if hostname is known to us
+        try {
+            // Check if hostName is valid by looking up its address
+            InetAddress addr = InetAddress.getByName(DASHost);
+        } catch (UnknownHostException e) {
+            String thisHost = NetUtils.getHostName();
+            String msg = Strings.get("Instance.DasHostUnknown",
+                    DASHost, thisHost);
+            throw new CommandException(msg, e);
+        }
+
+        // See if DAS is reachable
+        if (! NetUtils.isRunning(DASHost, DASPort)) {
+            // DAS provided host and port
+            String thisHost = NetUtils.getHostName();
+            String msg = Strings.get("Instance.DasHostUnreachable",
+                    DASHost, Integer.toString(DASPort), thisHost);
+            throw new CommandException(msg);
+        }
+    }
+
 }
