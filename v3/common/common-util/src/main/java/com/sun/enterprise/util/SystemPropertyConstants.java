@@ -306,7 +306,7 @@ public class SystemPropertyConstants
      * the INSTALL_ROOT_PROPERTY is not defined
      */
     public static final String getAsAdminScriptLocation() {
-        return getAsAdminScriptLocation(SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
+        return getAsAdminScriptLocation(System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY));
     }
 
     public static final String getAsAdminScriptLocation(String installRoot) {
