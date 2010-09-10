@@ -56,6 +56,7 @@ import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
+import java.net.URLEncoder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -211,10 +212,11 @@ public class ApplicationHandlers {
             String endpoint = (String) oneRow.get("endpoint");
             if(forLB){
                 attrs.put("lbEnabled", Enabled);
+                RestApiHandlers.restRequest(prefix+endpoint, attrs, "post", handlerCtx);
             }else{
-                attrs.put("enabled", Enabled);
+                DeployUtil.enableApp( (String)oneRow.get("name"), (String) oneRow.get("targetName"), handlerCtx,
+                        Boolean.parseBoolean(Enabled));
             }
-            RestApiHandlers.restRequest(prefix+endpoint, attrs, "post", handlerCtx);
         }
      }
 
@@ -267,16 +269,13 @@ public class ApplicationHandlers {
         }
     }
 
-
-
-
    @Handler(id = "gf.reloadApplication",
         input = {
             @HandlerInput(name = "appName", type = String.class, required = true)
         })
     public static void reloadApplication(HandlerContext handlerCtx) {
         String appName = (String) handlerCtx.getInputValue("appName");
-        if (DeployUtil.reloadApplication(appName, handlerCtx)){
+        if (DeployUtil.reloadApplication(appName, "domain",  handlerCtx)){
             GuiUtil.prepareAlert(handlerCtx, "success", GuiUtil.getMessage("org.glassfish.web.admingui.Strings", "restart.successPE"), null);
         }
     }
@@ -337,6 +336,7 @@ public class ApplicationHandlers {
                 endpoint = "/servers/server/" + oneTarget + "/application-ref/" + appName;
                 attrs = RestApiHandlers.getAttributesMap(prefix  + endpoint);
             }
+            oneRow.put("name", appName);
             oneRow.put("selected", false);
             oneRow.put("endpoint", endpoint);
             oneRow.put("targetName", oneTarget);
@@ -346,6 +346,66 @@ public class ApplicationHandlers {
         }
         handlerCtx.setOutputValue("result", result);
     }
+
+    /*
+     * This handler is called for populating the application table in the cluster or instance Application tab.
+     */
+    @Handler(id = "gf.getSingleTargetAppsInfo",
+        input = {
+            @HandlerInput(name = "appPropsMap", type = Map.class, required=true),
+            @HandlerInput(name = "appRefEndpoint", type = String.class, required=true),
+            @HandlerInput(name = "target", type = String.class, required=true),
+            @HandlerInput(name = "filterValue", type = String.class)},
+        output = {
+            @HandlerOutput(name = "filters", type = java.util.List.class),
+            @HandlerOutput(name = "result", type = java.util.List.class)})
+
+    public static void getSingleTargetAppsInfo(HandlerContext handlerCtx) {
+        String appRefEndpoint = (String) handlerCtx.getInputValue("appRefEndpoint");
+        String target = (String) handlerCtx.getInputValue("target");
+        Map<String, String> appPropsMap = (Map) handlerCtx.getInputValue("appPropsMap");
+        String filterValue = (String) handlerCtx.getInputValue("filterValue");
+        Set filters = new TreeSet();
+        filters.add("");
+        if (GuiUtil.isEmpty(filterValue)) {
+            filterValue = null;
+        }
+        List result = new ArrayList();
+        String prefix = (String) GuiUtil.getSessionValue("REST_URL");
+	if (appPropsMap != null) {
+	    for(String oneAppName : appPropsMap.keySet()){
+                try{
+                    String engines = appPropsMap.get(oneAppName);
+                    HashMap oneRow = new HashMap();
+                    oneRow.put("name", oneAppName);
+                    String encodedName = URLEncoder.encode(oneAppName, "UTF-8");
+                    oneRow.put("targetName", target);
+                    oneRow.put("selected", false);
+                    Map appRefAttrsMap = RestApiHandlers.getAttributesMap(prefix + appRefEndpoint + encodedName);
+                    String image = (appRefAttrsMap.get("enabled").equals("true")) ?  "/resource/images/enabled.png" : "/resource/images/disabled.png";
+                    oneRow.put("enabled", image);
+                    image = (appRefAttrsMap.get("lbEnabled").equals("true")) ?  "/resource/images/enabled.png" : "/resource/images/disabled.png";
+                    oneRow.put("lbEnabled",  image);
+                    oneRow.put("endpoint", appRefEndpoint+encodedName);
+                    oneRow.put("sniffers", engines);
+                    List sniffersList = GuiUtil.parseStringList(engines, ",");
+                    oneRow.put("sniffersList", sniffersList);
+                    for(int ix=0; ix< sniffersList.size(); ix++)
+                        filters.add(sniffersList.get(ix));
+                    if (filterValue != null){
+                        if (! sniffersList.contains(filterValue))
+                            continue;
+                    }
+                    result.add(oneRow);
+                }catch(Exception ex){
+                    //skip this app.
+                }
+	    }
+	}
+        handlerCtx.setOutputValue("result", result);
+        handlerCtx.setOutputValue("filters", new ArrayList(filters));
+    }
+
 
 
 

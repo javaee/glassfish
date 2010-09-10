@@ -74,6 +74,9 @@ public class TargetUtil {
             Map responseMap = RestApiHandlers.restRequest( endpoint , attrsMap, "get" , null);
             Map  dataMap = (Map) responseMap.get("data");
             Map<String, Object>  extraProps = (Map<String, Object>) dataMap.get("extraProperties");
+            if (extraProps == null){
+                return result;
+            }
             List<Map<String, String>> props = (List<Map<String, String>>) extraProps.get("instanceList");            
             if (props == null){
                 return result;

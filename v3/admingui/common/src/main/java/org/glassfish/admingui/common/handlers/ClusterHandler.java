@@ -398,15 +398,17 @@ public class ClusterHandler {
         String endpoint = GuiUtil.getSessionValue("REST_URL")+"/list-instances";
         try{
             Map responseMap = RestApiHandlers.restRequest( endpoint , attrs, "GET" , handlerCtx);
-            List<Map> instanceList = (List)((Map)((Map)responseMap.get("data")).get("extraProperties")).get("instanceList");
-
-            for(Map oneInstance : instanceList){
-                instances.add(oneInstance.get("name"));
-                statusMap.put(oneInstance.get("name"), oneInstance.get("status"));
-                uptimeMap.put(oneInstance.get("name"), oneInstance.get("uptime"));
+            Map extraPropertiesMap = (Map)((Map)responseMap.get("data")).get("extraProperties");
+            if (extraPropertiesMap != null){
+                List<Map> instanceList = (List)extraPropertiesMap.get("instanceList");
+                for(Map oneInstance : instanceList){
+                    instances.add(oneInstance.get("name"));
+                    statusMap.put(oneInstance.get("name"), oneInstance.get("status"));
+                    uptimeMap.put(oneInstance.get("name"), oneInstance.get("uptime"));
+                }
             }
         }catch (Exception ex){
-            GuiUtil.getLogger().severe("Error in listInstances ; \nendpoint = " + endpoint + "attrs=" + attrs);
+            GuiUtil.getLogger().severe("Error in listInstances ; \nendpoint = " + endpoint + "\nattrs=" + attrs);
             //we don't need to call GuiUtil.handleError() because thats taken care of in restRequest() when we pass in the handler.
         }
         handlerCtx.setOutputValue("instances", instances);
@@ -417,10 +419,10 @@ public class ClusterHandler {
 
 
 
-    public static String CLUSTER_RESOURCE_NAME = "org.glassfish.cluster.admingui.Strings";
+    public static final String CLUSTER_RESOURCE_NAME = "org.glassfish.cluster.admingui.Strings";
 
     //The following is defined in v3/cluster/admin/src/main/java/..../cluster/Constants.java
-    public static String RUNNING = "RUNNING";
-    public static String NOT_RUNNING = "NOT_RUNNING";
-    public static String PARTIALLY_RUNNING = "PARTIALLY_RUNNING";
+    public static final String RUNNING = "RUNNING";
+    public static final String NOT_RUNNING = "NOT_RUNNING";
+    public static final String PARTIALLY_RUNNING = "PARTIALLY_RUNNING";
 }

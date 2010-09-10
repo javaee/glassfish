@@ -62,9 +62,12 @@
             setPageSessionAttribute(key="listPageLink" value="/common/applications/applications.jsf");
             setPageSessionAttribute(key="targetLink" value="/common/applications/targetListing.jsf");
 
-            setPageSessionAttribute(key="nextPageLink" value="/common/applications/upload.jsf?cancelPage=#{listPageLink}");
+            setPageSessionAttribute(key="nextPageLink" value="/common/applications/upload.jsf?cancelPage=#{pageSession.listPageLink}&listPageLink=#{pageSession.listPageLink}");
             setPageSessionAttribute(key="isLifecycle" value="#{false}");
             setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmUndeploy}");
+
+        setSessionAttribute(key="gf_application_list_page" value="#{pageSession.listPageLink}");
+        setSessionAttribute(key="gf_application_cancel_page" value="#{pageSession.listPageLink}");
             
             <!--
             setPageSessionAttribute(key="viewKey" value="$pageSession{viewKeyValue}");

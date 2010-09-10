@@ -77,12 +77,13 @@
               propertyList="$attribute{newList}"
               targets = "#{pageSession.selectedTargets}"
         );
-	gf.redirect(page="#{request.contextPath}/common/removeFrame.jsf?#{pageSession.listPageLink}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&bare=true");
+        //println("===================redirect to  #{request.contextPath}/common/removeFrame.jsf?#{pageSession.listPageLink}&#{extraArgs}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&bare=true");
+	gf.redirect(page="#{request.contextPath}/common/removeFrame.jsf?#{pageSession.listPageLink}&#{extraArgs}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&bare=true");
     />
 </sun:button>
 
 <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}" immediate="true"
-    onClick="top.admingui.ajax.loadPage({url:'#{request.contextPath}/#{pageSession.listPageLink}'}); return false;">
+    onClick="top.admingui.ajax.loadPage({url:'#{request.contextPath}/#{pageSession.cancelPage}?#{pageSession.extraArgs}'}); return false;">
 //    <!command
 //        println("cancel");
 //        gf.navigate(page="#{request.contextPath}/#{cancelPage}?name=$pageSession{target}");

@@ -193,7 +193,7 @@ println("payload -------------------------------> #{requestScope.tmpJSON}");
                     if (#{pageSession.hasPropertyTable}){
                         if (#{pageSession['rest-api']}) {
                             javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
-                            println("payload -------------------------------> #{requestScope.tmpJSON}");
+                            //println("payload -------------------------------> #{requestScope.tmpJSON}");
                             urlencode(value="#{pageSession.valueMap['name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
                             gf.restRequest(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodeName}/property.json"
                                            method="POST"

@@ -498,7 +498,7 @@ public class WebAppHandlers {
                 GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.error.checkLog"));
                 return;
             }
-            DeployUtil.reloadApplication(appName, handlerCtx);
+            DeployUtil.reloadApplication(appName, "domain", handlerCtx);
         }
    }
 

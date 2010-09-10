@@ -328,11 +328,13 @@ public class DeploymentHandler {
     @Handler(id = "gf.changeAppStatus",
     input = {
         @HandlerInput(name = "selectedRows", type = List.class, required = true),
+        @HandlerInput(name = "target", type = String.class, defaultValue = "server"),
         @HandlerInput(name = "enabled", type = Boolean.class, required = true)
     })
     public static void changeAppStatus(HandlerContext handlerCtx) {
 
         List obj = (List) handlerCtx.getInputValue("selectedRows");
+        String target = (String) handlerCtx.getInputValue("target");
         boolean enabled = ((Boolean) handlerCtx.getInputValue("enabled")).booleanValue();
         GuiUtil.getLogger().fine("changeAppStatus:  enabled = " + enabled);
         DeploymentFacility df = GuiUtil.getDeploymentFacility();
@@ -341,7 +343,7 @@ public class DeploymentHandler {
         for (int i = 0; i < selectedRows.size(); i++) {
             Map oneRow = (Map) selectedRows.get(i);
             String appName = (String) oneRow.get("name");
-            if (DeployUtil.enableApp(appName, handlerCtx, enabled)){
+            if (DeployUtil.enableApp(appName, target, handlerCtx, enabled)){
                 String msg = GuiUtil.getMessage((enabled) ? "msg.enableSuccessfulPE" : "msg.disableSuccessfulPE");
                 GuiUtil.prepareAlert(handlerCtx, "success", msg, null);
             }else{

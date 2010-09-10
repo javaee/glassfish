@@ -145,17 +145,17 @@ public class DeployUtil {
         }
     }
 
-    static public boolean reloadApplication(String appName, HandlerContext handlerCtx){
+    static public boolean reloadApplication(String appName, String target, HandlerContext handlerCtx){
         //disable application and then enable it.
-        if (enableApp(appName, handlerCtx, false)){
-            return enableApp(appName, handlerCtx, true);
+        if (enableApp(appName, target, handlerCtx, false)){
+            return enableApp(appName, target, handlerCtx, true);
         }
         return false;
     }
 
 
-    static public boolean enableApp(String appName, HandlerContext handlerCtx, boolean enable ){
-        String[] targetNames = new String[]{"server"};
+    static public boolean enableApp(String appName, String target, HandlerContext handlerCtx, boolean enable){
+        String[] targetNames = new String[]{target};
         DeploymentFacility df = GuiUtil.getDeploymentFacility();
         Target[] targets = df.createTargets(targetNames);
         DFProgressObject  progressObject  = (enable) ? df.enable(targets,appName) : df.disable(targets, appName);

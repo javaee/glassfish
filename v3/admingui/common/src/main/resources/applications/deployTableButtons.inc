@@ -49,9 +49,7 @@
         />
         <sun:button id="deployButton" text="$resource{i18n.button.Deploy}" primary="#{true}">
                 <!command
-
-                    println("xxxxxxxxxxxxxxxxxxxxxxxx #{pageSession.nextPageLink}&listPageLink=#{pageSession.listPageLink}")
-		    gf.redirect(page="#{pageSession.nextPageLink}&listPageLink=#{pageSession.listPageLink}") />
+		    gf.redirect(page="#{pageSession.nextPageLink}") />
         </sun:button>
         <sun:button id="button1" text="$resource{i18n.button.Undeploy}" disabled="#{true}" primary="#{false}"
                 onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') )
@@ -64,21 +62,21 @@
                 gf.navigate(page="#{listPageLink}");
             />
          </sun:button>
-        <sun:button id="button2" text="$resource{i18n.button.Enable}" disabled="#{true}" primary="#{false}"
+        <sun:button id="button2" text="$resource{i18n.button.Enable}" rendered="#{pageSession.onlyDASExist}" disabled="#{true}" primary="#{false}"
                 onClick="return submitAndDisable(this, '$resource{i18n.button.Processing}');" >
         <!command
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                gf.changeAppStatus(selectedRows="${selectedRows}"  enabled="#{true}")
+                gf.changeAppStatus(selectedRows="${selectedRows}" target="server" enabled="#{true}")
                 gf.navigate(page="#{listPageLink}");
             />
             </sun:button>
-        <sun:button id="button3" text="$resource{i18n.button.Disable}" disabled="#{true}" primary="#{false}"
+        <sun:button id="button3" text="$resource{i18n.button.Disable}" rendered="#{pageSession.onlyDASExist}" disabled="#{true}" primary="#{false}"
             onClick="return submitAndDisable(this, '$resource{i18n.button.Processing}');" >
         <!command
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                gf.changeAppStatus(selectedRows="${selectedRows}"  enabled="#{false}")
+                gf.changeAppStatus(selectedRows="${selectedRows}" target="server" enabled="#{false}")
                 gf.navigate(page="#{listPageLink}");
             />
         </sun:button>

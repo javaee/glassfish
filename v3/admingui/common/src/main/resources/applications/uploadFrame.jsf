@@ -47,8 +47,18 @@
     <!beforeCreate
         setPageSessionAttribute(key="displayVS" value="#{true}");
         setPageSessionAttribute(key="chooseType" value="#{true}");
-        getRequestValue(key="listPageLink" value="#{pageSession.listPageLink}", default="/common/applications/applications.jsf");
-        getRequestValue(key="cancelPage" default="#{pageSession.listPageLink}" value="#{pageSession.cancelPage}" );
+
+        //getRequestValue(key="listPageLink" value="#{pageSession.listPageLink}", default="/common/applications/applications.jsf");
+        //getRequestValue(key="cancelPage" value="#{pageSession.cancelPage}" default="#{pageSession.listPageLink}"  );
+        //getRequestValue(key="extraArgs" value="#{pageSession.extraArgs}" default="foo");
+        
+        setPageSessionAttribute(key="listPageLink" value="#{gf_application_list_page}");
+        setPageSessionAttribute(key="extraArgs" value="#{gf_application_extra_args}");
+        setPageSessionAttribute(key="cancelPage" value="#{gf_application_cancel_page}");
+       
+        //println("====== listPageLink = #{pageSession.listPageLink}");
+        //println("====== cancelPage = #{pageSession.cancelPage}");
+        //println("====== extraArgs = #{pageSession.extraArgs}");
 
         setPageSessionAttribute(key="enabled" value="#{true}");
         createMap(result="#{pageSession.deployMap}")
