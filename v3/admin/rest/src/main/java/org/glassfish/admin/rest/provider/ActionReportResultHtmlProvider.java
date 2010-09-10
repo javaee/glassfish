@@ -152,7 +152,7 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
 
                 } else {//no values to show... give an hint
                     if ((childResources == null) || (childResources.isEmpty())) {
-                        if (uriInfo.getPath().equalsIgnoreCase("domain")) {
+                        if ((uriInfo!=null)&&(uriInfo.getPath().equalsIgnoreCase("domain"))) {
                             result.append(getHint(uriInfo, MediaType.TEXT_HTML));
                         }
                     }
