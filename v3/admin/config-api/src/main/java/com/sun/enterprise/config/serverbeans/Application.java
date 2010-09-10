@@ -376,6 +376,9 @@ public interface Application extends Injectable, ApplicationName, PropertyBag {
             deploymentParams.availabilityenabled = Boolean.parseBoolean(app.getAvailabilityEnabled());
             deploymentParams.asyncreplication = Boolean.parseBoolean(app.getAsyncReplication());
             if (appRef != null) {
+                deploymentParams.lbenabled = appRef.getLbEnabled();
+            }
+            if (appRef != null) {
                 deploymentParams.virtualservers = appRef.getVirtualServers();
             }
             return deploymentParams;
