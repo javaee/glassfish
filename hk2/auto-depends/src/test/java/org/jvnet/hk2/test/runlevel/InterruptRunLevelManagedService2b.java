@@ -17,6 +17,8 @@ import org.jvnet.hk2.component.PostConstruct;
 public class InterruptRunLevelManagedService2b implements RunLevelContract, PostConstruct {
 
   public static long i;
+  
+  public static boolean doSleep = true;
 
   @SuppressWarnings("static-access")
   @Override
@@ -26,7 +28,13 @@ public class InterruptRunLevelManagedService2b implements RunLevelContract, Post
     while (true) {
       i++;
       try {
-        Thread.currentThread().sleep(1);
+        if (doSleep) {
+          Thread.currentThread().sleep(1);
+        } else {
+          synchronized (this) {
+            wait();
+          }
+        }
       } catch (InterruptedException e) {
         throw new RuntimeException(e);
       }
