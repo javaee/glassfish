@@ -64,7 +64,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
 
     final String TRIGGER_CLUSTER_INSTANCES_PAGE = "Server Instances (";
 
-//    @Test
+    @Test
     public void testCreateClusterWithOneInstance() {
         String clusterName = "cluster" + generateRandomString();
         String instanceName = "instanceName" + generateRandomString();
@@ -79,7 +79,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         deleteRow("propertyForm:clustersTable:topActionsGroup1:button1", "propertyForm:clustersTable", clusterName);
     }
 
-//    @Test
+    @Test
     public void testStartAndStopClusterWithOneInstance() {
         String clusterName = "clusterName" + generateRandomString();
         String instanceName1 = "instanceName" + generateRandomString();
@@ -99,7 +99,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
 
     }
 
-//    @Test
+    @Test
     public void testClusterGeneralPage() {
         String clusterName = "cluster" + generateRandomString();
         String instanceName = "instanceName" + generateRandomString();
@@ -136,7 +136,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         deleteRow("propertyForm:clustersTable:topActionsGroup1:button1", "propertyForm:clustersTable", clusterName);
     }
 
-//    @Test
+    @Test
     public void testMultiDeleteClusters() {
         String clusterName1 = "cluster" + generateRandomString();
         String clusterName2 = "cluster" + generateRandomString();
@@ -156,7 +156,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
 
     }
 
-//    @Test
+    @Test
     public void testClusterInstancesTab() {
         String clusterName = "cluster" + generateRandomString();
         String instanceName = "instanceName" + generateRandomString();
