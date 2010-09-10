@@ -386,9 +386,9 @@ public class JmsHandlers {
             ConnectorRuntime connectorRuntime = GuiUtil.getHabitat().getComponent(ConnectorRuntime.class);
             PoolInfo poolInfo = new PoolInfo(poolName);
             connectorRuntime.pingConnectionPool(poolInfo);
-            GuiUtil.prepareAlert(handlerCtx, "success", GuiUtil.getMessage("msg.PingSucceed"), null);
+            GuiUtil.prepareAlert("success", GuiUtil.getMessage("msg.PingSucceed"), null);
         } catch (Exception ex) {
-            GuiUtil.prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), ex.getMessage());
+            GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), ex.getMessage());
         }
     }
 
