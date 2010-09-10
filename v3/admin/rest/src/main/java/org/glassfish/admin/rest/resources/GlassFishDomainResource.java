@@ -59,13 +59,9 @@ import javax.ws.rs.core.MediaType;
 import org.glassfish.admin.rest.logviewer.LogViewerResource;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.results.ActionReportResult;
-import org.glassfish.admin.rest.results.OptionsResult;
-import org.glassfish.admin.rest.results.StringListResult;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.admin.ParameterMap;
-//import org.glassfish.external.amx.AMXGlassfish;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.config.Dom;
 
 /**
  * This is the root class for the generated DomainResource
