@@ -54,7 +54,7 @@ import static org.junit.Assert.*;
 public class ClusterTest extends RestTestBase {
     public static final String URL_CLUSTER = "/domain/clusters/cluster";
     @Test
-    public void testDomainCreationAndDeletion() {
+    public void testClusterCreationAndDeletion() {
         final String clusterName = "cluster_" + generateRandomString();
         Map<String, String> newCluster = new HashMap<String, String>() {{
            put ("id", clusterName);
@@ -71,5 +71,26 @@ public class ClusterTest extends RestTestBase {
 
         response = get(URL_CLUSTER + "/" + clusterName);
         assertFalse(isSuccess(response));
+    }
+
+    @Test
+    public void testListLifecycleModules() {
+        final String clusterName = "cluster_" + generateRandomString();
+        Map<String, String> newCluster = new HashMap<String, String>() {{
+           put ("id", clusterName);
+        }};
+
+        ClientResponse response = post(URL_CLUSTER, newCluster);
+        assertTrue(isSuccess(response));
+
+        response = get(URL_CLUSTER + "/" + clusterName + "/list-lifecycle-modules");
+        assertTrue(isSuccess(response));
+
+        response = post(URL_CLUSTER + "/" + clusterName + "/delete-cluster");
+        assertTrue(isSuccess(response));
+
+        response = get(URL_CLUSTER + "/" + clusterName);
+        assertFalse(isSuccess(response));
+
     }
 }
