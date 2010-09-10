@@ -419,7 +419,9 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
             if (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS) {
                 events.send(new Event<ApplicationInfo>(Deployment.DEPLOYMENT_SUCCESS, appInfo));
                 long operationTime = Calendar.getInstance().getTimeInMillis() - operationStartTime;
-                deploymentLifecycleProbeProvider.applicationDeployedEvent(appName, getApplicationType(appInfo), String.valueOf(operationTime));
+                if (appInfo != null) {
+                    deploymentLifecycleProbeProvider.applicationDeployedEvent(appName, getApplicationType(appInfo), String.valueOf(operationTime));
+                }
             } else {
                 events.send(new Event<DeploymentContext>(Deployment.DEPLOYMENT_FAILURE, context));
             }
