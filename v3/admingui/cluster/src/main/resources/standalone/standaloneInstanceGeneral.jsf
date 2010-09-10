@@ -52,12 +52,17 @@
             getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
             urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
             setSessionAttribute(key="standaloneInstanceTabs" value="general");
+            setPageSessionAttribute(key="pageName" value="/cluster/standalone/standaloneInstanceGeneral.jsf");
+
+            gf.getInstanceInfo(instanceName="#{pageSession.encodedInstanceName}", info="#{pageSession.info}");
+            //getProxyAttrs(objectNameStr="#{sessionScope.DOMAIN_ROOT}" valueMap="#{pageSession.valueMap}")
+            //getProxyAttrs(objectNameStr="amx:pp=/domain/configs/config[server-config],type=java-config" valueMap="#{pageSession.valueMap2}")
+            //getDebugInfo(debugEnabled="#{pageSession.valueMap2['DebugEnabled']}", debugOptions="#{pageSession.valueMap2['DebugOptions']}", debugInfo="#{pageSession.debugInfo}")
         />
     </event>
     <sun:form id="propertyForm">
-
 #include "/cluster/standalone/standaloneInstanceTabs.inc"
-"<br/>instanceName = #{pageSession.instanceName}
+#include "/cluster/standalone/instanceProperties.jsf"
     </sun:form>
 </define>
 </composition>

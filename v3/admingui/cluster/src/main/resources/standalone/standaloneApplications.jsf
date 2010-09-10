@@ -56,7 +56,7 @@
     <event>
     <!beforeCreate
 
-        setSessionAttribute(key="standaloneInstanceTabs" value="standaloneApps");
+        setSessionAttribute(key="standaloneInstanceTabs" value="servInstApp");
         getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
         urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
         getRequestValue(key="filterValue" value=>$page{filterValue});
