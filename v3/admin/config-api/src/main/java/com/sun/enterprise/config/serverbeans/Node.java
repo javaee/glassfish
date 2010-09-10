@@ -348,17 +348,24 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
             List<Node> nodeList = nodes.getNode();
             List<Server> serverList=servers.getServer();
             //check if node is referenced in an instance
+            String instanceName = null;
             if (serverList.size() > 0) {
                 for (Server server: serverList){
                     if (nodeName.equals(server.getNode())){
-                       final String msg = localStrings.getLocalString(
-                        "Node.referencedByInstance",
-                        "Node {0} referenced in server instance {1}.  Remove instance before removing node."
-                        ,child.getName() ,server.getName() );
-                        logger.log(Level.SEVERE, msg);
-                        throw new TransactionFailure(msg);
+                        if (instanceName == null)
+                            instanceName = new String();
+                        instanceName = instanceName.concat(server.getName()+ ", ");
                     }
                 }
+                if (instanceName != null) {
+                    final String msg = localStrings.getLocalString(
+                            "Node.referencedByInstance",
+                            "Node {0} referenced in server instance(s): {1}.  Remove instances before removing node."
+                            ,child.getName() ,instanceName );
+                            logger.log(Level.SEVERE, msg);
+                            throw new TransactionFailure(msg);
+                }
+
             }
 
             nodeList.remove(child);

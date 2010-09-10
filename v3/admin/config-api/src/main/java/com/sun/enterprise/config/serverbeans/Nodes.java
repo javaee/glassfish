@@ -65,22 +65,10 @@ public interface Nodes extends ConfigBeanProxy, Injectable {
       */
     @Element
     @Create(value="_create-node", decorator=Node.Decorator.class, i18n=@I18n("_create.node.command") )
-    @Delete(value="delete-node-ssh", resolver= TypeAndNameResolver.class,
+    @Delete(value="_delete-node", resolver= TypeAndNameResolver.class,
             decorator=Node.DeleteDecorator.class,
-            i18n=@I18n("delete.node.ssh.delete"))
-    
-    /*
-    @CRUD(
-            creates = {
-                @Create(value="_create-node", decorator=Node.Decorator.class )
-            },
-            deletes = {
-//                @Delete(value="delete-node-config", resolver= TypeAndNameResolver.class, decorator=Node.DeleteDecorator.class),
-                @Delete(value="delete-node-ssh", resolver= TypeAndNameResolver.class, decorator=Node.DeleteDecorator.class)
-            }
-            )
-            */
-//    @Listing(value="list-nodes")
+            i18n=@I18n("delete.node.command"))
+
     public List<Node> getNode();
     
 

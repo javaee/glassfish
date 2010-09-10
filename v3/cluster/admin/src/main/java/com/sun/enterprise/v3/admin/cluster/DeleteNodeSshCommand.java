@@ -63,11 +63,11 @@ import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
  *
  * @author Carla Mott
  */
-@Service(name = "delete-node-config")
-@I18n("delete.node.config")
+@Service(name = "delete-node-ssh")
+@I18n("delete.node.ssh")
 @Scoped(PerLookup.class)
 @ExecuteOn({RuntimeType.DAS})
-public class DeleteNodeConfigCommand implements AdminCommand, PostConstruct {
+public class DeleteNodeSshCommand implements AdminCommand, PostConstruct {
     @Inject
     Habitat habitat;
 
@@ -104,9 +104,9 @@ public class DeleteNodeConfigCommand implements AdminCommand, PostConstruct {
             return;
         }
 
-        if (!(node.getType().equals("CONFIG") )){
+        if (!(node.getType().equals("SSH") )){
             //no node to delete  nothing to do here
-            String msg = Strings.get("notConfigNodeType", name);
+            String msg = Strings.get("notSshNodeType", name);
             logger.warning(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);

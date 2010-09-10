@@ -100,7 +100,7 @@ public class RemoteConnectHelper  {
 
     public boolean isLocalhost(Node nodeRef) {
         String nodeHost = nodeRef.getNodeHost();
-        if (nodeRef.equals("localhost"))
+        if (nodeHost.equals("localhost"))
             return true;
         if (NetUtils.IsThisHostLocal(nodeHost))
             return true;
