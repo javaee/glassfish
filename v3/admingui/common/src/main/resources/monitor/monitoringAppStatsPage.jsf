@@ -73,12 +73,12 @@
             createMap(result="#{requestScope.attrsMap}");
             mapPut(map="#{requestScope.attrsMap}"  key="modulename" value="#{viewVal}");
             mapPut(map="#{requestScope.attrsMap}"  key="appname"  value="#{appValue}");
-            gf.callRestAndExtractMsgProps(
+            gf.restRequest(
                 endpoint="#{sessionScope.REST_URL}/applications/application/list-sub-components"
                 attrs="#{requestScope.attrsMap}"
                 method="GET"
-                keyList="#{pageSession.subModuleList}"
-                propsMap="#{pageSession.propsMap}" );
+                result="#{requestScope.result}" );
+            setPageSessionAttribute(key="propsMap" value="#{requestScope.result.data.properties}");
         }
         
         getWebStatsUrl(app="#{appFullName}", compVal="#{cVal}", vsList="#{pageSession.vsList}", moduleProps="#{pageSession.propsMap}", webStatUrl=>$attribute{webStatUrl}, webStatType=>$attribute{webStatType});

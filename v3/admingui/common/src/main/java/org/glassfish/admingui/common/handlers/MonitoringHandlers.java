@@ -165,10 +165,9 @@ public class MonitoringHandlers {
             //This check is to get the correct type of statistics.
             if ((type == null || statType == null) || type.equals(statType)) {
                 if (doesProxyExist(endpoint)) {
-                    Map<String, Map> stats = RestApiHandlers.getMonitoringStatInfo(
-                            RestApiHandlers.get(endpoint).getResponseBody());
+                    Map<String, Object> stats = getMonitoringStatInfo(endpoint);
                     for (String statName : stats.keySet()) {
-                        Map<String, String> monAttrs = (Map<String, String>) stats.get(statName);
+                        Map<String, Object> monAttrs = (Map<String, Object>) stats.get(statName);
                         Map<String, String> statMap = new HashMap();
                         String val = "";
                         String details = "--";
@@ -193,16 +192,16 @@ public class MonitoringHandlers {
                             unit = (String) monAttrs.get("unit");
                             desc = (String) monAttrs.get("description");
 
-                            last = (String) monAttrs.get("lastsampletime");
-                            if (Long.valueOf(last) != -1) {
-                                last = df.format(new Date(Long.valueOf(last)));
+                            Long lastTime = (Long) monAttrs.get("lastsampletime");
+                            if (lastTime != -1) {
+                                last = df.format(new Date(lastTime));
                             }
-                            start = (String) monAttrs.get("starttime");
-                            if (Long.valueOf(start) != -1) {
-                                start = df.format(new Date(Long.valueOf(start)));
+                            Long startTime = (Long) monAttrs.get("starttime");
+                            if (startTime != -1) {
+                                start = df.format(new Date(startTime));
                             }
                             if (monAttrs.containsKey("count")) {
-                                val = (String) monAttrs.get("count") + " " + unit;
+                                val = monAttrs.get("count") + " " + unit;
                             } else if (monAttrs.containsKey("current")) {
                                 if (statName.equals("transaction-service")) {
                                     String str = (String) monAttrs.get("current");
@@ -211,9 +210,13 @@ public class MonitoringHandlers {
                                         val = formatStr;
                                     }
                                 } else {
-                                    val = (String) monAttrs.get("current");
-                                    if (unit != null && !(unit.equals("String"))) {
-                                        val = val + unit;
+                                    if (unit != null) {
+                                        if (unit.equals("String")) {
+                                            val = (String) monAttrs.get("current");
+                                        } else {
+                                            Long currentVal = (Long) monAttrs.get("current");
+                                            val = currentVal + unit;
+                                        }
                                     }
                                 }
                             } else if (monAttrs.containsKey("applicationtype")) {
@@ -694,9 +697,9 @@ public class MonitoringHandlers {
         String appName = name;
         String fullName = name;
         try {
-            List<String> applications = RestApiHandlers.getChildList(endpoint);
+            List<String> applications = new ArrayList<String>(RestApiHandlers.getChildMap(endpoint).keySet());
             for (String oneApp : applications) {
-                List<String> modules = RestApiHandlers.getChildList(endpoint + "/" + oneApp + "/module");
+                List<String> modules = new ArrayList<String>(RestApiHandlers.getChildMap(endpoint + "/" + oneApp + "/module").keySet());
                 if (modules.contains(name)) {
                     appName = oneApp;
                     break;
@@ -918,7 +921,7 @@ public class MonitoringHandlers {
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
         Boolean result = false;
         try {
-            List<String> poolNames = RestApiHandlers.getChildList(endpoint);
+            List<String> poolNames = new ArrayList<String>(RestApiHandlers.getChildMap(endpoint).keySet());
             if (poolNames.contains(poolName)) {
                 result = true;
             }
@@ -954,8 +957,8 @@ public class MonitoringHandlers {
         String firstConnector = null;
 
         try {
-            List<String> jdbcPools = RestApiHandlers.getChildList(endpoint + "/jdbc-connection-pool");
-            List<String> connectorPools = RestApiHandlers.getChildList(endpoint + "/connector-connection-pool");
+            List<String> jdbcPools = new ArrayList<String>(RestApiHandlers.getChildMap(endpoint + "/jdbc-connection-pool").keySet());
+            List<String> connectorPools = new ArrayList<String>(RestApiHandlers.getChildMap(endpoint + "/connector-connection-pool").keySet());
             for (String poolName : poolNames) {
                 if (jdbcPools.contains(poolName)) {
                     jdbcMonitorList.add(poolName);
@@ -1118,6 +1121,24 @@ public class MonitoringHandlers {
             values = values + "</table>";
         }
         return values;
+    }
+
+    private static Map<String, Object> getMonitoringStatInfo(String endpoint) {
+        Map<String, Object> monitorInfoMap = new HashMap<String, Object>();
+        try {
+            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "GET", null);
+            Map<String, Object> dataMap = (Map<String, Object>) responseMap.get("data");
+            if (dataMap != null) {
+                Map<String, Object> extraPropsMap = (Map<String, Object>) dataMap.get("extraProperties");
+                if (extraPropsMap != null) {
+                    monitorInfoMap = (Map<String, Object>) extraPropsMap.get("entity");
+                }
+            }
+        } catch (Exception ex) {
+            GuiUtil.getLogger().severe("Error in getMonitoringStatInfo ; \nendpoint = " + endpoint + "attrs=" + "method=GET");
+            //we don't need to call GuiUtil.handleError() because thats taken care of in restRequest() when we pass in the handler.
+        }
+        return monitorInfoMap;
     }
       
     final private static List<String> levels= new ArrayList();

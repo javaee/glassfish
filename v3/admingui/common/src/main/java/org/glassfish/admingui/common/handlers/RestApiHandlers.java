@@ -606,31 +606,7 @@ public class RestApiHandlers {
 
         return children;
     }
-
-    public static Map<String,Map> getMonitoringStatInfo(String document) throws SAXException, IOException, ParserConfigurationException {
-        Map<String, Map> result = new HashMap<String, Map>();
-        Document doc = MiscUtil.getDocument(document);
-        Element root = doc.getDocumentElement();
-        NodeList nl = root.getChildNodes();
-        //NamedNodeMap nodeAttrs;
-        if (nl.getLength() > 0) {
-            for (int i = 0; i < nl.getLength(); i++) {
-                Node child = nl.item(i);
-                if (child.getNodeType() == Node.ELEMENT_NODE) {
-                    Map<String, String> attrs = new HashMap<String, String>();
-                    NamedNodeMap nnm = child.getAttributes();
-                    for (int j = 0; j < nnm.getLength(); j++) {
-                        Node node = nnm.item(j);
-                        attrs.put(node.getNodeName(), node.getNodeValue());
-                    }
-                    result.put(child.getNodeName(), attrs);
-                }
-            }
-        }
-
-        return result;
-    }
-
+    
     /**
      * Given the parent URL and the desired childType, this method will build a List of Maps that
      * contains each child entities values.  In addition to the entity values, each row will
