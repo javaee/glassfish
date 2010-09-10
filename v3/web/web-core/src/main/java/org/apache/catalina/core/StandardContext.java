@@ -5415,7 +5415,7 @@ public class StandardContext
                 }
                 try {
                     if (log.isLoggable(Level.FINE)) {
-                        log.fine("Calling " + initializer + " with classes " +
+                        log.fine("Calling ServletContainerInitializer [" + initializer + "] onStartup with classes " +
                                 initializerList.get(initializer));
                     }
                     ServletContainerInitializer iniInstance =
