@@ -48,6 +48,7 @@ import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.ServerTags;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import org.jvnet.hk2.annotations.Service;
@@ -99,6 +100,9 @@ public class UpgradeStartup implements ModuleStartup {
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Server server;
 
+    @Inject 
+    Domain domain;
+
     @Inject
     CommandRunner commandRunner;
 
@@ -114,6 +118,8 @@ public class UpgradeStartup implements ModuleStartup {
     private final static String J2EE_APPS = "j2ee-apps";
     private final static String J2EE_MODULES = "j2ee-modules";
 
+    private final static String DOMAIN_TARGET = "domain";
+
     public void setStartupContext(StartupContext startupContext) {
         appservStartup.setStartupContext(startupContext);
     }
@@ -125,16 +131,17 @@ public class UpgradeStartup implements ModuleStartup {
         // we need to disable all the applications before starting server 
         // so the applications will not get loaded before redeployment
         // store the list of previous enabled applications
-        // so we can reset these applications back to enabled after 
+        // so we can reset these applications back to enabled after
         // redeployment
-        List<ApplicationRef> enabledApps = new ArrayList<ApplicationRef>();
+        List<Application> enabledApps = new ArrayList<Application>();
         List<String> enabledAppNames = new ArrayList<String>();
-        for (ApplicationRef appRef : server.getApplicationRef()) {
-            logger.log(Level.INFO, "app " + appRef.getRef() + " is " + appRef.getEnabled() + " resulting in " + Boolean.parseBoolean(appRef.getEnabled()));
-            if (Boolean.parseBoolean(appRef.getEnabled())) {
-                logger.log(Level.INFO, "Disabling application " + appRef.getRef());
-                enabledApps.add(appRef);
-                enabledAppNames.add(appRef.getRef());
+
+        for (Application app : domain.getApplications().getApplications()) {
+            logger.log(Level.INFO, "app " + app.getName() + " is " + app.getEnabled() + " resulting in " + Boolean.parseBoolean(app.getEnabled()));
+            if (Boolean.parseBoolean(app.getEnabled())) {
+                logger.log(Level.INFO, "Disabling application " + app.getName());
+                enabledApps.add(app);
+                enabledAppNames.add(app.getName());
             }
         }
 
@@ -143,12 +150,12 @@ public class UpgradeStartup implements ModuleStartup {
                 ConfigSupport.apply(new ConfigCode() {
                     public Object run(ConfigBeanProxy... configBeanProxies) throws PropertyVetoException, TransactionFailure {
                         for (ConfigBeanProxy proxy : configBeanProxies) {
-                            ApplicationRef appRef = (ApplicationRef) proxy;
-                            appRef.setEnabled(Boolean.FALSE.toString());
+                            Application app = (Application) proxy;
+                            app.setEnabled(Boolean.FALSE.toString());
                         }
                         return null;
                     }
-                }, enabledApps.toArray(new ApplicationRef[enabledApps.size()]));
+                }, enabledApps.toArray(new Application[enabledApps.size()]));
             } catch(TransactionFailure tf) {
                 logger.log(Level.SEVERE, "Exception while disabling applications", tf);
                 return;
@@ -158,7 +165,7 @@ public class UpgradeStartup implements ModuleStartup {
         // start the application server
         appservStartup.start();
 
-        // redeploy all existing applications in disable state
+        // redeploy all existing applications
         for (Application app : applications.getApplications()) {
             // we don't need to redeploy lifecycle modules
             if (Boolean.valueOf(app.getDeployProperties().getProperty
@@ -172,23 +179,25 @@ public class UpgradeStartup implements ModuleStartup {
         }
 
         // re-enables all applications. 
-        // we need to use the names in the enabledAppNames to find all 
+        // we need to use the names in the enabledAppNames to find all
         // the application refs that need to be re-enabled
-        // as the previous application refs collected not longer exist
+        // as the previous application collected not longer exist
         // after redeployment
         if (enabledAppNames.size()>0) {
-            for (ApplicationRef appRef : server.getApplicationRef()) {
-                if (enabledAppNames.contains(appRef.getRef())) {
-                    logger.log(Level.INFO, "Enabling application " + appRef.getRef());
+            for (Application app : domain.getApplications().getApplications()) {
+                if (enabledAppNames.contains(app.getName())) {
+                    logger.log(Level.INFO, "Enabling application " + app.getName());
                     try {
-                        ConfigSupport.apply(new SingleConfigCode<ApplicationRef>() {
-                            public Object run(ApplicationRef param) throws PropertyVetoException, TransactionFailure {
-                                param.setEnabled(Boolean.TRUE.toString());
+                        ConfigSupport.apply(new SingleConfigCode<Application>() {
+                            public Object run(Application param) throws PropertyVetoException, TransactionFailure {
+                                if (!Boolean.parseBoolean(param.getEnabled())) {
+                                    param.setEnabled(Boolean.TRUE.toString());
+                                }
                                 return null;
                             }
-                        }, appRef);
+                        }, app);
                     } catch(TransactionFailure tf) {
-                        logger.log(Level.SEVERE, "Exception while re-enabling application " + appRef.getRef(), tf);
+                        logger.log(Level.SEVERE, "Exception while disabling applications", tf);
                         return;
                     }
                 }
@@ -272,16 +281,9 @@ public class UpgradeStartup implements ModuleStartup {
                 app.getName());
             return true;
         }
-        ApplicationRef ref = null;
-        for (ApplicationRef appRef : server.getApplicationRef()) {
-            if (appRef.getRef().equals(app.getName())) {
-                ref = appRef;
-                break;
-            }
-        }
 
         // populate the params and properties from application element first
-        DeployCommandParameters deployParams = app.getDeployParameters(ref);
+        DeployCommandParameters deployParams = app.getDeployParameters(null);
 
         // for archive deployment, let's repackage the archive and redeploy
         // that way
@@ -315,10 +317,11 @@ public class UpgradeStartup implements ModuleStartup {
             DeploymentProperties.COMPATIBILITY, "v2");
       
         // now override the ones needed for the upgrade
+        deployParams.enabled = null;
         deployParams.force = true;
         deployParams.dropandcreatetables = false;
         deployParams.createtables = false;
-        deployParams.enabled = false;
+        deployParams.target = DOMAIN_TARGET;
 
         ActionReport report = new PlainTextActionReporter();
         commandRunner.getCommandInvocation("deploy", report).parameters(deployParams).execute();

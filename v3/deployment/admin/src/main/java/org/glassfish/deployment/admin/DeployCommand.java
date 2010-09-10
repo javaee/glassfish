@@ -676,7 +676,10 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             if (virtualservers == null) {
                 if (DeploymentUtils.isDomainTarget(target)) {
                     for (String tgt : previousTargets) {
-                        previousVirtualServers.put(tgt, domain.getVirtualServersForApplication(tgt, name));
+                        String vs = domain.getVirtualServersForApplication(tgt, name);
+                        if (vs != null) {
+                            previousVirtualServers.put(tgt, vs);
+                        }
                     }
                 } else {
                     virtualservers = domain.getVirtualServersForApplication(
