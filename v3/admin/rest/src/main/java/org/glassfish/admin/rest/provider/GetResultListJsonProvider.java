@@ -83,7 +83,7 @@ public class GetResultListJsonProvider extends BaseProvider<GetResultList> {
                 obj.put(KEY_COMMANDS, getCommandLinks(proxy.getCommandResourcesPaths()));
             }
         } catch (JSONException ex) {
-            Logger.getLogger(GetResultJsonProvider.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GetResultListJsonProvider.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return obj.toString();

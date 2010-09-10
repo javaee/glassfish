@@ -110,20 +110,12 @@ public class RestManagementAdapter extends RestAdapter {
 
         r.add(org.glassfish.admin.rest.provider.FormWriter.class);
 
-        r.add(org.glassfish.admin.rest.provider.GetResultHtmlProvider.class);
-        r.add(org.glassfish.admin.rest.provider.GetResultJsonProvider.class);
-        r.add(org.glassfish.admin.rest.provider.GetResultXmlProvider.class);
-
         r.add(org.glassfish.admin.rest.provider.GetResultListHtmlProvider.class);
         r.add(org.glassfish.admin.rest.provider.GetResultListJsonProvider.class);
         r.add(org.glassfish.admin.rest.provider.GetResultListXmlProvider.class);
 
         r.add(org.glassfish.admin.rest.provider.OptionsResultJsonProvider.class);
         r.add(org.glassfish.admin.rest.provider.OptionsResultXmlProvider.class);
-
-        r.add(org.glassfish.admin.rest.provider.StringListResultHtmlProvider.class);
-        r.add(org.glassfish.admin.rest.provider.StringListResultJsonProvider.class);
-        r.add(org.glassfish.admin.rest.provider.StringListResultXmlProvider.class);
 
         return r;
     }
