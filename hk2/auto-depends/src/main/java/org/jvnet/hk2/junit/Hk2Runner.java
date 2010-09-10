@@ -52,6 +52,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -138,7 +139,10 @@ public class Hk2Runner extends Runner {
             return;
         }
         
-        for (Description testDescription : description.getChildren()) {
+        Iterator<Description> iter = description.getChildren().iterator();
+        while (iter.hasNext()) {
+            Description testDescription = iter.next();
+            
             Method m = testMethods.get(testDescription);
             if (m.isAnnotationPresent(Ignore.class)) {
                 notifier.fireTestIgnored(testDescription);
@@ -170,7 +174,7 @@ public class Hk2Runner extends Runner {
                 throw new RuntimeException(e1);
             }
             
-            if (reinitPerTest) {
+            if (reinitPerTest && iter.hasNext()) {
                 try {
                     wombInit();
                 } catch (ComponentException e) {
