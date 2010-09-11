@@ -358,8 +358,8 @@
         <echo message="@@## connector1.5-resourcesxml-module-scope ##@@"/>
         <ant dir="../connector1.5-resourcesxml-module-scope" target="all"/>
         
-<!--        <echo message="@@## ejb/ejb30/persistence/tx_propagation.modified ##@@"/>
-        <ant dir="${env.APS_HOME}/devtests/ejb/ejb30/persistence/tx_propagation.modified" target="all"/>-->
+        <echo message="jpa-tx_propagation-resources-xml##@@"/>
+        <ant dir="jpa-tx-propagation-gf-resources-xml" target="all"/>
 
         <record name="glassfish-resources-xml-tests.output" action="stop"/>
 
