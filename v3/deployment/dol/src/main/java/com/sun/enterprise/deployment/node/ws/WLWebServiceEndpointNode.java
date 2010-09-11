@@ -44,6 +44,7 @@ import com.sun.enterprise.deployment.WebService;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.node.*;
 import com.sun.enterprise.deployment.runtime.ws.ReliabilityConfig;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import com.sun.enterprise.deployment.xml.WebServicesTagNames;
 import org.w3c.dom.Document;
@@ -53,6 +54,7 @@ import org.w3c.dom.Node;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * This node represents port-component in weblogic-webservices.xml
@@ -71,12 +73,12 @@ public class WLWebServiceEndpointNode extends DeploymentDescriptorNode {
         UNSUPPORTED_TAGS.add(WLWebServicesTagNames.TRANSACTION_TIMEOUT);
         UNSUPPORTED_TAGS.add(WLWebServicesTagNames.CALLBACK_PROTOCOL);
         UNSUPPORTED_TAGS.add(WLWebServicesTagNames.HTTP_FLUSH_RESPONSE);
-        UNSUPPORTED_TAGS.add(WLWebServicesTagNames.HTTP_RESPONSE_BUFFERSIZE);
     }
     public WLWebServiceEndpointNode() {
         registerElementHandler(new XMLElement(WLWebServicesTagNames.WSDL),
                         WSDLNode.class);
         registerElementHandler(new XMLElement(WLWebServicesTagNames.SERVICE_ENDPOINT_ADDRESS), ServiceEndpointAddressNode.class);
+        registerElementHandler(new XMLElement(WLWebServicesTagNames.RELIABILITY_CONFIG), ReliabilityConfigNode.class);
         for(String unsupportedTag: UNSUPPORTED_TAGS) {
             registerElementHandler( new XMLElement(unsupportedTag), WLUnSupportedNode.class);
         }
@@ -96,7 +98,7 @@ public class WLWebServiceEndpointNode extends DeploymentDescriptorNode {
                   "setTransportGuarantee");
         table.put(WLWebServicesTagNames.STREAM_ATTACHMENTS, "setStreamAttachments");
         table.put(WLWebServicesTagNames.VALIDATE_REQUEST, "setValidateRequest");
-
+        table.put(WLWebServicesTagNames.HTTP_RESPONSE_BUFFERSIZE,"setHttpResponseBufferSize");
         return table;
     }
 
@@ -122,21 +124,22 @@ public class WLWebServiceEndpointNode extends DeploymentDescriptorNode {
             node = new ServiceEndpointAddressNode(descriptor);
             node.setParentNode(this);
         } else if(WLWebServicesTagNames.RELIABILITY_CONFIG.equals(elementName)) {
-            ReliabilityConfig reliabilityConfig = descriptor.getReliabilityConfig();
-            if(reliabilityConfig == null) {
-                reliabilityConfig = new ReliabilityConfig();
-                descriptor.setReliabilityConfig(reliabilityConfig);
-            }
-            node = new ReliabilityConfigNode(reliabilityConfig);
+            node = new ReliabilityConfigNode();
             node.setParentNode(this);
         }
         return node;
-
     }
 
     @Override
     public Object getDescriptor() {
         return descriptor;
+    }
+
+    public void addDescriptor(Object childdescriptor) {
+        if(childdescriptor instanceof ReliabilityConfigNode) {
+            descriptor.setReliabilityConfig(((ReliabilityConfig)childdescriptor));
+        }
+
     }
 
     public Node writeDescriptor(Node parent, String nodeName,
@@ -181,6 +184,17 @@ public class WLWebServiceEndpointNode extends DeploymentDescriptorNode {
                     descriptor.getValidateRequest());
 
         }
+        if (descriptor.getHttpResponseBufferSize() != null) {
+            appendTextChild(wseNode,
+                    WLWebServicesTagNames.HTTP_RESPONSE_BUFFERSIZE,
+                    descriptor.getHttpResponseBufferSize());
+
+        }
+        if(descriptor.getReliabilityConfig() != null) {
+            ReliabilityConfigNode rmConfigNode = new ReliabilityConfigNode();
+            rmConfigNode.writeDescriptor(wseNode, descriptor.getReliabilityConfig());
+        }
+
         return wseNode;
     }
 

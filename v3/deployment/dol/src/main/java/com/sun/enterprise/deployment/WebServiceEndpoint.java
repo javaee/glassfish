@@ -190,6 +190,9 @@ public class WebServiceEndpoint extends Descriptor
     //reliability-config
     private ReliabilityConfig reliabilityConfig = null;
 
+    // specified in WLS DD, currently has used only in RMFeature
+    private String httpResponseBufferSize = null;
+
     // should debugging be allowed on this endpoint
     private String debuggingEnabled = "true";
 
@@ -450,6 +453,14 @@ public class WebServiceEndpoint extends Descriptor
 
     public void setReliabilityConfig(ReliabilityConfig reliabilityConfig) {
         this.reliabilityConfig = reliabilityConfig;
+    }
+
+    public String getHttpResponseBufferSize() {
+        return httpResponseBufferSize;
+    }
+
+    public void setHttpResponseBufferSize(String httpResponseBufferSize) {
+        this.httpResponseBufferSize = httpResponseBufferSize;
     }
 
     /**
