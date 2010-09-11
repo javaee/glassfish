@@ -554,3 +554,30 @@
         <arg line="${admin.domain}"/>
     </exec>
 </target>
+
+<!-- ================================================================ -->
+<!-- Target to create node ssh  -->
+<!-- ================================================================ -->
+<target name="create-node-ssh-common" depends="init-common">
+<echo message="Creating node ssh ${node.name}"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="create-node-ssh"/>
+    <arg line="--nodehost ${http.host}"/>
+    <arg line="--installdir ${env.S1AS_HOME}"/>
+    <arg line="--force ${force}"/>
+    <arg line="${node.name}"/>
+  </exec>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to delete node ssh  -->
+<!-- ================================================================ -->
+<target name="delete-node-ssh-common" depends="init-common">
+<echo message="Deleting node ssh ${node.name}"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="delete-node-ssh"/>
+    <arg line="${node.name}"/>
+  </exec>
+</target>
+
+
