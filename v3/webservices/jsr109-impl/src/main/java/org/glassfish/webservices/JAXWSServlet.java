@@ -44,6 +44,7 @@ package org.glassfish.webservices;
 
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.runtime.ws.ReliabilityConfig;
 import com.sun.logging.LogDomains;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.WSBinding;
@@ -53,6 +54,8 @@ import com.sun.xml.ws.api.server.SDDocumentSource;
 import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.developer.SchemaValidationFeature;
 import com.sun.xml.ws.developer.StreamingAttachmentFeature;
+import com.sun.xml.ws.rx.rm.api.ReliableMessagingFeature;
+import com.sun.xml.ws.rx.rm.api.RmProtocolVersion;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapterList;
 import org.glassfish.webservices.monitoring.Endpoint;
@@ -364,6 +367,62 @@ public class JAXWSServlet extends HttpServlet {
         if(endpoint.getStreamAttachments() != null && Boolean.parseBoolean(endpoint.getStreamAttachments())) {
             //enable StreamingAttachmentsFeature
             wsFeatures.add(new StreamingAttachmentFeature());
+        }
+
+        if(endpoint.getReliabilityConfig() != null) {
+            ReliabilityConfig rxConfig = endpoint.getReliabilityConfig();
+            long inactivityTimeout = rxConfig.getInactivityTimeout() == null ?
+                    ReliableMessagingFeature.DEFAULT_SEQUENCE_INACTIVITY_TIMEOUT :
+                    Long.parseLong(rxConfig.getInactivityTimeout().trim());
+            long bufferQuota = endpoint.getHttpResponseBufferSize()==null ?
+                    ReliableMessagingFeature.DEFAULT_DESTINATION_BUFFER_QUOTA :
+                    Long.parseLong(endpoint.getHttpResponseBufferSize().trim());
+            long baseRetransmissionInterval = rxConfig.getBaseRetransmissionInterval() == null ?
+                    ReliableMessagingFeature.DEFAULT_MESSAGE_RETRANSMISSION_INTERVAL :
+                    Long.parseLong(rxConfig.getBaseRetransmissionInterval().trim());
+            Enum backoffAlgorithm = Boolean.parseBoolean(rxConfig.getRetransmissionExponentialBackoff()) ?
+                    ReliableMessagingFeature.BackoffAlgorithm.EXPONENTIAL :
+                    ReliableMessagingFeature.BackoffAlgorithm.CONSTANT;
+
+            long ackInterval = rxConfig.getAcknowledgementInterval() == null ?
+                    ReliableMessagingFeature.DEFAULT_ACKNOWLEDGEMENT_TRANSMISSION_INTERVAL :
+                    Long.parseLong(rxConfig.getAcknowledgementInterval().trim());
+
+            if(rxConfig.getSequenceExpiration() == null) {
+                logger.info("For endpoint"+endpoint.getEndpointName() +", Ignoring configuration <sequence-expiration> in weblogic-webservices.xml");
+            }
+                        
+            long bufferRetryCount = rxConfig.getBufferRetryCount() == null ?
+                    ReliableMessagingFeature.DEFAULT_MAX_MESSAGE_RETRANSMISSION_COUNT :
+                    Long.parseLong(rxConfig.getBufferRetryCount().trim());
+            if(rxConfig.getBufferRetryDelay() == null) {
+                logger.info("For endpoint"+endpoint.getEndpointName() + ", Ignoring configuration <buffer-retry-delay> in weblogic-webservices.xml");
+            }
+            /* TODO this api is not public, discuss with Marek
+                ReliableMessagingFeature rmFeature =  new ReliableMessagingFeature(
+                    true, // this.enabled
+                RmProtocolVersion.getDefault(), // this.rmVersion
+                inactivityTimeout, // this.inactivityTimeout
+                bufferQuota, // this.bufferQuota
+                false, // this.orderedDelivery
+                ReliableMessagingFeature.DeliveryAssurance.getDefault(), // this.deliveryAssurance
+                ReliableMessagingFeature.SecurityBinding.getDefault(), // this.securityBinding
+                baseRetransmissionInterval, // this.baseRetransmissionInterval
+                backoffAlgorithm, // this.retransmissionBackoffAlgorithm
+                bufferRetryCount,
+                ReliableMessagingFeature.DEFAULT_MAX_RM_SESSION_CONTROL_MESSAGE_RESEND_ATTEMPTS, // this.maxRmSessionControlMessageResendAttempts
+                ackInterval, // this.acknowledgementTransmissionInterval
+                ReliableMessagingFeature.DEFAULT_ACK_REQUEST_TRANSMISSION_INTERVAL, // this.ackRequestTransmissionInterval
+                ReliableMessagingFeature.DEFAULT_CLOSE_SEQUENCE_OPERATION_TIMEOUT, // this.closeSequenceOperationTimeout
+                false, // this.persistenceEnabled
+                ReliableMessagingFeature.DEFAULT_SEQUENCE_MANAGER_MAINTENANCE_PERIOD,
+                ReliableMessagingFeature.DEFAULT_MAX_CONCURRENT_SESSIONS,
+                ReliableMessagingFeature.DEFAULT_OFFER_ELEMENT_GENERATION_DISABLED);
+               */
+        } else {
+            if(endpoint.getHttpResponseBufferSize() != null) {
+                logger.warning("For endpoint" + endpoint.getEndpointName() + ", Unsupported configuration <http-response-buffersize> in weblogic-webservices.xml");
+            }
         }
 
         if (wsFeatures.size()>0){
