@@ -44,11 +44,13 @@
 
 <sun:page id="page1">
     <!beforeCreate
-        getRequestValue(key="pageTitle" value="#{pageSession.pageTitle}");
         setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
         setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
         setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings");
         getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
+        urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
+        getRequestValue(key="reportType" value="#{pageSession.reportType}" default="summary");
+        urlencode(value="#{pageSession.reportType}" encoding="UTF-8" result="#{pageSession.encodedReportType}");
 
         getRequestValue(key="config" value="#{pageSession.config}");
         if ("!#{pageSession.config}") {
@@ -57,12 +59,12 @@
 
     />
     <sun:html id="html2"> 
-        <sun:head id="propertyhead" title="#{pageTitle}" >
+        <sun:head id="propertyhead" title="JVM Report" >
         </sun:head>
         <sun:body id="body3">
             <sun:form id="propertyForm">
                 <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="#{pageTitle} for #{pageSession.config}" >
+                <sun:title id="propertyContentPage" title=" #{instanceName}" >
                     <!-- Buttons  -->                    
                     <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">
@@ -71,7 +73,6 @@
                         </sun:button>
                     </sun:panelGroup>
                     </facet>
-<!--
                     <!facet pageButtonsBottom>
                     <sun:panelGroup id="bottomButtons">
                         <sun:button id="closeButton2" text="$resource{i18n.button.Close}"
@@ -79,39 +80,46 @@
                         </sun:button>
                     </sun:panelGroup>
                     </facet>
--->
                     <!-- PropertySheet .... -->
                     <sun:propertySheet id="propertySheet">	
                         <event>
                             <!beforeCreate
-                                gf.createAttributeMap(keys={"target", "type"}, values={"server", "summary"}, map="#{requestScope.attrs}");
-                                gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.config}/java-config/generate-jvm-report.json",
-                                    method="POST", attrs="#{requestScope.attrs}", result="#{pageSession.report}");
+                                gf.createAttributeMap(keys={"target", "type"}
+                                    values={"$pageSession{encodedInstanceName}", "$pageSession{encodedReportType}"},
+                                    map="#{requestScope.attrs}");
+
+                                    gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/server-config/java-config/generate-jvm-report.json",
+                                    method="POST",
+                                    attrs="#{requestScope.attrs}",
+                                    result="#{pageSession.report}");
                             />
                         </event>
 
                         <sun:propertySheetSection id="viewPropertySection">
                             <sun:property id="ViewProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvmReport.viewLabel}" >
-                                <sun:dropDown id="View" selected="#{viewVal}" submitForm="#{true}" immediate="#{true}"
+                                <sun:dropDown id="View" selected="#{pageSession.reportType}" submitForm="#{true}" immediate="{true}"
                                         labels={ "$resource{i18nc.jvmReport.Summary}","$resource{i18nc.jvmReport.Memory}", "$resource{i18nc.jvmReport.ClLoading}","$resource{i18nc.jvmReport.ThDump}"}
-                                        values={"summary", "memory", "class", "thread"}  >
-                                    <!command
-                                        setAttribute(key="click" value="$this{component}");
-                                        setAttribute(key="viewVal" value="#{click.selected}")
-                                        setAttribute(key="instanceName" value="#{instanceName}")
-                                        setAttribute(key="pageTitle" value="#{pageTitle} - #{instanceName}")
-                                        gf.navigate(page="#{request.contextPath}/common/appServer/jvmReport.jsf?config=#{pageSession.config}");
+                                        values={"summary", "memory", "class", "thread"}>
+                                    <!command                                                                                
+
+                                        gf.createAttributeMap(keys={"target", "type"}
+                                            values={"$pageSession{instanceName}", "$pageSession{reportType}"},
+                                            map="#{requestScope.attrs}");
+
+                                        gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/server-config/java-config/generate-jvm-report.json",
+                                        method="POST",
+                                        attrs="#{requestScope.attrs}",
+                                        result="#{pageSession.report}");
+
                                     />
                                 </sun:dropDown>
                             </sun:property>                          
                         </sun:propertySheetSection>
                         <sun:propertySheetSection id="reportPropertySection">
                             <sun:property id="ReportProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" readOnly="#{true)" >
-                                "<div id="reportDiv" style="width: 97pc; margin: auto; height: 55pc; overflow: auto; border: 1px solid #666; padding: 5px;">
-                                    "<pre><font size="3">
-                                        <h:outputText value="#{pageSession.report.data.message}" escape="false"/>
-                                    "</font></pre>
-                                "</div>
+                             "<pre><font size="3" /> 
+                                <sun:staticText id="Report" text="#{pageSession.report.data.message}"/>
+                             "</pre>
                             </sun:property>                  
                         </sun:propertySheetSection>
                     </sun:propertySheet>
