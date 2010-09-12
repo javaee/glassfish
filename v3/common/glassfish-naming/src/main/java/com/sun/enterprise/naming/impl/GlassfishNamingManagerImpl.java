@@ -829,7 +829,10 @@ public final class  GlassfishNamingManagerImpl
             // (i.e. no more slashes)
             // Make sure keys reflect the original prefix in the case of comp->module
             // replacement
-            if (key.startsWith(logicalJndiName) && key.indexOf('/', logicalJndiName.length()) == -1) {
+            // The search string itself is excluded from the returned list
+            if (key.startsWith(logicalJndiName) && 
+                key.indexOf('/', logicalJndiName.length()) == -1 &&
+                !key.equals(logicalJndiName)) {
                 String toAdd = replaceName ? logicalModuleJndiNameToComp(key) : key;
                 list.add(toAdd);
             }
