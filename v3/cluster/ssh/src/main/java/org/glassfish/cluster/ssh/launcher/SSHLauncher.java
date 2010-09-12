@@ -43,6 +43,11 @@ package org.glassfish.cluster.ssh.launcher;
 import java.io.*;
 
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.OS;
+
+import com.sun.enterprise.universal.process.ProcessManager;
+import com.sun.enterprise.universal.process.ProcessManagerException;
+
 import com.trilead.ssh2.Connection;
 import com.trilead.ssh2.KnownHosts;
 import com.trilead.ssh2.SCPClient;
@@ -64,6 +69,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -73,6 +80,7 @@ public class SSHLauncher {
 
     private static final String SSH_DIR = ".ssh/";
     private static final String AUTH_KEY_FILE = "authorized_keys";
+    private static final int DEFAULT_TIMEOUT_MSEC = 120000; // 2 minutes
   /**
      * Database of known hosts.
      */
@@ -168,7 +176,7 @@ public class SSHLauncher {
         this.port = port == 0 ? 22 : port;
 
         this.host = host;
-        this.keyFile = (keyFile == null) ? findDefaultKeyFile(): keyFile;
+        this.keyFile = (keyFile == null) ? SSHUtil.getDefaultKeyFile(): keyFile;
         this.logger = logger;
 
         this.userName = SSHUtil.checkString(userName) == null ?
@@ -400,31 +408,34 @@ public class SSHLauncher {
         return printable;
     }
 
-     public void setupKey(String node, String pubKeyFile) throws IOException {
+     public void setupKey(String node, String pubKeyFile, boolean generateKey, String passwd) throws IOException {
         boolean connected = false;
 
         File key = new File(keyFile);
         logger.fine("Key = " + keyFile);
         if (key.exists()) {
             if (checkConnection()) {
-                logger.fine("SSH key already setup");
+                logger.info("SSH public key access already setup");
                 return;
-            }
-            if ( pubKeyFile == null) {
-                pubKeyFile = findDefaultKeyFile() + ".pub";
-            }
+            }            
         } else {
-            throw new IOException("SSH key pair not present. Please generate a key pair manually and re-run the command.");
+            if (generateKey) {
+                if(!generateKeyPair()) {
+                    throw new IOException("SSH key pair generation failed. Please generate key manually.");
+                }
+            } else {                
+                throw new IOException("SSH key pair not present. Please generate a key pair manually or specify an existing one and re-run the command.");
+            }
         }
 
-
-        if (password == null) {
-            throw new IOException("SSH password is required for distributing the public key. You can specify the SSH password alias in a password file and pass it through --passwordfile option.");
+        //password is must for key distribution
+        if (passwd == null) {
+            throw new IOException("SSH password is required for distributing the public key. You can specify the SSH password in a password file and pass it through --passwordfile option.");
         }
         try {
             connection = new Connection(node, port);
             connection.connect();
-            connected = connection.authenticateWithPassword(userName, password);
+            connected = connection.authenticateWithPassword(userName, passwd);
         } catch (Exception ex) {
             //logger.printExceptionStackTrace(ex);
             throw new IOException("SSH password authentication failed for user " + userName + " on host " + node);
@@ -438,6 +449,10 @@ public class SSHLauncher {
 
         if (key.exists()) {
 
+            if (pubKeyFile == null) {
+                pubKeyFile = keyFile + ".pub";
+            }
+            
             File pubKey = new File(pubKeyFile);
             if(!pubKey.exists()) {
                 throw new IOException("Public key file " + pubKeyFile + " does not exist.");
@@ -458,12 +473,12 @@ public class SSHLauncher {
                     //logger.printDebugMessage("The auth file probably doesn't exist");
                 }
 
-                logger.fine("Got the remote authorized_keys file");
+                logger.info("Got the remote authorized_keys file");
                 File home = new File(System.getProperty("user.home"));
                 f = new File(home,SSH_DIR + AUTH_KEY_FILE +".temp");
                 oStream = new FileOutputStream(f);
                 out.writeTo(oStream);
-                logger.fine("Wrote the temp file");
+                logger.info("Wrote the temp file");
 
                 appendPublicKey(pubKey, f);
 
@@ -473,13 +488,14 @@ public class SSHLauncher {
 
                 scp.put(theBytes, AUTH_KEY_FILE, SSH_DIR);
 
-                logger.fine("Sent the merged file");
+                logger.info("Copied keyfile " + pubKeyFile + " to " + userName + "@" + host);
             } catch (FileNotFoundException fne) {
                 //logger.printExceptionStackTrace(fne);
             } catch (IOException ioe) {
                 //logger.printExceptionStackTrace(ioe);
             } finally {
                 //remove the temp file
+                //not working on Windows, investigate!
                 f.delete();
                 //clean up streams
                 if (out != null) {
@@ -547,7 +563,11 @@ public class SSHLauncher {
             c = new Connection(host, port);
             c.connect();
             File f = new File(keyFile);
-            status = c.authenticateWithPublicKey(userName, f, null);
+            logger.info("Connecting using cred: " + userName + ":" + keyFile + ":" + rawKeyPassPhrase);
+            status = c.authenticateWithPublicKey(userName, f, rawKeyPassPhrase);
+            if (status) {
+                logger.info("Successfully connected to " + userName + "@" + host + " using keyfile " + keyFile);
+            }
         } catch(IOException ioe) {
             //logger.printExceptionStackTrace(ioe);
         }
@@ -555,21 +575,88 @@ public class SSHLauncher {
         return status;
     }
 
-    private String findDefaultKeyFile() {
-        String key = null;
-        for (String keyName : Arrays.asList("id_rsa","id_dsa",
-                                                "identity"))
-        {
-            String h = System.getProperty("user.home") + File.separator;
-            File f = new File(h+".ssh/"+keyName);
-            if (f.exists()) {
-                key =  h  + ".ssh/" + keyName;
-                break;
-            }
+    /**
+      * Invoke ssh-keygen using ProcessManager API
+      */
+    private boolean generateKeyPair() throws IOException {
+        String keygenCmd = findSSHKeygen();
+        logger.fine("Using " + keygenCmd + " to generate key pair");
+
+        List<String> cmdLine = new ArrayList<String>();
+        cmdLine.add(keygenCmd);
+        cmdLine.add("-t");
+        cmdLine.add("rsa");
+        cmdLine.add("-N");
+        if (rawKeyPassPhrase != null) {
+            cmdLine.add(rawKeyPassPhrase);
+        } else {
+            //special handling for empty passphrase on Windows
+            if(OS.isWindows())
+                cmdLine.add("\"\"");
+            else
+                cmdLine.add("");
         }
-        return key;
+        cmdLine.add("-f");
+        cmdLine.add(keyFile);
+        cmdLine.add("-vvv");
+
+        ProcessManager pm = new ProcessManager(cmdLine);
+
+        logger.fine("Command = " + cmdLine.toString());
+        pm.setTimeoutMsec(DEFAULT_TIMEOUT_MSEC);
+
+        pm.setEcho(true);
+        int exit;
+
+        try {
+            exit = pm.execute();            
+        }
+        catch (ProcessManagerException ex) {
+            logger.fine("Error while executing ssh-keygen: " + ex.getMessage());
+            exit = 1;
+        }
+        logger.fine(pm.getStderr());
+        logger.info("ssh-keygen exit status: " + exit);
+        return (exit == 0) ? true : false;
     }
 
+    /**
+     * Crude method to locate ssh-keygen
+     * @return ssh-keygen command
+     */
+    private String findSSHKeygen() {
+        List<String> cmds = new ArrayList<String>(Arrays.asList(
+                    "ssh-keygen",
+                    "/usr/bin/ssh-keygen",
+                    "/usr/local/bin/ssh-keygen"));
+        
+        for (String s :cmds) {
+            ProcessManager pm = new ProcessManager(s, "-z");
+
+            pm.setTimeoutMsec(DEFAULT_TIMEOUT_MSEC);
+            pm.setEcho(false);
+            
+            boolean found = false;
+
+            try {
+                pm.execute();
+                String err = pm.getStderr();
+                logger.finer(err);
+                if (err.contains("Usage: ssh-keygen ")) {
+                    logger.fine("Found " + s);
+                    found = true;
+                }
+            }
+            catch (ProcessManagerException ex) {
+                found = false;
+            }
+
+            if (found)
+                return s;
+        }
+        return "ssh-keygen";
+    }
+    
     @Override
     public String toString() {
 

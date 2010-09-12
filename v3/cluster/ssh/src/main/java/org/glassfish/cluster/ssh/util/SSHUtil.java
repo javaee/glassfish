@@ -43,7 +43,10 @@ package org.glassfish.cluster.ssh.util;
 import com.trilead.ssh2.Connection;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import java.io.File;
 
 /**
  * @author Rajiv Mordani
@@ -91,4 +94,25 @@ public class SSHUtil {
           return s;
       }
 
+      public static String getExistingKeyFile() {
+        String key = null;
+        for (String keyName : Arrays.asList("id_rsa","id_dsa",
+                                                "identity"))
+        {
+            String h = System.getProperty("user.home") + File.separator;
+            File f = new File(h+".ssh/"+keyName);
+            if (f.exists()) {
+                key =  h  + ".ssh/" + keyName;
+                break;
+            }
+        }
+        return key;
+      }
+
+      public static String getDefaultKeyFile() {
+          String k = System.getProperty("user.home") + File.separator
+          //String k = System.getenv("HOME") + File.separator
+                          + ".ssh" + File.separator + "id_rsa";
+          return k;
+      }
 }

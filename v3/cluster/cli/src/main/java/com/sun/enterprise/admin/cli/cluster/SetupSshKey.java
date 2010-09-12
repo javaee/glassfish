@@ -40,7 +40,7 @@
 
 package com.sun.enterprise.admin.cli.cluster;
 
-import java.io.IOException;
+import java.io.*;
 
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
@@ -48,19 +48,18 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import org.glassfish.internal.api.Globals;
 import com.sun.enterprise.admin.cli.CLICommand;
+import com.sun.enterprise.admin.cli.CLIUtil;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
+import org.glassfish.cluster.ssh.util.SSHUtil;
 
 /**
- *  This is a local command that distributes the public key (RSA) to remote node(s)
+ *  This is a local command that distributes the SSH public key to remote node(s)
  *
  */
-@Service(name = "_setup-ssh-key")
+@Service(name = "setup-ssh")
 @Scoped(PerLookup.class)
 public final class SetupSshKey extends CLICommand {
     
-    @Param(optional = false, password=true)
-    private String sshpassword;
-
     @Param(optional = true)
     private String sshuser;
 
@@ -79,6 +78,12 @@ public final class SetupSshKey extends CLICommand {
     @Inject
     private Habitat habitat;
 
+    private String sshpassword;
+    private String sshkeypassphrase=null;
+
+    private boolean generateKey=false;
+    private boolean promptPass=false;
+
     /**
      */
     @Override
@@ -92,6 +97,27 @@ public final class SetupSshKey extends CLICommand {
         if(sshport==0) {
             sshport=22;
         }
+
+        if (sshkeyfile == null) {
+            //if user hasn't specified a key file and there is no key file at default
+            //location, then generate one
+            if (SSHUtil.getExistingKeyFile() == null) {
+                if(promptForKeyGeneration() && programOpts.isInteractive()) {
+                    generateKey=true;
+                    sshkeypassphrase=getSSHPassphrase();
+                }
+            } else {
+                //there is a key that requires to be distributed, hence need password
+                promptPass = true;
+            }
+        } else {
+            validateKeyFile(sshkeyfile);
+        }
+
+        if (sshpublickeyfile != null) {
+            validateKeyFile(sshpublickeyfile);
+        }
+
     }
 
     /**
@@ -104,18 +130,120 @@ public final class SetupSshKey extends CLICommand {
         Globals.setDefaultHabitat(habitat);
 
         for (String node : nodes) {
-            sshL.init(sshuser, node,  sshport, sshpassword, sshkeyfile, "", logger);
+            sshL.init(sshuser, node,  sshport, sshpassword, sshkeyfile, sshkeypassphrase, logger);
+            if (generateKey || promptPass) {
+                //prompt for password iff required
+                sshpassword=getSSHPassword();
+            }
             try {
-                sshL.setupKey(node, sshpublickeyfile);
+                sshL.setupKey(node, sshpublickeyfile, generateKey, sshpassword);
             } catch (IOException ce) {
-                logger.finer("SSH key setup failed: " + ce.getMessage());
-                throw new CommandException("SSH key setup failed: " + ce.getMessage());
+                logger.fine("SSH key setup failed: " + ce.getMessage());
+                throw new CommandException(Strings.get("KeySetupFailed", ce.getMessage()));
             } catch (Exception e) {
                 //handle KeyStoreException
             }
             if (sshL.checkConnection())
-                logger.finer("Connection SUCCEEDED!");
+                logger.fine("Connection SUCCEEDED!");
         }
         return SUCCESS;
+    }
+
+    /**
+     * Method that sets the prompt flag only if key file exists
+     * @param file the key file
+     */
+    private void validateKeyFile(String file) {
+        //if key exists, set prompt flag
+        File f = new File(file);
+        if (f.exists()) {
+            promptPass=true;
+        }
+    }
+    /**
+     * Get SSH password from password file or user.
+     */
+    private String getSSHPassword() throws CommandException {
+        String password = getFromPasswordFile("AS_ADMIN_SSH_PASSWORD");
+
+        //get password from user if not found in password file
+        if (password == null) {
+            if (programOpts.isInteractive()) {
+                password=readSSHPassword(Strings.get("SSHPasswordPrompt"));
+            } else {
+                throw new CommandException(Strings.get("SSHPasswordNotFound"));
+            }
+        }
+        return password;
+    }
+
+    /**
+     * Get SSH key passphrase from password file or user.
+     */
+    private String getSSHPassphrase() throws CommandException {
+        String passphrase = getFromPasswordFile("AS_ADMIN_SSH_KEYPASSPHRASE");
+
+        //get password from user if not found in password file
+        if (passphrase == null) {
+            if (programOpts.isInteractive()) {
+                //i18n
+                passphrase=readSSHPassword(Strings.get("SSHPassphrasePrompt"));
+            } else {
+                passphrase=""; //empty passphrase
+            }
+        }
+        return passphrase;
+    }
+
+    private String getFromPasswordFile(String name) throws CommandException {
+        String pass = null;
+        String pwfile = programOpts.getPasswordFile();
+        if (ok(pwfile)) {
+            passwords = CLIUtil.readPasswordFileOptions(pwfile, true);
+            logger.fine("Passwords from password file " + passwords);
+            pass = passwords.get(name);
+        }
+        return pass;
+    }
+
+    /**
+     * Prompt for key generation
+     */
+    private boolean promptForKeyGeneration() {
+        Console cons = System.console();
+
+        if (cons != null) {
+            String val = null;
+            do {
+                cons.printf("%s", Strings.get("GenerateKeyPairPrompt"));
+                val = cons.readLine();
+                if (val != null && (val.equalsIgnoreCase("yes") || val.equalsIgnoreCase("y"))) {
+                    logger.fine("Generate key!");
+                    return true;
+                } else if ( val != null && (val.equalsIgnoreCase("no") || val.equalsIgnoreCase("n"))) {
+                    break;
+                }
+            } while (val != null && !isValidAnswer(val));
+        }
+        return false;
+    }
+
+    private boolean isValidAnswer(String val) {
+        return val.equalsIgnoreCase("yes") || val.equalsIgnoreCase("no")
+                || val.equalsIgnoreCase("y") || val.equalsIgnoreCase("n") ;
+    }
+    /**
+     * Display the given prompt and read a password without echoing it.
+     * Returns null if no console available.
+     */
+    protected String readSSHPassword(String prompt) {
+        String password = null;
+        Console cons = System.console();
+        if (cons != null) {
+            char[] pc = cons.readPassword("%s", prompt);
+            // yes, yes, yes, it would be safer to not keep it in a String
+            password = new String(pc);
+        }
+        return password;
     }
 }
