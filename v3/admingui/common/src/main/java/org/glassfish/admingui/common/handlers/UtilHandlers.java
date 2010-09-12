@@ -821,6 +821,18 @@ public class UtilHandlers {
         Map map = (Map) handlerCtx.getInputValue("map");
         handlerCtx.setOutputValue("set", map.keySet());
     }
+    
+    @Handler(id="mapSet",
+	input = {
+	    @HandlerInput(name="map", type=Map.class, required=true),
+    	    @HandlerInput(name="key", type=String.class, required=true),
+    	    @HandlerInput(name="value", type=Object.class, required=true)})
+    public static void mapSet(HandlerContext handlerCtx) {
+        Map map = (Map) handlerCtx.getInputValue("map");
+        map.put(handlerCtx.getInputValue("key"),  handlerCtx.getInputValue("value"));
+    }
+
+
 
     @Handler(id = "convertStrToBoolean",
     input = {

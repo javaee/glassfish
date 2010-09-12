@@ -48,20 +48,20 @@
     <!beforeCreate
         setSessionAttribute(key="appGeneralTabs" value="general");
         getRequestValue(key="appName" value="#{pageSession.appName}");
+        urlencode(value="#{pageSession.appName}" encoding="UTF-8" result="#{pageSession.encodedAppName}");
         getRequestValue(key="listPageLink" value="#{pageSession.listPageLink}");
         //test the app still exists.
-        proxyExist(objectNameStr="amx:pp=/domain/applications,type=application,name=#{pageSession.appName}" exist="#{requestScope.exist}")
+        gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/applications/application/#{pageSession.encodedAppName}" exists="#{requestScope.exist}");
         if (! #{requestScope.exist}){
             gf.redirect(page="#{request.contextPath}/common/applications/applications.jsf");
         }
-        urlencode(value="#{pageSession.appName}" encoding="UTF-8" result="#{pageSession.encodedAppName}");
         getApplicationType(appName="#{pageSession.appName}" appType="#{pageSession.appType}")
         getAppEditIntegrationPoint(type="org.glassfish.admingui:editAppPage"  appEditPageMap="#{requestScope.editMap}")
         mapGet(Map="#{requestScope.editMap}"  Key="#{pageSession.appType}"  Value="#{requestScope.dPage}")
         if (! #{requestScope.dPage}){
             mapGet(Map="#{requestScope.editMap}"  Key="other"  Value="#{requestScope.dPage}")
         }
-        gf.redirect(page="#{request.contextPath}/#{requestScope.dPage}?appName=#{pageSession.encodedAppName}&listPageLink=#{pageSession.listPageLink}")
+        gf.redirect(page="#{request.contextPath}/#{requestScope.dPage}?appName=#{pageSession.encodedAppName}")
      />
     </event>
 </define>

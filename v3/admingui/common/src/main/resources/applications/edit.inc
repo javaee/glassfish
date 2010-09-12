@@ -40,10 +40,7 @@
 
 -->
 
-<!-- applications/edit.inc -->
 
-
-<!-- PropertySheet .... -->
 <sun:propertySheet id="propertySheet">
     <!-- Text Field section -->
     <sun:propertySheetSection id="propertSectionTextField">
@@ -77,7 +74,17 @@
         </sun:property>
 
         <sun:property id="jw" rendered="#{pageSession.showJavaWebStart}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.JavaWebStart}" helpText="$resource{i18n.deploy.JavaWebStartHelp}">
-            <sun:checkbox id="jwc" label="$resource{i18n.common.Enabled}" selected="#{pageSession.propMap['javaWebStartEnabled']}" selectedValue="true" />
+            <sun:checkbox id="jwc" label="$resource{i18n.common.Enabled}" selected="#{pageSession.javaWebStartEnabled}" selectedValue="true" >
+            </sun:checkbox>
+            <!beforeCreate
+                setPageSessionAttribute(key="javaWebStartEnabled" value="false");
+                foreach (var="oneProp" list="#{pageSession.tableList}") {
+                    if (#{requestScope.oneProp.name}=javaWebStartEnabled){
+                        setPageSessionAttribute(key="javaWebStartEnabled" value="#{requestScope.oneProp.value}");
+                        //will be nice if we can break here
+                    }
+                }
+            />
         </sun:property>
 
         <sun:property id="descProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}">

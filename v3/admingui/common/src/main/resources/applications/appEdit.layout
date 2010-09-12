@@ -51,7 +51,6 @@
         setPageSessionAttribute(key="selfUrl" value="#{sessionScope.REST_URL}/applications/application/#{pageSession.encodedAppName}");
         setPageSessionAttribute(key="appRefUrl" value="#{sessionScope.REST_URL}/servers/server/server/application-ref/#{pageSession.encodedAppName}");
         gf.onlyDASExist(onlyDAS="#{pageSession.onlyDASExist}");
-        setPageSessionAttribute(key="rest-api" value="true");
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
         gf.getTargetEnableInfo(appName="#{pageSession.appName}" status="#{pageSession.status}")
         if (#{pageSession.onlyDASExist}){
@@ -75,8 +74,8 @@
         setPageSessionAttribute(key="convertToFalseList2" value={"enabled"});
         setPageSessionAttribute(key="convertToFalseList" value={"enabled"});
 
-        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/applications,type=application,name=#{pageSession.appName}");
-        getProxyProperties(objectNameStr="#{pageSession.objectNameStr}"  result="#{pageSession.propMap}");
+        gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="GET" result="#{requestScope.propTable}");
+        setPageSessionAttribute(key="tableList" value="#{requestScope.propTable.data.extraProperties.properties}");
 
     />
     </event>
@@ -97,8 +96,6 @@
                     attrs="#{pageSession.valueMap}"
                     convertToFalse="#{pageSession.convertToFalseList}");
 
-                propMapToList(propMap="#{pageSession.propMap}" convertToFalse="#{pageSession.convertToFalseProp}" propList="#{requestScope.propList}")
-                setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="#{requestScope.propList}" );
 
                 if (#{pageSession.onlyDASExist}){
                     if (#{pageSession.showVS}){
@@ -120,12 +117,33 @@
                                 endpoint="#{sessionScope.REST_URL}/applications/application/#{pageSession.encodedAppName}/disable.json" method="POST"
                                 attrs="#{requestScope.attrsMap}"
                                 result="#{pageSession.json}");
-
                         }
                     }
                 }
+
+                if (#{pageSession.showJavaWebStart){
+                    if(!#{pageSession.javaWebStartEnabled}){
+                        //will be null if checkbox is unchecked.
+                        setPageSessionAttribute(key="javaWebStartEnabled" value="false");
+                    }
+                    foreach (var="oneProp" list="#{pageSession.tableList}") {
+                        if (#{requestScope.oneProp.name}=javaWebStartEnabled){
+                            setAttribute(key="found" value="true");
+                            mapSet(map="#{requestScope.oneProp}" key="value" value="#{pageSession.javaWebStartEnabled}")
+                        }
+                    }
+                    if (!#{requestScope.found}){
+                        createMap(result="#{requestScope.jmap}");
+                        mapPut(map="#{requestScope.jmap}" key="name" value="javaWebStartEnabled")
+                        mapPut(map="#{requestScope.jmap}" key="value" value="#{pageSession.javaWebStartEnabled}")
+                        listAdd(list="#{pageSession.tableList}" value="#{requestScope.jmap}");
+                    }
+                }
+                javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
+                gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json", method="POST", data="#{requestScope.tmpJSON}", result="#{requestScope.restResponse}");
+
                 prepareSuccessfulMsg();
-                gf.redirect(page="#{pageSession.editPage}?appName=#{pageSession.encodedAppName}&listPageLink=#{pageSession.listPageLink}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                gf.redirect(page="#{pageSession.editPage}?appName=#{pageSession.encodedAppName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
           />
           </sun:button>
           <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}"  immediate="#{true}">
