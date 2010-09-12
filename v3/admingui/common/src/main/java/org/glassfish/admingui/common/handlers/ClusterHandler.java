@@ -432,8 +432,8 @@ public class ClusterHandler {
         handlerCtx.setOutputValue("info", getInstanceInfo(instanceName));
     }
 
-    public static Map<String, String> getInstanceInfo(final String instanceName) {
-        Map<String, String> info = new HashMap<String, String>();
+    public static Map<String, Object> getInstanceInfo(final String instanceName) {
+        Map<String, Object> info = new HashMap<String, Object>();
         final String REST_URL = (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("REST_URL");
         final String instanceUrl = REST_URL + "/servers/server/" + instanceName;
         Map<String, Object> result = RestApiHandlers.restRequest(instanceUrl, null, "get", null);
@@ -458,6 +458,32 @@ public class ClusterHandler {
         // Debug
         result = RestApiHandlers.restRequest(configUrl + "/java-config", null, "get", null);
         Map<String, String> entity = (Map)getExtraPropertiesEntry(result, "entity");
+
+        // http ports
+        result = RestApiHandlers.restRequest(configUrl + "/network-config/network-listeners/network-listener", null, "get", null);
+        Map<String, String> children = (Map<String, String>)getExtraPropertiesEntry(result, "childResources");
+        if ((children != null) && (!children.isEmpty())) {
+            List<String> httpPorts = new ArrayList<String>();
+            for (String child : children.values()) {
+                result = RestApiHandlers.restRequest(child, null, "get", null);
+                Map<String, String> iiopListener = (Map<String, String>)getExtraPropertiesEntry(result, "entity");
+                httpPorts.add(iiopListener.get("port"));
+            }
+            info.put("httpPorts", httpPorts);
+        }
+
+        //iiop ports
+        result = RestApiHandlers.restRequest(configUrl + "/iiop-service/iiop-listener", null, "get", null);
+        children = (Map<String, String>)getExtraPropertiesEntry(result, "childResources");
+        if ((children != null) && (!children.isEmpty())) {
+            List<String> iiopPorts = new ArrayList<String>();
+            for (String child : children.values()) {
+                result = RestApiHandlers.restRequest(child, null, "get", null);
+                Map<String, String> iiopListener = (Map<String, String>)getExtraPropertiesEntry(result, "entity");
+                iiopPorts.add(iiopListener.get("port"));
+            }
+            info.put("iiopPorts", iiopPorts);
+        }
 
         info.put("config", instanceConfig);
         info.put("status", serverStatus);

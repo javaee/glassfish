@@ -41,7 +41,16 @@
 -->
 <!-- Page Title -->
 <sun:title id="propertyContentPage" title="$resource{i18n.instance.GeneralTitle}" >
-        <sun:button id="stopInstance" text="$resource{i18n.button.Stop}" disabled="#{false}" primary="#{false}"
+        <sun:button id="startInstance" text="$resource{i18n.button.Start}" disabled="#{pageSession.info.status != 'NOT_RUNNING'}" primary="#{false}"
+            onClick="if ( getConfirm(this, '$resource{i18n.msg.JS.confirmStartInstance}') )
+                  { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');}
+                    else {return false;} " >
+            <!command
+                gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server/#{endodedInstanceName}/start-instance", method="POST");
+                gf.redirect("#{pageSession.selfPage}");
+            />
+        </sun:button>
+        <sun:button id="stopInstance" text="$resource{i18n.button.Stop}" disabled="#{pageSession.info.status == 'NOT_RUNNING'}" primary="#{false}"
             onClick="if ( getConfirm(this, '$resource{i18n.msg.JS.confirmStopInstance}') )
                   { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');}
                     else {return false;} " >
@@ -49,7 +58,7 @@
                 gf.redirect("#{facesContext.externalContext.requestContextPath}/common/appServer/shutdown.jsf");
          />
         </sun:button>
-        <sun:button id="restartInstance" text="$resource{i18n.button.Restart}" disabled="#{false}" primary="#{false}"
+        <sun:button id="restartInstance" text="$resource{i18n.button.Restart}" disabled="#{pageSession.info.status == 'NOT_RUNNING'}" primary="#{false}"
             onClick="if ( getConfirm(this, '$resource{i18n.msg.JS.confirmRestartInstance}') )
                   { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');}
                     else {return false;} " >
@@ -80,24 +89,29 @@
         <sun:property id="hostName" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.hostHomeLabel}" >
             <sun:staticText id="hostName" text="#{pageSession.instanceName}" />
         </sun:property>
-        <sun:property id="status" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.statusLabel}" >
-            <sun:staticText id="status" text="#{pageSession.info.status}" />
+        <sun:property id="status" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Status}:" >
+            <sun:staticText id="status" text="#{requestScope.statusString}">
+                <!beforeCreate
+                    setAttribute(key="status" value="#{pageSession.info.status}");
+                    setAttribute(key="statusString" value="$resource{i18nc.status.$attribute{status}}  &nbsp; $resource{i18nc.status.image.$attribute{status}}");
+                />
+            </sun:staticText>
         </sun:property>
-        <sun:property id="loadBalancer" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.loadBalancerLabel}" >
+        <sun:property id="loadBalancer" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.lbTableColumn}:" >
             <sun:staticText id="loadBalancer" text="#{pageSession.loadBalancer}" />
         </sun:property>
         <sun:property id="httpPorts" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.httpPortsLabel}" >
-            <sun:staticText id="httpPorts" text="#{pageSession.httpPorts}" />
+            "<h1>#{pageSession.info.httpPorts.toString().substring(1).substring(0, pageSession.info.httpPorts.toString().length()-2)}</h1>
         </sun:property>
         <sun:property id="iiopPorts" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.iiopPortsLabel}" >
-            <sun:staticText id="iiopPorts" text="#{pageSession.iiopPorts}" />
+            "<h1>#{pageSession.info.iiopPorts.toString().substring(1).substring(0, pageSession.info.iiopPorts.toString().length()-2)}</h1>
         </sun:property>
         <sun:property id="jvmProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.JVMLabel}">
             <sun:hyperlink id="jvmlink" text="$resource{i18nc.inst.jvmReport}" onClick="javascript:
                 var jvmWin = window.open('#{request.contextPath}/common/appServer/jvmReport.jsf?pageTitle=$resource{i18nc.jvm.jvmReportPageName}&config=#{pageSession.info.config}','JVMReport','width='+(screen.width-300)+',height='+(screen.height-100)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');
                 jvmWin.focus(); return false;" />
         </sun:property>
-        <sun:property id="configuration" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.configurationLabel}">
+        <sun:property id="configuration" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Configuration}:">
             <sun:staticText id="configuration" text="#{pageSession.info.config}"/>
         </sun:property>
         <sun:property id="confiDir" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.configDirLabel}">
