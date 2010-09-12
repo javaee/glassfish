@@ -99,6 +99,7 @@ public class ListInstancesCommand implements AdminCommand {
     private ActionReport report;
     private ActionReport.MessagePart top;
     private static final String EOL = "\n";
+
     @Override
     public void execute(AdminCommandContext context) {
         // setup
@@ -115,8 +116,9 @@ public class ListInstancesCommand implements AdminCommand {
 
         Logger logger = context.getLogger();
 
-        if (!validateParams())
+        if (!validateParams()) {
             return;
+        }
 
         serverList = createServerList();
 
@@ -132,10 +134,11 @@ public class ListInstancesCommand implements AdminCommand {
             return;
         }
 
-        if (nostatus)
+        if (nostatus) {
             noStatus(serverList);
-        else
+        }  else {
             yesStatus(serverList, timeoutInMsec, logger);
+        }
 
         report.setActionExitCode(ExitCode.SUCCESS);
     }
@@ -148,25 +151,34 @@ public class ListInstancesCommand implements AdminCommand {
 
         StringBuilder sb = new StringBuilder();
         boolean firstServer = true;
+        Properties extraProps = new Properties();
+        List instanceList = new ArrayList();
 
         for (Server server : serverList) {
             boolean clustered = server.getCluster() != null;
 
-            if (standaloneonly && clustered)
+            if (standaloneonly && clustered) {
                 continue;
+            }
 
             String name = server.getName();
 
             if (notDas(name)) {
-                if (firstServer)
+                if (firstServer) {
                     firstServer = false;
-                else
+                }  else {
                     sb.append(EOL);
+                }
 
                 sb.append(name);
                 top.addProperty(name, "");
+                HashMap<String, Object> insDetails = new HashMap<String, Object>();
+                insDetails.put("name", name);
+                instanceList.add(insDetails);
             }
         }
+        extraProps.put("instanceList", instanceList);
+        report.setExtraProperties(extraProps);
     }
 
     private boolean notDas(String name) {
@@ -180,13 +192,15 @@ public class ListInstancesCommand implements AdminCommand {
         for (Server server : serverList) {
             boolean clustered = server.getCluster() != null;
 
-            if (standaloneonly && clustered)
+            if (standaloneonly && clustered) {
                 continue;
+            }
 
             String name = server.getName();
 
-            if (name == null)
+            if (name == null) {
                 continue;   // can this happen?!?
+            }
 
             Cluster cluster = domain.getClusterForInstance(name);
             String clusterName = (cluster != null) ? cluster.getName() : null;
@@ -210,10 +224,11 @@ public class ListInstancesCommand implements AdminCommand {
         List instanceList = new ArrayList();
 
         for (InstanceInfo ii : infos) {
-            if(first) 
+            if(first) {
                 first = false;
-            else
+            }  else {
                 sb.append(EOL);
+            }
             
             String name = ii.getName();
             String display = (ii.isRunning()) ? InstanceState.StateType.RUNNING.getDisplayString() :
@@ -250,10 +265,11 @@ public class ListInstancesCommand implements AdminCommand {
         extraProps.put("instanceList", instanceList);
         report.setExtraProperties(extraProps);
 
-        if (verbose)
+        if (verbose) {
             report.setMessage(InstanceInfo.format(infos));
-        else
+        }  else {
             report.setMessage(sb.toString());
+        }
     }
 
     /*
@@ -279,8 +295,9 @@ public class ListInstancesCommand implements AdminCommand {
             Cluster cluster = (Cluster) rc;
             return cluster.getInstances();
         }
-        else
+        else {
             return null;
+        }
     }
 
     private List<Server> getServersForNodeOrConfig() {
@@ -289,8 +306,9 @@ public class ListInstancesCommand implements AdminCommand {
 
         List<Server> list = getServersForNode();
 
-        if (list == null)
+        if (list == null) {
             list = getServersForConfig();
+        }
 
         return list;
     }
@@ -310,24 +328,28 @@ public class ListInstancesCommand implements AdminCommand {
                 }
             }
         }
-        if (!foundNode)
+        if (!foundNode) {
             return null;
-        else
+        } else {
             return domain.getInstancesOnNode(whichTarget);
+        }
     }
 
     private List<Server> getServersForConfig() {
         Config config = domain.getConfigNamed(whichTarget);
 
-        if (config == null)
+        if (config == null) {
             return null;
+        }
 
         List<ReferenceContainer> rcs = domain.getReferenceContainersOf(config);
         List<Server> servers = new LinkedList<Server>();
 
-        for (ReferenceContainer rc : rcs)
-            if (rc.isServer())
+        for (ReferenceContainer rc : rcs) {
+            if (rc.isServer()) {
                 servers.add((Server) rc);
+            }
+        }
 
         return servers;
     }
@@ -341,8 +363,9 @@ public class ListInstancesCommand implements AdminCommand {
         // that means ALL instances in the domains.  To make life easier -- we just
         //set the whichTarget to zilch to signal all instances in domain
 
-        if ("domain".equals(whichTarget))
+        if ("domain".equals(whichTarget)) {
             whichTarget = null;
+        }
 
         // standaloneonly AND a whichTarget are mutually exclusive
         if (standaloneonly && StringUtils.ok(whichTarget)) {
