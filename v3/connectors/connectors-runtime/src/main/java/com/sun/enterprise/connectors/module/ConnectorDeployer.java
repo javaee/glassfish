@@ -273,7 +273,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         Collection<ConnectorConnectionPool> conPools = ConnectorsUtil.getAllPoolsOfModule(moduleName, resources);
         Collection<String> poolNames = ConnectorsUtil.getAllPoolNames(conPools);
         Collection<Resource> connectorResources = ConnectorsUtil.getAllResources(poolNames, resources);
-        AdminObjectResource[] adminObjectResources = ResourcesUtil.createInstance().
+        Collection<AdminObjectResource> adminObjectResources = ResourcesUtil.createInstance().
                 getEnabledAdminObjectResources(moduleName);
         Collection<WorkSecurityMap> securityMaps = ConnectorsUtil.getAllWorkSecurityMaps(resources, moduleName);
         ResourceAdapterConfig rac = ConnectorsUtil.getRAConfig(moduleName, resources);
@@ -331,9 +331,9 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         }
     }
 
-    private void deleteAdminObjectResources(final AdminObjectResource[] adminObjectResources, String target,
+    private void deleteAdminObjectResources(final Collection<AdminObjectResource> adminObjectResources, String target,
                                             String raName) {
-        if (adminObjectResources != null && adminObjectResources.length > 0) {
+        if (adminObjectResources != null && adminObjectResources.size() > 0) {
             try {
                 final Server targetServer = domain.getServerNamed(target);
                 // delete admin-object-resource

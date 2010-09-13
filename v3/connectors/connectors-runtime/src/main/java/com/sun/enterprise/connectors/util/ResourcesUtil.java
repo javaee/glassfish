@@ -43,6 +43,7 @@ package com.sun.enterprise.connectors.util;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import com.sun.enterprise.connectors.module.ResourcesDeployer;
 import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.connectors.DeferredResourceConfig;
@@ -776,24 +777,35 @@ public class ResourcesUtil {
         return ConnectorsUtil.parseBoolean(appRef.getEnabled());
     }
 
-    public AdminObjectResource[] getEnabledAdminObjectResources(String raName)  {
-        return getEnabledAdminObjectResources(raName, getGlobalResources());
+    public Collection<AdminObjectResource> getEnabledAdminObjectResources(String raName)  {
+        Collection<AdminObjectResource> allResources = new ArrayList<AdminObjectResource>();
+
+        allResources.addAll(getEnabledAdminObjectResources(raName, getGlobalResources()));
+
+/*        Collection<Application> apps = getApplications().getApplications();
+        for(Application app : apps){
+            //TODO ASR check for enabled app and app-ref
+            Resources appScopedResources = app.getResources();
+            if(appScopedResources != null){
+                allResources.addAll(getEnabledAdminObjectResources(raName, appScopedResources));
+            }
+            List<Module> modules = app.getModule();
+            for(Module module : modules){
+                Resources moduleScopedResources = module.getResources();
+                if(moduleScopedResources != null){
+                    allResources.addAll(getEnabledAdminObjectResources(raName, moduleScopedResources));
+                }
+            }
+        }*/
+        return allResources;
     }
 
     //TODO can be made generic
     //TODO probably, DuckTyped for resources
-    public AdminObjectResource[] getEnabledAdminObjectResources(String raName, Resources resources)  {
-        List resourcesList = resources.getResources();
-        int resourceCount = resourcesList.size();      //sizeAdminObjectResource();
-        if(resourceCount == 0) {
-            return null;
-        }
+    public Collection<AdminObjectResource> getEnabledAdminObjectResources(String raName, Resources resources)  {
         List<AdminObjectResource> adminObjectResources = new ArrayList<AdminObjectResource>();
-        for(int i=0; i< resourceCount; ++i) {
-             Resource resource = (Resource)resourcesList.get(i);
+        for(Resource resource : resources.getResources(AdminObjectResource.class)) {
 
-            if(resource == null || !(resource instanceof AdminObjectResource))
-                continue;
             AdminObjectResource adminObjectResource = (AdminObjectResource)resource;
             String resourceAdapterName = adminObjectResource.getResAdapter();
 
@@ -808,9 +820,10 @@ public class ResourcesUtil {
                 continue;
             adminObjectResources.add(adminObjectResource);
         }
-        AdminObjectResource[] allAdminObjectResources =
-                    new AdminObjectResource[adminObjectResources.size()];
-        return adminObjectResources.toArray(allAdminObjectResources);
+        //AdminObjectResource[] allAdminObjectResources =
+        //            new AdminObjectResource[adminObjectResources.size()];
+        //return adminObjectResources.toArray(allAdminObjectResources);
+        return adminObjectResources;
     }
 
     private boolean belongToEmbeddedRarAndEnabled(String resourceAdapterName)  {
@@ -1079,5 +1092,38 @@ public class ResourcesUtil {
             }
         }
         return rarName;
+    }
+
+    public Resource getResource(String jndiName, String appName, String moduleName, Class resourceType){
+        Resource resource = null;
+        ResourceInfo resourceInfo = new ResourceInfo(jndiName, appName, moduleName);
+        Resources resources = null;
+        if(ConnectorsUtil.isApplicationScopedResource(resourceInfo) ||
+                ConnectorsUtil.isModuleScopedResource(resourceInfo) ){
+            if(getApplicationByName(appName) != null){
+                resources = getResources(resourceInfo);
+            }
+        }else{
+            resources = getResources(resourceInfo);
+        }
+        if(resources != null){
+            resource =  resources.getResourceByName(resourceType, jndiName);
+        }else{
+            //it is possible that "application" is being deployed (eg: during deployment "prepare" or application "start")
+            if(ConnectorsUtil.isApplicationScopedResource(resourceInfo) ||
+                    ConnectorsUtil.isModuleScopedResource(resourceInfo) ){
+
+                //for app-scoped-resource, resource is stored in "app-name" key
+                if(ConnectorsUtil.isApplicationScopedResource(resourceInfo)){
+                    moduleName = appName;
+                }
+                
+                resources = ResourcesDeployer.getResources(appName, moduleName);
+                if(resources != null){
+                    resource =  resources.getResourceByName(resourceType, jndiName);
+                }
+            }
+        }
+        return resource;
     }
 }

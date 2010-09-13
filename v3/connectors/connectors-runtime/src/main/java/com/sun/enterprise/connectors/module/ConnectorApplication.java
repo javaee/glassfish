@@ -160,7 +160,7 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
                 ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
         Collection<String> poolNames = ConnectorsUtil.getAllPoolNames(connectionPools);
         Collection<Resource> resources = ConnectorsUtil.getAllResources(poolNames, allResources);
-        AdminObjectResource[] adminObjectResources =
+        Collection<AdminObjectResource> adminObjectResources =
                 ResourcesUtil.createInstance().getEnabledAdminObjectResources(moduleName);
         for (AdminObjectResource aor : adminObjectResources) {
             resources.add(aor);
@@ -188,6 +188,8 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
      */
     public boolean undeployGlobalResources(boolean failIfResourcesExist) {
         boolean status;
+        //TODO ASR : should we undeploy app-scoped connector resources also ?
+        //TODO ASR : should we stop deployment by checking app-scoped connector resources also ?
         Collection<Resource> resources = filterConnectorResources(resourceManager.getAllResources());
         if (failIfResourcesExist && resources.size() > 0) {
             String message = "one or more resources of resource-adapter [ " + moduleName + " ] exist, " +
@@ -208,12 +210,12 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
                 ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
         Collection<String> poolNames = ConnectorsUtil.getAllPoolNames(connectionPools);
         Collection<Resource> connectorResources = ConnectorsUtil.getAllResources(poolNames, allResources);
-        AdminObjectResource[] adminObjectResources =
+        Collection<AdminObjectResource> adminObjectResources =
                 ResourcesUtil.createInstance().getEnabledAdminObjectResources(moduleName);
         List<Resource> resources = new ArrayList<Resource>();
         resources.addAll(connectorResources);
         resources.addAll(connectionPools);
-        resources.addAll(Arrays.asList(adminObjectResources));
+        resources.addAll(adminObjectResources);
 
         return resources;
     }
@@ -230,9 +232,14 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
         DeploymentContext dc = (DeploymentContext) stopContext;
         UndeployCommandParameters dcp = dc.getCommandParameters(UndeployCommandParameters.class);
         boolean failIfResourcesExist = false;
-        if (dcp.origin == OpsParams.Origin.undeploy) {
-            if(!(dcp.ignoreCascade || dcp.cascade)){
-                failIfResourcesExist = true;
+
+        //"stop" may be called even during deployment/load failure.
+        //Look for the undeploy flags only when it is undeploy-command
+        if(dcp != null){
+            if (dcp.origin == OpsParams.Origin.undeploy) {
+                if(!(dcp.ignoreCascade || dcp.cascade)){
+                    failIfResourcesExist = true;
+                }
             }
         }
 
