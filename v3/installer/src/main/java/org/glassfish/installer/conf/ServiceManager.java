@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.installer.conf;
 
 import java.util.logging.Level;
@@ -45,6 +44,7 @@ import java.util.logging.Logger;
 import org.glassfish.installer.util.GlassFishUtils;
 import org.openinstaller.util.ClassUtils;
 import org.openinstaller.util.ExecuteCommand;
+import org.openinstaller.util.Msg;
 
 /** Manages glassfish services related operations.
  * Operations such as start/stop/delete service are not exposed
@@ -99,11 +99,9 @@ public class ServiceManager {
         outputFromRecentRun = "";
 
         if (asadminExecuteCommand != null) {
-            LOGGER.log(Level.INFO, "Creating GlassFish instance");
-            LOGGER.log(Level.INFO, "with the following command line");
+            LOGGER.log(Level.INFO, Msg.get("CREATE_SERVICE", new String[]{serviceName}));
 
             outputFromRecentRun += asadminExecuteCommand.expandCommand(asadminExecuteCommand.getCommand()) + "\n";
-            LOGGER.log(Level.INFO, outputFromRecentRun);
 
             if (runningMode.contains("DRYRUN")) {
                 /*
@@ -117,7 +115,6 @@ public class ServiceManager {
                 asadminExecuteCommand.setCollectOutput(true);
                 asadminExecuteCommand.execute();
                 outputFromRecentRun = asadminExecuteCommand.getAllOutput();
-                LOGGER.log(Level.INFO, "Asadmin output: " + outputFromRecentRun);
                 // Look for the string failed till asadmin bugs related to stderr are resolved.
                 // Ugly/Buggy, but works for now.
                 if (outputFromRecentRun.indexOf("failed") != -1) {
@@ -126,33 +123,34 @@ public class ServiceManager {
                 }
 
             } catch (Exception e) {
-                LOGGER.log(Level.INFO, "In exception, asadmin output: " + outputFromRecentRun);
-                LOGGER.log(Level.INFO, "Exception while creating GlassFish domain: " + e.getMessage());
+                LOGGER.log(Level.FINEST, e.getMessage());
                 glassfishService = null;
                 serviceConfigSuccessful = false;
             }
         } else {
             serviceConfigSuccessful = false;
-            outputFromRecentRun = "Command line formation failed!";
+            outputFromRecentRun = Msg.get("INVALID_CREATE_SERVICE_COMMAND_LINE");
             glassfishService = null;
         }
+        LOGGER.log(Level.INFO, outputFromRecentRun);
+
         return glassfishService;
     }
 
     public boolean deleteService(Service serviceReference) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException(Msg.get("NOT_SUPPORTED_YET"));
     }
 
     public boolean stopService(Service serviceReference) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException(Msg.get("NOT_SUPPORTED_YET"));
     }
 
     public boolean startService(Service serviceReference) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException(Msg.get("NOT_SUPPORTED_YET"));
     }
 
     public boolean isServiceRunning(Service serviceReference) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException(Msg.get("NOT_SUPPORTED_YET"));
     }
     /* Caller can get the output of recent asadmin command run. This has to be used
      * along with configSuccessful flag to find out the overall status of configuration.

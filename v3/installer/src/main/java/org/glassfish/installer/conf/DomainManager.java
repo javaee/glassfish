@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.installer.conf;
 
 import java.util.logging.Level;
@@ -45,6 +44,7 @@ import java.util.logging.Logger;
 import org.glassfish.installer.util.GlassFishUtils;
 import org.openinstaller.util.ClassUtils;
 import org.openinstaller.util.ExecuteCommand;
+import org.openinstaller.util.Msg;
 
 /** Manages glassfish domain related operations.
  * Operations such as start/stop/delete domain are not exposed
@@ -134,10 +134,8 @@ public class DomainManager {
 
         outputFromRecentRun = "";
         if (asadminExecuteCommand != null) {
-            LOGGER.log(Level.INFO, "Creating GlassFish domain");
-            LOGGER.log(Level.INFO, "with the following command line");
-            outputFromRecentRun += asadminExecuteCommand.expandCommand(asadminExecuteCommand.getCommand()) + "\n";
-            LOGGER.log(Level.INFO, outputFromRecentRun);
+            LOGGER.log(Level.INFO, Msg.get("CREATE_DOMAIN", new String[]{domainName}));
+            outputFromRecentRun += asadminExecuteCommand.expandCommand(asadminExecuteCommand.getCommand());
 
             if (runningMode.contains("DRYRUN")) {
                 /*
@@ -151,50 +149,48 @@ public class DomainManager {
                 asadminExecuteCommand.setCollectOutput(true);
                 asadminExecuteCommand.execute();
                 outputFromRecentRun += asadminExecuteCommand.getAllOutput();
-                LOGGER.log(Level.INFO, "Asadmin output: " + outputFromRecentRun);
                 // Look for the string failed till asadmin bugs related to stderr are resolved.
                 // Ugly/Buggy, but works for now.
-                if (outputFromRecentRun.indexOf("failed") != -1) {
+                if (outputFromRecentRun.indexOf(Msg.get("FAILED", null)) != -1) {
                     domainConfigSuccessful = false;
                     glassfishDomain = null;
                 }
 
             } catch (Exception e) {
-                LOGGER.log(Level.INFO, "In exception, asadmin output: " + outputFromRecentRun);
-                LOGGER.log(Level.INFO, "Exception while creating GlassFish domain: " + e.getMessage());
+                LOGGER.log(Level.FINEST, e.getMessage());
                 glassfishDomain = null;
                 domainConfigSuccessful = false;
             }
         } else {
-            outputFromRecentRun = "Command Line formation failed.";
+            outputFromRecentRun = Msg.get("INVALID_CREATE_DOMAIN_COMMAND_LINE");
             domainConfigSuccessful = false;
             glassfishDomain = null;
         }
         /* Delete the password, it is set to be deleted upon JVM exit. */
         pFile.getPasswordFile().delete();
+        LOGGER.log(Level.INFO, outputFromRecentRun);
         return glassfishDomain;
     }
 
     public boolean deleteDomain(String domainName) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException(Msg.get("NOT_SUPPORTED_YET"));
     }
 
     public boolean stopDomain(String domainName) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException(Msg.get("NOT_SUPPORTED_YET"));
 
     }
 
-    public void startDomain(String domainName,String runningMode) {
-         /* Assemble the create-domain command line. */
+    public void startDomain(String domainName, String runningMode) {
+        /* Assemble the create-domain command line. */
         ExecuteCommand asadminExecuteCommand =
                 GlassFishUtils.assembleStartDomainCommand(productRef, domainName);
 
         outputFromRecentRun = "";
         if (asadminExecuteCommand != null) {
-            LOGGER.log(Level.INFO, "Starting GlassFish domain");
-            LOGGER.log(Level.INFO, "with the following command line");
+            LOGGER.log(Level.INFO, Msg.get("START_DOMAIN", new String[]{domainName}));
+
             outputFromRecentRun += asadminExecuteCommand.expandCommand(asadminExecuteCommand.getCommand()) + "\n";
-            LOGGER.log(Level.INFO, outputFromRecentRun);
 
             if (runningMode.contains("DRYRUN")) {
                 /*
@@ -208,22 +204,21 @@ public class DomainManager {
                 asadminExecuteCommand.setCollectOutput(true);
                 asadminExecuteCommand.execute();
                 outputFromRecentRun += asadminExecuteCommand.getAllOutput();
-                LOGGER.log(Level.INFO, "Asadmin output: " + outputFromRecentRun);
                 // Look for the string failed till asadmin bugs related to stderr are resolved.
                 // Ugly/Buggy, but works for now.
-                if (outputFromRecentRun.indexOf("failed") != -1) {
+                if (outputFromRecentRun.indexOf(Msg.get("FAILED", null)) != -1) {
                     domainConfigSuccessful = false;
                 }
 
             } catch (Exception e) {
-                LOGGER.log(Level.INFO, "In exception, asadmin output: " + outputFromRecentRun);
-                LOGGER.log(Level.INFO, "Exception while starting GlassFish domain: " + e.getMessage());
+                LOGGER.log(Level.FINEST, e.getMessage());
                 domainConfigSuccessful = false;
             }
         } else {
-            outputFromRecentRun = "Command Line formation failed.";
+            outputFromRecentRun = Msg.get("INVALID_START_DOMAIN_COMMAND_LINE");
             domainConfigSuccessful = false;
         }
+        LOGGER.log(Level.INFO, outputFromRecentRun);
     }
 
     /* Checks to make sure that the domain is running, currently used during
@@ -241,33 +236,26 @@ public class DomainManager {
                 GlassFishUtils.assembleListDomainsCommand(productRef);
 
         if (asadminExecuteCommand != null) {
-            LOGGER.log(Level.INFO, "Validating presence of GlassFish domain");
-            LOGGER.log(Level.INFO, "with the following command line");
-            LOGGER.log(Level.INFO,
-                    ExecuteCommand.expandCommand(asadminExecuteCommand.getCommand()));
             outputFromRecentRun = asadminExecuteCommand.expandCommand(asadminExecuteCommand.getCommand());
-
-
             try {
                 asadminExecuteCommand.setOutputType(ExecuteCommand.ERRORS | ExecuteCommand.NORMAL);
                 asadminExecuteCommand.setCollectOutput(true);
                 asadminExecuteCommand.execute();
                 outputFromRecentRun += asadminExecuteCommand.getAllOutput();
-                LOGGER.log(Level.INFO, "Asadmin output: " + outputFromRecentRun);
                 /* Look for the string "Name:<domainname> Status: Running" in the output. */
-                if (outputFromRecentRun.indexOf("Name: " + domainName + " Status: Running") != -1) {
+                String expectedOutput = Msg.get("DOMAIN_RUNNING_OUTPUT", new String[]{domainName});
+                if (outputFromRecentRun.indexOf(expectedOutput) != -1) {
                     retStatus = true;
                 }
 
             } catch (Exception e) {
-                LOGGER.log(Level.INFO, "In exception, asadmin output: " + outputFromRecentRun);
-                LOGGER.log(Level.INFO, "Exception while creating GlassFish domain: " + e.getMessage());
+                LOGGER.log(Level.FINEST, e.getMessage());
             }
         } else {
-            outputFromRecentRun = "Command Line formation failed.";
+            outputFromRecentRun = Msg.get("INVALID_LIST_DOMAIN_COMMAND_LINE");
             retStatus = false;
         }
-
+        LOGGER.log(Level.INFO, outputFromRecentRun);
         return retStatus;
     }
 

@@ -37,15 +37,16 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.installer.util;
 
+import java.util.logging.Logger;
 import org.glassfish.installer.conf.Cluster;
 import org.glassfish.installer.conf.Domain;
 import org.glassfish.installer.conf.Instance;
 import org.glassfish.installer.conf.PasswordFile;
 import org.glassfish.installer.conf.Product;
 import org.glassfish.installer.conf.Service;
+import org.openinstaller.util.ClassUtils;
 import org.openinstaller.util.EnhancedException;
 import org.openinstaller.util.ExecuteCommand;
 import org.openinstaller.util.InvalidArgumentException;
@@ -56,6 +57,12 @@ import org.openinstaller.util.InvalidArgumentException;
  */
 public class GlassFishUtils {
 
+    /* LOGGING */
+    private static final Logger LOGGER;
+
+    static {
+        LOGGER = Logger.getLogger(ClassUtils.getClassName());
+    }
     /* Move it to Resources */
     static public String windowsCopyRightNoticeText =
             "@echo off\n"
@@ -304,7 +311,7 @@ public class GlassFishUtils {
                         productRef.getAdminScript(),
                         "start-domain",
                         domainName
-                        });
+                    });
             return asadminExecuteCommand;
         } catch (EnhancedException ex) {
         }
@@ -312,10 +319,9 @@ public class GlassFishUtils {
     }
 
     static public boolean isGlassFishInstalledHere(String installDir) {
-       
-        return FileUtils.isFileExist(getGlassfishAdminScriptPath(installDir))
-                ||
-               FileUtils.isFileExist(getGlassfishConfigFilePath(installDir));
 
-}
+        return FileUtils.isFileExist(getGlassfishAdminScriptPath(installDir))
+                || FileUtils.isFileExist(getGlassfishConfigFilePath(installDir));
+
+    }
 }

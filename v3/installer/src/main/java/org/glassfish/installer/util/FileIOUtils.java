@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.installer.util;
 
 import java.io.BufferedReader;
@@ -48,6 +47,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.openinstaller.util.ClassUtils;
 
 /**
  * Utility class to perform file I/O operations such as read/write/update.
@@ -71,6 +73,13 @@ public class FileIOUtils {
      */
     protected int totalLines;
 
+    /* LOGGING */
+    private static final Logger LOGGER;
+
+    static {
+        LOGGER = Logger.getLogger(ClassUtils.getClassName());
+    }
+
     /**
      * Creates a new instance of FileIOUtils.
      */
@@ -83,6 +92,8 @@ public class FileIOUtils {
      * Sets up file for manipulation, If the file exists, then the contents are read
      * into array list.
      * @param fileName text file to manipulate.
+     * @throws IOException
+     * @throws FileNotFoundException
      */
     public void openFile(String fileName)
             throws IOException, FileNotFoundException {
@@ -131,12 +142,14 @@ public class FileIOUtils {
     /**
      * Save the buffer content into the currently opened file. Functionality
      * equal to regular file "Save" operation.
+     * @throws IOException
      */
     public void saveFile()
             throws IOException {
         BufferedWriter filePointer = new BufferedWriter(new FileWriter(inputFile));
         for (int loopVar = 0; loopVar < totalLines; loopVar++) {
             String temp = (String) contentBuffer.get(loopVar);
+            LOGGER.log(Level.FINEST, temp);
             filePointer.write(temp);
             filePointer.newLine();
         }
@@ -148,12 +161,14 @@ public class FileIOUtils {
      * equal to regular file "Save As" operation. Useful for copying,
      * updating templates and converting them to actual files.
      * @param outputFile target file to be used in save operation.
+     * @throws IOException
      */
     public void saveFileAs(String outputFile)
             throws IOException {
         BufferedWriter filePointer = new BufferedWriter(new FileWriter(outputFile));
         for (int loopVar = 0; loopVar < totalLines; loopVar++) {
             String temp = (String) contentBuffer.get(loopVar);
+            LOGGER.log(Level.FINEST, temp);
             filePointer.write(temp);
             filePointer.newLine();
         }
@@ -176,8 +191,10 @@ public class FileIOUtils {
      */
     public int findfirstStrcmp(String searchString) {
         int matchingLineNumber = -1;
+        LOGGER.log(Level.FINEST, searchString);
         for (int loopVar = 0; loopVar < totalLines; loopVar++) {
             String str = (String) contentBuffer.get(loopVar);
+            LOGGER.log(Level.FINEST, str);
             if (str.equals(searchString)) {
                 matchingLineNumber = loopVar;
                 break;
@@ -188,12 +205,15 @@ public class FileIOUtils {
 
     /** Case insensitive string search(only the first occurence) in the file.
      * * @param searchString string to be searched in the file.
+     * @param searchString
      * @return -1 if the given string not found, line number in the file otherwise.
      */
     public int findfirstSubStrcmp(String searchString) {
         int matchingLineNumber = -1;
+        LOGGER.log(Level.FINEST, searchString);
         for (int loopVar = 0; loopVar < totalLines; loopVar++) {
             String str = (String) contentBuffer.get(loopVar);
+            LOGGER.log(Level.FINEST, str);
             if (str.indexOf(searchString) != -1) {
                 matchingLineNumber = loopVar;
             }

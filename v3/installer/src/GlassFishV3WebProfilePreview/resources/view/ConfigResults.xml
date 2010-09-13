@@ -174,29 +174,26 @@ import java.util.logging.Logger;
 
     }
 
-    String formatMsg(String msgText) {
-        //Replace with regex later
-        String newText = msgText + "\n";
-        for (int i=0 ;i<msgText.length();i++)
-            newText += "-";
-        newText += "\n\n";
-        return newText;
-    }
-
+    String formatMsg(String inputMsg) {
+        String returnMsg = "\n" + inputMsg + "\n";
+        for (int i=0;i<inputMsg.length();i++)
+            returnMsg += "_";
+        returnMsg += "\n";
+        return returnMsg;
+     }
 
     void run() throws EnhancedException {
         wizard.enableNext(false);
         wizard.enableCancel(true);
-        wizard.setNextButtonText(Msg.get("CONFIG_FINISHED",null));
-        wizard.setBackButtonText(Msg.get("CONFIG_AGAIN",null));
-        wizard.setCancelButtonText(Msg.get("CONFIG_ABORT",null));
-        String output = formatMsg(Msg.get("CONFIG_HEADER_TITLE",null));
+        wizard.setNextButtonText(Msg.get("CONFIG_PANEL_NEXT_BUTTON_TEXT",null));
+        wizard.setBackButtonText(Msg.get("CONFIG_PANEL_BACK_BUTTON_TEXT",null));
+        wizard.setCancelButtonText(Msg.get("CONFIG_PANEL_CANCEL_BUTTON_TEXT",null));
+
+        String output = formatMsg(Msg.get("CONFIG_PANEL_CONTENT_HEADER",null));
         summaryHeader = wizard.getComponentByName((Container) content, "SUMMARY_HEADER");
         summaryTab = wizard.getComponentByName((Container) content, "SUMMARY_OF_CONFIGURATION");
         summaryHeader.setText(
-        "<HTML><body><font face='Sans-Serif'>" +
-        Msg.get("CONFIG_HEADER_TEXT",null) +
-         "<body><HTML>");
+        "<HTML><body><font face='Sans-Serif'>" + Msg.get("CONFIG_PANEL_HEADER_TEXT",null) + "<body><HTML>");
         summaryHeader.repaint();
 		
 	frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
@@ -211,53 +208,55 @@ import java.util.logging.Logger;
 
         // Create a clusterd instance
         if (ConfigHelper.getStringValue("ConfigType.Option.CONFIGURATION_MODE").equals("CREATE_CLUSTEREDINSTANCE")) {
-            output += formatMsg(Msg.get("CONFIG_CREATE_CLUSTERED_INSTANCE_INFO",null));
+            output += formatMsg(Msg.get("CONFIG_PANEL_CREATE_CLUSTERED_INSTANCE_TEXT",null));
             // Create a cluster if user chooses to do so.
             if (ConfigHelper.getBooleanValue("ClusteredInstance.Configuration.CREATE_CLUSTER")) {
-                output += formatMsg(Msg.get("CONFIG_CREATE_CLUSTER_INFO",null));
-                output += Msg.get("CONFIG_EXECUTING_COMMAND",null) + " " + createCluster(productRef, "DRYRUN") + "\n";
+                output += formatMsg(Msg.get("CONFIG_PANEL_CREATE_CLUSTER_TEXT",null));
+                output += Msg.get("CONFIG_PANEL_EXECUTING_COMMAND",null) + createCluster(productRef, "DRYRUN");
+		output += "\n";
                 summaryTab.setText(output);
                 summaryTab.repaint();
 		summaryTab.setCaretPosition(summaryTab.getDocument().getLength());
                 output += createCluster(productRef,"REALRUN");
-                output += "\n\n";
+		output += "\n";
                 summaryTab.setText(output);
                 summaryTab.repaint();
 		summaryTab.setCaretPosition(summaryTab.getDocument().getLength());
-
             }
 
             // Continue only when cluster creation is ok.
             if (overallStatus) {
-                output += formatMsg(Msg.get("CONFIG_CREATE_INSTANCE_INFO",null));
-                output += Msg.get("CONFIG_EXECUTING_COMMAND",null) + " " + createClusteredInstance(productRef, "DRYRUN") + "\n";
+                output += formatMsg(Msg.get("CONFIG_PANEL_CREATE_INSTANCE_TEXT",null));
+                output += Msg.get("CONFIG_PANEL_EXECUTING_COMMAND",null) + createClusteredInstance(productRef, "DRYRUN");
+		output += "\n";
                 summaryTab.setText(output);
                 summaryTab.repaint();
 		summaryTab.setCaretPosition(summaryTab.getDocument().getLength());
-                output += createClusteredInstance(productRef,"REALRUN");
-                output += "\n\n";
+                output += createClusteredInstance(productRef,"REALRUN") + "\n";
             }
         }
 
         // Create a standalone instance
         if (ConfigHelper.getStringValue("ConfigType.Option.CONFIGURATION_MODE").equals("CREATE_STANDALONEINSTANCE")) {
-            output += formatMsg(Msg.get("CONFIG_CREATE_STANDALONE_INSTANCE_INFO",null));
-            output += Msg.get("CONFIG_EXECUTING_COMMAND",null) + " " + createStandaloneInstance(productRef, "DRYRUN") + "\n";
+            output += formatMsg(Msg.get("CONFIG_PANEL_CREATE_STANDALONE_INSTANCE_TEXT",null));
+            output += Msg.get("CONFIG_PANEL_EXECUTING_COMMAND",null) + createStandaloneInstance(productRef, "DRYRUN");
+            output += "\n";
             summaryTab.setText(output);
             summaryTab.repaint();
 	    summaryTab.setCaretPosition(summaryTab.getDocument().getLength());
             output += createStandaloneInstance(productRef,"REALRUN");
-            output += "\n\n";
+            output += "\n";
         }
 
         // Create a Domain.
         if (ConfigHelper.getStringValue("ConfigType.Option.CONFIGURATION_MODE").equals("CREATE_DOMAIN")) {
-            output += formatMsg(Msg.get("CONFIG_CREATE_DOMAIN_INFO",null));
-            output += Msg.get("CONFIG_EXECUTING_COMMAND",null) + " " + createDomain(productRef, "DRYRUN") + "\n";
+            output += formatMsg(Msg.get("CONFIG_PANEL_CREATE_DOMAIN_TEXT",null));
+            output += Msg.get("CONFIG_PANEL_EXECUTING_COMMAND",null) + createDomain(productRef, "DRYRUN");
+            output += "\n";
             summaryTab.setText(output);
             summaryTab.repaint();
             output += createDomain(productRef,"REALRUN");
-            output += "\n\n";
+            output += "\n";
             summaryTab.setText(output);
             summaryTab.repaint();
 	    summaryTab.setCaretPosition(summaryTab.getDocument().getLength());
@@ -265,46 +264,56 @@ import java.util.logging.Logger;
             // Create a service for domain if needed.
             // Continue only when the domain is created successfully.
             if (overallStatus) {
-            if (ConfigHelper.getBooleanValue("Domain.Configuration.CREATE_SERVICE")) {
-                output += formatMsg(Msg.get("CONFIG_CREATE DOMAIN SERVICE_INFO",null));
-                output += Msg.get("CONFIG_EXECUTING_COMMAND",null) + " " + createDomainService(productRef, "DRYRUN") + "\n";
-                summaryTab.setText(output);
-                summaryTab.repaint();
-				summaryTab.setCaretPosition(summaryTab.getDocument().getLength());
-                output += createDomainService(productRef,"REALRUN");
-                output += "\n\n";
-            }
+                if (ConfigHelper.getBooleanValue("Domain.Configuration.CREATE_SERVICE")) {
+                    output += formatMsg(Msg.get("CONFIG_PANEL_CREATE_DOMAIN_SERVICE_TEXT",null));
+                    output += Msg.get("CONFIG_PANEL_EXECUTING_COMMAND",null) + createDomainService(productRef, "DRYRUN");
+            	    output += "\n";
+                    summaryTab.setText(output);
+                    summaryTab.repaint();
+                    summaryTab.setCaretPosition(summaryTab.getDocument().getLength());
+                    output += createDomainService(productRef,"REALRUN");
+                    output += "\n";
+                }
             }
 			
 			// start the recently created domain if needed.
             // Continue only when the domain is created successfully.
             if (overallStatus) {
-				if (ConfigHelper.getStringValue("Domain.Configuration.STARTUP_TYPE").equals("AUTOMATIC")) {
-                                        output += formatMsg(Msg.get("CONFIG_START_DOMAIN",null));
-					output += Msg.get("CONFIG_EXECUTING_COMMAND",null) + " " + startDomain(productRef, "DRYRUN") + "\n";
-					summaryTab.setText(output);
-					summaryTab.repaint();
-					summaryTab.setCaretPosition(summaryTab.getDocument().getLength());
-					output += startDomain(productRef,"REALRUN");
-					output += "\n\n";
-				}
+		if (ConfigHelper.getStringValue("Domain.Configuration.STARTUP_TYPE").equals("AUTOMATIC")) {
+			output += formatMsg(Msg.get("CONFIG_PANEL_START_DOMAIN_TEXT",null));
+			output += Msg.get("CONFIG_PANEL_EXECUTING_COMMAND",null) + startDomain(productRef, "DRYRUN");
+			output += "\n";
+			summaryTab.setText(output);
+			summaryTab.repaint();
+			summaryTab.setCaretPosition(summaryTab.getDocument().getLength());
+			output += startDomain(productRef,"REALRUN");
+			output += "\n";
+		}
             }
 
         }
-	LOGGER.log(Level.INFO, output);
-        summaryTab.setText(output);
-        summaryTab.repaint();
-	 summaryTab.setCaretPosition(summaryTab.getDocument().getLength());
-     if (overallStatus) 
-        summaryHeader.setText("<HTML><body><font face='Sans-Serif'>" + Msg.get("CONFIG_FOOTER_SUCCESS_TEXT",null) +"<body><HTML>");
-    else 
-        summaryHeader.setText("<HTML><body><font face='Sans-Serif'>" + Msg.get("CONFIG_FOOTER_FAILURE_TEXT",null) +"<body><HTML>");
+     LOGGER.log(Level.INFO, Msg.get("CONFIG_PANEL_CONFIGURING_GLASSFISH",null));
+     LOGGER.log(Level.INFO, output);
+     summaryTab.setText(output);
+     summaryTab.repaint();
+     summaryTab.setCaretPosition(summaryTab.getDocument().getLength());
+     if (overallStatus) {
+        summaryHeader.setText
+            ("<HTML><body><font face='Sans-Serif'>" + Msg.get("CONFIG_PANEL_SUCCESS_HEADER_STATUS_TEXT",null) + "<body><HTML>");
+    }
+    else {
+        summaryHeader.setText
+            ("<HTML><body><font face='Sans-Serif'>" + Msg.get("CONFIG_PANEL_FAILURE_HEADER_STATUS_TEXT",null) + "<body><HTML>");
+
+    }
     summaryHeader.repaint();
     frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
    
     // Enable back only for Advanced installation.
     if (ConfigHelper.getStringValue("InstallUserType.Option.USER_TYPE").equals("ADVANCED_USER"))
     	wizard.enableBack(true);
+
+
     wizard.enableNext(true);
     summaryTab.requestFocus();
   }

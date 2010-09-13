@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.openinstaller.provider.conf;
 
 import org.openinstaller.config.PropertySheet;
@@ -96,17 +95,18 @@ public final class InstallationConfigurator implements Configurator, Notificatio
         setConfigData(propSheet.getAllProps());
         try {
             if (productRef.getProductName().equals("Domain")) {
-                LOGGER.log(Level.INFO, "Configuring GlassFish");
+                LOGGER.log(Level.INFO, Msg.get("CONFIGURING_GLASSFISH", null));
                 configureGlassfish();
             }
 
             if (productRef.getProductName().equals("UpdateTool")) {
-                LOGGER.log(Level.INFO, "Configuring Updatetool");
+                LOGGER.log(Level.INFO, Msg.get("CONFIGURING_UPDATETOOL", null));
                 configureUpdatetool();
             }
         } catch (Exception e) {
             // Don't do anything as major error detection is handled throughout
             // this class where appropriate and fatal.
+            LOGGER.log(Level.FINEST, e.getMessage());
         }
 
         ResultReport.ResultStatus status =
@@ -128,13 +128,12 @@ public final class InstallationConfigurator implements Configurator, Notificatio
 
         try {
             if (productRef.getProductName().equals("Domain")) {
-                LOGGER.log(Level.INFO, "Unconfiguring GlassFish");
+                LOGGER.log(Level.INFO, Msg.get("UNCONFIGURING_GLASSFISH", null));
                 unconfigureGlassfish();
             }
 
             if (productRef.getProductName().equals("UpdateTool")) {
-                LOGGER.log(Level.INFO, "Unconfiguring Updatetool");
-                LOGGER.log(Level.INFO, "Installation directory: " + productRef.getInstallLocation());
+                LOGGER.log(Level.INFO, Msg.get("UNCONFIGURING_UPDATETOOL", null));
                 unconfigureUpdatetool();
                 org.glassfish.installer.util.FileUtils.deleteDirectory(new File(productRef.getInstallLocation() + File.separator + "updatetool"));
                 org.glassfish.installer.util.FileUtils.deleteDirectory(new File(productRef.getInstallLocation() + File.separator + "pkg"));
@@ -147,7 +146,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
                 wsShortMgr.deleteFolder(folderName);
             }
         } catch (Exception e) {
-            /* Ignore this for now */
+            LOGGER.log(Level.FINEST,e.getMessage());
         }
 
         return new ResultReport(ResultReport.ResultStatus.SUCCESS, "http://docs.sun.com/doc/820-7690", "http://docs.sun.com/doc/820-7690", null, productError);
@@ -169,33 +168,34 @@ public final class InstallationConfigurator implements Configurator, Notificatio
 
         String installDir = productRef.getInstallLocation();
         if (!OSUtils.isWindows()) {
+            LOGGER.log(Level.INFO, Msg.get("SETTING_EXECUTE_PERMISSIONS_FOR_GLASSFISH", null));
             org.glassfish.installer.util.FileUtils.setExecutable(installDir + "/glassfish/bin/asadmin");
             org.glassfish.installer.util.FileUtils.setExecutable(installDir + "/glassfish/bin/stopserv");
             org.glassfish.installer.util.FileUtils.setExecutable(installDir + "/glassfish/bin/startserv");
             org.glassfish.installer.util.FileUtils.setExecutable(installDir + "/glassfish/bin/jspc");
             org.glassfish.installer.util.FileUtils.setExecutable(installDir + "/bin/asadmin");
         }
+        
 
         // Update asenv
         updateConfigFile();
         // Unpack all of *pack*ed files.
         unpackJars();
-           //create domain startup/shutdown wrapper scripts
-         if (OSUtils.isWindows()) {
-                setupWindowsDomainScripts();
-                createServerShortCuts();
-            } else {
-                setupUnixDomainScripts();
-            }
+        //create domain startup/shutdown wrapper scripts
+        if (OSUtils.isWindows()) {
+            setupWindowsDomainScripts();
+            createServerShortCuts();
+        } else {
+            setupUnixDomainScripts();
         }
- 
-  
+    }
 
     /* Run configuration steps for update tool component. */
     public void configureUpdatetool() throws Exception {
 
         // set execute permissions for UC utilities
         if (!OSUtils.isWindows()) {
+            LOGGER.log(Level.INFO, Msg.get("SETTING_EXECUTE_PERMISSIONS_FOR_UPDATETOOL", null));
             org.glassfish.installer.util.FileUtils.setExecutable(productRef.getInstallLocation() + "/bin/pkg");
             org.glassfish.installer.util.FileUtils.setExecutable(productRef.getInstallLocation() + "/bin/updatetool");
         }
@@ -204,7 +204,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
 
         // check whether to bootstrap at all
         if (!ConfigHelper.getBooleanValue("UpdateTool.Configuration.BOOTSTRAP_UPDATETOOL")) {
-            LOGGER.log(Level.INFO, "Skipping updatetool bootstrap");
+            LOGGER.log(Level.INFO, Msg.get("SKIPPING_UPDATETOOL_BOOTSTRAP", null));
         } else {
             boolean allowUpdateCheck = ConfigHelper.getBooleanValue("UpdateTool.Configuration.ALLOW_UPDATE_CHECK");
             String proxyHost = configData.get("PROXY_HOST");
@@ -227,7 +227,8 @@ public final class InstallationConfigurator implements Configurator, Notificatio
                 props.setProperty("proxy.URL",
                         "http://" + proxyHost + ":" + proxyPort);
             }
-            LOGGER.log(Level.INFO, "Bootstrapping Updatetool");
+            LOGGER.log(Level.INFO, Msg.get("BOOTSTRAPPING_UPDATETOOL", null));
+            LOGGER.log(Level.FINEST, props.toString());
             //invoke bootstrap
             Bootstrap.main(props, LOGGER);
 
@@ -251,13 +252,14 @@ public final class InstallationConfigurator implements Configurator, Notificatio
                     shutdownCommand = productRef.getInstallLocation() + "/updatetool/bin/updatetool";
                 }
                 String[] shutdownCommandArray = {shutdownCommand, "--notifier", "--shutdown"};
-                LOGGER.log(Level.INFO, "Shutting down notifier process");
+                LOGGER.log(Level.INFO, Msg.get("SHUTDOWN_NOTIFIER", null));
                 ExecuteCommand shutdownExecuteCommand = new ExecuteCommand(shutdownCommandArray);
                 shutdownExecuteCommand.setOutputType(ExecuteCommand.ERRORS | ExecuteCommand.NORMAL);
                 shutdownExecuteCommand.setCollectOutput(true);
+                LOGGER.log(Level.FINEST, shutdownExecuteCommand.expandCommand(shutdownExecuteCommand.getCommand()));
                 shutdownExecuteCommand.execute();
             } catch (Exception e) {
-                LOGGER.log(Level.INFO, "Exception while unregistering notifier: " + e.getMessage());
+                LOGGER.log(Level.FINEST, e.getMessage());
                 // Its okay to ignore this for now.
             }
         } /* End, conditional code for Mac and Aix. */
@@ -271,13 +273,15 @@ public final class InstallationConfigurator implements Configurator, Notificatio
                 configCommand = productRef.getInstallLocation() + "/updatetool/bin/updatetoolconfig";
             }
             String[] configCommandArray = {configCommand, "--unregister"};
-            LOGGER.log(Level.INFO, "Unregistering notifier process");
+            LOGGER.log(Level.INFO, Msg.get("UNREGISTER_NOTIFIER", null));
             ExecuteCommand configExecuteCommand = new ExecuteCommand(configCommandArray);
             configExecuteCommand.setOutputType(ExecuteCommand.ERRORS | ExecuteCommand.NORMAL);
             configExecuteCommand.setCollectOutput(true);
+            LOGGER.log(Level.FINEST, configExecuteCommand.expandCommand(configExecuteCommand.getCommand()));
+
             configExecuteCommand.execute();
         } catch (Exception e) {
-            LOGGER.log(Level.INFO, "Exception while unregistering notifier: " + e.getMessage());
+            LOGGER.log(Level.FINEST, e.getMessage());
             // Its okay to ignore this for now.
 
         }
@@ -287,6 +291,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
     public void unconfigureGlassfish() {
         // Try to stop domain.
         stopDomain();
+        LOGGER.log(Level.INFO, Msg.get("CLEANINGUP_DIRECTORIES", null));
         try {
             // Cleanup list includes both windows and non-windows files.
             // FileUtils does check for the file before deleting.
@@ -297,12 +302,12 @@ public final class InstallationConfigurator implements Configurator, Notificatio
                 productRef.getInstallLocation() + File.separator + "glassfish" + File.separator + "lib"
             };
             for (int i = 0; i < dirList.length; i++) {
+                LOGGER.log(Level.FINEST, dirList[i]);
                 org.glassfish.installer.util.FileUtils.deleteDirectory(new File(dirList[i]));
             }
 
         } catch (Exception e) {
-            // Do nothing for now.
-            //LOGGER.log(Level.INFO, "Exception while removing created files: " + e.getMessage());
+            LOGGER.log(Level.FINEST, e.getMessage() + "\n");
         }
     }
 
@@ -315,17 +320,16 @@ public final class InstallationConfigurator implements Configurator, Notificatio
         try {
 
             String[] asadminCommandArray = {GlassFishUtils.getGlassfishAdminScriptPath(productRef.getInstallLocation()), "stop-domain", "domain1"};
-            LOGGER.log(Level.INFO, "Stopping default domain domain1");
-
+            LOGGER.log(Level.INFO, Msg.get("STOP_DEFAULT_DOMAIN", null));
             asadminExecuteCommand = new ExecuteCommand(asadminCommandArray);
             asadminExecuteCommand.setOutputType(ExecuteCommand.ERRORS | ExecuteCommand.NORMAL);
             asadminExecuteCommand.setCollectOutput(true);
+            LOGGER.log(Level.FINEST, asadminExecuteCommand.expandCommand(asadminExecuteCommand.getCommand()));
             asadminExecuteCommand.execute();
-            LOGGER.log(Level.INFO, "Asadmin output: " + asadminExecuteCommand.getAllOutput());
         } catch (Exception e) {
-            LOGGER.log(Level.INFO, "In exception, asadmin output: " + asadminExecuteCommand.getAllOutput());
-            LOGGER.log(Level.INFO, "Exception while creating GlassFish domain: " + e.getMessage());
         }
+        LOGGER.log(Level.FINEST, asadminExecuteCommand.getAllOutput());
+
     }
 
 
@@ -337,16 +341,18 @@ public final class InstallationConfigurator implements Configurator, Notificatio
     private void createUpdatetoolShortCuts() {
         String folderName =
                 (String) TemplateProcessor.getInstance().getFromDataModel("PRODUCT_NAME");
-        LOGGER.log(Level.INFO, "Creating shortcuts under Folder :<" + folderName + ">");
+        LOGGER.log(Level.INFO, Msg.get("CREATE_SHORTCUT_HEADER",
+                new String[]{folderName}));
         WindowsShortcutManager wsShortMgr = new WindowsShortcutManager();
         wsShortMgr.createFolder(folderName);
         String modifiedInstallDir = productRef.getInstallLocation().replace("\\", "\\\\");
+        LOGGER.log(Level.FINEST, modifiedInstallDir);
         // Create short cut for starting update tool.
-         wsShortMgr.createShortCut(
+        wsShortMgr.createShortCut(
                 folderName,
-                "Start Update Tool",
+                Msg.get("START_UPDATE_TOOL", null),
                 modifiedInstallDir + "\\\\bin\\\\updatetool.exe",
-                "Start updatetool",
+                Msg.get("START_UPDATE_TOOL", null),
                 "\"",
                 modifiedInstallDir + "\\\\updatetool\\\\vendor-packages\\\\updatetool\\\\images\\\\application-update-tool.ico",
                 modifiedInstallDir + "\\\\bin",
@@ -361,18 +367,20 @@ public final class InstallationConfigurator implements Configurator, Notificatio
     private void createServerShortCuts() throws EnhancedException {
         String folderName =
                 (String) TemplateProcessor.getInstance().getFromDataModel("PRODUCT_NAME");
-        LOGGER.log(Level.INFO, "Creating shortcuts under Folder :<" + folderName + ">");
-
+        LOGGER.log(Level.INFO, Msg.get("CREATE_SHORTCUT_HEADER",
+                new String[]{folderName}));
+  
         WindowsShortcutManager wsShortMgr = new WindowsShortcutManager();
         wsShortMgr.createFolder(folderName);
         String modifiedInstallDir = productRef.getInstallLocation().replace("\\", "\\\\");
-    
+
+        LOGGER.log(Level.FINEST, modifiedInstallDir);
         // Create short cut for uninstall.exe.
-         wsShortMgr.createShortCut(
+        wsShortMgr.createShortCut(
                 folderName,
-                "Uninstall",
+                Msg.get("UNINSTALL", null),
                 modifiedInstallDir + "\\\\uninstall.exe",
-                "Uninstall",
+                Msg.get("UNINSTALL", null),
                 "-j \" & chr(34) & \"" + jdkHome.replace("\\", "\\\\") + "\" & chr(34)",
                 modifiedInstallDir + "\\\\glassfish\\\\icons\\\\uninstall.ico",
                 modifiedInstallDir,
@@ -381,7 +389,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
         // Create short cut for Quick Start guide.
         wsShortMgr.createShortCut(
                 folderName,
-                "Quick Start Guide",
+                Msg.get("QSGUIDE", null),
                 modifiedInstallDir + "\\\\glassfish\\\\docs\\\\quickstart.html");
 
         // Look for correct page deployed in the installdir before linking it.
@@ -400,27 +408,27 @@ public final class InstallationConfigurator implements Configurator, Notificatio
             }
             f = null;
         }
+        LOGGER.log(Level.FINEST, aboutFile);
         // Create short cut for About Page.
         wsShortMgr.createShortCut(
                 folderName,
-                "About GlassFish Server",
+                Msg.get("ABOUT_GLASSFISH_SERVER", null),
                 modifiedInstallDir + aboutFilesLocation.replace("\\", "\\\\") + aboutFile.replace("\\", "\\\\"));
     }
 
-  
     //get JDK directory from java.home property and use it to define asadmin
     //execution environment PATH    
     private void updateConfigFile() {
         try {
             jdkHome = ConfigHelper.getStringValue("JDKSelection.directory.SELECTED_JDK");
         } catch (Exception e) {
-            LOGGER.log(Level.INFO, "JDKHome Couldnt be found ");
             jdkHome = new File(System.getProperty("java.home")).getParent();
             if (OSUtils.isMac() || OSUtils.isAix()) {
                 jdkHome = System.getProperty("java.home");
             }
         }
-        LOGGER.log(Level.INFO, "jdkHome: " + jdkHome);
+        LOGGER.log(Level.INFO, Msg.get("UPDATE_CONFIG_HEADER", null));
+        LOGGER.log(Level.INFO, Msg.get("JDK_HOME", new String[]{jdkHome}));
         //write jdkHome value to asenv.bat on Windows, asenv.conf on non-Windows platform...
         try {
             FileIOUtils configFile = new FileIOUtils();
@@ -434,13 +442,14 @@ public final class InstallationConfigurator implements Configurator, Notificatio
             configFile.saveFile();
             configFile.closeFile();
         } catch (Exception ex) {
-            LOGGER.log(Level.INFO, "Error while updating asenv configuration file: " + ex.getMessage());
+            LOGGER.log(Level.FINEST, ex.getMessage());
         }
     }
 
     /* Unpack compressed jars. */
     private void unpackJars() {
         //unpack jar files in all directories under glassfish/modules
+        LOGGER.log(Level.INFO, Msg.get("UNPACK_HEADER", null));
         String dirList[] = {
             productRef.getInstallLocation() + File.separator + "glassfish" + File.separator + "modules",
             productRef.getInstallLocation() + File.separator + "glassfish" + File.separator + "modules" + File.separator + "endorsed",
@@ -448,6 +457,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
 
         // if the jar extraction fails, then there is something really wrong.
         for (int i = 0; i < dirList.length; i++) {
+            LOGGER.log(Level.FINEST, dirList[i]);
             Unpack modulesUnpack = new Unpack(new File(dirList[i]), new File(dirList[i]));
             if (!modulesUnpack.unpackJars()) {
                 configSuccessful = false;
@@ -459,6 +469,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
      * This also should include copyright, that is currently taken from OSUtils.
      */
     private void setupWindowsDomainScripts() {
+        LOGGER.log(Level.INFO, Msg.get("SETUP_STARTSTOP_SCRIPTS", null));
         try {
             FileIOUtils startFile = new FileIOUtils();
             startFile.openFile(productRef.getInstallLocation() + "\\glassfish\\lib\\asadmin-start-domain.bat");
@@ -480,7 +491,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
             stopFile.saveFile();
             stopFile.closeFile();
         } catch (Exception ex) {
-            LOGGER.log(Level.INFO, "Error while creating wrapper file: " + ex.getMessage());
+            LOGGER.log(Level.FINEST, ex.getMessage());
             // OK to ignore this for now.
         }
 
@@ -490,6 +501,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
      */
 
     private void setupUnixDomainScripts() {
+        LOGGER.log(Level.INFO, Msg.get("SETUP_STARTSTOP_SCRIPTS", null));
         try {
             FileIOUtils startFile = new FileIOUtils();
             startFile.openFile(productRef.getInstallLocation() + "/glassfish/lib/asadmin-start-domain");
@@ -508,17 +520,13 @@ public final class InstallationConfigurator implements Configurator, Notificatio
             org.glassfish.installer.util.FileUtils.setExecutable(new File(productRef.getInstallLocation() + "/glassfish/lib/asadmin-start-domain").getAbsolutePath());
             org.glassfish.installer.util.FileUtils.setExecutable(new File(productRef.getInstallLocation() + "/glassfish/lib/asadmin-stop-domain").getAbsolutePath());
         } catch (Exception ex) {
-            LOGGER.log(Level.INFO, "Error while creating wrapper file: " + ex.getMessage());
-            // OK to ignore this for now.
-
+            LOGGER.log(Level.FINEST, ex.getMessage());
         }
     }
 
-
-
     /*create updatetool wrapper script used by shortcut items */
     private void setupUpdateToolScripts() {
-
+        LOGGER.log(Level.INFO, Msg.get("SETUP_UPDATETOOL_SCRIPT", null));
         org.glassfish.installer.util.FileUtils.createDirectory(productRef.getInstallLocation()
                 + File.separator
                 + "updatetool"
@@ -547,8 +555,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
             }
 
         } catch (Exception ex) {
-            LOGGER.log(Level.INFO, "Error while creating wrapper file: " + ex.getMessage());
-            // OK to ignore this for now.
+            LOGGER.log(Level.FINEST, ex.getMessage());
         }
     }
 }

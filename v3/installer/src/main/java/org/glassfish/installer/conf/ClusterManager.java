@@ -45,6 +45,7 @@ import java.util.logging.Logger;
 import org.glassfish.installer.util.GlassFishUtils;
 import org.openinstaller.util.ClassUtils;
 import org.openinstaller.util.ExecuteCommand;
+import org.openinstaller.util.Msg;
 
 /** Manages glassfish cluster related operations.
  * Operations such as start/stop/delete cluster are not exposed
@@ -107,8 +108,10 @@ public class ClusterManager {
 
         clusterConfigSuccessful = true;
 
+        LOGGER.log(Level.INFO, Msg.get("CHECKIF_DOMAIN_RUNNING",new String[]{domainRef.getDomainName()}));
+
         if (!glassfishDomainManager.isDomainRunning(domainRef.getDomainName())) {
-            outputFromRecentRun = "Domain " + domainRef.getDomainName() + " Not running\n";
+            outputFromRecentRun = Msg.get("DOMAIN_NOT_RUNNING",new String[] { domainRef.getDomainName()});
             clusterConfigSuccessful = false;
             //TODO Start the domain..
             return null;
@@ -123,13 +126,11 @@ public class ClusterManager {
         outputFromRecentRun = "";
 
         if (asadminExecuteCommand != null) {
-            LOGGER.log(Level.INFO, "Creating GlassFish cluster");
-            LOGGER.log(Level.INFO, "with the following command line");
+            LOGGER.log(Level.INFO, Msg.get("CREATE_CLUSTER", new String[] { clusterName}));
 
             /* Include the commandline also in the output. */
             outputFromRecentRun += asadminExecuteCommand.expandCommand(asadminExecuteCommand.getCommand()) + "\n";
-            LOGGER.log(Level.INFO, outputFromRecentRun);
-
+        
             if (runningMode.contains("DRYRUN")) {
                 /*
                 Do not execute the command, this is useful when the clients just
@@ -141,46 +142,45 @@ public class ClusterManager {
                 asadminExecuteCommand.setCollectOutput(true);
                 asadminExecuteCommand.execute();
                 outputFromRecentRun += asadminExecuteCommand.getAllOutput();
-                LOGGER.log(Level.INFO, "Asadmin output: " + outputFromRecentRun);
                 // Look for the string failed till asadmin bugs related to stderr are resolved.
                 // Ugly/Buggy, but works for now.
-                if (outputFromRecentRun.indexOf("failed") != -1) {
+                if (outputFromRecentRun.indexOf(Msg.get("FAILED",null)) != -1) {
                     clusterConfigSuccessful = false;
                     glassfishCluster = null;
                 }
 
             } catch (Exception e) {
-                LOGGER.log(Level.INFO, "In exception, asadmin output: " + outputFromRecentRun);
-                LOGGER.log(Level.INFO, "Exception while creating GlassFish Cluster: " + e.getMessage());
+                LOGGER.log(Level.FINEST, e.getMessage());
                 glassfishCluster = null;
                 clusterConfigSuccessful = false;
             }
         } else {
-            outputFromRecentRun = "Command Line formation failed.";
+            outputFromRecentRun = Msg.get("INVALID_CREATE_CLUSTER_COMMAND_LINE",null);
             clusterConfigSuccessful = false;
             glassfishCluster = null;
         }
+        LOGGER.log(Level.INFO, outputFromRecentRun);
         return glassfishCluster;
     }
 
     /* No need for this functionality in 3.1, hence not implemented yet. */
     public boolean deleteCluster() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException(Msg.get("NOT_SUPPORTED_YET"));
     }
 
     /* No need for this functionality in 3.1, hence not implemented yet. */
     public boolean stopCluster() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException(Msg.get("NOT_SUPPORTED_YET"));
     }
 
     /* No need for this functionality in 3.1, hence not implemented yet. */
     public boolean startCluster() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException(Msg.get("NOT_SUPPORTED_YET"));
     }
 
     /* No need for this functionality in 3.1, hence not implemented yet. */
     public boolean isClusterRunning() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException(Msg.get("NOT_SUPPORTED_YET"));
     }
 
     /* Caller can get the output of recent asadmin command run. This has to be used

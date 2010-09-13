@@ -189,7 +189,7 @@ run() {
         int mins = (theProgReporter.getEstimatedCompletionTime() % 3600) / 60;
         int secs = (theProgReporter.getEstimatedCompletionTime() % 3600) % 60;
 
-        progressStr += String.format(" Time Remaining: %02d:%02d:%02d", new Integer[] {hours, mins, secs});
+        progressStr += String.format(Msg.get("PROGRESS_TIME_REMAINING",null) + " %02d:%02d:%02d", new Integer[] {hours, mins, secs});
       }
       if (!theOldProgressStr.equals(progressStr)) {
         theOldProgressStr = progressStr;

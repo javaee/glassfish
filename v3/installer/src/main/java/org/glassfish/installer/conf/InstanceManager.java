@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.installer.conf;
 
 import java.util.logging.Level;
@@ -45,6 +44,7 @@ import java.util.logging.Logger;
 import org.glassfish.installer.util.GlassFishUtils;
 import org.openinstaller.util.ClassUtils;
 import org.openinstaller.util.ExecuteCommand;
+import org.openinstaller.util.Msg;
 
 /** Manages glassfish instsance related operations.
  * Operations such as start/stop/delete cluster are not exposed
@@ -131,7 +131,7 @@ public class InstanceManager {
 
         if (asadminExecuteCommand != null) {
 
-            LOGGER.log(Level.INFO, "Creating GlassFish Instance");
+            LOGGER.log(Level.INFO, Msg.get("CREATE_INSTANCE", new String[]{instanceName}));
             outputFromRecentRun += asadminExecuteCommand.expandCommand(asadminExecuteCommand.getCommand()) + "\n";
             if (runningMode.contains("DRYRUN")) {
                 /*
@@ -144,45 +144,44 @@ public class InstanceManager {
                 asadminExecuteCommand.setCollectOutput(true);
                 asadminExecuteCommand.execute();
                 outputFromRecentRun += asadminExecuteCommand.getAllOutput();
-                LOGGER.log(Level.INFO, "asadmin create-local-instance output: " + outputFromRecentRun);
                 // Look for the string failed till asadmin bugs related to stderr are resolved.
                 // Ugly/Buggy, but works for now.
-                if (outputFromRecentRun.indexOf("failed") != -1) {
+                if (outputFromRecentRun.indexOf(Msg.get("FAILED", null)) != -1) {
                     instanceConfigSuccessful = false;
                     glassfishInstance = null;
                 }
             } catch (Exception e) {
-                LOGGER.log(Level.INFO, "Possible errors/warnings, asadmin output: " + outputFromRecentRun);
-                LOGGER.log(Level.INFO, "Related Exception message: " + e.getMessage());
+                LOGGER.log(Level.FINEST, e.getMessage());
                 instanceConfigSuccessful = false;
                 glassfishInstance = null;
             }
         } else {
-            outputFromRecentRun = "Command Line formation failed.";
+            outputFromRecentRun = Msg.get("INVALID_CREATE_INSTANCE_COMMAND_LINE");
             instanceConfigSuccessful = false;
             glassfishInstance = null;
         }
+        LOGGER.log(Level.FINE, outputFromRecentRun);
         return glassfishInstance;
     }
 
     /* No need for this functionality in 3.1, hence not implemented yet. */
     public boolean deleteInstance() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException(Msg.get("NOT_SUPPORTED_YET"));
     }
 
     /* No need for this functionality in 3.1, hence not implemented yet. */
     public boolean stopInstance() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException(Msg.get("NOT_SUPPORTED_YET"));
     }
 
     /* No need for this functionality in 3.1, hence not implemented yet. */
     public boolean startInstance() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException(Msg.get("NOT_SUPPORTED_YET"));
     }
 
     /* No need for this functionality in 3.1, hence not implemented yet. */
     public boolean isInstanceRunning() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException(Msg.get("NOT_SUPPORTED_YET"));
     }
 
     public boolean isConfigSuccessful() {

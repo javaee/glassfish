@@ -37,11 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.installer.util;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Vector;
+import java.util.logging.Logger;
+import org.openinstaller.util.ClassUtils;
 
 /**
  * Utility class for String related operations.
@@ -51,6 +52,12 @@ public class StringUtils {
 
     /* Encoding scheme for String to be validated. */
     private static final String ASCII_CHARSET = "ISO-8859-1";
+    /* LOGGING */
+    private static final Logger LOGGER;
+
+    static {
+        LOGGER = Logger.getLogger(ClassUtils.getClassName());
+    }
 
     /**	Checks to make sure that the input is only numbers.
      * @param inputStr String to be validated.

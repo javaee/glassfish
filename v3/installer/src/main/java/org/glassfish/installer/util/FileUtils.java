@@ -37,11 +37,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.installer.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.openinstaller.util.ClassUtils;
 
 /**
  * File/Directory related operations.
@@ -53,9 +55,16 @@ public class FileUtils {
      * @param dirName File/Directory to verify.
      * @return true/false.
      */
+    /* LOGGING */
+    private static final Logger LOGGER;
+
+    static {
+        LOGGER = Logger.getLogger(ClassUtils.getClassName());
+    }
+
     static public boolean isSymLink(File dirName) throws IOException {
         boolean symLink = true;
-
+        LOGGER.log(Level.FINEST, dirName.getAbsolutePath());
         if (OSUtils.isWindows()) {
             symLink =
                     dirName.getAbsolutePath().equalsIgnoreCase(dirName.getCanonicalPath());
@@ -75,6 +84,7 @@ public class FileUtils {
         File filesList[] = objName.listFiles();
 
         for (File eachFile : filesList) {
+            LOGGER.log(Level.FINEST, eachFile.getAbsolutePath());
             if (eachFile.isDirectory()) {
                 if (isSymLink(eachFile)) {
                     deleteDirectory(eachFile);
@@ -94,6 +104,7 @@ public class FileUtils {
      * @param tFile File object.
      */
     public static void setExecutable(String fileName) throws SecurityException {
+        LOGGER.log(Level.FINEST, fileName);
         if (isFileExist(fileName)) {
             File tFile = new File(fileName);
             tFile.setExecutable(true);
@@ -105,6 +116,7 @@ public class FileUtils {
      * @return true/false.
      */
     public static boolean isFileExist(String fileName) {
+        LOGGER.log(Level.FINEST, fileName);
         return new File(fileName).exists();
     }
 
@@ -113,6 +125,7 @@ public class FileUtils {
      * @return true/false.
      */
     public static boolean deleteFile(String fileName) {
+        LOGGER.log(Level.FINEST, fileName);
         if (!isFileExist(fileName)) {
             return false;
         }
@@ -126,6 +139,7 @@ public class FileUtils {
      */
     public static boolean createDirectory(String pathToCreate) {
         boolean retStatus = true;
+        LOGGER.log(Level.FINEST, pathToCreate);
         try {
             File dirPath = new File(pathToCreate);
             dirPath.mkdirs();
