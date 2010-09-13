@@ -58,10 +58,7 @@ import java.security.Provider;
 //V3:Commented import com.sun.enterprise.config.ConfigContext;
 import com.sun.enterprise.server.pluggable.SecuritySupport;
 import com.sun.logging.LogDomains;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.AccessControlException;
 import java.security.AccessController;
 import java.security.Key;
@@ -112,7 +109,7 @@ public class SecuritySupportImpl extends SecuritySupport {
     private Date initDate = new Date();
 
     @Inject
-    private static Habitat habitat;
+    private Habitat habitat;
     @Inject
     private ProcessEnvironment penv;
 
