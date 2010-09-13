@@ -52,7 +52,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import java.lang.reflect.Field;
 import java.util.*;
-import org.glassfish.admin.rest.utils.Null;
 
 /**
  * @author Ludovic Champenois
