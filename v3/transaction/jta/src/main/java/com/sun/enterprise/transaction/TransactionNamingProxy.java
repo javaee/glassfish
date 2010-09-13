@@ -43,9 +43,9 @@ package com.sun.enterprise.transaction;
 import org.glassfish.api.naming.NamedNamingObjectProxy;
 import org.glassfish.api.naming.NamingObjectProxy;
 import org.glassfish.api.naming.NamingObjectsProvider;
-import org.glassfish.api.naming.GlassfishNamingManager;
-import org.glassfish.api.admin.ProcessEnvironment;
-import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
+//import org.glassfish.api.naming.GlassfishNamingManager;
+//import org.glassfish.api.admin.ProcessEnvironment;
+//import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.ComponentInvocation;
 
@@ -76,16 +76,16 @@ public class TransactionNamingProxy
     @Inject
     private Habitat habitat;
 
-    @Inject
-    private GlassfishNamingManager namingManager;
+//    @Inject
+//    private GlassfishNamingManager namingManager;
 
-    @Inject
-    private ProcessEnvironment processEnv;
+//    @Inject
+//    private ProcessEnvironment processEnv;
 
     private static Logger logger = LogDomains.getLogger(TransactionNamingProxy.class, LogDomains.JTA_LOGGER);
 
     private static final String USER_TX = "java:comp/UserTransaction";
-    private static final String USER_TX_NO_JAVA_COMP = "UserTransaction";
+//    private static final String USER_TX_NO_JAVA_COMP = "UserTransaction";
 
     private static final String TRANSACTION_SYNC_REGISTRY 
             = "java:comp/TransactionSynchronizationRegistry";
@@ -100,6 +100,10 @@ public class TransactionNamingProxy
             = "java:appserver/TransactionManager";
 
     public void postConstruct() {
+//        Issue 13108 (Cycle in our component chain involving GlassFishNamingManager
+//        and TransactionNamingProxy).  Comment out the publishing of "UserTransaction"
+//        and related field injections to break the circular dependency.
+        /*
         if( processEnv.getProcessType().isServer()) {
             try {
                // TODO: true or false?
@@ -109,6 +113,7 @@ public class TransactionNamingProxy
                logger.warning("Can't bind \"UserTransaction\" in JNDI");
             }
         }
+         */
     }
 
     public Object handle(String name) throws NamingException {
