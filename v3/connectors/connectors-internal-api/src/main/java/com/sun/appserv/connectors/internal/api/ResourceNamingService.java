@@ -229,16 +229,24 @@ public class ResourceNamingService implements ConnectorConstants {
     }
 
     private String getModuleScopedName(String name){
+
+/*
         if(!name.startsWith(JAVA_MODULE_SCOPE_PREFIX) && !name.startsWith(JAVA_GLOBAL_SCOPE_PREFIX)){
             return JAVA_MODULE_SCOPE_PREFIX+name;
         }
+*/
+
         return name;
     }
 
     private String getAppScopedName(String name){
+
+/*
         if(!name.startsWith(JAVA_APP_SCOPE_PREFIX) && !name.startsWith(JAVA_GLOBAL_SCOPE_PREFIX)){
             return JAVA_APP_SCOPE_PREFIX+name;
         }
+*/
+
         return name;
     }
 
