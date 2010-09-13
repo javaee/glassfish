@@ -76,6 +76,10 @@ public class AsadminMain {
     private final static int INVALID_COMMAND_ERROR = 3;
     private final static int SUCCESS = 0;
 
+    // XXX - move this to LogDomains?
+    private final static String ADMIN_CLI_LOGGER =
+                                    "com.sun.enterprise.admin.cli";
+
     private final static String DEBUG_FLAG = "Debug";
     private final static String ENV_DEBUG_FLAG = "AS_DEBUG";
 
@@ -130,21 +134,31 @@ public class AsadminMain {
         boolean trace = Boolean.parseBoolean(System.getenv("AS_TRACE"));
         boolean debug = sys != null || env;
 
-        logger = Logger.getLogger("");
+        /*
+         * Use a logger assoicated with the top-most package that we
+         * expect all admin commands to share.  Only this logger and
+         * its children obey the conventions that map terse=false to
+         * the INFO level and terse=true to the FINE level.
+         */
+        logger = Logger.getLogger(ADMIN_CLI_LOGGER);
         if (trace)
             logger.setLevel(Level.FINEST);
         else if (debug)
             logger.setLevel(Level.FINER);
         else {
             logger.setLevel(Level.FINE);
-            //logger.setLevel(Level.SEVERE);
         }
         logger.setUseParentHandlers(false);
-        for (Handler h : logger.getHandlers())
-            logger.removeHandler(h);
         Handler h = new CLILoggerHandler();
         h.setLevel(logger.getLevel());
         logger.addHandler(h);
+
+        // make sure the root logger uses our handler as well
+        Logger rlogger = Logger.getLogger("");
+        rlogger.setUseParentHandlers(false);
+        for (Handler lh : rlogger.getHandlers())
+            rlogger.removeHandler(lh);
+        rlogger.addHandler(h);
 
         if (CLIConstants.debugMode) {
             System.setProperty(CLIConstants.WALL_CLOCK_START_PROP,
