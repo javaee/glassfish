@@ -167,6 +167,14 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
         debug("Resources-Deployer :unload() called");
     }
 
+    public static Resources getResources(String appName, String moduleName){
+        Map<String, Resources> allResources = resourceConfigurations.get(appName);
+        if(allResources != null){
+            return allResources.get(moduleName);
+        }
+        return null;
+    }
+
 
     private void processArchive(DeploymentContext dc) {
 
@@ -524,17 +532,20 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                                 boolean embedded) throws Exception {
         for(com.sun.enterprise.config.serverbeans.Resource configBeanResource : configBeanResources){
             if(configBeanResource instanceof ResourcePool){
-                ResourcePool resourcePool = (ResourcePool)configBeanResource;
+                //if(configBeanResource instanceof JdbcConnectionPool){
+                    ResourcePool resourcePool = (ResourcePool)configBeanResource;
 
-                if(embedded){
-                    if(isEmbeddedRarResource(configBeanResource, configBeanResources) == TriState.TRUE){
-                        getResourceDeployer(resourcePool).deployResource(resourcePool, applicationName, moduleName);
+                    if(embedded){
+                        if(isEmbeddedRarResource(configBeanResource, configBeanResources) == TriState.TRUE){
+                            getResourceDeployer(resourcePool).deployResource(resourcePool, applicationName, moduleName);
+                        }
+                    }else{
+                        if(isEmbeddedRarResource(configBeanResource, configBeanResources) == TriState.FALSE){
+                            getResourceDeployer(resourcePool).deployResource(resourcePool, applicationName, moduleName);
+                        }
                     }
-                }else{
-                    if(isEmbeddedRarResource(configBeanResource, configBeanResources) == TriState.FALSE){
-                        getResourceDeployer(resourcePool).deployResource(resourcePool, applicationName, moduleName);
-                    }
-                }
+                //}
+
             }else if(configBeanResource instanceof BindableResource) {
                 BindableResource resource = (BindableResource)configBeanResource;
                 ResourceInfo resourceInfo = new ResourceInfo(resource.getJndiName(), applicationName, moduleName);
@@ -714,8 +725,8 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
             //TODO ASR call this only when the flag is on ? --properties preserveAppScopedResources=true
             cleanupPreservedResources(dc, event);
         }else if(Deployment.DEPLOYMENT_SUCCESS.equals(event.type())){
-            DeploymentContext dc = (DeploymentContext) event.hook();
-            String appName = getAppNameFromDeployCmdParams(dc);
+            ApplicationInfo applicationInfo = (ApplicationInfo) event.hook();
+            String appName = applicationInfo.getName();
             resourceConfigurations.remove(appName);
         }
     }
