@@ -45,7 +45,7 @@ import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Defines the notion of a run level ˆ la Unix.
+ * Defines the notion of a run level a la Unix.
  *
  * @author Jerome Dochez
  */
@@ -56,11 +56,13 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface RunLevel {
 
     /**
-     * Defines the environment in which this RunLevel applies
-     * An Environment is any type used to segregate the application of the
-     * run level annotation.
+     * Defines the environment in which this RunLevel applies.
+     * <p>
+     * An Environment is any type used to segregate the application / system 
+     * namespace.
+     * <p>
      * A null environment is considered a valid value and will be used as
-     * the default value.
+     * the default value mapping to Void.class.
      *
      * @return the environment type this annotation value applies in.
      */
