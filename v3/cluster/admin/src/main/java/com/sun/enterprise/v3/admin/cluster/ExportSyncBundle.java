@@ -130,7 +130,8 @@ public class ExportSyncBundle implements AdminCommand {
                 pumpItOut(context);
         }
         catch (Exception e) {
-            setError("BAD WRITE!!!! " + e.getLocalizedMessage());
+            setError(Strings.get("export.sync.bundle.fail", e.toString()));
+            logger.log(Level.SEVERE, Strings.get("export.sync.bundle.fail", e.toString()), e);
             return;
         }
     }
