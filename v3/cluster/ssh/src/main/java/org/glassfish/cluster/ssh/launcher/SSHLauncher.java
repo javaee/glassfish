@@ -176,7 +176,7 @@ public class SSHLauncher {
         this.port = port == 0 ? 22 : port;
 
         this.host = host;
-        this.keyFile = (keyFile == null) ? SSHUtil.getDefaultKeyFile(): keyFile;
+        this.keyFile = (keyFile == null) ? SSHUtil.getExistingKeyFile(): keyFile;
         this.logger = logger;
 
         this.userName = SSHUtil.checkString(userName) == null ?

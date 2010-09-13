@@ -102,6 +102,7 @@ public final class SetupSshKey extends CLICommand {
             //if user hasn't specified a key file and there is no key file at default
             //location, then generate one
             if (SSHUtil.getExistingKeyFile() == null) {
+                sshkeyfile = SSHUtil.getDefaultKeyFile();
                 if(promptForKeyGeneration() && programOpts.isInteractive()) {
                     generateKey=true;
                     sshkeypassphrase=getSSHPassphrase();
