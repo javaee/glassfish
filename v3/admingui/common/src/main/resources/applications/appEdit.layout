@@ -129,7 +129,7 @@
                     foreach (var="oneProp" list="#{pageSession.tableList}") {
                         if (#{requestScope.oneProp.name}=javaWebStartEnabled){
                             setAttribute(key="found" value="true");
-                            mapSet(map="#{requestScope.oneProp}" key="value" value="#{pageSession.javaWebStartEnabled}")
+                            mapPut(map="#{requestScope.oneProp}" key="value" value="#{pageSession.javaWebStartEnabled}")
                         }
                     }
                     if (!#{requestScope.found}){
