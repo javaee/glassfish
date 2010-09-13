@@ -1054,7 +1054,8 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
             }
             return pool;
         }*/
-        if(ConnectorsUtil.isApplicationScopedResource(poolInfo)){
+        //TODO ASR use ResourcesUtil to get pool config ?
+        if(ConnectorsUtil.isApplicationScopedResource(poolInfo) || ConnectorsUtil.isModuleScopedResource(poolInfo)){
             String applicationName = poolInfo.getApplicationName();
             String moduleName = poolInfo.getModuleName();
             Resources asc = null;
