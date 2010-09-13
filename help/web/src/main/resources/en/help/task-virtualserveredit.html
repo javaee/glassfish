@@ -1,6 +1,6 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
@@ -15,16 +15,22 @@ the machine on which the server is running.</b><p>Use either actual or virtual h
 server for your network (and, on a UNIX system, in your <tt>/etc/hosts</tt> file).
  The default value is the system property value <tt>${com.sun.aas.hostName}</tt>.</p></li>
 <li><b>Select a State option for the virtual server.</b><p>The value may be any of the following:</p><dl><dt>On</dt>
-<dd><p>The virtual server is active. This value is the default.</p></dd>
+<dd><p>The virtual server is active. This value is the default.</p>
+
+</dd>
 <dt>Off</dt>
-<dd><p>The virtual server is inactive. Attempts to access the server will return the error code 404 (resource not available).</p></dd>
+<dd><p>The virtual server is inactive. Attempts to access the server will return the error code 404 (resource not available).</p>
+
+</dd>
 <dt>Disabled</dt>
-<dd><p>The virtual server is disabled. Attempts to access the server will return the error code 403 (refused to fulfill the request).</p></dd>
+<dd><p>The virtual server is disabled. Attempts to access the server will return the error code 403 (refused to fulfill the request).</p>
+
+</dd>
 </dl>
 </li>
 <li><b>Select an SSO option for the new virtual server.</b><p>By default, a virtual server inherits the single sign-on (SSO) setting of the HTTP
 service. Select Enabled or Disabled to override the HTTP service setting by enabling
-or disabling single sign-on for this virtual server.</p><p>Single sign-on across applications on the Enterprise Server is supported by servlets and
+or disabling single sign-on for this virtual server.</p><p>Single sign-on across applications on the GlassFish Server is supported by servlets and
 JSP files. This feature allows multiple applications that require the same user sign-on
 information to share this information, rather than have the user sign on separately
 for each application. </p></li>
@@ -55,8 +61,16 @@ Properties button.</b></li></ul></li>
 <li><b>Click Save.</b>
 <hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
 Save.</p>
+
+
 <hr>
 </li></ol><h6>See Also</h6>
-<ul><li><p><a href="task-virtualservercreate.html">To Create a Virtual Server</a></p></li>
-<li><p><a href="task-virtualserverdelete.html">To Delete a Virtual Server</a></p></li></ul>
+<ul><li><p><a href="task-virtualservercreate.html">To Create a Virtual Server</a></p>
 
+</li>
+<li><p><a href="task-virtualserverdelete.html">To Delete a Virtual Server</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

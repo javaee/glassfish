@@ -1,52 +1,130 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-logviewer"></a><h4>Log Viewer</h4>
-<a name="indexterm-132"></a><a name="indexterm-133"></a><a name="indexterm-134"></a><p>Use the Log Viewer page to view the server log and to
-customize the log display.</p><p>The Log Viewer page contains three areas:</p>
-<ul><li><p>Search Criteria</p></li>
-<li><p>Advanced Search</p></li>
-<li><p>Search Results</p></li></ul>
-<p>The Search Criteria area contains the following options.</p><dl><dt>Advanced Search</dt>
-<dd><p>Clicking this link opens an area that allows you to make additional refinements to the log viewer.</p></dd>
+<a name="indexterm-135"></a><a name="indexterm-136"></a><a name="indexterm-137"></a><p>Use the Log Viewer page to view the server log and to
+customize the log display.</p>
+
+<p>The Log Viewer page contains three areas:</p>
+
+
+<ul><li><p>Search Criteria</p>
+
+</li>
+<li><p>Advanced Search</p>
+
+</li>
+<li><p>Search Results</p>
+
+</li></ul>
+<p>The Search Criteria area contains the following options.</p>
+
+<dl><dt>Advanced Search</dt>
+<dd><p>Clicking this link opens an area that allows you to make additional refinements to the log viewer.</p>
+
+</dd>
 <dt>Timestamp</dt>
-<dd><p>The Most Recent radio button displays the most recent messages. The Specific Range radio button opens From and To fields that allow you to view messages only from a certain period of time.</p><p>For the Time value, the syntax must take the following form (<b>SSS</b> stands for milliseconds):</p><pre><b>hh</b>:<b>mm</b>:<b>ss</b>.<b>SSS</b></pre><p>For example:</p><pre>17:10:00.000</pre><p>If the From value is later than the To value, an error message appears.</p></dd>
+<dd><p>The Most Recent radio button displays the most recent messages. The Specific Range radio button opens From and To fields that allow you to view messages only from a certain period of time.</p>
+
+<p>For the Time value, the syntax must take the following form (<b>SSS</b> stands for milliseconds):</p>
+
+<pre><b>hh</b>:<b>mm</b>:<b>ss</b>.<b>SSS</b></pre><p>For example:</p>
+
+<pre>17:10:00.000</pre><p>If the From value is later than the To value, an error message appears.</p>
+
+</dd>
 <dt>Log Level</dt>
-<dd><p>The selected log level for filtering. By default, the display includes all messages that appear in the server log at the chosen log level and more severe levels. Select the checkbox labeled &#8220;Do not include more severe messages&#8221; to display messages at only the chosen level.</p><p>To ensure that the messages you want to view appear in the server log, first set the appropriate log levels on the Module Log Levels page. See <a href="task-eelogginglevels.html">To Configure Log Levels</a>.</p><p>If you choose to filter log messages based on log level, only messages matching the specified filter criteria are shown. However, this filtering does not affect which messages are logged to the server log.</p></dd>
+<dd><p>The selected log level for filtering. By default, the display includes all messages that appear in the server log at the chosen log level and more severe levels. Select the checkbox labeled &#8220;Do not include more severe messages&#8221; to display messages at only the chosen level.</p>
+
+<p>To ensure that the messages you want to view appear in the server log, first set the appropriate log levels on the Module Log Levels page. See <a href="task-eelogginglevels.html">To Configure Log Levels</a>.</p>
+
+<p>If you choose to filter log messages based on log level, only messages matching the specified filter criteria are shown. However, this filtering does not affect which messages are logged to the server log.</p>
+
+</dd>
 </dl>
-<p>The Advanced Search area contains the following options.</p><dl><dt>Logger</dt>
-<dd><p>Logger namespaces to filter by module. Use shift-click or control-click to choose multiple namespaces.</p><p>Selecting a namespace at a higher level selects all the namespaces below it. For example, selecting <tt>javax.enterprise.system</tt> also selects the loggers for all the modules under that namespace: <tt>javax.enterprise.system.core</tt>, <tt>javax.enterprise.system.tools.admin</tt>, and so on.</p></dd>
+<p>The Advanced Search area contains the following options.</p>
+
+<dl><dt>Logger</dt>
+<dd><p>Logger namespaces to filter by module. Use shift-click or control-click to choose multiple namespaces.</p>
+
+<p>Selecting a namespace at a higher level selects all the namespaces below it. For example, selecting <tt>javax.enterprise.system</tt> also selects the loggers for all the modules under that namespace: <tt>javax.enterprise.system.core</tt>, <tt>javax.enterprise.system.tools.admin</tt>, and so on.</p>
+
+</dd>
 <dt>Custom Logger</dt>
-<dd><p>Loggers specific to a particular application, one per line.</p><p>If the application has several modules, you can view any or all of them. For example, suppose the application has loggers with the following names:</p><pre>com.mycompany.myapp.module1
+<dd><p>Loggers specific to a particular application, one per line.</p>
+
+<p>If the application has several modules, you can view any or all of them. For example, suppose the application has loggers with the following names:</p>
+
+<pre>com.mycompany.myapp.module1
 com.mycompany.myapp.module2
-com.mycompany.myapp.module3</pre><p>To view messages from all modules in the application, type <tt>com.mycompany.myapp</tt>. To view messages from <tt>module2</tt> only, type <tt>com.mycompany.myapp.module2</tt>.</p><p>When you specify one or more custom loggers, messages from Enterprise Server modules appear only if you specify them explicitly in the Logger area.</p></dd>
+com.mycompany.myapp.module3</pre><p>To view messages from all modules in the application, type <tt>com.mycompany.myapp</tt>. To view messages from <tt>module2</tt> only, type <tt>com.mycompany.myapp.module2</tt>.</p>
+
+<p>When you specify one or more custom loggers, messages from GlassFish Server modules appear only if you specify them explicitly in the Logger area.</p>
+
+</dd>
 <dt>Name-Value Pairs</dt>
-<dd><p>The key name and value for a thread, to view output from a specific thread. The key name is <tt>_ThreadID</tt>. For example:</p><pre>_ThreadID=13</pre><p>Suppose that <tt>com.mycompany.myapp.module2</tt> runs in several threads. To refine the log viewer to show only the output from a single thread, specify that module&#8217;s logger in the Custom Logger field, and then specify the thread ID in this field.</p></dd>
+<dd><p>The key name and value for a thread, to view output from a specific thread. The key name is <tt>_ThreadID</tt>. For example:</p>
+
+<pre>_ThreadID=13</pre><p>Suppose that <tt>com.mycompany.myapp.module2</tt> runs in several threads. To refine the log viewer to show only the output from a single thread, specify that module&#8217;s logger in the Custom Logger field, and then specify the thread ID in this field.</p>
+
+</dd>
 <dt>Display</dt>
-<dd><p>The number of messages to view at a time. The default number of messages displayed is 40. Other choices are 100, 250, and 1000.</p><p>To view stack traces, deselect the &#8220;Limit excessively long messages&#8221; checkbox. By default, stack traces do not appear in the viewer; to view them, click the <tt>(details)</tt> link for a message.</p></dd>
+<dd><p>The number of messages to view at a time. The default number of messages displayed is 40. Other choices are 100, 250, and 1000.</p>
+
+<p>To view stack traces, deselect the &#8220;Limit excessively long messages&#8221; checkbox. By default, stack traces do not appear in the viewer; to view them, click the <tt>(details)</tt> link for a message.</p>
+
+</dd>
 </dl>
-<p>The Search Results table displays the server log messages.</p><p>For each message, the Search Results table contains the following information.</p><dl><dt>Record Number</dt>
-<dd><p>The number of the message in the server log.</p></dd>
+<p>The Search Results table displays the server log messages.</p>
+
+<p>For each message, the Search Results table contains the following information.</p>
+
+<dl><dt>Record Number</dt>
+<dd><p>The number of the message in the server log.</p>
+
+</dd>
 <dt>Log Level</dt>
-<dd><p>The log level of the message.</p></dd>
+<dd><p>The log level of the message.</p>
+
+</dd>
 <dt>Message</dt>
-<dd><p>The brief text of the log message. Click the <tt>(details)</tt> link to view a formatted version of a message.</p></dd>
+<dd><p>The brief text of the log message. Click the <tt>(details)</tt> link to view a formatted version of a message.</p>
+
+</dd>
 <dt>Logger</dt>
-<dd><p>The logger module that generated the log message.</p></dd>
+<dd><p>The logger module that generated the log message.</p>
+
+</dd>
 <dt>Timestamp</dt>
-<dd><p>The date and time when the log message was issued.</p></dd>
+<dd><p>The date and time when the log message was issued.</p>
+
+</dd>
 <dt>Name/Value Pairs</dt>
-<dd><p>The thread name and ID of the log message.</p></dd>
+<dd><p>The thread name and ID of the log message.</p>
+
+</dd>
 </dl>
 <h5>Related Tasks</h5>
 
-<ul><li><p><a href="task-eelogging.html">To Configure General Logging Settings</a></p></li>
-<li><p><a href="task-eelogginglevels.html">To Configure Log Levels</a></p></li>
-<li><p><a href="task-logviewer.html">To View the Server Log</a></p></li></ul>
+<ul><li><p><a href="task-eelogging.html">To Configure General Logging Settings</a></p>
+
+</li>
+<li><p><a href="task-eelogginglevels.html">To Configure Log Levels</a></p>
+
+</li>
+<li><p><a href="task-logviewer.html">To View the Server Log</a></p>
+
+</li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
 
-<ul><li><p><tt>set-log-level</tt></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/rotate-log-1?a=view"><tt>rotate-log</tt>(1)</a></p></li></ul>
+<ul><li><p><tt>set-log-level</tt></p>
 
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/rotate-log-1?a=view"><tt>rotate-log</tt>(1)</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

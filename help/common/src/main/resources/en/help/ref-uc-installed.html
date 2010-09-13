@@ -1,31 +1,65 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-uc-installed"></a><h4>Installed Components</h4>
-<a name="indexterm-240"></a><p>The Installed Components page provides information about <a href="ref-uc-concepts.html#ref-uc-about-component">components</a> of the <a href="ref-uc-concepts.html#ref-uc-about-repository">installation image</a> that are
-installed.</p><p>To uninstall any installed components, first stop the Enterprise Server domain. Then use
+<a name="indexterm-243"></a><p>The Installed Components page provides information about <a href="ref-uc-concepts.html#ref-uc-about-component">components</a> of the <a href="ref-uc-concepts.html#ref-uc-about-repository">installation image</a> that are
+installed.</p>
+
+<p>To uninstall any installed components, first stop the GlassFish Server domain. Then use
 one of these commands:</p>
-<ul><li><p><tt>glassfishv3/bin/updatetool</tt>, which starts the Update Tool graphical utility</p></li>
-<li><p><tt>glassfishv3/bin/pkg</tt>, a command-line version of the Update Tool</p></li></ul>
-<p>For information on using the <tt>pkg</tt> command, see <a href="http://docs.sun.com/doc/820-7692/ghapp?a=view">Chapter 10, Extending Enterprise Server, in <i>Sun GlassFish Enterprise Server v3 Administration Guide</i></a>. The Update Tool
-utility has its own online help.</p><p>Restart the server after you have finished uninstalling the components.</p><p>The Installed Components page contains the following options.</p><dl><dt>Installation Path</dt>
-<dd><p>The file system path of the root or top level directory of the installation image.</p></dd>
+
+
+<ul><li><p><tt>glassfishv3/bin/updatetool</tt>, which starts the Update Tool graphical utility</p>
+
+</li>
+<li><p><tt>glassfishv3/bin/pkg</tt>, a command-line version of the Update Tool</p>
+
+</li></ul>
+<p>For information on using the <tt>pkg</tt> command, see <a href="http://docs.sun.com/doc/821-2416/ghapp?a=view">Chapter 10, Extending and Updating GlassFish Server, in <i>Oracle GlassFish Server 3.1 Administration Guide</i></a>. The Update Tool
+utility has its own online help.</p>
+
+<p>Restart the server after you have finished uninstalling the components.</p>
+
+<p>The Installed Components page contains the following options.</p>
+
+<dl><dt>Installation Path</dt>
+<dd><p>The file system path of the root or top level directory of the installation image.</p>
+
+</dd>
 <dt>Installed Components</dt>
-<dd><p>For each installed component, this table provides the following information.</p><dl><dt>Component</dt>
-<dd><p>The name of the component.</p></dd>
+<dd><p>For each installed component, this table provides the following information.</p>
+
+<dl><dt>Component</dt>
+<dd><p>The name of the component.</p>
+
+</dd>
 <dt>Category</dt>
-<dd><p>The category of software with which the component is associated, for example, Application Servers, System Tools, and Databases. The category is assigned to the component by the author of the component when the component is created.</p></dd>
+<dd><p>The category of software with which the component is associated, for example, Application Servers, System Tools, and Databases. The category is assigned to the component by the author of the component when the component is created.</p>
+
+</dd>
 <dt>Version</dt>
-<dd><p>The version number of the package in which the component is supplied.</p></dd>
+<dd><p>The version number of the package in which the component is supplied.</p>
+
+</dd>
 <dt>Installed Size</dt>
-<dd><p>The amount of disk space that the installation of the component consumes.</p></dd>
+<dd><p>The amount of disk space that the installation of the component consumes.</p>
+
+</dd>
 <dt>Source</dt>
-<dd><p>The name of the <a href="ref-uc-concepts.html#ref-uc-about-repository">Network Repository</a> from which the component was obtained.</p></dd>
+<dd><p>The name of the <a href="ref-uc-concepts.html#ref-uc-about-repository">Network Repository</a> from which the component was obtained.</p>
+
+</dd>
 </dl>
 </dd>
 </dl>
 <h5>Related Tasks</h5>
-<p><a href="task-uc-installed-remove.html">To View Installed Components</a></p><h5>Related <tt>asadmin</tt> Commands</h5>
+<p><a href="task-uc-installed-remove.html">To View Installed Components</a></p>
+
+<h5>Related <tt>asadmin</tt> Commands</h5>
 <p>None.</p>
+
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

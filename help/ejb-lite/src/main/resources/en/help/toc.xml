@@ -1,9 +1,9 @@
 <toc version="2.0">
 
- <tocitem target="tasks-topic-group" text="Enterprise Server Administration Console Tasks" expand="false">
+ <tocitem target="tasks-topic-group" text="GlassFish Server Administration Console Tasks" expand="false">
     <tocitem target="task-group-configejbcontainer" text="Configuring the EJB Container" expand="false">
         <tocitem target="task-ejbgeneral" text="To Configure EJB Settings" expand="false"></tocitem></tocitem></tocitem>
- <tocitem target="ref-topic-group" text="Enterprise Server Administration Console Reference" expand="false">
+ <tocitem target="ref-topic-group" text="GlassFish Server Administration Console Reference" expand="false">
     <tocitem target="ref-group-configuration" text="Configuration" expand="false">
         <tocitem target="ref-group-ejbcontainer" text="EJB Container" expand="false">
             <tocitem target="ref-ejbgeneral" text="Enterprise Java Beans (EJB)" expand="false"></tocitem>

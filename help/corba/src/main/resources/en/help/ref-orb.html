@@ -1,36 +1,76 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-orb"></a><h4>ORB</h4>
-<a name="indexterm-8"></a><a name="indexterm-9"></a><p>Use the ORB page to configure the Object Request Broker.</p><p>The ORB provides the required infrastructure to identify and locate objects, handle connection
+<a name="indexterm-8"></a><a name="indexterm-9"></a><p>Use the ORB page to configure the Object Request Broker.</p>
+
+<p>The ORB provides the required infrastructure to identify and locate objects, handle connection
 management, deliver data, and request communication. Remote clients of enterprise beans (EJB modules)
-communicate with the Enterprise Server using the ORB.</p><p>The ORB page contains the following options.</p><dl><dt>Load Defaults</dt>
-<dd><p>Button to restore the default values of all the settings.</p></dd>
+communicate with the GlassFish Server using the ORB.</p>
+
+<p>The ORB page contains the following options.</p>
+
+<dl><dt>Load Defaults</dt>
+<dd><p>Button to restore the default values of all the settings.</p>
+
+</dd>
 <dt>Thread Pool ID</dt>
-<dd><p>The thread pool used by the ORB. The ORB uses thread pools to respond to requests from remote clients of enterprise beans and other clients that communicate by using RMI-IIOP. The default thread pool for the ORB is <tt>thread-pool-1</tt>, which uses defaults appropriate for RMI/IIOP requests.</p></dd>
+<dd><p>The thread pool used by the ORB. The ORB uses thread pools to respond to requests from remote clients of enterprise beans and other clients that communicate by using RMI-IIOP. The default thread pool for the ORB is <tt>thread-pool-1</tt>, which uses defaults appropriate for RMI/IIOP requests.</p>
+
+</dd>
 <dt>Max Message Fragment Size</dt>
-<dd><p>The maximum fragment size for IIOP messages. Messages larger than this size are fragmented. The default value is 1024 bytes.</p></dd>
+<dd><p>The maximum fragment size for IIOP messages. Messages larger than this size are fragmented. The default value is 1024 bytes.</p>
+
+</dd>
 <dt>Total Connections</dt>
-<dd><p>The maximum number of incoming connections for all IIOP listeners. The default value is 1024.</p></dd>
+<dd><p>The maximum number of incoming connections for all IIOP listeners. The default value is 1024.</p>
+
+</dd>
 <dt>IIOP Client Authentication</dt>
-<dd><p>If the Enabled checkbox is selected, the server rejects unauthenticated requests and inserts an authentication-required bit in Interoperable Object References (IORs) sent to clients. IIOP client authentication can be enabled or disabled. This option is disabled by default.</p></dd>
+<dd><p>If the Enabled checkbox is selected, the server rejects unauthenticated requests and inserts an authentication-required bit in Interoperable Object References (IORs) sent to clients. IIOP client authentication can be enabled or disabled. This option is disabled by default.</p>
+
+</dd>
 <dt>Additional Properties</dt>
-<dd><p>Additional properties for the ORB. The Enterprise Serverdoes not define any additional properties for the ORB.</p></dd>
+<dd><p>Additional properties for the ORB. The GlassFish Serverdoes not define any additional properties for the ORB.</p>
+
+</dd>
 </dl>
 <h5>Related Tasks</h5>
 
-<ul><li><p><a href="task-orb.html">To Configure the ORB</a></p></li>
-<li><p><a href="task-iioplistenernew.html">To Create an IIOP Listener</a></p></li>
-<li><p><a href="task-iioplisteneredit.html">To Edit an IIOP Listener</a></p></li>
-<li><p><a href="task-editiiopssl.html">To Edit SSL Settings for a Secure IIOP Listener</a></p></li>
-<li><p><a href="task-iioplistenerdelete.html">To Delete an IIOP Listener</a></p></li></ul>
+<ul><li><p><a href="task-orb.html">To Configure the ORB</a></p>
+
+</li>
+<li><p><a href="task-iioplistenernew.html">To Create an IIOP Listener</a></p>
+
+</li>
+<li><p><a href="task-iioplisteneredit.html">To Edit an IIOP Listener</a></p>
+
+</li>
+<li><p><a href="task-editiiopssl.html">To Edit SSL Settings for a Secure IIOP Listener</a></p>
+
+</li>
+<li><p><a href="task-iioplistenerdelete.html">To Delete an IIOP Listener</a></p>
+
+</li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
 
-<ul><li><p><a href="http://docs.sun.com/doc/820-7701/create-iiop-listener-1?a=view"><tt>create-iiop-listener</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/list-iiop-listeners-1?a=view"><tt>list-iiop-listeners</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/delete-iiop-listener-1?a=view"><tt>delete-iiop-listener</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/create-ssl-1?a=view"><tt>create-ssl</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/delete-ssl-1?a=view"><tt>delete-ssl</tt>(1)</a></p></li></ul>
+<ul><li><p><a href="http://docs.sun.com/doc/821-2433/create-iiop-listener-1?a=view"><tt>create-iiop-listener</tt>(1)</a></p>
 
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/list-iiop-listeners-1?a=view"><tt>list-iiop-listeners</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/delete-iiop-listener-1?a=view"><tt>delete-iiop-listener</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/create-ssl-1?a=view"><tt>create-ssl</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/delete-ssl-1?a=view"><tt>delete-ssl</tt>(1)</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

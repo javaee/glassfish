@@ -1,16 +1,18 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
 
 <a name="task-threadpoolnew"></a><h4>To Create a Thread Pool</h4><a name="indexterm-32"></a><p>Thread pools are used by network listeners and by the ORB. Commonly, a
 network listener uses one of the two thread pools that are created
-when you install the Enterprise Server, and the ORB uses the other. You
+when you install the GlassFish Server, and the ORB uses the other. You
 may edit either of these default thread pools to specify settings appropriate to
 your applications or hardware systems, or you can create and use a thread
-pool with these settings.</p><ol>
+pool with these settings.</p>
+
+<ol>
 <li><b>In the navigation tree, expand the Configuration node.</b></li>
 <li><b>Under the Configuration node, select the Thread Pools node.</b><p>The Thread Pools page opens.</p></li>
 <li><b>On the Thread Pools page, click New.</b><p>The New Thread Pool page opens.</p></li>
@@ -30,6 +32,12 @@ is 2.</p></li>
 seconds, that a thread can remain idle in the pool.</b><p>After this time expires, the thread is removed from the pool. The default
 value is 900.</p></li>
 <li><b>Click OK.</b></li></ol><h6>See Also</h6>
-<ul><li><p><a href="task-threadpooledit.html">To Edit a Thread Pool</a></p></li>
-<li><p><a href="task-threadpooldelete.html">To Delete a Thread Pool</a></p></li></ul>
+<ul><li><p><a href="task-threadpooledit.html">To Edit a Thread Pool</a></p>
 
+</li>
+<li><p><a href="task-threadpooldelete.html">To Delete a Thread Pool</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

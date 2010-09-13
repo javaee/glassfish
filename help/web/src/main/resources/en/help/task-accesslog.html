@@ -1,6 +1,6 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
@@ -43,56 +43,108 @@ that each time the server is accessed, the log message is stored directly
 to the file. The default value is 300.</p></li>
 <li><b>In the Format field, type the string value to specify the following properties
 of the access log:</b>
-<ul><li><p>The information that is to be captured in the access log</p></li>
-<li><p>The order in which the information is captured</p></li></ul>
+<ul><li><p>The information that is to be captured in the access log</p>
+
+</li>
+<li><p>The order in which the information is captured</p>
+
+</li></ul>
 <p>The default value is as follows:</p><pre>%client.name% %auth-user-name% %datetime% %request% %status% %response.length%</pre><p>The following values are available for inclusion in the format string:</p><dl><dt><tt>%attribute.<i>name</i>%</tt></dt>
-<dd><p>Logs the value (by calling its <tt>toString</tt> method) of the request attribute with the given <i>name</i></p></dd>
+<dd><p>Logs the value (by calling its <tt>toString</tt> method) of the request attribute with the given <i>name</i></p>
+
+</dd>
 <dt><tt>%auth-user-name%</tt></dt>
-<dd><p>Name of authorized user</p></dd>
+<dd><p>Name of authorized user</p>
+
+</dd>
 <dt><tt>%client.name%</tt></dt>
-<dd><p>Client host name</p></dd>
+<dd><p>Client host name</p>
+
+</dd>
 <dt><tt>%client.dns%</tt></dt>
-<dd><p>Client DNS</p></dd>
+<dd><p>Client DNS</p>
+
+</dd>
 <dt><tt>%cookie.<i>name</i>%</tt></dt>
-<dd><p>The value of the request cookie with the given <i>name</i></p></dd>
+<dd><p>The value of the request cookie with the given <i>name</i></p>
+
+</dd>
 <dt><tt>%cookie.value%</tt></dt>
-<dd><p>The value of the first cookie found in the request</p></dd>
+<dd><p>The value of the first cookie found in the request</p>
+
+</dd>
 <dt><tt>%datetime%</tt></dt>
-<dd><p>System date</p></dd>
+<dd><p>System date</p>
+
+</dd>
 <dt><tt>%request%</tt></dt>
-<dd><p>Full HTTP request line</p></dd>
+<dd><p>Full HTTP request line</p>
+
+</dd>
 <dt><tt>%status%</tt></dt>
-<dd><p>Status</p></dd>
+<dd><p>Status</p>
+
+</dd>
 <dt><tt>%response.length%</tt></dt>
-<dd><p>Response content length</p></dd>
+<dd><p>Response content length</p>
+
+</dd>
 <dt><tt>%header.referer%</tt></dt>
-<dd><p>Referer header</p></dd>
+<dd><p>Referer header</p>
+
+</dd>
 <dt><tt>%header.user-agent%</tt></dt>
-<dd><p>User agent header</p></dd>
+<dd><p>User agent header</p>
+
+</dd>
 <dt><tt>%http-method%</tt></dt>
-<dd><p>HTTP method</p></dd>
+<dd><p>HTTP method</p>
+
+</dd>
 <dt><tt>%http-uri%</tt></dt>
-<dd><p>HTTP URI</p></dd>
+<dd><p>HTTP URI</p>
+
+</dd>
 <dt><tt>%query-str%</tt></dt>
-<dd><p>HTTP query string</p></dd>
+<dd><p>HTTP query string</p>
+
+</dd>
 <dt><tt>%http-version%</tt></dt>
-<dd><p>HTTP protocol version</p></dd>
+<dd><p>HTTP protocol version</p>
+
+</dd>
 <dt><tt>%header.accept%</tt></dt>
-<dd><p>Accept header</p></dd>
+<dd><p>Accept header</p>
+
+</dd>
 <dt><tt>%header.date%</tt></dt>
-<dd><p>Date header</p></dd>
+<dd><p>Date header</p>
+
+</dd>
 <dt><tt>%header.if-mod-since%</tt></dt>
-<dd><p>If-Modified-Since header</p></dd>
+<dd><p>If-Modified-Since header</p>
+
+</dd>
 <dt><tt>%header.auth%</tt></dt>
-<dd><p>Authorization header</p></dd>
+<dd><p>Authorization header</p>
+
+</dd>
 <dt><tt>%header.<i>any</i>%</tt></dt>
-<dd><p>Any valid HTTP header value defined in RFC 2616 (<tt>any</tt> is also a valid header value; it is specified as a variable here)</p></dd>
+<dd><p>Any valid HTTP header value defined in RFC 2616 (<tt>any</tt> is also a valid header value; it is specified as a variable here)</p>
+
+</dd>
 <dt><tt>%session.<i>name</i>%</tt></dt>
-<dd><p>The value of the session attribute with the name <i>name</i>, or <tt>NULL-SESSION-ATTRIBUTE-<i>name</i></tt> if the named attribute does not exist in the session, or <tt>NULL-SESSION</tt> if no session exists</p></dd>
+<dd><p>The value of the session attribute with the name <i>name</i>, or <tt>NULL-SESSION-ATTRIBUTE-<i>name</i></tt> if the named attribute does not exist in the session, or <tt>NULL-SESSION</tt> if no session exists</p>
+
+</dd>
 <dt><tt>%time-taken%</tt></dt>
-<dd><p>Time (in milliseconds) it took to service each request</p></dd>
+<dd><p>Time (in milliseconds) it took to service each request</p>
+
+</dd>
 <dt><tt>%vs.id%</tt></dt>
-<dd><p>Virtual server ID</p></dd>
+<dd><p>Virtual server ID</p>
+
+</dd>
 </dl>
 </li>
 <li>(Optional) <b>In the Additional Properties section, specify additional properties.</b><p>For a description of available properties, see <a href="ref-httpserviceprops.html">Properties Specific to the HTTP Service</a>.</p><ul>
@@ -106,5 +158,9 @@ Properties button.</b></li></ul></li>
 <li><b>Click Save.</b>
 <hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
 Save.</p>
+
+
 <hr>
 </li></ol>
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

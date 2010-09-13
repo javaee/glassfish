@@ -1,33 +1,67 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-jmsdestinationedit"></a><h4>Edit JMS Destination Resource</h4>
 <a name="indexterm-39"></a><a name="indexterm-40"></a><p>Use the Edit JMS Destination Resource page to modify the settings for a
-JMS destination resource.</p><p>The Edit JMS Destination Resource page contains the following options.</p><dl><dt>Load Defaults</dt>
-<dd><p>Button to restore the default values of all the settings.</p></dd>
+JMS destination resource.</p>
+
+<p>The Edit JMS Destination Resource page contains the following options.</p>
+
+<dl><dt>Load Defaults</dt>
+<dd><p>Button to restore the default values of all the settings.</p>
+
+</dd>
 <dt>JNDI Name</dt>
-<dd><p>A unique name that identifies the destination resource. The JNDI name is a read-only field. You can only specify the JNDI name when you create a new JMS destination resource.</p></dd>
+<dd><p>A unique name that identifies the destination resource. The JNDI name is a read-only field. You can only specify the JNDI name when you create a new JMS destination resource.</p>
+
+</dd>
 <dt>Physical Destination Name</dt>
-<dd><p>The name of the physical destination associated with this resource.</p><p>The Enterprise Server creates the physical destination automatically when it is needed and deletes it when you delete the destination resource.</p></dd>
+<dd><p>The name of the physical destination associated with this resource.</p>
+
+<p>The GlassFish Server creates the physical destination automatically when it is needed and deletes it when you delete the destination resource.</p>
+
+</dd>
 <dt>Resource Type</dt>
-<dd><p>The type of the destination resource. Available choices are <tt>javax.jms.Topic</tt> and <tt>javax.jms.Queue</tt>.</p></dd>
+<dd><p>The type of the destination resource. Available choices are <tt>javax.jms.Topic</tt> and <tt>javax.jms.Queue</tt>.</p>
+
+</dd>
 <dt>Description</dt>
-<dd><p>A description of the destination resource.</p></dd>
+<dd><p>A description of the destination resource.</p>
+
+</dd>
 <dt>Status</dt>
-<dd><p>The status of the destination resource. The destination resource can be enabled or disabled. This option is enabled by default.</p></dd>
+<dd><p>The status of the destination resource. The destination resource can be enabled or disabled. This option is enabled by default.</p>
+
+</dd>
 <dt>Additional Properties</dt>
-<dd><p>Additional properties for the destination resource. The Enterprise Serverdoes not define any additional properties for JMS destination resources.</p></dd>
+<dd><p>Additional properties for the destination resource. The GlassFish Serverdoes not define any additional properties for JMS destination resources.</p>
+
+</dd>
 </dl>
 <h5>Related Tasks</h5>
 
-<ul><li><p><a href="task-jmsdestinationnew.html">To Create a JMS Destination Resource</a></p></li>
-<li><p><a href="task-jmsdestinationedit.html">To Edit a JMS Destination Resource</a></p></li>
-<li><p><a href="task-jmsdestinationdelete.html">To Delete a JMS Destination Resource</a></p></li></ul>
+<ul><li><p><a href="task-jmsdestinationnew.html">To Create a JMS Destination Resource</a></p>
+
+</li>
+<li><p><a href="task-jmsdestinationedit.html">To Edit a JMS Destination Resource</a></p>
+
+</li>
+<li><p><a href="task-jmsdestinationdelete.html">To Delete a JMS Destination Resource</a></p>
+
+</li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
 
-<ul><li><p><a href="http://docs.sun.com/doc/820-7701/create-jms-resource-1?a=view"><tt>create-jms-resource</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/list-jms-resources-1?a=view"><tt>list-jms-resources</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/delete-jms-resource-1?a=view"><tt>delete-jms-resource</tt>(1)</a></p></li></ul>
+<ul><li><p><tt>create-jms-resource</tt>(1)</p>
 
+</li>
+<li><p><tt>list-jms-resources</tt>(1)</p>
+
+</li>
+<li><p><tt>delete-jms-resource</tt>(1)</p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

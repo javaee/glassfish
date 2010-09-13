@@ -1,35 +1,69 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-realms"></a><h4>Realms</h4>
-<a name="indexterm-195"></a><p>The Enterprise Server comes preconfigured with three realms: <tt>file</tt>, <tt>certificate</tt>, and <tt>admin-realm</tt>.
+<a name="indexterm-198"></a><p>The GlassFish Server comes preconfigured with three realms: <tt>file</tt>, <tt>certificate</tt>, and <tt>admin-realm</tt>.
 It is also possible to create <tt>ldap</tt>, <tt>JDBC</tt>, <tt>solaris</tt>, and custom realms. Generally, you
 will have one realm of each type on a server, but on the
-Enterprise Server there are two file realms: <tt>file</tt> and <tt>admin-realm</tt>. These are
+GlassFish Server there are two file realms: <tt>file</tt> and <tt>admin-realm</tt>. These are
 two realms of the same type used for two different purposes. It is
 also possible to have a different certificate database for each virtual server on
-your system.</p><p>Use the Realms page to configure realms.</p><p>For each realm, the following information is provided.</p><dl><dt>Name</dt>
-<dd><p>The name of the realm.</p></dd>
+your system.</p>
+
+<p>Use the Realms page to configure realms.</p>
+
+<p>For each realm, the following information is provided.</p>
+
+<dl><dt>Name</dt>
+<dd><p>The name of the realm.</p>
+
+</dd>
 <dt>Class Name</dt>
-<dd><p>The class name for the realm.</p></dd>
+<dd><p>The class name for the realm.</p>
+
+</dd>
 </dl>
-<p>The Realms table also contains the following options.</p><dl><dt>New</dt>
-<dd><p>Button to create a new realm.</p></dd>
+<p>The Realms table also contains the following options.</p>
+
+<dl><dt>New</dt>
+<dd><p>Button to create a new realm.</p>
+
+</dd>
 <dt>Delete</dt>
-<dd><p>Button to delete one or more selected realms.</p></dd>
+<dd><p>Button to delete one or more selected realms.</p>
+
+</dd>
 </dl>
 <h5>Related Tasks</h5>
 
-<ul><li><p><a href="task-realmnew.html">To Create a Realm</a></p></li>
-<li><p><a href="task-realmedit.html">To Edit a Realm</a></p></li>
-<li><p><a href="task-todeleterealm.html">To Delete a Realm</a></p></li>
-<li><p><a href="task-tosetdefault.html">To Set the Default Realm</a></p></li>
-<li><p><a href="task-createcustomrealm.html">To Create a Custom Realm</a></p></li></ul>
+<ul><li><p><a href="task-realmnew.html">To Create a Realm</a></p>
+
+</li>
+<li><p><a href="task-realmedit.html">To Edit a Realm</a></p>
+
+</li>
+<li><p><a href="task-todeleterealm.html">To Delete a Realm</a></p>
+
+</li>
+<li><p><a href="task-tosetdefault.html">To Set the Default Realm</a></p>
+
+</li>
+<li><p><a href="task-createcustomrealm.html">To Create a Custom Realm</a></p>
+
+</li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
 
-<ul><li><p><a href="http://docs.sun.com/doc/820-7701/create-auth-realm-1?a=view"><tt>create-auth-realm</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/delete-auth-realm-1?a=view"><tt>delete-auth-realm</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/list-auth-realms-1?a=view"><tt>list-auth-realms</tt>(1)</a></p></li></ul>
+<ul><li><p><a href="http://docs.sun.com/doc/821-2433/create-auth-realm-1?a=view"><tt>create-auth-realm</tt>(1)</a></p>
 
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/delete-auth-realm-1?a=view"><tt>delete-auth-realm</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/list-auth-realms-1?a=view"><tt>list-auth-realms</tt>(1)</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

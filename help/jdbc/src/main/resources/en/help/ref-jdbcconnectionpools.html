@@ -1,6 +1,6 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-jdbcconnectionpools"></a><h4>Connection Pools</h4>
@@ -9,42 +9,98 @@ when the connection pool is registered. Connection pools use a JDBC driver to
 create physical database connections. Your application borrows a connection from the pool, uses
 it, then returns it to the pool by closing it. To create a
 JDBC resource, specify the associated connection pool. Multiple JDBC resources can specify a
-single connection pool.</p><p>A JDBC connection pool is a group of reusable connections for a
+single connection pool.</p>
+
+<p>A JDBC connection pool is a group of reusable connections for a
 particular database. Because creating each new physical connection is time-consuming, the server maintains a
 pool of available connections to increase performance. When an application requests a connection,
 it obtains one from the pool. When an application closes a connection, the
-connection is returned to the pool.</p><p>When creating a connection pool with the Administration Console, you are defining the
-aspects of a connection to a specific database.</p><p>Use the JDBC Connection Pools page to configure JDBC connection pools.</p><p>For each connection pool, the following information is provided.</p><dl><dt>Pool Name</dt>
-<dd><p>The name of the connection pool.</p></dd>
+connection is returned to the pool.</p>
+
+<p>When creating a connection pool with the Administration Console, you are defining the
+aspects of a connection to a specific database.</p>
+
+<p>Use the JDBC Connection Pools page to configure JDBC connection pools.</p>
+
+<p>For each connection pool, the following information is provided.</p>
+
+<dl><dt>Pool Name</dt>
+<dd><p>The name of the connection pool.</p>
+
+</dd>
 <dt>Resource Type</dt>
-<dd><p>The resource type of the connection pool.</p></dd>
+<dd><p>The resource type of the connection pool.</p>
+
+</dd>
 <dt>Classname</dt>
-<dd><p>The name of the vendor-specific class that implements the <tt>javax.sql.XADataSource</tt>, <tt>java.sql.ConnectionPoolDataSource</tt>, <tt>javax.sql.DataSource</tt>, or <tt>java.sql.Driver</tt> API.</p></dd>
+<dd><p>The name of the vendor-specific class that implements the <tt>javax.sql.XADataSource</tt>, <tt>java.sql.ConnectionPoolDataSource</tt>, <tt>javax.sql.DataSource</tt>, or <tt>java.sql.Driver</tt> API.</p>
+
+</dd>
 <dt>Description</dt>
-<dd><p>A short description of the connection pool.</p></dd>
+<dd><p>A short description of the connection pool.</p>
+
+</dd>
 </dl>
-<p>The Pools table also contains the following options.</p><dl><dt>New</dt>
-<dd><p>Button to create a new connection pool.</p></dd>
+<p>The Pools table also contains the following options.</p>
+
+<dl><dt>New</dt>
+<dd><p>Button to create a new connection pool.</p>
+
+</dd>
 <dt>Delete</dt>
-<dd><p>Button to delete one or more selected connection pools.</p></dd>
+<dd><p>Button to delete one or more selected connection pools.</p>
+
+</dd>
 </dl>
 <h5>Related Tasks</h5>
 
-<ul><li><p><a href="task-setdbaccess.html">To Set Up Database Access</a></p></li>
-<li><p><a href="task-integratejdbcdriver.html">To Integrate a JDBC Driver</a></p></li>
-<li><p><a href="task-jdbcconnectionpoolnew.html">To Create a JDBC Connection Pool</a></p></li>
-<li><p><a href="task-jdbcconnectionpooledit.html">To Edit JDBC Connection Pool General Settings</a></p></li>
-<li><p><a href="task-verifyconnpoolsettings.html">To Verify Connection Pool Settings</a></p></li>
-<li><p><a href="task-jdbcconnectionpooladvance.html">To Edit JDBC Connection Pool Advanced Attributes</a></p></li>
-<li><p><a href="task-jdbcconnectionpoolproperty.html">To Edit JDBC Connection Pool Properties</a></p></li>
-<li><p><a href="task-jdbcconnectionpooldelete.html">To Delete a JDBC Connection Pool</a></p></li></ul>
+<ul><li><p><a href="task-setdbaccess.html">To Set Up Database Access</a></p>
+
+</li>
+<li><p><a href="task-integratejdbcdriver.html">To Integrate a JDBC Driver</a></p>
+
+</li>
+<li><p><a href="task-jdbcconnectionpoolnew.html">To Create a JDBC Connection Pool</a></p>
+
+</li>
+<li><p><a href="task-jdbcconnectionpooledit.html">To Edit JDBC Connection Pool General Settings</a></p>
+
+</li>
+<li><p><a href="task-verifyconnpoolsettings.html">To Verify Connection Pool Settings</a></p>
+
+</li>
+<li><p><a href="task-jdbcconnectionpooladvance.html">To Edit JDBC Connection Pool Advanced Attributes</a></p>
+
+</li>
+<li><p><a href="task-jdbcconnectionpoolproperty.html">To Edit JDBC Connection Pool Properties</a></p>
+
+</li>
+<li><p><a href="task-jdbcconnectionpooldelete.html">To Delete a JDBC Connection Pool</a></p>
+
+</li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
 
-<ul><li><p><a href="http://docs.sun.com/doc/820-7701/add-resources-1?a=view"><tt>add-resources</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/create-jdbc-connection-pool-1?a=view"><tt>create-jdbc-connection-pool</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/delete-jdbc-connection-pool-1?a=view"><tt>delete-jdbc-connection-pool</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/list-jdbc-connection-pools-1?a=view"><tt>list-jdbc-connection-pools</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/ping-connection-pool-1?a=view"><tt>ping-connection-pool</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/start-database-1?a=view"><tt>start-database</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/stop-database-1?a=view"><tt>stop-database</tt>(1)</a></p></li></ul>
+<ul><li><p><a href="http://docs.sun.com/doc/821-2433/add-resources-1?a=view"><tt>add-resources</tt>(1)</a></p>
 
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/create-jdbc-connection-pool-1?a=view"><tt>create-jdbc-connection-pool</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/delete-jdbc-connection-pool-1?a=view"><tt>delete-jdbc-connection-pool</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/list-jdbc-connection-pools-1?a=view"><tt>list-jdbc-connection-pools</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/ping-connection-pool-1?a=view"><tt>ping-connection-pool</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/start-database-1?a=view"><tt>start-database</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/stop-database-1?a=view"><tt>stop-database</tt>(1)</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

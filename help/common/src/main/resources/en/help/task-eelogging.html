@@ -1,6 +1,6 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
@@ -16,10 +16,10 @@ server log file.</b><p>The default location is <tt>glassfish/domains/domain1/log
 <li><b>In the Log Handler field, type the absolute class name of a
 custom log handler.</b><p>A custom log handler enables you to  send logs to a destination
 other than <tt>server.log</tt> or <tt>syslog</tt>. The custom handler must extend the class <tt>java.util.logging.Handler</tt>
-(a JSR 047 compliant API). Put the handler class in the Enterprise Server
+(a JSR 047 compliant API). Put the handler class in the GlassFish Server
 classpath so that the handler is installed during server startup.</p></li>
 <li><b>In the File Rotation Limit field, type the size in bytes that the
-server log file must reach before it is rotated.</b><p>When the server log reaches the specified size, the Enterprise Server creates a
+server log file must reach before it is rotated.</b><p>When the server log reaches the specified size, the GlassFish Server creates a
 new, empty file named <tt>server.log</tt> and renames the old file <tt>server.log_</tt><i>date</i>, where <i>date</i>
 is the date and time when the file was rotated. The default value
 is 2 megabytes. The minimum value for the limit is 500 kilobytes; if
@@ -30,11 +30,22 @@ which the server log must be rotated.</b><p>The default value is 0, which means 
 it reaches the size specified in the File Rotation Limit field.</p>
 <hr><p><b>Note - </b>If you specify one or more minutes, the time limit takes precedence over
 the size limit specified by the File Rotation Limit field.</p>
+
+
 <hr>
 </li>
 <li><b>In the Flush Frequency field, type the maximum number of messages to be
 written from the queue to the server log at a time.</b><p>The default value is 1.</p></li>
 <li><b>Click Save.</b></li></ol><h6>See Also</h6>
-<ul><li><p><a href="task-eelogginglevels.html">To Configure Log Levels</a></p></li>
-<li><p><a href="task-logviewer.html">To View the Server Log</a></p></li></ul>
+<ul><li><p><a href="task-eelogginglevels.html">To Configure Log Levels</a></p>
 
+</li>
+<li><p><a href="task-logging-max-logfiles.html">To Change the Limit on the Number of Rotated Log Files</a></p>
+
+</li>
+<li><p><a href="task-logviewer.html">To View the Server Log</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

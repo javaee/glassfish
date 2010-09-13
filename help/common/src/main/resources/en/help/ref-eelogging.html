@@ -1,30 +1,60 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-eelogging"></a><h4>Logger Settings</h4>
-<a name="indexterm-190"></a><p>Use the Logger Settings page to configure logging for the Enterprise Server.</p><p>The Logger Settings page contains the following options.</p><dl><dt>Write to System Log</dt>
-<dd><p>If this option is selected, logging output is sent to the <tt>syslog</tt> facility in addition to the server log. This feature is available on Solaris and Linux systems only. This option is disabled by default.</p></dd>
+<a name="indexterm-193"></a><p>Use the Logger Settings page to configure logging for the GlassFish Server.</p>
+
+<p>The Logger Settings page contains the following options.</p>
+
+<dl><dt>Write to System Log</dt>
+<dd><p>If this option is selected, logging output is sent to the <tt>syslog</tt> facility in addition to the server log. This feature is available on Solaris and Linux systems only. This option is disabled by default.</p>
+
+</dd>
 <dt>Log File</dt>
-<dd><p>An alternative name or location for the server log file. The default location is <tt>glassfish/domains/domain1/logs/server.log</tt>.</p></dd>
+<dd><p>An alternative name or location for the server log file. The default location is <tt>glassfish/domains/domain1/logs/server.log</tt>.</p>
+
+</dd>
 <dt>Log Handler</dt>
-<dd><p>The absolute class name of a custom log handler. A custom log handler enables you to send logs to a destination other than <tt>server.log</tt> or <tt>syslog</tt>. The custom handler must extend the class <tt>java.util.logging.Handler</tt> (a JSR 047 compliant API). Put the handler class in the Enterprise Server classpath so that the handler is installed during server startup.</p></dd>
+<dd><p>The absolute class name of a custom log handler. A custom log handler enables you to send logs to a destination other than <tt>server.log</tt> or <tt>syslog</tt>. The custom handler must extend the class <tt>java.util.logging.Handler</tt> (a JSR 047 compliant API). Put the handler class in the GlassFish Server classpath so that the handler is installed during server startup.</p>
+
+</dd>
 <dt>File Rotation Limit</dt>
-<dd><p>The size in bytes that the server log file must reach before it is rotated. When the server log reaches the specified size, the Enterprise Server creates a new, empty file named <tt>server.log</tt> and renames the old file <tt>server.log_</tt><i>date</i>, where <i>date</i> is the date and time when the file was rotated. The default value is 2 megabytes. The minimum value for the limit is 500 kilobytes; if you specify a lower value, the file rotates when it reaches 500 KB. To turn off log file rotation, set the value to 0.</p></dd>
+<dd><p>The size in bytes that the server log file must reach before it is rotated. When the server log reaches the specified size, the GlassFish Server creates a new, empty file named <tt>server.log</tt> and renames the old file <tt>server.log_</tt><i>date</i>, where <i>date</i> is the date and time when the file was rotated. The default value is 2 megabytes. The minimum value for the limit is 500 kilobytes; if you specify a lower value, the file rotates when it reaches 500 KB. To turn off log file rotation, set the value to 0.</p>
+
+</dd>
 <dt>File Rotation Time Limit</dt>
-<dd><p>The number of minutes after which the server log must be rotated. The default value is 0, which means that the file is rotated when it reaches the size specified in the File Rotation Limit field. If you specify one or more minutes, the time limit takes precedence over the size limit specified by the File Rotation Limit field.</p></dd>
+<dd><p>The number of minutes after which the server log must be rotated. The default value is 0, which means that the file is rotated when it reaches the size specified in the File Rotation Limit field. If you specify one or more minutes, the time limit takes precedence over the size limit specified by the File Rotation Limit field.</p>
+
+</dd>
 <dt>Flush Frequency</dt>
-<dd><p>The maximum number of messages to be written from the queue to the server log at a time. The default value is 1.</p></dd>
+<dd><p>The maximum number of messages to be written from the queue to the server log at a time. The default value is 1.</p>
+
+</dd>
 </dl>
 <h5>Related Tasks</h5>
 
-<ul><li><p><a href="task-eelogging.html">To Configure General Logging Settings</a></p></li>
-<li><p><a href="task-eelogginglevels.html">To Configure Log Levels</a></p></li>
-<li><p><a href="task-logviewer.html">To View the Server Log</a></p></li></ul>
+<ul><li><p><a href="task-eelogging.html">To Configure General Logging Settings</a></p>
+
+</li>
+<li><p><a href="task-eelogginglevels.html">To Configure Log Levels</a></p>
+
+</li>
+<li><p><a href="task-logviewer.html">To View the Server Log</a></p>
+
+</li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
 
-<ul><li><p><a href="http://docs.sun.com/doc/820-7701/set-log-level-1?a=view"><tt>set-log-level</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/list-logger-levels-1?a=view"><tt>list-logger-levels</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/rotate-log-1?a=view"><tt>rotate-log</tt>(1)</a></p></li></ul>
+<ul><li><p><tt>set-log-level</tt>(1)</p>
 
+</li>
+<li><p><tt>list-logger-levels</tt>(1)</p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/rotate-log-1?a=view"><tt>rotate-log</tt>(1)</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

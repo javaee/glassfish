@@ -1,33 +1,68 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-uc-concepts"></a><h4>Update Tool Key Concepts</h4>
-<a name="indexterm-236"></a><p>Update Tool manages the installations of Enterprise Server software components that are contained
-under a single file system directory on your system.</p><p>The Administration Console version of Update Tool allows you to do the following:</p>
-<ul><li><p>Install add-on components</p></li>
-<li><p>View updates to installed components</p></li>
-<li><p>View installed components</p></li></ul>
-<p>To update or remove installed components, you must stop the Enterprise Server
+<a name="indexterm-239"></a><p>Update Tool manages the installations of GlassFish Server software components that are contained
+under a single file system directory on your system.</p>
+
+<p>The Administration Console version of Update Tool allows you to do the following:</p>
+
+
+<ul><li><p>Install add-on components</p>
+
+</li>
+<li><p>View updates to installed components</p>
+
+</li>
+<li><p>View installed components</p>
+
+</li></ul>
+<p>To update or remove installed components, you must stop the GlassFish Server
 domain, then use one of the following commands:</p>
-<ul><li><p><tt><i>as-install-parent</i>/bin/updatetool</tt>, which starts the Update Tool graphical utility</p></li>
-<li><p><tt><i>as-install-parent</i>/bin/pkg</tt>, a command-line version of the Update Tool</p></li></ul>
-<p>The key concepts for Update Tool are described in the sections that follow.</p><a name="ref-uc-about-component"></a><h5>Component</h5>
+
+
+<ul><li><p><tt><i>as-install-parent</i>/bin/updatetool</tt>, which starts the Update Tool graphical utility</p>
+
+</li>
+<li><p><tt><i>as-install-parent</i>/bin/pkg</tt>, a command-line version of the Update Tool</p>
+
+</li></ul>
+<p>The key concepts for Update Tool are described in the sections that follow.</p>
+
+<a name="ref-uc-about-component"></a><h5>Component</h5>
 <p>A <b>component</b> is the installable unit that Update Tool manages. A component consists
 of files that are installed as a unit on your system within an
-installation image.</p><a name="ref-uc-about-image"></a><h5>Installation Image</h5>
+installation image.</p>
+
+<a name="ref-uc-about-image"></a><h5>Installation Image</h5>
 <p>An <b>installation image</b> is the directory that contains the software components, including the content
 of the directory. The installation image is added to Update Tool as the
-result of downloading and installing  Enterprise Server software. To enable the addition
-and update of Enterprise Server software components, each installation image contains information about the
-installation of components.</p><a name="ref-uc-about-repository"></a><h5>Network Repository</h5>
+result of downloading and installing  GlassFish Server software. To enable the addition
+and update of GlassFish Server software components, each installation image contains information about the
+installation of components.</p>
+
+<a name="ref-uc-about-repository"></a><h5>Network Repository</h5>
 <p>A <b>network repository</b> contains the following items:</p>
-<ul><li><p>Components that can be added to an installation image</p></li>
-<li><p>Updates to existing components in an installation image</p></li></ul>
+
+
+<ul><li><p>Components that can be added to an installation image</p>
+
+</li>
+<li><p>Updates to existing components in an installation image</p>
+
+</li></ul>
 <p>An installation image is associated with one or more network repositories. Each network
 repository is represented by a name and an associated URL. A repository name
 is unique for each installation image, and represents both the organization or project
-that manages the repository and a well defined scope of content.</p><a name="ref-uc-about-addon"></a><h5>Add-On Component</h5>
+that manages the repository and a well defined scope of content. To learn
+about the network repositories preconfigured for GlassFish Server, see <a href="http://docs.sun.com/doc/821-2416/gjzko?a=view">Preconfigured Repositories for GlassFish Server in <i>Oracle GlassFish Server 3.1 Administration Guide</i></a>.</p>
+
+<a name="ref-uc-about-addon"></a><h5>Add-On Component</h5>
 <p>An <b>add-on component</b> is a component of the installation image that is not yet
 installed.</p>
+
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

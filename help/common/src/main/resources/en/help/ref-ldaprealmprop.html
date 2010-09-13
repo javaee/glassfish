@@ -1,30 +1,58 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-ldaprealmprop"></a><h4>Properties Specific to the <tt>LDAPRealm</tt> Class</h4>
-<a name="indexterm-204"></a><a name="indexterm-205"></a><p>The following properties are required for an LDAP realm.</p><dl><dt>JAAS Context</dt>
-<dd><p>The JAAS (Java Authentication and Authorization Service) context (the identifier for the login module to use for this realm). The only valid value is <tt>solarisRealm</tt>.</p></dd>
+<a name="indexterm-207"></a><a name="indexterm-208"></a><p>The following properties are required for an LDAP realm.</p>
+
+<dl><dt>JAAS Context</dt>
+<dd><p>The JAAS (Java Authentication and Authorization Service) context (the identifier for the login module to use for this realm). The only valid value is <tt>solarisRealm</tt>.</p>
+
+</dd>
 <dt>Directory</dt>
-<dd><p>The LDAP URL for your server.</p></dd>
+<dd><p>The LDAP URL for your server.</p>
+
+</dd>
 <dt>Base DN</dt>
-<dd><p>The LDAP base distinguished name (DN) for the location of user data. This base DN can be at any level above the user data, since a tree scope search is performed. The smaller the search tree, the better the performance.</p></dd>
+<dd><p>The LDAP base distinguished name (DN) for the location of user data. This base DN can be at any level above the user data, since a tree scope search is performed. The smaller the search tree, the better the performance.</p>
+
+</dd>
 </dl>
-<p>The following optional property is available for an LDAP realm.</p><dl><dt>Assign Groups</dt>
-<dd><p>A comma-separated list of group names. All clients who present valid certificates are assigned to these groups, for example, <tt>employee,manager</tt>, where these are the names of user groups.</p></dd>
+<p>The following optional property is available for an LDAP realm.</p>
+
+<dl><dt>Assign Groups</dt>
+<dd><p>A comma-separated list of group names. All clients who present valid certificates are assigned to these groups, for example, <tt>employee,manager</tt>, where these are the names of user groups.</p>
+
+</dd>
 </dl>
-<p>The following additional properties are available for an LDAP realm.</p><dl><dt><tt>search-filter</tt></dt>
-<dd><p>The search filter to use to find the user. The default is <tt>uid=%s</tt> (<tt>%s</tt> expands to the subject name).</p></dd>
+<p>The following additional properties are available for an LDAP realm.</p>
+
+<dl><dt><tt>search-filter</tt></dt>
+<dd><p>The search filter to use to find the user. The default is <tt>uid=%s</tt> (<tt>%s</tt> expands to the subject name).</p>
+
+</dd>
 <dt><tt>group-base-dn</tt></dt>
-<dd><p>The base DN for the location of group data. By default, it is same as the Base DN value, but it can be tuned, if necessary.</p></dd>
+<dd><p>The base DN for the location of group data. By default, it is same as the Base DN value, but it can be tuned, if necessary.</p>
+
+</dd>
 <dt><tt>group-search-filter</tt></dt>
-<dd><p>The search filter to find group memberships for the user. The default is <tt>uniquemember=%d</tt> (<tt>%d</tt> expands to the user element DN).</p></dd>
+<dd><p>The search filter to find group memberships for the user. The default is <tt>uniquemember=%d</tt> (<tt>%d</tt> expands to the user element DN).</p>
+
+</dd>
 <dt><tt>group-target</tt></dt>
-<dd><p>The LDAP attribute name that contains group name entries. The default is <tt>CN</tt>.</p></dd>
+<dd><p>The LDAP attribute name that contains group name entries. The default is <tt>CN</tt>.</p>
+
+</dd>
 <dt><tt>search-bind-dn</tt></dt>
-<dd><p>An optional DN used to authenticate to the directory for performing the <tt>search-filter</tt> lookup. Only required for directories that do not allow anonymous search.</p></dd>
+<dd><p>An optional DN used to authenticate to the directory for performing the <tt>search-filter</tt> lookup. Only required for directories that do not allow anonymous search.</p>
+
+</dd>
 <dt><tt>search-bind-password</tt></dt>
-<dd><p>The LDAP password for the DN given in <tt>search-bind-dn</tt> .</p></dd>
+<dd><p>The LDAP password for the DN given in <tt>search-bind-dn</tt> .</p>
+
+</dd>
 </dl>
 
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

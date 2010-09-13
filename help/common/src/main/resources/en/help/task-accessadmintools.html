@@ -1,22 +1,24 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
 
-<a name="task-accessadmintools"></a><h4>To Grant Access to Administration Tools</h4><a name="indexterm-77"></a><p>Only users in the <tt>asadmin</tt> group are able to access the Administration Console
+<a name="task-accessadmintools"></a><h4>To Grant Access to Administration Tools</h4><a name="indexterm-80"></a><p>Only users in the <tt>asadmin</tt> group are able to access the Administration Console
 and the <tt>asadmin</tt> command line utility. To give users access to these administration
-tools, add them to the <tt>asadmin</tt> group in the <tt>admin-realm</tt>.</p><ol>
+tools, add them to the <tt>asadmin</tt> group in the <tt>admin-realm</tt>.</p>
+
+<ol>
 <li><b>In the navigation tree, expand the Configuration node.</b></li>
 <li><b>Expand the Security node.</b></li>
 <li><b>Expand the Realms node.</b></li>
 <li><b>Select the <tt>admin-realm</tt> node.</b><p>The Edit Realm page opens.</p></li>
 <li><b>On  the Edit Realm page, click the Manage Users button.</b><p>The Admin Users page opens.</p><p>Initially after installation, the administrator user name and password entered during installation are
 listed in a file named <tt>admin-keyfile</tt>. By default, this user belongs to the
-group <tt>asadmin</tt>, which gives rights to modify the Enterprise Server. Assign users to
+group <tt>asadmin</tt>, which gives rights to modify the GlassFish Server. Assign users to
 this group only if you want to grant them administrator privileges for the
-Enterprise Server.</p><p>If you add users to the <tt>admin-realm</tt> realm, but assign the user to
+GlassFish Server.</p><p>If you add users to the <tt>admin-realm</tt> realm, but assign the user to
 a group other than <tt>asadmin</tt>, the user information will still be written to
 the file named <tt>admin-keyfile</tt>, but the user will not have access to administrative
 tools or to applications in the <tt>file</tt> realm.</p></li>
@@ -24,12 +26,18 @@ tools or to applications in the <tt>file</tt> realm.</p></li>
 to the <tt>admin-realm</tt> realm.</b><p>The New File Realm User page opens.</p></li>
 <li><b>In the User ID field, type the new user name.</b></li>
 <li><b>In the Group List field, type the names of the groups to
-which the user will belong.</b><p>To authorize a user to make modifications to the Enterprise Server, include the
+which the user will belong.</b><p>To authorize a user to make modifications to the GlassFish Server, include the
 <tt>asadmin</tt> group in the Group List.</p></li>
 <li><b>In the New Password and Confirm New Password fields, type the password for
 the new user.</b></li>
 <li><b>Click OK to add this user to the <tt>admin-realm</tt> realm, or click Cancel
 to quit without saving.</b></li></ol><h6>See Also</h6>
-<ul><li><p><a href="task-securitysettings.html">To Configure Security Settings</a></p></li>
-<li><p><a href="task-changeadminpasswd.html">To Change the Password for a User in the Admin Realm</a></p></li></ul>
+<ul><li><p><a href="task-securitysettings.html">To Configure Security Settings</a></p>
 
+</li>
+<li><p><a href="task-changeadminpasswd.html">To Change the Password for a User in the Admin Realm</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

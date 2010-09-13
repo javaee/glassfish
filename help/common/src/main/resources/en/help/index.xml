@@ -98,7 +98,17 @@
  <indexitem text="enterprise applications">
     <indexitem target="ref-uploaddev" text="deploying (reference)"></indexitem>
     <indexitem target="task-deployentapp" text="deploying (task)"></indexitem></indexitem>
- <indexitem text="Enterprise Server">
+ <indexitem text="file realm">
+    <indexitem target="ref-filerealmusernew" text="adding users (reference)"></indexitem>
+    <indexitem target="task-fileuserscreate" text="adding users (task)"></indexitem>
+    <indexitem target="task-fileusersdelete" text="deleting users"></indexitem>
+    <indexitem target="ref-filerealmuseredit" text="editing users (reference)"></indexitem>
+    <indexitem target="task-fileusersedit" text="editing users (task)"></indexitem>
+    <indexitem target="ref-editfile-adminrealm" text="properties"></indexitem>
+    <indexitem target="ref-managefilerealm" text="viewing and configuring users"></indexitem></indexitem>
+ <indexitem target="ref-supportpage" text="GlassFish News page">
+    <indexitem target="task-support" text="viewing"></indexitem></indexitem>
+ <indexitem text="GlassFish Server">
     <indexitem target="ref-serverinstappsconfig" text="applications configuration (reference)"></indexitem>
     <indexitem target="task-setadvanceappconfig" text="applications configuration (task)"></indexitem>
     <indexitem target="ref-domainattributestab" text="domain attributes (reference)"></indexitem>
@@ -118,16 +128,7 @@
     <indexitem target="task-servermonitoringdata" text="viewing monitoring data for virtual servers (task)"></indexitem>
     <indexitem target="ref-logviewer" text="viewing the server log (reference)"></indexitem>
     <indexitem target="task-logviewer" text="viewing the server log (task)"></indexitem></indexitem>
- <indexitem text="file realm">
-    <indexitem target="ref-filerealmusernew" text="adding users (reference)"></indexitem>
-    <indexitem target="task-fileuserscreate" text="adding users (task)"></indexitem>
-    <indexitem target="task-fileusersdelete" text="deleting users"></indexitem>
-    <indexitem target="ref-filerealmuseredit" text="editing users (reference)"></indexitem>
-    <indexitem target="task-fileusersedit" text="editing users (task)"></indexitem>
-    <indexitem target="ref-editfile-adminrealm" text="properties"></indexitem>
-    <indexitem target="ref-managefilerealm" text="viewing and configuring users"></indexitem></indexitem>
- <indexitem target="ref-supportpage" text="GlassFish News page">
-    <indexitem target="task-support" text="viewing"></indexitem></indexitem>
+ <indexitem target="task-logging-max-logfiles" text="history files, limiting number of"></indexitem>
  <indexitem text="JACC providers">
     <indexitem target="ref-jaccprovidernew" text="creating (reference)"></indexitem>
     <indexitem target="task-jaccprovidernew" text="creating (task)"></indexitem>
@@ -176,6 +177,7 @@
     <indexitem target="task-eelogging" text="configuring general settings (task)"></indexitem>
     <indexitem target="ref-eelogginglevels" text="configuring levels (reference)"></indexitem>
     <indexitem target="task-eelogginglevels" text="configuring levels (task)"></indexitem>
+    <indexitem target="task-logging-max-logfiles" text="configuring maximum number of log files (task)"></indexitem>
     <indexitem target="ref-logviewer" text="viewing the server log (reference)"></indexitem>
     <indexitem target="task-logviewer" text="viewing the server log (task)"></indexitem></indexitem>
  <indexitem text="message security">
@@ -238,14 +240,15 @@
     <indexitem target="ref-realms" text="viewing and configuring"></indexitem></indexitem>
  <indexitem target="ref-redeploy" text="redeploying applications (reference)"></indexitem>
  <indexitem target="task-appredeploy" text="redeploying applications (task)"></indexitem>
- <indexitem target="ref-registrationpage" text="registering Enterprise Server (reference)"></indexitem>
- <indexitem target="task-register" text="registering Enterprise Server (task)"></indexitem>
+ <indexitem target="ref-registrationpage" text="registering GlassFish Server (reference)"></indexitem>
+ <indexitem target="task-register" text="registering GlassFish Server (task)"></indexitem>
  <indexitem target="ref-serverinstappsconfig" text="reload settings for applications (reference)"></indexitem>
  <indexitem target="task-setadvanceappconfig" text="reload settings for applications (task)"></indexitem>
  <indexitem text="resources">
     <indexitem target="ref-resourcemonitoringdata" text="viewing monitoring data (reference)"></indexitem>
     <indexitem target="task-resourcemonitoringdata" text="viewing monitoring data (task)"></indexitem></indexitem>
  <indexitem target="task-apprestart" text="restarting applications"></indexitem>
+ <indexitem target="task-logging-max-logfiles" text="rotated log files, limiting number of"></indexitem>
  <indexitem text="Ruby applications">
     <indexitem target="ref-uploaddev" text="deploying (reference)"></indexitem>
     <indexitem target="task-appdeployruby" text="deploying (task)"></indexitem></indexitem>

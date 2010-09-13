@@ -1,6 +1,6 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
@@ -31,12 +31,12 @@ implements the desired Store protocol.</b><p>By default, the Store Protocol Clas
 class.</b><p>By default, the Transport Protocol Class is <tt>com.sun.mail.smtp.SMTPTransport</tt>.</p></li>
 <li><b>Select the Debug checkbox to enable extra debugging output, including a protocol trace,
 for this mail session.</b><p>If the JavaMail log level is set to <tt>FINE</tt> or finer, the debugging
-output is generated and is included in the system log file. See <a href="../../../common/en/help/task-eelogginglevels.html">To Configure Log Levels</a>
+output is generated and is included in the system log file. See <a href="http://docs.sun.com/doc/821-2472/task-eelogginglevels?a=view">To Configure Log Levels</a>
 for information about setting the log level.</p></li>
 <li>(Optional) <b>In the Additional Properties table, specify additional properties required by applications, such as
 a protocol-specific host or username property.</b><p>For a list of the available properties, see <a href="http://java.sun.com/products/javamail/javadocs/index.html">JavaMail API documentation</a>. Additional properties must begin with
 <tt>mail-</tt> and must use hyphens, not periods, as separators. For example, <tt>mail-debug</tt> is
-correct, but <tt>mail.debug</tt> is not. The Enterprise Server back end converts the
+correct, but <tt>mail.debug</tt> is not. The GlassFish Server back end converts the
 hyphens into the periods expected by the JavaMail API.</p><ul>
 <li><b>To add a property, click the Add Property button. In the blank row
 that appears, type the property name in the Name field, and type
@@ -48,8 +48,16 @@ Properties button.</b></li></ul></li>
 <li><b>Click Save.</b>
 <hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
 Save.</p>
+
+
 <hr>
 </li></ol><h6>See Also</h6>
-<ul><li><p><a href="task-javamailsessioncreate.html">To Create a JavaMail Session</a></p></li>
-<li><p><a href="task-javamailsessionsdelete.html">To Delete a JavaMail Session</a></p></li></ul>
+<ul><li><p><a href="task-javamailsessioncreate.html">To Create a JavaMail Session</a></p>
 
+</li>
+<li><p><a href="task-javamailsessionsdelete.html">To Delete a JavaMail Session</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

@@ -1,18 +1,32 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-messagesecurityproviderconfigprops"></a><h4>Properties Specific to Message Security Provider Configurations</h4>
-<a name="indexterm-227"></a><a name="indexterm-228"></a><p>The following properties are available for a message security provider configuration.</p><dl><dt><tt>server.config</tt></dt>
-<dd><p>The directory and file name of an XML file that contains the server configuration information. The default value is <i>domain-dir</i><tt>/config/wss-server-config-1.0.xml</tt>.</p></dd>
+<a name="indexterm-230"></a><a name="indexterm-231"></a><p>The following properties are available for a message security provider configuration.</p>
+
+<dl><dt><tt>server.config</tt></dt>
+<dd><p>The directory and file name of an XML file that contains the server configuration information. The default value is <i>domain-dir</i><tt>/config/wss-server-config-1.0.xml</tt>.</p>
+
+</dd>
 <dt><tt>debug</tt></dt>
-<dd><p>If <tt>true</tt>, enables dumping of server provider debug messages to the server log. The default value is <tt>false</tt>.</p></dd>
+<dd><p>If <tt>true</tt>, enables dumping of server provider debug messages to the server log. The default value is <tt>false</tt>.</p>
+
+</dd>
 <dt><tt>dynamic.username.password</tt></dt>
-<dd><p>If <tt>true</tt>, signals the provider runtime to collect the user name and password from the <tt>CallbackHandler</tt> for each request. If false, the user name and password for <tt>wsse:UsernameToken(s)</tt> is collected once, during module initialization. This property is only applicable for a <tt>ClientAuthModule</tt>. The default value is <tt>false</tt>.</p></dd>
+<dd><p>If <tt>true</tt>, signals the provider runtime to collect the user name and password from the <tt>CallbackHandler</tt> for each request. If false, the user name and password for <tt>wsse:UsernameToken(s)</tt> is collected once, during module initialization. This property is only applicable for a <tt>ClientAuthModule</tt>. The default value is <tt>false</tt>.</p>
+
+</dd>
 <dt><tt>encryption.key.alias</tt></dt>
-<dd><p>Specifies the encryption key used by the provider. The key is identified by its <tt>keystore</tt> alias. The default value is <tt>s1as</tt>.</p></dd>
+<dd><p>Specifies the encryption key used by the provider. The key is identified by its <tt>keystore</tt> alias. The default value is <tt>s1as</tt>.</p>
+
+</dd>
 <dt><tt>signature.key.alias</tt></dt>
-<dd><p>Specifies the signature key used by the provider. The key is identified by its <tt>keystore</tt> alias. The default value is <tt>s1as</tt>.</p></dd>
+<dd><p>Specifies the signature key used by the provider. The key is identified by its <tt>keystore</tt> alias. The default value is <tt>s1as</tt>.</p>
+
+</dd>
 </dl>
 
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

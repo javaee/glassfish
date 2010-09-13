@@ -1,6 +1,6 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
@@ -13,13 +13,13 @@ the recovery of incomplete transactions  when the server is restarted.</b><p>Thi
 <li><b>In the Transaction Timeout field, type the number of seconds the server waits
 before rolling back a transaction that has not completed.</b><p>A value of 0 disables transaction timeouts. The default value is 0, meaning
 that the server waits indefinitely for a transaction to complete.</p></li>
-<li><b>In the Retry Timeout field, type the number of seconds the Enterprise
+<li><b>In the Retry Timeout field, type the number of seconds the GlassFish
 Server tries to connect to an unreachable server.</b><p>The default value is 600 (10 minutes).</p></li>
 <li><b>In the Transaction Log Location field, type the directory where server logs are
 kept.</b><p>Transaction logs are kept in the <tt>tx</tt> subdirectory of the directory specified by
 this field. The default value is the directory specified by the Log Root
 field of the Domain Attributes page, which is located under the Advanced tab
-of the Enterprise Server node.</p></li>
+of the GlassFish Server node.</p></li>
 <li><b>From the Heuristic Decision drop-down list, select the policy to be followed if
 the outcome of a distributed transaction cannot be determined because other participants are
 unreachable.</b><p>Unless there is a good reason to select Commit, leave Heuristic Decision set
@@ -37,11 +37,23 @@ button.</b></li></ul></li>
 <li><b>Click Save.</b>
 <hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
 Save.</p>
+
+
 <hr>
 </li>
-<li><b>Restart the Enterprise Server.</b></li></ol><h6>See Also</h6>
-<ul><li><p><a href="task-configtransrecovery.html">To Configure How the Enterprise Server Recovers Transactions</a></p></li>
-<li><p><a href="task-settranstimeout.html">To Set a Transaction Timeout Value</a></p></li>
-<li><p><a href="task-settranslog.html">To Set the Location of the Transaction Logs</a></p></li>
-<li><p><a href="task-setkeyptinterval.html">To Set the Keypoint Interval</a></p></li></ul>
+<li><b>Restart the GlassFish Server.</b></li></ol><h6>See Also</h6>
+<ul><li><p><a href="task-configtransrecovery.html">To Configure How the GlassFish Server Recovers Transactions</a></p>
 
+</li>
+<li><p><a href="task-settranstimeout.html">To Set a Transaction Timeout Value</a></p>
+
+</li>
+<li><p><a href="task-settranslog.html">To Set the Location of the Transaction Logs</a></p>
+
+</li>
+<li><p><a href="task-setkeyptinterval.html">To Set the Keypoint Interval</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

@@ -1,6 +1,6 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
@@ -53,18 +53,24 @@ Cache Idle Timeout value, beans are removed immediately without being passivated
 is 5400.</p></li>
 <li><b>From the Removal Selection Policy drop-down list, select the policy the container uses
 to remove stateful session beans from the cache.</b><p>The choices are as follows:</p><dl><dt>Not recently used (NRU)</dt>
-<dd><p>(Default) Removes a bean that hasn&#8217;t been used recently.</p></dd>
+<dd><p>(Default) Removes a bean that hasn&#8217;t been used recently.</p>
+
+</dd>
 <dt>First in, first out (FIFO)</dt>
-<dd><p>Removes the oldest bean in the cache.</p></dd>
+<dd><p>Removes the oldest bean in the cache.</p>
+
+</dd>
 <dt>Least recently used (LRU)</dt>
-<dd><p>Removes the least recently accessed bean.</p></dd>
+<dd><p>Removes the least recently accessed bean.</p>
+
+</dd>
 </dl>
 </li>
 <li><b>In the Cache Idle Timeout field, type the maximum number of seconds that
 a bean can remain idle in the cache.</b><p>After this amount of time, the container can passivate this bean. A value
 of 0 specifies that beans never become candidates for passivation. The default value
 is 600.</p></li>
-<li>(Optional) <b>In the Additional Properties section, specify additional properties.</b><p>The Enterprise Server does not define any additional properties for the EJB container.</p><ul>
+<li>(Optional) <b>In the Additional Properties section, specify additional properties.</b><p>The GlassFish Server does not define any additional properties for the EJB container.</p><ul>
 <li><b>To add a property, click the Add Property button. In the blank row
 that appears, type the property name in the Name field, and type
 the property value in the Value field.</b></li>
@@ -75,9 +81,17 @@ Properties button.</b></li></ul></li>
 <li><b>Click Save.</b>
 <hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
 Save.</p>
+
+
 <hr>
 </li>
-<li><b>Restart the Enterprise Server.</b></li></ol><h6>See Also</h6>
-<ul><li><p><a href="../../../ejb/en/help/task-ejbmdbpoolsettings.html">To Configure MDB Pool Settings</a></p></li>
-<li><p><a href="../../../ejb/en/help/task-ejbtimerservice.html">To Configure the EJB Timer Service</a></p></li></ul>
+<li><b>Restart the GlassFish Server.</b></li></ol><h6>See Also</h6>
+<ul><li><p><a href="http://docs.sun.com/doc/821-2463/task-ejbmdbpoolsettings?a=view">To Configure MDB Pool Settings</a></p>
 
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2463/task-ejbtimerservice?a=view">To Configure the EJB Timer Service</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

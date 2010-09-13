@@ -1,35 +1,77 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-jdbcresourcenew"></a><h4>New JDBC Resource</h4>
-<a name="indexterm-18"></a><p>Use the New JDBC Resource page to create a new JDBC resource.</p><p>The New JDBC Resource page contains the following options.</p><dl><dt>JNDI Name</dt>
-<dd><p>A unique name that identifies the JDBC resource. The JNDI name organizes and locates components within a distributed computing environment similarly to the way that card catalogs organize and represent locations of books in a library. Consequently, the JNDI name becomes an important method of accessing the JDBC resource. By convention, the name begins with the <tt>jdbc/</tt> string, for example, <tt>jdbc/payrolldb</tt>. Don&#8217;t forget the forward slash. The name must contain only alphanumeric, underscore, dash, or dot characters.</p></dd>
+<a name="indexterm-18"></a><p>Use the New JDBC Resource page to create a new JDBC resource.</p>
+
+<p>The New JDBC Resource page contains the following options.</p>
+
+<dl><dt>JNDI Name</dt>
+<dd><p>A unique name that identifies the JDBC resource. The JNDI name organizes and locates components within a distributed computing environment similarly to the way that card catalogs organize and represent locations of books in a library. Consequently, the JNDI name becomes an important method of accessing the JDBC resource. By convention, the name begins with the <tt>jdbc/</tt> string, for example, <tt>jdbc/payrolldb</tt>. Don&#8217;t forget the forward slash. The name must contain only alphanumeric, underscore, dash, or dot characters.</p>
+
+</dd>
 <dt>Pool Name</dt>
-<dd><p>The connection pool associated with the JDBC resource.</p></dd>
+<dd><p>The connection pool associated with the JDBC resource.</p>
+
+</dd>
 <dt>Description</dt>
-<dd><p>A short description of the JDBC resource.</p></dd>
+<dd><p>A short description of the JDBC resource.</p>
+
+</dd>
 <dt>Status</dt>
-<dd><p>If this option is enabled, the resource is available at runtime. This option is enabled by default.</p></dd>
+<dd><p>If this option is enabled, the resource is available at runtime. This option is enabled by default.</p>
+
+</dd>
 <dt>Additional Properties</dt>
-<dd><p>Additional properties for the JDBC resource. The Enterprise Serverdoes not define any additional properties for JDBC resources.</p></dd>
+<dd><p>Additional properties for the JDBC resource. The GlassFish Serverdoes not define any additional properties for JDBC resources.</p>
+
+</dd>
 </dl>
 <h5>Related Tasks</h5>
 
-<ul><li><p><a href="task-setdbaccess.html">To Set Up Database Access</a></p></li>
-<li><p><a href="task-integratejdbcdriver.html">To Integrate a JDBC Driver</a></p></li>
-<li><p><a href="task-jdbcresourcenew.html">To Create a JDBC Resource</a></p></li>
-<li><p><a href="task-jdbcresourcesedit.html">To Edit a JDBC Resource</a></p></li>
-<li><p><a href="task-jdbcresourcesdelete.html">To Delete a JDBC Resource</a></p></li>
-<li><p><a href="task-jdbcconnectionpoolnew.html">To Create a JDBC Connection Pool</a></p></li></ul>
+<ul><li><p><a href="task-setdbaccess.html">To Set Up Database Access</a></p>
+
+</li>
+<li><p><a href="task-integratejdbcdriver.html">To Integrate a JDBC Driver</a></p>
+
+</li>
+<li><p><a href="task-jdbcresourcenew.html">To Create a JDBC Resource</a></p>
+
+</li>
+<li><p><a href="task-jdbcresourcesedit.html">To Edit a JDBC Resource</a></p>
+
+</li>
+<li><p><a href="task-jdbcresourcesdelete.html">To Delete a JDBC Resource</a></p>
+
+</li>
+<li><p><a href="task-jdbcconnectionpoolnew.html">To Create a JDBC Connection Pool</a></p>
+
+</li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
 
-<ul><li><p><a href="http://docs.sun.com/doc/820-7701/add-resources-1?a=view"><tt>add-resources</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/create-jdbc-resource-1?a=view"><tt>create-jdbc-resource</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/delete-jdbc-resource-1?a=view"><tt>delete-jdbc-resource</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/list-jdbc-resources-1?a=view"><tt>list-jdbc-resources</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/create-jdbc-connection-pool-1?a=view"><tt>create-jdbc-connection-pool</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/start-database-1?a=view"><tt>start-database</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/stop-database-1?a=view"><tt>stop-database</tt>(1)</a></p></li></ul>
+<ul><li><p><a href="http://docs.sun.com/doc/821-2433/add-resources-1?a=view"><tt>add-resources</tt>(1)</a></p>
 
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/create-jdbc-resource-1?a=view"><tt>create-jdbc-resource</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/delete-jdbc-resource-1?a=view"><tt>delete-jdbc-resource</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/list-jdbc-resources-1?a=view"><tt>list-jdbc-resources</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/create-jdbc-connection-pool-1?a=view"><tt>create-jdbc-connection-pool</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/start-database-1?a=view"><tt>start-database</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/stop-database-1?a=view"><tt>stop-database</tt>(1)</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

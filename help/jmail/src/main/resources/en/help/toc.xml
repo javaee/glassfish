@@ -1,6 +1,6 @@
 <toc version="2.0">
 
- <tocitem target="tasks-topic-group" text="Enterprise Server Administration Console Tasks" expand="false">
+ <tocitem target="tasks-topic-group" text="GlassFish Server Administration Console Tasks" expand="false">
     <tocitem target="task-group-javamailresources" text="Configuring JavaMail Sessions" expand="false">
         <tocitem target="task-javamailsessioncreate" text="To Create a JavaMail Session" expand="false"></tocitem>
         <tocitem target="task-javamailsessionsedit" text="To Edit a JavaMail Session" expand="false"></tocitem>
@@ -12,7 +12,7 @@
         <tocitem target="task-jndiexternalresourcecreate" text="To Create an External JNDI Resource" expand="false"></tocitem>
         <tocitem target="task-jndiexternalresourceedit" text="To Edit an External JNDI Resource" expand="false"></tocitem>
         <tocitem target="task-jndiexternalresourcedelete" text="To Delete an External JNDI Resource" expand="false"></tocitem></tocitem></tocitem>
- <tocitem target="ref-topic-group" text="Enterprise Server Administration Console Reference" expand="false">
+ <tocitem target="ref-topic-group" text="GlassFish Server Administration Console Reference" expand="false">
     <tocitem target="ref-group-resources" text="Resources" expand="false">
         <tocitem target="ref-group-javamailresources" text="JavaMail Sessions" expand="false">
             <tocitem target="ref-javamailsessions" text="JavaMail Sessions" expand="false"></tocitem>

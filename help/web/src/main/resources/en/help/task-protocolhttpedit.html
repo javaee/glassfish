@@ -1,6 +1,6 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
@@ -18,10 +18,16 @@ your server does not use an alias, leave this field blank.</p></li>
 <li><b>From the Default Virtual Server drop-down list, select the virtual  server to
 be associated with the protocol.</b><p>Use the Virtual Servers page to define virtual servers.</p></li>
 <li><b>In the Redirect Port field, type the port value to be used
-to redirect a request to another port. </b><p>The Enterprise Server automatically redirects the request if these two conditions exist:</p>
-<ul><li><p>This protocol is supporting non-SSL requests.</p></li>
-<li><p>A request is received for which a matching security constraint requires SSL transport.</p></li></ul>
-<p>If a redirect port is not specified, the Enterprise Server uses the
+to redirect a request to another port. </b><p>The GlassFish Server automatically redirects the request if these two conditions exist:</p>
+
+
+<ul><li><p>This protocol is supporting non-SSL requests.</p>
+
+</li>
+<li><p>A request is received for which a matching security constraint requires SSL transport.</p>
+
+</li></ul>
+<p>If a redirect port is not specified, the GlassFish Server uses the
 port number specified in the original request.</p></li>
 <li><b>In the Max Connections field, type the maximum number of persistent connections to
 be maintained in Keep-Alive mode.</b><p>The Keep-Alive subsystem periodically polls idle connections.</p></li>
@@ -50,11 +56,17 @@ is UTF-8.</p></li>
 <li><b>In the Version field, type the version of the HTTP protocol used.</b><p>The default value is HTTP/1.1.</p></li>
 <li><b>From the Compression drop-down list, select the use of HTTP/1.1 GZIP compression to
 save server bandwidth.</b><p>Available choices are:</p><dl><dt><tt>on</tt></dt>
-<dd><p>Compresses data.</p></dd>
+<dd><p>Compresses data.</p>
+
+</dd>
 <dt><tt>off</tt></dt>
-<dd><p>Disables compression.</p></dd>
+<dd><p>Disables compression.</p>
+
+</dd>
 <dt><tt>force</tt></dt>
-<dd><p>Forces data compression in all cases.</p></dd>
+<dd><p>Forces data compression in all cases.</p>
+
+</dd>
 </dl>
 <p>The default value is <tt>off</tt>.</p></li>
 <li><b>In the Compressible Mime Type field, type a comma-separated list of MIME types
@@ -77,28 +89,54 @@ charset. The default value is <tt>text/html; charset=iso-8859-1</tt>.</p></li>
 <li><b>Select the Comet Support Enabled checkbox to enable Comet support for the protocol.</b><p>This option is disabled by default.</p></li>
 <li><b>Select the DNS Lookup Enabled checkbox to enable Domain Name System (DNS) lookup.</b><p>This option is disabled by default.</p></li>
 <li><b>Select the RCM Support Enabled checkbox to enable Resource Configuration Management (RCM).</b><p>This option is disabled by default.</p></li>
-<li><b>Select the Trace Enabled checkbox to enable the TRACE operation.</b><p>If this option is disabled, the Enterprise Server is less susceptible to cross-site
+<li><b>Select the Trace Enabled checkbox to enable the TRACE operation.</b><p>If this option is disabled, the GlassFish Server is less susceptible to cross-site
 scripting attacks. This option is enabled by default.</p></li>
 <li><b>Select the Auth Pass Through checkbox to indicate that the network listener that
 uses this protocol receives traffic from an SSL-terminating proxy server.</b><p>This option is disabled by default.</p></li>
 <li><b>Select the Chunking Enabled checkbox to enable HTTP response chunking.</b><p>This option is enabled by default.</p></li>
-<li><b>Select the XPowered By Enabled checkbox to tell the Enterprise Server to use
+<li><b>Select the XPowered By Enabled checkbox to tell the GlassFish Server to use
 <tt>X-Powered-By</tt> headers according to the Java Servlet 3.0 and Java Server Pages 2.0
 specifications.</b><p>This option is enabled by default.</p></li>
 <li><b>Click Save.</b>
 <hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
 Save.</p>
+
+
 <hr>
 </li></ol><h6>See Also</h6>
-<ul><li><p><a href="task-networklistenernew.html">To Create a Network Listener</a></p></li>
-<li><p><a href="task-networklisteneredit.html">To Edit a Network Listener</a></p></li>
-<li><p><a href="task-networklistenerdelete.html">To Delete a Network Listener</a></p></li>
-<li><p><a href="task-protocolnew.html">To Create a Protocol</a></p></li>
-<li><p><a href="task-protocoledit.html">To Edit a Protocol</a></p></li>
-<li><p><a href="task-protocolssledit.html">To Edit SSL Settings for a Protocol</a></p></li>
-<li><p><a href="task-protocolfilecacheedit.html">To Edit File Cache Settings for a Protocol</a></p></li>
-<li><p><a href="task-protocoldelete.html">To Delete a Protocol</a></p></li>
-<li><p><a href="task-transportnew.html">To Create a Transport</a></p></li>
-<li><p><a href="task-transportedit.html">To Edit a Transport</a></p></li>
-<li><p><a href="task-transportdelete.html">To Delete a Transport</a></p></li></ul>
+<ul><li><p><a href="task-networklistenernew.html">To Create a Network Listener</a></p>
 
+</li>
+<li><p><a href="task-networklisteneredit.html">To Edit a Network Listener</a></p>
+
+</li>
+<li><p><a href="task-networklistenerdelete.html">To Delete a Network Listener</a></p>
+
+</li>
+<li><p><a href="task-protocolnew.html">To Create a Protocol</a></p>
+
+</li>
+<li><p><a href="task-protocoledit.html">To Edit a Protocol</a></p>
+
+</li>
+<li><p><a href="task-protocolssledit.html">To Edit SSL Settings for a Protocol</a></p>
+
+</li>
+<li><p><a href="task-protocolfilecacheedit.html">To Edit File Cache Settings for a Protocol</a></p>
+
+</li>
+<li><p><a href="task-protocoldelete.html">To Delete a Protocol</a></p>
+
+</li>
+<li><p><a href="task-transportnew.html">To Create a Transport</a></p>
+
+</li>
+<li><p><a href="task-transportedit.html">To Edit a Transport</a></p>
+
+</li>
+<li><p><a href="task-transportdelete.html">To Delete a Transport</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

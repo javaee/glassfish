@@ -1,6 +1,6 @@
 <toc version="2.0">
 
- <tocitem target="tasks-topic-group" text="Enterprise Server Administration Console Tasks" expand="false">
+ <tocitem target="tasks-topic-group" text="GlassFish Server Administration Console Tasks" expand="false">
     <tocitem target="task-group-jmsresources" text="Configuring JMS Resources" expand="false">
         <tocitem target="task-jmsconnectionnew" text="To Create a JMS Connection Factory Resource" expand="false"></tocitem>
         <tocitem target="task-jmsconnectionedit" text="To Edit a JMS Connection Factory Resource" expand="false"></tocitem>
@@ -18,7 +18,7 @@
         <tocitem target="task-jmsphysicaldestdelete" text="To Delete a JMS Physical Destination" expand="false"></tocitem>
         <tocitem target="task-jmsflushmessages" text="To Remove Messages from a JMS Physical Destination" expand="false"></tocitem>
         <tocitem target="task-jmsphysicaldeststats" text="To View Statistics for a JMS Physical Destination" expand="false"></tocitem></tocitem></tocitem>
- <tocitem target="ref-topic-group" text="Enterprise Server Administration Console Reference" expand="false">
+ <tocitem target="ref-topic-group" text="GlassFish Server Administration Console Reference" expand="false">
     <tocitem target="ref-group-resources" text="Resources" expand="false">
         <tocitem target="ref-group-jmsresources" text="JMS Resources" expand="false">
             <tocitem target="ref-jmsresources" text="JMS Resources" expand="false"></tocitem>

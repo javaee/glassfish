@@ -1,31 +1,63 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-jmshostedit"></a><h4>Edit JMS Host</h4>
 <a name="indexterm-46"></a><p>Use the Edit JMS Host page to modify the settings for a
-JMS host.</p><p>The Edit JMS Host page contains the following options.</p><dl><dt>Load Defaults</dt>
-<dd><p>Button to restore the default values of all the settings.</p></dd>
+JMS host.</p>
+
+<p>The Edit JMS Host page contains the following options.</p>
+
+<dl><dt>Load Defaults</dt>
+<dd><p>Button to restore the default values of all the settings.</p>
+
+</dd>
 <dt>Name</dt>
-<dd><p>The name of the host. The Name field is a read-only field. You can only specify the Name field when you create a new JMS host.</p></dd>
+<dd><p>The name of the host. The Name field is a read-only field. You can only specify the Name field when you create a new JMS host.</p>
+
+</dd>
 <dt>Host</dt>
-<dd><p>The name or Internet Protocol (IP) address of the system where the JMS host will run (<tt>localhost</tt> or the name of the local or remote system).</p></dd>
+<dd><p>The name or Internet Protocol (IP) address of the system where the JMS host will run (<tt>localhost</tt> or the name of the local or remote system).</p>
+
+</dd>
 <dt>Port</dt>
-<dd><p>The port number of the JMS service. Change this field only if the JMS service to be used is running on a non-default port. The default port is 7676.</p></dd>
+<dd><p>The port number of the JMS service. Change this field only if the JMS service to be used is running on a non-default port. The default port is 7676.</p>
+
+</dd>
 <dt>Admin Username and Admin Password</dt>
-<dd><p>The Message Queue broker user name and password. These are different from the Enterprise Server user name and password. Edit these fields only if the Message Queue broker values have been changed using the <tt><i>as-install-parent</i>/mq/bin/imqusermgr</tt> command. The default values are <tt>admin</tt> and <tt>admin</tt>.</p></dd>
+<dd><p>The Message Queue broker user name and password. These are different from the GlassFish Server user name and password. Edit these fields only if the Message Queue broker values have been changed using the <tt><i>as-install-parent</i>/mq/bin/imqusermgr</tt> command. The default values are <tt>admin</tt> and <tt>admin</tt>.</p>
+
+</dd>
 </dl>
 <h5>Related Tasks</h5>
 
-<ul><li><p><a href="task-jmsservice.html">To Configure the JMS Service</a></p></li>
-<li><p><a href="task-jmshostnew.html">To Create a JMS Host</a></p></li>
-<li><p><a href="task-jmshostedit.html">To Edit a JMS Host</a></p></li>
-<li><p><a href="task-jmshostdelete.html">To Delete a JMS Host</a></p></li></ul>
+<ul><li><p><a href="task-jmsservice.html">To Configure the JMS Service</a></p>
+
+</li>
+<li><p><a href="task-jmshostnew.html">To Create a JMS Host</a></p>
+
+</li>
+<li><p><a href="task-jmshostedit.html">To Edit a JMS Host</a></p>
+
+</li>
+<li><p><a href="task-jmshostdelete.html">To Delete a JMS Host</a></p>
+
+</li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
 
-<ul><li><p><a href="http://docs.sun.com/doc/820-7701/create-jms-host-1?a=view"><tt>create-jms-host</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/list-jms-hosts-1?a=view"><tt>list-jms-hosts</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/delete-jms-host-1?a=view"><tt>delete-jms-host</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/jms-ping-1?a=view"><tt>jms-ping</tt>(1)</a></p></li></ul>
+<ul><li><p><tt>create-jms-host</tt>(1)</p>
 
+</li>
+<li><p><tt>list-jms-hosts</tt>(1)</p>
+
+</li>
+<li><p><tt>delete-jms-host</tt>(1)</p>
+
+</li>
+<li><p><tt>jms-ping</tt>(1)</p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

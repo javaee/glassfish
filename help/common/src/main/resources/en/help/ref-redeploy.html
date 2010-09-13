@@ -1,45 +1,111 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-redeploy"></a><h4>Redeploy Applications or Modules</h4>
-<a name="indexterm-181"></a><a name="indexterm-182"></a><p>Use the Redeploy Applications or Modules page to redeploy a previously deployed application.</p><p>The Redeploy Applications or Modules page contains the following options.</p><dl><dt>Location</dt>
-<dd><p>The location of the new archive for the application that you are redeploying.</p><p>The following options specify from where the archive is accessible and whether the archive is a file or a directory.</p><dl><dt>Packaged File to Be Uploaded to the Server</dt>
-<dd><p>The archive is in a file that resides on or is accessible from the client machine.</p><p>The client machine is the host on which you are viewing the Administration Console through a browser.</p></dd>
-<dt>Local Packaged File or Directory That Is Accessible From the Enterprise Server</dt>
-<dd><p>The archive is a file that resides on the server machine, or is an unpackaged application in an exploded directory.</p><p>The server machine is the host that is running the Enterprise Server domain administration server. </p></dd>
+<a name="indexterm-184"></a><a name="indexterm-185"></a><p>Use the Redeploy Applications or Modules page to redeploy a previously deployed application.</p>
+
+<p>The Redeploy Applications or Modules page contains the following options.</p>
+
+<dl><dt>Location</dt>
+<dd><p>The location of the new archive for the application that you are redeploying.</p>
+
+<p>The following options specify from where the archive is accessible and whether the archive is a file or a directory.</p>
+
+<dl><dt>Packaged File to Be Uploaded to the Server</dt>
+<dd><p>The archive is in a file that resides on or is accessible from the client machine.</p>
+
+<p>The client machine is the host on which you are viewing the Administration Console through a browser.</p>
+
+</dd>
+<dt>Local Packaged File or Directory That Is Accessible From the GlassFish Server</dt>
+<dd><p>The archive is a file that resides on the server machine, or is an unpackaged application in an exploded directory.</p>
+
+<p>The server machine is the host that is running the GlassFish Server domain administration server. </p>
+
+</dd>
 </dl>
 </dd>
 <dt>Application Name</dt>
-<dd><p>Read-only field displaying the name of the application that you are redeploying.</p></dd>
+<dd><p>Read-only field displaying the name of the application that you are redeploying.</p>
+
+</dd>
 <dt>Preserve Sessions</dt>
-<dd><p>If the Preserve Sessions checkbox is selected, active sessions of the application that you are redeploying are preserved and then restored when the redeployment is complete.</p><p>If any active session of the application fails to be preserved or restored, <b>none</b> of the sessions will be available when the redeployment is complete. However, the redeployment continues and a warning is logged.</p><p>To preserve active sessions, the Enterprise Server serializes the sessions and saves them in memory. To restore the sessions, the class loader of the newly redeployed application deserializes any sessions that were previously saved.</p></dd>
+<dd><p>If the Preserve Sessions checkbox is selected, active sessions of the application that you are redeploying are preserved and then restored when the redeployment is complete.</p>
+
+<p>If any active session of the application fails to be preserved or restored, <b>none</b> of the sessions will be available when the redeployment is complete. However, the redeployment continues and a warning is logged.</p>
+
+<p>To preserve active sessions, the GlassFish Server serializes the sessions and saves them in memory. To restore the sessions, the class loader of the newly redeployed application deserializes any sessions that were previously saved.</p>
+
+</dd>
 <dt>Precompile JSPs</dt>
-<dd><p>If this option is selected, JavaServer Pages (JSP) files are precompiled. If this option is disabled, JSP files are compiled at runtime when they are first accessed. This option is disabled by default.</p></dd>
+<dd><p>If this option is selected, JavaServer Pages (JSP) files are precompiled. If this option is disabled, JSP files are compiled at runtime when they are first accessed. This option is disabled by default.</p>
+
+</dd>
 <dt>Run Verifier</dt>
-<dd><p>If this option is selected, the verifier is run before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the file. Verification of large applications is often time-consuming. This option is disabled by default.</p></dd>
+<dd><p>If this option is selected, the verifier is run before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the file. Verification of large applications is often time-consuming. This option is disabled by default.</p>
+
+</dd>
 </dl>
 <h5>Related Tasks</h5>
 
-<ul><li><p><a href="task-appredeploy.html">To Redeploy a Deployed Application</a></p></li>
-<li><p><a href="task-applistdeployed.html">To View a List of Deployed Applications</a></p></li>
-<li><p><a href="task-appdeployweb.html">To Deploy a Web Application</a></p></li>
-<li><p><a href="task-deployentapp.html">To Deploy an Enterprise Application</a></p></li>
-<li><p><a href="task-appdeployclient.html">To Deploy an Application Client</a></p></li>
-<li><p><a href="task-appdeployconn.html">To Deploy a Connector Module</a></p></li>
-<li><p><a href="task-appdeployejb.html">To Deploy an EJB Jar</a></p></li>
-<li><p><a href="task-appdeployruby.html">To Deploy a Ruby Application</a></p></li>
-<li><p><a href="task-appedit.html">To Edit a Deployed Application</a></p></li>
-<li><p><a href="task-appviewdesc.html">To View Descriptors of an Application</a></p></li>
-<li><p><a href="task-endpoint.html">To View Endpoint Information for a Web Service</a></p></li>
-<li><p><a href="task-applaunch.html">To Launch an Application</a></p></li>
-<li><p><a href="task-appclientlaunch.html">To Launch an Application Client</a></p></li>
-<li><p><a href="task-apprestart.html">To Restart a Deployed Application</a></p></li></ul>
+<ul><li><p><a href="task-appredeploy.html">To Redeploy a Deployed Application</a></p>
+
+</li>
+<li><p><a href="task-applistdeployed.html">To View a List of Deployed Applications</a></p>
+
+</li>
+<li><p><a href="task-appdeployweb.html">To Deploy a Web Application</a></p>
+
+</li>
+<li><p><a href="task-deployentapp.html">To Deploy an Enterprise Application</a></p>
+
+</li>
+<li><p><a href="task-appdeployclient.html">To Deploy an Application Client</a></p>
+
+</li>
+<li><p><a href="task-appdeployconn.html">To Deploy a Connector Module</a></p>
+
+</li>
+<li><p><a href="task-appdeployejb.html">To Deploy an EJB Jar</a></p>
+
+</li>
+<li><p><a href="task-appdeployruby.html">To Deploy a Ruby Application</a></p>
+
+</li>
+<li><p><a href="task-appedit.html">To Edit a Deployed Application</a></p>
+
+</li>
+<li><p><a href="task-appviewdesc.html">To View Descriptors of an Application</a></p>
+
+</li>
+<li><p><a href="task-endpoint.html">To View Endpoint Information for a Web Service</a></p>
+
+</li>
+<li><p><a href="task-applaunch.html">To Launch an Application</a></p>
+
+</li>
+<li><p><a href="task-appclientlaunch.html">To Launch an Application Client</a></p>
+
+</li>
+<li><p><a href="task-apprestart.html">To Restart a Deployed Application</a></p>
+
+</li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
 
-<ul><li><p><a href="http://docs.sun.com/doc/820-7701/deploy-1?a=view"><tt>deploy</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/redeploy-1?a=view"><tt>redeploy</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/list-applications-1?a=view"><tt>list-applications</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/list-modules-1?a=view"><tt>list-modules</tt>(1)</a></p></li></ul>
+<ul><li><p><a href="http://docs.sun.com/doc/821-2433/deploy-1?a=view"><tt>deploy</tt>(1)</a></p>
 
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/redeploy-1?a=view"><tt>redeploy</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/list-applications-1?a=view"><tt>list-applications</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/list-modules-1?a=view"><tt>list-modules</tt>(1)</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

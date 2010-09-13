@@ -1,24 +1,42 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-editfile-adminrealm"></a><h4>Properties Specific to the <tt>FileRealm</tt> Class</h4>
-<a name="indexterm-198"></a><a name="indexterm-199"></a><p>The following properties are required for a <tt>file</tt> realm.</p><dl><dt>JAAS Context</dt>
-<dd><p>The JAAS (Java Authentication and Authorization Service) context (the identifier for the login module to use for this realm). The only valid value is <tt>fileRealm</tt>.</p></dd>
+<a name="indexterm-201"></a><a name="indexterm-202"></a><p>The following properties are required for a <tt>file</tt> realm.</p>
+
+<dl><dt>JAAS Context</dt>
+<dd><p>The JAAS (Java Authentication and Authorization Service) context (the identifier for the login module to use for this realm). The only valid value is <tt>fileRealm</tt>.</p>
+
+</dd>
 <dt>Key File</dt>
-<dd><p>Full path and name of the file where the server will store all user, group, and password information for this realm. The default value is <i>domain-dir</i><tt>/config/keyfile</tt> for the <tt>file</tt> realm and <i>domain-dir</i><tt>/config/admin-keyfile</tt> for the <tt>admin-realm</tt> realm.</p></dd>
+<dd><p>Full path and name of the file where the server will store all user, group, and password information for this realm. The default value is <i>domain-dir</i><tt>/config/keyfile</tt> for the <tt>file</tt> realm and <i>domain-dir</i><tt>/config/admin-keyfile</tt> for the <tt>admin-realm</tt> realm.</p>
+
+</dd>
 </dl>
 <p>The key file for the <tt>file</tt> realm is initially empty, so users must
-be added on the <a href="ref-managefilerealm.html">File Users</a> page before the <tt>file</tt> realm is used.</p><p>The key file for the <tt>admin-realm</tt> realm initially contains the administrator user name,
+be added on the <a href="ref-managefilerealm.html">File Users</a> page before the <tt>file</tt> realm is used.</p>
+
+<p>The key file for the <tt>admin-realm</tt> realm initially contains the administrator user name,
 the administrator password in an encrypted format, and the group to which this
 user belongs (<tt>asadmin</tt> by default). For more information on adding users to the
 <tt>admin-realm</tt>, see <a href="task-accessadmintools.html">To Grant Access to Administration Tools</a>.</p>
+
+
 <hr><p><b>Note - </b>Users in the group <tt>asadmin</tt> in the <tt>admin-realm</tt> are authorized to use
 the Administration Console and <tt>asadmin</tt> tools. Add only users to this group that
 have server administrative privileges.</p>
+
+
 <hr>
-<p>The following optional property is available for a <tt>file</tt> realm.</p><dl><dt>Assign Groups</dt>
-<dd><p>A comma-separated list of group names. All clients who present valid certificates are assigned to these groups, for example, <tt>employee,manager</tt>, where these are the names of user groups.</p></dd>
+<p>The following optional property is available for a <tt>file</tt> realm.</p>
+
+<dl><dt>Assign Groups</dt>
+<dd><p>A comma-separated list of group names. All clients who present valid certificates are assigned to these groups, for example, <tt>employee,manager</tt>, where these are the names of user groups.</p>
+
+</dd>
 </dl>
 
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

@@ -1,185 +1,399 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-uploaddev"></a><h4>Deploy Applications or Modules</h4>
-<a name="indexterm-167"></a><a name="indexterm-168"></a><a name="indexterm-169"></a><a name="indexterm-170"></a><a name="indexterm-171"></a><a name="indexterm-172"></a><a name="indexterm-173"></a><a name="indexterm-174"></a><a name="indexterm-175"></a><a name="indexterm-176"></a><a name="indexterm-177"></a><a name="indexterm-178"></a><a name="indexterm-179"></a><a name="indexterm-180"></a><p>Use the Deploy Applications or Modules page to deploy an application.</p><p>The Deploy Applications or Modules page contains the following options for all applications.
-Additional options appear only after you specify the Location field for the application.</p><dl><dt>Location</dt>
-<dd><p>The location of the archive for the application that you are deploying.</p><p>The following options specify from where the archive is accessible and whether the archive is a file or a directory.</p><dl><dt>Packaged File to Be Uploaded to the Server</dt>
-<dd><p>The archive is in a file that resides on or is accessible from the client machine.</p><p>The client machine is the host on which you are viewing the Administration Console through a browser.</p></dd>
-<dt>Local Packaged File or Directory That Is Accessible From the Enterprise Server</dt>
-<dd><p>The archive is a file that resides on the server machine, or is an unpackaged application in an exploded directory.</p><p>The server machine is the host that is running the Enterprise Server domain administration server. </p></dd>
+<a name="indexterm-170"></a><a name="indexterm-171"></a><a name="indexterm-172"></a><a name="indexterm-173"></a><a name="indexterm-174"></a><a name="indexterm-175"></a><a name="indexterm-176"></a><a name="indexterm-177"></a><a name="indexterm-178"></a><a name="indexterm-179"></a><a name="indexterm-180"></a><a name="indexterm-181"></a><a name="indexterm-182"></a><a name="indexterm-183"></a><p>Use the Deploy Applications or Modules page to deploy an application.</p>
+
+<p>The Deploy Applications or Modules page contains the following options for all applications.
+Additional options appear only after you specify the Location field for the application.</p>
+
+<dl><dt>Location</dt>
+<dd><p>The location of the archive for the application that you are deploying.</p>
+
+<p>The following options specify from where the archive is accessible and whether the archive is a file or a directory.</p>
+
+<dl><dt>Packaged File to Be Uploaded to the Server</dt>
+<dd><p>The archive is in a file that resides on or is accessible from the client machine.</p>
+
+<p>The client machine is the host on which you are viewing the Administration Console through a browser.</p>
+
+</dd>
+<dt>Local Packaged File or Directory That Is Accessible From the GlassFish Server</dt>
+<dd><p>The archive is a file that resides on the server machine, or is an unpackaged application in an exploded directory.</p>
+
+<p>The server machine is the host that is running the GlassFish Server domain administration server. </p>
+
+</dd>
 </dl>
 </dd>
 <dt>Type</dt>
 <dd><p>The type of the application. Available choices are:</p>
-<ul><li><p>Web Application</p></li>
-<li><p>Enterprise Application</p></li>
-<li><p>Application Client</p></li>
-<li><p>Connector Module</p></li>
-<li><p>EJB Jar</p></li>
-<li><p>Ruby Application</p></li>
-<li><p>Other</p></li></ul>
+
+
+<ul><li><p>Web Application</p>
+
+</li>
+<li><p>Enterprise Application</p>
+
+</li>
+<li><p>Application Client</p>
+
+</li>
+<li><p>Connector Module</p>
+
+</li>
+<li><p>EJB Jar</p>
+
+</li>
+<li><p>Ruby Application</p>
+
+</li>
+<li><p>Other</p>
+
+</li></ul>
 </dd>
 </dl>
 <p>Additional options for the various application types are described in the following sections.</p>
-<ul><li><p><a href="#ref-webapp-options">Additional Options for a Web Application</a></p></li>
-<li><p><a href="#ref-entapp-options">Additional Options for an Enterprise Application</a></p></li>
-<li><p><a href="#ref-appclient-options">Additional Options for an Application Client</a></p></li>
-<li><p><a href="#ref-connmodule-options">Additional Options for a Connector Module</a></p></li>
-<li><p><a href="#ref-ejb-options">Additional Options for an EJB Jar</a></p></li>
-<li><p><a href="#ref-ruby-options">Additional Options for a Ruby Application</a></p></li></ul>
+
+
+<ul><li><p><a href="#ref-webapp-options">Additional Options for a Web Application</a></p>
+
+</li>
+<li><p><a href="#ref-entapp-options">Additional Options for an Enterprise Application</a></p>
+
+</li>
+<li><p><a href="#ref-appclient-options">Additional Options for an Application Client</a></p>
+
+</li>
+<li><p><a href="#ref-connmodule-options">Additional Options for a Connector Module</a></p>
+
+</li>
+<li><p><a href="#ref-ejb-options">Additional Options for an EJB Jar</a></p>
+
+</li>
+<li><p><a href="#ref-ruby-options">Additional Options for a Ruby Application</a></p>
+
+</li></ul>
 <a name="ref-webapp-options"></a><h5>Additional Options for a Web Application</h5>
-<p>If the application type is Web Application, the following options appear.</p><dl><dt>Context Root</dt>
-<dd><p>The path to the application. In the URL of the web application, the context root immediately follows the port number (<tt>http://<i>host</i>:<i>port</i>/<i>context-root</i>/...</tt>). The context root must start with a forward slash, for example, <tt>/hello</tt>.</p></dd>
+<p>If the application type is Web Application, the following options appear.</p>
+
+<dl><dt>Context Root</dt>
+<dd><p>The path to the application. In the URL of the web application, the context root immediately follows the port number (<tt>http://<i>host</i>:<i>port</i>/<i>context-root</i>/...</tt>). The context root must start with a forward slash, for example, <tt>/hello</tt>.</p>
+
+</dd>
 <dt>Application Name</dt>
-<dd><p>The name of the application.</p></dd>
+<dd><p>The name of the application.</p>
+
+</dd>
 <dt>Virtual Servers</dt>
-<dd><p>The virtual servers associated with this application.</p></dd>
+<dd><p>The virtual servers associated with this application.</p>
+
+</dd>
 <dt>Status</dt>
-<dd><p>If this option is selected, the application is enabled. This option is selected by default.</p></dd>
+<dd><p>If this option is selected, the application is enabled. This option is selected by default.</p>
+
+</dd>
 <dt>Precompile JSPs</dt>
-<dd><p>If this option is selected, JavaServer Pages<sup>TM</sup> (JSP<sup>TM</sup>) files are precompiled. If this option is disabled, JSP files are compiled at runtime when they are first accessed. This option is disabled by default.</p></dd>
+<dd><p>If this option is selected, JavaServer Pages (JSP) files are precompiled. If this option is disabled, JSP files are compiled at runtime when they are first accessed. This option is disabled by default.</p>
+
+</dd>
 <dt>Run Verifier</dt>
-<dd><p>If this option is selected, the verifier is run before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the file. Verification of large applications is often time-consuming. This option is disabled by default.</p></dd>
+<dd><p>If this option is selected, the verifier is run before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the file. Verification of large applications is often time-consuming. This option is disabled by default.</p>
+
+</dd>
 <dt>Force Redeploy</dt>
-<dd><p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p></dd>
+<dd><p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p>
+
+</dd>
 <dt>Libraries</dt>
-<dd><p>A comma-separated list of library JAR files specific to this module or application. The paths may be absolute or relative. A relative path is relative to <tt></tt><i>domain-dir</i><tt>/lib/applibs</tt>. If the path is absolute, the path must be accessible to the domain administration server (DAS), which means it must be under <tt></tt><i>domain-dir</i><tt></tt>. The libraries are made available to the application in the order in which they are specified.</p></dd>
+<dd><p>A comma-separated list of library JAR files specific to this module or application. The paths may be absolute or relative. A relative path is relative to <tt></tt><i>domain-dir</i><tt>/lib/applibs</tt>. If the path is absolute, the path must be accessible to the domain administration server (DAS), which means it must be under <tt></tt><i>domain-dir</i><tt></tt>. The libraries are made available to the application in the order in which they are specified.</p>
+
+</dd>
 <dt>Description</dt>
-<dd><p>A description of the application.</p></dd>
+<dd><p>A description of the application.</p>
+
+</dd>
 </dl>
 <a name="ref-entapp-options"></a><h5>Additional Options for an Enterprise Application</h5>
-<p>If the application type is Enterprise Application, the following options appear.</p><dl><dt>Application Name</dt>
-<dd><p>The name of the application.</p></dd>
+<p>If the application type is Enterprise Application, the following options appear.</p>
+
+<dl><dt>Application Name</dt>
+<dd><p>The name of the application.</p>
+
+</dd>
 <dt>Virtual Servers</dt>
-<dd><p>The virtual servers associated with this application.</p></dd>
+<dd><p>The virtual servers associated with this application.</p>
+
+</dd>
 <dt>Status</dt>
-<dd><p>If this option is selected, the application is enabled. This option is selected by default.</p></dd>
+<dd><p>If this option is selected, the application is enabled. This option is selected by default.</p>
+
+</dd>
 <dt>Precompile JSPs</dt>
-<dd><p>If this option is selected, JavaServer Pages (JSP) files are precompiled. If this option is disabled, JSP files are compiled at runtime when they are first accessed. This option is disabled by default.</p></dd>
+<dd><p>If this option is selected, JavaServer Pages (JSP) files are precompiled. If this option is disabled, JSP files are compiled at runtime when they are first accessed. This option is disabled by default.</p>
+
+</dd>
 <dt>Run Verifier</dt>
-<dd><p>If this option is selected, the verifier is run before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the file. Verification of large applications is often time-consuming. This option is disabled by default.</p></dd>
+<dd><p>If this option is selected, the verifier is run before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the file. Verification of large applications is often time-consuming. This option is disabled by default.</p>
+
+</dd>
 <dt>Force Redeploy</dt>
-<dd><p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p></dd>
+<dd><p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p>
+
+</dd>
 <dt>Java Web Start</dt>
-<dd><p>If this option is selected, Java Web Start access is permitted for an application client module. This option is disabled by default.</p></dd>
+<dd><p>If this option is selected, Java Web Start access is permitted for an application client module. This option is disabled by default.</p>
+
+</dd>
 <dt>Libraries</dt>
-<dd><p>A comma-separated list of library JAR files specific to this application. Specifies an absolute or relative path. A relative path is relative to <tt></tt><i>domain-dir</i><tt>/lib/applibs</tt>. If the path is absolute, the path must be accessible to the domain administration server (DAS), which means it must be under <tt></tt><i>domain-dir</i><tt></tt>. The libraries are made available to the application in the order in which they are specified.</p></dd>
+<dd><p>A comma-separated list of library JAR files specific to this application. Specifies an absolute or relative path. A relative path is relative to <tt></tt><i>domain-dir</i><tt>/lib/applibs</tt>. If the path is absolute, the path must be accessible to the domain administration server (DAS), which means it must be under <tt></tt><i>domain-dir</i><tt></tt>. The libraries are made available to the application in the order in which they are specified.</p>
+
+</dd>
 <dt>Description</dt>
-<dd><p>A description of the application.</p></dd>
+<dd><p>A description of the application.</p>
+
+</dd>
 </dl>
 <a name="ref-appclient-options"></a><h5>Additional Options for an Application Client</h5>
-<p>If the application type is Application Client, the following options appear.</p><dl><dt>Application Name</dt>
-<dd><p>The name of the application.</p></dd>
+<p>If the application type is Application Client, the following options appear.</p>
+
+<dl><dt>Application Name</dt>
+<dd><p>The name of the application.</p>
+
+</dd>
 <dt>Run Verifier</dt>
-<dd><p>If this option is selected, the verifier is run before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the file. Verification of large applications is often time-consuming. This option is disabled by default.</p></dd>
+<dd><p>If this option is selected, the verifier is run before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the file. Verification of large applications is often time-consuming. This option is disabled by default.</p>
+
+</dd>
 <dt>Force Redeploy</dt>
-<dd><p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p></dd>
+<dd><p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p>
+
+</dd>
 <dt>Java Web Start</dt>
-<dd><p>If this option is selected, Java Web Start access is permitted for an application client module. This option is disabled by default.</p></dd>
+<dd><p>If this option is selected, Java Web Start access is permitted for an application client module. This option is disabled by default.</p>
+
+</dd>
 <dt>Description</dt>
-<dd><p>A description of the application.</p></dd>
+<dd><p>A description of the application.</p>
+
+</dd>
 </dl>
 <a name="ref-connmodule-options"></a><h5>Additional Options for a Connector Module</h5>
-<p>If the application type is Connector Module, the following options appear.</p><dl><dt>Application Name</dt>
-<dd><p>The name of the application.</p></dd>
+<p>If the application type is Connector Module, the following options appear.</p>
+
+<dl><dt>Application Name</dt>
+<dd><p>The name of the application.</p>
+
+</dd>
 <dt>Status</dt>
-<dd><p>If this option is selected, the application is enabled. This option is selected by default.</p></dd>
+<dd><p>If this option is selected, the application is enabled. This option is selected by default.</p>
+
+</dd>
 <dt>Run Verifier</dt>
-<dd><p>If this option is selected, the verifier is run before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the file. Verification of large applications is often time-consuming. This option is disabled by default.</p></dd>
+<dd><p>If this option is selected, the verifier is run before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the file. Verification of large applications is often time-consuming. This option is disabled by default.</p>
+
+</dd>
 <dt>Force Redeploy</dt>
-<dd><p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p></dd>
+<dd><p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p>
+
+</dd>
 <dt>Description</dt>
-<dd><p>A description of the application.</p></dd>
+<dd><p>A description of the application.</p>
+
+</dd>
 </dl>
 <a name="ref-ejb-options"></a><h5>Additional Options for an EJB Jar</h5>
-<p>If the application type is EJB Jar, the following options appear.</p><dl><dt>Application Name</dt>
-<dd><p>The name of the application.</p></dd>
+<p>If the application type is EJB Jar, the following options appear.</p>
+
+<dl><dt>Application Name</dt>
+<dd><p>The name of the application.</p>
+
+</dd>
 <dt>Status</dt>
-<dd><p>If this option is selected, the application is enabled. This option is selected by default.</p></dd>
+<dd><p>If this option is selected, the application is enabled. This option is selected by default.</p>
+
+</dd>
 <dt>Run Verifier</dt>
-<dd><p>If this option is selected, the verifier is run before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the file. Verification of large applications is often time-consuming. This option is disabled by default.</p></dd>
+<dd><p>If this option is selected, the verifier is run before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the file. Verification of large applications is often time-consuming. This option is disabled by default.</p>
+
+</dd>
 <dt>Force Redeploy</dt>
-<dd><p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p></dd>
+<dd><p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p>
+
+</dd>
 <dt>Libraries</dt>
-<dd><p>A comma-separated list of library JAR files specific to this module or application. Specifies an absolute or relative path. A relative path is relative to <tt></tt><i>domain-dir</i><tt>/lib/applibs</tt>. If the path is absolute, the path must be accessible to the domain administration server (DAS), which means it must be under <tt></tt><i>domain-dir</i><tt></tt>. The libraries are made available to the application in the order in which they are specified.</p></dd>
+<dd><p>A comma-separated list of library JAR files specific to this module or application. Specifies an absolute or relative path. A relative path is relative to <tt></tt><i>domain-dir</i><tt>/lib/applibs</tt>. If the path is absolute, the path must be accessible to the domain administration server (DAS), which means it must be under <tt></tt><i>domain-dir</i><tt></tt>. The libraries are made available to the application in the order in which they are specified.</p>
+
+</dd>
 <dt>Description</dt>
-<dd><p>A description of the application.</p></dd>
+<dd><p>A description of the application.</p>
+
+</dd>
 </dl>
 <a name="ref-ruby-options"></a><h5>Additional Options for a Ruby Application</h5>
-<p>If the application type is Ruby Application, the following options appear.</p><dl><dt>Application Name</dt>
-<dd><p>The name of the application.</p></dd>
+<p>If the application type is Ruby Application, the following options appear.</p>
+
+<dl><dt>Application Name</dt>
+<dd><p>The name of the application.</p>
+
+</dd>
 <dt>Context Root</dt>
-<dd><p>The path to the application. In the URL of the web application, the context root immediately follows the port number (<tt>http://<i>host</i>:<i>port</i>/<i>context-root</i>/...</tt>). The context root must start with a forward slash, for example, <tt>/hello</tt>.</p></dd>
+<dd><p>The path to the application. In the URL of the web application, the context root immediately follows the port number (<tt>http://<i>host</i>:<i>port</i>/<i>context-root</i>/...</tt>). The context root must start with a forward slash, for example, <tt>/hello</tt>.</p>
+
+</dd>
 <dt>Status</dt>
-<dd><p>If this option is selected, the application is enabled. This option is selected by default.</p></dd>
+<dd><p>If this option is selected, the application is enabled. This option is selected by default.</p>
+
+</dd>
 <dt>Force Redeploy</dt>
-<dd><p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p></dd>
+<dd><p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p>
+
+</dd>
 <dt>JRuby Home</dt>
-<dd><p>The path to the directory where the JRuby container is installed. The default location is <tt></tt><i>as-install</i><tt>/jruby</tt>. If you specify a value for this field, the application value overrides the JRuby Home value set for the Ruby container.</p></dd>
+<dd><p>The path to the directory where the JRuby container is installed. The default location is <tt></tt><i>as-install</i><tt>/jruby</tt>. If you specify a value for this field, the application value overrides the JRuby Home value set for the Ruby container.</p>
+
+</dd>
 <dt>Initial Pool Size</dt>
-<dd><p>The initial number of JRuby runtimes to start. The value must be greater than or equal to the value in the Minimum Pool Size field and less than or equal to the value in the Maximum Pool Size field. The default value is 1. If you specify a value for this field, the application value overrides the Initial Pool Size value set for the Ruby container.</p></dd>
+<dd><p>The initial number of JRuby runtimes to start. The value must be greater than or equal to the value in the Minimum Pool Size field and less than or equal to the value in the Maximum Pool Size field. The default value is 1. If you specify a value for this field, the application value overrides the Initial Pool Size value set for the Ruby container.</p>
+
+</dd>
 <dt>Minimum Pool Size</dt>
-<dd><p>The minimum number of JRuby runtimes in the pool. The value must be less than or equal to the value in the Initial Pool Size field and less than or equal to the value in the Maximum Pool Size field. The default value is 1. If you specify a value for this field, the application value overrides the Minimum Pool Size value set for the Ruby container.</p></dd>
+<dd><p>The minimum number of JRuby runtimes in the pool. The value must be less than or equal to the value in the Initial Pool Size field and less than or equal to the value in the Maximum Pool Size field. The default value is 1. If you specify a value for this field, the application value overrides the Minimum Pool Size value set for the Ruby container.</p>
+
+</dd>
 <dt>Maximum Pool Size</dt>
-<dd><p>The maximum number of JRuby runtimes in the pool. The value must be greater than or equal to the value in the Minimum Pool Size field and greater than or equal to the value in the Initial Pool Size field. The default value is 1. If you specify a value for this field, the application value overrides the Maximum Pool Size value set for the Ruby container.</p></dd>
+<dd><p>The maximum number of JRuby runtimes in the pool. The value must be greater than or equal to the value in the Minimum Pool Size field and greater than or equal to the value in the Initial Pool Size field. The default value is 1. If you specify a value for this field, the application value overrides the Maximum Pool Size value set for the Ruby container.</p>
+
+</dd>
 <dt>Framework</dt>
-<dd><p>The framework on which the application is to be deployed. Available choices are <tt>rails</tt>, <tt>merb</tt>, <tt>sinatra</tt>, and <tt>auto-detection</tt>. The default is <tt>rails</tt>. Setting this property to a value other than <tt>auto-detection</tt> bypasses the normal, and potentially lengthy, auto-detection process and forces deployment on the specified framework. If the deployed application is not written for the specified framework, errors result.</p></dd>
+<dd><p>The framework on which the application is to be deployed. Available choices are <tt>rails</tt>, <tt>merb</tt>, <tt>sinatra</tt>, and <tt>auto-detection</tt>. The default is <tt>rails</tt>. Setting this property to a value other than <tt>auto-detection</tt> bypasses the normal, and potentially lengthy, auto-detection process and forces deployment on the specified framework. If the deployed application is not written for the specified framework, errors result.</p>
+
+</dd>
 <dt>Rack Environment</dt>
-<dd><p>The environment in which the JRuby framework, such as Rails or Merb, runs. Available choices are <tt>production</tt>, <tt>development</tt>, and <tt>test</tt>. The default is <tt>development</tt>.</p></dd>
+<dd><p>The environment in which the JRuby framework, such as Rails or Merb, runs. Available choices are <tt>production</tt>, <tt>development</tt>, and <tt>test</tt>. The default is <tt>development</tt>.</p>
+
+</dd>
 <dt>MT-Safe</dt>
-<dd><p>The thread-safe setting for the framework in which the application will run. This property affects applications started using an auto-detected user-provided startup script. Available choices are:</p><dl><dt><tt>true</tt></dt>
-<dd><p>Specifies that the framework is thread-safe and therefore does not need a pool created for it.</p></dd>
+<dd><p>The thread-safe setting for the framework in which the application will run. This property affects applications started using an auto-detected user-provided startup script. Available choices are:</p>
+
+<dl><dt><tt>true</tt></dt>
+<dd><p>Specifies that the framework is thread-safe and therefore does not need a pool created for it.</p>
+
+</dd>
 <dt><tt>false</tt></dt>
-<dd><p>Specifies that the application starts with a pool of application instances, and each instance of the application is accessed by one thread at a time.</p></dd>
+<dd><p>Specifies that the application starts with a pool of application instances, and each instance of the application is accessed by one thread at a time.</p>
+
+</dd>
 <dt><tt>default</tt></dt>
-<dd><p>The Enterprise Server tries to detect thread safety automatically. This value is the default.</p></dd>
+<dd><p>The GlassFish Server tries to detect thread safety automatically. This value is the default.</p>
+
+</dd>
 </dl>
-<p>This property only affects frameworks being launched where the thread safety cannot be automatically determined. Setting this value to <tt>true</tt> does not cause an auto-detected Rails 2.1.<i>x</i> application to be launched in thread-safe mode, nor can it be used to force a thread-safe framework to start in pooled mode.</p></dd>
+<p>This property only affects frameworks being launched where the thread safety cannot be automatically determined. Setting this value to <tt>true</tt> does not cause an auto-detected Rails 2.1.<i>x</i> application to be launched in thread-safe mode, nor can it be used to force a thread-safe framework to start in pooled mode.</p>
+
+</dd>
 <dt>Virtual Servers</dt>
-<dd><p>The virtual servers associated with this application.</p></dd>
+<dd><p>The virtual servers associated with this application.</p>
+
+</dd>
 <dt>Description</dt>
-<dd><p>A description of the application.</p></dd>
+<dd><p>A description of the application.</p>
+
+</dd>
 </dl>
 <h5>Additional Options for Applications of Type Other</h5>
-<p>If the application type is Other, the following options appear.</p><dl><dt>Application Name</dt>
-<dd><p>The name of the application.</p></dd>
+<p>If the application type is Other, the following options appear.</p>
+
+<dl><dt>Application Name</dt>
+<dd><p>The name of the application.</p>
+
+</dd>
 <dt>Virtual Servers</dt>
-<dd><p>The virtual servers associated with this application.</p></dd>
+<dd><p>The virtual servers associated with this application.</p>
+
+</dd>
 <dt>Status</dt>
-<dd><p>If this option is selected, the application is enabled. This option is selected by default.</p></dd>
+<dd><p>If this option is selected, the application is enabled. This option is selected by default.</p>
+
+</dd>
 <dt>Precompile JSPs</dt>
-<dd><p>If this option is selected, JavaServer Pages (JSP) files are precompiled. If this option is disabled, JSP files are compiled at runtime when they are first accessed. This option is disabled by default.</p></dd>
+<dd><p>If this option is selected, JavaServer Pages (JSP) files are precompiled. If this option is disabled, JSP files are compiled at runtime when they are first accessed. This option is disabled by default.</p>
+
+</dd>
 <dt>Run Verifier</dt>
-<dd><p>If this option is selected, the verifier is run before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the file. Verification of large applications is often time-consuming. This option is disabled by default.</p></dd>
+<dd><p>If this option is selected, the verifier is run before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the file. Verification of large applications is often time-consuming. This option is disabled by default.</p>
+
+</dd>
 <dt>Force Redeploy</dt>
-<dd><p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p></dd>
+<dd><p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p>
+
+</dd>
 <dt>Libraries</dt>
-<dd><p>A comma-separated list of library JAR files specific to this module or application. Specifies an absolute or relative path. A relative path is relative to <tt></tt><i>domain-dir</i><tt>/lib/applibs</tt>. If the path is absolute, the path must be accessible to the domain administration server (DAS), which means it must be under <tt></tt><i>domain-dir</i><tt></tt>. The libraries are made available to the application in the order in which they are specified.</p></dd>
+<dd><p>A comma-separated list of library JAR files specific to this module or application. Specifies an absolute or relative path. A relative path is relative to <tt></tt><i>domain-dir</i><tt>/lib/applibs</tt>. If the path is absolute, the path must be accessible to the domain administration server (DAS), which means it must be under <tt></tt><i>domain-dir</i><tt></tt>. The libraries are made available to the application in the order in which they are specified.</p>
+
+</dd>
 <dt>Description</dt>
-<dd><p>A description of the application.</p></dd>
+<dd><p>A description of the application.</p>
+
+</dd>
 </dl>
 <h5>Related Tasks</h5>
 
-<ul><li><p><a href="task-applistdeployed.html">To View a List of Deployed Applications</a></p></li>
-<li><p><a href="task-appdeployweb.html">To Deploy a Web Application</a></p></li>
-<li><p><a href="task-deployentapp.html">To Deploy an Enterprise Application</a></p></li>
-<li><p><a href="task-appdeployclient.html">To Deploy an Application Client</a></p></li>
-<li><p><a href="task-appdeployconn.html">To Deploy a Connector Module</a></p></li>
-<li><p><a href="task-appdeployejb.html">To Deploy an EJB Jar</a></p></li>
-<li><p><a href="task-appdeployruby.html">To Deploy a Ruby Application</a></p></li>
-<li><p><a href="task-appedit.html">To Edit a Deployed Application</a></p></li>
-<li><p><a href="task-appviewdesc.html">To View Descriptors of an Application</a></p></li>
-<li><p><a href="task-endpoint.html">To View Endpoint Information for a Web Service</a></p></li>
-<li><p><a href="task-applaunch.html">To Launch an Application</a></p></li>
-<li><p><a href="task-appclientlaunch.html">To Launch an Application Client</a></p></li>
-<li><p><a href="task-appredeploy.html">To Redeploy a Deployed Application</a></p></li>
-<li><p><a href="task-apprestart.html">To Restart a Deployed Application</a></p></li></ul>
+<ul><li><p><a href="task-applistdeployed.html">To View a List of Deployed Applications</a></p>
+
+</li>
+<li><p><a href="task-appdeployweb.html">To Deploy a Web Application</a></p>
+
+</li>
+<li><p><a href="task-deployentapp.html">To Deploy an Enterprise Application</a></p>
+
+</li>
+<li><p><a href="task-appdeployclient.html">To Deploy an Application Client</a></p>
+
+</li>
+<li><p><a href="task-appdeployconn.html">To Deploy a Connector Module</a></p>
+
+</li>
+<li><p><a href="task-appdeployejb.html">To Deploy an EJB Jar</a></p>
+
+</li>
+<li><p><a href="task-appdeployruby.html">To Deploy a Ruby Application</a></p>
+
+</li>
+<li><p><a href="task-appedit.html">To Edit a Deployed Application</a></p>
+
+</li>
+<li><p><a href="task-appviewdesc.html">To View Descriptors of an Application</a></p>
+
+</li>
+<li><p><a href="task-endpoint.html">To View Endpoint Information for a Web Service</a></p>
+
+</li>
+<li><p><a href="task-applaunch.html">To Launch an Application</a></p>
+
+</li>
+<li><p><a href="task-appclientlaunch.html">To Launch an Application Client</a></p>
+
+</li>
+<li><p><a href="task-appredeploy.html">To Redeploy a Deployed Application</a></p>
+
+</li>
+<li><p><a href="task-apprestart.html">To Restart a Deployed Application</a></p>
+
+</li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
 
-<ul><li><p><a href="http://docs.sun.com/doc/820-7701/deploy-1?a=view"><tt>deploy</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/redeploy-1?a=view"><tt>redeploy</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/list-applications-1?a=view"><tt>list-applications</tt>(1)</a></p></li></ul>
+<ul><li><p><a href="http://docs.sun.com/doc/821-2433/deploy-1?a=view"><tt>deploy</tt>(1)</a></p>
 
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/redeploy-1?a=view"><tt>redeploy</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/list-applications-1?a=view"><tt>list-applications</tt>(1)</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

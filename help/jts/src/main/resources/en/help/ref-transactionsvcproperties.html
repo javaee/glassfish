@@ -1,26 +1,48 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-transactionsvcproperties"></a><h4>Properties Specific to the Transaction Service</h4>
-<a name="indexterm-9"></a><a name="indexterm-10"></a><p>The following properties are available for configuring the Transaction Service.</p><dl><dt><tt>oracle-xa-recovery-workaround</tt></dt>
-<dd><p>If set to <tt>true</tt>, the Oracle XA Resource workaround is used in transaction recovery. The default value is <tt>true</tt>.</p></dd>
+<a name="indexterm-9"></a><a name="indexterm-10"></a><p>The following properties are available for configuring the Transaction Service.</p>
+
+<dl><dt><tt>oracle-xa-recovery-workaround</tt></dt>
+<dd><p>If set to <tt>true</tt>, the Oracle XA Resource workaround is used in transaction recovery. The default value is <tt>true</tt>.</p>
+
+</dd>
 <dt><tt>disable-distributed-transaction-logging</tt></dt>
-<dd><p>If set to <tt>true</tt>, disables transaction logging, which might improve performance. If the On Restart Enabled checkbox is selected, this property is ignored. The default value is <tt>false</tt>.</p></dd>
+<dd><p>If set to <tt>true</tt>, disables transaction logging, which might improve performance. If the On Restart Enabled checkbox is selected, this property is ignored. The default value is <tt>false</tt>.</p>
+
+</dd>
 <dt><tt>xaresource-txn-timeout</tt></dt>
-<dd><p>Changes the <tt>XAResource</tt> timeout. In some cases, the <tt>XAResource</tt> default timeout can cause transactions to be aborted, so it is desirable to change it. The default value is specific to the <tt>XAResource</tt> used.</p></dd>
+<dd><p>Changes the <tt>XAResource</tt> timeout. In some cases, the <tt>XAResource</tt> default timeout can cause transactions to be aborted, so it is desirable to change it. The default value is specific to the <tt>XAResource</tt> used.</p>
+
+</dd>
 <dt><tt>pending-txn-cleanup-interval</tt></dt>
-<dd><p>Specifies the interval, in seconds, at which an asynchronous thread checks for pending transactions and completes them. If this property is not specified, there is no default. If this property is present but has no value, the default value is 60.</p></dd>
+<dd><p>Specifies the interval, in seconds, at which an asynchronous thread checks for pending transactions and completes them. If this property is not specified, there is no default. If this property is present but has no value, the default value is 60.</p>
+
+</dd>
 <dt><tt>use-last-agent-optimization</tt></dt>
-<dd><p>If set to <tt>true</tt>, enables last agent optimization, which improves the throughput of transactions. If one non-XA resource is used with XA resources in the same transaction, the non-XA resource is the last agent. The default value is <tt>true</tt>.</p></dd>
+<dd><p>If set to <tt>true</tt>, enables last agent optimization, which improves the throughput of transactions. If one non-XA resource is used with XA resources in the same transaction, the non-XA resource is the last agent. The default value is <tt>true</tt>.</p>
+
+</dd>
 <dt><tt>delegated-recovery</tt></dt>
-<dd><p>If set to <tt>true</tt>, cluster-wide delegated recovery is enabled. The default value is false.</p></dd>
+<dd><p>If set to <tt>true</tt>, cluster-wide delegated recovery is enabled. The default value is false.</p>
+
+</dd>
 <dt><tt>wait-time-before-recovery-insec</tt></dt>
-<dd><p>Specifies the wait time, in seconds, after which an instance starts the recovery for a dead instance.</p></dd>
+<dd><p>Specifies the wait time, in seconds, after which an instance starts the recovery for a dead instance.</p>
+
+</dd>
 <dt><tt>db-logging-resource</tt></dt>
-<dd><p>Specifies the JNDI name of the JDBC resource for the database to which transactions are logged. For more information, see <a href="http://docs.sun.com/doc/820-7695/beanm?a=view">Chapter 15, Using the Transaction Service, in <i>Sun GlassFish Enterprise Server v3 Application Development Guide</i></a>. There is no default value.</p></dd>
+<dd><p>Specifies the JNDI name of the JDBC resource for the database to which transactions are logged. For more information, see <a href="http://docs.sun.com/doc/821-2418/beanm?a=view">Chapter 15, Using the Transaction Service, in <i>Oracle GlassFish Server 3.1 Application Development Guide</i></a>. There is no default value.</p>
+
+</dd>
 <dt><tt>xa-servername</tt></dt>
-<dd><p>Specifies the host name that the transaction service uses to identify transactions being managed by the installed Enterprise Server. This can sometimes be useful for recovering transactions from the log file that was created on a different host running the Enterprise Server.</p></dd>
+<dd><p>Specifies the host name that the transaction service uses to identify transactions being managed by the installed GlassFish Server. This can sometimes be useful for recovering transactions from the log file that was created on a different host running the GlassFish Server.</p>
+
+</dd>
 </dl>
 
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

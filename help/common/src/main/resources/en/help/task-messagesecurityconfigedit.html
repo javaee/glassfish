@@ -1,19 +1,23 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
 
-<a name="task-messagesecurityconfigedit"></a><h4>To Edit a Message Security Configuration</h4><a name="indexterm-108"></a><p>To enable message security for web services endpoints deployed in Enterprise Server, you
+<a name="task-messagesecurityconfigedit"></a><h4>To Edit a Message Security Configuration</h4><a name="indexterm-111"></a><p>To enable message security for web services endpoints deployed in GlassFish Server, you
 must specify a provider to be used by default on the server
 side. If you enable a default provider for message security, you also need
 to enable providers to be used by clients of the web services deployed
-in Enterprise Server. Information on enabling the providers used by clients is discussed
-in <a href="task-enablemesec4appclients.html">To Enable Message Security for Application Clients</a>.</p><p>To enable message security for web service invocations originating from deployed endpoints, you
+in GlassFish Server. Information on enabling the providers used by clients is discussed
+in <a href="task-enablemesec4appclients.html">To Enable Message Security for Application Clients</a>.</p>
+
+<p>To enable message security for web service invocations originating from deployed endpoints, you
 must specify a default client provider. If you enabled a default client provider
-for Enterprise Server, you must ensure that any services invoked from endpoints deployed
-in Enterprise Server are compatibly configured for message layer security.</p><ol>
+for GlassFish Server, you must ensure that any services invoked from endpoints deployed
+in GlassFish Server are compatibly configured for message layer security.</p>
+
+<ol>
 <li><b>In the navigation tree, expand the Configuration node.</b></li>
 <li><b>Expand the Security node.</b></li>
 <li><b>Select the Message Security node.</b><p>The Message Security Configurations page opens.</p></li>
@@ -23,23 +27,39 @@ configuration that you are editing.</b><p>By default, the only configured messag
 select a server-side provider.</b><p>The default server provider, also called the default provider, identifies the server provider invoked
 for an application that does not identify a specific server provider. Available choices
 are <tt>ServerProvider</tt>, <tt>XWS_ServerProvider</tt>, or none. By default, no provider is selected, so
-that Enterprise Server will not invoke a message security provider on the server
+that GlassFish Server will not invoke a message security provider on the server
 side. Generally, select <tt>ServerProvider</tt> as the default provider.</p></li>
 <li><b>From the Default Client Provider drop-down list, select a client provider.</b><p>The default client provider identifies the client provider invoked for an application that
 does not identify a specific client provider. Available choices are <tt>ClientProvider</tt>, <tt>XWS_ClientProvider</tt>, or
-none. By default, no provider is selected, so that Enterprise Server will not
+none. By default, no provider is selected, so that GlassFish Server will not
 invoke a message security provider on the client side. Generally, select none for
 the default client provider. Select <tt>ClientProvider</tt> to enable a default provider and message
 protection policy to apply to the web services invocations originating from web services
-endpoints deployed on Enterprise Server.</p></li>
+endpoints deployed on GlassFish Server.</p></li>
 <li><b>Click Save.</b></li>
 <li><b>For instructions on how to modify message protection policies of enabled client or
 server providers, see <a href="task-messagesecurityproviderconfigedit.html">To Edit a Message Security Provider Configuration</a>.</b></li></ol><h6>See Also</h6>
-<ul><li><p><a href="task-configmsgsecproviders.html">To Configure Enterprise Server Facilities for Use by Message Security Providers</a></p></li>
-<li><p><a href="task-messagesecurityconfignew.html">To Create a Message Security Configuration</a></p></li>
-<li><p><a href="task-messagesecurityconfigdelete.html">To Delete a Message Security Configuration</a></p></li>
-<li><p><a href="task-messagesecurityproviderconfignew.html">To Create a Message Security Provider Configuration</a></p></li>
-<li><p><a href="task-messagesecurityproviderconfigedit.html">To Edit a Message Security Provider Configuration</a></p></li>
-<li><p><a href="task-messagesecurityproviderconfigdelete.html">To Delete a Message Security Provider Configuration</a></p></li>
-<li><p><a href="task-enablemesec4appclients.html">To Enable Message Security for Application Clients</a></p></li></ul>
+<ul><li><p><a href="task-configmsgsecproviders.html">To Configure GlassFish Server Facilities for Use by Message Security Providers</a></p>
 
+</li>
+<li><p><a href="task-messagesecurityconfignew.html">To Create a Message Security Configuration</a></p>
+
+</li>
+<li><p><a href="task-messagesecurityconfigdelete.html">To Delete a Message Security Configuration</a></p>
+
+</li>
+<li><p><a href="task-messagesecurityproviderconfignew.html">To Create a Message Security Provider Configuration</a></p>
+
+</li>
+<li><p><a href="task-messagesecurityproviderconfigedit.html">To Edit a Message Security Provider Configuration</a></p>
+
+</li>
+<li><p><a href="task-messagesecurityproviderconfigdelete.html">To Delete a Message Security Provider Configuration</a></p>
+
+</li>
+<li><p><a href="task-enablemesec4appclients.html">To Enable Message Security for Application Clients</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

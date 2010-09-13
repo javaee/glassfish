@@ -1,0 +1,47 @@
+<!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
+ 
+Use is subject to License Terms  -->
+
+
+<a name="task-logging-max-logfiles"></a><h4>To Change the Limit on the Number of Rotated Log Files</h4><a name="indexterm-75"></a><a name="indexterm-76"></a><a name="indexterm-77"></a><p>When GlassFish Server rotates a log file, it creates a new, empty
+file named <tt>server.log</tt> and renames the old file <tt>server.log_</tt><i>date</i>, where <i>date</i> is the date
+and time when the file was rotated.</p>
+
+<p>By default, GlassFish Server limits the number of rotated log files to 10.
+When this limit is reached, the oldest log file is deleted when
+GlassFish Server next rotates a log file.</p>
+
+<p>If necessary, you can change the limit on the number of rotated
+log files. Any new limit that you set applies to rotated log files for
+both access logging and the server log.</p>
+
+<ul>
+<li><b>Set the <tt>com.sun.enterprise.server.logging.max_history_files</tt> system property to the maximum number of rotated log
+files to keep.</b><p>For information about how to set a system property, see <a href="task-systemproperties.html">To Manage System Properties</a>.</p><p>The behavior of the <tt>com.sun.enterprise.server.logging.max_history_files</tt> system property is as follows:</p>
+<ul><li><p>If the property is not set, GlassFish Server keeps a maximum of 10 rotated log files.</p>
+
+</li>
+<li><p>If the property is set to an invalid number or null, GlassFish Server keeps a maximum of 10 rotated log files.</p>
+
+</li>
+<li><p>If the property is set to 0, GlassFish Server keeps no rotated log files.</p>
+
+</li></ul>
+</li></ul><h6>See Also</h6>
+<ul><li><p><a href="task-eelogging.html">To Configure General Logging Settings</a></p>
+
+</li>
+<li><p><a href="task-eelogginglevels.html">To Configure Log Levels</a></p>
+
+</li>
+<li><p><a href="task-logviewer.html">To View the Server Log</a></p>
+
+</li>
+<li><p><a href="task-systemproperties.html">To Manage System Properties</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

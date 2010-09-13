@@ -1,12 +1,16 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
 
 <a name="task-ejbmdbpoolsettings"></a><h4>To Configure MDB Pool Settings</h4><a name="indexterm-1"></a><a name="indexterm-2"></a><a name="indexterm-3"></a><a name="indexterm-4"></a><a name="indexterm-5"></a><p>The pool for message-driven beans is similar to the pool for session beans.
-By default, the container maintains a pool of message-driven beans.</p><p>To adjust the configuration of this pool, perform these steps.</p><ol>
+By default, the container maintains a pool of message-driven beans.</p>
+
+<p>To adjust the configuration of this pool, perform these steps.</p>
+
+<ol>
 <li><b>In the navigation tree, expand the Configuration node.</b></li>
 <li><b>Select the EJB Container node.</b><p>The Enterprise Java Beans (EJB) page opens.</p></li>
 <li><b>Click the MDB Settings tab.</b><p>The MDB Default Pool Settings page opens.</p></li>
@@ -23,7 +27,7 @@ bean in the pool can remain idle before it is removed from
 the pool.</b><p>After this amount of time, the bean is destroyed. A value of
 0 means that a bean can remain idle indefinitely. The default value is
 600.</p></li>
-<li>(Optional) <b>In the Additional Properties section, specify additional properties.</b><p>The Enterprise Server does not define any additional properties for the MDB pool.</p><ul>
+<li>(Optional) <b>In the Additional Properties section, specify additional properties.</b><p>The GlassFish Server does not define any additional properties for the MDB pool.</p><ul>
 <li><b>To add a property, click the Add Property button. In the blank row
 that appears, type the property name in the Name field, and type
 the property value in the Value field.</b></li>
@@ -34,9 +38,17 @@ Properties button.</b></li></ul></li>
 <li><b>Click Save.</b>
 <hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
 Save.</p>
+
+
 <hr>
 </li>
-<li><b>Restart the Enterprise Server.</b></li></ol><h6>See Also</h6>
-<ul><li><p><a href="../../../ejb-lite/en/help/task-ejbgeneral.html">To Configure EJB Settings</a></p></li>
-<li><p><a href="task-ejbtimerservice.html">To Configure the EJB Timer Service</a></p></li></ul>
+<li><b>Restart the GlassFish Server.</b></li></ol><h6>See Also</h6>
+<ul><li><p><a href="http://docs.sun.com/doc/821-2464/task-ejbgeneral?a=view">To Configure EJB Settings</a></p>
 
+</li>
+<li><p><a href="task-ejbtimerservice.html">To Configure the EJB Timer Service</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

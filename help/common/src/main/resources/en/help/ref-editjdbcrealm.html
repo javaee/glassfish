@@ -1,39 +1,73 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-editjdbcrealm"></a><h4>Properties Specific to the <tt>JDBCRealm</tt> Class</h4>
-<a name="indexterm-202"></a><a name="indexterm-203"></a><p>To protect your web pages or web applications, you can set the
+<a name="indexterm-205"></a><a name="indexterm-206"></a><p>To protect your web pages or web applications, you can set the
 security so that only registered users can access them. This is known as
 the authentication facility. This type of realm involves storing the credentials of your
-users inside a database. The Enterprise Server uses the database information and the enabled
-JDBC realm option inside the configuration file.</p><p>The following properties are required for a JDBC realm.</p><dl><dt>JAAS Context</dt>
-<dd><p>The JAAS (Java Authentication and Authorization Service) context (the identifier for the login module to use for this realm). The only valid value is <tt>jdbcRealm</tt>.</p></dd>
+users inside a database. The GlassFish Server uses the database information and the enabled
+JDBC realm option inside the configuration file.</p>
+
+<p>The following properties are required for a JDBC realm.</p>
+
+<dl><dt>JAAS Context</dt>
+<dd><p>The JAAS (Java Authentication and Authorization Service) context (the identifier for the login module to use for this realm). The only valid value is <tt>jdbcRealm</tt>.</p>
+
+</dd>
 <dt>JNDI</dt>
-<dd><p>The JNDI name for this realm. The default value is <tt>jdbc/security</tt>.</p></dd>
+<dd><p>The JNDI name for this realm. The default value is <tt>jdbc/security</tt>.</p>
+
+</dd>
 <dt>User Table</dt>
-<dd><p>The table that contains a list of authorized users for this realm. The default value is <tt>usertable</tt>.</p></dd>
+<dd><p>The table that contains a list of authorized users for this realm. The default value is <tt>usertable</tt>.</p>
+
+</dd>
 <dt>User Name Column</dt>
-<dd><p>The name of the column that contains the list of users inside the user table. The default value is <tt>userid</tt>.</p></dd>
+<dd><p>The name of the column that contains the list of users inside the user table. The default value is <tt>userid</tt>.</p>
+
+</dd>
 <dt>Password Column</dt>
-<dd><p>The name of the column that contains the respective user's password in the user table. The default value is <tt>password</tt>.</p></dd>
+<dd><p>The name of the column that contains the respective user's password in the user table. The default value is <tt>password</tt>.</p>
+
+</dd>
 <dt>Group Table</dt>
-<dd><p>The name of the group table in the database. The default value is <tt>grouptable</tt>.</p></dd>
+<dd><p>The name of the group table in the database. The default value is <tt>grouptable</tt>.</p>
+
+</dd>
 <dt>Group Name Column</dt>
-<dd><p>The name of the group name column in the database's group table. The default value is <tt>groupid</tt>.</p></dd>
+<dd><p>The name of the group name column in the database's group table. The default value is <tt>groupid</tt>.</p>
+
+</dd>
 </dl>
-<p>The following optional properties are available for a JDBC realm.</p><dl><dt>Assign Groups</dt>
-<dd><p>A comma-separated list of group names. All clients who present valid certificates are assigned to these groups, for example, <tt>employee,manager</tt>, where these are the names of user groups.</p></dd>
+<p>The following optional properties are available for a JDBC realm.</p>
+
+<dl><dt>Assign Groups</dt>
+<dd><p>A comma-separated list of group names. All clients who present valid certificates are assigned to these groups, for example, <tt>employee,manager</tt>, where these are the names of user groups.</p>
+
+</dd>
 <dt>Database User</dt>
-<dd><p>Allows you to specify the database user name in the realm instead of the <tt>jdbc-connection-pool</tt>. This prevents other applications from looking up the database, getting a connection, and browsing the user table. By default, the <tt>jdbc-connection-pool</tt> configuration is used.</p></dd>
+<dd><p>Allows you to specify the database user name in the realm instead of the <tt>jdbc-connection-pool</tt>. This prevents other applications from looking up the database, getting a connection, and browsing the user table. By default, the <tt>jdbc-connection-pool</tt> configuration is used.</p>
+
+</dd>
 <dt>Database Password</dt>
-<dd><p>Allows you to specify the database password in the realm instead of the <tt>jdbc-connection-pool</tt>. This prevents other applications from looking up the database, getting a connection, and browsing the user table. By default, the <tt>jdbc-connection-pool</tt> configuration is used.</p></dd>
+<dd><p>Allows you to specify the database password in the realm instead of the <tt>jdbc-connection-pool</tt>. This prevents other applications from looking up the database, getting a connection, and browsing the user table. By default, the <tt>jdbc-connection-pool</tt> configuration is used.</p>
+
+</dd>
 <dt>Digest Algorithm</dt>
-<dd><p>The digest algorithm. The default is <tt>MD5</tt>. You can use any algorithm supported in the JDK, or <tt>none</tt>.</p></dd>
+<dd><p>The digest algorithm. The default is <tt>MD5</tt>. You can use any algorithm supported in the JDK, or <tt>none</tt>.</p>
+
+</dd>
 <dt>Encoding</dt>
-<dd><p>The encoding. Allowed values are <tt>Hex</tt> and <tt>Base64</tt>. If <tt>digest-algorithm</tt> is specified, the default is <tt>Hex</tt>. If <tt>digest-algorithm</tt> is not specified, by default no encoding is specified.</p></dd>
+<dd><p>The encoding. Allowed values are <tt>Hex</tt> and <tt>Base64</tt>. If <tt>digest-algorithm</tt> is specified, the default is <tt>Hex</tt>. If <tt>digest-algorithm</tt> is not specified, by default no encoding is specified.</p>
+
+</dd>
 <dt>Charset</dt>
-<dd><p>The charset for the digest algorithm. </p></dd>
+<dd><p>The charset for the digest algorithm. </p>
+
+</dd>
 </dl>
 
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

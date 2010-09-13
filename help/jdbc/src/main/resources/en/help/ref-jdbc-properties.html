@@ -1,32 +1,60 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-jdbc-properties"></a><h4>Properties Specific to JDBC Connection Pools</h4>
 <a name="indexterm-26"></a><a name="indexterm-27"></a><p>Most JDBC drivers allow use of standard property lists to specify the user,
 password, and other resource configuration information. Although properties are optional with respect to
-the Enterprise Server, some properties might be necessary for most databases. For details,
-see the JDBC 4.0 Standard Extension API.</p><p>Changing JDBC driver properties requires a server restart.</p><p>The following standard properties are common to many JDBC vendors. For information about
-the properties available for your JDBC driver, consult the vendor's documentation.</p><dl><dt><tt>user</tt></dt>
-<dd><p>Specifies the user name for connecting to the database.</p></dd>
+the GlassFish Server, some properties might be necessary for most databases. For details,
+see the JDBC 4.0 Standard Extension API.</p>
+
+<p>Changing JDBC driver properties requires a server restart.</p>
+
+<p>The following standard properties are common to many JDBC vendors. For information about
+the properties available for your JDBC driver, consult the vendor's documentation.</p>
+
+<dl><dt><tt>user</tt></dt>
+<dd><p>Specifies the user name for connecting to the database.</p>
+
+</dd>
 <dt><tt>password</tt></dt>
-<dd><p>Specifies the password for connecting to the database.</p></dd>
+<dd><p>Specifies the password for connecting to the database.</p>
+
+</dd>
 <dt><tt>databaseName</tt></dt>
-<dd><p>Specifies the database for this connection pool.</p></dd>
+<dd><p>Specifies the database for this connection pool.</p>
+
+</dd>
 <dt><tt>serverName</tt></dt>
-<dd><p>Specifies the database server for this connection pool.</p></dd>
+<dd><p>Specifies the database server for this connection pool.</p>
+
+</dd>
 <dt><tt>port</tt></dt>
-<dd><p>Specifies the port on which the database server listens for requests.</p></dd>
+<dd><p>Specifies the port on which the database server listens for requests.</p>
+
+</dd>
 <dt><tt>networkProtocol</tt></dt>
-<dd><p>Specifies the communication protocol.</p></dd>
+<dd><p>Specifies the communication protocol.</p>
+
+</dd>
 <dt><tt>roleName</tt></dt>
-<dd><p>Specifies the initial SQL role name.</p></dd>
+<dd><p>Specifies the initial SQL role name.</p>
+
+</dd>
 <dt><tt>datasourceName</tt></dt>
-<dd><p>Specifies an underlying <tt>XADataSource</tt>, or a <tt>ConnectionPoolDataSource</tt> if connection pooling is done.</p></dd>
+<dd><p>Specifies an underlying <tt>XADataSource</tt>, or a <tt>ConnectionPoolDataSource</tt> if connection pooling is done.</p>
+
+</dd>
 <dt><tt>description</tt></dt>
-<dd><p>Specifies a text description.</p></dd>
+<dd><p>Specifies a text description.</p>
+
+</dd>
 <dt><tt>url</tt></dt>
-<dd><p>Specifies the URL for this connection pool. Although this is not a standard property, it is commonly used.</p></dd>
+<dd><p>Specifies the URL for this connection pool. Although this is not a standard property, it is commonly used.</p>
+
+</dd>
 </dl>
 
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

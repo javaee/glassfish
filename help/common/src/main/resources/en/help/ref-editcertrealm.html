@@ -1,18 +1,27 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-editcertrealm"></a><h4>Properties Specific to the <tt>CertificateRealm</tt> Class</h4>
-<a name="indexterm-200"></a><a name="indexterm-201"></a><p>The <tt>certificate</tt> realm supports SSL authentication. This realm sets up the user identity
-in the Enterprise Server&#8217;s security context, and populates it with user data obtained
+<a name="indexterm-203"></a><a name="indexterm-204"></a><p>The <tt>certificate</tt> realm supports SSL authentication. This realm sets up the user identity
+in the GlassFish Server&#8217;s security context, and populates it with user data obtained
 from cryptographically verified client certificates in the truststore and keystore files. Add users
-to these files using <tt>keytool</tt> or <tt>certutil</tt>. For more information, see the <a href="http://docs.sun.com/doc/820-7627"><i>The Java EE 6 Tutorial, Volume I</i></a> section
-on security.</p><p>With the <tt>certificate</tt> realm, Java containers handle authorization processing based on each user&#8217;s
+to these files using <tt>keytool</tt> or <tt>certutil</tt>. For more information, see <a href="http://docs.sun.com/doc/821-1841/gijrp?a=view">Part&#160;VII, Security, in <i>The Java EE 6 Tutorial</i></a>.</p>
+
+<p>With the <tt>certificate</tt> realm, Java containers handle authorization processing based on each user&#8217;s
 Distinguished Name (DN) from his or her certificate. The DN is the name
 of the entity whose public key the certificate identifies. This name uses the
 X.500 standard, so it is intended to be unique across the Internet. For
-more information on key stores and trust stores, refer to the <a href="http://java.sun.com/j2se/1.4.2/docs/tooldocs/solaris/keytool.html">keytool documentation</a>.</p><p>The following optional property is available for the <tt>certificate</tt> realm.</p><dl><dt>Assign Groups</dt>
-<dd><p>A comma-separated list of group names. All clients who present valid certificates are assigned to these groups, for example, <tt>employee,manager</tt>, where these are the names of user groups.</p></dd>
+more information on key stores and trust stores, refer to the <a href="http://java.sun.com/j2se/1.4.2/docs/tooldocs/solaris/keytool.html">keytool documentation</a>.</p>
+
+<p>The following optional property is available for the <tt>certificate</tt> realm.</p>
+
+<dl><dt>Assign Groups</dt>
+<dd><p>A comma-separated list of group names. All clients who present valid certificates are assigned to these groups, for example, <tt>employee,manager</tt>, where these are the names of user groups.</p>
+
+</dd>
 </dl>
 
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

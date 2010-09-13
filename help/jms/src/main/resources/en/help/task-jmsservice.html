@@ -1,27 +1,31 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
 
 <a name="task-jmsservice"></a><h4>To Configure the JMS Service</h4><a name="indexterm-13"></a><p>Use the JMS Service page to configure settings to be used by
-all JMS connections.</p><p>For more information about configuring the JMS service, see <a href="http://docs.sun.com/doc/820-7695/beaob?a=view">Chapter 17, Using the Java Message Service, in <i>Sun GlassFish Enterprise Server v3 Application Development Guide</i></a>.</p><ol>
+all JMS connections.</p>
+
+<p>For more information about configuring the JMS service, see Chapter 17, Using the Java Message Service, in <i>Oracle GlassFish Server 3.1 Application Development Guide</i>.</p>
+
+<ol>
 <li><b>In the navigation tree, expand the Configuration node.</b></li>
 <li><b>Under the Configuration node, select the Java Message Service node.</b><p>The JMS Service page opens.</p></li>
 <li><b>From the Type drop-down list:</b><ul>
 <li><b>Select EMBEDDED to access the JMS service on the local host.</b><p>The JMS service is started in the same JVM machine as the
-Enterprise Server. Lazy initialization starts the default embedded broker on the first access of
-JMS services rather than at Enterprise Server startup. This is the default type
+GlassFish Server. Lazy initialization starts the default embedded broker on the first access of
+JMS services rather than at GlassFish Server startup. This is the default type
 of JMS Service.</p></li>
-<li><b>Select LOCAL to access the JMS service on the local host.</b><p>The JMS service is started along with the Enterprise Server.</p></li>
+<li><b>Select LOCAL to access the JMS service on the local host.</b><p>The JMS service is started along with the GlassFish Server.</p></li>
 <li><b>Select REMOTE to access the JMS service on another system.</b><p>If you choose REMOTE, the JMS service is not started by the
-Enterprise Server the next time the server starts. Instead, the JMS service is
+GlassFish Server the next time the server starts. Instead, the JMS service is
 started and managed by Message Queue, so you must start the Message Queue
-broker separately. For information about starting the broker, see the <a href="http://docs.sun.com/doc/821-0027/aeoby?a=view">Starting Brokers in <i>Sun GlassFish Message Queue 4.4 Administration Guide</i></a>. If you choose
+broker separately. For information about starting the broker, see the Starting Brokers in <i>Oracle GlassFish Message Queue 4.5 Administration Guide</i>. If you choose
 this value and are using a remote host, follow the instructions in <a href="task-jmshostedit.html">To Edit a JMS Host</a>
 to specify the name of the remote host.</p></li></ul></li>
-<li><b>In the Startup Timeout field, type the number of seconds the Enterprise
+<li><b>In the Startup Timeout field, type the number of seconds the GlassFish
 Server waits for the JMS service to start before aborting the startup.</b><p>On a slow or overloaded system, increase the value from the default. The
 default value is 60.</p></li>
 <li><b>In the Start Arguments field, type arguments to customize the JMS service startup.</b><p>Use any arguments available through the <tt><i>as-install-parent</i>/mq/bin/imqbrokerd</tt> command.</p></li>
@@ -67,17 +71,41 @@ ping succeeded.</p></li>
 <li><b>Click Save.</b>
 <hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
 Save.</p>
+
+
 <hr>
 </li></ol><h6>More Information<br>Accessing Remote Servers</h6><p>Changing the provider and host to a remote system causes all JMS
 applications to run on the remote server. To use both the local server
 and one or more remote servers, create a connection factory resource with the
-<tt>AddressList</tt> property to create connections that access remote servers. See <a href="task-jmsconnectionnew.html">To Create a JMS Connection Factory Resource</a>.</p>Equivalent asadmin command</h6><p><tt>jms-ping</tt></p><h6>See Also</h6>
-<ul><li><p><a href="task-jmshostnew.html">To Create a JMS Host</a></p></li>
-<li><p><a href="task-jmshostedit.html">To Edit a JMS Host</a></p></li>
-<li><p><a href="task-jmshostdelete.html">To Delete a JMS Host</a></p></li>
-<li><p><a href="task-jmsphysicaldestnew.html">To Create a JMS Physical Destination</a></p></li>
-<li><p><a href="task-jmsphysicaldestedit.html">To Edit a JMS Physical Destination</a></p></li>
-<li><p><a href="task-jmsphysicaldestdelete.html">To Delete a JMS Physical Destination</a></p></li>
-<li><p><a href="task-jmsflushmessages.html">To Remove Messages from a JMS Physical Destination</a></p></li>
-<li><p><a href="task-jmsphysicaldeststats.html">To View Statistics for a JMS Physical Destination</a></p></li></ul>
+<tt>AddressList</tt> property to create connections that access remote servers. See <a href="task-jmsconnectionnew.html">To Create a JMS Connection Factory Resource</a>.</p>
 
+Equivalent asadmin command</h6><p><tt>jms-ping</tt></p>
+
+<h6>See Also</h6>
+<ul><li><p><a href="task-jmshostnew.html">To Create a JMS Host</a></p>
+
+</li>
+<li><p><a href="task-jmshostedit.html">To Edit a JMS Host</a></p>
+
+</li>
+<li><p><a href="task-jmshostdelete.html">To Delete a JMS Host</a></p>
+
+</li>
+<li><p><a href="task-jmsphysicaldestnew.html">To Create a JMS Physical Destination</a></p>
+
+</li>
+<li><p><a href="task-jmsphysicaldestedit.html">To Edit a JMS Physical Destination</a></p>
+
+</li>
+<li><p><a href="task-jmsphysicaldestdelete.html">To Delete a JMS Physical Destination</a></p>
+
+</li>
+<li><p><a href="task-jmsflushmessages.html">To Remove Messages from a JMS Physical Destination</a></p>
+
+</li>
+<li><p><a href="task-jmsphysicaldeststats.html">To View Statistics for a JMS Physical Destination</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

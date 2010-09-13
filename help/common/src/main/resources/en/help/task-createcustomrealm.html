@@ -1,15 +1,19 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
 
-<a name="task-createcustomrealm"></a><h4>To Create a Custom Realm</h4><a name="indexterm-84"></a><a name="indexterm-85"></a><p>In addition to the three built-in realms, you can also create custom realms
+<a name="task-createcustomrealm"></a><h4>To Create a Custom Realm</h4><a name="indexterm-87"></a><a name="indexterm-88"></a><p>In addition to the three built-in realms, you can also create custom realms
 that store user data in some other way, such as in a
 relational database. Development of a custom realm is outside the scope of this
-document. For more information, see <a href="http://docs.sun.com/doc/820-7695/beabg?a=view">Chapter 5, Securing Applications, in <i>Sun GlassFish Enterprise Server v3 Application Development Guide</i></a>.</p><p>For administration purposes, custom realms are implemented by a class (called the <tt>LoginModule</tt>)
-derived from the Java Authentication and Authorization Service (JAAS) package.</p><ol>
+document. For more information, see <a href="http://docs.sun.com/doc/821-2418/beabg?a=view">Chapter 5, Securing Applications, in <i>Oracle GlassFish Server 3.1 Application Development Guide</i></a>.</p>
+
+<p>For administration purposes, custom realms are implemented by a class (called the <tt>LoginModule</tt>)
+derived from the Java Authentication and Authorization Service (JAAS) package.</p>
+
+<ol>
 <li><b>Follow the procedure in <a href="task-realmnew.html">To Create a Realm</a>, typing the name of the custom realm
 and the name of the <tt>LoginModule</tt> class. </b><p>Use any unique name for the custom realm, for example <tt>myCustomRealm</tt>.</p></li>
 <li><b>Click OK.</b></li>
@@ -24,8 +28,18 @@ as follows:</b><pre><i>realmName</i> {
 <li><b>Restart the server if Restart Required appears in the Administration Console.</b></li>
 <li><b>Ensure that the realm is properly loaded.</b><p>Check <tt></tt><i>domain-dir</i><tt>/logs/server.log</tt> to ensure that the server loaded the realm. The server
 should invoke the realm&#8217;s <tt>init</tt> method.</p></li></ol><h6>See Also</h6>
-<ul><li><p><a href="task-realmnew.html">To Create a Realm</a></p></li>
-<li><p><a href="task-realmedit.html">To Edit a Realm</a></p></li>
-<li><p><a href="task-todeleterealm.html">To Delete a Realm</a></p></li>
-<li><p><a href="task-tosetdefault.html">To Set the Default Realm</a></p></li></ul>
+<ul><li><p><a href="task-realmnew.html">To Create a Realm</a></p>
 
+</li>
+<li><p><a href="task-realmedit.html">To Edit a Realm</a></p>
+
+</li>
+<li><p><a href="task-todeleterealm.html">To Delete a Realm</a></p>
+
+</li>
+<li><p><a href="task-tosetdefault.html">To Set the Default Realm</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

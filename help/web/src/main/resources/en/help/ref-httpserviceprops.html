@@ -1,19 +1,37 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-httpserviceprops"></a><h4>Properties Specific to the HTTP Service</h4>
 <a name="indexterm-51"></a><a name="indexterm-52"></a><p>The following additional properties are available for the HTTP service. If you specify
-these properties, they apply to all <a href="ref-group-networklisteners.html">Network Listeners</a>.</p><dl><dt><tt>ssl-cache-entriese</tt></dt>
-<dd><p>The number of SSL sessions to be cached. The default value is 10,000.</p></dd>
+these properties, they apply to all <a href="ref-group-networklisteners.html">Network Listeners</a>.</p>
+
+<dl><dt><tt>ssl-cache-entriese</tt></dt>
+<dd><p>The number of SSL sessions to be cached. The default value is 10,000.</p>
+
+</dd>
 <dt><tt>ssl3-session-timeout</tt></dt>
-<dd><p>The interval at which SSL3 sessions are cached. The default value is 86,400.</p></dd>
+<dd><p>The interval at which SSL3 sessions are cached. The default value is 86,400.</p>
+
+</dd>
 <dt><tt>ssl-session-timeout</tt></dt>
-<dd><p>The interval at which SSL2 sessions are cached. The default value is 100.</p></dd>
+<dd><p>The interval at which SSL2 sessions are cached. The default value is 100.</p>
+
+</dd>
 <dt><tt>proxyHandler</tt></dt>
-<dd><p>The fully qualified class name of a custom implementation of the <tt>com.sun.appserv.ProxyHandler</tt> abstract class, which allows a back-end Enterprise Server instance to retrieve information about the original client request that was intercepted by an SSL-terminating proxy server (for example, a load balancer). An implementation of this abstract class inspects a given request for the custom request headers through which the proxy server communicates the information about the original client request to the Enterprise Server instance, and returns that information to its caller.</p><p>The default implementation reads the client IP address from an HTTP request header named <tt>Proxy-ip</tt>, the SSL <tt>keysize</tt> from an HTTP request header named <tt>Proxy-keysize</tt>, and the SSL client certificate chain from an HTTP request header named <tt>Proxy-auth-cert</tt>. The <tt>Proxy-auth-cert</tt> value must contain the BASE-64 encoded client certificate chain without the <tt>BEGIN CERTIFICATE</tt> and <tt>END CERTIFICATE</tt> boundaries and with <tt>\n</tt> replaced with <tt>% d% a</tt>.</p><p>This setting is used only if the Auth Pass Through checkbox for the network listener protocol's HTTP page is set to true.</p></dd>
+<dd><p>The fully qualified class name of a custom implementation of the <tt>com.sun.appserv.ProxyHandler</tt> abstract class, which allows a back-end GlassFish Server instance to retrieve information about the original client request that was intercepted by an SSL-terminating proxy server (for example, a load balancer). An implementation of this abstract class inspects a given request for the custom request headers through which the proxy server communicates the information about the original client request to the Enterprise Server instance, and returns that information to its caller.</p>
+
+<p>The default implementation reads the client IP address from an HTTP request header named <tt>Proxy-ip</tt>, the SSL <tt>keysize</tt> from an HTTP request header named <tt>Proxy-keysize</tt>, and the SSL client certificate chain from an HTTP request header named <tt>Proxy-auth-cert</tt>. The <tt>Proxy-auth-cert</tt> value must contain the BASE-64 encoded client certificate chain without the <tt>BEGIN CERTIFICATE</tt> and <tt>END CERTIFICATE</tt> boundaries and with <tt>\n</tt> replaced with <tt>% d% a</tt>.</p>
+
+<p>This setting is used only if the Auth Pass Through checkbox for the network listener protocol's HTTP page is set to true.</p>
+
+</dd>
 <dt><tt>connectionTimeout</tt></dt>
-<dd><p>Specifies the number of seconds that network listeners wait, after accepting a connection, for the request URI line to be presented. The default value is 30.</p></dd>
+<dd><p>Specifies the number of seconds that network listeners wait, after accepting a connection, for the request URI line to be presented. The default value is 30.</p>
+
+</dd>
 </dl>
 
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

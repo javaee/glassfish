@@ -1,47 +1,65 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
 
 <a name="task-jvmsettings"></a><h4>To Configure the JVM General Settings</h4><a name="indexterm-66"></a><a name="indexterm-67"></a><p>The Java Virtual Machine (JVM) enables Java byte codes to run on a
-physical machine. Tuning the JVM settings improves performance and avoids memory allocation errors.</p><p>The Java Virtual Machine is included in the Java Platform, Standard Edition (Java
-SE platform), which is required by the Enterprise Server. Incorrect JVM settings will
+physical machine. Tuning the JVM settings improves performance and avoids memory allocation errors.</p>
+
+<p>The Java Virtual Machine is included in the Java Platform, Standard Edition (Java
+SE platform), which is required by the GlassFish Server. Incorrect JVM settings will
 prevent the server from running, so use care when changing these settings.</p>
+
+
 <hr><p><b>Note - </b>The terms &#8220;Java Virtual Machine&#8221; and &#8220;JVM&#8221; mean a Virtual Machine for the
 Java platform.</p>
+
+
 <hr>
 <ol>
 <li><b>In the navigation tree, select the Configuration node.</b></li>
 <li><b>Under the Configuration node, select the JVM Settings node.</b><p>The JVM General Settings page opens.</p></li>
 <li><b>On the JVM General Settings page, in the Java Home field, type the
-name of the installation directory of the Java SE software.</b><p>The Enterprise Server relies on the Java SE platform. To verify that the
+name of the installation directory of the Java SE software.</b><p>The GlassFish Server relies on the Java SE platform. To verify that the
 version of Java SE software that you specify is supported in this release,
-see the <a href="http://docs.sun.com/doc/820-7688"><i>Sun GlassFish Enterprise Server v3 Release Notes</i></a>. If you enter a nonexistent directory name or the directory
-for an unsupported version of Java SE software, then Enterprise Server will not
+see the <a href="http://docs.sun.com/doc/821-2434"><i>Oracle GlassFish Server 3.1 Release Notes</i></a>. If you enter a nonexistent directory name or the directory
+for an unsupported version of Java SE software, then GlassFish Server will not
 start.</p></li>
 <li><b>In the Javac Options field, type the command-line options for the Java programming
-language compiler.</b><p>The Enterprise Server runs the compiler when Enterprise JavaBeans<sup>TM</sup> (EJB<sup>TM</sup>) components are deployed.</p></li>
+language compiler.</b><p>The GlassFish Server runs the compiler when Enterprise JavaBeans (EJB) components are deployed.</p></li>
 <li><b>Select the Debug Enabled checkbox to enable debugging with the Java Platform Debugger
-Architecture (JPDA).</b><p>JPDA is used by application developers. For more information, see the <a href="http://docs.sun.com/doc/820-7695"><i>Sun GlassFish Enterprise Server v3 Application Development Guide</i></a>.</p></li>
+Architecture (JPDA).</b><p>JPDA is used by application developers. For more information, see the <a href="http://docs.sun.com/doc/821-2418"><i>Oracle GlassFish Server 3.1 Application Development Guide</i></a>.</p></li>
 <li><b>In the Debug Options field, type the JPDA options to be passed to
 the JVM.</b><p>This field is applicable only if debugging was enabled in the preceding step.</p></li>
 <li><b>In the RMI Compile Options field, type the command-line options for the <tt>rmic</tt>
-compiler.</b><p>The Enterprise Server runs the <tt>rmic</tt> compiler when EJB components are deployed.</p></li>
+compiler.</b><p>The GlassFish Server runs the <tt>rmic</tt> compiler when EJB components are deployed.</p></li>
 <li><b>In the Bytecode Preprocessor field, type a list of class names.</b><p>Use commas to separate class names. Each class must implement the com.sun.appserv.BytecodePreprocessor
 interface. The classes are called in the order specified.</p></li>
 <li>(Optional) <b>In the Additional Properties section, specify additional properties.</b><p>To add a property, click the Add Property button. In the blank row
 that appears, type the property name in the Name field, and type the
-property value in the Value field.</p><p>The Enterprise Server does not define any additional properties for the JVM.</p></li>
+property value in the Value field.</p><p>The GlassFish Server does not define any additional properties for the JVM.</p></li>
 <li><b>Click Save.</b>
 <hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
 Save.</p>
+
+
 <hr>
 </li>
 <li><b>Restart the server.</b></li></ol><h6>See Also</h6>
-<ul><li><p><a href="task-jvmpathsettings.html">To Configure the JVM Path Settings</a></p></li>
-<li><p><a href="task-jvmoptions.html">To Configure the JVM Options</a></p></li>
-<li><p><a href="task-securitymanagerdisable.html">To Disable the Security Manager</a></p></li>
-<li><p><a href="task-jvmprofilersettings.html">To Configure the JVM Profiler Settings</a></p></li></ul>
+<ul><li><p><a href="task-jvmpathsettings.html">To Configure the JVM Path Settings</a></p>
 
+</li>
+<li><p><a href="task-jvmoptions.html">To Configure the JVM Options</a></p>
+
+</li>
+<li><p><a href="task-securitymanagerdisable.html">To Disable the Security Manager</a></p>
+
+</li>
+<li><p><a href="task-jvmprofilersettings.html">To Configure the JVM Profiler Settings</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

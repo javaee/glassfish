@@ -1,25 +1,49 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-connectionservice"></a><h4>Connector Service</h4>
-<a name="indexterm-61"></a><p>Use the Connector Service page to modify general settings for the Connector Service,
-which governs resource adapters.</p><p>The Connector Service page contains the following options.</p><dl><dt>Load Defaults</dt>
-<dd><p>Button to restore the default values of all the settings.</p></dd>
+<a name="indexterm-62"></a><p>Use the Connector Service page to modify general settings for the Connector Service,
+which governs resource adapters.</p>
+
+<p>The Connector Service page contains the following options.</p>
+
+<dl><dt>Load Defaults</dt>
+<dd><p>Button to restore the default values of all the settings.</p>
+
+</dd>
 <dt>Shutdown Timeout</dt>
-<dd><p>The maximum number of seconds allowed during Enterprise Server shutdown for the <tt>ResourceAdapter.stop</tt> method of a connector module's instance to complete. Resource adapters that take longer to shut down are ignored, and Enterprise Server shutdown continues. The default value is 30 seconds.</p></dd>
+<dd><p>The maximum number of seconds allowed during GlassFish Server shutdown for the <tt>ResourceAdapter.stop</tt> method of a connector module's instance to complete. Resource adapters that take longer to shut down are ignored, and GlassFish Server shutdown continues. The default value is 30 seconds.</p>
+
+</dd>
 <dt>Connector Classloading Policy</dt>
-<dd><p>The policy to be used for loading classes. Available choices are:</p><dl><dt><tt>derived</tt></dt>
-<dd><p>Indicates that the resource adapters are provided according to an application's references to any of the resource adapter's resources. This policy is the default.</p></dd>
+<dd><p>The policy to be used for loading classes. Available choices are:</p>
+
+<dl><dt><tt>derived</tt></dt>
+<dd><p>Indicates that the resource adapters are provided according to an application's references to any of the resource adapter's resources. This policy is the default.</p>
+
+</dd>
 <dt><tt>global</tt></dt>
-<dd><p>Indicates that all resource adapters will be visible to all applications.</p></dd>
+<dd><p>Indicates that all resource adapters will be visible to all applications.</p>
+
+</dd>
 </dl>
-<p>This policy does not apply to the preinstalled JMS system resource adapter, <tt>jmsra</tt>, which is always visible to all applications.</p></dd>
+<p>This policy does not apply to the preinstalled JMS system resource adapter, <tt>jmsra</tt>, which is always visible to all applications.</p>
+
+</dd>
 </dl>
 <h5>Related Tasks</h5>
 
-<ul><li><p><a href="task-connectionservice.html">To Configure the Connector Service</a></p></li>
-<li><p><a href="../../../common/en/help/task-appdeployconn.html">To Deploy a Connector Module</a></p></li></ul>
+<ul><li><p><a href="task-connectionservice.html">To Configure the Connector Service</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2472/task-appdeployconn?a=view">To Deploy a Connector Module</a></p>
+
+</li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
 <p>None.</p>
+
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

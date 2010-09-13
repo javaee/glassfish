@@ -1,18 +1,30 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-jdbc"></a><h4>JDBC</h4>
 <a name="indexterm-16"></a><p>Use the JDBC page to configure resources of the following types:</p>
-<ul><li><p><a href="ref-jdbcresources.html">JDBC Resources</a></p></li>
-<li><p><a href="ref-jdbcconnectionpools.html">Connection Pools</a></p></li></ul>
-<p>Java<sup>TM</sup> DataBase Connectivity (JDBC<sup>TM</sup>) technology provides connectivity to relational databases. In the Enterprise
+
+
+<ul><li><p><a href="ref-jdbcresources.html">JDBC Resources</a></p>
+
+</li>
+<li><p><a href="ref-jdbcconnectionpools.html">Connection Pools</a></p>
+
+</li></ul>
+<p>Java DataBase Connectivity (JDBC) technology provides connectivity to relational databases. In the GlassFish
 Server, you configure database connectivity by adding JDBC resources (data sources) to the domain.
 A data source is a Java Platform, Enterprise Edition (Java EE platform) standard
 method of configuring connectivity to a database. Each data source contains a pool
-of database connections. Applications look up the data source on the Java Naming and Directory Interface<sup>TM</sup> (JNDI) API
-tree or in the local application context and then retrieve a database connection
-with the <tt>getConnection</tt> method. Data sources and their connection pools provide connection management
-processes that help keep your system running.</p><p>The Enterprise Server includes a copy of the Java DB database and
+of database connections. Applications look up the data source on the Java Naming
+and Directory Interface (JNDI) API tree or in the local application context and
+then retrieve a database connection with the <tt>getConnection</tt> method. Data sources and their connection
+pools provide connection management processes that help keep your system running.</p>
+
+<p>The GlassFish Server includes a copy of the Java DB database and
 is preconfigured with the ability to access this database.</p>
+
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

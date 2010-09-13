@@ -1,26 +1,52 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-ejbmdbpoolsettings"></a><h4>MDB Default Pool Settings</h4>
-<a name="indexterm-9"></a><a name="indexterm-10"></a><a name="indexterm-11"></a><p>Use the MDB Default Pool Settings page to configure the MDB pool.</p><p>The MDB Default Pool Settings page contains the following options.</p><dl><dt>Load Defaults</dt>
-<dd><p>Button to restore the default values of all the settings.</p></dd>
+<a name="indexterm-9"></a><a name="indexterm-10"></a><a name="indexterm-11"></a><p>Use the MDB Default Pool Settings page to configure the MDB pool.</p>
+
+<p>The MDB Default Pool Settings page contains the following options.</p>
+
+<dl><dt>Load Defaults</dt>
+<dd><p>Button to restore the default values of all the settings.</p>
+
+</dd>
 <dt>Initial and Minimum Pool Size</dt>
-<dd><p>The minimum number of message beans to be maintained in the pool. The default value is 0.</p></dd>
+<dd><p>The minimum number of message beans to be maintained in the pool. The default value is 0.</p>
+
+</dd>
 <dt>Maximum Pool Size</dt>
-<dd><p>The maximum number of beans that the container can maintain in the pool at one time. The default value is 32.</p></dd>
+<dd><p>The maximum number of beans that the container can maintain in the pool at one time. The default value is 32.</p>
+
+</dd>
 <dt>Pool Resize Quantity</dt>
-<dd><p>The number of beans that are removed from the pool if they are idle for more than the time specified in the Pool Idle Timeout field. The value must be at least 0 and less than the Maximum Pool Size value. The default value is 8.</p></dd>
+<dd><p>The number of beans that are removed from the pool if they are idle for more than the time specified in the Pool Idle Timeout field. The value must be at least 0 and less than the Maximum Pool Size value. The default value is 8.</p>
+
+</dd>
 <dt>Pool Idle Timeout</dt>
-<dd><p>The time, in seconds, that a bean in the pool can remain idle before it is removed from the pool. After this amount of time, the bean is destroyed. A value of 0 means that a bean can remain idle indefinitely. The default value is 600.</p></dd>
+<dd><p>The time, in seconds, that a bean in the pool can remain idle before it is removed from the pool. After this amount of time, the bean is destroyed. A value of 0 means that a bean can remain idle indefinitely. The default value is 600.</p>
+
+</dd>
 <dt>Additional Properties</dt>
-<dd><p>Additional properties for the MDB pool. The Enterprise Server does not define any additional properties for the MDB pool.</p></dd>
+<dd><p>Additional properties for the MDB pool. The GlassFish Server does not define any additional properties for the MDB pool.</p>
+
+</dd>
 </dl>
 <h5>Related Tasks</h5>
 
-<ul><li><p><a href="task-ejbmdbpoolsettings.html">To Configure MDB Pool Settings</a></p></li>
-<li><p><a href="../../../ejb-lite/en/help/task-ejbgeneral.html">To Configure EJB Settings</a></p></li>
-<li><p><a href="task-ejbtimerservice.html">To Configure the EJB Timer Service</a></p></li></ul>
+<ul><li><p><a href="task-ejbmdbpoolsettings.html">To Configure MDB Pool Settings</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2464/task-ejbgeneral?a=view">To Configure EJB Settings</a></p>
+
+</li>
+<li><p><a href="task-ejbtimerservice.html">To Configure the EJB Timer Service</a></p>
+
+</li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
 <p>None.</p>
+
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

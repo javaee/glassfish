@@ -1,12 +1,12 @@
 <toc version="2.0">
 
- <tocitem target="tasks-topic-group" text="Enterprise Server Administration Console Tasks" expand="false">
-    <tocitem target="task-group-registration" text="Registering the Sun GlassFish Enterprise Server" expand="false">
-        <tocitem target="task-register" text="To Register the Sun GlassFish Enterprise Server" expand="false"></tocitem>
-        <tocitem target="task-support" text="To View the GlassFish News Page for the Sun GlassFish Enterprise Server" expand="false"></tocitem>
-        <tocitem target="task-subscriptions" text="To View the Subscriptions Page for Sun GlassFish Enterprise Server" expand="false"></tocitem></tocitem>
-    <tocitem target="task-group-appservsettings" text="Configuring and Managing the Enterprise Server" expand="false">
-        <tocitem target="task-generaltab" text="To View General Information for the Enterprise Server" expand="false"></tocitem>
+ <tocitem target="tasks-topic-group" text="GlassFish Server Administration Console Tasks" expand="false">
+    <tocitem target="task-group-registration" text="Registering the Oracle GlassFish Server" expand="false">
+        <tocitem target="task-register" text="To Register the Oracle GlassFish Server" expand="false"></tocitem>
+        <tocitem target="task-support" text="To View the GlassFish News Page for the Oracle GlassFish Server" expand="false"></tocitem>
+        <tocitem target="task-subscriptions" text="To View the Subscriptions Page for Oracle GlassFish Server" expand="false"></tocitem></tocitem>
+    <tocitem target="task-group-appservsettings" text="Configuring and Managing the GlassFish Server" expand="false">
+        <tocitem target="task-generaltab" text="To View General Information for the GlassFish Server" expand="false"></tocitem>
         <tocitem target="task-logviewer" text="To View the Server Log" expand="false"></tocitem>
         <tocitem target="task-setadvanceappconfig" text="To Set the Advanced Applications Configuration" expand="false"></tocitem>
         <tocitem target="task-setadvancedomainattributes" text="To Set the Advanced Domain Attributes" expand="false"></tocitem>
@@ -34,7 +34,7 @@
         <tocitem target="task-lifecyclemodulenew" text="To Create a Lifecycle Module" expand="false"></tocitem>
         <tocitem target="task-lifecyclemoduleedit" text="To Edit a Lifecycle Module" expand="false"></tocitem>
         <tocitem target="task-lifecyclemoduledelete" text="To Delete a Lifecycle Module" expand="false"></tocitem></tocitem>
-    <tocitem target="task-group-configjvm" text="Configuring the JavaTM Virtual Machine (JVMTM)" expand="false">
+    <tocitem target="task-group-configjvm" text="Configuring the Java Virtual Machine (JVM)" expand="false">
         <tocitem target="task-jvmsettings" text="To Configure the JVM General Settings" expand="false"></tocitem>
         <tocitem target="task-jvmpathsettings" text="To Configure the JVM Path Settings" expand="false"></tocitem>
         <tocitem target="task-jvmoptions" text="To Configure the JVM Options" expand="false"></tocitem>
@@ -42,7 +42,8 @@
         <tocitem target="task-jvmprofilersettings" text="To Configure the JVM Profiler Settings" expand="false"></tocitem></tocitem>
     <tocitem target="task-group-logging" text="Configuring Logging" expand="false">
         <tocitem target="task-eelogging" text="To Configure General Logging Settings" expand="false"></tocitem>
-        <tocitem target="task-eelogginglevels" text="To Configure Log Levels" expand="false"></tocitem></tocitem>
+        <tocitem target="task-eelogginglevels" text="To Configure Log Levels" expand="false"></tocitem>
+        <tocitem target="task-logging-max-logfiles" text="To Change the Limit on the Number of Rotated Log Files" expand="false"></tocitem></tocitem>
     <tocitem target="task-group-serversecurity" text="Configuring Server Security" expand="false">
         <tocitem target="task-securitysettings" text="To Configure Security Settings" expand="false"></tocitem>
         <tocitem target="task-accessadmintools" text="To Grant Access to Administration Tools" expand="false"></tocitem>
@@ -61,7 +62,7 @@
         <tocitem target="task-adminuserscreate" text="To Add a User to the Admin Realm" expand="false"></tocitem>
         <tocitem target="task-adminusersedit" text="To Edit Admin Realm User Information" expand="false"></tocitem>
         <tocitem target="task-adminusersdelete" text="To Delete a User from the Admin Realm" expand="false"></tocitem></tocitem>
-    <tocitem target="task-group-auditevents" text="Auditing Enterprise Server Events" expand="false">
+    <tocitem target="task-group-auditevents" text="Auditing GlassFish Server Events" expand="false">
         <tocitem target="task-auditmodulenew" text="To Create an Audit Module" expand="false"></tocitem>
         <tocitem target="task-auditmoduleedit" text="To Edit an Audit Module" expand="false"></tocitem>
         <tocitem target="task-auditmoduledelete" text="To Delete an Audit Module" expand="false"></tocitem>
@@ -74,7 +75,7 @@
         <tocitem target="task-jaccproviderdelete" text="To Delete a JACC Provider" expand="false"></tocitem>
         <tocitem target="task-setactivejaccprov" text="To Set the Active JACC Provider" expand="false"></tocitem></tocitem>
     <tocitem target="task-group-messagesecurity" text="Configuring Message Security" expand="false">
-        <tocitem target="task-configmsgsecproviders" text="To Configure Enterprise Server Facilities for Use by Message Security Providers" expand="false"></tocitem>
+        <tocitem target="task-configmsgsecproviders" text="To Configure GlassFish Server Facilities for Use by Message Security Providers" expand="false"></tocitem>
         <tocitem target="task-messagesecurityconfignew" text="To Create a Message Security Configuration" expand="false"></tocitem>
         <tocitem target="task-messagesecurityconfigedit" text="To Edit a Message Security Configuration" expand="false"></tocitem>
         <tocitem target="task-messagesecurityconfigdelete" text="To Delete a Message Security Configuration" expand="false"></tocitem>
@@ -85,21 +86,21 @@
     <tocitem target="task-group-adminservice" text="Configuring the Admin Service" expand="false">
         <tocitem target="task-jmxconnectoredit" text="To Edit the JMX Connector" expand="false"></tocitem>
         <tocitem target="task-jmxconnectorssledit" text="To Edit SSL Settings for the JMX Connector" expand="false"></tocitem></tocitem>
-    <tocitem target="task-group-monitor" text="Configuring Enterprise Server Monitoring" expand="false">
+    <tocitem target="task-group-monitor" text="Configuring GlassFish Server Monitoring" expand="false">
         <tocitem target="task-confmonitor" text="To Configure the Monitoring Service" expand="false"></tocitem></tocitem>
-    <tocitem target="task-group-uc" text="Updating and Extending Enterprise Server" expand="false">
+    <tocitem target="task-group-uc" text="Updating and Extending GlassFish Server" expand="false">
         <tocitem target="task-uc-addon" text="To Install Add-On Components" expand="false"></tocitem>
         <tocitem target="task-uc-update" text="To View Available Updates for Components" expand="false"></tocitem>
         <tocitem target="task-uc-installed-remove" text="To View Installed Components" expand="false"></tocitem>
         <tocitem target="task-uc-pkgdetails" text="To View Detailed Information About a Component" expand="false"></tocitem>
         <tocitem target="task-uc-set-proxy" text="To Configure Network Proxy Settings for Accessing Network Repositories" expand="false"></tocitem></tocitem></tocitem>
- <tocitem target="ref-topic-group" text="Enterprise Server Administration Console Reference" expand="false">
+ <tocitem target="ref-topic-group" text="GlassFish Server Administration Console Reference" expand="false">
     <tocitem target="ref-group-commontask-all" text="Common Tasks" expand="false">
         <tocitem target="ref-developercommontasks" text="Common Tasks" expand="false"></tocitem></tocitem>
     <tocitem target="ref-group-registration" text="Registration and Support" expand="false">
         <tocitem target="ref-registrationpage" text="Product Registration" expand="false"></tocitem>
         <tocitem target="ref-supportpage" text="GlassFish News" expand="false"></tocitem></tocitem>
-    <tocitem target="ref-group-appservsettings" text="Enterprise Server" expand="false">
+    <tocitem target="ref-group-appservsettings" text="GlassFish Server" expand="false">
         <tocitem target="ref-generaltab" text="General Information" expand="false"></tocitem>
         <tocitem target="ref-logviewer" text="Log Viewer" expand="false"></tocitem>
         <tocitem target="ref-group-advancedsettings" text="Advanced" expand="false">

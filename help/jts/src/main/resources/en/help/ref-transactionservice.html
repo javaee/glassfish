@@ -1,31 +1,65 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-transactionservice"></a><h4>Transaction Service</h4>
-<a name="indexterm-8"></a><p>Use the Transaction Service page to configure transaction recovery, timeouts, and logging.</p><p>The Transaction Service page contains the following options.</p><dl><dt>Load Defaults</dt>
-<dd><p>Button to restore the default values of all the settings.</p></dd>
+<a name="indexterm-8"></a><p>Use the Transaction Service page to configure transaction recovery, timeouts, and logging.</p>
+
+<p>The Transaction Service page contains the following options.</p>
+
+<dl><dt>Load Defaults</dt>
+<dd><p>Button to restore the default values of all the settings.</p>
+
+</dd>
 <dt>On Restart</dt>
-<dd><p>If the Enabled checkbox is selected, the Enterprise Server attempts to recover incomplete transactions when the server is restarted. This option is disabled by default.</p></dd>
+<dd><p>If the Enabled checkbox is selected, the GlassFish Server attempts to recover incomplete transactions when the server is restarted. This option is disabled by default.</p>
+
+</dd>
 <dt>Transaction Timeout</dt>
-<dd><p>Number of seconds the server waits before rolling back a transaction that has not completed. The default value is 0, meaning that the server waits indefinitely for a transaction to complete.</p></dd>
+<dd><p>Number of seconds the server waits before rolling back a transaction that has not completed. The default value is 0, meaning that the server waits indefinitely for a transaction to complete.</p>
+
+</dd>
 <dt>Retry Timeout</dt>
-<dd><p>Number of seconds the Enterprise Server tries to connect to an unreachable server. The default value is 600 (10 minutes).</p></dd>
+<dd><p>Number of seconds the GlassFish Server tries to connect to an unreachable server. The default value is 600 (10 minutes).</p>
+
+</dd>
 <dt>Transaction Log Location</dt>
-<dd><p>The directory where server logs are kept. Transaction logs are kept in the <tt>tx</tt> subdirectory of the directory specified by this field. The default value is the directory specified by the Log Root field of the Domain Attributes page, which is located under the Advanced tab of the Enterprise Server node.</p></dd>
+<dd><p>The directory where server logs are kept. Transaction logs are kept in the <tt>tx</tt> subdirectory of the directory specified by this field. The default value is the directory specified by the Log Root field of the Domain Attributes page, which is located under the Advanced tab of the GlassFish Server node.</p>
+
+</dd>
 <dt>Heuristic Decision</dt>
-<dd><p>Whether transactions that involve unreachable servers are to be committed or rolled back. The default value is Rollback. Committing indeterminate transactions can compromise the data integrity of your application.</p></dd>
+<dd><p>Whether transactions that involve unreachable servers are to be committed or rolled back. The default value is Rollback. Committing indeterminate transactions can compromise the data integrity of your application.</p>
+
+</dd>
 <dt>Keypoint Interval</dt>
-<dd><p>The number of transactions between keypoint operations, which compress the transaction log file. The default value is 65,536.</p></dd>
+<dd><p>The number of transactions between keypoint operations, which compress the transaction log file. The default value is 65,536.</p>
+
+</dd>
 <dt>Additional Properties</dt>
-<dd><p>Additional properties for the Transaction Service.</p><p>For a description of available properties, see <a href="ref-transactionsvcproperties.html">Properties Specific to the Transaction Service</a>.</p></dd>
+<dd><p>Additional properties for the Transaction Service.</p>
+
+<p>For a description of available properties, see <a href="ref-transactionsvcproperties.html">Properties Specific to the Transaction Service</a>.</p>
+
+</dd>
 </dl>
 <a name="ginkt"></a><h5>Related Tasks</h5>
 
-<ul><li><p><a href="task-configtransservice.html">To Configure the Transaction Service</a></p></li>
-<li><p><a href="task-configtransrecovery.html">To Configure How the Enterprise Server Recovers Transactions</a></p></li>
-<li><p><a href="task-settranstimeout.html">To Set a Transaction Timeout Value</a></p></li>
-<li><p><a href="task-settranslog.html">To Set the Location of the Transaction Logs</a></p></li>
-<li><p><a href="task-setkeyptinterval.html">To Set the Keypoint Interval</a></p></li></ul>
+<ul><li><p><a href="task-configtransservice.html">To Configure the Transaction Service</a></p>
 
+</li>
+<li><p><a href="task-configtransrecovery.html">To Configure How the GlassFish Server Recovers Transactions</a></p>
+
+</li>
+<li><p><a href="task-settranstimeout.html">To Set a Transaction Timeout Value</a></p>
+
+</li>
+<li><p><a href="task-settranslog.html">To Set the Location of the Transaction Logs</a></p>
+
+</li>
+<li><p><a href="task-setkeyptinterval.html">To Set the Keypoint Interval</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

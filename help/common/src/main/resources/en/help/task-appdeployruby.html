@@ -1,6 +1,6 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
@@ -16,14 +16,14 @@ Console through a browser.</p><p>Click Browse to browse to the file, or type the
 to the file.</p></li>
 <li><b>If the application is an archive file that resides on the server machine,
 or is an unpackaged application from an exploded directory, select the option Local
-Packaged File or Directory That Is Accessible From the Enterprise Server.</b><p>The server machine is the host that is running the domain administration server
+Packaged File or Directory That Is Accessible From the GlassFish Server.</b><p>The server machine is the host that is running the domain administration server
 (DAS). </p><p>Click Browse Files to browse to a file, or Browse Folders to
 browse to a directory. Alternatively, type the full path name to the file
 or directory. It is common to deploy a JRuby application from a directory.</p></li></ul></li>
 <li><b>From the Type drop-down list, select Ruby Application.</b><p>If you specified either a Packaged File to Be Uploaded to the Server
-or a Local Packaged File That Is Accessible From the Enterprise Server, the
+or a Local Packaged File That Is Accessible From the GlassFish Server, the
 application type is detected automatically. If you specified a Directory That Is Accessible From
-the Enterprise Server, you must specify the type manually.</p></li>
+the GlassFish Server, you must specify the type manually.</p></li>
 <li><b>In the Application Name field, retain the default name, which is the directory
 name or the prefix of the file name, or type another name.</b><p>The default name appears if you chose to upload a file. The
 application name must be unique.</p></li>
@@ -66,11 +66,17 @@ application is not written for the specified framework, errors result.</p></li>
 framework, such as Rails or Merb, runs.</b><p>Available choices are <tt>production</tt>, <tt>development</tt>, and <tt>test</tt>. The default is <tt>development</tt>.</p></li>
 <li><b>From the MT-Safe drop-down list, select the thread-safe setting for the framework in
 which the application will run.</b><p>This property affects applications started using an auto-detected user-provided startup script. Available choices are:</p><dl><dt><tt>true</tt></dt>
-<dd><p>Specifies that the framework is thread-safe and therefore does not need a pool created for it.</p></dd>
+<dd><p>Specifies that the framework is thread-safe and therefore does not need a pool created for it.</p>
+
+</dd>
 <dt><tt>false</tt></dt>
-<dd><p>Specifies that the application starts with a pool of application instances, and each instance of the application is accessed by one thread at a time.</p></dd>
+<dd><p>Specifies that the application starts with a pool of application instances, and each instance of the application is accessed by one thread at a time.</p>
+
+</dd>
 <dt><tt>default</tt></dt>
-<dd><p>The Enterprise Server tries to detect thread safety automatically. This value is the default.</p></dd>
+<dd><p>The GlassFish Server tries to detect thread safety automatically. This value is the default.</p>
+
+</dd>
 </dl>
 <p>This property only affects frameworks being launched where the thread safety cannot be
 automatically determined. Setting this value to <tt>true</tt> does not cause an auto-detected Rails
@@ -80,17 +86,45 @@ to force a thread-safe framework to start in pooled mode.</p></li>
 with this application.</b></li>
 <li><b>In the Description field, type a description for this application.</b></li>
 <li><b>Click OK.</b></li></ol><h6>See Also</h6>
-<ul><li><p><a href="task-applistdeployed.html">To View a List of Deployed Applications</a></p></li>
-<li><p><a href="task-appdeployweb.html">To Deploy a Web Application</a></p></li>
-<li><p><a href="task-deployentapp.html">To Deploy an Enterprise Application</a></p></li>
-<li><p><a href="task-appdeployclient.html">To Deploy an Application Client</a></p></li>
-<li><p><a href="task-appdeployconn.html">To Deploy a Connector Module</a></p></li>
-<li><p><a href="task-appdeployejb.html">To Deploy an EJB Jar</a></p></li>
-<li><p><a href="task-appedit.html">To Edit a Deployed Application</a></p></li>
-<li><p><a href="task-appviewdesc.html">To View Descriptors of an Application</a></p></li>
-<li><p><a href="task-endpoint.html">To View Endpoint Information for a Web Service</a></p></li>
-<li><p><a href="task-applaunch.html">To Launch an Application</a></p></li>
-<li><p><a href="task-appclientlaunch.html">To Launch an Application Client</a></p></li>
-<li><p><a href="task-appredeploy.html">To Redeploy a Deployed Application</a></p></li>
-<li><p><a href="task-apprestart.html">To Restart a Deployed Application</a></p></li></ul>
+<ul><li><p><a href="task-applistdeployed.html">To View a List of Deployed Applications</a></p>
 
+</li>
+<li><p><a href="task-appdeployweb.html">To Deploy a Web Application</a></p>
+
+</li>
+<li><p><a href="task-deployentapp.html">To Deploy an Enterprise Application</a></p>
+
+</li>
+<li><p><a href="task-appdeployclient.html">To Deploy an Application Client</a></p>
+
+</li>
+<li><p><a href="task-appdeployconn.html">To Deploy a Connector Module</a></p>
+
+</li>
+<li><p><a href="task-appdeployejb.html">To Deploy an EJB Jar</a></p>
+
+</li>
+<li><p><a href="task-appedit.html">To Edit a Deployed Application</a></p>
+
+</li>
+<li><p><a href="task-appviewdesc.html">To View Descriptors of an Application</a></p>
+
+</li>
+<li><p><a href="task-endpoint.html">To View Endpoint Information for a Web Service</a></p>
+
+</li>
+<li><p><a href="task-applaunch.html">To Launch an Application</a></p>
+
+</li>
+<li><p><a href="task-appclientlaunch.html">To Launch an Application Client</a></p>
+
+</li>
+<li><p><a href="task-appredeploy.html">To Redeploy a Deployed Application</a></p>
+
+</li>
+<li><p><a href="task-apprestart.html">To Restart a Deployed Application</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

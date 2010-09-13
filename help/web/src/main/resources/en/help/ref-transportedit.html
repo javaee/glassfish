@@ -1,51 +1,101 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-transportedit"></a><h4>Edit Transport</h4>
 <a name="indexterm-72"></a><p>Use the Edit Transport page to modify the settings of an existing
-transport.</p><p>The Edit Transport page contains the following options.</p><dl><dt>Load Defaults</dt>
-<dd><p>Button to restore the default values of all the settings.</p></dd>
+transport.</p>
+
+<p>The Edit Transport page contains the following options.</p>
+
+<dl><dt>Load Defaults</dt>
+<dd><p>Button to restore the default values of all the settings.</p>
+
+</dd>
 <dt>Name</dt>
-<dd><p>The name of the transport. The name is a read-only field. You can only specify a name when you create a new transport.</p></dd>
+<dd><p>The name of the transport. The name is a read-only field. You can only specify a name when you create a new transport.</p>
+
+</dd>
 <dt>Classname</dt>
-<dd><p>The class name of the transport implementation. The default value is <tt>com.sun.grizzly.TCPSelectorHandler</tt>.</p></dd>
+<dd><p>The class name of the transport implementation. The default value is <tt>com.sun.grizzly.TCPSelectorHandler</tt>.</p>
+
+</dd>
 <dt>Selection Key Handler</dt>
-<dd><p>The class name of the selection key handler. A selection key handler is an abstract class that manages the lifecycle of selection keys. If you do not specify a value, a default implementation is used.</p></dd>
+<dd><p>The class name of the selection key handler. A selection key handler is an abstract class that manages the lifecycle of selection keys. If you do not specify a value, a default implementation is used.</p>
+
+</dd>
 <dt>Byte Buffer Type</dt>
-<dd><p>The type of <tt>ByteBuffer</tt> to be used. Available choices are <tt>HEAP</tt> and <tt>DIRECT</tt>. The default value is <tt>HEAP</tt>.</p></dd>
+<dd><p>The type of <tt>ByteBuffer</tt> to be used. Available choices are <tt>HEAP</tt> and <tt>DIRECT</tt>. The default value is <tt>HEAP</tt>.</p>
+
+</dd>
 <dt>Acceptor Threads</dt>
-<dd><p>The number of processors in the machine. A value of &#8211;1 indicates that Grizzly will calculate the number of acceptor threads itself, based on the number of processors in the machine. The default value is 1.</p><p>To set the number of request processing threads, set the Max Thread Pool Size value of the thread pool used by a network listener that uses this transport.</p></dd>
+<dd><p>The number of processors in the machine. A value of &#8211;1 indicates that Grizzly will calculate the number of acceptor threads itself, based on the number of processors in the machine. The default value is 1.</p>
+
+<p>To set the number of request processing threads, set the Max Thread Pool Size value of the thread pool used by a network listener that uses this transport.</p>
+
+</dd>
 <dt>Max Connections Count</dt>
-<dd><p>The maximum number of pending connections on a network listener that uses this transport. The default value is 4096.</p></dd>
+<dd><p>The maximum number of pending connections on a network listener that uses this transport. The default value is 4096.</p>
+
+</dd>
 <dt>Buffer Size</dt>
-<dd><p>The size, in bytes, of the buffer to be provided for input streams created by a network listener that uses this transport. The default value is 8192.</p></dd>
+<dd><p>The size, in bytes, of the buffer to be provided for input streams created by a network listener that uses this transport. The default value is 8192.</p>
+
+</dd>
 <dt>Idle Key Timeout</dt>
-<dd><p>The number of seconds after which an idle key will be cancelled and the channel closed. The default value is 30.</p></dd>
+<dd><p>The number of seconds after which an idle key will be cancelled and the channel closed. The default value is 30.</p>
+
+</dd>
 <dt>Read Timeout</dt>
-<dd><p>The number of milliseconds the Enterprise Serverwaits during the header and body parsing phase of a read operation. The default value is 30,000.</p></dd>
+<dd><p>The number of milliseconds the GlassFish Serverwaits during the header and body parsing phase of a read operation. The default value is 30,000.</p>
+
+</dd>
 <dt>Selector Poll Timeout</dt>
-<dd><p>The number of milliseconds an NIO Selector will block waiting for events (users' requests). The default value is 1000.</p></dd>
+<dd><p>The number of milliseconds an NIO Selector will block waiting for events (users' requests). The default value is 1000.</p>
+
+</dd>
 <dt>Write Timeout</dt>
-<dd><p>The number of milliseconds the Enterprise Serverwaits before considering the remote client disconnected when writing the response. The default value is 30,000.</p></dd>
+<dd><p>The number of milliseconds the GlassFish Serverwaits before considering the remote client disconnected when writing the response. The default value is 30,000.</p>
+
+</dd>
 <dt>Display Configuration</dt>
-<dd><p>If this option is selected, Grizzly's internal configuration is flushed to the server logs. This option may provide useful information for debugging. This option is disabled by default.</p></dd>
+<dd><p>If this option is selected, Grizzly's internal configuration is flushed to the server logs. This option may provide useful information for debugging. This option is disabled by default.</p>
+
+</dd>
 <dt>Snoop</dt>
-<dd><p>If this option is selected, the requests/response information is dumped to the server log. This option may provide useful information for debugging, but will significantly reduce performance. This option is disabled by default.</p></dd>
+<dd><p>If this option is selected, the requests/response information is dumped to the server log. This option may provide useful information for debugging, but will significantly reduce performance. This option is disabled by default.</p>
+
+</dd>
 <dt>TCP No Delay</dt>
-<dd><p>If this option is selected, TCP_NODELAY (also called Nagle's algorithm) is enabled. This option is enabled by default.</p></dd>
+<dd><p>If this option is selected, TCP_NODELAY (also called Nagle's algorithm) is enabled. This option is enabled by default.</p>
+
+</dd>
 </dl>
 <h5>Related Tasks</h5>
 
-<ul><li><p><a href="task-transportnew.html">To Create a Transport</a></p></li>
-<li><p><a href="task-transportedit.html">To Edit a Transport</a></p></li>
-<li><p><a href="task-transportdelete.html">To Delete a Transport</a></p></li></ul>
+<ul><li><p><a href="task-transportnew.html">To Create a Transport</a></p>
+
+</li>
+<li><p><a href="task-transportedit.html">To Edit a Transport</a></p>
+
+</li>
+<li><p><a href="task-transportdelete.html">To Delete a Transport</a></p>
+
+</li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
 
 <ul><li>
-<ul><li><p><a href="http://docs.sun.com/doc/820-7701/create-transport-1?a=view"><tt>create-transport</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/list-transports-1?a=view"><tt>list-transports</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/delete-transport-1?a=view"><tt>delete-transport</tt>(1)</a></p></li></ul>
+<ul><li><p><a href="http://docs.sun.com/doc/821-2433/create-transport-1?a=view"><tt>create-transport</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/list-transports-1?a=view"><tt>list-transports</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/delete-transport-1?a=view"><tt>delete-transport</tt>(1)</a></p>
+
+</li></ul>
 </li></ul>
 
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

@@ -58,7 +58,9 @@
     <indexitem target="ref-resourceadapterconfig" text="viewing and configuring"></indexitem></indexitem>
  <indexitem text="resource adapter configurations, See resource adapter configs"></indexitem>
  <indexitem text="security maps">
-    <indexitem text="See also work security maps"></indexitem>
+    <indexitem text="See security maps for connector connection pools"></indexitem>
+    <indexitem text="See work security maps"></indexitem></indexitem>
+ <indexitem text="security maps for connector connection pools">
     <indexitem target="ref-connectorsecuritymapnew" text="creating (reference)"></indexitem>
     <indexitem target="task-connectorsecuritymapnew" text="creating (task)"></indexitem>
     <indexitem target="task-connectorsecuritymapdel" text="deleting"></indexitem>

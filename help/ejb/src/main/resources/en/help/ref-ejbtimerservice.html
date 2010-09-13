@@ -1,30 +1,56 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-ejbtimerservice"></a><h4>EJB Timer Service</h4>
-<a name="indexterm-12"></a><a name="indexterm-13"></a><a name="indexterm-14"></a><p>Use the EJB Timer Service page to configure the EJB timer service.</p><p>The timer service is a persistent and transactional notification service that is provided
+<a name="indexterm-12"></a><a name="indexterm-13"></a><a name="indexterm-14"></a><p>Use the EJB Timer Service page to configure the EJB timer service.</p>
+
+<p>The timer service is a persistent and transactional notification service that is provided
 by the enterprise bean container and is used to schedule notifications or events
 used by enterprise beans. All enterprise beans except stateful session beans can receive
 notifications from the timer service. Persistent timers set by the service are not
-destroyed when the server is shut down or restarted.</p><p>The EJB Timer Service page contains the following options.</p><dl><dt>Load Defaults</dt>
-<dd><p>Button to restore the default values of all the settings.</p></dd>
+destroyed when the server is shut down or restarted.</p>
+
+<p>The EJB Timer Service page contains the following options.</p>
+
+<dl><dt>Load Defaults</dt>
+<dd><p>Button to restore the default values of all the settings.</p>
+
+</dd>
 <dt>Minimum Delivery Interval</dt>
-<dd><p>The minimum number of milliseconds allowed before the next timer expiration for a particular timer can occur. Setting this interval too low can cause server overload. The default value is 1000.</p></dd>
+<dd><p>The minimum number of milliseconds allowed before the next timer expiration for a particular timer can occur. Setting this interval too low can cause server overload. The default value is 1000.</p>
+
+</dd>
 <dt>Maximum Redeliveries</dt>
-<dd><p>The maximum number of attempts the timer service makes to deliver a timer expiration due for exception or rollback. The default value is 1.</p></dd>
+<dd><p>The maximum number of attempts the timer service makes to deliver a timer expiration due for exception or rollback. The default value is 1.</p>
+
+</dd>
 <dt>Redelivery Interval</dt>
-<dd><p>The interval, in milliseconds, between redelivery attempts. The default value is 5000.</p></dd>
+<dd><p>The interval, in milliseconds, between redelivery attempts. The default value is 5000.</p>
+
+</dd>
 <dt>Timer Datasource</dt>
-<dd><p>The JNDI name of the JDBC resource that will be used as the timer datasource. If specified, this value overrides the default value of <tt>jdbc/__TimerPool</tt> for the timer service system application.</p></dd>
+<dd><p>The JNDI name of the JDBC resource that will be used as the timer datasource. If specified, this value overrides the default value of <tt>jdbc/__TimerPool</tt> for the timer service system application.</p>
+
+</dd>
 </dl>
 <h5>Related Tasks</h5>
 
-<ul><li><p><a href="task-ejbmdbpoolsettings.html">To Configure MDB Pool Settings</a></p></li>
-<li><p><a href="../../../ejb-lite/en/help/task-ejbgeneral.html">To Configure EJB Settings</a></p></li>
-<li><p><a href="task-ejbtimerservice.html">To Configure the EJB Timer Service</a></p></li></ul>
+<ul><li><p><a href="task-ejbmdbpoolsettings.html">To Configure MDB Pool Settings</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2464/task-ejbgeneral?a=view">To Configure EJB Settings</a></p>
+
+</li>
+<li><p><a href="task-ejbtimerservice.html">To Configure the EJB Timer Service</a></p>
+
+</li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
 
-<ul><li><p><a href="http://docs.sun.com/doc/820-7701/list-timers-1?a=view"><tt>list-timers</tt>(1)</a></p></li></ul>
+<ul><li><p><a href="http://docs.sun.com/doc/821-2433/list-timers-1?a=view"><tt>list-timers</tt>(1)</a></p>
 
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

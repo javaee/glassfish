@@ -1,41 +1,83 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-editiiopssl"></a><h4>SSL</h4>
 <a name="indexterm-13"></a><a name="indexterm-14"></a><p>Use the SSL page to modify the SSL settings for an IIOP
-listener.</p><p>The SSL page contains the following options.</p><dl><dt>SSL3</dt>
-<dd><p>If this checkbox is selected, the SSL3 protocol is enabled for the IIOP listener. This option is enabled by default.</p></dd>
+listener.</p>
+
+<p>The SSL page contains the following options.</p>
+
+<dl><dt>SSL3</dt>
+<dd><p>If this checkbox is selected, the SSL3 protocol is enabled for the IIOP listener. This option is enabled by default.</p>
+
+</dd>
 <dt>TLS</dt>
-<dd><p>If this checkbox is selected, the TLS protocol is enabled for the IIOP listener. This option is enabled by default.</p></dd>
+<dd><p>If this checkbox is selected, the TLS protocol is enabled for the IIOP listener. This option is enabled by default.</p>
+
+</dd>
 <dt></dt>
 <dt>Client Authentication</dt>
-<dd><p>If this checkbox is selected, clients must identify themselves to the server on every request. This option is disabled by default.</p></dd>
+<dd><p>If this checkbox is selected, clients must identify themselves to the server on every request. This option is disabled by default.</p>
+
+</dd>
 <dt>Certificate Nickname</dt>
-<dd><p>The nickname of the server certificate in the certificate database or the PKCS#11 token. In the certificate, the name format is <tt><i>tokenname</i>:<i>nickname</i></tt>. Including the <tt><i>tokenname</i>:</tt> part of the name in this attribute is optional.</p></dd>
+<dd><p>The nickname of the server certificate in the certificate database or the PKCS#11 token. In the certificate, the name format is <tt><i>tokenname</i>:<i>nickname</i></tt>. Including the <tt><i>tokenname</i>:</tt> part of the name in this attribute is optional.</p>
+
+</dd>
 <dt>Key Store</dt>
-<dd><p>The name of the keystore file (for example, <tt>keystore.jks</tt>).</p></dd>
+<dd><p>The name of the keystore file (for example, <tt>keystore.jks</tt>).</p>
+
+</dd>
 <dt>Trust Algorithm</dt>
-<dd><p>The name of the trust management algorithm (for example, PKIX) to use for certification path validation.</p></dd>
+<dd><p>The name of the trust management algorithm (for example, PKIX) to use for certification path validation.</p>
+
+</dd>
 <dt>Max Certificate Length</dt>
-<dd><p>The maximum number of non-self-issued intermediate certificates that can exist in a certification path. This field is used only if the Trust Algorithm field is set to PKIX. A value of 0 implies that the path can only contain a single certificate. A value of -1 implies that the path length is unconstrained (there is no maximum). Setting a value less than -1 causes an exception to be thrown.</p></dd>
+<dd><p>The maximum number of non-self-issued intermediate certificates that can exist in a certification path. This field is used only if the Trust Algorithm field is set to PKIX. A value of 0 implies that the path can only contain a single certificate. A value of -1 implies that the path length is unconstrained (there is no maximum). Setting a value less than -1 causes an exception to be thrown.</p>
+
+</dd>
 <dt>Trust Store</dt>
-<dd><p>The name of the truststore file (for example, <tt>cacerts.jks</tt>).</p></dd>
+<dd><p>The name of the truststore file (for example, <tt>cacerts.jks</tt>).</p>
+
+</dd>
 <dt>Cipher Suites</dt>
-<dd><p>An area where you can add or remove cipher suites. If you do not add any cipher suites, all cipher suites will be used.</p></dd>
+<dd><p>An area where you can add or remove cipher suites. If you do not add any cipher suites, all cipher suites will be used.</p>
+
+</dd>
 </dl>
 <h5>Related Tasks</h5>
 
-<ul><li><p><a href="task-iioplistenernew.html">To Create an IIOP Listener</a></p></li>
-<li><p><a href="task-iioplisteneredit.html">To Edit an IIOP Listener</a></p></li>
-<li><p><a href="task-editiiopssl.html">To Edit SSL Settings for a Secure IIOP Listener</a></p></li>
-<li><p><a href="task-iioplistenerdelete.html">To Delete an IIOP Listener</a></p></li></ul>
+<ul><li><p><a href="task-iioplistenernew.html">To Create an IIOP Listener</a></p>
+
+</li>
+<li><p><a href="task-iioplisteneredit.html">To Edit an IIOP Listener</a></p>
+
+</li>
+<li><p><a href="task-editiiopssl.html">To Edit SSL Settings for a Secure IIOP Listener</a></p>
+
+</li>
+<li><p><a href="task-iioplistenerdelete.html">To Delete an IIOP Listener</a></p>
+
+</li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
 
-<ul><li><p><a href="http://docs.sun.com/doc/820-7701/create-iiop-listener-1?a=view"><tt>create-iiop-listener</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/list-iiop-listeners-1?a=view"><tt>list-iiop-listeners</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/delete-iiop-listener-1?a=view"><tt>delete-iiop-listener</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/create-ssl-1?a=view"><tt>create-ssl</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/delete-ssl-1?a=view"><tt>delete-ssl</tt>(1)</a></p></li></ul>
+<ul><li><p><a href="http://docs.sun.com/doc/821-2433/create-iiop-listener-1?a=view"><tt>create-iiop-listener</tt>(1)</a></p>
 
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/list-iiop-listeners-1?a=view"><tt>list-iiop-listeners</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/delete-iiop-listener-1?a=view"><tt>delete-iiop-listener</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/create-ssl-1?a=view"><tt>create-ssl</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/delete-ssl-1?a=view"><tt>delete-ssl</tt>(1)</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

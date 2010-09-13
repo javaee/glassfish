@@ -1,50 +1,116 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-realmsnew"></a><h4>New Realm</h4>
-<a name="indexterm-196"></a><p>Use the New Realm page to create a realm.</p><p>The New Realm page contains the following options.</p><dl><dt>Name</dt>
-<dd><p>The name for the new realm.</p></dd>
+<a name="indexterm-199"></a><p>Use the New Realm page to create a realm.</p>
+
+<p>The New Realm page contains the following options.</p>
+
+<dl><dt>Name</dt>
+<dd><p>The name for the new realm.</p>
+
+</dd>
 <dt>Class Name</dt>
-<dd><p>The class name for the new realm.</p><p>Valid choices are shown in the following table.</p><table><col width="16%"><col width="83%"><tr><th align="left" valign="top" scope="column"><p>Realm Name</p></th>
-<th align="left" valign="top" scope="column"><p>Class Name</p></th>
+<dd><p>The class name for the new realm.</p>
+
+<p>Valid choices are shown in the following table.</p>
+
+<table><col width="16%"><col width="83%"><tr><th align="left" valign="top" scope="column"><p>Realm Name</p>
+
+</th>
+<th align="left" valign="top" scope="column"><p>Class Name</p>
+
+</th>
 </tr>
-<tr><td align="left" valign="top" scope="row"><p><tt>file</tt></p></td>
-<td align="left" valign="top" scope="row"><p><tt>com.sun.enterprise.security.auth.realm.file.FileRealm</tt></p></td>
+<tr><td align="left" valign="top" scope="row"><p><tt>file</tt></p>
+
+</td>
+<td align="left" valign="top" scope="row"><p><tt>com.sun.enterprise.security.auth.realm.file.FileRealm</tt></p>
+
+</td>
 </tr>
-<tr><td align="left" valign="top" scope="row"><p><tt>certificate</tt></p></td>
-<td align="left" valign="top" scope="row"><p><tt>com.sun.enterprise.security.auth.realm.certificate.CertificateRealm</tt></p></td>
+<tr><td align="left" valign="top" scope="row"><p><tt>certificate</tt></p>
+
+</td>
+<td align="left" valign="top" scope="row"><p><tt>com.sun.enterprise.security.auth.realm.certificate.CertificateRealm</tt></p>
+
+</td>
 </tr>
-<tr><td align="left" valign="top" scope="row"><p><tt>ldap</tt></p></td>
-<td align="left" valign="top" scope="row"><p><tt>com.sun.enterprise.security.auth.realm.ldap.LDAPRealm</tt></p></td>
+<tr><td align="left" valign="top" scope="row"><p><tt>ldap</tt></p>
+
+</td>
+<td align="left" valign="top" scope="row"><p><tt>com.sun.enterprise.security.auth.realm.ldap.LDAPRealm</tt></p>
+
+</td>
 </tr>
-<tr><td align="left" valign="top" scope="row"><p><tt>JDBC</tt></p></td>
-<td align="left" valign="top" scope="row"><p><tt>com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm</tt></p></td>
+<tr><td align="left" valign="top" scope="row"><p><tt>JDBC</tt></p>
+
+</td>
+<td align="left" valign="top" scope="row"><p><tt>com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm</tt></p>
+
+</td>
 </tr>
-<tr><td align="left" valign="top" scope="row"><p><tt>solaris</tt></p></td>
-<td align="left" valign="top" scope="row"><p><tt>com.sun.enterprise.security.auth.realm.solaris.SolarisRealm</tt></p></td>
+<tr><td align="left" valign="top" scope="row"><p><tt>solaris</tt></p>
+
+</td>
+<td align="left" valign="top" scope="row"><p><tt>com.sun.enterprise.security.auth.realm.solaris.SolarisRealm</tt></p>
+
+</td>
 </tr>
-</table><p>To specify a custom realm, select the lower radio button and type the class name for the custom realm being created.</p></dd>
+</table><p>To specify a custom realm, select the lower radio button and type the class name for the custom realm being created.</p>
+
+</dd>
 <dt>Additional Properties</dt>
 <dd><p>Additional properties for the realm. Valid properties depend on the type of realm.</p>
-<ul><li><p>For a description of File Realm properties, see <a href="ref-editfile-adminrealm.html">Properties Specific to the <tt>FileRealm</tt> Class</a>.</p></li>
-<li><p>For a description of Certificate Realm properties, see <a href="ref-editcertrealm.html">Properties Specific to the <tt>CertificateRealm</tt> Class</a>.</p></li>
-<li><p>For a description of JDBC Realm properties, see <a href="ref-editjdbcrealm.html">Properties Specific to the <tt>JDBCRealm</tt> Class</a>.</p></li>
-<li><p>For a description of LDAP Realm properties, see <a href="ref-ldaprealmprop.html">Properties Specific to the <tt>LDAPRealm</tt> Class</a>.</p></li>
-<li><p>For a description of Solaris Realm properties, see <a href="ref-solarisrealmprop.html">Properties Specific to the <tt>SolarisRealm</tt> Class</a>.</p></li></ul>
+
+
+<ul><li><p>For a description of File Realm properties, see <a href="ref-editfile-adminrealm.html">Properties Specific to the <tt>FileRealm</tt> Class</a>.</p>
+
+</li>
+<li><p>For a description of Certificate Realm properties, see <a href="ref-editcertrealm.html">Properties Specific to the <tt>CertificateRealm</tt> Class</a>.</p>
+
+</li>
+<li><p>For a description of JDBC Realm properties, see <a href="ref-editjdbcrealm.html">Properties Specific to the <tt>JDBCRealm</tt> Class</a>.</p>
+
+</li>
+<li><p>For a description of LDAP Realm properties, see <a href="ref-ldaprealmprop.html">Properties Specific to the <tt>LDAPRealm</tt> Class</a>.</p>
+
+</li>
+<li><p>For a description of Solaris Realm properties, see <a href="ref-solarisrealmprop.html">Properties Specific to the <tt>SolarisRealm</tt> Class</a>.</p>
+
+</li></ul>
 </dd>
 </dl>
 <h5>Related Tasks</h5>
 
-<ul><li><p><a href="task-realmnew.html">To Create a Realm</a></p></li>
-<li><p><a href="task-realmedit.html">To Edit a Realm</a></p></li>
-<li><p><a href="task-todeleterealm.html">To Delete a Realm</a></p></li>
-<li><p><a href="task-tosetdefault.html">To Set the Default Realm</a></p></li>
-<li><p><a href="task-createcustomrealm.html">To Create a Custom Realm</a></p></li></ul>
+<ul><li><p><a href="task-realmnew.html">To Create a Realm</a></p>
+
+</li>
+<li><p><a href="task-realmedit.html">To Edit a Realm</a></p>
+
+</li>
+<li><p><a href="task-todeleterealm.html">To Delete a Realm</a></p>
+
+</li>
+<li><p><a href="task-tosetdefault.html">To Set the Default Realm</a></p>
+
+</li>
+<li><p><a href="task-createcustomrealm.html">To Create a Custom Realm</a></p>
+
+</li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
 
-<ul><li><p><a href="http://docs.sun.com/doc/820-7701/create-auth-realm-1?a=view"><tt>create-auth-realm</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/delete-auth-realm-1?a=view"><tt>delete-auth-realm</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/list-auth-realms-1?a=view"><tt>list-auth-realms</tt>(1)</a></p></li></ul>
+<ul><li><p><a href="http://docs.sun.com/doc/821-2433/create-auth-realm-1?a=view"><tt>create-auth-realm</tt>(1)</a></p>
 
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/delete-auth-realm-1?a=view"><tt>delete-auth-realm</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/list-auth-realms-1?a=view"><tt>list-auth-realms</tt>(1)</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

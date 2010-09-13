@@ -1,29 +1,59 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-jaccproviders"></a><h4>JACC Providers</h4>
-<a name="indexterm-217"></a><p>Use the JACC Providers page to configure Java Authorization Contract for Containers (JACC)
-providers.</p><p>JACC is the part of the Java EE specification that defines an
+<a name="indexterm-220"></a><p>Use the JACC Providers page to configure Java Authorization Contract for Containers (JACC)
+providers.</p>
+
+<p>JACC is the part of the Java EE specification that defines an
 interface for pluggable authorization providers. This enables the administrator to set up third-party <b>plugin</b>
-modules to perform authorization. By default, the Enterprise Server provides a simple, JACC-compliant
-file-based authorization engine.</p><p>For information on how to write the implementation classes for a JACC provider,
-see the JACC specification at <a href="http://jcp.org/en/jsr/detail?id=115">http://jcp.org/en/jsr/detail?id=115</a>.</p><p>For each JACC provider, the following information is provided.</p><dl><dt>Name</dt>
-<dd><p>The name of the JACC provider.</p></dd>
+modules to perform authorization. By default, the GlassFish Server provides a simple, JACC-compliant
+file-based authorization engine.</p>
+
+<p>For information on how to write the implementation classes for a JACC provider,
+see the JACC specification at <a href="http://jcp.org/en/jsr/detail?id=115">http://jcp.org/en/jsr/detail?id=115</a>.</p>
+
+<p>For each JACC provider, the following information is provided.</p>
+
+<dl><dt>Name</dt>
+<dd><p>The name of the JACC provider.</p>
+
+</dd>
 <dt>Policy Provider</dt>
-<dd><p>The name of the class that implements the policy factory.</p></dd>
+<dd><p>The name of the class that implements the policy factory.</p>
+
+</dd>
 </dl>
-<p>The JACC Providers table also contains the following options.</p><dl><dt>New</dt>
-<dd><p>Button to create a new JACC provider.</p></dd>
+<p>The JACC Providers table also contains the following options.</p>
+
+<dl><dt>New</dt>
+<dd><p>Button to create a new JACC provider.</p>
+
+</dd>
 <dt>Delete</dt>
-<dd><p>Button to delete one or more selected JACC providers.</p></dd>
+<dd><p>Button to delete one or more selected JACC providers.</p>
+
+</dd>
 </dl>
 <h5>Related Tasks</h5>
 
-<ul><li><p><a href="task-jaccprovidernew.html">To Create a JACC Provider</a></p></li>
-<li><p><a href="task-jaccprovideredit.html">To Edit a JACC Provider</a></p></li>
-<li><p><a href="task-jaccproviderdelete.html">To Delete a JACC Provider</a></p></li>
-<li><p><a href="task-setactivejaccprov.html">To Set the Active JACC Provider</a></p></li></ul>
+<ul><li><p><a href="task-jaccprovidernew.html">To Create a JACC Provider</a></p>
+
+</li>
+<li><p><a href="task-jaccprovideredit.html">To Edit a JACC Provider</a></p>
+
+</li>
+<li><p><a href="task-jaccproviderdelete.html">To Delete a JACC Provider</a></p>
+
+</li>
+<li><p><a href="task-setactivejaccprov.html">To Set the Active JACC Provider</a></p>
+
+</li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
 <p>None.</p>
+
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

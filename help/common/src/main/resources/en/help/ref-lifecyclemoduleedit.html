@@ -1,36 +1,72 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-lifecyclemoduleedit"></a><h4>Edit Lifecycle Module</h4>
-<a name="indexterm-185"></a><p>Use the Edit Lifecycle Module page to modify settings for a lifecycle module.</p><p>The Edit Lifecycle Module page contains the following options.</p><dl><dt>Name</dt>
-<dd><p>The name of the lifecycle module. The name is a read-only field. You can only specify a name when you create a new lifecycle module.</p></dd>
+<a name="indexterm-188"></a><p>Use the Edit Lifecycle Module page to modify settings for a lifecycle module.</p>
+
+<p>The Edit Lifecycle Module page contains the following options.</p>
+
+<dl><dt>Name</dt>
+<dd><p>The name of the lifecycle module. The name is a read-only field. You can only specify a name when you create a new lifecycle module.</p>
+
+</dd>
 <dt>Class Name</dt>
-<dd><p>The fully qualified name of the lifecycle module's class file. The class must implement the <tt>com.sun.appserv.server.LifecycleListener</tt> interface.</p></dd>
+<dd><p>The fully qualified name of the lifecycle module's class file. The class must implement the <tt>com.sun.appserv.server.LifecycleListener</tt> interface.</p>
+
+</dd>
 <dt>Classpath</dt>
-<dd><p>The classpath for the lifecycle module. The classpath specifies where the lifecycle module is located. The default value is <tt></tt><i>domain-dir</i><tt>/applications</tt>. If the module is already in this directory (that is, in the server classpath), this field can be left blank.</p></dd>
+<dd><p>The classpath for the lifecycle module. The classpath specifies where the lifecycle module is located. The default value is <tt></tt><i>domain-dir</i><tt>/applications</tt>. If the module is already in this directory (that is, in the server classpath), this field can be left blank.</p>
+
+</dd>
 <dt>Load Order</dt>
-<dd><p>The order in which this lifecycle module is to be loaded at startup. Modules with smaller integer load order values are loaded sooner. The value can range from 101 to the operating system's <tt>MAXINT</tt>. Values from 1 to 100 are reserved.</p></dd>
+<dd><p>The order in which this lifecycle module is to be loaded at startup. Modules with smaller integer load order values are loaded sooner. The value can range from 101 to the operating system's <tt>MAXINT</tt>. Values from 1 to 100 are reserved.</p>
+
+</dd>
 <dt>Status</dt>
-<dd><p>If this option is selected, the lifecycle module is enabled. This option is enabled by default.</p></dd>
+<dd><p>If this option is selected, the lifecycle module is enabled. This option is enabled by default.</p>
+
+</dd>
 <dt>On Load Failure</dt>
-<dd><p>If this option is selected, the server will be shut down if the lifecycle module fails to load. This option is disabled by default.</p></dd>
+<dd><p>If this option is selected, the server will be shut down if the lifecycle module fails to load. This option is disabled by default.</p>
+
+</dd>
 <dt>Virtual Servers</dt>
-<dd><p>The virtual server or servers to be associated with the lifecycle module. By default, no virtual server is selected.</p></dd>
+<dd><p>The virtual server or servers to be associated with the lifecycle module. By default, no virtual server is selected.</p>
+
+</dd>
 <dt>Description</dt>
-<dd><p>A description of the lifecycle module.</p></dd>
+<dd><p>A description of the lifecycle module.</p>
+
+</dd>
 <dt>Additional Properties</dt>
-<dd><p>Additional properties for the lifecycle module. The Enterprise Server does not define any additional properties for lifecycle modules.</p></dd>
+<dd><p>Additional properties for the lifecycle module. The GlassFish Server does not define any additional properties for lifecycle modules.</p>
+
+</dd>
 </dl>
 <h5>Related Tasks</h5>
 
-<ul><li><p><a href="task-lifecyclemodulenew.html">To Create a Lifecycle Module</a></p></li>
-<li><p><a href="task-lifecyclemoduleedit.html">To Edit a Lifecycle Module</a></p></li>
-<li><p><a href="task-lifecyclemoduledelete.html">To Delete a Lifecycle Module</a></p></li></ul>
+<ul><li><p><a href="task-lifecyclemodulenew.html">To Create a Lifecycle Module</a></p>
+
+</li>
+<li><p><a href="task-lifecyclemoduleedit.html">To Edit a Lifecycle Module</a></p>
+
+</li>
+<li><p><a href="task-lifecyclemoduledelete.html">To Delete a Lifecycle Module</a></p>
+
+</li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
 
-<ul><li><p><a href="http://docs.sun.com/doc/820-7701/create-lifecycle-module-1?a=view"><tt>create-lifecycle-module</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/list-lifecycle-modules-1?a=view"><tt>list-lifecycle-modules</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/delete-lifecycle-module-1?a=view"><tt>delete-lifecycle-module</tt>(1)</a></p></li></ul>
+<ul><li><p><a href="http://docs.sun.com/doc/821-2433/create-lifecycle-module-1?a=view"><tt>create-lifecycle-module</tt>(1)</a></p>
 
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/list-lifecycle-modules-1?a=view"><tt>list-lifecycle-modules</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/delete-lifecycle-module-1?a=view"><tt>delete-lifecycle-module</tt>(1)</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

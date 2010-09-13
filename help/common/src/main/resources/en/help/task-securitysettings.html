@@ -1,15 +1,17 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
 
-<a name="task-securitysettings"></a><h4>To Configure Security Settings</h4><a name="indexterm-75"></a><a name="indexterm-76"></a><p>The Administration Console enables you to set a variety of system-wide security settings.</p><ol>
+<a name="task-securitysettings"></a><h4>To Configure Security Settings</h4><a name="indexterm-78"></a><a name="indexterm-79"></a><p>The Administration Console enables you to set a variety of system-wide security settings.</p>
+
+<ol>
 <li><b>In the navigation tree, expand the Configuration node.</b></li>
 <li><b>Under the Configuration node, select the Security node.</b><p>The Security page opens.</p></li>
 <li><b>Select the Security Manager Enabled checkbox to turn on the security manager.</b><p>If this option is enabled, a JVM option, <tt>-Djava.security.manager</tt>, will be added
-to the JVM settings of the Enterprise Server. See <a href="task-jvmoptions.html">To Configure the JVM Options</a>. You must restart
+to the JVM settings of the GlassFish Server. See <a href="task-jvmoptions.html">To Configure the JVM Options</a>. You must restart
 the server to enable this change.</p><p>Ensure that you have granted correct permissions for all applications. You can turn
 off the security manager to enhance performance. This option is disabled by default.</p></li>
 <li><b>Select the Audit Logging Enabled checkbox to turn on audit logging.</b><p>If this option is enabled, the server will load and run all
@@ -34,11 +36,21 @@ the name of a customized <tt>java.security.Principal</tt> implementation class t
 the default principal-to-role mapping.</b></li>
 <li>(Optional) <b>In the Additional Properties section, specify additional properties.</b><p>Valid properties are dependent on the type of realm selected in the Default
 Realm field.</p>
-<ul><li><p>For a description of File Realm properties, see <a href="ref-editfile-adminrealm.html">Properties Specific to the <tt>FileRealm</tt> Class</a>.</p></li>
-<li><p>For a description of Certificate Realm properties, see <a href="ref-editcertrealm.html">Properties Specific to the <tt>CertificateRealm</tt> Class</a>.</p></li>
-<li><p>For a description of JDBC Realm properties, see <a href="ref-editjdbcrealm.html">Properties Specific to the <tt>JDBCRealm</tt> Class</a>.</p></li>
-<li><p>For a description of LDAP Realm properties, see <a href="ref-ldaprealmprop.html">Properties Specific to the <tt>LDAPRealm</tt> Class</a>.</p></li>
-<li><p>For a description of Solaris Realm properties, see <a href="ref-solarisrealmprop.html">Properties Specific to the <tt>SolarisRealm</tt> Class</a>.</p></li></ul>
+<ul><li><p>For a description of File Realm properties, see <a href="ref-editfile-adminrealm.html">Properties Specific to the <tt>FileRealm</tt> Class</a>.</p>
+
+</li>
+<li><p>For a description of Certificate Realm properties, see <a href="ref-editcertrealm.html">Properties Specific to the <tt>CertificateRealm</tt> Class</a>.</p>
+
+</li>
+<li><p>For a description of JDBC Realm properties, see <a href="ref-editjdbcrealm.html">Properties Specific to the <tt>JDBCRealm</tt> Class</a>.</p>
+
+</li>
+<li><p>For a description of LDAP Realm properties, see <a href="ref-ldaprealmprop.html">Properties Specific to the <tt>LDAPRealm</tt> Class</a>.</p>
+
+</li>
+<li><p>For a description of Solaris Realm properties, see <a href="ref-solarisrealmprop.html">Properties Specific to the <tt>SolarisRealm</tt> Class</a>.</p>
+
+</li></ul>
 <ul>
 <li><b>To add a property, click the Add Property button. In the blank row
 that appears, type the property name in the Name field, and type
@@ -48,6 +60,12 @@ the property value in the Value field.</b></li>
 Name field of the property that you are deleting, then click the Delete
 Properties button.</b></li></ul></li>
 <li><b>Click Save.</b></li></ol><h6>See Also</h6>
-<ul><li><p><a href="task-accessadmintools.html">To Grant Access to Administration Tools</a></p></li>
-<li><p><a href="task-changeadminpasswd.html">To Change the Password for a User in the Admin Realm</a></p></li></ul>
+<ul><li><p><a href="task-accessadmintools.html">To Grant Access to Administration Tools</a></p>
 
+</li>
+<li><p><a href="task-changeadminpasswd.html">To Change the Password for a User in the Admin Realm</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

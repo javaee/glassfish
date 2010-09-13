@@ -1,40 +1,64 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-configreq-respolicy"></a><h4>Request and Response Policy Configurations</h4>
-<a name="indexterm-230"></a><p>If Authenticate Source is <tt>sender</tt>, then the message contains a <tt>wsse:Security</tt> header with
+<a name="indexterm-233"></a><p>If Authenticate Source is <tt>sender</tt>, then the message contains a <tt>wsse:Security</tt> header with
 a <tt>wsse:UsernameToken</tt> (with password). If Authenticate Source is content, then the content of
 the SOAP message body is signed, and the message contains a <tt>wsse:Security</tt>
-header with the message body signature represented as a <tt>ds</tt>:<tt>Signature</tt>.</p><p>If Authenticate Recipient is either <tt>before-content</tt> or <tt>after-content</tt>, the content of the
+header with the message body signature represented as a <tt>ds</tt>:<tt>Signature</tt>.</p>
+
+<p>If Authenticate Recipient is either <tt>before-content</tt> or <tt>after-content</tt>, the content of the
 SOAP message body is encrypted and replaced with the resulting <tt>xend:EncryptedData</tt>. The message contains
 <tt>a wsse:Security</tt> header that contains an <tt>xenc:EncryptedKey</tt>. The <tt>xenc:EncryptedKey</tt> contains the key used to
 encrypt the SOAP message body. The key is encrypted in the public key
-of the recipient.</p><p>If the Authenticate Source and Authenticate Recipient settings are left blank, then no
-security policy is specified, and the modules perform no security operations.</p><p>The following table shows message protection policy configurations and the resulting message security
-operations performed by the WS-Security SOAP message security providers for that configuration.</p><a name="gbutq"></a><h6>Table&#160;1 Message Protection Policy Based on WS-Security Soap Message Security Operation</h6><table><col width="33%"><col width="33%"><col width="33%"><tr><th align="left" valign="top" scope="column"></th>
+of the recipient.</p>
+
+<p>If the Authenticate Source and Authenticate Recipient settings are left blank, then no
+security policy is specified, and the modules perform no security operations.</p>
+
+<p>The following table shows message protection policy configurations and the resulting message security
+operations performed by the WS-Security SOAP message security providers for that configuration.</p>
+
+<a name="gbutq"></a><h6>Table&#160;1 Message Protection Policy Based on WS-Security Soap Message Security Operation</h6><table><col width="33%"><col width="33%"><col width="33%"><tr><th align="left" valign="top" scope="column"></th>
 <th align="left" valign="top" scope="column"><p>Authenticate Recipient
-<tt>before-content</tt></p></th>
-<th align="left" valign="top" scope="column"><p>Authenticate Recipient <tt>after-content</tt></p></th>
+<tt>before-content</tt></p>
+
+</th>
+<th align="left" valign="top" scope="column"><p>Authenticate Recipient <tt>after-content</tt></p>
+
+</th>
 </tr>
-<tr><td align="left" valign="top" scope="row"><p>Authenticate Source <tt>sender</tt></p></td>
+<tr><td align="left" valign="top" scope="row"><p>Authenticate Source <tt>sender</tt></p>
+
+</td>
 <td colspan="2" align="left" valign="top" scope="row"><p>The content of the SOAP message body is
 encrypted and replaced with the resulting <tt>xend:EncryptedData</tt>. The message contains <tt>a wsse:Security</tt> header that
 contains a <tt>wsse:UsernameToken (with password)</tt> and an <tt>xenc:EncryptedKey</tt>. The <tt>xenc:EncryptedKey</tt> contains the key used
 to encrypt the SOAP message body. The key is encrypted in the public
-key of the recipient.</p></td>
+key of the recipient.</p>
+
+</td>
 </tr>
-<tr><td align="left" valign="top" scope="row"><p>Authenticate Source <tt>content</tt></p></td>
+<tr><td align="left" valign="top" scope="row"><p>Authenticate Source <tt>content</tt></p>
+
+</td>
 <td align="left" valign="top" scope="row"><p>The content of the SOAP message body
 is encrypted and replaced with the resulting <tt>xend:EncryptedData</tt>. The <tt>xenc:EncryptedData</tt> is signed. The
 message contains <tt>a wsse:Security</tt> header that contains an <tt>xenc:EncryptedKey</tt> and a <tt>ds:Signature</tt>. The <tt>xenc:EncryptedKey</tt>
 contains the key used to encrypt the SOAP message body. The key is
-encrypted in the public key of the recipient.</p></td>
+encrypted in the public key of the recipient.</p>
+
+</td>
 <td align="left" valign="top" scope="row"><p>The content of the SOAP message
 body is signed, then encrypted, and then replaced with the resulting <tt>xend:EncryptedData</tt>. The message
 contains a <tt>wsse:Security</tt> header that contains an <tt>xenc:EncryptedKey</tt> and a <tt>ds:Signature</tt>. The
 <tt>xenc:EncryptedKey</tt> contains the key used to encrypt the SOAP message body. The
-key is encrypted in the public key of the recipient.</p></td>
+key is encrypted in the public key of the recipient.</p>
+
+</td>
 </tr>
 </table>
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

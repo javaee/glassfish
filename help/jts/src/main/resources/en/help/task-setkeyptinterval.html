@@ -1,6 +1,6 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
@@ -10,13 +10,25 @@ of transactions between keypoint operations on the log. Keypoint operations can 
 size of the transaction log files. A larger number of keypoint intervals results
 in larger transaction log files, but fewer keypoint operations, and potentially better performance.
 A smaller keypoint interval (for example, 256) results in smaller log files but
-slightly reduced performance due to the greater frequency of keypoint operations.</p><ol>
+slightly reduced performance due to the greater frequency of keypoint operations.</p>
+
+<ol>
 <li><b>In the navigation tree, expand the Configuration node.</b></li>
 <li><b>Select the Transaction Service node.</b><p>The Transaction Service page opens.</p></li>
 <li><b>In the Keypoint Interval field, type the number of transactions between keypoint operations.</b><p>The default value is 65,536.</p></li>
 <li><b>Click Save.</b></li></ol><h6>See Also</h6>
-<ul><li><p><a href="task-configtransservice.html">To Configure the Transaction Service</a></p></li>
-<li><p><a href="task-configtransrecovery.html">To Configure How the Enterprise Server Recovers Transactions</a></p></li>
-<li><p><a href="task-settranstimeout.html">To Set a Transaction Timeout Value</a></p></li>
-<li><p><a href="task-settranslog.html">To Set the Location of the Transaction Logs</a></p></li></ul>
+<ul><li><p><a href="task-configtransservice.html">To Configure the Transaction Service</a></p>
 
+</li>
+<li><p><a href="task-configtransrecovery.html">To Configure How the GlassFish Server Recovers Transactions</a></p>
+
+</li>
+<li><p><a href="task-settranstimeout.html">To Set a Transaction Timeout Value</a></p>
+
+</li>
+<li><p><a href="task-settranslog.html">To Set the Location of the Transaction Logs</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

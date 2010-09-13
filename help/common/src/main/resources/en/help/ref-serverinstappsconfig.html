@@ -1,44 +1,86 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-serverinstappsconfig"></a><h4>Applications Configuration</h4>
-<a name="indexterm-135"></a><a name="indexterm-136"></a><a name="indexterm-137"></a><a name="indexterm-138"></a><a name="indexterm-139"></a><p>Use the Applications Configuration page to set properties that help ensure that changes
-to deployed applications are detected and that the modified classes are reloaded.</p><p>The Applications Configuration page contains the following options.</p><dl><dt>Load Defaults</dt>
-<dd><p>Button to restore the default values of all the settings.</p></dd>
+<a name="indexterm-138"></a><a name="indexterm-139"></a><a name="indexterm-140"></a><a name="indexterm-141"></a><a name="indexterm-142"></a><p>Use the Applications Configuration page to set properties that help ensure that changes
+to deployed applications are detected and that the modified classes are reloaded.</p>
+
+<p>The Applications Configuration page contains the following options.</p>
+
+<dl><dt>Load Defaults</dt>
+<dd><p>Button to restore the default values of all the settings.</p>
+
+</dd>
 <dt>Reload</dt>
-<dd><p>If this option is enabled, modified classes are reloaded dynamically. The server periodically checks for changes in the deployment directory and redeploys the application, automatically and dynamically, with the changes. This is useful in a development environment, because it allows code changes to be tested quickly. In a production environment, however, dynamic reloading might degrade performance. In addition, whenever a reload is done, the sessions at that transit time become invalid. The client must restart the session. This option is enabled by default.</p></dd>
+<dd><p>If this option is enabled, modified classes are reloaded dynamically. The server periodically checks for changes in the deployment directory and redeploys the application, automatically and dynamically, with the changes. This is useful in a development environment, because it allows code changes to be tested quickly. In a production environment, however, dynamic reloading might degrade performance. In addition, whenever a reload is done, the sessions at that transit time become invalid. The client must restart the session. This option is enabled by default.</p>
+
+</dd>
 <dt>Reload Poll Interval</dt>
-<dd><p>Identifies how often the server should check for code changes in the deployed applications and modules. The default value is 2.</p></dd>
+<dd><p>Identifies how often the server should check for code changes in the deployed applications and modules. The default value is 2.</p>
+
+</dd>
 <dt>Admin Session Timeout</dt>
-<dd><p>Identifies the number of minutes of inactivity before the Administration Console times out and you have to log in again. The default value is 60.</p></dd>
+<dd><p>Identifies the number of minutes of inactivity before the Administration Console times out and you have to log in again. The default value is 60.</p>
+
+</dd>
 <dt>Auto Deploy</dt>
-<dd><p>If this option is enabled, applications in the auto-deploy directory are deployed automatically. This option is enabled by default.</p></dd>
+<dd><p>If this option is enabled, applications in the auto-deploy directory are deployed automatically. This option is enabled by default.</p>
+
+</dd>
 <dt>Auto Deploy Poll Interval</dt>
-<dd><p>Specifies how often the server should check the auto-deploy directory for application or module changes. Changing the poll interval does not affect the time taken for deploying an application or module. The default value is 2.</p></dd>
+<dd><p>Specifies how often the server should check the auto-deploy directory for application or module changes. Changing the poll interval does not affect the time taken for deploying an application or module. The default value is 2.</p>
+
+</dd>
 <dt>Auto Deploy Retry Timeout</dt>
-<dd><p>Specifies the number of seconds that a partially copied file can remain unchanged in size before an error occurs. The default value is 4.</p><p>If a file is copied slowly into the auto-deploy directory, the file can appear before the entire file is copied. As a result, the attempt to automatically deploy the application fails. If an attempt to automatically deploy an application fails for this reason, the Enterprise Server tries to deploy the application again. If the size of the partially copied file remains unchanged for the specified period of time, an error occurs.</p></dd>
+<dd><p>Specifies the number of seconds that a partially copied file can remain unchanged in size before an error occurs. The default value is 4.</p>
+
+<p>If a file is copied slowly into the auto-deploy directory, the file can appear before the entire file is copied. As a result, the attempt to automatically deploy the application fails. If an attempt to automatically deploy an application fails for this reason, the GlassFish Server tries to deploy the application again. If the size of the partially copied file remains unchanged for the specified period of time, an error occurs.</p>
+
+</dd>
 <dt>Auto Deploy Directory</dt>
-<dd><p>Identifies the directory to monitor for automatic deployment of applications. The default value is <tt></tt><i>domain-dir</i><tt>/autodeploy</tt>.</p></dd>
+<dd><p>Identifies the directory to monitor for automatic deployment of applications. The default value is <tt></tt><i>domain-dir</i><tt>/autodeploy</tt>.</p>
+
+</dd>
 <dt>XML Validation</dt>
-<dd><p>Specifies the type of XML validation to be performed on standard and Enterprise Server deployment descriptors. The type may be any of the following:</p><dl><dt>Full</dt>
-<dd><p>If XML validation fails, deployment fails. This value is the default.</p></dd>
+<dd><p>Specifies the type of XML validation to be performed on standard and GlassFish Server deployment descriptors. The type may be any of the following:</p>
+
+<dl><dt>Full</dt>
+<dd><p>If XML validation fails, deployment fails. This value is the default.</p>
+
+</dd>
 <dt>Parsing</dt>
-<dd><p>XML validation errors are reported, but deployment occurs.</p></dd>
+<dd><p>XML validation errors are reported, but deployment occurs.</p>
+
+</dd>
 <dt>None</dt>
-<dd><p>No XML validation is performed.</p></dd>
+<dd><p>No XML validation is performed.</p>
+
+</dd>
 </dl>
 </dd>
 <dt>Verifier</dt>
-<dd><p>If this option is enabled, the verifier is run before autodeployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the file. Verification of large applications is often time-consuming. This option is disabled by default.</p></dd>
+<dd><p>If this option is enabled, the verifier is run before autodeployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the file. Verification of large applications is often time-consuming. This option is disabled by default.</p>
+
+</dd>
 <dt>Precompile</dt>
-<dd><p>If this option is enabled, JavaServer Pages<sup>TM</sup> (JSP<sup>TM</sup>) files are precompiled. If this option is disabled, JSP files are compiled at runtime when they are first accessed. This option is disabled by default.</p></dd>
+<dd><p>If this option is enabled, JavaServer Pages (JSP) files are precompiled. If this option is disabled, JSP files are compiled at runtime when they are first accessed. This option is disabled by default.</p>
+
+</dd>
 <dt>Additional Properties</dt>
-<dd><p>Additional properties for applications. The Enterprise Server does not define any additional properties for applications.</p></dd>
+<dd><p>Additional properties for applications. The GlassFish Server does not define any additional properties for applications.</p>
+
+</dd>
 </dl>
 <h5>Related Tasks</h5>
 
-<ul><li><p><a href="task-setadvanceappconfig.html">To Set the Advanced Applications Configuration</a></p></li>
-<li><p><a href="task-setadvancedomainattributes.html">To Set the Advanced Domain Attributes</a></p></li></ul>
+<ul><li><p><a href="task-setadvanceappconfig.html">To Set the Advanced Applications Configuration</a></p>
 
+</li>
+<li><p><a href="task-setadvancedomainattributes.html">To Set the Advanced Domain Attributes</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

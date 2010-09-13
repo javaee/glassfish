@@ -1,58 +1,128 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-mqschemeservice"></a><h4>MQ Scheme and MQ Service Address Syntax</h4>
-<p>The full syntax for a message service address is</p><pre><i>scheme</i>://<i>address-syntax</i></pre><p>where the <i>scheme</i> and <i>address-syntax</i> are described in the table below.</p><p>The MQ Scheme and MQ Service are the values shown in the
-first two columns of the following table.</p><table><col width="16%"><col width="16%"><col width="33%"><col width="33%"><tr><th align="left" valign="top" scope="column"><p>Scheme Name</p></th>
-<th align="left" valign="top" scope="column"><p>Connection Service</p></th>
-<th align="left" valign="top" scope="column"><p>Description</p></th>
-<th align="left" valign="top" scope="column"><p>Address Syntax</p></th>
+<p>The full syntax for a message service address is</p>
+
+<pre><i>scheme</i>://<i>address-syntax</i></pre><p>where the <i>scheme</i> and <i>address-syntax</i> are described in the table below.</p>
+
+<p>The MQ Scheme and MQ Service are the values shown in the
+first two columns of the following table.</p>
+
+<table><col width="16%"><col width="16%"><col width="33%"><col width="33%"><tr><th align="left" valign="top" scope="column"><p>Scheme Name</p>
+
+</th>
+<th align="left" valign="top" scope="column"><p>Connection Service</p>
+
+</th>
+<th align="left" valign="top" scope="column"><p>Description</p>
+
+</th>
+<th align="left" valign="top" scope="column"><p>Address Syntax</p>
+
+</th>
 </tr>
-<tr><td align="left" valign="top" scope="row"><p><tt>mq</tt></p></td>
-<td align="left" valign="top" scope="row"><p><tt>jms</tt> and <tt>ssljms</tt></p></td>
+<tr><td align="left" valign="top" scope="row"><p><tt>mq</tt></p>
+
+</td>
+<td align="left" valign="top" scope="row"><p><tt>jms</tt> and <tt>ssljms</tt></p>
+
+</td>
 <td align="left" valign="top" scope="row"><p>Message Queue
 client runtime makes a connection to the MQ Port Mapper at the specified
 host and port. The Port Mapper returns a list of the dynamically established
 connection service ports, and the Message Queue client runtime then makes a connection
-to the port hosting the specified connection service.</p></td>
-<td align="left" valign="top" scope="row"><p><tt>[</tt><i>hostName</i><tt>][:</tt><i>port</i><tt>][/</tt><i>serviceName</i><tt>]</tt></p><p>Defaults:   <i>hostName</i> =
-<tt>localhost</tt>,   <i>port</i> = <tt>7676</tt>,   <i>serviceName</i> = <tt>jms</tt></p><p>Defaults only apply
+to the port hosting the specified connection service.</p>
+
+</td>
+<td align="left" valign="top" scope="row"><p><tt>[</tt><i>hostName</i><tt>][:</tt><i>port</i><tt>][/</tt><i>serviceName</i><tt>]</tt></p>
+
+<p>Defaults:   <i>hostName</i> =
+<tt>localhost</tt>,   <i>port</i> = <tt>7676</tt>,   <i>serviceName</i> = <tt>jms</tt></p>
+
+<p>Defaults only apply
 to the <tt>jms</tt> connection service. For the <tt>ssljms</tt> connection service, all variables need
-to be specified.</p><p>Example: <tt>mq:MyHost:7677/ssljms</tt></p></td>
+to be specified.</p>
+
+<p>Example: <tt>mq:MyHost:7677/ssljms</tt></p>
+
+</td>
 </tr>
-<tr><td align="left" valign="top" scope="row"><p><tt>mqtcp</tt></p></td>
-<td align="left" valign="top" scope="row"><p><tt>jms</tt></p></td>
+<tr><td align="left" valign="top" scope="row"><p><tt>mqtcp</tt></p>
+
+</td>
+<td align="left" valign="top" scope="row"><p><tt>jms</tt></p>
+
+</td>
 <td align="left" valign="top" scope="row"><p>Message Queue client runtime makes a TCP connection to the
-specified host and port (bypassing the MQ Port Mapper) to establish a connection.</p></td>
-<td align="left" valign="top" scope="row"><p><i>hostName</i><tt>:</tt><i>port</i><tt>/jms</tt></p><p>Example:
-<tt>mqtcp:localhost:7676/jms</tt></p></td>
+specified host and port (bypassing the MQ Port Mapper) to establish a connection.</p>
+
+</td>
+<td align="left" valign="top" scope="row"><p><i>hostName</i><tt>:</tt><i>port</i><tt>/jms</tt></p>
+
+<p>Example:
+<tt>mqtcp:localhost:7676/jms</tt></p>
+
+</td>
 </tr>
-<tr><td align="left" valign="top" scope="row"><p><tt>mqssl</tt></p></td>
-<td align="left" valign="top" scope="row"><p><tt>ssljms</tt></p></td>
+<tr><td align="left" valign="top" scope="row"><p><tt>mqssl</tt></p>
+
+</td>
+<td align="left" valign="top" scope="row"><p><tt>ssljms</tt></p>
+
+</td>
 <td align="left" valign="top" scope="row"><p>Message Queue client runtime makes a secure SSL connection to the specified host
-and port (bypassing the MQ Port Mapper) to establish a connection.</p></td>
-<td align="left" valign="top" scope="row"><p><i>hostName</i><tt>:</tt><i>port</i><tt>/ssljms</tt></p><p>Example: <tt>mqssl:localhost:7676/ssljms</tt></p></td>
+and port (bypassing the MQ Port Mapper) to establish a connection.</p>
+
+</td>
+<td align="left" valign="top" scope="row"><p><i>hostName</i><tt>:</tt><i>port</i><tt>/ssljms</tt></p>
+
+<p>Example: <tt>mqssl:localhost:7676/ssljms</tt></p>
+
+</td>
 </tr>
-<tr><td align="left" valign="top" scope="row"><p><tt>http</tt></p></td>
-<td align="left" valign="top" scope="row"><p><tt>httpjms</tt></p></td>
+<tr><td align="left" valign="top" scope="row"><p><tt>http</tt></p>
+
+</td>
+<td align="left" valign="top" scope="row"><p><tt>httpjms</tt></p>
+
+</td>
 <td align="left" valign="top" scope="row"><p>Message
 Queue client runtime makes an HTTP connection to an Message Queue tunnel servlet
 at the specified URL. (The broker must be configured to access the HTTP
-tunnel servlet, as described in the Message Queue <b>Administrator&#8217;s Guide</b>.)</p></td>
-<td align="left" valign="top" scope="row"><p><i>hostName</i><tt>:</tt><i>port</i><tt>/</tt><i>contextRoot</i><tt>/tunnel</tt></p><p>If multiple broker instances
+tunnel servlet, as described in the Message Queue <b>Administrator&#8217;s Guide</b>.)</p>
+
+</td>
+<td align="left" valign="top" scope="row"><p><i>hostName</i><tt>:</tt><i>port</i><tt>/</tt><i>contextRoot</i><tt>/tunnel</tt></p>
+
+<p>If multiple broker instances
 are using the same tunnel servlet, then the syntax for connecting to a
-specific broker instance (rather than a randomly selected one) is: <tt>http://</tt><i>hostName</i><tt>:</tt><i>port</i><tt>/</tt><i>contextRoot</i><tt>/tunnel?</tt><i>serverName</i><tt>=</tt><i>hostName</i><tt>:</tt><i>instanceName</i></p></td>
+specific broker instance (rather than a randomly selected one) is: <tt>http://</tt><i>hostName</i><tt>:</tt><i>port</i><tt>/</tt><i>contextRoot</i><tt>/tunnel?</tt><i>serverName</i><tt>=</tt><i>hostName</i><tt>:</tt><i>instanceName</i></p>
+
+</td>
 </tr>
-<tr><td align="left" valign="top" scope="row"><p><tt>https</tt></p></td>
-<td align="left" valign="top" scope="row"><p><tt>httpsjms</tt></p></td>
+<tr><td align="left" valign="top" scope="row"><p><tt>https</tt></p>
+
+</td>
+<td align="left" valign="top" scope="row"><p><tt>httpsjms</tt></p>
+
+</td>
 <td align="left" valign="top" scope="row"><p>Message Queue client
 runtime makes a secure HTTPS connection to the specified Message Queue tunnel servlet
 URL. (The broker must be configured to access the HTTPS tunnel servlet, as
-described in the Message Queue <b>Administrator&#8217;s Guide</b>.)</p></td>
-<td align="left" valign="top" scope="row"><p><i>hostName</i><tt>:</tt><i>port</i><tt>/</tt><i>contextRoot</i><tt>/tunnel</tt></p><p>If multiple broker instances are using the
+described in the Message Queue <b>Administrator&#8217;s Guide</b>.)</p>
+
+</td>
+<td align="left" valign="top" scope="row"><p><i>hostName</i><tt>:</tt><i>port</i><tt>/</tt><i>contextRoot</i><tt>/tunnel</tt></p>
+
+<p>If multiple broker instances are using the
 same tunnel servlet, then the syntax for connecting to a specific broker instance
-(rather than a randomly selected one) is: <tt>http://</tt><i>hostName</i><tt>:</tt><i>port</i><tt>/</tt><i>contextRoot</i><tt>/tunnel?</tt><i>serverName</i><tt>=</tt><i>hostName</i><tt>:</tt><i>instanceName</i></p></td>
+(rather than a randomly selected one) is: <tt>http://</tt><i>hostName</i><tt>:</tt><i>port</i><tt>/</tt><i>contextRoot</i><tt>/tunnel?</tt><i>serverName</i><tt>=</tt><i>hostName</i><tt>:</tt><i>instanceName</i></p>
+
+</td>
 </tr>
 </table>
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

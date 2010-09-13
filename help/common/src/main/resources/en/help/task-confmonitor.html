@@ -1,23 +1,23 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
 
-<a name="task-confmonitor"></a><h4>To Configure the Monitoring Service</h4><a name="indexterm-119"></a><ol>
+<a name="task-confmonitor"></a><h4>To Configure the Monitoring Service</h4><a name="indexterm-122"></a><ol>
 <li><b>In the navigation tree, expand the Configuration node.</b></li>
 <li><b>Under the Configuration node, select the Monitoring node.</b><p>The Monitoring Service page opens.</p></li>
-<li><b>Select the Monitoring Service Enabled checkbox to enable monitoring for the Enterprise Server,
+<li><b>Select the Monitoring Service Enabled checkbox to enable monitoring for the GlassFish Server,
 or deselect the checkbox to disable monitoring.</b><p>This option is enabled by default.</p></li>
 <li><b>Select the Monitoring MBeans Enabled checkbox to deploy all MBeans needed for monitoring,
 or deselect the checkbox to undeploy these MBeans.</b><p>This option is enabled by default.</p><p>If the checkbox is not selected, you cannot view monitoring data in the
 Administration Console, even if the Monitoring Service checkbox is selected. Instead, you must
 use the command line to view monitoring data. If you deselect the checkbox,
-the memory footprint of the Enterprise Server is reduced.</p></li>
-<li><b>Select the DTrace Enabled checkbox to enable use of the Solaris<sup>TM</sup> DTrace
-facility.</b><p>In order to use the Solaris DTrace facility, you must also have Sun
-GlassFish Enterprise Manager DTrace Monitoring. This option is disabled by default.</p></li>
+the memory footprint of the GlassFish Server is reduced.</p></li>
+<li><b>Select the DTrace Enabled checkbox to enable use of the Solaris DTrace
+facility.</b><p>In order to use the Solaris DTrace facility, you must also have Oracle
+Enterprise Manager DTrace Monitoring. This option is disabled by default.</p></li>
 <li><b>In the table, perform one of the following actions.</b><ul>
 <li><b>In the Monitoring Level column, select LOW or HIGH from the drop-down list
 for one or more components in the Component column to enable monitoring for
@@ -30,7 +30,15 @@ HIGH options in this release. To disable monitoring for one or more
 components, select OFF. The default value is OFF.</p><p>You must deploy an application, component, or service before you configure monitoring for
 it.</p></li>
 <li><b>Click Save.</b></li></ol><h6>See Also</h6>
-<ul><li><p><a href="task-appmonitoringdata.html">To View Application Monitoring Data</a></p></li>
-<li><p><a href="task-servermonitoringdata.html">To View Server Monitoring Data</a></p></li>
-<li><p><a href="task-resourcemonitoringdata.html">To View Resource Monitoring Data</a></p></li></ul>
+<ul><li><p><a href="task-appmonitoringdata.html">To View Application Monitoring Data</a></p>
 
+</li>
+<li><p><a href="task-servermonitoringdata.html">To View Server Monitoring Data</a></p>
+
+</li>
+<li><p><a href="task-resourcemonitoringdata.html">To View Resource Monitoring Data</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

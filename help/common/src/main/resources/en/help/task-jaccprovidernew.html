@@ -1,15 +1,19 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
 
-<a name="task-jaccprovidernew"></a><h4>To Create a JACC Provider</h4><a name="indexterm-100"></a><a name="indexterm-101"></a><a name="indexterm-102"></a><p>JACC (Java Authorization Contract for Containers) is the part of the Java EE
+<a name="task-jaccprovidernew"></a><h4>To Create a JACC Provider</h4><a name="indexterm-103"></a><a name="indexterm-104"></a><a name="indexterm-105"></a><p>JACC (Java Authorization Contract for Containers) is the part of the Java EE
 specification that defines an interface for pluggable authorization providers. This enables the administrator
-to set up third-party <b>plugin</b> modules to perform authorization. By default, the Enterprise
-Server provides a simple, JACC-compliant file-based authorization engine.</p><p>For information on how to write the implementation classes for a JACC provider,
-see the JACC specification at <a href="http://jcp.org/en/jsr/detail?id=115">http://jcp.org/en/jsr/detail?id=115</a>.</p><ol>
+to set up third-party <b>plugin</b> modules to perform authorization. By default, the GlassFish
+Server provides a simple, JACC-compliant file-based authorization engine.</p>
+
+<p>For information on how to write the implementation classes for a JACC provider,
+see the JACC specification at <a href="http://jcp.org/en/jsr/detail?id=115">http://jcp.org/en/jsr/detail?id=115</a>.</p>
+
+<ol>
 <li><b>In the navigation tree, expand the Configuration node.</b></li>
 <li><b>Under the  Configuration node, expand the Security node.</b></li>
 <li><b>Under the Security node, select the JACC Providers node.</b><p>The JACC Providers page opens.</p></li>
@@ -24,7 +28,15 @@ the policy factory.</b><p>The <tt>default</tt> provider uses <tt>com.sun.enterpr
 that appears, type the property name in the Name field, and type the
 property value in the Value field.</p><p>For a description of the additional properties available for JACC providers, see <a href="ref-jaccproviderprop.html">Properties Specific to JACC Providers</a>.</p></li>
 <li><b>Click OK.</b></li></ol><h6>See Also</h6>
-<ul><li><p><a href="task-jaccprovideredit.html">To Edit a JACC Provider</a></p></li>
-<li><p><a href="task-jaccproviderdelete.html">To Delete a JACC Provider</a></p></li>
-<li><p><a href="task-setactivejaccprov.html">To Set the Active JACC Provider</a></p></li></ul>
+<ul><li><p><a href="task-jaccprovideredit.html">To Edit a JACC Provider</a></p>
 
+</li>
+<li><p><a href="task-jaccproviderdelete.html">To Delete a JACC Provider</a></p>
+
+</li>
+<li><p><a href="task-setactivejaccprov.html">To Set the Active JACC Provider</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

@@ -1,6 +1,6 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
@@ -29,10 +29,20 @@ messages in one or more folders. Allowed values are <tt>imap</tt>, <tt>pop3</tt>
 The default value is <tt>imap</tt>.</p></li>
 <li><b>In the Store Protocol Class field, specify the service provider implementation class for
 storage.</b><p>Allowed values are:</p>
-<ul><li><p><tt>com.sun.mail.imap.IMAPStore</tt></p></li>
-<li><p><tt>com.sun.mail.pop3.POP3Store</tt></p></li>
-<li><p><tt>com.sun.mail.imap.IMAPSSLStore</tt></p></li>
-<li><p><tt>com.sun.mail.pop3.POP3SSLStore</tt></p></li></ul>
+
+
+<ul><li><p><tt>com.sun.mail.imap.IMAPStore</tt></p>
+
+</li>
+<li><p><tt>com.sun.mail.pop3.POP3Store</tt></p>
+
+</li>
+<li><p><tt>com.sun.mail.imap.IMAPSSLStore</tt></p>
+
+</li>
+<li><p><tt>com.sun.mail.pop3.POP3SSLStore</tt></p>
+
+</li></ul>
 <p>The default value is <tt>com.sun.mail.imap.IMAPStore</tt>.</p></li>
 <li><b>In the Transport Protocol field, specify the transport communication method.</b><p>The transport protocol service sends messages. Allowed values are <tt>smtp</tt> and <tt>smtps</tt>. By
 default, the Transport Protocol is <tt>smtp</tt>.</p></li>
@@ -40,16 +50,22 @@ default, the Transport Protocol is <tt>smtp</tt>.</p></li>
 transport.</b><p>The default value is <tt>com.sun.mail.smtp.SMTPTransport</tt>.</p></li>
 <li><b>Select the Debug checkbox to enable extra debugging output, including a protocol trace,
 for this mail session.</b><p>If the JavaMail log level is set to <tt>FINE</tt> or finer, the debugging
-output is generated and is included in the system log file. See <a href="../../../common/en/help/task-eelogginglevels.html">To Configure Log Levels</a>
+output is generated and is included in the system log file. See <a href="http://docs.sun.com/doc/821-2472/task-eelogginglevels?a=view">To Configure Log Levels</a>
 for information about setting the log level. This option is disabled by default.</p></li>
 <li>(Optional) <b>In the Additional Properties table, specify additional properties required by applications, such as
 a protocol-specific host or username property.</b><p>For a list of the available properties, see the <a href="http://java.sun.com/products/javamail/javadocs/index.html">JavaMail API documentation</a>. Additional properties must begin
 with <tt>mail-</tt> and must use hyphens, not periods, as separators. For example, <tt>mail-debug</tt>
-is correct, but <tt>mail.debug</tt> is not. The Enterprise Server back end converts
+is correct, but <tt>mail.debug</tt> is not. The GlassFish Server back end converts
 the hyphens into the periods expected by the JavaMail API.</p><p>To add a property, click the Add Property button. In the blank
 row that appears, type the property name in the Name field, and type
 the property value in the Value field.</p></li>
 <li><b>Click OK.</b></li></ol><h6>See Also</h6>
-<ul><li><p><a href="task-javamailsessionsedit.html">To Edit a JavaMail Session</a></p></li>
-<li><p><a href="task-javamailsessionsdelete.html">To Delete a JavaMail Session</a></p></li></ul>
+<ul><li><p><a href="task-javamailsessionsedit.html">To Edit a JavaMail Session</a></p>
 
+</li>
+<li><p><a href="task-javamailsessionsdelete.html">To Delete a JavaMail Session</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

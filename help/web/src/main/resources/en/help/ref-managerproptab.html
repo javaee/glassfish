@@ -1,28 +1,62 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-managerproptab"></a><h4>Manager Properties</h4>
 <a name="indexterm-44"></a><a name="indexterm-45"></a><p>The session manager provides the means to configure how sessions are created and
 destroyed, where the session state is stored, and the maximum number of sessions
-that are available.</p><p>Use the Manager Properties page to add or modify session manager properties for
-the web container.</p><p>The Manager Properties page contains the following options.</p><dl><dt>Load Defaults</dt>
-<dd><p>Button to restore the default values of all the settings.</p></dd>
+that are available.</p>
+
+<p>Use the Manager Properties page to add or modify session manager properties for
+the web container.</p>
+
+<p>The Manager Properties page contains the following options.</p>
+
+<dl><dt>Load Defaults</dt>
+<dd><p>Button to restore the default values of all the settings.</p>
+
+</dd>
 <dt>Reap Interval</dt>
-<dd><p>The number of seconds before inactive session data is deleted from the store. The default value is 60.</p><p>Set this value lower than the frequency at which session data changes. For example, this value should be as low as possible (1 second) for a hit counter servlet on a frequently accessed web site; otherwise, you could lose the last few hits each time you restart the server.</p></dd>
+<dd><p>The number of seconds before inactive session data is deleted from the store. The default value is 60.</p>
+
+<p>Set this value lower than the frequency at which session data changes. For example, this value should be as low as possible (1 second) for a hit counter servlet on a frequently accessed web site; otherwise, you could lose the last few hits each time you restart the server.</p>
+
+</dd>
 <dt>Max Sessions</dt>
-<dd><p>The maximum number of sessions that can be in cache. A value of &#8211;1 indicates no limit to the number of sessions. The default value is &#8211;1. </p><p>After the limit is reached, an attempt to create a new session causes an <tt>IllegalStateException</tt> to be thrown.</p></dd>
+<dd><p>The maximum number of sessions that can be in cache. A value of &#8211;1 indicates no limit to the number of sessions. The default value is &#8211;1. </p>
+
+<p>After the limit is reached, an attempt to create a new session causes an <tt>IllegalStateException</tt> to be thrown.</p>
+
+</dd>
 <dt>Session File Name</dt>
-<dd><p>The absolute or relative path to the directory in which the session state is preserved between application restarts, if preserving the state is possible. If this path is not set, the session state is not preserved. By default, this path is not set.</p><p>A relative path is relative to the temporary directory for this web application.</p></dd>
+<dd><p>The absolute or relative path to the directory in which the session state is preserved between application restarts, if preserving the state is possible. If this path is not set, the session state is not preserved. By default, this path is not set.</p>
+
+<p>A relative path is relative to the temporary directory for this web application.</p>
+
+</dd>
 <dt>Additional Properties</dt>
-<dd><p>Additional properties for the session manager. The Enterprise Server does not define any additional properties for the session manager.</p></dd>
+<dd><p>Additional properties for the session manager. The GlassFish Server does not define any additional properties for the session manager.</p>
+
+</dd>
 </dl>
 <h5>Related Tasks</h5>
 
-<ul><li><p><a href="task-webcontainergeneral.html">To Configure General Properties for the Web Container</a></p></li>
-<li><p><a href="task-webcontainersessiontimeout.html">To Configure Session Properties for the Web Container</a></p></li>
-<li><p><a href="task-webcontainermanagerprops.html">To Configure Manager Properties  for the Web Container</a></p></li>
-<li><p><a href="task-webcontainerstoreprops.html">To Configure Store Properties for the Web Container</a></p></li></ul>
+<ul><li><p><a href="task-webcontainergeneral.html">To Configure General Properties for the Web Container</a></p>
+
+</li>
+<li><p><a href="task-webcontainersessiontimeout.html">To Configure Session Properties for the Web Container</a></p>
+
+</li>
+<li><p><a href="task-webcontainermanagerprops.html">To Configure Manager Properties  for the Web Container</a></p>
+
+</li>
+<li><p><a href="task-webcontainerstoreprops.html">To Configure Store Properties for the Web Container</a></p>
+
+</li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
 <p>None.</p>
+
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

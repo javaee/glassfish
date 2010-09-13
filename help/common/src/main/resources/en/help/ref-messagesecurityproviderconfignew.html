@@ -1,49 +1,113 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-messagesecurityproviderconfignew"></a><h4>New Provider Configuration</h4>
-<a name="indexterm-226"></a><p>Use the New Provider Configuration page to create a new message security provider
-configuration.</p><p>The New Provider Configuration page contains the following options.</p><dl><dt>Provider ID</dt>
-<dd><p>The name of the message security provider.</p></dd>
+<a name="indexterm-229"></a><p>Use the New Provider Configuration page to create a new message security provider
+configuration.</p>
+
+<p>The New Provider Configuration page contains the following options.</p>
+
+<dl><dt>Provider ID</dt>
+<dd><p>The name of the message security provider.</p>
+
+</dd>
 <dt>Default Provider</dt>
-<dd><p>If this option is selected, this provider is the default provider.  The default provider will be invoked for any application that does not identify a specific provider. Whether the provider is the default client provider, the default server provider, or both is determined by the Provider Type.</p></dd>
+<dd><p>If this option is selected, this provider is the default provider.  The default provider will be invoked for any application that does not identify a specific provider. Whether the provider is the default client provider, the default server provider, or both is determined by the Provider Type.</p>
+
+</dd>
 <dt>Provider Type</dt>
-<dd><p>Specifies the type of the provider. Available choices are:</p><dl><dt><tt>client</tt></dt>
-<dd><p>Specifies that the provider is the client authentication provider.</p></dd>
+<dd><p>Specifies the type of the provider. Available choices are:</p>
+
+<dl><dt><tt>client</tt></dt>
+<dd><p>Specifies that the provider is the client authentication provider.</p>
+
+</dd>
 <dt><tt>server</tt></dt>
-<dd><p>Specifies that the provider is the server authentication provider.</p></dd>
+<dd><p>Specifies that the provider is the server authentication provider.</p>
+
+</dd>
 <dt><tt>client-server</tt></dt>
-<dd><p>Specifies that the provider is both a client and a server authentication provider.</p></dd>
+<dd><p>Specifies that the provider is both a client and a server authentication provider.</p>
+
+</dd>
 </dl>
 </dd>
 <dt>Class Name</dt>
-<dd><p>The name of the Java implementation class of the provider. Client authentication providers must implement the <tt>com.sun.enterprise.security.jauth.ClientAuthModule</tt> interface. Server-side providers must implement the <tt>com.sun.enterprise.security.jauth.ServerAuthModule</tt> interface. Client-server providers must implement both interfaces.</p></dd>
+<dd><p>The name of the Java implementation class of the provider. Client authentication providers must implement the <tt>com.sun.enterprise.security.jauth.ClientAuthModule</tt> interface. Server-side providers must implement the <tt>com.sun.enterprise.security.jauth.ServerAuthModule</tt> interface. Client-server providers must implement both interfaces.</p>
+
+</dd>
 <dt>Authenticate Source (for Request Policy)</dt>
-<dd><p>The type of required authentication for the request policy. The request policy determines the request processing that the authentication provider performs. The request policy fields are optional, but if they are not specified, the authentication provider does not authenticate request messages.</p><p>Select <tt>sender</tt> to specify message-layer sender authentication (for example, username and password) of request messages. Select <tt>content</tt> to specify content authentication (for example, digital signature) of request messages. Leave the field empty to not authenticate the source of requests. By default, no authentication type is selected.</p><p>For a description of the actions performed by the SOAP message security providers, see <a href="ref-configreq-respolicy.html">Request and Response Policy Configurations</a>.</p></dd>
+<dd><p>The type of required authentication for the request policy. The request policy determines the request processing that the authentication provider performs. The request policy fields are optional, but if they are not specified, the authentication provider does not authenticate request messages.</p>
+
+<p>Select <tt>sender</tt> to specify message-layer sender authentication (for example, username and password) of request messages. Select <tt>content</tt> to specify content authentication (for example, digital signature) of request messages. Leave the field empty to not authenticate the source of requests. By default, no authentication type is selected.</p>
+
+<p>For a description of the actions performed by the SOAP message security providers, see <a href="ref-configreq-respolicy.html">Request and Response Policy Configurations</a>.</p>
+
+</dd>
 <dt>Authenticate Recipient (for Request Policy)</dt>
-<dd><p>Specifies whether recipient authentication occurs before or after content authentication for the request policy.</p><p>Select <tt>before-content</tt> or <tt>after-content</tt> to require message-layer authentication of the receiver of the request message to its sender (by XML encryption). If the value is not specified, the default is <tt>after-content</tt>. Policies are expressed in message sender order, so <tt>after-content</tt> means that the message receiver decrypts the message before validating the signature.</p></dd>
+<dd><p>Specifies whether recipient authentication occurs before or after content authentication for the request policy.</p>
+
+<p>Select <tt>before-content</tt> or <tt>after-content</tt> to require message-layer authentication of the receiver of the request message to its sender (by XML encryption). If the value is not specified, the default is <tt>after-content</tt>. Policies are expressed in message sender order, so <tt>after-content</tt> means that the message receiver decrypts the message before validating the signature.</p>
+
+</dd>
 <dt>Authenticate Source (for Response Policy)</dt>
-<dd><p>The type of required authentication for the response policy. The response policy determines the response processing that the authentication provider performs. The response policy fields are optional, but if they are not specified, no authentication is applied to response messages.</p><p>Select <tt>sender</tt> to specify message-layer sender authentication (for example, username password) of response messages. Select <tt>content</tt> to specify content authentication (for example, digital signature) of response messages. Leave the field empty to not authenticate response sources. By default, no authentication type is selected.</p><p>For a description of the actions performed by the SOAP message security providers, see <a href="ref-configreq-respolicy.html">Request and Response Policy Configurations</a>.</p></dd>
+<dd><p>The type of required authentication for the response policy. The response policy determines the response processing that the authentication provider performs. The response policy fields are optional, but if they are not specified, no authentication is applied to response messages.</p>
+
+<p>Select <tt>sender</tt> to specify message-layer sender authentication (for example, username password) of response messages. Select <tt>content</tt> to specify content authentication (for example, digital signature) of response messages. Leave the field empty to not authenticate response sources. By default, no authentication type is selected.</p>
+
+<p>For a description of the actions performed by the SOAP message security providers, see <a href="ref-configreq-respolicy.html">Request and Response Policy Configurations</a>.</p>
+
+</dd>
 <dt>Authenticate Recipient (for Response Policy)</dt>
-<dd><p>Specifies whether recipient authentication occurs before or after content authentication for the response policy.</p><p>Select <tt>before-content</tt> or <tt>after-content</tt> to define a requirement for message-layer authentication of the receiver of the response message to its sender (by XML encryption). If the value is not specified, the default is <tt>after-content</tt>. Policies are expressed in message sender order, so <tt>after-content</tt> means that the message receiver decrypts the message before validating the signature.</p></dd>
+<dd><p>Specifies whether recipient authentication occurs before or after content authentication for the response policy.</p>
+
+<p>Select <tt>before-content</tt> or <tt>after-content</tt> to define a requirement for message-layer authentication of the receiver of the response message to its sender (by XML encryption). If the value is not specified, the default is <tt>after-content</tt>. Policies are expressed in message sender order, so <tt>after-content</tt> means that the message receiver decrypts the message before validating the signature.</p>
+
+</dd>
 <dt>Additional Properties</dt>
-<dd><p>Additional properties for the message security provider configuration. For a description of the additional properties available for provider configurations, see <a href="ref-messagesecurityproviderconfigprops.html">Properties Specific to Message Security Provider Configurations</a>.</p></dd>
+<dd><p>Additional properties for the message security provider configuration. For a description of the additional properties available for provider configurations, see <a href="ref-messagesecurityproviderconfigprops.html">Properties Specific to Message Security Provider Configurations</a>.</p>
+
+</dd>
 </dl>
 <h5>Related Tasks</h5>
 
-<ul><li><p><a href="task-configmsgsecproviders.html">To Configure Enterprise Server Facilities for Use by Message Security Providers</a></p></li>
-<li><p><a href="task-messagesecurityconfignew.html">To Create a Message Security Configuration</a></p></li>
-<li><p><a href="task-messagesecurityconfigedit.html">To Edit a Message Security Configuration</a></p></li>
-<li><p><a href="task-messagesecurityconfigdelete.html">To Delete a Message Security Configuration</a></p></li>
-<li><p><a href="task-messagesecurityproviderconfignew.html">To Create a Message Security Provider Configuration</a></p></li>
-<li><p><a href="task-messagesecurityproviderconfigedit.html">To Edit a Message Security Provider Configuration</a></p></li>
-<li><p><a href="task-messagesecurityproviderconfigdelete.html">To Delete a Message Security Provider Configuration</a></p></li>
-<li><p><a href="task-enablemesec4appclients.html">To Enable Message Security for Application Clients</a></p></li></ul>
+<ul><li><p><a href="task-configmsgsecproviders.html">To Configure GlassFish Server Facilities for Use by Message Security Providers</a></p>
+
+</li>
+<li><p><a href="task-messagesecurityconfignew.html">To Create a Message Security Configuration</a></p>
+
+</li>
+<li><p><a href="task-messagesecurityconfigedit.html">To Edit a Message Security Configuration</a></p>
+
+</li>
+<li><p><a href="task-messagesecurityconfigdelete.html">To Delete a Message Security Configuration</a></p>
+
+</li>
+<li><p><a href="task-messagesecurityproviderconfignew.html">To Create a Message Security Provider Configuration</a></p>
+
+</li>
+<li><p><a href="task-messagesecurityproviderconfigedit.html">To Edit a Message Security Provider Configuration</a></p>
+
+</li>
+<li><p><a href="task-messagesecurityproviderconfigdelete.html">To Delete a Message Security Provider Configuration</a></p>
+
+</li>
+<li><p><a href="task-enablemesec4appclients.html">To Enable Message Security for Application Clients</a></p>
+
+</li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
 
-<ul><li><p><a href="http://docs.sun.com/doc/820-7701/create-message-security-provider-1?a=view"><tt>create-message-security-provider</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/list-message-security-providers-1?a=view"><tt>list-message-security-providers</tt>(1)</a></p></li>
-<li><p><a href="http://docs.sun.com/doc/820-7701/delete-message-security-provider-1?a=view"><tt>delete-message-security-provider</tt>(1)</a></p></li></ul>
+<ul><li><p><a href="http://docs.sun.com/doc/821-2433/create-message-security-provider-1?a=view"><tt>create-message-security-provider</tt>(1)</a></p>
 
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/list-message-security-providers-1?a=view"><tt>list-message-security-providers</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/delete-message-security-provider-1?a=view"><tt>delete-message-security-provider</tt>(1)</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

@@ -1,19 +1,21 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
 
-<a name="task-connectorsecuritymapnew"></a><h4>To Create a Security Map for a Connector Connection Pool</h4><a name="indexterm-9"></a><a name="indexterm-10"></a><a name="indexterm-11"></a><p>Security maps enable the creation of a mapping between Java EE users and
-groups and EIS users and groups.</p><ol>
+<a name="task-connectorsecuritymapnew"></a><h4>To Create a Security Map for a Connector Connection Pool</h4><a name="indexterm-9"></a><a name="indexterm-10"></a><a name="indexterm-11"></a><a name="indexterm-12"></a><p>Security maps  for connector connection pools enable the creation of a mapping
+between Java EE users and groups and EIS users and groups.</p>
+
+<ol>
 <li><b>In the navigation tree, expand the Resources node.</b></li>
 <li><b>Expand the Connectors node.</b></li>
 <li><b>Under the Connectors node, select the Connector Connection Pools node.</b><p>The Connector Connection Pools page opens.</p></li>
 <li><b>On the Connector Connection Pools page, click the name of the connection pool
 that you are editing.</b><p>The Edit Connector Connection Pool page opens.</p></li>
-<li><b>On the Edit Connector Connection Pool page, click the Security Maps tab.</b><p>The Security Maps page opens.</p></li>
-<li><b>On the Security Maps page, click New.</b><p>The New Security Map page opens.</p></li>
+<li><b>On the Edit Connector Connection Pool page, click the Security Maps tab.</b><p>The Connector Connection Pool Security Maps page opens.</p></li>
+<li><b>On the Connector Connection Pool Security Maps page, click New.</b><p>The New Connector Connection Pool Security Map page opens.</p></li>
 <li><b>In the Security Map Name field, type a name for the security
 map.</b></li>
 <li><b>Do one of the following, but not both:</b><ul>
@@ -24,22 +26,58 @@ by commas.</b></li></ul></li>
 <li><b>In the Username field, specify the backend principal username required by the EIS.</b></li>
 <li><b>In the Password field, specify the backend principal password required by the EIS.</b></li>
 <li><b>Click OK.</b></li>
-<li><b>Restart the Enterprise Server.</b></li></ol><h6>See Also</h6>
-<ul><li><p><a href="task-connectorresourcenew.html">To Create a Connector Resource</a></p></li>
-<li><p><a href="task-connectorresourceedit.html">To Edit a Connector Resource</a></p></li>
-<li><p><a href="task-connectorresourcesdelete.html">To Delete a Connector Resource</a></p></li>
-<li><p><a href="task-connectorconnectionpoolnew.html">To Create a Connector Connection Pool</a></p></li>
-<li><p><a href="task-connectorconnectionpooledit.html">To Edit a Connector Connection Pool</a></p></li>
-<li><p><a href="task-connectorconnectionpooladvance.html">To Edit Connector Connection Pool Advanced Attributes</a></p></li>
-<li><p><a href="task-connectorconnectionpoolproperty.html">To Edit Connection Pool Properties</a></p></li>
-<li><p><a href="task-connectorsecuritymapedit.html">To Edit a Security Map for a Connector Connection Pool</a></p></li>
-<li><p><a href="task-connectorsecuritymapdel.html">To Delete a Security Map for a Connector Connection Pool</a></p></li>
-<li><p><a href="task-connectorconnectionpooldel.html">To Delete a Connector Connection Pool</a></p></li>
-<li><p><a href="task-setupeisaccess.html">To Set Up EIS Access</a></p></li>
-<li><p><a href="task-adminobjectnew.html">To Create an Administered Object Resource</a></p></li>
-<li><p><a href="task-adminobjectedit.html">To Edit an Administered Object Resource</a></p></li>
-<li><p><a href="task-administeredobjectresourcedelete.html">To Delete an Administered Object Resource</a></p></li>
-<li><p><a href="task-worksecuritymapnew.html">To Create a Work Security Map</a></p></li>
-<li><p><a href="task-worksecuritymapedit.html">To Edit a Work Security Map</a></p></li>
-<li><p><a href="task-worksecuritymapdelete.html">To Delete a Work Security Map</a></p></li></ul>
+<li><b>Restart the GlassFish Server.</b></li></ol><h6>See Also</h6>
+<ul><li><p><a href="task-connectorresourcenew.html">To Create a Connector Resource</a></p>
 
+</li>
+<li><p><a href="task-connectorresourceedit.html">To Edit a Connector Resource</a></p>
+
+</li>
+<li><p><a href="task-connectorresourcesdelete.html">To Delete a Connector Resource</a></p>
+
+</li>
+<li><p><a href="task-connectorconnectionpoolnew.html">To Create a Connector Connection Pool</a></p>
+
+</li>
+<li><p><a href="task-connectorconnectionpooledit.html">To Edit a Connector Connection Pool</a></p>
+
+</li>
+<li><p><a href="task-connectorconnectionpooladvance.html">To Edit Connector Connection Pool Advanced Attributes</a></p>
+
+</li>
+<li><p><a href="task-connectorconnectionpoolproperty.html">To Edit Connector Connection Pool Properties</a></p>
+
+</li>
+<li><p><a href="task-connectorsecuritymapedit.html">To Edit a Security Map for a Connector Connection Pool</a></p>
+
+</li>
+<li><p><a href="task-connectorsecuritymapdel.html">To Delete a Security Map for a Connector Connection Pool</a></p>
+
+</li>
+<li><p><a href="task-connectorconnectionpooldel.html">To Delete a Connector Connection Pool</a></p>
+
+</li>
+<li><p><a href="task-setupeisaccess.html">To Set Up EIS Access</a></p>
+
+</li>
+<li><p><a href="task-adminobjectnew.html">To Create an Administered Object Resource</a></p>
+
+</li>
+<li><p><a href="task-adminobjectedit.html">To Edit an Administered Object Resource</a></p>
+
+</li>
+<li><p><a href="task-administeredobjectresourcedelete.html">To Delete an Administered Object Resource</a></p>
+
+</li>
+<li><p><a href="task-worksecuritymapnew.html">To Create a Work Security Map</a></p>
+
+</li>
+<li><p><a href="task-worksecuritymapedit.html">To Edit a Work Security Map</a></p>
+
+</li>
+<li><p><a href="task-worksecuritymapdelete.html">To Delete a Work Security Map</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

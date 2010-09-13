@@ -1,10 +1,10 @@
 <toc version="2.0">
 
- <tocitem target="tasks-topic-group" text="Enterprise Server Administration Console Tasks" expand="false">
+ <tocitem target="tasks-topic-group" text="GlassFish Server Administration Console Tasks" expand="false">
     <tocitem target="task-group-rubycontainer" text="Configuring the Ruby Container" expand="false">
         <tocitem target="task-installjruby" text="To Install the JRuby Add-On Component" expand="false"></tocitem>
         <tocitem target="task-configrubycontainer" text="To Configure the Ruby Container" expand="false"></tocitem></tocitem></tocitem>
- <tocitem target="ref-topic-group" text="Enterprise Server Administration Console Reference" expand="false">
+ <tocitem target="ref-topic-group" text="GlassFish Server Administration Console Reference" expand="false">
     <tocitem target="ref-group-configuration" text="Configuration" expand="false">
         <tocitem target="ref-group-rubycontainer" text="Ruby Container" expand="false">
             <tocitem target="ref-configrubycontainer" text="Ruby Container" expand="false"></tocitem>

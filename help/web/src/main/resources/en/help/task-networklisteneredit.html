@@ -1,6 +1,6 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
@@ -19,10 +19,10 @@ in a socket exception (<tt>java.net.ConnectException</tt>).</p></li>
 the network listener.</b><p>This option is disabled by default.</p></li>
 <li><b>Select the JK Listener Enabled checkbox to specify that the listener supports Apache's
 <tt>mod-jk</tt> protocol.</b><p>The <tt>mod-jk</tt> protocol is a proprietary communication/network protocol between Apache's <tt>httpd</tt> (web server)
-and an Enterprise Server back-end instance. If the listener supports this protocol, <tt>httpd</tt>
+and an GlassFish Server back-end instance. If the listener supports this protocol, <tt>httpd</tt>
 is supposed to handle all static content, whereas any requests for dynamic resources (i.e.,
 Servlets and JSPs) are routed to the <tt>mod-jk</tt> enabled network listener of the
-Enterprise Server, using the <tt>mod-jk</tt> protocol. This option is disabled by default.</p></li>
+GlassFish Server, using the <tt>mod-jk</tt> protocol. This option is disabled by default.</p></li>
 <li><b>In the Port field, type the port number on which the network
 listener will listen.</b><p>Legal values are 1 through 65535. On a UNIX system, creating sockets
 that listen on ports 1 through 1024 requires superuser privileges.</p></li>
@@ -34,19 +34,47 @@ with the network listener.</b></li>
 <li><b>Click Save.</b>
 <hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
 Save.</p>
+
+
 <hr>
 </li></ol><h6>Next Steps</h6><p>You can use the SSL, HTTP, and File Cache tabs to edit
 the settings for the protocol associated with the network listener. The SSL tab
-is meaningful only if you enabled security for the network listener.</p><h6>See Also</h6>
-<ul><li><p><a href="task-networklistenernew.html">To Create a Network Listener</a></p></li>
-<li><p><a href="task-networklistenerdelete.html">To Delete a Network Listener</a></p></li>
-<li><p><a href="task-protocolnew.html">To Create a Protocol</a></p></li>
-<li><p><a href="task-protocoledit.html">To Edit a Protocol</a></p></li>
-<li><p><a href="task-protocolssledit.html">To Edit SSL Settings for a Protocol</a></p></li>
-<li><p><a href="task-protocolhttpedit.html">To Edit HTTP Settings for a Protocol</a></p></li>
-<li><p><a href="task-protocolfilecacheedit.html">To Edit File Cache Settings for a Protocol</a></p></li>
-<li><p><a href="task-protocoldelete.html">To Delete a Protocol</a></p></li>
-<li><p><a href="task-transportnew.html">To Create a Transport</a></p></li>
-<li><p><a href="task-transportedit.html">To Edit a Transport</a></p></li>
-<li><p><a href="task-transportdelete.html">To Delete a Transport</a></p></li></ul>
+is meaningful only if you enabled security for the network listener.</p>
 
+<h6>See Also</h6>
+<ul><li><p><a href="task-networklistenernew.html">To Create a Network Listener</a></p>
+
+</li>
+<li><p><a href="task-networklistenerdelete.html">To Delete a Network Listener</a></p>
+
+</li>
+<li><p><a href="task-protocolnew.html">To Create a Protocol</a></p>
+
+</li>
+<li><p><a href="task-protocoledit.html">To Edit a Protocol</a></p>
+
+</li>
+<li><p><a href="task-protocolssledit.html">To Edit SSL Settings for a Protocol</a></p>
+
+</li>
+<li><p><a href="task-protocolhttpedit.html">To Edit HTTP Settings for a Protocol</a></p>
+
+</li>
+<li><p><a href="task-protocolfilecacheedit.html">To Edit File Cache Settings for a Protocol</a></p>
+
+</li>
+<li><p><a href="task-protocoldelete.html">To Delete a Protocol</a></p>
+
+</li>
+<li><p><a href="task-transportnew.html">To Create a Transport</a></p>
+
+</li>
+<li><p><a href="task-transportedit.html">To Edit a Transport</a></p>
+
+</li>
+<li><p><a href="task-transportdelete.html">To Delete a Transport</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

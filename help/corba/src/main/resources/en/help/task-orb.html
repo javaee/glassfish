@@ -1,6 +1,6 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
@@ -11,7 +11,7 @@ Use is subject to License Terms  -->
 <li><b>Choose the thread pool the ORB uses from the Thread Pool ID
 drop-down list.</b><p>The ORB uses thread pools to respond to requests from remote clients of
 enterprise beans and other clients that communicate by using RMI-IIOP. The default thread
-pool for the ORB is <tt>thread-pool-1</tt>, which uses defaults appropriate for RMI/IIOP requests.</p><p>See <a href="../../../web/en/help/ref-threadpools.html">Thread Pools</a> for more information.</p></li>
+pool for the ORB is <tt>thread-pool-1</tt>, which uses defaults appropriate for RMI/IIOP requests.</p><p>See <a href="http://docs.sun.com/doc/821-2471/ref-threadpools?a=view">Thread Pools</a> for more information.</p></li>
 <li><b>From the Max Message Fragment Size drop-down list, select the maximum fragment size
 for IIOP messages.</b><p>Messages larger than this size are fragmented. The default value is 1024 bytes.</p></li>
 <li><b>In the Total Connections field, set the maximum number of incoming connections for
@@ -20,7 +20,7 @@ all IIOP listeners.</b><p>The default value is 1024.</p></li>
 is required.</b><p>If IIOP client authentication is enabled, the server rejects unauthenticated requests and inserts
 an authentication-required bit in Interoperable Object References (IORs) sent to clients. This option is
 disabled by default.</p></li>
-<li>(Optional) <b>In the Additional Properties area, specify additional properties.</b><p>The Enterprise Serverdoes not define any additional properties for the ORB.</p><ul>
+<li>(Optional) <b>In the Additional Properties area, specify additional properties.</b><p>The GlassFish Serverdoes not define any additional properties for the ORB.</p><ul>
 <li><b>To add a property, click the Add Property button. In the blank row
 that appears, type the property name in the Name field, and type
 the property value in the Value field.</b></li>
@@ -31,11 +31,23 @@ Properties button.</b></li></ul></li>
 <li><b>Click Save.</b>
 <hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
 Save.</p>
+
+
 <hr>
 </li>
-<li><b>Restart the Enterprise Server.</b></li></ol><h6>See Also</h6>
-<ul><li><p><a href="task-iioplistenernew.html">To Create an IIOP Listener</a></p></li>
-<li><p><a href="task-iioplisteneredit.html">To Edit an IIOP Listener</a></p></li>
-<li><p><a href="task-editiiopssl.html">To Edit SSL Settings for a Secure IIOP Listener</a></p></li>
-<li><p><a href="task-iioplistenerdelete.html">To Delete an IIOP Listener</a></p></li></ul>
+<li><b>Restart the GlassFish Server.</b></li></ol><h6>See Also</h6>
+<ul><li><p><a href="task-iioplistenernew.html">To Create an IIOP Listener</a></p>
 
+</li>
+<li><p><a href="task-iioplisteneredit.html">To Edit an IIOP Listener</a></p>
+
+</li>
+<li><p><a href="task-editiiopssl.html">To Edit SSL Settings for a Secure IIOP Listener</a></p>
+
+</li>
+<li><p><a href="task-iioplistenerdelete.html">To Delete an IIOP Listener</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

@@ -1,13 +1,15 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 
 
 <a name="task-webcontainermanagerprops"></a><h4>To Configure Manager Properties  for the Web Container</h4><a name="indexterm-6"></a><a name="indexterm-7"></a><a name="indexterm-8"></a><p>The session manager provides the means to configure how sessions are created and
 destroyed, where the session state is stored, and the maximum number of sessions
-that are available.</p><ol>
+that are available.</p>
+
+<ol>
 <li><b>In the navigation tree, expand the Configuration node.</b></li>
 <li><b>Under the Configuration node, select the Web Container node.</b><p>The General Properties page opens.</p></li>
 <li><b>On the General Properties page, click the Manager Properties tab.</b><p>The Manager Properties page opens.</p></li>
@@ -24,7 +26,7 @@ causes an <tt>IllegalStateException</tt> to be thrown.</p></li>
 directory in which the session state is preserved between application restarts, if preserving
 the state is possible.</b><p>If this path is not set, the session state is not preserved. By
 default, this path is not set.</p><p>A relative path is relative to the temporary directory for this web application.</p></li>
-<li>(Optional) <b>In the Additional Properties section, specify additional properties.</b><p>The Enterprise Server does not define any additional properties for the session manager.</p><ul>
+<li>(Optional) <b>In the Additional Properties section, specify additional properties.</b><p>The GlassFish Server does not define any additional properties for the session manager.</p><ul>
 <li><b>To add a property, click the Add Property button. In the blank row
 that appears, type the property name in the Name field, and type
 the property value in the Value field.</b></li>
@@ -35,9 +37,19 @@ Properties button.</b></li></ul></li>
 <li><b>Click Save.</b>
 <hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
 Save.</p>
+
+
 <hr>
 </li></ol><h6>See Also</h6>
-<ul><li><p><a href="task-webcontainergeneral.html">To Configure General Properties for the Web Container</a></p></li>
-<li><p><a href="task-webcontainersessiontimeout.html">To Configure Session Properties for the Web Container</a></p></li>
-<li><p><a href="task-webcontainerstoreprops.html">To Configure Store Properties for the Web Container</a></p></li></ul>
+<ul><li><p><a href="task-webcontainergeneral.html">To Configure General Properties for the Web Container</a></p>
 
+</li>
+<li><p><a href="task-webcontainersessiontimeout.html">To Configure Session Properties for the Web Container</a></p>
+
+</li>
+<li><p><a href="task-webcontainerstoreprops.html">To Configure Store Properties for the Web Container</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

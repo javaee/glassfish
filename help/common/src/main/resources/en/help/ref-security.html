@@ -1,41 +1,95 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-security"></a><h4>Security</h4>
-<a name="indexterm-193"></a><a name="indexterm-194"></a><p>Use the Security page to set security properties for the Enterprise Server.</p><p>The Security page contains the following options.</p><dl><dt>Security Manager</dt>
-<dd><p>If this option is selected, the security manager for the domain is enabled. This option is disabled by default.</p><p>When this option is enabled, a JVM option, <tt>-Djava.security.manager</tt>, will be added to the JVM setting of the Enterprise Server. See <a href="task-jvmoptions.html">To Configure the JVM Options</a>. You must restart the server to enable this change. </p><p>Ensure that you have granted correct permissions for all applications. You can turn off the security manager to enhance performance.</p></dd>
+<a name="indexterm-196"></a><a name="indexterm-197"></a><p>Use the Security page to set security properties for the GlassFish Server.</p>
+
+<p>The Security page contains the following options.</p>
+
+<dl><dt>Security Manager</dt>
+<dd><p>If this option is selected, the security manager for the domain is enabled. This option is disabled by default.</p>
+
+<p>When this option is enabled, a JVM option, <tt>-Djava.security.manager</tt>, will be added to the JVM setting of the GlassFish Server. See <a href="task-jvmoptions.html">To Configure the JVM Options</a>. You must restart the server to enable this change. </p>
+
+<p>Ensure that you have granted correct permissions for all applications. You can turn off the security manager to enhance performance.</p>
+
+</dd>
 <dt>Audit Logging</dt>
-<dd><p>If this option is enabled, the server will load and run all the audit modules specified in the Audit Modules setting. If the option is disabled, the server will not access audit modules. This option is disabled by default.</p></dd>
+<dd><p>If this option is enabled, the server will load and run all the audit modules specified in the Audit Modules setting. If the option is disabled, the server will not access audit modules. This option is disabled by default.</p>
+
+</dd>
 <dt>Default Realm</dt>
-<dd><p>The active (default) realm that the server uses for authentication. Applications use this realm unless their deployment descriptor specifies a different realm. All configured realms appear in the list. The default value is <tt>file</tt>.</p></dd>
+<dd><p>The active (default) realm that the server uses for authentication. Applications use this realm unless their deployment descriptor specifies a different realm. All configured realms appear in the list. The default value is <tt>file</tt>.</p>
+
+</dd>
 <dt>Default Principal</dt>
-<dd><p>Specifies the default user name. The server uses this user name when no other principal is provided. If you type a value in this field, type the corresponding password in the Default Principal Password field.</p><p>A default principal is not required for normal server operation.</p></dd>
+<dd><p>Specifies the default user name. The server uses this user name when no other principal is provided. If you type a value in this field, type the corresponding password in the Default Principal Password field.</p>
+
+<p>A default principal is not required for normal server operation.</p>
+
+</dd>
 <dt>Default Principal Password</dt>
-<dd><p>Password of the default principal specified in the Default Principal field. A default principal is not required for normal server operation.</p></dd>
+<dd><p>Password of the default principal specified in the Default Principal field. A default principal is not required for normal server operation.</p>
+
+</dd>
 <dt>JACC</dt>
-<dd><p>The class name of a configured JACC provider. The default value is <tt>default</tt>.</p></dd>
+<dd><p>The class name of a configured JACC provider. The default value is <tt>default</tt>.</p>
+
+</dd>
 <dt>Audit Modules</dt>
-<dd><p>The audit provider modules that will be used by the audit subsystem if audit logging is enabled. By default, the server uses an audit module named <tt>default</tt>. For information on creating new audit modules, see <a href="task-auditmodulenew.html">To Create an Audit Module</a>.</p></dd>
+<dd><p>The audit provider modules that will be used by the audit subsystem if audit logging is enabled. By default, the server uses an audit module named <tt>default</tt>. For information on creating new audit modules, see <a href="task-auditmodulenew.html">To Create an Audit Module</a>.</p>
+
+</dd>
 <dt>Default Principal To Role Mapping Enabled</dt>
-<dd><p>If this option is selected, default principal-to-role mapping is applied to applications that do not have an application-specific mapping.</p></dd>
+<dd><p>If this option is selected, default principal-to-role mapping is applied to applications that do not have an application-specific mapping.</p>
+
+</dd>
 <dt>Mapped Principal Class</dt>
-<dd><p>Specifies a custom implementation of the <tt>java.security.Principal</tt> class used in the default principal-to-role mapping, if default principal-to-role mapping is enabled.</p></dd>
+<dd><p>Specifies a custom implementation of the <tt>java.security.Principal</tt> class used in the default principal-to-role mapping, if default principal-to-role mapping is enabled.</p>
+
+</dd>
 <dt>Additional Properties</dt>
-<dd><p>Additional security properties for the server.</p><p>Valid properties are dependent on the type of realm selected in the Default Realm field and are typically specified when you edit a realm. For details, see the following topics:</p>
-<ul><li><p><a href="ref-editfile-adminrealm.html">Properties Specific to the <tt>FileRealm</tt> Class</a></p></li>
-<li><p><a href="ref-editcertrealm.html">Properties Specific to the <tt>CertificateRealm</tt> Class</a></p></li>
-<li><p><a href="ref-editjdbcrealm.html">Properties Specific to the <tt>JDBCRealm</tt> Class</a></p></li>
-<li><p><a href="ref-ldaprealmprop.html">Properties Specific to the <tt>LDAPRealm</tt> Class</a></p></li>
-<li><p><a href="ref-solarisrealmprop.html">Properties Specific to the <tt>SolarisRealm</tt> Class</a></p></li></ul>
+<dd><p>Additional security properties for the server.</p>
+
+<p>Valid properties are dependent on the type of realm selected in the Default Realm field and are typically specified when you edit a realm. For details, see the following topics:</p>
+
+
+<ul><li><p><a href="ref-editfile-adminrealm.html">Properties Specific to the <tt>FileRealm</tt> Class</a></p>
+
+</li>
+<li><p><a href="ref-editcertrealm.html">Properties Specific to the <tt>CertificateRealm</tt> Class</a></p>
+
+</li>
+<li><p><a href="ref-editjdbcrealm.html">Properties Specific to the <tt>JDBCRealm</tt> Class</a></p>
+
+</li>
+<li><p><a href="ref-ldaprealmprop.html">Properties Specific to the <tt>LDAPRealm</tt> Class</a></p>
+
+</li>
+<li><p><a href="ref-solarisrealmprop.html">Properties Specific to the <tt>SolarisRealm</tt> Class</a></p>
+
+</li></ul>
 </dd>
 </dl>
 <h5>Related Tasks</h5>
 
-<ul><li><p><a href="task-securitysettings.html">To Configure Security Settings</a></p></li>
-<li><p><a href="task-auditmodulenew.html">To Create an Audit Module</a></p></li>
-<li><p><a href="task-changeadminpasswd.html">To Change the Password for a User in the Admin Realm</a></p></li>
-<li><p><a href="task-accessadmintools.html">To Grant Access to Administration Tools</a></p></li></ul>
+<ul><li><p><a href="task-securitysettings.html">To Configure Security Settings</a></p>
+
+</li>
+<li><p><a href="task-auditmodulenew.html">To Create an Audit Module</a></p>
+
+</li>
+<li><p><a href="task-changeadminpasswd.html">To Change the Password for a User in the Admin Realm</a></p>
+
+</li>
+<li><p><a href="task-accessadmintools.html">To Grant Access to Administration Tools</a></p>
+
+</li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
 <p>None.</p>
+
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
