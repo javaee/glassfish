@@ -52,6 +52,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 import java.lang.reflect.Field;
 import java.util.*;
+import org.glassfish.admin.rest.utils.Null;
 
 /**
  * @author Ludovic Champenois
@@ -158,6 +159,8 @@ public class ActionReportResultJsonProvider extends BaseProvider<ActionReportRes
             result = processCollection((Collection)object);
         } else if (object instanceof Map) {
             result = processMap((Map)object);
+        } else if (object == null) {
+            result = JSONObject.NULL;
         } else {
             result = object;
         }
