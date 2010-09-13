@@ -37,7 +37,7 @@
 <!initPage
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
-    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+    setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
 />
 
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.gms.TitlePage}" >
@@ -99,7 +99,7 @@
     <sun:title id="propertyContentPage2">
 #include "/common/shared/editPageButtons_2.inc"
     </sun:title>
-        <sun:hidden id="helpKey" value="$resource{help.gms}" />
+        <sun:hidden id="helpKey" value="$resource{help_cluster.gms}" />
         </sun:form>
 #include "/common/shared/changeButtonsJS.inc"
 </define>
