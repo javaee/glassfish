@@ -208,9 +208,9 @@ public class ClusterHandler {
             if(action.equals("delete-instance")){
                 response = deleteInstance(instanceName, (String) oneRow.get("node"));
             }else{
-                try{
-                       response = RestApiHandlers.restRequest(prefix + instanceName + "/" + action , null, "post" ,null);
-                }catch (Exception ex){
+                try {
+                   response = RestApiHandlers.restRequest(prefix + instanceName + "/" + action , null, "post" ,null);
+                } catch (Exception ex){
                     GuiUtil.getLogger().severe("Error in instanceAction ; \nendpoint = " + prefix + instanceName + "/" + action  + "attrsMap=" + null);
                     response = null;
                 }

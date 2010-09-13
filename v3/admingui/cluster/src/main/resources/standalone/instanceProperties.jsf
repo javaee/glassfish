@@ -46,7 +46,11 @@
                   { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');}
                     else {return false;} " >
             <!command
-                gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server/#{endodedInstanceName}/start-instance", method="POST");
+                createMap(result="#{requestScope.map}");
+                mapPut(map="#{requestScope.map}", key="name", value="#{pageSession.encodedInstanceName}");
+                createList(result="#{requestScope.list}", size="0");
+                listAdd(list="#{requestScope.list}", value="#{requestScope.map}");
+                gf.instanceAction(rows="#{requestScope.list}", action="start-instance");
                 gf.redirect("#{pageSession.selfPage}");
             />
         </sun:button>
@@ -55,7 +59,12 @@
                   { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');}
                     else {return false;} " >
              <!command
-                gf.redirect("#{facesContext.externalContext.requestContextPath}/common/appServer/shutdown.jsf");
+                createMap(result="#{requestScope.map}");
+                mapPut(map="#{requestScope.map}", key="name", value="#{pageSession.encodedInstanceName}");
+                createList(result="#{requestScope.list}", size="0");
+                listAdd(list="#{requestScope.list}", value="#{requestScope.map}");
+                gf.instanceAction(rows="#{requestScope.list}", action="stop-instance");
+                gf.redirect("#{pageSession.selfPage}");
          />
         </sun:button>
         <sun:button id="restartInstance" text="$resource{i18n.button.Restart}" disabled="#{pageSession.info.status == 'NOT_RUNNING'}" primary="#{false}"
@@ -63,7 +72,13 @@
                   { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');}
                     else {return false;} " >
              <!command
-                gf.redirect("#{facesContext.externalContext.requestContextPath}/common/appServer/restart-2.jsf");
+                createMap(result="#{requestScope.map}");
+                mapPut(map="#{requestScope.map}", key="name", value="#{pageSession.encodedInstanceName}");
+                createList(result="#{requestScope.list}", size="0");
+                listAdd(list="#{requestScope.list}", value="#{requestScope.map}");
+                gf.instanceAction(rows="#{requestScope.list}", action="stop-instance");
+                gf.instanceAction(rows="#{requestScope.list}", action="start-instance");
+                gf.redirect("#{pageSession.selfPage}");
          />
         </sun:button>
         <sun:button id="logViewer" text="$resource{i18n.button.logViewer}"  primary="#{true}"
@@ -97,9 +112,11 @@
                 />
             </sun:staticText>
         </sun:property>
+<!--
         <sun:property id="loadBalancer" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.lbTableColumn}:" >
             <sun:staticText id="loadBalancer" text="#{pageSession.loadBalancer}" />
         </sun:property>
+-->
         <sun:property id="httpPorts" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.httpPortsLabel}" >
             "<h1>#{pageSession.info.httpPorts.toString().substring(1).substring(0, pageSession.info.httpPorts.toString().length()-2)}</h1>
         </sun:property>
