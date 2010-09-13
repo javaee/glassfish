@@ -90,9 +90,6 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
     private Habitat connectorRuntimeHabitat;
 
     @Inject
-    private Resources allResources; // Needed so as to listen to config changes.
-
-    @Inject
     private Habitat deployerHabitat;
 
     @Inject
@@ -117,9 +114,16 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
 
     public void postConstruct() {
         bindConnectorDescriptors();
-        deployResources(allResources.getResources());
+        deployResources(domain.getResources().getResources());
+        addListenerToResources();
         addListenerToResourceRefs();
         addListenerToServer();
+    }
+
+    private void addListenerToResources(){
+        Resources resources = domain.getResources();
+        ObservableBean bean = (ObservableBean) ConfigSupport.getImpl((ConfigBeanProxy)resources);
+        bean.addListener(this);
     }
 
     private void addListenerToServer() {
@@ -182,13 +186,13 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
 
     private boolean isBindableResourceEnabled(String jndiName) {
         boolean resourceEnabled = Boolean.valueOf(((BindableResource)
-                allResources.getResourceByName(BindableResource.class, jndiName)).getEnabled());
+                domain.getResources().getResourceByName(BindableResource.class, jndiName)).getEnabled());
         boolean refEnabled = domain.getServerNamed(environment.getInstanceName()).getResourceRef(jndiName) != null;
         return resourceEnabled && refEnabled;
     }
 
     public Resources getAllResources(){
-        return allResources;
+        return domain.getResources();
     }
 
 
@@ -198,7 +202,7 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
     public void preDestroy() {
 
         if (isConnectorRuntimeInitialized()) {
-            Collection<Resource> resources = ConnectorsUtil.getAllSystemRAResourcesAndPools(allResources);
+            Collection<Resource> resources = ConnectorsUtil.getAllSystemRAResourcesAndPools(domain.getResources());
 
             undeployResources(resources);
             ConnectorRuntime cr = getConnectorRuntime();
@@ -213,6 +217,7 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
                     "resource-adapters shutdown, resources, pools cleanup");
             }
         }
+        removeListenerForAllResources();
         removeListenerForResources();
         removeListenerForResourceRefs();
         removeListenerForServer();
@@ -353,7 +358,7 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
                         if ("enabled".equalsIgnoreCase(propertyName)) {
                             boolean newValue = ConnectorsUtil.parseBoolean(event.getNewValue().toString());
                             boolean oldValue = ConnectorsUtil.parseBoolean(event.getOldValue().toString());
-                            for (Resource resource : allResources.getResources()) {
+                            for (Resource resource : domain.getResources().getResources()) {
                                 if (resource instanceof BindableResource) {
                                     bindableResource = (BindableResource) resource;
                                     if (refName != null) {
@@ -411,7 +416,7 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
                 //create-resource-ref
                 ResourceRef ref = (ResourceRef)instance;
                 BindableResource resource = (BindableResource)
-                        allResources.getResourceByName(BindableResource.class, ref.getRef());
+                        domain.getResources().getResourceByName(BindableResource.class, ref.getRef());
                 ResourceInfo resourceInfo = new ResourceInfo(resource.getJndiName());
                 resourcesBinder.deployResource(resourceInfo, resource);
             }
@@ -438,7 +443,7 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
                     //delete-resource-ref
                     ResourceRef ref = (ResourceRef)instance;
                     BindableResource resource = (BindableResource)
-                            allResources.getResourceByName(BindableResource.class, ref.getRef());
+                            domain.getResources().getResourceByName(BindableResource.class, ref.getRef());
                     //get appropriate deployer and undeploy resource
                     getResourceDeployer(resource).undeployResource(resource);
                     //Remove listener from the removed instance
@@ -528,13 +533,17 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
         }
     }
 
+    private void removeListenerForResources(){
+        ObservableBean bean = (ObservableBean)ConfigSupport.getImpl((ConfigBeanProxy)domain.getResources());
+        bean.removeListener(this);
+    }
     /**
      * Remove listener from all resources - JDBC Connection Pools/JDBC Resources/
      * Connector Connection Pools/ Connector Resources.
      * Invoked from preDestroy()
      */
-    private void removeListenerForResources() {
-        for (Resource configuredResource : allResources.getResources()) {
+    private void removeListenerForAllResources() {
+        for (Resource configuredResource : domain.getResources().getResources()) {
             removeListenerForResource(configuredResource);
         }
     }
