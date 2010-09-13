@@ -36,8 +36,8 @@
 
 <sun:page id="page1">
     <!beforeCreate
-        setResourceBundle(key="i18n" bundle="com.sun.enterprise.tools.admingui.resources.Strings")
-	setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
+        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
+        setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
         getRequestValue(key="appID" value=>$attribute{appID});
         getRequestValue(key="contextRoot" value=>$attribute{contextRoot});
         getTargetURLList(
@@ -61,7 +61,7 @@
                             </sun:property>   
                             <sun:property id="linkProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Links}:">
                                 <foreach key="list" list="#{pageSession.urlList}">
-                                    <sun:hyperlink 
+                                    <sun:hyperlink
                                         text="#{list.url}"
                                         url="#{list.url}"/>
                                     "<br />
