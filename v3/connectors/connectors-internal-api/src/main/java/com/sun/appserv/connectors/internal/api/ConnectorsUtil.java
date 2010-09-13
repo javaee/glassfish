@@ -62,6 +62,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.admin.*;
 import org.glassfish.deployment.common.InstalledLibrariesResolver;
 import org.glassfish.loader.util.ASClassLoaderUtil;
+import org.glassfish.resource.common.GenericResourceInfo;
 import org.glassfish.resource.common.PoolInfo;
 import org.glassfish.resource.common.ResourceInfo;
 import org.jvnet.hk2.config.types.Property;
@@ -906,20 +907,14 @@ public class ConnectorsUtil {
     }
 
     //TODO ASR : instead of explicit APIs, getScope() can return "none" or "app" or "module" enum value ?
-    public static boolean isApplicationScopedResource(PoolInfo poolInfo){
-        return poolInfo != null && poolInfo.getApplicationName() != null;
+    public static boolean isApplicationScopedResource(GenericResourceInfo resourceInfo){
+        return resourceInfo != null && resourceInfo.getApplicationName() != null &&
+                resourceInfo.getName() != null && resourceInfo.getName().startsWith(ConnectorConstants.JAVA_APP_SCOPE_PREFIX);
     }
 
-    public static boolean isModuleScopedResource(PoolInfo poolInfo){
-        return poolInfo != null && poolInfo.getApplicationName() != null && poolInfo.getModuleName() != null;
-    }
-
-    public static boolean isApplicationScopedResource(ResourceInfo resourceInfo){
-        return resourceInfo != null && resourceInfo.getApplicationName() != null;
-    }
-
-    public static boolean isModuleScopedResource(ResourceInfo resourceInfo){
-        return resourceInfo != null && resourceInfo.getApplicationName() != null && resourceInfo.getModuleName() != null;
+    public static boolean isModuleScopedResource(GenericResourceInfo resourceInfo){
+        return resourceInfo != null && resourceInfo.getApplicationName() != null && resourceInfo.getModuleName() != null &&
+                resourceInfo.getName() != null && resourceInfo.getName().startsWith(ConnectorConstants.JAVA_MODULE_SCOPE_PREFIX);
     }
 
     public static String getPoolMonitoringSubTreeRoot(PoolInfo poolInfo) {
@@ -944,5 +939,17 @@ public class ConnectorsUtil {
         }
         return moduleName;
     }
-    
+
+    public static String getModuleName(EjbMessageBeanDescriptor descriptor) {
+        String appName = descriptor.getApplication().getAppName();
+        String moduleName = descriptor.getEjbBundleDescriptor().getModuleID();
+        String actualModuleName = moduleName;
+        if(moduleName != null){
+            String prefix = appName+"#";
+            if(moduleName.startsWith(prefix)){
+                actualModuleName = moduleName.substring(prefix.length());
+            }
+        }
+        return actualModuleName;
+    }
 }
