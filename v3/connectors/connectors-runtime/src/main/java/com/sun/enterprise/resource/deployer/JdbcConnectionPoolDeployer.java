@@ -128,9 +128,6 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
         //JDBC connection pool creation. The actualDeployResource method 
         //below is invoked by JdbcResourceDeployer when a resource-ref for a 
         //resource that is pointed to this pool is added to a server instance
-    /**
-     * {@inheritDoc}
-     */
         if(_logger.isLoggable(Level.FINE)){
             _logger.fine(" JdbcConnectionPoolDeployer - deployResource : " + resource + " calling actualDeploy");
         }
