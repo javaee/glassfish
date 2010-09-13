@@ -50,6 +50,7 @@ import java.util.logging.Level;
 import com.sun.jts.jta.TransactionServiceProperties;
 import com.sun.jts.CosTransactions.Configuration;
 import com.sun.jts.CosTransactions.DefaultTransactionService;
+import com.sun.jts.CosTransactions.RecoveryLockFile;
 
 import com.sun.enterprise.config.serverbeans.TransactionService;
 import com.sun.enterprise.config.serverbeans.Server;
@@ -58,6 +59,7 @@ import com.sun.enterprise.config.serverbeans.Servers;
 import com.sun.enterprise.transaction.api.ResourceRecoveryManager;
 import com.sun.enterprise.transaction.api.RecoveryResourceRegistry;
 import com.sun.enterprise.transaction.spi.RecoveryEventListener;
+import com.sun.enterprise.transaction.jts.api.DelegatedTransactionRecoveryFence;
 
 import org.glassfish.gms.bootstrap.GMSAdapter;
 import org.glassfish.gms.bootstrap.GMSAdapterService;
@@ -79,11 +81,12 @@ public class GMSCallBack implements CallBack {
 
     // Use a class from com.sun.jts subpackage
     static Logger _logger = LogDomains.getLogger(TransactionServiceProperties.class, LogDomains.TRANSACTION_LOGGER);
-    private RecoveryResourceRegistry recoveryListenersRegistry;
-    private ResourceRecoveryManager recoveryManager;
+
     private Servers servers;
+    private Habitat habitat;
 
     private int waitTime;
+    private DelegatedTransactionRecoveryFence fence;
 
     public GMSCallBack(int waitTime, Habitat habitat) {
         GMSAdapterService gmsAdapterService = habitat.getComponent(GMSAdapterService.class);
@@ -92,8 +95,7 @@ public class GMSCallBack implements CallBack {
             if (gmsAdapter != null) {
                 gmsAdapter.registerFailureRecoveryListener(component, this);
 
-                recoveryListenersRegistry = habitat.getComponent(RecoveryResourceRegistry.class);
-                recoveryManager = habitat.getComponent(ResourceRecoveryManager.class);
+                this.habitat = habitat;
                 servers = habitat.getComponent(Servers.class);
 
                 this.waitTime = waitTime;
@@ -106,6 +108,7 @@ public class GMSCallBack implements CallBack {
                     // Create recoveryfile file so that automatic recovery will find it even 
                     // if no XA transaction is envolved.
                     DefaultTransactionService.setServerName(props);
+                    fence = RecoveryLockFile.getDelegatedTransactionRecoveryFence();
                 }
 
                 GroupManagementService gms = gmsAdapter.getModule();
@@ -114,6 +117,7 @@ public class GMSCallBack implements CallBack {
                 } catch (Exception e) {
                     _logger.log(Level.WARNING, "jts.error_updating_gms", e);
                 } 
+
             }
         }
     }
@@ -121,6 +125,8 @@ public class GMSCallBack implements CallBack {
     @Override
     public void processNotification(Signal signal) {
         if (signal instanceof FailureRecoverySignal) {
+            long timestamp = System.currentTimeMillis();
+
             if (_logger.isLoggable(Level.INFO)) {
                 _logger.log(Level.INFO, "[GMSCallBack] failure recovery signal: " + signal);
             }
@@ -150,11 +156,21 @@ public class GMSCallBack implements CallBack {
                     _logger.log(Level.WARNING, "jts.error_getting_member_details", instance);
                     return;
             }
+
+            if (fence.isFenceRaised(logdir, instance, timestamp)) {
+                    _logger.log(Level.INFO, "Instance " + instance + " is already recoevering");
+                    return;
+            }
+
+            fence.raiseFence(logdir, instance);
+
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE, "Transaction log directory for " + instance + " is " + logdir);
                 _logger.log(Level.FINE, "Starting transaction recovery of " + instance);
             }
 
+            ResourceRecoveryManager recoveryManager = habitat.getComponent(ResourceRecoveryManager.class);
+            RecoveryResourceRegistry recoveryListenersRegistry = habitat.getComponent(RecoveryResourceRegistry.class);
             Set<RecoveryEventListener> listeners = recoveryListenersRegistry.getEventListeners();
             for (RecoveryEventListener erl : listeners) {
                 try {
@@ -166,7 +182,7 @@ public class GMSCallBack implements CallBack {
             }
 
             // TODO
-            _logger.log(Level.WARNING, "[GMSCallBack] Automatic delegated transaction recovery is not fully supported");
+            _logger.log(Level.WARNING, "[GMSCallBack] Automatic delegated transaction recovery is still work in progress");
 
             boolean result = false;
             try {
@@ -176,6 +192,8 @@ public class GMSCallBack implements CallBack {
                 }
             } catch (Exception e) {
                 _logger.log(Level.WARNING, "jts.recovery_error", e);
+            } finally {
+                fence.lowerFence(logdir, instance);
             }
 
             for (RecoveryEventListener erl : listeners) {

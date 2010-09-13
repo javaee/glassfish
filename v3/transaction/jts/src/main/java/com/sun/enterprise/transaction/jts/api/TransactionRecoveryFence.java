@@ -47,10 +47,10 @@ package com.sun.enterprise.transaction.jts.api;
  */
 
 /**
- * This is a class to start an AutomaticTransactionService 
+ * Interface for locking of the transaction recovery process
  */
 
-public interface TransactionRecovery {
+public interface TransactionRecoveryFence {
     /**
      * DataStructures are initialized first. Recovery
      * of transaction starts immediatley after the initialization.

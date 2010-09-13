@@ -64,6 +64,7 @@ package com.sun.jts.CosTransactions;
 
 import java.util.*;
 import java.io.*;
+import java.util.concurrent.*;
 
 import org.omg.CORBA.*;
 import org.omg.CosTransactions.*;
@@ -79,7 +80,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import com.sun.logging.LogDomains;
 import com.sun.jts.utils.LogFormatter;
-import com.sun.enterprise.transaction.jts.api.TransactionRecovery;
+import com.sun.enterprise.transaction.jts.api.TransactionRecoveryFence;
 /**
  * This class manages information required for recovery, and also general
  * state regarding transactions in a process.
@@ -155,8 +156,8 @@ public class RecoveryManager {
      */
     private static Hashtable inCompleteTxMap = new Hashtable();
 
-    // This will start TransactionRecovery service as soon as all resources are available.
-    private static TransactionRecovery txRecovery = new TransactionRecoverySimple();
+    // This will start TransactionRecoveryFence service as soon as all resources are available.
+    private static TransactionRecoveryFence txRecoveryFence = new TransactionRecoveryFenceSimple();
 
     
     
@@ -944,8 +945,7 @@ public class RecoveryManager {
             if (uniqueRMSetReady != null) {
                 try {
                     uniqueRMSetReady.waitEvent();
-                    txRecovery.start();
-                    txRecovery.raiseFence();
+                    txRecoveryFence.raiseFence();
                     xaResources = RecoveryManager.uniqueRMSet;
                 } catch (InterruptedException exc) {
 					_logger.log(Level.SEVERE,"jts.wait_for_resync_complete_interrupted");
@@ -1597,23 +1597,12 @@ public class RecoveryManager {
 
     static void createRecoveryFile(String serverName) {
         try {
-            int[] result = new int[1];
-            String logPath = Configuration.getDirectory(Configuration.LOG_DIRECTORY,
-                                                 Configuration.JTS_SUBDIRECTORY,
-                                                 result);
-            if( result[0] == Configuration.DEFAULT_USED ||
-                result[0] == Configuration.DEFAULT_INVALID ) {
-                if( result[0] == Configuration.DEFAULT_INVALID ) {
-                    logPath = ".";
-                }
-            }
+            String logPath = getLogDirectory();
             File recoveryFile = LogControl.recoveryIdentifierFile(serverName,logPath);
             RandomAccessFile raf = new RandomAccessFile(recoveryFile,"rw");
             raf.writeBytes(serverName);
             raf.setLength(serverName.length());
             raf.close();
-            File recoveryLockFile = LogControl.recoveryLockFile(serverName,logPath);
-            recoveryLockFile.createNewFile();
         } catch (Exception ex) {
             _logger.log(Level.WARNING,"jts.exception_in_recovery_file_handling",ex);
         }
@@ -1624,18 +1613,35 @@ public class RecoveryManager {
      * This service is started as soon as all the resources are available.
      */
 
-    public static void registerTransactionRecoveryService(TransactionRecovery txRecoveryService) {
-        txRecovery = txRecoveryService;
+    public static void registerTransactionRecoveryFence(TransactionRecoveryFence fence) {
+        txRecoveryFence = fence;
+        txRecoveryFence.start();
     }
 
     /**
-     * return the autoTxRecoveryObject
+     * return the TxRecoveryFence Object
      */
-    static TransactionRecovery getTransactionRecovery() {
-        return txRecovery;
+    static TransactionRecoveryFence getTransactionRecoveryFence() {
+        return txRecoveryFence;
     }
 
-    
+    /**
+     * return transaction log directory
+     */
+    static String getLogDirectory() {
+        int[] result = new int[1];
+        String logDir = Configuration.getDirectory(Configuration.LOG_DIRECTORY,
+                     Configuration.JTS_SUBDIRECTORY, result);
+        if( result[0] == Configuration.DEFAULT_USED ||
+                result[0] == Configuration.DEFAULT_INVALID ) {
+            if( result[0] == Configuration.DEFAULT_INVALID ) {
+                logDir = ".";
+            }
+        }
+
+        return logDir;
+    }
+
     /**
      * Reports the contents of the RecoveryManager tables.
      * $Only required for debug.
@@ -1709,18 +1715,30 @@ public class RecoveryManager {
    /**
     * A no-op class
     */
-   static class TransactionRecoverySimple implements TransactionRecovery{
+   static class TransactionRecoveryFenceSimple implements TransactionRecoveryFence {
+
+        private final Semaphore semaphore = new Semaphore(1, true);
+
         public void start() {
         }
+
         /**
-         * Raise the fence so that no other instance can
-         * start the recovery at the same time.
+         * {@inheritDoc}
          */
-        public void raiseFence() {}
+        public void raiseFence() {
+            try {
+                semaphore.acquire();
+            } catch(InterruptedException ie) {
+                _logger.log(Level.FINE,"Error in acquireReadLock",ie);
+            }
+        }
+
         /**
-         * Lower the fence
+         * {@inheritDoc}
          */
-        public void lowerFence() {}
+        public void lowerFence() {
+            semaphore.release();
+        }
 
     }
 }
@@ -1792,8 +1810,8 @@ class ResyncThread extends Thread  {
             } catch (Throwable tex) {tex.printStackTrace();} // forget any exeception in resyncComplete
             _logger.log(Level.SEVERE,"jts.log_exception_at_recovery",ex);
         }
-        if(RecoveryManager.getTransactionRecovery() != null)
-            RecoveryManager.getTransactionRecovery().lowerFence();
+        if(RecoveryManager.getTransactionRecoveryFence() != null)
+            RecoveryManager.getTransactionRecoveryFence().lowerFence();
     }
 
 
