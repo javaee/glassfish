@@ -42,6 +42,9 @@ package org.glassfish.admin.rest.resources;
 
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Context;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Properties;
 import java.util.TreeMap;
 import javax.ws.rs.Consumes;
 import java.util.ArrayList;
@@ -53,7 +56,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.PathParam;
+
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
 import org.glassfish.admin.rest.RestService;
+import org.glassfish.admin.rest.clientutils.MarshallingUtils;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.external.statistics.Statistic;
@@ -103,11 +110,11 @@ public class MonitoringResource {
             return result;
         }
 
+        String currentInstanceName = System.getProperty("com.sun.aas.instanceName");
         if ((path.equals("")) || (path.equals("/"))) {
             //Return the sub-resource list of root nodes
 
-            String instanceName = System.getProperty("com.sun.aas.instanceName");
-            TreeNode serverNode = monitoringRegistry.get(instanceName);
+            TreeNode serverNode = monitoringRegistry.get(currentInstanceName);
             if (serverNode != null) {
                 //check to make sure we do not display empty server resource
                 //    - http://host:port/monitoring/domain/server
@@ -134,6 +141,51 @@ public class MonitoringResource {
             path = path.substring(1);
         }
 
+        
+        if(!path.startsWith(currentInstanceName)) {
+            // forward the request to instance
+            Client client = null;
+
+            try {
+                client = Client.create();
+                // TODO need to get actual host:port for instanceName
+                String hostName = "localHost";
+                String portNumber = "14848";
+                final String MONITORING_DOMAIN = "/monitoring/domain/";
+                String forwardURL = "http://" + hostName + ':' + portNumber + MONITORING_DOMAIN + path;
+                ClientResponse response = client.resource(forwardURL ).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+                ClientResponse.Status status = ClientResponse.Status.fromStatusCode(response.getStatus());
+                if(status.getFamily() == javax.ws.rs.core.Response.Status.Family.SUCCESSFUL) {
+                    String jsonDoc = response.getEntity(String.class);
+                    Map responseMap = MarshallingUtils.buildMapFromDocument(jsonDoc);
+                    Map resultExtraProperties = (Map)responseMap.get("extraProperties");
+                    if(resultExtraProperties != null) {
+                        Properties responseExtraProperties = ar.getExtraProperties();
+                        responseExtraProperties.put("entity", resultExtraProperties.get("entity"));
+                        @SuppressWarnings({"unchecked"}) Map<String, String> childResources = (Map<String, String>) resultExtraProperties.get("childResources");
+                        for (Map.Entry<String, String> entry : childResources.entrySet()) {
+                            URL targetURL = null;
+                            try {
+                                URL originalURL = new URL(entry.getValue());
+                                //TODO need to figure out what is DAS's hostname and port number (may be able to figure it out from Grizly Adapater)
+                                targetURL = new URL(originalURL.getProtocol(), "localhost", 4848, originalURL.getFile() );
+                            } catch (MalformedURLException e) {
+                                //TODO There was an exception while parsing URL. Need to decide what to do. For now ignore the child entry
+                            }
+                            entry.setValue(targetURL.toString());
+                        }
+                        responseExtraProperties.put("childResources", childResources);
+                    }
+                }
+            } finally {
+                if(client != null) {
+                    client.destroy();
+                }
+            }
+        }
+
+
+
         //replace all . with \.
         path = path.replaceAll("\\.", "\\\\.");
 
@@ -149,7 +201,6 @@ public class MonitoringResource {
             dottedName = "";
         }
 
-        //TreeNode rootNode = monitoringRegistry.get("server");
         TreeNode rootNode = monitoringRegistry.get(root);
         if (rootNode == null) {
             //No monitoring data, so nothing to list

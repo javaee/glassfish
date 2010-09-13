@@ -40,6 +40,7 @@
 
 package org.glassfish.admin.rest.provider;
 
+import com.sun.enterprise.config.serverbeans.Config;
 import org.glassfish.admin.rest.RestConfig;
 import org.glassfish.admin.rest.RestService;
 import java.util.Collections;
@@ -118,10 +119,13 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
      *
      */
     protected boolean isDebug() {
-        RestConfig rg = RestService.getDomain().getConfigNamed("server-config").getExtensionByType(
-                RestConfig.class);
-        if ((rg != null) && (rg.getDebug().equalsIgnoreCase("true"))) {
-            return true;
+        //TODO need to fix this to return correct value while running on an instance. Currently it will always return false
+        Config config = RestService.getDomain().getConfigNamed("server-config");
+        if (config != null) {
+            RestConfig rg = config.getExtensionByType(RestConfig.class);
+            if ((rg != null) && (rg.getDebug().equalsIgnoreCase("true"))) {
+                return true;
+            }
         }
 
         if (requestHeaders == null) {
