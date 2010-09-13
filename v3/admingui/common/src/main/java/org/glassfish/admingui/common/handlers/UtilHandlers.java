@@ -298,33 +298,33 @@ public class UtilHandlers {
 
     /**
      * <p> Adds the given value to a <code>List</code></p>
-     * <p> Input value: "list" -- Type: <code>java.util.List</code>
+     * <p> Input list: "list" -- Type: <code>java.util.List</code>
      * <p> Input value: "value" -- Type: <code>java.lang.Object</code>
+     * <p> Input value: "index" -- Type: <code>Integer</code>
      * 
      * @param handlerCtx The HandlerContext
      */
     @Handler(id="listAdd",
     	input={
-            @HandlerInput(name="list", type=List.class, required=true),
+            @HandlerInput(name="list", type=List.class),
             @HandlerInput(name="value", type=Object.class, required=true),
             @HandlerInput(name="index", type=Integer.class)
-        }
+        },
+        output={
+            @HandlerOutput(name="result", type=List.class)}
     )
     public static void listAdd(HandlerContext handlerCtx) {
-
         List list = (List)handlerCtx.getInputValue("list");
-        if (list == null) {
-            list = new ArrayList();
-        }
         Integer index = (Integer)handlerCtx.getInputValue("index");
         if(list == null) {
             list = new ArrayList();
         }
-        if (index == null)
-                list.add(handlerCtx.getInputValue("value"));
-        else{
+        if (index == null){
+            list.add(handlerCtx.getInputValue("value"));
+        } else {
             list.add(index, handlerCtx.getInputValue("value"));
         }
+        handlerCtx.setOutputValue("result", list);
     }
 
 
@@ -822,18 +822,6 @@ public class UtilHandlers {
         handlerCtx.setOutputValue("set", map.keySet());
     }
     
-    @Handler(id="mapSet",
-	input = {
-	    @HandlerInput(name="map", type=Map.class, required=true),
-    	    @HandlerInput(name="key", type=String.class, required=true),
-    	    @HandlerInput(name="value", type=Object.class, required=true)})
-    public static void mapSet(HandlerContext handlerCtx) {
-        Map map = (Map) handlerCtx.getInputValue("map");
-        map.put(handlerCtx.getInputValue("key"),  handlerCtx.getInputValue("value"));
-    }
-
-
-
     @Handler(id = "convertStrToBoolean",
     input = {
         @HandlerInput(name = "str", type = String.class, required = true)},
