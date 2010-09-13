@@ -145,19 +145,25 @@ public class DeployUtil {
         }
     }
 
-    static public boolean reloadApplication(String appName, String target, HandlerContext handlerCtx){
+    static public boolean reloadApplication(String appName, List targets, HandlerContext handlerCtx){
         //disable application and then enable it.
-        if (enableApp(appName, target, handlerCtx, false)){
-            return enableApp(appName, target, handlerCtx, true);
+        String[] targetArray = (String[])targets.toArray(new String[targets.size()]);
+        if (enableApp(appName, targetArray, handlerCtx, false)){
+            return enableApp(appName, targetArray, handlerCtx, true);
         }
         return false;
     }
 
 
     static public boolean enableApp(String appName, String target, HandlerContext handlerCtx, boolean enable){
-        String[] targetNames = new String[]{target};
+        String[] targets = new String[]{target};
+        return enableApp(appName, targets, handlerCtx, enable);
+
+    }
+
+    static public boolean enableApp(String appName, String[] targetNamess, HandlerContext handlerCtx, boolean enable){
         DeploymentFacility df = GuiUtil.getDeploymentFacility();
-        Target[] targets = df.createTargets(targetNames);
+        Target[] targets = df.createTargets(targetNamess);
         DFProgressObject  progressObject  = (enable) ? df.enable(targets,appName) : df.disable(targets, appName);
         progressObject.waitFor();
         DFDeploymentStatus status = progressObject.getCompletedStatus();
