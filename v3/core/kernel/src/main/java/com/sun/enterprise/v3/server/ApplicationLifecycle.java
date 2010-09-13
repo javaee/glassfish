@@ -1534,18 +1534,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
             appRef.setVirtualServers(deployParams.virtualservers);
         } else {
             // deploy to all virtual-servers, we need to get the list.
-            HttpService httpService = habitat.getComponent(HttpService.class);
-            StringBuilder sb = new StringBuilder();
-            for (VirtualServer s : httpService.getVirtualServer()) {
-                if (s.getId().equals(AdminAdapter.VS_NAME)) {
-                    continue;
-                }
-                if (sb.length()>0) {
-                    sb.append(',');
-                }
-                sb.append(s.getId());
-            }
-            appRef.setVirtualServers(sb.toString());
+            appRef.setVirtualServers(getVirtualServers(deployParams.target));
         }
         if(deployParams.lbenabled != null){
             appRef.setLbEnabled(deployParams.lbenabled);
