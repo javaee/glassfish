@@ -361,6 +361,9 @@
         <echo message="jpa-tx_propagation-resources-xml##@@"/>
         <ant dir="jpa-tx-propagation-gf-resources-xml" target="all"/>
 
+        <echo message="@@## ejb30mdb-resources-xml ##@@"/>
+        <ant dir="./../mq/ejb30mdb-resources-xml" target="all"/>
+
         <record name="glassfish-resources-xml-tests.output" action="stop"/>
 
     </target>
