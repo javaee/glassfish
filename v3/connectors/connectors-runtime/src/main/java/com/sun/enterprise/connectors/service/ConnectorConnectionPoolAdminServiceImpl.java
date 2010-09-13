@@ -1450,8 +1450,12 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
                     "ccp_adm.wrong_params_for_create");
             throw new ConnectorRuntimeException(i18nMsg);
         }
+
         ConnectorDescriptor connectorDescriptor =
                 _registry.getDescriptor(rarName);
+        if(connectorDescriptor == null){
+            connectorDescriptor = _runtime.getConnectorDescriptor(rarName);
+        }
         if (connectorDescriptor == null) {
             String i18nMsg = localStrings.getString(
                     "ccp_adm.no_conn_pool_obj", rarName);
@@ -1462,6 +1466,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             _logger.log(Level.SEVERE, "", cre);
             throw cre;
         }
+
         Set connectionDefs =
                 connectorDescriptor.getOutboundResourceAdapter().getConnectionDefs();
         ConnectionDefDescriptor cdd = null;

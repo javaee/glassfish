@@ -41,6 +41,7 @@
 package com.sun.enterprise.connectors.service;
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import org.glassfish.resource.common.GenericResourceInfo;
 import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
@@ -114,7 +115,21 @@ public class ConnectorAdminServiceUtils implements ConnectorConstants {
     }
 
     public static String getReservePrefixedJNDINameForPool(PoolInfo poolInfo) {
-        return getReservePrefixedJNDIName(ConnectorConstants.POOLS_JNDINAME_PREFIX, poolInfo.getName());
+        String name = getReservePrefixedJNDIName(ConnectorConstants.POOLS_JNDINAME_PREFIX, poolInfo.getName());
+        return getScopedName(poolInfo, name);
+    }
+
+    private static String getScopedName(GenericResourceInfo resourceInfo, String name){
+        if(resourceInfo.getName().startsWith(ConnectorConstants.JAVA_APP_SCOPE_PREFIX)){
+            if(!name.startsWith(ConnectorConstants.JAVA_APP_SCOPE_PREFIX)){
+                name = ConnectorConstants.JAVA_APP_SCOPE_PREFIX + name;
+            }
+        }else if (resourceInfo.getName().startsWith(ConnectorConstants.JAVA_MODULE_SCOPE_PREFIX)){
+            if(!name.startsWith(ConnectorConstants.JAVA_MODULE_SCOPE_PREFIX)){
+                name = ConnectorConstants.JAVA_MODULE_SCOPE_PREFIX + name;
+            }
+        }
+        return name;
     }
 
     public static String getReservePrefixedJNDINameForDescriptor(String moduleName) {

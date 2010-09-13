@@ -63,13 +63,7 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.i18n.StringManager;
 
 import java.rmi.Naming;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-import java.util.Iterator;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -1762,9 +1756,10 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
         String resourceAdapterMid = ConnectorRuntime.DEFAULT_JMS_ADAPTER;
 
         descriptor_.setResourceAdapterMid(resourceAdapterMid);
+        String appName = descriptor_.getApplication().getAppName();
+        String moduleName = ConnectorsUtil.getModuleName(descriptor_);
 
-
-        String destName = getPhysicalDestinationFromConfiguration(jndiName);
+        String destName = getPhysicalDestinationFromConfiguration(jndiName, appName, moduleName);
 
         //1.3 jndi-name ==> 1.4 setDestination
         descriptor_.putRuntimeActivationConfigProperty(
@@ -1799,7 +1794,8 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                            server = (Server) serversList.get(j);
                        }
                     }
-                    AdminObjectResource[] adminObjectResources =
+ /*  
+                 AdminObjectResource[] adminObjectResources =
                             ResourcesUtil.createInstance().getEnabledAdminObjectResources(ConnectorConstants.DEFAULT_JMS_ADAPTER);
                 for (int i = 0; i < adminObjectResources.length; i++) {
                     AdminObjectResource aor = adminObjectResources[i];
@@ -1811,6 +1807,17 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                                 Object[]{aor.getResType() , aor.getJndiName() , descriptor_.getName()});
                     }
                 }
+ */
+                AdminObjectResource aor = (AdminObjectResource) 
+                        ResourcesUtil.createInstance().getResource(jndiName, appName, moduleName, AdminObjectResource.class);
+                if(aor != null && ConnectorConstants.DEFAULT_JMS_ADAPTER.equals(aor.getResAdapter())){
+                    descriptor_.putRuntimeActivationConfigProperty(
+                            new EnvironmentProperty(DESTINATION_TYPE,
+                                    aor.getResType(), null));
+                    logger.log(Level.INFO, "endpoint.determine.destinationtype", new
+                            Object[]{aor.getResType() , aor.getJndiName() , descriptor_.getName()});
+                }
+
             } catch (Exception e) {
 
             }
@@ -1930,7 +1937,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
         return getDomainName() + SEPARATOR + getClusterName() + SEPARATOR + descriptor_.getUniqueId() ;
     }
 
-    private String getPhysicalDestinationFromConfiguration(String logicalDest)
+    private String getPhysicalDestinationFromConfiguration(String logicalDest, String appName, String moduleName)
                                 throws ConnectorRuntimeException{
      Property ep = null;
         try {
@@ -1938,14 +1945,8 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
             //ConfigContext ctx = sc.getConfigContext();
             //Resources rbeans =                           ServerBeansFactory.getDomainBean(ctx).getResources();
             AdminObjectResource res = null;
-            for (int i=0; i < getAllResources().getResources().size(); i++){
-                 Resource ares = getAllResources().getResources().get(i);
-                if (!(ares instanceof AdminObjectResource) ) continue;
-
-                 AdminObjectResource adminres = (AdminObjectResource)ares ;
-                 if (logicalDest.equals(adminres.getJndiName()))
-                    res = adminres;
-            }
+            res = (AdminObjectResource)
+                    ResourcesUtil.createInstance().getResource(logicalDest, appName, moduleName, AdminObjectResource.class);
             //AdminObjectResource res = (AdminObjectResource)   allResources.getAdminObjectResourceByJndiName(logicalDest);
         if (res == null) {
             String msg = sm.getString("ajra.err_getting_dest", logicalDest );
@@ -1976,16 +1977,21 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
         //todo: need to enable
         List <Property> ep = null;
         try {
-            Resources rbeans = getAllResources();//ServerBeansFactory.getDomainBean(ctx).getResources();
+            /*Resources rbeans = getAllResources();//ServerBeansFactory.getDomainBean(ctx).getResources();
             ConnectorResource res = (ConnectorResource)
-                             rbeans.getResourceByName(ConnectorResource.class, cfName);
+                             rbeans.getResourceByName(ConnectorResource.class, cfName);*/
+            String appName = descriptor_.getApplication().getAppName();
+            String moduleName = ConnectorsUtil.getModuleName(descriptor_);
+            ConnectorResource res = (ConnectorResource)
+                    ResourcesUtil.createInstance().getResource(cfName, appName, moduleName, ConnectorResource.class);
         if (res == null) {
             String msg = sm.getString("ajra.mdb_cf_not_created", cfName);
         throw new ConnectorRuntimeException(msg);
         }
 
         ConnectorConnectionPool ccp = (ConnectorConnectionPool)
-            rbeans.getResourceByName(ConnectorConnectionPool.class, res.getPoolName());
+             ResourcesUtil.createInstance().getResource(res.getPoolName(), appName, moduleName, ConnectorConnectionPool.class);
+            //rbeans.getResourceByName(ConnectorConnectionPool.class, res.getPoolName());
 
         ep = ccp.getProperty();
         } catch(Exception ce) {
@@ -2035,10 +2041,6 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
 
     private ServerEnvironmentImpl getServerEnvironment(){
         return habitat.getComponent(ServerEnvironmentImpl.class);
-    }
-
-    private Resources getAllResources(){
-        return habitat.getComponent(Domain.class).getResources();
     }
 
     private AdminService getAdminService() {

@@ -111,6 +111,12 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
 
         PoolInfo poolInfo = new PoolInfo(domainCcp.getName(), applicationName, moduleName);
         final ConnectorConnectionPool ccp = getConnectorConnectionPool(domainCcp, poolInfo);
+        String rarName = domainCcp.getResourceAdapterName();
+        String connDefName = domainCcp.getConnectionDefinitionName();
+        List<Property> props = domainCcp.getProperty();
+        List<SecurityMap> securityMaps = domainCcp.getSecurityMap();
+
+        populateConnectorConnectionPool(ccp, connDefName, rarName, props, securityMaps);
         final String defName = domainCcp.getConnectionDefinitionName();
 
         /*if (domainCcp.isEnabled()) {
@@ -434,8 +440,7 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
                                                  List<Property> props, List<SecurityMap> securityMaps)
             throws ConnectorRuntimeException {
 
-        ConnectorRegistry _registry = ConnectorRegistry.getInstance();
-        ConnectorDescriptor connectorDescriptor = _registry.getDescriptor(rarName);
+        ConnectorDescriptor connectorDescriptor = runtime.getConnectorDescriptor(rarName);
         if (connectorDescriptor == null) {
             ConnectorRuntimeException cre = new ConnectorRuntimeException("Failed to get connection pool object");
             _logger.log(Level.SEVERE, "rardeployment.connector_descriptor_notfound_registry", rarName);
