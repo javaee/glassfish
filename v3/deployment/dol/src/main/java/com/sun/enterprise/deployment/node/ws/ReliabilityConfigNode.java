@@ -58,18 +58,19 @@ import java.util.Map;
 public class ReliabilityConfigNode extends DeploymentDescriptorNode {
     private final XMLElement tag =
             new XMLElement(WLWebServicesTagNames.RELIABILITY_CONFIG);
-    ReliabilityConfig descriptor;
 
-    public ReliabilityConfigNode(ReliabilityConfig descriptor) {
-        this.descriptor = descriptor;
+    ReliabilityConfig rmConfig = new ReliabilityConfig();
+    /*
+    public ReliabilityConfigNode(WebServiceEndpoint endpoint) {
+        this.endpoint = endpoint;
     }
-
+     */
     protected XMLElement getXMLRootTag() {
         return tag;
     }
 
     public Object getDescriptor() {
-        return descriptor;
+        return rmConfig;
     }
 
     protected Map getDispatchTable() {
