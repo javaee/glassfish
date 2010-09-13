@@ -363,12 +363,14 @@ public class ServerSynchronizer implements PostConstruct {
         // all apps are under <server>, even in a cluster
         for (ApplicationRef ref : server.getApplicationRef()) {
             Application app = applications.getApplication(ref.getRef());
-            logger.finest("ServerSynchronizer: got app " + app.getName());
-            if (Boolean.parseBoolean(app.getDirectoryDeployed()))
-                logger.finest("ServerSynchronizer: skipping directory " +
+            if (app != null) {
+                logger.finest("ServerSynchronizer: got app " + app.getName());
+                if (Boolean.parseBoolean(app.getDirectoryDeployed()))
+                    logger.finest("ServerSynchronizer: skipping directory " +
                                 "deployed app: " + app.getName());
-            else
-                apps.put(VersioningUtils.getRepositoryName(app.getName()), app);
+                else
+                    apps.put(VersioningUtils.getRepositoryName(app.getName()), app);
+            }
         }
         return apps;
     }
