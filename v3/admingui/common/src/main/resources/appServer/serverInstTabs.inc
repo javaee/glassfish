@@ -43,12 +43,11 @@
 <!-- appServer/serverInstTabs.jsf -->
 
 <sun:tabSet id="serverInstTabs" immediate="true" selected="#{sessionScope.serverInstTabs}">
-
     <sun:tab id="general" immediate="true" text="$resource{i18n.common.General}" toolTip="$resource{i18n.common.General} Tab" >
         <!command
-        setSessionAttribute(key="serverInstTabs" value="general");
-        gf.redirect(page="#{request.contextPath}/common/appServer/serverInstGeneralPe.jsf");
-	    />       
+            setSessionAttribute(key="serverInstTabs" value="general");
+            gf.redirect(page="#{request.contextPath}/common/appServer/serverInstGeneralPe.jsf");
+        />
     </sun:tab>
     <sun:tab id="token" immediate="true" text="$resource{i18n.systemProps.tableTitle}" toolTip="$resource{i18n.systemProps.tableTitle} Tab">
         <!command
@@ -62,10 +61,9 @@
             gf.redirect(page="#{request.contextPath}/common/appServer/serverInstResources.jsf?instanceName=server");
         />
     </sun:tab>
-
 </sun:tabSet>
 <event>
     <!afterCreate
-	includeIntegrations(type="org.glassfish.admingui:serverInstTab");
+        includeIntegrations(type="org.glassfish.admingui:serverInstTab");
     />
 </event>
