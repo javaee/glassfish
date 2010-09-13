@@ -146,8 +146,9 @@ public class EmbeddedSecurityUtil implements EmbeddedSecurity {
         if (fullFilePath == null) {
             return null;
         }
-        int beginIndex = fullFilePath.lastIndexOf(File.separator);
-        return fullFilePath.substring(beginIndex + 1);
+        File file = new File(fullFilePath);
+        return file.getName();
+       
     }
 
     public boolean isEmbedded(ServerEnvironment se) {

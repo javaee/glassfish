@@ -70,7 +70,9 @@ import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.PropertyResolver;
 import org.glassfish.config.support.TargetType;
+import org.glassfish.internal.api.RelativePathResolver;
 
 
 /**
@@ -123,8 +125,8 @@ public class CreateAuthRealm implements AdminCommand {
     private Config config;
     @Inject
     private Domain domain;
-  //  @Inject
- //   private SecurityConfigListener securityListener;
+    @Inject
+    private SecurityConfigListener securityListener;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -166,9 +168,10 @@ public class CreateAuthRealm implements AdminCommand {
                 public Object run(SecurityService param) 
                 throws PropertyVetoException, TransactionFailure {
                 AuthRealm newAuthRealm = param.createChild(AuthRealm.class);
-                    populateAuthRealmElement(newAuthRealm);                    
+                    populateAuthRealmElement(newAuthRealm);
                     param.getAuthRealm().add(newAuthRealm);
-                    //temporary fix - since the SecurityConfigListener is  not being called on an realm add.
+                    //In case of cluster instances, this is required to
+                    //avoid issues with the listener's callback method
                     SecurityConfigListener.authRealmCreated(newAuthRealm);
                     return newAuthRealm;
                     
@@ -194,7 +197,11 @@ public class CreateAuthRealm implements AdminCommand {
             for (Object propname: properties.keySet()) {
                 Property newprop = newAuthRealm.createChild(Property.class);
                 newprop.setName((String) propname);
-                newprop.setValue(properties.getProperty((String) propname));            
+                String propValue = properties.getProperty((String) propname);
+                if (propValue != null && propValue.contains("$")) {
+                    propValue = RelativePathResolver.resolvePath(propValue);
+                }
+                newprop.setValue(propValue);
                 newAuthRealm.getProperty().add(newprop);    
             }
         }
