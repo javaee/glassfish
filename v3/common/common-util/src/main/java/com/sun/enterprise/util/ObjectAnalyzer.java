@@ -375,7 +375,7 @@ public class ObjectAnalyzer
 
 			if(m.getName().equals("setAccessible") && m.getParameterTypes().length == 2)//NOI18N
 			{
-				Logger.getAnonymousLogger().fine("Found setAccessible: " + m);//NOI18N
+				Logger.getAnonymousLogger().finer("Found setAccessible: " + m);//NOI18N
 				setAccessibleMethod = m;
 				break;
 			}
