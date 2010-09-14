@@ -114,10 +114,14 @@ public class DistributedEJBTimerServiceImpl
     }
 
     @Override
-    public void beforeRecovery(String instance) {}
+    public void beforeRecovery(boolean delegated, String instance) {}
 
     @Override
-    public void afterRecovery(boolean success,String instance) {
+    public void afterRecovery(boolean success, boolean delegated, String instance) {
+        if (!delegated) {
+            return; // nothing to do
+        }
+
         Logger logger = ejbContainerUtil.getLogger();
         if (logger.isLoggable(Level.INFO)) {
                 logger.log(Level.INFO, "[DistributedEJBTimerServiceImpl] afterRecovery event for instance " + instance);

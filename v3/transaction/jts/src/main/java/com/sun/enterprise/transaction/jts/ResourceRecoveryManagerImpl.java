@@ -108,7 +108,8 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
      * @throws Exception when unable to recover
      */
     public boolean recoverIncompleteTx(boolean delegated, String logPath) throws Exception {
-        return recoverIncompleteTx(delegated, logPath, ((delegated)? null : Configuration.getPropertyValue(Configuration.INSTANCE_NAME)));
+        return recoverIncompleteTx(delegated, logPath, 
+                ((delegated)? null : Configuration.getPropertyValue(Configuration.INSTANCE_NAME)), false);
     }
 
     /**
@@ -116,10 +117,12 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
      * @param delegated indicates whether delegated recovery is needed
      * @param logPath transaction log directory path
      * @param instance the name of the instance for which delegated recovery is performed, null if unknown.
+     * @param notifyRecoveryListeners specifies whether recovery listeners are to be notified
      * @return boolean indicating the status of transaction recovery
      * @throws Exception when unable to recover
      */
-    public boolean recoverIncompleteTx(boolean delegated, String logPath, String instance) throws Exception {
+    public boolean recoverIncompleteTx(boolean delegated, String logPath, String instance, 
+            boolean notifyRecoveryListeners) throws Exception {
         boolean result = false; 
         Map<RecoveryResourceHandler, Vector> handlerToXAResourcesMap = null;
         try {
@@ -128,7 +131,9 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
             }
 
             configure();
-            beforeRecovery(instance);
+            if (notifyRecoveryListeners) {
+                beforeRecovery(delegated, instance);
+            }
 
             Vector xaresList = new Vector();
 
@@ -160,10 +165,8 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
             } catch (Exception ex1) {
                 _logger.log(Level.WARNING, "xaresource.recover_error", ex1);
             }
-            try {
-                afterRecovery(result, instance);
-            } catch (Exception ex1) {
-                _logger.log(Level.WARNING, "xaresource.recover_error", ex1);
+            if (notifyRecoveryListeners) {
+                afterRecovery(result, delegated, instance);
             }
         }
     }
@@ -278,24 +281,34 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
     /**
      * notifies the event listeners that recovery is about to start
      */
-    private void beforeRecovery(String instance) {
+    private void beforeRecovery(boolean delegated, String instance) {
         Set<RecoveryEventListener> listeners =
                 recoveryListenersRegistry.getEventListeners();
 
         for (RecoveryEventListener erl : listeners) {
-            erl.beforeRecovery(instance);
+            try {
+                erl.beforeRecovery(delegated, instance);
+            } catch (Throwable e) {
+                _logger.log(Level.WARNING, "", e);
+                _logger.log(Level.WARNING, "jts.before_recovery_excep", e);
+            }
         }
     }
 
     /**
      * notifies the event listeners that all recovery operations are completed
      */
-    private void afterRecovery(boolean success, String instance) {
+    private void afterRecovery(boolean success, boolean delegated, String instance) {
         Set<RecoveryEventListener> listeners =
                 recoveryListenersRegistry.getEventListeners();
 
         for (RecoveryEventListener erl : listeners) {
-            erl.afterRecovery(success, instance);
+            try {
+                erl.afterRecovery(success, delegated, instance);
+            } catch (Throwable e) {
+                _logger.log(Level.WARNING, "", e);
+                _logger.log(Level.WARNING, "jts.after_recovery_excep", e);
+            }
         }
     }
 

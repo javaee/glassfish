@@ -66,10 +66,12 @@ public interface ResourceRecoveryManager {
      * @param delegated indicates whether delegated recovery is needed
      * @param logPath transaction log directory path
      * @param instance the name opf the instance for which delegated recovery is requested, null if unknown
+     * @param notifyRecoveryListeners specifies whether recovery listeners are to be notified
      * @return boolean indicating the status of transaction recovery
      * @throws Exception when unable to recover
      */
-    public boolean recoverIncompleteTx(boolean delegated, String logPath, String instance) throws Exception;
+    public boolean recoverIncompleteTx(boolean delegated, String logPath, String instance, 
+            boolean notifyRecoveryListeners) throws Exception;
 
     /**
      * recover the xa-resources

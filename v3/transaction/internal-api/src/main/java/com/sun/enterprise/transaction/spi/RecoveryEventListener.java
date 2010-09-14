@@ -51,14 +51,16 @@ public interface RecoveryEventListener  {
 
     /**
      * Indicate to the listener that recovery for a specific instance is about to start.
+     * @param delegated identifies whether it is part of a delegated transaction recovery
      * @param instance the instance name for which transaction recovery is performed, null if unknown
      */
-    void beforeRecovery(String instance);
+    void beforeRecovery(boolean delegated, String instance);
 
     /**
      * Indicate to the listener that recovery is over.
      * @param success <code>true</code> if the recovery operation finished successfully
+     * @param delegated identifies whether it is part of a delegated transaction recovery
      * @param instance the instance name for which transaction recovery is performed, null if unknown
      */
-    void afterRecovery(boolean success, String instance);
+    void afterRecovery(boolean success, boolean delegated, String instance);
 }

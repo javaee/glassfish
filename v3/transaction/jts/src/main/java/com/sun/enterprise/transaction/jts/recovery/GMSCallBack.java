@@ -174,8 +174,8 @@ public class GMSCallBack implements CallBack {
             Set<RecoveryEventListener> listeners = recoveryListenersRegistry.getEventListeners();
             for (RecoveryEventListener erl : listeners) {
                 try {
-                    erl.beforeRecovery(instance);
-                } catch (Exception e) {
+                    erl.beforeRecovery(true, instance);
+                } catch (Throwable e) {
                     _logger.log(Level.WARNING, "", e);
                     _logger.log(Level.WARNING, "jts.before_recovery_excep", erl);
                 }
@@ -190,16 +190,19 @@ public class GMSCallBack implements CallBack {
                 if (_logger.isLoggable(Level.FINE)) {
                     _logger.log(Level.FINE, "Transaction recovery of " + instance + " is completed");
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 _logger.log(Level.WARNING, "jts.recovery_error", e);
             } finally {
                 fence.lowerFence(logdir, instance);
             }
 
+            String instance0 = fence.getInstanceRecoveredFor(logdir);
+            while (instance0 != null) {
+            }
             for (RecoveryEventListener erl : listeners) {
                 try {
-                    erl.afterRecovery(result, instance);
-                } catch (Exception e) {
+                    erl.afterRecovery(result, true, instance);
+                } catch (Throwable e) {
                     _logger.log(Level.WARNING, "", e);
                     _logger.log(Level.WARNING, "jts.after_recovery_excep", erl);
                 }
