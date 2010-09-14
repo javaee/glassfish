@@ -264,10 +264,19 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             // Let this pass to the admin console (do nothing)
             handleLoadedState();
         } else {
+            // if the admin console is not loaded, and someone use the REST access,
+            //browsers also request the favicon icon... Since we do not want to load
+            // the admin gui just to return a non existing icon,
+            //we just return without loading the entire console...
+            if ("/favicon.ico".equals(req.getRequestURI())) {
+                return;
+            }
+            
             InteractionResult ir = getUserInteractionResult(req);
             if (ir == InteractionResult.CANCEL) {
 // FIXME: What if they clicked Cancel?
 	    }
+
 	    synchronized(this) {
 		if (downloadedVersion == null) {
 		    setDownloadedVersion();
