@@ -64,11 +64,24 @@
             setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
             setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
 
+            // Get config attributes
             gf.restRequest(endpoint="#{pageSession.parentUrl}", method="get", result="#{requestScope.result}");
             setPageSessionAttribute(key="dynaReconfig", value="#{requestScope.result.data.extraProperties.entity.dynamicReconfigurationEnabled}");
 
+            // get config sys props
             gf.restRequest(endpoint="#{pageSession.selfUrl}", method="GET", result="#{requestScope.propTable}");
             setPageSessionAttribute(key="tableList", value="#{requestScope.propTable.data.extraProperties.systemProperties}");
+
+            // find clusters/instances using this config
+            createList(result="#{pageSession.configUsageList}" size="0");
+            gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server", method="get", result="#{requestScope.result}");
+            gf.getMapKeys(Map="#{requestScope.result.data.extraProperties.childResources}", Keys="#{requestScope.instances}");
+            foreach (var="instance", list="#{requestScope.instances}") {
+                gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server/#{instance}", method="get", result="#{requestScope.instanceResults}");
+                if ("#{requestScope.instanceResults.data.extraProperties.entity.configRef}=#{pageSession.configName}") {
+                    listAdd(list="#{pageSession.configUsageList}", value="#{instance}");
+                }
+            }
         />
     </event>
     <sun:form id="propertyForm">
@@ -77,6 +90,10 @@
                 <sun:panelGroup id="topButtons">
                     <sun:button id="saveButton" text="$resource{i18n.button.Save}" >
                         <!command
+                            createMap(result="#{requestScope.data}");
+                            mapPut(map="#{requestScope.data}", key="dynamicReconfigurationEnabled", value="#{pageSession.dynaReconfig ? 'true' : 'false'}");
+                            gf.restRequest(endpoint="#{pageSession.parentUrl}", method="POST", data="#{requestScope.data}", contentType="application/x-www-form-urlencoded", result="#{requestScope.restResponse}");
+
                             createMap(result="#{requestScope.data}");
                             foreach (var="row" list="#{pageSession.tableList}") {
                                 mapPut(map="#{requestScope.data}", key="#{row.name}", value="#{row.value}");
@@ -96,8 +113,8 @@
             </facet>
         </sun:title>
 #include "/common/shared/alertMsg.inc"
-        <sun:propertySheet id="propertySheet" >
-            <sun:propertySheetSection id="serverGeneralPropSheet">
+        <sun:propertySheet id="propertySheet1" >
+            <sun:propertySheetSection id="reconfigSheet">
                 <sun:property id="dynaReconfigProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.systemProps.dynamicReconfigLabel}" >
                     <sun:checkbox id="dynaReconfig" value="#{pageSession.dynaReconfig}" selectedValue="true"/>
                 </sun:property>
@@ -173,11 +190,29 @@
                     <sun:textField columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.common.PropertyValue']}" id="col1St" value="#{td.value.value}" />
                 </sun:tableColumn>
                 <sun:tableColumn headerText="$resource{i18n.systemProps.colInstanceValues}" sort="value" rowHeader="$boolean{false}" id="col4">
-                    <sun:hyperlink id="instanceLink" text="$resource{i18n.systemProps.colInstanceValues}" url="/cluster/configuration/sysInstanceValues.jsf?propName#{td.value.name}=&configName=#{pageSession.configName}"/>
+                    <sun:hyperlink id="instanceLink" text="$resource{i18n.systemProps.colInstanceValues}" url="/cluster/configuration/sysInstanceValues.jsf?propName=#{td.value.name}&configName=#{pageSession.configName}"/>
                 </sun:tableColumn>
                 "<br/>
             </sun:tableRowGroup>
         </sun:table>
+        <sun:propertySheet id="propertySheet2" >
+            <sun:propertySheetSection id="usingThisConfigSheet">
+                <sun:property id="usingThisConfigProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.systemProps.instClustLabel}" >
+                    <foreach key="entry" list="#{pageSession.configUsageList}">
+                        <event>
+                            <!beforeEncode
+                                setAttribute(key="tmp" value="#{entry}");
+                                gf.listInstances(optionKeys={"id"} optionValues={"$attribute{tmp}"}, statusMap="#{requestScope.statusMap}");
+                                setAttribute(key="status" value="#{requestScope.statusMap['$attribute{tmp}']}");
+                                setAttribute(key="statusString" value="$resource{i18nc.status.image.$attribute{status}}");
+                            />
+                        </event>
+                        <h:outputText id="colStopped" value="#{requestScope.statusString}&#160;#{entry}" escape="false"/>
+                        "<br/>
+                    </foreach>
+                </sun:property>
+            </sun:propertySheetSection>
+        </sun:propertySheet>
     </sun:form>
 #include "/common/shared/changeButtonsJS.inc"
 </define>
