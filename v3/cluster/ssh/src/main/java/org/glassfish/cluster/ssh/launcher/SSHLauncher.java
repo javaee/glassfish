@@ -74,6 +74,11 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * @author Rajiv Mordani
+ */
+
+
 @Service(name="SSHLauncher")
 @Scoped(PerLookup.class)
 public class SSHLauncher {
@@ -213,10 +218,12 @@ public class SSHLauncher {
     private void openConnection() throws IOException {
 
     boolean isAuthenticated = false;
+    String message= "";
     connection = new Connection(host, port);
 
         connection.connect(new HostVerifier(knownHostsDatabase));
         if(SSHUtil.checkString(keyFile) == null && SSHUtil.checkString(password) == null) {
+            message += "No key or password specified - trying default keys \n";
             if (logger.isLoggable(Level.FINE)) {
                 logger.fine("keyfile and password are null. Will try to authenticate with default key file if available");
             }
@@ -226,6 +233,7 @@ public class SSHLauncher {
             for (String keyName : Arrays.asList("id_rsa","id_dsa",
                                                 "identity"))
             {
+                message += "Tried to authenticate using " + keyName + "\n";
                 File key = new File(home,".ssh/"+keyName);
                 if (key.exists()) {
                     isAuthenticated =
@@ -236,6 +244,9 @@ public class SSHLauncher {
                     if (logger.isLoggable(Level.FINE)) {
                         logger.fine("Authentication successful using key " + keyName);
                     }
+
+                    message = null;
+
                     break;
                 }
 
@@ -251,10 +262,14 @@ public class SSHLauncher {
                     logger.fine("Specified key file exists at " + key);
                 }
 
+
                 //See if the key file is protected with passphrase
                 
                isAuthenticated = connection.authenticateWithPublicKey(
                                             userName, key, keyPassPhrase);
+                if (!isAuthenticated) {
+                    message = "Tried authenticating with specified key at " + key;
+                }
 
             }
         } if (!isAuthenticated && SSHUtil.checkString(password) != null) {
@@ -263,6 +278,9 @@ public class SSHLauncher {
               }
 
           isAuthenticated = connection.authenticateWithPassword(userName, password);
+          if (!isAuthenticated) {
+              message += "Tried authenticating with password " + password;
+          }
       }
 
         if (!isAuthenticated && !connection.isAuthenticationComplete()) {
@@ -271,8 +289,9 @@ public class SSHLauncher {
             if (logger.isLoggable(Level.FINE)) {
                 logger.fine("Could not authenticate");
             }
-            throw new IOException("Could not authenticate");
+            throw new IOException("Could not authenticate. " + message);
         }
+        message = null;
         SSHUtil.register(connection);
 
     }
