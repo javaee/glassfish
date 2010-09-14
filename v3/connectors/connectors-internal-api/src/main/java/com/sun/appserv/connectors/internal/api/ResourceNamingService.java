@@ -192,7 +192,9 @@ public class ResourceNamingService implements ConnectorConstants {
     }
 
     private boolean isGlobalName(String jndiName) {
-        return jndiName.startsWith(JAVA_GLOBAL_SCOPE_PREFIX);
+        return jndiName.startsWith(JAVA_GLOBAL_SCOPE_PREFIX) ||
+                (!jndiName.startsWith(JAVA_APP_SCOPE_PREFIX) &&
+                !jndiName.startsWith(JAVA_MODULE_SCOPE_PREFIX));
     }
 
     public Object lookup(GenericResourceInfo resourceInfo, String name, Hashtable env) throws NamingException{
