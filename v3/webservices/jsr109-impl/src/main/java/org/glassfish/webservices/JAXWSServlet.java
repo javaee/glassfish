@@ -55,6 +55,7 @@ import com.sun.xml.ws.api.server.WSEndpoint;
 import com.sun.xml.ws.developer.SchemaValidationFeature;
 import com.sun.xml.ws.developer.StreamingAttachmentFeature;
 import com.sun.xml.ws.rx.rm.api.ReliableMessagingFeature;
+import com.sun.xml.ws.rx.rm.api.ReliableMessagingFeatureBuilder;
 import com.sun.xml.ws.rx.rm.api.RmProtocolVersion;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapterList;
@@ -370,55 +371,44 @@ public class JAXWSServlet extends HttpServlet {
         }
 
         if(endpoint.getReliabilityConfig() != null) {
+            // TODO Revisit later after Metro provides generic method to pass partial configuration to Metro runtime.
+            // Only partial configuration is specified in webservices DD, but the information for creating complete RM feature should be gathered
+            // from wsdl policy, annotation or metro configuration file. For ex: RmProtocolVersion would be decided by  policy assertion.
+            // For now, the feature would be constructed from default values, overriding any configuration specified in wsdl or metro configuration file..
+            
             ReliabilityConfig rxConfig = endpoint.getReliabilityConfig();
-            long inactivityTimeout = rxConfig.getInactivityTimeout() == null ?
-                    ReliableMessagingFeature.DEFAULT_SEQUENCE_INACTIVITY_TIMEOUT :
-                    Long.parseLong(rxConfig.getInactivityTimeout().trim());
-            long bufferQuota = endpoint.getHttpResponseBufferSize()==null ?
-                    ReliableMessagingFeature.DEFAULT_DESTINATION_BUFFER_QUOTA :
-                    Long.parseLong(endpoint.getHttpResponseBufferSize().trim());
-            long baseRetransmissionInterval = rxConfig.getBaseRetransmissionInterval() == null ?
-                    ReliableMessagingFeature.DEFAULT_MESSAGE_RETRANSMISSION_INTERVAL :
-                    Long.parseLong(rxConfig.getBaseRetransmissionInterval().trim());
-            Enum backoffAlgorithm = Boolean.parseBoolean(rxConfig.getRetransmissionExponentialBackoff()) ?
+            ReliableMessagingFeatureBuilder rmbuilder = new ReliableMessagingFeatureBuilder(RmProtocolVersion.getDefault());
+
+            if(rxConfig.getInactivityTimeout() != null) {
+                rmbuilder.sequenceInactivityTimeout(Long.parseLong(rxConfig.getInactivityTimeout().trim()));
+
+            }
+            if(endpoint.getHttpResponseBufferSize() != null) {
+                rmbuilder.destinationBufferQuota(Long.parseLong(endpoint.getHttpResponseBufferSize().trim()));
+
+            }
+            if(rxConfig.getBaseRetransmissionInterval() != null) {
+                rmbuilder.messageRetransmissionInterval(Long.parseLong(rxConfig.getBaseRetransmissionInterval().trim()));
+            }
+            if(rxConfig.getRetransmissionExponentialBackoff() != null) {
+                rmbuilder.retransmissionBackoffAlgorithm(Boolean.parseBoolean(rxConfig.getRetransmissionExponentialBackoff()) ?
                     ReliableMessagingFeature.BackoffAlgorithm.EXPONENTIAL :
-                    ReliableMessagingFeature.BackoffAlgorithm.CONSTANT;
-
-            long ackInterval = rxConfig.getAcknowledgementInterval() == null ?
-                    ReliableMessagingFeature.DEFAULT_ACKNOWLEDGEMENT_TRANSMISSION_INTERVAL :
-                    Long.parseLong(rxConfig.getAcknowledgementInterval().trim());
-
-            if(rxConfig.getSequenceExpiration() == null) {
+                    ReliableMessagingFeature.BackoffAlgorithm.getDefault());
+            }
+            if(rxConfig.getAcknowledgementInterval() != null) {
+                rmbuilder.acknowledgementTransmissionInterval(Long.parseLong(rxConfig.getAcknowledgementInterval().trim()));
+            }
+            if(rxConfig.getSequenceExpiration() != null) {
                 logger.info("For endpoint"+endpoint.getEndpointName() +", Ignoring configuration <sequence-expiration> in weblogic-webservices.xml");
             }
-                        
-            long bufferRetryCount = rxConfig.getBufferRetryCount() == null ?
-                    ReliableMessagingFeature.DEFAULT_MAX_MESSAGE_RETRANSMISSION_COUNT :
-                    Long.parseLong(rxConfig.getBufferRetryCount().trim());
-            if(rxConfig.getBufferRetryDelay() == null) {
+            if(rxConfig.getBufferRetryCount() != null) {
+                rmbuilder.maxMessageRetransmissionCount(Long.parseLong(rxConfig.getBufferRetryCount().trim()));
+            }
+            if(rxConfig.getBufferRetryDelay() != null) {
                 logger.info("For endpoint"+endpoint.getEndpointName() + ", Ignoring configuration <buffer-retry-delay> in weblogic-webservices.xml");
             }
-            /* TODO this api is not public, discuss with Marek
-                ReliableMessagingFeature rmFeature =  new ReliableMessagingFeature(
-                    true, // this.enabled
-                RmProtocolVersion.getDefault(), // this.rmVersion
-                inactivityTimeout, // this.inactivityTimeout
-                bufferQuota, // this.bufferQuota
-                false, // this.orderedDelivery
-                ReliableMessagingFeature.DeliveryAssurance.getDefault(), // this.deliveryAssurance
-                ReliableMessagingFeature.SecurityBinding.getDefault(), // this.securityBinding
-                baseRetransmissionInterval, // this.baseRetransmissionInterval
-                backoffAlgorithm, // this.retransmissionBackoffAlgorithm
-                bufferRetryCount,
-                ReliableMessagingFeature.DEFAULT_MAX_RM_SESSION_CONTROL_MESSAGE_RESEND_ATTEMPTS, // this.maxRmSessionControlMessageResendAttempts
-                ackInterval, // this.acknowledgementTransmissionInterval
-                ReliableMessagingFeature.DEFAULT_ACK_REQUEST_TRANSMISSION_INTERVAL, // this.ackRequestTransmissionInterval
-                ReliableMessagingFeature.DEFAULT_CLOSE_SEQUENCE_OPERATION_TIMEOUT, // this.closeSequenceOperationTimeout
-                false, // this.persistenceEnabled
-                ReliableMessagingFeature.DEFAULT_SEQUENCE_MANAGER_MAINTENANCE_PERIOD,
-                ReliableMessagingFeature.DEFAULT_MAX_CONCURRENT_SESSIONS,
-                ReliableMessagingFeature.DEFAULT_OFFER_ELEMENT_GENERATION_DISABLED);
-               */
+
+            wsFeatures.add(rmbuilder.build());            
         } else {
             if(endpoint.getHttpResponseBufferSize() != null) {
                 logger.warning("For endpoint" + endpoint.getEndpointName() + ", Unsupported configuration <http-response-buffersize> in weblogic-webservices.xml");
