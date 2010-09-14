@@ -44,9 +44,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Handler;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- */
+ */@Contract
 public interface LogManager {
     Map<String, String> getLoggingProperties() throws IOException;
 
