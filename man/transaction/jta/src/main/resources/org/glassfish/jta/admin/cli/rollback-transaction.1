@@ -18,7 +18,7 @@ DESCRIPTION
          1.   Enable monitoring using  the  set  subcommand.  For
               example:
 
-                asadmin> set server.monitoring-service.module-monitoring-levels.transaction-service=HIGH
+                asadmin> set clstr1-config.monitoring-service.module-monitoring-levels.transaction-service=HIGH
 
          2.   Use the  freeze-transaction-service  subcommand  to
               halt in-process transactions.
@@ -26,7 +26,7 @@ DESCRIPTION
          3.   Look up the active transactions using the get  sub-
               command with the --monitor option. For example:
 
-                asadmin> get --monitor server.monitoring-service.module-monitoring-levels.transaction-service
+                asadmin> get --monitor inst1.server.transaction-service.activeids-current
 
      This subcommand is supported in remote mode only.
 

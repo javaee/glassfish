@@ -1,0 +1,91 @@
+
+asadmin Utility Subcommands                 create-node-config(1)
+
+NAME
+     create-node-config - creates a node that is not enabled  for
+     communication over SSH
+
+SYNOPSIS
+     create-node-config [--help]
+     [--nodehost node-host]
+     [--installdir install-dir] [--nodedir node-dir] node-name
+
+DESCRIPTION
+     The create-node-config subcommand creates a node that is not
+     enabled for communication over secure shell (SSH).
+
+     A node represents a  host  on  which  the  GlassFish  Server
+     software  is installed. A node must be present on every host
+     on which GlassFish Server instances reside.
+
+     All operations on a node that is not enabled for  communica-
+     tion  over  SSH  node must be performed on the host that the
+     node represents. The domain administration server (DAS) on a
+     remote  host cannot contact the node. The create-node-config
+     subcommand does not require SSH to be configured  to  create
+     the node.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --nodehost
+         The name of the host that the node  represents.  If  the
+         name  of  the  host is omitted, no host is specified for
+         the node.
+
+     --installdir
+
+         The full path to the base installation directory of  the
+         GlassFish  Server  software  on  the  host, for example,
+         /export/glassfishv3/glassfish.  The   default   is   the
+         default  base  installation  directory  of the GlassFish
+         Server software. This default is useful only if  GlassF-
+         ish  Server  is  installed  in  the same location on all
+         hosts.
+
+Java EE 6           Last change: 13 Sep 2010                    1
+
+asadmin Utility Subcommands                 create-node-config(1)
+
+     --nodedir
+
+         The full path  to  the  directory  that  is  to  contain
+         GlassFish Server instances that are created on the node.
+         The default is as-install/nodes, where as-install is the
+         base  installation  directory  of  the  GlassFish Server
+         software on the host.
+
+OPERANDS
+     node-name
+         The name of the node. The  name  of  the  node  must  be
+         unique in the domain and must not be the name of a clus-
+         ter, a named configuration, a GlassFish Server instance,
+         or another node.
+
+EXAMPLES
+     Example 1 Creating a Node Configuration
+
+     This example creates the configuration for node sj03 on host
+     sj03.example.com.
+
+       asadmin> create-node-config --nodehost sj03.example.com sj03
+
+       Command create-node-config executed successfully.
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     delete-node-config(1), list-nodes(1), update-node-config(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 13 Sep 2010                    2
+

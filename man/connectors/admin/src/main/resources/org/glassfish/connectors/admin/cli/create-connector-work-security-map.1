@@ -53,21 +53,21 @@ Java EE 6           Last change: 09 Sep 2010                    1
 asadmin Utility Subcommands
                             create-connector-work-security-map(1)
 
-         o    To scope a security map at the  application  level,
-              place  the  glassfish-resources.xml  containing the
-              map definition in the top-level META-INF  directory
-              of    the    RAR    archive    (META-INF/glassfish-
-              resources.xml) . The map can be referenced  through
-              lookups  with  the java:app prefix. The map will be
+         o    To scope a resource at the application level, place
+              the glassfish-resources.xml containing the resource
+              definition in the top-level META-INF  directory  of
+              the  RAR archive (META-INF/glassfish-resources.xml)
+              . The resource can be  referenced  through  lookups
+              with  the  java:app  prefix.  The  resource will be
               available only to the application (and its modules)
               for which it is defined.
 
-         o    To scope a security map at the module level,  place
-              the   glassfish-resources.xml  containing  the  map
+         o    To scope a resource at the module level, place  the
+              glassfish-resources.xml   containing  the  resource
               definition in the RAR bundled at the module  level.
-              The  map can be referenced through lookups with the
-              java:module prefix. The map will be available  only
-              to the module for which it is defined.
+              The resource can be referenced through lookups with
+              the java:module prefix. The resource will be avail-
+              able only to the module for which it is defined.
 
      The jndi-name for  application-scoped-resources  or  module-
      scoped-resources    are    specified    using   the   format

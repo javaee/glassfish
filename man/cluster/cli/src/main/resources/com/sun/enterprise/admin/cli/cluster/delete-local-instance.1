@@ -1,31 +1,108 @@
 
-Misc. Reference Manual Pages                          (Java EE 6)
+asadmin Utility Subcommands              delete-local-instance(1)
 
 NAME
-      -
+     delete-local-instance - deletes a GlassFish Server  instance
+     on the machine where the subcommand is run
 
 SYNOPSIS
-      [--help]
+     delete-local-instance [--help]
+     [--nodedir node-dir] [--node node-name]
+     [instance-name]
 
 DESCRIPTION
+     The delete-local-instance  subcommand  deletes  a  GlassFish
+     Server  instance on the machine where the subcommand is run.
+     This subcommand does not require secure shell  (SSH)  to  be
+     configured. You must run this command from the machine where
+     the instance resides.
+
+     The subcommand can delete  any  GlassFish  Server  instance,
+     regardless  of  how  the  instance was created. For example,
+     this subcommand can delete an instance that was  created  by
+     using the create-instance(1) subcommand.
+
+     The instance that is being deleted must not be running. Oth-
+     erwise, an error occurs.
+
+     The subcommand deletes an instance by performing the follow-
+     ing actions:
+
+         o    Removing the instance from the configuration of the
+              domain administration server (DAS)
+
+         o    Deleting the instance's files from file system
+
+     If the instance that is being deleted is the  only  instance
+     that  is  using  the  node directory, that directory is also
+     removed.
+
+     If a standalone instance is deleted,  the  instance's  stan-
+     dalone  configuration is also deleted. A standalone instance
+     refers to a configuration that is named instance-name-config
+     to which no other clusters or unclustered instances refer.
+
+     The delete-local-instance subcommand does  not  contact  the
+     DAS  to determine the node on which the instance resides. To
+     determine the node on which the instance resides,  the  sub-
+     command  searches  the  directory  that  contains  the  node
+
+Java EE 6           Last change: 13 Sep 2010                    1
+
+asadmin Utility Subcommands              delete-local-instance(1)
+
+     directories. If multiple node directories  exist,  the  node
+     must be specified as an option of the subcommand.
+
+     This subcommand is supported in local mode and remote mode.
+
 OPTIONS
      --help
      -?
 
          Displays the help text for the subcommand.
 
-OPERANDS
-EXAMPLES
-     Example 1
+     --nodedir
+         Specifies the directory  that  contains  the  instance's
+         node  directory.  The instance's files are stored in the
+         instance's  node   directory.   The   default   is   as-
+         install/nodes.
 
-       asadmin>
+     --node
+
+         Specifies the node on which the instance  resides.  This
+         option  may be omitted only if the directory that the --
+         nodedir option specifies contains only one  node  direc-
+         tory. Otherwise, this option is required.
+
+OPERANDS
+     instance-name
+         The name of the instance to delete.
+
+EXAMPLES
+     Example 1 Deleting an Instance
+
+     This example deletes the instance pmdsainst.
+
+       asadmin> delete-local-instance pmdsainst
+
+       Command delete-local-instance executed successfully.
 
 EXIT STATUS
      0                           command executed successfully
 
      1                           error in executing the command
 
-SEE ALSO
+Java EE 6           Last change: 13 Sep 2010                    2
 
-SunOS 5.10                Last change:                          1
+asadmin Utility Subcommands              delete-local-instance(1)
+
+SEE ALSO
+     create-instance(1),    create-local-instance(1),     delete-
+     instance(1),   start-instance(1),   start-local-instance(1),
+     stop-instance(1) stop-local-instance(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 13 Sep 2010                    3
 
