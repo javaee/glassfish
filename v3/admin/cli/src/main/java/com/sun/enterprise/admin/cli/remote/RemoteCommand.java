@@ -405,8 +405,18 @@ public class RemoteCommand extends CLICommand {
      * @return usage text
      */
     public String getUsage() {
-        if (usage == null)
+        if (usage == null) {
+            if (rac == null) {
+                /*
+                 * We weren't able to initialize the RemoteAdminCommand
+                 * object, probably because we failed to parse the program
+                 * options.  With no ability to contact the remote server,
+                 * we can't provide any usage information.  Sigh.
+                 */
+                return strings.get("Usage.noserver");
+            }
             usage = rac.getUsage();
+        }
         if (usage == null)
             return super.getUsage();
 
