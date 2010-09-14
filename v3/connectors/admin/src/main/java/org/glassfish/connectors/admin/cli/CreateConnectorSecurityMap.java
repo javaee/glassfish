@@ -123,7 +123,7 @@ public class CreateConnectorSecurityMap extends ConnectorSecurityMap implements 
         if (principals != null && userGroups != null) {
             report.setMessage(localStrings.getLocalString("create.connector.security.map.specifyPrincipalsOrGroupsMap",
                     "A work-security-map can have either (any number of) group mapping or (any number of) principals" +
-                            " mapping but not both. Specify --principalsmap or --groupsmap."));
+                            " mapping but not both. Specify --principals or --usergroups."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
