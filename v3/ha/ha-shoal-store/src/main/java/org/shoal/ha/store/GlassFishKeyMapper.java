@@ -67,11 +67,7 @@ public class GlassFishKeyMapper
         String cookieStr = null;
 
         if (key != null) {
-            String mappedInstance = super.getMappedInstance(groupName, key);
-            if (version == null) {
-                version = "" + Long.MIN_VALUE;
-            }
-            cookieStr = (mappedInstance == null) ? (":" + version) : (mappedInstance + ":" + version);
+            cookieStr = super.getReplicaChoices(groupName, key);
         }
         return new HACookieInfo(cookieStr);
     }
@@ -84,6 +80,16 @@ public class GlassFishKeyMapper
         } else {
             return super.getMappedInstance(groupName, key1);
         }
-    } 
+    }
+
+    @Override
+    public String getReplicaChoices(String groupName, Object key) {
+        HACookieInfo cookieInfo = HACookieManager.getCurrent();
+        if (cookieInfo.getReplica() != null) {
+            return cookieInfo.getCookie();
+        } else {
+            return super.getReplicaChoices(groupName, key);
+        }
+    }
 
 }
