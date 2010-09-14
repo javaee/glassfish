@@ -70,6 +70,7 @@ public final class ValidateMulticastCommand extends CLICommand {
     private static final String BIND_INT_OPTION = "bindinterface";
     private static final String PERIOD_OPTION = "sendperiod";
     private static final String TIMEOUT_OPTION = "timeout";
+    private static final String TTL_OPTION = "timetolive";
     private static final String DEBUG_OPTION = "debug";
 
     @Param(name=PORT_OPTION, optional=true)
@@ -86,6 +87,9 @@ public final class ValidateMulticastCommand extends CLICommand {
 
     @Param(name=TIMEOUT_OPTION, optional=true)
     private String timeout;
+
+    @Param(name=TTL_OPTION, optional=true)
+    private String ttl;
 
     @Param(name="verbose", optional=true)
     private String debug;
@@ -118,6 +122,10 @@ public final class ValidateMulticastCommand extends CLICommand {
         if (timeout != null && !timeout.isEmpty()) {
             argList.add(DASH + TIMEOUT_OPTION);
             argList.add(timeout);
+        }
+        if (ttl != null && !ttl.isEmpty()) {
+            argList.add(DASH + TTL_OPTION);
+            argList.add(ttl);
         }
         if (debug != null && "true".equalsIgnoreCase(debug)) {
             argList.add(DASH + DEBUG_OPTION);
