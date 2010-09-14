@@ -72,7 +72,7 @@ public final class SetupSshKey extends CLICommand {
     @Param(optional = true)
     private String sshpublickeyfile;
 
-    @Param(optional = false, primary = true, multiple = true)
+    @Param(name="hosts", optional = false, primary = true, multiple = true)
     private String[] nodes;
 
     @Inject

@@ -47,6 +47,7 @@ import com.sun.enterprise.util.OS;
 
 import com.sun.enterprise.universal.process.ProcessManager;
 import com.sun.enterprise.universal.process.ProcessManagerException;
+import com.sun.enterprise.universal.process.ProcessUtils;
 
 import com.trilead.ssh2.Connection;
 import com.trilead.ssh2.KnownHosts;
@@ -83,7 +84,7 @@ import java.util.logging.Logger;
 @Scoped(PerLookup.class)
 public class SSHLauncher {
 
-    private static final String SSH_DIR = ".ssh/";
+    private static final String SSH_DIR = ".ssh" + File.separator;
     private static final String AUTH_KEY_FILE = "authorized_keys";
     private static final int DEFAULT_TIMEOUT_MSEC = 120000; // 2 minutes
   /**
@@ -582,7 +583,7 @@ public class SSHLauncher {
             c = new Connection(host, port);
             c.connect();
             File f = new File(keyFile);
-            logger.info("Connecting using cred: " + userName + ":" + keyFile + ":" + rawKeyPassPhrase);
+            logger.info("Connecting using credentials: user=" + userName + " keyfile=" + keyFile + " keypassphrase=" + getPrintablePassword(rawKeyPassPhrase));
             status = c.authenticateWithPublicKey(userName, f, rawKeyPassPhrase);
             if (status) {
                 logger.info("Successfully connected to " + userName + "@" + host + " using keyfile " + keyFile);
@@ -621,7 +622,8 @@ public class SSHLauncher {
 
         ProcessManager pm = new ProcessManager(cmdLine);
 
-        logger.fine("Command = " + cmdLine.toString());
+        //commenting since this log statement displays password in raw form
+        //logger.fine("Command = " + cmdLine.toString());
         pm.setTimeoutMsec(DEFAULT_TIMEOUT_MSEC);
 
         pm.setEcho(true);
@@ -634,7 +636,8 @@ public class SSHLauncher {
             logger.fine("Error while executing ssh-keygen: " + ex.getMessage());
             exit = 1;
         }
-        logger.fine(pm.getStderr());
+        if (exit != 0)
+            logger.fine(pm.getStderr());
         logger.info("ssh-keygen exit status: " + exit);
         return (exit == 0) ? true : false;
     }
@@ -645,33 +648,19 @@ public class SSHLauncher {
      */
     private String findSSHKeygen() {
         List<String> cmds = new ArrayList<String>(Arrays.asList(
-                    "ssh-keygen",
                     "/usr/bin/ssh-keygen",
                     "/usr/local/bin/ssh-keygen"));
-        
+
+        File exe = ProcessUtils.getExe("ssh-keygen");
+        if( exe != null){
+            return exe.getPath();
+        }
+
         for (String s :cmds) {
-            ProcessManager pm = new ProcessManager(s, "-z");
-
-            pm.setTimeoutMsec(DEFAULT_TIMEOUT_MSEC);
-            pm.setEcho(false);
-            
-            boolean found = false;
-
-            try {
-                pm.execute();
-                String err = pm.getStderr();
-                logger.finer(err);
-                if (err.contains("Usage: ssh-keygen ")) {
-                    logger.fine("Found " + s);
-                    found = true;
-                }
-            }
-            catch (ProcessManagerException ex) {
-                found = false;
-            }
-
-            if (found)
+            File f = new File(s);
+            if (f.canExecute()) {
                 return s;
+            }
         }
         return "ssh-keygen";
     }
