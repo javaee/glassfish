@@ -77,7 +77,10 @@ public class ResourceAdapter implements javax.resource.spi.ResourceAdapter {
     private static Logger _logger = LogDomains.getLogger(ResourceAdapter.class, LogDomains.RSR_LOGGER);
 
     public ResourceAdapter() {
-        ra = this;
+        if(ra != null){
+            //we do not expect RA to be initialized multiple times as this is a System RAR
+            ra = this;
+        }
     }
 
     public static ResourceAdapter getInstance() {
