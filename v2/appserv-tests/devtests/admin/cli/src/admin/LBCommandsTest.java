@@ -458,8 +458,8 @@ public class LBCommandsTest extends AdminBaseDevTest {
     private static final String TARGETS_OPTION="--lbtargets";
     private static final String TARGET_OPTION="--target";
 
-    private static final String CHECKSUM1 = "42e91dd95f6bcda75b84c1f465e9691f";
-    private static final String CHECKSUM2 = "93a0f03abddc7f7438f8f5bdf51c079c";
-    private static final String CHECKSUM3 = "06143ab8e04fb3ab4caaebd626f6eafa";
-    private static final String CHECKSUM4 = "9d4f76cbab0d30140c49a2ac8351d028";
+    private static final String CHECKSUM1 = "6e1b1e948e31cfff72e89a1d7da5d65f";
+    private static final String CHECKSUM2 = "b8f0b333dc1b935d8921a420985953b0";
+    private static final String CHECKSUM3 = "4b5d431750cc251bf1920ce46c38ce38";
+    private static final String CHECKSUM4 = "99d66d54e9749427359e2c4b06f63847";
 }
