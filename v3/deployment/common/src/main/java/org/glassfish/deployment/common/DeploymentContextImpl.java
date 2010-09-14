@@ -94,6 +94,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
     Map<String, Object> transientAppMetaData = new HashMap<String, Object>();
     Map<String, ArchiveHandler> moduleArchiveHandlers = new HashMap<String, ArchiveHandler>();
     Map<String, ExtendedDeploymentContext> moduleDeploymentContexts = new HashMap<String, ExtendedDeploymentContext>();
+    ExtendedDeploymentContext parentContext = null;
 
     /** Creates a new instance of DeploymentContext */
     public DeploymentContextImpl(Deployment.DeploymentContextBuilder builder, ServerEnvironment env) {
@@ -457,6 +458,26 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
     public void setModulePropsMap(Map<String, Properties> modulePropsMap) {
         this.modulePropsMap = modulePropsMap;
     }
+
+    /**
+     * Sets the parent context for the module
+     *
+     * @param parentContext
+     */
+    public void setParentContext(ExtendedDeploymentContext parentContext) {
+        this.parentContext = parentContext;
+    }
+
+    /**
+     * Gets the parent context of the module
+     *
+     *
+     * @return the parent context
+     */
+    public ExtendedDeploymentContext getParentContext() {
+        return parentContext;
+    }
+
 
     /**
      * Gets the archive handlers for modules

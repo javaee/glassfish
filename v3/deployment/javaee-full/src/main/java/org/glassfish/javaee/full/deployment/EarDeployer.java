@@ -439,6 +439,7 @@ public class EarDeployer implements Deployer {
                 };
 
                 ((ExtendedDeploymentContext)context).getModuleDeploymentContexts().put(moduleUri, moduleContext);
+                moduleContext.setParentContext((ExtendedDeploymentContext)context);
                 return moduleContext;
     }
 

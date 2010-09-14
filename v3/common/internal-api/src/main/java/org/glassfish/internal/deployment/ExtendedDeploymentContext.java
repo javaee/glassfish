@@ -139,6 +139,21 @@ public interface ExtendedDeploymentContext extends DeploymentContext {
      */
     public void setClassLoader(ClassLoader cloader);
 
+   /**
+     * Sets the parent context
+     *
+     * @param parentContext 
+     */
+    public void setParentContext(ExtendedDeploymentContext parentContext);
+
+    /**
+     * Gets the parent context for this context
+     *
+     * @return the parent context
+     */
+    public ExtendedDeploymentContext getParentContext();
+
+
     /**
      * Returns the internal directory for the application (used for holding
      * the uploaded archive, for example).
