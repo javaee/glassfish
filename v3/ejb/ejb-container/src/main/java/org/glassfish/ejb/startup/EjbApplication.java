@@ -70,6 +70,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.deployment.UndeployCommandParameters;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 
 /**
  * This class represents a logical collection of EJB components contained in one ejb-jar
@@ -250,12 +251,25 @@ public class EjbApplication
             if (isKeepState(depc, false, ejbBundle)) {
                 Properties appProps = depc.getAppProps();
                 Object appId = appProps.get(EjbDeployer.APP_UNIQUE_ID_PROP);
-                Properties actionReportProps = depc.getActionReport().getExtraProperties();
+                Properties actionReportProps = null;
+
+                if(ejbBundle.getApplication().isVirtual()) {
+                    actionReportProps = depc.getActionReport().getExtraProperties();
+                } else { // the application is EAR
+                    ExtendedDeploymentContext exdc = (ExtendedDeploymentContext) depc;
+                    actionReportProps = exdc.getParentContext().getActionReport().getExtraProperties();
+                }
                 if (actionReportProps != null) {
                     actionReportProps.put(EjbDeployer.APP_UNIQUE_ID_PROP, appId);
                     ejbBundle.setKeepState(String.valueOf(true));
                     _logger.log(Level.INFO, "keepstate is true, saving appId {0} for application {1}.",
                             new Object[]{appId, this});
+                } else {
+                    // keepstate is true but actionReportProps is null, which means
+                    // this is not redeploy.  This could happen during undeploy when
+                    // keep-state is set to true in deployment descriptors,
+                    // or undeploy --keepstate
+                    ejbBundle.setKeepState(String.valueOf(false));
                 }
             }
         }
