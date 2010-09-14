@@ -532,20 +532,16 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                                 boolean embedded) throws Exception {
         for(com.sun.enterprise.config.serverbeans.Resource configBeanResource : configBeanResources){
             if(configBeanResource instanceof ResourcePool){
-                //if(configBeanResource instanceof JdbcConnectionPool){
-                    ResourcePool resourcePool = (ResourcePool)configBeanResource;
-
-                    if(embedded){
-                        if(isEmbeddedRarResource(configBeanResource, configBeanResources) == TriState.TRUE){
-                            getResourceDeployer(resourcePool).deployResource(resourcePool, applicationName, moduleName);
-                        }
-                    }else{
-                        if(isEmbeddedRarResource(configBeanResource, configBeanResources) == TriState.FALSE){
-                            getResourceDeployer(resourcePool).deployResource(resourcePool, applicationName, moduleName);
-                        }
+                ResourcePool resourcePool = (ResourcePool)configBeanResource;
+                if(embedded){
+                    if(isEmbeddedRarResource(configBeanResource, configBeanResources) == TriState.TRUE){
+                        getResourceDeployer(resourcePool).deployResource(resourcePool, applicationName, moduleName);
                     }
-                //}
-
+                }else{
+                    if(isEmbeddedRarResource(configBeanResource, configBeanResources) == TriState.FALSE){
+                        getResourceDeployer(resourcePool).deployResource(resourcePool, applicationName, moduleName);
+                    }
+                }
             }else if(configBeanResource instanceof BindableResource) {
                 BindableResource resource = (BindableResource)configBeanResource;
                 ResourceInfo resourceInfo = new ResourceInfo(resource.getJndiName(), applicationName, moduleName);
