@@ -42,6 +42,7 @@ package org.glassfish.gms;
 
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.ee.cms.core.*;
+import com.sun.enterprise.ee.cms.core.AliveAndReadySignal;
 import com.sun.enterprise.ee.cms.core.GroupManagementService;
 import com.sun.enterprise.ee.cms.impl.client.*;
 import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
@@ -656,6 +657,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             if (signal instanceof JoinedAndReadyNotificationSignal ||
                 signal instanceof FailureNotificationSignal ||
                 signal instanceof PlannedShutdownSignal) {
+                AliveAndReadySignal arSignal = (AliveAndReadySignal)signal;
                 String signalSubevent = "";
                 if (signal instanceof JoinedAndReadyNotificationSignal) {
                     JoinedAndReadyNotificationSignal jrsig = (JoinedAndReadyNotificationSignal)signal;
@@ -671,8 +673,8 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                         signalSubevent = " Subevent:" + GMSConstants.shutdownType.GROUP_SHUTDOWN.toString();
                     }
                 }
-                AliveAndReadyView current = gms.getGroupHandle().getCurrentAliveAndReadyCoreView();
-                AliveAndReadyView previous = gms.getGroupHandle().getPreviousAliveAndReadyCoreView();
+                AliveAndReadyView current = arSignal.getCurrentView();
+                AliveAndReadyView previous = arSignal.getPreviousView();
                 logger.log(Level.INFO, "gmsservice.alive.ready.signal",
                     new Object [] {
                         signal.getClass().getSimpleName() + signalSubevent,
