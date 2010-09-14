@@ -264,7 +264,6 @@ public final class CompositeMetadata implements Storeable {
 
                         if ((attr.getOperation() == SessionAttributeMetadata.Operation.ADD) ||
                                 attr.getOperation() == SessionAttributeMetadata.Operation.UPDATE) {
-                            System.out.println("CompositeMetadata:write " + attr.getOperation() + " Attribute name " + attrName);
                             byte[] attrData = attr.getState();
                             if (attrData == null) {
                                 dos.writeInt(0);
@@ -303,7 +302,6 @@ public final class CompositeMetadata implements Storeable {
             boolean[] dirtyFlags = new boolean[3];
             for (int i = 0; i < dirtyFlags.length; i++) {
                 dirtyFlags[i] = dis.readBoolean();
-                System.out.println("_storeable_readState.DirtyFlag [" + i + "] is " + dirtyFlags[i]);
             }
 
 
@@ -347,12 +345,10 @@ public final class CompositeMetadata implements Storeable {
                                 byte[] attrData = new byte[dataLen];
                                 dis.read(attrData);
                                 attributesMap.put(attrName, new SessionAttributeMetadata(attrName, smdOpcode, attrData));
-                                System.out.println("CompositeMetadata: " + smdOpcode + " Attribute name " + attrName);
                                 break;
 
                             case DELETE:
                                 attributesMap.remove(attrName);
-                                System.out.println("CompositeMetadata: DELETE " + smdOpcode + " Attribute name " + attrName);
                                 break;
 
                         }

@@ -92,19 +92,21 @@ public class HASessionStoreValve extends ValveBase {
         ReplicationWebEventPersistentManager manager;
         StandardContext  context;
 
-        HttpServletRequest httpServletrequest = (HttpServletRequest)request.getRequest();
-        HttpSession session = httpServletrequest.getSession(false);
+
+        //HttpSession session = httpServletrequest.getSession(false);
+        Session session = request.getSessionInternal(false);
         if (session != null) {
             sessionId = session.getId();
-        }
-        
-        System.out.println("id is " + sessionId);
-        if (sessionId != null) {
-            context = (StandardContext) request.getContext();
-            manager = (ReplicationWebEventPersistentManager)context.getManager();
-            String replica = manager.getReplicaFromPredictor(sessionId, "-1");
-            
-            httpServletrequest.setAttribute("jreplicaLocation", replica);
+      
+            if (sessionId != null) {
+                context = (StandardContext) request.getContext();
+                manager = (ReplicationWebEventPersistentManager)context.getManager();
+                String version = (new Long(session.getVersion())).toString();
+                String replica = manager.getReplicaFromPredictor(sessionId, version);
+
+                HttpServletRequest httpServletrequest = (HttpServletRequest)request.getRequest();
+                httpServletrequest.setAttribute("jreplicaLocation", replica);
+            }
         }
 
 

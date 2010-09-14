@@ -518,9 +518,9 @@ public class ReplicationStore extends HAStoreBase {
             
 
             if (ois == null) {
-                ois = new ObjectInputStream(is); 
+                ois = new ObjectInputStream(is);
             }
-            if(ois != null) {               
+            if(ois != null) {
                 try {
                     _session = readSession(manager, ois);
                 } 

@@ -86,6 +86,7 @@ public abstract class BaseHASession extends StandardSession
      */
     public void setId(String id) {
         super.setId(id);
+        
     } 
 
     /**
