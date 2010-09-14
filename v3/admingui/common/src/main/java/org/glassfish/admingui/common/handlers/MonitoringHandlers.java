@@ -803,6 +803,7 @@ public class MonitoringHandlers {
         @HandlerInput(name="app",   type=String.class, required=true),
         @HandlerInput(name="compVal",   type=String.class, required=true),
         @HandlerInput(name="vsList",   type=List.class, required=true),
+        @HandlerInput(name="monitorURL",   type=String.class, required=true),
         @HandlerInput(name="moduleProps",   type=Map.class, required=true)},
        output = {
         @HandlerOutput(name = "webStatUrl", type = String.class),
@@ -810,12 +811,13 @@ public class MonitoringHandlers {
        })
     public static void getWebStatsUrl(HandlerContext handlerCtx) {
         String app = (String) handlerCtx.getInputValue("app");
+        String monitorURL = (String) handlerCtx.getInputValue("monitorURL");
         List<String> vsList = (List<String>) handlerCtx.getInputValue("vsList");
         String compVal = (String) handlerCtx.getInputValue("compVal");
         Map<String, String> moduleProps = (Map<String, String>) handlerCtx.getInputValue("moduleProps");
         String webStatUrl = "EMPTY";
         String statType = "EMPTY";
-        String monitorEndpoint = GuiUtil.getSessionValue("MONITOR_URL") + "/server/applications/" + app;
+        String monitorEndpoint = monitorURL + "/applications/" + app;
 
         if (compVal == null || compVal.equals("")) {
             for (String vs : vsList) {
@@ -846,6 +848,7 @@ public class MonitoringHandlers {
       input={
         @HandlerInput(name="app",   type=String.class, required=true),
         @HandlerInput(name="moduleProps",   type=Map.class, required=true),
+        @HandlerInput(name="monitorURL",   type=String.class, required=true),
         @HandlerInput(name="compVal",   type=String.class, required=true)},
        output = {
         @HandlerOutput(name = "statUrl", type = String.class),
@@ -854,12 +857,12 @@ public class MonitoringHandlers {
     public static void getStatsUrl(HandlerContext handlerCtx) {
         String app = (String) handlerCtx.getInputValue("app");
         String comp = (String) handlerCtx.getInputValue("compVal");
+        String monitorURL = (String) handlerCtx.getInputValue("monitorURL");
         Map<String, String> moduleProps = (Map<String, String>) handlerCtx.getInputValue("moduleProps");
         String statUrl = "EMPTY";
         String statType = "";
-        String monitorUrl = (String) GuiUtil.getSessionValue("MONITOR_URL");
 
-        statUrl = monitorUrl + "/server/applications/" + app + "/" + comp;
+        statUrl = monitorURL + "/applications/" + app + "/" + comp;
 
         if (comp != null && doesProxyExist(statUrl)) {
             String[] compStrs = comp.split("/");
@@ -938,7 +941,7 @@ public class MonitoringHandlers {
      * first jdbc element and first connector element for the given set of
      * pool names  and resources endpoint. 
      */
-    @Handler(id = "getMonitoringPools",
+    @Handler(id = "gf.getMonitoringPools",
       input={
         @HandlerInput(name="poolNames",   type=List.class, required=true),
         @HandlerInput(name="endpoint",   type=String.class, required=true)},
@@ -976,20 +979,69 @@ public class MonitoringHandlers {
         handlerCtx.setOutputValue("firstConnector", firstConnector);
     }
 
+    @Handler(id = "gf.getInstanceMonitorURL",
+      input={
+        @HandlerInput(name="instanceName",   type=String.class, defaultValue="server")},
+       output = {
+        @HandlerOutput(name = "monitorURL", type = String.class)
+       })
+    public static void getInstanceMonitorURL(HandlerContext handlerCtx) {
+        String instanceName = (String) handlerCtx.getInputValue("instanceName");
+        String monitorURL = null;
+        String serverRestURL = (String) GuiUtil.getSessionValue("REST_URL");
+        String port = null;
 
-    public static Boolean doesAppProxyExist(String name, String type) {
-        List proxyList = V3AMX.getProxyListByType(type);
-        boolean proxyexist = false;
-        if (proxyList != null && proxyList.size() != 0) {
-            ListIterator li = proxyList.listIterator();
-            while (li.hasNext()) {
-                String pname = (String) li.next();
-                if (pname.contains(name+"/")) {
-                    proxyexist = true;
+        if (instanceName.equals("server")) {
+            monitorURL = (String) GuiUtil.getSessionValue("MONITOR_URL") + "/server";
+        } else {
+            if (doesProxyExist(serverRestURL + "/servers/server/" + instanceName + "/system-property/ASADMIN_LISTENER_PORT")) {
+                port = (String) RestApiHandlers.getAttributesMap(serverRestURL + "/servers/server/" + instanceName + "/system-property/ASADMIN_LISTENER_PORT").get("value");
+            } else {
+                String configName = (String) RestApiHandlers.getAttributesMap(serverRestURL + "/servers/server/" + instanceName).get("configRef");
+                port = (String) RestApiHandlers.getAttributesMap(serverRestURL + "/configs/config/" + configName + "/network-config/network-listeners/network-listener/admin-listener").get("port");
+                port = port.trim();
+                if (port.startsWith("${")) {
+                    port = port.substring(2, port.length() - 1);
+                    port = (String) RestApiHandlers.getAttributesMap(serverRestURL + "/configs/config/" + configName + "/system-property/ASADMIN_LISTENER_PORT").get("value");
                 }
             }
+            String node = (String) RestApiHandlers.getAttributesMap(serverRestURL + "/servers/server/" + instanceName).get("node");
+            String nodeHost = (String) RestApiHandlers.getAttributesMap(serverRestURL + "/nodes/node/" + node).get("nodeHost");
+            if (serverRestURL.startsWith("https:")) {
+                monitorURL = "https://"+nodeHost+":"+ port + "/monitoring/domain/" + instanceName +"/server";
+            } else {
+                monitorURL = "http://"+nodeHost+":"+ port + "/monitoring/domain/" + instanceName +"/server";
+            }
+        }
+        handlerCtx.setOutputValue("monitorURL", monitorURL);
+    }
+
+    public static Boolean doesAppProxyExist(String appName, String moduleName) {
+        boolean proxyexist = false;
+        Map<String, Object> subComps = getSubComponents(appName, moduleName);
+        if (subComps != null && subComps.size() > 0) {
+            proxyexist = true;
         }
         return proxyexist;
+    }
+
+    public static Map<String, Object> getSubComponents(String appName, String moduleName) {
+        String endpoint = GuiUtil.getSessionValue("REST_URL") + "/applications/application/list-sub-components";
+        Map<String, Object> attrs = new HashMap<String, Object>();
+        attrs.put("appname", appName);
+        attrs.put("modulename", moduleName);
+
+        try {
+            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, attrs, "GET", null);
+            Map<String, Object> propsMap = (Map<String, Object>) ((Map<String, Object>) responseMap.get("data")).get("properties");
+            if (propsMap != null && propsMap.size() > 0) {
+                return propsMap;
+            }
+        } catch (Exception ex) {
+            GuiUtil.getLogger().severe("Error in doesAppProxyExist ; \nendpoint = " + endpoint + "attrs=" + attrs + "method=GET");
+            //we don't need to call GuiUtil.handleError() because thats taken care of in restRequest() when we pass in the handler.
+        }
+        return null;
     }
 
     public static Boolean doesProxyExist(String endpoint) {

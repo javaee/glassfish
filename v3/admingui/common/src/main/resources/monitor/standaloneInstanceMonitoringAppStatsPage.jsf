@@ -44,20 +44,24 @@
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.appMonitor}" >
 <!define name="content">
     <event>
     <!beforeCreate
-        getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
-        urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
+        getRequestValue(key="instanceName" value=>$attribute{instanceName});
+        urlencode(value="#{instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
         setSessionAttribute(key="standaloneInstanceTabs" value="monitorApplications");
+        gf.getInstanceMonitorURL(instanceName="#{pageSession.encodedInstanceName}"  monitorURL="#{pageSession.monitorURL}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/monitor/standaloneInstanceMonitoringAppStatsPage.jsf");
         />
     </event>
             <sun:form id="propertyForm">
 
 #include "/cluster/standalone/standaloneInstanceTabs.inc"
-
-" InstanceName = #{pageSession.instanceName}
+#include "/common/shared/alertMsg.inc"
+#include "monitoringAppStatsPage.inc"
+	<sun:hidden id="helpKey" value="$resource{help_common.monitorApps}" />
             </sun:form>
+#include "/common/shared/changeButtonsJS.inc"
 </define>
 </composition>

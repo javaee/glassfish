@@ -40,12 +40,28 @@
 
 -->
 
-<sun:tab id="monitoring" immediate="true" text="$resource{i18nc.monitoring}" toolTip="$resource{i18nc.monitoring} Tab">
+<!initPage
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+/>
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.serverMonitor}" >
+<!define name="content">
+    <event>
     <!beforeCreate
-        setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings");
-    />
-    <!command
-	setSessionAttribute(key="serverInstTabs" value="monitoring");
-	gf.redirect(page="#{request.contextPath}/common/monitor/serverInstMonitoringAppsPage.jsf");
-    />
-</sun:tab>
+        getRequestValue(key="instanceName" value=>$attribute{instanceName});
+        urlencode(value="#{instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
+        setSessionAttribute(key="standaloneInstanceTabs" value="monitorServer");
+        gf.getInstanceMonitorURL(instanceName="#{pageSession.encodedInstanceName}"  monitorURL="#{pageSession.monitorURL}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/monitor/serverInstMonitoringServerPage.jsf");
+        />
+    </event>
+            <sun:form id="propertyForm">
+
+#include "/cluster/standalone/standaloneInstanceTabs.inc"
+#include "/shared/alertMsg.inc"
+#include "monitoringServerStatsPage.inc"
+	<sun:hidden id="helpKey" value="$resource{help_web.monitorRuntime}" />
+            </sun:form>
+#include "/shared/changeButtonsJS.inc"
+</define>
+</composition>

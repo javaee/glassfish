@@ -45,26 +45,28 @@
     setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.resourcesMonitor}" >
 <!define name="content">
     <event>
     <!beforeCreate
-        getRequestValue(key="clusterName" value="#{pageSession.clusterName}");
-        urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
-        getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
-        urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
+        getRequestValue(key="clusterName" value=>$attribute{clusterName});
+        urlencode(value="#{clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
+        getRequestValue(key="instanceName" value=>$attribute{instanceName});
+        urlencode(value="#{instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
         setSessionAttribute(key="clusterInstanceTabs" value="monitorResources");
-
+        gf.getInstanceMonitorURL(instanceName="#{pageSession.encodedInstanceName}"  monitorURL="#{pageSession.monitorURL}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/monitor/clusterInstanceMonitoringResourcePage.jsf");
 
         />
     </event>
             <sun:form id="propertyForm">
 
 #include "/cluster/cluster/clusterInstanceTabs.inc"
-"<br/>
-" ClusterName = #{pageSession.clusterName}
-"<br/>
-" InstanceName = #{pageSession.instanceName}
+#include "/shared/alertMsg.inc"
+#include "monitoringResourcesStatsPage.inc"
+
+    <sun:hidden id="helpKey" value="$resource{help_common.monitorResources}" />
             </sun:form>
+#include "/shared/changeButtonsJS.inc" 
 </define>
 </composition>

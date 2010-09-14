@@ -40,16 +40,8 @@
 
 -->
 
-<!-- monitor/monitoringAppStatsPage.jsf -->
+<!-- monitor/monitoringAppStatsPage.inc -->
 
-<!initPage
-    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
-    setResourceBundle(key="help_web" bundle="org.glassfish.common.admingui.Helplinks")
-          
-/>
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.appMonitor}" >
-<!define name="content">
 <event>
     <!beforeCreate
         gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/applications/application" result="#{pageSession.tmpList}");
@@ -81,31 +73,35 @@
             setPageSessionAttribute(key="propsMap" value="#{requestScope.result.data.properties}");
         }
         
-        getWebStatsUrl(app="#{appFullName}", compVal="#{cVal}", vsList="#{pageSession.vsList}", moduleProps="#{pageSession.propsMap}", webStatUrl=>$attribute{webStatUrl}, webStatType=>$attribute{webStatType});
+        getWebStatsUrl(app="#{appFullName}", compVal="#{cVal}", monitorURL="#{pageSession.monitorURL}", vsList="#{pageSession.vsList}", moduleProps="#{pageSession.propsMap}", webStatUrl=>$attribute{webStatUrl}, webStatType=>$attribute{webStatType});
         getNameforMbean(appName="#{viewVal}", compVal="#{cVal}", end="true", mbeanName=>$attribute{mbName});
-        getStatsUrl(app="#{appFullName}", compVal="#{cVal}", moduleProps="#{pageSession.propsMap}", statUrl=>$attribute{statUrl}, statType=>$attribute{statType});
+        getStatsUrl(app="#{appFullName}", compVal="#{cVal}", monitorURL="#{pageSession.monitorURL}", moduleProps="#{pageSession.propsMap}", statUrl=>$attribute{statUrl}, statType=>$attribute{statType});
         calculateHelpUrl(pluginId="#{pluginId}", helpKey: "$resource{help_web.monitorApps}", url="#{olhLink}");
     />
 </event>    
-            <sun:form id="propertyForm">
-#include "/common/appServer/serverInstTabs.inc"
-#include "/common/shared/alertMsg.inc"
-                 <sun:title id="propertyContentPage" title="$resource{i18nc.appMonitor}"
-                 helpText="$resource{i18nc.monitoring.webContainer.PageHelp}">
-            <!facet pageButtonsTop>
-                <sun:panelGroup id="topButtons">
-                    <sun:button id="refreshButton" 
-                                text="$resource{i18n.button.Refresh}">
+
+<sun:title id="propertyContentPage" title="$resource{i18nc.appMonitor}"
+    helpText="$resource{i18nc.monitoring.webContainer.PageHelp}">
+        <!facet pageButtonsTop>
+            <sun:panelGroup id="topButtons">
+                <sun:button id="refreshButton"
+                            text="$resource{i18n.button.Refresh}">
                     <!command
                         setAttribute(key="viewVal" value="#{viewVal}");
                         setAttribute(key="monitorList" value="#{monitorList}");
                         setAttribute(key="cVal" value="#{cVal}");
                         setAttribute(key="componentList" value="#{componentList}");
-                        gf.navigate(page="#{request.contextPath}/common/monitor/monitoringAppStatsPage.jsf");
-                    />              
-                    </sun:button>
-                </sun:panelGroup>
-            </facet> 
+                        if ("$pageSession{encodedInstanceName}") {
+                            setAttribute(key="instanceName" value="$pageSession{encodedInstanceName}");
+                        }
+                        if ("$pageSession{encodedClusterName}") {
+                            setAttribute(key="clusterName" value="$pageSession{encodedClusterName}");
+                        }
+                        gf.navigate(page="#{pageSession.selfPage}");
+                    />
+                </sun:button>
+            </sun:panelGroup>
+        </facet>
             
 		 "<br /><br />
             <sun:propertySheet id="propertySheet">
@@ -118,13 +114,19 @@
                                     setAttribute(key="viewVal" value="#{click.selected}");
                                     setAttribute(key="componentList" value="#{componentList}");
                                     setAttribute(key="monitorList" value="#{monitorList}");
-                                    gf.navigate(page="#{request.contextPath}/common/monitor/monitoringAppStatsPage.jsf");
+                                    if ("$pageSession{encodedInstanceName}") {
+                                        setAttribute(key="instanceName" value="$pageSession{encodedInstanceName}");
+                                    }
+                                    if ("$pageSession{encodedClusterName}") {
+                                        setAttribute(key="clusterName" value="$pageSession{encodedClusterName}");
+                                    }
+                                    gf.navigate(page="#{pageSession.selfPage}");
                                 />
                 </sun:dropDown>
                 "&nbsp;&nbsp;&nbsp;&nbsp;
                 <sun:dropDown id="ComponentView" label="$resource{i18nc.monitoring.Component} : " items="$attribute{componentList}" selected="#{cVal}"  submitForm="#{true}" immediate="#{true}" >
                                 <!beforeCreate
-                                   populateComponentDropDown(AppName="#{viewVal}", VSList="#{vsList}", ComponentList=>$attribute{componentList});
+                                   populateComponentDropDown(AppName="#{appValue}", VSList="#{vsList}", ModuleName="#{viewVal}", MonitorURL="#{pageSession.monitorURL}", ComponentList=>$attribute{componentList});
                                  />
                                 <!command
                                     setAttribute(key="click" value="$this{component}");
@@ -132,7 +134,13 @@
                                     setAttribute(key="viewVal" value="#{viewVal}");
                                     setAttribute(key="componentList" value="#{componentList}");
                                     setAttribute(key="monitorList" value="#{monitorList}");
-                                    gf.navigate(page="#{request.contextPath}/common/monitor/monitoringAppStatsPage.jsf");
+                                    if ("$pageSession{encodedInstanceName}") {
+                                        setAttribute(key="instanceName" value="$pageSession{encodedInstanceName}");
+                                    }
+                                    if ("$pageSession{encodedClusterName}") {
+                                        setAttribute(key="clusterName" value="$pageSession{encodedClusterName}");
+                                    }
+                                    gf.navigate(page="#{pageSession.selfPage}");
                                 />
                                 <!afterCreate
                                     getClientId(component="$this{component}" clientId=>$page{dropDownId});
@@ -277,7 +285,7 @@
     <sun:tableRowGroup id="wmStats" rendered="#{hasStatsWMS}" data={"$attribute{wmStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.WorkManagementStats} : #{viewVal}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStats(endpoint="#{sessionScope.MONITOR_URL}/server/connector-service/#{viewVal}/work-management", result=>$attribute{wmStatsList}  hasStats=>$attribute{hasStatsWMS});
+            getStats(endpoint="#{pageSession.monitorURL}/connector-service/#{viewVal}/work-management", result=>$attribute{wmStatsList}  hasStats=>$attribute{hasStatsWMS});
         
          />  
                         
@@ -351,8 +359,3 @@
     
 </sun:table>
 </sun:title>
-	<sun:hidden id="helpKey" value="$resource{help_web.monitorApps}" />
-            </sun:form>
-#include "/common/shared/changeButtonsJS.inc"        
-</define>
-</composition>

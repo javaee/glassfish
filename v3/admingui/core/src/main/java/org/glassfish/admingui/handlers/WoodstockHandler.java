@@ -76,10 +76,13 @@ import java.util.ListIterator;
 import java.util.ArrayList;
 
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.handlers.MonitoringHandlers;
+import org.glassfish.admingui.common.handlers.RestApiHandlers;
 import org.glassfish.admingui.util.SunOptionUtil;
 
 public class WoodstockHandler {
@@ -418,19 +421,16 @@ public class WoodstockHandler {
             while (al.hasNext()) {
                 ArrayList moduleList = new ArrayList();
                 String appName = (String) al.next();
-                Map<String, AMXProxy> modules = V3AMX.getInstance().getApplication(appName).childrenMap("module");
-                for (AMXProxy oneModule : modules.values()) {
-                    String moduleName = oneModule.getName();
-                        boolean hasSfullStats = MonitoringHandlers.doesAppProxyExist(moduleName, "stateful-session-bean-mon");
-                        boolean hasSlessStats = MonitoringHandlers.doesAppProxyExist(moduleName, "stateless-session-bean-mon");
-                        boolean hasWebStats = MonitoringHandlers.doesAppProxyExist(moduleName, "servlet-instance-mon");
-                        boolean hasMdbStats = MonitoringHandlers.doesAppProxyExist(moduleName, "message-driven-bean-mon");
-                        boolean hasPoolStats = MonitoringHandlers.doesAppProxyExist(moduleName, "bean-pool-mon");
-                        boolean hasCacheStats = MonitoringHandlers.doesAppProxyExist(moduleName, "bean-cache-mon");
-                        boolean hasMethodStats = MonitoringHandlers.doesAppProxyExist(moduleName, "bean-method-mon");
-                        if (hasSfullStats || hasSlessStats || hasWebStats || hasMdbStats || hasPoolStats || hasCacheStats || hasMethodStats) {
-                            moduleList.add(moduleName);
-                        }
+                Set<String> modules = new HashSet<String>();
+                try {
+                    modules = RestApiHandlers.getChildMap(GuiUtil.getSessionValue("REST_URL") + "/applications/application/" + appName + "/module").keySet();
+                } catch (Exception ex) {
+                    GuiUtil.handleException(handlerCtx, ex);
+                }
+                for (String moduleName : modules) {
+                    if (MonitoringHandlers.doesAppProxyExist(appName, moduleName)) {
+                        moduleList.add(moduleName);
+                    }
                 }
                if (moduleList.isEmpty()) {
                     menuList.add(new Option(appName, appName));
@@ -443,8 +443,7 @@ public class WoodstockHandler {
                     if (firstItem == null){
                         firstItem = (String)moduleList.get(0);
                     }
-                }
-                
+                }                
           }
         }
 
@@ -461,66 +460,40 @@ public class WoodstockHandler {
      */
     @Handler(id = "populateComponentDropDown",
     input = {
+        @HandlerInput(name = "ModuleName", type = String.class, required = true),
         @HandlerInput(name = "VSList", type = List.class, required = true),
+        @HandlerInput(name = "MonitorURL", type = String.class, required = true),
         @HandlerInput(name = "AppName", type = String.class, required = true)},
     output = {
         @HandlerOutput(name = "ComponentList", type = Option[].class)})
     public void populateComponentDropDown(HandlerContext handlerCtx) {
-        List vsList = (List) handlerCtx.getInputValue("VSList");
+        String moduleName = (String) handlerCtx.getInputValue("ModuleName");
         String appname = (String) handlerCtx.getInputValue("AppName");
+        String monitorURL = (String) handlerCtx.getInputValue("MonitorURL");
+        List vsList = (List) handlerCtx.getInputValue("VSList");
         ArrayList menuList = new ArrayList();
         menuList.add(new Option("", ""));
+        
         if (appname != null && !appname.isEmpty()) {
-            if (MonitoringHandlers.doesAppProxyExist(appname, "servlet-instance-mon")) {
-                if (vsList != null) {
-                    ListIterator vl = vsList.listIterator();
-                    while (vl.hasNext()) {
-                        String name = (String) vl.next();
-                        List servlets = MonitoringHandlers.servletInstanceValues(appname, "servlet-instance-mon", name);
-                        if (!servlets.isEmpty()) {
-                            OptionGroup menuOptions = getMenuOptions(servlets, name, "", true);
-                            menuList.add(menuOptions);
-                        }
+            //Servlet Instance Menu Options.
+            List servletInstanceMenuOptions = getWebComponentMenuOptions(appname, moduleName, vsList, monitorURL, handlerCtx);
+            menuList.addAll(servletInstanceMenuOptions);
+            //EJB Menu options.
+            Map<String, Object> compsMap = MonitoringHandlers.getSubComponents(appname, moduleName);
+            if (compsMap != null && compsMap.size() > 0) {
+                for (String comp : compsMap.keySet()) {
+                    if (!compsMap.get(comp).equals("Servlet")) {
+                        List compMenuOptions = getEJBComponentMenuOptions(appname, moduleName, comp, monitorURL, handlerCtx);
+                        menuList.addAll(compMenuOptions);
                     }
-                }
-            }
-            if (MonitoringHandlers.doesAppProxyExist(appname, "stateful-session-bean-mon")) {
-                List<String> sfullSession = getEJBComponentsMenuOptions(appname, "stateful-session-bean-mon");
-                if (!sfullSession.isEmpty()) {
-                    menuList.addAll(sfullSession);
-                }
-            }
-            if (MonitoringHandlers.doesAppProxyExist(appname, "stateless-session-bean-mon")) {
-                List<String> slessSession = getEJBComponentsMenuOptions(appname, "stateless-session-bean-mon");
-                if (!slessSession.isEmpty()) {
-                    menuList.addAll(slessSession);
-                }
-            }
-            if (MonitoringHandlers.doesAppProxyExist(appname, "message-driven-bean-mon")) {
-                List<String> mdbs = getEJBComponentsMenuOptions(appname, "message-driven-bean-mon");
-                if (!mdbs.isEmpty()) {
-                    menuList.addAll(mdbs);
-                }
-            }
-            if (MonitoringHandlers.doesAppProxyExist(appname, "singleton-bean-mon")) {
-                List<String> sbs = getEJBComponentsMenuOptions(appname, "singleton-bean-mon");
-                if (!sbs.isEmpty()) {
-                    menuList.addAll(sbs);
-                }
-            }
-            if (MonitoringHandlers.doesAppProxyExist(appname, "entity-bean-mon")) {
-                List ebs = getEJBComponentsMenuOptions(appname, "entity-bean-mon");
-                if (!ebs.isEmpty()) {
-                    menuList.addAll(ebs);
-                }
+                }                               
             }
         }
         // Add Menu Options.
         jumpMenuOptions = (Option[]) menuList.toArray(new Option[menuList.size()]);
-
         handlerCtx.setOutputValue("ComponentList", jumpMenuOptions);
     }
-    
+
     private static List getEJBComponentsMenuOptions(String appname, String ejbtype) {
         List menuList = new ArrayList();
         List ebs = MonitoringHandlers.getAllEjbComps(appname, ejbtype, "");
@@ -539,6 +512,60 @@ public class WoodstockHandler {
         }
         return menuList;
 
+    }
+    
+    private static List getEJBComponentMenuOptions(String appname, String modulename, String compName, String monitorURL, HandlerContext handlerCtx) {
+        String endpoint = monitorURL + "/applications/" + appname + "/" + modulename + "/" + compName;
+        List compMenuList = new ArrayList();
+        List menuList = new ArrayList();
+        Set<String> compChildSet = null;
+        try {
+            compChildSet = RestApiHandlers.getChildMap(endpoint).keySet();
+        } catch (Exception ex) {
+            GuiUtil.getLogger().severe("Error in getEJBComponentMenuOptions ; \nendpoint = " + endpoint + "method=GET");
+        }
+        for (String child : compChildSet) {
+            Set<String> subCompChildSet = null;
+            try {
+                subCompChildSet = RestApiHandlers.getChildMap(endpoint + "/" + child).keySet();
+            } catch (Exception ex) {
+                GuiUtil.getLogger().severe("Error in getEJBComponentMenuOptions ; \nendpoint = " + endpoint + "/" + child + "method=GET");
+            }
+            if (subCompChildSet.size() > 0) {
+                //For ex: bean-methods
+                OptionGroup childCompMenuOptions = getMenuOptions(new ArrayList(subCompChildSet), child, compName, true);
+                menuList.add(childCompMenuOptions);
+            } else {
+                //For ex: bean-cache and bean-
+                compMenuList.add(child);
+            }
+        }
+        compMenuList.add(0, compName);
+        OptionGroup compMenuOptions = getMenuOptions(compMenuList, compName, "", true);
+        menuList.add(0, compMenuOptions);
+        return menuList;
+    }
+
+    private static List getWebComponentMenuOptions(String appname, String modulename, List vsList, String monitorURL, HandlerContext handlerCtx) {
+        String endpoint = monitorURL + "/applications/" + appname + "/" + modulename;
+        List menuList = new ArrayList();
+
+        if (vsList != null) {
+            ListIterator vl = vsList.listIterator();
+            while (vl.hasNext()) {
+                String name = (String) vl.next();
+                try {
+                    List servlets = new ArrayList(RestApiHandlers.getChildMap(endpoint + "/" + name).keySet());
+                    if (!servlets.isEmpty()) {
+                        OptionGroup menuOptions = getMenuOptions(servlets, name, "", true);
+                        menuList.add(menuOptions);
+                    }
+                } catch (Exception ex) {
+                    GuiUtil.getLogger().severe("Error in getWebComponentMenuOptions ; \nendpoint = " + endpoint + "/" + name + "method=GET");
+                }
+            }
+        }
+        return menuList;
     }
 
     private static OptionGroup getMenuOptions(List values, String label, String label2, boolean addLabel) {
