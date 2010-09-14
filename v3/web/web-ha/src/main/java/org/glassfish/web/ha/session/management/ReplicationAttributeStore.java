@@ -613,12 +613,12 @@ public class ReplicationAttributeStore extends ReplicationStore {
     }
     
     private void printAttrList(String attrListType, ArrayList attrList) {
-        if (_logger.isLoggable(Level.INFO)) {
-            _logger.info("AttributeType = " + attrListType);
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("AttributeType = " + attrListType);
             String nextAttrName = null;
             for(int i=0; i<attrList.size(); i++) {
                 nextAttrName = (String)attrList.get(i);
-                _logger.info("attribute[" + i + "]=" + nextAttrName);
+                _logger.fine("attribute[" + i + "]=" + nextAttrName);
             }
         }
     }
