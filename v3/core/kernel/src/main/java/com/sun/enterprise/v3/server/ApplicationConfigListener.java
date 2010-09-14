@@ -49,6 +49,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.component.PostConstruct;
+import com.sun.enterprise.module.bootstrap.StartupContext;
 
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.ActionReport;
@@ -105,8 +106,13 @@ public class ApplicationConfigListener implements TransactionListener,
     @Inject
     Deployment deployment;
 
+    @Inject
+    StartupContext startupContext;
+
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Server server;
+
+    private final static String UPGRADE_PARAM = "-upgrade";
 
     public void transactionCommited( final List<PropertyChangeEvent> changes) {
         for (PropertyChangeEvent event : changes) {
@@ -151,6 +157,16 @@ public class ApplicationConfigListener implements TransactionListener,
     }
 
     public void postConstruct() {
+        Properties arguments = startupContext.getArguments(); 
+        if (arguments != null) {
+            boolean isUpgrade = Boolean.valueOf(
+                arguments.getProperty(UPGRADE_PARAM));  
+            if (isUpgrade) {
+                // we don't want to register this listener for the upgrade
+                // start up
+                return;
+            }
+        }
         transactions.addTransactionsListener(this);
         logger = Logger.getLogger(ApplicationConfigListener.class.getName());
     }
