@@ -53,6 +53,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -1001,14 +1002,17 @@ public class CommandRunnerImpl implements CommandRunner {
                         "All @ExecuteOn attribute and type validation completed successfully. Starting replication stages"));
             }
 
+
             /**
              * We're finally ready to actually execute the command instance.
              * Acquire the appropriate lock.
              */
-            Lock lock = adminLock.getLock(command);
+
+            Lock lock = null;
+            boolean lockTimedOut = false;
             try {
-                if (lock != null)
-                    lock.lock();        // XXX - should use a timeout
+                // XXX: Should not hardcode the timeout.
+                lock = adminLock.getLock(command, 30, "asadmin");
 
             // If command is undoable, then invoke prepare method
             if(command instanceof UndoableCommand) {
@@ -1067,9 +1071,24 @@ public class CommandRunnerImpl implements CommandRunner {
             } else
                 doCommand(model, command, context);
             
+            } catch (AdminCommandLockTimeoutException ex) {
+                lockTimedOut = true;
+                String lockTime = formatSuspendDate(ex.getTimeOfAcquisition());
+                String logMsg = "Command: " + model.getCommandName() +
+                    " failed to acquire a command lock.  REASON: time out " +
+                    "(current lock acquired on " + lockTime + ")";
+                logger.warning(logMsg);
+                String msg = adminStrings.getLocalString("lock.timeout",
+                    "The command was blocked from executing.  The domain is " +
+                    "either suspended or another command required exclusive " +
+                    "access to the domain.\n\n" +
+                    "The domain was suspend or locked on {0}.", 
+                    lockTime);
+                report.setMessage(msg);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             } finally {
                 // command is done, release the lock
-                if (lock != null)
+                if (lock != null && lockTimedOut == false)
                     lock.unlock();
             }
 
@@ -1399,6 +1418,21 @@ public class CommandRunnerImpl implements CommandRunner {
                 appRoot.mkdirs();
 
             return appRoot;
+        }
+    }
+
+    /** 
+     * Format the lock acquisition time.
+     */
+    private String formatSuspendDate(Date lockTime) {
+        if (lockTime != null) {
+            String DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss z";
+            SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+            return sdf.format(lockTime);
+        } else {
+            return new String(
+                adminStrings.getLocalString("lock.timeoutunavailable", 
+                                            "<<Date is unavailable>>"));
         }
     }
 }

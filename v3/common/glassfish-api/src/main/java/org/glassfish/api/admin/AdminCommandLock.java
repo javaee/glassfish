@@ -90,10 +90,10 @@ public class AdminCommandLock {
     /**
      * The status of a suspend command attempt.
      */
-    public enum SuspendStatus { SUCCESS,  // Suspend succeeded
-                                TIMEOUT,  // Failed - suspend timed out
-                                BADSTATE, // Failed - already suspended
-                                ERROR     // Failed - other error
+    public enum SuspendStatus { SUCCESS,       // Suspend succeeded
+                                TIMEOUT,       // Failed - suspend timed out
+                                ILLEGALSTATE,  // Failed - already suspended
+                                ERROR          // Failed - other error
                               };
 
     /**
@@ -127,6 +127,60 @@ public class AdminCommandLock {
         if (alock.value() == CommandLock.LockType.EXCLUSIVE)
             return rwlock.writeLock();
         return null;    // no lock
+    }
+
+    /**
+     * Return the appropriate Lock object for the specified command.
+     * The returned lock has been locked.  If this command needs
+     * no lock, null is returned.
+     *
+     * @param   command the AdminCommand object
+     * @param   timeout the timeout in seconds
+     * @param   owner   the authority who requested the lock
+     * @return          the Lock object to use, or null if no lock needed
+     */
+    public Lock getLock(AdminCommand command, int timeout, 
+                                     String owner) throws
+            AdminCommandLockTimeoutException {
+
+        Lock lock = null;
+        boolean exclusive = false;
+
+        CommandLock alock = command.getClass().getAnnotation(CommandLock.class);
+
+        if (alock == null || alock.value() == CommandLock.LockType.SHARED)
+            lock = rwlock.readLock();
+        else if (alock.value() == CommandLock.LockType.EXCLUSIVE) {
+            lock = rwlock.writeLock();
+            exclusive = true;
+        }
+
+        if (lock == null) 
+            return null; // no lock
+
+        boolean lockAcquired = false;
+        while (!lockAcquired) {
+            try {
+                if (lock.tryLock(timeout, TimeUnit.SECONDS)) {
+                    lockAcquired = true;
+                } else {
+                    throw new AdminCommandLockTimeoutException(
+                        "timeout acquiring lock",
+                        getLockTimeOfAcquisition(),
+                        getLockOwner());
+                }
+            } catch (java.lang.InterruptedException e) {
+                logger.log(Level.FINE, "Interrupted acquiring command lock. ",
+                           e);
+            }
+        }
+
+        if (lockAcquired && exclusive) {
+            setLockOwner(owner);
+            setLockTimeOfAcquisition(new Date());
+        }
+
+        return lock;
     }
 
     /**
@@ -190,7 +244,7 @@ public class AdminCommandLock {
          */
         if (suspendCommandsLockThread != null &&
             suspendCommandsLockThread.isAlive()) {
-            return SuspendStatus.BADSTATE;
+            return SuspendStatus.ILLEGALSTATE;
         }
 
         /*
