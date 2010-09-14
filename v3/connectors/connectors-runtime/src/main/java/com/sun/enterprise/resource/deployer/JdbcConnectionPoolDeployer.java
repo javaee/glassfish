@@ -128,11 +128,11 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
         //JDBC connection pool creation. The actualDeployResource method 
         //below is invoked by JdbcResourceDeployer when a resource-ref for a 
         //resource that is pointed to this pool is added to a server instance
-        if(_logger.isLoggable(Level.FINE)){
-            _logger.fine(" JdbcConnectionPoolDeployer - deployResource : " + resource + " calling actualDeploy");
-        }
         JdbcConnectionPool jcp = (JdbcConnectionPool)resource;
         PoolInfo poolInfo = new PoolInfo(jcp.getName(), applicationName, moduleName);
+        if(_logger.isLoggable(Level.FINE)){
+            _logger.fine(" JdbcConnectionPoolDeployer - deployResource : " + poolInfo + " calling actualDeploy");
+        }
         actualDeployResource(resource, poolInfo);
     }
 
@@ -155,7 +155,7 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
      */
     public void actualDeployResource(Object resource, PoolInfo poolInfo) {
         if(_logger.isLoggable(Level.FINE)){
-            _logger.fine(" JdbcConnectionPoolDeployer - actualDeployResource : " + resource);
+            _logger.fine(" JdbcConnectionPoolDeployer - actualDeployResource : " + poolInfo);
         }
         JdbcConnectionPool adminPool = (JdbcConnectionPool) resource;
         try {
@@ -172,12 +172,12 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
      * {@inheritDoc}
      */
     public void undeployResource(Object resource, String applicationName, String moduleName) throws Exception{
-        if(_logger.isLoggable(Level.FINE)) {
-            _logger.fine(" JdbcConnectionPoolDeployer - unDeployResource : " +
-                "calling actualUndeploy of " + resource);
-        }
         JdbcConnectionPool jdbcConnPool = (JdbcConnectionPool) resource;
         PoolInfo poolInfo = new PoolInfo(jdbcConnPool.getName(), applicationName, moduleName);
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.fine(" JdbcConnectionPoolDeployer - unDeployResource : " +
+                "calling actualUndeploy of " + poolInfo);
+        }
         actualUndeployResource(poolInfo);
     }
 
@@ -185,12 +185,12 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
      * {@inheritDoc}
      */
     public synchronized void undeployResource(Object resource) throws Exception {
-        if(_logger.isLoggable(Level.FINE)) {
-            _logger.fine(" JdbcConnectionPoolDeployer - unDeployResource : " +
-                "calling actualUndeploy of " + resource);
-        }
         JdbcConnectionPool jdbcConnPool = (JdbcConnectionPool) resource;
         PoolInfo poolInfo = ConnectorsUtil.getPoolInfo(jdbcConnPool);
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.fine(" JdbcConnectionPoolDeployer - unDeployResource : " +
+                "calling actualUndeploy of " + poolInfo);
+        }
         actualUndeployResource(poolInfo);
     }
 
