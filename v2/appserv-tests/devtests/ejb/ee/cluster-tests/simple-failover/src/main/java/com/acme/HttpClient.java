@@ -83,7 +83,7 @@ public class HttpClient {
 */
 
             System.out.println("Redirecting traffic to " + failoverPort + "...");
-            //Thread.sleep(6 * 1000);
+            Thread.sleep(3 * 1000);
             url = "http://" + host + ":" + failoverPort +
                     "/" + appName + "/" + servletName;
             for (int i = 0; i < 3; i++) {
