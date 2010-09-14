@@ -7,7 +7,7 @@ import java.util.*;
 
 public class HttpClient {
 
-    private static final String ASADMIN = "/space/work/v3/trunk/glassfishv3/glassfish/bin/asadmin";
+    private static final String ASADMIN = "/space/work/v3/pure/glassfishv3/glassfish/bin/asadmin";
     private static String appName = "SFSBMethodCheckpointDriver";
     private static String servletName = "SFSBDriverServlet";
 
