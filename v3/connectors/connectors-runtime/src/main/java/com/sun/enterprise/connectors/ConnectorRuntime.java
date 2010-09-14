@@ -519,8 +519,12 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * @param jndiName  jndi name of the resource
      * @return DataSource representing the resource.
      */
-    private Object lookupDataSourceInDAS(ResourceInfo resourceInfo){
-        return connectorResourceAdmService.lookupDataSourceInDAS(resourceInfo);
+    private Object lookupDataSourceInDAS(ResourceInfo resourceInfo) {
+        try{
+            return connectorResourceAdmService.lookupDataSourceInDAS(resourceInfo);
+        }catch(ConnectorRuntimeException cre){
+            throw new RuntimeException(cre.getMessage(), cre);
+        }
     }
 
     /**

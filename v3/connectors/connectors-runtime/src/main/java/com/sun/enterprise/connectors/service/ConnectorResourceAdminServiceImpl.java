@@ -41,12 +41,14 @@
 package com.sun.enterprise.connectors.service;
 
 import com.sun.appserv.connectors.internal.api.*;
+import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.connectors.naming.ConnectorResourceNamingEventNotifier;
 import com.sun.appserv.connectors.internal.spi.ConnectorNamingEvent;
 import com.sun.enterprise.connectors.naming.ConnectorNamingEventNotifier;
+import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.resource.naming.SerializableObjectRefAddr;
 import org.glassfish.resource.common.PoolInfo;
 import org.glassfish.resource.common.ResourceInfo;
@@ -229,7 +231,7 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
      * @param jndiName the jndi name of the resource
      * @return DataSource representing the resource.
      */
-    public Object lookupDataSourceInDAS(ResourceInfo resourceInfo){
+    public Object lookupDataSourceInDAS(ResourceInfo resourceInfo) throws ConnectorRuntimeException{
         MyDataSource myDS = new MyDataSource();
         myDS.setResourceInfo(resourceInfo);
         return myDS;
@@ -240,8 +242,28 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
         private PrintWriter logWriter;
         private int loginTimeout;
 
-        public void setResourceInfo(ResourceInfo resourceInfo){
+        public void setResourceInfo(ResourceInfo resourceInfo) throws ConnectorRuntimeException{
+            validateResource(resourceInfo);
             this.resourceInfo = resourceInfo;
+        }
+
+        private void validateResource(ResourceInfo resourceInfo) throws ConnectorRuntimeException {
+            ResourcesUtil resourcesUtil = ResourcesUtil.createInstance();
+            String jndiName = resourceInfo.getName();
+            String suffix = ConnectorsUtil.getValidSuffix(jndiName);
+
+            if(suffix != null){
+                //Typically, resource is created without suffix. Try without suffix.
+                String tmpJndiName = jndiName.substring(0, jndiName.lastIndexOf(suffix));
+                if(resourcesUtil.getResource(tmpJndiName, resourceInfo.getApplicationName(),
+                        resourceInfo.getModuleName(), JdbcResource.class) != null){
+                    return;
+                }
+            }
+
+            if(resourcesUtil.getResource(resourceInfo, JdbcResource.class) == null){
+                throw new ConnectorRuntimeException("Invalid resource : " + resourceInfo);
+            }
         }
 
         public Connection getConnection() throws SQLException {

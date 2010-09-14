@@ -1094,36 +1094,44 @@ public class ResourcesUtil {
         return rarName;
     }
 
-    public Resource getResource(String jndiName, String appName, String moduleName, Class resourceType){
+
+    public Resource getResource(ResourceInfo resourceInfo, Class resourceType) {
         Resource resource = null;
-        ResourceInfo resourceInfo = new ResourceInfo(jndiName, appName, moduleName);
+        String appName = resourceInfo.getApplicationName();
+        String jndiName = resourceInfo.getName();
+        String moduleName = resourceInfo.getModuleName();
         Resources resources = null;
-        if(ConnectorsUtil.isApplicationScopedResource(resourceInfo) ||
-                ConnectorsUtil.isModuleScopedResource(resourceInfo) ){
-            if(getApplicationByName(appName) != null){
+        if (ConnectorsUtil.isApplicationScopedResource(resourceInfo) ||
+                ConnectorsUtil.isModuleScopedResource(resourceInfo)) {
+            if (getApplicationByName(appName) != null) {
                 resources = getResources(resourceInfo);
             }
-        }else{
+        } else {
             resources = getResources(resourceInfo);
         }
-        if(resources != null){
-            resource =  resources.getResourceByName(resourceType, jndiName);
-        }else{
+        if (resources != null) {
+            resource = resources.getResourceByName(resourceType, jndiName);
+        } else {
             //it is possible that "application" is being deployed (eg: during deployment "prepare" or application "start")
-            if(ConnectorsUtil.isApplicationScopedResource(resourceInfo) ||
-                    ConnectorsUtil.isModuleScopedResource(resourceInfo) ){
+            if (ConnectorsUtil.isApplicationScopedResource(resourceInfo) ||
+                    ConnectorsUtil.isModuleScopedResource(resourceInfo)) {
 
                 //for app-scoped-resource, resource is stored in "app-name" key
-                if(ConnectorsUtil.isApplicationScopedResource(resourceInfo)){
+                if (ConnectorsUtil.isApplicationScopedResource(resourceInfo)) {
                     moduleName = appName;
                 }
-                
+
                 resources = ResourcesDeployer.getResources(appName, moduleName);
-                if(resources != null){
-                    resource =  resources.getResourceByName(resourceType, jndiName);
+                if (resources != null) {
+                    resource = resources.getResourceByName(resourceType, jndiName);
                 }
             }
         }
         return resource;
+    }
+
+    public Resource getResource(String jndiName, String appName, String moduleName, Class resourceType) {
+        ResourceInfo resourceInfo = new ResourceInfo(jndiName, appName, moduleName);
+        return getResource(resourceInfo, resourceType);
     }
 }
