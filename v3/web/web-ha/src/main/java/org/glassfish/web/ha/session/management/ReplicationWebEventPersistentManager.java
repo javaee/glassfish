@@ -277,11 +277,9 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
         return;
     }
 
-    public String getReplicaFromPredictor(String sessionId, String version) {
-        System.out.println("Manager.replicaFromPredictor " + sessionId + "version " + version);
-        HACookieInfo cookieInfo = predictor.makeCookie(gmsAdapterService.getGMSAdapter().getClusterName(), sessionId, version);
+    public String getReplicaFromPredictor(String sessionId, String oldJreplicaValue) {
+        HACookieInfo cookieInfo = predictor.makeCookie(gmsAdapterService.getGMSAdapter().getClusterName(), sessionId, oldJreplicaValue);
         HACookieManager.setCurrrent(cookieInfo);
-        System.out.println("ReplicationWebEventManager setcurrent to " + cookieInfo);
         return cookieInfo.getReplica();
     }
 

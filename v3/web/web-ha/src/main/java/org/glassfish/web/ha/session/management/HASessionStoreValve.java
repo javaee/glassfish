@@ -50,6 +50,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.io.IOException;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.apache.catalina.valves.ValveBase;
@@ -101,10 +102,17 @@ public class HASessionStoreValve extends ValveBase {
             if (sessionId != null) {
                 context = (StandardContext) request.getContext();
                 manager = (ReplicationWebEventPersistentManager)context.getManager();
-                String version = (new Long(session.getVersion())).toString();
-                String replica = manager.getReplicaFromPredictor(sessionId, version);
 
+
+                String oldJreplicaValue = null;
                 HttpServletRequest httpServletrequest = (HttpServletRequest)request.getRequest();
+                Cookie[] cookies = httpServletrequest.getCookies();
+                for (Cookie cookie: cookies) {
+                    if (cookie.getName().equalsIgnoreCase("jreplica")) {
+                        oldJreplicaValue = cookie.getValue();
+                    }
+                }
+                String replica = manager.getReplicaFromPredictor(sessionId, oldJreplicaValue);
                 httpServletrequest.setAttribute("jreplicaLocation", replica);
             }
         }
