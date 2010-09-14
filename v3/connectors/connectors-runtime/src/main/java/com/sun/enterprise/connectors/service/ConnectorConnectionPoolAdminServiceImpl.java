@@ -871,16 +871,8 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             throws ConnectorRuntimeException, NamingException {
         String jndiNameForPool = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForPool(poolInfo);
 
-        //Context ic = _runtime.getNamingManager().getInitialContext();
-        Context ic ;
-        if(env != null){
-            ic = new InitialContext(env);
-        }else{
-            ic = new InitialContext();
-        }
-
         ConnectorConnectionPool connectorConnectionPool = (ConnectorConnectionPool)
-                _runtime.getResourceNamingService().lookup(poolInfo, jndiNameForPool);
+                _runtime.getResourceNamingService().lookup(poolInfo, jndiNameForPool, env);
         if (connectorConnectionPool == null) {
             String i18nMsg = localStrings.getString("ccp_adm.null_pool", poolInfo);
             ConnectorRuntimeException cre = new ConnectorRuntimeException(i18nMsg);
