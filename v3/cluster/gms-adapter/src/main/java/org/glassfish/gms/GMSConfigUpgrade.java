@@ -73,35 +73,36 @@ public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
 
 
     public void postConstruct() {
-        //This will upgrade all the cluster elements in the domain.xml
-        upgradeClusterElements();
-
-        // this will upgrade all the group-management-service elements in domain.xml
-        upgradeGroupManagementServiceElements();
-    }
-
-    private void upgradeClusterElements (){
         try {
-            List<Cluster> clusterList = clusters.getCluster();
-            for (Cluster cl :clusterList) {
-                ConfigSupport.apply(new ClusterConfigCode(), cl);
-            }
+            //This will upgrade all the cluster elements in the domain.xml
+            upgradeClusterElements();
+
+            // this will upgrade all the group-management-service elements in domain.xml
+            upgradeGroupManagementServiceElements();
         } catch (Exception e) {
+            // todo: logging service has not been started yet, so the resource
+            // bundle isn't being picked up. still waiting to hear what logger
+            // should be used during upgrade
             logger.log(Level.SEVERE, "gmsupgrade.failed", e);
             throw new RuntimeException(e);
         }
     }
 
-    private void upgradeGroupManagementServiceElements() {
-        try {
-            List<Config> lconfigs = configs.getConfig();
-            for (Config c : lconfigs) {
-                //Logger.getAnonymousLogger().log(Level.FINE, "Upgrade config " + c.getName());
-                ConfigSupport.apply(new GroupManagementServiceConfigCode(), c);
+    private void upgradeClusterElements () throws TransactionFailure {
+        List<Cluster> clusterList = clusters.getCluster();
+        for (Cluster cl :clusterList) {
+            ConfigSupport.apply(new ClusterConfigCode(), cl);
+        }
+    }
+
+    private void upgradeGroupManagementServiceElements()
+        throws TransactionFailure {
+        List<Config> lconfigs = configs.getConfig();
+        for (Config c : lconfigs) {
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, "Upgrade config " + c.getName());
             }
-        } catch (Throwable t) {
-            logger.log(Level.SEVERE, "gmsupgrade.failed", t);
-            throw new RuntimeException(t);
+            ConfigSupport.apply(new GroupManagementServiceConfigCode(), c);
         }
     }
 

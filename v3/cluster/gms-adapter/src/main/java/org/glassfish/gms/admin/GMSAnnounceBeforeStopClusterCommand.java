@@ -76,6 +76,9 @@ import java.util.logging.Logger;
 @Scoped(PerLookup.class)
 public class GMSAnnounceBeforeStopClusterCommand implements AdminCommand {
 
+    private static final Logger logger = LogDomains.getLogger(
+        GMSAnnounceBeforeStopClusterCommand.class, LogDomains.GMS_LOGGER);
+
     @Inject
     private ServerEnvironment env;
     @Param(optional = false, primary = true)
@@ -98,8 +101,6 @@ public class GMSAnnounceBeforeStopClusterCommand implements AdminCommand {
     @Override
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
-        Logger logger = context.getLogger();
-
         try {
             if (gmsAdapterService.isGmsEnabled()) {
                 gmsadapter = gmsAdapterService.getGMSAdapterByName(clusterName);
@@ -129,8 +130,9 @@ public class GMSAnnounceBeforeStopClusterCommand implements AdminCommand {
 
                                     // ensure gms group startup announcement does not interfere with starting cluster.
                                     // any exception here should not interfer with starting cluster.
-                                    // todo:  improve logging
-                                    logger.log(Level.WARNING, t.getLocalizedMessage(), t);
+                                    logger.log(Level.WARNING,
+                                        "cluster.stop.exception",
+                                        t.getLocalizedMessage());
                                 }
                             } // else from GMS perspective treat remaining instances getting started as INSTANCE_START, not GROUP_START.
                             // nothing gms specific to do for this case.

@@ -56,6 +56,7 @@ import org.jvnet.hk2.component.PerLookup;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -63,6 +64,9 @@ import java.util.logging.Logger;
 @Supplemental(value = "start-cluster", on = Supplemental.Timing.After, ifFailure = FailurePolicy.Warn)
 @Scoped(PerLookup.class)
 public class GMSAnnounceAfterStartClusterCommand implements AdminCommand {
+
+    private static final Logger logger = LogDomains.getLogger(
+        GMSAnnounceAfterStartClusterCommand.class, LogDomains.GMS_LOGGER);
 
     @Inject
     private ServerEnvironment env;
@@ -84,20 +88,19 @@ public class GMSAnnounceAfterStartClusterCommand implements AdminCommand {
     @Override
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
-        Logger logger = context.getLogger();
-        announceGMSGroupStartupComplete(clusterName, report, logger);
+        announceGMSGroupStartupComplete(clusterName, report);
     }
 
-    static public void announceGMSGroupStartupComplete(String clusterName, ActionReport report, Logger logger) {
+    static public void announceGMSGroupStartupComplete(String clusterName, ActionReport report) {
         if (report != null) {
             GMSAnnounceSupplementalInfo gmsInfo = report.getResultType(GMSAnnounceSupplementalInfo.class);
             if (gmsInfo != null && gmsInfo.gmsInitiated) {
                 List<String> members = null;
                 GMSConstants.groupStartupState groupStartupState = GMSConstants.groupStartupState.COMPLETED_FAILED;
 
-
-                logger.info("GMSAnnounceAfterStartClusterCommand: exitCode:" + report.getActionExitCode() + "" +
-                            " members " + members + " clusterMembers:" + gmsInfo.clusterMembers);
+                logger.log(Level.INFO, "after.start", new Object [] {
+                    report.getActionExitCode(), members, gmsInfo.clusterMembers
+                });
                 switch (report.getActionExitCode()) {
                     case SUCCESS:
                         // all instances started
@@ -136,9 +139,8 @@ public class GMSAnnounceAfterStartClusterCommand implements AdminCommand {
                     }
                 } catch (Throwable t) {
                     // ensure gms group startup announcement does not interfere with starting cluster.
-
-                    // todo: improve logging
-                    logger.warning(t.getLocalizedMessage());
+                    logger.log(Level.WARNING, "group.start.exception",
+                        t.getLocalizedMessage());
                 }
             }
         }

@@ -61,12 +61,9 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.config.ConfigListener;
 import org.jvnet.hk2.config.Dom;
-import org.jvnet.hk2.config.UnprocessedChangeEvents;
 import org.jvnet.hk2.config.types.Property;
 
-import java.beans.PropertyChangeEvent;
 import java.util.List;
 import java.util.Properties;
 import java.util.SortedSet;
@@ -86,15 +83,11 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
     private static final Logger logger =
         LogDomains.getLogger(GMSAdapterImpl.class, LogDomains.GMS_LOGGER);
     
-    private Level gmsLogLevel = Level.CONFIG;
     private static final String BEGINS_WITH = "^";
     private static final String GMS_PROPERTY_PREFIX = "GMS_";
     private static final String GMS_PROPERTY_PREFIX_REGEXP = BEGINS_WITH + GMS_PROPERTY_PREFIX;
 
     private GroupManagementService gms;
-
-    private final static String INSTANCE_NAME = "INSTANCE_NAME";
-    private final static String CLUSTER_NAME = "CLUSTER_NAME";
 
     private final static String CORE = "CORE";
     private final static String SPECTATOR = "SPECTATOR";
@@ -142,8 +135,10 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
     @Override
     public void postConstruct() {
-        logger.setLevel(Level.CONFIG);
-        logger.log(Level.CONFIG, "gmsservice.postconstruct");
+        // workaround until we can set level to CONFIG in server
+        if (logger.isLoggable(Level.INFO) && !logger.isLoggable(Level.CONFIG)) {
+            logger.setLevel(Level.CONFIG);
+        }
     }
 
     AtomicBoolean initialized = new AtomicBoolean(false);
@@ -159,7 +154,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
         if (initialized.compareAndSet(false, true)) {
             this.clusterName = clusterName;
             if (clusterName == null) {
-                logger.log(Level.SEVERE, "no clustername to lookup");
+                logger.log(Level.SEVERE, "gmsservice.no.cluster.name");
                 return false;
             }
             try {
@@ -168,7 +163,8 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 // ignore
             }
             if (gms != null) {
-                logger.log(Level.SEVERE, "multiple gms-adapter service for cluster " + clusterName);
+                logger.log(Level.SEVERE, "gmsservice.multiple.adapter",
+                    clusterName);
                 return false;
             }
 
@@ -198,12 +194,18 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
             clusterConfig = domain.getConfigNamed(clusterName + "-config");
             if (logger.isLoggable(Level.CONFIG)) {
-                logger.config("clusterName=" + clusterName + " clusterConfig=" + clusterConfig);
+                logger.log(Level.CONFIG,
+                    "clusterName=" + clusterName +
+                    " clusterConfig=" + clusterConfig);
             }
             try {
                 initializeGMS();
             } catch (GMSException e) {
-                logger.log(Level.WARNING, "gmsexception.occurred", e);
+                logger.log(Level.WARNING, "gmsexception.occurred",
+                    e.getLocalizedMessage());
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.log(Level.FINE, "stack trace:", e);
+                }
             }
             initializationComplete.set(true);
         }
@@ -233,8 +235,8 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             hHistory = new HealthHistory(cluster);
             Dom.unwrap(cluster).addListener(hHistory);
         } catch (Throwable t) {
-            // todo: fix logging
-            logger.log(Level.WARNING, "new HealthHistory(List)", t);
+            logger.log(Level.WARNING, "gmsexception.new.health.history",
+                t.getLocalizedMessage());
         }
     }
 
@@ -343,7 +345,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                         Property prop = clusterConfig.getGroupManagementService().getProperty(keyName);
                         if (prop == null) {
                             if (logger.isLoggable(Level.FINE)) {
-                                logger.fine(String.format(
+                                logger.log(Level.FINE, String.format(
                                     "No config property found for %s",
                                     keyName));
                             }
@@ -376,12 +378,16 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
 
                 default:
-//                    logger.log();
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.log(Level.FINE, String.format(
+                            "service provider key %s ignored", keyName));
+                    }
                     break;
             }  /* end switch over ServiceProviderConfigurationKeys enum */
             } catch (Throwable t) {
                 logger.log(Level.WARNING,
-                    "gmsexception.processing.config.props", t);
+                    "gmsexception.processing.config.props",
+                    t.getLocalizedMessage());
             }
         } /* end for loop over ServiceProviderConfigurationKeys */
 
@@ -394,13 +400,29 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             for (Property prop : props) {
                 String name = prop.getName().trim();
                 String value = prop.getValue().trim();
-                if (name == null || value == null) continue;
-                logger.config("processing group-management-service property name=" + name + " value= " + value);
+                if (name == null || value == null) {
+                    continue;
+                }
+                if (logger.isLoggable(Level.CONFIG)) {
+                    logger.log(Level.CONFIG,
+                        "processing group-management-service property name=" +
+                            name + " value= " + value);
+                }
                 if (value.startsWith("${")) {
-                    logger.config("skipping group-management-service property name=" + name + " since value is unresolved symbolic token="+ value);
-                 } else if (name != null ) {
+                    if (logger.isLoggable(Level.CONFIG)) {
+                        logger.log(Level.CONFIG,
+                            "skipping group-management-service property name=" +
+                                name +
+                                " since value is unresolved symbolic token=" +
+                                value);
+                    }
+                } else if (name != null ) {
                     try {
-                        logger.config("processing group-management-service property name=" + name + " value= " + value);
+                        if (logger.isLoggable(Level.CONFIG)) {
+                            logger.log(Level.CONFIG,
+                                "processing group-management-service property name=" +
+                                    name + " value= " + value);
+                        }
                         if (name.startsWith(GMS_PROPERTY_PREFIX)) {
                             name = name.replaceFirst(GMS_PROPERTY_PREFIX_REGEXP, "");
                         }
@@ -408,9 +430,13 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                         GrizzlyConfigConstants key = GrizzlyConfigConstants.valueOf(name);
                         configProps.put(name, value);
                     } catch (IllegalArgumentException iae) {
-                        logger.warning("ignoring group-management-service property " + name + " with value of " + value + " due to " + iae.getLocalizedMessage());
+                        logger.log(Level.WARNING,
+                            "gmsexception.ignoring.property",
+                            new Object [] {
+                                name, value, iae.getLocalizedMessage()
+                            });
                     }
-                 }
+                }
             }
         }
         if (cluster != null) {
@@ -419,9 +445,18 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 String name = prop.getName().trim();
                 String value = prop.getValue().trim();
                 if (name == null || value == null) continue;
-                logger.config("processing cluster property name=" + name + " value= " + value);
+                if (logger.isLoggable(Level.CONFIG)) {
+                    logger.log(Level.CONFIG,
+                        "processing cluster property name=" + name +
+                        " value= " + value);
+                }
                 if (value.startsWith("${")) {
-                    logger.config("skipping cluster property name=" + name + " since value is unresolved symbolic token="+ value);
+                    if (logger.isLoggable(Level.CONFIG)) {
+                        logger.log(Level.CONFIG,
+                            "skipping cluster property name=" + name +
+                            " since value is unresolved symbolic token=" +
+                            value);
+                    }
                 } else if (name != null ) {
                     try {
                         if (name.startsWith(GMS_PROPERTY_PREFIX)) {
@@ -442,9 +477,11 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                             configProps.put(name, value);
                         }
                     } catch (Throwable t) {
-                        logger.warning("error processing cluster property:" + name + " value:"+ value +
-                                " due to exception " + t.getLocalizedMessage());
-
+                        logger.log(Level.WARNING,
+                            "gmsexception.cluster.property.error",
+                            new Object [] {
+                                name, value, t.getLocalizedMessage()
+                            });
                     }
                 }
             }
@@ -492,7 +529,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                             return;
                         }
                         if (event.is(EventTypes.SERVER_SHUTDOWN)) {
-                            logger.fine("Calling gms.shutdown()...");
+                            logger.log(Level.FINE, "Calling gms.shutdown()...");
 
                             // todo: remove these when removing the test register ones above.
                             removeJoinedAndReadyNotificationListener(GMSAdapterImpl.this);
@@ -524,14 +561,17 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 events.register(glassfishEventListener);
                 gms.join();
                 joinTime = System.currentTimeMillis();
-                logger.info("member " + instanceName + " joined group " + clusterName);
+                logger.log(Level.INFO, "gmsservice.member.joined.group",
+                    new Object [] {instanceName, clusterName});
             } catch (GMSException e) {
                 // failed to start so unregister event listener that calls GMS.
                 events.unregister(glassfishEventListener);
-                logger.log(Level.WARNING, "gmsexception.occurred", e.getLocalizedMessage());
+                logger.log(Level.WARNING, "gmsexception.occurred",
+                    e.getLocalizedMessage());
             }
 
-            logger.log(Level.CONFIG, "gmsservice.started ", new Object[]{instanceName, clusterName});
+            logger.log(Level.INFO, "gmsservice.started",
+                new Object[] {instanceName, clusterName});
 
         } else throw new GMSException("gms object is null.");
     }
@@ -547,7 +587,8 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             }
         }
         if (unknownMembers.size() > 0) {
-            logger.log(Level.INFO, "aliveAndReady monitoring: joinedAndReady memberState is UNKNOWN for core members:" + unknownMembers);
+            logger.log(Level.INFO,
+                "gmsservice.member.state.unknown", unknownMembers);
         }
     }
 
@@ -560,7 +601,8 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
         for (String key : prop.stringPropertyNames()) {
             sb.append(key).append(" = ").append(prop.get(key)).append("  ");
         }
-        logger.log(Level.CONFIG, "gmsservice.print.properties", sb.toString());
+        logger.log(Level.CONFIG,
+            "Printing all GMS properties: ", sb.toString());
     }
 
     public Startup.Lifecycle getLifecycle() {
@@ -583,7 +625,8 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
         try {
             return GMSFactory.getGMSModule(groupName);
         } catch (GMSException e) {
-            logger.log(Level.SEVERE, "Exception in getting GMS module for group " + groupName , e.getLocalizedMessage());
+            logger.log(Level.SEVERE, "gmsexception.cannot.get.group.module",
+                new Object [] {groupName , e.getLocalizedMessage()});
             return null;
         }
     }
@@ -591,7 +634,8 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
     @Override
     public void processNotification(Signal signal) {
         if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "gmsservice.processNotification", signal.getClass().getName());
+            logger.log(Level.FINE, "GMSService: Received a notification ",
+                signal.getClass().getName());
         }
         try {
             /*
@@ -605,8 +649,8 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 hHistory.updateHealth(signal);
             }
         } catch (Throwable t) {
-            // todo: fix logging
-            logger.log(Level.WARNING, "hHistory.updateHealth(signal)", t);
+            logger.log(Level.WARNING, "gmsexception.update.health.history",
+                t.getLocalizedMessage());
         }
         if (this.aliveAndReadyLoggingEnabled) {
             if (signal instanceof JoinedAndReadyNotificationSignal ||
@@ -629,9 +673,14 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 }
                 AliveAndReadyView current = gms.getGroupHandle().getCurrentAliveAndReadyCoreView();
                 AliveAndReadyView previous = gms.getGroupHandle().getPreviousAliveAndReadyCoreView();
-                logger.info("AliveAndReady for signal: " + signal.getClass().getSimpleName() + signalSubevent +
-                            " for member: " + signal.getMemberToken() + " of group: " + signal.getGroupName() +
-                            " current:[" +  current + "] previous:[" + previous + "]");
+                logger.log(Level.INFO, "gmsservice.alive.ready.signal",
+                    new Object [] {
+                        signal.getClass().getSimpleName() + signalSubevent,
+                        signal.getMemberToken(),
+                        signal.getGroupName(),
+                        current,
+                        previous
+                    });
             }
         }
     }

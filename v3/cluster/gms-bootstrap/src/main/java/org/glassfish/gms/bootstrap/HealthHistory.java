@@ -258,7 +258,7 @@ public final class HealthHistory implements ConfigListener {
         InstanceHealth oldHealth = healthMap.putIfAbsent(name,
             new InstanceHealth(STATE.NOT_RUNNING, NOTIME));
         if (oldHealth != null) {
-            logger.log(Level.WARNING, "key.already.present", name);
+            logger.log(Level.INFO, "key.already.present", name);
         }
     }
 

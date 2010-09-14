@@ -55,6 +55,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -62,6 +63,9 @@ import java.util.logging.Logger;
 @Supplemental(value = "stop-cluster", on = Supplemental.Timing.After, ifFailure = FailurePolicy.Warn)
 @Scoped(PerLookup.class)
 public class GMSAnnounceAfterStopClusterCommand implements AdminCommand {
+
+    private static final Logger logger = LogDomains.getLogger(
+        GMSAnnounceAfterStopClusterCommand.class, LogDomains.GMS_LOGGER);
 
     @Param(optional = false, primary = true)
     private String clusterName;
@@ -73,11 +77,10 @@ public class GMSAnnounceAfterStopClusterCommand implements AdminCommand {
     @Override
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
-        Logger logger = context.getLogger();
-        announceGMSGroupStopComplete(clusterName, report, logger);
+        announceGMSGroupStopComplete(clusterName, report);
     }
 
-    static public void announceGMSGroupStopComplete(String clusterName, ActionReport report, Logger logger) {
+    static public void announceGMSGroupStopComplete(String clusterName, ActionReport report) {
         if (report != null) {
             GMSAnnounceSupplementalInfo gmsInfo = report.getResultType(GMSAnnounceSupplementalInfo.class);
             if (gmsInfo != null && gmsInfo.gmsInitiated) {
@@ -88,9 +91,8 @@ public class GMSAnnounceAfterStopClusterCommand implements AdminCommand {
                     }
                 } catch (Throwable t) {
                     // ensure gms group startup announcement does not interfere with starting cluster.
-
-                    // todo: improve logging
-                    logger.warning(t.getLocalizedMessage());
+                    logger.log(Level.WARNING, "group.stop.exception",
+                        t.getLocalizedMessage());
                 }
             }
         }
