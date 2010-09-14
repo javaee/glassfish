@@ -106,8 +106,6 @@ public class InstallNodeCommand extends CLICommand {
     private String sshkeypassphrase=null;
     
     private boolean promptPass=false;
-    
-
 
     @Inject
     SSHLauncher sshLauncher;
@@ -154,11 +152,12 @@ public class InstallNodeCommand extends CLICommand {
             
 
             scpClient.put(zipFile.getAbsolutePath(), remoteDir);
-            String unzipCommand = "cd " + remoteDir + "; unzip glassfish.zip; rm glassfish.zip; chmod +x bin/*";
+            //String unzipCommand = "cd " + remoteDir + "; unzip glassfish.zip; chmod +x bin/*";
+            String unzipCommand = "cd " + remoteDir + "; jar -xvf glassfish.zip";
             sshLauncher.runCommand(unzipCommand, outStream);
+            sftpClient.rm(remoteDir + "/glassfish.zip");
             for (String binDirFile: binDirFiles) {
-                System.out.println("bin file name is " + remoteDir + binDirFile);
-                sftpClient.chmod((remoteDir + binDirFile), 0755);
+                sftpClient.chmod((remoteDir + "/" + binDirFile), 0755);
             }
             
 
@@ -191,10 +190,6 @@ public class InstallNodeCommand extends CLICommand {
             zipFileLocation = new File(System.getProperty("java.io.tmpdir"));
         }
 
-        File glassFishZipFile = new File(zipFileLocation, "glassfish.zip");
-        if (glassFishZipFile.exists()) {
-            return glassFishZipFile; 
-        }
 
         FileListerRelative lister = new FileListerRelative(installRoot);
         //lister.keepEmptyDirectories();	// we want to restore any empty directories too!
@@ -208,10 +203,16 @@ public class InstallNodeCommand extends CLICommand {
             String fileName = iter.next();
             if (fileName.contains("domains") || fileName.contains("nodes")) {
                 iter.remove();
-            } else if (fileName.contains("bin")) {
+            } else if (fileName.startsWith("bin")) {
                 binDirFiles.add(fileName);
             }
         }
+
+        File glassFishZipFile = new File(zipFileLocation, "glassfish.zip");
+        if (glassFishZipFile.exists()) {
+            return glassFishZipFile;
+        }
+
 
        String [] filesToZip = new String[resultFiles.size()];
         filesToZip = resultFiles.toArray(filesToZip);
