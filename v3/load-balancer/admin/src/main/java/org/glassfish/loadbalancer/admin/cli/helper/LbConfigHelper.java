@@ -117,5 +117,5 @@ public class LbConfigHelper {
     }
     private static final String PUBLICID =
             "-//Sun Microsystems Inc.//DTD Sun Java System Application Server 9.1//EN";
-    private static final String SYSTEMID = "sun-loadbalancer_1_2.dtd";
+    private static final String SYSTEMID = "glassfish-loadbalancer_1_3.dtd";
 }
