@@ -224,20 +224,4 @@ public class InstallNodeCommand extends CLICommand {
 
     }
 
-    private List<String> findAllFiles(File installRoot, List<String> resultFiles) throws IOException {
-
-        File [] allFiles = installRoot.listFiles();
-        for (File file: allFiles) {
-
-            if (file.isDirectory() && !(file.getName().equals("domains") || file.getName().equals("nodes"))) {
-                resultFiles.add(file.getCanonicalPath());
-                findAllFiles(file, resultFiles);
-            }
-            resultFiles.add(file.getCanonicalPath());
-        }
-
-        
-        return resultFiles;
-    }
-
 }
