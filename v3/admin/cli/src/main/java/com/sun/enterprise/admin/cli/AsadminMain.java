@@ -63,7 +63,6 @@ import com.sun.enterprise.util.SystemPropertyConstants;
  */
 public class AsadminMain {
 
-    private       static String[] copyOfArgs;
     private       static String classPath;
     private       static String className;
     private       static String command;
@@ -204,14 +203,6 @@ public class AsadminMain {
         ModulesRegistry registry = new StaticModulesRegistry(ecl);
         habitat = registry.createHabitat("default");
 
-        /*
-         * Keep a copy of our original arguments, before we change them below.
-         * This is used by start-domain and is passsed in to the newly
-         * started domain, along with the class path and class name, so that
-         * the domain has everything it needs to be able to restart itself.
-         */
-        copyOfArgs = new String[args.length];
-        System.arraycopy(args, 0, copyOfArgs, 0, args.length);
         classPath =
             SmartFile.sanitizePaths(System.getProperty("java.class.path"));
         className = AsadminMain.class.getName();
@@ -277,7 +268,6 @@ public class AsadminMain {
             } else
                 po = new ProgramOptions(env);
             po.toEnvironment(env);
-            po.setProgramArguments(copyOfArgs);
             po.setClassPath(classPath);
             po.setClassName(className);
             if (argv.length == 0) {

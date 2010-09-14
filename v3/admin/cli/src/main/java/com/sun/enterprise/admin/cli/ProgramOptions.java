@@ -101,7 +101,6 @@ public class ProgramOptions {
      * XXX - this is somewhat of a kludge but this seems the best place
      * to put it for now
      */
-    private String[]                        programArguments;
     private String                          classPath;
     private String                          className;
 
@@ -168,7 +167,6 @@ public class ProgramOptions {
         this.options = new ParameterMap(other.options);
         this.env = other.env;
         this.password = other.password;
-        this.programArguments = other.programArguments;
         this.classPath = other.classPath;
         this.className = other.className;
     }
@@ -480,17 +478,34 @@ public class ProgramOptions {
     }
 
     /**
-     * @return the programArguments
+     * Return an array of asadmin command line options that specify
+     * all the options of this ProgramOptions instance.
      */
     public String[] getProgramArguments() {
-        return programArguments;
-    }
-
-    /**
-     * @param programArguments the programArguments to set
-     */
-    public void setProgramArguments(String[] programArguments) {
-        this.programArguments = programArguments;
+        List<String> args = new ArrayList<String>(15);
+        if (ok(getHost())) {
+            args.add("--host");
+            args.add(getHost());
+        }
+        if (getPort() > 0) {
+            args.add("--port");
+            args.add(String.valueOf(getPort()));
+        }
+        if (ok(getUser())) {
+            args.add("--user");
+            args.add(getUser());
+        }
+        if (ok(getPasswordFile())) {
+            args.add("--passwordfile");
+            args.add(getPasswordFile());
+        }
+        args.add("--secure=" + String.valueOf(isSecure()));
+        args.add("--terse=" + String.valueOf(isTerse()));
+        args.add("--echo=" + String.valueOf(isEcho()));
+        args.add("--interactive=" + String.valueOf(isInteractive()));
+        String[] a = new String[args.size()];
+        args.toArray(a);
+        return a;
     }
 
     /**

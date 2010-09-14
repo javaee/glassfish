@@ -40,12 +40,15 @@
 
 package com.sun.enterprise.admin.cli.cluster;
 
+import java.io.*;
+import java.util.*;
+import java.util.logging.*;
+
 import com.sun.enterprise.admin.launcher.GFLauncher;
 import com.sun.enterprise.admin.launcher.GFLauncherException;
 import com.sun.enterprise.admin.launcher.GFLauncherFactory;
 import com.sun.enterprise.admin.launcher.GFLauncherInfo;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
-import java.io.*;
 
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
@@ -56,6 +59,7 @@ import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.util.ObjectAnalyzer;
 import com.sun.enterprise.admin.cli.StartServerCommand;
 import static com.sun.enterprise.admin.cli.CLIConstants.*;
+
 /**
  * Start a local server instance.
  */
@@ -202,9 +206,40 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
 
             info.setRespawnInfo(programOpts.getClassName(),
                             programOpts.getClassPath(),
-                            programOpts.getProgramArguments());
+                            respawnArgs());
 
             launcher.setup();
+    }
+
+    /**
+     * Return the asadmin command line arguments necessary to
+     * start this server instance.
+     */
+    private String[] respawnArgs() {
+        List<String> args = new ArrayList<String>(15);
+        args.addAll(Arrays.asList(programOpts.getProgramArguments()));
+
+        // now the start-local-instance specific arguments
+        args.add(getName());    // the command name
+        args.add("--verbose=" + String.valueOf(verbose));
+        args.add("--debug=" + String.valueOf(debug));
+        args.add("--nosync=" + String.valueOf(nosync));
+        if (ok(nodeDir)) {
+            args.add("--nodedir");
+            args.add(nodeDir);
+        }
+        if (ok(node)) {
+            args.add("--node");
+            args.add(node);
+        }
+        if (ok(instanceName))
+            args.add(instanceName);     // the operand
+
+        if (logger.isLoggable(Level.FINER))
+            logger.finer("Respawn args: " + args.toString());
+        String[] a = new String[args.size()];
+        args.toArray(a);
+        return a;
     }
 
     public String toString() {

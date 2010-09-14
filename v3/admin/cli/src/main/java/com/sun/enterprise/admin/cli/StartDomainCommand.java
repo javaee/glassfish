@@ -42,6 +42,7 @@ package com.sun.enterprise.admin.cli;
 
 import java.io.*;
 import java.util.*;
+import java.util.logging.*;
 
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
@@ -180,9 +181,33 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
 
         info.setRespawnInfo(programOpts.getClassName(),
                 programOpts.getClassPath(),
-                programOpts.getProgramArguments());
+                respawnArgs());
 
         launcher.setup();
+    }
+
+    /**
+     * Return the asadmin command line arguments necessar to start
+     * this domain admin server.
+     */
+    private String[] respawnArgs() {
+        List<String> args = new ArrayList<String>(15);
+        args.addAll(Arrays.asList(programOpts.getProgramArguments()));
+
+        // now the start-domain specific arguments
+        args.add(getName());    // the command name
+        args.add("--verbose=" + String.valueOf(verbose));
+        args.add("--debug=" + String.valueOf(debug));
+        args.add("--domaindir");
+        args.add(getDomainsDir().toString());
+        if (ok(getDomainName()))
+            args.add(getDomainName());  // the operand
+
+        if (logger.isLoggable(Level.FINER))
+            logger.finer("Respawn args: " + args.toString());
+        String[] a = new String[args.size()];
+        args.toArray(a);
+        return a;
     }
 
     /*

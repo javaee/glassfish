@@ -207,10 +207,9 @@ public class MultimodeCommand extends CLICommand {
                  */
                 po = new ProgramOptions(env);
                 // copy over AsadminMain info
-                po.setProgramArguments(programOpts.getProgramArguments());
                 po.setClassPath(programOpts.getClassPath());
                 po.setClassName(programOpts.getClassName());
-                // remote the old one and replace it
+                // remove the old one and replace it
                 habitat.remove(
                     habitat.getInhabitantByType(ProgramOptions.class));
                 habitat.addComponent("program-options", po);
