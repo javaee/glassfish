@@ -165,8 +165,17 @@ public class CreateInstanceCommand implements AdminCommand {
         nodeDir = theNode.getNodeDir();
         installDir = theNode.getInstallDir();
 
-        // First, update domain.xml by calling _register-instance
+        if (!StringUtils.ok(nodeHost)) {
+            String msg = Strings.get("create.instance.missing.nodehost",
+                    theNode.getName(), "create-instance", "update-node-config",
+                    "create-local-instance");
+            logger.warning(msg);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);
+            return;
+        }
 
+        // First, update domain.xml by calling _register-instance
         CommandInvocation ci = cr.getCommandInvocation("_register-instance", report);
         ParameterMap map = new ParameterMap();
         map.add("node", node);

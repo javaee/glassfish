@@ -92,9 +92,6 @@ public class CreateNodeSshCommand implements AdminCommand  {
     @Param(name = "sshkeyfile", optional = true)
     private String sshkeyfile;
 
-    @Param(optional = true)
-    private String sshpublickeyfile;
-
     @Param(name = "sshpassword", optional = true, password = true)
     private String sshpassword;
 
@@ -116,25 +113,6 @@ public class CreateNodeSshCommand implements AdminCommand  {
         logger = context.getLogger();
 
         setDefaults();        
-
-        /*
-         * XXX Was requiring a password even if I already had a valid
-         * SSH key setup
-        sshL.init(sshuser, nodehost,  Integer.parseInt(sshport), sshpassword, sshkeyfile, sshkeypassphrase, logger);
-        
-        try {
-            sshL.setupKey(nodehost, sshpublickeyfile);
-        } catch (IOException ce) {
-            logger.fine("SSH key setup failed: " + ce.getMessage());
-            if(!force) {
-                report.setMessage(ce.getMessage());
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
-            }
-        } catch (Exception e) {
-            //handle KeyStoreException
-        }
-         */
 
         ParameterMap map = new ParameterMap();
         map.add("DEFAULT", name);

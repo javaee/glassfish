@@ -208,12 +208,12 @@ public class NodeUtils {
         }
     }
 
-    private void validateHostName(String hostName)
+    void validateHostName(String hostName)
             throws CommandValidationException {
 
         if (! StringUtils.ok(hostName)) {
             throw new CommandValidationException(
-                    Strings.get("unknown.host", hostName));
+                    Strings.get("nodehost.required"));
         }
         try {
             // Check if hostName is valid by looking up it's address
