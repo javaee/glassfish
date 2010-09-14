@@ -1050,13 +1050,12 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
             app.setDescription(deployParams.description);
         }
 
+        app.setEnabled(String.valueOf(true));
         if (appProps.getProperty(ServerTags.LOCATION) != null) {
                     app.setLocation(appProps.getProperty(
                 ServerTags.LOCATION));
-            // always set the enable attribute of application to true
-            // unless for redeploy to domain where we preserve the enable
+            // when redeploy to domain we preserve the enable
             // attribute
-            app.setEnabled(String.valueOf(true));
             if (DeploymentUtils.isDomainTarget(deployParams.target)) {
                 if (previousEnabledAttributes != null) {
                     String enabledAttr = previousEnabledAttributes.getProperty(DeploymentUtils.DOMAIN_TARGET_NAME);
@@ -1067,9 +1066,6 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
             }
             app.setAvailabilityEnabled(deployParams.availabilityenabled.toString());
             app.setAsyncReplication(deployParams.asyncreplication.toString());
-        } else {
-            // this is not a regular javaee module 
-            app.setEnabled(deployParams.enabled.toString());
         }
         if (appProps.getProperty(ServerTags.OBJECT_TYPE) != null) {
             app.setObjectType(appProps.getProperty(
@@ -1752,6 +1748,10 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
     public void validateUndeploymentTarget(String target, String name) {
         List<String> referencedTargets = domain.getAllReferencedTargetsForApplication(name);
         if (referencedTargets.size() > 1) {
+            Application app = applications.getApplication(name);
+            if (app.isLifecycleModule()) {  
+                throw new IllegalArgumentException(localStrings.getLocalString("delete_lifecycle_on_multiple_targets", "Lifecycle module {0} is referenced by more than one targets. Please remove all references before attempting delete operation.", name)); 
+            }
             if (!target.equals("domain")) {
                 throw new IllegalArgumentException(localStrings.getLocalString("undeploy_on_multiple_targets", "Application {0} is referenced by more than one targets. Please remove all references or specify all targets (or domain target if using asadmin command line) before attempting undeploy operation.", name)); 
             }

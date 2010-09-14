@@ -80,7 +80,7 @@ import java.io.OutputStream;
 
 
 /**
- * Trivial example of deployment-for-instance command
+ * The deploy command that runs on instance
  * @author hzhang_jn
  * @author tjquinn
  */
@@ -101,7 +101,7 @@ public class InstanceDeployCommand extends InstanceDeployCommandParameters imple
     @Inject
     ArchiveFactory archiveFactory;
 
-    @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    @Inject
     Applications applications;
 
     @Inject

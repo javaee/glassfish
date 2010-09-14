@@ -71,7 +71,7 @@ import java.util.Properties;
  */
 @Service(name="create-lifecycle-module")
 @I18n("create.lifecycle.module")
-@ExecuteOn(value={RuntimeType.DAS})
+@ExecuteOn(value={RuntimeType.DAS, RuntimeType.INSTANCE})
 @Scoped(PerLookup.class)
 @TargetType(value={CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
 public class CreateLifecycleModuleCommand implements AdminCommand {

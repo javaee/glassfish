@@ -87,6 +87,7 @@ import java.util.List;
 import org.glassfish.api.admin.FailurePolicy;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.deployment.common.ApplicationConfigInfo;
+import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.deployment.versioning.VersioningException;
 import org.glassfish.deployment.versioning.VersioningSyntaxException;
 import org.glassfish.deployment.versioning.VersioningUtils;
@@ -225,7 +226,7 @@ public class CreateApplicationRefCommand implements AdminCommand {
 
                 Transaction t = new Transaction();
                 if (app.isLifecycleModule()) {
-                    handleLifecycleModule(report, logger, t);
+                    handleLifecycleModule(context, t);
                     return;
                 }
 
@@ -342,25 +343,43 @@ public class CreateApplicationRefCommand implements AdminCommand {
         }
     } 
 
-    private void handleLifecycleModule(ActionReport report, Logger logger, Transaction t) {
+    private void handleLifecycleModule(AdminCommandContext context, Transaction t) {
+        final ActionReport report = context.getActionReport();
+        final Logger logger = context.getLogger();
+
+        Application app = applications.getApplication(name);
+
         // create a dummy context to hold params and props
         DeployCommandParameters commandParams = new DeployCommandParameters();
         commandParams.name = name;
-        commandParams.origin = Origin.load;
         commandParams.target = target;
         commandParams.virtualservers = virtualservers;
         commandParams.enabled = enabled;
-        if(lbenabled != null){
-            commandParams.lbenabled = lbenabled;
-        }
 
         ExtendedDeploymentContext lifecycleContext = new DeploymentContextImpl(report, logger, null, commandParams, null);
         try  {
             deployment.registerAppInDomainXML(null, lifecycleContext, t, true);
         } catch(Exception e) {
-            report.setMessage("Failed to create application ref for lifecycle module: " + e);
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.failure(logger, e.getMessage());
+        }
+
+        if (!DeploymentUtils.isDASTarget(target)) {
+            final ParameterMap paramMap = new ParameterMap();
+            paramMap.add("DEFAULT", name);
+            paramMap.add(DeploymentProperties.TARGET, target);
+            paramMap.add(DeploymentProperties.ENABLED, enabled.toString());
+            if (virtualservers != null) {
+                paramMap.add(DeploymentProperties.VIRTUAL_SERVERS, 
+                    virtualservers);
+            }
+            // pass the app props so we have the information to persist in the
+            // domain.xml
+            Properties appProps = app.getDeployProperties();
+            paramMap.set(DeploymentProperties.APP_PROPS, DeploymentUtils.propertiesValue(appProps, ':'));
+
+            final List<String> targets = new ArrayList<String>();
+            targets.add(target);
+            ClusterOperationUtil.replicateCommand("_lifecycle", FailurePolicy.Error, FailurePolicy.Warn, targets, context, paramMap, habitat);
         }
     }
-
 }
