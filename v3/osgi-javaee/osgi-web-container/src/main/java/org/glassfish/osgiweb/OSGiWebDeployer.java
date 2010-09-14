@@ -54,7 +54,7 @@ import java.util.logging.Logger;
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiWebDeployer extends AbstractOSGiDeployer implements OSGiDeployer {
+public class OSGiWebDeployer extends AbstractOSGiDeployer {
     private static final Logger logger =
             Logger.getLogger(OSGiWebDeployer.class.getPackage().getName());
 
@@ -88,4 +88,11 @@ public class OSGiWebDeployer extends AbstractOSGiDeployer implements OSGiDeploye
         return headers.get(Constants.WEB_CONTEXT_PATH) != null &&
                 headers.get(org.osgi.framework.Constants.FRAGMENT_HOST) == null;
     }
+
+    @Override
+    protected void raiseEvent(State state, Bundle appBundle, Throwable e) {
+        WABEventPublisher ep = new WABEventPublisher();
+        ep.raiseEvent(state, appBundle, getBundleContext().getBundle(), e);
+    }
+
 }

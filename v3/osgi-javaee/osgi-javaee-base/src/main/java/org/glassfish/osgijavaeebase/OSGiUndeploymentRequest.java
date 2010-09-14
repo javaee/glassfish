@@ -142,4 +142,7 @@ public abstract class OSGiUndeploymentRequest
         return parameters;
     }
 
+    protected OSGiApplicationInfo getOsgiAppInfo() {
+        return osgiAppInfo;
+    }
 }

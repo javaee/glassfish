@@ -51,16 +51,10 @@ import org.osgi.framework.Bundle;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public interface OSGiDeployer {
-    OSGiDeploymentRequest createOSGiDeploymentRequest(Deployment deployer,
-                                                      ArchiveFactory archiveFactory,
-                                                      ServerEnvironmentImpl env,
-                                                      ActionReport reporter,
-                                                      Bundle b);
 
-    OSGiUndeploymentRequest createOSGiUndeploymentRequest(Deployment deployer,
-                                                          ServerEnvironmentImpl env,
-                                                          ActionReport reporter,
-                                                          OSGiApplicationInfo osgiAppInfo);
+    OSGiApplicationInfo deploy(Bundle b) throws DeploymentException;
+
+    void undeploy(OSGiApplicationInfo osgiAppInfo) throws DeploymentException;
 
     boolean handles(Bundle bundle);
 }

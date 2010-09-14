@@ -65,7 +65,7 @@ import java.util.logging.Logger;
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiEJBDeployer extends AbstractOSGiDeployer implements OSGiDeployer {
+public class OSGiEJBDeployer extends AbstractOSGiDeployer {
 
     private static Logger logger = Logger.getLogger(OSGiEJBDeployer.class.getPackage().getName());
 

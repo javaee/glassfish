@@ -51,7 +51,6 @@ import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,7 +69,6 @@ public abstract class OSGiDeploymentRequest
             Logger.getLogger(OSGiUndeploymentRequest.class.getPackage().getName());
 
     private ActionReport reporter;
-
     private Bundle b;
     private boolean dirDeployment;
     private Deployment deployer;
@@ -93,7 +91,7 @@ public abstract class OSGiDeploymentRequest
         this.b = b;
     }
 
-    protected void preDeploy() {}
+    protected void preDeploy() throws DeploymentException {}
 
     protected void postDeploy() {}
 
@@ -104,27 +102,27 @@ public abstract class OSGiDeploymentRequest
      */
     public OSGiApplicationInfo execute()
     {
-        preDeploy();
+        try {
+            preDeploy();
+        } catch (DeploymentException e) {
+            reporter.failure(logger,
+                    "Failed while deploying bundle " + b, e);
+            return result; // return without calling postDeploy()
+        }
         // This is where the fun is...
         try
         {
             prepare();
+            result = deploy(); // Now actual deployment begins
         }
         catch (Exception e)
         {
-            // if prepare failed, there is nothing to undo.
-            // populate report and return
             reporter.failure(logger,
-                    "Failed while preparing to deploy bundle " + b, e);
-            return null;
-        }
-
-        try {
-            // Now actual deployment begins
-            return (result = deploy());
+                    "Failed while deploying bundle " + b, e);
         } finally {
-            postDeploy();
+            postDeploy(); // call even if something failed so that the actions in predeploy() can be rolled back.
         }
+        return result;
     }
 
     private void prepare() throws Exception
@@ -191,9 +189,10 @@ public abstract class OSGiDeploymentRequest
             }
             else
             {
-                logger.logp(Level.INFO, "OSGiDeploymentRequest",
+                logger.logp(Level.FINE, "OSGiDeploymentRequest",
                         "deploy", "failed to deploy {0} for following reason: {1} ", new Object[]{b, reporter.getMessage()});
-                return null;
+                throw new RuntimeException("Failed to deploy bundle [ " + b + " ], root cause: " + reporter.getMessage(),
+                        reporter.getFailureCause());
             }
         }
         finally

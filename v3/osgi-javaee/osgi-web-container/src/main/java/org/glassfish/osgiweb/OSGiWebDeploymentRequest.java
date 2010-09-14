@@ -45,6 +45,7 @@ import com.sun.enterprise.web.*;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.EngineRef;
 import org.glassfish.internal.data.ModuleInfo;
+import org.glassfish.osgijavaeebase.DeploymentException;
 import org.glassfish.osgijavaeebase.OSGiApplicationInfo;
 import org.glassfish.osgijavaeebase.OSGiDeploymentRequest;
 import org.glassfish.osgijavaeebase.OSGiDeploymentContext;
@@ -55,34 +56,29 @@ import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.api.Globals;
-import org.osgi.framework.Bundle;
+import org.osgi.framework.*;
 
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.List;
-import java.util.StringTokenizer;
 import java.io.IOException;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.config.serverbeans.*;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleReference;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.packageadmin.PackageAdmin;
-import org.osgi.util.tracker.ServiceTracker;
 
 import javax.servlet.ServletContext;
 
+import static org.glassfish.osgiweb.Constants.*;
 import static org.osgi.framework.Constants.BUNDLE_VERSION;
 
+
 /**
+ * This is the class responsible for deploying a WAB in the Java EE container.
+ *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
-
-    // TODO(Sahoo): Integration with event admin service
 
     private static final Logger logger =
             Logger.getLogger(OSGiWebDeployer.class.getPackage().getName());
@@ -119,7 +115,7 @@ public class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
             // We expect WEB_CONTEXT_PATH to be always present.
             // This is mandated in the spec.
             parameters.contextroot = getArchive().getManifest().
-                    getMainAttributes().getValue(org.glassfish.osgiweb.Constants.WEB_CONTEXT_PATH);
+                    getMainAttributes().getValue(WEB_CONTEXT_PATH);
         }
         catch (IOException e)
         {
@@ -127,7 +123,7 @@ public class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
         }
         if (parameters.contextroot == null || parameters.contextroot.length() == 0)
         {
-            throw new Exception(Constants.WEB_CONTEXT_PATH +
+            throw new Exception(WEB_CONTEXT_PATH +
                     " manifest header is mandatory");
         }
         parameters.virtualservers = getVirtualServers();
@@ -138,7 +134,7 @@ public class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
         String virtualServers = null;
         try {
             virtualServers = getArchive().getManifest().getMainAttributes().getValue(
-                    org.glassfish.osgiweb.Constants.VIRTUAL_SERVERS);
+                    VIRTUAL_SERVERS);
         } catch (Exception e) {
             // ignore
         }
@@ -149,6 +145,7 @@ public class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
         }
         return virtualServers;
     }
+
     /**
      * @return comma-separated list of all defined virtual servers (exclusive
      * of __asadmin)
@@ -195,16 +192,23 @@ public class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
     }
 
     @Override
-    public void preDeploy() {
+    public void preDeploy() throws DeploymentException {
+        detectCollisions();
         currentBundleContext.set(getBundle().getBundleContext());
+    }
+
+    private void detectCollisions() throws ContextPathCollisionException {
+        ContextPathCollisionDetector cd = ContextPathCollisionDetector.get();
+        cd.preDeploy(getBundle());
     }
 
     @Override
     public void postDeploy() {
+        currentBundleContext.set(null);
         OSGiApplicationInfo osgiAppInfo = getResult();
         if (osgiAppInfo == null) return;
         ServletContext sc = getServletContext(osgiAppInfo.getAppInfo());
-        assert(sc.getAttribute(Constants.BUNDLE_CONTEXT_ATTR) == osgiAppInfo.getBundle().getBundleContext());
+        assert(sc.getAttribute(BUNDLE_CONTEXT_ATTR) == osgiAppInfo.getBundle().getBundleContext());
         ServiceRegistration scReg = registerService(osgiAppInfo.getBundle(), sc);
         // TODO(Sahoo): Unregister scReg when we go down
     }
@@ -230,13 +234,13 @@ public class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
     private ServiceRegistration registerService(Bundle b, ServletContext sc)
     {
         Properties props = new Properties();
-        props.setProperty(Constants.OSGI_WEB_SYMBOLIC_NAME, b.getSymbolicName());
-        String cpath = (String) b.getHeaders().get(Constants.WEB_CONTEXT_PATH);
-        props.setProperty(Constants.OSGI_WEB_CONTEXTPATH, cpath);
+        props.setProperty(OSGI_WEB_SYMBOLIC_NAME, b.getSymbolicName());
+        String cpath = (String) b.getHeaders().get(WEB_CONTEXT_PATH);
+        props.setProperty(OSGI_WEB_CONTEXTPATH, cpath);
         String version = (String) b.getHeaders().get(BUNDLE_VERSION);
         if (version != null)
         {
-            props.setProperty(Constants.OSGI_WEB_VERSION, version);
+            props.setProperty(OSGI_WEB_VERSION, version);
         }
         BundleContext bctx = b.getBundleContext();
         if (bctx != null) {

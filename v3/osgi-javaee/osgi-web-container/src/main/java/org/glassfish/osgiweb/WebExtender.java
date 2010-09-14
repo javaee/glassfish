@@ -78,6 +78,8 @@ public class WebExtender implements Extender {
     }
 
     public synchronized void stop() {
+        // Stop CollisionDetector first so that when we undeploy as part of shutting down, it won't try to deploy bundles
+        ContextPathCollisionDetector.get().stop();
         removeURLHandler();
         unregisterDeployer();
         unregisterWmd();

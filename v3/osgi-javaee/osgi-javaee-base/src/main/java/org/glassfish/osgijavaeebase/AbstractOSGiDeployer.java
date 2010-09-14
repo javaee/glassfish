@@ -40,6 +40,12 @@
 
 package org.glassfish.osgijavaeebase;
 
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import org.glassfish.api.ActionReport;
+import org.glassfish.internal.api.Globals;
+import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.server.ServerEnvironmentImpl;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
@@ -52,13 +58,29 @@ import java.util.logging.Logger;
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public abstract class AbstractOSGiDeployer {
+public abstract class AbstractOSGiDeployer implements OSGiDeployer {
+
+    /**
+     * Various request processing states
+     */
+    public static enum State {
+        DEPLOYING,
+        DEPLOYED,
+        FAILED,
+        UNDEPLOYING,
+        UNDEPLOYED
+    }
+
     private static final Logger logger =
             Logger.getLogger(AbstractOSGiDeployer.class.getPackage().getName());
 
     private BundleContext bundleContext;
     private ServiceRegistration serviceReg;
     private int rank;
+
+    private Deployment deployer = Globals.get(Deployment.class);
+    private ArchiveFactory archiveFactory = Globals.get(ArchiveFactory.class);
+    private ServerEnvironmentImpl env = Globals.get(ServerEnvironmentImpl.class);
 
     protected AbstractOSGiDeployer(BundleContext bundleContext, int rank) {
         this.bundleContext = bundleContext;
@@ -92,6 +114,39 @@ public abstract class AbstractOSGiDeployer {
         serviceReg.unregister();
     }
 
+    public OSGiApplicationInfo deploy(Bundle b) throws DeploymentException {
+        raiseEvent(State.DEPLOYING, b, null);
+        ActionReport report = getReport();
+        OSGiDeploymentRequest request = createOSGiDeploymentRequest(deployer, archiveFactory, env, report, b);
+        OSGiApplicationInfo osgiAppInfo = request.execute();
+        if (osgiAppInfo == null) {
+            final Throwable throwable = report.getFailureCause();
+            raiseEvent(State.FAILED, b, throwable);
+            throw new DeploymentException("Deployment of " + b + " failed because of following reason: " + report.getMessage(),
+                    throwable);
+        }
+        raiseEvent(State.DEPLOYED, b, null);
+        return osgiAppInfo;
+    }
+
+    public void undeploy(OSGiApplicationInfo osgiAppInfo) throws DeploymentException {
+        final Bundle b = osgiAppInfo.getBundle();
+        raiseEvent(State.UNDEPLOYING, b, null);
+        ActionReport report = getReport();
+        OSGiUndeploymentRequest request = createOSGiUndeploymentRequest(deployer, env, report, osgiAppInfo);
+        request.execute();
+        raiseEvent(State.UNDEPLOYED, b, null); // raise event even if something went wrong
+        if (report.getActionExitCode() == ActionReport.ExitCode.FAILURE) {
+            throw new DeploymentException("Undeployment of " + b + " failed because of following reason: " + report.getMessage(),
+                    report.getFailureCause());
+        }
+    }
+
+    protected ActionReport getReport() {
+        return Globals.getDefaultHabitat().getComponent(ActionReport.class,
+                "plain");
+    }
+
     /**
      * Undeploys all bundles which have been deployed using this deployer
      */
@@ -114,6 +169,23 @@ public abstract class AbstractOSGiDeployer {
         } finally {
             st.close();
         }
+    }
+
+    protected abstract OSGiDeploymentRequest createOSGiDeploymentRequest(Deployment deployer,
+                                                      ArchiveFactory archiveFactory,
+                                                      ServerEnvironmentImpl env,
+                                                      ActionReport reporter,
+                                                      Bundle b);
+
+    protected abstract OSGiUndeploymentRequest createOSGiUndeploymentRequest(Deployment deployer,
+                                                          ServerEnvironmentImpl env,
+                                                          ActionReport reporter,
+                                                          OSGiApplicationInfo osgiAppInfo);
+
+    /**
+     * Integration with Event Admin Service happens here.
+     */
+    protected void raiseEvent(State state, Bundle appBundle, Throwable throwable) {
     }
 
 }

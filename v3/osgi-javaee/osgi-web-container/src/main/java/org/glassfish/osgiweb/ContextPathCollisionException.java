@@ -38,44 +38,56 @@
  * holder.
  */
 
+
 package org.glassfish.osgiweb;
 
-import org.glassfish.osgijavaeebase.OSGiUndeploymentRequest;
-import org.glassfish.osgijavaeebase.OSGiDeploymentContext;
-import org.glassfish.osgijavaeebase.OSGiApplicationInfo;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.UndeployCommandParameters;
-import org.glassfish.server.ServerEnvironmentImpl;
-import org.glassfish.internal.deployment.Deployment;
-import org.osgi.framework.Bundle;
+import org.glassfish.osgijavaeebase.DeploymentException;
 
-import java.util.logging.Logger;
+import java.util.Arrays;
 
 /**
+ * This exception is thrown when multiple WABs have same Web-ContextPath.
+ *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiWebUndeploymentRequest extends OSGiUndeploymentRequest {
+class ContextPathCollisionException extends DeploymentException {
+    private final String contextPath;
+    private final Long[] collidingWabIds;
 
-    public OSGiWebUndeploymentRequest(Deployment deployer, ServerEnvironmentImpl env, ActionReport reporter, OSGiApplicationInfo osgiAppInfo) {
-        super(deployer, env, reporter, osgiAppInfo);
+    /**
+     * @param contextPath Context-Path for which collision is detected
+     * @param collidingWabIds bundle id of the WABs that have same context path. The last entry denotes the
+     * current bundle being deployed
+     */
+    public ContextPathCollisionException(String contextPath, Long[] collidingWabIds) {
+        if (collidingWabIds.length < 2) throw new IllegalArgumentException("At least two WAB ids are needed");
+        this.contextPath = contextPath;
+        this.collidingWabIds = Arrays.copyOf(collidingWabIds, collidingWabIds.length);
+        Arrays.sort(this.collidingWabIds);
     }
 
-    protected OSGiDeploymentContext getDeploymentContextImpl(ActionReport reporter, Logger logger, ReadableArchive source, UndeployCommandParameters undeployParams, ServerEnvironmentImpl env, Bundle bundle) throws Exception {
-        return new OSGiWebDeploymentContext(reporter, logger, source, undeployParams, env, bundle);
+    public String getContextPath() {
+        return contextPath;
+    }
+
+    public long getCurrentWabId() {
+        return collidingWabIds[collidingWabIds.length -1];
+    }
+
+    public Long[] getExistingWabIds() {
+        return Arrays.copyOfRange(collidingWabIds, 0, collidingWabIds.length-1);
     }
 
     @Override
-    protected void postUndeploy() {
-        unregisterService();
-        deployCollidingBundle();
-    }
-
-    private void deployCollidingBundle() {
-        ContextPathCollisionDetector.get().postUndeploy(getOsgiAppInfo().getBundle());
-    }
-
-    private void unregisterService() {
-        //TODO(Sahoo): Not Yet Implemented
+    public String getMessage() {
+        StringBuilder sb = new StringBuilder("context path [" + contextPath + "] is same for following bundles: [");
+        for(int i = 0; i < collidingWabIds.length; i++) {
+            sb.append(collidingWabIds[i]);
+            if (i != collidingWabIds.length-1) {
+                sb.append(", ");
+            }
+        }
+        sb.append("]");
+        return sb.toString();
     }
 }
