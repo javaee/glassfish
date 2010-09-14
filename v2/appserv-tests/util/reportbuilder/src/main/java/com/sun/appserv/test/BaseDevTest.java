@@ -336,7 +336,7 @@ public abstract class BaseDevTest {
         public String err;
         public String outAndErr;
     }
-    private static final int DEFAULT_TIMEOUT_MSEC = 240000; // 4 minutes
+    private static final int DEFAULT_TIMEOUT_MSEC = 480000; // 8 minutes
     private boolean verbose = true;
     // in case the command fails so that it can be printed (Hack bnevins)
     private AsadminReturn lastAsadminReturn;
