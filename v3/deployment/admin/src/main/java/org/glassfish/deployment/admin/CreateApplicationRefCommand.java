@@ -53,6 +53,7 @@ import org.glassfish.api.deployment.OpsParams.Origin;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.deployment.common.DeploymentContextImpl;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.config.serverbeans.Application;
@@ -223,6 +224,10 @@ public class CreateApplicationRefCommand implements AdminCommand {
             } else {
 
                 Transaction t = new Transaction();
+                if (app.isLifecycleModule()) {
+                    handleLifecycleModule(report, logger, t);
+                    return;
+                }
 
                 ReadableArchive archive;
                 File file = null;
@@ -336,4 +341,26 @@ public class CreateApplicationRefCommand implements AdminCommand {
             }
         }
     } 
+
+    private void handleLifecycleModule(ActionReport report, Logger logger, Transaction t) {
+        // create a dummy context to hold params and props
+        DeployCommandParameters commandParams = new DeployCommandParameters();
+        commandParams.name = name;
+        commandParams.origin = Origin.load;
+        commandParams.target = target;
+        commandParams.virtualservers = virtualservers;
+        commandParams.enabled = enabled;
+        if(lbenabled != null){
+            commandParams.lbenabled = lbenabled;
+        }
+
+        ExtendedDeploymentContext lifecycleContext = new DeploymentContextImpl(report, logger, null, commandParams, null);
+        try  {
+            deployment.registerAppInDomainXML(null, lifecycleContext, t, true);
+        } catch(Exception e) {
+            report.setMessage("Failed to create application ref for lifecycle module: " + e);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+        }
+    }
+
 }

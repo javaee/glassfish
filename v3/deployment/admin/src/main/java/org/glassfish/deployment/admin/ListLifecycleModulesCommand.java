@@ -70,7 +70,7 @@ import java.util.Properties;
 @I18n("list.lifecycle.modules")
 @Scoped(PerLookup.class)
 @ExecuteOn(value={RuntimeType.DAS})
-@TargetType(value={CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
+@TargetType(value={CommandTarget.DOMAIN, CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
 public class ListLifecycleModulesCommand implements AdminCommand  {
 
     @Param(primary=true, optional=true)
@@ -91,8 +91,7 @@ public class ListLifecycleModulesCommand implements AdminCommand  {
 
         boolean found = false;
         for (Application app : domain.getApplicationsInTarget(target)) {
-            if (Boolean.valueOf(app.getDeployProperties().getProperty
-                (ServerTags.IS_LIFECYCLE))) {
+            if (app.isLifecycleModule()) {
                 ActionReport.MessagePart childPart = part.addChild();
                 childPart.setMessage(app.getName());
                 found = true;

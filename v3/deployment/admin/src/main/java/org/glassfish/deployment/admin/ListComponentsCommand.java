@@ -109,7 +109,7 @@ public class ListComponentsCommand implements AdminCommand {
         ActionReport.MessagePart part = report.getTopMessagePart();        
         int numOfApplications = 0;
         for (Application app : domain.getApplicationsInTarget(target)) {
-                if (!Boolean.valueOf(app.getDeployProperties().getProperty(ServerTags.IS_LIFECYCLE))) {
+                if (!app.isLifecycleModule()) {
                     if (type==null || isApplicationOfThisType(app, type)) {
                         ActionReport.MessagePart childPart = part.addChild();
                         String message = app.getName() + " "
