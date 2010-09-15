@@ -47,10 +47,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.jar.JarOutputStream;
-import java.util.jar.Manifest;
+import java.util.jar.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.Deflater;
@@ -175,8 +172,16 @@ public class ModuleExtractor {
                             modulePath + JarFile.MANIFEST_NAME);
                     Manifest m;
                     InputStream in = modulesJar.getInputStream(manifestEntry);
+
+
                     try {
                         m = new Manifest(in);
+                        if(m != null) {
+                            Attributes attrs = m.getMainAttributes();
+                            if(attrs != null) {
+                                b.setBundleSymbolicName(attrs.getValue("Bundle-SymbolicName"));
+                            }
+                        }
                     } finally {
                         in.close();
                     }

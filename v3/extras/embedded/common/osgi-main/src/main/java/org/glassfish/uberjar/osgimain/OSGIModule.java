@@ -53,6 +53,7 @@ public class OSGIModule {
 
     private String location;
     private InputStream contentStream;
+    private String bundleSymbolicName;
     private ExceptionHandler exceptionHandler = new ExceptionHandler();
     private boolean explicitlyClosed;
 
@@ -90,6 +91,14 @@ public class OSGIModule {
     @Override
     public String toString() {
         return super.toString() + " :: location = " + location;
+    }
+
+    public String getBundleSymbolicName() {
+        return bundleSymbolicName;
+    }
+
+    public void setBundleSymbolicName(String bundleSymbolicName) {
+        this.bundleSymbolicName = bundleSymbolicName;
     }
 
     class ExceptionHandler {

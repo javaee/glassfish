@@ -91,7 +91,7 @@ public class Main implements BundleActivator {
         final Map<String, Bundle> installedBundles = new HashMap();
         if (bundles != null && bundles.length > 0) {
             for (Bundle b : bundles) {
-                installedBundles.put(b.getLocation(), b);
+                installedBundles.put(b.getSymbolicName(), b);
             }
         }
         final File embeddedJar = new File(embeddedJarURI);
@@ -103,7 +103,8 @@ public class Main implements BundleActivator {
                     try {
                         String bundleLocation = m.getLocation();
                         if (!excludedModules.contains(bundleLocation)) {
-                            Bundle installed = installedBundles.get(bundleLocation);
+                            Bundle installed = m.getBundleSymbolicName() != null ?
+                                    installedBundles.get(m.getBundleSymbolicName()) : null;
                             if (installed != null && installed.getLastModified() < embeddedJar.lastModified()) {
                                 // update the bundle if it is already installed and is older than uber jar.
                                 installed.update(m.getContentStream());
