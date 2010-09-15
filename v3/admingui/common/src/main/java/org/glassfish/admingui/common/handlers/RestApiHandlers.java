@@ -48,27 +48,44 @@ import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
-import java.util.logging.Level;
-import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.common.util.MiscUtil;
-import org.glassfish.admingui.common.util.RestResponse;
-import org.w3c.dom.*;
-import org.xml.sax.SAXException;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import javax.faces.context.FacesContext;
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.xml.parsers.ParserConfigurationException;
 
+import org.glassfish.admingui.common.security.AdminConsoleAuthModule;
+import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.util.MiscUtil;
+import org.glassfish.admingui.common.util.RestResponse;
+
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
+
+
+/**
+ *
+ */
 public class RestApiHandlers {
     public static final String FORM_ENCODING = "application/x-www-form-urlencoded";
     // FIXME: Change this to "application/json"
     public static final String RESPONSE_TYPE = "application/xml";
     public static final String GUI_TOKEN_FOR_EMPTY_PROPERTY_VALUE = "()";
     public static final Client JERSEY_CLIENT = Client.create();
+
+    private static final String REST_TOKEN_COOKIE = "gfresttoken";
 
     @Handler(id = "gf.getDefaultValues",
             input = {
@@ -705,18 +722,44 @@ public class RestApiHandlers {
         return childElements;
     }
 
+    /**
+     *	<p> This method returns the value of the REST token if it is
+     *	    successfully set in session scope.</p>
+     */
+    private static final String getRestToken() {
+	String token = null;
+	FacesContext ctx = FacesContext.getCurrentInstance();
+	if (ctx != null) {
+	    token = (String) ctx.getExternalContext().getSessionMap().
+		    get(AdminConsoleAuthModule.REST_TOKEN);
+	}
+	return token;
+    }
+
     //******************************************************************************************************************
     // Jersey client methods
     //******************************************************************************************************************
+
+    /**
+     *
+     */
     public static RestResponse get(String address) {
         return get(address, new HashMap<String, Object>());
     }
     
     public static RestResponse get(String address, Map<String, Object> payload) {
+	WebResource webResource = JERSEY_CLIENT.resource(address).queryParams(buildMultivalueMap(payload));
+	//webResource.addFilter(new HTTPBasicAuthFilter("admin", "admin"));
+	ClientResponse resp = webResource.
+		cookie(new Cookie(REST_TOKEN_COOKIE, getRestToken())).
+		accept(RESPONSE_TYPE).get(ClientResponse.class);
+	return RestResponse.getRestResponse(resp);
+	/*
         return RestResponse.getRestResponse(JERSEY_CLIENT.resource(address)
                 .queryParams(buildMultivalueMap(payload))
                 .accept(RESPONSE_TYPE)
                 .get(ClientResponse.class));
+	*/
     }
 
     public static RestResponse post(String address, Object payload, String contentType) {
@@ -728,6 +771,7 @@ public class RestApiHandlers {
             payload = buildMultivalueMap((Map<String, Object>)payload);
         }
         ClientResponse cr = webResource.header("Content-Type", contentType).
+		cookie(new Cookie(REST_TOKEN_COOKIE, getRestToken())).
 		accept(RESPONSE_TYPE).post(ClientResponse.class, payload);
         //checkStatusForSuccess(cr);
         RestResponse rr = RestResponse.getRestResponse(cr);
@@ -737,7 +781,9 @@ public class RestApiHandlers {
     public static RestResponse post(String address, Map<String, Object> payload) {
         WebResource webResource = JERSEY_CLIENT.resource(address);
         MultivaluedMap formData = buildMultivalueMap(payload);
-        ClientResponse cr = webResource.accept(RESPONSE_TYPE).post(ClientResponse.class, formData);
+        ClientResponse cr = webResource.
+		cookie(new Cookie(REST_TOKEN_COOKIE, getRestToken())).
+		accept(RESPONSE_TYPE).post(ClientResponse.class, formData);
         //checkStatusForSuccess(cr);
         RestResponse rr = RestResponse.getRestResponse(cr);
         return rr;
@@ -750,14 +796,18 @@ public class RestApiHandlers {
 
     public static RestResponse delete(String address, Map<String, Object> payload) {
         WebResource webResource = JERSEY_CLIENT.resource(address);
-        ClientResponse cr = webResource.queryParams(buildMultivalueMap(payload)).accept(RESPONSE_TYPE).delete(ClientResponse.class);
+        ClientResponse cr = webResource.queryParams(buildMultivalueMap(payload)).
+		cookie(new Cookie(REST_TOKEN_COOKIE, getRestToken())).
+		accept(RESPONSE_TYPE).delete(ClientResponse.class);
         checkStatusForSuccess(cr);
         return RestResponse.getRestResponse(cr);
     }
 
     public static RestResponse options(String address, String responseType) {
         WebResource webResource = JERSEY_CLIENT.resource(address);
-        ClientResponse cr = webResource.accept(responseType).options(ClientResponse.class);
+        ClientResponse cr = webResource.
+		cookie(new Cookie(REST_TOKEN_COOKIE, getRestToken())).
+		accept(responseType).options(ClientResponse.class);
         checkStatusForSuccess(cr);
         return RestResponse.getRestResponse(cr);
     }
