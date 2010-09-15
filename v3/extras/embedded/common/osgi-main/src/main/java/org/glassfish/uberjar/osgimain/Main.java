@@ -117,7 +117,7 @@ public class Main implements BundleActivator {
                         }
                         m.close();
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        logger.finer(ex.getMessage());
                     }
                 }
             });
