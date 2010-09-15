@@ -37,9 +37,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.admin;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.ActionReport;
@@ -58,11 +62,10 @@ import org.glassfish.internal.config.UnprocessedConfigListener;
  *
  * @author Bill Shannon
  */
-@Service(name="_get-restart-required")
+@Service(name = "_get-restart-required")
 @Scoped(PerLookup.class)
 @I18n("get.restart.required.command")
 public class GetRestartRequiredCommand implements AdminCommand {
-
     @Param(optional = true)
     private boolean why;
 
@@ -73,11 +76,26 @@ public class GetRestartRequiredCommand implements AdminCommand {
         ActionReport report = context.getActionReport();
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         ActionReport.MessagePart mp = report.getTopMessagePart();
+
+        Properties extraProperties = new Properties();
+        Map<String, Object> entity = new HashMap<String, Object>();
         mp.setMessage(Boolean.toString(ucl.serverRequiresRestart()));
-        if (why) {
-            for (UnprocessedChangeEvents es : ucl.getUnprocessedChangeEvents())
-                for (UnprocessedChangeEvent e : es.getUnprocessed())
+        entity.put("restartRequired", Boolean.toString(ucl.serverRequiresRestart()));
+        List<String> unprocessedChanges = new ArrayList<String>();
+
+        for (UnprocessedChangeEvents es : ucl.getUnprocessedChangeEvents()) {
+            for (UnprocessedChangeEvent e : es.getUnprocessed()) {
+                if (why) {
                     mp.addChild().setMessage(e.getReason());
+                }
+                unprocessedChanges.add(e.getReason());
+            }
         }
+
+        if (!unprocessedChanges.isEmpty()) {
+            entity.put("unprocessedChanges", unprocessedChanges);
+        }
+        extraProperties.put("entity", entity);
+        ((ActionReport) report).setExtraProperties(extraProperties);
     }
 }
