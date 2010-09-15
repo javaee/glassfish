@@ -48,31 +48,31 @@
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.configuration.pageTitle}" >
 <!define name="content">
     <event>
-    <!beforeCreate 
-        getRequestValue(key="configName" value=>$page{configName});
-    />
+        <!beforeCreate
+            getRequestValue(key="configName" value=>$page{configName});
+        />
     </event>
-            <sun:form id="configForm"> 
-                <sun:title 
-                    id="configPageTitle" 
-                    title="$resource{i18n.configuration.pageTitle}" 
-                    helpText="$resource{i18n.configuration.pageTitleHelp}"
+    <sun:form id="configForm">
+        <sun:title
+            id="configPageTitle"
+            title="$resource{i18n.configuration.pageTitle}"
+            helpText="$resource{i18n.configuration.pageTitleHelp}"
+        />
+        <sun:propertySheet id="propSheet">
+            <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$attribute{sheetId});
                 />
-                <sun:propertySheet id="propSheet">
-                    <!afterCreate
-                            getClientId(component="$this{component}" clientId=>$attribute{sheetId});
-                        />
-                    <sun:propertySheetSection id="propSheetSection">
-                    </sun:propertySheetSection>
-                </sun:propertySheet>
-                <event>
-                        <!afterCreate
-                            getUIComponent(clientId="#{sheetId}"  component=>$attribute{component})
-                            includeIntegrations(type="org.glassfish.admingui:configuration" root="#{component}");
-                        />
-                    </event>
-                <sun:hidden id="helpKey" value="$resource{help_common.configuration}" />
-            </sun:form>           
+            <sun:propertySheetSection id="propSheetSection">
+            </sun:propertySheetSection>
+        </sun:propertySheet>
+        <event>
+            <!afterCreate
+                getUIComponent(clientId="#{sheetId}"  component=>$attribute{component})
+                includeIntegrations(type="org.glassfish.admingui:configuration" root="#{component}");
+            />
+        </event>
+        <sun:hidden id="helpKey" value="$resource{help_common.configuration}" />
+    </sun:form>
 </define>
 </composition>
 

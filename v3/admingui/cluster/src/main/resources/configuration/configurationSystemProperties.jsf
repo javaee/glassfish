@@ -92,13 +92,13 @@
                         <!command
                             createMap(result="#{requestScope.data}");
                             mapPut(map="#{requestScope.data}", key="dynamicReconfigurationEnabled", value="#{pageSession.dynaReconfig ? 'true' : 'false'}");
-                            gf.restRequest(endpoint="#{pageSession.parentUrl}", method="POST", data="#{requestScope.data}", contentType="application/x-www-form-urlencoded", result="#{requestScope.restResponse}");
+                            gf.restRequest(endpoint="#{pageSession.parentUrl}", method="POST", attrs="#{requestScope.data}", contentType="application/x-www-form-urlencoded", result="#{requestScope.restResponse}");
 
                             createMap(result="#{requestScope.data}");
                             foreach (var="row" list="#{pageSession.tableList}") {
                                 mapPut(map="#{requestScope.data}", key="#{row.name}", value="#{row.value}");
                             }
-                            gf.restRequest(endpoint="#{pageSession.selfUrl}", method="POST", data="#{requestScope.data}", contentType="application/x-www-form-urlencoded", result="#{requestScope.restResponse}");
+                            gf.restRequest(endpoint="#{pageSession.selfUrl}", method="POST", attrs="#{requestScope.data}", contentType="application/x-www-form-urlencoded", result="#{requestScope.restResponse}");
                             prepareSuccessfulMsg();
                             gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                         />
