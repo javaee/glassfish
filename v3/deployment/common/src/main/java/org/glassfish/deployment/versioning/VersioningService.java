@@ -43,9 +43,12 @@ package org.glassfish.deployment.versioning;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Application;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.CommandRunner;
@@ -80,7 +83,7 @@ public class VersioningService {
      * @param target the target where we want to get all the versions
      * @return all the version(s) of the given application
      */
-    public final List<String> getAllversions(String untaggedName, String target) {
+    private final List<String> getAllversions(String untaggedName, String target) {
         List<Application> allApplications = null;
         if (target != null) {
             allApplications = domain.getApplicationsInTarget(target);
@@ -88,6 +91,40 @@ public class VersioningService {
             allApplications = domain.getApplications().getApplications();
         }
         return VersioningUtils.getVersions(untaggedName, allApplications);
+    }
+
+    /**
+     * Search for all enabled versions of the given application in all
+     * known targets. As different versions maybe enabled on different targets,
+     * the return type used is a map.
+     *
+     * @param name the application name
+     * @return a map matching the enabled versions with their target(s)
+     * @throws VersioningSyntaxException if getEnabledVersion throws an exception
+     */
+    public Map<String,List<String>> getAllEnabledVersionsInTargets(String name)
+            throws VersioningSyntaxException {
+        
+        Map<String,List<String>> enabledVersionsInTargets = new HashMap<String, List<String>>();
+        List<String> allTargets = domain.getAllTargets();
+
+        Iterator it = allTargets.iterator();
+        while(it.hasNext()){
+            String target = (String)it.next();
+            String enabledVersion = getEnabledVersion(name, target);
+            if(enabledVersion != null){
+                // the key already exists, we just add the new target into the list
+                if(enabledVersionsInTargets.containsKey(enabledVersion)){
+                    enabledVersionsInTargets.get(enabledVersion).add(target);
+                } else {
+                    // we have to create the list associated with the key
+                    List<String> listTargets = new ArrayList<String>();
+                    listTargets.add(target);
+                    enabledVersionsInTargets.put(enabledVersion, listTargets);     
+                }
+            }
+        }
+        return enabledVersionsInTargets;
     }
 
     /**

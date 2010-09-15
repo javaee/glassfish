@@ -347,6 +347,24 @@ public class VersioningUtils {
         return isVersionExpression;
     }
 
+     /**
+     * Test if the given application name is a version expression containing
+     * any wildcard character. That is to say the version expression is matching
+     * more than one version.
+     *
+     * @param appName the application name
+     * @return <code>true</code> if the appName is a version expression matching
+     * more than one version.
+     * @throws VersioningSyntaxException if isVersionExpression
+     * throws exception
+     */
+    public static final Boolean isVersionExpressionWithWildCard(String appName)
+            throws VersioningSyntaxException {
+
+        return isVersionExpression(appName)
+                && appName.contains(EXPRESSION_WILDCARD);
+    }
+
     /**
      * Test if the given application name is a version identifier.
      *

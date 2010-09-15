@@ -82,10 +82,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import org.glassfish.deployment.versioning.VersioningService;
 import org.glassfish.deployment.versioning.VersioningException;
-import org.glassfish.deployment.versioning.VersioningSyntaxException;
+import org.glassfish.deployment.versioning.VersioningUtils;
 
 /**
  * Disable command
@@ -142,30 +147,65 @@ public class DisableCommand extends UndeployCommandParameters implements AdminCo
             origin = Origin.undeploy;
         }
 
-        try {
-            List<String> matchedVersions = versioningService.getMatchedVersions(appName, target);
-            if (matchedVersions == Collections.EMPTY_LIST) {
-                // no version matched by the expression
-                // nothing to do : success
-                report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+        boolean isVersionExpressionWithWilcard =
+                VersioningUtils.isVersionExpressionWithWildCard(appName);
+
+        Set<String> enabledVersionsToDisable = Collections.EMPTY_SET;
+
+        if (env.isDas() && DeploymentUtils.isDomainTarget(target)) {
+
+                Map<String,List<String>> enabledVersionsInTargets = Collections.EMPTY_MAP;
+                if( isVersionExpressionWithWilcard ){
+                    enabledVersionsInTargets = versioningService.getAllEnabledVersionsInTargets(appName);
+                } else {
+                    enabledVersionsInTargets = new HashMap<String, List<String>>();
+                    enabledVersionsInTargets.put(appName,domain.getAllReferencedTargetsForApplication(appName));
+                }
+                enabledVersionsToDisable = enabledVersionsInTargets.keySet();
+
+                // for each distinct enabled version in all known targets
+                Iterator it = enabledVersionsInTargets.entrySet().iterator();
+                while(it.hasNext()){
+                    
+                    Map.Entry entry = (Map.Entry)it.next();
+                    appName = (String)entry.getKey();
+                    List<String> targets = (List<String>)entry.getValue();
+                        
+                    // replicate command to all referenced targets
+                    try {
+                        ParameterMapExtractor extractor = new ParameterMapExtractor(this);
+                        ParameterMap paramMap = extractor.extract(Collections.EMPTY_LIST);
+                        paramMap.set("DEFAULT", appName);
+                        ClusterOperationUtil.replicateCommand("disable", FailurePolicy.Error, FailurePolicy.Warn, targets, context, paramMap, habitat);
+                    } catch (Exception e) {
+                        report.failure(logger, e.getMessage());
+                        return;
+                    }
+                }
+        } else if ( isVersionExpressionWithWilcard ){
+
+            try {
+                List<String> matchedVersions = versioningService.getMatchedVersions(appName, target);
+                if (matchedVersions == Collections.EMPTY_LIST) {
+                    // no version matched by the expression
+                    // nothing to do : success
+                    report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+                    return;
+                }
+                String enabledVersion = versioningService.getEnabledVersion(appName, target);
+                if (matchedVersions.contains(enabledVersion)) {
+                    // the enabled version is matched by the expression
+                    appName = enabledVersion;
+                } else {
+                    // the enabled version is not matched by the expression
+                    // nothing to do : success
+                    report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+                    return;
+                }
+            } catch (VersioningException e) {
+                report.failure(logger, e.getMessage());
                 return;
             }
-            String enabledVersion = versioningService.getEnabledVersion(appName, target);
-            if (matchedVersions.contains(enabledVersion)) {
-                // the enabled version is matched by the expression
-                appName = enabledVersion;
-            } else {
-                // the enabled version is not matched by the expression
-                // nothing to do : success
-                report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-                return;
-            }
-        } catch (VersioningSyntaxException e) {
-            report.failure(logger, e.getMessage());
-            return;
-        } catch (VersioningException e) {
-            report.failure(logger, e.getMessage());
-            return;
         }
 
         if (!deployment.isRegistered(appName)) {
@@ -183,23 +223,6 @@ public class DisableCommand extends UndeployCommandParameters implements AdminCo
             }
         }
 
-
-        if (env.isDas()) {
-            if (DeploymentUtils.isDomainTarget(target)) {
-                List<String> targets = domain.getAllReferencedTargetsForApplication(appName);
-                // replicate command to all referenced targets
-                try {
-                    ParameterMapExtractor extractor = new ParameterMapExtractor(this);
-                    ParameterMap paramMap = extractor.extract(Collections.EMPTY_LIST);
-                    paramMap.set("DEFAULT", appName);
-                    ClusterOperationUtil.replicateCommand("disable", FailurePolicy.Error, FailurePolicy.Warn, targets, context, paramMap, habitat);
-                } catch (Exception e) {
-                    report.failure(logger, e.getMessage());
-                    return;
-                } 
-            }
-        }
-
         if (!domain.isCurrentInstanceMatchingTarget(target, appName, server.getName(), null)) {
             try {
                 deployment.updateAppEnabledAttributeInDomainXML(appName, target, false);
@@ -210,14 +233,27 @@ public class DisableCommand extends UndeployCommandParameters implements AdminCo
         }
 
         ApplicationInfo appInfo = deployment.get(appName);
-
         try {
             Application app = applications.getApplication(appName);
-
             this.name = appName;
 
             deployment.disable(this, app, appInfo, report, logger);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error during disabling: ", e);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(e.getMessage());
+        }
 
+        if( enabledVersionsToDisable == Collections.EMPTY_SET ) {
+            enabledVersionsToDisable = new HashSet<String>();
+            enabledVersionsToDisable.add(appName);
+        }
+
+        // iterating all the distinct enabled versions in all targets
+        Iterator it = enabledVersionsToDisable.iterator();
+        while (it.hasNext()) {
+
+            appName = (String) it.next();
             if (!report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
                 try {
                     deployment.updateAppEnabledAttributeInDomainXML(appName, target, false);
@@ -225,10 +261,6 @@ public class DisableCommand extends UndeployCommandParameters implements AdminCo
                     logger.warning("failed to set enable attribute for " + appName);
                 }
             }
-        } catch(Exception e) {
-            logger.log(Level.SEVERE, "Error during disabling: ", e);
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(e.getMessage());
         }
     }        
 }
