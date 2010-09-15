@@ -63,20 +63,20 @@ public class GlassFishKeyMapper
 
 
     @Override
-    public HACookieInfo makeCookie(String groupName, Object key, String version) {
+    public HACookieInfo makeCookie(String groupName, Object key, String oldReplicaCookie) {
         String cookieStr = null;
 
         if (key != null) {
             cookieStr = super.getReplicaChoices(groupName, key);
         }
-        return new HACookieInfo(cookieStr);
+        return new HACookieInfo(cookieStr, oldReplicaCookie);
     }
 
     @Override
     public String getMappedInstance(String groupName, Object key1) {
         HACookieInfo cookieInfo = HACookieManager.getCurrent();
-        if (cookieInfo.getReplica() != null) {
-            return cookieInfo.getReplica();
+        if (cookieInfo.getNewReplicaCookie() != null) {
+            return cookieInfo.getNewReplicaCookie();
         } else {
             return super.getMappedInstance(groupName, key1);
         }
@@ -85,8 +85,8 @@ public class GlassFishKeyMapper
     @Override
     public String getReplicaChoices(String groupName, Object key) {
         HACookieInfo cookieInfo = HACookieManager.getCurrent();
-        if (cookieInfo.getReplica() != null) {
-            return cookieInfo.getCookie();
+        if (cookieInfo.getOldReplicaCookie() != null) {
+            return cookieInfo.getOldReplicaCookie();
         } else {
             return super.getReplicaChoices(groupName, key);
         }

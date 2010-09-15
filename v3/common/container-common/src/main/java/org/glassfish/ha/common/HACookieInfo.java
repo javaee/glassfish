@@ -49,64 +49,52 @@ package org.glassfish.ha.common;
  */
 public class HACookieInfo {
 
-    String cookie;
+    String newReplica;
 
     Object hashKey;
 
-    String replica;
+    String oldReplica;
 
-    public HACookieInfo(String cookie) {
-        initialize(cookie);
+    public HACookieInfo(String newReplica, String oldReplica) {
+        initialize(newReplica, oldReplica);
     }
 
-    public HACookieInfo initialize(String cookie) {
-        update(cookie);
+    public HACookieInfo initialize(String newReplica, String oldReplica) {
+        update(newReplica, oldReplica);
 
         return this;
     }
 
-    public void update(String cookie) {
-        if (cookie != null && cookie.trim().length() > 0) {
-            this.cookie = cookie.trim();
-            String[] args = cookie.split(":");
-            replica = args[0];
+    public void update(String newReplica, String oldReplica) {
+        if (newReplica != null && newReplica.trim().length() > 0) {
+            this.newReplica = newReplica.trim();
+        }
 
-            System.out.println("HACookie.update(" + cookie + ") => " + replica);
+        if (oldReplica != null && oldReplica.trim().length() > 0) {
+            this.oldReplica = oldReplica.trim();
         }
     }
 
     void reset() {
-        cookie = null;
+        newReplica = null;
         hashKey = null;
-        replica = null;
+        oldReplica = null;
     }
 
-    public String getCookie() {
-        return cookie;
+    public String getNewReplicaCookie() {
+        return newReplica;
     }
 
-    public Object getHashKey() {
-        return hashKey;
-    }
-
-    public void setHashKey(Object hashKey) {
-        this.hashKey = hashKey;
-    }
-
-    public String getReplica() {
-        return replica;
-    }
-
-    public void setReplica(String replica) {
-        this.replica = replica;
+    public String getOldReplicaCookie() {
+        return oldReplica;
     }
 
     @Override
     public String toString() {
         return "HACookieInfo{" +
-                "cookie='" + cookie + '\'' +
+                "newReplica='" + newReplica + '\'' +
                 ", hashKey=" + hashKey +
-                ", replica='" + replica + '\'' +
+                ", oldReplica='" + oldReplica + '\'' +
                 '}';
     }
 }

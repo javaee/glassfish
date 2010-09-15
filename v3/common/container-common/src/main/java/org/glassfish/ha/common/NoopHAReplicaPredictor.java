@@ -52,7 +52,7 @@ public class NoopHAReplicaPredictor
 
     @Override
     public HACookieInfo makeCookie(String groupName, Object key, String version) {
-        return new HACookieInfo("inst3:-1");
+        return new HACookieInfo("", "");
     }
 
 }

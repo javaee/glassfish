@@ -53,13 +53,13 @@ public class HACookieManager {
         @Override
         protected HACookieInfo childValue(HACookieInfo parentValue) {
             return (parentValue != null)
-                ? new HACookieInfo(parentValue.getCookie())
-                : new HACookieInfo(null);
+                ? new HACookieInfo(parentValue.getNewReplicaCookie(), parentValue.getOldReplicaCookie())
+                : new HACookieInfo(null, null);
         }
 
         @Override
         protected HACookieInfo initialValue() {
-            return new HACookieInfo(null);
+            return new HACookieInfo(null, null);
         }
     };
 
@@ -70,13 +70,6 @@ public class HACookieManager {
     public static HACookieInfo setCurrrent(HACookieInfo info) {
         HACookieInfo oldInfo = _haCookieInfo.get();
         _haCookieInfo.set(info);
-
-        return oldInfo;
-    }
-
-    public static HACookieInfo setCurrrent(String cookie) {
-        HACookieInfo oldInfo = _haCookieInfo.get();
-        _haCookieInfo.set(new HACookieInfo(cookie));
 
         return oldInfo;
     }
