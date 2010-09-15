@@ -94,8 +94,8 @@ public class ClusterSetupTest extends AdminBaseDevTest {
 	Thread.currentThread().sleep(5000);
         // check that the instances are there
         report(tn + "list-instances", asadmin("list-instances"));
-        report(tn + "getindex1", matchString("GlassFish Enterprise Server", getURL(i1url)));
-        retStatus = report(tn + "getindex2", matchString("GlassFish Enterprise Server", getURL(i2url)));
+        report(tn + "getindex1", matchString("GlassFish Server", getURL(i1url)));
+        retStatus = report(tn + "getindex2", matchString("GlassFish Server", getURL(i2url)));
         Assert.assertEquals(retStatus, true, "Start instance failed ...");
     }
  }
