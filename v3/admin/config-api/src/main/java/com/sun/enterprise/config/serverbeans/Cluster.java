@@ -203,7 +203,6 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *              {@link String }
      * @throws PropertyVetoException if a listener vetoes the change
      */
-    @Param(name="gmsbindinterfaceaddress", optional=true)
     void setGmsBindInterfaceAddress(String value) throws PropertyVetoException;
 
     /**
@@ -540,10 +539,9 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                         "Cluster software is not installed"));
             }
             final String instanceName = instance.getName();
-            if (instance.getGmsBindInterfaceAddress() == null) {
-                String bia = String.format("${GMS-BIND-INTERFACE-ADDRESS-%s}", instanceName);
-                instance.setGmsBindInterfaceAddress(bia);
-            }
+            instance.setGmsBindInterfaceAddress(String.format(
+                "${GMS-BIND-INTERFACE-ADDRESS-%s}",
+                instanceName));
 
             if (instance.getGmsMulticastAddress() == null) {
                 instance.setGmsMulticastAddress(generateHeartbeatAddress());
