@@ -1,31 +1,27 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
- * may not use this file except in compliance with the License.  You can
- * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
- * or packager/legal/LICENSE.txt.  See the License for the specific
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at packager/legal/LICENSE.txt.
- *
- * GPL Classpath Exception:
- * Oracle designates this particular file as subject to the "Classpath"
- * exception as provided by Oracle in the GPL Version 2 section of the License
- * file that accompanied this code.
- *
- * Modifications:
- * If applicable, add the following below the License Header, with the fields
- * enclosed by brackets [] replaced by your own identifying information:
- * "Portions Copyright [year] [name of copyright owner]"
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
  *
  * Contributor(s):
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -75,7 +71,7 @@ public interface JmsAvailability extends ConfigBeanProxy, Injectable, PropertyBa
      * considered non-HA. JMS Messages are not persisted to a highly available
      * store. If this attribute is "true" the MQ cluster pointed to by the
      * jms-service element is a HA cluster and the MQ cluster uses the database
-     * pointed to by mq-store-pool-name to save persistent JMS messages and
+     * pointed to by jdbcurl to save persistent JMS messages and
      * other broker cluster configuration information. Individual applications
      * will not be able to control or override MQ cluster availability levels.
      * They inherit the availability attribute defined in this element.
@@ -96,29 +92,106 @@ public interface JmsAvailability extends ConfigBeanProxy, Injectable, PropertyBa
      *              {@link String }
      */
     void setAvailabilityEnabled(String value) throws PropertyVetoException;
+    /**
+     * Gets the value of the DB Vendor property.
+     *
+     * This is the DB Vendor Name for the DB used by the MQ broker cluster
+     * for use in saving persistent JMS messages and other broker
+     * cluster configuration information.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute
+    String getDbVendor();
 
     /**
-     * Gets the value of the mqStorePoolName property.
+     * Sets the value of the DB Vendor property.
      *
-     * This is the jndi-name for the JDBC Connection Pool used by the MQ broker
+     * @param value allowed object is
+     *              {@link String }
+     */
+    void setDbVendor(String value) throws PropertyVetoException;
+
+    /**
+         * Gets the value of the DB User Name property.
+         *
+         * This is the DB user Name for the DB used by the MQ broker cluster
+         * for use in saving persistent JMS messages and other broker
+         * cluster configuration information.
+         *
+         * @return possible object is
+         *         {@link String }
+      */
+      @Attribute
+      String getDbUsername();
+
+      /**
+         * Sets the value of the DB UserName property.
+         *
+         * @param value allowed object is
+         *              {@link String }
+       */
+      void setDbUsername(String value) throws PropertyVetoException;
+
+    /**
+             * Gets the value of the DB Password property.
+             *
+             * This is the DB Password for the DB used by the MQ broker cluster
+             * for use in saving persistent JMS messages and other broker
+             * cluster configuration information.
+             *
+             * @return possible object is
+             *         {@link String }
+             */
+            @Attribute
+            String getDbPassword();
+
+            /**
+             * Sets the value of the DB password property.
+             *
+             * @param value allowed object is
+             *              {@link String }
+             */
+            void setDbPassword(String value) throws PropertyVetoException;
+
+    /**
+     * Gets the value of the JDBC URL property.
+     *
+     * This is the JDBC URL used by the MQ broker
      * cluster for use in saving persistent JMS messages and other broker
-     * cluster configuration information.  It will default to value of
-     * store-pool-name under availability-service (ultimately "jdbc/hastore")
+     * cluster configuration information.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute
+    String getJdbcUrl();
+
+    /**
+     * Sets the value of the JDBC URL property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    void setJdbcUrl(String value) throws PropertyVetoException;
+
+    /**
+     * Gets the value of the MQ Store pool name property.
      *
      * @return possible object is
      *         {@link String }
      */
     @Attribute
     String getMqStorePoolName();
-
+    
     /**
-     * Sets the value of the mqStorePoolName property.
+     * Sets the value of the MQ store pool name property.
      *
      * @param value allowed object is
      *              {@link String }
      */
-    void setMqStorePoolName(String value) throws PropertyVetoException;
-    
+    void setMqStorePoolName(String value) throws PropertyVetoException;    
     /**
     	Properties as per {@link PropertyBag}
      */
