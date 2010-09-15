@@ -207,6 +207,8 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 if (logger.isLoggable(Level.FINE)) {
                     logger.log(Level.FINE, "stack trace:", e);
                 }
+                // prevent access to a malformed gms object.
+                return false;
             }
             initializationComplete.set(true);
         }
@@ -653,6 +655,16 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             logger.log(Level.WARNING, "gmsexception.update.health.history",
                 t.getLocalizedMessage());
         }
+//        if (signal instanceof FailureRecoverySignal) {
+//            FailureRecoverySignal frsSignal = (FailureRecoverySignal)signal;
+//            logger.log(Level.INFO, "gmsservice.failurerecovery.start.notification", new Object[]{frsSignal.getComponentName(), frsSignal.getMemberToken()});
+//            try {
+//                Thread.sleep(20 * 1000); // sleep 20 seconds. simulate wait time to allow instance to restart and do self recovery before another instance does it.
+//            } catch (InterruptedException ie) {
+//
+//            }
+//            logger.log(Level.INFO, "gmsservice.failurerecovery.completed.notification", new Object[]{frsSignal.getComponentName(), frsSignal.getMemberToken()});
+//        }
         if (this.aliveAndReadyLoggingEnabled) {
             if (signal instanceof JoinedAndReadyNotificationSignal ||
                 signal instanceof FailureNotificationSignal ||
