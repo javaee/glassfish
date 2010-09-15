@@ -103,16 +103,15 @@
    
 
     <sun:tableColumn headerText="$resource{i18n.ComponentTable.colAction}" embeddedActions="#{false}" rowHeader="$boolean{true}" id="col4">
+<!--
         <sun:hyperlink id="link" rendered="#{td.value.hasLaunch}" text="$resource{i18n.deployTable.launch}" url="#{td.value.launchLink}"
             onClick="window.open('#{td.value.launchLink}','ViewerWindow','width='+.60*screen.width+',height='+.60*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,directories=yes,location=yes'); return false;" />
-
-        <!--TODO-V3-CLUSTER
-        <!if $session{supportCluster}>
-            <sun:hyperlink id="clusterLink" rendered="#{td.value.hasLaunch}" text="$resource{i18n.deployTable.launch}" 
-                onClick="var win=window.open('webApplicationLinks.jsf?appID=#{td.value.name}&contextRoot=#{td.value.contextRoot}','ViewerWindow','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,directories=yes,location=yes');win.focus(); return false;" >
-        </!if>
-        -->
-
+-->
+<!--        <!if $session{supportCluster}> -->
+            <sun:hyperlink id="link" rendered="#{td.value.hasLaunch}" text="$resource{i18n.deployTable.launch}"
+                onClick="var win=window.open('applications/webApplicationLinks.jsf?appID=#{td.value.name}&contextRoot=#{td.value.contextRoot}','ViewerWindow','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,directories=yes,location=yes');win.focus(); return false;" />
+<!--        </!if>
+-->
         "&#160;|&#160;
 
         <sun:hyperlink id="redeployLink" text="$resource{i18n.deployTable.redeploy}" 

@@ -63,6 +63,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Iterator;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -134,20 +135,54 @@ public class ApplicationHandlers {
 
     private static void getLaunchInfo(String serverName, String appName,  Map oneRow) {
         String endpoint = GuiUtil.getSessionValue("REST_URL") + "/applications/application/" + appName + ".json";
-        String contextRoot = (String) RestApiHandlers.restRequest(endpoint, null, "GET", null).get("contextRoot");
-        if (contextRoot == null){
-            contextRoot = "";
+        Map map = RestApiHandlers.restRequest(endpoint, null, "GET", null);
+        Map data = (Map)map.get("data");
+        String contextRoot = "";
+        boolean enabled = false;
+        if (data != null) {
+            Map extraProperties = (Map)data.get("extraProperties");
+            if (extraProperties != null) {
+                Map entity = (Map)extraProperties.get("entity");
+                if (entity != null) {
+                    contextRoot = (String) entity.get("contextRoot");
+                    enabled = Boolean.parseBoolean((String) entity.get("enabled"));
+                }
+            }
         }
 
-        String refEndpoint = GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + serverName + "/application-ref/" + appName + ".json";
-        //String status = (String) RestApiHandlers.getAttributesMap(refEndpoint).get("enabled");
-        String status = (String) RestApiHandlers.restRequest(endpoint, null, "GET", null).get("enabled");
-        boolean enabled = Boolean.parseBoolean(status);
 
         oneRow.put("contextRoot", contextRoot);
         oneRow.put("hasLaunch", false);
         if ( !enabled || contextRoot.equals("")){
             return;
+        }
+
+        List<String> targetList = DeployUtil.getApplicationTarget(appName, "application-ref");
+        for(String target : targetList) {
+            String virtualServers = getVirtualServers(target, appName);
+            Map result = getListener(virtualServers, "server-config");
+
+
+            String vs = (String)result.get("vs");
+            if (vs.equals( "server")){
+                vs = serverName;   //this is actually the hostName, more readable for user in the launch URL.
+            }
+            String port = (String)result.get("port");
+            String protocol = (String)result.get("protocol");
+            oneRow.put("hasLaunch", true);
+            oneRow.put("launchLink", protocol + "://" + vs + ":" + port + calContextRoot(contextRoot));
+            //return protocol + "://" + vs + ":" + port ;
+
+/*            HashMap  targetMap = new HashMap();
+            if (clusters.contains(target)){
+        handlerCtx.setOutputValue("configName", RestApiHandlers.getAttributesMap(endpoint).get("configRef"));
+                endpoint = "/clusters/cluster/" + target + "/application-ref/" + appName;
+                attrs = RestApiHandlers.getAttributesMap(prefix + endpoint);
+            }else{
+                endpoint = "/servers/server/" + target + "/application-ref/" + appName;
+                attrs = RestApiHandlers.getAttributesMap(prefix  + endpoint);
+            }
+ */
         }
 
         /*
@@ -161,7 +196,103 @@ public class ApplicationHandlers {
         }
         */
     }
-    
+
+    private static String getVirtualServers(String target, String appName) {
+        List clusters = TargetUtil.getClusters();
+        List standalone = TargetUtil.getStandaloneInstances();
+        standalone.add("server");
+        String ep = (String)GuiUtil.getSessionValue("REST_URL");
+        if (clusters.contains(target)){
+            ep = ep + "/clusters/cluster/" + target + "/application-ref/" + appName;
+        }else{
+            ep = ep + "/servers/server/" + target + "/application-ref/" + appName;
+        }
+        String virtualServers =
+                (String)RestApiHandlers.getAttributesMap(ep).get("virtualServers");
+        return virtualServers;
+    }
+
+    // returns a  http-listener that is linked to a non-admin VS
+    /*
+    private static Map getListener() {
+        Map<String, VirtualServer> vsMap = V3AMX.getServerConfig("server-config").getHttpService().childrenMap(VirtualServer.class);
+        return getOneVsWithNetworkListener(new ArrayList(vsMap.keySet()));
+    }
+    */
+
+    private static Map getListener(String vsIds, String configName) {
+        return getOneVsWithNetworkListener(GuiUtil.parseStringList(vsIds, ","), configName);
+    }
+
+    private static Map getOneVsWithNetworkListener(List<String> vsList, String configName) {
+        Map result = new HashMap();
+        if (vsList == null || vsList.size() == 0) {
+            return null;
+        }
+        //Just to ensure we look at "server" first.
+        if (vsList.contains("server")){
+            vsList.remove("server");
+            vsList.add(0, "server");
+        }
+        boolean found = false;
+//        Map<String, VirtualServer> vsMap = V3AMX.getServerConfig("server-config").getHttpService().childrenMap(VirtualServer.class);
+        String ep = (String)GuiUtil.getSessionValue("REST_URL");
+        ep = ep + "/configs/config/" + configName + "/http-service/virtual-server";
+        Map vsInConfig = new HashMap();
+        try{
+            vsInConfig = RestApiHandlers.getChildMap(ep);
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+        for (String vsName : vsList) {
+            if (vsName.equals("admin-listener")) {
+                continue;
+            }
+            Object vs = vsInConfig.get(vsName);
+            if (vs != null) {
+                ep = (String)GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + 
+                        configName + "/http-service/virtual-server/" + vsName;
+                String listener = (String)RestApiHandlers.getAttributesMap(ep).get("networkListeners");
+                if (GuiUtil.isEmpty(listener)) {
+                    continue;
+                } else {
+                    List<String> hpList = GuiUtil.parseStringList(listener, ",");
+                    for (String one : hpList) {
+                        ep = (String)GuiUtil.getSessionValue("REST_URL") +
+"/configs/config/server-config/network-config/network-listeners/network-listener/" + one;
+
+                        Map nlAttributes = RestApiHandlers.getAttributesMap(ep);
+                        if ("false".equals((String)nlAttributes.get("enabled"))) {
+                            continue;
+                        }
+//                        String security = (String)oneListener.findProtocol().attributesMap().get("SecurityEnabled");
+                        String protocol = (String)nlAttributes.get("protocol");
+                        ep = (String)GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + 
+                                configName + "/network-config/protocols/protocol/" + protocol;
+                        String security = (String)RestApiHandlers.getAttributesMap(ep).get("securityEnabled");
+
+                        result.put("port", nlAttributes.get("port"));
+                        result.put("vs", vsName);
+
+                        if ("true".equals(security)) {
+                            //use this secured port, but try to find one thats not secured.
+                            result.put("protocol", "https");
+                            //result.put("port", oneListener.resolveAttribute("Port"));
+                            found = true;
+                            continue;
+                        } else {
+                            result.put("protocol", "http");
+                            //result.put("port", oneListener.resolveAttribute("Port"));
+                            return result;
+                        }
+                    }
+                }
+            }
+        }
+        return found ? result : null;
+    }
+
 
     @Handler(id = "gf.getConfigName",
         input = {
@@ -408,6 +539,32 @@ public class ApplicationHandlers {
     }
 
 
+    @Handler(id="getTargetURLList",
+        input={
+            @HandlerInput(name="AppID", type=String.class, required=true),
+            @HandlerInput(name="contextRoot", type=String.class)},
+        output={
+            @HandlerOutput(name="URLList", type=List.class)})
+
+    public void getTargetURLList(HandlerContext handlerCtx) {
+	String id = (String)handlerCtx.getInputValue("AppID");
+        String contextRoot = (String)handlerCtx.getInputValue("contextRoot");
+        String ctxRoot = calContextRoot(contextRoot);
+
+        List urls = getLaunchInfo2(id);
+	Iterator it = urls.iterator();
+	String url = null;
+        ArrayList list = new ArrayList();
+	while (it.hasNext()) {
+	    url = (String)it.next();
+            HashMap m = new HashMap();
+            m.put("url", url + ctxRoot);
+            list.add(m);
+	}
+
+        handlerCtx.setOutputValue("URLList", list);
+
+    }
 
 
     private static String calContextRoot(String contextRoot) {
@@ -425,4 +582,91 @@ public class ApplicationHandlers {
     }
     
 
+
+/********************/
+
+
+    private static List getLaunchInfo2(String appName) {
+        List<String> targetList = DeployUtil.getApplicationTarget(appName, "application-ref");
+        List URLs = new ArrayList();
+        for(String target : targetList) {
+            String virtualServers = getVirtualServers(target, appName);
+            URLs.addAll(getURLs(GuiUtil.parseStringList(virtualServers, ","), "server-config"));
+/*
+            String vs = (String)result.get("vs");
+            if (vs.equals( "server")){
+                vs = serverName;   //this is actually the hostName, more readable for user in the launch URL.
+            }
+ */
+        }
+        return URLs;
+    }
+
+
+    private static List getURLs(List<String> vsList, String configName) {
+        List URLs = new ArrayList();
+        Map result = new HashMap();
+        if (vsList == null || vsList.size() == 0) {
+            return null;
+        }
+        //Just to ensure we look at "server" first.
+        if (vsList.contains("server")){
+            vsList.remove("server");
+            vsList.add(0, "server");
+        }
+        boolean found = false;
+//        Map<String, VirtualServer> vsMap = V3AMX.getServerConfig("server-config").getHttpService().childrenMap(VirtualServer.class);
+        String ep = (String)GuiUtil.getSessionValue("REST_URL");
+        ep = ep + "/configs/config/" + configName + "/http-service/virtual-server";
+        Map vsInConfig = new HashMap();
+        try{
+            vsInConfig = RestApiHandlers.getChildMap(ep);
+
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+        for (String vsName : vsList) {
+            if (vsName.equals("admin-listener")) {
+                continue;
+            }
+            Object vs = vsInConfig.get(vsName);
+            if (vs != null) {
+                ep = (String)GuiUtil.getSessionValue("REST_URL") + "/configs/config/" +
+                        configName + "/http-service/virtual-server/" + vsName;
+                String listener = (String)RestApiHandlers.getAttributesMap(ep).get("networkListeners");
+                if (GuiUtil.isEmpty(listener)) {
+                    continue;
+                } else {
+                    List<String> hpList = GuiUtil.parseStringList(listener, ",");
+                    for (String one : hpList) {
+                        ep = (String)GuiUtil.getSessionValue("REST_URL") +
+"/configs/config/server-config/network-config/network-listeners/network-listener/" + one;
+
+                        Map nlAttributes = RestApiHandlers.getAttributesMap(ep);
+                        if ("false".equals((String)nlAttributes.get("enabled"))) {
+                            continue;
+                        }
+//                        String security = (String)oneListener.findProtocol().attributesMap().get("SecurityEnabled");
+                        ep = (String)GuiUtil.getSessionValue("REST_URL") + "/configs/config/" +
+                                configName + "/network-config/protocols/protocol/" + (String)nlAttributes.get("protocol");
+                        String security = (String)RestApiHandlers.getAttributesMap(ep).get("securityEnabled");
+
+                        String protocol = "http";
+                        if ("true".equals(security))
+                            protocol = "https";
+/*                        URLs.add(protocol + "://" + vsName + ":" +
+                                (String)nlAttributes.get("port"));
+ *
+ */
+                        // for now specify localhost, hostname is not available.
+                            URLs.add(protocol + "://" + "localhost" + ":" +
+                                (String)nlAttributes.get("port"));
+
+                    }
+                }
+            }
+        }
+        return URLs;
+    }
 }
