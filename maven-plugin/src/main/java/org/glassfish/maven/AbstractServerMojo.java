@@ -250,17 +250,17 @@ public abstract class AbstractServerMojo extends AbstractMojo {
     protected Properties getBootStrapProperties() {
         Properties props = new Properties();
         props.setProperty("GlassFish_Platform", "Felix");
-        if (installRoot != null) {
-            props.setProperty(INSTALL_ROOT_PROP_NAME, new File(installRoot).getAbsolutePath());
-            props.setProperty(INSTALL_ROOT_URI_PROP_NAME,
-                    new File(installRoot).toURI().toString());
-        }
-        if (instanceRoot != null) {
-            props.setProperty(INSTANCE_ROOT_PROP_NAME, new File(instanceRoot).getAbsolutePath());
-            props.setProperty(INSTANCE_ROOT_URI_PROP_NAME,
-                    new File(instanceRoot).toURI().toString());
-//                props.setProperty("org.osgi.framework.storage", instanceRoot + "/osgi-cache/Felix");
-        }
+        
+        installRoot = installRoot != null ? installRoot : getDefaultInstallRoot();
+        instanceRoot = instanceRoot != null ? instanceRoot : getDefaultInstanceRoot(installRoot);
+
+        props.setProperty(INSTALL_ROOT_PROP_NAME, new File(installRoot).getAbsolutePath());
+        props.setProperty(INSTALL_ROOT_URI_PROP_NAME,
+                new File(installRoot).toURI().toString());
+        
+        props.setProperty(INSTANCE_ROOT_PROP_NAME, new File(instanceRoot).getAbsolutePath());
+        props.setProperty(INSTANCE_ROOT_URI_PROP_NAME,
+                new File(instanceRoot).toURI().toString());
 
         if (configFile != null) {
             try {
@@ -279,5 +279,19 @@ public abstract class AbstractServerMojo extends AbstractMojo {
         // TODO :: take care of other config props containerType, autoDelete
         return props;
     }
+
+    private String getDefaultInstallRoot() {
+        Artifact gfMvnPlugin = (Artifact) project.getPluginArtifactMap().get(thisArtifactId);
+        String userDir = System.getProperty("user.home");
+        String fs = File.separator;
+        return new File(userDir, "." + gfMvnPlugin.getArtifactId() + fs +
+                gfMvnPlugin.getVersion()).getAbsolutePath();
+    }
+
+    private String getDefaultInstanceRoot(String installRoot) {
+        String fs = File.separator;
+        return new File(installRoot, "domains" + fs + "domain1").getAbsolutePath();
+    }
+
 
 }
