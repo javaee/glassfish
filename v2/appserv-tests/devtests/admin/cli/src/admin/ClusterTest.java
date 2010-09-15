@@ -372,8 +372,8 @@ public class ClusterTest extends AdminBaseDevTest {
 
         // check that the instances are there
         report(tn + "list-instances", asadmin("list-instances"));
-        report(tn + "getindex1", matchString("GlassFish Enterprise Server", getURL(i1url)));
-        report(tn + "getindex2", matchString("GlassFish Enterprise Server", getURL(i2url)));
+        report(tn + "getindex1", matchString("GlassFish Server", getURL(i1url)));
+        report(tn + "getindex2", matchString("GlassFish Server", getURL(i2url)));
 
 	// To check fix for 12494 and stop such regressions
 	// deploy to default server before deploy to cluster and undeploy
@@ -519,8 +519,8 @@ public class ClusterTest extends AdminBaseDevTest {
 
         // check that the instances are there
         report(tn + "list-instances", asadmin("list-instances"));
-        report(tn + "getindex1", matchString("GlassFish Enterprise Server", getURL(i1url)));
-        report(tn + "getindex2", matchString("GlassFish Enterprise Server", getURL(i2url)));
+        report(tn + "getindex1", matchString("GlassFish Server", getURL(i1url)));
+        report(tn + "getindex2", matchString("GlassFish Server", getURL(i2url)));
 
 	// Set dynamic reconfig enabled flag for c1 to false
 	report(tn + "set-dyn-recfg-flag", asadmin("set", "configs.config."+cname+"-config.dynamic-reconfiguration-enabled=false"));
@@ -629,9 +629,9 @@ public class ClusterTest extends AdminBaseDevTest {
         sleep(4); // Work-around for issue 12967
 
         // check that the instances are there
-        report(tn + "getindex1", matchString("GlassFish Enterprise Server", getURL(i1url)));
-        report(tn + "getindex2", matchString("GlassFish Enterprise Server", getURL(i2url)));
-        report(tn + "getindex3", matchString("GlassFish Enterprise Server", getURL(i3url)));
+        report(tn + "getindex1", matchString("GlassFish Server", getURL(i1url)));
+        report(tn + "getindex2", matchString("GlassFish Server", getURL(i2url)));
+        report(tn + "getindex3", matchString("GlassFish Server", getURL(i3url)));
 
 	// check if list lists all configs created
         AsadminReturn ret = asadminWithOutput("list", "configs.config");

@@ -118,7 +118,7 @@ public class SyncTest extends AdminBaseDevTest {
 
         // check that the instance, the app, and the file are there
         report(tn + "list-instances", asadmin("list-instances"));
-        report(tn + "getindex1", matchString("GlassFish Enterprise Server", getURL(i1url)));
+        report(tn + "getindex1", matchString("GlassFish Server", getURL(i1url)));
         report(tn + "getfoo", matchString("Foo file", getURL(i1url + "foo.html")));
         //report(tn + "getapp1", matchString("Hello", getURL(i1url + "helloworld1/hi.jsp")));
 
@@ -174,7 +174,7 @@ public class SyncTest extends AdminBaseDevTest {
 
         // check that the instance and the app are there
         report(tn + "list-instances", asadmin("list-instances"));
-        report(tn + "getindex1", matchString("GlassFish Enterprise Server", getURL(i1url)));
+        report(tn + "getindex1", matchString("GlassFish Server", getURL(i1url)));
         //report(tn + "getapp1", matchString("Hello", getURL(i1url + "helloworld2/hi.jsp")));
 
         // stop the instance
@@ -186,7 +186,7 @@ public class SyncTest extends AdminBaseDevTest {
         report(tn + "start-local-instance1a", asadmin("start-local-instance", i1name));
 
         // make sure the instance and app are still there
-        report(tn + "getindex1a", matchString("GlassFish Enterprise Server", getURL(i1url)));
+        report(tn + "getindex1a", matchString("GlassFish Server", getURL(i1url)));
         //report(tn + "getapp1a", matchString("Hello", getURL(i1url + "helloworld2/hi.jsp")));
 
         // stop the instance
@@ -232,7 +232,7 @@ public class SyncTest extends AdminBaseDevTest {
 
         // check that the instance and the file are there
         report(tn + "list-instances", asadmin("list-instances"));
-        report(tn + "getindex1", matchString("GlassFish Enterprise Server", getURL(i1url)));
+        report(tn + "getindex1", matchString("GlassFish Server", getURL(i1url)));
         report(tn + "getfoo", matchString("Foo file", getURL(i1url + "foo.html")));
 
         // stop the instance
