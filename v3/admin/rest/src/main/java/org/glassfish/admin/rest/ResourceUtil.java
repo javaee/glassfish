@@ -612,7 +612,10 @@ public class ResourceUtil {
 
         parameterMetaData.putAttribute(Constants.TYPE, getXsdType(paramModel.getType().toString()));
         parameterMetaData.putAttribute(Constants.OPTIONAL, Boolean.toString(param.optional()));
-        parameterMetaData.putAttribute(Constants.DEFAULT_VALUE, param.defaultValue());
+        String val = param.defaultValue();
+        if ((val!=null)&&(!val.equals("\u0000"))){
+         parameterMetaData.putAttribute(Constants.DEFAULT_VALUE, param.defaultValue());
+        }
         parameterMetaData.putAttribute(Constants.ACCEPTABLE_VALUES, param.acceptableValues());
 
         return parameterMetaData;
