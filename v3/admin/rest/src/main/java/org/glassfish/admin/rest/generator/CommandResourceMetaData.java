@@ -118,6 +118,7 @@ public class CommandResourceMetaData {
             {"ConnectionPool", "ping-connection-pool", "GET", "ping", "Ping"},
             {"Domain", "create-instance", "POST", "create-instance", "Create Instance"},
             {"Domain", "_get-host-and-port", "GET", "host-port", "HostPort"},
+            {"Domain", "_get-restart-required", "GET", "_get-restart-required", "Restart Reasons"},
             {"Domain", "list-log-levels", "GET", "list-log-levels", "LogLevels"},
             {"Domain", "list-instances", "GET", "list-instances", "List Instances"},
             {"Domain", "restart-domain", "POST", "restart", "Restart"},
