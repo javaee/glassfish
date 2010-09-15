@@ -506,6 +506,18 @@ public class SSHLauncher {
                 byte[] theBytes = new byte[sendFile.available()];
                 sendFile.read(theBytes);
 
+                try {
+                    if (connection.exec("test -d " + SSH_DIR , new ByteArrayOutputStream())!=0) {
+                        logger.info(SSH_DIR + " does not exist");
+                        // .ssh directory doesn't exist, create it.
+                        if (connection.exec("mkdir -p " + SSH_DIR, new ByteArrayOutputStream())!=0) {
+                            logger.info("Created .ssh directory");
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.info("Failed to create .ssh directory on remote host:" + e.getMessage());
+                }
+
                 scp.put(theBytes, AUTH_KEY_FILE, SSH_DIR);
 
                 logger.info("Copied keyfile " + pubKeyFile + " to " + userName + "@" + host);
