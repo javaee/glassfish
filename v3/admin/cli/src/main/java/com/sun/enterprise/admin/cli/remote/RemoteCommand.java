@@ -411,9 +411,10 @@ public class RemoteCommand extends CLICommand {
                  * We weren't able to initialize the RemoteAdminCommand
                  * object, probably because we failed to parse the program
                  * options.  With no ability to contact the remote server,
-                 * we can't provide any usage information.  Sigh.
+                 * we can't provide any command-specific usage information.
+                 * Sigh.
                  */
-                return strings.get("Usage.noserver");
+                return strings.get("Usage.asadmin.full", getName());
             }
             usage = rac.getUsage();
         }
