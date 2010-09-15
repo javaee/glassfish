@@ -56,31 +56,24 @@
             <!-- Page Title -->
 #include "/common/shared/alertMsg.inc"                
             <sun:title id="title" title="$resource{i18n.common.restartRequired}"  helpText="$resource{i18n.restart.RestartHelpText}" >
-                "<br/>
-                "<a href="#" onclick="showRestartReasons(); return false;">
-                "<div id="toggle" class="collapsed" style="float: left; width: 12px; height: 12px;">&#160;</div>
-                "</a>
-                "$resource{i18n.restart.showRestartReasonList}
-                "<br /><br /><br />
-                <sun:button id="stopInstance" style="margin-left: 8pt"
-                    onClick="if (getConfirm(this, '$resource{i18n.msg.JS.confirmRestartInstance}')) {return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');} else {return false;}"
-                    text="$resource{i18n.button.Restart}"
-                    toolTip="$resource{i18n.restart.tooltip}">
-                    <!command
-                        gf.redirect("#{facesContext.externalContext.requestContextPath}/common/appServer/restart-2.jsf");
-                    />
-                </sun:button>
+                <!facet pageButtonsTop>
+                    <sun:panelGroup id="topButtons">
+                        <sun:button id="stopInstance" style="margin-left: 8pt"
+                            onClick="if (getConfirm(this, '$resource{i18n.msg.JS.confirmRestartInstance}')) {return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');} else {return false;}"
+                            text="$resource{i18n.button.Restart}"
+                            toolTip="$resource{i18n.restart.tooltip}">
+                            <!command
+                                gf.redirect("#{facesContext.externalContext.requestContextPath}/common/appServer/restart-2.jsf");
+                            />
+                        </sun:button>
+                    </sun:panelGroup>
+                </facet>
             </sun:title>
-            "<div id="restartReasons" style="visibility: hidden">
-                "<br />
-                <!-- TODO:  i18n -->
-                "<table width="95%" style="margin: auto" cellpadding="0" cellspacing="0" border="1">
-                    "<tr><th>Property Name</th><th>Old Value</th><th>New Value</th><th>Source</th><th>Reason</th>
-                <foreach key="reason" list="#{unprocessedChanges}">
-                    "<tr><td>#{reason[0]}</td><td>#{reason[1]}</td><td>#{reason[2]}</td><td>#{reason[3]}</td><td>#{reason[4]}</td></tr>
-                </foreach>
-                "</table>
-            "</div>
+            "<ul>
+            <foreach key="reason" list="#{unprocessedChanges}">
+                "<li style="display: list-item; list-style: disc outside none">#{reason}</li>
+            </foreach>
+            "</ul>
         </sun:form>
  </define>
 </composition>
