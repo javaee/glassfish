@@ -62,14 +62,15 @@ public class GlassFishKeyMapper
     }
 
 
-    @Override
     public HACookieInfo makeCookie(String groupName, Object key, String oldReplicaCookie) {
         String cookieStr = null;
 
         if (key != null) {
             cookieStr = super.getReplicaChoices(groupName, key);
         }
-        return new HACookieInfo(cookieStr, oldReplicaCookie);
+        HACookieInfo ha = new HACookieInfo(cookieStr, oldReplicaCookie);
+        System.out.println("** ## HACookieInfo.makeCookie(" + key + ", " + oldReplicaCookie + " ==> " + ha);
+        return ha;
     }
 
     @Override
