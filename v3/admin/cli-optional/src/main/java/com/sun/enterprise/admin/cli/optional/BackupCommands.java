@@ -45,9 +45,9 @@ import java.io.*;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.Param;
 import com.sun.enterprise.admin.cli.*;
+import com.sun.enterprise.backup.BackupRequest;
 import com.sun.enterprise.util.ObjectAnalyzer;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-import com.sun.enterprise.backup.BackupRequest;
 
 import com.sun.enterprise.util.io.DomainDirs;
 
@@ -79,6 +79,8 @@ public abstract class BackupCommands extends LocalDomainCommand {
     private String desc = null;
 
     private String backupdir = null;
+
+    private int recycleLimit = 0;
 
      /**
      * A method that checks the options and operand that the user supplied.
@@ -121,10 +123,14 @@ public abstract class BackupCommands extends LocalDomainCommand {
     protected void setBackupDir(String dir) {
         backupdir = dir;
     }
-    
+
+    protected void setRecycleLimit(int limit) {
+        recycleLimit = limit;
+    }
+
     protected void prepareRequest() throws CommandValidationException {
 
-        request = new BackupRequest(domainDirParam, domainName, desc);
+        request = new BackupRequest(domainDirParam, domainName, desc, recycleLimit);
 
         request.setTerse(programOpts.isTerse());
         request.setVerbose(verbose);

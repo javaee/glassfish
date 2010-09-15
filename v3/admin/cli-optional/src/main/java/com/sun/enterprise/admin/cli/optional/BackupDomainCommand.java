@@ -78,6 +78,9 @@ public final class BackupDomainCommand extends BackupCommands {
     @Param(name="_force",optional=true)
     String force;
 
+    @Param(name="_recyclelimit",optional=true)
+    String recycleLimit;
+
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(BackupDomainCommand.class);
 
@@ -103,8 +106,23 @@ public final class BackupDomainCommand extends BackupCommands {
                         strings.get("DomainIsNotStopped", domainName));
             }
         }
+
+        int limit = 0;
+        if (recycleLimit != null ) {
+            try {
+                limit = Integer.parseInt(recycleLimit.trim());
+            } catch (NumberFormatException ex) {
+                limit = -1;
+            }
+            if (limit < 0) {
+                throw new CommandException(
+                        strings.get("InvalidBackupRecycleLimit", recycleLimit));
+            }
+        }
+
         setDescription(description);
         setBackupDir(backupdir);
+        setRecycleLimit(limit);
         prepareRequest();
         initializeLogger();     // in case program options changed
     }

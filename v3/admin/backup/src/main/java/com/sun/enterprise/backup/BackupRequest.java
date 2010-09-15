@@ -77,7 +77,16 @@ public class BackupRequest
 		this(domainsDirName, domain, desc);
 		setBackupFile(backupFileName);
 	}
-	
+
+	/**
+	 * Create an instance
+	 **/
+	public BackupRequest(String domainsDirName, String domain, String desc, int limit)
+	{
+		this(domainsDirName, domain, desc);
+        recycleLimit = limit;
+	}
+
 	///////////////////////////////////////////////////////////////////////////
 
 	public void setTerse(boolean b)
@@ -144,6 +153,7 @@ public class BackupRequest
 	File	domainsDir;
 	String	domainName;
 	String	description;
+	int     recycleLimit = 0;
 
 	// VARIABLES POSSIBLY SET AT RUNTIME
 	File	backupFile;

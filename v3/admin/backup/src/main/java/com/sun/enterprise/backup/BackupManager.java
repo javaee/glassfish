@@ -42,6 +42,7 @@ package com.sun.enterprise.backup;
 
 import com.sun.enterprise.backup.util.*;
 import java.io.*;
+import java.util.List;
 
 /**
  *
@@ -63,7 +64,7 @@ public class BackupManager extends BackupRestoreManager
 		String mesg = StringHelper.get("backup-res.SuccessfulBackup");
 		String statusString = writeStatus();
 		
-		if(request.terse == false)
+		if (request.terse == false)
 		{
 			mesg += "\n\n" + statusString;
 		}
@@ -72,7 +73,19 @@ public class BackupManager extends BackupRestoreManager
 		{
 			ZipStorage zs = new ZipStorage(request);
 			zs.store();
-			return mesg;
+            // TODO: RSH - Recycle files. I'm not sure if this is the precise
+            // place to do the recycling, but we probably need to do it somewhere
+            // in this module since BackupFilenameManager is module private. We
+            // should do the recycling after the backup completes. I think it
+            // should be safe to recycle after a successful or unsuccessful backup
+            // (assuming a failed backup doesn't leave a corrupt ZIP file).
+    		BackupFilenameManager bfm =
+                new BackupFilenameManager(getBackupDirectory(request), request.domainName);
+            List<File> recycleFiles = bfm.getRecycleFiles(request.recycleLimit);
+            for (File f : recycleFiles) {
+                // f.delete();
+            }
+            return mesg;
 		}
 		finally
 		{
@@ -93,15 +106,9 @@ public class BackupManager extends BackupRestoreManager
 		if(!FileUtils.safeIsDirectory(request.domainDir))
 			throw new BackupException("backup-res.NoDomainDir", request.domainDir);
 
-                File backupDir = null;
+        File backupDir = getBackupDirectory(request);
 
-                if (request.backupDir != null) {
-                    backupDir = request.backupDir;
-                } else {
-		    backupDir = new File(request.domainDir, Constants.BACKUP_DIR);
-                }
-
-		// not an error for this directory to not exist yet
+        // not an error for this directory to not exist yet
 		backupDir.mkdirs();
 
 		// NOW it's an error to not exist...
@@ -115,8 +122,18 @@ public class BackupManager extends BackupRestoreManager
                 if(request.description == null || request.description.length() <= 0)
 		    request.description = bfmgr.getCustomizedDescription();
 	}
-	
-	///////////////////////////////////////////////////////////////////////////////
+
+    private static File getBackupDirectory(BackupRequest request) {
+        File backupDir = null;
+        if (request.backupDir != null) {
+            backupDir = request.backupDir;
+        } else {
+            backupDir = new File(request.domainDir, Constants.BACKUP_DIR);
+        }
+        return backupDir;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
 	
 	private String writeStatus()
 	{
