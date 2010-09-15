@@ -105,11 +105,11 @@ public class Main implements BundleActivator {
                         if (!excludedModules.contains(bundleLocation)) {
                             Bundle installed = m.getBundleSymbolicName() != null ?
                                     installedBundles.get(m.getBundleSymbolicName()) : null;
-                            if (installed != null && installed.getLastModified() < embeddedJar.lastModified()) {
+                            if(installed == null) {
+                                installed = context.installBundle(bundleLocation, m.getContentStream());
+                            } else if(installed.getLastModified() < embeddedJar.lastModified()) {
                                 // update the bundle if it is already installed and is older than uber jar.
                                 installed.update(m.getContentStream());
-                            } else {
-                                installed = context.installBundle(bundleLocation, m.getContentStream());
                             }
                             if (autoStartBundleLocation.indexOf(bundleLocation) != -1) {
                                 autostartBundles.put(bundleLocation, installed);
