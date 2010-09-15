@@ -96,7 +96,6 @@ public interface SystemProperty extends ConfigBeanProxy, Injectable  {
      */
     @Attribute
     @NotNull
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")              
     public String getValue();
 
     /**
