@@ -651,6 +651,10 @@ public class RemoteAdminCommand {
                     // XXX - logger.printExceptionStackTrace(io);
                     throw new CommandException(io);
                 }
+            } catch (SocketTimeoutException e) {
+                logger.finer("doHttpCommand: read timeout " + e);
+                throw new CommandException(
+                    strings.get("ReadTimeout", (float)readTimeout / 1000), e);
             } catch (IOException e) {
                 logger.finer("doHttpCommand: IO exception " + e);
                 throw new CommandException(
