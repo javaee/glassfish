@@ -53,7 +53,11 @@ import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import com.sun.enterprise.transaction.api.ResourceRecoveryManager;
 import com.sun.enterprise.config.serverbeans.TransactionService;
+import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.SystemProperty;
+import com.sun.enterprise.config.serverbeans.SystemPropertyBag;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 
@@ -193,9 +197,26 @@ public class TransactionServiceProperties {
                     ServerContext ctx = habitat.getByContract(ServerContext.class);
                     String instanceName = ctx.getInstanceName();
                     if (dbLoggingResource == null) {
-                        String logdir = txnService.getTxLogDir();
-                        if(logdir == null){
-                            Domain domain = habitat.getComponent(Domain.class);
+                        Domain domain = habitat.getComponent(Domain.class);
+                        Server server = domain.getServerNamed(instanceName);
+
+                        // Check if the server system property is set
+                        String logdir = getTXLogDir(server);
+
+                        // if not, check if the cluster system property is set
+                        if(logdir == null) {
+                            Cluster cluster = server.getCluster();
+                            if (cluster != null) {
+                                logdir = getTXLogDir(cluster);
+                            }
+                        }
+
+                        // No system properties are set - get tx log dir from transaction service
+                        if(logdir == null) {
+                            logdir = txnService.getTxLogDir();
+                        }
+
+                        if(logdir == null) {
                             logdir = domain.getLogRoot();
                             if(logdir == null){
                                 // logdir = FileUtil.getAbsolutePath(".." + File.separator + "logs");
@@ -207,7 +228,6 @@ public class TransactionServiceProperties {
                                     "Relative pathname specified for transaction log directory : " 
                                     + logdir);
                             }
-                            Domain domain = habitat.getComponent(Domain.class);;
                             String logroot = domain.getLogRoot();
                             if(logroot != null){
                                 logdir = logroot + File.separator + logdir;
@@ -259,6 +279,17 @@ public class TransactionServiceProperties {
 
     private static boolean isValueSet(String value) {
         return (value != null && !value.equals("") && !value.equals(" "));
+    }
+
+   private static String getTXLogDir(SystemPropertyBag bag) {
+        for (SystemProperty prop : bag.getSystemProperty()) {
+            String name = prop.getName();
+            if (name.equals("TX-LOG-DIR")) {
+                return prop.getValue();
+            }
+        }
+
+        return null;
     }
 
     private static class RecoveryHelperThread extends Thread {
