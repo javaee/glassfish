@@ -56,7 +56,6 @@
             setPageSessionAttribute(key="listPageLink" value="/common/applications/lifecycles.jsf");
             gf.getTargetListInfo(appName="#{pageSession.appName}" result=>$attribute{listOfRows} );
             setPageSessionAttribute(key="targetPageLink" value="#{request.contextPath}/common/applications/lifecycleTargetListing.jsf");
-
         />
     </event>
 "    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":lifecycle");</script>
@@ -87,7 +86,7 @@
                         setAttribute(key="name" value="#{name}");
                         setAttribute(key="targetPage" value="#{targetPage}");
                         setAttribute(key="targetPageHelp" value="#{targetPageHelp}");
-                        gf.redirect(page="#{request.contextPath}/common/applications/manageTargets.jsf?appName=#{pageSession.encodedName}&listPageLink=#{pageSession.listPageLink}&targetPageLink=#{pageSession.targetPageLink}");
+                        gf.redirect(page="#{request.contextPath}/common/applications/manageTargets.jsf?appName=#{pageSession.encodedName}&listPageLink=#{pageSession.listPageLink}&targetPageLink=#{pageSession.targetPageLink}&highLight=lifecycle");
                 />
             </sun:button>
 
@@ -102,7 +101,7 @@
                     getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
                     setAttribute(key="click" value="$this{component}");
                     setAttribute(key="actionValue" value="#{click.selected}")
-println("========== #{requestScope.selectedRows}")
+//println("========== #{requestScope.selectedRows}")
                     createMap(result="#{requestScope.attrsMap}");
                     if( ${actionValue}=enable){
                         mapPut(map="#{requestScope.attrsMap}"  key="enabled" value="true");
@@ -144,12 +143,10 @@ println("========== #{requestScope.selectedRows}")
         <sun:tableColumn headerText="$resource{i18n.deployTable.colEnabled}" sort="enabled" rowHeader="$boolean{true}" id="col2">
             <staticText id="typeCol" value="#{td.value.enabled}" />
         </sun:tableColumn>
-<!--
         <sun:tableColumn headerText="$resource{i18n.TargetTable.colVirtualServer}" rendered="#{hasActionColumn}" rowHeader="$boolean{true}" id="col3">
             <sun:hyperlink id="link" text="$resource{i18n.TargetTable.virtualServerLink}"
-                url="/applications/virtualServerTargets.jsf?appName=#{name}&appType=#{appType}&targetName=#{td.value.targetName}&targetPage=#{targetPage}" />
+                url="/common/applications/manageVirtualServers.jsf?appName=#{pageSession.encodedName}&targetName=#{td.value.targetName}&targetPageLink=#{targetPageLink}&highLight=lifecycle" />
         </sun:tableColumn>
--->
 
     </sun:tableRowGroup>
  </sun:table>

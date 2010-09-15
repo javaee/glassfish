@@ -89,9 +89,9 @@
                         setAttribute(key="name" value="#{name}");
                         setAttribute(key="targetPage" value="#{targetPage}");
                         setAttribute(key="targetPageHelp" value="#{targetPageHelp}");
-println("-------------#{request.contextPath}/common/applications/manageTargets.jsf?appName=#{pageSession.encodedAppName}&listPageLink=#{pageSession.listPageLink}&targetPageLink=#{pageSession.targetPageLink}");
+//println("-------------#{request.contextPath}/common/applications/manageTargets.jsf?appName=#{pageSession.encodedAppName}&listPageLink=#{pageSession.listPageLink}&targetPageLink=#{pageSession.targetPageLink}");
 
-                        gf.redirect(page="#{request.contextPath}/common/applications/manageTargets.jsf?appName=#{pageSession.encodedAppName}&listPageLink=#{pageSession.listPageLink}&targetPageLink=#{pageSession.targetPageLink}");
+                        gf.redirect(page="#{request.contextPath}/common/applications/manageTargets.jsf?appName=#{pageSession.encodedAppName}&listPageLink=#{pageSession.listPageLink}&targetPageLink=#{pageSession.targetPageLink}&highLight=applications");
                 />
             </sun:button>
 
@@ -149,12 +149,10 @@ println("-------------#{request.contextPath}/common/applications/manageTargets.j
          <sun:tableColumn headerText="$resource{i18n.targetListing.LBEnabled}"  sort="lbEnabled" rowHeader="$boolean{true}" id="lbEabled">
             <staticText id="enabled" value="#{td.value.lbEnabled}" />
         </sun:tableColumn>
-<!--
         <sun:tableColumn headerText="$resource{i18n.TargetTable.colVirtualServer}" rendered="#{hasActionColumn}" rowHeader="$boolean{true}" id="col3">
             <sun:hyperlink id="link" text="$resource{i18n.TargetTable.virtualServerLink}"
-                url="/applications/virtualServerTargets.jsf?appName=#{name}&appType=#{appType}&targetName=#{td.value.targetName}&targetPage=#{targetPage}" />
+                url="/common/applications/manageVirtualServers.jsf?appName=#{pageSession.encodedAppName}&targetName=#{td.value.targetName}&targetPageLink=#{targetPageLink}&highLight=applications" />
         </sun:tableColumn>
--->
 
     </sun:tableRowGroup>
  </sun:table>

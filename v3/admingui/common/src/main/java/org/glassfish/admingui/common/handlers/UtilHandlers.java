@@ -578,12 +578,12 @@ public class UtilHandlers {
         @HandlerInput(name = "array", type = String[].class, required = true)},
     output = {
         @HandlerOutput(name = "commaString", type = String.class)})
-    public static void convertArrayToString(HandlerContext handlerCtx) {
+    public static void convertArrayToCommaString(HandlerContext handlerCtx) {
         String[] array = (String[])handlerCtx.getInputValue("array");
         String commaString = "";
-		if( (array != null) && array.length > 0 ) {
-			commaString = GuiUtil.arrayToString(array, ",");
-		}
+        if( (array != null) && array.length > 0 ) {
+                commaString = GuiUtil.arrayToString(array, ",");
+        }
         handlerCtx.setOutputValue("commaString", commaString);
     }
     
@@ -618,7 +618,7 @@ public class UtilHandlers {
     @Handler(id="convertStringtoList",
          input={
             @HandlerInput(name="str", type=String.class),
-            @HandlerInput(name="delimiter", type=String.class)
+            @HandlerInput(name="delimiter", type=String.class, defaultValue=",")
             },
         output = {
             @HandlerOutput(name = "result", type = List.class)
