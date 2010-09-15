@@ -72,7 +72,7 @@
         <antcall target="deployment">
             <param name="withTest" value="true"/>
         </antcall>
-       <antcall target="deactivation"/>
+        <antcall target="deactivation"/>
         <antcall target="redeployment"/>
         <antcall target="undeployment"/>
         <antcall target="samples.scenarios"/>
