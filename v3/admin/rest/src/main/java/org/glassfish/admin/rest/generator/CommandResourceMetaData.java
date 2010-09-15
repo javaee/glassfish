@@ -189,7 +189,8 @@ public class CommandResourceMetaData {
             {"Server", "delete-instance", "DELETE", "delete-instance", "Delete Instance", "id=$parent"},
             {"Server", "start-instance", "POST", "start-instance", "Start Instance", "id=$parent"},
             {"Server", "stop-instance", "POST", "stop-instance", "Stop Instance", "id=$parent"},
-            {"Server", "recover-transactions", "POST", "recover-transactions", "Recover", "id=$parent"}
+            {"Server", "recover-transactions", "POST", "recover-transactions", "Recover", "id=$parent"},
+            {"WorkSecurityMap", "update-connector-work-security-map", "POST", "update-connector-work-security-map", "Update", "id=$parent"}
     };
 
 
