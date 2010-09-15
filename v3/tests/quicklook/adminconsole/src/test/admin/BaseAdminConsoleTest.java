@@ -150,7 +150,7 @@ public class BaseAdminConsoleTest {
         if (statusCode == 302) {
             Header locationHeader = post.getResponseHeader("location");
             if (locationHeader != null) {
-                Assert.assertEquals(this.adminUrl, locationHeader.getValue());
+                Assert.assertTrue(locationHeader.getValue().startsWith(this.adminUrl));
             } else {
                 Assert.fail("Failed to login: no redirect header");
             }
