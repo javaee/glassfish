@@ -56,8 +56,8 @@
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{topActionGroup});
         />
-        <sun:button id="deployButton" text="$resource{i18n.button.New}" primary="#{true}">
-                <!command gf.redirect(page="#{pageSession.nextPageLink}") />
+        <sun:button id="newButton" text="$resource{i18n.button.New}" primary="#{true}">
+                <!command gf.redirect(page="#{request.contextPath}/common/applications/lifecycleNew.jsf") />
         </sun:button>
         <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
                 onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') )
@@ -66,27 +66,49 @@
             <!command
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                deleteChildren(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType}", selectedRows="${selectedRows}");
-                deleteChildren(objectNameStr="#{pageSession.objectNameStr2}", type="#{pageSession.childType2}", selectedRows="${selectedRows}");
-                gf.navigate(page="#{listPageLink}");
+                foreach (var="row" list="#{requestScope.selectedRows}") {
+                    createMap(result="#{requestScope.attrsMap}");
+                    mapPut(map="#{requestScope.attrsMap}"  key="name" value="#{row['name']}");
+                    mapPut(map="#{requestScope.attrsMap}"  key="target" value="domain");
+                    gf.restRequest(
+                        endpoint="#{sessionScope.REST_URL}/applications/application/delete-lifecycle-module"
+                        //attrs="#{requestScope.attrsMap}"
+                        method="POST"
+                        result="#{requestScope.result}");
+                }
+                gf.redirect(page="#{listPageLink}");
             />
          </sun:button>
-        <sun:button id="button2" text="$resource{i18n.button.Enable}" disabled="#{true}" primary="#{false}"
+        <sun:button id="button2" rendered="#{pageSession.onlyDASExist}" text="$resource{i18n.button.Enable}" disabled="#{true}" primary="#{false}"
                 onClick="return submitAndDisable(this, '$resource{i18n.button.Processing}');" >
         <!command
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                changeLifecycleStatus(selectedRows="${selectedRows}"  enabled="#{true}")
-                gf.navigate(page="#{listPageLink}");
+                createMap(result="#{requestScope.attrsMap}");
+                mapPut(map="#{requestScope.attrsMap}"  key="enabled" value="true");
+                foreach (var="row" list="#{requestScope.selectedRows}") {
+                    gf.restRequest(
+                        endpoint="#{sessionScope.REST_URL}/servers/server/server/application-ref/#{row['encodedName']}"
+                        attrs="#{requestScope.attrsMap}"
+                        method="POST");
+                }
+                gf.redirect(page="#{listPageLink}");
             />
             </sun:button>
-        <sun:button id="button3" text="$resource{i18n.button.Disable}" disabled="#{true}" primary="#{false}"
+        <sun:button id="button3" rendered="#{pageSession.onlyDASExist}" text="$resource{i18n.button.Disable}" disabled="#{true}" primary="#{false}"
             onClick="return submitAndDisable(this, '$resource{i18n.button.Processing}');" >
         <!command
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                changeLifecycleStatus(selectedRows="${selectedRows}"  enabled="#{false}")
-                gf.navigate(page="#{listPageLink}");
+                createMap(result="#{requestScope.attrsMap}");
+                mapPut(map="#{requestScope.attrsMap}"  key="enabled" value="false");
+                foreach (var="row" list="#{requestScope.selectedRows}") {
+                    gf.restRequest(
+                        endpoint="#{sessionScope.REST_URL}/servers/server/server/application-ref/#{row['encodedName']}"
+                        attrs="#{requestScope.attrsMap}"
+                        method="POST");
+                }
+                gf.redirect(page="#{listPageLink}");
             />
         </sun:button>
      </sun:panelGroup>
@@ -105,23 +127,27 @@
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n.deployTable.colName}" sort="Name" rowHeader="$boolean{true}" id="col1">
-        <sun:hyperlink id="link" text="#{td.value.name}" url="#{editLink}?appName=#{td.value.name}" />
+        <sun:hyperlink id="link" text="#{td.value.name}" url="#{editLink}?appName=#{td.value.encodedName}" />
     </sun:tableColumn>
 
-    <sun:tableColumn  headerText="$resource{i18n.deployTable.colEnabled}" sort="enabled" rowHeader="$boolean{true}" id="col2">
-        <sun:image id="enCol" value="#{td.value.enableURL}" />
+    <sun:tableColumn rendered="#{!pageSession.onlyDASExist}" headerText="$resource{i18n.deployTable.colStatus}" sort="enabled" rowHeader="$boolean{true}" id="col2">
+        <sun:hyperlink rendered="#{!pageSession.onlyDASExist}" id="targetLink" text="#{td.value.enableURL}" url="#{targetLink}?appName=#{td.value.encodedName}&listPageLink=#{pageSession.listPageLink}" />
     </sun:tableColumn>
 
+    <sun:tableColumn  rendered="#{pageSession.onlyDASExist}" headerText="$resource{i18n.deployTable.colEnabled}" sort="enabled" rowHeader="$boolean{true}" id="col22">
+        <sun:image rendered="#{pageSession.onlyDASExist}" id="enCol" value="#{td.value.enableURL}" />
+    </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n.deployTable.colLoadOrder}"  sort="loadOrder"  rowHeader="$boolean{true}" id="col3">
         <staticText id="loadOrder" value="#{td.value.loadOrder}" />
     </sun:tableColumn>
 
+        <!--
     <sun:tableColumn  headerText="$resource{i18n.deployTable.classnameCol}" sort="className" rowHeader="$boolean{true}" id="col4">
         <sun:staticText escape="true" id="className" value="#{td.value.className}" />
     </sun:tableColumn>
 
-<!--
+
     <sun:tableColumn rendered="$pageSession{showDetail}"
         headerText="$resource{i18n.common.TargetTab}"  
         rowHeader="$boolean{true}" id="colTarget">

@@ -40,35 +40,18 @@
 
 -->
 
-<!-- lifecycleNew.jsf -->
-
-<!initPage
-    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
-    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
-/>
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.lifecycleModule.newPageTitle}" >
-<!define name="content">
-    <event>
-    <!beforeCreate
-        setPageSessionAttribute(key="edit" value="false")
-        setPageSessionAttribute(key="listPageLink" value="#{request.contextPath}/common/applications/lifecycles.jsf");
-        gf.onlyDASExist(onlyDAS="#{pageSession.onlyDASExist}");
-        createMap(result="#{pageSession.valueMap}");
-        mapPut(map="#{pageSession.valueMap}" key="enabled"  value="true");
-    />
-    </event>
-
-            <sun:form id="propertyForm">
-#include "/common/shared/alertMsg.inc"
-
-        <!-- Page Title -->
-<sun:title id="propertyContentPage" title="$resource{i18nc.lifecycleModule.newPageTitle}" helpText="$resource{i18nc.lifecycleModule.newPageTitleHelp}">
-#include "/common/applications/lifecycleButtons.inc"
-</sun:title>
-        "<br><br>
-#include "/common/applications/lifecycleAttr.inc"
-	<sun:hidden id="helpKey" value="$resource{help.lifecycleNew}" />
-        </sun:form>
-</define>
-</composition>
-
+<sun:tabSet id="lcGeneralTabs" immediate="$boolean{true}" selected="#{sessionScope.lcGeneralTabs}">
+    <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" toolTip="$resource{i18n.common.General} Tab" >
+        <!command
+            setSessionAttribute(key="lcGeneralTabs" value="general");
+            gf.redirect(page="#{request.contextPath}/common/applications/lifecycleEdit.jsf?appName=#{pageSession.encodedName}&listPageLink=#{pageSession.listPageLink}");
+        />       
+    </sun:tab>
+    
+     <sun:tab id="targetTab" rendered="#{!pageSession.onlyDASExist}" immediate="$boolean{true}" text="$resource{i18n.common.TargetTab}" toolTip="$resource{i18n.common.TargetTab} Tab">
+        <!command
+            setSessionAttribute(key="lcGeneralTabs" value="targetTab");
+            gf.redirect(page="#{request.contextPath}/common/applications/lifecycleTargetListing.jsf?appName=#{pageSession.encodedName}&listPageLink=#{pageSession.listPageLink}");
+        />
+    </sun:tab>
+</sun:tabSet>

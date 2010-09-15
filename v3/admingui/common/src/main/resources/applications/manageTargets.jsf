@@ -57,6 +57,7 @@
             gf.getApplicationTarget(appName="#{pageSession.appName}" result="#{requestScope.sTargets}");
             convertListToArray(list="#{requestScope.sTargets}" array="#{pageSession.selectedTargets}");
             getRequestValue(key="listPageLink" value="#{pageSession.listPageLink}"  default="/common/applications/applications.jsf");
+            getRequestValue(key="targetPageLink" value="#{pageSession.targetPageLink}");
             //setPageSessionAttribute(key="selectedTargets" value=["server"] );
         />
     </event>
@@ -75,13 +76,13 @@
                 <!command
                     gf.changeAppTargets(appName="#{pageSession.appName}" targets="#{pageSession.selectedTargets}");
                     prepareSuccessfulMsg();
-                    gf.redirect(page="#{request.contextPath}/common/applications/targetListing.jsf?appName=#{pageSession.encodedAppName}&listPageLink=#{pageSession.listPageLink}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                    gf.redirect(page="#{pageSession.targetPageLink}?appName=#{pageSession.encodedAppName}&listPageLink=#{pageSession.listPageLink}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
             <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
                 <!command
 
-                    gf.redirect(page="#{request.contextPath}/common/applications/targetListing.jsf?appName=#{pageSession.encodedAppName}&listPageLink=#{pageSession.listPageLink}");
+                    gf.redirect(page="#{pageSession.targetPageLink}?appName=#{pageSession.encodedAppName}&listPageLink=#{pageSession.listPageLink}");
                 />
             </sun:button>
         </sun:panelGroup>

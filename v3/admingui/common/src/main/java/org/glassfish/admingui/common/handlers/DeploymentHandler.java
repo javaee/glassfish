@@ -64,6 +64,7 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.io.ByteArrayInputStream;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -74,6 +75,7 @@ import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.intf.config.VirtualServer;
 import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.util.TargetUtil;
 import org.glassfish.admingui.common.util.V3AMX;
 import org.w3c.dom.Document;
 
@@ -159,15 +161,12 @@ public class DeploymentHandler {
                 deploymentProps.setProperty(key, value);
             }
         }
-
-
-
         // include any  additional property that user enters
         List<Map<String, String>> propertyList = (List) handlerCtx.getInputValue("propertyList");
         if (propertyList != null) {
             Set propertyNames = new HashSet();
             for (Map<String, String> oneRow : propertyList) {
-                final String name = oneRow.get(ProxyHandlers.PROPERTY_NAME);
+                final String name = oneRow.get("name");
                 if (GuiUtil.isEmpty(name)) {
                     continue;
                 }
@@ -177,7 +176,7 @@ public class DeploymentHandler {
                 } else {
                     propertyNames.add(name);
                 }
-                String value = oneRow.get(ProxyHandlers.PROPERTY_VALUE);
+                String value = oneRow.get("value");
                 if (GuiUtil.isEmpty(value)) {
                     continue;
                 }
@@ -185,7 +184,6 @@ public class DeploymentHandler {
 
             }
         }
-
         if (props.size() > 0) {
             deploymentProps.setProperties(props);
         }
@@ -224,11 +222,13 @@ public class DeploymentHandler {
             DFDeploymentProperties deploymentProps = new DFDeploymentProperties();
 
              //If we are redeploying a web app, we want to preserve context root.
-             AMXProxy app = V3AMX.getInstance().getApplication(appName);
-             String ctxRoot = (String) app.attributesMap().get("ContextRoot");
+             String ctxRoot = (String) RestApiHandlers.getEntityAttrs(
+                     GuiUtil.getSessionValue("REST_URL")+"/applications/application/" +appName ,"entity").get("contextRoot");
+
              if (ctxRoot != null){
                  deploymentProps.setContextRoot(ctxRoot);
              }
+
              deploymentProps.setForce(true);
              deploymentProps.setUpload(false);
              deploymentProps.setName(appName);
@@ -271,11 +271,13 @@ public class DeploymentHandler {
         DeploymentFacility df = GuiUtil.getDeploymentFacility();
         //Hard coding to server, fix me for actual targets in EE.
         for (int i = 0; i < selectedRows.size(); i++) {
+            boolean domainOnly = false;
             Map oneRow = (Map) selectedRows.get(i);
             String appName = (String) oneRow.get("name");
             List targets = DeployUtil.getApplicationTarget(appName, "application-ref");
             if (targets.isEmpty()){
                 targets.add("domain");
+                domainOnly = true;
             }
 
             String[] targetArray = (String[])targets.toArray(new String[targets.size()]);
@@ -287,12 +289,13 @@ public class DeploymentHandler {
             //successfully.  If we stopProcessing, the table data is stale and still shows the
             //app that has been gone.
             if (DeployUtil.checkDeployStatus(status, handlerCtx, false)) {
-                undeployedAppList.add(appName);
+                if(! domainOnly){
+                    removeFromDefaultWebModule(appName, targets);
+                }
             }else{
                 errorList.add(appName);
             }
         }
-        removeFromDefaultWebModule(undeployedAppList);
         if (errorList.size() > 0){
             GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), GuiUtil.getMessage("msg.deploy.UndeployError") + " " + GuiUtil.listToString(errorList, ","));
         }
@@ -301,19 +304,42 @@ public class DeploymentHandler {
 
     //For any undeployed applications, we need to ensure that it is no longer specified as the
     //default web module of any VS.
-    static private void  removeFromDefaultWebModule(List<String> undeployedAppList){
-        Map<String, VirtualServer> vsMap = V3AMX.getInstance().getConfig("server-config").getHttpService().getVirtualServer();
-        for(VirtualServer vs : vsMap.values()){
-            String appName = vs.getDefaultWebModule();
-            if (GuiUtil.isEmpty(appName)){
-                continue;
-            }
-            int index = appName.indexOf("#");
-            if (index != -1){
-                appName = appName.substring(0, index);
-            }
-            if (undeployedAppList.contains(appName)){
-                vs.setDefaultWebModule("");
+    static private void  removeFromDefaultWebModule(String undeployedAppName, List<String> targets){
+
+        String prefix = GuiUtil.getSessionValue("REST_URL")+"/configs/config/";
+        Map attrsMap = new HashMap();
+        attrsMap.put("defaultWebModule", "");
+        for(String oneTarget:  targets){
+            try{
+                //find the config ref. by this target
+                String endpoint = TargetUtil.getTargetEndpoint(oneTarget);
+                String configName = (String) RestApiHandlers.getEntityAttrs(endpoint, "entity").get("configRef");
+                String encodedConfigName = URLEncoder.encode(configName, "UTF-8");
+
+                //get all the VS of this config
+                String vsEndpoint =  prefix + encodedConfigName + "/http-service/virtual-server";
+                Map vsMap = RestApiHandlers.getChildMap( vsEndpoint );
+
+                //for each VS, look at the defaultWebModule
+                if (vsMap != null && vsMap.size()>0){
+                    List<String> vsList = new ArrayList(vsMap.keySet());
+                    for(String oneVs : vsList){
+                        String oneEndpoint = vsEndpoint+"/" + oneVs ;
+                        String defWebModule = (String) RestApiHandlers.getEntityAttrs( oneEndpoint , "entity").get("defaultWebModule");
+                        if (GuiUtil.isEmpty(defWebModule)){
+                            continue;
+                        }
+                        int index = defWebModule.indexOf("#");
+                        if (index != -1){
+                            defWebModule = defWebModule.substring(0, index);
+                        }
+                        if (undeployedAppName.equals(defWebModule)){
+                            RestApiHandlers.restRequest(oneEndpoint, attrsMap, "POST", null);
+                        }
+                    }
+                }
+            }catch(Exception ex){
+
             }
         }
     }

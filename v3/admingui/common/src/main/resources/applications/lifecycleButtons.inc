@@ -45,14 +45,47 @@
      <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}" 
         onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
         <!command
+            gf.mapValueNullToFalse(map="#{pageSession.valueMap}"  keys={"enabled", "failurefatal" } result="#{requestScope.attrMap}")
+            setPageSessionAttribute(key="valueMap" value="#{requestScope.attrMap}");
+
             getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-            saveLifecycle(
-                attrMap="#{pageSession.valueMap}",
-                attrMap2="#{pageSession.valueMap2}",
-                propList="${newList}",
-                edit="#{edit}"
-            );
+
+            setAttribute(key="tmp" value="#{pageSession.valueMap.classname}");
+            gf.createAttributeMap(keys={"name" , "value" } ,values={"class-name", "$attribute{tmp}"} map="#{requestScope.map}");
+            listAdd(list="#{requestScope.newList}" value="#{requestScope.map}");
+
+            if (#{pageSession.valueMap.classpath}){
+                setAttribute(key="tmp" value="#{pageSession.valueMap.classpath}");
+                gf.createAttributeMap( keys={"name" , "value" } , values={"classpath", "$attribute{tmp}"}  map="#{requestScope.map}");
+                listAdd(list="#{requestScope.newList}" value="#{requestScope.map}");
+            }
+            if (#{pageSession.valueMap.loadorder}){
+                setAttribute(key="tmp" value="#{pageSession.valueMap.loadorder}");
+                gf.createAttributeMap(keys={"name" , "value" } ,values={"load-order","$attribute{tmp}"}  map="#{requestScope.map}");
+                listAdd(list="#{requestScope.newList}" value="#{requestScope.map}");
+            }
+
+            setAttribute(key="tmp" value="#{pageSession.valueMap.failurefatal}");
+            gf.createAttributeMap(keys={"name" , "value" }, values={"is-failure-fatal", "$attribute{tmp}"}  map="#{requestScope.map}");
+            listAdd(list="#{requestScope.newList}" value="#{requestScope.map}");
+
+            gf.createAttributeMap(keys={"name" , "value" }, values={ "isLifecycle", "true"}  map="#{requestScope.map}");
+            listAdd(list="#{requestScope.newList}" value="#{requestScope.map}");
+
+            javaToJSON(obj="#{requestScope.newList}" json="#{requestScope.tmpJSON}");
+            gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="POST" data="#{requestScope.tmpJSON}" result="#{requestScope.restResponse}");
+
+            createMap(result="#{requestScope.aMap}")
+            mapPut(map="#{requestScope.aMap}" key="description" value="#{pageSession.valueMap.description}");
+            gf.restRequest(endpoint="#{pageSession.selfUrl}" attrs="#{requestScope.aMap}" method="POST" );
+
+            if (#{pageSession.onlyDASExist}){
+                createMap(result="#{requestScope.aMap}")
+                mapPut(map="#{requestScope.aMap}" key="enabled" value="#{pageSession.valueMap.enabled}");
+                gf.restRequest(endpoint="#{pageSession.appRefUrl}" attrs="#{requestScope.aMap}" method="POST" );
+            }
+
             prepareSuccessfulMsg();
             gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
         />
@@ -61,20 +94,25 @@
     <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
             onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
         <!command
-            getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-            getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-            saveLifecycle(
-                attrMap="#{pageSession.valueMap}",
-                attrMap2="#{pageSession.valueMap2}",
-                propList="${newList}"
-                edit="#{edit}"
-            );
-            gf.redirect(page="#{parentPage}")
+            if (!#{pageSession.onlyDASExist}){
+                mapPut(map="#{pageSession.valueMap}" key="target" value="domain");
+            }
+            gf.mapValueNullToFalse(map="#{pageSession.valueMap}"  keys={"enabled", "failurefatal" } result="#{requestScope.attrMap}")
+            gf.restRequest(
+                endpoint="#{sessionScope.REST_URL}/applications/application/create-lifecycle-module"
+                attrs="#{requestScope.attrMap}"
+                method="POST");
+            if (!#{pageSession.onlyDASExist}){
+                    convertListToArray( list="#{pageSession.selectedTargets}" array="#{requestScope.TargetArray}" ){
+                    gf.changeAppTargets(appName="#{pageSession.valueMap['name']" targets="#{requestScope.TargetArray}");
+                }
+            }
+            gf.redirect(page="#{pageSession.listPageLink}")
         />
     </sun:button>
     <sun:button id="cancelButton" immediate="#{true}" text="$resource{i18n.button.Cancel}" primary="#{false}">
         <!command
-            gf.redirect(page="#{parentPage}")
+            gf.redirect(page="#{listPageLink}")
         />
   </sun:button>
 </sun:panelGroup>

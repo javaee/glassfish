@@ -275,6 +275,34 @@ public class UtilHandlers {
     }
 
     /**
+     * This handler goes through all the Map entries, if the value is null, it will convert that to "false"
+     * This is used usually to take care of un-checked checkbox which is set to 'null',  but needs to be set to false when
+     * the map is passed in as attrsMap for request.
+     *	<p> Returns the map  </p>
+     *
+     *  <p> Input value: "map" -- Type: <code>java.util.Map</code>
+     * <p> Input value: "key" -- Type: <code>java.util.List</code>
+     *	@param	handlerCtx	The HandlerContext.
+     */
+    @Handler(id="gf.mapValueNullToFalse",
+        input={
+            @HandlerInput(name="map", type=Map.class, required=true),
+            @HandlerInput(name="keys", type=List.class, required=true) },
+        output={
+            @HandlerOutput(name="result", type=Map.class)} )
+    public static void mapValueNullToFalse(HandlerContext handlerCtx) {
+        Map map = (Map)handlerCtx.getInputValue("map");
+        List<String>  keys = (List)handlerCtx.getInputValue("keys");
+        Map result = new HashMap(map);
+        for( String key: keys){
+            if (map.get(key) == null){
+                result.put(key, "false");
+            }
+        }
+        handlerCtx.setOutputValue("result", result);
+    }
+
+    /**
      *	<p> Returns the keys  </p>
      *
      *  <p> Input value: "Map" -- Type: <code>java.util.Map</code>
@@ -816,7 +844,7 @@ public class UtilHandlers {
 	input = {
 	    @HandlerInput(name="map", type=Map.class, required=true)},
 	output = {
-	    @HandlerOutput(name="set", type=Set.class)})
+	    @HandlerOutput(name="keyList", type=List.class)})
     public static void mapKeySet(HandlerContext handlerCtx) {
         Map map = (Map) handlerCtx.getInputValue("map");
         handlerCtx.setOutputValue("set", map.keySet());

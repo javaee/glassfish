@@ -50,21 +50,54 @@
 <!define name="content">
     <event>
     <!beforeCreate
+
+        setSessionAttribute(key="lcGeneralTabs" value="general");
         setPageSessionAttribute(key="edit" value="true")
-        getRequestValue(key="appName" value="#{pageSession.Name}");
-        urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+        getRequestValue(key="appName" value="#{pageSession.name}");
+        urlencode(value="#{pageSession.name}" encoding="UTF-8" result="#{pageSession.encodedName}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/applications/lifecycleEdit.jsf?appName=#{pageSession.encodedName}");
-        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/applications/lifecycles.jsf");
-        getLifecycleAttrEdit(Name="#{pageSession.Name}"  attrMap="#{pageSession.valueMap}", properties="#{requestScope.tableList}" );
-        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/applications,type=application,name=#{pageSession.Name}");
-        setPageSessionAttribute(key="appRefObjectName" value="amx:pp=/domain/servers/server[server],type=application-ref,name=#{pageSession.Name}");
-        getProxyAttrs(objectNameStr="#{pageSession.appRefObjectName}" valueMap="#{pageSession.valueMap2}")
-        getApplicationEnabled(objectNameStr="#{pageSession.objectNameStr}" enabled="#{pageSession.valueMap2['Enabled']}")
+        setPageSessionAttribute(key="listPageLink" value="#{request.contextPath}/common/applications/lifecycles.jsf");
         gf.onlyDASExist(onlyDAS="#{pageSession.onlyDASExist}");
-    />
+        setPageSessionAttribute(key="selfUrl" value="#{sessionScope.REST_URL}/applications/application/#{pageSession.encodedName}");
+        setPageSessionAttribute(key="appRefUrl" value="#{sessionScope.REST_URL}/servers/server/server/application-ref/#{pageSession.encodedName}");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+
+        gf.restRequest(endpoint="#{sessionScope.REST_URL}/applications/application/#{pageSession.encodedName}/property.json"  method="GET" result="#{requestScope.resp}");
+        setPageSessionAttribute(key="propsMap" value="#{requestScope.resp.data.extraProperties.properties}");
+        gf.getTargetEnableInfo(appName="#{pageSession.appName}" status="#{pageSession.status}")
+        if (#{pageSession.onlyDASExist}){
+            gf.getEntityAttrs(endpoint="#{pageSession.appRefUrl}" valueMap="#{pageSession.valueMap2}");
+            mapPut(map="#{pageSession.valueMap}"  key="enabled" value="#{pageSession.status}");
+            setPageSessionAttribute(key="origState" value="#{pageSession.status}");
+        }
+        setPageSessionAttribute(key="attrList" value={"classpath" , "is-failure-fatal", "class-name", "load-order", "isLifecycle"} );
+        setPageSessionAttribute(key="tableList" value={});
+        foreach( var="oneProp" list="#{pageSession.propsMap}"){
+            gf.containedIn(list="#{pageSession.attrList}" testStr="#{requestScope.oneProp.name}" contain="#{requestScope.contain}");
+            if( #{requestScope.contain}){
+                if (#{requestScope.oneProp.name}=classpath){
+                    mapPut(map="#{pageSession.valueMap}"  key="classpath" value="#{requestScope.oneProp.value}");
+                }
+                if (#{requestScope.oneProp.name}=is-failure-fatal){
+                    mapPut(map="#{pageSession.valueMap}"  key="failurefatal" value="#{requestScope.oneProp.value}");
+                }
+                if (#{requestScope.oneProp.name}=class-name){
+                    mapPut(map="#{pageSession.valueMap}"  key="classname" value="#{requestScope.oneProp.value}");
+                }
+                if (#{requestScope.oneProp.name}=load-order){
+                    mapPut(map="#{pageSession.valueMap}"  key="loadorder" value="#{requestScope.oneProp.value}");
+                }
+            }
+            if (!#{requestScope.contain}){
+                listAdd(list="#{pageSession.tableList}", value="#{requestScope.oneProp}")
+            }
+        }
+        />
     </event>
 
             <sun:form id="propertyForm">
+
+#include "/common/applications/lifecycleTabs.inc"
 #include "/common/shared/alertMsg.inc"
 
         <!-- Page Title -->

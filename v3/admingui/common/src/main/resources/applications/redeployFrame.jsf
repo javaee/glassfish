@@ -40,14 +40,14 @@
 
 -->
 
-<!-- applications/redeployFrame.jsf -->
 <!composition template="/templates/iframe.layout"  guiTitle="$resource{i18n.redeploy.pageTitle}" guiTemplateOnLoad="uploadInit();">
 <!define name="content">
     <event>
     <!beforeCreate
         getRequestValue(key="appName" value=>$page{appName});
+        urlencode(value="#{pageSession.appName}" encoding="UTF-8" result="#{pageSession.encodedAppName}");
         //test the app still exists.
-        proxyExist(objectNameStr="amx:pp=/domain/applications,type=application,name=#{pageSession.appName}" exist="#{requestScope.exist}")
+        gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/applications/application/#{pageSession.encodedAppName}" exists="#{requestScope.exist}");
         if (! #{requestScope.exist}){
             gf.redirect(page="#{request.contextPath}/common/applications/applications.jsf");
         }

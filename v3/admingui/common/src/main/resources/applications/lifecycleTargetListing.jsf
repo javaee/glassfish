@@ -40,9 +40,6 @@
 
 -->
 
-<!-- applications/targetListing.jsf -->
-
-
 <!initPage
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
     setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
@@ -53,18 +50,19 @@
 <!define name="content">
     <event>
         <!beforeCreate
-            setSessionAttribute(key="appGeneralTabs" value="targetTab");
+            setSessionAttribute(key="lcGeneralTabs" value="targetTab");
             getRequestValue(key="appName" value="#{pageSession.appName}");
-            urlencode(value="#{pageSession.appName}" encoding="UTF-8" result="#{pageSession.encodedAppName}");
-            getRequestValue(key="listPageLink" value="#{pageSession.listPageLink}"  default="/common/applications/applications.jsf");
+            urlencode(value="#{pageSession.appName}" encoding="UTF-8" result="#{pageSession.encodedName}");
+            setPageSessionAttribute(key="listPageLink" value="/common/applications/lifecycles.jsf");
             gf.getTargetListInfo(appName="#{pageSession.appName}" result=>$attribute{listOfRows} );
-            setPageSessionAttribute(key="targetPageLink" value="#{request.contextPath}/common/applications/targetListing.jsf");
+            setPageSessionAttribute(key="targetPageLink" value="#{request.contextPath}/common/applications/lifecycleTargetListing.jsf");
+
         />
     </event>
-"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":applications");</script>
+"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":lifecycle");</script>
             <sun:form id="propertyForm">
 
-#include "/common/applications/appGeneralTabs.inc"
+#include "/common/applications/lifecycleTabs.inc"
 
 #include "/common/shared/alertMsg.inc"
  <sun:title id="propertyContentPage" title="$resource{i18n.targetListing.PageTitle}" helpText="$resource{i18n.targetListing.PageTitleHelp}"/>
@@ -89,37 +87,38 @@
                         setAttribute(key="name" value="#{name}");
                         setAttribute(key="targetPage" value="#{targetPage}");
                         setAttribute(key="targetPageHelp" value="#{targetPageHelp}");
-println("-------------#{request.contextPath}/common/applications/manageTargets.jsf?appName=#{pageSession.encodedAppName}&listPageLink=#{pageSession.listPageLink}&targetPageLink=#{pageSession.targetPageLink}");
-
-                        gf.redirect(page="#{request.contextPath}/common/applications/manageTargets.jsf?appName=#{pageSession.encodedAppName}&listPageLink=#{pageSession.listPageLink}&targetPageLink=#{pageSession.targetPageLink}");
+                        gf.redirect(page="#{request.contextPath}/common/applications/manageTargets.jsf?appName=#{pageSession.encodedName}&listPageLink=#{pageSession.listPageLink}&targetPageLink=#{pageSession.targetPageLink}");
                 />
             </sun:button>
 
             <sun:dropDown id="dropdown1" submitForm="#{true}"  disabled="#{false}"
                 labels={ "$resource{i18n.common.moreActionDropDown}"
                         "$resource{i18n.button.Enable}"  "$resource{i18n.button.Disable}"
-                        "$resource{i18n.targetListing.table.lbEnable}"  "$resource{i18n.targetListing.table.lbDisable}"
                      }
-                values={"" "enable" "disable" "lb-enable" "lb-disable" } >
+                values={"" "enable" "disable"  } >
 
                 <!command
                     getUIComponent(clientId="#{targetTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
                     setAttribute(key="click" value="$this{component}");
                     setAttribute(key="actionValue" value="#{click.selected}")
+println("========== #{requestScope.selectedRows}")
+                    createMap(result="#{requestScope.attrsMap}");
                     if( ${actionValue}=enable){
-                        gf.changeTargetStatus(selectedRows="${selectedRows}"  Enabled="#{true}" forLB="$boolean{false}")
+                        mapPut(map="#{requestScope.attrsMap}"  key="enabled" value="true");
                     }
                     if( ${actionValue}=disable){
-                        gf.changeTargetStatus(selectedRows="${selectedRows}"  Enabled="#{false}" forLB="$boolean{false}")
+                        mapPut(map="#{requestScope.attrsMap}"  key="enabled" value="false");
                     }
-                    if( ${actionValue}=lb-enable){
-                        gf.changeTargetStatus(selectedRows="${selectedRows}" Enabled="#{true}" forLB="$boolean{true}")
+                    foreach (var="row" list="#{requestScope.selectedRows}") {
+                        mapPut(map="#{requestScope.attrsMap}"  key="enabled" value="#{row['name']}");
+                        gf.restRequest(
+                            endpoint="#{row['endpoint']}"
+                            attrs="#{requestScope.attrsMap}"
+                            method="POST"
+                            result="#{requestScope.result}");
                     }
-                    if( ${actionValue}=lb-disable){
-                        gf.changeTargetStatus(selectedRows="${selectedRows}"  Enabled="#{false}" forLB="$boolean{true}")
-                    }
-                    gf.redirect(page="#{request.contextPath}/common/applications/targetListing.jsf?appName=#{pageSession.encodedAppName}&listPageLink=#{pageSession.listPageLink}");
+                    gf.redirect(page="#{request.contextPath}/common/applications/lifecycleTargetListing.jsf?appName=#{pageSession.encodedName}&listPageLink=#{pageSession.listPageLink}");
                 />
             </sun:dropDown>
          </sun:panelGroup>
@@ -144,10 +143,6 @@ println("-------------#{request.contextPath}/common/applications/manageTargets.j
 
         <sun:tableColumn headerText="$resource{i18n.deployTable.colEnabled}" sort="enabled" rowHeader="$boolean{true}" id="col2">
             <staticText id="typeCol" value="#{td.value.enabled}" />
-        </sun:tableColumn>
-
-         <sun:tableColumn headerText="$resource{i18n.targetListing.LBEnabled}"  sort="lbEnabled" rowHeader="$boolean{true}" id="lbEabled">
-            <staticText id="enabled" value="#{td.value.lbEnabled}" />
         </sun:tableColumn>
 <!--
         <sun:tableColumn headerText="$resource{i18n.TargetTable.colVirtualServer}" rendered="#{hasActionColumn}" rowHeader="$boolean{true}" id="col3">

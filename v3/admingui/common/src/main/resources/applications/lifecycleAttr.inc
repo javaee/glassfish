@@ -39,22 +39,20 @@
     holder.
 
 -->
-
-<!-- lifecycle.inc -->
 <sun:propertySheet id="propertySheet">
     <!-- Text Field section -->
     <sun:propertySheetSection id="propertSectionTextField">
 
     <sun:property id="IdStaticProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" >
-        <sun:staticText id="IdStatic" text="#{pageSession.valueMap['Name']}"/>
+        <sun:staticText id="IdStatic" text="#{pageSession.valueMap['name']}"/>
     </sun:property>
 
     <sun:property id="IdTextProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
-        <sun:textField id="IdText" styleClass="required" text="#{pageSession.valueMap['Name']}" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.common.Name']}" required="#{true}" />
+        <sun:textField id="IdText" styleClass="required" text="#{pageSession.valueMap['name']}" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.common.Name']}" required="#{true}" />
     </sun:property>
 
     <sun:property id="classNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.lifecycleModule.classname}" helpText="$resource{i18nc.lifecycleModule.classnameHelp}" >
-        <sun:textField id="classname" styleClass="required" columns="$int{70}" maxLength="#{sessionScope.fieldLengths['maxLength.lifecycleModule.classname']}" text="#{pageSession.valueMap['class-name']}"  required="#{true}" />
+        <sun:textField id="classname" styleClass="required" columns="$int{70}" maxLength="#{sessionScope.fieldLengths['maxLength.lifecycleModule.classname']}" text="#{pageSession.valueMap['classname']}"  required="#{true}" />
     </sun:property> 
 
     <sun:property id="pathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}"  label="$resource{i18nc.lifecycleModule.classPath}" helpText="$resource{i18nc.lifecycleModule.classPathHelp}" >
@@ -62,38 +60,42 @@
     </sun:property> 
 
     <sun:property id="loadOrderProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.lifecycleModule.loadOrder}"  helpText="$resource{i18nc.lifecycleModule.loadOrderHelp}" >
-        <sun:textField id="loadOrder" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.lifecycleModule.loadOrder']}" text="#{pageSession.valueMap['load-order']}" />
+        <sun:textField id="loadOrder" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.lifecycleModule.loadOrder']}" text="#{pageSession.valueMap['loadorder']}" />
     </sun:property> 
 
-    
+    <sun:property id="descProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}">
+        <sun:textField id="desc" columns="$int{70}" maxLength="#{sessionScope.fieldLengths['maxLength.common.description']}" text="#{pageSession.valueMap['description']}" />
+    </sun:property>
 
-    <sun:property id="statusProp" rendered="#{useCheckBox}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
-        <sun:checkbox id="status" label="$resource{i18n.common.Enabled}"  selected="#{pageSession.valueMap2['Enabled']}" selectedValue="true" />
-   </sun:property>
-
-    <sun:property id="failProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.lifecycleModule.onLoadFailure}" helpText="$resource{i18nc.lifecycleModule.onLoadFailureHelp}" >
-        <sun:checkbox label="$resource{i18nc.lifecycleModule.preventStart}" selected="#{pageSession.valueMap['is-failure-fatal']}"  selectedValue="true" />
-   </sun:property>
-
-   <sun:property id="vsProp"  rendered="#{pageSession.onlyDASExist}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.virtualServerLabel}" helpText="$resource{i18n.deploy.vsHelp}">
-       <sun:listbox id="vs" immediate="#{true}" multiple="#{true}"  rows="$int{4}"
-            labels="$pageSession{availableVS}"
-            selected="#{pageSession.valueMap2['selectedVS']}" >
+    <!--
+    <sun:property id="vsProp"  rendered="#{pageSession.onlyDASExist}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.virtualServerLabel}" helpText="$resource{i18n.deploy.vsHelp}">
+        <sun:listbox id="vs" immediate="#{true}" multiple="#{true}"  rows="$int{4}" labels="$pageSession{availableVS}" selected="#{pageSession.virtualservers}" >
             <!beforeCreate
                 getVsForDeployment(result="#{pageSession.vsList}");
                 getListBoxOptions(
                     availableList="#{pageSession.vsList}",
-                    selectedCommaString="#{pageSession.valueMap2['VirtualServers']}",
+                    selectedCommaString="",
                     availableListResult="#{pageSession.availableVS}",
-                    selectedOptions="#{pageSession.valueMap2['selectedVS']}"
+                    selectedOptions="#{pageSession.other['virtualservers']}"
                     addEmptyFirstChoice="true");
             />
         </sun:listbox>
     </sun:property>
+    -->
 
-    <sun:property id="descProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}">
-        <sun:textField id="desc" columns="$int{70}" maxLength="#{sessionScope.fieldLengths['maxLength.common.description']}" text="#{pageSession.valueMap['Description']}" />
+
+    <sun:property id="statusNew" rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
+        <sun:checkbox id="status" label="$resource{i18n.common.Enabled}"  selected="#{pageSession.valueMap['enabled']}" selectedValue="true" />
     </sun:property>
+
+    <sun:property id="statusEdit"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
+        <sun:checkbox id="status" rendered="#{pageSession.onlyDASExist}" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['enabled']}" selectedValue="true" />
+        <sun:staticText id="statusText" rendered="#{!pageSession.onlyDASExist}" text="#{pageSession.status}" />
+    </sun:property>
+
+    <sun:property id="failProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.lifecycleModule.onLoadFailure}" helpText="$resource{i18nc.lifecycleModule.onLoadFailureHelp}" >
+        <sun:checkbox label="$resource{i18nc.lifecycleModule.preventStart}" selected="#{pageSession.valueMap['failurefatal']}"  selectedValue="true" />
+   </sun:property>
 
     </sun:propertySheetSection>
 </sun:propertySheet>

@@ -45,6 +45,7 @@
 
 package org.glassfish.admingui.common.util;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -98,6 +99,28 @@ public class TargetUtil {
             ex.printStackTrace();
         }
         return clusters;
+    }
+
+
+    public static String getTargetEndpoint(String target){
+        try{
+            String encodedName = URLEncoder.encode(target, "UTF-8");
+            String endpoint = (String)GuiUtil.getSessionValue("REST_URL");
+            if (target.equals("server")){
+                endpoint = endpoint + "/servers/server/server";
+            }else{
+                List clusters = TargetUtil.getClusters();
+                if (clusters.contains(target)){
+                    endpoint = endpoint + "/clusters/cluster/" + encodedName;
+                }else{
+                    endpoint = endpoint + "/servers/server/" + encodedName;
+                }
+            }
+            return endpoint;
+        }catch(Exception ex){
+            ex.printStackTrace();
+            return "";
+        }
     }
 
 }

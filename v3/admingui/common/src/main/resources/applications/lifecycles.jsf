@@ -54,16 +54,15 @@
 <!define name="content">
     <event>
         <!beforeCreate
-            getLifecyclesInfo(serverName='#{request.serverName}', result=>$attribute{listOfRows} );
+            gf.restRequest(endpoint="#{sessionScope.REST_URL}/applications/application/list-lifecycle-modules.json"  attrs="#{requestScope.attrsMap}" method="get" result="#{requestScope.resp}");
+            gf.getLifecyclesInfo(children="#{requestScope.resp.data.children}", result=>$attribute{listOfRows} );
+        println("============= $attribute{listOfRows} ");
+            gf.onlyDASExist(onlyDAS="#{pageSession.onlyDASExist}");
             setPageSessionAttribute(key="tableTitle" value="$resource{i18n.deployTable.lifeCycle}");
             setPageSessionAttribute(key="editLink" value="#{request.contextPath}/common/applications/lifecycleEdit.jsf");
             setPageSessionAttribute(key="listPageLink" value="#{request.contextPath}/common/applications/lifecycles.jsf");
-            setPageSessionAttribute(key="nextPageLink" value="#{request.contextPath}/common/applications/lifecycleNew.jsf?cancelPage=#{listPageLink}");
-            setPageSessionAttribute(key="isLifecycle" value="#{true}");
-            setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain,type=applications");
-            setPageSessionAttribute(key="childType" value="application");
-            setPageSessionAttribute(key="objectNameStr2" value="amx:pp=/domain/servers,type=server,name=server");
-            setPageSessionAttribute(key="childType2" value="application-ref");
+            setPageSessionAttribute(key="nextPageLink" value="#{request.contextPath}/common/applications/lifecycleNew.jsf");
+            setPageSessionAttribute(key="targetLink" value="/common/applications/lifecycleTargetListing.jsf");
             setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nc.msg.JS.confirmDeleteLifecycle}");
         />
     </event>

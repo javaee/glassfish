@@ -101,7 +101,7 @@ public class ApplicationHandlers {
 
 	if (appPropsMap != null) {
 	    for(String oneAppName : appPropsMap.keySet()){
-
+              try{
 		String engines = appPropsMap.get(oneAppName);
 		if (GuiUtil.isEmpty(engines)){
 		    //this is life cycle, do not display in the applications table.
@@ -109,6 +109,7 @@ public class ApplicationHandlers {
 		}
 		HashMap oneRow = new HashMap();
 		oneRow.put("name", oneAppName);
+                oneRow.put("encodedName", URLEncoder.encode(oneAppName, "UTF-8"));
 		oneRow.put("selected", false);
 		oneRow.put("enableURL", DeployUtil.getTargetEnableInfo(oneAppName, true, true));
 		oneRow.put("sniffers", engines);
@@ -125,6 +126,9 @@ public class ApplicationHandlers {
 		getLaunchInfo(serverName, oneAppName, oneRow);
 
 		result.add(oneRow);
+              }catch(Exception ex){
+                ex.printStackTrace();
+              }
 	    }
 	}
         handlerCtx.setOutputValue("result", result);
@@ -132,6 +136,54 @@ public class ApplicationHandlers {
     }
 
 
+    //gf.getLifecyclesInfo(#{requestScope.resp.data.children}, result=>$attribute{listOfRows} );
+
+    @Handler(id = "gf.getLifecyclesInfo",
+        input = {
+            @HandlerInput(name = "children", type = List.class, required=true)},
+        output = {
+            @HandlerOutput(name = "result", type = java.util.List.class)})
+
+    public static void getLifecyclesInfo(HandlerContext handlerCtx) {
+        List<Map> children = (List) handlerCtx.getInputValue("children");
+        List result = new ArrayList();
+        String prefix =  GuiUtil.getSessionValue("REST_URL") + "/applications/application/";
+        if (children == null){
+            handlerCtx.setOutputValue("result", result);
+            return;
+        }
+        for(Map oneChild : children){
+            Map oneRow = new HashMap();
+            try{
+                String name = (String) oneChild.get("message");
+                String encodedName = URLEncoder.encode(name, "UTF-8");
+                oneRow.put("name", name);
+                oneRow.put("encodedName", encodedName);
+                oneRow.put("selected", false);
+                oneRow.put("loadOrder", getPropValue(prefix+encodedName, "load-order", handlerCtx));
+                oneRow.put("enableURL", DeployUtil.getTargetEnableInfo(name, true, true));
+                result.add(oneRow);
+            }catch(Exception ex){
+                ex.printStackTrace();
+            }
+        }
+        handlerCtx.setOutputValue("result", result);
+    }
+
+
+    private static String getPropValue(String endpoint, String propName, HandlerContext handlerCtx){
+        Map responseMap = (Map) RestApiHandlers.restRequest(endpoint+"/property.json", null, "GET", handlerCtx);
+        Map extraPropertiesMap = (Map)((Map)responseMap.get("data")).get("extraProperties");
+        if (extraPropertiesMap != null){
+            List<Map> props = (List)extraPropertiesMap.get("properties");
+            for(Map oneProp: props){
+                if (oneProp.get("name").equals(propName)){
+                    return (String) oneProp.get("value");
+                }
+            }
+        }
+        return "";
+    }
 
     private static void getLaunchInfo(String serverName, String appName,  Map oneRow) {
         String endpoint = GuiUtil.getSessionValue("REST_URL") + "/applications/application/" + appName + ".json";
@@ -151,9 +203,9 @@ public class ApplicationHandlers {
         }
 
 
-        oneRow.put("contextRoot", contextRoot);
+        oneRow.put("contextRoot", (contextRoot==null)? "" : contextRoot);
         oneRow.put("hasLaunch", false);
-        if ( !enabled || contextRoot.equals("")){
+        if ( !enabled || GuiUtil.isEmpty(contextRoot)){
             return;
         }
 
@@ -294,27 +346,26 @@ public class ApplicationHandlers {
     }
 
 
+    @Handler(id = "gf.getTargetEndpoint",
+        input = {
+            @HandlerInput(name = "target", type = String.class, required = true)},
+        output = {
+            @HandlerOutput(name = "endpoint", type = String.class)})
+    public static void getTargetEndpoint(HandlerContext handlerCtx) {
+        handlerCtx.setOutputValue("endpoint", TargetUtil.getTargetEndpoint( (String) handlerCtx.getInputValue("target")));
+    }
+
+
+    //TODO:  whoever that calls gf.getConfigName() should call getTargetEndpoint and then grep the config in jsf.
     @Handler(id = "gf.getConfigName",
         input = {
             @HandlerInput(name = "target", type = String.class, required = true)},
         output = {
             @HandlerOutput(name = "configName", type = String.class)})
     public static void getConfigName(HandlerContext handlerCtx) {
-        String target = (String) handlerCtx.getInputValue("target");
-        String endpoint = (String)GuiUtil.getSessionValue("REST_URL");
-        if (target.equals("server")){
-            endpoint = endpoint + "/servers/server/server";
-        }else{
-            List clusters = TargetUtil.getClusters();
-            if (clusters.contains(target)){
-                endpoint = endpoint + "/clusters/cluster/" + target;
-            }else{
-                endpoint = endpoint + "/servers/server/" + target;
-            }
-        }
+        String endpoint = TargetUtil.getTargetEndpoint( (String) handlerCtx.getInputValue("target"));
         handlerCtx.setOutputValue("configName", RestApiHandlers.getAttributesMap(endpoint).get("configRef"));
     }
-
 
 
     @Handler(id = "gf.getApplicationTarget",
@@ -429,10 +480,14 @@ public class ApplicationHandlers {
     }
 
    @Handler(id = "getVsForDeployment",
+        input = {
+            @HandlerInput(name = "targetConfig", type = String.class, defaultValue="server-config")
+        },
         output = {
         @HandlerOutput(name = "result", type = List.class)})
     public static void getVsForDeployment(HandlerContext handlerCtx) {
-        String endpoint = GuiUtil.getSessionValue("REST_URL")+"/configs/config/server-config/http-service/virtual-server";
+       String targetConfig = (String) handlerCtx.getInputValue("targetConfig");
+        String endpoint = GuiUtil.getSessionValue("REST_URL")+"/configs/config/"+targetConfig+"/http-service/virtual-server";
         List vsList = new ArrayList();
         try{
             vsList = new ArrayList(RestApiHandlers.getChildMap(endpoint).keySet());
@@ -462,11 +517,11 @@ public class ApplicationHandlers {
         for(String oneTarget : targetList){
             HashMap oneRow = new HashMap();
             if (clusters.contains(oneTarget)){
-                endpoint = "/clusters/cluster/" + oneTarget + "/application-ref/" + appName;
+                endpoint = prefix + "/clusters/cluster/" + oneTarget + "/application-ref/" + appName;
                 attrs = RestApiHandlers.getAttributesMap(prefix + endpoint);
             }else{
-                endpoint = "/servers/server/" + oneTarget + "/application-ref/" + appName;
-                attrs = RestApiHandlers.getAttributesMap(prefix  + endpoint);
+                endpoint = prefix+"/servers/server/" + oneTarget + "/application-ref/" + appName;
+                attrs = RestApiHandlers.getAttributesMap(endpoint);
             }
             oneRow.put("name", appName);
             oneRow.put("selected", false);
@@ -564,6 +619,32 @@ public class ApplicationHandlers {
 
         handlerCtx.setOutputValue("URLList", list);
 
+    }
+
+
+    /*
+     * Get the application type for the specified appName.
+     * If there isComposite property is true, the appType will be returned as 'ear'
+     * Otherwise, depends on the sniffer engine
+     */
+    @Handler(id = "gf.getApplicationType",
+        input = {
+            @HandlerInput(name = "snifferMap", type = Map.class, required = true)},
+        output = {
+            @HandlerOutput(name = "appType", type = String.class)})
+    public static void getApplicationType(HandlerContext handlerCtx) {
+        Map<String,String> snifferMap = (Map) handlerCtx.getInputValue("snifferMap");
+        String appType = "ejb";
+        if (! GuiUtil.isEmpty(snifferMap.get("web"))){
+            appType="war";
+        }else
+        if (! GuiUtil.isEmpty(snifferMap.get("connector"))){
+            appType="rar";
+        }else
+        if (! GuiUtil.isEmpty(snifferMap.get("appclient"))){
+            appType="appclient";
+        }
+        handlerCtx.setOutputValue("appType", appType);
     }
 
 
