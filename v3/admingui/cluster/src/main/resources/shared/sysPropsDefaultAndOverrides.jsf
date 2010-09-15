@@ -44,30 +44,41 @@
     <!beforeCreate
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/servers/server/#{pageSession.encodedInstanceName}");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/system-properties");
+        createList(result="#{pageSession.tableList}", size="0");
 
         // get instance attrs
         gf.restRequest(endpoint="#{pageSession.parentUrl}", method="get", result="#{requestScope.result}");
         setPageSessionAttribute(key="configRef", value="#{requestScope.result.data.extraProperties.entity.configRef}");
 
         // get config sys props
-        gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configRef}/system-properties", method="GET", result="#{requestScope.propTable}");
-        setPageSessionAttribute(key="tableList", value="#{requestScope.propTable.data.extraProperties.systemProperties}");
+        gf.restRequest(endpoint="#{selfUrl}", method="GET", result="#{requestScope.results}");
+        setPageSessionAttribute(key="sysProps", value="#{requestScope.results.data.extraProperties.systemProperties}");
 
         // get instance sys prop overrides
-        gf.restRequest(endpoint="#{selfUrl}", method="GET", result="#{requestScope.results}");
-        setAttribute(key="instSysProps", value="#{requestScope.results.data.extraProperties.systemProperties}");
-        createMap(result="#{pageSession.instSysPropMap}");
-        foreach(var="prop", list="#{instSysProps}") {
-            mapPut(map="#{pageSession.instSysPropMap}", key="#{prop.name}", value="#{prop.value}");
+        gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configRef}/system-properties", method="GET", result="#{requestScope.results}");
+        setAttribute(key="sysPropsDefaults", value="#{requestScope.results.data.extraProperties.systemProperties}");
+        createMap(result="#{pageSession.sysPropsDefaultsMap}");
+        foreach(var="prop", list="#{sysPropsDefaults}") {
+            mapPut(map="#{pageSession.sysPropsDefaultsMap}", key="#{prop.name}", value="#{prop.value}");
         }
 
-        foreach(var="row", list="#{pageSession.tableList}") {
-            setAttribute(key="tmp" value="#{row.name}");
-            setAttribute(key="overrideValue" value="#{pageSession.instSysPropMap['$attribute{tmp}']}");
+        foreach(var="prop", list="#{pageSession.sysProps}") {
+            println("**** prop = #{prop}");
+            setAttribute(key="tmp" value="#{prop.name}");
+            setAttribute(key="overrideValue" value="#{prop.value}");
             if (!"#{overrideValue}") {
                 setAttribute(key="overrideValue" value="");
             }
+            setAttribute(key="defaultValue" value="#{pageSession.sysPropsDefaultsMap['$attribute{tmp}']}");
+            if (!"#{defaultValue}") {
+                setAttribute(key="defaultValue" value="");
+            }
+
+            createMap(result="#{row}");
+            mapPut(map="#{row}", key="name", value="#{prop.name}");
+            mapPut(map="#{row}", key="defaultValue", value="#{empty defaultValue ? '' : defaultValue}");
             mapPut(map="#{row}", key="overrideValue", value="#{empty overrideValue ? '' : overrideValue}");
+            listAdd(list="#{pageSession.tableList}", value="#{row}");
         }
     />
     <!facet pageButtonsTop>
@@ -78,10 +89,8 @@
                     foreach (var="row", list="#{pageSession.tableList}") {
                         mapPut(map="#{requestScope.data}", key="#{row.name}", value="#{row.overrideValue}");
                     }
-                    println("***** requestScope.data = #{requestScope.data}");
                     gf.restRequest(endpoint="#{pageSession.selfUrl}", method="POST", attrs="#{requestScope.data}", contentType="application/x-www-form-urlencoded", result="#{requestScope.restResponse}");
                     prepareSuccessfulMsg();
-                    println("***** page = #{pageSession.parentPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                     gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
@@ -110,7 +119,7 @@
             <sun:button id="addSharedTableButton" disabled="#{false}" text="$resource{i18n.button.AddProperty}" >
                 <!command
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                    addRowToTable(TableRowGroup="$attribute{tableRowGroup}", NameList={"name", "value", "overrideValue"});
+                    addRowToTable(TableRowGroup="$attribute{tableRowGroup}", NameList={"name", "defaultValue", "overrideValue"});
                 />
             </sun:button>
             <sun:button id="button1" text="$resource{i18n.button.DeleteProperties}" disabled="#{true}" primary="#{false}">
@@ -163,7 +172,7 @@
             <sun:textField id="overrideVal" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.common.PropertyValue']}" value="#{td.value.overrideValue}"/>
         </sun:tableColumn>
         <sun:tableColumn headerText="$resource{i18n.systemProps.colDefaultValue}" sort="value" rowHeader="$boolean{false}" id="col3">
-            <h:outputText id="col1St" value="#{td.value.value}" />
+            <h:outputText id="col1St" value="#{td.value.defaultValue}" />
         </sun:tableColumn>
         "<br/>
     </sun:tableRowGroup>
