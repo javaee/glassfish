@@ -52,7 +52,7 @@
     </page>
     <page name="InstallHome"/>
     <page name="JDKSelection">
-	<when><![CDATA[ !CONFIG_ONLY && !(IS_MAC || IS_AIX) ]]></when>
+	<when><![CDATA[ !CONFIG_ONLY && !BASIC_USER && !(IS_MAC || IS_AIX) ]]></when>
     </page>
     <page name="UpdateTool">
 	<when><![CDATA[ !CONFIG_ONLY  ]]></when>
@@ -67,7 +67,7 @@
 	<when><![CDATA[ !INSTALL_ONLY && ADVANCED_USER ]]></when>
     </page>
     <page name="Domain">
-	<when><![CDATA[ BASIC_USER || (!INSTALL_ONLY && CREATE_DOMAIN)  ]]></when>
+	<when><![CDATA[ (!INSTALL_ONLY && ADVANCED_USER && CREATE_DOMAIN)  ]]></when>
     </page>
     <page name="StandaloneInstance">
 	<when><![CDATA[ (!INSTALL_ONLY && ADVANCED_USER && CREATE_STANDALONEINSTANCE)  ]]></when>

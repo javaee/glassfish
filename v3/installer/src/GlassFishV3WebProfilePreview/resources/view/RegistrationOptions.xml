@@ -306,7 +306,6 @@ return theAL;
       }
 
 
-      List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
       radio1.requestFocus();
 
      }

@@ -171,6 +171,10 @@ return theAL;
 
         if (activeModes.contains("BASIC_USER"))  {
             activeModes.remove("BASIC_USER");
+		// Add the default values since we are going to skip
+		// JDKSelection panel. 
+            ConfigHelper.setValue("JDKSelection.directory.SELECTED_JDK",
+                        System.getProperty("java.home"));
         }
 
         if (activeModes.contains("ADVANCED_USER"))  {

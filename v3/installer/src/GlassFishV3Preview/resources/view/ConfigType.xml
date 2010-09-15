@@ -294,8 +294,6 @@ return theAL;
 
       setRegOption("CREATE_DOMAIN");
  
-
-      List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
      }
 
     return (Runnable)this;

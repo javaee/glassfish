@@ -250,7 +250,6 @@ return theAL;
 
       setRegOption("INSTALL_AND_CONFIG");
 
-      List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
      }
 
     return (Runnable)this;

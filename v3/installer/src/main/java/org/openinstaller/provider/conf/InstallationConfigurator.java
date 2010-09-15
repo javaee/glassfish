@@ -146,7 +146,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
                 wsShortMgr.deleteFolder(folderName);
             }
         } catch (Exception e) {
-            LOGGER.log(Level.FINEST,e.getMessage());
+            LOGGER.log(Level.FINEST, e.getMessage());
         }
 
         return new ResultReport(ResultReport.ResultStatus.SUCCESS, "http://docs.sun.com/doc/820-7690", "http://docs.sun.com/doc/820-7690", null, productError);
@@ -175,7 +175,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
             org.glassfish.installer.util.FileUtils.setExecutable(installDir + "/glassfish/bin/jspc");
             org.glassfish.installer.util.FileUtils.setExecutable(installDir + "/bin/asadmin");
         }
-        
+
 
         // Update asenv
         updateConfigFile();
@@ -369,7 +369,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
                 (String) TemplateProcessor.getInstance().getFromDataModel("PRODUCT_NAME");
         LOGGER.log(Level.INFO, Msg.get("CREATE_SHORTCUT_HEADER",
                 new String[]{folderName}));
-  
+
         WindowsShortcutManager wsShortMgr = new WindowsShortcutManager();
         wsShortMgr.createFolder(folderName);
         String modifiedInstallDir = productRef.getInstallLocation().replace("\\", "\\\\");
@@ -418,10 +418,21 @@ public final class InstallationConfigurator implements Configurator, Notificatio
 
     //get JDK directory from java.home property and use it to define asadmin
     //execution environment PATH    
-    private void updateConfigFile() {
-        try {
-            jdkHome = ConfigHelper.getStringValue("JDKSelection.directory.SELECTED_JDK");
-        } catch (Exception e) {
+    private void updateConfigFile() throws EnhancedException {
+
+        // For advanced mode, fetch JAVA_HOME from panel.
+        if (ConfigHelper.getStringValue("InstallUserType.Option.USER_TYPE").equals("ADVANCED_USER")) {
+            try {
+                jdkHome = ConfigHelper.getStringValue("JDKSelection.directory.SELECTED_JDK");
+            } catch (Exception e) {
+                jdkHome = new File(System.getProperty("java.home")).getParent();
+                if (OSUtils.isMac() || OSUtils.isAix()) {
+                    jdkHome = System.getProperty("java.home");
+                }
+            }
+        }
+        // For basic mode, fetch JAVA_HOME from environment.
+        else {
             jdkHome = new File(System.getProperty("java.home")).getParent();
             if (OSUtils.isMac() || OSUtils.isAix()) {
                 jdkHome = System.getProperty("java.home");

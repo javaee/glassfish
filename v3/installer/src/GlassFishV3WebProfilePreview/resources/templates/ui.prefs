@@ -504,14 +504,14 @@ ACCOUNT_CREATION_HEADER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&
 ACCOUNT_CREATION_FOOTER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;&lt;a href=http://www.sun.com/privacy/&gt;Sun's Privacy Policy&lt;BODY&gt;&lt;HTML&gt;
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~USER TYPE OPTIONS PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-INSTALLUSERTYPE_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;This program supports a &lt;i&gt;BASIC USER&lt;/i&gt; as well as an &lt;i&gt;ADVANCED USER&lt;/i&gt;, a &lt;BR&gt;classification based on the level of customizations that you would like to &lt;BR&gt;perform. Please identify the user type based on your needs.&lt;BODY&gt;&lt;HTML&gt; 
+INSTALLUSERTYPE_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;This program supports a &lt;i&gt;TYPICAL&lt;/i&gt; as well as a &lt;i&gt;CUSTOM installation, a&lt;/i&gt; &lt;BR&gt;classification based on the level of customizations that you would like&lt;BR&gt;to perform. Please select an appropriate option.&lt;BODY&gt;&lt;HTML&gt;
 
-BASIC_USER_FOOTER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Choose this option to perform an installation that would setup a GlassFish&lt;BR&gt;domain in this machine.&lt;BODY&gt;&lt;HTML&gt; 
+BASIC_USER_FOOTER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Choose this option to install binaries, create a domain administration&lt;BR&gt;server by name domain1 and configure GlassFish to use JDK under &lt;BR&gt; $JAVA_HOME. Please make sure that ports 4848 and 8080 are free.&lt;BODY&gt;&lt;HTML&gt;
 
-ADVANCED_USER_FOOTER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Choosing this option gives you the flexibility to just install the binaries and &lt;BR&gt; skip configuration if required, create a domain or a stand alone instance or a &lt;BR&gt; clustered instance along with the cluster.&lt;BODY&gt;&lt;HTML&gt; 
+ADVANCED_USER_FOOTER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Choosing this option gives you the flexibility to just install the binaries&lt;BR&gt;and skip configuration if required, create a domain administration&lt;BR&gt;server or a stand alone instance or a clustered instance along with the&lt;BR&gt;cluster. You can also configure an existing installation of GlassFish.&lt;BODY&gt;&lt;HTML&gt;
 
-BASIC_USER=Basic User
-ADVANCED_USER=Advanced User
+BASIC_USER=Typical Installation
+ADVANCED_USER=Custom Installation
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~INSTALLATION/CONFIGUARATION OPTIONS PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 INSTALL_CONFIG_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;This program can perform a fresh installation and configuration of GlassFish&lt;BR&gt; or can use existing installed binaries to perform the required configuration.&lt;BR&gt; You may also choose to just install the binaries and skip the configuration.&lt;BR&gt; Please select an option that meets your needs.&lt;BODY&gt;&lt;HTML&gt; 
