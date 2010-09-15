@@ -79,9 +79,15 @@ public class ScheduleHandlers {
 
         if (dayOfWeek == null || "*".equals(dayOfWeek))
             allDaysOfWeek = true;
+        else
+            data = dayOfWeek;
 
         if (dayOfMonth == null || "*".equals(dayOfMonth))
             allDaysOfMonth = true;
+        else {
+            if (data.length() > 1) data = data + ",";
+            data = data + dayOfMonth;
+        }
 
         if (month == null || "*".equals(month))
             allMonths = true;
@@ -91,24 +97,32 @@ public class ScheduleHandlers {
         else if (!allDaysOfWeek) {
             if (allDaysOfMonth && allMonths) {
                 type="weekly";
-                data = dayOfWeek;
             }
         }
         else if (!allDaysOfMonth) {
             if (allDaysOfWeek && allMonths) {
                 type="monthly";
-                data = dayOfMonth;
             }
         }
+
         List<String> dataList = GuiUtil.parseStringList(data, ",");
 
         Map dataMap = new HashMap();
         for (String dataItem : dataList) {
             dataMap.put(dataItem, "true");
         }
-
         handlerCtx.setOutputValue("data", dataMap);
         handlerCtx.setOutputValue("type", type);
 
     }
+
+    /*
+    @Handler(id = "gf.setScheduleData",
+        input = {
+            @HandlerInput(name = "values", type = java.util.Map.class, required=true)})
+
+    public static void setScheduleData(HandlerContext handlerCtx) {
+        System.out.println("VALUES = " + handlerCtx.getInputValue("values"));
+    }
+    */
 }
