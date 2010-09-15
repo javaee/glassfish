@@ -81,8 +81,6 @@ import org.jvnet.hk2.config.TransactionFailure;
  */
 public class ModuleInfo {
 
-    final static protected Logger logger = LogDomains.getLogger(ModuleInfo.class, LogDomains.CORE_LOGGER);
-    
     protected Set<EngineRef> engines = new LinkedHashSet<EngineRef>();
     final protected Map<Class<? extends Object>, Object> metaData = new HashMap<Class<? extends Object>, Object>();
 
@@ -157,7 +155,7 @@ public class ModuleInfo {
     }
 
     public void load(ExtendedDeploymentContext context, ProgressTracker tracker) throws Exception {
-        ActionReport report = context.getActionReport();
+        Logger logger = context.getLogger();
         context.setPhase(ExtendedDeploymentContext.Phase.LOAD);
         moduleClassLoader = context.getClassLoader();
 
@@ -184,7 +182,7 @@ public class ModuleInfo {
                 filteredEngines.add(engine);
 
             } catch(Exception e) {
-                report.failure(logger, "Exception while invoking " + deployer.getClass() + " load method", e);
+                logger.log(Level.SEVERE, "Exception while invoking " + deployer.getClass() + " load method", e);
                 throw e;
             } finally {
                 Thread.currentThread().setContextClassLoader(currentClassLoader);
@@ -224,15 +222,15 @@ public class ModuleInfo {
         DeploymentContext context,
         ProgressTracker tracker) throws Exception {
 
-        ActionReport report = context.getActionReport();
+        Logger logger = context.getLogger();
 
         if (started)
             return;
         
         // registers all deployed items.
         for (EngineRef engine : _getEngineRefs()) {
-            if (context.getLogger().isLoggable(Level.FINE)) {
-                context.getLogger().fine("starting " + engine.getContainerInfo().getSniffer().getModuleType());
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("starting " + engine.getContainerInfo().getSniffer().getModuleType());
             }
 
             ClassLoader currentClassLoader  = 
@@ -240,11 +238,11 @@ public class ModuleInfo {
             try {
                 Thread.currentThread().setContextClassLoader(context.getClassLoader());
                 if (!engine.start( context, tracker)) {
-                    report.failure(logger, "Module not started " +  engine.getApplicationContainer().toString());
+                    logger.log(Level.SEVERE, "Module not started " +  engine.getApplicationContainer().toString());
                     throw new Exception( "Module not started " +  engine.getApplicationContainer().toString());
                 }
             } catch(Exception e) {
-                report.failure(logger, "Exception while invoking " + engine.getApplicationContainer().getClass() + " start method", e);
+                logger.log(Level.SEVERE, "Exception while invoking " + engine.getApplicationContainer().getClass() + " start method", e);
                 throw e;
             } finally {
                 Thread.currentThread().setContextClassLoader(currentClassLoader);
@@ -282,6 +280,7 @@ public class ModuleInfo {
 
     public void unload(ExtendedDeploymentContext context) {
 
+        Logger logger = context.getLogger();
         for (EngineRef engine : _getEngineRefs()) {
             if (engine.getApplicationContainer()!=null && engine.getApplicationContainer().getClassLoader()!=null) {
                 classLoaders.add(engine.getApplicationContainer().getClassLoader());
@@ -313,6 +312,7 @@ public class ModuleInfo {
     }
 
     public void clean(ExtendedDeploymentContext context) throws Exception {
+        Logger logger = context.getLogger();
         for (EngineRef ref : _getEngineRefs()) {
             ref.clean(context);
         }

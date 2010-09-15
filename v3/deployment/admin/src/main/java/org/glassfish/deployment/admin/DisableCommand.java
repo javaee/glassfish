@@ -105,7 +105,7 @@ public class DisableCommand extends UndeployCommandParameters implements AdminCo
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DisableCommand.class);    
 
     @Param(optional=true, defaultValue="false")
-    public Boolean isUndeploy = false;
+    public Boolean isundeploy = false;
 
     @Inject
     ServerEnvironment env;
@@ -143,7 +143,7 @@ public class DisableCommand extends UndeployCommandParameters implements AdminCo
 
         String appName = name();
 
-        if (isUndeploy) {
+        if (isundeploy) {
             origin = Origin.undeploy;
         }
 

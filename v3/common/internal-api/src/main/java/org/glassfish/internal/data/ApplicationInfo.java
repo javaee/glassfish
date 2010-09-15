@@ -223,6 +223,7 @@ public class ApplicationInfo extends ModuleInfo {
 
     public void load(ExtendedDeploymentContext context, ProgressTracker tracker)
             throws Exception {
+        Logger logger = context.getLogger();
         if (isLoaded) {
             logger.fine("Application is already loaded.");
             return;
@@ -254,6 +255,7 @@ public class ApplicationInfo extends ModuleInfo {
         ExtendedDeploymentContext context,
         ProgressTracker tracker) throws Exception {
 
+        Logger logger = context.getLogger();
         super.start(context, tracker);
         // registers all deployed items.
         for (ModuleInfo module : getModuleInfos()) {
@@ -284,6 +286,7 @@ public class ApplicationInfo extends ModuleInfo {
 
     public void unload(ExtendedDeploymentContext context) {
 
+        Logger logger = context.getLogger();
         if (!isLoaded) {
             logger.fine("Application is already unloaded.");
             return;
@@ -358,6 +361,7 @@ public class ApplicationInfo extends ModuleInfo {
     }
 
     public void clean(ExtendedDeploymentContext context) throws Exception {
+        Logger logger = context.getLogger();
         super.clean(context);
         for (ModuleInfo info : modules) {
             info.clean(getSubContext(info,context));

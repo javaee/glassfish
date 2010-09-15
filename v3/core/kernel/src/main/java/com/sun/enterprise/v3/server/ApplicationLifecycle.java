@@ -355,7 +355,8 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                     try {
                           moduleInfo = prepareModule(sortedEngineInfos, appName, context, tracker);
                     } catch(Exception prepareException) {
-                        report.failure(logger, "Exception while preparing the app", prepareException);
+                        report.failure(logger, "Exception while preparing the app", null);
+                        report.setFailureCause(prepareException);
                         tracker.actOn(logger);
                         return null;
                     }
@@ -400,7 +401,8 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                         appInfo.load(context, tracker);
                         appInfo.start(context, tracker);
                     } catch(Exception loadException) {
-                        report.failure(logger, "Exception while loading the app", loadException);
+                        report.failure(logger, "Exception while loading the app", null);
+                        report.setFailureCause(loadException);
                         tracker.actOn(logger);
                         return null;
                     }
@@ -411,8 +413,8 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
             }
 
         } catch (Exception e) {
-            logger.log(Level.WARNING,  localStrings.getLocalString("error.deploying.app", "Exception while deploying the app [{0}]", appName), e);
-            report.failure(logger, localStrings.getLocalString("error.deploying.app", "Exception while deploying the app [{0}]", appName), e);
+            report.failure(logger, localStrings.getLocalString("error.deploying.app", "Exception while deploying the app [{0}]", appName), null);
+            report.setFailureCause(e);
             tracker.actOn(logger);
             return null;
         } finally {

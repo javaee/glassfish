@@ -142,7 +142,6 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
     private File safeCopyOfApp = null;
     private File safeCopyOfDeploymentPlan = null;
     private File originalPathValue;
-    private boolean isRedeploy = false;
     private List<String> previousTargets = new ArrayList<String>();
     private Properties previousVirtualServers = new Properties();
     private Properties previousEnabledAttributes = new Properties();
@@ -242,8 +241,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             }
             
             boolean isRegistered = deployment.isRegistered(name);
-            isRedeploy = isRegistered && force;
-            deployment.validateDeploymentTarget(target, name, isRedeploy);
+            isredeploy = isRegistered && force;
+            deployment.validateDeploymentTarget(target, name, isredeploy);
 
             ActionReport.MessagePart part = report.getTopMessagePart();
             part.addProperty(DeploymentProperties.NAME, name);
@@ -391,15 +390,13 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                         false);
             }
         } catch(Throwable e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            report.failure(logger,localStrings.getLocalString(
-                    "errDuringDepl", 
-                    "Error during deployment : ") + e.getMessage(),null);
+            report.failure(logger, e.getMessage(), null);
+            report.setFailureCause(e);
         } finally {
             try {
                 archive.close();
             } catch(IOException e) {
-                logger.log(Level.INFO, localStrings.getLocalString(
+                logger.log(Level.FINE, localStrings.getLocalString(
                         "errClosingArtifact", 
                         "Error while closing deployable artifact : ",
                         path.getAbsolutePath()), e);
@@ -412,7 +409,19 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                         "Deployment of {0} done is {1} ms",
                         name,
                         (Calendar.getInstance().getTimeInMillis() - operationStartTime)));
-            } else {
+            } else if (report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
+                String errorMessage = report.getMessage();
+                Throwable cause = report.getFailureCause();
+                if (cause != null) {
+                    if (cause.getMessage() != null) {
+                        errorMessage = errorMessage + " : " + cause.getMessage();
+                    }
+                    logger.log(Level.SEVERE, errorMessage, cause.getCause());
+                }
+                report.setMessage(localStrings.getLocalString("deploy.errDuringDepl", "Error occur during deployment: {0}.", errorMessage));
+                // reset the failure cause so command framework will not try 
+                // to print the same message again
+                report.setFailureCause(null);
                 if (expansionDir!=null) {
                    FileUtils.whack(expansionDir);
                 }
@@ -531,10 +540,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
      */
     private Properties handleRedeploy(final String name, final ActionReport report)
         throws Exception {
-        if (isRedeploy) 
+        if (isredeploy) 
         {
-            isredeploy = true;
-
             //preserve settings first before undeploy
             Application app = apps.getModule(Application.class, name);
 
