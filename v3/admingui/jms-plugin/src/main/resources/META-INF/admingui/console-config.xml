@@ -64,6 +64,13 @@
     />
 
     <integration-point
+                id="jmsavailabilitytabs"
+                type="org.glassfish.admingui:availabilityTabs"
+                priority="20"
+                parentId="availabilityTabs"
+                content="jmsAvailabilityTabs.inc"
+    />
+    <integration-point
                 id="jmsResourceLink"
                 parentId="propSheetSection"
                 type="org.glassfish.admingui:resources"

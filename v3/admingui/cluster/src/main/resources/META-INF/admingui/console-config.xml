@@ -65,6 +65,13 @@
         />
     <!-- Add a link under the Configuration Page  -->
     <integration-point
+                id="availability_service"
+                type="org.glassfish.admingui:navNode"
+                priority="375"
+                parentId="#{configNameId}"
+                content="/availability/pluginTreeNodeAvailSvc.jsf"
+        />
+        <integration-point
                 id="gms_node"
                 type="org.glassfish.admingui:navNode"
                 priority="900"

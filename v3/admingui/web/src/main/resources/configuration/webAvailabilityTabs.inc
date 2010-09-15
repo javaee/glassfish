@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -38,24 +37,11 @@
     and therefore, elected the GPL Version 2 license, then the option applies
     only if the new code is made subject to such option by the copyright
     holder.
-
 -->
 
-<console-config id="ejb">
-     <!-- Adding Tabs to the EJB Container page for MDB and EJB Timer -->
-        <integration-point
-                id="ejbtabs"
-                type="org.glassfish.ejb.admingui:ejbContainerTabs"
-                priority="20"
-                parentId="ejbContainerTabs"
-                content="configuration/mdbEjbTimerTabs.inc"
-        />
-        <!-- Add links under the Configuration Page  -->
-        <integration-point
-                id="ejbavailabilitytabs"
-                type="org.glassfish.admingui:availabilityTabs"
-                priority="20"
-                parentId="availabilityTabs"
-                content="configuration/ejbAvailabilityTabs.inc"
-        />
-</console-config>
+    <sun:tab id="webAvailabilityTab" immediate="true" text="$resource{i18ncs.availability.webAvailabilityTab}" toolTip="$resource{i18ncs.availability.jmsAvailabilityTab} Tab">
+        <!command
+            setSessionAttribute(key="availabilityTabs" value="webAvailabilityTab");
+            gf.redirect(page="#{request.contextPath}/web/configuration/webAvailabilityService.jsf?configName=#{configName}");
+	/>    
+    </sun:tab>

@@ -85,6 +85,13 @@
 
         <!-- Add links under the Configuration Page  -->
         <integration-point
+                id="webavailabilitytabs"
+                type="org.glassfish.admingui:availabilityTabs"
+                priority="20"
+                parentId="availabilityTabs"
+                content="configuration/webAvailabilityTabs.inc"
+        />
+        <integration-point
                 id="web_containerConfigurationLink"
                 type="org.glassfish.admingui:configuration"
                 priority="200"
