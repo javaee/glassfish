@@ -46,10 +46,7 @@ import org.osgi.framework.BundleContext;
 
 import java.io.File;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -67,6 +64,8 @@ public class Main implements BundleActivator {
     public static final String AUTO_START_BUNDLES_PROP =
             "org.glassfish.embedded.osgimain.autostartBundles";
 
+    private List<String> excludedModules = new ArrayList();
+
     private List<Bundle> autoStartBundles = new ArrayList();
 
     HashMap<String, Bundle> autostartBundles = new HashMap();
@@ -74,25 +73,46 @@ public class Main implements BundleActivator {
     private static final Logger logger = Logger.getLogger("embedded-glassfish");
 
     public void start(final BundleContext context) throws Exception {
-        logger.logp(Level.INFO, "Main", "start", "Start has been called. BundleContext = {0}", context);
+        logger.logp(Level.FINER, "Main", "start", "Start has been called. BundleContext = {0}", context);
+
+
         URI embeddedJarURI = new URI(context.getProperty(UBER_JAR_URI));
 
         final String autoStartBundleLocation = context.getProperty(AUTO_START_BUNDLES_PROP);
 
 //        String autoStartBundleLocation = context.getProperty(AUTO_START_BUNDLES_PROP); // TODO :: parse multiple values.
 
-        logger.info("embeddedJar = " + embeddedJarURI + ", autoStartBundles = " + autoStartBundleLocation);
-        logger.info("Installing GlassFish bundles. Please wait.....");
+        logger.info("Please wait while the GlassFish is being initialized...");
+        logger.finer("embeddedJar = " + embeddedJarURI + ", autoStartBundles = " + autoStartBundleLocation);
+        logger.finer("Installing GlassFish bundles. Please wait.....");
         ExecutorService executor = Executors.newFixedThreadPool(10);
 
-        for (OSGIModule module : ModuleExtractor.extractModules(new File(embeddedJarURI))) {
+        Bundle[] bundles = context.getBundles();
+        final Map<String, Bundle> installedBundles = new HashMap();
+        if (bundles != null && bundles.length > 0) {
+            for (Bundle b : bundles) {
+                installedBundles.put(b.getLocation(), b);
+            }
+        }
+        final File embeddedJar = new File(embeddedJarURI);
+
+        for (OSGIModule module : ModuleExtractor.extractModules(embeddedJar)) {
             final OSGIModule m = module;
             executor.execute(new Runnable() {
                 public void run() {
                     try {
-                        Bundle installed = context.installBundle(m.getLocation(), m.getContentStream());
-                        if (autoStartBundleLocation.indexOf(m.getLocation()) != -1) {
-                            autostartBundles.put(m.getLocation(), installed);
+                        String bundleLocation = m.getLocation();
+                        if (!excludedModules.contains(bundleLocation)) {
+                            Bundle installed = installedBundles.get(bundleLocation);
+                            if (installed != null && installed.getLastModified() < embeddedJar.lastModified()) {
+                                // update the bundle if it is already installed and is older than uber jar.
+                                installed.update(m.getContentStream());
+                            } else {
+                                installed = context.installBundle(bundleLocation, m.getContentStream());
+                            }
+                            if (autoStartBundleLocation.indexOf(bundleLocation) != -1) {
+                                autostartBundles.put(bundleLocation, installed);
+                            }
                         }
                         m.close();
                     } catch (Exception ex) {
@@ -102,10 +122,10 @@ public class Main implements BundleActivator {
             });
         }
 
-        logger.info("Waiting to complete installation of all bundles. Please wait.....");
+        logger.finer("Waiting to complete installation of all bundles. Please wait.....");
         executor.shutdown();
         boolean completed = executor.awaitTermination(120, TimeUnit.SECONDS);
-        logger.info("Completed successfully ? " + completed);
+        logger.finer("Completed successfully ? " + completed);
 
         // Autostart the bundles in the order in which they are specified.
         if (autoStartBundleLocation != null) {
@@ -115,27 +135,27 @@ public class Main implements BundleActivator {
                 if (bundleLocation.isEmpty()) break;
                 Bundle b = autostartBundles.get(bundleLocation);
                 if (b != null) {
-                    logger.info("Starting bundle " + b);
+                    logger.finer("Starting bundle " + b);
                     try {
                         b.start();
                     } catch (Throwable t) {
                         t.printStackTrace();
                     }
-                    logger.info("Started bundle " + b);
+                    logger.finer("Started bundle " + b);
                 } else {
                     logger.warning("Unable to find bundle with location " + bundleLocation);
                 }
             }
         }
 
-        logger.info("Autostart bundles = " + autoStartBundles);
+        logger.finer("Autostart bundles = " + autoStartBundles);
         for (Bundle bundle : autoStartBundles) {
             bundle.start();
         }
     }
 
     public void stop(BundleContext bundleContext) throws Exception {
-        logger.logp(Level.INFO, "Main", "stop", "Stop has been called. BundleContext = {0}", bundleContext);
+        logger.logp(Level.FINER, "Main", "stop", "Stop has been called. BundleContext = {0}", bundleContext);
     }
 
 

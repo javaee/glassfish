@@ -70,7 +70,7 @@ public class UberJarOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.Runt
         Constants.Platform platform =
                 Constants.Platform.valueOf(props.getProperty(
                         Constants.PLATFORM_PROPERTY_KEY, Constants.Platform.Felix.name()));
-        logger.info("platform = " + platform);
+        logger.finer("platform = " + platform);
         // TODO(Sahoo): Add support for generic OSGi platform
         switch (platform) {
             case Felix:
@@ -85,9 +85,9 @@ public class UberJarOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.Runt
         if (framework != null) {
             framework.stop();
             framework.waitForStop(0);
-            logger.info("EmbeddedOSGIRuntimeBuilder.destroy, stopped framework " + framework);
+            logger.finer("EmbeddedOSGIRuntimeBuilder.destroy, stopped framework " + framework);
         } else {
-            logger.info("EmbeddedOSGIRuntimeBuilder.destroy called");
+            logger.finer("EmbeddedOSGIRuntimeBuilder.destroy called");
         }
     }
 
@@ -103,7 +103,7 @@ public class UberJarOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.Runt
 
         String uberJarURI = props.getProperty(UBER_JAR_URI);
 
-        logger.info("EmbeddedOSGIRuntimeBuilder.build, uberJarUri = " + uberJarURI);
+        logger.finer("EmbeddedOSGIRuntimeBuilder.build, uberJarUri = " + uberJarURI);
 
         URI jar = uberJarURI != null ? new URI(uberJarURI) : Util.whichJar(GlassFishRuntime.class);
 
@@ -169,7 +169,7 @@ public class UberJarOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.Runt
         props.setProperty("org.osgi.framework.storage", instanceRoot + "/osgi-cache/Felix");
 //        }
 
-        logger.logp(Level.INFO, "EmbeddedOSGIRuntimeBuilder", "build",
+        logger.logp(Level.FINER, "EmbeddedOSGIRuntimeBuilder", "build",
                 "Building file system {0}", props);
 
         try {
@@ -182,7 +182,7 @@ public class UberJarOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.Runt
                         getBundle().getBundleContext();
                 Bundle autostartBundle = context.installBundle(props.getProperty("glassfish.auto.start"));
                 autostartBundle.start(Bundle.START_TRANSIENT);
-                logger.info("Started autostartBundle " + autostartBundle);
+                logger.finer("Started autostartBundle " + autostartBundle);
                 return getService(GlassFishRuntime.class, context);
             }
         } catch (Throwable t) {
@@ -222,12 +222,12 @@ public class UberJarOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.Runt
             URI configFile = URI.create(configFileURI);
             InputStream stream = configFile.toURL().openConnection().getInputStream();
             File domainXml = new File(instanceRoot, "config/domain.xml");
-            logger.info("domainXML uri = " + configFileURI + ", size = " + stream.available());
+            logger.finer("domainXML uri = " + configFileURI + ", size = " + stream.available());
             if (!domainXml.toURI().equals(configFile)) {
                 Util.copy(stream, new FileOutputStream(domainXml), stream.available());
-                logger.info("Created " + domainXml);
+                logger.finer("Created " + domainXml);
             } else {
-                logger.info("Skipped creation of " + domainXml);
+                logger.finer("Skipped creation of " + domainXml);
             }
 
         }

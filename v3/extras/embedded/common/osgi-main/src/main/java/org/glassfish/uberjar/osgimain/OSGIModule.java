@@ -96,7 +96,7 @@ public class OSGIModule {
 
         public void handle(Exception ex) {
             if (!explicitlyClosed) {
-                logger.warning(ex.getMessage());
+//                logger.warning(ex.getMessage());
             }
         }
     }

@@ -88,15 +88,15 @@ public class Util {
     }
 
     public static URI whichJar(Class clazz) {
-        System.out.println("ResourceName = " + clazz.getName().replace(".", "/") + ".class");
+        logger.finer("ResourceName = " + clazz.getName().replace(".", "/") + ".class");
         URL url = clazz.getClassLoader().getResource(
                 clazz.getName().replace(".", "/") + ".class");
-        System.out.println("url = " + url);
+        logger.finer("url = " + url);
         if (url != null) {
             URLConnection con = null;
             try {
                 con = url.openConnection();
-                System.out.println("con = " + con);
+                logger.finer("con = " + con);
                 if (con instanceof JarURLConnection) {
                     return JarURLConnection.class.cast(con).getJarFileURL().toURI();
                 }
@@ -111,7 +111,6 @@ public class Util {
     public static boolean isUber(URI uri) {
         String uriString = uri.toString();
         String jarFileName = uriString.substring(uriString.lastIndexOf("/") + 1);
-        System.out.println("jarFIleName = " + jarFileName);
         return jarFileName.indexOf("glassfish-embedded") != -1 ? true : false;
     }
 
