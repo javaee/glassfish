@@ -166,8 +166,17 @@ public class CreateInstanceCommand implements AdminCommand {
         installDir = theNode.getInstallDir();
 
         if (!StringUtils.ok(nodeHost)) {
-            String msg = Strings.get("create.instance.missing.nodehost",
-                    theNode.getName(), "create-instance", "update-node-config",
+            String msg = Strings.get("create.instance.missing.info",
+                    theNode.getName(),"nodehost", "create-instance", "update-node-config",
+                    "create-local-instance");
+            logger.warning(msg);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);
+            return;
+        }
+        if (!StringUtils.ok(installDir)) {
+            String msg = Strings.get("create.instance.missing.info",
+                    theNode.getName(),"installdir", "create-instance", "update-node-config",
                     "create-local-instance");
             logger.warning(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);

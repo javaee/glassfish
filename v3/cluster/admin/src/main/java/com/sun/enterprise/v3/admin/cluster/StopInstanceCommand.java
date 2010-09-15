@@ -142,6 +142,7 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
         if (errorMessage != null) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(errorMessage);
+            return;
         }
 
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
