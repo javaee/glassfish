@@ -77,7 +77,15 @@ public class TransactionServiceProperties {
     private static final String JTS_SERVER_ID = "com.sun.jts.persistentServerId";
     private static final int DEFAULT_SERVER_ID = 100 ;
 
-    public static Properties getJTSProperties (Habitat habitat, boolean isORBAvailable) {
+    private static Properties properties = null;
+    private static volatile boolean orbAvailable = false;
+
+    public static synchronized Properties getJTSProperties (Habitat habitat, boolean isORBAvailable) {
+        if (orbAvailable != isORBAvailable && properties != null) {
+            // We will need to update the properties if ORB availability changed
+            return properties;
+        }
+
         Properties jtsProperties = new Properties();
         if (habitat != null) {
             ProcessEnvironment processEnv = habitat.getComponent(ProcessEnvironment.class);
@@ -129,11 +137,7 @@ public class TransactionServiceProperties {
         
                         } else if (name.equals("pending-txn-cleanup-interval")) {
                             if (isValueSet(value)) {
-                                int interval = Integer.parseInt(value);
-                                new RecoveryHelperThread(habitat, interval).start();
-                                if (_logger.isLoggable(Level.FINE))
-                                   _logger.log(Level.FINE,"Asynchronous thread for incomplete "
-                                           + "tx is enabled with interval " + interval);
+                                jtsProperties.put("pending-txn-cleanup-interval", value);
                             }
                         }
                     }
@@ -230,7 +234,27 @@ public class TransactionServiceProperties {
             }
         }
 
-        return jtsProperties;
+        properties = jtsProperties;
+        orbAvailable = isORBAvailable;
+
+        return properties;
+    }
+
+    public static void startRecoveryThread(Habitat habitat) {
+        if (properties == null) {
+            _logger.log(Level.WARNING, "", new IllegalStateException());
+            return;
+        }
+
+        String value = properties.getProperty("pending-txn-cleanup-interval");
+        if (isValueSet(value)) {
+            int interval = Integer.parseInt(value);
+            new RecoveryHelperThread(habitat, interval).start();
+            if (_logger.isLoggable(Level.FINE)) {
+               _logger.log(Level.FINE,"Asynchronous thread for incomplete "
+                           + "tx is enabled with interval " + interval);
+            }
+        }
     }
 
     private static boolean isValueSet(String value) {

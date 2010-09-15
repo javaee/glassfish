@@ -1609,13 +1609,11 @@ public class RecoveryManager {
     }
 
     /**
-     * Register the implementation of Automatice Transaction recovery.
+     * Register the implementation of Transaction recovery fence.
      * This service is started as soon as all the resources are available.
      */
-
     public static void registerTransactionRecoveryFence(TransactionRecoveryFence fence) {
         txRecoveryFence = fence;
-        txRecoveryFence.start();
     }
 
     /**
@@ -1626,9 +1624,21 @@ public class RecoveryManager {
     }
 
     /**
+     * Start Transaction recovery fence.
+     */
+    public static void startTransactionRecoveryFence() {
+        if (txRecoveryFence != null) {
+            // Perform any extra steps (like finish delegated recovery if necessary
+            txRecoveryFence.start();
+        } else {
+            _logger.log(Level.WARNING,"", new IllegalStateException());
+        }
+    }
+
+    /**
      * return transaction log directory
      */
-    static String getLogDirectory() {
+    public static String getLogDirectory() {
         int[] result = new int[1];
         String logDir = Configuration.getDirectory(Configuration.LOG_DIRECTORY,
                      Configuration.JTS_SUBDIRECTORY, result);

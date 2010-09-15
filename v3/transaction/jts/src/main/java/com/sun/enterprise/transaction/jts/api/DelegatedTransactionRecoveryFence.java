@@ -68,10 +68,10 @@ public interface DelegatedTransactionRecoveryFence {
     public void lowerFence(String path, String instanceName);
         
     /**
-     * Returns instance for which delegated recovery was done on the specified path or null
-     * if such instance does not exist
+     * Returns instance for which delegated recovery was done before the timestamp specified 
+     * on the specified path or null if such instance does not exist
      */
-    public String getInstanceRecoveredFor(String path);
+    public String getInstanceRecoveredFor(String path, long timestamp);
         
     /**
      * If an instance was doing delegated recovery on the specified path, assign

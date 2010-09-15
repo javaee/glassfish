@@ -82,7 +82,7 @@ import java.io.*;
 //   0.01  SAJH   Initial implementation.
 //------------------------------------------------------------------------------
 
-class LogControl {
+public class LogControl {
 
     /**Constants for file name extensions.
      */
@@ -912,7 +912,7 @@ class LogControl {
         return result;
     }
 
-    final static File recoveryLockFile(String logId, String logDir) {
+    public final static File recoveryLockFile(String logId, String logDir) {
         File result = new File(directory(logId,logDir),RECOVERY_LOCK_FILE_NAME);
         return result;
     }

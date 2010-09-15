@@ -40,19 +40,13 @@
 
 //----------------------------------------------------------------------------
 //
-// Module:      RecoveryLockFile.java
-//
 // Description: Recovery lock file handling
-//
-// Product:     com.sun.jts.CosTransactions
-//
 // Author:      Marina Vatkina
-//
 // Date:        Sep 20101
 //
 //----------------------------------------------------------------------------
 
-package com.sun.jts.CosTransactions;
+package com.sun.enterprise.transaction.jts.recovery;
 
 import java.util.*;
 import java.io.*;
@@ -64,11 +58,23 @@ import com.sun.logging.LogDomains;
 import com.sun.enterprise.transaction.jts.api.TransactionRecoveryFence;
 import com.sun.enterprise.transaction.jts.api.DelegatedTransactionRecoveryFence;
 
+import com.sun.jts.CosTransactions.Configuration;
+import com.sun.jts.CosTransactions.LogControl;
+import com.sun.jts.CosTransactions.RecoveryManager;
+
 /**
  * This class manages lock file required for delegated recovery.
  * @author mvatkina
  *
  * @see
+ * Records in the recovery lock file have the following format:
+ * PREFIX INSTANCE_NAME TIMESTAMP
+ * Where PREFIX can be one of:
+ * - "O" means OWNED by this instance, i.e. non-delegated recovery 
+ * - "B" means recovered BY the specified instance 
+ * - "F" means recovered FOR the specified instance
+ * TIMESTAMP is the time of the recovery operation
+ * 
 */
 
 public class RecoveryLockFile implements TransactionRecoveryFence, DelegatedTransactionRecoveryFence {
@@ -85,18 +91,29 @@ public class RecoveryLockFile implements TransactionRecoveryFence, DelegatedTran
     // Single instance
     private static final RecoveryLockFile instance = new RecoveryLockFile();
 
+    private volatile boolean started = false;
     private String instance_name;
     private String log_path;
+    private GMSCallBack gmsCallBack;
 
     private RecoveryLockFile() {
-        RecoveryManager.registerTransactionRecoveryFence(this);
     }
 
-    public static DelegatedTransactionRecoveryFence getDelegatedTransactionRecoveryFence() {
+    public static DelegatedTransactionRecoveryFence getDelegatedTransactionRecoveryFence(GMSCallBack gmsCallBack) {
+        instance.init(gmsCallBack);
+
         return instance;
     }
 
     public void start() {
+        if (!started) {
+            gmsCallBack.finishDelegatedRecovery(log_path);
+            started = true;
+        }
+    }
+
+    private void init(GMSCallBack gmsCallBack) {
+        this.gmsCallBack = gmsCallBack;
         try {
             instance_name = Configuration.getPropertyValue(Configuration.INSTANCE_NAME);
             log_path = RecoveryManager.getLogDirectory();
@@ -106,6 +123,7 @@ public class RecoveryLockFile implements TransactionRecoveryFence, DelegatedTran
         } catch (Exception ex) {
             _logger.log(Level.WARNING, "jts.exception_in_recovery_file_handling", ex);
         }
+        RecoveryManager.registerTransactionRecoveryFence(this);
     }
 
     /**
@@ -133,7 +151,7 @@ public class RecoveryLockFile implements TransactionRecoveryFence, DelegatedTran
      * {@inheritDoc}
      */
     public boolean isFenceRaised(String logDir, String instance, long timestamp) {
-        return isRecovering(logDir, instance, timestamp);
+        return isRecovering(logDir, instance, timestamp, BY);
     }
 
     /**
@@ -147,7 +165,7 @@ public class RecoveryLockFile implements TransactionRecoveryFence, DelegatedTran
      * {@inheritDoc}
      */
     public void raiseFence(String logPath, String instance, long timestamp) {
-        while (isRecovering(logPath, instance, timestamp)) {
+        while (isRecovering(logPath, instance, timestamp, BY)) {
             //wait
             try {
                 Thread.sleep(60000);
@@ -167,8 +185,12 @@ public class RecoveryLockFile implements TransactionRecoveryFence, DelegatedTran
     /**
      * {@inheritDoc}
      */
-    public String getInstanceRecoveredFor(String path) {
-        return doneRecovering(path, null, FOR);
+    public String getInstanceRecoveredFor(String path, long timestamp) {
+        if (!isRecovering(path, null, timestamp, FOR)) {
+            return doneRecovering(path, null, FOR);
+        }
+
+        return null;
     }
 
     /**
@@ -183,7 +205,7 @@ public class RecoveryLockFile implements TransactionRecoveryFence, DelegatedTran
      * Returns true if running instance is doing its own recovery
      */
     private boolean isRecovering() {
-        return isRecovering(log_path, instance_name, 0L);
+        return isRecovering(log_path, instance_name, 0L, BY);
     }
 
     /**
@@ -191,7 +213,7 @@ public class RecoveryLockFile implements TransactionRecoveryFence, DelegatedTran
      * that the specified instance started recovery after specified timestamp
      * either for itself or by another instance.
      */
-    private boolean isRecovering(String logDir, String instance, long timestamp) {
+    private boolean isRecovering(String logDir, String instance, long timestamp, String prefix) {
         BufferedReader reader = null;
         File recoveryLockFile = LogControl.recoveryLockFile(".", logDir);
         if (!recoveryLockFile.exists()) {
@@ -211,8 +233,8 @@ public class RecoveryLockFile implements TransactionRecoveryFence, DelegatedTran
                     String[] parts = line.split(SEPARATOR);
                     if (parts.length != 3) {
                         throw new IllegalStateException();
-                    } else if (parts[0].equals(OWN) && parts[1].equals(instance) ||
-                             parts[0].equals(BY)) {
+                    } else if ((parts[0].equals(OWN) && parts[1].equals(instance)) ||
+                             (instance == null && parts[0].equals(prefix))) {
                     _logger.log(Level.INFO, "Recovering? " + (Long.parseLong(parts[2]) > timestamp));
                         return (Long.parseLong(parts[2]) > timestamp);
                     } else {

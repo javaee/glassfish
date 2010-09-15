@@ -159,6 +159,9 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
             }
 
             return result;
+        } catch (Exception ex1) {
+            _logger.log(Level.WARNING, "xaresource.recover_error", ex1);
+            throw ex1;
         } finally {
             try {
                 closeAllResources(handlerToXAResourcesMap);
@@ -211,7 +214,6 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
     public void recoverXAResources(boolean force) {
         if (force) {
             try {
-                //TODO V3, v2 has txnService.isAutomaticRecovery
                 if (!Boolean.valueOf(txnService.getAutomaticRecovery())) {
                     return;
                 }
@@ -222,11 +224,6 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
 
                 configure();
 
-                /** TBD - Not needed for PE. When used when does it need to register?
-                RecoveryManager.registerTransactionRecoveryService(
-                        habitat.getByContract(TransactionRecovery.class));
-                **/
-                
                 Vector xaresList = new Vector();
                 Map<RecoveryResourceHandler, Vector> resourcesToHandler = 
                         getAllRecoverableResources(xaresList);
@@ -337,6 +334,7 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
         txMgr = habitat.getByContract(JavaEETransactionManager.class);
         recoveryListenersRegistry = habitat.getComponent(RecoveryResourceRegistry.class);
         if (recoveryListenersRegistry == null) throw new IllegalStateException();
+        RecoveryManager.startTransactionRecoveryFence();
 
         configured = true;
     }
