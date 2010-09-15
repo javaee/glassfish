@@ -44,6 +44,8 @@ import java.beans.PropertyVetoException;
 import java.util.*;
 import java.util.logging.*;
 
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.JavaConfig;
 import org.glassfish.api.admin.config.ConfigurationUpgrade;
 import org.jvnet.hk2.annotations.Inject;
@@ -63,15 +65,29 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Service
 @Scoped(PerLookup.class)
 public class V2ToV3ConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
+
     @Inject
-    JavaConfig jc;
+    Configs configs;
 
     public void postConstruct() {
+        // the 'prevent' defense
+        if (configs == null ||
+            configs.getConfig() == null ||
+            configs.getConfig().isEmpty()) {
+            return;
+        }
+
         try {
-            oldJvmOptions = Collections.unmodifiableList(jc.getJvmOptions());
-            doAdditions();
-            doRemovals();
-            ConfigSupport.apply(new JavaConfigChanger(), jc);
+            for (Config c : configs.getConfig()) {
+                JavaConfig jc = c.getJavaConfig();
+                if (jc == null) {
+                    continue;
+                }
+                oldJvmOptions = Collections.unmodifiableList(jc.getJvmOptions());
+                doAdditions();
+                doRemovals();
+                ConfigSupport.apply(new JavaConfigChanger(), jc);
+            }
         }
         catch (Exception e) {
             Logger.getAnonymousLogger().log(Level.SEVERE,
