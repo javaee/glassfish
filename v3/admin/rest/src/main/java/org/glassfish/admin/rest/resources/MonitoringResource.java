@@ -57,6 +57,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.PathParam;
 
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import org.glassfish.admin.rest.RestService;
@@ -141,50 +143,12 @@ public class MonitoringResource {
             path = path.substring(1);
         }
 
-        
         if(!path.startsWith(currentInstanceName)) {
+            //TODO need to make sure we are actually running on DAS else do not try to forward.
             // forward the request to instance
-            Client client = null;
-
-            try {
-                client = Client.create();
-                // TODO need to get actual host:port for instanceName
-                String hostName = "localHost";
-                String portNumber = "14848";
-                final String MONITORING_DOMAIN = "/monitoring/domain/";
-                String forwardURL = "http://" + hostName + ':' + portNumber + MONITORING_DOMAIN + path;
-                ClientResponse response = client.resource(forwardURL ).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-                ClientResponse.Status status = ClientResponse.Status.fromStatusCode(response.getStatus());
-                if(status.getFamily() == javax.ws.rs.core.Response.Status.Family.SUCCESSFUL) {
-                    String jsonDoc = response.getEntity(String.class);
-                    Map responseMap = MarshallingUtils.buildMapFromDocument(jsonDoc);
-                    Map resultExtraProperties = (Map)responseMap.get("extraProperties");
-                    if(resultExtraProperties != null) {
-                        Properties responseExtraProperties = ar.getExtraProperties();
-                        responseExtraProperties.put("entity", resultExtraProperties.get("entity"));
-                        @SuppressWarnings({"unchecked"}) Map<String, String> childResources = (Map<String, String>) resultExtraProperties.get("childResources");
-                        for (Map.Entry<String, String> entry : childResources.entrySet()) {
-                            URL targetURL = null;
-                            try {
-                                URL originalURL = new URL(entry.getValue());
-                                //TODO need to figure out what is DAS's hostname and port number (may be able to figure it out from Grizly Adapater)
-                                targetURL = new URL(originalURL.getProtocol(), "localhost", 4848, originalURL.getFile() );
-                            } catch (MalformedURLException e) {
-                                //TODO There was an exception while parsing URL. Need to decide what to do. For now ignore the child entry
-                            }
-                            entry.setValue(targetURL.toString());
-                        }
-                        responseExtraProperties.put("childResources", childResources);
-                    }
-                }
-            } finally {
-                if(client != null) {
-                    client.destroy();
-                }
-            }
+            proxyRequestForInstanceData(ar);
+            return result;
         }
-
-
 
         //replace all . with \.
         path = path.replaceAll("\\.", "\\\\.");
@@ -236,6 +200,52 @@ public class MonitoringResource {
         }
         constructEntity(list,  ar);
         return result;
+    }
+
+    private void proxyRequestForInstanceData(RestActionReporter ar) {
+        String targetInstanceName = path.substring(0, path.indexOf('/'));
+        Client client = null;
+        try {
+            client = Client.create();
+            Domain domain = RestService.getDomain();
+            Server server = domain.getServerNamed(targetInstanceName);
+            if (server != null) {
+                //forward to URL that has same path as current request. Host and Port are replaced to that of targetInstanceName
+                String forwardURL = uriInfo.getAbsolutePathBuilder().host(server.getAdminHost()).port(server.getAdminPort()).build().toASCIIString();
+
+                ClientResponse response = client.resource(forwardURL).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class); //TODO if the target server is down, we get ClientResponseException. Need to handle it
+                ClientResponse.Status status = ClientResponse.Status.fromStatusCode(response.getStatus());
+                if (status.getFamily() == javax.ws.rs.core.Response.Status.Family.SUCCESSFUL) {
+                    String jsonDoc = response.getEntity(String.class);
+                    Map responseMap = MarshallingUtils.buildMapFromDocument(jsonDoc);
+                    Map resultExtraProperties = (Map) responseMap.get("extraProperties");
+                    if (resultExtraProperties != null) {
+                        Properties responseExtraProperties = ar.getExtraProperties();
+                        responseExtraProperties.put("entity", resultExtraProperties.get("entity"));
+                        @SuppressWarnings({"unchecked"}) Map<String, String> childResources = (Map<String, String>) resultExtraProperties.get("childResources");
+                        for (Map.Entry<String, String> entry : childResources.entrySet()) {
+                            String targetURL = null;
+                            try {
+                                URL originalURL = new URL(entry.getValue());
+                                //Construct targetURL which has host+port of DAS and path from originalURL
+                                targetURL = uriInfo.getBaseUriBuilder().replacePath(originalURL.getFile()).build().toASCIIString();
+                            } catch (MalformedURLException e) {
+                                //TODO There was an exception while parsing URL. Need to decide what to do. For now ignore the child entry
+                            }
+                            entry.setValue(targetURL);
+                        }
+                        responseExtraProperties.put("childResources", childResources);
+                    }
+                }
+            } else { // server == null
+                // TODO error to user. Can not locate server for whom data is being looked for
+
+            }
+        } finally {
+            if (client != null) {
+                client.destroy();
+            }
+        }
     }
 
     private void constructEntity(List<TreeNode> nodeList, RestActionReporter ar) {
