@@ -183,7 +183,6 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 		    obj = ((Map) obj).get("extraProperties");
 		    if ((obj != null) && (obj instanceof Map)) {
 			session.putValue(REST_TOKEN, ((Map) obj).get("token"));
-System.out.println("TOKEN ================> " + ((Map) obj).get("token"));
 		    }
 		}
 	    }
