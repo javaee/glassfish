@@ -70,7 +70,7 @@ import org.jvnet.hk2.config.TransactionFailure;
  */
 public class MQAddressList {
 
-    static Logger logger = LogDomains.getLogger(MQAddressList.class,  LogDomains.RSR_LOGGER);
+    static Logger logger = LogDomains.getLogger(MQAddressList.class,  LogDomains.JMS_LOGGER);
     private static String myName =
                System.getProperty(SystemPropertyConstants.SERVER_NAME);
 
@@ -269,11 +269,7 @@ public class MQAddressList {
          Domain domain = Globals.get(Domain.class);
          Clusters clusters = domain.getClusters();
          List clusterList = clusters.getCluster();
-         Cluster cluster = null;
-         for (int i =0; i < clusterList.size(); i++){
-             if (clusterName.equals(((Cluster)clusterList.get(i)).getName()))
-                    cluster =    (Cluster)clusterList.get(i);
-         }
+         Cluster cluster = domain.getClusterNamed(clusterName);
 
         //final String myCluster      = ClusterHelper.getClusterByName(domainCC, clusterName).getName();
 	    final Server[] buddies      = this.getServersInCluster(cluster);//ServerHelper.getServersInCluster(domainCC, myCluster);
@@ -299,33 +295,34 @@ public class MQAddressList {
         return null;
     }
      private JmsHost getMasterJmsHostInCluster(String clusterName) throws Exception {
-        //final String myCluster      = ClusterHelper.getClusterByName(domainCC, clusterName).getName();
         Domain domain = Globals.get(Domain.class);
-        Clusters clusters = domain.getClusters();
-        List clustersList = clusters.getCluster();
-        Server[] buddies = null;
-        Cluster cluster = null;
-        for (int i =0; i < clustersList.size(); i++)
-        {
-            if(clusterName.equals(((Cluster)clustersList.get(i)).getName()))
-                cluster = (Cluster) clustersList.get(i);
-        }
-         buddies = getServersInCluster(cluster);
-        //final Server[] buddies      = ServerHelper.getServersInCluster(domainCC, myCluster);
-	    for (final Server as : buddies) {
-	 	try {
-             		final JmsHost copy	  = getResolvedJmsHost(as);
-			// return the first valid host
-			// there may be hosts attached to an NA that is down
-             		return copy;
-	 	} catch (Exception e) {
-		// we dont add the host if we cannot get it
-			;
-	 	}
-	}
-	throw new RuntimeException("No JMS hosts available to select as Master");
+        Cluster cluster = domain.getClusterNamed(clusterName);
 
-        // final JmsHost copy   = getResolvedJmsHost(buddies[0]);
+         /*
+           Since GF 3.1 - Added a new way to configure the master broker
+           Check if a master broker has been configured by looking at jmsService.getMasterBroker
+           If it is configured, return th
+           If not, use the first configured server in the cluster list as the master broker
+         */
+         Config config = domain.getConfigNamed(cluster.getConfigRef());
+         JmsService jmsService = config.getJmsService();
+         Server masterBrokerInstance = null;
+
+         String masterBrokerInstanceName = jmsService.getMasterBroker();
+         if (masterBrokerInstanceName != null){
+             masterBrokerInstance = domain.getServerNamed(masterBrokerInstanceName);
+         }
+        Server[] buddies = getServersInCluster(cluster);
+        // return the first valid host
+			// there may be hosts attached to an NA that is down
+        if (buddies != null && buddies.length > 0){
+            masterBrokerInstance = buddies[0];
+        }
+        final JmsHost copy	  = getResolvedJmsHost(masterBrokerInstance);
+	    if (copy != null)
+            return copy;
+        else
+	        throw new RuntimeException("No JMS hosts available to select as Master");
     }
 
     public Cluster getClusterByName(String clusterName)
@@ -635,7 +632,7 @@ public class MQAddressList {
 
 
         String hostName = getNodeHostName(as);
-        String port = getJMSPropertyValue(as) ;//"JMS_PROVIDER_PORT", "7676");
+        String port = JmsRaUtil.getJMSPropertyValue(as) ;//"JMS_PROVIDER_PORT", "7676");
         if (copy != null) {
              copy.setHost(hostName);
              copy.setPort(port);
@@ -646,13 +643,6 @@ public class MQAddressList {
        // return null; //getResolvedJmsHost(as);
     }
 
-    private String getJMSPropertyValue(Server as){
-
-        SystemProperty sp = as.getSystemProperty("JMS_PROVIDER_PORT");
-        if (sp != null) return sp.getValue();
-
-        return null;
-    }
     private JmsHost createJmsHostCopy(final JmsHost jmsHost, final Server server)
         {
         JmsHost jmsHostCopy = new JmsHostWrapper();

@@ -79,7 +79,7 @@ public class LegacyJmsRecoveryResourceHandler implements RecoveryResourceHandler
     static final String JMS_QUEUE_CONNECTION_FACTORY = "javax.jms.QueueConnectionFactory";
     static final String JMS_TOPIC_CONNECTION_FACTORY = "javax.jms.TopicConnectionFactory";
 
-    private static Logger _logger = LogDomains.getLogger(LegacyJmsRecoveryResourceHandler.class, LogDomains.RSR_LOGGER);
+    private static Logger _logger = LogDomains.getLogger(LegacyJmsRecoveryResourceHandler.class, LogDomains.JMS_LOGGER);
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(LegacyJmsRecoveryResourceHandler.class);
 
 

@@ -52,7 +52,7 @@ import com.sun.enterprise.util.i18n.StringManager;
  */
 public class MQUrl {
 
-    static Logger logger = LogDomains.getLogger(MQUrl.class, LogDomains.RSR_LOGGER);
+    static Logger logger = LogDomains.getLogger(MQUrl.class, LogDomains.JMS_LOGGER);
     private String host = null;
     private String port = null;
     private String scheme = "mq";

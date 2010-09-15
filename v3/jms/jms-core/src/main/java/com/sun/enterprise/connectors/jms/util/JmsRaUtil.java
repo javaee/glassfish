@@ -50,10 +50,7 @@ import java.util.logging.Logger;
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
-import com.sun.enterprise.config.serverbeans.Cluster;
-import com.sun.enterprise.config.serverbeans.JmsService;
-import com.sun.enterprise.config.serverbeans.MdbContainer;
-import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.connectors.jms.inflow.MdbContainerProps;
 import com.sun.enterprise.connectors.jms.system.MQAddressList;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
@@ -450,5 +447,13 @@ public class JmsRaUtil {
              new ConnectorRuntimeException(e.getMessage());
         cre.initCause(e);
         return cre;
+    }
+
+    public static String getJMSPropertyValue(Server as){
+
+        SystemProperty sp = as.getSystemProperty("JMS_PROVIDER_PORT");
+        if (sp != null) return sp.getValue();
+
+        return null;
     }
 }
