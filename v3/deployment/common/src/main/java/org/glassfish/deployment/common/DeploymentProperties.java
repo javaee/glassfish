@@ -540,6 +540,10 @@ public class DeploymentProperties extends Properties {
         "previousEnabledAttributes";
     public static final String PRESERVED_CONTEXT_ROOT = "preservedcontextroot";
     public static final String APP_PROPS = "appprops";
+    public static final String IS_REDEPLOY = "isredeploy";
+    public static final String IGNORE_CASCADE = "ignoreCascade";
+    public static final String KEEP_STATE = "keepstate";
+    public static final String DROP_TABLES = "droptables";
 
     // internal use - from .reload support
     public static final String KEEP_REPOSITORY_DIRECTORY = "keepreposdir";

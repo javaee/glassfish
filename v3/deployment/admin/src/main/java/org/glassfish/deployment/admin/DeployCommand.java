@@ -533,6 +533,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
         throws Exception {
         if (isRedeploy) 
         {
+            isredeploy = true;
+
             //preserve settings first before undeploy
             Application app = apps.getModule(Application.class, name);
 
@@ -547,14 +549,15 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             // replication framework
             final ParameterMap parameters = new ParameterMap();
             parameters.add("DEFAULT", name);
-            parameters.add("target", target);
-            parameters.add("keepreposdir", keepreposdir.toString());
+            parameters.add(DeploymentProperties.TARGET, target);
+            parameters.add(DeploymentProperties.KEEP_REPOSITORY_DIRECTORY, keepreposdir.toString());
+            parameters.add(DeploymentProperties.IS_REDEPLOY, isredeploy.toString());
             if (dropandcreatetables != null) {
-                parameters.add("droptables", dropandcreatetables.toString());
+                parameters.add(DeploymentProperties.DROP_TABLES, dropandcreatetables.toString());
             }
-            parameters.add("ignoreCascade", force.toString());
+            parameters.add(DeploymentProperties.IGNORE_CASCADE, force.toString());
             if (keepstate != null) {
-                parameters.add("keepstate", keepstate.toString());
+                parameters.add(DeploymentProperties.KEEP_STATE, keepstate.toString());
             }
 
             ActionReport subReport = report.addSubActionsReport();

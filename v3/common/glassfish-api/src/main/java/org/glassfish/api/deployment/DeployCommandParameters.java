@@ -114,6 +114,9 @@ public class DeployCommandParameters extends OpsParams {
     @Param(optional=true, defaultValue="false")
     public Boolean keepfailedstubs = false;
 
+    @Param(optional=true, defaultValue="false")
+    public Boolean isredeploy = false;
+
     @Param(optional=true, defaultValue="true")
     public Boolean logReportedErrors = false;
 
