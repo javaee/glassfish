@@ -162,6 +162,15 @@
             <property value="${com.sun.aas.instanceRoot}/config/wss-server-config-1.0.xml" name="security.config" />
           </provider-config>
         </message-security-config>
+        <message-security-config auth-layer="HttpServlet">
+            <provider-config provider-type="server" provider-id="GFConsoleAuthModule" class-name="org.glassfish.admingui.common.security.AdminConsoleAuthModule">
+                <request-policy auth-source="sender"></request-policy>
+                <response-policy></response-policy>
+                <property name="restAuthURL" value="http://localhost:%%%ADMIN_PORT%%%/management/sessions"></property>
+                <property name="loginPage" value="/login.jsf"></property>
+                <property name="loginErrorPage" value="/loginError.jsf"></property>
+            </provider-config>
+        </message-security-config>
       </security-service>
       <transaction-service tx-log-dir="${com.sun.aas.instanceRoot}/logs" >
       </transaction-service>
@@ -331,6 +340,15 @@
                      <property name="signature.key.alias" value="s1as" />
                      <property name="debug" value="false" />
                      <property name="security.config" value="${com.sun.aas.instanceRoot}/config/wss-server-config-1.0.xml" />
+                 </provider-config>
+             </message-security-config>
+             <message-security-config auth-layer="HttpServlet">
+                 <provider-config provider-type="server" provider-id="GFConsoleAuthModule" class-name="org.glassfish.admingui.common.security.AdminConsoleAuthModule">
+                     <request-policy auth-source="sender"></request-policy>
+                     <response-policy></response-policy>
+                     <property name="restAuthURL" value="http://localhost:%%%ADMIN_PORT%%%/management/sessions"></property>
+                     <property name="loginPage" value="/login.jsf"></property>
+                     <property name="loginErrorPage" value="/loginError.jsf"></property>
                  </provider-config>
              </message-security-config>
          </security-service>
