@@ -618,7 +618,7 @@ public class SSHLauncher {
         }
         cmdLine.add("-f");
         cmdLine.add(keyFile);
-        cmdLine.add("-vvv");
+        //cmdLine.add("-vvv");
 
         ProcessManager pm = new ProcessManager(cmdLine);
 
