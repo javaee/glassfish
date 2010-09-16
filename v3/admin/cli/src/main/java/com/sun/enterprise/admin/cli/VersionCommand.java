@@ -66,7 +66,7 @@ import org.glassfish.branding.GlassFishBranding;
 @Scoped(PerLookup.class)
 public class VersionCommand extends CLICommand {
 
-    @Param(optional = true)
+    @Param(optional = true, shortName = "v")
     private boolean verbose;
 
     @Param(optional = true)
