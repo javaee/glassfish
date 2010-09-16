@@ -139,10 +139,6 @@ public class ListComponentsCommand implements AdminCommand {
 
     private String getVerboseStatus(Application app) {
        String message = "";
-       if (DeploymentUtils.isDomainTarget(target)) {
-           // ignore --verbose for target domain 
-           return message;
-       }
        boolean isVersionEnabled = domain.isAppEnabledInTarget(app.getName(), target);
        if ( isVersionEnabled ) {
            message = localStrings.getLocalString("list.applications.verbose.enabled", "(enabled)");

@@ -487,7 +487,6 @@ public class VersioningUtilsTest {
     public void testGetRepositoryName() throws VersioningSyntaxException {
         String versionIdentifier = "RC-1.0.0";
 
-        // application name foo:RC-1.0.0
         String appName = APPLICATION_NAME
                 + VersioningUtils.EXPRESSION_SEPARATOR
                 + versionIdentifier;
@@ -497,10 +496,21 @@ public class VersioningUtilsTest {
                 + versionIdentifier;
 
         String result = "";
-        try {
-            result = VersioningUtils.getRepositoryName(appName);
-        } catch (VersioningSyntaxException ex) {
-        }
+        result = VersioningUtils.getRepositoryName(appName);
+        assertEquals(expectedResult, result);
+
+        //==========================================
+
+        versionIdentifier = "RC:1.0.0";
+        appName = APPLICATION_NAME
+                + VersioningUtils.EXPRESSION_SEPARATOR
+                + versionIdentifier;
+        
+        expectedResult = APPLICATION_NAME
+                + VersioningUtils.REPOSITORY_DASH
+                + versionIdentifier.replace(":", VersioningUtils.REPOSITORY_DASH);
+
+        result = VersioningUtils.getRepositoryName(appName);
         assertEquals(expectedResult, result);
     }
 
@@ -529,6 +539,7 @@ public class VersioningUtilsTest {
         assertEquals(false, VersioningUtils.isUntagged(APPLICATION_NAME+":BETA*"));
         assertEquals(false, VersioningUtils.isUntagged(APPLICATION_NAME+":BETA"));
         assertEquals(false, VersioningUtils.isUntagged(APPLICATION_NAME+"::"));
+        assertEquals(false, VersioningUtils.isUntagged(APPLICATION_NAME+":BETA:2"));
     }
 
      /**

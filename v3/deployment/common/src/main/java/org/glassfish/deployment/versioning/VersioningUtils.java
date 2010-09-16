@@ -285,29 +285,14 @@ public class VersioningUtils {
     }
 
     /**
-     * Replaces the colon with a dash in the given application name.
+     * Replaces colons with dashs in the given application name.
      *
      * @param appName the application name
      * @return a valid repository name
-     * @throws VersioningSyntaxException if getEpression and getUntaggedName
-     * throws exception
      */
-    public static final String getRepositoryName(String appName)
-            throws VersioningSyntaxException {
-
-        String expression = getExpression(appName);
-        String untaggedName = getUntaggedName(appName);
-
-        if (expression != null) {
-
-            StringBuilder repositoryNameBuilder = new StringBuilder(untaggedName);
-            repositoryNameBuilder.append(REPOSITORY_DASH);
-            repositoryNameBuilder.append(expression);
-            return repositoryNameBuilder.toString();
-
-        } else {
-            return untaggedName;
-        }
+    public static final String getRepositoryName(String appName) {
+        
+        return appName.replace(EXPRESSION_SEPARATOR, REPOSITORY_DASH);
     }
 
     /**
