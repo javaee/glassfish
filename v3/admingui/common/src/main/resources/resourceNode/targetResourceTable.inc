@@ -86,7 +86,12 @@
                                     endpoint="#{pageSession.restURL}/#{requestScope.encodedResName}"
                                     method="GET"
                                     result=>$page{resourceRefAttrs});
-                                setAttribute(key="status" value="#{resourceRefAttrs.data.extraProperties.entity.enabled}");
+                                if ("#{resourceRefAttrs.data.extraProperties.entity.enabled}=true") {
+                                    setAttribute(key="status" value="/resource/images/enabled.png");
+                                }
+                                if ("#{resourceRefAttrs.data.extraProperties.entity.enabled}=false") {
+                                    setAttribute(key="status" value="/resource/images/disabled.png");
+                                }
                                 mapGet(Map="#{requestScope.typeMap}" Key="#{requestScope.resType}" Value=>$attribute{type});
                                 mapGet(Map="#{requestScope.editMap}" Key="#{requestScope.resType}" Value=>$attribute{link});
                                 gf.createAttributeMap(keys={"Enabled", "selected", "Name", "link", "Type"}
@@ -116,7 +121,7 @@
                 <sun:hyperlink id="link" text="#{td.value.Name}" url="#{td.value.link}" />
             </sun:tableColumn>
             <sun:tableColumn headerText="$resource{i18n.common.Enabled}" rowHeader="$boolean{true}" id="col2">
-                <sun:staticText escape="true" id="enabled" value="#{td.value.Enabled}" />
+                <sun:image id="enablecol" value="#{td.value.Enabled}" />
             </sun:tableColumn>
             <sun:tableColumn headerText="$resource{i18n.common.type.header}" rowHeader="$boolean{true}" id="col3">
                 <sun:staticText escape="true" id="type" value="#{td.value.Type}" />
