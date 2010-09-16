@@ -87,10 +87,10 @@
                     <sun:textField id="HttpSessionStore" columns="$int{15}" maxLength="#{sessionScope.fieldLengths['maxLength.availabilty.persistenceType']}" text="#{pageSession.valueMap['persistenceType']}" />
                 </sun:property>
                 <sun:property id="PersistenceFrequencyProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.availability.persistenceFreq}" helpText="$resource{i18n_web.availability.persistenceFreqHelp}">
-                    <sun:textField id="HttpSessionStore" columns="$int{15}" maxLength="#{sessionScope.fieldLengths['maxLength.availabilty.persistenceFrequency']}" text="#{pageSession.valueMap['persistenceFrequency']}" />
+                    <sun:dropDown id="PersistenceFrequency" selected="#{pageSession.valueMap['persistenceFrequency']}" labels={"time-based", "web-method"} />
                 </sun:property>
                 <sun:property id="PersistenceScopeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.availability.persistenceScope}" helpText="$resource{i18n_web.availability.persistenceScopeHelp}">
-                    <sun:textField id="HttpSessionStore" columns="$int{15}" maxLength="#{sessionScope.fieldLengths['maxLength.availabilty.persistenceScope']}" text="#{pageSession.valueMap['persistenceScope']}" />
+                    <sun:dropDown id="PersistenceScope" selected="#{pageSession.valueMap['persistenceScope']}" labels={"session", "modified-session", "modified-attribute"} />
                 </sun:property>
                 <sun:property id="SingleSignOnProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.availability.singleSignOn}" helpText="$resource{i18n_web.availability.singleSignOnHelp}">
                     <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['ssoFailoverEnabled']}" selectedValue="true" />
