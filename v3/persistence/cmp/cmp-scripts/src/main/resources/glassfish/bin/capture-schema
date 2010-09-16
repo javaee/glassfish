@@ -40,7 +40,6 @@
 # holder.
 #
 
-echo foo
 AS_INSTALL=`dirname $0`/..
 AS_INSTALL_LIB=$AS_INSTALL/modules
 
