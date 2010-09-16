@@ -202,11 +202,15 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
 
         public static String getInstallDirUnixStyle(Node node) {
             String installDir= node.getInstallDir();
+            if (installDir == null)
+                return null;
             return installDir.replaceAll("\\\\","/");
         }
 
         public static String getNodeDirUnixStyle(Node node) {
             String nodeDir= node.getNodeDir();
+            if (nodeDir == null)
+               return null;
             return nodeDir.replaceAll("\\\\","/");
         }
 
@@ -342,6 +346,7 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
                 final String msg = localStrings.getLocalString(
                  "Node.localhost",
                  "Cannot remove Node {0}. ",child.getName() );
+                
                  logger.log(Level.SEVERE, msg);
                 throw new TransactionFailure(msg);            }
 
