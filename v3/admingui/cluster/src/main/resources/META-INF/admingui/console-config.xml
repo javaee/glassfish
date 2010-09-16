@@ -63,6 +63,15 @@
                 parentId="tree"
                 content="/node/nodeTreeNode.jsf"
         />
+
+    <integration-point
+            id="availabilityServiceLink"
+            type="org.glassfish.admingui:configuration"
+            priority="375"
+            parentId="propSheetSection"
+            content="/availability/availabilityLink.jsf"
+    />
+
     <!-- Add a link under the Configuration Page  -->
     <integration-point
                 id="availability_service"
