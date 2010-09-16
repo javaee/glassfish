@@ -142,7 +142,7 @@ public class CaptureSchema {
             System.err.println(bundle.getString("HELP_SCHEMA_ARG")); //NOI18N
             System.err.println(bundle.getString("HELP_TABLE_ARG")); //NOI18N
             System.err.println(bundle.getString("HELP_OPTIONAL_INFO")); //NOI18N
-            System.exit(0);
+            System.exit(1);
         }
 
         // Ensure that outfile ends with OUTPUTFILE_EXTENSION, warning user if
@@ -154,6 +154,7 @@ public class CaptureSchema {
         }
         
         ConnectionProvider cp = null;
+        boolean err_flag=false;
         try {
             System.err.println(bundle.getString("MESSAGE_USING_URL")+ dburl); //NOI18N
             System.err.println(bundle.getString("MESSAGE_USING_USERNAME")+ username); //NOI18N
@@ -167,7 +168,7 @@ public class CaptureSchema {
             if (null != dbschemaname)
                 cp.setSchema(dbschemaname); //schema in the database you want to capture; needs to be improved and set in constructor probably
             
-            System.err.println(bundle.getString("MESSAGE_CAPTURING_SCHEMA") + dbschemaname);//NOI18N
+            System.out.println(bundle.getString("MESSAGE_CAPTURING_SCHEMA") + dbschemaname);//NOI18N
 
             SchemaElementImpl outSchemaImpl = new SchemaElementImpl(cp);
             SchemaElement se = new SchemaElement(outSchemaImpl);
@@ -181,6 +182,7 @@ public class CaptureSchema {
             (null == dbschemaname || dbschemaname.length() == 0)) {
                 // this argument combo has problems. print an error message and exit
                 System.err.println(bundle.getString("ERR_ORACLE_ARGUMENTS")); //NOI18N
+                err_flag=true;
                 return;
             }
             
@@ -193,27 +195,31 @@ public class CaptureSchema {
                     outSchemaImpl.initTables(cp, tableList,vList,false);
                 else {
                     System.err.println(bundle.getString("MESSAGE_NO_VALID_TABLES")); //NOI18N
+                    err_flag=true;
                     return;
                 }
             }
-            System.err.println(bundle.getString("MESSAGE_SCHEMA_CAPTURED")); //NOI18N
+            System.out.println(bundle.getString("MESSAGE_SCHEMA_CAPTURED")); //NOI18N
             
-            System.err.println(bundle.getString("MESSAGE_SAVING_SCHEMA")); //NOI18N
+            System.out.println(bundle.getString("MESSAGE_SAVING_SCHEMA")); //NOI18N
             OutputStream outstream = new FileOutputStream(outfile);
             se.save(outstream);
         }
         catch (java.lang.ClassNotFoundException cnfe) {
             System.err.println(bundle.getString("ERR_CHECK_CLASSPATH")); //NOI18N
             cnfe.printStackTrace(System.err); //NOI18N
+            err_flag=true;
         }
-        catch (Exception exc) {
+        catch (Throwable exc) {
             exc.printStackTrace(System.err); //NOI18N
+            err_flag=true;
         }
         finally {
             if (cp != null) {
                 cp.closeConnection();
             }
         }
+        System.exit(err_flag ? 1 : 0);
     }
     
     private static void pruneTableList(List tableList, ConnectionProvider cp, 
