@@ -50,20 +50,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.management.Attribute;
-import org.glassfish.admin.amx.config.AMXConfigProxy;
-import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.Util;
-import org.glassfish.admin.amx.intf.config.AuthRealm;
-import org.glassfish.admin.amx.intf.config.JavaConfig;
-import org.glassfish.admin.amx.intf.config.MessageSecurityConfig;
 import org.glassfish.admin.amx.intf.config.Property;
-import org.glassfish.admin.amx.intf.config.ProviderConfig;
-import org.glassfish.admin.amx.intf.config.SecurityService;
 import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.common.util.JSONUtil;
 import org.glassfish.admingui.common.util.RestResponse;
-import org.glassfish.admingui.common.util.V3AMX;
 
 
 /**
@@ -506,68 +496,6 @@ public class SecurityHandler {
     }
 
 
-    /**
-     *	<p> This handler checks to see if the current login user exists in current Realm,
-     *  if it doesn't, invalidate the session.
-     */
-    /*  This handler is no longer used.  We already disallow the deletion of current admin user.
-    @Handler(id="checkCurrentUser",
-        input={
-            @HandlerInput(name="Realm", type=String.class, required=true)},
-        output={
-            @HandlerOutput(name="endSession", type=Boolean.class)}
-     )
-     public static void checkCurrentUser(HandlerContext handlerCtx){
-        boolean endSession = false;
-        String realmName = (String) handlerCtx.getInputValue("Realm");
-        AMXProxy amx = V3AMX.getInstance().getConfig("server-config").getAdminService().getJMXConnector().get("system");
-        String authRealm = (String) amx.attributesMap().get("AuthRealmName");
-        if (realmName.equals(authRealm)){
-            String[] userNames = V3AMX.getInstance().getRealmsMgr().getUserNames(realmName);
-            if (userNames == null || userNames.length ==0){
-                endSession = true;
-            }else{
-                String currentLoginUser = (String) GuiUtil.getSessionValue("userName");
-                for(int i=0; i< userNames.length; i++){
-                    if(userNames[i].equals(currentLoginUser)){
-                        endSession = false;
-                        break;
-                    }
-                }
-            }
-        }
-        if (endSession){
-            ExternalContext extContext = handlerCtx.getFacesContext().getExternalContext();
-            HttpServletRequest request = (HttpServletRequest) extContext.getRequest();
-            request.getSession().invalidate();
-        }
-        handlerCtx.setOutputValue("endSession", endSession);
-    }
-     */
-
-
-     /**
-     *	<p> This handler determines if a 'Manage User' button should be displayed.
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id="hasManageUserButton",
-        input={
-            @HandlerInput(name="realmName", type=String.class, required=true)},
-        output={
-            @HandlerOutput(name="result", type=Boolean.class)}
-     )
-     public static void hasManageUserButton(HandlerContext handlerCtx){
-
-        try{
-            String realmName = (String) handlerCtx.getInputValue("realmName");
-            handlerCtx.setOutputValue("result", V3AMX.getInstance().getRealmsMgr().supportsUserManagement(realmName));
-        }catch(Exception ex){
-            //refer to issue# 11623. Backend may throw exception if there is any issue with instantiating this realm.
-            //we need to catch that and just set to false for manage user for this realm.
-            handlerCtx.setOutputValue("result", false);
-        }
-    }
-
     private static String getGroupNames(String realmName, String userName, String configName, HandlerContext handlerCtx){
         try{
             String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
@@ -584,13 +512,14 @@ public class SecurityHandler {
 
 
     private static List skipRealmPropsList = new ArrayList();
-    private static List realmClassList;
+    private static List realmClassList = new ArrayList();
     static {
-        String[] classnames = V3AMX.getInstance().getRealmsMgr().getPredefinedAuthRealmClassNames();
-        realmClassList = new ArrayList();
-        realmClassList.add("");
-        for(int i=0; i< classnames.length; i++){
-            realmClassList.add(classnames[i]);
+        String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/server-config/security-service/auth-realm/list-predefined-authrealm-classnames";
+        Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "GET", null);
+        Map<String, Object> valueMap = (Map<String, Object>) responseMap.get("data");
+        ArrayList<HashMap> classNames = (ArrayList<HashMap>) ((ArrayList<HashMap>) valueMap.get("children"));
+        for (HashMap className : classNames) {
+            realmClassList.add(className.get("message"));
         }
         skipRealmPropsList.add("jaas-context");
         skipRealmPropsList.add("file");
@@ -641,48 +570,6 @@ public class SecurityHandler {
                 oneRow.put("default", falseStr);
             }
         }
-    }
-
-
-   @Handler(id="createMsgSecurity",
-        input={
-            @HandlerInput(name="attrMap", type=Map.class, required=true),
-            @HandlerInput(name="propList", type=List.class, required=true)},
-        output={
-            @HandlerOutput(name="providerObjName", type=String.class)}
-     )
-     public static void createMsgSecurity(HandlerContext handlerCtx){
-        Map<String,String> attrMap = (Map<String,String>) handlerCtx.getInputValue("attrMap");
-
-        String providerName = attrMap.get("Name");
-        //setup provider attrMap
-        Map providerAttrs = new HashMap();
-        providerAttrs.put("Name", providerName);
-        providerAttrs.put("ProviderType", attrMap.get("ProviderType"));
-        providerAttrs.put("ClassName", attrMap.get("ClassName"));
-
-        List pList = V3AMX.verifyPropertyList((List) handlerCtx.getInputValue("propList"));
-        if (pList.size() > 0){
-            Map[] propMaps = (Map[])pList.toArray(new Map[pList.size()]);
-            providerAttrs.put(Util.deduceType(Property.class), propMaps);
-        }
-        //setup MsgSecurityConfig attrMap
-        Map msgAttrs = new HashMap();
-        msgAttrs.put("AuthLayer", attrMap.get("AuthLayer"));
-        if ("true".equals(attrMap.get("defaultProvider"))){
-            String type =  attrMap.get("ProviderType");
-            if (type.equals("server") || type.equals("client-server")){
-                msgAttrs.put("DefaultProvider", providerName);
-            }
-            if (type.equals("client") || type.equals("client-server")){
-                msgAttrs.put("DefaultClientProvider", providerName);
-            }
-        }
-        msgAttrs.put(Util.deduceType(ProviderConfig.class), providerAttrs);
-        SecurityService ss = V3AMX.getInstance().getConfig("server-config").getSecurityService();
-        AMXConfigProxy msgConfig = ss.createChild("message-security-config", msgAttrs);
-        ProviderConfig provider = msgConfig.childrenMap(ProviderConfig.class).get(providerName);
-        handlerCtx.setOutputValue("providerObjName", provider.objectName().toString() );
     }
 
 
@@ -803,98 +690,84 @@ public class SecurityHandler {
     }
 
 
-    @Handler(id="checkMsgSecurityDefaultProvider",
-         input={
-            @HandlerInput(name="msgSecurityName", type=String.class, required=true)
-     })
-     public static void checkMsgSecurityDefaultProvider(HandlerContext handlerCtx){
-        String msgSecurityName = (String) handlerCtx.getInputValue("msgSecurityName");
-        MessageSecurityConfig msgConfig = getMsgSecurityProxy(msgSecurityName);
-        String defServer = msgConfig.getDefaultProvider();
-        if ( !GuiUtil.isEmpty(defServer)){
-            if (msgConfig.childrenMap(ProviderConfig.class).get(defServer) == null){
-                msgConfig.setDefaultProvider(null);
-            }
-        }
-        String defClient = msgConfig.getDefaultClientProvider();
-        if ( !GuiUtil.isEmpty(defClient)){
-            if (msgConfig.childrenMap(ProviderConfig.class).get(defClient) == null){
-                msgConfig.setDefaultClientProvider(null);
-            }
-        }
-    }
-
-
     @Handler(id="saveSecurityManagerValue",
          input={
             @HandlerInput(name="configName", type=String.class),
             @HandlerInput(name="value", type=String.class, required=true)
      })
      public static void saveSecurityManagerValue(HandlerContext handlerCtx){
-        String configName = (String) handlerCtx.getInputValue("configName");
-        if (GuiUtil.isEmpty(configName))
-            configName = "server-config";
-        JavaConfig javaC = V3AMX.getInstance().getConfig(configName).getJavaConfig();
-        Boolean status = isSecurityManagerEnabled(javaC);
-        String value= (String) handlerCtx.getInputValue("value");
-        Boolean userValue = new Boolean(value);
-        if (status.equals(userValue)){
-            //no need to change
-            return;
-        }
-
-        ArrayList newOptions = new ArrayList();
-        String[] origOptions = javaC.getJvmOptions();
-        if(userValue){
-            for(int i=0; i<origOptions.length; i++){
-                newOptions.add(origOptions[i]);
+        try {
+            String configName = (String) handlerCtx.getInputValue("configName");
+            if (GuiUtil.isEmpty(configName))
+                configName = "server-config";
+            String endpoint = GuiUtil.getSessionValue("REST_URL") +
+                    "/configs/config/" + configName + "/java-config/jvm-options.json";
+            ArrayList<String> list;
+            Map result = (HashMap) RestApiHandlers.restRequest(endpoint, null, "GET", null).get("data");
+            list = (ArrayList<String>) ((Map<String, Object>) result.get("extraProperties")).get("leafList");
+            if (list == null)
+                list = new ArrayList<String>();
+            Boolean status = isSecurityManagerEnabled(list);
+            String value= (String) handlerCtx.getInputValue("value");
+            Boolean userValue = new Boolean(value);
+            if (status.equals(userValue)){
+                //no need to change
+                return;
             }
-            newOptions.add(JVM_OPTION_SECURITY_MANAGER);
-        }else{
-            for(int i=0; i<origOptions.length; i++){
-                if (! (origOptions[i].trim().equals(JVM_OPTION_SECURITY_MANAGER) ||
-                        origOptions[i].trim().startsWith(JVM_OPTION_SECURITY_MANAGER_WITH_EQUAL))){
-                   newOptions.add(origOptions[i]);
+
+            ArrayList newOptions = new ArrayList();
+            Object [] origOptions = list.toArray();
+            if (userValue){
+                for(int i=0; i<origOptions.length; i++){
+                    newOptions.add(origOptions[i]);
+                }
+                newOptions.add(JVM_OPTION_SECURITY_MANAGER);
+            } else{
+                for(int i=0; i<origOptions.length; i++){
+                    String str = (String) origOptions[i];
+                    if (! (str.trim().equals(JVM_OPTION_SECURITY_MANAGER) ||
+                            str.trim().startsWith(JVM_OPTION_SECURITY_MANAGER_WITH_EQUAL))){
+                       newOptions.add(origOptions[i]);
+                    }
                 }
             }
+            // delete all the jvm options
+            Map<String, Object> payload = null;
+            for (Object s: list) {
+                String str = (String)s;
+                payload = new HashMap<String, Object>();
+                ArrayList kv = InstanceHandler.getKeyValuePair(str);
+                payload.put((String)kv.get(0), kv.get(1));
+                RestResponse response = RestApiHandlers.delete(endpoint, payload);
+                if (!response.isSuccess()) {
+                    throw new Exception (response.getResponseBody());
+                }
+            }
+
+            // add all the new jvm options
+            for (Object s : newOptions) {
+                String str = (String)s;
+                payload = new HashMap<String, Object>();
+                ArrayList kv = InstanceHandler.getKeyValuePair(str);
+                payload.put((String)kv.get(0), kv.get(1));
+                RestResponse response = RestApiHandlers.post(endpoint, payload);
+                if (!response.isSuccess()) {
+                    throw new Exception (response.getResponseBody());
+                }
+            }
+        }catch(Exception ex){
+            GuiUtil.handleException(handlerCtx, ex);
         }
-        String[] jvmOptions = (String[])newOptions.toArray(new String[0]);
-        javaC.setJvmOptions(jvmOptions);
     }
 
     @Handler(id="getSecurityManagerValue",
-         input={
-            @HandlerInput(name="configName", type=String.class)},
-        output={
-            @HandlerOutput(name="value", type=String.class)}
-     )
-     public static void getSecurityManagerValue(HandlerContext handlerCtx){
-        String configName = (String) handlerCtx.getInputValue("configName");
-        if (GuiUtil.isEmpty(configName))
-            configName = "server-config";
-        JavaConfig javaC = V3AMX.getInstance().getConfig(configName).getJavaConfig();
-        handlerCtx.setOutputValue("value",  isSecurityManagerEnabled(javaC).toString());
-    }
-
-    private static Boolean isSecurityManagerEnabled(JavaConfig javaC){
-        final String[] jvmOptions = javaC.getJvmOptions();
-        for(int i=0; i<jvmOptions.length; i++){
-            if (jvmOptions[i].trim().equals(JVM_OPTION_SECURITY_MANAGER) ||
-                    jvmOptions[i].trim().startsWith(JVM_OPTION_SECURITY_MANAGER_WITH_EQUAL)){
-                return Boolean.TRUE;
-            }
-        }
-        return Boolean.FALSE;
-    }
-
-    @Handler(id="getSecurityManagerValue2",
-         input={
+        input={
             @HandlerInput(name="endpoint", type=String.class),
             @HandlerInput(name="attrs", type=Map.class, required=false)},
-        output={
-            @HandlerOutput(name="value", type=String.class)}
-     )
-     public static void getSecurityManagerValue2(HandlerContext handlerCtx){
+       output={
+           @HandlerOutput(name="value", type=String.class)}
+    )
+    public static void getSecurityManagerValue(HandlerContext handlerCtx){
         ArrayList<String> list = InstanceHandler.getJvmOptions(handlerCtx);
         handlerCtx.setOutputValue("value",  isSecurityManagerEnabled(list).toString());
     }
@@ -907,15 +780,6 @@ public class SecurityHandler {
             }
         }
         return Boolean.FALSE;
-    }
-
-    private static MessageSecurityConfig getMsgSecurityProxy(String msgSecurityName){
-        Set<AMXProxy> pSet = V3AMX.getInstance().getDomainRoot().getQueryMgr().queryTypeName("message-security-config", msgSecurityName);
-        for(AMXProxy msgProxy : pSet){
-            //should be just one.
-            return (MessageSecurityConfig) msgProxy.as(MessageSecurityConfig.class);
-        }
-        return null;
     }
 
     private static String str(String aa){

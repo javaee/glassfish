@@ -216,7 +216,7 @@ public class InstanceHandler {
         }
     }
 
-    private static ArrayList getKeyValuePair(String str) {
+    public static ArrayList getKeyValuePair(String str) {
         ArrayList list = new ArrayList(2);
         int index = str.indexOf("=");
         String key = "";

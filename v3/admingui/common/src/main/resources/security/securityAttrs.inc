@@ -48,7 +48,8 @@
         <sun:property id="securityManagerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.security.SecurityManager}"  helpText="$resource{i18nc.security.SecurityManagerHelp}">
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.securityManagerStatus}" selectedValue="true"  >
             <!beforeCreate
-                getSecurityManagerValue(configName="#{pageSession.configName}" value="#{pageSession.securityManagerStatus}")
+                setPageSessionAttribute(key="jvmOptionsUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/java-config/jvm-options");
+                getSecurityManagerValue(endpoint="#{pageSession.jvmOptionsUrl}" value="#{pageSession.securityManagerStatus}")
             />
             </sun:checkbox>
         </sun:property>
