@@ -50,6 +50,10 @@ public class ComponentException extends RuntimeException {
         super(message);
     }
     
+    public ComponentException(Throwable origin) {
+      super(origin);
+    }
+    
     public ComponentException(String message, Throwable origin) {
         super(message, origin);
     }
