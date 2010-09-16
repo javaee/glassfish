@@ -432,7 +432,8 @@ public class SSHLauncher {
         boolean connected = false;
 
         File key = new File(keyFile);
-        logger.fine("Key = " + keyFile);
+        if(logger.isLoggable(Level.FINE))
+            logger.fine("Key = " + keyFile);
         if (key.exists()) {
             if (checkConnection()) {
                 logger.info("SSH public key access already setup");
@@ -493,12 +494,12 @@ public class SSHLauncher {
                     //logger.printDebugMessage("The auth file probably doesn't exist");
                 }
 
-                logger.info("Got the remote authorized_keys file");
+                logger.fine("Got the remote authorized_keys file");
                 File home = new File(System.getProperty("user.home"));
                 f = new File(home,SSH_DIR + AUTH_KEY_FILE +".temp");
                 oStream = new FileOutputStream(f);
                 out.writeTo(oStream);
-                logger.info("Wrote the temp file");
+                logger.fine("Wrote the temp file");
 
                 appendPublicKey(pubKey, f);
 
@@ -508,14 +509,14 @@ public class SSHLauncher {
 
                 try {
                     if (connection.exec("test -d " + SSH_DIR , new ByteArrayOutputStream())!=0) {
-                        logger.info(SSH_DIR + " does not exist");
+                        logger.fine(SSH_DIR + " does not exist");
                         // .ssh directory doesn't exist, create it.
                         if (connection.exec("mkdir -p " + SSH_DIR, new ByteArrayOutputStream())!=0) {
-                            logger.info("Created .ssh directory");
+                            logger.fine("Created .ssh directory");
                         }
                     }
                 } catch (Exception e) {
-                    logger.info("Failed to create .ssh directory on remote host:" + e.getMessage());
+                    logger.fine("Failed to create .ssh directory on remote host:" + e.getMessage());
                 }
 
                 scp.put(theBytes, AUTH_KEY_FILE, SSH_DIR);
@@ -595,7 +596,7 @@ public class SSHLauncher {
             c = new Connection(host, port);
             c.connect();
             File f = new File(keyFile);
-            logger.info("Connecting using credentials: user=" + userName + " keyfile=" + keyFile + " keypassphrase=" + getPrintablePassword(rawKeyPassPhrase));
+            logger.fine("Connecting using credentials: user=" + userName + " keyfile=" + keyFile + " keypassphrase=" + getPrintablePassword(rawKeyPassPhrase));
             status = c.authenticateWithPublicKey(userName, f, rawKeyPassPhrase);
             if (status) {
                 logger.info("Successfully connected to " + userName + "@" + host + " using keyfile " + keyFile);
@@ -614,31 +615,43 @@ public class SSHLauncher {
         String keygenCmd = findSSHKeygen();
         logger.fine("Using " + keygenCmd + " to generate key pair");
 
+        StringBuffer k = new StringBuffer();
         List<String> cmdLine = new ArrayList<String>();
         cmdLine.add(keygenCmd);
+        k.append(keygenCmd);
         cmdLine.add("-t");
+        k.append(" ").append("-t");
         cmdLine.add("rsa");
+        k.append(" ").append("rsa");
         cmdLine.add("-N");
-        if (rawKeyPassPhrase != null) {
+        k.append(" ").append("-N");
+
+        if (rawKeyPassPhrase != null && rawKeyPassPhrase.length() > 0) {
             cmdLine.add(rawKeyPassPhrase);
+            k.append(" ").append(getPrintablePassword(rawKeyPassPhrase));
         } else {
             //special handling for empty passphrase on Windows
-            if(OS.isWindows())
+            if(OS.isWindows()) {
                 cmdLine.add("\"\"");
-            else
+                k.append(" ").append("\"\"");
+            } else {
                 cmdLine.add("");
+                k.append(" ").append("");
+            }
         }
         cmdLine.add("-f");
+        k.append(" ").append("-f");
         cmdLine.add(keyFile);
+        k.append(" ").append(keyFile);
         //cmdLine.add("-vvv");
 
         ProcessManager pm = new ProcessManager(cmdLine);
 
-        //commenting since this log statement displays password in raw form
-        //logger.fine("Command = " + cmdLine.toString());
+        logger.fine("Command = " + k);
         pm.setTimeoutMsec(DEFAULT_TIMEOUT_MSEC);
 
-        pm.setEcho(true);
+        if (logger.isLoggable(Level.FINE))
+            pm.setEcho(true);
         int exit;
 
         try {
@@ -650,7 +663,7 @@ public class SSHLauncher {
         }
         if (exit != 0)
             logger.fine(pm.getStderr());
-        logger.info("ssh-keygen exit status: " + exit);
+        logger.fine("ssh-keygen exit status: " + exit);
         return (exit == 0) ? true : false;
     }
 

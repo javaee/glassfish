@@ -58,6 +58,7 @@ import org.glassfish.cluster.ssh.util.SSHUtil;
  */
 @Service(name = "setup-ssh")
 @Scoped(PerLookup.class)
+@ExecuteOn({RuntimeType.DAS})
 public final class SetupSshKey extends CLICommand {
     
     @Param(optional = true)
@@ -72,6 +73,9 @@ public final class SetupSshKey extends CLICommand {
     @Param(optional = true)
     private String sshpublickeyfile;
 
+    @Param(optional = true)
+    private boolean generatekey=false;
+
     @Param(name="hosts", optional = false, primary = true, multiple = true)
     private String[] nodes;
 
@@ -81,7 +85,6 @@ public final class SetupSshKey extends CLICommand {
     private String sshpassword;
     private String sshkeypassphrase=null;
 
-    private boolean generateKey=false;
     private boolean promptPass=false;
 
     /**
@@ -103,8 +106,8 @@ public final class SetupSshKey extends CLICommand {
             //location, then generate one
             if (SSHUtil.getExistingKeyFile() == null) {
                 sshkeyfile = SSHUtil.getDefaultKeyFile();
-                if(promptForKeyGeneration() && programOpts.isInteractive()) {
-                    generateKey=true;
+                if(promptForKeyGeneration()) {
+                    generatekey=true;
                     sshkeypassphrase=getSSHPassphrase();
                 }
             } else {
@@ -132,14 +135,14 @@ public final class SetupSshKey extends CLICommand {
 
         for (String node : nodes) {
             sshL.init(sshuser, node,  sshport, sshpassword, sshkeyfile, sshkeypassphrase, logger);
-            if (generateKey || promptPass) {
+            if (generatekey || promptPass) {
                 //prompt for password iff required
                 sshpassword=getSSHPassword();
             }
             try {
-                sshL.setupKey(node, sshpublickeyfile, generateKey, sshpassword);
+                sshL.setupKey(node, sshpublickeyfile, generatekey, sshpassword);
             } catch (IOException ce) {
-                logger.fine("SSH key setup failed: " + ce.getMessage());
+                //logger.fine("SSH key setup failed: " + ce.getMessage());
                 throw new CommandException(Strings.get("KeySetupFailed", ce.getMessage()));
             } catch (Exception e) {
                 //handle KeyStoreException
@@ -211,6 +214,9 @@ public final class SetupSshKey extends CLICommand {
      * Prompt for key generation
      */
     private boolean promptForKeyGeneration() {
+        if (generatekey)
+            return true;
+        
         Console cons = System.console();
 
         if (cons != null) {
