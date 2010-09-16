@@ -42,6 +42,7 @@
 
 <!initPage
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+    setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.serverMonitor}" >
@@ -50,9 +51,10 @@
     <!beforeCreate
         getRequestValue(key="instanceName" value=>$attribute{instanceName});
         urlencode(value="#{instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
+        gf.getConfigName(target="#{instanceName}" configName=>$pageSession{configName});
         setSessionAttribute(key="standaloneInstanceTabs" value="monitorServer");
         gf.getInstanceMonitorURL(instanceName="#{pageSession.encodedInstanceName}"  monitorURL="#{pageSession.monitorURL}");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/monitor/serverInstMonitoringServerPage.jsf");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/monitor/standaloneInstanceMonitoringServerPage.jsf");
         />
     </event>
             <sun:form id="propertyForm">

@@ -42,6 +42,7 @@
 
 <!initPage
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+    setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.appMonitor}" >
@@ -50,6 +51,7 @@
     <!beforeCreate
         getRequestValue(key="instanceName" value=>$attribute{instanceName});
         urlencode(value="#{instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
+        gf.getConfigName(target="#{instanceName}" configName=>$pageSession{configName});
         setSessionAttribute(key="standaloneInstanceTabs" value="monitorApplications");
         gf.getInstanceMonitorURL(instanceName="#{pageSession.encodedInstanceName}"  monitorURL="#{pageSession.monitorURL}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/monitor/standaloneInstanceMonitoringAppStatsPage.jsf");

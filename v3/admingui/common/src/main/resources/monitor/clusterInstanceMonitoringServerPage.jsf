@@ -53,6 +53,7 @@
         urlencode(value="#{clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
         getRequestValue(key="instanceName" value=>$attribute{instanceName});
         urlencode(value="#{instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
+        gf.getConfigName(target="#{instanceName}" configName=>$pageSession{configName});
         setSessionAttribute(key="clusterInstanceTabs" value="monitorServer");
         gf.getInstanceMonitorURL(instanceName="#{pageSession.encodedInstanceName}"  monitorURL="#{pageSession.monitorURL}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/monitor/clusterInstanceMonitoringServerPage.jsf");

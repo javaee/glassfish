@@ -41,9 +41,6 @@
 -->
 
 <sun:tab id="monitoring" immediate="true" text="$resource{i18nc.Monitor.MonitoringTab}" toolTip="$resource{i18nc.Monitor.MonitoringTab.tooltip}">
-    <!beforeCreate
-        setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings");
-    />
     <!command
         setSessionAttribute(key="clusterInstanceTabs" value="monitoring");
         gf.redirect(page="#{request.contextPath}/common/monitor/clusterInstanceMonitoringAppStatsPage.jsf?clusterName=#{pageSession.encodedClusterName}&instanceName=#{pageSession.encodedInstanceName}");
