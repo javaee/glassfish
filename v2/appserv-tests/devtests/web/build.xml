@@ -385,6 +385,7 @@
         <ant dir="sessionSerializeOnShutdownOnly" target="all"/>
         <ant dir="sessionWithCookiePersistenceType" target="all"/>
         <ant dir="singleSignOnCookieSecure" target="all"/>
+        <ant dir="singleSignOnCookieHttpOnly" target="all"/>
         <ant dir="singleSignOnHttpServiceDynamicReconfig" target="all"/>
         <ant dir="singleengine" target="all"/>
         <ant dir="ssiEscapeCharacter" target="all"/>
