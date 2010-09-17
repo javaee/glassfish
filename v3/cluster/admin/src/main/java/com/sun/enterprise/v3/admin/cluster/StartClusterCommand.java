@@ -49,37 +49,32 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.Servers;
-import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 
 @I18n("start.cluster.command")
 @Service(name = "start-cluster")
 @ExecuteOn(value={RuntimeType.DAS}, ifFailure=FailurePolicy.Warn)
 @CommandLock(CommandLock.LockType.NONE) // don't prevent _synchronize-files
 @Scoped(PerLookup.class)
-public class StartClusterCommand implements AdminCommand, PostConstruct {
+public class StartClusterCommand implements AdminCommand {
 
     @Inject
     private ServerEnvironment env;
-    @Inject
-    private Habitat habitat;
-    @Param(optional = false, primary = true)
-    private String clusterName;
+
     @Inject
     private Domain domain;
+
     @Inject
     private CommandRunner runner;
+
+    @Param(optional = false, primary = true)
+    private String clusterName;
+
     @Param(optional = true, defaultValue = "false")
     private boolean verbose;
-    private RemoteInstanceCommandHelper helper;
 
-    @Override
-    public void postConstruct() {
-        helper = new RemoteInstanceCommandHelper(habitat);
-    }
+    @Param(optional=true, obsolete=true)
+    private boolean autohadboverride = false;
 
     @Override
     public void execute(AdminCommandContext context) {

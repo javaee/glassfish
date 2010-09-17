@@ -52,45 +52,30 @@ import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.Servers;
-import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 
 @I18n("stop.cluster.command")
 @Service(name="stop-cluster")
 @Scoped(PerLookup.class)
-public class StopClusterCommand implements AdminCommand, PostConstruct {
-    @Inject
-    private Habitat habitat;
+public class StopClusterCommand implements AdminCommand {
 
     @Param(optional=false, primary=true)
     private String clusterName;
 
+    @Param(optional=true, obsolete=true)
+    private boolean autohadboverride = false;
+
     @Inject
     private ServerEnvironment env;
-
 
     @Inject
     private Domain domain;
 
-
     @Inject
     private CommandRunner runner;
 
-    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    private Server das_server;
-
     @Param(optional = true, defaultValue = "false")
     private boolean verbose;
-
-    private RemoteInstanceCommandHelper helper;
-
-    @Override
-    public void postConstruct() {
-        helper = new RemoteInstanceCommandHelper(habitat);
-    }
 
     @Override
     public void execute(AdminCommandContext context) {
