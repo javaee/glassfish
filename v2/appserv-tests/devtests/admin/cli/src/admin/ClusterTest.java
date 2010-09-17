@@ -249,7 +249,7 @@ public class ClusterTest extends AdminBaseDevTest {
         for (int i = 0 ; i<3; i ++) {
             report(testName +"start-li"+i , asadmin("start-local-instance",iname+i));
         }
-        AsadminReturn ret = asadminWithOutput("list-instances","--verbose");
+        AsadminReturn ret = asadminWithOutput("list-instances","--long");
         AsadminReturn lc = asadminWithOutput("list-clusters");
         report(testName+"list-cl1" , isClusterRunning(cname));
 

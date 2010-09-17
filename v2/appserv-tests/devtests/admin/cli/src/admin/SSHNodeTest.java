@@ -169,7 +169,7 @@ public class SSHNodeTest extends AdminBaseDevTest {
         System.out.printf("Starting cluster %s\n", CNAME);
         report("ssh-node-start-cluster1", asadmin("start-cluster", CNAME));
 
-        AsadminReturn ret = asadminWithOutput("list-instances", "--verbose");
+        AsadminReturn ret = asadminWithOutput("list-instances", "--long");
         System.out.printf("After start-cluster list-instances returned:\n%s\n",
                 ret.out);
 
@@ -185,7 +185,7 @@ public class SSHNodeTest extends AdminBaseDevTest {
         } catch (InterruptedException e) {
         }
 
-        ret = asadminWithOutput("list-instances", "--verbose");
+        ret = asadminWithOutput("list-instances", "--long");
         System.out.printf("After stop-cluster list-instances returned:\n%s\n",
                 ret.out);
 
