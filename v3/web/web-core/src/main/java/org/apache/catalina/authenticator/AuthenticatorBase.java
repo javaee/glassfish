@@ -436,6 +436,14 @@ public abstract class AuthenticatorBase
         this.changeSessionIdOnAuthentication = changeSessionIdOnAuthentication;
     }
 
+    public SingleSignOn getSingleSignOn() {
+        return sso;
+    }
+
+    public void setSingleSignOn(SingleSignOn sso) {
+        this.sso = sso;
+    }
+
     // --------------------------------------------------------- Public Methods
     
     
@@ -928,6 +936,7 @@ public abstract class AuthenticatorBase
         StandardHost host = (StandardHost) context.getParent();
         if (host != null) {
             host.configureSingleSignOnCookieSecure(cookie, hreq);
+            host.configureSingleSignOnCookieHttpOnly(cookie);
         } else {
             cookie.setSecure(hreq.isSecure());
         }
@@ -1051,7 +1060,7 @@ public abstract class AuthenticatorBase
                 log.log(Level.SEVERE, "Exception getting debug value", e);
             }
         }
-        /** CR 6411114 (Lifecycle implementation moved to ValveBase)
+        /** CR 6411114 (Lifecycle implementation moved to ValveBase)                             ÷
         started = true;
         */
 

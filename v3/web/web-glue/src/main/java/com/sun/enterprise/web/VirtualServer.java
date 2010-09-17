@@ -54,7 +54,9 @@ import com.sun.enterprise.web.session.SessionCookieConfig;
 import com.sun.logging.LogDomains;
 import com.sun.web.security.RealmAdapter;
 import org.apache.catalina.*;
+import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.authenticator.SingleSignOn;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.deploy.ErrorPage;
 import org.apache.catalina.valves.RemoteAddrValve;
@@ -213,6 +215,8 @@ public class VirtualServer extends StandardHost
 
     // The value of the ssoCookieSecure property
     private String ssoCookieSecure = null;
+
+    private boolean ssoCookieHttpOnly = false;
 
     private String defaultContextPath = null;
 
@@ -413,6 +417,11 @@ public class VirtualServer extends StandardHost
                 !ssoCookieSecure.equals(SessionCookieConfig.DYNAMIC_SECURE)) {
             ssoCookie.setSecure(Boolean.parseBoolean(ssoCookieSecure));
         }
+    }
+
+    @Override
+    public void configureSingleSignOnCookieHttpOnly(Cookie ssoCookie) {
+        ssoCookie.setHttpOnly(ssoCookieHttpOnly);
     }
 
 
@@ -1298,15 +1307,20 @@ public class VirtualServer extends StandardHost
                     ", as configured");
             }
 
+            boolean hasExistingSSO = false;
             // Remove existing SSO valve (if any)
             GlassFishValve[] valves = getValves();
             for (int i=0; valves!=null && i<valves.length; i++) {
                 if (valves[i] instanceof SingleSignOn) {
                     removeValve(valves[i]);
+                    hasExistingSSO = true;
                     break;
                 }
             }
 
+            if (hasExistingSSO) {
+                setSingleSignOnForChildren(null);
+            }
         } else {
             /*
              * Enable SSO
@@ -1317,10 +1331,24 @@ public class VirtualServer extends StandardHost
                     ", as configured");
             }
 
-            SSOFactory ssoFactory =
-                webContainerFeatureFactory.getSSOFactory();
-            GlassFishSingleSignOn sso =
-                ssoFactory.createSingleSignOnValve(getName());
+            GlassFishSingleSignOn sso = null;
+
+            //find existing SSO (if any), in case of a reconfig
+            GlassFishValve[] valves = getValves();
+            for (int i=0; valves!=null && i<valves.length; i++) {
+                if (valves[i] instanceof GlassFishSingleSignOn) {
+                    sso = (GlassFishSingleSignOn)valves[i];
+                    break;
+                }
+            }
+
+            if (sso == null) {
+                SSOFactory ssoFactory =
+                    webContainerFeatureFactory.getSSOFactory();
+                sso = ssoFactory.createSingleSignOnValve(getName());
+                setSingleSignOnForChildren(sso);
+                addValve((GlassFishValve) sso);
+            }
 
             // set max idle time if given
             Property idle = vsBean.getProperty(SSO_MAX_IDLE);
@@ -1344,17 +1372,8 @@ public class VirtualServer extends StandardHost
                 sso.setReapInterval(Integer.parseInt(expireTime.getValue()));
             }
 
-            // Remove existing SSO valve (if any), in case of a reconfig
-            GlassFishValve[] valves = getValves();
-            for (int i=0; valves!=null && i<valves.length; i++) {
-                if (valves[i] instanceof SingleSignOn) {
-                    removeValve(valves[i]);
-                    break;
-                }
-            }
-
-            addValve((GlassFishValve) sso);
             configureSingleSignOnCookieSecure();
+            configureSingleSignOnCookieHttpOnly();
         }
     }
 
@@ -1628,6 +1647,20 @@ public class VirtualServer extends StandardHost
             || ConfigBeansUtilities.toBoolean(ssoEnabled); 
     }
 
+    private void setSingleSignOnForChildren(SingleSignOn sso) {
+        for (Container container : findChildren()) {
+            if (container instanceof StandardContext) {
+                StandardContext context = (StandardContext)container;
+                for (GlassFishValve valve: context.getValves()) {
+                    if (valve instanceof AuthenticatorBase) {
+                        ((AuthenticatorBase)valve).setSingleSignOn(sso);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Determines whether access logging is enabled for this virtual server.
      *
@@ -1669,6 +1702,10 @@ public class VirtualServer extends StandardHost
         } else {
             ssoCookieSecure = cookieSecure;
         }
+    }
+
+    private void configureSingleSignOnCookieHttpOnly() {
+        ssoCookieHttpOnly = Boolean.parseBoolean(vsBean.getSsoCookieHttpOnly());
     }
 
     /**

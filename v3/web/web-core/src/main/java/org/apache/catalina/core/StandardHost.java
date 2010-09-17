@@ -879,6 +879,15 @@ public class StandardHost
 
 
     /**
+     * Configures the HttpOnly attribute of the given SSO cookie.
+     *
+     * @param cookie the SSO ccokie to be configured
+     */
+    public void configureSingleSignOnCookieHttpOnly(Cookie cookie) {
+    }
+
+
+    /**
      * Return a String representation of this component.
      */
     @Override
