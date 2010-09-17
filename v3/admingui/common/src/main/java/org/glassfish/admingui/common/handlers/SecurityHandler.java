@@ -284,6 +284,7 @@ public class SecurityHandler {
                propertyStr = propertyStr + oneProp.get("value") + ":";
             }
             values.put("property", propertyStr);
+            values.put("target", attrMap.get("target"));
             RestApiHandlers.restRequest(endpoint , values, "post", handlerCtx);
         }else{
             Map<String, Object> cMap = new HashMap();
@@ -295,6 +296,7 @@ public class SecurityHandler {
                propertyStr = propertyStr + oneProp.get("value") + ":";
             }
             endpoint = endpoint + "/auth-realm";
+            cMap.put("target", attrMap.get("target"));
             cMap.put("property", propertyStr);
             RestApiHandlers.restRequest(endpoint, cMap, "post", handlerCtx);
         }

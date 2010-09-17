@@ -57,6 +57,7 @@
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/audit-module");
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getDefaultValues(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+#include "/common/shared/targetsConfig.inc"
         createList(size="0", result="#{pageSession.tableList}");
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{false}" );

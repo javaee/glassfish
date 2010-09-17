@@ -79,6 +79,9 @@
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service");
         setPageSessionAttribute(key="rest-api" value="true");
         getRealmAttrForCreate(attrMap=>$page{attrMap}, classnameOption=>$page{classnameOption}, realmClasses=>$page{realmClasses}, properties=>$page{props}  );
+        createMap(result="#{pageSession.valueMap}");
+#include "/common/shared/targetsConfig.inc"
+        mapPut(map="#{pageSession.attrMap}" key="target" value="#{pageSession.valueMap['target']}");
         setPageSessionAttribute(key="myOption" value="$pageSession{classnameOption}");
     />
     </event>

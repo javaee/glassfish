@@ -58,6 +58,7 @@
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getDefaultValues(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+#include "/common/shared/targetsConfig.inc"
         setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
@@ -82,10 +83,12 @@
                     mapPut(map="#{pageSession.protocolMap}", key="SecurityEnabled", value="#{pageSession.valueMap['securityEnabled']}");
                     if ("#{pageSession.valueMap['protocolChoice']}=create") {
                         mapPut(map="#{pageSession.protocolMap}", key="name", value="#{pageSession.valueMap['newProtocolName']}");
+                        mapPut(map="#{pageSession.protocolMap}", key="target", value="#{pageSession.valueMap['target']}");
                         setPageSessionAttribute(key="protocolName", value="#{pageSession.valueMap['newProtocolName']}");
                         gf.createEntity(endpoint="#{pageSession.protocolUrl}", attrs="#{pageSession.protocolMap}");
                         createMap(result="#{pageSession.httpMap}");
                         mapPut(map="#{pageSession.httpMap}", key="defaultVirtualServer", value="#{pageSession.valueMap['defaultVirtualServer']}");
+                        mapPut(map="#{pageSession.httpMap}", key="target", value="#{pageSession.valueMap['target']}");
                         gf.createEntity(endpoint="#{pageSession.protocolUrl}/#{pageSession.protocolName}/create-http", attrs="#{pageSession.httpMap}");
                     }
                     if ("!(#{pageSession.valueMap['protocolChoice']}=create)") {
@@ -103,6 +106,7 @@
                     mapPut(map="#{pageSession.networkListenerMap}", key="enabled", value="#{pageSession.valueMap['enabled']}");
                     mapPut(map="#{pageSession.networkListenerMap}", key="jkenabled", value="#{pageSession.valueMap['jkenabled']}");
                     mapPut(map="#{pageSession.networkListenerMap}", key="protocol", value="#{pageSession.protocolName}");
+                    mapPut(map="#{pageSession.networkListenerMap}", key="target", value="#{pageSession.valueMap['target']}");
                     gf.createEntity(endpoint="#{pageSession.parentUrl}/network-listener", attrs="#{pageSession.networkListenerMap}");
                     gf.restRequest(endpoint="#{pageSession.protocolUrl}/#{pageSession.protocolName}/http.json", method="get", result="#{pageSession.protocolAttrHttp}");
                     setPageSessionAttribute(key="vsName" value="#{pageSession.protocolAttrHttp.data.extraProperties.entity['defaultVirtualServer']}");
