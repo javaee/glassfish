@@ -68,7 +68,7 @@
         gf.getEntityAttrs(endpoint="#{pageSession.resourceUrl}.json", valueMap="#{pageSession.valueMap}");
 
         setPageSessionAttribute(key="type" value="#{valueMap.resType}");
-        setPageSessionAttribute(key="convertToFalseList" value={"isConnectionValidationRequired" "failAllConnections" "allowNonComponentCallers" "nonTransactionalConnections" "isIsolationLevelGuaranteed"});
+        setPageSessionAttribute(key="convertToFalseList" value={"ping" "isConnectionValidationRequired" "failAllConnections" "allowNonComponentCallers" "nonTransactionalConnections" "isIsolationLevelGuaranteed"});
         setPageSessionAttribute(key="skipAttrsList", value={"jndiName"});
 
         //set the following for including buttons.inc

@@ -53,7 +53,6 @@
                         convertToFalse="#{pageSession.convertToFalseList}"
                         onlyUseAttrs="#{pageSession.onlyUseAttrs}"
                     );
-                    prepareSuccessfulMsg();
                     if ("#{valueMap['ping']}") {
                         urlencode(value="#{valueMap['name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
                         gf.createAttributeMap(keys={"id"} values={"$pageSession{encodeName}"} map="#{requestScope.attrMap}");
@@ -61,13 +60,8 @@
                                        attrs="#{requestScope.attrMap}"
                                        method="GET"
                                        result="#{requestScope.result}");
-                        if ("#{requestScope.result.data['exit_code']} = SUCCESS") {
-                             prepareAlertMsg(summary="$resource{i18n.msg.PingSucceed}", type="success");
-                        }
-                        if ("!(#{requestScope.result.data['exit_code']} = SUCCESS)") {
-                             prepareAlertMsg(summary="$resource{i18njdbc.msg.warning.poolSavedPingFailed}", type="error");
-                        }
                     }
+                    prepareSuccessfulMsg();
                     gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
