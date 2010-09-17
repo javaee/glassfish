@@ -455,7 +455,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
         CommandRunner runner;
 
         @Override
-        public void decorate(AdminCommandContext context, Server instance) throws TransactionFailure, PropertyVetoException {
+        public void decorate(AdminCommandContext context, final Server instance) throws TransactionFailure, PropertyVetoException {
             Config ourConfig = null;
             Cluster ourCluster = null;
             Logger logger = LogDomains.getLogger(Cluster.class, LogDomains.ADMIN_LOGGER);
@@ -638,8 +638,29 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
 
             this.addClusterRefs(ourCluster, instance);
             if (checkPorts) {
-                PortManager pm = new PortManager(ourCluster, ourConfig, domain, instance, logger);
-                String message = pm.process(); // might throw
+                String message = null;
+                try {
+                    PortManager pm = new PortManager(ourCluster, ourConfig, domain, instance, logger);
+                    message = pm.process(); // might throw
+                } catch (TransactionFailure tf) {
+                    if (configRef == null && clusterName == null) {  //Issue 13503
+                        Configs configsRO = domain.getConfigs();
+                        ConfigSupport.apply(new SingleConfigCode<Configs>() {
+                            final String configRef = instance.getConfigRef();
+                            public Object run(Configs param) throws PropertyVetoException, TransactionFailure {
+                                for (Config c : param.getConfig()) {
+                                    if (c.getName().equals(configRef)) {
+                                        param.getConfig().remove(c);
+                                        break;
+                                    }
+                                }
+                                return null;
+                            }
+                        }, configsRO);
+                    }
+
+                    throw tf;
+                }
 
                 if (message != null) {
                     ActionReport report = context.getActionReport();
@@ -673,6 +694,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @Scoped(PerLookup.class)
     class DeleteDecorator implements DeletionDecorator<Servers, Server> {
 
+        @Param(optional=true)
+        String target;
         //TODO - add support for node?
         @Param(name = "node", optional = true)
         String node;
