@@ -224,6 +224,7 @@ public class UberJarOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.Runt
             File domainXml = new File(instanceRoot, "config/domain.xml");
             logger.finer("domainXML uri = " + configFileURI + ", size = " + stream.available());
             if (!domainXml.toURI().equals(configFile)) {
+                domainXml.getParentFile().mkdirs();
                 Util.copy(stream, new FileOutputStream(domainXml), stream.available());
                 logger.finer("Created " + domainXml);
             } else {
