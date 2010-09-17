@@ -1,3 +1,6 @@
+THIS README IS OBSOLETE : Refer ../README ($APS_HOME/devtests/jdbc/README)
+
+
 Properties to be set in the file setup-jdbc-dev-tests.sh before running the devtests:
 
 1. "v3home" - installation home of glassfish v3.
