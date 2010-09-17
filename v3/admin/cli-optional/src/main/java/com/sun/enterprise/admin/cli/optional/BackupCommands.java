@@ -76,6 +76,13 @@ public abstract class BackupCommands extends LocalDomainCommand {
     @Param(name = "domain_name", primary = true, optional = true)
     String domainName;
 
+    @Param(name="_configonly",optional=true)
+    String configonly;
+
+    @Param(name="name",optional=true)
+    String name;
+
+
     private String desc = null;
 
     private String backupdir = null;
