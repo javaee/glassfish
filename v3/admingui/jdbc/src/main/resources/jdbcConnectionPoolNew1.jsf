@@ -105,7 +105,7 @@
                                     />
                                 </sun:dropDown>
                                 "<br/>
-                                <sun:textField id="dbField"  columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.common.resType']}" text="#{wizardPoolExtra.DBVendorField}" onChange="emptyDropdown(this.value);">
+                                <sun:textField id="dbField"  columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.common.resType']}" text="#{wizardPoolExtra.DBVendorField}" onFocus="emptyDropdown(this.value);">
                                     <!afterCreate
                                         getClientId(component="$this{component}" clientId="#{pageSession.dbFieldId}");
                                     />
