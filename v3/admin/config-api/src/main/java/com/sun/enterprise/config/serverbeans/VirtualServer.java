@@ -301,6 +301,11 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
 
     void setSsoCookieSecure(String value);
 
+    @Attribute(defaultValue="false", dataType=Boolean.class)
+    String getSsoCookieHttpOnly();
+
+    void setSsoCookieHttpOnly(String value);
+
     @DuckTyped
     void addNetworkListener(String name) throws PropertyVetoException;
 
