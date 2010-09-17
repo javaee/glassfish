@@ -76,6 +76,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.admingui.common.security.AdminConsoleAuthModule;
 import org.glassfish.deployment.client.DeploymentFacility;
 import org.glassfish.deployment.client.ServerConnectionIdentifier;
 
@@ -158,21 +159,15 @@ public class GuiUtil {
         Object request = externalCtx.getRequest();
         if (request instanceof javax.servlet.ServletRequest){
             ServletRequest srequest = (ServletRequest) request;
-            String serverName = srequest.getServerName();
-            sessionMap.put("serverName", serverName);
-            Integer port = V3AMXUtil.getAdminPort();
-            sessionMap.put("serverPort", port);
-            if (srequest.isSecure()){
-                sessionMap.put("requestIsSecured", Boolean.TRUE);
-                sessionMap.put("REST_URL", "https://"+serverName+":"+ port + "/management/domain");
-                sessionMap.put("MONITOR_URL", "https://"+serverName+":"+ port + "/monitoring/domain");
-            }else{
-                sessionMap.put("requestIsSecured", Boolean.FALSE);
-                sessionMap.put("REST_URL", "http://"+serverName+":"+ port + "/management/domain");
-                sessionMap.put("MONITOR_URL", "http://"+serverName+":"+ port + "/monitoring/domain");
-            }
-
-        }else{
+            String serverName = (String) sessionMap.get(AdminConsoleAuthModule.REST_SERVER_NAME);
+	    if (serverName == null) {
+		throw new IllegalStateException("REST Server Name not set!");
+	    }
+            int port = (Integer) sessionMap.get(AdminConsoleAuthModule.REST_SERVER_PORT);
+	    sessionMap.put("requestIsSecured", srequest.isSecure());
+	    sessionMap.put("REST_URL", "http" + (srequest.isSecure() ? "s" : "") + "://" + serverName + ":" + port + "/management/domain");
+	    sessionMap.put("MONITOR_URL", "http" + (srequest.isSecure() ? "s" : "") + "://" + serverName + ":" + port + "/monitoring/domain");
+        } else {
             //should never get here.
             sessionMap.put("serverName", "");
         }

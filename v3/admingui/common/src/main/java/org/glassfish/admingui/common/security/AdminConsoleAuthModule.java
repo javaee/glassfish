@@ -45,6 +45,8 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Map;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
@@ -130,6 +132,20 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 			savedClientSubject.getPrincipals());
 		return AuthStatus.SUCCESS;
 	    }
+	}
+
+	// See if we've already calculated the serverName / serverPort
+	if (session.getValue(REST_SERVER_NAME) == null) {
+	    // Save this for use later...
+	    URL url = null;
+	    try {
+		url = new URL(restURL);
+	    } catch (MalformedURLException ex) {
+		throw new IllegalArgumentException(
+			"Unable to parse REST URL: (" + restURL + ")", ex);
+	    }
+	    session.putValue(REST_SERVER_NAME, url.getHost());
+	    session.putValue(REST_SERVER_PORT, url.getPort());
 	}
 
 	// See if the username / password has been passed in...
@@ -240,5 +256,18 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
     private static final String SAVED_SUBJECT = "Saved_Subject";
     private static final String RESPONSE_TYPE = "application/json";
 
+    /**
+     *	The Session key for the REST Server Name.
+     */
+    public static final String REST_SERVER_NAME = "serverName";
+
+    /**
+     *	The Session key for the REST Server Port.
+     */
+    public static final String REST_SERVER_PORT = "serverPort";
+
+    /**
+     *	The Session key for the REST authentication token.
+     */
     public static final String REST_TOKEN = "__rTkn__";
 }
