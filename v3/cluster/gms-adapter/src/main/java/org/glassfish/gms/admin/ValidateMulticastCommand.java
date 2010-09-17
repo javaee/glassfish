@@ -91,8 +91,8 @@ public final class ValidateMulticastCommand extends CLICommand {
     @Param(name=TTL_OPTION, optional=true)
     private String ttl;
 
-    @Param(name="verbose", optional=true)
-    private String debug;
+    @Param(optional = true, defaultValue = "false")
+    private boolean verbose;
 
     @Override
     protected int executeCommand() throws CommandException {
@@ -127,9 +127,9 @@ public final class ValidateMulticastCommand extends CLICommand {
             argList.add(DASH + TTL_OPTION);
             argList.add(ttl);
         }
-        if (debug != null && "true".equalsIgnoreCase(debug)) {
+        if (verbose) {
             argList.add(DASH + DEBUG_OPTION);
         }
-        return argList.toArray(new String[0]);
+        return argList.toArray(new String[argList.size()]);
     }
 }
