@@ -446,6 +446,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
         boolean checkPorts = true;
         @Param(name = "portbase", optional = true)
         private String portBase;
+        @Param(optional=true, defaultValue="false", shortName="t")
+        public Boolean terse = false;
         @Inject
         Domain domain;
         @Inject
@@ -662,7 +664,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                     throw tf;
                 }
 
-                if (message != null) {
+                if (message != null && !terse) {
                     ActionReport report = context.getActionReport();
                     report.setMessage(message);
                 }
