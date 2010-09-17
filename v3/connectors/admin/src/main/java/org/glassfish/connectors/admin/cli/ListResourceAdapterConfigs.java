@@ -83,8 +83,8 @@ public class ListResourceAdapterConfigs implements AdminCommand {
     @Param(name="raname", optional=true)
     private String raName;
 
-    @Param(name="verbose", optional=true, defaultValue="false")
-    private Boolean verbose;
+    @Param(name="long", optional=true, defaultValue="false", shortName="l", alias="verbose")
+    private Boolean long_opt;
 
     @Param(primary = true, optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME, alias = "targetName", obsolete = true)
     private String target ;
@@ -130,9 +130,9 @@ public class ListResourceAdapterConfigs implements AdminCommand {
                     "Nothing to list."));
             } else {
                 /**
-                  get the properties if verbose=true. Otherwise return the name.
+                  get the properties if long_opt=true. Otherwise return the name.
                  */
-                if (verbose) {
+                if (long_opt) {
                     for (Entry<String, List<Property>> raEntry : raMap.entrySet()) {
                         final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
                         part.setMessage(raEntry.getKey());

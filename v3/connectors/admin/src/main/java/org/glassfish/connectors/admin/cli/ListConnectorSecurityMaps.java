@@ -82,8 +82,8 @@ public class ListConnectorSecurityMaps extends ConnectorSecurityMap implements A
     @Param(name="securitymap", optional=true)
     String securityMap;
 
-    @Param(name="verbose", optional=true, defaultValue="false")
-    Boolean verbose;
+    @Param(name="long", optional=true, defaultValue="false", shortName="l", alias="verbose")
+    Boolean long_opt;
 
     @Param(name="pool-name", primary=true)
     String poolName;
@@ -134,20 +134,20 @@ public class ListConnectorSecurityMaps extends ConnectorSecurityMap implements A
         try {
             final List<SecurityMap> securityMaps = getAllSecurityMapsForPool(poolName, ccPools);
             if (securityMaps != null && !securityMaps.isEmpty()) {
-                if (securityMap == null && verbose) {
+                if (securityMap == null && long_opt) {
                     for (SecurityMap sm : securityMaps) {
                         listSecurityMapDetails(sm, mp);
                     }
-                } else if (securityMap == null && !verbose) {
+                } else if (securityMap == null && !long_opt) {
                     //print the map names .....
                     for (SecurityMap sm : securityMaps) {
                         listSecurityMapNames(sm, mp);
                     }
                 } else {
-                    // map name is not null, verbose is redundant when security map is specified
+                    // map name is not null, long_opt is redundant when security map is specified
                     for (SecurityMap sm : securityMaps) {
                         if (sm.getName().equals(securityMap)) {
-                            //if (verbose) {
+                            //if (long_opt) {
                                 listSecurityMapDetails(sm, mp);
                                 break;
                             //} else {
