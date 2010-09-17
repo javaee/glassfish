@@ -78,8 +78,8 @@ public class ListApplicationRefsCommand implements AdminCommand {
     @Param(primary=true, optional=true)
     String target = "server";
 
-    @Param(optional=true, defaultValue="false", shortName="v")
-    public Boolean verbose = false;
+    @Param(optional=true, defaultValue="false", name="long", shortName="l")
+    public Boolean long_opt = false;
 
     @Param(optional=true, defaultValue="false", shortName="t")
     public Boolean terse = false;
@@ -101,8 +101,8 @@ public class ListApplicationRefsCommand implements AdminCommand {
         for (ApplicationRef ref : domain.getApplicationRefsInTarget(target)) {
             ActionReport.MessagePart childPart = part.addChild();
             String message = ref.getRef();
-            if( verbose ){
-                message += getVerboseStatus(ref);
+            if( long_opt ){
+                message += getLongStatus(ref);
             }
             childPart.setMessage(message);
             numOfApplications++;
@@ -113,7 +113,7 @@ public class ListApplicationRefsCommand implements AdminCommand {
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 
-    private String getVerboseStatus(ApplicationRef ref) {
+    private String getLongStatus(ApplicationRef ref) {
        String message = "";
        if (DeploymentUtils.isDomainTarget(target)) {
            // ignore --verbose for target domain

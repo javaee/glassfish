@@ -84,8 +84,8 @@ public class ListInstancesCommand implements AdminCommand {
     private Servers allServers;
     @Inject
     InstanceStateService stateService;
-    @Param(optional = true, defaultValue = "false")
-    private boolean verbose;
+    @Param(optional = true, defaultValue = "false", name="long", shortName="l")
+    private boolean long_opt;
     @Param(optional = true, defaultValue = "2000")
     private String timeoutmsec;
     @Param(optional = true, defaultValue = "false")
@@ -265,7 +265,7 @@ public class ListInstancesCommand implements AdminCommand {
         extraProps.put("instanceList", instanceList);
         report.setExtraProperties(extraProps);
 
-        if (verbose) {
+        if (long_opt) {
             report.setMessage(InstanceInfo.format(infos));
         }  else {
             report.setMessage(sb.toString());
@@ -373,11 +373,11 @@ public class ListInstancesCommand implements AdminCommand {
             return false;
         }
 
-        // verbose is not allowed with nostatus.
+        // long_opt is not allowed with nostatus.
         // It could be allowed in the future if desired but the table code needs
         // to change.
-        if (verbose && nostatus) {
-            fail(Strings.get("list.instances.verboseAndNoStatus"));
+        if (long_opt && nostatus) {
+            fail(Strings.get("list.instances.longAndNoStatus"));
             return false;
         }
 

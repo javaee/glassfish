@@ -79,8 +79,8 @@ public class ListComponentsCommand implements AdminCommand {
     @Param(primary=true, optional=true)
     public String target = "server";
 
-    @Param(optional=true, defaultValue="false", shortName="v")
-    public Boolean verbose = false;
+    @Param(optional=true, defaultValue="false", name="long", shortName="l")
+    public Boolean long_opt = false;
 
     @Param(optional=true, defaultValue="false", shortName="t")
     public Boolean terse = false;
@@ -114,8 +114,8 @@ public class ListComponentsCommand implements AdminCommand {
                         ActionReport.MessagePart childPart = part.addChild();
                         String message = app.getName() + " "
                                     + getAppSnifferEngines(app, true);
-                        if( verbose ){
-                            message += getVerboseStatus(app);
+                        if( long_opt ){
+                            message += getLongStatus(app);
                         }
                         if(resources){
                             displayAppScopedResources(app.getName(), report, childPart);
@@ -137,7 +137,7 @@ public class ListComponentsCommand implements AdminCommand {
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 
-    private String getVerboseStatus(Application app) {
+    private String getLongStatus(Application app) {
        String message = "";
        boolean isVersionEnabled = domain.isAppEnabledInTarget(app.getName(), target);
        if ( isVersionEnabled ) {

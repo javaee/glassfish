@@ -44,18 +44,7 @@ import com.sun.enterprise.config.serverbeans.Servers;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Nodes;
 import com.sun.enterprise.config.serverbeans.Node;
-
-import com.sun.enterprise.util.StringUtils;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.cluster.NodeInfo;
-
-import org.jvnet.hk2.annotations.*;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.component.PostConstruct;
-import org.glassfish.api.admin.config.ReferenceContainer;
-import org.jvnet.hk2.component.*;
 import java.util.logging.Logger;
 import java.util.List;
 import java.util.LinkedList;
@@ -71,15 +60,15 @@ public class ListNodesHelper {
     Logger logger;
 
     String listType;
-    boolean verbose;
+    boolean long_opt;
     boolean terse;
     List<Node>  nodeList;
     List<NodeInfo> infos = new LinkedList<NodeInfo>();
 
-    public ListNodesHelper(Logger _logger, Servers servers, Nodes nodes, String type, boolean verbose, boolean terse) {
+    public ListNodesHelper(Logger _logger, Servers servers, Nodes nodes, String type, boolean long_opt, boolean terse) {
         logger = _logger;
         this.listType = type;
-        this.verbose = verbose;
+        this.long_opt = long_opt;
         this.terse = terse;
         this.servers = servers;
         nodeList=nodes.getNode();
@@ -108,10 +97,10 @@ public class ListNodesHelper {
 
             if (terse)
                 sb.append(name);
-            else if (!verbose)
+            else if (!long_opt)
                 sb.append(name + "  "+ nodeType + "  "+ host);
 
-            if (verbose){
+            if (long_opt){
                 List<Server> serverList=servers.getServer();
                 //check if node is referenced in an instance
                 String instanceList= new String();
@@ -129,7 +118,7 @@ public class ListNodesHelper {
             }
 
         }
-        if (verbose)
+        if (long_opt)
             return  NodeInfo.format(infos);
         else
             return sb.toString();

@@ -41,27 +41,16 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.config.serverbeans.Servers;
-import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Nodes;
-import com.sun.enterprise.config.serverbeans.Node;
-
-import com.sun.enterprise.util.StringUtils;
-import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.util.cluster.NodeInfo;
-
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.*;
-import org.glassfish.api.admin.config.ReferenceContainer;
 import org.jvnet.hk2.component.*;
 import java.util.logging.Logger;
-import java.util.List;
-import java.util.LinkedList;
 
 @Service(name = "list-nodes-ssh")
 @Scoped(PerLookup.class)
@@ -73,8 +62,8 @@ public class ListNodesSshCommand implements AdminCommand{
     @Inject
     private Nodes nodes;
     
-    @Param(optional = true, defaultValue = "false")
-    private boolean verbose;
+    @Param(optional = true, defaultValue = "false", name="long", shortName="l")
+    private boolean long_opt;
     @Param(optional = true)
     private boolean terse;
    
@@ -88,7 +77,7 @@ public class ListNodesSshCommand implements AdminCommand{
 
         Logger logger = context.getLogger();
 
-        ListNodesHelper lnh = new ListNodesHelper(logger, servers, nodes, "SSH", verbose, terse);
+        ListNodesHelper lnh = new ListNodesHelper(logger, servers, nodes, "SSH", long_opt, terse);
 
         String nodeList = lnh.getNodeList();
 
