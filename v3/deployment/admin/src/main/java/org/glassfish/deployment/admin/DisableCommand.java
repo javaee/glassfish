@@ -51,6 +51,7 @@ import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.admin.util.ClusterOperationUtil;
+import java.util.ArrayList;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -154,34 +155,38 @@ public class DisableCommand extends UndeployCommandParameters implements AdminCo
 
         if (env.isDas() && DeploymentUtils.isDomainTarget(target)) {
 
-                Map<String,List<String>> enabledVersionsInTargets = Collections.EMPTY_MAP;
-                if( isVersionExpressionWithWilcard ){
-                    enabledVersionsInTargets = versioningService.getAllEnabledVersionsInTargets(appName);
-                } else {
-                    enabledVersionsInTargets = new HashMap<String, List<String>>();
-                    enabledVersionsInTargets.put(appName,domain.getAllReferencedTargetsForApplication(appName));
-                }
-                enabledVersionsToDisable = enabledVersionsInTargets.keySet();
+            Map<String,Set<String>> enabledVersionsInTargets = Collections.EMPTY_MAP;
 
-                // for each distinct enabled version in all known targets
-                Iterator it = enabledVersionsInTargets.entrySet().iterator();
-                while(it.hasNext()){
-                    
-                    Map.Entry entry = (Map.Entry)it.next();
-                    appName = (String)entry.getKey();
-                    List<String> targets = (List<String>)entry.getValue();
-                        
-                    // replicate command to all referenced targets
-                    try {
-                        ParameterMapExtractor extractor = new ParameterMapExtractor(this);
-                        ParameterMap paramMap = extractor.extract(Collections.EMPTY_LIST);
-                        paramMap.set("DEFAULT", appName);
-                        ClusterOperationUtil.replicateCommand("disable", FailurePolicy.Error, FailurePolicy.Warn, targets, context, paramMap, habitat);
-                    } catch (Exception e) {
-                        report.failure(logger, e.getMessage());
-                        return;
-                    }
+            if( VersioningUtils.isVersionExpressionWithWildCard(name)){
+                enabledVersionsInTargets =
+                        versioningService.getEnabledVersionInReferencedTargetsForExpression(appName);
+            } else {
+                enabledVersionsInTargets = new HashMap<String, Set<String>>();
+                enabledVersionsInTargets.put(appName,
+                        new HashSet<String>(domain.getAllReferencedTargetsForApplication(appName)));
+            }
+            enabledVersionsToDisable = enabledVersionsInTargets.keySet();
+
+            // for each distinct enabled version in all known targets
+            Iterator it = enabledVersionsInTargets.entrySet().iterator();
+            while(it.hasNext()){
+
+                Map.Entry entry = (Map.Entry)it.next();
+                appName = (String)entry.getKey();
+                List<String> targets =
+                        new ArrayList<String>((Set<String>)entry.getValue());
+
+                // replicate command to all referenced targets
+                try {
+                    ParameterMapExtractor extractor = new ParameterMapExtractor(this);
+                    ParameterMap paramMap = extractor.extract(Collections.EMPTY_LIST);
+                    paramMap.set("DEFAULT", appName);
+                    ClusterOperationUtil.replicateCommand("disable", FailurePolicy.Error, FailurePolicy.Warn, targets, context, paramMap, habitat);
+                } catch (Exception e) {
+                    report.failure(logger, e.getMessage());
+                    return;
                 }
+            }
         } else if ( isVersionExpressionWithWilcard ){
 
             try {

@@ -46,13 +46,16 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -93,34 +96,84 @@ public class VersioningService {
         return VersioningUtils.getVersions(untaggedName, allApplications);
     }
 
-    /**
-     * Search for all enabled versions of the given application in all
-     * known targets. As different versions maybe enabled on different targets,
-     * the return type used is a map.
+   /**
+     * Search the enabled versions on the referenced targets of each version
+     * matched by the expression.
+     * This method is designed to be used with domain target. As different
+     * versions maybe enabled on different targets, the return type used is a map.
      *
-     * @param name the application name
+     * @param versionExpression a version expression (that contains wildcard character)
      * @return a map matching the enabled versions with their target(s)
      * @throws VersioningSyntaxException if getEnabledVersion throws an exception
      */
-    public Map<String,List<String>> getAllEnabledVersionsInTargets(String name)
+    public Map<String, Set<String>> getEnabledVersionInReferencedTargetsForExpression(String versionExpression)
+            throws VersioningSyntaxException {
+
+        Map<String,Set<String>> enabledVersionsInTargets = Collections.EMPTY_MAP;
+        List<String> matchedVersions = getMatchedVersions(versionExpression, "domain");
+
+        // foreach matched version
+        Iterator it = matchedVersions.iterator();
+        while(it.hasNext()){
+
+            String matchedVersion = (String) it.next();
+            // retrieved all the enabled version on the referenced target on each matched version
+            Map<String,Set<String>> tempMap =
+                    getEnabledVersionsInReferencedTargets(matchedVersion);
+
+            if(enabledVersionsInTargets != Collections.EMPTY_MAP){
+
+                // foreach enabled version we combine the target list into the map
+                Iterator tempIt = tempMap.keySet().iterator();
+                while(tempIt.hasNext()){
+
+                    String tempKey = (String)tempIt.next();
+                    Set<String> tempList = tempMap.get(tempKey);
+
+                    if(enabledVersionsInTargets.containsKey(tempKey)){
+                        enabledVersionsInTargets.get(tempKey).addAll(tempList);
+                    } else {
+                        enabledVersionsInTargets.put(tempKey, tempList);
+                    }
+                }
+            } else {
+                enabledVersionsInTargets = tempMap;
+            }
+        }
+        return enabledVersionsInTargets;
+    }
+    
+    /**
+     * Search the enabled versions on the referenced targets of the given version.
+     * This method is designed to be used with domain target. As different
+     * versions maybe enabled on different targets, the return type used is a map.
+     *
+     * @param versionIdentifier a version expression (that contains wildcard character)
+     * @return a map matching the enabled versions with their target(s)
+     * @throws VersioningSyntaxException if getEnabledVersion throws an exception
+     */
+    public Map<String,Set<String>> getEnabledVersionsInReferencedTargets(String versionIdentifier)
             throws VersioningSyntaxException {
         
-        Map<String,List<String>> enabledVersionsInTargets = new HashMap<String, List<String>>();
-        List<String> allTargets = domain.getAllTargets();
+        Map<String,Set<String>> enabledVersionsInTargets =
+                new HashMap<String, Set<String>>();
+
+        List<String> allTargets =
+                domain.getAllReferencedTargetsForApplication(versionIdentifier);
 
         Iterator it = allTargets.iterator();
         while(it.hasNext()){
             String target = (String)it.next();
-            String enabledVersion = getEnabledVersion(name, target);
+            String enabledVersion = getEnabledVersion(versionIdentifier, target);
             if(enabledVersion != null){
                 // the key already exists, we just add the new target into the list
                 if(enabledVersionsInTargets.containsKey(enabledVersion)){
                     enabledVersionsInTargets.get(enabledVersion).add(target);
                 } else {
                     // we have to create the list associated with the key
-                    List<String> listTargets = new ArrayList<String>();
-                    listTargets.add(target);
-                    enabledVersionsInTargets.put(enabledVersion, listTargets);     
+                    Set<String> setTargets = new HashSet<String>();
+                    setTargets.add(target);
+                    enabledVersionsInTargets.put(enabledVersion, setTargets);
                 }
             }
         }
@@ -199,20 +252,43 @@ public class VersioningService {
     public void handleDisable(final String appName, final String target,
             final ActionReport report) throws VersioningSyntaxException {
 
-        // retrieve the currently enabled version of the application
-        String enabledVersion = getEnabledVersion(appName, target);
+        Set<String> versionsToDisable = Collections.EMPTY_SET;
 
-        // invoke disable if the currently enabled version is not itself
-        if (enabledVersion != null
-                && !enabledVersion.equals(appName)) {
-            final ParameterMap parameters = new ParameterMap();
-            parameters.add("DEFAULT", enabledVersion);
-            parameters.add("target", target);
+        if (DeploymentUtils.isDomainTarget(target)) {
+            // retrieve the enabled versions on each target in the domain 
+            Map<String,Set<String>> enabledVersions =
+                    getEnabledVersionsInReferencedTargets(appName);
 
-            ActionReport subReport = report.addSubActionsReport();
+            if (!enabledVersions.isEmpty()) {
+                versionsToDisable = enabledVersions.keySet();
+            }
+        } else {
+            // retrieve the currently enabled version of the application
+            String enabledVersion = getEnabledVersion(appName, target);
 
-            CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation("disable", subReport);
-            inv.parameters(parameters).execute();
+            if (enabledVersion != null
+                    && !enabledVersion.equals(appName)) {
+                versionsToDisable = new HashSet<String>();
+                versionsToDisable.add(enabledVersion);
+            }
+        }
+
+        Iterator<String> it = versionsToDisable.iterator();
+        while (it.hasNext()) {
+            String currentVersion = it.next();
+            // invoke disable if the currently enabled version is not itself
+            if (currentVersion != null
+                    && !currentVersion.equals(appName)) {
+                final ParameterMap parameters = new ParameterMap();
+                parameters.add("DEFAULT", currentVersion);
+                parameters.add("target", target);
+
+                ActionReport subReport = report.addSubActionsReport();
+
+                CommandRunner.CommandInvocation inv =
+                        commandRunner.getCommandInvocation("disable", subReport);
+                inv.parameters(parameters).execute();
+            }
         }
     }
 

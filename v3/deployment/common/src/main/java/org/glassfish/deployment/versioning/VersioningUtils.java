@@ -155,11 +155,11 @@ public class VersioningUtils {
      * @param appName the application name
      * @throws VersioningSyntaxException if the given application name had some
      * critical patterns.
-     * @throws VersioningWildCardException if the given application name had some
+     * @throws VersioningException if the given application name had some
      * wildcard character(s) in its identifier part.
      */
     public static final void checkIdentifier(String appName)
-            throws VersioningSyntaxException {
+            throws VersioningException {
         
         String identifier = getExpression(appName);
         if (identifier != null && identifier.contains(EXPRESSION_WILDCARD)) {

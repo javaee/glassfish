@@ -78,6 +78,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.beans.PropertyVetoException;
+import java.util.HashMap;
+import java.util.Iterator;
 import org.glassfish.deployment.common.ApplicationConfigInfo;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.deployment.versioning.VersioningSyntaxException;
@@ -147,15 +149,14 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
         }
 
         if (env.isDas()) {
-            if (!DeploymentUtils.isDomainTarget(target)) {
-                // try to disable the enabled version, if exist
-                try {
-                    versioningService.handleDisable(name(),target, report);
-                } catch (VersioningSyntaxException e) {
-                    report.failure(logger, e.getMessage());
-                    return;
-                }
-            } else {
+            // try to disable the enabled version, if exist
+            try {
+                versioningService.handleDisable(name(),target, report);
+            } catch (VersioningSyntaxException e) {
+                report.failure(logger, e.getMessage());
+                return;
+            }
+            if (DeploymentUtils.isDomainTarget(target)) {
                 List<String> targets = domain.getAllReferencedTargetsForApplication(name());
                 // replicate command to all referenced targets
                 try {
