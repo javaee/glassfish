@@ -127,7 +127,7 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
             dd = new DomainDirs(domainsDirFile, getDomainName());
             setServerDirs(dd.getServerDirs());
         } catch (Exception e) {
-            throw new CommandException(e);
+            throw new CommandException(e.getMessage(), e);
         }
 
         String pw = getServerDirs().getLocalPassword();
