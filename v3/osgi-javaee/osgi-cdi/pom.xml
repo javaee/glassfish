@@ -55,7 +55,7 @@
     <developers>
         <developer>
             <id>sivakumart</id>
-            <name>Siva</name>
+            <name>Sivakumar Thyagarajan</name>
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
                 <role>developer</role>
@@ -88,8 +88,11 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.jboss.weld</groupId>
-            <artifactId>weld-osgi-bundle</artifactId>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>6.0</version>
+            <scope>provided</scope>
         </dependency>
+
     </dependencies>
 </project>
