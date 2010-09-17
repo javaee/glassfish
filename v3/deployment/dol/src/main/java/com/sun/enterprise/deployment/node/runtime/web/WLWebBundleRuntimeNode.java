@@ -265,9 +265,11 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
 
         //security-role-assignment*
         WLSecurityRoleAssignment[] wlRoleAssignments = sunWebApp.getWLSecurityRoleAssignment();
-        for (int i = 0; i < wlRoleAssignments.length; i++) {
+        if (wlRoleAssignments != null && wlRoleAssignments.length > 0) {
             WLSecurityRoleAssignmentNode sran = new WLSecurityRoleAssignmentNode();
-            sran.writeDescriptor(root, RuntimeTagNames.WL_SECURITY_ROLE_ASSIGNMENT, wlRoleAssignments[i]);
+            for (int i = 0; i < wlRoleAssignments.length; i++) {
+                sran.writeDescriptor(root, RuntimeTagNames.WL_SECURITY_ROLE_ASSIGNMENT, wlRoleAssignments[i]);
+            }
         }
 
         //resource-description*
