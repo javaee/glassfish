@@ -152,14 +152,11 @@ public class SessionManager {
             lassAccessedTime = System.currentTimeMillis();
         }
 
+	/**
+	 *
+	 */
         public boolean authenticate(GrizzlyRequest req) {
-//  FIXME:
-//  When the AdminConsoleAuthModule authenticates (on my Ubuntu Linux machine),
-//  getRemoteAddr is 127.0.0.1.  Later when I make a Jersey request from the
-//  web app it is 127.0.1.1 so the remote addr check fails.  This needs to be
-//  resolved.  For now I am disabling this check.
-//            return isSessionActive() && clientAddress.equals(req.getRemoteAddr());
-            return isSessionActive();
+            return isSessionActive() && clientAddress.equals(req.getRemoteAddr());
         }
     }
 
