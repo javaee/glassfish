@@ -61,7 +61,7 @@ public class MyListener implements ServletContextListener {
             Class<NewServlet> servletCl = (Class<NewServlet>)Class.forName("NewServlet");
             NewServlet servlet = sc.createServlet(servletCl);
             servlet.setMyParameter("myServletParamValue");
-            ServletRegistration.Dynamic sr = (ServletRegistration.Dynamic)sc.addServlet("NewServlet", servlet);
+            ServletRegistration.Dynamic sr = sc.addServlet("NewServlet", servlet);
             sr.setInitParameter("servletInitParamName", "servletInitParamValue");
             sr.addMapping("/newServlet");
 
@@ -80,14 +80,14 @@ public class MyListener implements ServletContextListener {
             Class<NewServlet2> servletCl2 = (Class<NewServlet2>)Class.forName("NewServlet2");
             NewServlet2 servlet2 = sc.createServlet(servletCl2);
             servlet2.setMyParameter("myServletParamValue2");
-            ServletRegistration.Dynamic sr2 = (ServletRegistration.Dynamic)sc.addServlet("NewServlet2", servlet2);
+            ServletRegistration.Dynamic sr2 = sc.addServlet("NewServlet2", servlet2);
             sr2.setInitParameter("servletInitParamName", "servletInitParamValue2");
             sr2.addMapping("/newServlet2");
 
 
             NewServlet2 servlet2_1 = sc.createServlet(servletCl2);
             servlet2_1.setMyParameter("myServletParamValue2");
-            ServletRegistration.Dynamic sr2_1 = (ServletRegistration.Dynamic)sc.addServlet("NewServlet2_1", servlet2_1);
+            ServletRegistration.Dynamic sr2_1 = sc.addServlet("NewServlet2_1", servlet2_1);
             sr2_1.setInitParameter("servletInitParamName", "servletInitParamValue2");
             HttpConstraintElement constraint2_1 = new HttpConstraintElement(TransportGuarantee.NONE, "javaee");
             List<HttpMethodConstraintElement> methodConstraint2_1 = new ArrayList<HttpMethodConstraintElement>();
