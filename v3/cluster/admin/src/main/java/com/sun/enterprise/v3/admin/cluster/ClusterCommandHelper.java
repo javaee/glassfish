@@ -220,6 +220,17 @@ class ClusterCommandHelper {
             try {
                 cmdRunnable = responseQueue.take();
             } catch (InterruptedException e) {
+                // This thread has been interrupted. Abort
+                threadPool.shutdownNow();
+                msg = Strings.get("cluster.command.interrupted", clusterName,
+                        Integer.toString(n), Integer.toString(nInstances),
+                        command);
+                logger.warning(msg);
+                output.append(msg).append(NL);
+                failureOccurred = true;
+                // Re-establish interrupted state on thread
+                Thread.currentThread().interrupt();
+                break;
             }
             String iname = cmdRunnable.getName();
             ActionReport instanceReport = cmdRunnable.getActionReport();

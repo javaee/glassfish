@@ -123,14 +123,27 @@ public class NodeRunner  {
         UnsupportedOperationException,
         IllegalArgumentException {
 
+        return runAdminCommandOnNode(node, output, false, args);
+    }
+
+    public int runAdminCommandOnNode(Node node, StringBuilder output,
+                                     boolean waitForReaderThreads,
+                                     List<String> args) throws
+        SSHCommandExecutionException,
+        ProcessManagerException,
+        UnsupportedOperationException,
+        IllegalArgumentException {
+
         if (node.isLocal()) {
-            return runAdminCommandOnLocalNode(node, output, args);
+            return runAdminCommandOnLocalNode(node, output, waitForReaderThreads,
+                    args);
         } else {
             return runAdminCommandOnRemoteNode(node, output, args);
         }
     }
 
     private int runAdminCommandOnLocalNode(Node node, StringBuilder output,
+                                           boolean waitForReaderThreads,
                                            List<String> args) throws
             ProcessManagerException {
 
@@ -152,8 +165,8 @@ public class NodeRunner  {
         trace("Running command locally: " + lastCommandRun);
         ProcessManager pm = new ProcessManager(fullcommand);
 
-        // XXX should not need this after fix for 12777
-        //pm.waitForReaderThreads(waitForReaderThreads);
+        // XXX should not need this after fix for 12777, but we seem to
+        pm.waitForReaderThreads(waitForReaderThreads);
         pm.execute();  // blocks until command is complete
 
         String stdout = pm.getStdout();

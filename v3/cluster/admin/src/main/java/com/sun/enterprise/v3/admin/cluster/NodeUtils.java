@@ -370,10 +370,17 @@ public class NodeUtils {
      * @param humanCommand  The command the user should run on the node if
      *                      we failed to run the passed command.
      * @param output        Output from the run command.
+     * @param waitForReaderThreads True: wait for the command IO to complete.
+     *                      False: don't wait for IO to complete, just for
+     *                      process to end.
+     *                      Currently this only applies to locally run commands
+     *                      and should only be set to false by start-instance
+     *                      (see bug 12777). 
      */
    void runAdminCommandOnNode(Node node, List<String> command,
            AdminCommandContext context, String firstErrorMessage,
-           String humanCommand, StringBuilder output) {
+           String humanCommand, StringBuilder output,
+           boolean waitForReaderThreads) {
 
         ActionReport report = context.getActionReport();
         boolean failure = true;
@@ -391,7 +398,8 @@ public class NodeUtils {
 
         NodeRunner nr = new NodeRunner(habitat, logger);
         try {
-            int status = nr.runAdminCommandOnNode(node, output, command);
+            int status = nr.runAdminCommandOnNode(node, output, waitForReaderThreads,
+                                                  command);
             if (status != 0) {
                 // Command ran, but didn't succeed. Log full information
                 msg2 = Strings.get("node.command.failed", nodeName,
@@ -435,5 +443,13 @@ public class NodeUtils {
        }
 
        return;
+   }
+
+   void runAdminCommandOnNode(Node node, List<String> command,
+           AdminCommandContext context, String firstErrorMessage,
+           String humanCommand, StringBuilder output) {
+
+       runAdminCommandOnNode(node, command, context, firstErrorMessage,
+               humanCommand, output, true);
    }
 }

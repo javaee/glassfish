@@ -45,6 +45,7 @@ import com.sun.enterprise.util.StringUtils;
 import java.util.logging.Logger;
 
 import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.util.OS;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -241,9 +242,16 @@ public class StartInstanceCommand implements AdminCommand {
 
         StringBuilder output = new StringBuilder();
 
+        // There is a problem on Windows waiting for IO to complete on a
+        // child process which runs a long running grandchild. See IT 12777.
+        boolean waitForReaderThreads = true;
+        if (OS.isWindows()) {
+            waitForReaderThreads = false;
+        }
+
         // Run the command on the node and handle errors.
         nodeUtils.runAdminCommandOnNode(node, command, ctx, firstErrorMessage,
-                humanCommand, output);
+                humanCommand, output, waitForReaderThreads);
 
         ActionReport report = ctx.getActionReport();
         if (report.getActionExitCode() == ActionReport.ExitCode.SUCCESS) {
