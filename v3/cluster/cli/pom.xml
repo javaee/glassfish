@@ -67,7 +67,6 @@
                     </archive>
                 </configuration>
             </plugin>
-            <!-- XXX - doesn't exist yet
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -82,7 +81,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.glassfish.docs.man</groupId>
-                                    <artifactId>admin-cli-cluster-manpage</artifactId>
+                                    <artifactId>cluster-cli-manpage</artifactId>
                                     <version>${v3-docs.version}</version>
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
@@ -94,7 +93,6 @@
                     </execution>
                 </executions>
             </plugin>
-            -->
         </plugins>
         <resources>
             <resource>
