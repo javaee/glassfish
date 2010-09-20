@@ -56,10 +56,12 @@
         setPageSessionAttribute(key="childType" value="work-security-map");
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
         gf.getDefaultValues(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", valueMap="#{pageSession.valueMap}");
-        
+
         createMap(result="#{pageSession.valueMap2}");
-         //set the following for including buttons.inc
+        //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{false}" );
+        setPageSessionAttribute(key="disablePrincipals" value="#{false}" );
+        setPageSessionAttribute(key="disableGroups" value="#{false}" );
     />
     </event>
             <sun:form id="propertyForm">

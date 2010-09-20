@@ -45,8 +45,10 @@
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
+                    mapPut(map="#{pageSession.valueMap}" key="resourceAdapterName" value="#{pageSession.valueMap['raname']}");
                     gf.createEntity(endpoint="#{pageSession.selfUrl}"
                         attrs="#{pageSession.valueMap}"
+                        skipAttrs="#{pageSession.skipAttrsList}"
                         convertToFalse="#{pageSession.convertToFalseList}");
                     if ('#{usersOptionG}=users') {
                         convertStringToMap(str="#{pageSession.valueMap2['groupMapping']}" result="#{requestScope.groupsMap}");
@@ -55,9 +57,10 @@
                         gf.getMessageProps(messageListProps="#{requestScope.oldGroupsInfo}"
                            id="eisGroup"
                            keyList="#{pageSession.oldGroupsList}");
+                        setPageSessionAttribute(key="groupsToAddList" value={});
                         foreach(var="group" list="#{requestScope.groupsList}") {
                             //verify whether this group already existing or not.
-                            //If it is already there, update the entity or create a new one.
+                            //If it is already there, update the entity or add to the new groups list.
                             gf.containedIn(list="#{pageSession.oldGroupsList}" testStr="#{group}" contain="#{requestScope.isExists}");
                             if (#{requestScope.isExists}) {
                                 createMap(result="#{requestScope.attrsMap}");
@@ -66,28 +69,19 @@
                                 gf.restRequest(endpoint="#{pageSession.selfUrl}/group-map/#{group}" attrs="#{requestScope.attrsMap}" method="POST");
                                 removeListElement(list="#{pageSession.oldGroupsList}" name="#{group}" finalList="#{pageSession.oldGroupsList}");
                             }
-                            //TO DO: As of now not able to add a new group element.
-                            //Issue:13174. Remove the comments once it is available.
-                            <!--if (!#{requestScope.isExists}) {
-                                createMap(result="#{requestScope.attrsMap}");
-                                mapPut(map="#{requestScope.attrsMap}" key="eisGroup" value="#{group}");
+                            if (!#{requestScope.isExists}) {
                                 mapGet(Map="#{requestScope.groupsMap}" Key="#{group}" Value="#{requestScope.val}");
-                                mapPut(map="#{requestScope.attrsMap}" key="mappedGroup" value="#{val}");
-                                gf.restRequest(endpoint="#{pageSession.selfUrl}/group-map" attrs="#{requestScope.attrsMap}" method="POST");
-                            }-->
-                            //Remove the principal maps if there are any.
-                            gf.getChildList(parentEndpoint="#{pageSession.selfUrl}", childType="principal-map", result="#{requestScope.oldPrincipalsInfo}", id="eisPrincipal");
-                            gf.getMessageProps(messageListProps="#{requestScope.oldPrincipalsInfo}"
-                               id="eisPrincipal"
-                               keyList="#{requestScope.oldPrincipalsList}");
-                            foreach(var="principal" list="#{requestScope.principalsList}") {
-                                gf.restRequest(endpoint="#{pageSession.selfUrl}/principal-map/#{principal}" method="DELETE");
-                            }
+                                listAdd(list="#{pageSession.groupsToAddList}" value="#{group}=#{val}" result="#{pageSession.groupsToAddList}");                                
+                            }                            
                         }
-                        //Remove the remaining group old group elements if there are any.
-                        foreach(var="group" list="#{pageSession.oldGroupsList}") {
-                            gf.restRequest(endpoint="#{pageSession.selfUrl}/group-map/#{group}" method="DELETE");
-                        }
+                        
+                        convertListToCommaString(list="#{pageSession.groupsToAddList}" commaString=>$attribute{groupsToAddStr});
+                        convertListToCommaString(list="#{pageSession.oldGroupsList}" commaString=>$attribute{oldGroupsStr});
+                        createMap(result="#{requestScope.attrsMap}");
+                        mapPut(map="#{requestScope.attrsMap}" key="raname" value="#{pageSession.valueMap['resourceAdapterName']}");
+                        mapPut(map="#{requestScope.attrsMap}" key="addgroups" value="#{groupsToAddStr}");
+                        mapPut(map="#{requestScope.attrsMap}" key="removegroups" value="#{oldGroupsStr}");
+                        gf.restRequest(endpoint="#{pageSession.selfUrl}/update-connector-work-security-map" attrs="#{requestScope.attrsMap}" method="POST");
                     }
                     if ('#{usersOptionP}=principals') {
                         convertStringToMap(str="#{pageSession.valueMap2['principalMapping']}" result="#{requestScope.principalsMap}");
@@ -96,9 +90,10 @@
                         gf.getMessageProps(messageListProps="#{requestScope.oldPrincipalsInfo}"
                            id="eisPrincipal"
                            keyList="#{pageSession.oldPrincipalsList}");
+                        setPageSessionAttribute(key="principalsToAddList" value={});
                         foreach(var="principal" list="#{requestScope.principalsList}") {
                             //verify whether this principal already existing or not.
-                            //If it is already there, update the entity or create a new one.
+                            //If it is already there, update the entity or add to the new principals list.
                             gf.containedIn(list="#{pageSession.oldPrincipalsList}" testStr="#{principal}" contain="#{requestScope.isExists}");
                             if (#{requestScope.isExists}) {
                                 createMap(result="#{requestScope.attrsMap}");
@@ -107,28 +102,19 @@
                                 gf.restRequest(endpoint="#{pageSession.selfUrl}/principal-map/#{principal}" attrs="#{requestScope.attrsMap}" method="POST");
                                 removeListElement(list="#{pageSession.oldPrincipalsList}" name="#{principal}" finalList="#{pageSession.oldPrincipalsList}");
                             }
-                            //TO DO: As of now not able to add a new prinicial element.
-                            //Issue:13174. Remove the comments once it is available.
-                            <!--if (!#{requestScope.isExists}) {
-                                createMap(result="#{requestScope.attrsMap}");
-                                mapPut(map="#{requestScope.attrsMap}" key="eisPrincipal" value="#{principal}");
+                            if (!#{requestScope.isExists}) {
                                 mapGet(Map="#{requestScope.principalsMap}" Key="#{principal}" Value="#{requestScope.val}");
-                                mapPut(map="#{requestScope.attrsMap}" key="mappedPrincipal" value="#{val}");
-                                gf.restRequest(endpoint="#{pageSession.selfUrl}/principal-map" attrs="#{requestScope.attrsMap}" method="POST");
-                            }-->
-                            //Remove the group maps if there are any.
-                            gf.getChildList(parentEndpoint="#{pageSession.selfUrl}", childType="group-map", result="#{requestScope.oldGroupsInfo}", id="eisGroup");
-                            gf.getMessageProps(messageListProps="#{requestScope.oldGroupsInfo}"
-                               id="eisGroup"
-                               keyList="#{requestScope.oldGroupsList}");
-                            foreach(var="group" list="#{requestScope.groupsList}") {
-                                gf.restRequest(endpoint="#{pageSession.selfUrl}/group-map/#{group}" method="DELETE");
+                                listAdd(list="#{pageSession.principalsToAddList}" value="#{principal}=#{val}" result="#{pageSession.principalsToAddList}");
                             }
                         }
-                        //Remove the remaining principal elements#{pageSession.oldPrincipalsList}.
-                        foreach(var="principal" list="#{pageSession.oldPrincipalsList}") {
-                            gf.restRequest(endpoint="#{pageSession.selfUrl}/principal-map/#{principal}" method="DELETE");
-                        }
+                        convertListToCommaString(list="#{pageSession.principalsToAddList}" commaString=>$attribute{principalsToAddStr});
+                        convertListToCommaString(list="#{pageSession.oldPrincipalsList}" commaString=>$attribute{oldPrincipalsStr});
+                        createMap(result="#{requestScope.attrsMap}");
+                        mapPut(map="#{requestScope.attrsMap}" key="raname" value="#{pageSession.valueMap['resourceAdapterName']}");
+                        mapPut(map="#{requestScope.attrsMap}" key="addprincipals" value="#{principalsToAddStr}");
+                        mapPut(map="#{requestScope.attrsMap}" key="removeprincipals" value="#{oldPrincipalsStr}");
+                        gf.restRequest(endpoint="#{pageSession.selfUrl}/update-connector-work-security-map" attrs="#{requestScope.attrsMap}" method="POST");
+
                     }                   
                     prepareSuccessfulMsg();
                     gf.redirect(page="#{selfPage}&mapName=#{pageSession.valueMap['name']}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
@@ -138,14 +124,13 @@
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
                     if ('#{usersOptionG}=users') {                        
-                        mapPut(map="#{pageSession.valueMap}" key="groupsMap" value="#{pageSession.valueMap2['groupMapping']}");
+                        mapPut(map="#{pageSession.valueMap}" key="groupsmap" value="#{pageSession.valueMap2['groupMapping']}");
                     }
                     if ('#{usersOptionP}=principals') {
-                        mapPut(map="#{pageSession.valueMap}" key="principalsMap" value="#{pageSession.valueMap2['principalMapping']}");
+                        mapPut(map="#{pageSession.valueMap}" key="principalsmap" value="#{pageSession.valueMap2['principalMapping']}");
                     }
                     gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}"
-                        attrs="#{pageSession.valueMap}"
-                        convertToFalse="#{pageSession.convertToFalseList}");
+                        attrs="#{pageSession.valueMap}");
                     
                     gf.redirect(page="#{pageSession.parentPage}")
                 />

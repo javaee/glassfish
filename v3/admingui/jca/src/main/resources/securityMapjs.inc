@@ -82,12 +82,16 @@ function checkClassname(){
 
 function enableWorkSecurityMapFields(opt){
     if(opt == 'principals') {
+        var val = getTextElement('#{eisuserGroupsId}').value;
         disableComponent('#{eisuserGroupsId}', 'text');
+        getTextElement('#{eisuserGroupsId}').value=val;
  	enableComponent('#{eisprincipalsId}', 'text');
 	getTextElement('#{eisprincipalsId}').focus();
         #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{pPropId}:optB', true);
     }else{
+        var val = getTextElement('#{eisprincipalsId}').value;
 	disableComponent('#{eisprincipalsId}', 'text');
+        getTextElement('#{eisprincipalsId}').value=val;
         enableComponent('#{eisuserGroupsId}', 'text');
         getTextElement('#{eisuserGroupsId}').focus();
         #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{grpPropId}:optA', true);

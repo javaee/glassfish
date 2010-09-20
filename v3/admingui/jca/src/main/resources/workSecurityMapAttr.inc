@@ -54,12 +54,12 @@
         </sun:property>
 
         <sun:property id="mapNameNew" rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.securityMapName}" >
-            <sun:textField id="mapName"   styleClass="required" maxLength="#{sessionScope.fieldLengths['maxLength.connectorSecurityMap.securityMapName']}" text="#{pageSession.valueMap['name']}" required="#{true}"/>
+            <sun:textField id="mapName"   styleClass="required" maxLength="#{sessionScope.fieldLengths['maxLength.connectorSecurityMap.securityMapName']}" text="#{pageSession.valueMap['id']}" required="#{true}"/>
         </sun:property>
                 <sun:property id="groupProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.workSecurityMap.Group}">
 
             <sun:radioButton id="optA"  name="usersOption" label="$resource{i18njca.workSecurityMap.GroupMapping}" selected="#{requestScope.usersOptionG}" selectedValue="users"
-                    onClick="enableWorkSecurityMapFields('users'); "
+                    disabled="#{disableGroups}"  onClick="enableWorkSecurityMapFields('users'); "
                 />
             "<br /><br />
             <sun:textField id="eisgrouptext" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.workSecurityMap.Group']}" text="#{pageSession.valueMap2['groupMapping']}" >
@@ -77,7 +77,7 @@
 
         <sun:property id="principalsProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.workSecurityMap.Principal}">
                    <sun:radioButton id="optB"  name="usersOption" label="$resource{i18njca.workSecurityMap.PrincipalMapping}" selected="#{requestScope.usersOptionP}" selectedValue="principals"
-                    onClick="javascript: enableWorkSecurityMapFields('principals');"
+                     disabled="#{disablePrincipals}" onClick="javascript: enableWorkSecurityMapFields('principals');"
                 />
             "<br /><br />
             <sun:textField id="eisprincipals" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.workSecurityMap.GroupMapping']}" text="#{pageSession.valueMap2['principalMapping']}" >
@@ -93,7 +93,7 @@
                 />
         </sun:property>
         <sun:property id="resAdaptorProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}" helpText="$resource{i18njca.adminObjectResource.resourceAdapterHelp}">
-            <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['raName']}" labels="$pageSession{connectorList}"  >
+            <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['raname']}" labels="$pageSession{connectorList}"  >
                 <!beforeCreate
                      //REST - TO DO
                      getApplicationBySnifferType(type="connector"  result="#{pageSession.connectorList}")
