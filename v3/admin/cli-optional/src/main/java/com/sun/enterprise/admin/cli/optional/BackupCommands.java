@@ -76,16 +76,17 @@ public abstract class BackupCommands extends LocalDomainCommand {
     @Param(name = "domain_name", primary = true, optional = true)
     String domainName;
 
-    @Param(name="_configonly",optional=true)
+    @Param(name= "_configonly", optional = true)
     String configonly;
 
-    @Param(name="name",optional=true)
-    String name;
+    @Param(optional = true)
+    String backupconfig;
+
+    @Param(optional = true)
+    String backupdir;
 
 
     private String desc = null;
-
-    private String backupdir = null;
 
     private int recycleLimit = 0;
 
@@ -137,18 +138,20 @@ public abstract class BackupCommands extends LocalDomainCommand {
 
     protected void prepareRequest() throws CommandValidationException {
 
-        request = new BackupRequest(domainDirParam, domainName, desc, recycleLimit);
-
-        request.setTerse(programOpts.isTerse());
-        request.setVerbose(verbose);
+        File backupdir_f = null;
         if (backupdir != null) {
-            File f = new File(backupdir);
-            if (!f.isAbsolute()) {
+            backupdir_f = new File(backupdir);
+            if (!backupdir_f.isAbsolute()) {
                 throw new CommandValidationException(
                     strings.get("InvalidBackupDirPath", backupdir));
             }
-            request.setBackupDir(f);
         }
+
+        request = new BackupRequest(domainDirParam, domainName, backupdir_f,
+                                    null, desc, recycleLimit);
+
+        request.setTerse(programOpts.isTerse());
+        request.setVerbose(verbose);
     }
  
     /*

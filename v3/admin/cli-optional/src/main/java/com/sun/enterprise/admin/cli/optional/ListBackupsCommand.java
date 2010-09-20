@@ -62,9 +62,6 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 @Scoped(PerLookup.class)
 public final class ListBackupsCommand extends BackupCommands {
 
-    @Param(optional = true)
-    String backupdir;
-
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ListDomainsCommand.class);
 

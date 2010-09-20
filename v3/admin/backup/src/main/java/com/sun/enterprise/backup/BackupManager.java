@@ -50,98 +50,85 @@ import java.util.List;
  */
 
 
-public class BackupManager extends BackupRestoreManager
-{
-	public BackupManager(BackupRequest req) throws BackupException
-	{
-		super(req);
-	}
-	
-	///////////////////////////////////////////////////////////////////////////////
+public class BackupManager extends BackupRestoreManager {
+    public BackupManager(BackupRequest req) throws BackupException {
+        super(req);
+    }
 
-	public final String backup() throws BackupException
-	{
-		String mesg = StringHelper.get("backup-res.SuccessfulBackup");
-		String statusString = writeStatus();
-		
-		if (request.terse == false)
-		{
-			mesg += "\n\n" + statusString;
-		}
-		
-		try
-		{
-			ZipStorage zs = new ZipStorage(request);
-			zs.store();
+    //////////////////////////////////////////////////////////////////////
+
+    public final String backup() throws BackupException {
+        String mesg = StringHelper.get("backup-res.SuccessfulBackup");
+        String statusString = writeStatus();
+
+        if (request.terse == false) {
+            mesg += "\n\n" + statusString;
+        }
+        
+        try
+        {
+            ZipStorage zs = new ZipStorage(request);
+            zs.store();
             // TODO: RSH - Recycle files. I'm not sure if this is the precise
             // place to do the recycling, but we probably need to do it somewhere
             // in this module since BackupFilenameManager is module private. We
             // should do the recycling after the backup completes. I think it
             // should be safe to recycle after a successful or unsuccessful backup
             // (assuming a failed backup doesn't leave a corrupt ZIP file).
-    		BackupFilenameManager bfm =
+            BackupFilenameManager bfm =
                 new BackupFilenameManager(getBackupDirectory(request), request.domainName);
             List<File> recycleFiles = bfm.getRecycleFiles(request.recycleLimit);
             for (File f : recycleFiles) {
                 // f.delete();
             }
             return mesg;
-		}
-		finally
-		{
-			status.delete();
-			FileUtils.protect(request.backupFile);
-		}
-	}
-	
-	///////////////////////////////////////////////////////////////////////////////
+        }
+        finally {
+            status.delete();
+            FileUtils.protect(request.backupFile);
+        }
+    }
+    
+    ////////////////////////////////////////////////////////////////////////
 
-	void init() throws BackupException
-	{
-		super.init();
-		
-		if(request.backupFile != null)
-			throw new BackupException("backup-res.InternalError", "No backupFilename may be specified for a backup -- it is reserved for restore operations only.");
-		
-		if(!FileUtils.safeIsDirectory(request.domainDir))
-			throw new BackupException("backup-res.NoDomainDir", request.domainDir);
+    void init() throws BackupException {
+        super.init();
+        
+        if(request.backupFile != null)
+            throw new BackupException("backup-res.InternalError",
+                "No backupFilename may be specified for a backup -- it is reserved for restore operations only.");
+        
+        if(!FileUtils.safeIsDirectory(request.domainDir))
+            throw new BackupException("backup-res.NoDomainDir", 
+                                      request.domainDir);
 
         File backupDir = getBackupDirectory(request);
 
         // not an error for this directory to not exist yet
-		backupDir.mkdirs();
+        backupDir.mkdirs();
 
-		// NOW it's an error to not exist...
-		if(!FileUtils.safeIsDirectory(backupDir))
-			throw new BackupException("backup-res.NoBackupDirCantCreate", backupDir);
+        // NOW it's an error to not exist...
+        if(!FileUtils.safeIsDirectory(backupDir))
+            throw new BackupException("backup-res.NoBackupDirCantCreate",
+                                      backupDir);
 
-		BackupFilenameManager bfmgr = new BackupFilenameManager(backupDir, request.domainName);
-		request.backupFile = bfmgr.next();        
+        BackupFilenameManager bfmgr = 
+            new BackupFilenameManager(backupDir, request.domainName);
+        request.backupFile = bfmgr.next();        
 
-                // get customized description if user hasn't specified one
-                if(request.description == null || request.description.length() <= 0)
-		    request.description = bfmgr.getCustomizedDescription();
-	}
-
-    private static File getBackupDirectory(BackupRequest request) {
-        File backupDir = null;
-        if (request.backupDir != null) {
-            backupDir = request.backupDir;
-        } else {
-            backupDir = new File(request.domainDir, Constants.BACKUP_DIR);
-        }
-        return backupDir;
+        // get customized description if user hasn't specified one
+        if(request.description == null || request.description.length() <= 0)
+            request.description = bfmgr.getCustomizedDescription();
     }
 
-    ///////////////////////////////////////////////////////////////////////////////
-	
-	private String writeStatus()
-	{
-		status = new Status();
-		return status.write(request);
-	}
-	
-	///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+    
+    private String writeStatus() {
+        status = new Status();
+        return status.write(request);
+    }
+    
+    ///////////////////////////////////////////////////////////////////////////
 
-	Status status;
+       Status status;
 }

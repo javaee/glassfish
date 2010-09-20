@@ -76,7 +76,7 @@ public final class RestoreDomainCommand extends BackupCommands {
     @Param(name = "filename", optional = true)
     private String backupFilename;
 
-    @Param(name="force", optional = true, defaultValue = "false")
+    @Param(name= "force", optional = true, defaultValue = "false")
     private boolean force;
 
     private static final LocalStringsImpl strings =
@@ -86,7 +86,7 @@ public final class RestoreDomainCommand extends BackupCommands {
      */
     @Override
     protected void validate()
-            throws CommandException {
+            throws CommandException, CommandValidationException {
         
         if (backupFilename == null && domainName == null) {
             if (!force) {
@@ -113,6 +113,7 @@ public final class RestoreDomainCommand extends BackupCommands {
             }
         }
 
+        setBackupDir(backupdir);
         initRequest();
 
         initializeLogger();     // in case program options changed
@@ -134,13 +135,19 @@ public final class RestoreDomainCommand extends BackupCommands {
         return 0;
     }
 
-    private void initRequest() {
+    private void initRequest() throws CommandValidationException {
+
+        File backupdir_f = null;
+        if (backupdir != null) {
+            backupdir_f = new File(backupdir);
+            if (!backupdir_f.isAbsolute()) {
+                throw new CommandValidationException(
+                    strings.get("InvalidBackupDirPath", backupdir));
+            }
+        }
         
-        if (backupFilename == null)
-            request = new BackupRequest(domainDirParam, domainName, null);
-        else
-            request = new BackupRequest(domainDirParam, domainName, null,
-                                        backupFilename);
+        request = new BackupRequest(domainDirParam, domainName, backupdir_f,
+                                    backupFilename);
         request.setTerse(programOpts.isTerse());
         request.setVerbose(verbose);
         request.setForce(force);

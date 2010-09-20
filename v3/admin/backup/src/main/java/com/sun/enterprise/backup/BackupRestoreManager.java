@@ -44,49 +44,59 @@ import com.sun.enterprise.backup.util.*;
 import java.io.*;
 
 /**
- * Baseclass for BackupManager and RestoreManager.  Common code between the two goes
- * in here.
+ * Baseclass for BackupManager and RestoreManager.  Common code between 
+ * the two goes in here.
  * @author  Byron Nevins
  */
 
-abstract class BackupRestoreManager
-{
-	public BackupRestoreManager(BackupRequest req) throws BackupException
-	{
-		if(req == null)
-			throw new BackupException("backup-res.InternalError", getClass().getName() + ".ctor: null BackupRequest object");
-		
-		this.request = req;
-		init();
-		LoggerHelper.finest("Request DUMP **********\n" + req);
-	}
-	
-	///////////////////////////////////////////////////////////////////////////////
+abstract class BackupRestoreManager {
 
-	void init() throws BackupException
-	{
-		// only do once!
-		if(wasInitialized)
-			return;
+    public BackupRestoreManager(BackupRequest req) throws BackupException {
+        if(req == null)
+            throw new BackupException("backup-res.InternalError", 
+                getClass().getName() + ".ctor: null BackupRequest object");
 		
-		if(request == null)
-			throw new BackupException("backup-res.InternalError", "null BackupRequest reference");
+        this.request = req;
+        init();
+        LoggerHelper.finest("Request DUMP **********\n" + req);
+    }
+	
+    void init() throws BackupException {
+
+        // only do once!
+        if(wasInitialized)
+            return;
 		
-		// add a timestamp
-		request.timestamp = System.currentTimeMillis();
+        if(request == null)
+            throw new BackupException("backup-res.InternalError",
+                                      "null BackupRequest reference");
+		
+        // add a timestamp
+        request.timestamp = System.currentTimeMillis();
                 
-		// validate domains dir
-		if(request.domainsDir == null || !FileUtils.safeIsDirectory(request.domainsDir))
-			throw new BackupException("backup-res.NoDomainsDir", request.domainsDir);
+        // validate domains dir
+        if (request.domainsDir == null ||
+            !FileUtils.safeIsDirectory(request.domainsDir))
+            throw new BackupException("backup-res.NoDomainsDir",
+                                      request.domainsDir);
 				
-		if (request.domainName != null)
-                    request.domainDir = new File(request.domainsDir, request.domainName);
-		
-		LoggerHelper.setLevel(request);
-	}
+        if (request.domainName != null)
+            request.domainDir = new File(request.domainsDir, request.domainName);
 
-	///////////////////////////////////////////////////////////////////////////
-	
-	BackupRequest		request;
-	private boolean		wasInitialized = false;
+        LoggerHelper.setLevel(request);
+    }
+
+    protected File getBackupDirectory(BackupRequest request) {
+        File backupDir = null;
+        if (request.backupDir != null) {
+            backupDir = request.backupDir;
+        } else {
+            backupDir = new File(request.domainDir, Constants.BACKUP_DIR);
+        }
+        return backupDir;
+    }
+
+
+    BackupRequest   request;
+    private boolean wasInitialized = false;
 }

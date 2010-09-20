@@ -57,119 +57,104 @@ import com.sun.enterprise.backup.util.FileUtils;
  * @author  bnevins
  */
 
-public class BackupRequest
-{
-	/**
-	 * Create an instance
-	 **/
-	public BackupRequest(String domainsDirName, String domain, String desc)
-	{
-		setDomainsDir(domainsDirName);
-		setDescription(desc);
-		domainName	= domain;
-	}
-	
-	/**
-	 * Create an instance
-	 **/
-	public BackupRequest(String domainsDirName, String domain, String desc, String backupFileName)
-	{
-		this(domainsDirName, domain, desc);
-		setBackupFile(backupFileName);
-	}
+public class BackupRequest {
+    /**
+     * Create an instance (generic)
+     **/
+    public BackupRequest(String domainsDirName, String domain, 
+                         File backupDir, String backupConfig) {
+        setDomainsDir(domainsDirName);
+        setBackupDir(backupDir);
+        setBackupConfig(backupConfig);
+        domainName = domain;
+    }
 
-	/**
-	 * Create an instance
-	 **/
-	public BackupRequest(String domainsDirName, String domain, String desc, int limit)
-	{
-		this(domainsDirName, domain, desc);
+    /**
+     * Create an instance (used by backup-domain and list-backups)
+     **/
+    public BackupRequest(String domainsDirName, String domain, 
+                         File backupDir, String backupConfig,
+                         String desc, int limit) {
+        this(domainsDirName, domain, backupDir, backupConfig);
+        setDescription(desc);
+        setRecycleLimit(limit);
+    }
+    
+    /**
+     * Create an instance (used by restore-domain)
+     **/
+    public BackupRequest(String domainsDirName, String domain, 
+                         File backupDir, String backupConfig,
+                         String backupFileName) {
+        this(domainsDirName, domain, backupDir, backupConfig);
+        setBackupFile(backupFileName);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+
+    public void setTerse(boolean b) {
+        terse = b;
+    }
+    
+    public void setVerbose(boolean b) {
+        verbose = b;
+    }
+    
+    public String toString() {
+        return ObjectAnalyzer.toString(this);
+    }
+
+    public void setForce(boolean f) {
+        force = f;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    
+    private void setDomainsDir(String name) {
+        domainsDir = FileUtils.safeGetCanonicalFile(new File(name));
+    }
+
+    private void setBackupDir(File dir) {
+        backupDir = dir;
+    }
+
+    private void setRecycleLimit(int limit) {
         recycleLimit = limit;
-	}
+    }
 
-	///////////////////////////////////////////////////////////////////////////
+    private void setDescription(String desc) {
+        description = desc;
+    }
 
-	public void setTerse(boolean b)
-	{
-		terse = b;
-	}
-	
-	///////////////////////////////////////////////////////////////////////////
+    private void setBackupFile(String name) {
+        backupFile = FileUtils.safeGetCanonicalFile(new File(name));
+    }
 
-	public void setVerbose(boolean b)
-	{
-		verbose = b;
-	}
-	
-	///////////////////////////////////////////////////////////////////////////
+    private void setBackupConfig(String name) {
+        backupConfig = name;
+    }
 
-	public String toString()
-	{
-		return ObjectAnalyzer.toString(this);
-	}
-	
-	///////////////////////////////////////////////////////////////////////////
-	////////////     Private Methods     //////////////////////////////////////
-	///////////////////////////////////////////////////////////////////////////
-	
-	private void setDomainsDir(String name)
-	{
-		domainsDir	= FileUtils.safeGetCanonicalFile(new File(name));
-	}
+    ///////////////////////////////////////////////////////////////////////////
+    ////////////     Variables     ////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+    
+    final static String[] excludeDirs = {Constants.BACKUP_DIR + "/"}; 
 
-	///////////////////////////////////////////////////////////////////////////
+    File    domainsDir;
+    String  domainName;
+    String  description;
+    int     recycleLimit = 0;
+    File    backupDir = null;
+    String  backupConfig = null;
 
-	private void setBackupFile(String name)
-	{
-		backupFile	= FileUtils.safeGetCanonicalFile(new File(name));
-	}
-
-	///////////////////////////////////////////////////////////////////////////
-
-	private void setDescription(String desc)
-	{
-		description = desc;
-	}
-
-        ///////////////////////////////////////////////////////////////////////////
-
-	public void setBackupDir(File dir)
-	{
-		backupDir = dir;
-	}
-
-        ///////////////////////////////////////////////////////////////////////////
-
-	public void setForce(boolean f)
-	{
-		force = f;
-	}
-	///////////////////////////////////////////////////////////////////////////
-	////////////     Variables     ////////////////////////////////////////////
-	///////////////////////////////////////////////////////////////////////////
-	
-	final static String[] excludeDirs = {Constants.BACKUP_DIR + "/"}; 
-
-	File	domainsDir;
-	String	domainName;
-	String	description;
-	int     recycleLimit = 0;
-
-	// VARIABLES POSSIBLY SET AT RUNTIME
-	File	backupFile;
-	
-	// VARIABLES SET AT RUNTIME
-	File	domainDir;
-	long	timestamp;
-	
-	// variables used ONLY by ListManager
-	// The reason it is here instead of in ListManager is so that
-	// we can get a nice concise centralized display of ALL the variables
-	// for all commands
-	
-	File	backupDir = null;
-	boolean	terse	= false;
-	boolean	verbose	= false;
-        boolean force = false;
+    // VARIABLES POSSIBLY SET AT RUNTIME
+    File    backupFile;
+    
+    // VARIABLES SET AT RUNTIME
+    File    domainDir;
+    long    timestamp;
+    
+    boolean terse = false;
+    boolean verbose = false;
+    boolean force = false;
 }
-

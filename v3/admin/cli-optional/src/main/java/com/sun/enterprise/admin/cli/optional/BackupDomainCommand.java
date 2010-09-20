@@ -72,9 +72,6 @@ public final class BackupDomainCommand extends BackupCommands {
     @Param(name = "description", optional = true)
     String description;
 
-    @Param(optional = true)
-    String backupdir;
-
     @Param(name="_force",optional=true)
     String force;
 
