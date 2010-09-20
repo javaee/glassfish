@@ -40,6 +40,8 @@
 
 package org.glassfish.config.support;
 
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.JaccProvider;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import java.beans.PropertyVetoException;
@@ -70,17 +72,19 @@ import org.jvnet.hk2.config.TransactionFailure;
 public class SecurityUpgradeService implements ConfigurationUpgrade, PostConstruct {
 
     @Inject
-    private Habitat habitat;
+    Configs configs;
+
     public void postConstruct() {
-        upgradeJACCProvider();
+        for (Config config : configs.getConfig()) {
+            SecurityService service = config.getSecurityService();
+            if (service != null) {
+                upgradeJACCProvider(service);
+            }
+        }
     }
 
-    private void upgradeJACCProvider() {
+    private void upgradeJACCProvider(SecurityService securityService) {
         try {
-            final SecurityService  securityService = habitat.getComponent(SecurityService.class);
-            if (securityService == null) {
-                return;
-            }
             List<JaccProvider> jaccProviders = securityService.getJaccProvider();
             for (JaccProvider jacc : jaccProviders) {
                 if ("com.sun.enterprise.security.jacc.provider.SimplePolicyConfigurationFactory".equals(jacc.getPolicyConfigurationFactoryProvider())) {
