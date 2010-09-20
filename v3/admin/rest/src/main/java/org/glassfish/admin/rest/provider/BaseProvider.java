@@ -37,9 +37,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.rest.provider;
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Config;
 import org.glassfish.admin.rest.RestConfig;
 import org.glassfish.admin.rest.RestService;
@@ -71,14 +71,17 @@ import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 @Provider
 public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
     public static final String HEADER_DEBUG = "__debug";
+
     public static final String JSONP_CALLBACK = "jsoncallback";
+
     @Context
     protected UriInfo uriInfo;
+
     @Context
     protected HttpHeaders requestHeaders;
 
-
     protected Class desiredType;
+
     protected MediaType supportedMediaType;
 
     public BaseProvider(Class desiredType, MediaType mediaType) {
@@ -101,7 +104,7 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
 
     @Override
     public void writeTo(T proxy, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-                        MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
         entityStream.write(getContent(proxy).getBytes());
     }
 
@@ -120,16 +123,19 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
      */
     protected boolean isDebug() {
         //TODO need to fix this to return correct value while running on an instance. Currently it will always return false
-        Config config = RestService.getDomain().getConfigNamed("server-config");
-        if (config != null) {
-            RestConfig rg = config.getExtensionByType(RestConfig.class);
-            if ((rg != null) && (rg.getDebug().equalsIgnoreCase("true"))) {
-                return true;
+        Domain domain = RestService.getDomain();
+        if (domain != null) {
+            Config config = domain.getConfigNamed("server-config");
+            if (config != null) {
+                RestConfig rg = config.getExtensionByType(RestConfig.class);
+                if ((rg != null) && (rg.getDebug().equalsIgnoreCase("true"))) {
+                    return true;
+                }
             }
         }
 
         if (requestHeaders == null) {
-            return true; 
+            return true;
         }
         List header = requestHeaders.getRequestHeader(HEADER_DEBUG);
         return (header != null) && ("true".equals(header.get(0)));
@@ -142,7 +148,7 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
         if (uriInfo == null) {
             return null;
         }
-        
+
         MultivaluedMap<String, String> l = uriInfo.getQueryParameters();
 
         if (l == null) {
@@ -154,11 +160,7 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
     protected String getXmlCommandLinks(String[][] commandResourcesPaths, String indent) {
         StringBuilder result = new StringBuilder();
         for (String[] commandResourcePath : commandResourcesPaths) {
-            result.append("\n")
-                    .append(indent)
-                    .append(getStartXmlElement(KEY_COMMAND))
-                    .append(getElementLink(uriInfo, commandResourcePath[0]))
-                    .append(getEndXmlElement(KEY_COMMAND));
+            result.append("\n").append(indent).append(getStartXmlElement(KEY_COMMAND)).append(getElementLink(uriInfo, commandResourcePath[0])).append(getEndXmlElement(KEY_COMMAND));
         }
         return result.toString();
     }

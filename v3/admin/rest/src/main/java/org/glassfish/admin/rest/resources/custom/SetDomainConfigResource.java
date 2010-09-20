@@ -51,6 +51,7 @@ import javax.ws.rs.core.MediaType;
 import org.glassfish.admin.rest.resources.TemplateExecCommand;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.api.admin.ParameterMap;
+import org.jvnet.hk2.config.Dom;
 
 /**
  *
@@ -58,8 +59,13 @@ import org.glassfish.api.admin.ParameterMap;
  */
 public class SetDomainConfigResource extends TemplateExecCommand {
     public SetDomainConfigResource() {
-        super("DomainResource", "set", "POST", "commandAction", "set", false);
+        super("SetDomainConfigResource", "set", "POST", "commandAction", "set", false);
     }
+    
+    public void setEntity(Dom p) {
+        // ugly no-op hack. For now.
+    }
+
     @POST
     @Produces({"text/html;qs=2",MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
