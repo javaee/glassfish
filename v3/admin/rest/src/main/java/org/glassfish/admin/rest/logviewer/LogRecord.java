@@ -69,7 +69,7 @@ import org.w3c.dom.Node;
  *
  * @author ludo
  */
-class LogRecord {
+public class LogRecord {
 
     long recordNumber;
     Date loggedDateTime;

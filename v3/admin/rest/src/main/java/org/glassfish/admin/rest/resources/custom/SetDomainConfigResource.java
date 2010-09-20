@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
+ * 
  * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
- *
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -11,20 +11,20 @@
  * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at packager/legal/LICENSE.txt.
- *
+ * 
  * GPL Classpath Exception:
  * Oracle designates this particular file as subject to the "Classpath"
  * exception as provided by Oracle in the GPL Version 2 section of the License
  * file that accompanied this code.
- *
+ * 
  * Modifications:
  * If applicable, add the following below the License Header, with the fields
  * enclosed by brackets [] replaced by your own identifying information:
  * "Portions Copyright [year] [name of copyright owner]"
- *
+ * 
  * Contributor(s):
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
@@ -38,23 +38,44 @@
  * holder.
  */
 
-package org.glassfish.admin.rest.resources;
+package org.glassfish.admin.rest.resources.custom;
 
-import org.glassfish.admin.rest.RestService;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import org.glassfish.admin.rest.resources.TemplateExecCommand;
+import org.glassfish.admin.rest.results.ActionReportResult;
+import org.glassfish.api.admin.ParameterMap;
 
 /**
- * This is the root class for the generated DomainResource
- * that bootstrap the dom tree with the domain object
- * and add a few sub resources like log viewer
- * or log-level setup which are not described as configbeans
- * but more external config or files (server.log or JDK logger setup
- * 
- * @author ludo
+ *
+ * @author jasonlee
  */
-public class GlassFishDomainResource extends TemplateResource {
-
-    public GlassFishDomainResource(){
-        childModel = RestService.getDomainBean().model;
-        entity = RestService.getDomainBean();
+public class SetDomainConfigResource extends TemplateExecCommand {
+    public SetDomainConfigResource() {
+        super("DomainResource", "set", "POST", "commandAction", "set", false);
     }
+    @POST
+//    @Path("set/")
+    @Produces({"text/html;qs=2",MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
+    public ActionReportResult setDomainConfig(HashMap<String, String> data) {
+
+        final Iterator<Entry<String, String>> iterator = data.entrySet().iterator();
+        if (iterator.hasNext()) {
+            ParameterMap fixed = new ParameterMap();
+            Map.Entry entry = iterator.next();
+            fixed.add("DEFAULT", entry.getKey()+"="+entry.getValue());
+
+            return executeCommand(fixed);
+        }
+
+        throw new RuntimeException("You must supply exactly one configuration option."); //i18n
+    }
+
 }

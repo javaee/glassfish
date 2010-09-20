@@ -469,6 +469,9 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         // ConfigBean, Custom Resource Class, path
         {"Cluster", "SystemPropertiesCliResource", "system-properties"},
         {"Config", "SystemPropertiesCliResource", "system-properties"},
+        {"Domain", "JmxServiceUrlsResource", "jmx-urls"},
+        {"Domain", "LogViewerResource", "view-log"},
+        {"Domain", "SetDomainConfigResource", "set"},
         {"NetworkListener", "FindHttpProtocolResource", "find-http-protocol"},
         {"Server", "SystemPropertiesCliResource", "system-properties"}
     };

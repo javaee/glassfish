@@ -38,7 +38,7 @@
  * holder.
  */
 
-package org.glassfish.admin.rest.logviewer;
+package org.glassfish.admin.rest.resources.custom;
 
 import com.sun.enterprise.server.logging.logviewer.backend.LogFilter;
 import org.glassfish.admin.rest.RestService;
@@ -56,6 +56,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import org.glassfish.admin.rest.logviewer.LogRecord;
 
 /**
  * REST resource to get Log records

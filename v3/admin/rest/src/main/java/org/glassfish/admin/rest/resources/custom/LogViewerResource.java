@@ -38,7 +38,7 @@
  * holder.
  */
 
-package org.glassfish.admin.rest.logviewer;
+package org.glassfish.admin.rest.resources.custom;
 
 import com.sun.jersey.api.core.ResourceContext;
 import java.io.File;
@@ -60,13 +60,19 @@ import javax.ws.rs.core.Response;
 import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.util.zip.GZIPOutputStream;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
+import org.glassfish.admin.rest.logviewer.CharSpool;
+import org.glassfish.admin.rest.logviewer.LineEndNormalizingWriter;
+import org.glassfish.admin.rest.logviewer.WriterOutputStream;
+import org.jvnet.hk2.config.Dom;
 
 /**
  * Represents a large text data.
@@ -101,6 +107,10 @@ public class LogViewerResource {
     private Source source;
     protected Charset charset;
     private volatile boolean completed;
+
+    public void setEntity(Dom p) {
+        // ugly no-op hack. For now.
+    }
 
     @Path("details/")
     public StructuredLogViewerResource getDomainUptimeResource() {
