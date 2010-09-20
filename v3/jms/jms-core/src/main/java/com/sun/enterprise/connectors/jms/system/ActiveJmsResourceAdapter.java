@@ -626,13 +626,8 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
 
                 */
         if(dbProps == null) dbProps = new Properties();
-	dbProps.setProperty("imq.cluster.clusterid", getMQClusterName());
 	if(Boolean.valueOf(jmsAvailability.getAvailabilityEnabled()) == false)
 		dbProps.setProperty("imq.cluster.nomasterbroker", "true");
-	else{
-		dbProps.setProperty("imq.brokerid", getBrokerInstanceName(getJmsService()));
-		dbProps.setProperty("imq.persist.store", "jdbc");
-	}
         String dbVendor = jmsAvailability.getDbVendor();
         String dbuser = jmsAvailability.getDbUsername();
         String dbPassword = jmsAvailability.getDbPassword();
@@ -647,12 +642,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
 
         String propertyPrefix = fullprefix + "property.";
 
-        if(dbJdbcUrl != null) {
-		if ("derby".equals(dbVendor))	
-			dbProps.setProperty(fullprefix + "opendburl", dbJdbcUrl);
-		else
-			dbProps.setProperty(propertyPrefix + "url", dbJdbcUrl);
-	}
+        if(dbJdbcUrl != null) dbProps.setProperty(propertyPrefix + "url", dbJdbcUrl);
 
         for (Object obj : dbprops){
 	    Property prop = (Property) obj;	
@@ -695,21 +685,29 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
     protected void postRAConfiguration() throws ConnectorRuntimeException {
         //Set all non-supported javabean property types in the JavaBean
         try {
-		if(! isDBEnabled()){
-			if(dbProps == null)
-				dbProps = new Properties();
-		 dbProps.setProperty("imq.cluster.dynamicChangeMasterBrokerEnabled", "true");			
-		}
-
             if (dbProps != null) {
+		//String dbPropertiesStr = null;
+	   	//StringWriter writer = new StringWriter();
+	   	//dbProps.store(writer, "DB Properties");
+	   	//dbPropertiesStr =  writer.toString();
+
+                //Method[] mthds = this.resourceadapter_.getClass().getMethods();
                 Method mthds = this.resourceadapter_.getClass().getMethod("setBrokerProps", Properties.class);
+               // for (int i = 0; i < mthds.length; i++) {
+                    //if(mthds[i].getName().equalsIgnoreCase("set" + DB_HADB_PROPS))
+                  //  if(mthds[i].getName().equalsIgnoreCase("set" + "BrokerProps")){
             	if(mthds != null){        
 	    		logFine("Setting property:" + DB_HADB_PROPS
                                         + "=" + dbProps.toString());
                         mthds.invoke(this.resourceadapter_,
                                         new Object[]{dbProps});
-               		 }
-            }
+                    } /*else if(mthds[i].getName().equalsIgnoreCase("set" + DS_HADB_PROPS)) {
+                        logFine("Setting property:" + DS_HADB_PROPS
+                                        + "=" + dsProps.toString());
+                        mthds[i].invoke(this.resourceadapter_, new Object[]{dsProps});
+                    } */
+                }
+           // }
         } catch (Exception e) {
             ConnectorRuntimeException crex = new ConnectorRuntimeException(
                             e.getMessage());
@@ -749,7 +747,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
         * domain.xml,
        */
      if (ja != null) {
-        jmsAvailability = Boolean.parseBoolean(ja.getAvailabilityEnabled());
+        jmsAvailability = Boolean.getBoolean(ja.getAvailabilityEnabled());
     }
         logger.log(Level.FINE, "JMS availability :: " + jmsAvailability);
         return jmsAvailability;
@@ -1159,7 +1157,6 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                      return;
             } else {
                if (! isDBEnabled()){
-		       
                 String masterbrkr = getMasterBroker();
                     ConnectorConfigProperty  envProp2 = new ConnectorConfigProperty
                         (MASTERBROKER,masterbrkr , "Master  Broker",
@@ -1187,14 +1184,11 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
         AvailabilityService as = server.getConfig().getAvailabilityService();
 
         JmsService jmsService = server.getConfig().getJmsService();
-
-        if (jmsService.getUseMasterBroker() != null && ! Boolean.parseBoolean(jmsService.getUseMasterBroker()))
+        JmsAvailability jmsAvailability = as.getJmsAvailability();
+        if (jmsService.getUseMasterBroker() != null && Boolean.getBoolean(jmsService.getUseMasterBroker()))
             return true;
-	if (as != null){
-		JmsAvailability jmsAvailability = as.getJmsAvailability();
-        	if (jmsAvailability.getAvailabilityEnabled() != null && Boolean.parseBoolean(jmsAvailability.getAvailabilityEnabled())){
-            		return true;
-		}
+        else if (jmsAvailability.getAvailabilityEnabled() != null && Boolean.getBoolean(jmsAvailability.getAvailabilityEnabled())){
+            return true;
         }
 
         return false;
