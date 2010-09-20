@@ -442,11 +442,11 @@ public abstract class JMSDestination {
                 return CommandTarget.CONFIG;
             Server targetServer = domain.getServerNamed(target);
             if (targetServer!=null) {
-                Clusters clusters = domain.getClusters();
-                List clustersList = clusters.getCluster();
-                if (JmsRaUtil.isServerClustered(clustersList, target))
-                    return CommandTarget.CLUSTERED_INSTANCE;
-                else if (targetServer.isDas())
+               // Clusters clusters = domain.getClusters();
+               // List clustersList = clusters.getCluster();
+                //if (JmsRaUtil.isServerClustered(clustersList, target))
+                  //  return CommandTarget.CLUSTERED_INSTANCE;
+               if (targetServer.isDas())
                     return CommandTarget.DAS;
                 else return CommandTarget.STANDALONE_INSTANCE;
             }//end if (targetServer!=null)

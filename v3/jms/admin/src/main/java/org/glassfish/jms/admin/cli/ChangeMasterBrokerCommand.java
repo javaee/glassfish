@@ -174,7 +174,7 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
        String newMasterBroker = newMasterBrokerHost + ":" + newMasterBrokerPort;
       // System.out.println("1: IN deleteinstanceCheck supplimental oldMasterBroker = " + oldMasterBroker + " newmasterBroker " + newMasterBroker);
        try{
-            updateMasterBroker(oldMasterBroker, newMasterBroker);
+            updateMasterBroker(oldMBServer.getName(), oldMasterBroker, newMasterBroker);
        }catch(Exception e){
                       report.setMessage(localStrings.getLocalString("change.master.broker.CannotChangeMB",
                                     "Unable to change master broker."));
@@ -217,8 +217,8 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
 	    return jmsHost;
       }
 
-     private void updateMasterBroker(String oldMasterBroker, String newMasterBroker) throws Exception {
-        MQJMXConnectorInfo mqInfo = getMQJMXConnectorInfo(oldMasterBroker, config,serverContext, domain, connectorRuntime);
+     private void updateMasterBroker(String serverName, String oldMasterBroker, String newMasterBroker) throws Exception {
+        MQJMXConnectorInfo mqInfo = getMQJMXConnectorInfo(serverName, config,serverContext, domain, connectorRuntime);
 
          //MBeanServerConnection  mbsc = getMBeanServerConnection(tgtName);
          try {
