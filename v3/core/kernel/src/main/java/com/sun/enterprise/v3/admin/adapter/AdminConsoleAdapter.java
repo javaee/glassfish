@@ -52,6 +52,7 @@ import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import com.sun.logging.LogDomains;
 import com.sun.pkg.client.Image;
 import com.sun.pkg.client.Version;
+import java.net.MalformedURLException;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.Adapter;
@@ -77,6 +78,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.types.Property;
 
 import java.beans.PropertyVetoException;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -84,6 +86,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
@@ -196,6 +200,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 
     // Flag set to true for directory deploy, false for war
     private static final boolean directoryDeploy = true;
+    private boolean isRestStarted = false;
 
     /**
      * Constructor.
@@ -208,6 +213,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     /**
      *
      */
+    @Override
     public String getContextRoot() {
         return epd.getGuiContextRoot(); //default is /admin
     }
@@ -215,6 +221,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     /**
      *
      */
+    @Override
     public void afterService(GrizzlyRequest req, GrizzlyResponse res) throws Exception {
     }
 
@@ -227,6 +234,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     /**
      *
      */
+    @Override
     public void service(GrizzlyRequest req, GrizzlyResponse res) {
         try {
             if (!latch.await(100L, TimeUnit.SECONDS)) {
@@ -244,10 +252,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                 handleResourceRequest(req, res);
             } catch (IOException ioe) {
                 if (log.isLoggable(Level.SEVERE)) {
-                    log.severe("Unable to serve resource: "
-                                  + req.getRequestURI()
-                                  + ".  Cause: "
-                                  + ioe.toString());
+                    log.log(Level.SEVERE, "Unable to serve resource: {0}.  Cause: {1}", new Object[]{req.getRequestURI(), ioe.toString()});
                 }
                 if (log.isLoggable(Level.FINE)) {
                     log.log(Level.FINE,
@@ -281,6 +286,9 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 		if (downloadedVersion == null) {
 		    setDownloadedVersion();
 		}
+                if (!isRestStarted) {
+                    forceRestModuleLoad(req);
+                }
 		if (isInstalling()) {
 		    sendStatusPage(req, res);
 		} else {
@@ -332,11 +340,39 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      *  type otherwise <code>false</code>.
      */
     private boolean isResourceRequest(GrizzlyRequest req) {
-
         return (getContentType(req.getRequestURI()) != null);
-
     }
 
+    /**
+     * All that needs to happen for the REST module to be initialized is a request
+     * of some sort.  Here, we don't care about the response, so we make the request
+     * then close the stream and move on.
+     */
+    private void forceRestModuleLoad(final GrizzlyRequest req) {
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                InputStream is = null;
+                try {
+                    URL url = new URL("http://localhost:" + req.getLocalPort() + "/management/domain");
+                    URLConnection conn = url.openConnection();
+                    is = conn.getInputStream();
+                    isRestStarted = true;
+                } catch (Exception ex) {
+                } finally {
+                    if (is != null) {
+                        try {
+                            is.close();
+                        } catch (IOException ex1) {
+                            Logger.getLogger(AdminConsoleAdapter.class.getName()).log(Level.SEVERE, null, ex1);
+                        }
+                    }
+                }
+            }
+        };
+        thread.setDaemon(true);
+        thread.run();
+    }
 
     private String getContentType(String resource) {
 
@@ -471,6 +507,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     /**
      * Checks whether this adapter has been registered as a network endpoint.
      */
+    @Override
     public boolean isRegistered() {
         return isRegistered;
     }
@@ -479,6 +516,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      * Marks this adapter as having been registered or unregistered as a
      * network endpoint
      */
+    @Override
     public void setRegistered(boolean isRegistered) {
         this.isRegistered = isRegistered;
     }
@@ -489,7 +527,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      */
     void setStateMsg(AdapterState msg) {
         stateMsg = msg;
-        log.log(Level.INFO, msg + "");
+        log.log(Level.INFO, msg.toString());
     }
 
     /**
@@ -503,6 +541,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     /**
      *
      */
+    @Override
     public void postConstruct() {
         events.register(this);
         //set up the environment properly
@@ -512,6 +551,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     /**
      *
      */
+    @Override
     public void event(@RestrictTo(EventTypes.SERVER_READY_NAME) Event event) {
         latch.countDown();
         if (log != null) {
@@ -956,6 +996,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         initHtml = null;
     }
 
+    @Override
     public int getListenPort() {
         return epd.getListenPort();
     }
@@ -965,6 +1006,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         return epd.getListenAddress();
     }
 
+    @Override
     public List<String> getVirtualServers() {
         return epd.getGuiHosts();
     }
