@@ -77,7 +77,10 @@ public class ListJavaMailResources implements AdminCommand {
             new LocalStringManagerImpl(ListJavaMailResources.class);
 
     @Param(primary = true, optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
-    private String target ;
+    private String targetOperand;
+
+    @Param(optional = true, obsolete = true)
+    private String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
     @Inject
     private BindableResourcesHelper bindableResourcesHelper;
@@ -100,7 +103,7 @@ public class ListJavaMailResources implements AdminCommand {
             Collection<MailResource> mailResources =
                     domain.getResources().getResources(MailResource.class);
             for (MailResource mailResource : mailResources) {
-                if(bindableResourcesHelper.resourceExists(mailResource.getJndiName(), target)){
+                if(bindableResourcesHelper.resourceExists(mailResource.getJndiName(), targetOperand)){
                     list.add(mailResource.getJndiName());
                 }
             }

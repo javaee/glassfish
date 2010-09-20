@@ -77,7 +77,10 @@ public class ListJndiResources implements AdminCommand {
             new LocalStringManagerImpl(ListJndiResources.class);
 
     @Param(primary = true, optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
-    private String target ;
+    private String targetOperand;
+
+    @Param(optional = true, obsolete = true)
+    private String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
     @Inject
     private BindableResourcesHelper bindableResourcesHelper;
@@ -100,7 +103,7 @@ public class ListJndiResources implements AdminCommand {
             Collection<ExternalJndiResource> jndiResources =
                     domain.getResources().getResources(ExternalJndiResource.class);
             for (ExternalJndiResource jndiResource : jndiResources) {
-                if(bindableResourcesHelper.resourceExists(jndiResource.getJndiName(), target)){
+                if(bindableResourcesHelper.resourceExists(jndiResource.getJndiName(), targetOperand)){
                     list.add(jndiResource.getJndiName());
                 }
             }
