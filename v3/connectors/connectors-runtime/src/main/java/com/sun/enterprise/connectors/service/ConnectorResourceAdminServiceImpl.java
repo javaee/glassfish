@@ -88,7 +88,6 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
     public void createConnectorResource(ResourceInfo resourceInfo, PoolInfo poolInfo,
                                         String resourceType) throws ConnectorRuntimeException {
 
-        String errMsg = "rardeployment.jndi_lookup_failed";
         try {
             ConnectorConnectionPool ccp = null;
             String jndiNameForPool = ConnectorAdminServiceUtils.
@@ -122,9 +121,15 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
             RefAddr resAddr = new SerializableObjectRefAddr(ResourceInfo.class.getName(), resourceInfo);
             ref.add(resAddr);
 
-
-            errMsg = "Failed to bind connector resource in JNDI";
-            namingService.publishObject(resourceInfo, ref, true);
+            try{
+                namingService.publishObject(resourceInfo, ref, true);
+            }catch(NamingException ne){
+                ConnectorRuntimeException cre = new ConnectorRuntimeException(ne.getMessage());
+                cre.initCause(ne);
+                Object params[] = new Object[]{resourceInfo, cre};
+                _logger.log(Level.SEVERE, "rardeployment.resource_jndi_bind_failure", params);
+                throw cre;
+            }
 
 /*
 
@@ -140,11 +145,10 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
                             ConnectorNamingEvent.EVENT_OBJECT_REBIND));
 
         } catch (NamingException ne) {
-            ConnectorRuntimeException cre =
-                    new ConnectorRuntimeException(errMsg);
+            ConnectorRuntimeException cre = new ConnectorRuntimeException(ne.getMessage());
             cre.initCause(ne);
-            _logger.log(Level.SEVERE, errMsg, resourceInfo);
-            _logger.log(Level.SEVERE, "", cre);
+            Object params[] = new Object[]{resourceInfo, cre};
+            _logger.log(Level.SEVERE, "rardeployment.jndi_lookup_failed", params);
             throw cre;
         }
     }
