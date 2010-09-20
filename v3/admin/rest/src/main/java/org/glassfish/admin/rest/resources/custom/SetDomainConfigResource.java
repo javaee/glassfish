@@ -61,7 +61,6 @@ public class SetDomainConfigResource extends TemplateExecCommand {
         super("DomainResource", "set", "POST", "commandAction", "set", false);
     }
     @POST
-//    @Path("set/")
     @Produces({"text/html;qs=2",MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
     public ActionReportResult setDomainConfig(HashMap<String, String> data) {
@@ -77,5 +76,4 @@ public class SetDomainConfigResource extends TemplateExecCommand {
 
         throw new RuntimeException("You must supply exactly one configuration option."); //i18n
     }
-
 }

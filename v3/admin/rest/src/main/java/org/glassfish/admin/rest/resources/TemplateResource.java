@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.rest.resources;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -69,28 +68,38 @@ import static org.glassfish.admin.rest.Util.upperCaseFirstLetter;
  * @author Ludovic Champenois ludo@dev.java.net
  * @author Rajeshwar Patil
  */
-@Produces({"text/html;qs=2",MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
+@Produces({"text/html;qs=2", MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
 @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
 public class TemplateResource {
     @Context
     protected HttpHeaders requestHeaders;
+
     @Context
     protected UriInfo uriInfo;
+
     @Context
     protected ResourceContext resourceContext;
+
     protected Dom entity;  //may be null when not created yet...
+
     protected Dom parent;
+
     protected String tagName;
+
     protected boolean entityNeedsToBeCreated = false;
-    protected ConfigModel childModel ; //good model even if the child entity is null
+
+    protected ConfigModel childModel; //good model even if the child entity is null
 
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(TemplateResource.class);
-    final private static List<String> attributesToSkip = new ArrayList<String>() {{
+
+    final private static List<String> attributesToSkip = new ArrayList<String>() {
+        {
             add("parent");
             add("name");
             add("children");
             add("submit");
-        }};
+        }
+    };
 
     /** Creates a new instance of xxxResource */
     public TemplateResource() {
@@ -154,10 +163,9 @@ public class TemplateResource {
         } catch (Exception ex) {
             if (ex.getCause() instanceof ValidationException) {
                 return ResourceUtil.getActionReportResult(400, ex.getMessage(), requestHeaders, uriInfo);
-            } else if(ex instanceof TransactionFailure){
-                 return ResourceUtil.getActionReportResult(400, ex.getMessage(), requestHeaders, uriInfo);
-            }
-                else {
+            } else if (ex instanceof TransactionFailure) {
+                return ResourceUtil.getActionReportResult(400, ex.getMessage(), requestHeaders, uriInfo);
+            } else {
                 throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
             }
         }
@@ -258,10 +266,11 @@ public class TemplateResource {
 
         /////optionsResult.putMethodMetaData("POST", new MethodMetaData());
         MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData(childModel);
-        if (entityNeedsToBeCreated)
+        if (entityNeedsToBeCreated) {
             postMethodMetaData.setDescription("Create A New One");
-        else
+        } else {
             postMethodMetaData.setDescription("Update");
+        }
         map.put("POST", postMethodMetaData);
 
 
@@ -271,10 +280,8 @@ public class TemplateResource {
             MethodMetaData deleteMethodMetaData;
             if (command.equals("GENERIC-DELETE")) {
                 deleteMethodMetaData = new MethodMetaData();
-
             } else {
-                deleteMethodMetaData = ResourceUtil.getMethodMetaData(
-                        command, RestService.getHabitat(), RestService.logger);
+                deleteMethodMetaData = ResourceUtil.getMethodMetaData(command, RestService.getHabitat(), RestService.logger);
                 //In case of delete operation(command), do not  display/provide id attribute.
                 deleteMethodMetaData.removeParamMetaData("id");
             }
@@ -316,23 +323,23 @@ public class TemplateResource {
         this.parent = parent;
         this.tagName = tagName;
         entity = parent.nodeElement(tagName);
-        if (entity == null) {           
+        if (entity == null) {
             try {
                 Class<? extends ConfigBeanProxy> proxy = TemplateListOfResource.getElementTypeByName(parent, tagName);
                 ConfigBean theParent = (ConfigBean) parent;
                 // we quickly crate one just to get it smodel.
                 // but the real one might be created later, if the user wants it!
-               entityNeedsToBeCreated = true;
-               entity = theParent.allocate(proxy);
-               childModel = entity.model;
-               entity = null;
+                entityNeedsToBeCreated = true;
+                entity = theParent.allocate(proxy);
+                childModel = entity.model;
+                entity = null;
 
             } catch (Exception e) {
                 throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
             }
 
         } else {
-                childModel = entity.model;
+            childModel = entity.model;
 
         }
     }
@@ -391,14 +398,12 @@ public class TemplateResource {
                 } else {
                     try {
                         Logger.getLogger(TemplateResource.class.getName()).log(Level.INFO, "Values=" + fieldName + " === " + n.getValue());
-
                         data.put(fieldName, n.getValue());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             }
-
         } catch (Exception ex) {
             Logger.getLogger(TemplateResource.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
@@ -419,8 +424,7 @@ public class TemplateResource {
                             keyAttributeName = s;
                         }
                     }
-                    if (keyAttributeName == null)//nothing, so pick the first one
-                    {
+                    if (keyAttributeName == null) {//nothing, so pick the first one
                         keyAttributeName = model.getAttributeNames().iterator().next();
                     }
                 } catch (Exception e) {
@@ -438,12 +442,9 @@ public class TemplateResource {
     }
 
     private static File saveFile(String fileName, String mimeType, InputStream fileStream) {
-
-
         BufferedOutputStream out = null;
         File f = null;
         try {
-
             if (fileName.contains(".")) {
                 String prefix = fileName.substring(0, fileName.indexOf("."));
                 String suffix = fileName.substring(fileName.indexOf("."), fileName.length());
@@ -463,7 +464,6 @@ public class TemplateResource {
             return f;
         } catch (IOException ex) {
             Logger.getLogger(TemplateResource.class.getName()).log(Level.SEVERE, null, ex);
-
         } finally {
             try {
                 if (out != null) {
@@ -472,8 +472,6 @@ public class TemplateResource {
             } catch (IOException ex) {
                 Logger.getLogger(TemplateResource.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-
         }
         return null;
     }
@@ -486,7 +484,6 @@ public class TemplateResource {
     @RestRedirect(opType= RestRedirect.OpType.POST, commandName = "redeploy")
     }
      **/
-
     /**
      * Returns the list of command resource paths [command, http method, url/path]
      * @return
@@ -496,8 +493,9 @@ public class TemplateResource {
     }
 
     protected String getDeleteCommand() {
-        if (entity==null)
+        if (entity == null) {
             return null;
+        }
         return ResourceUtil.getCommand(RestRedirect.OpType.DELETE, getEntity().model);
     }
 
@@ -537,10 +535,10 @@ public class TemplateResource {
     //******************************************************************************************************************
     protected ActionReportResult buildActionReportResult(boolean showEntityValues) {
         RestActionReporter ar = new RestActionReporter();
-        ConfigBean entity = (ConfigBean)getEntity();
+        ConfigBean entity = (ConfigBean) getEntity();
         ar.setActionDescription(upperCaseFirstLetter(childModel.getTagName()));
         if (showEntityValues) {
-            if (entity!=null) {
+            if (entity != null) {
                 ar.getExtraProperties().put("entity", getAttributes(entity));
             }
         }
@@ -551,7 +549,7 @@ public class TemplateResource {
         optionsResult.putMethodMetaData("DELETE", mmd.get("DELETE"));
 
         ResourceUtil.addMethodMetaData(ar, mmd);
-        if (entity!=null) {
+        if (entity != null) {
             ar.getExtraProperties().put("childResources", ResourceUtil.getResourceLinks(entity, uriInfo));
         }
         ar.getExtraProperties().put("commands", ResourceUtil.getCommandLinks(getCommandResourcesPaths()));
