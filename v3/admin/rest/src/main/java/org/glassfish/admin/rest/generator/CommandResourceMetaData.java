@@ -192,17 +192,4 @@ public class CommandResourceMetaData {
             {"Server", "recover-transactions", "POST", "recover-transactions", "Recover", "id=$parent"},
             {"WorkSecurityMap", "update-connector-work-security-map", "POST", "update-connector-work-security-map", "Update", "id=$parent"}
     };
-
-
-//
-//    private Map<String, List<CommandResourceMetaData> > configBeansToCommandResourceMetaData = new HashMap<String, List<CommandResourceMetaData>>() {{
-//        put("Application", new LinkedList<CommandResourceMetaData>()
-//                {{
-//                    add (new CommandResourceMetaData("disable", "POST", "disable", "Disable", "id=$parent") );
-//                    add (new CommandResourceMetaData("disable", "POST", "disable", "Disable", "id=$parent") );
-//                }}
-//           );
-//
-//    }};
-
 }

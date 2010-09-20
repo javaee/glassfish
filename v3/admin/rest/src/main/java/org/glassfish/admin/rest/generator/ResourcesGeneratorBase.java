@@ -69,7 +69,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
     public void generateSingle(ConfigModel model, DomDocument domDocument) {
         //processRedirectsAnnotation(model); // TODO need to extract info from RestRedirect Annotations
 
-        String serverConfigName = getUnqualifiedTypeName(model.targetTypeName);
+        String serverConfigName = ResourceUtil.getUnqualifiedTypeName(model.targetTypeName);
         String beanName = getBeanName(serverConfigName);
         String className = getClassName(beanName);
 
@@ -101,7 +101,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
                 List<ConfigModel> subChildConfigModels = ResourceUtil.getRealChildConfigModels(childModel, domDocument);
                 for (ConfigModel subChildConfigModel : subChildConfigModels) {
                     if (ResourceUtil.isOnlyATag(childModel)) {
-                        String childResourceClassName = getClassName(getUnqualifiedTypeName(subChildConfigModel.targetTypeName));
+                        String childResourceClassName = getClassName(ResourceUtil.getUnqualifiedTypeName(subChildConfigModel.targetTypeName));
                         String childPath = subChildConfigModel.getTagName();
                         classWriter.createGetChildResource(childPath, childResourceClassName);
                         generateSingle(subChildConfigModel, domDocument);
@@ -131,7 +131,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
 
     public void generateList(ConfigModel model, DomDocument domDocument)  {
 
-        String serverConfigName = getUnqualifiedTypeName(model.targetTypeName);
+        String serverConfigName = ResourceUtil.getUnqualifiedTypeName(model.targetTypeName);
         String beanName = getBeanName(serverConfigName);
         String className = "List" + getClassName(beanName);
 
@@ -183,7 +183,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
     private void processNonLeafChildElement(String elementName, ConfigModel.Property childElement, DomDocument domDocument, ClassWriter classWriter) {
         ConfigModel.Node node = (ConfigModel.Node) childElement;
         ConfigModel childModel = node.getModel();
-        String beanName = getUnqualifiedTypeName(childModel.targetTypeName);
+        String beanName = ResourceUtil.getUnqualifiedTypeName(childModel.targetTypeName);
 
         if (beanName.equals("Property")) {
             classWriter.createGetChildResource("property", "PropertiesBagResource");
@@ -210,7 +210,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
      * @param classWriter
      */
     private void processNonLeafChildConfigModel(ConfigModel childConfigModel, ConfigModel.Property childElement, DomDocument domDocument, ClassWriter classWriter) {
-        String childResourceClassName = getClassName("List" + getUnqualifiedTypeName(childConfigModel.targetTypeName));
+        String childResourceClassName = getClassName("List" + ResourceUtil.getUnqualifiedTypeName(childConfigModel.targetTypeName));
         String childPath = childConfigModel.getTagName();
         classWriter.createGetChildResource(childPath, childResourceClassName);
         if (childElement.isCollection()) {
@@ -384,14 +384,6 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         return keyAttributeName;
     }
 
-    /**
-     * @param qualifiedTypeName
-     * @return unqualified type name for given qualified type name. This is a substring of qualifiedTypeName after last "."
-     */
-    private String getUnqualifiedTypeName(String qualifiedTypeName) {
-        return qualifiedTypeName.substring(qualifiedTypeName.lastIndexOf(".") + 1, qualifiedTypeName.length());
-    }
-
     private void processRedirectsAnnotation(ConfigModel model) {
         Class<? extends ConfigBeanProxy> cbp = null;
         try {
@@ -473,7 +465,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         put("ListSecurityMap", "create-connector-security-map");
     }};
 
-    private static final String[][] configBeanCustomResources = {
+    public static final String[][] configBeanCustomResources = {
         // ConfigBean, Custom Resource Class, path
         {"Cluster", "SystemPropertiesCliResource", "system-properties"},
         {"Config", "SystemPropertiesCliResource", "system-properties"},

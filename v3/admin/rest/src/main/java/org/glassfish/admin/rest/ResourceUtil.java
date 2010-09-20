@@ -41,6 +41,7 @@
 package org.glassfish.admin.rest;
 
 
+import org.glassfish.admin.rest.generator.ResourcesGeneratorBase;
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.provider.ParameterMetaData;
 import org.glassfish.admin.rest.provider.ProviderUtil;
@@ -206,8 +207,7 @@ public class ResourceUtil {
      * @param logger  the logger to use
      * @return MethodMetaData the meta-data store for the resource method.
      */
-    public static MethodMetaData getMethodMetaData(String command, Habitat habitat,
-                                                   Logger logger) {
+    public static MethodMetaData getMethodMetaData(String command, Habitat habitat, Logger logger) {
         return getMethodMetaData(command, Constants.MESSAGE_PARAMETER,
                 habitat, logger);
     }
@@ -222,8 +222,7 @@ public class ResourceUtil {
      * @param logger        the logger to use
      * @return MethodMetaData the meta-data store for the resource method.
      */
-    public static MethodMetaData getMethodMetaData(String command,
-                                                   int parameterType, Habitat habitat, Logger logger) {
+    public static MethodMetaData getMethodMetaData(String command, int parameterType, Habitat habitat, Logger logger) {
         return getMethodMetaData(command, null, parameterType, habitat, logger);
     }
 
@@ -239,8 +238,7 @@ public class ResourceUtil {
      * @param logger              the logger to use
      * @return MethodMetaData the meta-data store for the resource method.
      */
-    public static MethodMetaData getMethodMetaData(String command,
-                                                   HashMap<String, String> commandParamsToSkip, int parameterType,
+    public static MethodMetaData getMethodMetaData(String command, HashMap<String, String> commandParamsToSkip, int parameterType,
                                                    Habitat habitat, Logger logger) {
         MethodMetaData methodMetaData = new MethodMetaData();
 
@@ -249,8 +247,7 @@ public class ResourceUtil {
             if (commandParamsToSkip == null) {
                 params = getParamMetaData(command, habitat, logger);
             } else {
-                params = getParamMetaData(command, commandParamsToSkip.keySet(),
-                        habitat, logger);
+                params = getParamMetaData(command, commandParamsToSkip.keySet(), habitat, logger);
             }
 
             Iterator<CommandModel.ParamModel> iterator = params.iterator();
@@ -262,8 +259,7 @@ public class ResourceUtil {
                 ParameterMetaData parameterMetaData = getParameterMetaData(paramModel);
 
 
-                String parameterName =
-                        (param.primary()) ? "id" : paramModel.getName();
+                String parameterName = (param.primary()) ? "id" : paramModel.getName();
 
                 // If the Param has an alias, use it instead of the name
                 String alias = param.alias();
@@ -290,7 +286,6 @@ public class ResourceUtil {
      * @param uriInfo the uri context to extract parent name value.
      */
     public static void resolveParentParamValue(HashMap<String, String> commandParams, UriInfo uriInfo) {
-
         String parent = getParentName(uriInfo);
         if (parent != null) {
             Set<String> keys = commandParams.keySet();
@@ -480,26 +475,22 @@ public class ResourceUtil {
         CommandModel cm = cr.getModel(commandName, logger);
         Collection<String> parameterNames = cm.getParametersNames();
 
-        ArrayList<CommandModel.ParamModel> metaData =
-                new ArrayList<CommandModel.ParamModel>();
+        ArrayList<CommandModel.ParamModel> metaData = new ArrayList<CommandModel.ParamModel>();
         CommandModel.ParamModel paramModel;
         for (String name : parameterNames) {
             paramModel = cm.getModelFor(name);
-            String parameterName =
-                    (paramModel.getParam().primary()) ? "id" : paramModel.getName();
+            String parameterName = (paramModel.getParam().primary()) ? "id" : paramModel.getName();
 
             boolean skipParameter = false;
             try {
                 skipParameter = commandParamsToSkip.contains(parameterName);
             } catch (Exception e) {
-                String errorMessage =
-                        localStrings.getLocalString("rest.metadata.skip.error",
+                String errorMessage = localStrings.getLocalString("rest.metadata.skip.error",
                                 "Parameter \"{0}\" may be redundant and not required.",
                                 new Object[]{parameterName});
-                Logger.getLogger(ResourceUtil.class.getName()).log(Level.INFO,
-                        null, errorMessage);
-                Logger.getLogger(ResourceUtil.class.getName()).log(Level.INFO,
-                        null, e);
+                // TODO: Why are we logging twice?
+                Logger.getLogger(ResourceUtil.class.getName()).log(Level.INFO, null, errorMessage);
+                Logger.getLogger(ResourceUtil.class.getName()).log(Level.INFO, null, e);
             }
 
             if (!skipParameter) {
@@ -609,7 +600,6 @@ public class ResourceUtil {
     }
 
     //Construct parameter meta-data from the model
-
     static ParameterMetaData getParameterMetaData(CommandModel.ParamModel paramModel) {
         Param param = paramModel.getParam();
         ParameterMetaData parameterMetaData = new ParameterMetaData();
@@ -617,8 +607,8 @@ public class ResourceUtil {
         parameterMetaData.putAttribute(Constants.TYPE, getXsdType(paramModel.getType().toString()));
         parameterMetaData.putAttribute(Constants.OPTIONAL, Boolean.toString(param.optional()));
         String val = param.defaultValue();
-        if ((val!=null)&&(!val.equals("\u0000"))){
-         parameterMetaData.putAttribute(Constants.DEFAULT_VALUE, param.defaultValue());
+        if ((val != null) && (!val.equals("\u0000"))) {
+            parameterMetaData.putAttribute(Constants.DEFAULT_VALUE, param.defaultValue());
         }
         parameterMetaData.putAttribute(Constants.ACCEPTABLE_VALUES, param.acceptableValues());
 
@@ -861,10 +851,26 @@ public class ResourceUtil {
             }
         }
 
+        String beanName = getUnqualifiedTypeName(dom.model.targetTypeName);
+        for (String[] resource : ResourcesGeneratorBase.configBeanCustomResources) {
+            if (resource[0].equals(beanName)) {
+                links.put(resource[2], ProviderUtil.getElementLink(uriInfo, resource[2]));
+            }
+        }
+
         return links;
     }
    
-    public static boolean isOnlyATag (ConfigModel model){
+    /**
+     * @param qualifiedTypeName
+     * @return unqualified type name for given qualified type name. This is a substring of qualifiedTypeName after last "."
+     */
+    public static String getUnqualifiedTypeName(String qualifiedTypeName) {
+        return qualifiedTypeName.substring(qualifiedTypeName.lastIndexOf(".") + 1, qualifiedTypeName.length());
+    }
+
+
+  public static boolean isOnlyATag (ConfigModel model){
         return (model.getAttributeNames().isEmpty()) && (model.getElementNames().isEmpty());
     }
 
