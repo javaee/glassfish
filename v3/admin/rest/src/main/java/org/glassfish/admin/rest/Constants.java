@@ -62,4 +62,5 @@ public interface Constants {
     public static final String DEFAULT_VALUE = "defaultValue";
     public static final String ACCEPTABLE_VALUES = "acceptableValues";
     public static final String PARENT_NAME_VARIABLE = "$parent";
+    public static final String DEPRECATED = "deprecated";
 }

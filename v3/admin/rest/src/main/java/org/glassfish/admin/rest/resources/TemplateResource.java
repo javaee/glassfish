@@ -540,8 +540,9 @@ public class TemplateResource {
         ConfigBean entity = (ConfigBean)getEntity();
         ar.setActionDescription(upperCaseFirstLetter(childModel.getTagName()));
         if (showEntityValues) {
-            if (entity!=null)
+            if (entity!=null) {
                 ar.getExtraProperties().put("entity", getAttributes(entity));
+            }
         }
         OptionsResult optionsResult = new OptionsResult(Util.getResourceName(uriInfo));
         Map<String, MethodMetaData> mmd = getMethodMetaData();

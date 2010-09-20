@@ -341,6 +341,10 @@ public class ResourceUtil {
                     Attribute attribute = method.getAnnotation(Attribute.class);
                     if (attribute != null) {
                         ParameterMetaData parameterMetaData = getParameterMetaData(attribute);
+                        Deprecated dep = method.getAnnotation(Deprecated.class);
+                        if (dep != null) {
+                            parameterMetaData.putAttribute(Constants.DEPRECATED, "true");
+                        }
 
                         //camelCase the attributeName before passing out
                         attributeName = eleminateHypen(attributeName);
@@ -843,7 +847,7 @@ public class ResourceUtil {
             if (elementName.equals("*")) {
                 ConfigModel.Node node = (ConfigModel.Node) dom.model.getElement(elementName);
                 ConfigModel childModel = node.getModel();
-                    List<ConfigModel> lcm =getRealChildConfigModels( childModel,  dom.document) ;
+                    List<ConfigModel> lcm = getRealChildConfigModels( childModel,  dom.document) ;
 
                     Collections.sort(lcm, new ConfigModelComparator());
                     if (lcm != null) {
