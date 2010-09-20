@@ -125,13 +125,14 @@ public class ShowComponentStatusCommand implements AdminCommand {
             
             String status = "disabled";
 
-            ApplicationRef ref = domain.getApplicationRefInTarget(appName, target);
-            if (ref == null) {
-                report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", appName, target));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
+            if (!DeploymentUtils.isDomainTarget(target)) {
+                ApplicationRef ref = domain.getApplicationRefInTarget(appName, target);
+                if (ref == null) {
+                    report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", appName, target));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
             }
-
             if (domain.isAppEnabledInTarget(appName, target)) {
                 status = "enabled";
             }
