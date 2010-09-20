@@ -88,7 +88,7 @@ public class StartInstanceCommand implements AdminCommand {
     @Inject
     private Servers servers;
     
-    @Param(optional = true, primary = true)
+    @Param(name = "instance_name", primary = true)
     private String instanceName;
 
     @Param(optional = true)
