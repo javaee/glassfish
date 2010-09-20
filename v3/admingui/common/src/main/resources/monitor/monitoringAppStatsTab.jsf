@@ -43,6 +43,6 @@
 <sun:tab id="monitor_appstats" immediate="true" text="$resource{i18nc.appmonitoring}" toolTip="$resource{i18nc.appmonitoring} Tab">
     <!command
 	setSessionAttribute(key="serverInstTabs" value="monitor_appstats");
-	gf.redirect(page="#{request.contextPath}/monitor/serverInstMonitoringAppStatsPage.jsf");
+	gf.redirect(page="#{request.contextPath}/monitor/serverInstMonitoringAppsPage.jsf");
     />
 </sun:tab>
