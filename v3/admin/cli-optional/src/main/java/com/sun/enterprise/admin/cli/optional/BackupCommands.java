@@ -80,7 +80,7 @@ public abstract class BackupCommands extends LocalDomainCommand {
     String configonly;
 
     @Param(optional = true)
-    String backupconfig;
+    String backupConfig;
 
     @Param(optional = true)
     String backupdir;
@@ -148,7 +148,7 @@ public abstract class BackupCommands extends LocalDomainCommand {
         }
 
         request = new BackupRequest(domainDirParam, domainName, backupdir_f,
-                                    null, desc, recycleLimit);
+                                    backupConfig, desc, recycleLimit);
 
         request.setTerse(programOpts.isTerse());
         request.setVerbose(verbose);

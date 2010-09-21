@@ -60,87 +60,81 @@ import java.io.*;
  */
 public class ListManager extends BackupRestoreManager
 {
-	
-	/** Creates an instance of ListManager.
-	 * The superclass will call init() so it is
-	 * possible for Exceptions to be thrown.
-	 * @param req The BackupRequest instance with required information.
-	 * @throws BackupException if there is a fatal error with the BackupRequest object.
-	 * @throws BackupWarningException if there is a non-fatal error with the BackupRequest object.
-	 */	
-	public ListManager(BackupRequest req) throws BackupException, BackupWarningException
-	{
-		super(req);
-	}
 
-	/** 
-	 * Find all backup zip files in a domain and return a String
-	 * summarizing information about the backup.
-	 * The summary is shorter if the "terse" option is true.
-	 * @return a String summary
-	 * @throws BackupException if there is a fatal error
-	 */
-	public String list() throws BackupException
-	{
-		StringBuffer sb = new StringBuffer();
-		
-		findZips();
-		
-		// it is GUARANTEED that the length > 0
-		for(int i = 0; i < zips.length; i++)
-		{
-			Status status = new Status();
-			sb.append(status.read(zips[i], request.terse));
-			sb.append("\n");
-			
-			if(request.terse == false)
-				sb.append("\n");
-		}
-		
-		return sb.toString();
-	}
+    /** Creates an instance of ListManager.
+     * The superclass will call init() so it is
+     * possible for Exceptions to be thrown.
+     * @param req The BackupRequest instance with required information.
+     * @throws BackupException if there is a fatal error with the 
+     * BackupRequest object.
+     * @throws BackupWarningException if there is a non-fatal error with the 
+     * BackupRequest object.
+     */
+    public ListManager(BackupRequest req) 
+        throws BackupException, BackupWarningException {
 
-	
-	///////////////////////////////////////////////////////////////////////////////
-	// 
-	/**
-	 * Finish initializing the BackupRequest object.
-	 * note: this method is called by the super class...
-	 * @throws BackupException for fatal errors
-	 * @throws BackupWarningException for non-fatal errors - these are errors
-	 * where we can not continue execution.
-	 */	
-	void init() throws BackupException, BackupWarningException
-	{
-		super.init();
-		
-		if(!FileUtils.safeIsDirectory(request.domainDir))
-			throw new BackupException("backup-res.NoDomainDir", request.domainDir);
+        super(req);
+    }
 
-                if (request.backupDir == null) {
-		    request.backupDir = new File(request.domainDir, Constants.BACKUP_DIR);
-                }
+    /** 
+     * Find all backup zip files in a domain and return a String
+     * summarizing information about the backup.
+     * The summary is shorter if the "terse" option is true.
+     * @return a String summary
+     * @throws BackupException if there is a fatal error
+     */
+    public String list() throws BackupException {
+        StringBuffer sb = new StringBuffer();
+        
+        findZips();
+        
+        // it is GUARANTEED that the length > 0
+        for(int i = 0; i < zips.length; i++)
+        {
+            Status status = new Status();
+            sb.append(status.read(zips[i], request.terse));
+            sb.append("\n");
+            
+            if(request.terse == false)
+                sb.append("\n");
+        }
+        
+        return sb.toString();
+    }
 
-		// It's a warning to not exist...
-		if(!FileUtils.safeIsDirectory(request.backupDir))
-			throw new BackupWarningException("backup-res.NoBackupDir", request.backupDir);
-	}
-	
-	///////////////////////////////////////////////////////////////////////////////
+    
+    /**
+     * Finish initializing the BackupRequest object.
+     * note: this method is called by the super class...
+     * @throws BackupException for fatal errors
+     * @throws BackupWarningException for non-fatal errors - these are errors
+     * where we can not continue execution.
+     */    
+    void init() throws BackupException, BackupWarningException {
+        super.init();
+        
+        if(!FileUtils.safeIsDirectory(request.domainDir))
+            throw new BackupException("backup-res.NoDomainDir",
+                                      request.domainDir);
 
-	/** Looks through the backups directory and assembles
-	 * a list of all backup files found.
-	 * @throws BackupWarningException if there are no backup zip files
-	 */	
-	void findZips() throws BackupWarningException
-	{
-		zips = request.backupDir.listFiles(new ZipFilenameFilter());
+        // It's a warning to not exist...
+        if(!FileUtils.safeIsDirectory(getBackupDirectory(request)))
+            throw new BackupWarningException("backup-res.NoBackupDir", 
+                                             getBackupDirectory(request));
+    }
+    
+    /** Looks through the backups directory and assembles
+     * a list of all backup files found.
+     * @throws BackupWarningException if there are no backup zip files
+     */    
+    void findZips() throws BackupWarningException {
 
-		if(zips == null || zips.length <= 0)
-			throw new BackupWarningException("backup-res.NoBackupFiles", request.backupDir);
-	}
-	
-	///////////////////////////////////////////////////////////////////////////////
+        zips = getBackupDirectory(request).listFiles(new ZipFilenameFilter());
+        if(zips == null || zips.length <= 0)
+            throw new BackupWarningException("backup-res.NoBackupFiles", 
+                                             getBackupDirectory(request));
+    }
+    
 
-	File[] zips;
+    File[] zips;
 }

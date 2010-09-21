@@ -87,7 +87,8 @@ public class BackupRequest {
                          File backupDir, String backupConfig,
                          String backupFileName) {
         this(domainsDirName, domain, backupDir, backupConfig);
-        setBackupFile(backupFileName);
+        if (backupFileName != null)
+            setBackupFile(backupFileName);
     }
 
     ///////////////////////////////////////////////////////////////////////////

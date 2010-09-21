@@ -147,7 +147,7 @@ public final class RestoreDomainCommand extends BackupCommands {
         }
         
         request = new BackupRequest(domainDirParam, domainName, backupdir_f,
-                                    backupFilename);
+                                    backupConfig, backupFilename);
         request.setTerse(programOpts.isTerse());
         request.setVerbose(verbose);
         request.setForce(force);

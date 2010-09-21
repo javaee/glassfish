@@ -86,14 +86,38 @@ abstract class BackupRestoreManager {
         LoggerHelper.setLevel(request);
     }
 
+    /**
+     * If both the backupDir and backupConfig are not set then this method
+     * behaves as it did in v2.  It returns a path to the 
+     * domainDir + BACKUP_DIR (backups).
+     * If a backupConfig has been associated with the request and the
+     * backupDir is not set then it returns a path to domainDir + backupConfig.
+     * If a backupConfig has been associated with the request and the
+     * backupDir is set then it returns a path to backupDir + domainName +
+     * backupConfig.
+     * If a backupConfig has not been associated with the request and the
+     * backupDir is set then it returns a path to backupDir + domainName.
+     */
     protected File getBackupDirectory(BackupRequest request) {
         File backupDir = null;
-        if (request.backupDir != null) {
-            backupDir = request.backupDir;
-        } else {
-            backupDir = new File(request.domainDir, Constants.BACKUP_DIR);
+
+        // The v2 case.
+        if (request.backupDir == null && request.backupConfig == null) {
+            return (new File(request.domainDir, Constants.BACKUP_DIR));
         }
-        return backupDir;
+
+        if (request.backupDir == null && request.backupConfig != null) {
+            return (new File(new File(request.domainDir, Constants.BACKUP_DIR),
+                             request.backupConfig));
+        }
+
+        if (request.backupDir != null && request.backupConfig != null) {
+            return (new File(new File(request.backupDir, request.domainName),
+                             request.backupConfig));
+        }
+
+        // backupDir != null && backupConfig == null
+        return (new File(request.backupDir, request.domainName));
     }
 
 
