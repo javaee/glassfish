@@ -43,6 +43,7 @@ package com.sun.enterprise.backup;
 import com.sun.enterprise.backup.util.*;
 import java.io.*;
 import java.util.List;
+import java.util.Date;
 
 /**
  *
@@ -58,15 +59,18 @@ public class BackupManager extends BackupRestoreManager {
     //////////////////////////////////////////////////////////////////////
 
     public final String backup() throws BackupException {
-        String mesg = StringHelper.get("backup-res.SuccessfulBackup");
+        String mesg = "";
         String statusString = writeStatus();
 
-        if (request.terse == false) {
-            mesg += "\n\n" + statusString;
+
+        if (!request.terse) {
+            String backupTime = new Date(request.timestamp).toString();
+
+            mesg = StringHelper.get("backup-res.SuccessfulBackup", 
+                                    request.domainName, backupTime);
         }
         
-        try
-        {
+        try {
             ZipStorage zs = new ZipStorage(request);
             zs.store();
             // TODO: RSH - Recycle files. I'm not sure if this is the precise
@@ -76,11 +80,31 @@ public class BackupManager extends BackupRestoreManager {
             // should be safe to recycle after a successful or unsuccessful backup
             // (assuming a failed backup doesn't leave a corrupt ZIP file).
             BackupFilenameManager bfm =
-                new BackupFilenameManager(getBackupDirectory(request), request.domainName);
+                new BackupFilenameManager(getBackupDirectory(request),
+                                          request.domainName);
             List<File> recycleFiles = bfm.getRecycleFiles(request.recycleLimit);
-            for (File f : recycleFiles) {
-                // f.delete();
+            if (recycleFiles.size() > 0 && request.verbose) {
+                mesg += "\n" + StringHelper.get("backup-res.recycle",
+                                                request.recycleLimit) + "\n";
             }
+
+            for (File f : recycleFiles) {
+                if (request.verbose) {
+                    mesg += StringHelper.get("backup-res.recycleDelete", f)
+                         + "\n";
+                }
+                if (!f.delete()) {
+                    mesg += StringHelper.get("backup-res.recycleBadDelete", f)
+                         + "\n";
+                }
+            }
+
+            if (request.verbose)
+                mesg += "\n\n" + statusString;
+
+            //XXX: This needs to be fixed such that if an error occurs
+            //     it is propogated up such that the command exits with
+            //     the proper exit code.
             return mesg;
         }
         finally {
