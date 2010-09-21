@@ -43,6 +43,7 @@
 <!-- full/customResources.jsf -->
 
 <!initPage
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
     setResourceBundle(key="i18njmail" bundle="org.glassfish.full.admingui.Strings");
     setResourceBundle(key="help_jmail" bundle="org.glassfish.full.admingui.Helplinks")
 />
