@@ -81,7 +81,7 @@ class OSGiServiceFactory {
         
         //Get the bundle context from the classloader that loaded the annotation
         //element
-        Class annotatedElt = ((Class)svcInjectionPoint.getAnnotated().getBaseType());
+        Class annotatedElt = svcInjectionPoint.getMember().getDeclaringClass();
         BundleContext bc = BundleReference.class
                             .cast(annotatedElt.getClassLoader())
                             .getBundle().getBundleContext();
