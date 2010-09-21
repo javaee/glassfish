@@ -59,7 +59,6 @@ import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.ejb.codegen.StaticRmiStubGenerator;
-import com.sun.ejb.containers.EjbContainerUtil;
 import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.ejb.containers.EJBTimerService;
 import com.sun.logging.LogDomains;
@@ -85,6 +84,7 @@ import org.glassfish.api.invocation.RegisteredComponentInvocationHandler;
 import org.glassfish.ejb.security.application.EJBSecurityManager;
 import org.glassfish.ejb.security.application.EjbSecurityProbeProvider;
 import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
+import org.glassfish.internal.data.ApplicationInfo;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -119,7 +119,7 @@ public class EjbDeployer
 
     @Inject
     private Events events;
-    
+
     private Object lock = new Object();
     private volatile CMPDeployer cmpDeployer = null;
 
@@ -177,7 +177,6 @@ public class EjbDeployer
 
         if( !appProps.containsKey(APP_UNIQUE_ID_PROP)) {
 
-
             // This is the first time load is being called for any ejb module in an
             // application, so generate the unique id.
 
@@ -185,6 +184,21 @@ public class EjbDeployer
             appProps.setProperty(APP_UNIQUE_ID_PROP, uniqueAppId + "");
         } else {
             uniqueAppId = Long.parseLong(appProps.getProperty(APP_UNIQUE_ID_PROP));
+        }
+
+        OpsParams params = dc.getCommandParameters(OpsParams.class);
+        if (params.origin.isDeploy()) {
+            // KEEP_STATE is saved to AppProps in EjbApplication.stop
+            String keepStateVal = (String) dc.getAppProps().get(EjbApplication.KEEP_STATE);
+            if (keepStateVal != null) {
+                // save KEEP_STATE to Application so subsequent to make it available
+                // to subsequent deploy-related methods.
+                ejbBundle.getApplication().setKeepStateResolved(keepStateVal);
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "EjbDeployer.prepare set keepstate to {0} for application.",
+                            ejbBundle.getApplication().getKeepStateResolved());
+                }
+            }
         }
 
         Application app = ejbBundle.getApplication();
@@ -197,7 +211,7 @@ public class EjbDeployer
             // this is the only place where Application.setUniqueId() should be called.
             app.setUniqueId(uniqueAppId);
         }
-
+        
         return super.prepare(dc);
     }
 
@@ -293,7 +307,6 @@ public class EjbDeployer
      * @param dc deployment context
      */
     public void clean(DeploymentContext dc) {
-        
         // Both undeploy and shutdown scenarios are
         // handled directly in EjbApplication.shutdown.
 
@@ -606,5 +619,15 @@ public class EjbDeployer
     */
     private boolean isDas() {
         return EjbContainerUtilImpl.getInstance().isDas();
+    }
+
+    private boolean getKeepStateFromApplicationInfo(String appName) {
+        ApplicationInfo appInfo = appRegistry.get(appName);
+        if (appInfo == null) {
+            // appInfo can be null when running EjbDeployer.clean after a failed deploy
+            return false;
+        }
+        Boolean ks = appInfo.getTransientAppMetaData(EjbApplication.KEEP_STATE, Boolean.class);
+        return (ks == null ? false : ks);
     }
 }

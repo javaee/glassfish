@@ -157,6 +157,13 @@ public class Application extends BundleDescriptor
     // realm associated with this application
     private String realm;
 
+    /**
+     * A flag to store the resolved keepstate value for the current application.
+     * See org.glassfish.ejb.startup.EjbApplication for details.  This value
+     * may be different from super.keepState.
+     */
+    private boolean keepStateResolved;
+
     // Physical entity manager factory corresponding to the unit name of 
     // each application-level persistence unit.  Only available at runtime.
     private Map<String, EntityManagerFactory> entityManagerFactories =
@@ -1957,5 +1964,21 @@ public class Application extends BundleDescriptor
             }
         }
         return super.getKeepState();
+    }
+
+    /**
+     * Returns the resolved keepstate value. 
+     * @return keepStateResolved
+     */
+    public boolean getKeepStateResolved() {
+        return keepStateResolved;
+    }
+
+    /**
+     * Sets the resolved keepstate value.  
+     * @param keepStateResolved
+     */
+    public void setKeepStateResolved(String keepStateResolved) {
+        this.keepStateResolved = Boolean.valueOf(keepStateResolved);
     }
 }

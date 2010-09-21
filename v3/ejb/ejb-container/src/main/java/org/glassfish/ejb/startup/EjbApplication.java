@@ -58,6 +58,7 @@ import org.glassfish.api.deployment.ApplicationContext;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.OpsParams;
+import org.glassfish.internal.data.ApplicationInfo;
 
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -70,6 +71,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.deployment.UndeployCommandParameters;
+import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 
 /**
@@ -111,6 +113,8 @@ public class EjbApplication
     private static final String CONTAINER_LIST_KEY = "org.glassfish.ejb.startup.EjbContainerList";
 
     private static final String EJB_APP_MARKED_AS_STARTED_STATUS = "org.glassfish.ejb.startup.EjbApplicationMarkedAsStarted";
+
+    static final String KEEP_STATE = "org.glassfish.ejb.startup.keepstate";
 
     public EjbApplication(
             EjbBundleDescriptor bundle, DeploymentContext dc,
@@ -246,41 +250,53 @@ public class EjbApplication
     }
 
     public boolean stop(ApplicationContext stopContext) {
-        if (stopContext instanceof DeploymentContext) {
-            DeploymentContext depc = (DeploymentContext) stopContext;
-            if (isKeepState(depc, false, ejbBundle)) {
+        DeploymentContext depc = (DeploymentContext) stopContext;
+        OpsParams params = depc.getCommandParameters(OpsParams.class);
+        boolean keepState = false;
+
+        //calculate keepstate value for undeploy only.  For failed deploy,
+        //keepstate remains the default value (false).
+        if(params.origin.isUndeploy()) {
+            keepState = resolveKeepStateOptions(depc, false, ejbBundle);
+            if (keepState) {
                 Properties appProps = depc.getAppProps();
                 Object appId = appProps.get(EjbDeployer.APP_UNIQUE_ID_PROP);
                 Properties actionReportProps = null;
 
-                if(ejbBundle.getApplication().isVirtual()) {
+                if (ejbBundle.getApplication().isVirtual()) {
                     actionReportProps = depc.getActionReport().getExtraProperties();
                 } else { // the application is EAR
                     ExtendedDeploymentContext exdc = (ExtendedDeploymentContext) depc;
                     actionReportProps = exdc.getParentContext().getActionReport().getExtraProperties();
                 }
-                if (actionReportProps != null) {
-                    actionReportProps.put(EjbDeployer.APP_UNIQUE_ID_PROP, appId);
-                    ejbBundle.setKeepState(String.valueOf(true));
-                    _logger.log(Level.INFO, "keepstate is true, saving appId {0} for application {1}.",
-                            new Object[]{appId, this});
-                } else {
-                    // keepstate is true but actionReportProps is null, which means
-                    // this is not redeploy.  This could happen during undeploy when
-                    // keep-state is set to true in deployment descriptors,
-                    // or undeploy --keepstate
-                    ejbBundle.setKeepState(String.valueOf(false));
-                }
+
+                actionReportProps.put(EjbDeployer.APP_UNIQUE_ID_PROP, appId);
+                actionReportProps.put(EjbApplication.KEEP_STATE, String.valueOf(true));
+                _logger.log(Level.INFO, "keepstate options resolved to true, saving appId {0} for application {1}.",
+                        new Object[]{appId, params.name()});
             }
         }
-
-        OpsParams params = ((DeploymentContext)stopContext).
-                getCommandParameters(OpsParams.class);
 
         // If true we're shutting down b/c of an undeploy or a fatal error during
         // deployment.  If false, it's a shutdown where the application will remain
         // deployed.
         boolean undeploy = (params.origin.isUndeploy() || params.origin.isDeploy());
+
+        // for undeploy and failed deploy, store the keepstate in ApplicationInfo
+        // and Application.  For failed deploy, keepstate is the default value (false).
+        if(undeploy) {
+            // store keepstate in ApplicationInfo to make it available to
+            // EjbDeployer.clean().  A different instance of DeploymentContext
+            // is passed to EjbDeployer.clean so we cannot use anything in DC (e.g.
+            // appProps, transientData) to store keepstate.
+            ApplicationRegistry appRegistry = habitat.getComponent(ApplicationRegistry.class);
+            ApplicationInfo appInfo = appRegistry.get(params.name());
+            appInfo.addTransientAppMetaData(KEEP_STATE, keepState);
+
+            // store keepState in Application to make it available to subsequent
+            // undeploy-related methods.
+            ejbBundle.getApplication().setKeepStateResolved(String.valueOf(keepState));
+        }
 
         // First, shutdown any singletons that were initialized based
         // on a particular ordering dependency.
@@ -363,20 +379,38 @@ public class EjbApplication
 
     }
 
-    private boolean isKeepState(DeploymentContext deployContext, boolean isDeploy,
+    /**
+     * Returns a consolidated keepstate value.  keepstate only takes effect for
+     * redeploy operations where the app is already registered.  If the app is
+     * not already registered, keepstate always resolves to false even if
+     * keepstate is true in CLI or descriptors.  For redeploy operations, CLI
+     * --keepstate option has precedence over descriptor keep-state element.
+     * @param deployContext
+     * @param isDeploy
+     * @param bundleDesc
+     * @return true if keepstate is true after consolidating --keepstate CLI option
+     * and keep-state element in descriptors; false otherwise.
+     */
+    private boolean resolveKeepStateOptions(DeploymentContext deployContext, boolean isDeploy,
             EjbBundleDescriptor bundleDesc) {
+        Boolean isredeploy = Boolean.FALSE;
         Boolean keepState = null;
         if (isDeploy) {
             DeployCommandParameters dcp = deployContext.getCommandParameters(DeployCommandParameters.class);
             if (dcp != null) {
+                isredeploy = dcp.isredeploy;
                 keepState = dcp.keepstate;
             }
         } else {
             UndeployCommandParameters ucp = deployContext.getCommandParameters(UndeployCommandParameters.class);
             if (ucp != null) {
+                isredeploy = ucp.isredeploy;
                 keepState = ucp.keepstate;
             }
         }
+        if(!isredeploy) {
+            return false;
+        } 
 
         if (keepState == null) {
             Application app = bundleDesc.getApplication();
