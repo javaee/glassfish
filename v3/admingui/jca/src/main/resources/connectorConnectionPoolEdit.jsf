@@ -64,7 +64,7 @@
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
 
-        setPageSessionAttribute(key="convertToFalseList" value={"Ping" "IsConnectionValidationRequired" "FailAllConnections" "AssociateWithThread" "ConnectionLeakReclaim" "LazyConnectionAssociation" "LazyConnectionEnlistment" "MatchConnections" });
+        setPageSessionAttribute(key="convertToFalseList" value={"ping" "isConnectionValidationRequired" "failAllConnections" "associateWithThread" "ConnectionLeakReclaim" "lazyConnectionAssociation" "lazyConnectionEnlistment" "matchConnections" });
         setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
         setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
