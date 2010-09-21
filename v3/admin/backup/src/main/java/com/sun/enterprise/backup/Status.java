@@ -57,244 +57,232 @@ import com.sun.appserv.server.util.Version;
  *
  * @author  Byron Nevins
  */
-class Status
-{
-	String write(BackupRequest req)
-	{
-		props = new Properties();
-		request = req;
-		statusFile = new File(request.domainDir, Constants.PROPS_FILENAME);
+class Status {
 
-		try
-		{
-			setProps();
-			FileOutputStream out = new FileOutputStream(statusFile);
-			props.store(out, Constants.PROPS_HEADER);
-			return propsToString(false);
-		}
-		catch(Exception e)
-		{
-			return StringHelper.get("backup-res.CantWriteStatus", statusFile);
-		}
-	}
-	
-	///////////////////////////////////////////////////////////////////////////////
+    String write(BackupRequest req) {
+        props = new Properties();
+        request = req;
+        statusFile = new File(request.domainDir, Constants.PROPS_FILENAME);
 
-	/**
-	 * @param file Either a zip file that contains backup.properties -- or backup.properties
-	 * itself.  terse is automatically set to true.
-	 * @return a String summary of the backup
-	 */	
-	String read(File file)
-	{
-		return read(file, true);
-	}
-	
-	///////////////////////////////////////////////////////////////////////////////
+        try {
+            setProps();
+            FileOutputStream out = new FileOutputStream(statusFile);
+            props.store(out, Constants.PROPS_HEADER);
+            return propsToString(false);
+        }
+        catch(Exception e) {
+            return StringHelper.get("backup-res.CantWriteStatus", statusFile);
+        }
+    }
+    
+    /**
+     * @param file Either a zip file that contains backup.properties -- or 
+     * backup.properties itself.  terse is automatically set to true.
+     * @return a String summary of the backup
+     */    
+    String read(File file) {
+        return read(file, true);
+    }
+    
+    /**
+     * @param file Either a zip file that contains backup.properties -- or 
+     * backup.properties itself.
+     * @param terse if true, give a short summary
+     * @return a String summary of the backup
+     */    
+    String read(File file, boolean terse) {
+        props = null;
+        
+        setPropsFromFile(file);
+        if(props == null) {
+            return badStatusFileMessage(file);
+        }
 
-	/**
-	 * @param file Either a zip file that contains backup.properties -- or backup.properties
-	 * itself.
-	 * @param terse if true, give a short summary
-	 * @return a String summary of the backup
-	 */	
-	String read(File file, boolean terse)
-	{
-		props = null;
-		
-		setPropsFromFile(file);
-		if(props == null)
-		{
-			return badStatusFileMessage(file);
-		}
+        return propsToString(terse);
+    }
 
-		return propsToString(terse);
-	}
+    /**
+     * open the zip file, parse the status file and return the timestamp
+     * of when it was created.
+     */
+    long getInternalTimestamp(File f) {
+        props = null;
+        setPropsFromFile(f);
 
-	/**
-	 * open the zip file, parse the status file and return the timestamp
-	 * of when it was created.
-	*/
+        try {
+            String s = props.getProperty(Constants.PROPS_TIMESTAMP_MSEC);
+            return Long.parseLong(s);
+        }
+        catch(Exception e) {
+            LoggerHelper.warning(badStatusFileMessage(f));
+            return 0;
+        }
+    }
+    
+    void delete() {
+        if(!statusFile.delete()) {
+            // TBD warning message
+            statusFile.deleteOnExit();
+        }
+    }
+    
+    String getDomainName() {
+        if(props == null)
+            return null;
+        
+        return props.getProperty(Constants.PROPS_DOMAIN_NAME);
+    }
 
-	long getInternalTimestamp(File f)
-	{
-		props = null;
-		setPropsFromFile(f);
+    String getTimeStamp() {
+        if(props == null)
+            return null;
+        
+        return props.getProperty(Constants.PROPS_TIMESTAMP_HUMAN);
+    }
 
-		try
-		{
-			String s = props.getProperty(Constants.PROPS_TIMESTAMP_MSEC);
-			return Long.parseLong(s);
-		}
-		catch(Exception e)
-		{
-			LoggerHelper.warning(badStatusFileMessage(f));
-			return 0;
-		}
-	}
-	
-	///////////////////////////////////////////////////////////////////////////////
-	
-	void delete()
-	{
-		if(!statusFile.delete())
-		{
-			// TBD warning message
-			statusFile.deleteOnExit();
-		}
-	}
-	
-	///////////////////////////////////////////////////////////////////////////////
-	
-	String getDomainName()
-	{
-		if(props == null)
-			return null;
-		
-		return props.getProperty(Constants.PROPS_DOMAIN_NAME);
-	}
+    String getUserName() {
+        if(props == null)
+            return null;
+        
+        return props.getProperty(Constants.PROPS_USER_NAME);
+    }
 
-	///////////////////////////////////////////////////////////////////////////////
-	//////  PRIVATE METHODS AND DATA    ///////////////////////////////////////////
-	///////////////////////////////////////////////////////////////////////////////
+    String getFileName() {
+        if(props == null)
+            return null;
+        
+        return props.getProperty(Constants.PROPS_BACKUP_FILE);
+    }
 
-	/**
-	 * @param file Either a zip file that contains backup.properties -- or backup.properties
-	 * itself.
-	 * @param terse if true, give a short summary
-	 * @return a String summary of the backup
-	 */	
-	private void setPropsFromFile(File file)
-	{
-		props = null;
-		ZipInputStream zis = null;
+    ///////////////////////////////////////////////////////////////////////////
+    //////  PRIVATE METHODS AND DATA    ///////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @param file Either a zip file that contains backup.properties -- or 
+     * backup.properties itself.
+     * @param terse if true, give a short summary
+     * @return a String summary of the backup
+     */    
+    private void setPropsFromFile(File file) {
+        props = null;
+        ZipInputStream zis = null;
 
 
-		if(file.getName().toLowerCase().endsWith(".properties"))
-		{
-			readPropertiesFile(file);
-			// props is now set...
-			return;
-		}
+        if(file.getName().toLowerCase().endsWith(".properties")) {
+            readPropertiesFile(file);
+            // props is now set...
+            return;
+        }
 
-		try
-		{
-			zis = new ZipInputStream(new FileInputStream(file));
-			ZipEntry ze;
+        try {
+            zis = new ZipInputStream(new FileInputStream(file));
+            ZipEntry ze;
 
-			while( (ze = zis.getNextEntry()) != null )
-			{
-				if(ze.getName().equals(Constants.PROPS_FILENAME))
-				{
-					props = new Properties();
-					props.load(zis);
-					break;
-				}
-			}
-			// props may be null
-		}
-		catch(Exception e)
-		{
-			// overkill...
-			props = null;
-		}
-		finally
-		{
-			if(zis != null)
-			{
-				try
-				{
-					zis.close();
-				}
-				catch(Exception e)
-				{
-				}
-			}
-		}
-	}
-	
-	///////////////////////////////////////////////////////////////////////////////
+            while( (ze = zis.getNextEntry()) != null ) {
+                if(ze.getName().equals(Constants.PROPS_FILENAME)) {
+                    props = new Properties();
+                    props.load(zis);
+                    break;
+                }
+            }
+            // props may be null
+        }
+        catch(Exception e) {
+            // overkill...
+            props = null;
+        }
+        finally {
+            if(zis != null) {
+                try {
+                    zis.close();
+                }
+                catch(Exception e) {
+                }
+            }
+        }
+    }
+    
+    private void readPropertiesFile(File propsFile) {
+        try {
+            BufferedInputStream in =
+                new BufferedInputStream(new FileInputStream(propsFile));
+            props = new Properties();
+            props.load(in);
+            in.close();
+        }
+        catch(IOException ioe) {
+            props = null;
+        }
+    }
 
-	private void readPropertiesFile(File propsFile)
-	{
-		try
-		{
-			BufferedInputStream in = new BufferedInputStream(new FileInputStream(propsFile));
-			props = new Properties();
-			props.load(in);
-			in.close();
-		}
-		catch(IOException ioe)
-		{
-			props = null;
-		}
-	}
+    private void setProps() {
+        props.setProperty(Constants.PROPS_USER_NAME,
+                          System.getProperty(Constants.PROPS_USER_NAME));
+        props.setProperty(Constants.PROPS_TIMESTAMP_MSEC,
+                          "" + request.timestamp);
+        props.setProperty(Constants.PROPS_DOMAINS_DIR,
+                          FileUtils.safeGetCanonicalPath(request.domainsDir));
+        props.setProperty(Constants.PROPS_DOMAIN_DIR,
+                          FileUtils.safeGetCanonicalPath(request.domainDir));
+        props.setProperty(Constants.PROPS_BACKUP_FILE,
+                          FileUtils.safeGetCanonicalPath(request.backupFile));
+        props.setProperty(Constants.PROPS_DOMAIN_NAME,
+                          request.domainName);
+        props.setProperty(Constants.PROPS_DESCRIPTION,
+                          request.description);
+        props.setProperty(Constants.PROPS_TIMESTAMP_HUMAN,
+                          new Date(request.timestamp).toString());
+        props.setProperty(Constants.PROPS_VERSION,
+                          Version.getFullVersion());
+    }
 
-	///////////////////////////////////////////////////////////////////////////////
+    private String propsToString(boolean terse) {
+        final String pre = "backup-res.Props.";
+        StringBuffer sb = new StringBuffer();
+        
+        
+        if(terse) {
+            sb.append(props.getProperty(Constants.PROPS_BACKUP_FILE));
+        } else {
+            sb.append(StringHelper.get(pre + Constants.PROPS_DESCRIPTION,
+                props.getProperty(Constants.PROPS_DESCRIPTION)));
+            sb.append("\n");
+            sb.append(StringHelper.get(pre + Constants.PROPS_BACKUP_FILE,
+                props.getProperty(Constants.PROPS_BACKUP_FILE)));
+            sb.append("\n");
+            sb.append(StringHelper.get(pre + Constants.PROPS_TIMESTAMP_HUMAN,
+                props.getProperty(Constants.PROPS_TIMESTAMP_HUMAN)));
+            sb.append("\n");
+            sb.append(StringHelper.get(pre + Constants.PROPS_DOMAINS_DIR, 
+                props.getProperty(Constants.PROPS_DOMAINS_DIR)));
+            sb.append("\n");
+            sb.append(StringHelper.get(pre + Constants.PROPS_DOMAIN_DIR, 
+                props.getProperty(Constants.PROPS_DOMAIN_DIR)));
+            sb.append("\n");
+            sb.append(StringHelper.get(pre + Constants.PROPS_DOMAIN_NAME, 
+                props.getProperty(Constants.PROPS_DOMAIN_NAME)));
+            sb.append("\n");
+            sb.append(StringHelper.get(pre + Constants.PROPS_USER_NAME, 
+                props.getProperty(Constants.PROPS_USER_NAME)));
+            sb.append("\n");
+            sb.append(StringHelper.get(pre + Constants.PROPS_VERSION,
+                props.getProperty(Constants.PROPS_VERSION)));
+        }
 
-	private void setProps()
-	{
-		props.setProperty(Constants.PROPS_USER_NAME, System.getProperty(Constants.PROPS_USER_NAME));
-		props.setProperty(Constants.PROPS_TIMESTAMP_MSEC,	"" + request.timestamp);
-		props.setProperty(Constants.PROPS_DOMAINS_DIR,	FileUtils.safeGetCanonicalPath(request.domainsDir));
-		props.setProperty(Constants.PROPS_DOMAIN_DIR,	FileUtils.safeGetCanonicalPath(request.domainDir));
-		props.setProperty(Constants.PROPS_BACKUP_FILE,	FileUtils.safeGetCanonicalPath(request.backupFile));
-		props.setProperty(Constants.PROPS_DOMAIN_NAME,	request.domainName);
-		props.setProperty(Constants.PROPS_DESCRIPTION,	request.description);
-		props.setProperty(Constants.PROPS_TIMESTAMP_HUMAN,	new Date(request.timestamp).toString());
-                props.setProperty(Constants.PROPS_VERSION,	Version.getFullVersion());
-	}
-
-	///////////////////////////////////////////////////////////////////////////////
-	
-	private String propsToString(boolean terse)
-	{
-		final String pre = "backup-res.Props.";
-		StringBuffer sb = new StringBuffer();
-		
-		
-		if(terse)
-		{
-			sb.append(props.getProperty(Constants.PROPS_BACKUP_FILE));
-		}
-
-		else
-		{
-			sb.append(StringHelper.get(pre + Constants.PROPS_DESCRIPTION, props.getProperty(Constants.PROPS_DESCRIPTION)));
-			sb.append("\n");
-			sb.append(StringHelper.get(pre + Constants.PROPS_BACKUP_FILE, props.getProperty(Constants.PROPS_BACKUP_FILE)));
-			sb.append("\n");
-			sb.append(StringHelper.get(pre + Constants.PROPS_TIMESTAMP_HUMAN, props.getProperty(Constants.PROPS_TIMESTAMP_HUMAN)));
-			sb.append("\n");
-			sb.append(StringHelper.get(pre + Constants.PROPS_DOMAINS_DIR, props.getProperty(Constants.PROPS_DOMAINS_DIR)));
-			sb.append("\n");
-			sb.append(StringHelper.get(pre + Constants.PROPS_DOMAIN_DIR, props.getProperty(Constants.PROPS_DOMAIN_DIR)));
-			sb.append("\n");
-			sb.append(StringHelper.get(pre + Constants.PROPS_DOMAIN_NAME, props.getProperty(Constants.PROPS_DOMAIN_NAME)));
-			sb.append("\n");
-			sb.append(StringHelper.get(pre + Constants.PROPS_USER_NAME, props.getProperty(Constants.PROPS_USER_NAME)));
-                        sb.append("\n");
-			sb.append(StringHelper.get(pre + Constants.PROPS_VERSION, props.getProperty(Constants.PROPS_VERSION)));
-		}
-
-		return sb.toString();
-	}
-	
-	///////////////////////////////////////////////////////////////////////////////
-
-	private String badStatusFileMessage(File file)
-	{
-		String msg = StringHelper.get("backup-res.Props.backup.file", file);
-		msg += "\n";
-		msg += StringHelper.get("backup-res.CorruptBackupFile.NoStatusFile");
-		return msg;
-	}
-	
-	///////////////////////////////////////////////////////////////////////////////
-	
-	private BackupRequest	request;
-	private File			statusFile;
-	private Properties		props;
+        return sb.toString();
+    }
+    
+    private String badStatusFileMessage(File file) {
+        String msg = StringHelper.get("backup-res.Props.backup.file", file);
+        msg += "\n";
+        msg += StringHelper.get("backup-res.CorruptBackupFile.NoStatusFile");
+        return msg;
+    }
+    
+    private BackupRequest    request;
+    private File             statusFile;
+    private Properties       props;
 }
 
 
