@@ -110,7 +110,7 @@
                                 if ("#{currentAdapter} & #{currentconnDef}") {
                                     if ("!((#{currentAdapter} = #{wizardPoolExtra.previousResAdapter}) &
                                          (#{currentconnDef} = #{wizardPoolExtra.previousDefinition}))") {
-                                        gf.createAttributeMap(keys={"rarName", "connectionDefnName"}
+                                        gf.createAttributeMap(keys={"rarname", "connectionDefnName"}
                                                               values={"$attribute{currentAdapter}", "$attribute{currentconnDef}"}
                                                               map="#{requestScope.mcfAttrs}");
                                         gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-mcf-config-properties"
