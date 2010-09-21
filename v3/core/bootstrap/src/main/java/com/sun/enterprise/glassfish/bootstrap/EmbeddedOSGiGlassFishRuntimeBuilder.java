@@ -121,7 +121,8 @@ public class EmbeddedOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.Run
                 bundleContext.installBundle(jar.toURI().toString());
             } catch (BundleException e) {
                 // continue processing after logging the exception
-                e.printStackTrace();
+                // e.printStackTrace();
+                System.out.println("Exception installing " + jar.toURI() + " : " + e);
             }
         }
     }
