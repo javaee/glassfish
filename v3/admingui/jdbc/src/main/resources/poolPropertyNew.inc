@@ -47,11 +47,11 @@
 
 <sun:propertySheetSection id="generalSheet" label="$resource{i18njdbc.jdbcPool.general}">
     <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.poolName}">
-        <sun:staticText escape="true" id="Jndi" text="#{wizardPoolExtra.Name}" />
+        <sun:staticText escape="true" id="Jndi" text="#{wizardPoolExtra.name}" />
     </sun:property>
 
     <sun:property id="resTypeWizProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.common.resType}"  >
-        <sun:staticText escape="true" id="resType" text="#{wizardPoolExtra.ResType}"  />
+        <sun:staticText escape="true" id="resType" text="#{wizardPoolExtra.resType}"  />
     </sun:property>
 
     <sun:property id="dbProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.dbVendor}"  >
@@ -59,7 +59,7 @@
     </sun:property>
 
     <sun:property id="dsProp" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.datasource}" helpText="$resource{i18njdbc.jdbcPool.datasourceHelpEnter}">
-        <sun:dropDown  id="datasource" selected="#{wizardPoolExtra.DatasourceClassname}" labels="$attribute{DSList}"  disabled="#{!wizardPoolExtra.dsClassname}" submitForm="#{true}" immediate="#{true}">
+        <sun:dropDown  id="datasource" selected="#{wizardPoolExtra.datasourceClassname}" labels="$attribute{DSList}"  disabled="#{!wizardPoolExtra.dsClassname}" submitForm="#{true}" immediate="#{true}">
             <!command
                     setAttribute(key="click" value="$this{component}");
                     mapPut(map="#{wizardPoolExtra}" key="datasourceClassname" value="#{click.selected}");
@@ -71,7 +71,7 @@
         <sun:textField id="datasourceField"  columns="$int{60}" maxLength="#{sessionScope.fieldLengths['jdbcPool.datasource']}" text="#{wizardPoolExtra.DatasourceClassnameField}"  disabled="#{!wizardPoolExtra.dsClassname}" />
     </sun:property>
     <sun:property id="ddsProp" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.driver}" helpText="$resource{i18njdbc.jdbcPool.driverHelpEnter}">
-        <sun:dropDown id="ddatasource"  selected="#{wizardPoolExtra.DriverClassname}" labels="$attribute{DList}"  disabled="#{wizardPoolExtra.dsClassname}" />
+        <sun:dropDown id="ddatasource"  selected="#{wizardPoolExtra.driverClassname}" labels="$attribute{DList}"  disabled="#{wizardPoolExtra.dsClassname}" />
         "<br/>
         <sun:textField id="ddatasourceField"  columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.driver']}" text="#{wizardPoolExtra.DriverClassnameField}"  disabled="#{wizardPoolExtra.dsClassname}" />
     </sun:property>

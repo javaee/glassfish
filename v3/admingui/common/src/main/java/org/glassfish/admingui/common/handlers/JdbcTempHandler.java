@@ -110,7 +110,7 @@ public class JdbcTempHandler {
         //Map pool = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardPool");
         Map extra = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardPoolExtra");
 
-        String resType = (String) extra.get("ResType");
+        String resType = (String) extra.get("resType");
         String dbVendorBox = (String) extra.get("DBVendorBox");
         String dbVendorField = (String) extra.get("DBVendorField");
 
@@ -152,7 +152,7 @@ public class JdbcTempHandler {
                         extra.put("DList", "");
                         extra.put("DriverClassnameField", "");
                         extra.put("dsClassname", Boolean.TRUE);
-                        extra.put("DatasourceClassname", dslName);
+                        extra.put("datasourceClassname", dslName);
                     }
                     if (guiLogger.isLoggable(Level.FINE)) {
                         guiLogger.fine("===== getConnectionDefinitionPropertiesAndDefaults(\"" + dslName + "\"," + resType + ")");
@@ -196,8 +196,8 @@ public class JdbcTempHandler {
     @Handler(id = "gf.updateJdbcConnectionPoolPropertiesTable")
     public static void updateJdbcConnectionPoolPropertiesTable(HandlerContext handlerCtx) {
         Map extra = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardPoolExtra");
-        String resType = (String) extra.get("ResType");
-        String classname = (String) extra.get("DatasourceClassname");
+        String resType = (String) extra.get("resType");
+        String classname = (String) extra.get("datasourceClassname");
         List<Map<String, String>> noprops = new ArrayList<Map<String, String>>();
         if (guiLogger.isLoggable(Level.FINE)) {
             guiLogger.fine("===== getConnectionDefinitionPropertiesAndDefaults(\"" + classname + "\"," + resType + ")");
@@ -224,23 +224,23 @@ public class JdbcTempHandler {
         Map extra = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardPoolExtra");
         Map attrs = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardMap");
 
-        String resType = (String) extra.get("ResType");
-        String classname = (String) extra.get("DatasourceClassname");
-        String driver = (String) extra.get("DriverClassname");
-        String name = (String) extra.get("Name");
+        String resType = (String) extra.get("resType");
+        String classname = (String) extra.get("datasourceClassname");
+        String driver = (String) extra.get("driverClassname");
+        String name = (String) extra.get("name");
         String classnamefield = (String) extra.get("DatasourceClassnameField");
         String driverfield = (String) extra.get("DriverClassnameField");
-        attrs.put("Name", name);
-        attrs.put("ResType", resType);
-        if ("".equals(attrs.get("TransactionIsolationLevel"))) {
-            attrs.remove("TransactionIsolationLevel");
+        attrs.put("name", name);
+        attrs.put("resType", resType);
+        if ("".equals(attrs.get("transactionIsolationLevel"))) {
+            attrs.remove("transactionIsolationLevel");
         }
         if (!GuiUtil.isEmpty(classnamefield) || !GuiUtil.isEmpty(driverfield)) {
-            attrs.put("DatasourceClassname", classnamefield);
-            attrs.put("DriverClassname", driverfield);
+            attrs.put("datasourceClassname", classnamefield);
+            attrs.put("driverClassname", driverfield);
         } else if (!GuiUtil.isEmpty(classname) || !GuiUtil.isEmpty(driver)) {
-            attrs.put("DatasourceClassname", classname);
-            attrs.put("DriverClassname", driver);
+            attrs.put("datasourceClassname", classname);
+            attrs.put("driverClassname", driver);
         } else {
             GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("org.glassfish.jdbc.admingui.Strings", "msg.Error.classNameCannotBeEmpty"));
             return;
@@ -297,11 +297,10 @@ public class JdbcTempHandler {
             Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, attrs, "GET", null);
             Map<String, Object> extraPropsMap = (Map<String, Object>) ((Map<String, Object>) responseMap.get("data")).get("extraProperties");
             if ( extraPropsMap != null) {
-                connDefProps = (Map<String, String>) (List<String>) extraPropsMap.get("connectionDefinitionPropertiesAndDefaults");
+                connDefProps = (Map<String, String>) extraPropsMap.get("connectionDefinitionPropertiesAndDefaults");
             }
-            connDefProps = RestUtilHandlers.getMapFromMapKey((List<Map<String, String>>) ((Map<String, Object>) responseMap.get("data")).get("children"), "message");
         } catch (Exception ex) {
-            GuiUtil.getLogger().severe("Error in getJdbcDriverClassNames ; \nendpoint = " + endpoint + "attrs=" + attrs + "method=GET");
+            GuiUtil.getLogger().severe("Error in getConnectionDefinitionPropertiesAndDefaults ; \nendpoint = " + endpoint + "attrs=" + attrs + "method=GET");
             //we don't need to call GuiUtil.handleError() because thats taken care of in restRequest() when we pass in the handler.
         }
         return connDefProps;

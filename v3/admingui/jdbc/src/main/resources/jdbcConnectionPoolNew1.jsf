@@ -91,11 +91,11 @@
                     <sun:propertySheet id="propertySheet" requiredFields="true">			 
                         <sun:propertySheetSection id="generalPropertySheet" label="$resource{i18njdbc.jdbcPool.general}">
                             <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.poolName}">
-                                <sun:textField id="name"  styleClass="required"  columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.poolName']}" text="#{wizardPoolExtra.Name}" required="#{true}"/> 
+                                <sun:textField id="name"  styleClass="required"  columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.poolName']}" text="#{wizardPoolExtra.name}" required="#{true}"/>
                             </sun:property>   
 
                             <sun:property id="resTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resType}" helpText="$resource{i18njdbc.jdbcPool.resTypeHelp}" >
-                                <sun:dropDown id="resType" selected="#{wizardPoolExtra.ResType}" labels="$attribute{ResTypeList}" />
+                                <sun:dropDown id="resType" selected="#{wizardPoolExtra.resType}" labels="$attribute{ResTypeList}" />
                             </sun:property>
                             
                             <sun:property id="dbProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.dbVendor}" helpText="$resource{i18njdbc.jdbcPool.dbVendorHelp}">

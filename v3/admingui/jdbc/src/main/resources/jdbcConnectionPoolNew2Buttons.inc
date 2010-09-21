@@ -65,14 +65,14 @@
                     result => $attribute{resultEndPoint});
             if (#{pageSession.hasPropertyTable}){
                 javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
-                urlencode(value="#{wizardMap['Name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
+                urlencode(value="#{wizardMap['name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
                 gf.restRequest(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodeName}/property.json"
                                method="POST"
                                data="#{requestScope.tmpJSON}"
                                result="#{requestScope.restResponse}");
             }
             if ("#{wizardMap['ping']}") {
-                urlencode(value="#{wizardMap['Name']}" encoding="UTF-8" result="#{pageSession.encodedName}");
+                urlencode(value="#{wizardMap['name']}" encoding="UTF-8" result="#{pageSession.encodedName}");
                 gf.createAttributeMap(keys={"id"} values={"$pageSession{encodedName}"} map="#{requestScope.attrMap}");
                 gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/ping-connection-pool.json"
                                attrs="#{requestScope.attrMap}"
