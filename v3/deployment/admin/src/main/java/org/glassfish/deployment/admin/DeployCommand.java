@@ -413,7 +413,9 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 String errorMessage = report.getMessage();
                 Throwable cause = report.getFailureCause();
                 if (cause != null) {
-                    if (cause.getMessage() != null) {
+                    String causeMessage = cause.getMessage();
+                    if (causeMessage != null && 
+                        !causeMessage.equals(errorMessage)) {
                         errorMessage = errorMessage + " : " + cause.getMessage();
                     }
                     logger.log(Level.SEVERE, errorMessage, cause.getCause());
