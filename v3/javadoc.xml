@@ -167,7 +167,7 @@
       <antcall target="saaj-api.download" />
       <antcall target="uel.download" />
       <antcall target="bean-validator.download" />
-      <antcall target="weld-api.download" />
+      <antcall target="weld-osgi-bundle.download" />
       <antcall target="hk2.download" />
       <antcall target="flashlight.download" />
   </target>
@@ -196,7 +196,7 @@
           <arg line="co" />
 	  <arg line="-d" />
 	  <arg line="jaxr-api" />
-	  <arg line="${jaxrj-api.cvs.location}" />
+	  <arg line="${jaxr-api.cvs.location}" />
 	</exec>
       <exec executable="cvs" dir="${external.dir}" failonerror="true" >
 	  <arg line="-d" />
@@ -246,7 +246,12 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="jaxb-api.download" description="Download JAXB-API" depends="initialize.maven">
       <artifact:dependencies sourcesFilesetId="sources.dependency.jaxb-api">
-          <dependency groupId="javax.xml.bind" artifactId="jaxb-api" version="2.2.2-promoted-b92" classifier="sources" />
+<!-- using previous version 2.2.1 since the new version 2.2.2-promoted-b94 does not have the source artifact -->
+          <dependency groupId="javax.xml.bind" artifactId="jaxb-api" version="2.2.1" classifier="sources" />
+
+<!--
+          <dependency groupId="javax.xml.bind" artifactId="jaxb-api" version="2.2.2-promoted-b94" classifier="sources" />
+-->
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -487,8 +492,12 @@ fileset refid of artifact:dependencies does not work in unjar
   </target>
 
   <target name="weld-osgi-bundle.download" description="Download Weld OSGI Bundle" depends="initialize.maven" >
+      <!-- temporary using the older version since new version does not have the source artifact -->
       <artifact:dependencies sourcesFilesetId="sources.dependency.weld-osgi-bundle" >
+          <dependency groupId="org.jboss.weld" artifactId="weld-osgi-bundle" version="1.0.1-SP3" classifier="sources" >
+<!--
           <dependency groupId="org.jboss.weld" artifactId="weld-osgi-bundle" version="1.1.0-01-glassfish" classifier="sources" >
+-->
               <exclusion groupId="javax.annotation" artifactId="jsr250-api" />
           </dependency>
           <remoteRepository refid="nexus.repository" />
@@ -508,7 +517,7 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="hk2.download" description="Download hk2" depends="initialize.maven" >
       <artifact:dependencies sourcesFilesetId="sources.dependency.hk2" >
-          <dependency groupId="com.sun.enterprise" artifactId="hk2" version="1.0.0" classifier="sources" />
+          <dependency groupId="com.sun.enterprise" artifactId="hk2" version="1.0.47" classifier="sources" />
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
