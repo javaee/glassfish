@@ -53,6 +53,7 @@
         setAttribute(key="usersOptionU" value="users" );
         getRequestValue(key="name" value="#{pageSession.Name}");
         urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+        setSessionAttribute(key="connectorPoolTabs" value="securityMapTab");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorSecurityMapNew.jsf?name=#{pageSession.encodedName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorSecurityMaps.jsf?name=#{pageSession.encodedName}");
         setPageSessionAttribute(key="childType" value="security-map");
@@ -68,6 +69,7 @@
     />
     </event>
             <sun:form id="propertyForm">
+#include "/jca/connectorConnectionPoolTabs.inc"
 #include "/common/shared/alertMsg.inc"
 
                 <!-- Page Title -->

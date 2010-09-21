@@ -55,6 +55,7 @@
         getRequestValue(key="mapName" value="#{pageSession.mapName}");
         urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
         urlencode(value="#{pageSession.mapName}" encoding="UTF-8" result="#{pageSession.encodedMapName}");
+        setSessionAttribute(key="connectorPoolTabs" value="securityMapTab");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorSecurityMapEdit.jsf?name=#{pageSession.encodedName}&mapName=#{pageSession.encodedMapName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorSecurityMaps.jsf?name=#{pageSession.encodedName}");
         //setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources/connector-connection-pool[#{pageSession.Name}],type=security-map,name=#{pageSession.mapName}");
@@ -98,6 +99,7 @@
     />
     </event>
             <sun:form id="propertyForm">
+#include "/jca/connectorConnectionPoolTabs.inc"
 #include "/common/shared/alertMsg.inc"
 
                 <!-- Page Title -->
