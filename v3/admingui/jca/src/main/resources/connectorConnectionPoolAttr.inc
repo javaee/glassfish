@@ -49,23 +49,23 @@
 <sun:propertySheet id="propertySheet">
     <sun:propertySheetSection id="generalPropertySheet"  label="$resource{i18n.common.GeneralSettings}">
         <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.poolName}">
-            <sun:staticText escape="true" id="Jndi" text="#{wizardPoolExtra.Name}" />
+            <sun:staticText escape="true" id="Jndi" text="#{wizardPoolExtra.name}" />
         </sun:property>
 
         <sun:property id="resAdapterNewProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}"  >
-            <sun:staticText escape="true" id="resAdapter" text="#{wizardPoolExtra.ResourceAdapterName}"  />
+            <sun:staticText escape="true" id="resAdapter" text="#{wizardPoolExtra.resourceAdapterName}"  />
         </sun:property>
 
         <sun:property id="connectionDefNewProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorConnectionPool.connectionDefinitionName}" >
-            <sun:staticText escape="true" id="connectionDef" text="#{wizardPoolExtra.ConnectionDefinitionName}"  />
+            <sun:staticText escape="true" id="connectionDef" text="#{wizardPoolExtra.connectiondefinitionname}"  />
         </sun:property>
 
         <sun:property id="pingProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.ping}" helpText="$resource{i18njca.jcaPool.pingHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{sessionScope.wizardMap.Ping}" selectedValue="true" />
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{sessionScope.wizardMap.ping}" selectedValue="true" />
         </sun:property>
 
         <sun:property id="descProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.common.description}" >
-            <sun:textField id="desc" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.common.description']}" text="#{sessionScope.wizardMap.Description}" />
+            <sun:textField id="desc" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.common.description']}" text="#{sessionScope.wizardMap.description}" />
         </sun:property>
 
         "<br /><br />
@@ -74,38 +74,38 @@
     <sun:propertySheetSection id="poolSettingsPropertySheet" label="$resource{i18njca.jcaPool.poolSettings}">
         <sun:property id="initSizeProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}"
             label="$resource{i18njca.jcaPool.initPoolSize}" helpText="$resource{i18njca.jcaPool.initPoolSizeHelp}">
-            <sun:textField id="ds" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.jcaPool.initPoolSize']}" text="#{sessionScope.wizardMap.SteadyPoolSize}" />
+            <sun:textField id="ds" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.jcaPool.initPoolSize']}" text="#{sessionScope.wizardMap.steadypoolsize}" />
             <sun:staticText escape="true" id="con1" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
         </sun:property>
 
         <sun:property id="maxProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.maxPoolSize}" helpText="$resource{i18njca.jcaPool.maxPoolSizeHelp}">
-            <sun:textField id="ds2" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.jcaPool.maxPoolSize']}" text="#{sessionScope.wizardMap.MaxPoolSize}" />
+            <sun:textField id="ds2" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.jcaPool.maxPoolSize']}" text="#{sessionScope.wizardMap.maxpoolsize}" />
             <sun:staticText escape="true" id="con2" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
         </sun:property>
 
         <sun:property id="resizeProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.poolResize}" helpText="$resource{i18njca.jcaPool.poolResizeHelp}">
-            <sun:textField id="ds3" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.jcaPool.poolResize']}" text="#{sessionScope.wizardMap.PoolResizeQuantity}" />
+            <sun:textField id="ds3" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.jcaPool.poolResize']}" text="#{sessionScope.wizardMap.poolResizeQuantity}" />
             <sun:staticText escape="true" id="con3" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
         </sun:property>
 
         <sun:property id="idleProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.idleTimeout}" helpText="$resource{i18njca.jcaPool.idleTimeoutHelp}">
-            <sun:textField id="ds" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.jcaPool.idleTimeout']}" text="#{sessionScope.wizardMap.IdleTimeoutInSeconds}" />
+            <sun:textField id="ds" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.jcaPool.idleTimeout']}" text="#{sessionScope.wizardMap.idleTimeoutInSeconds}" />
             <sun:staticText escape="true" id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
 
         <sun:property id="maxWaitProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.maxWait}" helpText="$resource{i18njca.jcaPool.maxWaitHelp}">
-            <sun:textField id="ds" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.jcaPool.maxWait']}" text="#{sessionScope.wizardMap.MaxWaitTimeInMillis}" />
+            <sun:textField id="ds" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.jcaPool.maxWait']}" text="#{sessionScope.wizardMap.maxWaitTimeInMillis}" />
             <sun:staticText escape="true" id="mil" style="padding: 8pt" text="$resource{i18n.common.Milliseconds}"/>
         </sun:property>
     </sun:propertySheetSection>
 
     <sun:propertySheetSection id="poolPropertySheet" label="$resource{i18njca.jcaPool.Validation}">
         <sun:property id="conValidationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.conValidation}" helpText="$resource{i18njca.connectorConnectionPool.conValidationHelp}">
-            <sun:checkbox label="$resource{i18n.common.Required}" selected="#{sessionScope.wizardMap.IsConnectionValidationRequired}" selectedValue="true" />
+            <sun:checkbox label="$resource{i18n.common.Required}" selected="#{sessionScope.wizardMap.isConnectionValidationRequired}" selectedValue="true" />
         </sun:property>
 
         <sun:property id="failProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorConnectionPool.onFail}" helpText="$resource{i18njca.connectorConnectionPool.onFailHelp}">
-            <sun:checkbox label="$resource{i18njca.connectorConnectionPool.closeAll}" selected="#{sessionScope.wizardMap.FailAllConnections}" selectedValue="true" />
+            <sun:checkbox label="$resource{i18njca.connectorConnectionPool.closeAll}" selected="#{sessionScope.wizardMap.failAllConnections}" selectedValue="true" />
         </sun:property>
 
         <sun:property>
@@ -113,7 +113,7 @@
         </sun:property>
 
         <sun:property id="transprop"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorConnectionPool.transSupport}" helpText="$resource{i18njca.connectorConnectionPool.transSupportHelp}" >
-            <sun:dropDown id="trans" selected="#{sessionScope.wizardMap.TransactionSupport}" labels={"" "XATransaction"  "LocalTransaction"  "NoTransaction"}/>
+            <sun:dropDown id="trans" selected="#{sessionScope.wizardMap.transactionsupport}" labels={"" "XATransaction"  "LocalTransaction"  "NoTransaction"}/>
         </sun:property>
 
         <sun:property>

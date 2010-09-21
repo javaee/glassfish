@@ -58,9 +58,9 @@
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorConnectionPoolNew2.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorConnectionPools.jsf");
         setPageSessionAttribute(key="childType" value="connector-connection-pool");
-        //TO DO
-        updateProxyProperties(propertyList="#{wizardPoolProperties}" TableList="#{pageSession.tableList}");
-        setPageSessionAttribute(key="convertToFalseList" value={"Ping" "FailAllConnections" "IsConnectionValidationRequired"});
+
+        setPageSessionAttribute(key="tableList" value="#{wizardPoolProperties}");
+        setPageSessionAttribute(key="convertToFalseList" value={"ping" "failAllConnections" "isConnectionValidationRequired" });
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{false}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );

@@ -65,14 +65,14 @@
                         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                         javaToJSON(obj="#{newList}" json="#{requestScope.tmpJSON}");
-                        urlencode(value="#{sessionScope.wizardMap['Name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
+                        urlencode(value="#{sessionScope.wizardMap['name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
                         gf.restRequest(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodeName}/property.json"
                                        method="POST"
                                        data="#{requestScope.tmpJSON}"
                                        result="#{requestScope.restResponse}");                        
                     }
-                    if ("#{sessionScope.wizardMap['Ping']}") {
-                        urlencode(value="#{sessionScope.wizardMap['Name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
+                    if ("#{sessionScope.wizardMap['ping']}") {
+                        urlencode(value="#{sessionScope.wizardMap['name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
                         gf.createAttributeMap(keys={"id"} values={"$pageSession{encodeName}"} map="#{requestScope.attrMap}");
                         gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/ping-connection-pool"
                                        attrs="#{requestScope.attrMap}"

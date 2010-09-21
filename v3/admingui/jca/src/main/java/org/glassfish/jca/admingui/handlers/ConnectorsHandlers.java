@@ -91,7 +91,7 @@ public class ConnectorsHandlers {
         if ((fromStep2 != null) && fromStep2) {
             //wizardMap is already in session map, we don't want to change anything.
             Map extra = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardPoolExtra");
-            String resAdapter = (String) extra.get("ResourceAdapterName");
+            String resAdapter = (String) extra.get("resourceAdapterName");
             handlerCtx.setOutputValue("resultAdapter", resAdapter);
         } else if ((fromStep1 != null) && fromStep1) {
             //this is from Step 1 where the page is navigated when changing the dropdown of resource adapter.
@@ -107,8 +107,8 @@ public class ConnectorsHandlers {
             }
             if (resAdapter != null && !(resAdapter.equals(""))) {               
                 Map extra = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardPoolExtra");
-                extra.put("ResourceAdapterName", resAdapter);
-                extra.put("Name", poolName);                
+                extra.put("resourceAdapterName", resAdapter);
+                extra.put("name", poolName);
                 handlerCtx.setOutputValue("resultAdapter", resAdapter);
             }
         } else {
@@ -147,13 +147,13 @@ public class ConnectorsHandlers {
         Map extra = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardPoolExtra");
         Map attrs = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardMap");
 
-        String resAdapter = (String) extra.get("ResourceAdapterName");
-        String definition = (String) extra.get("ConnectionDefinitionName");
-        String name = (String) extra.get("Name");
+        String resAdapter = (String) extra.get("resourceAdapterName");
+        String definition = (String) extra.get("connectiondefinitionname");
+        String name = (String) extra.get("name");
 
-        attrs.put("Name", name);
-        attrs.put("ConnectionDefinitionName", definition);
-        attrs.put("ResourceAdapterName", resAdapter);
+        attrs.put("name", name);
+        attrs.put("connectiondefinitionname", definition);
+        attrs.put("resourceAdapterName", resAdapter);
     }
       
     /**

@@ -105,8 +105,8 @@
                             onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                             <!command
                                 //Update the connector connection pool wizard
-                                setAttribute(key="currentAdapter" value="#{wizardPoolExtra.ResourceAdapterName}");
-                                setAttribute(key="currentconnDef" value="#{wizardPoolExtra.ConnectionDefinitionName}");
+                                setAttribute(key="currentAdapter" value="#{wizardPoolExtra.resourceAdapterName}");
+                                setAttribute(key="currentconnDef" value="#{wizardPoolExtra.connectiondefinitionname}");
                                 if ("#{currentAdapter} & #{currentconnDef}") {
                                     if ("!((#{currentAdapter} = #{wizardPoolExtra.previousResAdapter}) &
                                          (#{currentconnDef} = #{wizardPoolExtra.previousDefinition}))") {
@@ -139,7 +139,7 @@
                     <sun:propertySheet id="propertySheet">			 
                         <sun:propertySheetSection id="generalPropertySheet" >
                             <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.poolName}" helpText="$resource{i18n.common.jndiNameHelp}">
-                                <sun:textField id="name" styleClass="required" columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.poolName']}" text="#{wizardPoolExtra.Name}" required="#{true}" > 
+                                <sun:textField id="name" styleClass="required" columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.poolName']}" text="#{wizardPoolExtra.name}" required="#{true}" >
                                 <!afterCreate
                                      getClientId(component="$this{component}" clientId=>$page{jndiNameId});
                                 />
@@ -147,7 +147,7 @@
                             </sun:property>   
 
                             <sun:property id="resAdapterProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}" helpText="$resource{i18njca.adminObjectResource.resourceAdapterHelp}">
-                                <sun:dropDown id="db" selected="#{wizardPoolExtra.ResourceAdapterName}" submitForm="#{true}" immediate="#{true}"
+                                <sun:dropDown id="db" selected="#{wizardPoolExtra.resourceAdapterName}" submitForm="#{true}" immediate="#{true}"
                                     labels="$pageSession{modules}" styleClass="required" required="#{true}" >
                                 <!command
                                     getUIComponent(clientId="#{jndiNameId}", component=>$attribute{nameComponent});
@@ -161,7 +161,7 @@
                             </sun:property>
                                
                             <sun:property id="connectionDefProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorConnectionPool.connectionDefinitionName}" helpText="$resource{i18njca.connectorConnectionPool.connectionDefinitionNameHelp}">
-                                <sun:dropDown id="db" required="#{true}" styleClass="required" selected="#{wizardPoolExtra.ConnectionDefinitionName}"  labels="$attribute{connectionDefinitions}" />
+                                <sun:dropDown id="db" required="#{true}" styleClass="required" selected="#{wizardPoolExtra.connectiondefinitionname}"  labels="$attribute{connectionDefinitions}" />
                             </sun:property>
                         </sun:propertySheetSection>
                     </sun:propertySheet> 
