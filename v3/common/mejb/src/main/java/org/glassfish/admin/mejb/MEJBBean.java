@@ -48,8 +48,10 @@ import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 import javax.management.*;
 import javax.management.j2ee.ListenerRegistration;
+import javax.management.j2ee.Management;
 
 import org.glassfish.external.amx.AMXGlassfish;
+import org.glassfish.internal.api.MEJBClusterService;
 
 /**
  * @ejbHome <{org.glassfish.admin.mejb.MEJBHome}>
@@ -124,11 +126,21 @@ public final class MEJBBean implements SessionBean
         }
         return o;
     }
-    
+
+    private String getInstance(final ObjectName o) throws InstanceNotFoundException {
+        String j2eeTypeProp = o.getKeyProperty("J2EEServer");
+        //TODO : if null, check for parent
+        return j2eeTypeProp;
+    }
+
     // javax.management.j2ee.Management implementation starts here
     public Set<ObjectName> queryNames(ObjectName name, QueryExp query) throws RemoteException {
         try {
-            return restrict( mbeanServer.queryNames(name, query) );
+            // Unable to get instance name from the object name ? execute query on DAS
+            String ins = getInstance(name);
+            if(ins == null || "server".equals(ins))
+              return restrict( mbeanServer.queryNames(name, query) );
+            return MEJBClusterService.getInstance().getMEjbForInstance(ins).queryNames(name, query);
         } catch (Exception ex) {
             throw new RemoteException(this.toString() + "::queryNames", ex);
         }
@@ -136,7 +148,10 @@ public final class MEJBBean implements SessionBean
 
     public boolean isRegistered(ObjectName name) throws RemoteException {
         try {
-            return mbeanServer.isRegistered(name);
+            String ins = getInstance(name);
+            if(ins == null || "server".equals(ins))
+                return mbeanServer.isRegistered(name);
+            return MEJBClusterService.getInstance().getMEjbForInstance(ins).isRegistered(name);
         } catch (Exception ex) {
             throw new RemoteException(this.toString() + "::isRegistered", ex);
         }
@@ -153,38 +168,54 @@ public final class MEJBBean implements SessionBean
 
     public MBeanInfo getMBeanInfo(ObjectName name) throws InstanceNotFoundException,
             IntrospectionException, ReflectionException, RemoteException {
-        return mbeanServer.getMBeanInfo( bounce(name) );
+        String ins = getInstance(name);
+        if(ins == null || "server".equals(ins))
+            return mbeanServer.getMBeanInfo( bounce(name) );
+        return MEJBClusterService.getInstance().getMEjbForInstance(ins).getMBeanInfo(name);
     }
 
     public Object getAttribute(ObjectName name, String attribute) throws MBeanException,
             AttributeNotFoundException, InstanceNotFoundException,
             ReflectionException, RemoteException {
-        //debug( "MEJBBean.getAttribute: " + attribute + " on " + name );
-        return mbeanServer.getAttribute( bounce(name) , attribute);
+        String ins = getInstance(name);
+        if(ins == null || "server".equals(ins))
+            return mbeanServer.getAttribute( bounce(name) , attribute);
+        return MEJBClusterService.getInstance().getMEjbForInstance(ins).getAttribute(name, attribute);
     }
 
     public AttributeList getAttributes(ObjectName name, String[] attributes)
             throws InstanceNotFoundException, ReflectionException, RemoteException {
-        //debug( "MEJBBean.getAttributes: on " + name );
-        return mbeanServer.getAttributes( bounce(name), attributes);
+        String ins = getInstance(name);
+        if(ins == null || "server".equals(ins))
+            return mbeanServer.getAttributes( bounce(name), attributes);
+        return MEJBClusterService.getInstance().getMEjbForInstance(ins).getAttributes(name, attributes);
     }
 
     public void setAttribute(ObjectName name, Attribute attribute)
             throws InstanceNotFoundException, AttributeNotFoundException,
             InvalidAttributeValueException, MBeanException,
             ReflectionException, RemoteException {
-        mbeanServer.setAttribute( bounce(name), attribute);
+        String ins = getInstance(name);
+        if(ins == null || "server".equals(ins))
+            mbeanServer.setAttribute( bounce(name), attribute);
+        MEJBClusterService.getInstance().getMEjbForInstance(ins).setAttribute(name, attribute);
     }
 
     public AttributeList setAttributes(ObjectName name, AttributeList attributes)
             throws InstanceNotFoundException, ReflectionException, RemoteException {
-        return mbeanServer.setAttributes(name, attributes);
+        String ins = getInstance(name);
+        if(ins == null || "server".equals(ins))
+            return mbeanServer.setAttributes(name, attributes);
+        return MEJBClusterService.getInstance().getMEjbForInstance(ins).setAttributes(name, attributes);
     }
 
     public Object invoke(ObjectName name, String operationName, Object[] params, String[] signature)
             throws InstanceNotFoundException, MBeanException,
             ReflectionException, RemoteException {
-        return mbeanServer.invoke( bounce(name), operationName, params, signature);
+        String ins = getInstance(name);
+        if(ins == null || "server".equals(ins))
+            return mbeanServer.invoke( bounce(name), operationName, params, signature);
+        return MEJBClusterService.getInstance().getMEjbForInstance(ins).invoke(name, operationName, params, signature);
     }
 
     /**

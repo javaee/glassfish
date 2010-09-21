@@ -70,8 +70,8 @@
     <dependencies>
 
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.management.j2ee</artifactId>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>internal-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         
