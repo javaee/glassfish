@@ -295,11 +295,11 @@
         <echo message="@@## installed libraries embedded rar EXTENSION_LIST ##@@"/>
         <ant dir="installed-libraries-embedded" target="all-ext"/>
 
-<!--        <echo message="@@## beanvalidation-simple ##@@"/>
+        <echo message="@@## beanvalidation-simple ##@@"/>
         <ant dir="beanvalidation-simple" target="all"/>
 
         <echo message="@@## beanvalidation-simple ##@@"/>
-        <ant dir="beanvalidation-simple" target="embedded-all"/>-->
+        <ant dir="beanvalidation-simple" target="embedded-all"/>
 
        <echo message="@@## security-map-web#@@"/>
         <ant dir="securitymapweb" target="all"/>
