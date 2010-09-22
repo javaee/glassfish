@@ -18,6 +18,7 @@
         <antcall target="schedule_ann"/>
         <antcall target="aroundtimeout"/>
         <antcall target="mdb"/>
+        <antcall target="keepstate"/>
 
     </target>
 
@@ -49,6 +50,12 @@
         <record name="mdb.output" action="start" />
             <ant dir="mdb" target="all"/>
         <record name="mdb.output" action="stop" />
+    </target>
+
+    <target name="keepstate">
+        <record name="keepstate.output" action="start" />
+            <ant dir="keepstate" target="all"/>
+        <record name="keepstate.output" action="stop" />
     </target>
 
     <target name="usage">
