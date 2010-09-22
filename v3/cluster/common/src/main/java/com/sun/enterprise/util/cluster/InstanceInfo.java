@@ -57,6 +57,7 @@ import org.glassfish.api.admin.CommandException;
 import org.glassfish.api.admin.FailurePolicy;
 import org.glassfish.api.admin.InstanceCommandResult;
 import org.glassfish.api.admin.ParameterMap;
+import com.sun.enterprise.admin.util.ColumnFormatter;
 import com.sun.enterprise.universal.Duration;
 
 /**
@@ -181,80 +182,18 @@ public final class InstanceInfo {
     ////////  static formatting stuff below   ///////////////////////////////
     /////////////////////////////////////////////////////////////////////////
     public static String format(List<InstanceInfo> infos) {
-        int longestName = NAME.length();
-        int longestHost = HOST.length();
-        int longestState = STATE.length();
-        int longestPort = PORT.length();
-        int longestCluster = CLUSTER.length();
-
+        String headings[] = { NAME, HOST, PORT, CLUSTER, STATE };
+        ColumnFormatter cf = new ColumnFormatter(headings);
         for (InstanceInfo info : infos) {
-            int namel = info.getName().length();
-            int hostl = info.getHost().length();
-            int statel = info.getState().length();
-            int clusterl = info.getDisplayCluster().length();
-
-            if (namel > longestName)
-                longestName = namel;
-            if (hostl > longestHost)
-                longestHost = hostl;
-            if (statel > longestState)
-                longestState = statel;
-            if (clusterl > longestCluster)
-                longestCluster = clusterl;
+            cf.addRow(new Object[] {
+                info.getName(),
+                info.getHost(),
+                info.getPort(),
+                info.getCluster(),
+                info.getState()
+            });
         }
-
-        // we could truncate to fit in 80 characters -- but that gets very complex.
-        // If user wants huge names -- he'll have to put up with it!
-
-        longestName += 2;
-        longestHost += 2;
-        longestState += 2;
-        longestPort += 2;
-        longestCluster += 2;
-        StringBuilder sb = new StringBuilder();
-
-        String formattedLine =
-                "%-" + longestName
-                + "s %-" + longestHost
-                + "s %-" + longestPort
-                + "s %-" + longestCluster
-                + "s %-" + longestState
-                + "s";
-
-        sb.append(String.format(formattedLine, NAME, HOST, PORT, CLUSTER, STATE));
-        sb.append('\n');
-        for (int i = 0; i < longestName; i++)
-            sb.append('-');
-        sb.append('|');
-        for (int i = 0; i < longestHost; i++)
-            sb.append('-');
-        sb.append('|');
-        for (int i = 0; i < longestPort; i++)
-            sb.append('-');
-        sb.append('|');
-        for (int i = 0; i < longestCluster; i++)
-            sb.append('-');
-        sb.append('|');
-        for (int i = 0; i < longestState; i++)
-            sb.append('-');
-        sb.append('|');
-        sb.append('\n');
-
-        // no linefeed at the end!!!
-        boolean first = true;
-        for (InstanceInfo info : infos) {
-            if (first)
-                first = false;
-            else
-                sb.append('\n');
-
-            String portString = "   " + info.getPort();
-
-            sb.append(String.format(formattedLine, info.getName(),
-                    info.getHost(), portString, " " + info.getDisplayCluster(), info.getState()));
-        }
-
-        return sb.toString();
+        return cf.toString();
     }
 
     // TODO what about security????
