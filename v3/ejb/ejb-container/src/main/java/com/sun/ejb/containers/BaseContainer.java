@@ -3972,9 +3972,15 @@ public abstract class BaseContainer
             // not to cause it to be loaded if it's not used.
             EJBTimerService timerService = 
                 ejbContainerUtilImpl.getEJBTimerService();
-            if( timerService != null ) {
+            if (timerService != null) {
+                boolean deploy0 = deploy;  //avoid modifying param
+                if (deploy0 && ejbDescriptor.getApplication().getKeepStateResolved()) {
+                    deploy0 = false;
+                    _logger.log(Level.INFO,
+                    "keepstate is true and will not create new auto timers during deployment.");
+                }
                 scheduleIds = timerService.recoverAndCreateSchedules(
-                        getContainerId(), getApplicationId(), schedules, deploy);
+                        getContainerId(), getApplicationId(), schedules, deploy0);
             }
         }
 

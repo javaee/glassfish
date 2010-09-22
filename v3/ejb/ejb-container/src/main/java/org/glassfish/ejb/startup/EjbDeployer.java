@@ -334,11 +334,17 @@ public class EjbDeployer
                         _logger.log( Level.FINE, "EjbDeployer APP ID? " + uniqueAppId);
                         _logger.log( Level.FINE, "EjbDeployer TimerService: " + timerService);
                     }
-                    if (timerService != null) {
-                        timerService.destroyAllTimers(Long.parseLong(uniqueAppId));
-                    } else {
+
+                    if(timerService == null) {
                         throw new RuntimeException("EJB Timer Service is not available");
-                    }  
+                    }
+                    
+                    if (getKeepStateFromApplicationInfo(params.name())) {
+                        _logger.log(Level.INFO,
+                        "Timers will not be destroyed since keepstate is true for application {0}", params.name());
+                    } else {
+                        timerService.destroyAllTimers(Long.parseLong(uniqueAppId));
+                    }
                 }
             } catch (Exception e) {
                 _logger.log( Level.WARNING, "Failed to delete timers for application with id " + uniqueAppId, e);
