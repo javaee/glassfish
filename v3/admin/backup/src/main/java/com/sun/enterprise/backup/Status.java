@@ -101,6 +101,18 @@ class Status {
         return propsToString(terse);
     }
 
+    public boolean loadProps(File file) {
+  
+        // props is a class variable.
+        props = null;
+        setPropsFromFile(file);
+
+        if (props == null)
+            return false;
+
+        return true;
+    }
+
     /**
      * open the zip file, parse the status file and return the timestamp
      * of when it was created.
@@ -147,11 +159,18 @@ class Status {
         return props.getProperty(Constants.PROPS_USER_NAME);
     }
 
+    // Return the filename portion of the path.
     String getFileName() {
         if(props == null)
             return null;
         
-        return props.getProperty(Constants.PROPS_BACKUP_FILE);
+        try {
+            File f = new File(props.getProperty(Constants.PROPS_BACKUP_FILE));
+
+            return f.getName();
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////

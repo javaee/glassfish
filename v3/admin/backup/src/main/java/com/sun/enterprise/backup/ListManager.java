@@ -46,8 +46,13 @@
 
 package com.sun.enterprise.backup;
 
+import com.sun.enterprise.admin.util.ColumnFormatter;
 import com.sun.enterprise.backup.util.FileUtils;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+
 import java.io.*;
+import java.util.*;
+
 
 /**
  *
@@ -85,20 +90,66 @@ public class ListManager extends BackupRestoreManager
      */
     public String list() throws BackupException {
         StringBuffer sb = new StringBuffer();
+        String headings[] = { BACKUP, USER, DATE, FILENAME };
+        List<Integer> badPropsList = null;
+        ColumnFormatter cf = null;
+        boolean itemInRow = false;
         
         findZips();
-        
+
         // it is GUARANTEED that the length > 0
-        for(int i = 0; i < zips.length; i++)
-        {
+        for(int i = 0; i < zips.length; i++) {
             Status status = new Status();
-            sb.append(status.read(zips[i], request.terse));
-            sb.append("\n");
-            
-            if(request.terse == false)
-                sb.append("\n");
+
+            if (request.verbose) {
+                sb.append(status.read(zips[i], request.terse));
+                sb.append("\n\n");
+            } else {
+                if (cf == null) {
+                    cf = new ColumnFormatter(headings);
+                    badPropsList = new ArrayList<Integer>();
+                }
+
+                //XXX: if (request.terse)  How indicate no headers?
+
+                if (!status.loadProps(zips[i])) {
+                    badPropsList.add(new Integer(i));
+                } else {
+                    String filename = status.getFileName();
+
+                    if (filename == null)
+                        filename = strings.get("backup-list.unavailable");
+
+                    cf.addRow(new Object[] {
+                        "----",
+                        status.getUserName(),
+                        status.getTimeStamp(),
+                        filename
+                    });
+
+                    itemInRow = true;
+                }
+            }
         }
-        
+
+        if (cf != null) 
+            sb.append(cf.toString());
+
+        // If no items in the row and we are not in terse mode indicate
+        // there was nothing to list.
+        if (!itemInRow && !request.terse)
+            sb.append("\n" + strings.get("backup-list.nothing"));
+
+        // List any zips that had bad props.
+        if (badPropsList != null && !badPropsList.isEmpty()) {
+            sb.append("\n\n");
+            sb.append(strings.get("backup-list.bad-props"));
+            for (Integer iInt : badPropsList) {
+                sb.append("\n");
+                sb.append(zips[iInt.intValue()]);
+            }
+        }
+
         return sb.toString();
     }
 
@@ -136,5 +187,12 @@ public class ListManager extends BackupRestoreManager
     }
     
 
+    private static final LocalStringsImpl strings =
+                new LocalStringsImpl(ListManager.class);
+
     File[] zips;
+    private static final String BACKUP = strings.get("backup-list.backup-config");
+    private static final String USER = strings.get("backup-list.user-name");
+    private static final String DATE = strings.get("backup-list.date");
+    private static final String FILENAME = strings.get("backup-list.filename");
 }
