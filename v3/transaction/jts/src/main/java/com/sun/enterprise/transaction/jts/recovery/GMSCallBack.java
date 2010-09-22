@@ -116,7 +116,11 @@ public class GMSCallBack implements CallBack {
 
                 gms = gmsAdapter.getModule();
                 // Set the member details when GMS service is ready to store it
-                gmsAdapter.registerJoinedAndReadyNotificationListener(new RegisterTxLogDir(gms, instanceName, logdir));
+                try {
+                     gms.updateMemberDetails(instanceName, TXLOGLOCATION, logdir);
+                } catch (Exception e) {
+                    _logger.log(Level.WARNING, "jts.error_updating_gms", e);
+                }
             }
         }
         startTime = System.currentTimeMillis();
@@ -242,28 +246,4 @@ public class GMSCallBack implements CallBack {
 
         return rs;
     }
-
-    static class RegisterTxLogDir implements CallBack {
-        private final String instanceName;
-        private final String logdir;
-        private final GroupManagementService gms;
-    
-        RegisterTxLogDir(GroupManagementService gms, String instanceName, String logdir ) {
-            this.gms = gms;
-            this.instanceName = instanceName;
-            this.logdir = logdir;
-        }
-    
-        public void processNotification(Signal notification) {
-            if (notification.getMemberToken().equals(instanceName)) {
-                // received my joined and ready, lets publish to cluster the txloglocation.
-                try {
-                     gms.updateMemberDetails(instanceName, TXLOGLOCATION, logdir);
-                } catch (Exception e) {
-                    _logger.log(Level.WARNING, "jts.error_updating_gms", e);
-                }
-            }
-        }
-    }
-
 }
