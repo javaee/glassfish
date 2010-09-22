@@ -90,7 +90,7 @@ public class ResourceProxy implements NamingObjectProxy.InitializationNamingObje
                     getResourceDeployer(resource).deployResource(resource, resourceInfo.getApplicationName(),
                             resourceInfo.getModuleName());
                 }
-                result = namingService.lookup(resourceInfo, resourceInfo.getName());
+                result = namingService.lookup(resourceInfo, resourceInfo.getName(), ic.getEnvironment());
             }catch(Exception e){
                 throwResourceNotFoundException(e, resourceInfo);
             }
