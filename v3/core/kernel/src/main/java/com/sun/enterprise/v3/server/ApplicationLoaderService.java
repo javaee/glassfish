@@ -94,6 +94,7 @@ import java.util.logging.Logger;
 import org.glassfish.deployment.common.ApplicationConfigInfo;
 import org.glassfish.deployment.common.InstalledLibrariesResolver;
 import org.glassfish.deployment.common.DeploymentContextImpl;
+import org.glassfish.deployment.common.DeploymentProperties;
 
 /**
  * This service is responsible for loading all deployed applications...
@@ -310,23 +311,12 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
         String source = app.getLocation();
         final String appName = app.getName();
 
-        List<String> snifferTypes = new ArrayList<String>();
-        for (Module module : app.getModule()) {
-            for (Engine engine : module.getEngines()) {
-                snifferTypes.add(engine.getSniffer());
-            }
-        }
-
         // lifecycle modules are loaded separately
         if (Boolean.valueOf(app.getDeployProperties().getProperty
             (ServerTags.IS_LIFECYCLE))) {
             return;
         }
 
-        if (snifferTypes.isEmpty()) {
-            logger.log(Level.SEVERE, "cannot.determine.type", new Object[] {source});
-            return;
-        }
         URI uri;
         try {
             uri = new URI(source);
@@ -344,6 +334,10 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                         app.getDeployParameters(appRef);
                     deploymentParams.target = server.getName();
                     deploymentParams.origin = DeployCommandParameters.Origin.load;
+                    if (app.containsSnifferType(Application.OSGI_SNIFFER_TYPE)) {
+                        deploymentParams.type = DeploymentProperties.OSGI;
+                    }
+
                     archive = archiveFactory.get().openArchive(sourceFile, deploymentParams);
 
                     ActionReport report = new HTMLActionReporter();
@@ -354,26 +348,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
 
                     new ApplicationConfigInfo(app).store(depContext.getAppProps());
 
-                    List<Sniffer> sniffers = new ArrayList<Sniffer>();
-                    if (app.isStandaloneModule()) {
-                        for (String snifferType : snifferTypes) {
-                            Sniffer sniffer = snifferManager.getSniffer(snifferType);
-                            if (sniffer!=null) {
-                                sniffers.add(sniffer);
-                            } else {
-                                logger.log(Level.SEVERE, "cannot.find.sniffer", new Object[] {snifferType});
-                            }
-                        }
-                        if (sniffers.isEmpty()) {
-                            logger.log(Level.SEVERE, "cannot.find.sniffer.for.app", new Object[] {appName});
-                            return;
-                        }
-                    } else {
-                        // todo, this is a cludge to force the reload and reparsing of the
-                        // composite application.
-                        sniffers=null;
-                    }
-                    deployment.deploy(sniffers, depContext);
+                    deployment.deploy(deployment.getSniffersFromApp(app), depContext);
                     if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
                         logger.log(Level.INFO, "loading.application.time", new Object[] {
                                 appName, (Calendar.getInstance().getTimeInMillis() - operationStartTime)});

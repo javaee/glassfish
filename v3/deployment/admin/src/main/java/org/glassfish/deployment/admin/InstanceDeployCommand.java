@@ -151,7 +151,7 @@ public class InstanceDeployCommand extends InstanceDeployCommandParameters imple
             }
 
             archive = archiveFactory.openArchive(path, this);
-            ArchiveHandler archiveHandler = deployment.getArchiveHandler(archive);
+            ArchiveHandler archiveHandler = deployment.getArchiveHandler(archive, type);
             if (archiveHandler==null) {
                 report.failure(logger,localStrings.getLocalString("deploy.unknownarchivetype","Archive type of {0} was not recognized",path.getName()));
                 return;

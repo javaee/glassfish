@@ -558,6 +558,8 @@ public class DeploymentProperties extends Properties {
 
     public static final String PRESERVE_APP_SCOPED_RESOURCES = "preserveAppScopedResources";
 
+    public static final String OSGI = "osgi";
+
     static Map keyMap;
 
     static {

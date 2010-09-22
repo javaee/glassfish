@@ -200,7 +200,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
         File expansionDir=null;
         try {
 
-            ArchiveHandler archiveHandler = deployment.getArchiveHandler(archive);
+            ArchiveHandler archiveHandler = deployment.getArchiveHandler(archive, type);
             if (archiveHandler==null) {
                 report.failure(logger,localStrings.getLocalString("deploy.unknownarchivetype","Archive type of {0} was not recognized",path.getName()));
                 return;
@@ -390,7 +390,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                         false);
             }
         } catch(Throwable e) {
-            report.failure(logger, e.getMessage(), null);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(e.getMessage());
             report.setFailureCause(e);
         } finally {
             try {

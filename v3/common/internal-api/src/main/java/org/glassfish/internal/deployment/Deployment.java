@@ -178,6 +178,8 @@ public interface Deployment {
 
     public ArchiveHandler getArchiveHandler(ReadableArchive archive) throws IOException;
 
+    public ArchiveHandler getArchiveHandler(ReadableArchive archive, String type) throws IOException;
+
     public ModuleInfo prepareModule(
         List<EngineInfo> sortedEngineInfos, String moduleName,
         DeploymentContext context,
@@ -250,4 +252,7 @@ public interface Deployment {
      * @throws IOException if the scanning fails due to an I/O exception
      */
     public Types getDeployableTypes(DeploymentContext context) throws IOException;
+
+    public List<Sniffer> getSniffersFromApp(Application app);
+
 }

@@ -184,10 +184,28 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
      * @throws IOException when an error occur
      */
     public ArchiveHandler getArchiveHandler(ReadableArchive archive) throws IOException {
+        return getArchiveHandler(archive, null);
+    }
 
+    /**
+     * Returns the ArchiveHandler for the passed archive abstraction or null
+     * if there are none.
+     *
+     * @param archive the archive to find the handler for
+     * @param type the type of the archive
+     * @return the archive handler or null if not found.
+     * @throws IOException when an error occur
+     */
+    public ArchiveHandler getArchiveHandler(ReadableArchive archive, String type) throws IOException {
         // first we try the composite handlers as archive handlers can be fooled with the
         // sub directories and such.
         for (CompositeHandler handler : habitat.getAllByContract(CompositeHandler.class)) {
+            if (type == null || !type.equals(DeploymentProperties.OSGI)) {
+                if (DeploymentProperties.OSGI.equals(handler.getClass().getAnnotation(Service.class).name())) { 
+                    // skip osgi archive handler if the type is not "osgi"
+                    continue;
+                }
+            }
             if (handler.handles(archive)) {
                 return handler;
             }
@@ -292,7 +310,8 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
         try {
             ArchiveHandler handler = context.getArchiveHandler();
             if (handler == null) {
-                handler = getArchiveHandler(context.getSource());
+                handler = getArchiveHandler(context.getSource(), 
+                    commandParams.type);
                 context.setArchiveHandler(handler);
             }
             if (handler==null) {
@@ -1418,7 +1437,12 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
 
         ArchiveHandler archiveHandler = copy.archiveHandler();
         if (archiveHandler == null) {
-            archiveHandler = getArchiveHandler(archive);
+            String type = null;
+            OpsParams params = builder.params();
+            if (params != null && params instanceof DeployCommandParameters) {
+                type = ((DeployCommandParameters)params).type;
+            }
+            archiveHandler = getArchiveHandler(archive, type);
         }
 
 
@@ -1802,6 +1826,9 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
             commandParams.origin = DeployCommandParameters.Origin.load;
             commandParams.target = target;
             commandParams.enabled = Boolean.TRUE;
+            if (app.containsSnifferType(Application.OSGI_SNIFFER_TYPE)) {
+                commandParams.type = DeploymentProperties.OSGI;
+            }
             Properties contextProps = app.getDeployProperties();
             Map<String, Properties> modulePropsMap = app.getModulePropertiesMap();
             ApplicationConfigInfo savedAppConfig = new ApplicationConfigInfo(app);
@@ -1825,7 +1852,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 deploymentContext.setModulePropsMap(modulePropsMap);
             }
 
-            deploy(deploymentContext);
+            deploy(getSniffersFromApp(app), deploymentContext);
         } finally {
             try {
                 if (archive != null) {
@@ -1932,5 +1959,42 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
             return sb.substring(0, sb.length()-2);
         }
         return sb.toString();
+    }
+
+    public List<Sniffer> getSniffersFromApp(Application app) {
+        List<String> snifferTypes = new ArrayList<String>();
+        for (com.sun.enterprise.config.serverbeans.Module module : app.getModule()) {
+            for (Engine engine : module.getEngines()) {
+                snifferTypes.add(engine.getSniffer());
+            }
+        }
+
+        if (snifferTypes.isEmpty()) {
+            logger.log(Level.SEVERE, "cannot.determine.type", 
+                new Object[] {app.getLocation()});
+            return null;
+        }
+
+        List<Sniffer> sniffers = new ArrayList<Sniffer>();
+        if (app.isStandaloneModule()) {
+            for (String snifferType : snifferTypes) {
+                Sniffer sniffer = snifferManager.getSniffer(snifferType);
+                if (sniffer != null) {
+                    sniffers.add(sniffer);
+                } else {
+                    logger.log(Level.SEVERE, "cannot.find.sniffer", new Object[] {snifferType});
+                }
+            }
+            if (sniffers.isEmpty()) {
+                logger.log(Level.SEVERE, "cannot.find.sniffer.for.app", new Object[] {app.getName()});
+                return null;
+            }
+        } else {
+            // todo, this is a cludge to force the reload and reparsing of the
+            // composite application.
+            return null;
+        }
+
+        return sniffers;
     }
 }

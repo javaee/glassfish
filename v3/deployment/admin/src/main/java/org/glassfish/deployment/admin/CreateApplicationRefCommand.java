@@ -245,6 +245,10 @@ public class CreateApplicationRefCommand implements AdminCommand {
                     if(lbenabled != null){
                         commandParams.lbenabled = lbenabled;
                     }
+                    if (app.containsSnifferType(Application.OSGI_SNIFFER_TYPE)) {
+                        commandParams.type = DeploymentProperties.OSGI;
+                    }
+
                     contextProps = app.getDeployProperties();
                     modulePropsMap = app.getModulePropertiesMap();
                     savedAppConfig = new ApplicationConfigInfo(app);
@@ -298,7 +302,7 @@ public class CreateApplicationRefCommand implements AdminCommand {
                     }
 
                     if (domain.isCurrentInstanceMatchingTarget(target, appName, server.getName(), null)) {
-                        deployment.deploy(deploymentContext);
+                        deployment.deploy(deployment.getSniffersFromApp(app), deploymentContext);
                     }
 
                     if (report.getActionExitCode().equals(
