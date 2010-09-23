@@ -372,6 +372,8 @@ public final class JavaEETransactionImpl extends TimerTask implements
                 HeuristicMixedException, HeuristicRollbackException,
                 SecurityException, IllegalStateException, SystemException {
 
+        checkTransationActive();
+
         // START local transaction timeout
         // If this transaction is set for timeout, cancel it as it is in the commit state
         if (isTimerTask)
@@ -547,6 +549,9 @@ public final class JavaEETransactionImpl extends TimerTask implements
                     +" nonXAResource="+nonXAResource);
         }
 
+        if ( jtsTx == null )
+            checkTransationActive(); // non-xa transaction can't be in prepared state, xa code will do its check
+
         try {
             if ( jtsTx != null )
                 jtsTx.rollback();
@@ -598,6 +603,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
         }
         // END OF IASRI 4660742
 
+        checkTransationActive();
         if ( jtsTx != null )
             return jtsTx.delistResource(xaRes, flag);
         else
@@ -612,6 +618,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
                     +jtsTx+" nonXAResource="+nonXAResource);
         }
 
+        checkTransationActive();
         if ( jtsTx != null )
             return jtsTx.enlistResource(xaRes);
         else if ( nonXAResource != null )
@@ -645,14 +652,15 @@ public final class JavaEETransactionImpl extends TimerTask implements
         }
         // END OF IASRI 4660742
 
+        checkTransationActive();
         if ( jtsTx != null )
             jtsTx.registerSynchronization(sync);
         else
             syncs.add(sync);
     }
 
-    public void setRollbackOnly() throws IllegalStateException,
-            SystemException {
+    public void setRollbackOnly() throws IllegalStateException, SystemException {
+        checkTransationActive();
         if ( jtsTx != null )
             jtsTx.setRollbackOnly();
         else
@@ -668,6 +676,15 @@ public final class JavaEETransactionImpl extends TimerTask implements
             status = localTxStatus;
 
         return (status == Status.STATUS_MARKED_ROLLBACK);
+    }
+
+    private void checkTransationActive() throws SystemException {
+        int status = getStatus();
+        if (status != Status.STATUS_MARKED_ROLLBACK &&
+            status != Status.STATUS_ACTIVE) {
+            throw new IllegalStateException(sm.getString(
+                "enterprise_distributedtx.transaction_notactive"));
+        }
     }
 
     public String toString() {

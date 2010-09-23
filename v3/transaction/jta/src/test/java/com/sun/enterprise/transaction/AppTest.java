@@ -46,6 +46,7 @@ import junit.framework.TestSuite;
 
 import java.util.logging.*;
 import javax.transaction.*;
+import javax.transaction.xa.*;
 
 import java.beans.PropertyChangeEvent;
 import com.sun.enterprise.config.serverbeans.ServerTags;
@@ -115,6 +116,150 @@ public class AppTest extends TestCase {
         }
     }
 
+    public void testWrongTMOperationsAfterCommit() {
+        System.out.println("**Testing Wrong TM Operations After Commit ===>");
+        try {
+            t.begin();
+            t.commit();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+
+        try {
+            System.out.println("**Calling TM commit ===>");
+            t.commit();
+            System.out.println("**WRONG: TM commit successful <===");
+            assert (false);
+        } catch (IllegalStateException ex) {
+            System.out.println("**Caught IllegalStateException <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+
+        try {
+            System.out.println("**Calling TM rollback ===>");
+            t.rollback();
+            System.out.println("**WRONG: TM rollback successful <===");
+            assert (false);
+        } catch (IllegalStateException ex) {
+            System.out.println("**Caught IllegalStateException <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+
+        try {
+            System.out.println("**Calling TM setRollbackOnly ===>");
+            t.setRollbackOnly();
+            System.out.println("**WRONG: TM setRollbackOnly successful <===");
+            assert (false);
+        } catch (IllegalStateException ex) {
+            System.out.println("**Caught IllegalStateException <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+
+    }
+
+    public void testWrongTXOperationsAfterCommit() {
+        System.out.println("**Testing Wrong Tx Operations After Commit ===>");
+        Transaction tx = null;
+        try {
+            t.begin();
+            tx = t.getTransaction();
+            t.commit();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+
+        try {
+            System.out.println("**Calling Tx commit ===>");
+            tx.commit();
+            System.out.println("**WRONG: Tx commit successful <===");
+            assert (false);
+        } catch (IllegalStateException ex) {
+            System.out.println("**Caught IllegalStateException <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+
+        try {
+            System.out.println("**Calling Tx rollback ===>");
+            tx.rollback();
+            System.out.println("**WRONG: Tx rollback successful <===");
+            assert (false);
+        } catch (IllegalStateException ex) {
+            System.out.println("**Caught IllegalStateException <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+
+        try {
+            System.out.println("**Calling Tx setRollbackOnly ===>");
+            tx.setRollbackOnly();
+            System.out.println("**WRONG: Tx setRollbackOnly successful <===");
+            assert (false);
+        } catch (IllegalStateException ex) {
+            System.out.println("**Caught IllegalStateException <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+
+        try {
+            System.out.println("**Calling Tx enlistResource ===>");
+            tx.enlistResource(new TestResource());
+            System.out.println("**WRONG: Tx enlistResource successful <===");
+            assert (false);
+        } catch (IllegalStateException ex) {
+            System.out.println("**Caught IllegalStateException <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+
+        try {
+            System.out.println("**Calling Tx delistResource ===>");
+            tx.delistResource(new TestResource(), XAResource.TMSUCCESS);
+            System.out.println("**WRONG: Tx delistResource successful <===");
+            assert (false);
+        } catch (IllegalStateException ex) {
+            System.out.println("**Caught IllegalStateException <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+
+        try {
+            System.out.println("**Calling Tx registerSynchronization ===>");
+            TestSync s = new TestSync(false);
+            tx.registerSynchronization(s);
+            System.out.println("**WRONG: Tx registerSynchronization successful <===");
+            assert (false);
+        } catch (IllegalStateException ex) {
+            System.out.println("**Caught IllegalStateException <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+
+    }
+
     public void testWrongTMCommit() {
         System.out.println("**Testing Wrong TM commit ===>");
         try {
@@ -178,6 +323,58 @@ public class AppTest extends TestCase {
             assert (true);
         } catch (SystemException ne) {
             System.out.println("**Caught SystemException <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+    }
+
+    public void testWrongUTXOperationsAfterCommit() {
+        System.out.println("**Testing Wrong UTx Operations After Commit ===>");
+        UserTransaction utx = null;
+        try {
+            t.begin();
+            utx = createUtx();
+            t.commit();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+
+        try {
+            System.out.println("**Calling UTx commit ===>");
+            utx.commit();
+            System.out.println("**WRONG: UTx commit successful <===");
+            assert (false);
+        } catch (IllegalStateException ex) {
+            System.out.println("**Caught IllegalStateException <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+
+        try {
+            System.out.println("**Calling UTx rollback ===>");
+            utx.rollback();
+            System.out.println("**WRONG: UTx rollback successful <===");
+            assert (false);
+        } catch (IllegalStateException ex) {
+            System.out.println("**Caught IllegalStateException <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+
+        try {
+            System.out.println("**Calling UTx setRollbackOnly ===>");
+            utx.setRollbackOnly();
+            System.out.println("**WRONG: UTx setRollbackOnly successful <===");
+            assert (false);
+        } catch (IllegalStateException ex) {
+            System.out.println("**Caught IllegalStateException <===");
             assert (true);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -566,5 +763,21 @@ public class AppTest extends TestCase {
             super(msg);
         }
     }
+
+    static class TestResource implements XAResource {
+
+      public void commit(Xid xid, boolean onePhase) throws XAException{}
+      public boolean isSameRM(XAResource xaresource) throws XAException { return false; }
+      public void rollback(Xid xid) throws XAException {}
+      public int prepare(Xid xid) throws XAException { return XAResource.XA_OK; }
+      public boolean setTransactionTimeout(int i) throws XAException { return true; }
+      public int getTransactionTimeout() throws XAException { return 0; }
+      public void forget(Xid xid) throws XAException { }
+      public void start(Xid xid, int flags) throws XAException { }
+      public void end(Xid xid, int flags) throws XAException { }
+      public Xid[] recover(int flags) throws XAException { return null; }
+
+    }
+
 
 }
