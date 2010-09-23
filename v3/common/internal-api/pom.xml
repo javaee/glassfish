@@ -74,6 +74,7 @@
             <groupId>org.glassfish</groupId>
             <artifactId>javax.management.j2ee</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
