@@ -208,7 +208,7 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
                     "Exception while adding the new configuration {0}",
                     e.toString());
             logger.log(Level.SEVERE, msg, e);
-            result.failure(logger, msg,e);
+            result.failure(logger, msg);
         }
     }
 
