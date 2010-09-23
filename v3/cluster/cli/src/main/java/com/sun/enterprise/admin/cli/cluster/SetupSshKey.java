@@ -64,7 +64,7 @@ public final class SetupSshKey extends CLICommand {
     @Param(optional = true)
     private String sshuser;
 
-    @Param(optional=true)
+    @Param(optional=true, defaultValue="22")
     private int sshport;
 
     @Param(optional = true)
@@ -73,8 +73,8 @@ public final class SetupSshKey extends CLICommand {
     @Param(optional = true)
     private String sshpublickeyfile;
 
-    @Param(optional = true)
-    private boolean generatekey=false;
+    @Param(optional = true, defaultValue="false")
+    private boolean generatekey;
 
     @Param(name="hosts", optional = false, primary = true, multiple = true)
     private String[] nodes;
@@ -95,10 +95,6 @@ public final class SetupSshKey extends CLICommand {
 
         if(sshuser==null) {
             sshuser = System.getProperty("user.name");
-        }
-
-        if(sshport==0) {
-            sshport=22;
         }
 
         if (sshkeyfile == null) {
@@ -157,11 +153,13 @@ public final class SetupSshKey extends CLICommand {
      * Method that sets the prompt flag only if key file exists
      * @param file the key file
      */
-    private void validateKeyFile(String file) {
+    private void validateKeyFile(String file) throws CommandException {
         //if key exists, set prompt flag
         File f = new File(file);
         if (f.exists()) {
             promptPass=true;
+        } else {
+            throw new CommandException(Strings.get("KeyDoesNotExist", file));
         }
     }
     /**
@@ -217,6 +215,9 @@ public final class SetupSshKey extends CLICommand {
         if (generatekey)
             return true;
         
+        if (!programOpts.isInteractive())
+            return false;
+
         Console cons = System.console();
 
         if (cons != null) {

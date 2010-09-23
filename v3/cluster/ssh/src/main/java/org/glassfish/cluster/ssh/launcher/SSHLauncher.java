@@ -516,16 +516,13 @@ public class SSHLauncher {
                         }
                     }
                 } catch (Exception e) {
-                    logger.fine("Failed to create .ssh directory on remote host:" + e.getMessage());
+                    //logger.fine("Failed to create .ssh directory on remote host:" + e.getMessage());
+                    throw new IOException("Error while creating .ssh directory on remote host:" + e.getMessage());
                 }
 
                 scp.put(theBytes, AUTH_KEY_FILE, SSH_DIR);
 
-                logger.info("Copied keyfile " + pubKeyFile + " to " + userName + "@" + host);
-            } catch (FileNotFoundException fne) {
-                //logger.printExceptionStackTrace(fne);
-            } catch (IOException ioe) {
-                //logger.printExceptionStackTrace(ioe);
+                logger.info("Copied keyfile " + pubKeyFile + " to " + userName + "@" + host);           
             } finally {
                 //remove the temp file
                 //not working on Windows, investigate!
@@ -596,7 +593,7 @@ public class SSHLauncher {
             c = new Connection(host, port);
             c.connect();
             File f = new File(keyFile);
-            logger.fine("Connecting using credentials: user=" + userName + " keyfile=" + keyFile + " keypassphrase=" + getPrintablePassword(rawKeyPassPhrase));
+            logger.fine("Checking connection using credentials: user=" + userName + " keyfile=" + keyFile + " keypassphrase=" + getPrintablePassword(rawKeyPassPhrase));
             status = c.authenticateWithPublicKey(userName, f, rawKeyPassPhrase);
             if (status) {
                 logger.info("Successfully connected to " + userName + "@" + host + " using keyfile " + keyFile);
