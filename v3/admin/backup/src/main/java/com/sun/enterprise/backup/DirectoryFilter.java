@@ -38,25 +38,12 @@
  * holder.
  */
 
-/*
- * ZipFilenameFilter.java
- *
- * Created on March 30, 2004, 9:40 PM
- */
-
 package com.sun.enterprise.backup;
 
 import java.io.*;
 
-/**
- *
- * @author  bnevins
- * Tiny class.  It is here because it is used in 2 places --
- * RestoreManager and ListManager and it avoids code duplication.
- */
-
-class ZipFilenameFilter implements FilenameFilter {
+class DirectoryFilter implements FilenameFilter {
     public boolean accept(File dir, String name) {
-        return name.toLowerCase().endsWith(".zip");
+        return new File(dir, name).isDirectory();
     }
 }

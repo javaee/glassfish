@@ -95,7 +95,11 @@ public class ListManager extends BackupRestoreManager
         ColumnFormatter cf = null;
         boolean itemInRow = false;
         
-        findZips();
+        // If a backup config was not provided then look for all zips
+        // including those in the backup config directories.
+        // If a backup config was provided then only look for zips in
+        // that backup config directory.
+        findZips(request.backupConfig == null);
 
         // it is GUARANTEED that the length > 0
         for(int i = 0; i < zips.length; i++) {
@@ -174,18 +178,46 @@ public class ListManager extends BackupRestoreManager
                                              getBackupDirectory(request));
     }
     
-    /** Looks through the backups directory and assembles
+    /** Look through the backups directory/subdirectories and assemble
      * a list of all backup files found.
+     *
+     * @param  subdirs If true search the first level subdirectories too
      * @throws BackupWarningException if there are no backup zip files
      */    
-    void findZips() throws BackupWarningException {
+    private void findZips(boolean subdirs) throws BackupWarningException {
 
-        zips = getBackupDirectory(request).listFiles(new ZipFilenameFilter());
+        File[] dirs;
+        File[] files;
+        List<File>zipList = new ArrayList<File>();
+
+        
+        files = getBackupDirectory(request).listFiles(new ZipFilenameFilter());
+
+        if (subdirs) {
+            for (int i = 0; files != null && i < files.length; i++)
+                zipList.add(files[i]);
+
+            // Get the list of directories
+            dirs = getBackupDirectory(request).listFiles(new DirectoryFilter());
+
+            // For each directory we find in the domain's backup dir...
+            for(int i = 0; dirs != null && i < dirs.length; i++) {
+                files = dirs[i].listFiles(new ZipFilenameFilter());
+                    // Add the files with a zip extension to the List
+                    for (int j = 0; files != null && j < files.length; j++)
+                        zipList.add(files[j]);
+            }
+
+            if (zipList.size() > 0) 
+                zips = zipList.toArray(new File[0]);
+
+        } else
+            zips = files;
+
         if(zips == null || zips.length <= 0)
             throw new BackupWarningException("backup-res.NoBackupFiles", 
                                              getBackupDirectory(request));
     }
-    
 
     private static final LocalStringsImpl strings =
                 new LocalStringsImpl(ListManager.class);
