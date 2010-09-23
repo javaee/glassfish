@@ -39,6 +39,7 @@
  */
 package org.glassfish.admin.rest.resources;
 
+import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.jersey.api.core.ResourceContext;
 import com.sun.jersey.multipart.FormDataBodyPart;
@@ -79,6 +80,9 @@ public class TemplateResource {
 
     @Context
     protected ResourceContext resourceContext;
+
+    @Context
+    protected Habitat habitat;
 
     protected Dom entity;  //may be null when not created yet...
 
@@ -140,7 +144,8 @@ public class TemplateResource {
                 Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>>();
                 data = ResourceUtil.translateCamelCasedNamesToXMLNames(data);
                 mapOfChanges.put((ConfigBean) getEntity(), data);
-                RestService.getConfigSupport().apply(mapOfChanges); //throws TransactionFailure
+                ConfigSupport cs = habitat.getComponent(ConfigSupport.class);
+                cs.apply(mapOfChanges); //throws TransactionFailure
             } else {//create if in the tree
                 Class<? extends ConfigBeanProxy> proxy = TemplateListOfResource.getElementTypeByName(parent, tagName);
                 ConfigBean theParent = (ConfigBean) parent;
@@ -281,7 +286,9 @@ public class TemplateResource {
             if (command.equals("GENERIC-DELETE")) {
                 deleteMethodMetaData = new MethodMetaData();
             } else {
-                deleteMethodMetaData = ResourceUtil.getMethodMetaData(command, RestService.getHabitat(), RestService.logger);
+                deleteMethodMetaData = ResourceUtil.getMethodMetaData(
+                        command, habitat, RestService.logger);
+
                 //In case of delete operation(command), do not  display/provide id attribute.
                 deleteMethodMetaData.removeParamMetaData("id");
             }
@@ -504,7 +511,7 @@ public class TemplateResource {
         if (commandName != null) {
             String typeOfResult = ResourceUtil.getResultType(requestHeaders);
 
-            return ResourceUtil.runCommand(commandName, data, RestService.getHabitat(), typeOfResult);//processed
+            return ResourceUtil.runCommand(commandName, data, habitat, typeOfResult);//processed
         }
 
         return null;//not processed

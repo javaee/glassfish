@@ -82,4 +82,6 @@ public class SetDomainConfigResource extends TemplateExecCommand {
 
         throw new RuntimeException("You must supply exactly one configuration option."); //i18n
     }
+    
+    
 }

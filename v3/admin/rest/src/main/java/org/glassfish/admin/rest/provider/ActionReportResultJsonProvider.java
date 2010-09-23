@@ -58,7 +58,7 @@ import java.util.*;
  * @author Jason Lee
  */
 @Provider
-@Produces(MediaType.APPLICATION_JSON)
+@Produces({MediaType.APPLICATION_JSON,"application/x-javascript"})
 public class ActionReportResultJsonProvider extends BaseProvider<ActionReportResult> {
     public ActionReportResultJsonProvider() {
         super(ActionReportResult.class, MediaType.APPLICATION_JSON_TYPE);

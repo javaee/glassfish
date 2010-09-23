@@ -46,9 +46,14 @@ import com.sun.jersey.api.core.ResourceConfig;
 import org.glassfish.api.container.EndpointRegistrationException;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.jersey.api.core.DefaultResourceConfig;
+import com.sun.jersey.spi.inject.SingletonTypeInjectableProvider;
 import java.util.Set;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import org.glassfish.admin.rest.adapter.Reloader;
+import org.glassfish.admin.rest.resources.ReloadResource;
 import org.glassfish.internal.api.ServerContext;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  *
@@ -72,7 +77,7 @@ public class LazyJerseyInit {
      * @return the correct GrizzlyAdapter
      * @throws EndpointRegistrationException
      */
-    public static GrizzlyAdapter exposeContext(Set classes, ServerContext sc)
+    public static GrizzlyAdapter exposeContext(Set classes, ServerContext sc, Habitat habitat)
             throws EndpointRegistrationException {
 
         Adapter adapter = null;
@@ -81,6 +86,21 @@ public class LazyJerseyInit {
         rc.getMediaTypeMappings().put("xml", MediaType.APPLICATION_XML_TYPE);
         rc.getMediaTypeMappings().put("json", MediaType.APPLICATION_JSON_TYPE);
         rc.getMediaTypeMappings().put("html", MediaType.TEXT_HTML_TYPE);
+        rc.getMediaTypeMappings().put("js", new MediaType("application","x-javascript"));
+//  not yet      rc.getContainerRequestFilters().add(LoggingFilter.class);
+//        rc.getContainerResponseFilters().add(LoggingFilter.class);
+//        rc.getFeatures().put(ResourceConfig.FEATURE_DISABLE_WADL, Boolean.TRUE);
+
+        Reloader r = new Reloader();
+
+        rc.getProperties().put(ResourceConfig.PROPERTY_CONTAINER_NOTIFIER, r);
+        rc.getClasses().add(ReloadResource.class);
+
+        //We can only inject these 3 extra classes in Jersey resources...
+        //
+        rc.getSingletons().add(new SingletonTypeInjectableProvider<Context, Reloader>(Reloader.class, r) {});
+        rc.getSingletons().add(new SingletonTypeInjectableProvider<Context, ServerContext>(ServerContext.class, sc) {});
+        rc.getSingletons().add(new SingletonTypeInjectableProvider<Context, Habitat>(Habitat.class, habitat) {});
 
         //Use common classloader. Jersey artifacts are not visible through
         //module classloader

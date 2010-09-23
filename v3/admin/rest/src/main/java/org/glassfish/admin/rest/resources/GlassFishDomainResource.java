@@ -40,7 +40,10 @@
 
 package org.glassfish.admin.rest.resources;
 
-import org.glassfish.admin.rest.RestService;
+import com.sun.enterprise.config.serverbeans.Domain;
+import javax.ws.rs.core.Context;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.Dom;
 
 /**
  * This is the root class for the generated DomainResource
@@ -53,8 +56,16 @@ import org.glassfish.admin.rest.RestService;
  */
 public class GlassFishDomainResource extends TemplateResource {
 
-    public GlassFishDomainResource(){
-        childModel = RestService.getDomainBean().model;
-        entity = RestService.getDomainBean();
+    public GlassFishDomainResource() {
+        //moved init code in the setHabitat callback from Jersey, to get the correct habitat
+        //otherwise we cannot used jersey injected values in a constructor (which does not have a param)
+    }
+
+    //called when jersey is injecting the habitat...
+    @Context
+    public void setHabitat(Habitat hab) {
+        Dom dom1 = Dom.unwrap(hab.getComponent(Domain.class));
+        childModel = dom1.document.getRoot().model;
+        entity = dom1.document.getRoot();
     }
 }

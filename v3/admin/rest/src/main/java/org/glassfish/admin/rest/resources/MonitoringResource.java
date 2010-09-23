@@ -40,6 +40,7 @@
 
 package org.glassfish.admin.rest.resources;
 
+import org.jvnet.hk2.component.Habitat;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Context;
 import java.net.MalformedURLException;
@@ -61,7 +62,6 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
-import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.clientutils.MarshallingUtils;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
@@ -86,6 +86,11 @@ public class MonitoringResource {
     String path;
     @Context
     protected UriInfo uriInfo;
+
+    @Context
+    protected Habitat habitat;
+
+
     @GET
     //@Produces({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML,"text/html;qs=2"})
@@ -98,7 +103,7 @@ public class MonitoringResource {
         ar.setSuccess();
         // ar.getExtraProperties().put("jmxServiceUrls", jmxUrls);
         ActionReportResult result = new ActionReportResult(ar);
-        MonitoringRuntimeDataRegistry monitoringRegistry = RestService.getMonitoringRegistry();
+        MonitoringRuntimeDataRegistry monitoringRegistry =habitat.getComponent(MonitoringRuntimeDataRegistry.class);
 
         if (path == null) {
             //FIXME - Return appropriate message to the user
@@ -207,7 +212,7 @@ public class MonitoringResource {
         Client client = null;
         try {
             client = Client.create();
-            Domain domain = RestService.getDomain();
+            Domain domain = habitat.getComponent(Domain.class);
             Server server = domain.getServerNamed(targetInstanceName);
             if (server != null) {
                 //forward to URL that has same path as current request. Host and Port are replaced to that of targetInstanceName

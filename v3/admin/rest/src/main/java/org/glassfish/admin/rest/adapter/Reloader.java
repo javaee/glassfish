@@ -38,49 +38,29 @@
  * holder.
  */
 
-package org.glassfish.admin.rest.resources;
+package org.glassfish.admin.rest.adapter;
+
+import com.sun.jersey.spi.container.ContainerListener;
+import com.sun.jersey.spi.container.ContainerNotifier;
 
 
-import com.sun.jersey.spi.container.ContainerRequest;
-import org.glassfish.admin.rest.Constants;
-import org.glassfish.admin.rest.results.ActionReportResult;
-import org.glassfish.api.admin.ParameterMap;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import org.glassfish.admin.rest.CliFailureException;
+public class Reloader implements ContainerNotifier{
 
-/**
- *
- * @author ludovic champenois ludo@dev.java.net
- * Code moved from generated classes to here. Gen code inherits from this template class
- * that contains the logic for mapped commands RS Resources
- *
- */
-public class TemplateCommandGetResource extends TemplateExecCommand {
+    private List<ContainerListener> list = new ArrayList<ContainerListener>();
 
-    public TemplateCommandGetResource(String resourceName, String commandName, String commandMethod, boolean b) {
-        super(resourceName, commandName, commandMethod, "", "", b);
-        parameterType = Constants.QUERY_PARAMETER;
+    public void addListener(ContainerListener containerListener) {
+        list.add(containerListener);
     }
 
-    @GET
-    @Produces({
-        "text/html;qs=2",
-        MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_XML,
-        MediaType.APPLICATION_FORM_URLENCODED})
-    public ActionReportResult processGet() {
-        ParameterMap data = new ParameterMap();
-        try {
-            processCommandParams(data);
-            addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
-            adjustParameters(data);
 
-            return executeCommand(data);
-        } catch (Exception e) {
-            throw new CliFailureException(e.getMessage());
+    public void reload() {
+        for(ContainerListener cl : list) {
+            cl.onReload();
         }
     }
+
+
 }

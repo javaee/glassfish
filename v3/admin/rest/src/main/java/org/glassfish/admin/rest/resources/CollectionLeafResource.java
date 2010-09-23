@@ -40,6 +40,7 @@
 
 package org.glassfish.admin.rest.resources;
 
+import org.jvnet.hk2.component.Habitat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,6 +90,10 @@ public abstract class CollectionLeafResource {
 
     @Context
     protected ResourceContext resourceContext;
+
+    @Context
+    protected Habitat habitat;
+
     protected List<String> entity;
     protected Dom parent;
     protected String tagName;
@@ -183,7 +188,7 @@ public abstract class CollectionLeafResource {
         //POST meta data
         String postCommand = getPostCommand();
         if (postCommand != null) {
-            MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData(postCommand, RestService.getHabitat(), RestService.logger);
+            MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData(postCommand, habitat, RestService.logger);
             postMethodMetaData.setDescription("Create");
             mmd.put("POST", postMethodMetaData);
         }
@@ -191,7 +196,7 @@ public abstract class CollectionLeafResource {
         //DELETE meta data
         String deleteCommand = getDeleteCommand();
         if (deleteCommand != null) {
-            MethodMetaData deleteMethodMetaData = ResourceUtil.getMethodMetaData(deleteCommand, RestService.getHabitat(), RestService.logger);
+            MethodMetaData deleteMethodMetaData = ResourceUtil.getMethodMetaData(deleteCommand, habitat, RestService.logger);
             deleteMethodMetaData.setDescription("Delete");
             mmd.put("DELETE", deleteMethodMetaData);
         }
@@ -234,7 +239,7 @@ public abstract class CollectionLeafResource {
             if (null != commandName) {
                 String typeOfResult = ResourceUtil.getResultType(requestHeaders);
                 ActionReport actionReport = ResourceUtil.runCommand(commandName,
-                    data, RestService.getHabitat(),typeOfResult);
+                    data, habitat,typeOfResult);
 
                 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
                 if (exitCode != ActionReport.ExitCode.FAILURE) {

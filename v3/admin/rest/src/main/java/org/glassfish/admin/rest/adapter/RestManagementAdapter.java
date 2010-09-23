@@ -45,7 +45,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.generator.ASMResourcesGenerator;
 import org.glassfish.admin.rest.generator.ResourcesGenerator;
 import org.glassfish.admin.rest.resources.GeneratorResource;
@@ -90,7 +89,8 @@ public class RestManagementAdapter extends RestAdapter {
 
         r.add(domainResourceClass);
         r.add(org.glassfish.admin.rest.resources.SessionsResource.class); //TODO this needs to be added to all rest adapters that want to be secured. Decide on it after the discussion to unify RestAdapter is concluded
-
+        r.add(org.glassfish.admin.rest.resources.StaticResource.class);
+        
         //body readers, not in META-INF/services anymore
         r.add(org.glassfish.admin.rest.readers.FormReader.class);
         r.add(org.glassfish.admin.rest.readers.ParameterMapFormReader.class);
@@ -122,8 +122,8 @@ public class RestManagementAdapter extends RestAdapter {
 
     private void generateASM() {
         try {
-            Domain entity = RestService.getDomain();
-            Dom dom = Dom.unwrap(entity);
+        Domain entity = habitat.getComponent(Domain.class);
+        Dom dom = Dom.unwrap(entity);
             DomDocument document = dom.document;
             ConfigModel rootModel = dom.document.getRoot().model;
 

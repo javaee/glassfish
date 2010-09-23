@@ -81,7 +81,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import javax.ws.rs.core.MediaType;
 import org.glassfish.admin.rest.CliFailureException;
 import org.glassfish.admin.rest.provider.ActionReportResultHtmlProvider;
 import org.glassfish.admin.rest.provider.ActionReportResultJsonProvider;
@@ -386,19 +385,19 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
         return type;
     }
 
-    private ActionReport getClientActionReport(GrizzlyRequest req) {
-        ActionReport report=null;
-        String requestURI = req.getRequestURI();
-        String acceptedMimeType = getAcceptedMimeType(req);
-        report = habitat.getComponent(ActionReport.class, acceptedMimeType);
-
-        if (report==null) {
-            // get the default one.
-            report = habitat.getComponent(ActionReport.class, "html");
-        }
-        report.setActionDescription("REST");
-        return report;
-    }
+//    private ActionReport getClientActionReport(GrizzlyRequest req) {
+//        ActionReport report=null;
+//        String requestURI = req.getRequestURI();
+//        String acceptedMimeType = getAcceptedMimeType(req);
+//        report = habitat.getComponent(ActionReport.class, acceptedMimeType);
+//
+//        if (report==null) {
+//            // get the default one.
+//            report = habitat.getComponent(ActionReport.class, "html");
+//        }
+//        report.setActionDescription("REST");
+//        return report;
+//    }
 
 
     private void exposeContext(boolean useASM)
@@ -407,7 +406,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
         logger.fine("Exposing rest resource context root: " + context);
         if ((context != null) || (!"".equals(context))) {
             Set<Class<?>> classes = getResourcesConfig(useASM);
-            adapter = LazyJerseyInit.exposeContext(classes, sc);
+            adapter = LazyJerseyInit.exposeContext(classes, sc, habitat);
             ((GrizzlyAdapter) adapter).setResourcesContextPath(context);
             
             logger.info("Listening to REST requests at context: " + context + "/domain");
@@ -425,13 +424,13 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
             BaseProvider<ActionReportResult> provider;
             String type = getAcceptedMimeType(req);
             if ("xml".equals(type)) {
-                res.setContentType(MediaType.APPLICATION_XML);
+                res.setContentType("application/xml");
                 provider = new ActionReportResultXmlProvider();
             } else if ("json".equals(type)) {
-                res.setContentType(MediaType.APPLICATION_JSON);
+                res.setContentType("application/json");
                 provider = new ActionReportResultJsonProvider();
             } else {
-                res.setContentType(MediaType.TEXT_HTML);
+                res.setContentType("test/html");
                 provider = new ActionReportResultHtmlProvider();
             }
             res.setStatus(statusCode);

@@ -40,9 +40,9 @@
 package org.glassfish.admin.rest.provider;
 
 import com.sun.enterprise.config.serverbeans.Domain;
+import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.config.serverbeans.Config;
 import org.glassfish.admin.rest.RestConfig;
-import org.glassfish.admin.rest.RestService;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -80,6 +80,9 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
     @Context
     protected HttpHeaders requestHeaders;
 
+    @Context
+    protected Habitat habitat;
+    
     protected Class desiredType;
 
     protected MediaType supportedMediaType;
@@ -123,16 +126,16 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
      */
     protected boolean isDebug() {
         //TODO need to fix this to return correct value while running on an instance. Currently it will always return false
-        Domain domain = RestService.getDomain();
-        if (domain != null) {
-            Config config = domain.getConfigNamed("server-config");
+       Domain domain = habitat.getComponent(Domain.class);
+       if (domain != null) {
+           Config config = domain.getConfigNamed("server-config");
             if (config != null) {
                 RestConfig rg = config.getExtensionByType(RestConfig.class);
                 if ((rg != null) && (rg.getDebug().equalsIgnoreCase("true"))) {
                     return true;
                 }
             }
-        }
+       }
 
         if (requestHeaders == null) {
             return true;

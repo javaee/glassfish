@@ -60,6 +60,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * @author ludo
@@ -70,6 +71,10 @@ public class TemplateExecCommand {
     protected HttpHeaders requestHeaders;
     @Context
     protected UriInfo uriInfo;
+
+    @Context
+    protected Habitat habitat;
+
     protected String resourceName;
     protected String commandName;
     protected String commandDisplayName;
@@ -104,7 +109,7 @@ public class TemplateExecCommand {
         try {
             //command method metadata
             MethodMetaData methodMetaData = ResourceUtil.getMethodMetaData(
-                    commandName, getCommandParams(), parameterType, RestService.getHabitat(), RestService.logger);
+                    commandName, getCommandParams(), parameterType, habitat, RestService.logger);
             optionsResult.putMethodMetaData(commandMethod, methodMetaData);
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
@@ -114,7 +119,7 @@ public class TemplateExecCommand {
     }
 
     protected ActionReportResult executeCommand(ParameterMap data) {
-        RestActionReporter actionReport = ResourceUtil.runCommand(commandName, data, RestService.getHabitat(),
+        RestActionReporter actionReport = ResourceUtil.runCommand(commandName, data, habitat,
                 ResourceUtil.getResultType(requestHeaders));
         ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
         ActionReportResult results = new ActionReportResult(commandName, actionReport, options());

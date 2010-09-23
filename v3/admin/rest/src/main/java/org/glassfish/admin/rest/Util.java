@@ -177,7 +177,7 @@ public class Util {
      * @return String the html representation of the given message
      */
     protected static String getHtml(String message, UriInfo uriInfo,boolean delete) {
-        String result = ProviderUtil.getHtmlHeader();
+        String result = ProviderUtil.getHtmlHeader(uriInfo.getBaseUri().toASCIIString());
         String uri = uriInfo.getAbsolutePath().toString();
         if (delete){
             uri=uri+"/..";

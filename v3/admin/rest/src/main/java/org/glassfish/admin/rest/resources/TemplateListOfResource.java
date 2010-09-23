@@ -40,6 +40,7 @@
 
 package org.glassfish.admin.rest.resources;
 
+import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.admin.RestRedirect;
 import org.glassfish.admin.rest.CliFailureException;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -77,6 +78,11 @@ public abstract class TemplateListOfResource {
     protected UriInfo uriInfo;
     @Context
     protected ResourceContext resourceContext;
+
+
+    @Context
+    protected Habitat habitat;
+
     protected List<Dom> entity;
     protected Dom parent;
     protected String tagName;
@@ -131,7 +137,7 @@ public abstract class TemplateListOfResource {
                 ResourceUtil.adjustParameters(data); //adjusting for DEFAULT is required only while executing a CLI command
                 resourceToCreate += data.get("DEFAULT");
                 String typeOfResult = ResourceUtil.getResultType(requestHeaders);
-                RestActionReporter actionReport = ResourceUtil.runCommand(commandName, data, RestService.getHabitat(), typeOfResult);
+                RestActionReporter actionReport = ResourceUtil.runCommand(commandName, data, habitat, typeOfResult);
 
                 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
                 if (exitCode != ActionReport.ExitCode.FAILURE) {
@@ -197,7 +203,7 @@ public abstract class TemplateListOfResource {
         //POST meta data
         String command = getPostCommand();
         if (command != null) {
-            MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData(command, RestService.getHabitat(), RestService.logger);
+            MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData(command, habitat, RestService.logger);
             postMethodMetaData.setDescription("Create");
             if (Util.getResourceName(uriInfo).equals("Application")) {
                 postMethodMetaData.setIsFileUploadOperation(true);
@@ -312,7 +318,7 @@ public abstract class TemplateListOfResource {
 
             if (null != commandName) {
                 String typeOfResult = ResourceUtil.getResultType(requestHeaders);
-                ActionReport actionReport = ResourceUtil.runCommand(commandName, data, RestService.getHabitat(), typeOfResult);
+                ActionReport actionReport = ResourceUtil.runCommand(commandName, data, habitat, typeOfResult);
 
                 ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
                 if (exitCode != ActionReport.ExitCode.FAILURE) {

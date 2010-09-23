@@ -40,6 +40,7 @@
 
 package org.glassfish.admin.rest.resources.custom;
 
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.jersey.api.core.ResourceContext;
 import java.io.File;
 import java.io.IOException;
@@ -72,6 +73,8 @@ import javax.ws.rs.core.UriInfo;
 import org.glassfish.admin.rest.logviewer.CharSpool;
 import org.glassfish.admin.rest.logviewer.LineEndNormalizingWriter;
 import org.glassfish.admin.rest.logviewer.WriterOutputStream;
+import org.glassfish.server.ServerEnvironmentImpl;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.Dom;
 
 /**
@@ -93,6 +96,8 @@ public class LogViewerResource {
     @Context
     protected UriInfo ui;
 
+    @Context
+    protected Habitat habitat;
     /**
      * Represents the data source of this text.
      */
@@ -130,8 +135,9 @@ public class LogViewerResource {
         }
 
 
-        initLargeText(new File(org.glassfish.admin.rest.RestService.getLogLocation()), false);
-
+        ServerEnvironmentImpl env = habitat.getComponent(ServerEnvironmentImpl.class);
+        String logLocation = env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/logs/server.log";
+        initLargeText(new File(logLocation), false);
 
 
         if (!source.exists()) {

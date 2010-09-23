@@ -37,86 +37,69 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.admin.rest.resources;
 
-package org.glassfish.admin.rest;
+import java.io.InputStream;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 
-import java.util.logging.Logger;
 
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.PreDestroy;
-
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.logging.LogDomains;
-
-import org.glassfish.api.Startup;
-import org.glassfish.internal.api.LocalPassword;
-import org.glassfish.internal.api.RestInterfaceUID;
-import org.glassfish.server.ServerEnvironmentImpl;
-
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 /**
  * @author Ludovic Champenois ludo@dev.java.net
- * @author Rajeshwar Patil
  */
-@Service
-public class RestService implements Startup, PostConstruct, PreDestroy, RestInterfaceUID {
+@Path("/static/")
+public class StaticResource {
 
-    @Inject
-    private static Habitat habitat;
+    private final String PATH_INSIDE_JAR = "org/glassfish/admin/rest/static/";
+    private final String mimes[] = {
+        ".bmp", "image/bmp",
+        ".bz", "application/x-bzip",
+        ".bz2", "application/x-bzip2",
+        ".css", "text/css",
+        ".gz", "application/x-gzip",
+        ".gzip", "application/x-gzip",
+        ".htm", "text/html",
+        ".html", "text/html",
+        ".htmls", "text/html",
+        ".htx", "text/html",
+        ".ico", "image/x-icon",
+        ".jpe", "image/jpeg",
+        ".jpe", "image/pjpeg",
+        ".jpeg", "image/jpeg",
+        ".jpg", "image/jpeg",
+        ".js", "application/x-javascript",
+        ".json", "application/json",
+        ".png", "image/png",
+        ".text", "text/plain",
+        ".tif", "image/tiff",
+        ".tiff", "image/tiff",
+        ".xml", "text/xml",
+        ".zip", "application/zip"
+    };
 
-    @Inject
-    com.sun.enterprise.config.serverbeans.Domain domain;
+    @GET
+    @Path("{resource: .+}")
+    public Response getPath(@PathParam("resource") String resource) {
+        InputStream is = this.getClass().getClassLoader().getResourceAsStream(PATH_INSIDE_JAR + resource);
+        Response r = null;
+        String m = getMime(resource);
+        ResponseBuilder rp = Response.ok(is, m);
+        rp.header("resource3-header", m);
+        r = rp.build();
+        return r;
 
-    @Inject
-    org.glassfish.flashlight.MonitoringRuntimeDataRegistry monitoringRegistry;
-
-    @Inject
-    ServerEnvironmentImpl env;
-
-    @Inject
-    LocalPassword localPassword;
-
-
-    public final static Logger logger =
-            LogDomains.getLogger(RestService.class, LogDomains.ADMIN_LOGGER);
-    public final static LocalStringManagerImpl localStrings =
-            new LocalStringManagerImpl(RestService.class);
-
-    @Override
-    public Lifecycle getLifecycle() {
-        // This service stays running for the life of the app server, hence SERVER.
-        return Lifecycle.SERVER;
     }
 
-    @Override
-    public void postConstruct() {
-        //events.register(this);
-    //    logger.fine(localStrings.getLocalString("rest.service.initialization",
-    //            "Initializing REST interface support"));
-
-    }
-
-    @Override
-    public void preDestroy() {
-    }
-
-
-    @Override
-    public String getUID() {
-        if (_uid == null) {
-            _uid = localPassword.getLocalPassword();
+    private String getMime(String extension) {
+        for (int i = 0; i < mimes.length; i = i + 2) {
+            if (extension.endsWith(mimes[i])) {
+                return mimes[i + 1];
+            }
         }
-        return _uid;
+        return "text/plain";
     }
-
-
-    public static String getRestUID() {
-        return _uid;
-    }
-
-
-    private static String _uid;
 }

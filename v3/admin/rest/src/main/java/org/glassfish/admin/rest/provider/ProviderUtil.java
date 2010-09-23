@@ -448,10 +448,10 @@ public class ProviderUtil {
         return result;
     }
 
-    static public String getHtmlHeader() {
+    static public String getHtmlHeader(String baseUri) {
         String result = "<html><head>";
         result = result + "<title>GlassFish REST Interface</title>";
-        result = result + getInternalStyleSheet();
+        result = result + getInternalStyleSheet(baseUri);
         //FIXME - uncomment with the correct link for css file. This external file will override the internal style sheet.
         ///result = result + "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://localhost:8080/glassfish_rest_interface.css\" />";
         result = result + "</head><body>";
@@ -588,8 +588,10 @@ public class ProviderUtil {
         return retString;
     }
 
-    private static String getInternalStyleSheet() {
-        String result = "<style type=\"text/css\">";
+    private static String getInternalStyleSheet(String baseUri) {
+
+        return " <link rel=\"stylesheet\" type=\"text/css\" href=\""+baseUri+"static/std.css\" />";
+       /* String result = "<style type=\"text/css\">";
         result = result + "body {";
         result = result + "font-size:75%;font-family:verdana,arial,'sans serif';";
         result = result + "background-repeat:repeat-x;background-color:#F0F0F0;";
@@ -609,6 +611,6 @@ public class ProviderUtil {
         result = result + ".separator{clear:both}";
         result = result + "td {vertical-align: top}";
         result = result + "</style>";
-        return result;
+        return result;*/
     }
 }

@@ -49,6 +49,7 @@ import javax.management.remote.JMXServiceURL;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.results.ActionReportResult;
@@ -61,6 +62,10 @@ import org.jvnet.hk2.config.Dom;
  * @author jasonlee
  */
 public class JmxServiceUrlsResource {
+    
+        @Context
+    protected Habitat habitat;
+        
     public void setEntity(Dom p) {
         // ugly no-op hack. For now.
     }
@@ -70,7 +75,6 @@ public class JmxServiceUrlsResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
     public ActionReportResult getJmxServiceUrl() {
         try {
-            Habitat habitat = RestService.getHabitat();
             MBeanServer mBeanServer = habitat.getComponent(MBeanServer.class);
             JMXServiceURL[] urls = (JMXServiceURL[]) mBeanServer.getAttribute(getBootAMXMBeanObjectName(), "JMXServiceURLs");
             List<String> jmxUrls = new ArrayList();

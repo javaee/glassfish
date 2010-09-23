@@ -144,6 +144,19 @@
         </dependency>
     </dependencies>
     <build>
+                <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>org/glassfish/admin/rest/**/*.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>org/glassfish/admin/rest/**</include>
+                </includes>
+            </resource>        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

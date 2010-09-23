@@ -60,7 +60,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.glassfish.admin.rest.CliFailureException;
 import org.glassfish.admin.rest.ResourceUtil;
-import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.resources.TemplateExecCommand;
 import org.glassfish.admin.rest.resources.generated.SystemPropertyResource;
 import org.glassfish.admin.rest.results.ActionReportResult;
@@ -68,6 +67,7 @@ import org.glassfish.admin.rest.results.OptionsResult;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ParameterMap;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.Dom;
@@ -85,6 +85,9 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
 
     @Context
     protected ResourceContext resourceContext;
+
+    @Context
+    protected Habitat habitat;
     protected Dom entity;
 //    protected Dom parent;
 
@@ -173,7 +176,7 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
             data.put("DEFAULT", propertiesString);
             data.put("target", getParent(uriInfo));
 
-            RestActionReporter actionReport = ResourceUtil.runCommand("create-system-properties", data, RestService.getHabitat(), "");
+            RestActionReporter actionReport = ResourceUtil.runCommand("create-system-properties", data, habitat, "");
             ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
             ActionReportResult results = new ActionReportResult(commandName, actionReport, new OptionsResult());
 

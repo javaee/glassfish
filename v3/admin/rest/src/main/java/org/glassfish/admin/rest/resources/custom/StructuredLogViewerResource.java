@@ -56,7 +56,9 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import javax.ws.rs.core.Context;
 import org.glassfish.admin.rest.logviewer.LogRecord;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * REST resource to get Log records
@@ -66,6 +68,8 @@ import org.glassfish.admin.rest.logviewer.LogRecord;
  */
 public class StructuredLogViewerResource {
 
+    @Context
+    protected Habitat habitat;
     @GET
     @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
     public String getJson(
@@ -132,10 +136,10 @@ public class StructuredLogViewerResource {
             String type,
             boolean logFileRefresh) throws IOException {
 
-        if (RestService.getHabitat().getComponent(LogManager.class) == null) {
+        if (habitat.getComponent(LogManager.class) == null) {
             //the logger service is not install, so we cannot rely on it.
             //return an error
-            throw new IOException("The GlassFish LogManager Service is not avaiable. Not installed?");
+            throw new IOException("The GlassFish LogManager Service is not available. Not installed?");
         }
 
         Properties nameValueMap = new Properties();
@@ -144,7 +148,7 @@ public class StructuredLogViewerResource {
         if (!searchForward) {
             sortAscending = false;
         }
-        LogFilter logFilter = RestService.getHabitat().getComponent(LogFilter.class);
+        LogFilter logFilter = habitat.getComponent(LogFilter.class);
         if (instanceName.equals("")) {
             final AttributeList result = logFilter.getLogRecordsUsingQuery(logFileName,
                     startIndex,

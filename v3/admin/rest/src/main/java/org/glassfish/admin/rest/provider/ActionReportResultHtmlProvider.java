@@ -69,7 +69,7 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
     @Override
     public String getContent(ActionReportResult proxy) {
         RestActionReporter ar = (RestActionReporter) proxy.getActionReport();
-        StringBuilder result = new StringBuilder(ProviderUtil.getHtmlHeader());
+        StringBuilder result = new StringBuilder(ProviderUtil.getHtmlHeader(uriInfo.getBaseUri().toASCIIString()));
 
         result.append("<h1>")
                 .append(ar.getActionDescription())
