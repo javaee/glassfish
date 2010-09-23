@@ -41,18 +41,20 @@
 package org.glassfish.gms;
 
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.logging.LogDomains;
-import org.jvnet.hk2.annotations.Service;
+import com.sun.enterprise.util.EarlyLogger;
+import org.glassfish.api.admin.config.ConfigurationUpgrade;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.config.*;
-import org.glassfish.api.admin.config.ConfigurationUpgrade ;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.Transaction;
+import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.types.Property;
 
-import java.util.List;
-import java.util.logging.Logger;
-import java.util.logging.Level;
 import java.beans.PropertyVetoException;
+import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Startup service to upgrade cluster/gms elements in domain.xml
@@ -62,16 +64,13 @@ import java.beans.PropertyVetoException;
 @Service
 public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
 
-    private static final Logger logger =
-        LogDomains.getLogger(GMSConfigUpgrade.class, LogDomains.GMS_LOGGER);
-
     @Inject
     Clusters clusters;
 
     @Inject
     Configs configs;
 
-
+    @Override
     public void postConstruct() {
         try {
             //This will upgrade all the cluster elements in the domain.xml
@@ -80,10 +79,8 @@ public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
             // this will upgrade all the group-management-service elements in domain.xml
             upgradeGroupManagementServiceElements();
         } catch (Exception e) {
-            // todo: logging service has not been started yet, so the resource
-            // bundle isn't being picked up. still waiting to hear what logger
-            // should be used during upgrade
-            logger.log(Level.SEVERE, "gmsupgrade.failed", e);
+            EarlyLogger.add(Level.SEVERE,
+                "Failure while upgrading cluster data from V2 to V3: " + e);
             throw new RuntimeException(e);
         }
     }
@@ -99,9 +96,7 @@ public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
         throws TransactionFailure {
         List<Config> lconfigs = configs.getConfig();
         for (Config c : lconfigs) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, "Upgrade config " + c.getName());
-            }
+            EarlyLogger.add(Level.FINE, "Upgrade config " + c.getName());
             ConfigSupport.apply(new GroupManagementServiceConfigCode(), c);
         }
     }
