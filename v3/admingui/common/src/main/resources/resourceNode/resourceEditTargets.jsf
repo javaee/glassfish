@@ -138,7 +138,12 @@
                  }
                  if ("#{endpoint}") {
                      gf.getEntityAttrs(endpoint="#{endpoint}" valueMap="#{requestScope.attrs}");
-                     setAttribute(key="status" value="#{requestScope.attrs.enabled}");
+                     if ("#{requestScope.attrs.enabled}=true") {
+                         setAttribute(key="status" value="/resource/images/enabled.png");
+                     }
+                     if ("!(#{requestScope.attrs.enabled}=true)") {
+                         setAttribute(key="status" value="/resource/images/disabled.png");
+                     }
                      gf.createAttributeMap(keys={"selected", "endpoint", "targetName", "enabled"}
                                         values={"$boolean{false}",
                                                 "$attribute{endpoint}",
@@ -167,7 +172,7 @@
         </sun:tableColumn>
 
         <sun:tableColumn headerText="$resource{i18n.deployTable.colEnabled}" sort="enabled" rowHeader="$boolean{true}" id="col2">
-            <staticText id="statusCol" value="#{td.value.enabled}" />
+            <sun:image id="statusCol" value="#{td.value.enabled}" />
         </sun:tableColumn>
 
     </sun:tableRowGroup>
