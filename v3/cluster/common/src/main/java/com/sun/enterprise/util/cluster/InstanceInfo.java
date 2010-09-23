@@ -59,6 +59,7 @@ import org.glassfish.api.admin.InstanceCommandResult;
 import org.glassfish.api.admin.ParameterMap;
 import com.sun.enterprise.admin.util.ColumnFormatter;
 import com.sun.enterprise.universal.Duration;
+import org.glassfish.api.admin.InstanceState;
 
 /**
  * Used to format instance state info in a standard way.
@@ -139,6 +140,25 @@ public final class InstanceInfo {
         return uptime;
     }
 
+    public final String getDisplayState() {
+        String display = (isRunning()) ? InstanceState.StateType.RUNNING.getDisplayString() :
+                    InstanceState.StateType.NOT_RUNNING.getDisplayString();
+        List<String> failedCmds = stateService.getFailedCommands(name);
+        InstanceState.StateType istate = isRunning() ?
+                    (stateService.setState(name, InstanceState.StateType.RUNNING, false)) :
+                    (stateService.setState(name, InstanceState.StateType.NOT_RUNNING, false));
+
+        if (istate == InstanceState.StateType.RESTART_REQUIRED) {
+            if (isRunning()) {
+                display += ("; " + InstanceState.StateType.RESTART_REQUIRED.getDisplayString());
+            }
+            String list = "";
+            for(String z : failedCmds) list += (z + "; ");
+            display += (" [pending config changes are: " + list + "]");
+        }
+        return display;
+    }
+
     public final String getState() {
         if(state == null) {
             getFutureResult();
@@ -189,12 +209,24 @@ public final class InstanceInfo {
                 info.getName(),
                 info.getHost(),
                 info.getPort(),
-                info.getCluster(),
-                info.getState()
+                info.getDisplayCluster(),
+                info.getDisplayState()
             });
         }
         return cf.toString();
     }
+
+    public static String formatBrief(List<InstanceInfo> infos) {
+        ColumnFormatter cf = new ColumnFormatter();
+        for (InstanceInfo info : infos) {
+            cf.addRow(new Object[] {
+                info.getName(),
+                info.getDisplayState()
+            });
+        }
+        return cf.toString();
+    }
+
 
     // TODO what about security????
     private Future<InstanceCommandResult> pingInstance() {

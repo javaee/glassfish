@@ -47,18 +47,30 @@ import java.util.List;
  * @author Tom Mueller
  */
 public class ColumnFormatter {
-    String headings[];
-    List<String[]> valList = new ArrayList<String[]>();
+    private int numCols = -1;
+    private String headings[];
+    private List<String[]> valList = new ArrayList<String[]>();
 
     public ColumnFormatter(String headings[]) {
         this.headings = headings;
+        numCols = headings.length;
+    }
+
+    public ColumnFormatter() {
+        this.headings = null;
     }
 
     public void addRow(Object values[]) throws IllegalArgumentException {
-        if (values.length != headings.length) {
-            throw new IllegalArgumentException("TODO");
+        // check to make sure the number of columns is the same as what we already have
+        if (numCols != -1) {
+            if (values.length != numCols) {
+                throw new IllegalArgumentException(
+                        String.format("invalid number of columns (%d), expected (%d)",
+                            values.length, numCols));
+            }
         }
-        String v[] = new String[values.length];
+        numCols = values.length;
+        String v[] = new String[numCols];
         for (int i = 0; i < v.length; i++) {
             v[i] = values[i] == null ? "" : values[i].toString();
         }
@@ -67,8 +79,10 @@ public class ColumnFormatter {
 
     @Override
     public String toString() {
-        int longestValue[] = new int[headings.length];
+        // no data
+        if (numCols == -1) return "";
 
+        int longestValue[] = new int[numCols];
         for (String v[] : valList) {
             for (int i = 0; i < v.length; i++) {
                 if (v[i].length() > longestValue[i]) {
@@ -78,8 +92,8 @@ public class ColumnFormatter {
         }
 
         StringBuilder formattedLineBuf = new StringBuilder();
-        for (int i = 0; i < headings.length; i++) {
-            if (headings[i].length() > longestValue[i]) {
+        for (int i = 0; i < numCols; i++) {
+            if (headings != null && headings[i].length() > longestValue[i]) {
                 longestValue[i] = headings[i].length();
             }
             longestValue[i] += 2;
@@ -90,12 +104,19 @@ public class ColumnFormatter {
         String formattedLine = formattedLineBuf.toString();
         StringBuilder sb = new StringBuilder();
 
-        sb.append(String.format(formattedLine, (Object[])headings));
+        boolean havePrev = false;
+        if (headings != null) {
+            sb.append(String.format(formattedLine, (Object[])headings));
+            havePrev = true;
+        }
 
         // no linefeed at the end!!!
         for (String v[] : valList) {
-            sb.append('\n');
+            if (havePrev) {
+                sb.append('\n');
+            }
             sb.append(String.format(formattedLine, (Object[])v));
+            havePrev = true;
         }
 
         return sb.toString();

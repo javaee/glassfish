@@ -49,7 +49,6 @@ import com.sun.enterprise.util.cluster.InstanceInfo;
 import java.util.*;
 import java.util.logging.*;
 
-import com.sun.enterprise.v3.common.ActionReporter;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.I18n;
@@ -218,21 +217,11 @@ public class ListInstancesCommand implements AdminCommand {
             return;
         }
 
-        StringBuilder sb = new StringBuilder();
-        boolean first = true;
         Properties extraProps = new Properties();
         List instanceList = new ArrayList();
 
         for (InstanceInfo ii : infos) {
-            if(first) {
-                first = false;
-            }  else {
-                sb.append(EOL);
-            }
-            
             String name = ii.getName();
-            String display = (ii.isRunning()) ? InstanceState.StateType.RUNNING.getDisplayString() :
-                    InstanceState.StateType.NOT_RUNNING.getDisplayString();
             String value = (ii.isRunning()) ? InstanceState.StateType.RUNNING.getDescription() :
                     InstanceState.StateType.NOT_RUNNING.getDescription();
             InstanceState.StateType state = (ii.isRunning()) ?
@@ -241,16 +230,10 @@ public class ListInstancesCommand implements AdminCommand {
             List<String> failedCmds = stateService.getFailedCommands(name);
             if(state == InstanceState.StateType.RESTART_REQUIRED) {
                 if(ii.isRunning()) {
-                    display += ("; " + InstanceState.StateType.RESTART_REQUIRED.getDisplayString());
                     value += (";"+ InstanceState.StateType.RESTART_REQUIRED.getDescription());
                 }
-                String list = "";
-                for(String z : failedCmds)
-                    list += (z + "; ");
-                display += (" [pending config changes are : " + list + "]");
             }
 
-            sb.append(name).append(display);
             HashMap<String, Object> insDetails = new HashMap<String, Object>();
             insDetails.put("name", name);
             insDetails.put("status", value);
@@ -268,7 +251,7 @@ public class ListInstancesCommand implements AdminCommand {
         if (long_opt) {
             report.setMessage(InstanceInfo.format(infos));
         }  else {
-            report.setMessage(sb.toString());
+            report.setMessage(InstanceInfo.formatBrief(infos));
         }
     }
 
