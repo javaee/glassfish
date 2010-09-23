@@ -302,7 +302,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
 
 
     public void processApplication(Application app, ApplicationRef appRef, 
-        final Logger logger) {
+        final Logger log) {
 
         long operationStartTime = Calendar.getInstance().getTimeInMillis();
 

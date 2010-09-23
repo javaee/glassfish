@@ -67,8 +67,7 @@ import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.logging.LogDomains;
 import com.sun.enterprise.v3.common.HTMLActionReporter;
 
 import java.beans.PropertyChangeEvent;
@@ -89,7 +88,7 @@ public class ApplicationConfigListener implements TransactionListener,
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ApplicationConfigListener.class);
 
-    private Logger logger;
+    final private Logger logger = LogDomains.getLogger(ApplicationConfigListener.class, LogDomains.CORE_LOGGER);
 
     @Inject
     Transactions transactions;
@@ -168,7 +167,6 @@ public class ApplicationConfigListener implements TransactionListener,
             }
         }
         transactions.addTransactionsListener(this);
-        logger = Logger.getLogger(ApplicationConfigListener.class.getName());
     }
 
     private void handleAppEnableChange(Object parent, 
