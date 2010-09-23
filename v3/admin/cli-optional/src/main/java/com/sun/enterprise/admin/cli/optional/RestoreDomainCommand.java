@@ -145,9 +145,12 @@ public final class RestoreDomainCommand extends BackupCommands {
                     strings.get("InvalidBackupDirPath", backupdir));
             }
         }
-        
+        boolean configonlybackup = false;
+        if ((configonly != null) && (new Boolean(configonly))) {
+            configonlybackup = true;
+        }
         request = new BackupRequest(domainDirParam, domainName, backupdir_f,
-                                    backupConfig, backupFilename);
+                                    backupConfig, backupFilename,configonlybackup);
         request.setTerse(programOpts.isTerse());
         request.setVerbose(verbose);
         request.setForce(force);

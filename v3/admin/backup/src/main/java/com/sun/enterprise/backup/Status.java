@@ -254,6 +254,9 @@ class Status {
                           new Date(request.timestamp).toString());
         props.setProperty(Constants.PROPS_VERSION,
                           Version.getFullVersion());
+        String type = request.configOnly ? Constants.CONFIG_ONLY :
+                Constants.FULL;
+        props.setProperty(Constants.PROPS_TYPE,type);
     }
 
     private String propsToString(boolean terse) {
@@ -287,6 +290,9 @@ class Status {
             sb.append("\n");
             sb.append(StringHelper.get(pre + Constants.PROPS_VERSION,
                 props.getProperty(Constants.PROPS_VERSION)));
+            sb.append("\n");
+            sb.append(StringHelper.get(pre + Constants.PROPS_TYPE,
+                props.getProperty(Constants.PROPS_TYPE)));
         }
 
         return sb.toString();

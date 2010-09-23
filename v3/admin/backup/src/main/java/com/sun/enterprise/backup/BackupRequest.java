@@ -62,11 +62,12 @@ public class BackupRequest {
      * Create an instance (generic)
      **/
     public BackupRequest(String domainsDirName, String domain, 
-                         File backupDir, String backupConfig) {
+                         File backupDir, String backupConfig,boolean configonly) {
         setDomainsDir(domainsDirName);
         setBackupDir(backupDir);
         setBackupConfig(backupConfig);
         domainName = domain;
+        configOnly = configonly;
     }
 
     /**
@@ -74,8 +75,8 @@ public class BackupRequest {
      **/
     public BackupRequest(String domainsDirName, String domain, 
                          File backupDir, String backupConfig,
-                         String desc, int limit) {
-        this(domainsDirName, domain, backupDir, backupConfig);
+                         String desc, int limit,boolean configonly) {
+        this(domainsDirName, domain, backupDir, backupConfig,configonly);
         setDescription(desc);
         setRecycleLimit(limit);
     }
@@ -85,8 +86,8 @@ public class BackupRequest {
      **/
     public BackupRequest(String domainsDirName, String domain, 
                          File backupDir, String backupConfig,
-                         String backupFileName) {
-        this(domainsDirName, domain, backupDir, backupConfig);
+                         String backupFileName,boolean configonly) {
+        this(domainsDirName, domain, backupDir, backupConfig,configonly);
         if (backupFileName != null)
             setBackupFile(backupFileName);
     }
@@ -147,6 +148,7 @@ public class BackupRequest {
     int     recycleLimit = 0;
     File    backupDir = null;
     String  backupConfig = null;
+    boolean configOnly = false;
 
     // VARIABLES POSSIBLY SET AT RUNTIME
     File    backupFile;

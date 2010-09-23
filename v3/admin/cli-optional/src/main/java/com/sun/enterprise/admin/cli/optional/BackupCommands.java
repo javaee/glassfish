@@ -146,9 +146,12 @@ public abstract class BackupCommands extends LocalDomainCommand {
                     strings.get("InvalidBackupDirPath", backupdir));
             }
         }
-
+        boolean configonlybackup = false;
+        if ((configonly != null) && (new Boolean(configonly))) {
+            configonlybackup = true;
+        }
         request = new BackupRequest(domainDirParam, domainName, backupdir_f,
-                                    backupConfig, desc, recycleLimit);
+                                    backupConfig, desc, recycleLimit,configonlybackup);
 
         request.setTerse(programOpts.isTerse());
         request.setVerbose(verbose);
