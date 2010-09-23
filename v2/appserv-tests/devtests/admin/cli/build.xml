@@ -55,7 +55,7 @@
     <property name="teststorun" value="cli"/>
     <property name="verbose" value="false"/>
     <property name="javaprops" value="-Dverbose=${verbose}"/>
-
+   
     <path id="class.path">
         <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
         <pathelement location="build"/>
@@ -143,6 +143,21 @@
         <java classname="admin.SSHNodeTest"  fork="true" classpath="${test}">
             <jvmarg value="-Dssh.host=${ssh.host}"/>
             <jvmarg value="-Dssh.installdir=${ssh.installdir}"/>
+            <jvmarg value="${javaprops}"/>
+        </java>
+    </target>
+
+    <property name="ssh_host" value="HOST"/>
+    <property name="ssh_user" value="USER"/>
+    <property name="ssh_password" value="PASSWORD"/>
+
+    <target name="setup-ssh" depends="init">
+        <java classname="admin.SetupSshTest"  fork="true" classpath="${test}">
+            <jvmarg value="-Xdebug"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9000"/>
+            <jvmarg value="-Dssh.host=${ssh_host}"/>
+            <jvmarg value="-Dssh.user=${ssh_user}"/>
+            <jvmarg value="-Dssh.password=${ssh_password}"/>
             <jvmarg value="${javaprops}"/>
         </java>
     </target>
