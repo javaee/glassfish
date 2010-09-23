@@ -45,9 +45,9 @@
 <a name="36" href="#36">36</a>  <em class="comment"> */</em>
 <a name="37" href="#37">37</a>  <strong>package</strong> com.sun.enterprise.tools.apt;
 <a name="38" href="#38">38</a>  
-<a name="39" href="#39">39</a>  <strong>import</strong> com.sun.hk2.component.InhabitantsFile;
-<a name="40" href="#40">40</a>  <strong>import</strong> com.sun.hk2.component.InhabitantsScanner;
-<a name="41" href="#41">41</a>  <strong>import</strong> com.sun.hk2.component.KeyValuePairParser;
+<a name="39" href="#39">39</a>  <strong>import</strong> com.sun.hk2.component.InhabitantParser;
+<a name="40" href="#40">40</a>  <strong>import</strong> com.sun.hk2.component.InhabitantsFile;
+<a name="41" href="#41">41</a>  <strong>import</strong> com.sun.hk2.component.InhabitantsScanner;
 <a name="42" href="#42">42</a>  <strong>import</strong> com.sun.mirror.apt.AnnotationProcessorEnvironment;
 <a name="43" href="#43">43</a>  
 <a name="44" href="#44">44</a>  <strong>import</strong> java.io.File;
@@ -76,8 +76,8 @@
 <a name="67" href="#67">67</a>  <em>     */</em>
 <a name="68" href="#68">68</a>      <strong>public</strong> <strong>void</strong> load(File f) throws IOException {
 <a name="69" href="#69">69</a>          InhabitantsScanner scanner = <strong>new</strong> InhabitantsScanner(<strong>new</strong> FileInputStream(f),f.getPath());
-<a name="70" href="#70">70</a>          <strong>for</strong> (KeyValuePairParser kvpp : scanner)
-<a name="71" href="#71">71</a>              put(kvpp.find(InhabitantsFile.CLASS_KEY),kvpp.getLine());
+<a name="70" href="#70">70</a>          <strong>for</strong> (InhabitantParser kvpp : scanner)
+<a name="71" href="#71">71</a>              put(kvpp.getImplName(),kvpp.getLine());
 <a name="72" href="#72">72</a>      }
 <a name="73" href="#73">73</a>  
 <a name="74" href="#74">74</a>  

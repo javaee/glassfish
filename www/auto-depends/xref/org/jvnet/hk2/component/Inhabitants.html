@@ -11,7 +11,7 @@
 <a name="2" href="#2">2</a>   <em class="comment"> * </em>
 <a name="3" href="#3">3</a>   <em class="comment"> * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.</em>
 <a name="4" href="#4">4</a>   <em class="comment"> * </em>
-<a name="5" href="#5">5</a>   <em class="comment"> * Copyright 2007-2008 Sun Microsystems, Inc. All rights reserved.</em>
+<a name="5" href="#5">5</a>   <em class="comment"> * Copyright 2007-2010 Sun Microsystems, Inc. All rights reserved.</em>
 <a name="6" href="#6">6</a>   <em class="comment"> * </em>
 <a name="7" href="#7">7</a>   <em class="comment"> * The contents of this file are subject to the terms of either the GNU</em>
 <a name="8" href="#8">8</a>   <em class="comment"> * General Public License Version 2 only ("GPL") or the Common Development</em>
@@ -45,93 +45,49 @@
 <a name="36" href="#36">36</a>  <em class="comment"> */</em>
 <a name="37" href="#37">37</a>  <strong>package</strong> org.jvnet.hk2.component;
 <a name="38" href="#38">38</a>  
-<a name="39" href="#39">39</a>  <strong>import</strong> com.sun.hk2.component.ScopedInhabitant;
-<a name="40" href="#40">40</a>  <strong>import</strong> com.sun.hk2.component.SingletonInhabitant;
-<a name="41" href="#41">41</a>  <strong>import</strong> com.sun.hk2.component.ExistingSingletonInhabitant;
-<a name="42" href="#42">42</a>  <strong>import</strong> org.jvnet.hk2.annotations.Scoped;
-<a name="43" href="#43">43</a>  
-<a name="44" href="#44">44</a>  <strong>import</strong> javax.print.attribute.UnmodifiableSetException;
-<a name="45" href="#45">45</a>  <strong>import</strong> java.util.*;
-<a name="46" href="#46">46</a>  
-<a name="47" href="#47">47</a>  <em>/**<em>*</em></em>
-<a name="48" href="#48">48</a>  <em> * Factory for {@link Inhabitant}.</em>
-<a name="49" href="#49">49</a>  <em> * @author Kohsuke Kawaguchi</em>
-<a name="50" href="#50">50</a>  <em> */</em>
-<a name="51" href="#51">51</a>  <strong>public</strong> <strong>class</strong> <a href="../../../../org/jvnet/hk2/component/Inhabitants.html">Inhabitants</a> {
-<a name="52" href="#52">52</a>      <em>/**<em>*</em></em>
-<a name="53" href="#53">53</a>  <em>     * Creates a singleton wrapper around existing object.</em>
-<a name="54" href="#54">54</a>  <em>     */</em>
-<a name="55" href="#55">55</a>      <strong>public</strong> <strong>static</strong> &lt;T> Inhabitant&lt;T> create(T instance) {
-<a name="56" href="#56">56</a>          <strong>return</strong> <strong>new</strong> ExistingSingletonInhabitant&lt;T>(instance);
-<a name="57" href="#57">57</a>      }
-<a name="58" href="#58">58</a>      
-<a name="59" href="#59">59</a>      <em>/**<em>*</em></em>
-<a name="60" href="#60">60</a>  <em>     * Creates a {@link Inhabitant} by looking at annotations of the given type.</em>
-<a name="61" href="#61">61</a>  <em>     */</em>
-<a name="62" href="#62">62</a>      <strong>public</strong> <strong>static</strong> &lt;T> Inhabitant&lt;T> create(Class&lt;T> c, <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat, MultiMap&lt;String,String> metadata) {
-<a name="63" href="#63">63</a>          <strong>return</strong> wrapByScope(c, Wombs.create(c,habitat,metadata), habitat);
-<a name="64" href="#64">64</a>      }
-<a name="65" href="#65">65</a>  
-<a name="66" href="#66">66</a>      <em>/**<em>*</em></em>
-<a name="67" href="#67">67</a>  <em>     * Creates a {@link Inhabitant} by wrapping {@link Womb} to handle scoping right.</em>
-<a name="68" href="#68">68</a>  <em>     */</em>
-<a name="69" href="#69">69</a>      <strong>public</strong> <strong>static</strong> &lt;T> Inhabitant&lt;T> wrapByScope(Class&lt;T> c, Womb&lt;T> womb, <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat) {
-<a name="70" href="#70">70</a>          <a href="../../../../org/jvnet/hk2/annotations/Scoped.html">Scoped</a> scoped = c.getAnnotation(Scoped.<strong>class</strong>);
-<a name="71" href="#71">71</a>          <strong>if</strong>(scoped==<strong>null</strong>)
-<a name="72" href="#72">72</a>              <strong>return</strong> <strong>new</strong> SingletonInhabitant&lt;T>(womb); <em class="comment">// treated as singleton</em>
-<a name="73" href="#73">73</a>  
-<a name="74" href="#74">74</a>          Class&lt;? <strong>extends</strong> Scope> scopeClass = scoped.value();
-<a name="75" href="#75">75</a>  
-<a name="76" href="#76">76</a>          <em class="comment">// those two scopes are so common and different that they deserve</em>
-<a name="77" href="#77">77</a>          <em class="comment">// specialized code optimized for them.</em>
-<a name="78" href="#78">78</a>          <strong>if</strong>(scopeClass== PerLookup.<strong>class</strong>)
-<a name="79" href="#79">79</a>              <strong>return</strong> womb;
-<a name="80" href="#80">80</a>          <strong>if</strong>(scopeClass== Singleton.<strong>class</strong>)
-<a name="81" href="#81">81</a>              <strong>return</strong> <strong>new</strong> SingletonInhabitant&lt;T>(womb);
-<a name="82" href="#82">82</a>  
-<a name="83" href="#83">83</a>          <em class="comment">// other general case</em>
-<a name="84" href="#84">84</a>          <a href="../../../../org/jvnet/hk2/component/Scope.html">Scope</a> scope = habitat.getByType(scopeClass);
-<a name="85" href="#85">85</a>          <strong>if</strong>(scope==<strong>null</strong>)
-<a name="86" href="#86">86</a>              <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(<span class="string">"Failed to look up %s for %s"</span>,scopeClass,c);
-<a name="87" href="#87">87</a>          <strong>return</strong> <strong>new</strong> ScopedInhabitant&lt;T>(womb,scope);
-<a name="88" href="#88">88</a>      }
-<a name="89" href="#89">89</a>  
-<a name="90" href="#90">90</a>      <em>/**<em>*</em></em>
-<a name="91" href="#91">91</a>  <em>     * Calculate the list of indexes under which the inhabitant is registered.</em>
-<a name="92" href="#92">92</a>  <em>     * An index is usually obtained from a contract implementation, a service can</em>
-<a name="93" href="#93">93</a>  <em>     * be implementing more than one contract and therefore be indexed by multiple</em>
-<a name="94" href="#94">94</a>  <em>     * contract names.</em>
-<a name="95" href="#95">95</a>  <em>     *</em>
-<a name="96" href="#96">96</a>  <em>     * @param i instance of inhabitant to obtain the indexes from</em>
-<a name="97" href="#97">97</a>  <em>     * @param &lt;T> Contract type, optional</em>
-<a name="98" href="#98">98</a>  <em>     * @return a collection of indexes (usually there is only one) under which this</em>
-<a name="99" href="#99">99</a>  <em>     * service is available.</em>
-<a name="100" href="#100">100</a> <em>     */</em>
-<a name="101" href="#101">101</a>     <strong>public</strong> <strong>static</strong> &lt;T> Collection&lt;String> getIndexes(Inhabitant&lt;T> i) {
-<a name="102" href="#102">102</a>         ArrayList&lt;String> indexes = <strong>new</strong> ArrayList&lt;String>();
-<a name="103" href="#103">103</a>         Iterator&lt;Map.Entry&lt;String, List&lt;String>>> itr = i.metadata().entrySet().iterator();
-<a name="104" href="#104">104</a>         <strong>while</strong> (itr.hasNext()) {
-<a name="105" href="#105">105</a>             indexes.add(itr.next().getKey());
-<a name="106" href="#106">106</a>         }
-<a name="107" href="#107">107</a>         <strong>return</strong> indexes;
-<a name="108" href="#108">108</a>     }
-<a name="109" href="#109">109</a> 
-<a name="110" href="#110">110</a>     <em>/**<em>*</em></em>
-<a name="111" href="#111">111</a> <em>     * Returns the list of names the service implementation in known. Services in hk2 are</em>
-<a name="112" href="#112">112</a> <em>     * indexed by the contract name and an optional name. There can also be some aliasing</em>
-<a name="113" href="#113">113</a> <em>     * so the same service can be known under different names.</em>
-<a name="114" href="#114">114</a> <em>     *</em>
-<a name="115" href="#115">115</a> <em>     * @param i instance of inhabitant to obtain its registration name</em>
-<a name="116" href="#116">116</a> <em>     * @param indexName the contract name this service is implementing</em>
-<a name="117" href="#117">117</a> <em>     * @param &lt;T> contract type, optional</em>
-<a name="118" href="#118">118</a> <em>     * @return a collaction of names (usually there is only one) under which this service</em>
-<a name="119" href="#119">119</a> <em>     * is registered for the passed contract name</em>
-<a name="120" href="#120">120</a> <em>     */</em>
-<a name="121" href="#121">121</a>     <strong>public</strong> <strong>static</strong> &lt;T> Collection&lt;String> getNamesFor(Inhabitant&lt;T> i, String indexName) {
-<a name="122" href="#122">122</a>         <strong>return</strong> <strong>new</strong> ArrayList&lt;String>(i.metadata().get(indexName));
-<a name="123" href="#123">123</a>     }
-<a name="124" href="#124">124</a> 
-<a name="125" href="#125">125</a> }
+<a name="39" href="#39">39</a>  <strong>import</strong> java.util.Collection;
+<a name="40" href="#40">40</a>  
+<a name="41" href="#41">41</a>  <em>/**<em>*</em></em>
+<a name="42" href="#42">42</a>  <em> * Factory for {@link Inhabitant}.</em>
+<a name="43" href="#43">43</a>  <em> * @author Kohsuke Kawaguchi</em>
+<a name="44" href="#44">44</a>  <em> * </em>
+<a name="45" href="#45">45</a>  <em> * @deprecated Use {@link com.sun.hk2.component.Inhabitants} instead.</em>
+<a name="46" href="#46">46</a>  <em> */</em>
+<a name="47" href="#47">47</a>  <strong>public</strong> <strong>class</strong> <a href="../../../../org/jvnet/hk2/component/Inhabitants.html">Inhabitants</a> {
+<a name="48" href="#48">48</a>      <em>/**<em>*</em></em>
+<a name="49" href="#49">49</a>  <em>     * Creates a singleton wrapper around existing object.</em>
+<a name="50" href="#50">50</a>  <em>     * @deprecated Use {@link com.sun.hk2.component.Inhabitants} instead.</em>
+<a name="51" href="#51">51</a>  <em>     */</em>
+<a name="52" href="#52">52</a>      <strong>public</strong> <strong>static</strong> &lt;T> Inhabitant&lt;T> create(T instance) {
+<a name="53" href="#53">53</a>        <strong>return</strong> com.sun.hk2.component.Inhabitants.create(instance);
+<a name="54" href="#54">54</a>      }
+<a name="55" href="#55">55</a>      
+<a name="56" href="#56">56</a>      <em>/**<em>*</em></em>
+<a name="57" href="#57">57</a>  <em>     * Creates a {@link Inhabitant} by looking at annotations of the given type.</em>
+<a name="58" href="#58">58</a>  <em>     * @deprecated Use {@link com.sun.hk2.component.Inhabitants} instead.</em>
+<a name="59" href="#59">59</a>  <em>     */</em>
+<a name="60" href="#60">60</a>      <strong>public</strong> <strong>static</strong> &lt;T> Inhabitant&lt;T> create(Class&lt;T> c, <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat, MultiMap&lt;String,String> metadata) {
+<a name="61" href="#61">61</a>        <strong>return</strong> com.sun.hk2.component.Inhabitants.create(c, habitat, metadata);
+<a name="62" href="#62">62</a>      }
+<a name="63" href="#63">63</a>  
+<a name="64" href="#64">64</a>      <em>/**<em>*</em></em>
+<a name="65" href="#65">65</a>  <em>     * Returns the list of names the service implementation in known. Services in hk2 are</em>
+<a name="66" href="#66">66</a>  <em>     * indexed by the contract name and an optional name. There can also be some aliasing</em>
+<a name="67" href="#67">67</a>  <em>     * so the same service can be known under different names.</em>
+<a name="68" href="#68">68</a>  <em>     *</em>
+<a name="69" href="#69">69</a>  <em>     * @param i instance of inhabitant to obtain its registration name</em>
+<a name="70" href="#70">70</a>  <em>     * @param indexName the contract name this service is implementing</em>
+<a name="71" href="#71">71</a>  <em>     * @param &lt;T> contract type, optional</em>
+<a name="72" href="#72">72</a>  <em>     * @return a collection of names (usually there is only one) under which this service</em>
+<a name="73" href="#73">73</a>  <em>     * is registered for the passed contract name</em>
+<a name="74" href="#74">74</a>  <em>     * </em>
+<a name="75" href="#75">75</a>  <em>     * @deprecated Use {@link com.sun.hk2.component.Inhabitants} instead.</em>
+<a name="76" href="#76">76</a>  <em>     */</em>
+<a name="77" href="#77">77</a>      <strong>public</strong> <strong>static</strong> &lt;T> Collection&lt;String> getNamesFor(Inhabitant&lt;T> i, String indexName) {
+<a name="78" href="#78">78</a>        <strong>return</strong> com.sun.hk2.component.Inhabitants.getNamesFor(i, indexName);
+<a name="79" href="#79">79</a>      }
+<a name="80" href="#80">80</a>  
+<a name="81" href="#81">81</a>  }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

@@ -152,619 +152,657 @@
 <a name="143" href="#143">143</a>     }
 <a name="144" href="#144">144</a> 
 <a name="145" href="#145">145</a>     <em>/**<em>*</em></em>
-<a name="146" href="#146">146</a> <em>     * Returns the list of all the leaf attribute names on this model</em>
-<a name="147" href="#147">147</a> <em>     *</em>
-<a name="148" href="#148">148</a> <em>     * @return the list of all leaf attribute names.</em>
+<a name="146" href="#146">146</a> <em>     * Return the proxy type for this model</em>
+<a name="147" href="#147">147</a> <em>     * @param &lt;T> the proxy type</em>
+<a name="148" href="#148">148</a> <em>     * @return the class object for this proxy type</em>
 <a name="149" href="#149">149</a> <em>     */</em>
-<a name="150" href="#150">150</a>     <strong>public</strong> Set&lt;String> getLeafElementNames() {
-<a name="151" href="#151">151</a>         <strong>final</strong> Set&lt;String> results = <strong>new</strong> HashSet&lt;String>();
-<a name="152" href="#152">152</a>         <strong>for</strong> (Map.Entry&lt;String,Property> prop : elements.entrySet()) {
-<a name="153" href="#153">153</a>             <strong>if</strong> (prop.getValue().isLeaf()) {
-<a name="154" href="#154">154</a>                 results.add(prop.getKey());
-<a name="155" href="#155">155</a>             }
-<a name="156" href="#156">156</a>         }
-<a name="157" href="#157">157</a>         <strong>return</strong> Collections.unmodifiableSet(results);
-<a name="158" href="#158">158</a>     }
-<a name="159" href="#159">159</a> 
-<a name="160" href="#160">160</a>     <em>/**<em>*</em></em>
-<a name="161" href="#161">161</a> <em>     * Returns the list of all posible elements names on this model</em>
-<a name="162" href="#162">162</a> <em>     *</em>
-<a name="163" href="#163">163</a> <em>     * @return the list of all posible elements names.</em>
-<a name="164" href="#164">164</a> <em>     */</em>
-<a name="165" href="#165">165</a>     <strong>public</strong> Set&lt;String> getElementNames() {
-<a name="166" href="#166">166</a>         <strong>return</strong> Collections.unmodifiableSet(elements.keySet());
-<a name="167" href="#167">167</a>     }
-<a name="168" href="#168">168</a> 
-<a name="169" href="#169">169</a>     <em>/**<em>*</em></em>
-<a name="170" href="#170">170</a> <em>     * Returns the Property model for an element associated with this model</em>
-<a name="171" href="#171">171</a> <em>     * or null of the element name is not known,</em>
-<a name="172" href="#172">172</a> <em>     * @param elementName element name identifying the property</em>
-<a name="173" href="#173">173</a> <em>     * @return the Property instance describing the element</em>
-<a name="174" href="#174">174</a> <em>     */</em>
-<a name="175" href="#175">175</a>     <strong>public</strong> Property getElement(String elementName) {
-<a name="176" href="#176">176</a>         <strong>return</strong> elements.get(elementName);
-<a name="177" href="#177">177</a>     }
-<a name="178" href="#178">178</a> 
-<a name="179" href="#179">179</a> 
-<a name="180" href="#180">180</a>     <strong>public</strong> Property getElementFromXMlName( <strong>final</strong> String xmlName ) {
-<a name="181" href="#181">181</a>         <strong>final</strong> ConfigModel.Property cmp = findIgnoreCase(xmlName);
-<a name="182" href="#182">182</a>         <strong>if</strong> (cmp == <strong>null</strong>) {
-<a name="183" href="#183">183</a>             <strong>throw</strong> <strong>new</strong> IllegalArgumentException( <span class="string">"Illegal name: "</span> + xmlName );
-<a name="184" href="#184">184</a>         }
-<a name="185" href="#185">185</a>         <strong>return</strong> cmp;
-<a name="186" href="#186">186</a>     }    
-<a name="187" href="#187">187</a> 
-<a name="188" href="#188">188</a>     <em>/**<em>*</em></em>
-<a name="189" href="#189">189</a> <em>     * Performs injection to the given object.</em>
-<a name="190" href="#190">190</a> <em>     */</em>
-<a name="191" href="#191">191</a>     <em class="comment">/*<em class="comment">package*/</em> <strong>void</strong> inject(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Object target) {</em>
-<a name="192" href="#192">192</a>         <strong>try</strong> {
-<a name="193" href="#193">193</a>             injector.get().inject(dom,target);
-<a name="194" href="#194">194</a>         } <strong>catch</strong> (ConfigurationException e) {
-<a name="195" href="#195">195</a>             e.setLocation(dom.getLocation());
-<a name="196" href="#196">196</a>             <strong>throw</strong> e;
+<a name="150" href="#150">150</a>     <strong>public</strong> &lt;T <strong>extends</strong> ConfigBeanProxy> Class&lt;T> getProxyType() {
+<a name="151" href="#151">151</a>         <strong>try</strong> {
+<a name="152" href="#152">152</a>             <strong>return</strong> (Class&lt;T>) classLoaderHolder.get().loadClass(targetTypeName);
+<a name="153" href="#153">153</a>         } <strong>catch</strong> (ClassNotFoundException e) {
+<a name="154" href="#154">154</a>             <strong>return</strong> <strong>null</strong>;
+<a name="155" href="#155">155</a>         }
+<a name="156" href="#156">156</a>     }
+<a name="157" href="#157">157</a> 
+<a name="158" href="#158">158</a>     <em>/**<em>*</em></em>
+<a name="159" href="#159">159</a> <em>     * Returns the list of all the leaf attribute names on this model</em>
+<a name="160" href="#160">160</a> <em>     *</em>
+<a name="161" href="#161">161</a> <em>     * @return the list of all leaf attribute names.</em>
+<a name="162" href="#162">162</a> <em>     */</em>
+<a name="163" href="#163">163</a>     <strong>public</strong> Set&lt;String> getLeafElementNames() {
+<a name="164" href="#164">164</a>         <strong>final</strong> Set&lt;String> results = <strong>new</strong> HashSet&lt;String>();
+<a name="165" href="#165">165</a>         <strong>for</strong> (Map.Entry&lt;String,Property> prop : elements.entrySet()) {
+<a name="166" href="#166">166</a>             <strong>if</strong> (prop.getValue().isLeaf()) {
+<a name="167" href="#167">167</a>                 results.add(prop.getKey());
+<a name="168" href="#168">168</a>             }
+<a name="169" href="#169">169</a>         }
+<a name="170" href="#170">170</a>         <strong>return</strong> Collections.unmodifiableSet(results);
+<a name="171" href="#171">171</a>     }
+<a name="172" href="#172">172</a> 
+<a name="173" href="#173">173</a>     <em>/**<em>*</em></em>
+<a name="174" href="#174">174</a> <em>     * Returns the list of all posible elements names on this model</em>
+<a name="175" href="#175">175</a> <em>     *</em>
+<a name="176" href="#176">176</a> <em>     * @return the list of all posible elements names.</em>
+<a name="177" href="#177">177</a> <em>     */</em>
+<a name="178" href="#178">178</a>     <strong>public</strong> Set&lt;String> getElementNames() {
+<a name="179" href="#179">179</a>         <strong>return</strong> Collections.unmodifiableSet(elements.keySet());
+<a name="180" href="#180">180</a>     }
+<a name="181" href="#181">181</a> 
+<a name="182" href="#182">182</a>     <em>/**<em>*</em></em>
+<a name="183" href="#183">183</a> <em>     * Returns the Property model for an element associated with this model</em>
+<a name="184" href="#184">184</a> <em>     * or null of the element name is not known,</em>
+<a name="185" href="#185">185</a> <em>     * @param elementName element name identifying the property</em>
+<a name="186" href="#186">186</a> <em>     * @return the Property instance describing the element</em>
+<a name="187" href="#187">187</a> <em>     */</em>
+<a name="188" href="#188">188</a>     <strong>public</strong> Property getElement(String elementName) {
+<a name="189" href="#189">189</a>         <strong>return</strong> elements.get(elementName);
+<a name="190" href="#190">190</a>     }
+<a name="191" href="#191">191</a> 
+<a name="192" href="#192">192</a> 
+<a name="193" href="#193">193</a>     <strong>public</strong> Property getElementFromXMlName( <strong>final</strong> String xmlName ) {
+<a name="194" href="#194">194</a>         <strong>final</strong> ConfigModel.Property cmp = findIgnoreCase(xmlName);
+<a name="195" href="#195">195</a>         <strong>if</strong> (cmp == <strong>null</strong>) {
+<a name="196" href="#196">196</a>             <strong>throw</strong> <strong>new</strong> IllegalArgumentException( <span class="string">"Illegal name: "</span> + xmlName );
 <a name="197" href="#197">197</a>         }
-<a name="198" href="#198">198</a>     }
-<a name="199" href="#199">199</a> 
-<a name="200" href="#200">200</a>     <em>/**<em>*</em></em>
-<a name="201" href="#201">201</a> <em>     * Obtains the duck method implementation from a method on the {@link ConfigBeanProxy}-derived interface.</em>
-<a name="202" href="#202">202</a> <em>     */</em>
-<a name="203" href="#203">203</a>     <strong>public</strong> Method getDuckMethod(Method method) throws ClassNotFoundException, NoSuchMethodException {
-<a name="204" href="#204">204</a>         <strong>synchronized</strong> (duckMethods) {
-<a name="205" href="#205">205</a>             Method duckMethod = duckMethods.get(method);
-<a name="206" href="#206">206</a>             <strong>if</strong>(duckMethod!=<strong>null</strong>)    <strong>return</strong> duckMethod;
-<a name="207" href="#207">207</a> 
-<a name="208" href="#208">208</a>             Class&lt;?> clz = method.getDeclaringClass();
-<a name="209" href="#209">209</a>             Class&lt;?> duck = clz.getClassLoader().loadClass(clz.getName() + <span class="string">"$Duck"</span>);
-<a name="210" href="#210">210</a> 
-<a name="211" href="#211">211</a>             Class&lt;?>[] types = method.getParameterTypes();
-<a name="212" href="#212">212</a>             Class[] paramTypes = <strong>new</strong> Class[types.length+1];
-<a name="213" href="#213">213</a>             System.arraycopy(types,0,paramTypes,1,types.length);
-<a name="214" href="#214">214</a>             paramTypes[0] = clz;
-<a name="215" href="#215">215</a>             duckMethod = duck.getMethod(method.getName(), paramTypes);
-<a name="216" href="#216">216</a>             duckMethods.put(method,duckMethod);
-<a name="217" href="#217">217</a> 
-<a name="218" href="#218">218</a>             <strong>return</strong> duckMethod;
-<a name="219" href="#219">219</a>         }
-<a name="220" href="#220">220</a>     }
-<a name="221" href="#221">221</a> 
-<a name="222" href="#222">222</a>     <em>/**<em>*</em></em>
-<a name="223" href="#223">223</a> <em>     * Obtain XML names (like "abc-def") from strings like "getAbcDef" and "hasAbcDef".</em>
-<a name="224" href="#224">224</a> <em>     * &lt;p></em>
-<a name="225" href="#225">225</a> <em>     * The conversion rule uses the model to find a good match.</em>
-<a name="226" href="#226">226</a> <em>     */</em>
-<a name="227" href="#227">227</a>     <strong>public</strong> ConfigModel.Property toProperty(Method method) {
-<a name="228" href="#228">228</a>         String name = method.getName();
-<a name="229" href="#229">229</a> 
-<a name="230" href="#230">230</a>         <em class="comment">// check annotations first</em>
-<a name="231" href="#231">231</a>         <a href="../../../../org/jvnet/hk2/config/Element.html">Element</a> e = method.getAnnotation(Element.<strong>class</strong>);
-<a name="232" href="#232">232</a>         <strong>if</strong>(e!=<strong>null</strong>) {
-<a name="233" href="#233">233</a>             String en = e.value();
-<a name="234" href="#234">234</a>             <strong>if</strong>(en.length()>0)
-<a name="235" href="#235">235</a>                 <strong>return</strong> elements.get(en);
-<a name="236" href="#236">236</a>         }
-<a name="237" href="#237">237</a>         <a href="../../../../org/jvnet/hk2/config/Attribute.html">Attribute</a> a = method.getAnnotation(Attribute.<strong>class</strong>);
-<a name="238" href="#238">238</a>         <strong>if</strong>(a!=<strong>null</strong>) {
-<a name="239" href="#239">239</a>             String an = a.value();
-<a name="240" href="#240">240</a>             <strong>if</strong>(an.length()>0)
-<a name="241" href="#241">241</a>                 <strong>return</strong> attributes.get(an);
-<a name="242" href="#242">242</a>         }
-<a name="243" href="#243">243</a>         <em class="comment">// TODO: check annotations on the getter/setter</em>
-<a name="244" href="#244">244</a> 
-<a name="245" href="#245">245</a>         <em class="comment">// first, trim off the prefix</em>
-<a name="246" href="#246">246</a>         <strong>for</strong> (String p : Dom.PROPERTY_PREFIX) {
-<a name="247" href="#247">247</a>             <strong>if</strong>(name.startsWith(p)) {
-<a name="248" href="#248">248</a>                 name = name.substring(p.length());
-<a name="249" href="#249">249</a>                 <strong>break</strong>;
-<a name="250" href="#250">250</a>             }
-<a name="251" href="#251">251</a>         }
-<a name="252" href="#252">252</a> 
-<a name="253" href="#253">253</a>         <em class="comment">// tokenize by finding 'x|X' and 'X|Xx' then insert '-'.</em>
-<a name="254" href="#254">254</a>         StringBuilder buf = <strong>new</strong> StringBuilder(name.length()+5);
-<a name="255" href="#255">255</a>         <strong>for</strong>(String t : Dom.TOKENIZER.split(name)) {
-<a name="256" href="#256">256</a>             <strong>if</strong>(buf.length()>0)  buf.append('-');
-<a name="257" href="#257">257</a>             buf.append(t.toLowerCase());
-<a name="258" href="#258">258</a>         }
-<a name="259" href="#259">259</a>         name = buf.toString();
-<a name="260" href="#260">260</a> 
-<a name="261" href="#261">261</a>         <em class="comment">// at this point name should match XML names in the model, modulo case.</em>
-<a name="262" href="#262">262</a>         <strong>return</strong> findIgnoreCase(name);
-<a name="263" href="#263">263</a>     }    
-<a name="264" href="#264">264</a> 
-<a name="265" href="#265">265</a>     <strong>public</strong> <strong>abstract</strong> <strong>static</strong> <strong>class</strong> Property {
-<a name="266" href="#266">266</a>         <em>/**<em>*</em></em>
-<a name="267" href="#267">267</a> <em>         * @see #xmlName()</em>
-<a name="268" href="#268">268</a> <em>         */</em>
-<a name="269" href="#269">269</a>         <strong>public</strong> <strong>final</strong> String xmlName;
-<a name="270" href="#270">270</a> 
-<a name="271" href="#271">271</a>         <strong>protected</strong> Property(String xmlName) {
-<a name="272" href="#272">272</a>             <strong>this</strong>.xmlName = xmlName;
-<a name="273" href="#273">273</a>         }
-<a name="274" href="#274">274</a> 
-<a name="275" href="#275">275</a>         <em>/**<em>*</em></em>
-<a name="276" href="#276">276</a> <em>         * XML name of the property, like "abc-def".</em>
-<a name="277" href="#277">277</a> <em>         */</em>
-<a name="278" href="#278">278</a>         <strong>public</strong> <strong>final</strong> String xmlName() {
-<a name="279" href="#279">279</a>             <strong>return</strong> xmlName;
-<a name="280" href="#280">280</a>         }
-<a name="281" href="#281">281</a> 
-<a name="282" href="#282">282</a>         <strong>public</strong> <strong>abstract</strong> <strong>boolean</strong> isLeaf();
-<a name="283" href="#283">283</a> 
-<a name="284" href="#284">284</a>         <em>/**<em>*</em></em>
-<a name="285" href="#285">285</a> <em>         * Is multiple values allowed?</em>
-<a name="286" href="#286">286</a> <em>         */</em>
-<a name="287" href="#287">287</a>         <strong>public</strong> <strong>abstract</strong> <strong>boolean</strong> isCollection();
-<a name="288" href="#288">288</a> 
-<a name="289" href="#289">289</a>         <em>/**<em>*</em></em>
-<a name="290" href="#290">290</a> <em>         * Gets the value from {@link Dom} in the specified type.</em>
-<a name="291" href="#291">291</a> <em>         *</em>
-<a name="292" href="#292">292</a> <em>         * @param dom</em>
-<a name="293" href="#293">293</a> <em>         *      The DOM instance to get the value from.</em>
-<a name="294" href="#294">294</a> <em>         * @param returnType</em>
-<a name="295" href="#295">295</a> <em>         *      The expected type of the returned object.</em>
-<a name="296" href="#296">296</a> <em>         *      Valid types are (1) primitive and 'leaf' Java types, such as {@link String},</em>
-<a name="297" href="#297">297</a> <em>         *      (2) {@link ConfigBeanProxy}, (3) {@link Dom}, and (4) collections of any of above.</em>
+<a name="198" href="#198">198</a>         <strong>return</strong> cmp;
+<a name="199" href="#199">199</a>     }    
+<a name="200" href="#200">200</a> 
+<a name="201" href="#201">201</a>     <em>/**<em>*</em></em>
+<a name="202" href="#202">202</a> <em>     * Performs injection to the given object.</em>
+<a name="203" href="#203">203</a> <em>     */</em>
+<a name="204" href="#204">204</a>     <em class="comment">/*<em class="comment">package*/</em> <strong>void</strong> inject(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Object target) {</em>
+<a name="205" href="#205">205</a>         <strong>try</strong> {
+<a name="206" href="#206">206</a>             injector.get().inject(dom,target);
+<a name="207" href="#207">207</a>         } <strong>catch</strong> (ConfigurationException e) {
+<a name="208" href="#208">208</a>             e.setLocation(dom.getLocation());
+<a name="209" href="#209">209</a>             <strong>throw</strong> e;
+<a name="210" href="#210">210</a>         }
+<a name="211" href="#211">211</a>     }
+<a name="212" href="#212">212</a> 
+<a name="213" href="#213">213</a>     <em>/**<em>*</em></em>
+<a name="214" href="#214">214</a> <em>     * Obtains the duck method implementation from a method on the {@link ConfigBeanProxy}-derived interface.</em>
+<a name="215" href="#215">215</a> <em>     */</em>
+<a name="216" href="#216">216</a>     <strong>public</strong> Method getDuckMethod(Method method) throws ClassNotFoundException, NoSuchMethodException {
+<a name="217" href="#217">217</a>         <strong>synchronized</strong> (duckMethods) {
+<a name="218" href="#218">218</a>             Method duckMethod = duckMethods.get(method);
+<a name="219" href="#219">219</a>             <strong>if</strong>(duckMethod!=<strong>null</strong>)    <strong>return</strong> duckMethod;
+<a name="220" href="#220">220</a> 
+<a name="221" href="#221">221</a>             Class&lt;?> clz = method.getDeclaringClass();
+<a name="222" href="#222">222</a>             Class&lt;?> duck = clz.getClassLoader().loadClass(clz.getName() + <span class="string">"$Duck"</span>);
+<a name="223" href="#223">223</a> 
+<a name="224" href="#224">224</a>             Class&lt;?>[] types = method.getParameterTypes();
+<a name="225" href="#225">225</a>             Class[] paramTypes = <strong>new</strong> Class[types.length+1];
+<a name="226" href="#226">226</a>             System.arraycopy(types,0,paramTypes,1,types.length);
+<a name="227" href="#227">227</a>             paramTypes[0] = clz;
+<a name="228" href="#228">228</a>             duckMethod = duck.getMethod(method.getName(), paramTypes);
+<a name="229" href="#229">229</a>             duckMethods.put(method,duckMethod);
+<a name="230" href="#230">230</a> 
+<a name="231" href="#231">231</a>             <strong>return</strong> duckMethod;
+<a name="232" href="#232">232</a>         }
+<a name="233" href="#233">233</a>     }
+<a name="234" href="#234">234</a> 
+<a name="235" href="#235">235</a>     <em>/**<em>*</em></em>
+<a name="236" href="#236">236</a> <em>     * Obtain XML names (like "abc-def") from strings like "getAbcDef" and "hasAbcDef".</em>
+<a name="237" href="#237">237</a> <em>     * &lt;p></em>
+<a name="238" href="#238">238</a> <em>     * The conversion rule uses the model to find a good match.</em>
+<a name="239" href="#239">239</a> <em>     */</em>
+<a name="240" href="#240">240</a>     <strong>public</strong> ConfigModel.Property toProperty(Method method) {
+<a name="241" href="#241">241</a>         String name = method.getName();
+<a name="242" href="#242">242</a> 
+<a name="243" href="#243">243</a>         <em class="comment">// check annotations first</em>
+<a name="244" href="#244">244</a>         <a href="../../../../org/jvnet/hk2/config/Element.html">Element</a> e = method.getAnnotation(Element.<strong>class</strong>);
+<a name="245" href="#245">245</a>         <strong>if</strong>(e!=<strong>null</strong>) {
+<a name="246" href="#246">246</a>             String en = e.value();
+<a name="247" href="#247">247</a>             <strong>if</strong>(en.length()>0)
+<a name="248" href="#248">248</a>                 <strong>return</strong> elements.get(en);
+<a name="249" href="#249">249</a>         }
+<a name="250" href="#250">250</a>         <a href="../../../../org/jvnet/hk2/config/Attribute.html">Attribute</a> a = method.getAnnotation(Attribute.<strong>class</strong>);
+<a name="251" href="#251">251</a>         <strong>if</strong>(a!=<strong>null</strong>) {
+<a name="252" href="#252">252</a>             String an = a.value();
+<a name="253" href="#253">253</a>             <strong>if</strong>(an.length()>0)
+<a name="254" href="#254">254</a>                 <strong>return</strong> attributes.get(an);
+<a name="255" href="#255">255</a>         }
+<a name="256" href="#256">256</a>         <em class="comment">// TODO: check annotations on the getter/setter</em>
+<a name="257" href="#257">257</a> 
+<a name="258" href="#258">258</a>         <em class="comment">// first, trim off the prefix</em>
+<a name="259" href="#259">259</a>         <strong>for</strong> (String p : Dom.PROPERTY_PREFIX) {
+<a name="260" href="#260">260</a>             <strong>if</strong>(name.startsWith(p)) {
+<a name="261" href="#261">261</a>                 name = name.substring(p.length());
+<a name="262" href="#262">262</a>                 <strong>break</strong>;
+<a name="263" href="#263">263</a>             }
+<a name="264" href="#264">264</a>         }
+<a name="265" href="#265">265</a> 
+<a name="266" href="#266">266</a>         name = camelCaseToXML(name);
+<a name="267" href="#267">267</a> 
+<a name="268" href="#268">268</a>         <em class="comment">// at this point name should match XML names in the model, modulo case.</em>
+<a name="269" href="#269">269</a>         <strong>return</strong> findIgnoreCase(name);
+<a name="270" href="#270">270</a>     }
+<a name="271" href="#271">271</a> 
+<a name="272" href="#272">272</a>     <strong>public</strong> String camelCaseToXML(String camelCase) {
+<a name="273" href="#273">273</a>         
+<a name="274" href="#274">274</a>         <em class="comment">// tokenize by finding 'x|X' and 'X|Xx' then insert '-'.</em>
+<a name="275" href="#275">275</a>         StringBuilder buf = <strong>new</strong> StringBuilder(camelCase.length()+5);
+<a name="276" href="#276">276</a>         <strong>for</strong>(String t : Dom.TOKENIZER.split(camelCase)) {
+<a name="277" href="#277">277</a>             <strong>if</strong>(buf.length()>0)  buf.append('-');
+<a name="278" href="#278">278</a>             buf.append(t.toLowerCase());
+<a name="279" href="#279">279</a>         }
+<a name="280" href="#280">280</a>         <strong>return</strong> buf.toString();
+<a name="281" href="#281">281</a>     }
+<a name="282" href="#282">282</a> 
+<a name="283" href="#283">283</a>     <strong>public</strong> <strong>abstract</strong> <strong>static</strong> <strong>class</strong> Property {
+<a name="284" href="#284">284</a> 
+<a name="285" href="#285">285</a>         <strong>public</strong> <strong>final</strong> List&lt;String> annotations = <strong>new</strong> ArrayList&lt;String>();
+<a name="286" href="#286">286</a> 
+<a name="287" href="#287">287</a>         <em>/**<em>*</em></em>
+<a name="288" href="#288">288</a> <em>         * @see #xmlName()</em>
+<a name="289" href="#289">289</a> <em>         */</em>
+<a name="290" href="#290">290</a>         <strong>public</strong> <strong>final</strong> String xmlName;
+<a name="291" href="#291">291</a> 
+<a name="292" href="#292">292</a>         <strong>protected</strong> Property(String xmlName) {
+<a name="293" href="#293">293</a>             <strong>this</strong>.xmlName = xmlName;
+<a name="294" href="#294">294</a>         }
+<a name="295" href="#295">295</a> 
+<a name="296" href="#296">296</a>         <em>/**<em>*</em></em>
+<a name="297" href="#297">297</a> <em>         * XML name of the property, like "abc-def".</em>
 <a name="298" href="#298">298</a> <em>         */</em>
-<a name="299" href="#299">299</a>         <strong>public</strong> <strong>abstract</strong> Object get(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Type returnType);
-<a name="300" href="#300">300</a> 
-<a name="301" href="#301">301</a>         <em>/**<em>*</em></em>
-<a name="302" href="#302">302</a> <em>         * Sets the value to {@link Dom}.</em>
-<a name="303" href="#303">303</a> <em>         *</em>
-<a name="304" href="#304">304</a> <em>         * @param arg</em>
-<a name="305" href="#305">305</a> <em>         *      The new value. See the return type of the get method for the discussion of</em>
-<a name="306" href="#306">306</a> <em>         *      possible types.</em>
+<a name="299" href="#299">299</a>         <strong>public</strong> <strong>final</strong> String xmlName() {
+<a name="300" href="#300">300</a>             <strong>return</strong> xmlName;
+<a name="301" href="#301">301</a>         }
+<a name="302" href="#302">302</a> 
+<a name="303" href="#303">303</a>         <strong>public</strong> <strong>abstract</strong> <strong>boolean</strong> isLeaf();
+<a name="304" href="#304">304</a> 
+<a name="305" href="#305">305</a>         <em>/**<em>*</em></em>
+<a name="306" href="#306">306</a> <em>         * Is multiple values allowed?</em>
 <a name="307" href="#307">307</a> <em>         */</em>
-<a name="308" href="#308">308</a>         <strong>public</strong> <strong>abstract</strong> <strong>void</strong> set(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Object arg);
-<a name="309" href="#309">309</a>     }
-<a name="310" href="#310">310</a> 
-<a name="311" href="#311">311</a>     <strong>public</strong> <strong>static</strong> <strong>abstract</strong> <strong>class</strong> Node <strong>extends</strong> Property {
-<a name="312" href="#312">312</a>         <strong>final</strong> <a href="../../../../org/jvnet/hk2/config/ConfigModel.html">ConfigModel</a> model;
-<a name="313" href="#313">313</a>         <strong>public</strong> Node(<a href="../../../../org/jvnet/hk2/config/ConfigModel.html">ConfigModel</a> model, String xmlName) {
-<a name="314" href="#314">314</a>             <strong>super</strong>(xmlName);
-<a name="315" href="#315">315</a>             <strong>this</strong>.model = model;
-<a name="316" href="#316">316</a>         }
-<a name="317" href="#317">317</a> 
-<a name="318" href="#318">318</a>         <strong>public</strong> <strong>boolean</strong> isLeaf() {
-<a name="319" href="#319">319</a>             <strong>return</strong> false;
-<a name="320" href="#320">320</a>         }
+<a name="308" href="#308">308</a>         <strong>public</strong> <strong>abstract</strong> <strong>boolean</strong> isCollection();
+<a name="309" href="#309">309</a> 
+<a name="310" href="#310">310</a>         <em>/**<em>*</em></em>
+<a name="311" href="#311">311</a> <em>         * Gets the value from {@link Dom} in the specified type.</em>
+<a name="312" href="#312">312</a> <em>         *</em>
+<a name="313" href="#313">313</a> <em>         * @param dom</em>
+<a name="314" href="#314">314</a> <em>         *      The DOM instance to get the value from.</em>
+<a name="315" href="#315">315</a> <em>         * @param returnType</em>
+<a name="316" href="#316">316</a> <em>         *      The expected type of the returned object.</em>
+<a name="317" href="#317">317</a> <em>         *      Valid types are (1) primitive and 'leaf' Java types, such as {@link String},</em>
+<a name="318" href="#318">318</a> <em>         *      (2) {@link ConfigBeanProxy}, (3) {@link Dom}, and (4) collections of any of above.</em>
+<a name="319" href="#319">319</a> <em>         */</em>
+<a name="320" href="#320">320</a>         <strong>public</strong> <strong>abstract</strong> Object get(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Type returnType);
 <a name="321" href="#321">321</a> 
 <a name="322" href="#322">322</a>         <em>/**<em>*</em></em>
-<a name="323" href="#323">323</a> <em>         * Returns the config model for this Node</em>
-<a name="324" href="#324">324</a> <em>         * </em>
-<a name="325" href="#325">325</a> <em>         * @return</em>
-<a name="326" href="#326">326</a> <em>         */</em>
-<a name="327" href="#327">327</a>         <strong>public</strong> <a href="../../../../org/jvnet/hk2/config/ConfigModel.html">ConfigModel</a> getModel() {
-<a name="328" href="#328">328</a>             <strong>return</strong> model;
-<a name="329" href="#329">329</a>         }
+<a name="323" href="#323">323</a> <em>         * Sets the value to {@link Dom}.</em>
+<a name="324" href="#324">324</a> <em>         *</em>
+<a name="325" href="#325">325</a> <em>         * @param arg</em>
+<a name="326" href="#326">326</a> <em>         *      The new value. See the return type of the get method for the discussion of</em>
+<a name="327" href="#327">327</a> <em>         *      possible types.</em>
+<a name="328" href="#328">328</a> <em>         */</em>
+<a name="329" href="#329">329</a>         <strong>public</strong> <strong>abstract</strong> <strong>void</strong> set(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Object arg);
 <a name="330" href="#330">330</a> 
-<a name="331" href="#331">331</a>         <em>/**<em>*</em></em>
-<a name="332" href="#332">332</a> <em>         * Coerce the given type to {@link Dom}.</em>
-<a name="333" href="#333">333</a> <em>         * Only handles those types that are valid to the {@link #set(Dom, Object)} method.</em>
-<a name="334" href="#334">334</a> <em>         */</em>
-<a name="335" href="#335">335</a>         <strong>protected</strong> <strong>final</strong> <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> toDom(Object arg) {
-<a name="336" href="#336">336</a>             <strong>if</strong>(arg==<strong>null</strong>)
-<a name="337" href="#337">337</a>                 <strong>return</strong> <strong>null</strong>;
-<a name="338" href="#338">338</a>             <strong>if</strong>(arg instanceof <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a>)
-<a name="339" href="#339">339</a>                 <strong>return</strong> (Dom)arg;
-<a name="340" href="#340">340</a>             <strong>if</strong>(arg instanceof <a href="../../../../org/jvnet/hk2/config/ConfigBeanProxy.html">ConfigBeanProxy</a>)
-<a name="341" href="#341">341</a>                 <strong>return</strong> Dom.unwrap((ConfigBeanProxy)arg);
-<a name="342" href="#342">342</a>             <strong>throw</strong> <strong>new</strong> IllegalArgumentException(<span class="string">"Unexpected type "</span>+arg.getClass()+<span class="string">" for "</span>+xmlName);
-<a name="343" href="#343">343</a>         }
-<a name="344" href="#344">344</a>     }
-<a name="345" href="#345">345</a> 
-<a name="346" href="#346">346</a>     <strong>static</strong> <strong>final</strong> <strong>class</strong> CollectionNode <strong>extends</strong> Node {
-<a name="347" href="#347">347</a>         CollectionNode(<a href="../../../../org/jvnet/hk2/config/ConfigModel.html">ConfigModel</a> model, String xmlName) {
-<a name="348" href="#348">348</a>             <strong>super</strong>(model, xmlName);
-<a name="349" href="#349">349</a>         }
-<a name="350" href="#350">350</a> 
-<a name="351" href="#351">351</a>         <strong>public</strong> <strong>boolean</strong> isCollection() {
-<a name="352" href="#352">352</a>             <strong>return</strong> <strong>true</strong>;
-<a name="353" href="#353">353</a>         }
-<a name="354" href="#354">354</a> 
-<a name="355" href="#355">355</a>         <strong>public</strong> Object get(<strong>final</strong> <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Type returnType) {
-<a name="356" href="#356">356</a>             <em class="comment">// TODO: perhaps support more collection types?</em>
-<a name="357" href="#357">357</a> 
-<a name="358" href="#358">358</a> 
-<a name="359" href="#359">359</a>             <strong>if</strong>(!(returnType instanceof ParameterizedType))
-<a name="360" href="#360">360</a>                 <strong>throw</strong> <strong>new</strong> IllegalArgumentException(<span class="string">"List needs to be parameterized"</span>);
-<a name="361" href="#361">361</a>             <strong>final</strong> Class itemType = Types.erasure(Types.getTypeArgument(returnType,0));
-<a name="362" href="#362">362</a> 
-<a name="363" href="#363">363</a>             <strong>final</strong> List&lt;Dom> v = (<span class="string">"*"</span>.equals(xmlName)?dom.domNodeByTypeElements(itemType):dom.nodeElements(xmlName));
-<a name="364" href="#364">364</a> 
-<a name="365" href="#365">365</a>             <strong>if</strong>(itemType==Dom.<strong>class</strong>)
-<a name="366" href="#366">366</a>                 <em class="comment">// TODO: this returns a view, not a live list</em>
-<a name="367" href="#367">367</a>                 <strong>return</strong> v;
-<a name="368" href="#368">368</a>             <strong>if</strong>(ConfigBeanProxy.<strong>class</strong>.isAssignableFrom(itemType)) {
-<a name="369" href="#369">369</a>                 <em class="comment">// return a live list</em>
-<a name="370" href="#370">370</a>                 <strong>return</strong> <strong>new</strong> AbstractList&lt;Object>() {
-<a name="371" href="#371">371</a>                     <strong>public</strong> Object get(<strong>int</strong> index) {
-<a name="372" href="#372">372</a>                         <strong>return</strong> v.get(index).createProxy();
-<a name="373" href="#373">373</a>                     }
-<a name="374" href="#374">374</a> 
-<a name="375" href="#375">375</a>                     <strong>public</strong> <strong>void</strong> add(<strong>int</strong> index, Object element) {
-<a name="376" href="#376">376</a>                         <em class="comment">// update the master children list, as well as this view 'v'</em>
-<a name="377" href="#377">377</a>                         <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> child = Dom.unwrap((ConfigBeanProxy) element);
-<a name="378" href="#378">378</a>                         dom.insertAfter( index==0 ? <strong>null</strong> : v.get(index-1), xmlName, child);
-<a name="379" href="#379">379</a>                         v.add(index,child);
-<a name="380" href="#380">380</a>                     }
-<a name="381" href="#381">381</a> 
-<a name="382" href="#382">382</a>                     <strong>public</strong> Object remove(<strong>int</strong> index) {
-<a name="383" href="#383">383</a>                         <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> child = v.get(index);
-<a name="384" href="#384">384</a>                         dom.removeChild(child);
-<a name="385" href="#385">385</a>                         v.remove(index);
-<a name="386" href="#386">386</a>                         <strong>return</strong> child.createProxy();
-<a name="387" href="#387">387</a>                     }
-<a name="388" href="#388">388</a> 
-<a name="389" href="#389">389</a>                     <strong>public</strong> Object set(<strong>int</strong> index, Object element) {
-<a name="390" href="#390">390</a>                         <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> child = Dom.unwrap((ConfigBeanProxy) element);
-<a name="391" href="#391">391</a>                         dom.replaceChild( v.get(index), xmlName, child );
-<a name="392" href="#392">392</a>                         <strong>return</strong> v.set(index,child).createProxy();
-<a name="393" href="#393">393</a>                     }
-<a name="394" href="#394">394</a> 
-<a name="395" href="#395">395</a>                     <strong>public</strong> <strong>int</strong> size() {
-<a name="396" href="#396">396</a>                         <strong>return</strong> v.size();
-<a name="397" href="#397">397</a>                     }
-<a name="398" href="#398">398</a>                 };
-<a name="399" href="#399">399</a>             }
-<a name="400" href="#400">400</a> 
-<a name="401" href="#401">401</a>             <em class="comment">// TODO: error check needs to be improved,</em>
-<a name="402" href="#402">402</a>             <em class="comment">// as itemType might be inconsistent with the actual type</em>
-<a name="403" href="#403">403</a>             <strong>return</strong> <strong>new</strong> AbstractList() {
-<a name="404" href="#404">404</a>                 <strong>public</strong> Object get(<strong>int</strong> index) {
-<a name="405" href="#405">405</a>                     <strong>return</strong> v.get(index).get();
-<a name="406" href="#406">406</a>                 }
-<a name="407" href="#407">407</a> 
-<a name="408" href="#408">408</a>                 <strong>public</strong> <strong>int</strong> size() {
-<a name="409" href="#409">409</a>                     <strong>return</strong> v.size();
-<a name="410" href="#410">410</a>                 }
-<a name="411" href="#411">411</a>             };
-<a name="412" href="#412">412</a>         }
+<a name="331" href="#331">331</a>         <strong>public</strong> List&lt;String> getAnnotations() {
+<a name="332" href="#332">332</a>             <strong>return</strong> annotations;
+<a name="333" href="#333">333</a>         }
+<a name="334" href="#334">334</a>     }
+<a name="335" href="#335">335</a> 
+<a name="336" href="#336">336</a>     <strong>public</strong> <strong>static</strong> <strong>abstract</strong> <strong>class</strong> Node <strong>extends</strong> Property {
+<a name="337" href="#337">337</a>         <strong>final</strong> <a href="../../../../org/jvnet/hk2/config/ConfigModel.html">ConfigModel</a> model;
+<a name="338" href="#338">338</a>         <strong>public</strong> Node(<a href="../../../../org/jvnet/hk2/config/ConfigModel.html">ConfigModel</a> model, String xmlName) {
+<a name="339" href="#339">339</a>             <strong>super</strong>(xmlName);
+<a name="340" href="#340">340</a>             <strong>this</strong>.model = model;
+<a name="341" href="#341">341</a>         }
+<a name="342" href="#342">342</a> 
+<a name="343" href="#343">343</a>         <strong>public</strong> <strong>boolean</strong> isLeaf() {
+<a name="344" href="#344">344</a>             <strong>return</strong> false;
+<a name="345" href="#345">345</a>         }
+<a name="346" href="#346">346</a> 
+<a name="347" href="#347">347</a>         <em>/**<em>*</em></em>
+<a name="348" href="#348">348</a> <em>         * Returns the config model for this Node</em>
+<a name="349" href="#349">349</a> <em>         * </em>
+<a name="350" href="#350">350</a> <em>         * @return</em>
+<a name="351" href="#351">351</a> <em>         */</em>
+<a name="352" href="#352">352</a>         <strong>public</strong> <a href="../../../../org/jvnet/hk2/config/ConfigModel.html">ConfigModel</a> getModel() {
+<a name="353" href="#353">353</a>             <strong>return</strong> model;
+<a name="354" href="#354">354</a>         }
+<a name="355" href="#355">355</a> 
+<a name="356" href="#356">356</a>         <em>/**<em>*</em></em>
+<a name="357" href="#357">357</a> <em>         * Coerce the given type to {@link Dom}.</em>
+<a name="358" href="#358">358</a> <em>         * Only handles those types that are valid to the {@link #set(Dom, Object)} method.</em>
+<a name="359" href="#359">359</a> <em>         */</em>
+<a name="360" href="#360">360</a>         <strong>protected</strong> <strong>final</strong> <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> toDom(Object arg) {
+<a name="361" href="#361">361</a>             <strong>if</strong>(arg==<strong>null</strong>)
+<a name="362" href="#362">362</a>                 <strong>return</strong> <strong>null</strong>;
+<a name="363" href="#363">363</a>             <strong>if</strong>(arg instanceof <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a>)
+<a name="364" href="#364">364</a>                 <strong>return</strong> (Dom)arg;
+<a name="365" href="#365">365</a>             <strong>if</strong>(arg instanceof <a href="../../../../org/jvnet/hk2/config/ConfigBeanProxy.html">ConfigBeanProxy</a>)
+<a name="366" href="#366">366</a>                 <strong>return</strong> Dom.unwrap((ConfigBeanProxy)arg);
+<a name="367" href="#367">367</a>             <strong>throw</strong> <strong>new</strong> IllegalArgumentException(<span class="string">"Unexpected type "</span>+arg.getClass()+<span class="string">" for "</span>+xmlName);
+<a name="368" href="#368">368</a>         }
+<a name="369" href="#369">369</a>     }
+<a name="370" href="#370">370</a> 
+<a name="371" href="#371">371</a>     <strong>static</strong> <strong>final</strong> <strong>class</strong> CollectionNode <strong>extends</strong> Node {
+<a name="372" href="#372">372</a>         CollectionNode(<a href="../../../../org/jvnet/hk2/config/ConfigModel.html">ConfigModel</a> model, String xmlName) {
+<a name="373" href="#373">373</a>             <strong>super</strong>(model, xmlName);
+<a name="374" href="#374">374</a>         }
+<a name="375" href="#375">375</a> 
+<a name="376" href="#376">376</a>         <strong>public</strong> <strong>boolean</strong> isCollection() {
+<a name="377" href="#377">377</a>             <strong>return</strong> <strong>true</strong>;
+<a name="378" href="#378">378</a>         }
+<a name="379" href="#379">379</a> 
+<a name="380" href="#380">380</a>         <strong>public</strong> Object get(<strong>final</strong> <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Type returnType) {
+<a name="381" href="#381">381</a>             <em class="comment">// TODO: perhaps support more collection types?</em>
+<a name="382" href="#382">382</a> 
+<a name="383" href="#383">383</a> 
+<a name="384" href="#384">384</a>             <strong>if</strong>(!(returnType instanceof ParameterizedType))
+<a name="385" href="#385">385</a>                 <strong>throw</strong> <strong>new</strong> IllegalArgumentException(<span class="string">"List needs to be parameterized"</span>);
+<a name="386" href="#386">386</a>             <strong>final</strong> Class itemType = Types.erasure(Types.getTypeArgument(returnType,0));
+<a name="387" href="#387">387</a> 
+<a name="388" href="#388">388</a>             <strong>final</strong> List&lt;Dom> v = (<span class="string">"*"</span>.equals(xmlName)?dom.domNodeByTypeElements(itemType):dom.nodeElements(xmlName));
+<a name="389" href="#389">389</a> 
+<a name="390" href="#390">390</a>             <strong>if</strong>(itemType==Dom.<strong>class</strong>)
+<a name="391" href="#391">391</a>                 <em class="comment">// TODO: this returns a view, not a live list</em>
+<a name="392" href="#392">392</a>                 <strong>return</strong> v;
+<a name="393" href="#393">393</a>             <strong>if</strong>(ConfigBeanProxy.<strong>class</strong>.isAssignableFrom(itemType)) {
+<a name="394" href="#394">394</a>                 <em class="comment">// return a live list</em>
+<a name="395" href="#395">395</a>                 <strong>return</strong> <strong>new</strong> AbstractList&lt;Object>() {
+<a name="396" href="#396">396</a>                     <strong>public</strong> Object get(<strong>int</strong> index) {
+<a name="397" href="#397">397</a>                         <strong>return</strong> v.get(index).createProxy();
+<a name="398" href="#398">398</a>                     }
+<a name="399" href="#399">399</a> 
+<a name="400" href="#400">400</a>                     <strong>public</strong> <strong>void</strong> add(<strong>int</strong> index, Object element) {
+<a name="401" href="#401">401</a>                         <em class="comment">// update the master children list, as well as this view 'v'</em>
+<a name="402" href="#402">402</a>                         <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> child = Dom.unwrap((ConfigBeanProxy) element);
+<a name="403" href="#403">403</a>                         dom.insertAfter( index==0 ? <strong>null</strong> : v.get(index-1), xmlName, child);
+<a name="404" href="#404">404</a>                         v.add(index,child);
+<a name="405" href="#405">405</a>                     }
+<a name="406" href="#406">406</a> 
+<a name="407" href="#407">407</a>                     <strong>public</strong> Object remove(<strong>int</strong> index) {
+<a name="408" href="#408">408</a>                         <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> child = v.get(index);
+<a name="409" href="#409">409</a>                         dom.removeChild(child);
+<a name="410" href="#410">410</a>                         v.remove(index);
+<a name="411" href="#411">411</a>                         <strong>return</strong> child.createProxy();
+<a name="412" href="#412">412</a>                     }
 <a name="413" href="#413">413</a> 
-<a name="414" href="#414">414</a>         <strong>public</strong> <strong>void</strong> set(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Object _arg) {
-<a name="415" href="#415">415</a>             <strong>if</strong>(!(_arg instanceof List))
-<a name="416" href="#416">416</a>                 <strong>throw</strong> <strong>new</strong> IllegalArgumentException(<span class="string">"Expecting a list but found "</span>+_arg);
-<a name="417" href="#417">417</a>             List arg = (List)_arg;
-<a name="418" href="#418">418</a> 
-<a name="419" href="#419">419</a>             <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a>[] values = <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a>[arg.size()];
-<a name="420" href="#420">420</a>             <strong>int</strong> i=0;
-<a name="421" href="#421">421</a>             <strong>for</strong> (Object o : arg)
-<a name="422" href="#422">422</a>                 values[i++] = toDom(o);
-<a name="423" href="#423">423</a> 
-<a name="424" href="#424">424</a>             dom.setNodeElements(xmlName,values);
-<a name="425" href="#425">425</a>         }
-<a name="426" href="#426">426</a>     }
-<a name="427" href="#427">427</a> 
-<a name="428" href="#428">428</a>     <strong>static</strong> <strong>final</strong> <strong>class</strong> SingleNode <strong>extends</strong> Node {
-<a name="429" href="#429">429</a>         SingleNode(<a href="../../../../org/jvnet/hk2/config/ConfigModel.html">ConfigModel</a> model, String xmlName) {
-<a name="430" href="#430">430</a>             <strong>super</strong>(model, xmlName);
-<a name="431" href="#431">431</a>         }
+<a name="414" href="#414">414</a>                     <strong>public</strong> Object set(<strong>int</strong> index, Object element) {
+<a name="415" href="#415">415</a>                         <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> child = Dom.unwrap((ConfigBeanProxy) element);
+<a name="416" href="#416">416</a>                         dom.replaceChild( v.get(index), xmlName, child );
+<a name="417" href="#417">417</a>                         <strong>return</strong> v.set(index,child).createProxy();
+<a name="418" href="#418">418</a>                     }
+<a name="419" href="#419">419</a> 
+<a name="420" href="#420">420</a>                     <strong>public</strong> <strong>int</strong> size() {
+<a name="421" href="#421">421</a>                         <strong>return</strong> v.size();
+<a name="422" href="#422">422</a>                     }
+<a name="423" href="#423">423</a>                 };
+<a name="424" href="#424">424</a>             }
+<a name="425" href="#425">425</a> 
+<a name="426" href="#426">426</a>             <em class="comment">// TODO: error check needs to be improved,</em>
+<a name="427" href="#427">427</a>             <em class="comment">// as itemType might be inconsistent with the actual type</em>
+<a name="428" href="#428">428</a>             <strong>return</strong> <strong>new</strong> AbstractList() {
+<a name="429" href="#429">429</a>                 <strong>public</strong> Object get(<strong>int</strong> index) {
+<a name="430" href="#430">430</a>                     <strong>return</strong> v.get(index).get();
+<a name="431" href="#431">431</a>                 }
 <a name="432" href="#432">432</a> 
-<a name="433" href="#433">433</a>         <strong>public</strong> <strong>boolean</strong> isCollection() {
-<a name="434" href="#434">434</a>             <strong>return</strong> false;
-<a name="435" href="#435">435</a>         }
-<a name="436" href="#436">436</a> 
-<a name="437" href="#437">437</a>         <strong>public</strong> Object get(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Type returnType) {
-<a name="438" href="#438">438</a>             <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> v = dom.nodeElement(xmlName);
-<a name="439" href="#439">439</a>             <strong>if</strong>(v==<strong>null</strong>)     <strong>return</strong> <strong>null</strong>;
-<a name="440" href="#440">440</a> 
-<a name="441" href="#441">441</a>             <strong>if</strong>(returnType==Dom.<strong>class</strong>)
-<a name="442" href="#442">442</a>                 <strong>return</strong> v;
+<a name="433" href="#433">433</a>                 <strong>public</strong> <strong>int</strong> size() {
+<a name="434" href="#434">434</a>                     <strong>return</strong> v.size();
+<a name="435" href="#435">435</a>                 }
+<a name="436" href="#436">436</a>             };
+<a name="437" href="#437">437</a>         }
+<a name="438" href="#438">438</a> 
+<a name="439" href="#439">439</a>         <strong>public</strong> <strong>void</strong> set(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Object _arg) {
+<a name="440" href="#440">440</a>             <strong>if</strong>(!(_arg instanceof List))
+<a name="441" href="#441">441</a>                 <strong>throw</strong> <strong>new</strong> IllegalArgumentException(<span class="string">"Expecting a list but found "</span>+_arg);
+<a name="442" href="#442">442</a>             List arg = (List)_arg;
 <a name="443" href="#443">443</a> 
-<a name="444" href="#444">444</a>             Class rt = Types.erasure(returnType);
-<a name="445" href="#445">445</a>             <strong>if</strong>(ConfigBeanProxy.<strong>class</strong>.isAssignableFrom(rt))
-<a name="446" href="#446">446</a>                 <strong>return</strong> v.createProxy();
-<a name="447" href="#447">447</a> 
-<a name="448" href="#448">448</a>             <strong>throw</strong> <strong>new</strong> IllegalArgumentException(<span class="string">"Invalid type "</span>+returnType+<span class="string">" for "</span>+xmlName);
-<a name="449" href="#449">449</a>         }
-<a name="450" href="#450">450</a> 
-<a name="451" href="#451">451</a>         <strong>public</strong> <strong>void</strong> set(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Object arg) {
-<a name="452" href="#452">452</a>             <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> child = toDom(arg);
-<a name="453" href="#453">453</a> 
-<a name="454" href="#454">454</a>             <strong>if</strong>(child==<strong>null</strong>) <em class="comment">// remove</em>
-<a name="455" href="#455">455</a>                 dom.setNodeElements(xmlName);
-<a name="456" href="#456">456</a>             <strong>else</strong> <em class="comment">// replace</em>
-<a name="457" href="#457">457</a>                 dom.setNodeElements(xmlName,child);
-<a name="458" href="#458">458</a>         }
-<a name="459" href="#459">459</a>     }
-<a name="460" href="#460">460</a> 
-<a name="461" href="#461">461</a>     <strong>static</strong> <strong>abstract</strong> <strong>class</strong> Leaf <strong>extends</strong> Property {
-<a name="462" href="#462">462</a>         <strong>public</strong> Leaf(String xmlName) {
-<a name="463" href="#463">463</a>             <strong>super</strong>(xmlName);
-<a name="464" href="#464">464</a>         }
+<a name="444" href="#444">444</a>             <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a>[] values = <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a>[arg.size()];
+<a name="445" href="#445">445</a>             <strong>int</strong> i=0;
+<a name="446" href="#446">446</a>             <strong>for</strong> (Object o : arg)
+<a name="447" href="#447">447</a>                 values[i++] = toDom(o);
+<a name="448" href="#448">448</a> 
+<a name="449" href="#449">449</a>             dom.setNodeElements(xmlName,values);
+<a name="450" href="#450">450</a>         }
+<a name="451" href="#451">451</a>     }
+<a name="452" href="#452">452</a> 
+<a name="453" href="#453">453</a>     <strong>static</strong> <strong>final</strong> <strong>class</strong> SingleNode <strong>extends</strong> Node {
+<a name="454" href="#454">454</a>         SingleNode(<a href="../../../../org/jvnet/hk2/config/ConfigModel.html">ConfigModel</a> model, String xmlName) {
+<a name="455" href="#455">455</a>             <strong>super</strong>(model, xmlName);
+<a name="456" href="#456">456</a>         }
+<a name="457" href="#457">457</a> 
+<a name="458" href="#458">458</a>         <strong>public</strong> <strong>boolean</strong> isCollection() {
+<a name="459" href="#459">459</a>             <strong>return</strong> false;
+<a name="460" href="#460">460</a>         }
+<a name="461" href="#461">461</a> 
+<a name="462" href="#462">462</a>         <strong>public</strong> Object get(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Type returnType) {
+<a name="463" href="#463">463</a>             <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> v = dom.nodeElement(xmlName);
+<a name="464" href="#464">464</a>             <strong>if</strong>(v==<strong>null</strong>)     <strong>return</strong> <strong>null</strong>;
 <a name="465" href="#465">465</a> 
-<a name="466" href="#466">466</a>         <strong>public</strong> <strong>boolean</strong> isLeaf() {
-<a name="467" href="#467">467</a>             <strong>return</strong> <strong>true</strong>;
-<a name="468" href="#468">468</a>         }
-<a name="469" href="#469">469</a> 
-<a name="470" href="#470">470</a>         <em>/**<em>*</em></em>
-<a name="471" href="#471">471</a> <em>         * Converts a single value from string to the specified target type.</em>
-<a name="472" href="#472">472</a> <em>         *</em>
-<a name="473" href="#473">473</a> <em>         * @return</em>
-<a name="474" href="#474">474</a> <em>         *      Instance of the given 'returnType'</em>
-<a name="475" href="#475">475</a> <em>         */</em>
-<a name="476" href="#476">476</a>         <strong>protected</strong> <strong>static</strong> Object convertLeafValue(Class&lt;?> returnType, String v) {
-<a name="477" href="#477">477</a>             <strong>if</strong>(v==<strong>null</strong>)
-<a name="478" href="#478">478</a>                 <em class="comment">// TODO: default value handling</em>
-<a name="479" href="#479">479</a>                 <em class="comment">// TODO: if primitive types, report an error</em>
-<a name="480" href="#480">480</a>                 <strong>return</strong> <strong>null</strong>;
-<a name="481" href="#481">481</a> 
-<a name="482" href="#482">482</a>             <strong>if</strong>(returnType==String.<strong>class</strong>) {
-<a name="483" href="#483">483</a>                 <strong>return</strong> v;
-<a name="484" href="#484">484</a>             }
-<a name="485" href="#485">485</a>             <strong>if</strong>(returnType==Integer.<strong>class</strong> || returnType==<strong>int</strong>.<strong>class</strong>) {
-<a name="486" href="#486">486</a>                 <strong>return</strong> Integer.valueOf(v);
-<a name="487" href="#487">487</a>             }
-<a name="488" href="#488">488</a>             <strong>if</strong>(returnType==Boolean.<strong>class</strong> || returnType==<strong>boolean</strong>.<strong>class</strong>) {
-<a name="489" href="#489">489</a>                 <strong>return</strong> BOOLEAN_TRUE.contains(v);
-<a name="490" href="#490">490</a>             }
-<a name="491" href="#491">491</a>             <strong>throw</strong> <strong>new</strong> IllegalArgumentException(<span class="string">"Don't know how to handle "</span>+returnType);
-<a name="492" href="#492">492</a>         }
-<a name="493" href="#493">493</a> 
-<a name="494" href="#494">494</a>         <strong>private</strong> <strong>static</strong> <strong>final</strong> Set&lt;String> BOOLEAN_TRUE = <strong>new</strong> HashSet&lt;String>(Arrays.asList(<span class="string">"true"</span>,<span class="string">"yes"</span>,<span class="string">"on"</span>,<span class="string">"1"</span>));
-<a name="495" href="#495">495</a>     }
-<a name="496" href="#496">496</a> 
-<a name="497" href="#497">497</a>     <strong>static</strong> <strong>final</strong> <strong>class</strong> CollectionLeaf <strong>extends</strong> Leaf {
-<a name="498" href="#498">498</a>         CollectionLeaf(String xmlName) {
-<a name="499" href="#499">499</a>             <strong>super</strong>(xmlName);
-<a name="500" href="#500">500</a>         }
-<a name="501" href="#501">501</a> 
-<a name="502" href="#502">502</a>         <strong>public</strong> <strong>boolean</strong> isCollection() {
-<a name="503" href="#503">503</a>             <strong>return</strong> <strong>true</strong>;
-<a name="504" href="#504">504</a>         }
-<a name="505" href="#505">505</a> 
-<a name="506" href="#506">506</a>         <strong>public</strong> Object get(<strong>final</strong> <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Type returnType) {
-<a name="507" href="#507">507</a>             <em class="comment">// TODO: perhaps support more collection types?</em>
-<a name="508" href="#508">508</a>             <strong>final</strong> List&lt;String> v = dom.leafElements(xmlName);
-<a name="509" href="#509">509</a>             <strong>if</strong>(!(returnType instanceof ParameterizedType))
-<a name="510" href="#510">510</a>                 <strong>throw</strong> <strong>new</strong> IllegalArgumentException(<span class="string">"List needs to be parameterized"</span>);
-<a name="511" href="#511">511</a>             <strong>final</strong> Class itemType = Types.erasure(Types.getTypeArgument(returnType,0));
-<a name="512" href="#512">512</a> 
-<a name="513" href="#513">513</a>             <em class="comment">// return a live list</em>
-<a name="514" href="#514">514</a>             <strong>return</strong> <strong>new</strong> AbstractList&lt;Object>() {
-<a name="515" href="#515">515</a>                 <strong>public</strong> Object get(<strong>int</strong> index) {
-<a name="516" href="#516">516</a>                     <strong>return</strong> convertLeafValue(itemType, v.get(index));
-<a name="517" href="#517">517</a>                 }
+<a name="466" href="#466">466</a>             <strong>if</strong>(returnType==Dom.<strong>class</strong>)
+<a name="467" href="#467">467</a>                 <strong>return</strong> v;
+<a name="468" href="#468">468</a> 
+<a name="469" href="#469">469</a>             Class rt = Types.erasure(returnType);
+<a name="470" href="#470">470</a>             <strong>if</strong>(ConfigBeanProxy.<strong>class</strong>.isAssignableFrom(rt))
+<a name="471" href="#471">471</a>                 <strong>return</strong> v.createProxy();
+<a name="472" href="#472">472</a> 
+<a name="473" href="#473">473</a>             <strong>throw</strong> <strong>new</strong> IllegalArgumentException(<span class="string">"Invalid type "</span>+returnType+<span class="string">" for "</span>+xmlName);
+<a name="474" href="#474">474</a>         }
+<a name="475" href="#475">475</a> 
+<a name="476" href="#476">476</a>         <strong>public</strong> <strong>void</strong> set(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Object arg) {
+<a name="477" href="#477">477</a>             <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> child = toDom(arg);
+<a name="478" href="#478">478</a> 
+<a name="479" href="#479">479</a>             <strong>if</strong>(child==<strong>null</strong>) <em class="comment">// remove</em>
+<a name="480" href="#480">480</a>                 dom.setNodeElements(xmlName);
+<a name="481" href="#481">481</a>             <strong>else</strong> <em class="comment">// replace</em>
+<a name="482" href="#482">482</a>                 dom.setNodeElements(xmlName,child);
+<a name="483" href="#483">483</a>         }
+<a name="484" href="#484">484</a>     }
+<a name="485" href="#485">485</a> 
+<a name="486" href="#486">486</a>     <strong>static</strong> <strong>abstract</strong> <strong>class</strong> Leaf <strong>extends</strong> Property {
+<a name="487" href="#487">487</a>         <strong>public</strong> Leaf(String xmlName) {
+<a name="488" href="#488">488</a>             <strong>super</strong>(xmlName);
+<a name="489" href="#489">489</a>         }
+<a name="490" href="#490">490</a> 
+<a name="491" href="#491">491</a>         <strong>public</strong> <strong>boolean</strong> isLeaf() {
+<a name="492" href="#492">492</a>             <strong>return</strong> <strong>true</strong>;
+<a name="493" href="#493">493</a>         }
+<a name="494" href="#494">494</a> 
+<a name="495" href="#495">495</a>         <em>/**<em>*</em></em>
+<a name="496" href="#496">496</a> <em>         * Converts a single value from string to the specified target type.</em>
+<a name="497" href="#497">497</a> <em>         *</em>
+<a name="498" href="#498">498</a> <em>         * @return</em>
+<a name="499" href="#499">499</a> <em>         *      Instance of the given 'returnType'</em>
+<a name="500" href="#500">500</a> <em>         */</em>
+<a name="501" href="#501">501</a>         <strong>protected</strong> <strong>static</strong> Object convertLeafValue(Class&lt;?> returnType, String v) {
+<a name="502" href="#502">502</a>             <strong>if</strong>(v==<strong>null</strong>)
+<a name="503" href="#503">503</a>                 <em class="comment">// TODO: default value handling</em>
+<a name="504" href="#504">504</a>                 <em class="comment">// TODO: if primitive types, report an error</em>
+<a name="505" href="#505">505</a>                 <strong>return</strong> <strong>null</strong>;
+<a name="506" href="#506">506</a> 
+<a name="507" href="#507">507</a>             <strong>if</strong>(returnType==String.<strong>class</strong>) {
+<a name="508" href="#508">508</a>                 <strong>return</strong> v;
+<a name="509" href="#509">509</a>             }
+<a name="510" href="#510">510</a>             <strong>if</strong>(returnType==Integer.<strong>class</strong> || returnType==<strong>int</strong>.<strong>class</strong>) {
+<a name="511" href="#511">511</a>                 <strong>return</strong> Integer.valueOf(v);
+<a name="512" href="#512">512</a>             }
+<a name="513" href="#513">513</a>             <strong>if</strong>(returnType==Boolean.<strong>class</strong> || returnType==<strong>boolean</strong>.<strong>class</strong>) {
+<a name="514" href="#514">514</a>                 <strong>return</strong> BOOLEAN_TRUE.contains(v);
+<a name="515" href="#515">515</a>             }
+<a name="516" href="#516">516</a>             <strong>throw</strong> <strong>new</strong> IllegalArgumentException(<span class="string">"Don't know how to handle "</span>+returnType);
+<a name="517" href="#517">517</a>         }
 <a name="518" href="#518">518</a> 
-<a name="519" href="#519">519</a>                 <strong>public</strong> <strong>void</strong> add(<strong>int</strong> index, Object element) {
-<a name="520" href="#520">520</a>                     <em class="comment">// update the master children list, as well as this view 'v'</em>
-<a name="521" href="#521">521</a>                     dom.addLeafElement(xmlName, element.toString());
-<a name="522" href="#522">522</a>                     v.add(index, element.toString());
-<a name="523" href="#523">523</a>                 }
-<a name="524" href="#524">524</a> 
-<a name="525" href="#525">525</a>                 <strong>public</strong> Object remove(<strong>int</strong> index) {
-<a name="526" href="#526">526</a>                     dom.removeLeafElement(xmlName, v.get(index));
-<a name="527" href="#527">527</a>                     <strong>return</strong> v.remove(index);
-<a name="528" href="#528">528</a>                 }
-<a name="529" href="#529">529</a> 
-<a name="530" href="#530">530</a>                 <strong>public</strong> Object set(<strong>int</strong> index, Object element) {
-<a name="531" href="#531">531</a>                     dom.changeLeafElement(xmlName, v.get(index), element.toString());
-<a name="532" href="#532">532</a>                     <strong>return</strong> v.set(index, element.toString());
-<a name="533" href="#533">533</a>                 }
-<a name="534" href="#534">534</a> 
-<a name="535" href="#535">535</a>                 <strong>public</strong> <strong>int</strong> size() {
-<a name="536" href="#536">536</a>                     <strong>return</strong> v.size();
-<a name="537" href="#537">537</a>                 }
-<a name="538" href="#538">538</a>             };
-<a name="539" href="#539">539</a>         }
-<a name="540" href="#540">540</a> 
-<a name="541" href="#541">541</a>         <strong>public</strong> <strong>void</strong> set(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Object arg) {
-<a name="542" href="#542">542</a>             <strong>if</strong> (arg instanceof List) {
-<a name="543" href="#543">543</a>                 String[] strings = <strong>new</strong> String[((List) arg).size()];
-<a name="544" href="#544">544</a>                 dom.setLeafElements(xmlName, (String[]) ((List)arg).toArray(strings));
-<a name="545" href="#545">545</a>             } <strong>else</strong> {<em class="comment">//TODO -- I hope this is OK for now (km@dev.java.net 25 Mar 2008)</em>
-<a name="546" href="#546">546</a>                 <strong>throw</strong> <strong>new</strong> UnsupportedOperationException();
-<a name="547" href="#547">547</a>             }
-<a name="548" href="#548">548</a>         }
-<a name="549" href="#549">549</a>     }
-<a name="550" href="#550">550</a> 
-<a name="551" href="#551">551</a>     <strong>static</strong> <strong>class</strong> AttributeLeaf <strong>extends</strong> Leaf {
-<a name="552" href="#552">552</a> 
-<a name="553" href="#553">553</a>         <strong>public</strong> <strong>final</strong> String dataType;
-<a name="554" href="#554">554</a>         
-<a name="555" href="#555">555</a>         AttributeLeaf(String xmlName, String dataType) {
-<a name="556" href="#556">556</a>             <strong>super</strong>(xmlName);
-<a name="557" href="#557">557</a>             <strong>this</strong>.dataType = dataType;
-<a name="558" href="#558">558</a>         }
+<a name="519" href="#519">519</a>         <strong>private</strong> <strong>static</strong> <strong>final</strong> Set&lt;String> BOOLEAN_TRUE = <strong>new</strong> HashSet&lt;String>(Arrays.asList(<span class="string">"true"</span>,<span class="string">"yes"</span>,<span class="string">"on"</span>,<span class="string">"1"</span>));
+<a name="520" href="#520">520</a>     }
+<a name="521" href="#521">521</a> 
+<a name="522" href="#522">522</a>     <strong>static</strong> <strong>final</strong> <strong>class</strong> CollectionLeaf <strong>extends</strong> Leaf {
+<a name="523" href="#523">523</a>         CollectionLeaf(String xmlName) {
+<a name="524" href="#524">524</a>             <strong>super</strong>(xmlName);
+<a name="525" href="#525">525</a>         }
+<a name="526" href="#526">526</a> 
+<a name="527" href="#527">527</a>         <strong>public</strong> <strong>boolean</strong> isCollection() {
+<a name="528" href="#528">528</a>             <strong>return</strong> <strong>true</strong>;
+<a name="529" href="#529">529</a>         }
+<a name="530" href="#530">530</a> 
+<a name="531" href="#531">531</a>         <strong>public</strong> Object get(<strong>final</strong> <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Type returnType) {
+<a name="532" href="#532">532</a>             <em class="comment">// TODO: perhaps support more collection types?</em>
+<a name="533" href="#533">533</a>             <strong>final</strong> List&lt;String> v = dom.leafElements(xmlName);
+<a name="534" href="#534">534</a>             <strong>if</strong>(!(returnType instanceof ParameterizedType))
+<a name="535" href="#535">535</a>                 <strong>throw</strong> <strong>new</strong> IllegalArgumentException(<span class="string">"List needs to be parameterized"</span>);
+<a name="536" href="#536">536</a>             <strong>final</strong> Class itemType = Types.erasure(Types.getTypeArgument(returnType,0));
+<a name="537" href="#537">537</a> 
+<a name="538" href="#538">538</a>             <em class="comment">// return a live list</em>
+<a name="539" href="#539">539</a>             <strong>return</strong> <strong>new</strong> AbstractList&lt;Object>() {
+<a name="540" href="#540">540</a>                 <strong>public</strong> Object get(<strong>int</strong> index) {
+<a name="541" href="#541">541</a>                     <strong>return</strong> convertLeafValue(itemType, v.get(index));
+<a name="542" href="#542">542</a>                 }
+<a name="543" href="#543">543</a> 
+<a name="544" href="#544">544</a>                 <strong>public</strong> <strong>void</strong> add(<strong>int</strong> index, Object element) {
+<a name="545" href="#545">545</a>                     <em class="comment">// update the master children list, as well as this view 'v'</em>
+<a name="546" href="#546">546</a>                     dom.addLeafElement(xmlName, element.toString());
+<a name="547" href="#547">547</a>                     v.add(index, element.toString());
+<a name="548" href="#548">548</a>                 }
+<a name="549" href="#549">549</a> 
+<a name="550" href="#550">550</a>                 <strong>public</strong> Object remove(<strong>int</strong> index) {
+<a name="551" href="#551">551</a>                     dom.removeLeafElement(xmlName, v.get(index));
+<a name="552" href="#552">552</a>                     <strong>return</strong> v.remove(index);
+<a name="553" href="#553">553</a>                 }
+<a name="554" href="#554">554</a> 
+<a name="555" href="#555">555</a>                 <strong>public</strong> Object set(<strong>int</strong> index, Object element) {
+<a name="556" href="#556">556</a>                     dom.changeLeafElement(xmlName, v.get(index), element.toString());
+<a name="557" href="#557">557</a>                     <strong>return</strong> v.set(index, element.toString());
+<a name="558" href="#558">558</a>                 }
 <a name="559" href="#559">559</a> 
-<a name="560" href="#560">560</a>         <em>/**<em>*</em></em>
-<a name="561" href="#561">561</a> <em>         * Is multiple values allowed?</em>
-<a name="562" href="#562">562</a> <em>         */</em>
-<a name="563" href="#563">563</a>         <strong>public</strong> <strong>boolean</strong> isCollection() {
-<a name="564" href="#564">564</a>             <strong>return</strong> false;
-<a name="565" href="#565">565</a>         }
-<a name="566" href="#566">566</a> 
-<a name="567" href="#567">567</a>         <em>/**<em>*</em></em>
-<a name="568" href="#568">568</a> <em>         * Gets the value from {@link Dom} in the specified type.</em>
-<a name="569" href="#569">569</a> <em>         *</em>
-<a name="570" href="#570">570</a> <em>         * @param dom        The DOM instance to get the value from.</em>
-<a name="571" href="#571">571</a> <em>         * @param returnType The expected type of the returned object.</em>
-<a name="572" href="#572">572</a> <em>         *                   Valid types are (1) primitive and 'leaf' Java types, such as {@link String},</em>
-<a name="573" href="#573">573</a> <em>         *                   (2) {@link ConfigBeanProxy}, (3) and its collections.</em>
-<a name="574" href="#574">574</a> <em>         */</em>
-<a name="575" href="#575">575</a>         <strong>public</strong> Object get(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Type returnType) {
-<a name="576" href="#576">576</a>             String v = dom.attribute(xmlName);
-<a name="577" href="#577">577</a>             <strong>return</strong> convertLeafValue(Types.erasure(<strong>return</strong>Type), v);
-<a name="578" href="#578">578</a>         }
-<a name="579" href="#579">579</a> 
-<a name="580" href="#580">580</a>         <em>/**<em>*</em></em>
-<a name="581" href="#581">581</a> <em>         * Sets the value to {@link Dom}.</em>
-<a name="582" href="#582">582</a> <em>         */</em>
-<a name="583" href="#583">583</a>         <strong>public</strong> <strong>void</strong> set(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Object arg) {
-<a name="584" href="#584">584</a>             dom.attribute(xmlName, arg==<strong>null</strong>?<strong>null</strong>:arg.toString());
-<a name="585" href="#585">585</a>         }
-<a name="586" href="#586">586</a> 
-<a name="587" href="#587">587</a>         <strong>public</strong> String getDefaultValue() {
-<a name="588" href="#588">588</a>             <strong>return</strong> <strong>null</strong>;
-<a name="589" href="#589">589</a>         }
-<a name="590" href="#590">590</a>     }
+<a name="560" href="#560">560</a>                 <strong>public</strong> <strong>int</strong> size() {
+<a name="561" href="#561">561</a>                     <strong>return</strong> v.size();
+<a name="562" href="#562">562</a>                 }
+<a name="563" href="#563">563</a>             };
+<a name="564" href="#564">564</a>         }
+<a name="565" href="#565">565</a> 
+<a name="566" href="#566">566</a>         <strong>public</strong> <strong>void</strong> set(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Object arg) {
+<a name="567" href="#567">567</a>             <strong>if</strong> (arg instanceof List) {
+<a name="568" href="#568">568</a>                 String[] strings = <strong>new</strong> String[((List) arg).size()];
+<a name="569" href="#569">569</a>                 dom.setLeafElements(xmlName, (String[]) ((List)arg).toArray(strings));
+<a name="570" href="#570">570</a>             } <strong>else</strong> {<em class="comment">//TODO -- I hope this is OK for now (km@dev.java.net 25 Mar 2008)</em>
+<a name="571" href="#571">571</a>                 <strong>throw</strong> <strong>new</strong> UnsupportedOperationException();
+<a name="572" href="#572">572</a>             }
+<a name="573" href="#573">573</a>         }
+<a name="574" href="#574">574</a>     }
+<a name="575" href="#575">575</a> 
+<a name="576" href="#576">576</a>     <strong>static</strong> <strong>class</strong> AttributeLeaf <strong>extends</strong> Leaf {
+<a name="577" href="#577">577</a> 
+<a name="578" href="#578">578</a>         <strong>public</strong> <strong>final</strong> String dataType;
+<a name="579" href="#579">579</a>         
+<a name="580" href="#580">580</a>         AttributeLeaf(String xmlName, String dataType) {
+<a name="581" href="#581">581</a>             <strong>super</strong>(xmlName);
+<a name="582" href="#582">582</a>             <strong>this</strong>.dataType = dataType;
+<a name="583" href="#583">583</a>         }
+<a name="584" href="#584">584</a> 
+<a name="585" href="#585">585</a>         <em>/**<em>*</em></em>
+<a name="586" href="#586">586</a> <em>         * Is multiple values allowed?</em>
+<a name="587" href="#587">587</a> <em>         */</em>
+<a name="588" href="#588">588</a>         <strong>public</strong> <strong>boolean</strong> isCollection() {
+<a name="589" href="#589">589</a>             <strong>return</strong> false;
+<a name="590" href="#590">590</a>         }
 <a name="591" href="#591">591</a> 
-<a name="592" href="#592">592</a>     <strong>static</strong> <strong>final</strong> <strong>class</strong> AttributeLeafWithDefaultValue <strong>extends</strong> AttributeLeaf {
-<a name="593" href="#593">593</a>         <strong>public</strong> <strong>final</strong> String dv;
-<a name="594" href="#594">594</a>         AttributeLeafWithDefaultValue(String xmlName, String dataType, String dv) {
-<a name="595" href="#595">595</a>             <strong>super</strong>(xmlName, dataType);
-<a name="596" href="#596">596</a>             <strong>this</strong>.dv = dv;
-<a name="597" href="#597">597</a>         }
-<a name="598" href="#598">598</a>         @Override
-<a name="599" href="#599">599</a>         <strong>public</strong> Object get(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Type rt) {
-<a name="600" href="#600">600</a>             Object value = <strong>super</strong>.get(dom, rt);
-<a name="601" href="#601">601</a>             <strong>if</strong> (value == <strong>null</strong>)
-<a name="602" href="#602">602</a>                 <strong>return</strong> (dv);
-<a name="603" href="#603">603</a>             <strong>return</strong> value;
-<a name="604" href="#604">604</a>         }
-<a name="605" href="#605">605</a>         <strong>public</strong> String getDefaultValue() {
-<a name="606" href="#606">606</a>             <strong>return</strong> dv;
-<a name="607" href="#607">607</a>         }
-<a name="608" href="#608">608</a>     }
-<a name="609" href="#609">609</a>     
-<a name="610" href="#610">610</a>     <strong>static</strong> <strong>final</strong> <strong>class</strong> SingleLeaf <strong>extends</strong> Leaf {
-<a name="611" href="#611">611</a>         SingleLeaf(String xmlName) {
-<a name="612" href="#612">612</a>             <strong>super</strong>(xmlName);
-<a name="613" href="#613">613</a>         }
-<a name="614" href="#614">614</a> 
-<a name="615" href="#615">615</a>         <strong>public</strong> <strong>boolean</strong> isCollection() {
-<a name="616" href="#616">616</a>             <strong>return</strong> false;
-<a name="617" href="#617">617</a>         }
-<a name="618" href="#618">618</a> 
-<a name="619" href="#619">619</a>         <strong>public</strong> Object get(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Type returnType) {
-<a name="620" href="#620">620</a>             <em class="comment">// leaf types</em>
-<a name="621" href="#621">621</a>             String v = dom.leafElement(xmlName);
-<a name="622" href="#622">622</a>             <strong>return</strong> convertLeafValue(Types.erasure(<strong>return</strong>Type), v);
-<a name="623" href="#623">623</a>         }
-<a name="624" href="#624">624</a> 
-<a name="625" href="#625">625</a>         <strong>public</strong> <strong>void</strong> set(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Object arg) {
-<a name="626" href="#626">626</a>             <strong>if</strong>(arg==<strong>null</strong>) {
-<a name="627" href="#627">627</a>                 dom.removeLeafElement(xmlName, dom.leafElement(xmlName));
-<a name="628" href="#628">628</a>             } <strong>else</strong> {
-<a name="629" href="#629">629</a>                 dom.setLeafElements(xmlName,arg.toString());
-<a name="630" href="#630">630</a>             }
-<a name="631" href="#631">631</a>         }
-<a name="632" href="#632">632</a>     }
-<a name="633" href="#633">633</a> 
-<a name="634" href="#634">634</a>     <em>/**<em>*</em></em>
-<a name="635" href="#635">635</a> <em>     * @param description</em>
-<a name="636" href="#636">636</a> <em>     *      The description of the model as written in {@link InhabitantsFile the inhabitants file}.</em>
-<a name="637" href="#637">637</a> <em>     */</em>
-<a name="638" href="#638">638</a>     <strong>public</strong> <a href="../../../../org/jvnet/hk2/config/ConfigModel.html">ConfigModel</a>(<a href="../../../../org/jvnet/hk2/config/DomDocument.html">DomDocument</a> document, Inhabitant&lt;? <strong>extends</strong> ConfigInjector> injector, MultiMap&lt;String,String> description) {
-<a name="639" href="#639">639</a>         <strong>if</strong>(description==<strong>null</strong>)
-<a name="640" href="#640">640</a>             <strong>throw</strong> <strong>new</strong> ComponentException(<span class="string">"%s doesn't have any metadata"</span>,injector.type());
-<a name="641" href="#641">641</a> 
-<a name="642" href="#642">642</a>         document.models.put(injector,<strong>this</strong>); <em class="comment">// register now so that cyclic references are handled correctly.</em>
-<a name="643" href="#643">643</a>         <strong>this</strong>.injector = injector;
-<a name="644" href="#644">644</a>         String targetTypeName=<strong>null</strong>,indexTypeName=<strong>null</strong>;
-<a name="645" href="#645">645</a>         String key = <strong>null</strong>;
-<a name="646" href="#646">646</a>         <strong>for</strong> (Map.Entry&lt;String, List&lt;String>> e : description.entrySet()) {
-<a name="647" href="#647">647</a>             String name = e.getKey();
-<a name="648" href="#648">648</a>             String value = e.getValue().size()>0 ? e.getValue().get(0) : <strong>null</strong>;
-<a name="649" href="#649">649</a>             <strong>if</strong>(name.startsWith(<span class="string">"@"</span>)) {
-<a name="650" href="#650">650</a>                 <em class="comment">// TODO: handle value.equals("optional") and value.equals("required") distinctively.</em>
-<a name="651" href="#651">651</a>                 String attributeName = name.substring(1);
-<a name="652" href="#652">652</a>                 String dv = getMetadataFieldKeyedAs(e.getValue(), <span class="string">"default:"</span>);  <em class="comment">//default value</em>
-<a name="653" href="#653">653</a>                 String dt = getMetadataFieldKeyedAs(e.getValue(), <span class="string">"datatype:"</span>); <em class="comment">//type</em>
-<a name="654" href="#654">654</a>                 AttributeLeaf leaf = <strong>null</strong>;
-<a name="655" href="#655">655</a>                 <strong>if</strong> (dv == <strong>null</strong>)
-<a name="656" href="#656">656</a>                     leaf = <strong>new</strong> AttributeLeaf(attributeName, dt);
-<a name="657" href="#657">657</a>                 <strong>else</strong>
-<a name="658" href="#658">658</a>                     leaf = <strong>new</strong> AttributeLeafWithDefaultValue(attributeName, dt, dv);
-<a name="659" href="#659">659</a>                 attributes.put(attributeName, leaf);
-<a name="660" href="#660">660</a>             } <strong>else</strong>
-<a name="661" href="#661">661</a>             <strong>if</strong>(name.startsWith(<span class="string">"&lt;"</span>)) {
-<a name="662" href="#662">662</a>                 String elementName = name.substring(1, name.length() - 1);
-<a name="663" href="#663">663</a>                 elements.put(elementName,parseValue(elementName,document,value));
-<a name="664" href="#664">664</a>             } <strong>else</strong>
-<a name="665" href="#665">665</a>             <strong>if</strong>(name.equals(ConfigMetadata.TARGET))
-<a name="666" href="#666">666</a>                 targetTypeName = value;
-<a name="667" href="#667">667</a>             <strong>else</strong>
-<a name="668" href="#668">668</a>             <strong>if</strong>(name.equals(ConfigMetadata.KEYED_AS))
-<a name="669" href="#669">669</a>                 indexTypeName = value;
-<a name="670" href="#670">670</a>             <strong>else</strong>
-<a name="671" href="#671">671</a>             <strong>if</strong>(name.equals(ConfigMetadata.KEY))
-<a name="672" href="#672">672</a>                 key = value;
-<a name="673" href="#673">673</a>         }
-<a name="674" href="#674">674</a>         <strong>if</strong>(targetTypeName==<strong>null</strong>)
-<a name="675" href="#675">675</a>             <strong>throw</strong> <strong>new</strong> ComponentException(<span class="string">"%s doesn't have the mandatory '%s' metadata"</span>, injector.type(), ConfigMetadata.TARGET);
-<a name="676" href="#676">676</a>         <strong>if</strong>(key==<strong>null</strong> ^ indexTypeName==<strong>null</strong>)
-<a name="677" href="#677">677</a>             <strong>throw</strong> <strong>new</strong> ComponentException(<span class="string">"%s has inconsistent '%s=%s' and '%s=%s' metadata"</span>,
-<a name="678" href="#678">678</a>                 ConfigMetadata.KEY, key, ConfigMetadata.TARGET, indexTypeName);
-<a name="679" href="#679">679</a>         <strong>this</strong>.targetTypeName = targetTypeName;
-<a name="680" href="#680">680</a>         <strong>this</strong>.keyedAs = indexTypeName;
-<a name="681" href="#681">681</a>         <strong>this</strong>.key = key;
-<a name="682" href="#682">682</a>         <strong>this</strong>.contracts = description.get(ConfigMetadata.TARGET_CONTRACTS);
-<a name="683" href="#683">683</a>         <strong>this</strong>.symbolSpaces = <strong>new</strong> HashSet&lt;String>(description.get(<span class="string">"symbolSpaces"</span>));
-<a name="684" href="#684">684</a> 
-<a name="685" href="#685">685</a>         String tagName = <strong>null</strong>;
-<a name="686" href="#686">686</a>         <strong>for</strong> (String v : description.get(InhabitantsFile.INDEX_KEY)) {
-<a name="687" href="#687">687</a>             <strong>if</strong>(v.startsWith(ELEMENT_NAME_PREFIX))
-<a name="688" href="#688">688</a>                 tagName = v.substring(ELEMENT_NAME_PREFIX.length());
-<a name="689" href="#689">689</a>         }
-<a name="690" href="#690">690</a>         <strong>this</strong>.tagName = tagName;
-<a name="691" href="#691">691</a>     }
-<a name="692" href="#692">692</a> 
-<a name="693" href="#693">693</a>     <strong>private</strong> <strong>static</strong> <strong>final</strong> String ELEMENT_NAME_PREFIX = ConfigInjector.<strong>class</strong>.getName() + ':';
-<a name="694" href="#694">694</a> 
-<a name="695" href="#695">695</a>     <em>/**<em>*</em></em>
-<a name="696" href="#696">696</a> <em>     * Finds the {@link Property} from either {@link #elements} or {@link #attributes}.</em>
-<a name="697" href="#697">697</a> <em>     * @param xmlName</em>
-<a name="698" href="#698">698</a> <em>     *      XML name to be searched.</em>
-<a name="699" href="#699">699</a> <em>     * @return null</em>
-<a name="700" href="#700">700</a> <em>     *      if none is found.</em>
-<a name="701" href="#701">701</a> <em>     */</em>
-<a name="702" href="#702">702</a>     <strong>public</strong> Property findIgnoreCase(String xmlName) {
-<a name="703" href="#703">703</a>         <em class="comment">// first try the exact match to take our chance</em>
-<a name="704" href="#704">704</a>         Property a = attributes.get(xmlName);
-<a name="705" href="#705">705</a>         <strong>if</strong>(a!=<strong>null</strong>)     <strong>return</strong> a;
-<a name="706" href="#706">706</a>         a = elements.get(xmlName);
-<a name="707" href="#707">707</a>         <strong>if</strong>(a!=<strong>null</strong>)     <strong>return</strong> a;
-<a name="708" href="#708">708</a> 
-<a name="709" href="#709">709</a>         <em class="comment">// exhaustive search</em>
-<a name="710" href="#710">710</a>         a = _findIgnoreCase(xmlName, attributes);
-<a name="711" href="#711">711</a>         <strong>if</strong>(a!=<strong>null</strong>)     <strong>return</strong> a;
-<a name="712" href="#712">712</a>         <strong>return</strong> _findIgnoreCase(xmlName, elements);
-<a name="713" href="#713">713</a>     }
-<a name="714" href="#714">714</a> 
-<a name="715" href="#715">715</a>     <strong>private</strong> Property _findIgnoreCase(String name, Map&lt;String, ? <strong>extends</strong> Property> map) {
-<a name="716" href="#716">716</a>         <strong>for</strong> (Map.Entry&lt;String, ? <strong>extends</strong> Property> i : map.entrySet())
-<a name="717" href="#717">717</a>             <strong>if</strong>(i.getKey().equalsIgnoreCase(name))
-<a name="718" href="#718">718</a>                 <strong>return</strong> i.getValue();
-<a name="719" href="#719">719</a>         <strong>return</strong> <strong>null</strong>;
-<a name="720" href="#720">720</a>     }
+<a name="592" href="#592">592</a>         <em>/**<em>*</em></em>
+<a name="593" href="#593">593</a> <em>         * Gets the value from {@link Dom} in the specified type.</em>
+<a name="594" href="#594">594</a> <em>         *</em>
+<a name="595" href="#595">595</a> <em>         * @param dom        The DOM instance to get the value from.</em>
+<a name="596" href="#596">596</a> <em>         * @param returnType The expected type of the returned object.</em>
+<a name="597" href="#597">597</a> <em>         *                   Valid types are (1) primitive and 'leaf' Java types, such as {@link String},</em>
+<a name="598" href="#598">598</a> <em>         *                   (2) {@link ConfigBeanProxy}, (3) and its collections.</em>
+<a name="599" href="#599">599</a> <em>         */</em>
+<a name="600" href="#600">600</a>         <strong>public</strong> Object get(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Type returnType) {
+<a name="601" href="#601">601</a>             String v = dom.attribute(xmlName);
+<a name="602" href="#602">602</a>             <strong>return</strong> convertLeafValue(Types.erasure(<strong>return</strong>Type), v);
+<a name="603" href="#603">603</a>         }
+<a name="604" href="#604">604</a> 
+<a name="605" href="#605">605</a>         <em>/**<em>*</em></em>
+<a name="606" href="#606">606</a> <em>         * Sets the value to {@link Dom}.</em>
+<a name="607" href="#607">607</a> <em>         */</em>
+<a name="608" href="#608">608</a>         <strong>public</strong> <strong>void</strong> set(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Object arg) {
+<a name="609" href="#609">609</a>             dom.attribute(xmlName, arg==<strong>null</strong>?<strong>null</strong>:arg.toString());
+<a name="610" href="#610">610</a>         }
+<a name="611" href="#611">611</a> 
+<a name="612" href="#612">612</a>         <strong>public</strong> String getDefaultValue() {
+<a name="613" href="#613">613</a>             <strong>return</strong> <strong>null</strong>;
+<a name="614" href="#614">614</a>         }
+<a name="615" href="#615">615</a>     }
+<a name="616" href="#616">616</a> 
+<a name="617" href="#617">617</a>     <strong>static</strong> <strong>final</strong> <strong>class</strong> AttributeLeafWithDefaultValue <strong>extends</strong> AttributeLeaf {
+<a name="618" href="#618">618</a>         <strong>public</strong> <strong>final</strong> String dv;
+<a name="619" href="#619">619</a>         AttributeLeafWithDefaultValue(String xmlName, String dataType, String dv) {
+<a name="620" href="#620">620</a>             <strong>super</strong>(xmlName, dataType);
+<a name="621" href="#621">621</a>             <strong>this</strong>.dv = dv;
+<a name="622" href="#622">622</a>         }
+<a name="623" href="#623">623</a>         @Override
+<a name="624" href="#624">624</a>         <strong>public</strong> Object get(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Type rt) {
+<a name="625" href="#625">625</a>             Object value = <strong>super</strong>.get(dom, rt);
+<a name="626" href="#626">626</a>             <strong>if</strong> (value == <strong>null</strong>)
+<a name="627" href="#627">627</a>                 <strong>return</strong> (dv);
+<a name="628" href="#628">628</a>             <strong>return</strong> value;
+<a name="629" href="#629">629</a>         }
+<a name="630" href="#630">630</a>         <strong>public</strong> String getDefaultValue() {
+<a name="631" href="#631">631</a>             <strong>return</strong> dv;
+<a name="632" href="#632">632</a>         }
+<a name="633" href="#633">633</a>     }
+<a name="634" href="#634">634</a>     
+<a name="635" href="#635">635</a>     <strong>static</strong> <strong>final</strong> <strong>class</strong> SingleLeaf <strong>extends</strong> Leaf {
+<a name="636" href="#636">636</a>         SingleLeaf(String xmlName) {
+<a name="637" href="#637">637</a>             <strong>super</strong>(xmlName);
+<a name="638" href="#638">638</a>         }
+<a name="639" href="#639">639</a> 
+<a name="640" href="#640">640</a>         <strong>public</strong> <strong>boolean</strong> isCollection() {
+<a name="641" href="#641">641</a>             <strong>return</strong> false;
+<a name="642" href="#642">642</a>         }
+<a name="643" href="#643">643</a> 
+<a name="644" href="#644">644</a>         <strong>public</strong> Object get(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Type returnType) {
+<a name="645" href="#645">645</a>             <em class="comment">// leaf types</em>
+<a name="646" href="#646">646</a>             String v = dom.leafElement(xmlName);
+<a name="647" href="#647">647</a>             <strong>return</strong> convertLeafValue(Types.erasure(<strong>return</strong>Type), v);
+<a name="648" href="#648">648</a>         }
+<a name="649" href="#649">649</a> 
+<a name="650" href="#650">650</a>         <strong>public</strong> <strong>void</strong> set(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom, Object arg) {
+<a name="651" href="#651">651</a>             <strong>if</strong>(arg==<strong>null</strong>) {
+<a name="652" href="#652">652</a>                 dom.removeLeafElement(xmlName, dom.leafElement(xmlName));
+<a name="653" href="#653">653</a>             } <strong>else</strong> {
+<a name="654" href="#654">654</a>                 dom.setLeafElements(xmlName,arg.toString());
+<a name="655" href="#655">655</a>             }
+<a name="656" href="#656">656</a>         }
+<a name="657" href="#657">657</a>     }
+<a name="658" href="#658">658</a> 
+<a name="659" href="#659">659</a>     <em>/**<em>*</em></em>
+<a name="660" href="#660">660</a> <em>     * @param description</em>
+<a name="661" href="#661">661</a> <em>     *      The description of the model as written in {@link InhabitantsFile the inhabitants file}.</em>
+<a name="662" href="#662">662</a> <em>     */</em>
+<a name="663" href="#663">663</a>     <strong>public</strong> <a href="../../../../org/jvnet/hk2/config/ConfigModel.html">ConfigModel</a>(<a href="../../../../org/jvnet/hk2/config/DomDocument.html">DomDocument</a> document, Inhabitant&lt;? <strong>extends</strong> ConfigInjector> injector, MultiMap&lt;String,String> description) {
+<a name="664" href="#664">664</a>         <strong>if</strong>(description==<strong>null</strong>)
+<a name="665" href="#665">665</a>             <strong>throw</strong> <strong>new</strong> ComponentException(<span class="string">"%s doesn't have any metadata"</span>,injector.type());
+<a name="666" href="#666">666</a> 
+<a name="667" href="#667">667</a>         document.models.put(injector,<strong>this</strong>); <em class="comment">// register now so that cyclic references are handled correctly.</em>
+<a name="668" href="#668">668</a>         <strong>this</strong>.injector = injector;
+<a name="669" href="#669">669</a>         String targetTypeName=<strong>null</strong>,indexTypeName=<strong>null</strong>;
+<a name="670" href="#670">670</a>         String key = <strong>null</strong>;
+<a name="671" href="#671">671</a>         <strong>for</strong> (Map.Entry&lt;String, List&lt;String>> e : description.entrySet()) {
+<a name="672" href="#672">672</a>             String name = e.getKey();
+<a name="673" href="#673">673</a>             String value = e.getValue().size()>0 ? e.getValue().get(0) : <strong>null</strong>;
+<a name="674" href="#674">674</a>             <strong>if</strong>(name.startsWith(<span class="string">"@"</span>)) {
+<a name="675" href="#675">675</a>                 <em class="comment">// TODO: handle value.equals("optional") and value.equals("required") distinctively.</em>
+<a name="676" href="#676">676</a>                 String attributeName = name.substring(1);
+<a name="677" href="#677">677</a>                 String dv = getMetadataFieldKeyedAs(e.getValue(), <span class="string">"default:"</span>);  <em class="comment">//default value</em>
+<a name="678" href="#678">678</a>                 String dt = getMetadataFieldKeyedAs(e.getValue(), <span class="string">"datatype:"</span>); <em class="comment">//type</em>
+<a name="679" href="#679">679</a>                 AttributeLeaf leaf = <strong>null</strong>;
+<a name="680" href="#680">680</a>                 <strong>if</strong> (dv == <strong>null</strong>)
+<a name="681" href="#681">681</a>                     leaf = <strong>new</strong> AttributeLeaf(attributeName, dt);
+<a name="682" href="#682">682</a>                 <strong>else</strong>
+<a name="683" href="#683">683</a>                     leaf = <strong>new</strong> AttributeLeafWithDefaultValue(attributeName, dt, dv);
+<a name="684" href="#684">684</a>                 attributes.put(attributeName, leaf);
+<a name="685" href="#685">685</a>             } <strong>else</strong>
+<a name="686" href="#686">686</a>             <strong>if</strong>(name.startsWith(<span class="string">"&lt;"</span>)) {
+<a name="687" href="#687">687</a>                 <strong>if</strong> (e.getValue().size()>0) {
+<a name="688" href="#688">688</a>                     String elementName = name.substring(1, name.length() - 1);
+<a name="689" href="#689">689</a>                    elements.put(elementName,parseValue(elementName,document,e.getValue()));
+<a name="690" href="#690">690</a>                 }
+<a name="691" href="#691">691</a>             } <strong>else</strong>
+<a name="692" href="#692">692</a>             <strong>if</strong>(name.equals(ConfigMetadata.TARGET))
+<a name="693" href="#693">693</a>                 targetTypeName = value;
+<a name="694" href="#694">694</a>             <strong>else</strong>
+<a name="695" href="#695">695</a>             <strong>if</strong>(name.equals(ConfigMetadata.KEYED_AS))
+<a name="696" href="#696">696</a>                 indexTypeName = value;
+<a name="697" href="#697">697</a>             <strong>else</strong>
+<a name="698" href="#698">698</a>             <strong>if</strong>(name.equals(ConfigMetadata.KEY))
+<a name="699" href="#699">699</a>                 key = value;
+<a name="700" href="#700">700</a>         }
+<a name="701" href="#701">701</a>         <strong>if</strong>(targetTypeName==<strong>null</strong>)
+<a name="702" href="#702">702</a>             <strong>throw</strong> <strong>new</strong> ComponentException(<span class="string">"%s doesn't have the mandatory '%s' metadata"</span>, injector.type(), ConfigMetadata.TARGET);
+<a name="703" href="#703">703</a>         <strong>if</strong>(key==<strong>null</strong> ^ indexTypeName==<strong>null</strong>)
+<a name="704" href="#704">704</a>             <strong>throw</strong> <strong>new</strong> ComponentException(<span class="string">"%s has inconsistent '%s=%s' and '%s=%s' metadata"</span>,
+<a name="705" href="#705">705</a>                 ConfigMetadata.KEY, key, ConfigMetadata.TARGET, indexTypeName);
+<a name="706" href="#706">706</a>         <strong>this</strong>.targetTypeName = targetTypeName;
+<a name="707" href="#707">707</a>         <strong>this</strong>.keyedAs = indexTypeName;
+<a name="708" href="#708">708</a>         <strong>this</strong>.key = key;
+<a name="709" href="#709">709</a>         <strong>this</strong>.contracts = description.get(ConfigMetadata.TARGET_CONTRACTS);
+<a name="710" href="#710">710</a>         <strong>this</strong>.symbolSpaces = <strong>new</strong> HashSet&lt;String>(description.get(<span class="string">"symbolSpaces"</span>));
+<a name="711" href="#711">711</a> 
+<a name="712" href="#712">712</a>         String tagName = <strong>null</strong>;
+<a name="713" href="#713">713</a>         <strong>for</strong> (String v : description.get(InhabitantsFile.INDEX_KEY)) {
+<a name="714" href="#714">714</a>             <strong>if</strong>(v.startsWith(ELEMENT_NAME_PREFIX))
+<a name="715" href="#715">715</a>                 tagName = v.substring(ELEMENT_NAME_PREFIX.length());
+<a name="716" href="#716">716</a>         }
+<a name="717" href="#717">717</a>         <strong>this</strong>.tagName = tagName;
+<a name="718" href="#718">718</a>     }
+<a name="719" href="#719">719</a> 
+<a name="720" href="#720">720</a>     <strong>private</strong> <strong>static</strong> <strong>final</strong> String ELEMENT_NAME_PREFIX = ConfigInjector.<strong>class</strong>.getName() + ':';
 <a name="721" href="#721">721</a> 
 <a name="722" href="#722">722</a>     <em>/**<em>*</em></em>
-<a name="723" href="#723">723</a> <em>     * Parses {@link Property} object from a value in the metadata description.</em>
-<a name="724" href="#724">724</a> <em>     */</em>
-<a name="725" href="#725">725</a>     <strong>private</strong> Property parseValue(String elementName, <a href="../../../../org/jvnet/hk2/config/DomDocument.html">DomDocument</a> document, String value) {
-<a name="726" href="#726">726</a>         <strong>boolean</strong> collection = false;
-<a name="727" href="#727">727</a>         <strong>if</strong>(value.startsWith(<span class="string">"collection:"</span>)) {
-<a name="728" href="#728">728</a>             collection = <strong>true</strong>;
-<a name="729" href="#729">729</a>             value = value.substring(11);
-<a name="730" href="#730">730</a>         }
-<a name="731" href="#731">731</a> 
-<a name="732" href="#732">732</a>         <strong>if</strong>(value.equals(<span class="string">"leaf"</span>)) {
-<a name="733" href="#733">733</a>             <strong>if</strong>(collection)  <strong>return</strong> <strong>new</strong> CollectionLeaf(elementName);
-<a name="734" href="#734">734</a>             <strong>else</strong>            <strong>return</strong> <strong>new</strong> SingleLeaf(elementName);
-<a name="735" href="#735">735</a>         }
-<a name="736" href="#736">736</a> 
-<a name="737" href="#737">737</a>         <em class="comment">// this element is a reference to another configured inhabitant.</em>
-<a name="738" href="#738">738</a>         <em class="comment">// figure that out.</em>
-<a name="739" href="#739">739</a>         <a href="../../../../org/jvnet/hk2/config/ConfigModel.html">ConfigModel</a> model = document.buildModel(value);
-<a name="740" href="#740">740</a>         <strong>if</strong>(collection)
-<a name="741" href="#741">741</a>             <strong>return</strong> <strong>new</strong> CollectionNode(model,elementName);
-<a name="742" href="#742">742</a>         <strong>else</strong>
-<a name="743" href="#743">743</a>             <strong>return</strong> <strong>new</strong> SingleNode(model,elementName);
-<a name="744" href="#744">744</a>     }
-<a name="745" href="#745">745</a>     
-<a name="746" href="#746">746</a>     <strong>private</strong> <strong>static</strong> String getMetadataFieldKeyedAs(List&lt;String> strings, String name) {
-<a name="747" href="#747">747</a>         <strong>if</strong> (strings == <strong>null</strong> || strings.size() == 0 || name == <strong>null</strong>)
-<a name="748" href="#748">748</a>             <strong>return</strong> ( <strong>null</strong> );
-<a name="749" href="#749">749</a>         String dv = <strong>null</strong>;
-<a name="750" href="#750">750</a>         <strong>for</strong> (String s : strings) {
-<a name="751" href="#751">751</a>             <strong>if</strong> (s.startsWith(name)) {
-<a name="752" href="#752">752</a>                 dv = s.substring(name.length());
-<a name="753" href="#753">753</a>                 <strong>break</strong>;
-<a name="754" href="#754">754</a>             }
-<a name="755" href="#755">755</a>         }
-<a name="756" href="#756">756</a>         <strong>return</strong> ( dv );        
-<a name="757" href="#757">757</a>     }
-<a name="758" href="#758">758</a> }
+<a name="723" href="#723">723</a> <em>     * Finds the {@link Property} from either {@link #elements} or {@link #attributes}.</em>
+<a name="724" href="#724">724</a> <em>     * @param xmlName</em>
+<a name="725" href="#725">725</a> <em>     *      XML name to be searched.</em>
+<a name="726" href="#726">726</a> <em>     * @return null</em>
+<a name="727" href="#727">727</a> <em>     *      if none is found.</em>
+<a name="728" href="#728">728</a> <em>     */</em>
+<a name="729" href="#729">729</a>     <strong>public</strong> Property findIgnoreCase(String xmlName) {
+<a name="730" href="#730">730</a>         <em class="comment">// first try the exact match to take our chance</em>
+<a name="731" href="#731">731</a>         Property a = attributes.get(xmlName);
+<a name="732" href="#732">732</a>         <strong>if</strong>(a!=<strong>null</strong>)     <strong>return</strong> a;
+<a name="733" href="#733">733</a>         a = elements.get(xmlName);
+<a name="734" href="#734">734</a>         <strong>if</strong>(a!=<strong>null</strong>)     <strong>return</strong> a;
+<a name="735" href="#735">735</a> 
+<a name="736" href="#736">736</a>         <em class="comment">// exhaustive search</em>
+<a name="737" href="#737">737</a>         a = _findIgnoreCase(xmlName, attributes);
+<a name="738" href="#738">738</a>         <strong>if</strong>(a!=<strong>null</strong>)     <strong>return</strong> a;
+<a name="739" href="#739">739</a>         <strong>return</strong> _findIgnoreCase(xmlName, elements);
+<a name="740" href="#740">740</a>     }
+<a name="741" href="#741">741</a> 
+<a name="742" href="#742">742</a>     <strong>private</strong> Property _findIgnoreCase(String name, Map&lt;String, ? <strong>extends</strong> Property> map) {
+<a name="743" href="#743">743</a>         <strong>for</strong> (Map.Entry&lt;String, ? <strong>extends</strong> Property> i : map.entrySet())
+<a name="744" href="#744">744</a>             <strong>if</strong>(i.getKey().equalsIgnoreCase(name))
+<a name="745" href="#745">745</a>                 <strong>return</strong> i.getValue();
+<a name="746" href="#746">746</a>         <strong>return</strong> <strong>null</strong>;
+<a name="747" href="#747">747</a>     }
+<a name="748" href="#748">748</a> 
+<a name="749" href="#749">749</a>     <em>/**<em>*</em></em>
+<a name="750" href="#750">750</a> <em>     * Parses {@link Property} object from a value in the metadata description.</em>
+<a name="751" href="#751">751</a> <em>     */</em>
+<a name="752" href="#752">752</a>     <strong>private</strong> Property parseValue(String elementName, <a href="../../../../org/jvnet/hk2/config/DomDocument.html">DomDocument</a> document, List&lt;String> values) {
+<a name="753" href="#753">753</a>         String value = values.size()>0 ? values.get(0) : <strong>null</strong>;
+<a name="754" href="#754">754</a>         <strong>if</strong> (value==<strong>null</strong>)
+<a name="755" href="#755">755</a>             <strong>return</strong> <strong>null</strong>;
+<a name="756" href="#756">756</a> 
+<a name="757" href="#757">757</a> 
+<a name="758" href="#758">758</a> 
+<a name="759" href="#759">759</a>         <strong>boolean</strong> collection = false;
+<a name="760" href="#760">760</a>         <strong>if</strong>(value.startsWith(<span class="string">"collection:"</span>)) {
+<a name="761" href="#761">761</a>             collection = <strong>true</strong>;
+<a name="762" href="#762">762</a>             value = value.substring(11);
+<a name="763" href="#763">763</a>         }
+<a name="764" href="#764">764</a> 
+<a name="765" href="#765">765</a>         Property prop;
+<a name="766" href="#766">766</a>         <strong>if</strong>(value.equals(<span class="string">"leaf"</span>)) {
+<a name="767" href="#767">767</a>             prop = collection?<strong>new</strong> CollectionLeaf(elementName):<strong>new</strong> SingleLeaf(elementName);
+<a name="768" href="#768">768</a>         } <strong>else</strong> {
+<a name="769" href="#769">769</a>             <em class="comment">// this element is a reference to another configured inhabitant.</em>
+<a name="770" href="#770">770</a>             <em class="comment">// figure that out.</em>
+<a name="771" href="#771">771</a>             <a href="../../../../org/jvnet/hk2/config/ConfigModel.html">ConfigModel</a> model = document.buildModel(value);
+<a name="772" href="#772">772</a>             prop = collection?<strong>new</strong> CollectionNode(model,elementName):<strong>new</strong> SingleNode(model,elementName);
+<a name="773" href="#773">773</a>         }
+<a name="774" href="#774">774</a> 
+<a name="775" href="#775">775</a>         <strong>for</strong> (String s  : values) {
+<a name="776" href="#776">776</a>             <strong>if</strong> (s.startsWith(<span class="string">"@"</span>)) {
+<a name="777" href="#777">777</a>                  String annotationType = s.substring(1);
+<a name="778" href="#778">778</a>                  prop.annotations.add(annotationType);               
+<a name="779" href="#779">779</a>             }
+<a name="780" href="#780">780</a>         }
+<a name="781" href="#781">781</a>         <strong>return</strong> prop;
+<a name="782" href="#782">782</a>     }
+<a name="783" href="#783">783</a>     
+<a name="784" href="#784">784</a>     <strong>private</strong> <strong>static</strong> String getMetadataFieldKeyedAs(List&lt;String> strings, String name) {
+<a name="785" href="#785">785</a>         <strong>if</strong> (strings == <strong>null</strong> || strings.size() == 0 || name == <strong>null</strong>)
+<a name="786" href="#786">786</a>             <strong>return</strong> ( <strong>null</strong> );
+<a name="787" href="#787">787</a>         String dv = <strong>null</strong>;
+<a name="788" href="#788">788</a>         <strong>for</strong> (String s : strings) {
+<a name="789" href="#789">789</a>             <strong>if</strong> (s.startsWith(name)) {
+<a name="790" href="#790">790</a>                 dv = s.substring(name.length());
+<a name="791" href="#791">791</a>                 <strong>break</strong>;
+<a name="792" href="#792">792</a>             }
+<a name="793" href="#793">793</a>         }
+<a name="794" href="#794">794</a>         <strong>return</strong> ( dv );        
+<a name="795" href="#795">795</a>     }
+<a name="796" href="#796">796</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

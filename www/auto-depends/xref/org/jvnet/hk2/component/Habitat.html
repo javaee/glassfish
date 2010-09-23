@@ -47,594 +47,1099 @@
 <a name="38" href="#38">38</a>  
 <a name="39" href="#39">39</a>  <strong>import</strong> com.sun.hk2.component.CompanionSeed;
 <a name="40" href="#40">40</a>  <strong>import</strong> <strong>static</strong> com.sun.hk2.component.CompanionSeed.Registerer.createCompanion;
-<a name="41" href="#41">41</a>  <strong>import</strong> com.sun.hk2.component.ExistingSingletonInhabitant;
-<a name="42" href="#42">42</a>  <strong>import</strong> com.sun.hk2.component.FactoryWomb;
-<a name="43" href="#43">43</a>  <strong>import</strong> <strong>static</strong> com.sun.hk2.component.InhabitantsFile.CAGE_BUILDER_KEY;
-<a name="44" href="#44">44</a>  <strong>import</strong> com.sun.hk2.component.ScopeInstance;
-<a name="45" href="#45">45</a>  <strong>import</strong> org.jvnet.hk2.annotations.Contract;
-<a name="46" href="#46">46</a>  <strong>import</strong> org.jvnet.hk2.annotations.ContractProvided;
-<a name="47" href="#47">47</a>  <strong>import</strong> org.jvnet.hk2.annotations.FactoryFor;
-<a name="48" href="#48">48</a>  
-<a name="49" href="#49">49</a>  <strong>import</strong> java.lang.annotation.Annotation;
-<a name="50" href="#50">50</a>  <strong>import</strong> java.util.Map.Entry;
-<a name="51" href="#51">51</a>  <strong>import</strong> java.util.*;
-<a name="52" href="#52">52</a>  <strong>import</strong> java.util.logging.Logger;
-<a name="53" href="#53">53</a>  
-<a name="54" href="#54">54</a>  <em>/**<em>*</em></em>
-<a name="55" href="#55">55</a>  <em> * A set of templates that constitute a world of objects.</em>
-<a name="56" href="#56">56</a>  <em> *</em>
-<a name="57" href="#57">57</a>  <em> * @author Kohsuke Kawaguchi</em>
-<a name="58" href="#58">58</a>  <em> * @author Jerome Dochez</em>
-<a name="59" href="#59">59</a>  <em> */</em>
-<a name="60" href="#60">60</a>  @SuppressWarnings(<span class="string">"unchecked"</span>)
-<a name="61" href="#61">61</a>  <strong>public</strong> <strong>class</strong> <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> {
-<a name="62" href="#62">62</a>  
-<a name="63" href="#63">63</a>      <em>/**<em>*</em></em>
-<a name="64" href="#64">64</a>  <em>     * Name to use to progammatically store default instances of a particular service.</em>
-<a name="65" href="#65">65</a>  <em>     */</em>
-<a name="66" href="#66">66</a>      <strong>public</strong> <strong>final</strong> String DEFAULT_NAME = <span class="string">"_HABITAT_DEFAULT"</span>;
-<a name="67" href="#67">67</a>      <em>/**<em>*</em></em>
-<a name="68" href="#68">68</a>  <em>     * Contract type FQCN to their corresponding inhabitants.</em>
-<a name="69" href="#69">69</a>  <em>     *</em>
-<a name="70" href="#70">70</a>  <em>     * Can't use {@link Class} as the key so that we can create index without</em>
-<a name="71" href="#71">71</a>  <em>     * loading contract types. Once populated upfront, it works as a read-only map.</em>
-<a name="72" href="#72">72</a>  <em>     */</em>
-<a name="73" href="#73">73</a>      <strong>private</strong> <strong>final</strong> MultiMap&lt;String,NamedInhabitant> byContract = <strong>new</strong> MultiMap&lt;String,NamedInhabitant>();
-<a name="74" href="#74">74</a>  
-<a name="75" href="#75">75</a>      <em>/**<em>*</em></em>
-<a name="76" href="#76">76</a>  <em>     * Index by {@link Inhabitant#type()}.</em>
-<a name="77" href="#77">77</a>  <em>     */</em>
-<a name="78" href="#78">78</a>      <strong>private</strong> <strong>final</strong> MultiMap&lt;String,Inhabitant> byType = <strong>new</strong> MultiMap&lt;String,Inhabitant>();
-<a name="79" href="#79">79</a>  
-<a name="80" href="#80">80</a>      <strong>public</strong> <strong>final</strong> <a href="../../../../com/sun/hk2/component/ScopeInstance.html">ScopeInstance</a> singletonScope;
-<a name="81" href="#81">81</a>  
-<a name="82" href="#82">82</a>      <strong>public</strong> <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a>() {
-<a name="83" href="#83">83</a>  
-<a name="84" href="#84">84</a>          singletonScope = <strong>new</strong> <a href="../../../../com/sun/hk2/component/ScopeInstance.html">ScopeInstance</a>(<span class="string">"singleton"</span>, <strong>new</strong> HashMap());
-<a name="85" href="#85">85</a>  
-<a name="86" href="#86">86</a>          <em class="comment">// make the habitat itself available</em>
-<a name="87" href="#87">87</a>          add(<strong>new</strong> ExistingSingletonInhabitant&lt;Habitat>(Habitat.<strong>class</strong>,<strong>this</strong>));
-<a name="88" href="#88">88</a>  
-<a name="89" href="#89">89</a>          add(<strong>new</strong> ExistingSingletonInhabitant&lt;CompanionSeed.Registerer>(CompanionSeed.Registerer.<strong>class</strong>,
-<a name="90" href="#90">90</a>                  <strong>new</strong> CompanionSeed.Registerer(<strong>this</strong>)));
-<a name="91" href="#91">91</a>          add(<strong>new</strong> ExistingSingletonInhabitant&lt;CageBuilder.Registerer>(CageBuilder.Registerer.<strong>class</strong>,
-<a name="92" href="#92">92</a>                  <strong>new</strong> CageBuilder.Registerer(<strong>this</strong>)));
-<a name="93" href="#93">93</a>      }
+<a name="41" href="#41">41</a>  
+<a name="42" href="#42">42</a>  <strong>import</strong> com.sun.hk2.component.ExistingSingletonInhabitant;
+<a name="43" href="#43">43</a>  <strong>import</strong> com.sun.hk2.component.FactoryWomb;
+<a name="44" href="#44">44</a>  <strong>import</strong> com.sun.hk2.component.InjectInjectionResolver;
+<a name="45" href="#45">45</a>  <strong>import</strong> com.sun.hk2.component.InjectionResolver;
+<a name="46" href="#46">46</a>  <strong>import</strong> com.sun.hk2.component.LeadInjectionResolver;
+<a name="47" href="#47">47</a>  
+<a name="48" href="#48">48</a>  <strong>import</strong> <strong>static</strong> com.sun.hk2.component.InhabitantsFile.CAGE_BUILDER_KEY;
+<a name="49" href="#49">49</a>  <strong>import</strong> com.sun.hk2.component.ScopeInstance;
+<a name="50" href="#50">50</a>  <strong>import</strong> org.jvnet.hk2.annotations.Contract;
+<a name="51" href="#51">51</a>  <strong>import</strong> org.jvnet.hk2.annotations.ContractProvided;
+<a name="52" href="#52">52</a>  <strong>import</strong> org.jvnet.hk2.annotations.FactoryFor;
+<a name="53" href="#53">53</a>  <strong>import</strong> org.jvnet.hk2.component.HabitatListener.EventType;
+<a name="54" href="#54">54</a>  <strong>import</strong> org.jvnet.hk2.component.InhabitantTracker.Callback;
+<a name="55" href="#55">55</a>  <strong>import</strong> org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
+<a name="56" href="#56">56</a>  <strong>import</strong> org.jvnet.hk2.component.matcher.Constants;
+<a name="57" href="#57">57</a>  
+<a name="58" href="#58">58</a>  <strong>import</strong> java.lang.annotation.Annotation;
+<a name="59" href="#59">59</a>  <strong>import</strong> java.util.Map.Entry;
+<a name="60" href="#60">60</a>  <strong>import</strong> java.util.*;
+<a name="61" href="#61">61</a>  <strong>import</strong> java.util.concurrent.CopyOnWriteArrayList;
+<a name="62" href="#62">62</a>  <strong>import</strong> java.util.concurrent.ExecutorService;
+<a name="63" href="#63">63</a>  <strong>import</strong> java.util.concurrent.Executors;
+<a name="64" href="#64">64</a>  <strong>import</strong> java.util.concurrent.Future;
+<a name="65" href="#65">65</a>  <strong>import</strong> java.util.concurrent.ThreadFactory;
+<a name="66" href="#66">66</a>  <strong>import</strong> java.util.logging.Level;
+<a name="67" href="#67">67</a>  <strong>import</strong> java.util.logging.Logger;
+<a name="68" href="#68">68</a>  
+<a name="69" href="#69">69</a>  <em>/**<em>*</em></em>
+<a name="70" href="#70">70</a>  <em> * A set of templates that constitute a world of objects.</em>
+<a name="71" href="#71">71</a>  <em> *</em>
+<a name="72" href="#72">72</a>  <em> * @author Kohsuke Kawaguchi</em>
+<a name="73" href="#73">73</a>  <em> * @author Jerome Dochez</em>
+<a name="74" href="#74">74</a>  <em> */</em>
+<a name="75" href="#75">75</a>  @SuppressWarnings(<span class="string">"unchecked"</span>)
+<a name="76" href="#76">76</a>  <strong>public</strong> <strong>class</strong> <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> {
+<a name="77" href="#77">77</a>  
+<a name="78" href="#78">78</a>      <em>/**<em>*</em></em>
+<a name="79" href="#79">79</a>  <em>     * Name to use to programmatically store default instances of a particular service.</em>
+<a name="80" href="#80">80</a>  <em>     */</em>
+<a name="81" href="#81">81</a>      <strong>public</strong> <strong>final</strong> String DEFAULT_NAME = <span class="string">"_HABITAT_DEFAULT"</span>;
+<a name="82" href="#82">82</a>      <em>/**<em>*</em></em>
+<a name="83" href="#83">83</a>  <em>     * Contract type FQCN to their corresponding inhabitants.</em>
+<a name="84" href="#84">84</a>  <em>     *</em>
+<a name="85" href="#85">85</a>  <em>     * Can't use {@link Class} as the key so that we can create index without</em>
+<a name="86" href="#86">86</a>  <em>     * loading contract types. Once populated upfront, it works as a read-only map.</em>
+<a name="87" href="#87">87</a>  <em>     */</em>
+<a name="88" href="#88">88</a>      <strong>private</strong> <strong>final</strong> MultiMap&lt;String,NamedInhabitant> byContract; 
+<a name="89" href="#89">89</a>  
+<a name="90" href="#90">90</a>      <em>/**<em>*</em></em>
+<a name="91" href="#91">91</a>  <em>     * Index by {@link Inhabitant#type()}.</em>
+<a name="92" href="#92">92</a>  <em>     */</em>
+<a name="93" href="#93">93</a>      <strong>private</strong> <strong>final</strong> MultiMap&lt;String,Inhabitant> byType; 
 <a name="94" href="#94">94</a>  
-<a name="95" href="#95">95</a>  
-<a name="96" href="#96">96</a>      <em class="comment">/*</em>
-<a name="97" href="#97">97</a>  <em class="comment">        Why initialize/processInhabitantDecorations didn't work:</em>
-<a name="98" href="#98">98</a>  
-<a name="99" href="#99">99</a>  <em class="comment">        when a new CageBuilder comes into the habitat, it needs to build cages for all existing components.</em>
-<a name="100" href="#100">100</a> <em class="comment">        when a caged component comes into the habitat, it checks existing cage builders in the habitat.</em>
-<a name="101" href="#101">101</a> 
-<a name="102" href="#102">102</a> <em class="comment">        Now, when  a cage builder and a component are both initialized first and then processInhabitantDecorations</em>
-<a name="103" href="#103">103</a> <em class="comment">        runs for both of them later, then you end up creating a cage twice, because the builder think it got into</em>
-<a name="104" href="#104">104</a> <em class="comment">        habitat after than the component, and the component think it got into habitat after the builder.</em>
-<a name="105" href="#105">105</a> <em class="comment">     */</em>
-<a name="106" href="#106">106</a> 
-<a name="107" href="#107">107</a>     <em>/**<em>*</em></em>
-<a name="108" href="#108">108</a> <em>     * Removes all imhabitants for a particular type</em>
-<a name="109" href="#109">109</a> <em>     *</em>
-<a name="110" href="#110">110</a> <em>     * @param type of the compoment</em>
-<a name="111" href="#111">111</a> <em>     */</em>
-<a name="112" href="#112">112</a>     <strong>public</strong> <strong>void</strong> removeAllByType(Class&lt;?> type) {
+<a name="95" href="#95">95</a>      <strong>public</strong> <strong>final</strong> <a href="../../../../com/sun/hk2/component/ScopeInstance.html">ScopeInstance</a> singletonScope;
+<a name="96" href="#96">96</a>  
+<a name="97" href="#97">97</a>      <em class="comment">// TODO: toggle to use concurrency controls as the default (or after habitat is initially built)</em>
+<a name="98" href="#98">98</a>      <em class="comment">// TODO: Jerome to review performance costs</em>
+<a name="99" href="#99">99</a>      <strong>static</strong> <strong>final</strong> <strong>boolean</strong> CONCURRENCY_CONTROLS_DEFAULT = 
+<a name="100" href="#100">100</a> <em class="comment">//      "true".equals(System.getProperty("hk2.concurrency.controls", "true"));</em>
+<a name="101" href="#101">101</a>       Boolean.getBoolean(<span class="string">"hk2.concurrency.controls"</span>);
+<a name="102" href="#102">102</a>     <strong>private</strong> <strong>final</strong> <strong>boolean</strong> concurrencyControls;
+<a name="103" href="#103">103</a>     
+<a name="104" href="#104">104</a>     <em class="comment">// Listeners and trackers use this executor for notification of habitat</em>
+<a name="105" href="#105">105</a>     <em class="comment">// changes. Many systems will require same-thread notifications.  This is</em>
+<a name="106" href="#106">106</a>     <em class="comment">// why OSGi defaults to synchronous service tracker customizers, etc.</em>
+<a name="107" href="#107">107</a>     <em class="comment">// We also, therefore, will default to a synchronous model.</em>
+<a name="108" href="#108">108</a>     <strong>static</strong> <strong>boolean</strong> ASYNC_EXECUTOR = 
+<a name="109" href="#109">109</a>       Boolean.getBoolean(<span class="string">"hk2.async.executor"</span>);
+<a name="110" href="#110">110</a>     <strong>final</strong> ExecutorService exec;
+<a name="111" href="#111">111</a>     
+<a name="112" href="#112">112</a>     <strong>private</strong> <strong>boolean</strong> initialized;
 <a name="113" href="#113">113</a> 
-<a name="114" href="#114">114</a>         String name = type.getName();
-<a name="115" href="#115">115</a> 
-<a name="116" href="#116">116</a>         <em class="comment">// remove all existing inhabitant.</em>
-<a name="117" href="#117">117</a>         <strong>synchronized</strong>(byType.get(name)) {
-<a name="118" href="#118">118</a>             <strong>for</strong> (Inhabitant existing : byType.get(name)) {
-<a name="119" href="#119">119</a>                 existing.release();
-<a name="120" href="#120">120</a>             }
-<a name="121" href="#121">121</a>             byType.get(name).clear();
-<a name="122" href="#122">122</a>         }
-<a name="123" href="#123">123</a>     }
-<a name="124" href="#124">124</a> 
-<a name="125" href="#125">125</a>     <em>/**<em>*</em></em>
-<a name="126" href="#126">126</a> <em>     * Adds a new inhabitant.</em>
-<a name="127" href="#127">127</a> <em>     *</em>
-<a name="128" href="#128">128</a> <em>     * &lt;p></em>
-<a name="129" href="#129">129</a> <em>     * See {@link Inhabitants} for typical ways to create {@link Inhabitant}s.</em>
-<a name="130" href="#130">130</a> <em>     */</em>
-<a name="131" href="#131">131</a>     <strong>public</strong> <strong>void</strong> add(<strong>final</strong> Inhabitant&lt;?> i) {
-<a name="132" href="#132">132</a>         String name = i.typeName();
-<a name="133" href="#133">133</a>         byType.add(name,i);
-<a name="134" href="#134">134</a> 
-<a name="135" href="#135">135</a>         <em class="comment">// for each companion, create an inhabitat that goes with the lead and hook them up</em>
-<a name="136" href="#136">136</a>         List&lt;Inhabitant> companions=<strong>null</strong>;
-<a name="137" href="#137">137</a>         <strong>for</strong>(Inhabitant&lt;?> c : getInhabitantsByAnnotation(CompanionSeed.<strong>class</strong>,name)) {
-<a name="138" href="#138">138</a>             <strong>if</strong>(companions==<strong>null</strong>)
-<a name="139" href="#139">139</a>                 companions = <strong>new</strong> ArrayList&lt;Inhabitant>();
-<a name="140" href="#140">140</a>             companions.add(createCompanion(<strong>this</strong>,i,c));
-<a name="141" href="#141">141</a>         }
-<a name="142" href="#142">142</a>         i.setCompanions(companions);
-<a name="143" href="#143">143</a> 
-<a name="144" href="#144">144</a>         String cageBuilderName = i.metadata().getOne(CAGE_BUILDER_KEY);
-<a name="145" href="#145">145</a>         <strong>if</strong>(cageBuilderName!=<strong>null</strong>) {
-<a name="146" href="#146">146</a>             <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> cageBuilder = byType.getOne(cageBuilderName);
-<a name="147" href="#147">147</a>             <strong>if</strong>(cageBuilder!=<strong>null</strong>)
-<a name="148" href="#148">148</a>                 ((<a href="../../../../org/jvnet/hk2/component/CageBuilder.html">CageBuilder</a>)cageBuilder.get()).onEntered(i);
-<a name="149" href="#149">149</a>             <em class="comment">// if cageBuilder==null, we can't cage this component now, but</em>
-<a name="150" href="#150">150</a>             <em class="comment">// we'll do that when cageBuilder comes into the habitat.</em>
-<a name="151" href="#151">151</a>             <em class="comment">// that happens because every CageBuilder implementations are caged by</em>
-<a name="152" href="#152">152</a>             <em class="comment">// CageBuilder.Registerer.</em>
-<a name="153" href="#153">153</a>         }
-<a name="154" href="#154">154</a>     }
-<a name="155" href="#155">155</a> 
-<a name="156" href="#156">156</a>     <em>/**<em>*</em></em>
-<a name="157" href="#157">157</a> <em>     * Adds a new index to look up the given inhabitant.</em>
-<a name="158" href="#158">158</a> <em>     *</em>
-<a name="159" href="#159">159</a> <em>     * @param index</em>
-<a name="160" href="#160">160</a> <em>     *      Primary index name, such as contract FQCN.</em>
-<a name="161" href="#161">161</a> <em>     * @param name</em>
-<a name="162" href="#162">162</a> <em>     *      Name that identifies the inhabitant among other inhabitants</em>
-<a name="163" href="#163">163</a> <em>     *      in the same index. Can be null for unnamed inhabitants.</em>
-<a name="164" href="#164">164</a> <em>     */</em>
-<a name="165" href="#165">165</a>     <strong>public</strong> <strong>void</strong> addIndex(Inhabitant&lt;?> i, String index, String name) {
-<a name="166" href="#166">166</a>         byContract.add(index,<strong>new</strong> NamedInhabitant(name,i));
-<a name="167" href="#167">167</a> 
-<a name="168" href="#168">168</a>         <em class="comment">// TODO: do this in the listener</em>
-<a name="169" href="#169">169</a> 
-<a name="170" href="#170">170</a>         <em class="comment">// for each FactoryFor component, insert inhabitant for components created by the factory</em>
-<a name="171" href="#171">171</a>         <strong>if</strong>(index.equals(FactoryFor.<strong>class</strong>.getName())) {
-<a name="172" href="#172">172</a>             <a href="../../../../org/jvnet/hk2/annotations/FactoryFor.html">FactoryFor</a> ff = i.type().getAnnotation(FactoryFor.<strong>class</strong>);
-<a name="173" href="#173">173</a>             Class&lt;?> targetClass = ff.value();
-<a name="174" href="#174">174</a>             <a href="../../../../com/sun/hk2/component/FactoryWomb.html">FactoryWomb</a> target = <strong>new</strong> <a href="../../../../com/sun/hk2/component/FactoryWomb.html">FactoryWomb</a>(targetClass, (Inhabitant)i, <strong>this</strong>, MultiMap.&lt;String,String>emptyMap());
-<a name="175" href="#175">175</a>             add(target);
-<a name="176" href="#176">176</a>             addIndex(target, targetClass.getName(), <strong>null</strong>);
-<a name="177" href="#177">177</a>         }
-<a name="178" href="#178">178</a>     }
-<a name="179" href="#179">179</a> 
-<a name="180" href="#180">180</a>     <em>/**<em>*</em></em>
-<a name="181" href="#181">181</a> <em>     * Removes a inhabitant</em>
-<a name="182" href="#182">182</a> <em>     *</em>
-<a name="183" href="#183">183</a> <em>     * @param inhabitant</em>
-<a name="184" href="#184">184</a> <em>     *      inhabitant to be removed</em>
-<a name="185" href="#185">185</a> <em>     */</em>
-<a name="186" href="#186">186</a>     <strong>public</strong> <strong>boolean</strong> remove(Inhabitant&lt;?> inhabitant) {
-<a name="187" href="#187">187</a>         String name = inhabitant.typeName();
-<a name="188" href="#188">188</a>         <strong>if</strong> (byType.get(name).contains(inhabitant)) {
-<a name="189" href="#189">189</a>             byType.get(name).remove(inhabitant);
-<a name="190" href="#190">190</a>         }
-<a name="191" href="#191">191</a>         <strong>return</strong> <strong>true</strong>;
-<a name="192" href="#192">192</a>     }
-<a name="193" href="#193">193</a> 
-<a name="194" href="#194">194</a>     <em>/**<em>*</em></em>
-<a name="195" href="#195">195</a> <em>     * Removes a NamedInhabitant for a specific contract</em>
-<a name="196" href="#196">196</a> <em>     *</em>
-<a name="197" href="#197">197</a> <em>     * @param index contract name</em>
-<a name="198" href="#198">198</a> <em>     * @param name instance name</em>
-<a name="199" href="#199">199</a> <em>     * @return true if the removal was successful</em>
-<a name="200" href="#200">200</a> <em>     */</em>
-<a name="201" href="#201">201</a>     <strong>public</strong> <strong>boolean</strong> removeIndex(String index, String name) {
-<a name="202" href="#202">202</a>         <strong>if</strong> (byContract.containsKey(index)) {
-<a name="203" href="#203">203</a>             List&lt;NamedInhabitant> contracted = byContract.get(index);
-<a name="204" href="#204">204</a>             <strong>for</strong> (NamedInhabitant i : contracted) {
-<a name="205" href="#205">205</a>                 <strong>if</strong> ((i.name == <strong>null</strong> &amp;&amp; name == <strong>null</strong>) ||
-<a name="206" href="#206">206</a>                         (i.name != <strong>null</strong> &amp;&amp; i.name.equals(name))) {
-<a name="207" href="#207">207</a> 
-<a name="208" href="#208">208</a>                     <em class="comment">// remember to remove the components stored under its type</em>
-<a name="209" href="#209">209</a>                     <strong>if</strong> (byType.get(index).contains(i.inhabitant)) {
-<a name="210" href="#210">210</a>                         byType.get(index).remove(i.inhabitant);
-<a name="211" href="#211">211</a>                     }
-<a name="212" href="#212">212</a>                     <strong>return</strong> contracted.remove(i);
-<a name="213" href="#213">213</a>                 }
-<a name="214" href="#214">214</a>             }
-<a name="215" href="#215">215</a>         }
-<a name="216" href="#216">216</a>         <strong>return</strong> false;
-<a name="217" href="#217">217</a>     }
-<a name="218" href="#218">218</a> 
-<a name="219" href="#219">219</a>     <em>/**<em>*</em></em>
-<a name="220" href="#220">220</a> <em>     *  Removes a Contracted service</em>
-<a name="221" href="#221">221</a> <em>     *</em>
-<a name="222" href="#222">222</a> <em>     *  @param index the contract name</em>
-<a name="223" href="#223">223</a> <em>     * @param service the instance</em>
-<a name="224" href="#224">224</a> <em>     */</em>
-<a name="225" href="#225">225</a>     <strong>public</strong> <strong>boolean</strong> removeIndex(String index, Object service) {
-<a name="226" href="#226">226</a>         <strong>if</strong> (byContract.containsKey(index)) {
-<a name="227" href="#227">227</a>              List&lt;NamedInhabitant> contracted = byContract.get(index);
-<a name="228" href="#228">228</a>              <strong>for</strong> (NamedInhabitant i : contracted) {
-<a name="229" href="#229">229</a>                  <em class="comment">// call to isInstantiated is necessary to avoid loading of services that are not yet loaded</em>
-<a name="230" href="#230">230</a>                  <strong>if</strong> (i.inhabitant.isInstantiated() &amp;&amp; i.inhabitant.get().equals(service)) {
-<a name="231" href="#231">231</a>                     <em class="comment">// remember to remove the components stored under its type</em>
-<a name="232" href="#232">232</a>                     <strong>if</strong> (byType.get(index).contains(i.inhabitant)) {
-<a name="233" href="#233">233</a>                         byType.get(index).remove(i.inhabitant);
-<a name="234" href="#234">234</a>                     }                     
-<a name="235" href="#235">235</a>                      <strong>return</strong> contracted.remove(i);
-<a name="236" href="#236">236</a>                  }
-<a name="237" href="#237">237</a>              }
-<a name="238" href="#238">238</a>          }
-<a name="239" href="#239">239</a>          <strong>return</strong> false;
-<a name="240" href="#240">240</a>     }
-<a name="241" href="#241">241</a> 
-<a name="242" href="#242">242</a>     <em>/**<em>*</em></em>
-<a name="243" href="#243">243</a> <em>     * Checks if the given type is a contract interface that has some implementations in this {@link Habitat}.</em>
-<a name="244" href="#244">244</a> <em>     *</em>
-<a name="245" href="#245">245</a> <em>     * &lt;p></em>
-<a name="246" href="#246">246</a> <em>     * There are two ways for a type to be marked as a contract.</em>
-<a name="247" href="#247">247</a> <em>     * Either it has {@link Contract}, or it's marked by {@link ContractProvided} from the implementation.</em>
-<a name="248" href="#248">248</a> <em>     *</em>
-<a name="249" href="#249">249</a> <em>     * &lt;p></em>
-<a name="250" href="#250">250</a> <em>     * Note that just having {@link Contract} is not enough to make this method return true.</em>
-<a name="251" href="#251">251</a> <em>     * It can still return false if the contract has no implementation in this habitat.</em>
-<a name="252" href="#252">252</a> <em>     *</em>
-<a name="253" href="#253">253</a> <em>     * &lt;p></em>
-<a name="254" href="#254">254</a> <em>     * This method is useful during the injection to determine what lookup to perform,</em>
-<a name="255" href="#255">255</a> <em>     * and it handles the case correctly when the type is marked as a contract by {@link ContractProvided}.</em>
-<a name="256" href="#256">256</a> <em>     */</em>
-<a name="257" href="#257">257</a>     <strong>public</strong> <strong>boolean</strong> isContract(Class&lt;?> type) {
-<a name="258" href="#258">258</a>         <strong>return</strong> byContract.containsKey(type.getName());
-<a name="259" href="#259">259</a>     }
-<a name="260" href="#260">260</a> 
-<a name="261" href="#261">261</a>     <strong>public</strong> <strong>boolean</strong> isContract(String fullyQualifiedClassName) {
-<a name="262" href="#262">262</a>         <strong>return</strong> byContract.containsKey(fullyQualifiedClassName);
-<a name="263" href="#263">263</a>     }
-<a name="264" href="#264">264</a> 
-<a name="265" href="#265">265</a>     <em>/**<em>*</em></em>
-<a name="266" href="#266">266</a> <em>     * Gets all the inhabitants registered under the given {@link Contract}.</em>
-<a name="267" href="#267">267</a> <em>     * This is an example of heterogeneous type-safe container.</em>
-<a name="268" href="#268">268</a> <em>     * </em>
-<a name="269" href="#269">269</a> <em>     * @return</em>
-<a name="270" href="#270">270</a> <em>     *      can be empty but never null.</em>
-<a name="271" href="#271">271</a> <em>     */</em>
-<a name="272" href="#272">272</a>     <strong>public</strong> &lt;T> Collection&lt;T> getAllByContract(Class&lt;T> contractType) {
-<a name="273" href="#273">273</a>         <strong>final</strong> List&lt;NamedInhabitant> l = byContract.get(contractType.getName());
-<a name="274" href="#274">274</a>         <strong>return</strong> <strong>new</strong> AbstractList&lt;T>() {
-<a name="275" href="#275">275</a>             <strong>public</strong> T get(<strong>int</strong> index) {
-<a name="276" href="#276">276</a>                 <strong>return</strong> (T)l.get(index).inhabitant.get();
-<a name="277" href="#277">277</a>             }
-<a name="278" href="#278">278</a> 
-<a name="279" href="#279">279</a>             <strong>public</strong> <strong>int</strong> size() {
-<a name="280" href="#280">280</a>                 <strong>return</strong> l.size();
-<a name="281" href="#281">281</a>             }
-<a name="282" href="#282">282</a>         };
-<a name="283" href="#283">283</a>     }
-<a name="284" href="#284">284</a> 
-<a name="285" href="#285">285</a>     <em>/**<em>*</em></em>
-<a name="286" href="#286">286</a> <em>     * Gets the object of the given type.</em>
-<a name="287" href="#287">287</a> <em>     *</em>
-<a name="288" href="#288">288</a> <em>     * @return</em>
-<a name="289" href="#289">289</a> <em>     *      can be empty but never null.</em>
-<a name="290" href="#290">290</a> <em>     */</em>
-<a name="291" href="#291">291</a>     <strong>public</strong> &lt;T> Collection&lt;T> getAllByType(Class&lt;T> implType) {
-<a name="292" href="#292">292</a>         <strong>final</strong> List&lt;Inhabitant> l = byType.get(implType.getName());
-<a name="293" href="#293">293</a>         <strong>return</strong> <strong>new</strong> AbstractList&lt;T>() {
-<a name="294" href="#294">294</a>             <strong>public</strong> T get(<strong>int</strong> index) {
-<a name="295" href="#295">295</a>                 <strong>return</strong> (T)l.get(index).get();
-<a name="296" href="#296">296</a>             }
-<a name="297" href="#297">297</a> 
-<a name="298" href="#298">298</a>             <strong>public</strong> <strong>int</strong> size() {
-<a name="299" href="#299">299</a>                 <strong>return</strong> l.size();
-<a name="300" href="#300">300</a>             }
-<a name="301" href="#301">301</a>         };
-<a name="302" href="#302">302</a>     }
-<a name="303" href="#303">303</a> 
-<a name="304" href="#304">304</a>     <em>/**<em>*</em></em>
-<a name="305" href="#305">305</a> <em>     * Add an already instantiated component to this manager. The component has</em>
-<a name="306" href="#306">306</a> <em>     * been instantiated by external code, however dependency injection, PostConstruct</em>
-<a name="307" href="#307">307</a> <em>     * invocation and dependency extraction will be performed on this instance before</em>
-<a name="308" href="#308">308</a> <em>     * it is store in the relevant scope's resource manager.</em>
-<a name="309" href="#309">309</a> <em>     *</em>
-<a name="310" href="#310">310</a> <em>     * @param name name of the component, could be default name</em>
-<a name="311" href="#311">311</a> <em>     * @param component component instance</em>
-<a name="312" href="#312">312</a> <em>     * @throws ComponentException if the passed object is not an HK2 component or</em>
-<a name="313" href="#313">313</a> <em>     * injection/extraction failed.</em>
-<a name="314" href="#314">314</a> <em>     */</em>
-<a name="315" href="#315">315</a>     <em class="comment">// TODO: mutating Habitat after it's created poses synchronization issue</em>
-<a name="316" href="#316">316</a>     <strong>public</strong> &lt;T> <strong>void</strong> addComponent(String name, T component) throws ComponentException {
-<a name="317" href="#317">317</a>         add(<strong>new</strong> ExistingSingletonInhabitant&lt;T>(component));
+<a name="114" href="#114">114</a>     
+<a name="115" href="#115">115</a>     <strong>public</strong> <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a>() {
+<a name="116" href="#116">116</a>       <strong>this</strong>(<strong>null</strong>, <strong>null</strong>);
+<a name="117" href="#117">117</a>     }
+<a name="118" href="#118">118</a> 
+<a name="119" href="#119">119</a>     <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a>(ExecutorService exec, Boolean concurrency_controls) {
+<a name="120" href="#120">120</a>         <strong>this</strong>.concurrencyControls = 
+<a name="121" href="#121">121</a>             (<strong>null</strong> == concurrency_controls) 
+<a name="122" href="#122">122</a>                 ? CONCURRENCY_CONTROLS_DEFAULT : concurrency_controls;
+<a name="123" href="#123">123</a>         <strong>this</strong>.byContract = <strong>new</strong> MultiMap&lt;String,NamedInhabitant>(<strong>this</strong>.concurrencyControls);
+<a name="124" href="#124">124</a>         <strong>this</strong>.byType = <strong>new</strong> MultiMap&lt;String,Inhabitant>(<strong>this</strong>.concurrencyControls);
+<a name="125" href="#125">125</a>         <strong>this</strong>.singletonScope = <strong>new</strong> <a href="../../../../com/sun/hk2/component/ScopeInstance.html">ScopeInstance</a>(<span class="string">"singleton"</span>, <strong>new</strong> HashMap());
+<a name="126" href="#126">126</a> 
+<a name="127" href="#127">127</a>         <strong>if</strong> (<strong>null</strong> == exec) {
+<a name="128" href="#128">128</a>           <strong>if</strong> (ASYNC_EXECUTOR) {
+<a name="129" href="#129">129</a>             exec = Executors.<strong>new</strong>CachedThreadPool(<strong>new</strong> ThreadFactory() {
+<a name="130" href="#130">130</a>               @Override
+<a name="131" href="#131">131</a>               <strong>public</strong> Thread newThread(Runnable runnable) {
+<a name="132" href="#132">132</a>                 Thread t = Executors.defaultThreadFactory().newThread(runnable);
+<a name="133" href="#133">133</a>                 t.setDaemon(<strong>true</strong>);
+<a name="134" href="#134">134</a>                 <strong>return</strong> t;
+<a name="135" href="#135">135</a>               }
+<a name="136" href="#136">136</a>             });
+<a name="137" href="#137">137</a>           } <strong>else</strong> {
+<a name="138" href="#138">138</a>             exec = <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/SameThreadExecutor.html">SameThreadExecutor</a>();
+<a name="139" href="#139">139</a>           }
+<a name="140" href="#140">140</a>         }
+<a name="141" href="#141">141</a>         <strong>this</strong>.exec = exec;
+<a name="142" href="#142">142</a>         
+<a name="143" href="#143">143</a>         <em class="comment">// make the listeners available very early in lifecycle</em>
+<a name="144" href="#144">144</a>         addHabitatListener(<strong>new</strong> SelfListener());
+<a name="145" href="#145">145</a> 
+<a name="146" href="#146">146</a>         <em class="comment">// add the set of injection resolvers</em>
+<a name="147" href="#147">147</a>         add(<strong>new</strong> ExistingSingletonInhabitant&lt;InjectionResolver>(InjectionResolver.<strong>class</strong>,
+<a name="148" href="#148">148</a>                 <strong>new</strong> <a href="../../../../com/sun/hk2/component/InjectInjectionResolver.html">InjectInjectionResolver</a>(<strong>this</strong>)));
+<a name="149" href="#149">149</a>         add(<strong>new</strong> ExistingSingletonInhabitant&lt;InjectionResolver>(InjectionResolver.<strong>class</strong>,
+<a name="150" href="#150">150</a>                 <strong>new</strong> <a href="../../../../com/sun/hk2/component/LeadInjectionResolver.html">LeadInjectionResolver</a>(<strong>this</strong>)));
+<a name="151" href="#151">151</a>         
+<a name="152" href="#152">152</a>         <em class="comment">// make the habitat itself available</em>
+<a name="153" href="#153">153</a>         add(<strong>new</strong> ExistingSingletonInhabitant&lt;Habitat>(Habitat.<strong>class</strong>,<strong>this</strong>));
+<a name="154" href="#154">154</a> 
+<a name="155" href="#155">155</a>         add(<strong>new</strong> ExistingSingletonInhabitant&lt;CompanionSeed.Registerer>(CompanionSeed.Registerer.<strong>class</strong>,
+<a name="156" href="#156">156</a>                 <strong>new</strong> CompanionSeed.Registerer(<strong>this</strong>)));
+<a name="157" href="#157">157</a>         add(<strong>new</strong> ExistingSingletonInhabitant&lt;CageBuilder.Registerer>(CageBuilder.Registerer.<strong>class</strong>,
+<a name="158" href="#158">158</a>                 <strong>new</strong> CageBuilder.Registerer(<strong>this</strong>)));
+<a name="159" href="#159">159</a> 
+<a name="160" href="#160">160</a>         <em class="comment">// the default RunLevelService</em>
+<a name="161" href="#161">161</a>         <a href="../../../../org/jvnet/hk2/component/internal/runlevel/DefaultRunLevelService.html">DefaultRunLevelService</a> rls = <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/internal/runlevel/DefaultRunLevelService.html">DefaultRunLevelService</a>(<strong>this</strong>);
+<a name="162" href="#162">162</a>         ExistingSingletonInhabitant&lt;RunLevelService> rlsI = 
+<a name="163" href="#163">163</a>           <strong>new</strong> ExistingSingletonInhabitant&lt;RunLevelService>(RunLevelService.<strong>class</strong>, rls);
+<a name="164" href="#164">164</a>         add(rlsI);
+<a name="165" href="#165">165</a>         addIndex(rlsI, RunLevelService.<strong>class</strong>.getName(), <span class="string">"default"</span>);
+<a name="166" href="#166">166</a>     }
+<a name="167" href="#167">167</a>     
+<a name="168" href="#168">168</a>     <em>/**<em>*</em></em>
+<a name="169" href="#169">169</a> <em>     * Add a habitat listener with no contract-level filtering.</em>
+<a name="170" href="#170">170</a> <em>     * This API is primarily intended for internal cases within</em>
+<a name="171" href="#171">171</a> <em>     * Hk2.</em>
+<a name="172" href="#172">172</a> <em>     * </em>
+<a name="173" href="#173">173</a> <em>     * The listener with no contract-level filtering will be </em>
+<a name="174" href="#174">174</a> <em>     * called for all change events within the habitat pertaining</em>
+<a name="175" href="#175">175</a> <em>     * to inhabitants.</em>
+<a name="176" href="#176">176</a> <em>     *</em>
+<a name="177" href="#177">177</a> <em>     * @see {@link #addHabitatListener(HabitatListener, String...)}</em>
+<a name="178" href="#178">178</a> <em>     *      is recommended for most cases</em>
+<a name="179" href="#179">179</a> <em>     * </em>
+<a name="180" href="#180">180</a> <em>     * @param listener</em>
+<a name="181" href="#181">181</a> <em>     *      The habitat Listener to be added</em>
+<a name="182" href="#182">182</a> <em>     * </em>
+<a name="183" href="#183">183</a> <em>     * @since 3.1</em>
+<a name="184" href="#184">184</a> <em>     */</em>
+<a name="185" href="#185">185</a>     <strong>public</strong> <strong>void</strong> addHabitatListener(<a href="../../../../org/jvnet/hk2/component/HabitatListener.html">HabitatListener</a> listener) {
+<a name="186" href="#186">186</a>         addHabitatListener(listener, DEFAULT_NAME);
+<a name="187" href="#187">187</a>     }
+<a name="188" href="#188">188</a>     
+<a name="189" href="#189">189</a>     <em>/**<em>*</em></em>
+<a name="190" href="#190">190</a> <em>     * Add a habitat listener with contract-level filtering.</em>
+<a name="191" href="#191">191</a> <em>     * </em>
+<a name="192" href="#192">192</a> <em>     * The listener will be called based on the set of contract</em>
+<a name="193" href="#193">193</a> <em>     * filters provided.</em>
+<a name="194" href="#194">194</a> <em>     *</em>
+<a name="195" href="#195">195</a> <em>     * @param listener</em>
+<a name="196" href="#196">196</a> <em>     *      The habitat Listener to be added</em>
+<a name="197" href="#197">197</a> <em>     * @param typeNames</em>
+<a name="198" href="#198">198</a> <em>     *      The contracts to filter on; this should be non-null</em>
+<a name="199" href="#199">199</a> <em>     * </em>
+<a name="200" href="#200">200</a> <em>     * @since 3.1</em>
+<a name="201" href="#201">201</a> <em>     */</em>
+<a name="202" href="#202">202</a>     <strong>public</strong> <strong>void</strong> addHabitatListener(<a href="../../../../org/jvnet/hk2/component/HabitatListener.html">HabitatListener</a> listener, String... typeNames) {
+<a name="203" href="#203">203</a>       <strong>if</strong> (<strong>null</strong> == typeNames || 0 == typeNames.length) <strong>throw</strong> <strong>new</strong> IllegalArgumentException();
+<a name="204" href="#204">204</a>       addHabitatListener(listener, <strong>new</strong> HashSet&lt;String>(Arrays.asList(typeNames)));
+<a name="205" href="#205">205</a>     }
+<a name="206" href="#206">206</a>     
+<a name="207" href="#207">207</a>     <strong>protected</strong> <strong>void</strong> addHabitatListener(<a href="../../../../org/jvnet/hk2/component/HabitatListener.html">HabitatListener</a> listener, Set&lt;String> typeNames) {
+<a name="208" href="#208">208</a>         ExistingSingletonInhabitant&lt;HabitatListener> inhabitant = 
+<a name="209" href="#209">209</a>           <strong>new</strong> ExistingSingletonInhabitant&lt;HabitatListener>(HabitatListener.<strong>class</strong>,
+<a name="210" href="#210">210</a>               listener, metaData(typeNames));
+<a name="211" href="#211">211</a>         add(inhabitant);
+<a name="212" href="#212">212</a>   
+<a name="213" href="#213">213</a>         <em class="comment">// track listeners by type - support of filtered notification</em>
+<a name="214" href="#214">214</a>         <strong>for</strong> (String contract : typeNames) {
+<a name="215" href="#215">215</a>           ListenersByTypeInhabitant sameListeners; 
+<a name="216" href="#216">216</a>           <strong>synchronized</strong> (byContract) {
+<a name="217" href="#217">217</a>               sameListeners = (ListenersByTypeInhabitant)
+<a name="218" href="#218">218</a>                       getInhabitantByContract(ListenersByTypeInhabitant.<strong>class</strong>.getName(),
+<a name="219" href="#219">219</a>                       contract);
+<a name="220" href="#220">220</a>               <strong>if</strong> (<strong>null</strong> == sameListeners) {
+<a name="221" href="#221">221</a>                   sameListeners = <strong>new</strong> ListenersByTypeInhabitant(contract);
+<a name="222" href="#222">222</a>                   addIndex(sameListeners, ListenersByTypeInhabitant.<strong>class</strong>.getName(),
+<a name="223" href="#223">223</a>                       contract,
+<a name="224" href="#224">224</a>                       false); <em class="comment">// don't send notifications for this type (no particular reason really)</em>
+<a name="225" href="#225">225</a>               }
+<a name="226" href="#226">226</a>           }
+<a name="227" href="#227">227</a>           sameListeners.add(listener);
+<a name="228" href="#228">228</a>         }
+<a name="229" href="#229">229</a>     }
+<a name="230" href="#230">230</a> 
+<a name="231" href="#231">231</a>     <em>/**<em>*</em></em>
+<a name="232" href="#232">232</a> <em>     * Remove a habitat listener.</em>
+<a name="233" href="#233">233</a> <em>     * </em>
+<a name="234" href="#234">234</a> <em>     * @param listener</em>
+<a name="235" href="#235">235</a> <em>     *      The habitat Listener to be removed</em>
+<a name="236" href="#236">236</a> <em>     * @param typeNames</em>
+<a name="237" href="#237">237</a> <em>     *      The contracts to filter on</em>
+<a name="238" href="#238">238</a> <em>     * </em>
+<a name="239" href="#239">239</a> <em>     * @return true; if the listener was indeed removed</em>
+<a name="240" href="#240">240</a> <em>     * </em>
+<a name="241" href="#241">241</a> <em>     * @since 3.1</em>
+<a name="242" href="#242">242</a> <em>     */</em>
+<a name="243" href="#243">243</a>     <strong>public</strong> <strong>boolean</strong> removeHabitatListener(<a href="../../../../org/jvnet/hk2/component/HabitatListener.html">HabitatListener</a> listener) {
+<a name="244" href="#244">244</a>       List&lt;Inhabitant> list = byType._get(HabitatListener.<strong>class</strong>.getName());
+<a name="245" href="#245">245</a>       List&lt;Inhabitant> releaseList = <strong>new</strong> ArrayList&lt;Inhabitant>();
+<a name="246" href="#246">246</a>       Iterator&lt;Inhabitant> iter = list.iterator();
+<a name="247" href="#247">247</a>       <strong>while</strong> (iter.hasNext()) {
+<a name="248" href="#248">248</a>           <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> existing = iter.next();
+<a name="249" href="#249">249</a>           <strong>if</strong> (existing.get() == listener) {
+<a name="250" href="#250">250</a>               releaseList.add(existing);
+<a name="251" href="#251">251</a>               <strong>if</strong> (concurrencyControls) {
+<a name="252" href="#252">252</a>                   list.remove(existing);
+<a name="253" href="#253">253</a>               } <strong>else</strong> {
+<a name="254" href="#254">254</a>                   iter.remove();
+<a name="255" href="#255">255</a>               }
+<a name="256" href="#256">256</a>           }
+<a name="257" href="#257">257</a>       }
+<a name="258" href="#258">258</a> 
+<a name="259" href="#259">259</a>       <em class="comment">// need to release the per-listener-contract entries too</em>
+<a name="260" href="#260">260</a>       <strong>for</strong> (Inhabitant released : releaseList) {
+<a name="261" href="#261">261</a>           MultiMap&lt;String, String> metadata = released.metadata();
+<a name="262" href="#262">262</a>           <strong>if</strong> (<strong>null</strong> != metadata) {
+<a name="263" href="#263">263</a>               List&lt;String> filters = metadata.get(Constants.OBJECTCLASS);
+<a name="264" href="#264">264</a>               <strong>for</strong> (String contract : filters) {
+<a name="265" href="#265">265</a>                   ListenersByTypeInhabitant sameListeners; 
+<a name="266" href="#266">266</a>                   <strong>synchronized</strong> (byContract) {
+<a name="267" href="#267">267</a>                       sameListeners = (ListenersByTypeInhabitant)
+<a name="268" href="#268">268</a>                               getInhabitantByContract(ListenersByTypeInhabitant.<strong>class</strong>.getName(),
+<a name="269" href="#269">269</a>                               contract);
+<a name="270" href="#270">270</a>                   }
+<a name="271" href="#271">271</a>                   sameListeners.remove(listener);
+<a name="272" href="#272">272</a>               }                    
+<a name="273" href="#273">273</a>           }
+<a name="274" href="#274">274</a>           
+<a name="275" href="#275">275</a>           released.release();
+<a name="276" href="#276">276</a>           notify(released, EventType.INHABITANT_REMOVED, <strong>null</strong>, released);
+<a name="277" href="#277">277</a>       }
+<a name="278" href="#278">278</a>       
+<a name="279" href="#279">279</a>       <strong>return</strong> !releaseList.isEmpty();
+<a name="280" href="#280">280</a>     }
+<a name="281" href="#281">281</a> 
+<a name="282" href="#282">282</a>     <em>/**<em>*</em></em>
+<a name="283" href="#283">283</a> <em>     * Convert a set of type names into OBJECTCLASS keys within metadata</em>
+<a name="284" href="#284">284</a> <em>     */</em>
+<a name="285" href="#285">285</a>     <strong>private</strong> MultiMap&lt;String, String> metaData(Set&lt;String> typeNames) {
+<a name="286" href="#286">286</a>         <strong>if</strong> (<strong>null</strong> == typeNames) {
+<a name="287" href="#287">287</a>           <strong>return</strong> <strong>null</strong>;
+<a name="288" href="#288">288</a>         }
+<a name="289" href="#289">289</a>         
+<a name="290" href="#290">290</a>         MultiMap&lt;String, String> metadata = <strong>new</strong> MultiMap&lt;String, String>();
+<a name="291" href="#291">291</a>         <strong>for</strong> (String typeName : typeNames) {
+<a name="292" href="#292">292</a>           metadata.add(Constants.OBJECTCLASS, typeName);
+<a name="293" href="#293">293</a>         }
+<a name="294" href="#294">294</a>         
+<a name="295" href="#295">295</a>         <strong>return</strong> metadata;
+<a name="296" href="#296">296</a>     }
+<a name="297" href="#297">297</a>     
+<a name="298" href="#298">298</a>     <em>/**<em>*</em></em>
+<a name="299" href="#299">299</a> <em>     * Registers a dependency on the inhabitant with the given tracker context.</em>
+<a name="300" href="#300">300</a> <em>     * &lt;p></em>
+<a name="301" href="#301">301</a> <em>     * Once the criteria is met, any callback provided is called.  This callback may</em>
+<a name="302" href="#302">302</a> <em>     * occur asynchronously from the thread initiating the event.</em>
+<a name="303" href="#303">303</a> <em>     * </em>
+<a name="304" href="#304">304</a> <em>     * @param itc</em>
+<a name="305" href="#305">305</a> <em>     *          The tracking criteria.</em>
+<a name="306" href="#306">306</a> <em>     * @param callback</em>
+<a name="307" href="#307">307</a> <em>     *          Optionally the callback.</em>
+<a name="308" href="#308">308</a> <em>     * @return</em>
+<a name="309" href="#309">309</a> <em>     *          The tracker</em>
+<a name="310" href="#310">310</a> <em>     * @throws ComponentException</em>
+<a name="311" href="#311">311</a> <em>     * </em>
+<a name="312" href="#312">312</a> <em>     * @since 3.1</em>
+<a name="313" href="#313">313</a> <em>     */</em>
+<a name="314" href="#314">314</a>     <strong>public</strong> <a href="../../../../org/jvnet/hk2/component/InhabitantTracker.html">InhabitantTracker</a> track(<a href="../../../../org/jvnet/hk2/component/InhabitantTrackerContext.html">InhabitantTrackerContext</a> itc,
+<a name="315" href="#315">315</a>             Callback callback) throws ComponentException {
+<a name="316" href="#316">316</a>         <strong>if</strong> (<strong>null</strong> == itc) <strong>throw</strong> <strong>new</strong> IllegalArgumentException();
+<a name="317" href="#317">317</a>         <strong>return</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/InhabitantTrackerImpl.html">InhabitantTrackerImpl</a>(<strong>this</strong>, itc, callback);
 <a name="318" href="#318">318</a>     }
-<a name="319" href="#319">319</a> 
+<a name="319" href="#319">319</a>   
 <a name="320" href="#320">320</a>     <em>/**<em>*</em></em>
-<a name="321" href="#321">321</a> <em>     * Obtains a reference to the component inside the manager.</em>
-<a name="322" href="#322">322</a> <em>     *</em>
-<a name="323" href="#323">323</a> <em>     * &lt;p></em>
-<a name="324" href="#324">324</a> <em>     * This is the "new Foo()" equivalent in the IoC world.</em>
-<a name="325" href="#325">325</a> <em>     *</em>
-<a name="326" href="#326">326</a> <em>     * &lt;p></em>
-<a name="327" href="#327">327</a> <em>     * Depending on the {@link Scope} of the component, a new instance</em>
-<a name="328" href="#328">328</a> <em>     * might be created, or an existing instance might be returned.</em>
-<a name="329" href="#329">329</a> <em>     *</em>
-<a name="330" href="#330">330</a> <em>     * @return</em>
-<a name="331" href="#331">331</a> <em>     *      non-null.</em>
-<a name="332" href="#332">332</a> <em>     * @throws ComponentException</em>
-<a name="333" href="#333">333</a> <em>     *      If failed to obtain a requested instance.</em>
-<a name="334" href="#334">334</a> <em>     *      In practice, failure only happens when we try to create a</em>
-<a name="335" href="#335">335</a> <em>     *      new instance of the component.</em>
-<a name="336" href="#336">336</a> <em>     */</em>
-<a name="337" href="#337">337</a>     <strong>public</strong> &lt;T> T getComponent(Class&lt;T> clazz) throws ComponentException {
-<a name="338" href="#338">338</a>         <strong>if</strong>(isContract(clazz))
-<a name="339" href="#339">339</a>             <strong>return</strong> getByContract(clazz);
-<a name="340" href="#340">340</a>         <strong>else</strong>
-<a name="341" href="#341">341</a>             <strong>return</strong> getByType(clazz);
+<a name="321" href="#321">321</a> <em>     * Returns a future that can be checked asynchronously, and multiple times.</em>
+<a name="322" href="#322">322</a> <em>     * &lt;p></em>
+<a name="323" href="#323">323</a> <em>     * &lt;b>Implementation Note:&lt;/b> The Future that is returned does not behave in</em>
+<a name="324" href="#324">324</a> <em>     * the traditional sense in that it is NOT directly submitted to an</em>
+<a name="325" href="#325">325</a> <em>     * ExecutorService.  Each call to get() or get(timeout) may result in a </em>
+<a name="326" href="#326">326</a> <em>     * [re]submission to an internally held executor.  This means that a</em>
+<a name="327" href="#327">327</a> <em>     * call to get(...) may return a tracker, and a subsequent call to get(...) may</em>
+<a name="328" href="#328">328</a> <em>     * return null, or vice versa.  This is true until the underlying tracker is</em>
+<a name="329" href="#329">329</a> <em>     * released at which point a tracker is no longer usable.</em>
+<a name="330" href="#330">330</a> <em>     * </em>
+<a name="331" href="#331">331</a> <em>     * @param itc</em>
+<a name="332" href="#332">332</a> <em>     *          The tracking criteria.</em>
+<a name="333" href="#333">333</a> <em>     * @return</em>
+<a name="334" href="#334">334</a> <em>     *          The tracker</em>
+<a name="335" href="#335">335</a> <em>     * @throws ComponentException</em>
+<a name="336" href="#336">336</a> <em>     * </em>
+<a name="337" href="#337">337</a> <em>     * @since 3.1</em>
+<a name="338" href="#338">338</a> <em>     */</em>
+<a name="339" href="#339">339</a>     <strong>public</strong> Future&lt;InhabitantTracker> trackFuture(<a href="../../../../org/jvnet/hk2/component/InhabitantTrackerContext.html">InhabitantTrackerContext</a> itc) throws ComponentException {
+<a name="340" href="#340">340</a>         <strong>if</strong> (<strong>null</strong> == itc) <strong>throw</strong> <strong>new</strong> IllegalArgumentException();
+<a name="341" href="#341">341</a>         <strong>return</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/InhabitantTrackerJob.html">InhabitantTrackerJob</a>(<strong>this</strong>, itc);
 <a name="342" href="#342">342</a>     }
-<a name="343" href="#343">343</a> 
-<a name="344" href="#344">344</a>     <em>/**<em>*</em></em>
-<a name="345" href="#345">345</a> <em>     * Loads a component that implements the given contract and has the given name.</em>
-<a name="346" href="#346">346</a> <em>     *</em>
-<a name="347" href="#347">347</a> <em>     * @param name</em>
-<a name="348" href="#348">348</a> <em>     *      can be null, in which case it'll only match to the unnamed component.</em>
-<a name="349" href="#349">349</a> <em>     * @return</em>
-<a name="350" href="#350">350</a> <em>     *      null if no such servce exists.</em>
-<a name="351" href="#351">351</a> <em>     */</em>
-<a name="352" href="#352">352</a>     <strong>public</strong> &lt;T> T getComponent(Class&lt;T> contract, String name) throws ComponentException {
-<a name="353" href="#353">353</a> 
-<a name="354" href="#354">354</a>         <strong>if</strong> (name!=<strong>null</strong> &amp;&amp; name.length()==0)
-<a name="355" href="#355">355</a>             name=<strong>null</strong>;
-<a name="356" href="#356">356</a>         <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> i = getInhabitant(contract, name);
-<a name="357" href="#357">357</a>         <strong>if</strong>(i!=<strong>null</strong>)
-<a name="358" href="#358">358</a>             <strong>try</strong> {
-<a name="359" href="#359">359</a>                 <strong>return</strong> contract.<strong>cast</strong>(i.get());
-<a name="360" href="#360">360</a>             } <strong>catch</strong> (ClassCastException e) {
-<a name="361" href="#361">361</a>                 Logger.getAnonymousLogger().severe(<span class="string">"ClassCastException between contract "</span> + contract + <span class="string">" and service "</span> + i.get());
-<a name="362" href="#362">362</a>                 Logger.getAnonymousLogger().severe(<span class="string">"Contract class loader "</span> + contract.getClassLoader());
-<a name="363" href="#363">363</a>                 Logger.getAnonymousLogger().severe(<span class="string">"Service class loader "</span> + i.get().getClass().getClassLoader());
-<a name="364" href="#364">364</a>                 <strong>throw</strong> e;
-<a name="365" href="#365">365</a>             }
-<a name="366" href="#366">366</a>         <strong>else</strong>
-<a name="367" href="#367">367</a>             <strong>return</strong> <strong>null</strong>;
-<a name="368" href="#368">368</a>     }
-<a name="369" href="#369">369</a> 
-<a name="370" href="#370">370</a>     <strong>public</strong> Object getComponent(String fullQualifiedName, String name) {
-<a name="371" href="#371">371</a>         <strong>if</strong> (name!=<strong>null</strong> &amp;&amp; name.length()==0) {
-<a name="372" href="#372">372</a>             name=<strong>null</strong>;
-<a name="373" href="#373">373</a>         }
-<a name="374" href="#374">374</a>         <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> i = isContract(fullQualifiedName)?
-<a name="375" href="#375">375</a>                 getInhabitantByContract(fullQualifiedName, name):getInhabitantByType(fullQualifiedName);
-<a name="376" href="#376">376</a>         <strong>return</strong> i==<strong>null</strong>?<strong>null</strong>:i.get();
-<a name="377" href="#377">377</a>     }
-<a name="378" href="#378">378</a> 
-<a name="379" href="#379">379</a>     <em>/**<em>*</em></em>
-<a name="380" href="#380">380</a> <em>     * Gets a lazy reference to the component.</em>
-<a name="381" href="#381">381</a> <em>     *</em>
-<a name="382" href="#382">382</a> <em>     * &lt;p></em>
-<a name="383" href="#383">383</a> <em>     * This method defers the actual instantiation of the component</em>
-<a name="384" href="#384">384</a> <em>     * until {@link Inhabitant#get()} is invoked.</em>
-<a name="385" href="#385">385</a> <em>     *</em>
-<a name="386" href="#386">386</a> <em>     * @return null</em>
-<a name="387" href="#387">387</a> <em>     *      if no such component is found.</em>
-<a name="388" href="#388">388</a> <em>     */</em>
-<a name="389" href="#389">389</a>     <strong>public</strong> &lt;T> Inhabitant&lt;? <strong>extends</strong> T> getInhabitant(Class&lt;T> contract, String name) throws ComponentException {
-<a name="390" href="#390">390</a>         <strong>return</strong> getInhabitantByContract(contract.getName(), name);
-<a name="391" href="#391">391</a>     }
-<a name="392" href="#392">392</a> 
-<a name="393" href="#393">393</a>     <em>/**<em>*</em></em>
-<a name="394" href="#394">394</a> <em>     * Gets a lazy reference to the component.</em>
-<a name="395" href="#395">395</a> <em>     * </em>
-<a name="396" href="#396">396</a> <em>     * &lt;p></em>
-<a name="397" href="#397">397</a> <em>     * This method defers the actual instantiation of the component</em>
-<a name="398" href="#398">398</a> <em>     * until {@link Inhabitant#get()} is invoked.</em>
-<a name="399" href="#399">399</a> <em>     *</em>
-<a name="400" href="#400">400</a> <em>     * @return null</em>
-<a name="401" href="#401">401</a> <em>     *      if no such component is found.</em>
-<a name="402" href="#402">402</a> <em>     */</em>
-<a name="403" href="#403">403</a>     <strong>public</strong> &lt;T> Inhabitant&lt;T> getInhabitantByType(Class&lt;T> implType) {
-<a name="404" href="#404">404</a>         <strong>return</strong> (Inhabitant&lt;T>)getInhabitantByType(implType.getName());
-<a name="405" href="#405">405</a>     }
-<a name="406" href="#406">406</a> 
-<a name="407" href="#407">407</a>     <strong>public</strong> Inhabitant&lt;?> getInhabitantByType(String fullyQualifiedClassName) {
-<a name="408" href="#408">408</a>         List&lt;Inhabitant> list = byType.get(fullyQualifiedClassName);
-<a name="409" href="#409">409</a>         <strong>if</strong>(list.isEmpty())  <strong>return</strong> <strong>null</strong>;
-<a name="410" href="#410">410</a>         <strong>return</strong> list.get(0);
-<a name="411" href="#411">411</a>     }
-<a name="412" href="#412">412</a> 
-<a name="413" href="#413">413</a>     <em>/**<em>*</em></em>
-<a name="414" href="#414">414</a> <em>     * Gets the inhabitant that has the given contract annotation and the given name.</em>
-<a name="415" href="#415">415</a> <em>     *</em>
-<a name="416" href="#416">416</a> <em>     * &lt;p></em>
-<a name="417" href="#417">417</a> <em>     * This method defers the actual instantiation of the component</em>
-<a name="418" href="#418">418</a> <em>     * until {@link Inhabitant#get()} is invoked.</em>
-<a name="419" href="#419">419</a> <em>     *</em>
-<a name="420" href="#420">420</a> <em>     * @return null</em>
-<a name="421" href="#421">421</a> <em>     *      if no such component is found.</em>
-<a name="422" href="#422">422</a> <em>     */</em>
-<a name="423" href="#423">423</a>     <strong>public</strong> Inhabitant&lt;?> getInhabitantByAnnotation(Class&lt;? <strong>extends</strong> Annotation> contract, String name) throws ComponentException {
-<a name="424" href="#424">424</a>         <strong>return</strong> getInhabitantByContract(contract.getName(), name);
-<a name="425" href="#425">425</a>     }
-<a name="426" href="#426">426</a> 
-<a name="427" href="#427">427</a>     <em>/**<em>*</em></em>
-<a name="428" href="#428">428</a> <em>     * Gets all the inhabitants that has the given contract.</em>
-<a name="429" href="#429">429</a> <em>     */</em>
-<a name="430" href="#430">430</a>     <strong>public</strong> &lt;T> Collection&lt;Inhabitant&lt;? <strong>extends</strong> T>> getInhabitants(Class&lt;T> contract) throws ComponentException {
-<a name="431" href="#431">431</a>         <strong>final</strong> List&lt;NamedInhabitant> l = byContract.get(contract.getName());
-<a name="432" href="#432">432</a>         <strong>return</strong> <strong>new</strong> AbstractList&lt;Inhabitant&lt;? <strong>extends</strong> T>>() {
-<a name="433" href="#433">433</a>             <strong>public</strong> Inhabitant&lt;? <strong>extends</strong> T> get(<strong>int</strong> index) {
-<a name="434" href="#434">434</a>                 <strong>return</strong> l.get(index).inhabitant;
-<a name="435" href="#435">435</a>             }
-<a name="436" href="#436">436</a> 
-<a name="437" href="#437">437</a>             <strong>public</strong> <strong>int</strong> size() {
-<a name="438" href="#438">438</a>                 <strong>return</strong> l.size();
-<a name="439" href="#439">439</a>             }
-<a name="440" href="#440">440</a>         };
-<a name="441" href="#441">441</a>     }
-<a name="442" href="#442">442</a> 
-<a name="443" href="#443">443</a>     <em>/**<em>*</em></em>
-<a name="444" href="#444">444</a> <em>     * Gets all the inhabitants that has the given implementation type.</em>
-<a name="445" href="#445">445</a> <em>     */</em>
-<a name="446" href="#446">446</a>     <strong>public</strong> &lt;T> Collection&lt;Inhabitant&lt;T>> getInhabitantsByType(Class&lt;T> implType) throws ComponentException {
-<a name="447" href="#447">447</a>         <strong>return</strong> (Collection)byType.get(implType.getName());
-<a name="448" href="#448">448</a>     }
-<a name="449" href="#449">449</a> 
-<a name="450" href="#450">450</a>     <em>/**<em>*</em></em>
-<a name="451" href="#451">451</a> <em>     * Gets all the inhabitants that has the given implementation type name.</em>
-<a name="452" href="#452">452</a> <em>     */</em>
-<a name="453" href="#453">453</a>     <strong>public</strong> Collection&lt;Inhabitant&lt;?>> getInhabitantsByType(String fullyQualifiedClassName) {
-<a name="454" href="#454">454</a>         <strong>return</strong> (Collection)byType.get(fullyQualifiedClassName);
-<a name="455" href="#455">455</a>     }
-<a name="456" href="#456">456</a> 
-<a name="457" href="#457">457</a>     <strong>public</strong> Collection&lt;Inhabitant&lt;?>> getInhabitantsByContract(String fullyQualifiedClassName) {
-<a name="458" href="#458">458</a>         <strong>final</strong> List&lt;NamedInhabitant> services = byContract.get(fullyQualifiedClassName);
-<a name="459" href="#459">459</a>         <strong>return</strong> <strong>new</strong> AbstractList&lt;Inhabitant&lt;?>>() {
-<a name="460" href="#460">460</a>             <strong>public</strong> Inhabitant&lt;?> get(<strong>int</strong> index) {
-<a name="461" href="#461">461</a>                 <strong>return</strong> services.get(index).inhabitant;
-<a name="462" href="#462">462</a>             }
-<a name="463" href="#463">463</a> 
-<a name="464" href="#464">464</a>             <strong>public</strong> <strong>int</strong> size() {
-<a name="465" href="#465">465</a>                 <strong>return</strong> services.size();
-<a name="466" href="#466">466</a>             }
-<a name="467" href="#467">467</a>         };
-<a name="468" href="#468">468</a>     }
-<a name="469" href="#469">469</a> 
-<a name="470" href="#470">470</a>     <strong>private</strong> <strong>class</strong> MultiMapIterator implements Iterator {
-<a name="471" href="#471">471</a>         <strong>final</strong> Iterator&lt;Entry&lt;String, List&lt;NamedInhabitant>>> itr;
-<a name="472" href="#472">472</a>         MultiMapIterator(<a href="../../../../org/jvnet/hk2/component/MultiMap.html">MultiMap</a> map) {
-<a name="473" href="#473">473</a>             itr = map.entrySet().iterator();
-<a name="474" href="#474">474</a>         }
-<a name="475" href="#475">475</a> 
-<a name="476" href="#476">476</a>         <strong>public</strong> <strong>boolean</strong> hasNext() {
-<a name="477" href="#477">477</a>             <strong>return</strong> itr.hasNext();
-<a name="478" href="#478">478</a>         }
+<a name="343" href="#343">343</a>   
+<a name="344" href="#344">344</a>     <em class="comment">/*</em>
+<a name="345" href="#345">345</a> <em class="comment">        Why initialize/processInhabitantDecorations didn't work:</em>
+<a name="346" href="#346">346</a> 
+<a name="347" href="#347">347</a> <em class="comment">        when a new CageBuilder comes into the habitat, it needs to build cages for all existing components.</em>
+<a name="348" href="#348">348</a> <em class="comment">        when a caged component comes into the habitat, it checks existing cage builders in the habitat.</em>
+<a name="349" href="#349">349</a> 
+<a name="350" href="#350">350</a> <em class="comment">        Now, when  a cage builder and a component are both initialized first and then processInhabitantDecorations</em>
+<a name="351" href="#351">351</a> <em class="comment">        runs for both of them later, then you end up creating a cage twice, because the builder think it got into</em>
+<a name="352" href="#352">352</a> <em class="comment">        habitat after than the component, and the component think it got into habitat after the builder.</em>
+<a name="353" href="#353">353</a> <em class="comment">     */</em>
+<a name="354" href="#354">354</a> 
+<a name="355" href="#355">355</a>     <em>/**<em>*</em></em>
+<a name="356" href="#356">356</a> <em>     * Removes all inhabitants for a particular type</em>
+<a name="357" href="#357">357</a> <em>     *</em>
+<a name="358" href="#358">358</a> <em>     * @param type of the component</em>
+<a name="359" href="#359">359</a> <em>     * </em>
+<a name="360" href="#360">360</a> <em>     * @return true if any inhabitants were removed</em>
+<a name="361" href="#361">361</a> <em>     */</em>
+<a name="362" href="#362">362</a>     <strong>public</strong> <strong>boolean</strong> removeAllByType(Class&lt;?> type) {
+<a name="363" href="#363">363</a>         <strong>boolean</strong> removed = false;
+<a name="364" href="#364">364</a>         String name = type.getName();
+<a name="365" href="#365">365</a> 
+<a name="366" href="#366">366</a>         <em class="comment">// remove all existing inhabitants by type</em>
+<a name="367" href="#367">367</a>         List&lt;Inhabitant> list = <strong>new</strong> ArrayList&lt;Inhabitant>(byType.get(name));
+<a name="368" href="#368">368</a>         <strong>for</strong> (Inhabitant existing : list) {
+<a name="369" href="#369">369</a>             removed |= remove(existing);
+<a name="370" href="#370">370</a>         }
+<a name="371" href="#371">371</a>         
+<a name="372" href="#372">372</a>         <strong>return</strong> removed;
+<a name="373" href="#373">373</a>     }
+<a name="374" href="#374">374</a> 
+<a name="375" href="#375">375</a>     <em>/**<em>*</em></em>
+<a name="376" href="#376">376</a> <em>     * Adds a new inhabitant.</em>
+<a name="377" href="#377">377</a> <em>     *</em>
+<a name="378" href="#378">378</a> <em>     * &lt;p></em>
+<a name="379" href="#379">379</a> <em>     * See {@link Inhabitants} for typical ways to create {@link Inhabitant}s.</em>
+<a name="380" href="#380">380</a> <em>     */</em>
+<a name="381" href="#381">381</a>     <strong>public</strong> <strong>void</strong> add(<strong>final</strong> Inhabitant&lt;?> i) {
+<a name="382" href="#382">382</a>         String name = i.typeName();
+<a name="383" href="#383">383</a>         byType.add(name,i);
+<a name="384" href="#384">384</a> 
+<a name="385" href="#385">385</a>         <em class="comment">// for each companion, create an inhabitant that goes with the lead and hook them up</em>
+<a name="386" href="#386">386</a>         List&lt;Inhabitant> companions=<strong>null</strong>;
+<a name="387" href="#387">387</a>         <strong>for</strong>(Inhabitant&lt;?> c : getInhabitantsByAnnotation(CompanionSeed.<strong>class</strong>,name)) {
+<a name="388" href="#388">388</a>             <strong>if</strong>(companions==<strong>null</strong>)
+<a name="389" href="#389">389</a>                 companions = <strong>new</strong> ArrayList&lt;Inhabitant>();
+<a name="390" href="#390">390</a>             companions.add(createCompanion(<strong>this</strong>,i,c));
+<a name="391" href="#391">391</a>         }
+<a name="392" href="#392">392</a>         i.setCompanions(companions);
+<a name="393" href="#393">393</a> 
+<a name="394" href="#394">394</a>         String cageBuilderName = i.metadata().getOne(CAGE_BUILDER_KEY);
+<a name="395" href="#395">395</a>         <strong>if</strong>(cageBuilderName!=<strong>null</strong>) {
+<a name="396" href="#396">396</a>             <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> cageBuilder = byType.getOne(cageBuilderName);
+<a name="397" href="#397">397</a>             <strong>if</strong>(cageBuilder!=<strong>null</strong>)
+<a name="398" href="#398">398</a>                 ((<a href="../../../../org/jvnet/hk2/component/CageBuilder.html">CageBuilder</a>)cageBuilder.get()).onEntered(i);
+<a name="399" href="#399">399</a>             <em class="comment">// if cageBuilder==null, we can't cage this component now, but</em>
+<a name="400" href="#400">400</a>             <em class="comment">// we'll do that when cageBuilder comes into the habitat.</em>
+<a name="401" href="#401">401</a>             <em class="comment">// that happens because every CageBuilder implementations are caged by</em>
+<a name="402" href="#402">402</a>             <em class="comment">// CageBuilder.Registerer.</em>
+<a name="403" href="#403">403</a>         }
+<a name="404" href="#404">404</a>         
+<a name="405" href="#405">405</a>         notify(i, EventType.INHABITANT_ADDED, <strong>null</strong>, <strong>null</strong>);
+<a name="406" href="#406">406</a>     }
+<a name="407" href="#407">407</a> 
+<a name="408" href="#408">408</a>     <em>/**<em>*</em></em>
+<a name="409" href="#409">409</a> <em>     * Adds a new index to look up the given inhabitant.</em>
+<a name="410" href="#410">410</a> <em>     *</em>
+<a name="411" href="#411">411</a> <em>     * @param index</em>
+<a name="412" href="#412">412</a> <em>     *      Primary index name, such as contract FQCN.</em>
+<a name="413" href="#413">413</a> <em>     * @param name</em>
+<a name="414" href="#414">414</a> <em>     *      Name that identifies the inhabitant among other inhabitants</em>
+<a name="415" href="#415">415</a> <em>     *      in the same index. Can be null for unnamed inhabitants.</em>
+<a name="416" href="#416">416</a> <em>     */</em>
+<a name="417" href="#417">417</a>     <strong>public</strong> <strong>void</strong> addIndex(Inhabitant&lt;?> i, String index, String name) {
+<a name="418" href="#418">418</a>       addIndex(i, index, name, <strong>true</strong>);
+<a name="419" href="#419">419</a>     }
+<a name="420" href="#420">420</a> 
+<a name="421" href="#421">421</a>     <strong>protected</strong> <strong>void</strong> addIndex(Inhabitant&lt;?> i, String index, String name, <strong>boolean</strong> notify) {
+<a name="422" href="#422">422</a>       byContract.add(index,<strong>new</strong> NamedInhabitant(name,i));
+<a name="423" href="#423">423</a>       <strong>if</strong> (not<strong>if</strong>y) {
+<a name="424" href="#424">424</a>         notify(i, EventType.INHABITANT_INDEX_ADDED, index, name, <strong>null</strong>, <strong>null</strong>);
+<a name="425" href="#425">425</a>       }
+<a name="426" href="#426">426</a>     }
+<a name="427" href="#427">427</a> 
+<a name="428" href="#428">428</a>     <em>/**<em>*</em></em>
+<a name="429" href="#429">429</a> <em>     * Removes an inhabitant</em>
+<a name="430" href="#430">430</a> <em>     *</em>
+<a name="431" href="#431">431</a> <em>     * @param inhabitant</em>
+<a name="432" href="#432">432</a> <em>     *      inhabitant to be removed</em>
+<a name="433" href="#433">433</a> <em>     */</em>
+<a name="434" href="#434">434</a>     <strong>public</strong> <strong>boolean</strong> remove(Inhabitant&lt;?> inhabitant) {
+<a name="435" href="#435">435</a>         String name = inhabitant.typeName();
+<a name="436" href="#436">436</a>         <strong>if</strong> (byType.remove(name, inhabitant)) {
+<a name="437" href="#437">437</a>             notify(inhabitant, EventType.INHABITANT_REMOVED, <strong>null</strong>, <strong>null</strong>);
+<a name="438" href="#438">438</a>             inhabitant.release();
+<a name="439" href="#439">439</a>             <strong>return</strong> <strong>true</strong>;
+<a name="440" href="#440">440</a>         }
+<a name="441" href="#441">441</a>         <strong>return</strong> false;
+<a name="442" href="#442">442</a>     }
+<a name="443" href="#443">443</a> 
+<a name="444" href="#444">444</a>     <em>/**<em>*</em></em>
+<a name="445" href="#445">445</a> <em>     * Removes a NamedInhabitant for a specific contract</em>
+<a name="446" href="#446">446</a> <em>     *</em>
+<a name="447" href="#447">447</a> <em>     * @param index contract name</em>
+<a name="448" href="#448">448</a> <em>     * @param name instance name</em>
+<a name="449" href="#449">449</a> <em>     * @return true if the removal was successful</em>
+<a name="450" href="#450">450</a> <em>     */</em>
+<a name="451" href="#451">451</a>     <strong>public</strong> <strong>boolean</strong> removeIndex(String index, String name) {
+<a name="452" href="#452">452</a>         <strong>boolean</strong> removed = false;
+<a name="453" href="#453">453</a>         <strong>if</strong> (byContract.containsKey(index)) {
+<a name="454" href="#454">454</a>             List&lt;NamedInhabitant> contracted = byContract._get(index);
+<a name="455" href="#455">455</a>             Iterator&lt;NamedInhabitant> iter = contracted.iterator();
+<a name="456" href="#456">456</a>             <strong>while</strong> (iter.hasNext()) {
+<a name="457" href="#457">457</a>                 NamedInhabitant i = iter.next();
+<a name="458" href="#458">458</a>                 
+<a name="459" href="#459">459</a>                 <strong>if</strong> ((i.name == <strong>null</strong> &amp;&amp; name == <strong>null</strong>) ||
+<a name="460" href="#460">460</a>                         (i.name != <strong>null</strong> &amp;&amp; i.name.equals(name))) {
+<a name="461" href="#461">461</a>                     <strong>if</strong> (concurrencyControls) {
+<a name="462" href="#462">462</a>                         removed = contracted.remove(i);
+<a name="463" href="#463">463</a>                         assert(removed);
+<a name="464" href="#464">464</a>                     } <strong>else</strong> {
+<a name="465" href="#465">465</a>                         iter.remove();
+<a name="466" href="#466">466</a>                     }
+<a name="467" href="#467">467</a>                     removed = <strong>true</strong>;
+<a name="468" href="#468">468</a>                     notify(i.inhabitant, EventType.INHABITANT_INDEX_REMOVED,
+<a name="469" href="#469">469</a>                         index, name, <strong>null</strong>, <strong>null</strong>);
+<a name="470" href="#470">470</a> 
+<a name="471" href="#471">471</a>                     <em class="comment">// remember to remove the components stored under its type</em>
+<a name="472" href="#472">472</a>                     remove(i.inhabitant);
+<a name="473" href="#473">473</a>                 }
+<a name="474" href="#474">474</a>             }
+<a name="475" href="#475">475</a>         }
+<a name="476" href="#476">476</a> 
+<a name="477" href="#477">477</a>         <strong>return</strong> removed;
+<a name="478" href="#478">478</a>     }
 <a name="479" href="#479">479</a> 
-<a name="480" href="#480">480</a>         <strong>public</strong> Object next() {
-<a name="481" href="#481">481</a>             <strong>return</strong> itr.next().getKey();
-<a name="482" href="#482">482</a>         }
-<a name="483" href="#483">483</a> 
-<a name="484" href="#484">484</a>         <strong>public</strong> <strong>void</strong> remove() {
-<a name="485" href="#485">485</a>             <strong>throw</strong> <strong>new</strong> UnsupportedOperationException();
-<a name="486" href="#486">486</a>         }
-<a name="487" href="#487">487</a>     }
-<a name="488" href="#488">488</a> 
-<a name="489" href="#489">489</a>     <strong>public</strong> Iterator&lt;String> getAllContracts() {
-<a name="490" href="#490">490</a>         <strong>return</strong> <strong>new</strong> MultiMapIterator(byContract);
-<a name="491" href="#491">491</a>     }
-<a name="492" href="#492">492</a> 
-<a name="493" href="#493">493</a>     <strong>public</strong> Iterator&lt;String> getAllTypes() {
-<a name="494" href="#494">494</a>         <strong>return</strong> <strong>new</strong> MultiMapIterator(byType);
-<a name="495" href="#495">495</a>     }
-<a name="496" href="#496">496</a> 
-<a name="497" href="#497">497</a>     <strong>public</strong> <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> getInhabitantByContract(String fullyQualifiedName, String name) {
-<a name="498" href="#498">498</a>         <em class="comment">// TODO: faster implementation needed</em>
-<a name="499" href="#499">499</a>         <strong>for</strong> (NamedInhabitant i : byContract.get(fullyQualifiedName)) {
-<a name="500" href="#500">500</a>             <strong>if</strong>(eq(i.name,name))
-<a name="501" href="#501">501</a>                 <strong>return</strong> i.inhabitant;
-<a name="502" href="#502">502</a>         }
-<a name="503" href="#503">503</a>         <strong>return</strong> <strong>null</strong>;
-<a name="504" href="#504">504</a>     }
-<a name="505" href="#505">505</a> 
-<a name="506" href="#506">506</a>     <em>/**<em>*</em></em>
-<a name="507" href="#507">507</a> <em>     * Gets all the inhabitants that has the given contract and the given name</em>
-<a name="508" href="#508">508</a> <em>     *</em>
-<a name="509" href="#509">509</a> <em>     * &lt;p></em>
-<a name="510" href="#510">510</a> <em>     * This method defers the actual instantiation of the component</em>
-<a name="511" href="#511">511</a> <em>     * until {@link Inhabitant#get()} is invoked.</em>
-<a name="512" href="#512">512</a> <em>     *</em>
-<a name="513" href="#513">513</a> <em>     * @return</em>
-<a name="514" href="#514">514</a> <em>     *      Can be empty but never null.</em>
-<a name="515" href="#515">515</a> <em>     */</em>
-<a name="516" href="#516">516</a>     <strong>public</strong> &lt;T> Iterable&lt;Inhabitant&lt;? <strong>extends</strong> T>> getInhabitants(Class&lt;T> contract, String name) throws ComponentException {
-<a name="517" href="#517">517</a>         <strong>return</strong> _getInhabitants(contract,name);
-<a name="518" href="#518">518</a>     }
-<a name="519" href="#519">519</a> 
-<a name="520" href="#520">520</a>     <em>/**<em>*</em></em>
-<a name="521" href="#521">521</a> <em>     * Gets all the inhabitants that has the given contract annotation and the given name.</em>
-<a name="522" href="#522">522</a> <em>     *</em>
-<a name="523" href="#523">523</a> <em>     * &lt;p></em>
-<a name="524" href="#524">524</a> <em>     * This method defers the actual instantiation of the component</em>
-<a name="525" href="#525">525</a> <em>     * until {@link Inhabitant#get()} is invoked.</em>
-<a name="526" href="#526">526</a> <em>     *</em>
-<a name="527" href="#527">527</a> <em>     * @return</em>
-<a name="528" href="#528">528</a> <em>     *      Can be empty but never null.</em>
-<a name="529" href="#529">529</a> <em>     */</em>
-<a name="530" href="#530">530</a>     <strong>public</strong> Iterable&lt;Inhabitant&lt;?>> getInhabitantsByAnnotation(Class&lt;? <strong>extends</strong> Annotation> contract, String name) throws ComponentException {
-<a name="531" href="#531">531</a>         <strong>return</strong> _getInhabitants(contract, name);
-<a name="532" href="#532">532</a>     }
-<a name="533" href="#533">533</a> 
-<a name="534" href="#534">534</a>     <em class="comment">// intentionally not generified so that the getInhabitants methods can choose the right signature w/o error</em>
-<a name="535" href="#535">535</a>     <strong>private</strong> Iterable _getInhabitants(<strong>final</strong> Class contract, <strong>final</strong> String name) {
-<a name="536" href="#536">536</a>         <strong>return</strong> <strong>new</strong> Iterable&lt;Inhabitant>() {
-<a name="537" href="#537">537</a>             <strong>private</strong> <strong>final</strong> Iterable&lt;NamedInhabitant> base = byContract.get(contract.getName());
-<a name="538" href="#538">538</a> 
-<a name="539" href="#539">539</a>             <strong>public</strong> Iterator&lt;Inhabitant> iterator() {
-<a name="540" href="#540">540</a>                 <strong>return</strong> <strong>new</strong> Iterator&lt;Inhabitant>() {
-<a name="541" href="#541">541</a>                     <strong>private</strong> <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> i = <strong>null</strong>;
-<a name="542" href="#542">542</a>                     <strong>private</strong> <strong>final</strong> Iterator&lt;NamedInhabitant> itr = base.iterator();
-<a name="543" href="#543">543</a> 
-<a name="544" href="#544">544</a>                     <strong>public</strong> <strong>boolean</strong> hasNext() {
-<a name="545" href="#545">545</a>                         <strong>while</strong>(i==<strong>null</strong> &amp;&amp; itr.hasNext()) {
-<a name="546" href="#546">546</a>                             NamedInhabitant ni = itr.next();
-<a name="547" href="#547">547</a>                             <strong>if</strong>(eq(ni.name,name))
-<a name="548" href="#548">548</a>                                 i = ni.inhabitant;
-<a name="549" href="#549">549</a>                         }
-<a name="550" href="#550">550</a>                         <strong>return</strong> i!=<strong>null</strong>;
-<a name="551" href="#551">551</a>                     }
-<a name="552" href="#552">552</a> 
-<a name="553" href="#553">553</a>                     <strong>public</strong> <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> next() {
-<a name="554" href="#554">554</a>                         <strong>if</strong>(i==<strong>null</strong>)
-<a name="555" href="#555">555</a>                             <strong>throw</strong> <strong>new</strong> NoSuchElementException();
-<a name="556" href="#556">556</a>                         <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> r = i;
-<a name="557" href="#557">557</a>                         i = <strong>null</strong>;
-<a name="558" href="#558">558</a>                         <strong>return</strong> r;
-<a name="559" href="#559">559</a>                     }
-<a name="560" href="#560">560</a> 
-<a name="561" href="#561">561</a>                     <strong>public</strong> <strong>void</strong> remove() {
-<a name="562" href="#562">562</a>                         <strong>throw</strong> <strong>new</strong> UnsupportedOperationException();
-<a name="563" href="#563">563</a>                     }
-<a name="564" href="#564">564</a>                 };
-<a name="565" href="#565">565</a>             }
-<a name="566" href="#566">566</a>         };
-<a name="567" href="#567">567</a>     }
-<a name="568" href="#568">568</a> 
-<a name="569" href="#569">569</a>     <strong>private</strong> <strong>static</strong> <strong>boolean</strong> eq(String a, String b) {
-<a name="570" href="#570">570</a>         <strong>if</strong>(a==<strong>null</strong> &amp;&amp; b==<strong>null</strong>)  <strong>return</strong> <strong>true</strong>;
-<a name="571" href="#571">571</a>         <strong>if</strong>(a==<strong>null</strong> || b==<strong>null</strong>)  <strong>return</strong> false;
-<a name="572" href="#572">572</a>         <strong>return</strong> a.equals(b);
-<a name="573" href="#573">573</a>     }
-<a name="574" href="#574">574</a> 
-<a name="575" href="#575">575</a>     <em>/**<em>*</em></em>
-<a name="576" href="#576">576</a> <em>     * Gets the object of the given type.</em>
-<a name="577" href="#577">577</a> <em>     *</em>
-<a name="578" href="#578">578</a> <em>     * @return null if not found.</em>
-<a name="579" href="#579">579</a> <em>     */</em>
-<a name="580" href="#580">580</a>     <strong>public</strong> &lt;T> T getByType(Class&lt;T> implType) {
-<a name="581" href="#581">581</a>         <strong>return</strong> getBy(implType, byType);
-<a name="582" href="#582">582</a>     }
-<a name="583" href="#583">583</a> 
-<a name="584" href="#584">584</a>     <em>/**<em>*</em></em>
-<a name="585" href="#585">585</a> <em>     * Gets the object that has the given contract.</em>
-<a name="586" href="#586">586</a> <em>     *</em>
-<a name="587" href="#587">587</a> <em>     * &lt;p></em>
-<a name="588" href="#588">588</a> <em>     * If there are more than one of them, this method arbitrarily return</em>
-<a name="589" href="#589">589</a> <em>     * one of them. </em>
-<a name="590" href="#590">590</a> <em>     */</em>
-<a name="591" href="#591">591</a>     <strong>public</strong> &lt;T> T getByContract(Class&lt;T> contractType) {
-<a name="592" href="#592">592</a>         List&lt;NamedInhabitant> l = byContract.get(contractType.getName());
-<a name="593" href="#593">593</a>         <strong>if</strong>(l.isEmpty())     <strong>return</strong> <strong>null</strong>;
-<a name="594" href="#594">594</a>         <strong>else</strong>                <strong>return</strong> (T)l.get(0).inhabitant.get();
-<a name="595" href="#595">595</a>     }
-<a name="596" href="#596">596</a> 
-<a name="597" href="#597">597</a>     <strong>private</strong> &lt;T> T getBy(Class&lt;T> implType, MultiMap&lt;String, Inhabitant> index) {
-<a name="598" href="#598">598</a>         List&lt;Inhabitant> l = index.get(implType.getName());
-<a name="599" href="#599">599</a>         <strong>if</strong>(l.isEmpty())     <strong>return</strong> <strong>null</strong>;
-<a name="600" href="#600">600</a>         <strong>else</strong>                <strong>return</strong> (T)l.get(0).get();
-<a name="601" href="#601">601</a>     }
-<a name="602" href="#602">602</a> 
-<a name="603" href="#603">603</a>     <em>/**<em>*</em></em>
-<a name="604" href="#604">604</a> <em>     * Releases all the components.</em>
-<a name="605" href="#605">605</a> <em>     * Should be called for orderly shut-down of the system.</em>
-<a name="606" href="#606">606</a> <em>     * </em>
-<a name="607" href="#607">607</a> <em>     * TODO: more javadoc needed</em>
-<a name="608" href="#608">608</a> <em>     */</em>
-<a name="609" href="#609">609</a>     <strong>public</strong> <strong>void</strong> release() {
-<a name="610" href="#610">610</a>         <em class="comment">// TODO: synchronization story?</em>
-<a name="611" href="#611">611</a>         <strong>for</strong> (Entry&lt;String, List&lt;Inhabitant>> e : byType.entrySet())
-<a name="612" href="#612">612</a>             <strong>for</strong> (Inhabitant i : e.getValue())
-<a name="613" href="#613">613</a>                 i.release();
-<a name="614" href="#614">614</a>     }
-<a name="615" href="#615">615</a> 
-<a name="616" href="#616">616</a>     <strong>private</strong> <strong>static</strong> <strong>final</strong> <strong>class</strong> NamedInhabitant {
-<a name="617" href="#617">617</a>         <em>/**<em>*</em></em>
-<a name="618" href="#618">618</a> <em>         * Name. Can be null.</em>
-<a name="619" href="#619">619</a> <em>         */</em>
-<a name="620" href="#620">620</a>         <strong>final</strong> String name;
-<a name="621" href="#621">621</a>         <strong>final</strong> <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> inhabitant;
-<a name="622" href="#622">622</a> 
-<a name="623" href="#623">623</a>         <strong>public</strong> NamedInhabitant(String name, <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> inhabitant) {
-<a name="624" href="#624">624</a>             <strong>this</strong>.name = name;
-<a name="625" href="#625">625</a>             <strong>this</strong>.inhabitant = inhabitant;
-<a name="626" href="#626">626</a>         }
-<a name="627" href="#627">627</a>     }
-<a name="628" href="#628">628</a> }
+<a name="480" href="#480">480</a>     <em>/**<em>*</em></em>
+<a name="481" href="#481">481</a> <em>     *  Removes a Contracted service</em>
+<a name="482" href="#482">482</a> <em>     *</em>
+<a name="483" href="#483">483</a> <em>     * @param index the contract name</em>
+<a name="484" href="#484">484</a> <em>     * @param serviceOrInhabitant the service instance, or an Inhabitant instance</em>
+<a name="485" href="#485">485</a> <em>     */</em>
+<a name="486" href="#486">486</a>     <strong>public</strong> <strong>boolean</strong> removeIndex(String index, Object serviceOrInhabitant) {
+<a name="487" href="#487">487</a>         <strong>boolean</strong> removed = false;
+<a name="488" href="#488">488</a>         <strong>if</strong> (byContract.containsKey(index)) {
+<a name="489" href="#489">489</a>              List&lt;NamedInhabitant> contracted = byContract._get(index);
+<a name="490" href="#490">490</a>              Iterator&lt;NamedInhabitant> iter = contracted.iterator();
+<a name="491" href="#491">491</a>              <strong>while</strong> (iter.hasNext()) {
+<a name="492" href="#492">492</a>                  NamedInhabitant i = iter.next();
+<a name="493" href="#493">493</a>                  <strong>if</strong> (matches(i.inhabitant, serviceOrInhabitant)) {
+<a name="494" href="#494">494</a>                      <strong>if</strong> (concurrencyControls) {
+<a name="495" href="#495">495</a>                          removed = contracted.remove(i);
+<a name="496" href="#496">496</a>                          assert(removed);
+<a name="497" href="#497">497</a>                      } <strong>else</strong> {
+<a name="498" href="#498">498</a>                          iter.remove();
+<a name="499" href="#499">499</a>                      }
+<a name="500" href="#500">500</a>                      removed = <strong>true</strong>;
+<a name="501" href="#501">501</a>                      notify(i.inhabitant, EventType.INHABITANT_INDEX_REMOVED,
+<a name="502" href="#502">502</a>                          index, <strong>null</strong>, service(serviceOrInhabitant), <strong>null</strong>);
+<a name="503" href="#503">503</a> 
+<a name="504" href="#504">504</a>                      <em class="comment">// remember to remove the components stored under its type</em>
+<a name="505" href="#505">505</a>                      remove(i.inhabitant);
+<a name="506" href="#506">506</a>                  }
+<a name="507" href="#507">507</a>              }
+<a name="508" href="#508">508</a>          }
+<a name="509" href="#509">509</a>         
+<a name="510" href="#510">510</a>          <strong>return</strong> removed;
+<a name="511" href="#511">511</a>     }
+<a name="512" href="#512">512</a> 
+<a name="513" href="#513">513</a>     <strong>protected</strong> <strong>boolean</strong> matches(Inhabitant&lt;?> inhabitant, Object serviceOrInhabitant) {
+<a name="514" href="#514">514</a>       <strong>boolean</strong> matches;
+<a name="515" href="#515">515</a>       <strong>if</strong> (serviceOrInhabitant instanceof Inhabitant) {
+<a name="516" href="#516">516</a>         matches = (serviceOrInhabitant == inhabitant);
+<a name="517" href="#517">517</a>       } <strong>else</strong> {
+<a name="518" href="#518">518</a>         <em class="comment">// call to isInstantiated is necessary to avoid loading of services that are not yet loaded.</em>
+<a name="519" href="#519">519</a>         matches = inhabitant.isInstantiated() &amp;&amp; inhabitant.get()==serviceOrInhabitant;
+<a name="520" href="#520">520</a>       }
+<a name="521" href="#521">521</a>       <strong>return</strong> matches;
+<a name="522" href="#522">522</a>     }
+<a name="523" href="#523">523</a>     
+<a name="524" href="#524">524</a>     <strong>protected</strong> Object service(Object serviceOrInhabitant) {
+<a name="525" href="#525">525</a>       <strong>return</strong> (serviceOrInhabitant instanceof Inhabitant) 
+<a name="526" href="#526">526</a>         ? ((Inhabitant)serviceOrInhabitant).get() : serviceOrInhabitant;
+<a name="527" href="#527">527</a>     }
+<a name="528" href="#528">528</a>     
+<a name="529" href="#529">529</a>     <strong>protected</strong> <strong>static</strong> <strong>interface</strong> NotifyCall {
+<a name="530" href="#530">530</a>       <strong>boolean</strong> inhabitantChanged(<a href="../../../../org/jvnet/hk2/component/HabitatListener.html">HabitatListener</a> listener);
+<a name="531" href="#531">531</a>     }
+<a name="532" href="#532">532</a>     
+<a name="533" href="#533">533</a>     <em>/**<em>*</em></em>
+<a name="534" href="#534">534</a> <em>     * Trigger a notification that an inhabitant has changed.</em>
+<a name="535" href="#535">535</a> <em>     * </em>
+<a name="536" href="#536">536</a> <em>     * @param inhabitant the inhabitant that has changed</em>
+<a name="537" href="#537">537</a> <em>     * @param contracts the contracts associated with the inhabitant</em>
+<a name="538" href="#538">538</a> <em>     */</em>
+<a name="539" href="#539">539</a>     <strong>public</strong> <strong>void</strong> notifyInhabitantChanged(Inhabitant&lt;?> inhabitant,
+<a name="540" href="#540">540</a>           String... contracts) {
+<a name="541" href="#541">541</a>       <strong>if</strong> (<strong>null</strong> == contracts || 0 == contracts.length) {
+<a name="542" href="#542">542</a>         <em class="comment">// generic inhabitant modification (only general listeners will get notification)</em>
+<a name="543" href="#543">543</a>         notify(inhabitant, EventType.INHABITANT_MODIFIED, <strong>null</strong>, <strong>null</strong>);
+<a name="544" href="#544">544</a>       } <strong>else</strong> {
+<a name="545" href="#545">545</a>         <em class="comment">// all scoped-listeners will get modification</em>
+<a name="546" href="#546">546</a>         <strong>for</strong> (String contract : contracts) {
+<a name="547" href="#547">547</a>           notify(inhabitant, EventType.INHABITANT_MODIFIED, contract, <strong>null</strong>);
+<a name="548" href="#548">548</a>         }
+<a name="549" href="#549">549</a>       }
+<a name="550" href="#550">550</a>     }
+<a name="551" href="#551">551</a>     
+<a name="552" href="#552">552</a>     <em>/**<em>*</em></em>
+<a name="553" href="#553">553</a> <em>     * FOR INTERNAL USE ONLY</em>
+<a name="554" href="#554">554</a> <em>     */</em>
+<a name="555" href="#555">555</a>     <strong>public</strong> <strong>void</strong> initialized() {
+<a name="556" href="#556">556</a>       <strong>if</strong> (initialized) <strong>throw</strong> <strong>new</strong> RuntimeException(<span class="string">"already initialized"</span>);
+<a name="557" href="#557">557</a>       initialized = <strong>true</strong>;
+<a name="558" href="#558">558</a>       notify(<strong>null</strong>, EventType.HABITAT_INITIALIZED, <strong>null</strong>, <strong>null</strong>);
+<a name="559" href="#559">559</a>     }
+<a name="560" href="#560">560</a>     
+<a name="561" href="#561">561</a>     <strong>public</strong> <strong>boolean</strong> isInitialized() {
+<a name="562" href="#562">562</a>       <strong>return</strong> initialized;
+<a name="563" href="#563">563</a>     }
+<a name="564" href="#564">564</a>     
+<a name="565" href="#565">565</a>     <strong>protected</strong> <strong>void</strong> notify(<strong>final</strong> Inhabitant&lt;?> inhabitant,
+<a name="566" href="#566">566</a>         <strong>final</strong> EventType event,
+<a name="567" href="#567">567</a>         <strong>final</strong> String index,
+<a name="568" href="#568">568</a>         <strong>final</strong> Inhabitant&lt;HabitatListener> extraListenerToBeNotified) {
+<a name="569" href="#569">569</a>       NotifyCall innerCall = <strong>new</strong> NotifyCall() {
+<a name="570" href="#570">570</a>         <strong>public</strong> <strong>boolean</strong> inhabitantChanged(<a href="../../../../org/jvnet/hk2/component/HabitatListener.html">HabitatListener</a> listener) {
+<a name="571" href="#571">571</a>           <strong>return</strong> listener.inhabitantChanged(event, Habitat.<strong>this</strong>, inhabitant);
+<a name="572" href="#572">572</a>         }
+<a name="573" href="#573">573</a>       };
+<a name="574" href="#574">574</a>       notify(innerCall, inhabitant, event, index, extraListenerToBeNotified);
+<a name="575" href="#575">575</a>     }
+<a name="576" href="#576">576</a> 
+<a name="577" href="#577">577</a>     <strong>protected</strong> <strong>void</strong> notify(<strong>final</strong> Inhabitant&lt;?> inhabitant,
+<a name="578" href="#578">578</a>         <strong>final</strong> EventType event,
+<a name="579" href="#579">579</a>         <strong>final</strong> String index,
+<a name="580" href="#580">580</a>         <strong>final</strong> String name,
+<a name="581" href="#581">581</a>         <strong>final</strong> Object service,
+<a name="582" href="#582">582</a>         <strong>final</strong> Inhabitant&lt;HabitatListener> extraListenerToBeNotified) {
+<a name="583" href="#583">583</a>       NotifyCall innerCall = <strong>new</strong> NotifyCall() {
+<a name="584" href="#584">584</a>         <strong>public</strong> <strong>boolean</strong> inhabitantChanged(<a href="../../../../org/jvnet/hk2/component/HabitatListener.html">HabitatListener</a> listener) {
+<a name="585" href="#585">585</a>           <strong>return</strong> listener.inhabitantIndexChanged(event, Habitat.<strong>this</strong>, inhabitant,
+<a name="586" href="#586">586</a>               index, name, service);
+<a name="587" href="#587">587</a>         }
+<a name="588" href="#588">588</a>       };
+<a name="589" href="#589">589</a>       notify(innerCall, inhabitant, event, index, extraListenerToBeNotified);
+<a name="590" href="#590">590</a>     }
+<a name="591" href="#591">591</a> 
+<a name="592" href="#592">592</a>     <strong>protected</strong> <strong>void</strong> notify(<strong>final</strong> NotifyCall innerCall,
+<a name="593" href="#593">593</a>         <strong>final</strong> Inhabitant&lt;?> inhabitant,
+<a name="594" href="#594">594</a>         <strong>final</strong> EventType event,
+<a name="595" href="#595">595</a>         <strong>final</strong> String index,
+<a name="596" href="#596">596</a>         <strong>final</strong> Inhabitant&lt;HabitatListener> extraListenerToBeNotified) {
+<a name="597" href="#597">597</a>       <em class="comment">// do scoped listeners first</em>
+<a name="598" href="#598">598</a>       <strong>if</strong> (<strong>null</strong> != index) {
+<a name="599" href="#599">599</a>         doNotify(innerCall, inhabitant, event, index, <strong>null</strong>);
+<a name="600" href="#600">600</a>       }
+<a name="601" href="#601">601</a>       
+<a name="602" href="#602">602</a>       <em class="comment">// do general listeners next</em>
+<a name="603" href="#603">603</a>       doNotify(innerCall, inhabitant, event, DEFAULT_NAME, extraListenerToBeNotified);
+<a name="604" href="#604">604</a>     }
+<a name="605" href="#605">605</a>       
+<a name="606" href="#606">606</a>     <strong>private</strong> <strong>void</strong> doNotify(<strong>final</strong> NotifyCall innerCall,
+<a name="607" href="#607">607</a>         <strong>final</strong> Inhabitant&lt;?> inhabitant,
+<a name="608" href="#608">608</a>         <strong>final</strong> EventType event,
+<a name="609" href="#609">609</a>         <strong>final</strong> String index,
+<a name="610" href="#610">610</a>         <strong>final</strong> Inhabitant&lt;HabitatListener> extraListenerToBeNotified) {
+<a name="611" href="#611">611</a>       <strong>final</strong> ListenersByTypeInhabitant sameListeners = 
+<a name="612" href="#612">612</a>           (ListenersByTypeInhabitant)getInhabitantByContract(
+<a name="613" href="#613">613</a>               ListenersByTypeInhabitant.<strong>class</strong>.getName(),
+<a name="614" href="#614">614</a>               index);
+<a name="615" href="#615">615</a>       <strong>if</strong> (<strong>null</strong> != sameListeners &amp;&amp; !sameListeners.listeners.isEmpty()) {
+<a name="616" href="#616">616</a>         exec.execute(<strong>new</strong> Runnable() {
+<a name="617" href="#617">617</a>           <strong>public</strong> <strong>void</strong> run() {
+<a name="618" href="#618">618</a>             Iterator&lt;HabitatListener> iter = sameListeners.listeners.iterator();
+<a name="619" href="#619">619</a>             <strong>while</strong> (iter.hasNext()) {
+<a name="620" href="#620">620</a>               Object entry = iter.next();
+<a name="621" href="#621">621</a>               <a href="../../../../org/jvnet/hk2/component/HabitatListener.html">HabitatListener</a> listener = 
+<a name="622" href="#622">622</a>                 (entry instanceof <a href="../../../../org/jvnet/hk2/component/HabitatListener.html">HabitatListener</a>) ? 
+<a name="623" href="#623">623</a>                     (<a href="../../../../org/jvnet/hk2/component/HabitatListener.html">HabitatListener</a>)entry :
+<a name="624" href="#624">624</a>                     (<a href="../../../../org/jvnet/hk2/component/HabitatListener.html">HabitatListener</a>)((Inhabitant)entry).get();
+<a name="625" href="#625">625</a>               <strong>try</strong> {
+<a name="626" href="#626">626</a>                 <strong>boolean</strong> keepMe = innerCall.inhabitantChanged(listener);
+<a name="627" href="#627">627</a>                 <strong>if</strong> (!keepMe) {
+<a name="628" href="#628">628</a>                   removeHabitatListener(listener);
+<a name="629" href="#629">629</a>                 }
+<a name="630" href="#630">630</a>               } <strong>catch</strong> (Exception e){
+<a name="631" href="#631">631</a>                 <em class="comment">// don't percolate the exception since it may negatively impact processing</em>
+<a name="632" href="#632">632</a>                 Logger.getLogger(Habitat.<strong>class</strong>.getName()).
+<a name="633" href="#633">633</a>                   log(Level.WARNING, <span class="string">"exception caught from listener: "</span>, e);
+<a name="634" href="#634">634</a>               }
+<a name="635" href="#635">635</a>             }
+<a name="636" href="#636">636</a>             
+<a name="637" href="#637">637</a>             <em class="comment">// we take the extraListenerToBeNotified because</em>
+<a name="638" href="#638">638</a>             <em class="comment">//  (a) we want to have all notifications in the executor, and</em>
+<a name="639" href="#639">639</a>             <em class="comment">//  (b) it might trigger an exception that we want to trap</em>
+<a name="640" href="#640">640</a>             <strong>if</strong> (<strong>null</strong> != extraListenerToBeNot<strong>if</strong>ied) {
+<a name="641" href="#641">641</a>               extraListenerToBeNotified.get().inhabitantChanged(event, Habitat.<strong>this</strong>, extraListenerToBeNotified);
+<a name="642" href="#642">642</a>             }
+<a name="643" href="#643">643</a>           }
+<a name="644" href="#644">644</a>         });
+<a name="645" href="#645">645</a>       }
+<a name="646" href="#646">646</a>     }
+<a name="647" href="#647">647</a> 
+<a name="648" href="#648">648</a>     
+<a name="649" href="#649">649</a>     <em>/**<em>*</em></em>
+<a name="650" href="#650">650</a> <em>     * Checks if the given type is a contract interface that has some implementations in this {@link Habitat}.</em>
+<a name="651" href="#651">651</a> <em>     *</em>
+<a name="652" href="#652">652</a> <em>     * &lt;p></em>
+<a name="653" href="#653">653</a> <em>     * There are two ways for a type to be marked as a contract.</em>
+<a name="654" href="#654">654</a> <em>     * Either it has {@link Contract}, or it's marked by {@link ContractProvided} from the implementation.</em>
+<a name="655" href="#655">655</a> <em>     *</em>
+<a name="656" href="#656">656</a> <em>     * &lt;p></em>
+<a name="657" href="#657">657</a> <em>     * Note that just having {@link Contract} is not enough to make this method return true.</em>
+<a name="658" href="#658">658</a> <em>     * It can still return false if the contract has no implementation in this habitat.</em>
+<a name="659" href="#659">659</a> <em>     *</em>
+<a name="660" href="#660">660</a> <em>     * &lt;p></em>
+<a name="661" href="#661">661</a> <em>     * This method is useful during the injection to determine what lookup to perform,</em>
+<a name="662" href="#662">662</a> <em>     * and it handles the case correctly when the type is marked as a contract by {@link ContractProvided}.</em>
+<a name="663" href="#663">663</a> <em>     */</em>
+<a name="664" href="#664">664</a>     <strong>public</strong> <strong>boolean</strong> isContract(Class&lt;?> type) {
+<a name="665" href="#665">665</a>         <strong>return</strong> byContract.containsKey(type.getName());
+<a name="666" href="#666">666</a>     }
+<a name="667" href="#667">667</a> 
+<a name="668" href="#668">668</a>     <strong>public</strong> <strong>boolean</strong> isContract(String fullyQualifiedClassName) {
+<a name="669" href="#669">669</a>         <strong>return</strong> byContract.containsKey(fullyQualifiedClassName);
+<a name="670" href="#670">670</a>     }
+<a name="671" href="#671">671</a> 
+<a name="672" href="#672">672</a>     <em>/**<em>*</em></em>
+<a name="673" href="#673">673</a> <em>     * Gets all the inhabitants registered under the given {@link Contract}.</em>
+<a name="674" href="#674">674</a> <em>     * This is an example of heterogeneous type-safe container.</em>
+<a name="675" href="#675">675</a> <em>     * </em>
+<a name="676" href="#676">676</a> <em>     * @return</em>
+<a name="677" href="#677">677</a> <em>     *      can be empty but never null.</em>
+<a name="678" href="#678">678</a> <em>     */</em>
+<a name="679" href="#679">679</a>     <strong>public</strong> &lt;T> Collection&lt;T> getAllByContract(Class&lt;T> contractType) {
+<a name="680" href="#680">680</a>       <strong>return</strong> getAllByContract(contractType.getName());
+<a name="681" href="#681">681</a>     }
+<a name="682" href="#682">682</a>     
+<a name="683" href="#683">683</a>     <strong>public</strong> &lt;T> Collection&lt;T> getAllByContract(String contractType) {
+<a name="684" href="#684">684</a>         <strong>final</strong> List&lt;NamedInhabitant> l = byContract.get(contractType);
+<a name="685" href="#685">685</a>         <strong>return</strong> <strong>new</strong> AbstractList&lt;T>() {
+<a name="686" href="#686">686</a>             <strong>public</strong> T get(<strong>int</strong> index) {
+<a name="687" href="#687">687</a>                 <strong>return</strong> (T)l.get(index).inhabitant.get();
+<a name="688" href="#688">688</a>             }
+<a name="689" href="#689">689</a> 
+<a name="690" href="#690">690</a>             <strong>public</strong> <strong>int</strong> size() {
+<a name="691" href="#691">691</a>                 <strong>return</strong> l.size();
+<a name="692" href="#692">692</a>             }
+<a name="693" href="#693">693</a>         };
+<a name="694" href="#694">694</a>     }
+<a name="695" href="#695">695</a> 
+<a name="696" href="#696">696</a>     <strong>public</strong> Collection&lt;Inhabitant&lt;?>> getAllInhabitantsByContract(String contractType) {
+<a name="697" href="#697">697</a>       <strong>final</strong> List&lt;NamedInhabitant> l = byContract.get(contractType);
+<a name="698" href="#698">698</a>       <strong>return</strong> <strong>new</strong> AbstractList&lt;Inhabitant&lt;?>>() {
+<a name="699" href="#699">699</a>           <strong>public</strong> Inhabitant&lt;?> get(<strong>int</strong> index) {
+<a name="700" href="#700">700</a>               <strong>return</strong> l.get(index).inhabitant;
+<a name="701" href="#701">701</a>           }
+<a name="702" href="#702">702</a> 
+<a name="703" href="#703">703</a>           <strong>public</strong> <strong>int</strong> size() {
+<a name="704" href="#704">704</a>               <strong>return</strong> l.size();
+<a name="705" href="#705">705</a>           }
+<a name="706" href="#706">706</a>       };
+<a name="707" href="#707">707</a>     }
+<a name="708" href="#708">708</a> 
+<a name="709" href="#709">709</a>     <em>/**<em>*</em></em>
+<a name="710" href="#710">710</a> <em>     * Gets the object of the given type.</em>
+<a name="711" href="#711">711</a> <em>     *</em>
+<a name="712" href="#712">712</a> <em>     * @return</em>
+<a name="713" href="#713">713</a> <em>     *      can be empty but never null.</em>
+<a name="714" href="#714">714</a> <em>     */</em>
+<a name="715" href="#715">715</a>     <strong>public</strong> &lt;T> Collection&lt;T> getAllByType(Class&lt;T> implType) {
+<a name="716" href="#716">716</a>         <strong>final</strong> List&lt;Inhabitant> l = byType.get(implType.getName());
+<a name="717" href="#717">717</a>         <strong>return</strong> <strong>new</strong> AbstractList&lt;T>() {
+<a name="718" href="#718">718</a>             <strong>public</strong> T get(<strong>int</strong> index) {
+<a name="719" href="#719">719</a>                 <strong>return</strong> (T)l.get(index).get();
+<a name="720" href="#720">720</a>             }
+<a name="721" href="#721">721</a> 
+<a name="722" href="#722">722</a>             <strong>public</strong> <strong>int</strong> size() {
+<a name="723" href="#723">723</a>                 <strong>return</strong> l.size();
+<a name="724" href="#724">724</a>             }
+<a name="725" href="#725">725</a>         };
+<a name="726" href="#726">726</a>     }
+<a name="727" href="#727">727</a> 
+<a name="728" href="#728">728</a>     <em>/**<em>*</em></em>
+<a name="729" href="#729">729</a> <em>     * Add an already instantiated component to this manager. The component has</em>
+<a name="730" href="#730">730</a> <em>     * been instantiated by external code, however dependency injection, PostConstruct</em>
+<a name="731" href="#731">731</a> <em>     * invocation and dependency extraction will be performed on this instance before</em>
+<a name="732" href="#732">732</a> <em>     * it is store in the relevant scope's resource manager.</em>
+<a name="733" href="#733">733</a> <em>     *</em>
+<a name="734" href="#734">734</a> <em>     * @param name name of the component, could be default name</em>
+<a name="735" href="#735">735</a> <em>     * @param component component instance</em>
+<a name="736" href="#736">736</a> <em>     * @throws ComponentException if the passed object is not an HK2 component or</em>
+<a name="737" href="#737">737</a> <em>     * injection/extraction failed.</em>
+<a name="738" href="#738">738</a> <em>     */</em>
+<a name="739" href="#739">739</a>     <em class="comment">// TODO: mutating Habitat after it's created poses synchronization issue</em>
+<a name="740" href="#740">740</a>     <strong>public</strong> &lt;T> <strong>void</strong> addComponent(String name, T component) throws ComponentException {
+<a name="741" href="#741">741</a>         add(<strong>new</strong> ExistingSingletonInhabitant&lt;T>(component));
+<a name="742" href="#742">742</a>     }
+<a name="743" href="#743">743</a> 
+<a name="744" href="#744">744</a>     <em>/**<em>*</em></em>
+<a name="745" href="#745">745</a> <em>     * Obtains a reference to the component inside the manager.</em>
+<a name="746" href="#746">746</a> <em>     *</em>
+<a name="747" href="#747">747</a> <em>     * &lt;p></em>
+<a name="748" href="#748">748</a> <em>     * This is the "new Foo()" equivalent in the IoC world.</em>
+<a name="749" href="#749">749</a> <em>     *</em>
+<a name="750" href="#750">750</a> <em>     * &lt;p></em>
+<a name="751" href="#751">751</a> <em>     * Depending on the {@link Scope} of the component, a new instance</em>
+<a name="752" href="#752">752</a> <em>     * might be created, or an existing instance might be returned.</em>
+<a name="753" href="#753">753</a> <em>     *</em>
+<a name="754" href="#754">754</a> <em>     * @return</em>
+<a name="755" href="#755">755</a> <em>     *      non-null.</em>
+<a name="756" href="#756">756</a> <em>     * @throws ComponentException</em>
+<a name="757" href="#757">757</a> <em>     *      If failed to obtain a requested instance.</em>
+<a name="758" href="#758">758</a> <em>     *      In practice, failure only happens when we try to create a</em>
+<a name="759" href="#759">759</a> <em>     *      new instance of the component.</em>
+<a name="760" href="#760">760</a> <em>     */</em>
+<a name="761" href="#761">761</a>     <strong>public</strong> &lt;T> T getComponent(Class&lt;T> clazz) throws ComponentException {
+<a name="762" href="#762">762</a>         <strong>if</strong>(isContract(clazz))
+<a name="763" href="#763">763</a>             <strong>return</strong> getByContract(clazz);
+<a name="764" href="#764">764</a>         <strong>else</strong>
+<a name="765" href="#765">765</a>             <strong>return</strong> getByType(clazz);
+<a name="766" href="#766">766</a>     }
+<a name="767" href="#767">767</a> 
+<a name="768" href="#768">768</a>     <em>/**<em>*</em></em>
+<a name="769" href="#769">769</a> <em>     * Loads a component that implements the given contract and has the given name.</em>
+<a name="770" href="#770">770</a> <em>     *</em>
+<a name="771" href="#771">771</a> <em>     * @param name</em>
+<a name="772" href="#772">772</a> <em>     *      can be null, in which case it'll only match to the unnamed component.</em>
+<a name="773" href="#773">773</a> <em>     * @return</em>
+<a name="774" href="#774">774</a> <em>     *      null if no such servce exists.</em>
+<a name="775" href="#775">775</a> <em>     */</em>
+<a name="776" href="#776">776</a>     <strong>public</strong> &lt;T> T getComponent(Class&lt;T> contract, String name) throws ComponentException {
+<a name="777" href="#777">777</a>         <strong>if</strong> (name!=<strong>null</strong> &amp;&amp; name.length()==0)
+<a name="778" href="#778">778</a>             name=<strong>null</strong>;
+<a name="779" href="#779">779</a>         <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> i = getInhabitant(contract, name);
+<a name="780" href="#780">780</a>         <strong>if</strong>(i!=<strong>null</strong>)
+<a name="781" href="#781">781</a>             <strong>try</strong> {
+<a name="782" href="#782">782</a>                 <strong>return</strong> contract.<strong>cast</strong>(i.get());
+<a name="783" href="#783">783</a>             } <strong>catch</strong> (ClassCastException e) {
+<a name="784" href="#784">784</a>                 Logger.getAnonymousLogger().severe(<span class="string">"ClassCastException between contract "</span> + contract + <span class="string">" and service "</span> + i.get());
+<a name="785" href="#785">785</a>                 Logger.getAnonymousLogger().severe(<span class="string">"Contract class loader "</span> + contract.getClassLoader());
+<a name="786" href="#786">786</a>                 Logger.getAnonymousLogger().severe(<span class="string">"Service class loader "</span> + i.get().getClass().getClassLoader());
+<a name="787" href="#787">787</a>                 <strong>throw</strong> e;
+<a name="788" href="#788">788</a>             }
+<a name="789" href="#789">789</a>         <strong>else</strong>
+<a name="790" href="#790">790</a>             <strong>return</strong> <strong>null</strong>;
+<a name="791" href="#791">791</a>     }
+<a name="792" href="#792">792</a> 
+<a name="793" href="#793">793</a>     <strong>public</strong> Object getComponent(String fullQualifiedName, String name) {
+<a name="794" href="#794">794</a>         <strong>if</strong> (name!=<strong>null</strong> &amp;&amp; name.length()==0) {
+<a name="795" href="#795">795</a>             name=<strong>null</strong>;
+<a name="796" href="#796">796</a>         }
+<a name="797" href="#797">797</a>         <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> i = isContract(fullQualifiedName)?
+<a name="798" href="#798">798</a>                 getInhabitantByContract(fullQualifiedName, name):getInhabitantByType(fullQualifiedName);
+<a name="799" href="#799">799</a>         <strong>return</strong> i==<strong>null</strong>?<strong>null</strong>:i.get();
+<a name="800" href="#800">800</a>     }
+<a name="801" href="#801">801</a> 
+<a name="802" href="#802">802</a>     <em>/**<em>*</em></em>
+<a name="803" href="#803">803</a> <em>     * Gets a lazy reference to the component.</em>
+<a name="804" href="#804">804</a> <em>     *</em>
+<a name="805" href="#805">805</a> <em>     * &lt;p></em>
+<a name="806" href="#806">806</a> <em>     * This method defers the actual instantiation of the component</em>
+<a name="807" href="#807">807</a> <em>     * until {@link Inhabitant#get()} is invoked.</em>
+<a name="808" href="#808">808</a> <em>     *</em>
+<a name="809" href="#809">809</a> <em>     * @return null</em>
+<a name="810" href="#810">810</a> <em>     *      if no such component is found.</em>
+<a name="811" href="#811">811</a> <em>     */</em>
+<a name="812" href="#812">812</a>     <strong>public</strong> &lt;T> Inhabitant&lt;T> getInhabitant(Class&lt;T> contract, String name) throws ComponentException {
+<a name="813" href="#813">813</a>         <strong>return</strong> getInhabitantByContract(contract.getName(), name);
+<a name="814" href="#814">814</a>     }
+<a name="815" href="#815">815</a> 
+<a name="816" href="#816">816</a>     <em>/**<em>*</em></em>
+<a name="817" href="#817">817</a> <em>     * Gets a lazy reference to the component.</em>
+<a name="818" href="#818">818</a> <em>     * </em>
+<a name="819" href="#819">819</a> <em>     * &lt;p></em>
+<a name="820" href="#820">820</a> <em>     * This method defers the actual instantiation of the component</em>
+<a name="821" href="#821">821</a> <em>     * until {@link Inhabitant#get()} is invoked.</em>
+<a name="822" href="#822">822</a> <em>     *</em>
+<a name="823" href="#823">823</a> <em>     * @return null</em>
+<a name="824" href="#824">824</a> <em>     *      if no such component is found.</em>
+<a name="825" href="#825">825</a> <em>     */</em>
+<a name="826" href="#826">826</a>     <strong>public</strong> &lt;T> Inhabitant&lt;T> getInhabitantByType(Class&lt;T> implType) {
+<a name="827" href="#827">827</a>         <strong>return</strong> (Inhabitant&lt;T>)getInhabitantByType(implType.getName());
+<a name="828" href="#828">828</a>     }
+<a name="829" href="#829">829</a> 
+<a name="830" href="#830">830</a>     <strong>public</strong> Inhabitant&lt;?> getInhabitantByType(String fullyQualifiedClassName) {
+<a name="831" href="#831">831</a>         List&lt;Inhabitant> list = byType.get(fullyQualifiedClassName);
+<a name="832" href="#832">832</a>         <strong>if</strong>(list.isEmpty())  <strong>return</strong> <strong>null</strong>;
+<a name="833" href="#833">833</a>         <strong>return</strong> list.get(0);
+<a name="834" href="#834">834</a>     }
+<a name="835" href="#835">835</a> 
+<a name="836" href="#836">836</a>     <em>/**<em>*</em></em>
+<a name="837" href="#837">837</a> <em>     * Gets the inhabitant that has the given contract annotation and the given name.</em>
+<a name="838" href="#838">838</a> <em>     *</em>
+<a name="839" href="#839">839</a> <em>     * &lt;p></em>
+<a name="840" href="#840">840</a> <em>     * This method defers the actual instantiation of the component</em>
+<a name="841" href="#841">841</a> <em>     * until {@link Inhabitant#get()} is invoked.</em>
+<a name="842" href="#842">842</a> <em>     *</em>
+<a name="843" href="#843">843</a> <em>     * @return null</em>
+<a name="844" href="#844">844</a> <em>     *      if no such component is found.</em>
+<a name="845" href="#845">845</a> <em>     */</em>
+<a name="846" href="#846">846</a>     <strong>public</strong> Inhabitant&lt;?> getInhabitantByAnnotation(Class&lt;? <strong>extends</strong> Annotation> contract, String name) throws ComponentException {
+<a name="847" href="#847">847</a>         <strong>return</strong> getInhabitantByContract(contract.getName(), name);
+<a name="848" href="#848">848</a>     }
+<a name="849" href="#849">849</a> 
+<a name="850" href="#850">850</a>     <em>/**<em>*</em></em>
+<a name="851" href="#851">851</a> <em>     * Gets all the inhabitants that has the given contract.</em>
+<a name="852" href="#852">852</a> <em>     */</em>
+<a name="853" href="#853">853</a>     <strong>public</strong> &lt;T> Collection&lt;Inhabitant&lt;? <strong>extends</strong> T>> getInhabitants(Class&lt;T> contract) throws ComponentException {
+<a name="854" href="#854">854</a>         <strong>final</strong> List&lt;NamedInhabitant> l = byContract.get(contract.getName());
+<a name="855" href="#855">855</a>         <strong>return</strong> <strong>new</strong> AbstractList&lt;Inhabitant&lt;? <strong>extends</strong> T>>() {
+<a name="856" href="#856">856</a>             <strong>public</strong> Inhabitant&lt;? <strong>extends</strong> T> get(<strong>int</strong> index) {
+<a name="857" href="#857">857</a>                 <strong>return</strong> l.get(index).inhabitant;
+<a name="858" href="#858">858</a>             }
+<a name="859" href="#859">859</a> 
+<a name="860" href="#860">860</a>             <strong>public</strong> <strong>int</strong> size() {
+<a name="861" href="#861">861</a>                 <strong>return</strong> l.size();
+<a name="862" href="#862">862</a>             }
+<a name="863" href="#863">863</a>         };
+<a name="864" href="#864">864</a>     }
+<a name="865" href="#865">865</a> 
+<a name="866" href="#866">866</a>     <em>/**<em>*</em></em>
+<a name="867" href="#867">867</a> <em>     * Gets all the inhabitants that has the given implementation type.</em>
+<a name="868" href="#868">868</a> <em>     */</em>
+<a name="869" href="#869">869</a>     <strong>public</strong> &lt;T> Collection&lt;Inhabitant&lt;T>> getInhabitantsByType(Class&lt;T> implType) throws ComponentException {
+<a name="870" href="#870">870</a>         <strong>return</strong> (Collection)byType.get(implType.getName());
+<a name="871" href="#871">871</a>     }
+<a name="872" href="#872">872</a> 
+<a name="873" href="#873">873</a>     <em>/**<em>*</em></em>
+<a name="874" href="#874">874</a> <em>     * Gets all the inhabitants that has the given implementation type name.</em>
+<a name="875" href="#875">875</a> <em>     */</em>
+<a name="876" href="#876">876</a>     <strong>public</strong> Collection&lt;Inhabitant&lt;?>> getInhabitantsByType(String fullyQualifiedClassName) {
+<a name="877" href="#877">877</a>         <strong>return</strong> (Collection)byType.get(fullyQualifiedClassName);
+<a name="878" href="#878">878</a>     }
+<a name="879" href="#879">879</a> 
+<a name="880" href="#880">880</a>     <em>/**<em>*</em></em>
+<a name="881" href="#881">881</a> <em>     * Get the first inhabitant by contract</em>
+<a name="882" href="#882">882</a> <em>     * </em>
+<a name="883" href="#883">883</a> <em>     * @param fullyQualifiedClassName</em>
+<a name="884" href="#884">884</a> <em>     * @return</em>
+<a name="885" href="#885">885</a> <em>     */</em>
+<a name="886" href="#886">886</a>     <strong>public</strong> Inhabitant&lt;?> getInhabitantByContract(String typeName) {
+<a name="887" href="#887">887</a>       <strong>final</strong> List&lt;NamedInhabitant> services = byContract._get(typeName);
+<a name="888" href="#888">888</a>       <strong>return</strong> (<strong>null</strong> == services || services.isEmpty()) ? <strong>null</strong> : services.get(0).inhabitant;
+<a name="889" href="#889">889</a>     }
+<a name="890" href="#890">890</a>       
+<a name="891" href="#891">891</a>     <strong>public</strong> Collection&lt;Inhabitant&lt;?>> getInhabitantsByContract(String fullyQualifiedClassName) {
+<a name="892" href="#892">892</a>         <strong>final</strong> List&lt;NamedInhabitant> services = byContract.get(fullyQualifiedClassName);
+<a name="893" href="#893">893</a>         <strong>return</strong> <strong>new</strong> AbstractList&lt;Inhabitant&lt;?>>() {
+<a name="894" href="#894">894</a>             <strong>public</strong> Inhabitant&lt;?> get(<strong>int</strong> index) {
+<a name="895" href="#895">895</a>                 <strong>return</strong> services.get(index).inhabitant;
+<a name="896" href="#896">896</a>             }
+<a name="897" href="#897">897</a> 
+<a name="898" href="#898">898</a>             <strong>public</strong> <strong>int</strong> size() {
+<a name="899" href="#899">899</a>                 <strong>return</strong> services.size();
+<a name="900" href="#900">900</a>             }
+<a name="901" href="#901">901</a>         };
+<a name="902" href="#902">902</a>     }
+<a name="903" href="#903">903</a> 
+<a name="904" href="#904">904</a>     <strong>private</strong> <strong>class</strong> MultiMapIterator implements Iterator {
+<a name="905" href="#905">905</a>         <strong>final</strong> Iterator&lt;Entry&lt;String, List&lt;NamedInhabitant>>> itr;
+<a name="906" href="#906">906</a>         MultiMapIterator(<a href="../../../../org/jvnet/hk2/component/MultiMap.html">MultiMap</a> map) {
+<a name="907" href="#907">907</a>             itr = map.entrySet().iterator();
+<a name="908" href="#908">908</a>         }
+<a name="909" href="#909">909</a> 
+<a name="910" href="#910">910</a>         <strong>public</strong> <strong>boolean</strong> hasNext() {
+<a name="911" href="#911">911</a>             <strong>return</strong> itr.hasNext();
+<a name="912" href="#912">912</a>         }
+<a name="913" href="#913">913</a> 
+<a name="914" href="#914">914</a>         <strong>public</strong> Object next() {
+<a name="915" href="#915">915</a>             <strong>return</strong> itr.next().getKey();
+<a name="916" href="#916">916</a>         }
+<a name="917" href="#917">917</a> 
+<a name="918" href="#918">918</a>         <strong>public</strong> <strong>void</strong> remove() {
+<a name="919" href="#919">919</a>             <strong>throw</strong> <strong>new</strong> UnsupportedOperationException();
+<a name="920" href="#920">920</a>         }
+<a name="921" href="#921">921</a>     }
+<a name="922" href="#922">922</a> 
+<a name="923" href="#923">923</a>     <strong>public</strong> Iterator&lt;String> getAllContracts() {
+<a name="924" href="#924">924</a>         <strong>return</strong> <strong>new</strong> MultiMapIterator(byContract);
+<a name="925" href="#925">925</a>     }
+<a name="926" href="#926">926</a> 
+<a name="927" href="#927">927</a>     <strong>public</strong> Iterator&lt;String> getAllTypes() {
+<a name="928" href="#928">928</a>         <strong>return</strong> <strong>new</strong> MultiMapIterator(byType);
+<a name="929" href="#929">929</a>     }
+<a name="930" href="#930">930</a> 
+<a name="931" href="#931">931</a>     <strong>public</strong> <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> getInhabitantByContract(String fullyQualifiedName, String name) {
+<a name="932" href="#932">932</a>         <em class="comment">// TODO: faster implementation needed</em>
+<a name="933" href="#933">933</a>         <strong>for</strong> (NamedInhabitant i : byContract.get(fullyQualifiedName)) {
+<a name="934" href="#934">934</a>             <strong>if</strong>(eq(i.name,name))
+<a name="935" href="#935">935</a>                 <strong>return</strong> i.inhabitant;
+<a name="936" href="#936">936</a>         }
+<a name="937" href="#937">937</a>         <strong>return</strong> <strong>null</strong>;
+<a name="938" href="#938">938</a>     }
+<a name="939" href="#939">939</a> 
+<a name="940" href="#940">940</a>     <em>/**<em>*</em></em>
+<a name="941" href="#941">941</a> <em>     * Gets all the inhabitants that has the given contract and the given name</em>
+<a name="942" href="#942">942</a> <em>     *</em>
+<a name="943" href="#943">943</a> <em>     * &lt;p></em>
+<a name="944" href="#944">944</a> <em>     * This method defers the actual instantiation of the component</em>
+<a name="945" href="#945">945</a> <em>     * until {@link Inhabitant#get()} is invoked.</em>
+<a name="946" href="#946">946</a> <em>     *</em>
+<a name="947" href="#947">947</a> <em>     * @return</em>
+<a name="948" href="#948">948</a> <em>     *      Can be empty but never null.</em>
+<a name="949" href="#949">949</a> <em>     */</em>
+<a name="950" href="#950">950</a>     <strong>public</strong> &lt;T> Iterable&lt;Inhabitant&lt;? <strong>extends</strong> T>> getInhabitants(Class&lt;T> contract, String name) throws ComponentException {
+<a name="951" href="#951">951</a>         <strong>return</strong> _getInhabitants(contract,name);
+<a name="952" href="#952">952</a>     }
+<a name="953" href="#953">953</a> 
+<a name="954" href="#954">954</a>     <em>/**<em>*</em></em>
+<a name="955" href="#955">955</a> <em>     * Gets all the inhabitants that has the given contract annotation and the given name.</em>
+<a name="956" href="#956">956</a> <em>     *</em>
+<a name="957" href="#957">957</a> <em>     * &lt;p></em>
+<a name="958" href="#958">958</a> <em>     * This method defers the actual instantiation of the component</em>
+<a name="959" href="#959">959</a> <em>     * until {@link Inhabitant#get()} is invoked.</em>
+<a name="960" href="#960">960</a> <em>     *</em>
+<a name="961" href="#961">961</a> <em>     * @return</em>
+<a name="962" href="#962">962</a> <em>     *      Can be empty but never null.</em>
+<a name="963" href="#963">963</a> <em>     */</em>
+<a name="964" href="#964">964</a>     <strong>public</strong> Iterable&lt;Inhabitant&lt;?>> getInhabitantsByAnnotation(Class&lt;? <strong>extends</strong> Annotation> contract, String name) throws ComponentException {
+<a name="965" href="#965">965</a>         <strong>return</strong> _getInhabitants(contract, name);
+<a name="966" href="#966">966</a>     }
+<a name="967" href="#967">967</a> 
+<a name="968" href="#968">968</a>     <em class="comment">// intentionally not generified so that the getInhabitants methods can choose the right signature w/o error</em>
+<a name="969" href="#969">969</a>     <strong>private</strong> Iterable _getInhabitants(<strong>final</strong> Class contract, <strong>final</strong> String name) {
+<a name="970" href="#970">970</a>         <strong>return</strong> <strong>new</strong> Iterable&lt;Inhabitant>() {
+<a name="971" href="#971">971</a>             <strong>private</strong> <strong>final</strong> Iterable&lt;NamedInhabitant> base = byContract.get(contract.getName());
+<a name="972" href="#972">972</a> 
+<a name="973" href="#973">973</a>             <strong>public</strong> Iterator&lt;Inhabitant> iterator() {
+<a name="974" href="#974">974</a>                 <strong>return</strong> <strong>new</strong> Iterator&lt;Inhabitant>() {
+<a name="975" href="#975">975</a>                     <strong>private</strong> <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> i = <strong>null</strong>;
+<a name="976" href="#976">976</a>                     <strong>private</strong> <strong>final</strong> Iterator&lt;NamedInhabitant> itr = base.iterator();
+<a name="977" href="#977">977</a> 
+<a name="978" href="#978">978</a>                     <strong>public</strong> <strong>boolean</strong> hasNext() {
+<a name="979" href="#979">979</a>                         <strong>while</strong>(i==<strong>null</strong> &amp;&amp; itr.hasNext()) {
+<a name="980" href="#980">980</a>                             NamedInhabitant ni = itr.next();
+<a name="981" href="#981">981</a>                             <strong>if</strong>(eq(ni.name,name))
+<a name="982" href="#982">982</a>                                 i = ni.inhabitant;
+<a name="983" href="#983">983</a>                         }
+<a name="984" href="#984">984</a>                         <strong>return</strong> i!=<strong>null</strong>;
+<a name="985" href="#985">985</a>                     }
+<a name="986" href="#986">986</a> 
+<a name="987" href="#987">987</a>                     <strong>public</strong> <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> next() {
+<a name="988" href="#988">988</a>                         <strong>if</strong>(i==<strong>null</strong>)
+<a name="989" href="#989">989</a>                             <strong>throw</strong> <strong>new</strong> NoSuchElementException();
+<a name="990" href="#990">990</a>                         <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> r = i;
+<a name="991" href="#991">991</a>                         i = <strong>null</strong>;
+<a name="992" href="#992">992</a>                         <strong>return</strong> r;
+<a name="993" href="#993">993</a>                     }
+<a name="994" href="#994">994</a> 
+<a name="995" href="#995">995</a>                     <strong>public</strong> <strong>void</strong> remove() {
+<a name="996" href="#996">996</a>                         <strong>throw</strong> <strong>new</strong> UnsupportedOperationException();
+<a name="997" href="#997">997</a>                     }
+<a name="998" href="#998">998</a>                 };
+<a name="999" href="#999">999</a>             }
+<a name="1000" href="#1000">1000</a>         };
+<a name="1001" href="#1001">1001</a>     }
+<a name="1002" href="#1002">1002</a> 
+<a name="1003" href="#1003">1003</a>     <strong>private</strong> <strong>static</strong> <strong>boolean</strong> eq(String a, String b) {
+<a name="1004" href="#1004">1004</a>         <strong>if</strong>(a==<strong>null</strong> &amp;&amp; b==<strong>null</strong>)  <strong>return</strong> <strong>true</strong>;
+<a name="1005" href="#1005">1005</a>         <strong>if</strong>(a==<strong>null</strong> || b==<strong>null</strong>)  <strong>return</strong> false;
+<a name="1006" href="#1006">1006</a>         <strong>return</strong> a.equals(b);
+<a name="1007" href="#1007">1007</a>     }
+<a name="1008" href="#1008">1008</a> 
+<a name="1009" href="#1009">1009</a>     <em>/**<em>*</em></em>
+<a name="1010" href="#1010">1010</a> <em>     * Gets the object of the given type.</em>
+<a name="1011" href="#1011">1011</a> <em>     *</em>
+<a name="1012" href="#1012">1012</a> <em>     * @return null if not found.</em>
+<a name="1013" href="#1013">1013</a> <em>     */</em>
+<a name="1014" href="#1014">1014</a>     <strong>public</strong> &lt;T> T getByType(Class&lt;T> implType) {
+<a name="1015" href="#1015">1015</a>         <strong>return</strong> getBy(implType, byType);
+<a name="1016" href="#1016">1016</a>     }
+<a name="1017" href="#1017">1017</a> 
+<a name="1018" href="#1018">1018</a>     <em>/**<em>*</em></em>
+<a name="1019" href="#1019">1019</a> <em>     * Gets the object that has the given contract.</em>
+<a name="1020" href="#1020">1020</a> <em>     *</em>
+<a name="1021" href="#1021">1021</a> <em>     * &lt;p></em>
+<a name="1022" href="#1022">1022</a> <em>     * If there are more than one of them, this method arbitrarily return</em>
+<a name="1023" href="#1023">1023</a> <em>     * one of them. </em>
+<a name="1024" href="#1024">1024</a> <em>     */</em>
+<a name="1025" href="#1025">1025</a>     <strong>public</strong> &lt;T> T getByContract(Class&lt;T> contractType) {
+<a name="1026" href="#1026">1026</a>         List&lt;NamedInhabitant> l = byContract.get(contractType.getName());
+<a name="1027" href="#1027">1027</a>         <strong>if</strong>(l.isEmpty())     <strong>return</strong> <strong>null</strong>;
+<a name="1028" href="#1028">1028</a>         <strong>else</strong>                <strong>return</strong> (T)l.get(0).inhabitant.get();
+<a name="1029" href="#1029">1029</a>     }
+<a name="1030" href="#1030">1030</a> 
+<a name="1031" href="#1031">1031</a>     <strong>private</strong> &lt;T> T getBy(Class&lt;T> implType, MultiMap&lt;String, Inhabitant> index) {
+<a name="1032" href="#1032">1032</a>         List&lt;Inhabitant> l = index.get(implType.getName());
+<a name="1033" href="#1033">1033</a>         <strong>if</strong>(l.isEmpty())     <strong>return</strong> <strong>null</strong>;
+<a name="1034" href="#1034">1034</a>         <strong>else</strong>                <strong>return</strong> (T)l.get(0).get();
+<a name="1035" href="#1035">1035</a>     }
+<a name="1036" href="#1036">1036</a> 
+<a name="1037" href="#1037">1037</a>     <em>/**<em>*</em></em>
+<a name="1038" href="#1038">1038</a> <em>     * Releases all the components.</em>
+<a name="1039" href="#1039">1039</a> <em>     * Should be called for orderly shut-down of the system.</em>
+<a name="1040" href="#1040">1040</a> <em>     * </em>
+<a name="1041" href="#1041">1041</a> <em>     * TODO: more javadoc needed</em>
+<a name="1042" href="#1042">1042</a> <em>     */</em>
+<a name="1043" href="#1043">1043</a>     <strong>public</strong> <strong>void</strong> release() {
+<a name="1044" href="#1044">1044</a>         <em class="comment">// TODO: synchronization story?</em>
+<a name="1045" href="#1045">1045</a>         <strong>for</strong> (Entry&lt;String, List&lt;Inhabitant>> e : byType.entrySet()) {
+<a name="1046" href="#1046">1046</a>             <strong>for</strong> (Inhabitant i : e.getValue()) {
+<a name="1047" href="#1047">1047</a>                 i.release();
+<a name="1048" href="#1048">1048</a>                 notify(i, EventType.INHABITANT_REMOVED, <strong>null</strong>, <strong>null</strong>);
+<a name="1049" href="#1049">1049</a>             }
+<a name="1050" href="#1050">1050</a>         }
+<a name="1051" href="#1051">1051</a>     }
+<a name="1052" href="#1052">1052</a> 
+<a name="1053" href="#1053">1053</a>     <strong>private</strong> <strong>static</strong> <strong>final</strong> <strong>class</strong> NamedInhabitant {
+<a name="1054" href="#1054">1054</a>         <em>/**<em>*</em></em>
+<a name="1055" href="#1055">1055</a> <em>         * Name. Can be null.</em>
+<a name="1056" href="#1056">1056</a> <em>         */</em>
+<a name="1057" href="#1057">1057</a>         <strong>final</strong> String name;
+<a name="1058" href="#1058">1058</a>         <strong>final</strong> <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> inhabitant;
+<a name="1059" href="#1059">1059</a> 
+<a name="1060" href="#1060">1060</a>         <strong>public</strong> NamedInhabitant(String name, <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> inhabitant) {
+<a name="1061" href="#1061">1061</a>             <strong>this</strong>.name = name;
+<a name="1062" href="#1062">1062</a>             <strong>this</strong>.inhabitant = inhabitant;
+<a name="1063" href="#1063">1063</a>         }
+<a name="1064" href="#1064">1064</a>     }
+<a name="1065" href="#1065">1065</a>     
+<a name="1066" href="#1066">1066</a>     <strong>final</strong> <strong>class</strong> ListenersByTypeInhabitant 
+<a name="1067" href="#1067">1067</a>           <strong>extends</strong> <a href="../../../../com/sun/hk2/component/ExistingSingletonInhabitant.html">ExistingSingletonInhabitant</a> {
+<a name="1068" href="#1068">1068</a>       <strong>private</strong> <strong>final</strong> String name;
+<a name="1069" href="#1069">1069</a>       <strong>private</strong> <strong>final</strong> CopyOnWriteArrayList&lt;HabitatListener> listeners =
+<a name="1070" href="#1070">1070</a>           <strong>new</strong> CopyOnWriteArrayList&lt;HabitatListener>();
+<a name="1071" href="#1071">1071</a>       <strong>private</strong> <strong>volatile</strong> <strong>boolean</strong> released;
+<a name="1072" href="#1072">1072</a> 
+<a name="1073" href="#1073">1073</a>       <strong>protected</strong> ListenersByTypeInhabitant(String name) {
+<a name="1074" href="#1074">1074</a>         <strong>super</strong>(<strong>new</strong> <a href="../../../../com/sun/hk2/component/ExistingSingletonInhabitant.html">ExistingSingletonInhabitant</a>(ListenersByTypeInhabitant.<strong>class</strong>, <strong>null</strong>));
+<a name="1075" href="#1075">1075</a>         <strong>this</strong>.name = name;
+<a name="1076" href="#1076">1076</a>       }
+<a name="1077" href="#1077">1077</a> 
+<a name="1078" href="#1078">1078</a>       @Override
+<a name="1079" href="#1079">1079</a>       <strong>public</strong> String toString() {
+<a name="1080" href="#1080">1080</a>         <strong>return</strong> getClass().getSimpleName() + <span class="string">"("</span> + name + <span class="string">")"</span>;
+<a name="1081" href="#1081">1081</a>       } 
+<a name="1082" href="#1082">1082</a> 
+<a name="1083" href="#1083">1083</a>       <strong>public</strong> <strong>void</strong> add(<a href="../../../../org/jvnet/hk2/component/HabitatListener.html">HabitatListener</a> listener) {
+<a name="1084" href="#1084">1084</a>         listeners.add(0, listener);
+<a name="1085" href="#1085">1085</a>       }
+<a name="1086" href="#1086">1086</a>       
+<a name="1087" href="#1087">1087</a>       <strong>public</strong> <strong>boolean</strong> remove(<a href="../../../../org/jvnet/hk2/component/HabitatListener.html">HabitatListener</a> listener) {
+<a name="1088" href="#1088">1088</a>         <strong>return</strong> listeners.remove(listener);
+<a name="1089" href="#1089">1089</a>       }
+<a name="1090" href="#1090">1090</a> 
+<a name="1091" href="#1091">1091</a>       <strong>public</strong> <strong>int</strong> size() {
+<a name="1092" href="#1092">1092</a>         <strong>return</strong> listeners.size();
+<a name="1093" href="#1093">1093</a>       }
+<a name="1094" href="#1094">1094</a> 
+<a name="1095" href="#1095">1095</a>       @Override
+<a name="1096" href="#1096">1096</a>       <strong>public</strong> <strong>void</strong> release() {
+<a name="1097" href="#1097">1097</a>         <strong>if</strong> (!released) {
+<a name="1098" href="#1098">1098</a>           released = <strong>true</strong>;
+<a name="1099" href="#1099">1099</a>           
+<a name="1100" href="#1100">1100</a>           <strong>for</strong> (HabitatListener listener : listeners) {
+<a name="1101" href="#1101">1101</a>             removeHabitatListener(listener);
+<a name="1102" href="#1102">1102</a>           }
+<a name="1103" href="#1103">1103</a>         }
+<a name="1104" href="#1104">1104</a>         
+<a name="1105" href="#1105">1105</a>         <strong>super</strong>.release();
+<a name="1106" href="#1106">1106</a>       }
+<a name="1107" href="#1107">1107</a>     }
+<a name="1108" href="#1108">1108</a> 
+<a name="1109" href="#1109">1109</a>     <strong>private</strong> <strong>static</strong> <strong>final</strong> <strong>class</strong> SelfListener implements <a href="../../../../org/jvnet/hk2/component/HabitatListener.html">HabitatListener</a> {
+<a name="1110" href="#1110">1110</a>       <strong>public</strong> <strong>boolean</strong> inhabitantChanged(EventType eventType, <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat,
+<a name="1111" href="#1111">1111</a>           Inhabitant&lt;?> inhabitant) {
+<a name="1112" href="#1112">1112</a>         <strong>return</strong> <strong>true</strong>;
+<a name="1113" href="#1113">1113</a>       }
+<a name="1114" href="#1114">1114</a> 
+<a name="1115" href="#1115">1115</a>       <strong>public</strong> <strong>boolean</strong> inhabitantIndexChanged(EventType eventType, <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat,
+<a name="1116" href="#1116">1116</a>           Inhabitant&lt;?> i, String index, String name, Object service) {
+<a name="1117" href="#1117">1117</a> 
+<a name="1118" href="#1118">1118</a>         <em class="comment">// for each FactoryFor component, insert inhabitant for components created by the factory</em>
+<a name="1119" href="#1119">1119</a>         <strong>if</strong> (index.equals(FactoryFor.<strong>class</strong>.getName())) {
+<a name="1120" href="#1120">1120</a>             <a href="../../../../org/jvnet/hk2/annotations/FactoryFor.html">FactoryFor</a> ff = i.type().getAnnotation(FactoryFor.<strong>class</strong>);
+<a name="1121" href="#1121">1121</a>             Class&lt;?> targetClass = ff.value();
+<a name="1122" href="#1122">1122</a>             <a href="../../../../com/sun/hk2/component/FactoryWomb.html">FactoryWomb</a> target = <strong>new</strong> <a href="../../../../com/sun/hk2/component/FactoryWomb.html">FactoryWomb</a>(targetClass, i, habitat, MultiMap.&lt;String,String>emptyMap());
+<a name="1123" href="#1123">1123</a>             habitat.add(target);
+<a name="1124" href="#1124">1124</a>             habitat.addIndex(target, targetClass.getName(), <strong>null</strong>);
+<a name="1125" href="#1125">1125</a>         }
+<a name="1126" href="#1126">1126</a>         
+<a name="1127" href="#1127">1127</a> <em class="comment">//        System.out.println("Habitat Index Changed: " + eventType + "; " + i + "; index=" + index + "; name=" + name);</em>
+<a name="1128" href="#1128">1128</a> 
+<a name="1129" href="#1129">1129</a>         <strong>return</strong> <strong>true</strong>;
+<a name="1130" href="#1130">1130</a>       }
+<a name="1131" href="#1131">1131</a>     }
+<a name="1132" href="#1132">1132</a> 
+<a name="1133" href="#1133">1133</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

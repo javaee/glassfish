@@ -45,144 +45,81 @@
 <a name="36" href="#36">36</a>  <em class="comment"> */</em>
 <a name="37" href="#37">37</a>  <strong>package</strong> com.sun.hk2.component;
 <a name="38" href="#38">38</a>  
-<a name="39" href="#39">39</a>  <strong>import</strong> org.jvnet.hk2.component.*;
-<a name="40" href="#40">40</a>  <strong>import</strong> org.jvnet.hk2.annotations.Inject;
-<a name="41" href="#41">41</a>  <strong>import</strong> org.jvnet.hk2.annotations.Lead;
+<a name="39" href="#39">39</a>  <strong>import</strong> java.util.Collection;
+<a name="40" href="#40">40</a>  
+<a name="41" href="#41">41</a>  <strong>import</strong> org.jvnet.hk2.component.*;
 <a name="42" href="#42">42</a>  
-<a name="43" href="#43">43</a>  <strong>import</strong> java.lang.reflect.AnnotatedElement;
-<a name="44" href="#44">44</a>  <strong>import</strong> java.lang.reflect.Array;
-<a name="45" href="#45">45</a>  <strong>import</strong> java.lang.reflect.Type;
-<a name="46" href="#46">46</a>  <strong>import</strong> java.util.Collection;
-<a name="47" href="#47">47</a>  <strong>import</strong> org.jvnet.tiger_types.Types;
-<a name="48" href="#48">48</a>  
-<a name="49" href="#49">49</a>  <em>/**<em>*</em></em>
-<a name="50" href="#50">50</a>  <em> * @author Kohsuke Kawaguchi</em>
-<a name="51" href="#51">51</a>  <em> */</em>
-<a name="52" href="#52">52</a>  <strong>public</strong> <strong>abstract</strong> <strong>class</strong> AbstractWombImpl&lt;T> <strong>extends</strong> AbstractInhabitantImpl&lt;T> implements Womb&lt;T> {
-<a name="53" href="#53">53</a>      <strong>protected</strong> <strong>final</strong> Class&lt;T> type;
-<a name="54" href="#54">54</a>      <strong>private</strong> <strong>final</strong> MultiMap&lt;String,String> metadata;
-<a name="55" href="#55">55</a>      <strong>private</strong> <strong>final</strong> <a href="../../../../org/jvnet/hk2/component/InjectionManager.html">InjectionManager</a> injectionMgr = <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/InjectionManager.html">InjectionManager</a>();
-<a name="56" href="#56">56</a>  
-<a name="57" href="#57">57</a>      <strong>public</strong> <a href="../../../../com/sun/hk2/component/AbstractWombImpl.html">AbstractWombImpl</a>(Class&lt;T> type, MultiMap&lt;String,String> metadata) {
-<a name="58" href="#58">58</a>          <strong>this</strong>.type = type;
-<a name="59" href="#59">59</a>          <strong>this</strong>.metadata = metadata;
+<a name="43" href="#43">43</a>  <em>/**<em>*</em></em>
+<a name="44" href="#44">44</a>  <em> * @author Kohsuke Kawaguchi</em>
+<a name="45" href="#45">45</a>  <em> */</em>
+<a name="46" href="#46">46</a>  @SuppressWarnings(<span class="string">"unchecked"</span>)
+<a name="47" href="#47">47</a>  <strong>public</strong> <strong>abstract</strong> <strong>class</strong> AbstractWombImpl&lt;T> <strong>extends</strong> AbstractInhabitantImpl&lt;T> implements Womb&lt;T> {
+<a name="48" href="#48">48</a>      <strong>protected</strong> <strong>final</strong> Class&lt;T> type;
+<a name="49" href="#49">49</a>      <strong>protected</strong> <strong>final</strong> <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat; 
+<a name="50" href="#50">50</a>      <strong>private</strong> <strong>final</strong> MultiMap&lt;String,String> metadata;
+<a name="51" href="#51">51</a>  
+<a name="52" href="#52">52</a>      <strong>public</strong> <a href="../../../../com/sun/hk2/component/AbstractWombImpl.html">AbstractWombImpl</a>(Class&lt;T> type, <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat, MultiMap&lt;String,String> metadata) {
+<a name="53" href="#53">53</a>          <strong>this</strong>.type = type;
+<a name="54" href="#54">54</a>          <strong>this</strong>.habitat = habitat;
+<a name="55" href="#55">55</a>          <strong>this</strong>.metadata = metadata;
+<a name="56" href="#56">56</a>      }
+<a name="57" href="#57">57</a>  
+<a name="58" href="#58">58</a>      <strong>public</strong> <strong>final</strong> String typeName() {
+<a name="59" href="#59">59</a>          <strong>return</strong> type.getName();
 <a name="60" href="#60">60</a>      }
 <a name="61" href="#61">61</a>  
-<a name="62" href="#62">62</a>      <strong>public</strong> <strong>final</strong> String typeName() {
-<a name="63" href="#63">63</a>          <strong>return</strong> type.getName();
+<a name="62" href="#62">62</a>      <strong>public</strong> <strong>final</strong> Class&lt;T> type() {
+<a name="63" href="#63">63</a>          <strong>return</strong> type;
 <a name="64" href="#64">64</a>      }
 <a name="65" href="#65">65</a>  
-<a name="66" href="#66">66</a>      <strong>public</strong> <strong>final</strong> Class&lt;T> type() {
-<a name="67" href="#67">67</a>          <strong>return</strong> type;
-<a name="68" href="#68">68</a>      }
-<a name="69" href="#69">69</a>  
-<a name="70" href="#70">70</a>      <strong>public</strong> <strong>final</strong> T get(<a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> onBehalfOf) throws ComponentException {
-<a name="71" href="#71">71</a>          T o = create(onBehalfOf);
-<a name="72" href="#72">72</a>          <em class="comment">// I could rely on injection, but the algorithm is slow enough for now that I</em>
-<a name="73" href="#73">73</a>          <em class="comment">// need a faster scheme.</em>
-<a name="74" href="#74">74</a>          <strong>if</strong> (o instanceof InhabitantRequested) {
-<a name="75" href="#75">75</a>              ((<a href="../../../../org/jvnet/hk2/component/InhabitantRequested.html">InhabitantRequested</a>) o).setInhabitant(onBehalfOf);
-<a name="76" href="#76">76</a>          }
-<a name="77" href="#77">77</a>          initialize(o,onBehalfOf);
-<a name="78" href="#78">78</a>          <strong>return</strong> o;
-<a name="79" href="#79">79</a>      }
-<a name="80" href="#80">80</a>  
-<a name="81" href="#81">81</a>      <strong>public</strong> <strong>boolean</strong> isInstantiated() {
-<a name="82" href="#82">82</a>          <strong>return</strong> false;
+<a name="66" href="#66">66</a>      <strong>public</strong> <strong>final</strong> T get(<a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> onBehalfOf) throws ComponentException {
+<a name="67" href="#67">67</a>          T o = create(onBehalfOf);
+<a name="68" href="#68">68</a>          initialize(o, onBehalfOf);
+<a name="69" href="#69">69</a>          <strong>return</strong> o;
+<a name="70" href="#70">70</a>      }
+<a name="71" href="#71">71</a>  
+<a name="72" href="#72">72</a>      <strong>public</strong> <strong>boolean</strong> isInstantiated() {
+<a name="73" href="#73">73</a>          <strong>return</strong> <strong>true</strong>;
+<a name="74" href="#74">74</a>      }
+<a name="75" href="#75">75</a>  
+<a name="76" href="#76">76</a>      @Override
+<a name="77" href="#77">77</a>      <strong>public</strong> <strong>void</strong> initialize(T t, <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> onBehalfOf) throws ComponentException {
+<a name="78" href="#78">78</a>        <em class="comment">// I could rely on injection, but the algorithm is slow enough for now that I</em>
+<a name="79" href="#79">79</a>        <em class="comment">// need a faster scheme.</em>
+<a name="80" href="#80">80</a>        <strong>if</strong> (t instanceof InhabitantRequested) {
+<a name="81" href="#81">81</a>            ((<a href="../../../../org/jvnet/hk2/component/InhabitantRequested.html">InhabitantRequested</a>) t).setInhabitant(onBehalfOf);
+<a name="82" href="#82">82</a>        }
 <a name="83" href="#83">83</a>      }
 <a name="84" href="#84">84</a>  
-<a name="85" href="#85">85</a>      <strong>public</strong> <strong>void</strong>  initialize(T t, Inhabitant onBehalfOf) throws ComponentException {
-<a name="86" href="#86">86</a>          <em class="comment">// default is no-op</em>
-<a name="87" href="#87">87</a>      }
-<a name="88" href="#88">88</a>  
-<a name="89" href="#89">89</a>      <strong>public</strong> <strong>void</strong> release() {
-<a name="90" href="#90">90</a>          <em class="comment">// Womb creates a new instance every time,</em>
-<a name="91" href="#91">91</a>          <em class="comment">// so there's nothing to release here.</em>
+<a name="85" href="#85">85</a>      <strong>public</strong> <strong>void</strong> release() {
+<a name="86" href="#86">86</a>          <em class="comment">// Womb creates a new instance every time,</em>
+<a name="87" href="#87">87</a>          <em class="comment">// so there's nothing to release here.</em>
+<a name="88" href="#88">88</a>      }
+<a name="89" href="#89">89</a>  
+<a name="90" href="#90">90</a>      <strong>public</strong> MultiMap&lt;String, String> metadata() {
+<a name="91" href="#91">91</a>          <strong>return</strong> metadata;
 <a name="92" href="#92">92</a>      }
 <a name="93" href="#93">93</a>  
-<a name="94" href="#94">94</a>      <strong>public</strong> MultiMap&lt;String, String> metadata() {
-<a name="95" href="#95">95</a>          <strong>return</strong> metadata;
-<a name="96" href="#96">96</a>      }
-<a name="97" href="#97">97</a>  
-<a name="98" href="#98">98</a>      <em>/**<em>*</em></em>
-<a name="99" href="#99">99</a>  <em>     * Performs resource injection on the given instance from the given habitat.</em>
-<a name="100" href="#100">100</a> <em>     *</em>
-<a name="101" href="#101">101</a> <em>     * &lt;p></em>
-<a name="102" href="#102">102</a> <em>     * This method is an utility method for subclasses for performing injection.</em>
-<a name="103" href="#103">103</a> <em>     */</em>
-<a name="104" href="#104">104</a>     <strong>protected</strong> <strong>void</strong> inject(<strong>final</strong> <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat, T t, <strong>final</strong> <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> onBehalfOf) {
-<a name="105" href="#105">105</a> 
-<a name="106" href="#106">106</a>         <a href="../../../../com/sun/hk2/component/InjectionResolver.html">InjectionResolver</a>[] targets = {
-<a name="107" href="#107">107</a>             (<strong>new</strong> InjectionResolver&lt;Inject>(Inject.<strong>class</strong>) {
-<a name="108" href="#108">108</a>                 <strong>public</strong> <strong>boolean</strong> isOptional(AnnotatedElement element, <a href="../../../../org/jvnet/hk2/annotations/Inject.html">Inject</a> annotation) {
-<a name="109" href="#109">109</a>                     <strong>return</strong> annotation.optional();
-<a name="110" href="#110">110</a>                 }
-<a name="111" href="#111">111</a> 
-<a name="112" href="#112">112</a>                 <em>/**<em>*</em></em>
-<a name="113" href="#113">113</a> <em>                 * Obtains the value to inject, based on the type and {@link Inject} annotation.</em>
-<a name="114" href="#114">114</a> <em>                 */</em>
-<a name="115" href="#115">115</a>                 @SuppressWarnings(<span class="string">"unchecked"</span>)
-<a name="116" href="#116">116</a>                 <strong>public</strong> &lt;V> V getValue(Object component, AnnotatedElement target, Class&lt;V> type) throws ComponentException {
-<a name="117" href="#117">117</a>                     <strong>if</strong> (type.isArray()) {
-<a name="118" href="#118">118</a>                         Class&lt;?> ct = type.getComponentType();
-<a name="119" href="#119">119</a> 
-<a name="120" href="#120">120</a>                         Collection instances;
-<a name="121" href="#121">121</a>                         <strong>if</strong>(habitat.isContract(ct))
-<a name="122" href="#122">122</a>                             instances = habitat.getAllByContract(ct);
-<a name="123" href="#123">123</a>                         <strong>else</strong>
-<a name="124" href="#124">124</a>                             instances = habitat.getAllByType(ct);
-<a name="125" href="#125">125</a>                         <strong>return</strong> type.<strong>cast</strong>(instances.toArray((Object[]) Array.newInstance(ct, instances.size())));
-<a name="126" href="#126">126</a>                     } <strong>else</strong> <strong>if</strong> (Types.isSubClassOf(type, Holder.<strong>class</strong>)){
-<a name="127" href="#127">127</a>                         Type t = Types.getTypeArgument(((java.lang.reflect.Field) target).getGenericType(), 0);
-<a name="128" href="#128">128</a>                         Class finalType = Types.erasure(t);
-<a name="129" href="#129">129</a>                         <strong>if</strong> (habitat.isContract(finalType)) {
-<a name="130" href="#130">130</a>                             <strong>return</strong> type.<strong>cast</strong>(habitat.getInhabitants(finalType, target.getAnnotation(Inject.<strong>class</strong>).name()));
-<a name="131" href="#131">131</a>                         }
-<a name="132" href="#132">132</a>                         <strong>try</strong> {
-<a name="133" href="#133">133</a>                             <strong>if</strong> (finalType.<strong>cast</strong>(component)!=<strong>null</strong>) {
-<a name="134" href="#134">134</a>                                 <strong>return</strong> type.<strong>cast</strong>(onBehalfOf);
-<a name="135" href="#135">135</a>                             }
-<a name="136" href="#136">136</a>                         } <strong>catch</strong>(ClassCastException e) {
-<a name="137" href="#137">137</a>                             <em class="comment">// ignore</em>
-<a name="138" href="#138">138</a>                         }
-<a name="139" href="#139">139</a>                         <strong>return</strong> type.<strong>cast</strong>(habitat.getInhabitantByType(finalType));
-<a name="140" href="#140">140</a> 
-<a name="141" href="#141">141</a>                     } <strong>else</strong> {
-<a name="142" href="#142">142</a>                         <strong>if</strong>(habitat.isContract(type))
-<a name="143" href="#143">143</a>                             <em class="comment">// service lookup injection</em>
-<a name="144" href="#144">144</a>                             <strong>return</strong> habitat.getComponent(type, target.getAnnotation(Inject.<strong>class</strong>).name());
-<a name="145" href="#145">145</a> 
-<a name="146" href="#146">146</a>                         <em class="comment">// ideally we should check if type has @Service or @Configured</em>
-<a name="147" href="#147">147</a> 
-<a name="148" href="#148">148</a>                         <em class="comment">// component injection</em>
-<a name="149" href="#149">149</a>                         <strong>return</strong> habitat.getByType(type);
-<a name="150" href="#150">150</a>                     }
-<a name="151" href="#151">151</a>                 }
-<a name="152" href="#152">152</a>             }) ,
-<a name="153" href="#153">153</a> 
-<a name="154" href="#154">154</a>             (<strong>new</strong> InjectionResolver&lt;Lead>(Lead.<strong>class</strong>) {
-<a name="155" href="#155">155</a>                 <strong>public</strong> &lt;V> V getValue(Object component, AnnotatedElement target, Class&lt;V> type) throws ComponentException {
-<a name="156" href="#156">156</a>                     <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> lead = onBehalfOf.lead();
-<a name="157" href="#157">157</a>                     <strong>if</strong>(lead==<strong>null</strong>)
-<a name="158" href="#158">158</a>                         <em class="comment">// TODO: we should be able to check this error at APT, too.</em>
-<a name="159" href="#159">159</a>                         <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(component.getClass()+<span class="string">" requested @Lead injection but this is not a companion"</span>);
-<a name="160" href="#160">160</a> 
-<a name="161" href="#161">161</a>                     <strong>if</strong>(type==Inhabitant.<strong>class</strong>) {
-<a name="162" href="#162">162</a>                         <strong>return</strong> type.<strong>cast</strong>(lead);
-<a name="163" href="#163">163</a>                     }
-<a name="164" href="#164">164</a> 
-<a name="165" href="#165">165</a>                     <em class="comment">// otherwise inject the target object</em>
-<a name="166" href="#166">166</a>                     <strong>return</strong> type.<strong>cast</strong>(lead.get());
-<a name="167" href="#167">167</a>                 }
-<a name="168" href="#168">168</a>             })
-<a name="169" href="#169">169</a>         };
-<a name="170" href="#170">170</a>         injectionMgr.inject(t, targets);
-<a name="171" href="#171">171</a> 
-<a name="172" href="#172">172</a>         <em class="comment">// postContruct call if any</em>
-<a name="173" href="#173">173</a>         <strong>if</strong>(t instanceof <a href="../../../../org/jvnet/hk2/component/PostConstruct.html">PostConstruct</a>)
-<a name="174" href="#174">174</a>             ((<a href="../../../../org/jvnet/hk2/component/PostConstruct.html">PostConstruct</a>)t).postConstruct();
-<a name="175" href="#175">175</a>     }
-<a name="176" href="#176">176</a> }
+<a name="94" href="#94">94</a>      <em>/**<em>*</em></em>
+<a name="95" href="#95">95</a>  <em>     * Performs resource injection on the given instance from the given habitat.</em>
+<a name="96" href="#96">96</a>  <em>     *</em>
+<a name="97" href="#97">97</a>  <em>     * &lt;p></em>
+<a name="98" href="#98">98</a>  <em>     * This method is an utility method for subclasses for performing injection.</em>
+<a name="99" href="#99">99</a>  <em>     */</em>
+<a name="100" href="#100">100</a>     <strong>protected</strong> <strong>void</strong> inject(<a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat, T t, Inhabitant&lt;?> onBehalfOf) {
+<a name="101" href="#101">101</a>         <a href="../../../../org/jvnet/hk2/component/InjectionManager.html">InjectionManager</a> injectionMgr = <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/InjectionManager.html">InjectionManager</a>();
+<a name="102" href="#102">102</a>         
+<a name="103" href="#103">103</a>         Collection&lt;InjectionResolver> targets = habitat.getAllByType(InjectionResolver.<strong>class</strong>);
+<a name="104" href="#104">104</a>         assert(!targets.isEmpty());
+<a name="105" href="#105">105</a>         injectionMgr.inject(t, onBehalfOf, targets.toArray(<strong>new</strong> <a href="../../../../com/sun/hk2/component/InjectionResolver.html">InjectionResolver</a>[targets.size()]));
+<a name="106" href="#106">106</a> 
+<a name="107" href="#107">107</a>         <em class="comment">// postContruct call if any</em>
+<a name="108" href="#108">108</a>         <strong>if</strong> (t instanceof PostConstruct) {
+<a name="109" href="#109">109</a>             ((<a href="../../../../org/jvnet/hk2/component/PostConstruct.html">PostConstruct</a>)t).postConstruct();
+<a name="110" href="#110">110</a>         }
+<a name="111" href="#111">111</a>     }
+<a name="112" href="#112">112</a>     
+<a name="113" href="#113">113</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

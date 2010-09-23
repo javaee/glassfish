@@ -1,22 +1,24 @@
 -classpath
-'/Users/dochez/websites/hk2/hk2/auto-depends/target/classes:/Users/dochez/.m2/repository/com/sun/enterprise/tiger-types-osgi/0.3.37-SNAPSHOT/tiger-types-osgi-0.3.37-SNAPSHOT.jar'
+'/home/dochez/java/svn/hk2/trunk/hk2/auto-depends/target/classes:/home/dochez/.m2/repository/org/glassfish/hk2/external/asm-all-repackaged/1.0.48-SNAPSHOT/asm-all-repackaged-1.0.48-SNAPSHOT.jar:/home/dochez/.m2/repository/org/glassfish/hk2/class-model/1.0.48-SNAPSHOT/class-model-1.0.48-SNAPSHOT.jar:/home/dochez/.m2/repository/junit/junit/4.3.1/junit-4.3.1.jar:/home/dochez/.m2/repository/org/jvnet/tiger-types/1.2/tiger-types-1.2.jar'
 -encoding
-'MacRoman'
+'UTF-8'
 -protected
 -sourcepath
-'/Users/dochez/websites/hk2/hk2/auto-depends/src/java'
+'/home/dochez/java/svn/hk2/trunk/hk2/auto-depends/src/main/java'
 -author
 -bottom
-'Copyright &#169; 2008 <a href="http://www.sun.com">Sun Microsystems, Inc.</a>. All Rights Reserved.'
+'Copyright &#169; 2010 <a href="http://www.sun.com">Sun Microsystems, Inc.</a>. All Rights Reserved.'
 -charset
 'UTF-8'
 -d
-'/Users/dochez/websites/hk2/hk2/auto-depends/target/site/apidocs'
+'/home/dochez/java/svn/hk2/trunk/hk2/auto-depends/target/site/apidocs'
 -docencoding
 'UTF-8'
 -doctitle
-'Inversion of Control / Autodependency mechanism 0.3.37-SNAPSHOT API'
+'Inversion of Control / Autodependency mechanism 1.0.48-SNAPSHOT API'
+-link
+'http://java.sun.com/j2se/1.5.0/docs/api'
 -use
 -version
 -windowtitle
-'Inversion of Control / Autodependency mechanism 0.3.37-SNAPSHOT API'
+'Inversion of Control / Autodependency mechanism 1.0.48-SNAPSHOT API'

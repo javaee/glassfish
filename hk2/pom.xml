@@ -119,6 +119,13 @@
         <sourceDirectory>src/java</sourceDirectory>
         <testSourceDirectory>test/java</testSourceDirectory>
         <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>2.1</version>
+      </plugin>
+
+
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
