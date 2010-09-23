@@ -51,7 +51,7 @@ import java.util.Set;
 public abstract class AbstractAnnotationScanner implements AnnotationScanner {
     
     /** holds the annotations of interest to the specific type of scanner */
-    protected Set<String> annotations=null;
+    protected volatile Set<String> annotations=null;
     
     /** Creates a new instance of AbstractAnnotationScanner */
     public AbstractAnnotationScanner() {
