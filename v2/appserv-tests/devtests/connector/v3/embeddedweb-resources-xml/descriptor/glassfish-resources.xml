@@ -44,4 +44,7 @@
           <property name="SchemaName" value="DBUSER" />
           <property name="NoOfRows" value="1" />
   </admin-object-resource>
+ <resource-adapter-config resource-adapter-name="web-subclassingApp#jdbcra">
+      <property name="RAProperty" value="VALID"></property>
+    </resource-adapter-config>
 </resources> 

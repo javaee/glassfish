@@ -16,25 +16,7 @@
     &commonRun;
     &testproperties;
     
-<!--
-    <target name="all" depends="build,setup,deploy-war, run-war, undeploy-war, deploy-ear, run-ear, undeploy-ear, unsetup"/>
-
-    <target name="run-test" depends="build,deploy-war, run-war, undeploy-war, deploy-ear, run-ear, undeploy-ear"/>
--->
     <target name="all" depends="build, deploy-ear, setup, run-ear, unsetup, undeploy-ear"/>
-
-<!--
-	<antcall target="build"/>
-	<antcall target="setup"/>
-	<antcall target="deploy-war"/>
-	<antcall target="run-war"/>
-	<antcall target="undeploy-war"/>
-	<antcall target="deploy-ear"/>
-	<antcall target="run-ear"/>
-	<antcall target="undeploy-ear"/>
-	<antcall target="unsetup"/>
-    </target>
--->
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
@@ -45,87 +27,14 @@
     <antcall target="execute-sql-connector">
         <param name="sql.file" value="sql/simpleBank.sql"/>
     </antcall>
-    <!--<antcall target="create-pool"/>
-    <antcall target="create-resource"/>
-    <antcall target="create-admin-object"/>-->
-        
     </target>
-    <target name="create-pool">
-                <antcall target="create-connector-connpool-common">
-                <param name="ra.name" value="${appname}App#jdbcra"/>
-                <param name="extra-params" value="--matchconnections=false"/>
-                <param name="connection.defname" value="javax.sql.DataSource"/>
-                <param name="connector.conpool.name" value="embedded-ra-pool"/>
-                </antcall>
-                <antcall target="set-oracle-props">
-		<param name="pool.type" value="connector"/>
-		<param name="conpool.name" value="embedded-ra-pool"/>
-		</antcall>
-    </target>
-    <target name="create-resource">
-                <antcall target="create-connector-resource-common">
-                <param name="connector.conpool.name" value="embedded-ra-pool"/>
-                <param name="connector.jndi.name" value="jdbc/ejb-subclassing"/>
-                </antcall>
-     </target>
-
-
-     <target name="create-admin-object" depends="init-common">
-         <antcall target="asadmin-common">
-            <param name="admin.command" value="create-admin-object --target ${appserver.instance.name} --restype com.sun.jdbcra.spi.JdbcSetupAdmin --raname ${appname}App#jdbcra --property TableName=customer2:JndiName=jdbc/ejb-subclassing:SchemaName=DBUSER:NoOfRows=1"/>
-	    <param name="operand.props" value="eis/jdbcAdmin"/>
-         </antcall>
-     </target>
-
-     <target name="delete-admin-object" depends="init-common">
-         <antcall target="asadmin-common">
-	    <param name="admin.command" value="delete-admin-object"/>
-	    <param name="operand.props" value="--target ${appserver.instance.name} eis/jdbcAdmin"/>
-	 </antcall>
-	 <!--<antcall target="reconfig-common"/>-->
-     </target>
-    
-    <target name="restart">
-    <antcall target="restart-server-instance-common"/>
-    </target>
-
-     <target name="create-ra-config" depends="init-common">
-         <antcall target="asadmin-common">
-            <param name="admin.command" value="create-resource-adapter-config  --property RAProperty=VALID"/>
-	    <param name="operand.props" value="${appname}App#jdbcra"/>
-         </antcall>
-     </target>
-
-     <target name="delete-ra-config" depends="init-common">
-         <antcall target="asadmin-common">
-	    <param name="admin.command" value="delete-resource-adapter-config"/>
-	    <param name="operand.props" value="${appname}App#jdbcra"/>
-	 </antcall>
-	 <!--<antcall target="reconfig-common"/>-->
-     </target>
 
     <target name="unsetup">
     <antcall target="execute-sql-connector">
         <param name="sql.file" value="sql/dropBankTables.sql"/>
       </antcall>
-
-<!--    <antcall target="delete-resource"/>
-    <antcall target="delete-pool"/>
-    <antcall target="delete-admin-object"/>-->
     </target>
  
-    <target name="delete-pool">
-                <antcall target="delete-connector-connpool-common">
-                <param name="connector.conpool.name" value="embedded-ra-pool"/>
-                </antcall>
-     </target>
-
-     <target name="delete-resource">
-                <antcall target="delete-connector-resource-common">
-                <param name="connector.jndi.name" value="jdbc/ejb-subclassing"/>
-		</antcall>
-    </target>
-
     <target name="compile" depends="clean">
         <ant dir="ra" target="compile"/>
         <antcall target="compile-common">
@@ -186,7 +95,6 @@
 
     
     <target name="deploy-ear" depends="init-common">
-        <antcall target="create-ra-config"/>
         <antcall target="deploy-common"/>
     </target>
 
@@ -207,7 +115,6 @@
     </target>
  
     <target name="undeploy-ear" depends="init-common">
-        <antcall target="delete-ra-config"/>
         <antcall target="undeploy-common">
             <param name="extra-params" value="--cascade=true"/>
         </antcall>
