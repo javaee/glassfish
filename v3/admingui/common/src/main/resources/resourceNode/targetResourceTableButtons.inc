@@ -68,7 +68,7 @@
                     }
                 }
                 setAttribute(key="selectedRows" value="${selectedRows}");
-                gf.redirect(page="#{pageSession.listLink}");
+                gf.redirect(page="#{pageSession.listLink}&filterValue=#{pageSession.filterValue}");
             />
         </sun:button>
         <sun:button id="button2" text="$resource{i18n.button.Disable}" disabled="#{true}" primary="#{false}" >
@@ -92,7 +92,7 @@
                     }
                 }
                 setAttribute(key="selectedRows" value="${selectedRows}");
-                gf.redirect(page="#{pageSession.listLink}");
+                gf.redirect(page="#{pageSession.listLink}&filterValue=#{pageSession.filterValue}");
             />
         </sun:button>
         
