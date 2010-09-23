@@ -285,6 +285,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
             Resources appScopedResources = application.getResources();
             if(appScopedResources != null){
                 appInfo.addTransientAppMetaData(Application.APPLICATION, application);
+                appInfo.addTransientAppMetaData(application.getName()+"-resources", appScopedResources);
             }
 
             List<Module> modules = application.getModule();
@@ -467,6 +468,10 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                     asc = application.createChild(Resources.class);
                     application.setResources(asc);
                     dc.addTransientAppMetaData(ConnectorConstants.APP_META_DATA_RESOURCES, asc);
+                    ApplicationInfo appInfo = appRegistry.get(app.getName());
+                    if(appInfo != null){
+                        appInfo.addTransientAppMetaData(app.getName()+"-resources", asc);
+                    }
                 }
 
                 Collection<Resource> resourceConfigurations =
