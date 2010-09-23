@@ -50,6 +50,7 @@
 <!define name="content">
     <event>
     <!beforeCreate
+        getRequestValue(key="target" value="#{pageSession.targetValue}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/full/externalResourceNew.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/full/externalResources.jsf");
         setPageSessionAttribute(key="childType" value="external-jndi-resource");

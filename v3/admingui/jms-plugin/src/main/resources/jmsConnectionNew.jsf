@@ -49,6 +49,7 @@
 <!define name="content">
     <event>
         <!beforeCreate
+            getRequestValue(key="target" value="#{pageSession.targetValue}");
             setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jms/jmsConnectionNew.jsf");
             setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jms/jmsConnections.jsf");
 

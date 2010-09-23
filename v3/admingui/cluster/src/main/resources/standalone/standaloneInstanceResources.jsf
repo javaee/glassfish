@@ -50,9 +50,9 @@
 <!define name="content">
     <event>
     <!beforeCreate
-        getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
+        getRequestValue(key="instanceName" value="#{pageSession.target}");
         getRequestValue(key="filterValue" value="#{pageSession.filterValue}");
-        urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
+        urlencode(value="#{pageSession.target}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
         setSessionAttribute(key="standaloneInstanceTabs" value="resources");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/cluster/standalone/standaloneInstanceResources.jsf?instanceName=#{pageSession.encodedInstanceName}");
         setPageSessionAttribute(key="restURL" value="#{sessionScope.REST_URL}/servers/server/#{pageSession.encodedInstanceName}/resource-ref");

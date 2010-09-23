@@ -50,6 +50,7 @@
 <!define name="content">
     <event>
     <!beforeCreate
+        getRequestValue(key="target" value="#{pageSession.targetValue}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorResources.jsf");
         setPageSessionAttribute(key="childType" value="connector-resource");
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");

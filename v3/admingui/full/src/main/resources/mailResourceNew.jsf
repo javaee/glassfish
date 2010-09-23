@@ -50,6 +50,7 @@
 <!define name="content">
     <event>
     <!beforeCreate
+        getRequestValue(key="target" value="#{pageSession.targetValue}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/full/mailResourceNew.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/full/mailResources.jsf");
         setPageSessionAttribute(key="childType" value="mail-resource");

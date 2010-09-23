@@ -120,7 +120,7 @@
                 <!command
                     setAttribute(key="click" value="$this{component}");
                     setAttribute(key="actionValue" value="#{click.selected}");
-                    gf.redirect(page="#{request.contextPath}/#{click.selected}?target=#{target}" );
+                    gf.redirect(page="#{request.contextPath}/#{click.selected}?target=#{pageSession.target}" );
                 />
             </sun:dropDown>
 

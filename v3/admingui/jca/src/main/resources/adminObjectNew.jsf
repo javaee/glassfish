@@ -50,6 +50,7 @@
 <!define name="content">
     <event>
     <!beforeCreate
+        getRequestValue(key="target" value="#{pageSession.targetValue}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/adminObjectNew.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/adminObjectResources.jsf");
         setPageSessionAttribute(key="childType" value="admin-object-resource");
