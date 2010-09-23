@@ -66,8 +66,10 @@ public interface Constants
 	final static String			PROPS_HEADER				= "Backup Status";
     final static String         PROPS_VERSION                   = "version";
     final static String         PROPS_TYPE                   = "type";
-    final static String        BACKUP_CONFIG                  = "backupConfig";
+    final static String         BACKUP_CONFIG                  = "backupConfig";
 	final static String			PROPS_FILENAME				= "backup.properties";
     final static String         CONFIG_ONLY ="configOnly";
     final static String         FULL ="full";
+    final static String         CONFIG_DIR="config";
+    final static String         NO_CONFIG="no backup config";
 }

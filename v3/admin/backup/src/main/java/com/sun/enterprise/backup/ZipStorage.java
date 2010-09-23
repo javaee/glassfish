@@ -56,14 +56,14 @@ import java.io.*;
  * This class implements storing backups as zip files.  
  * @author Byron Nevins
  */
-class ZipStorage
-{
+class ZipStorage {
+
 	/**
 	 * @param req
 	 * @throws BackupException
 	 */	
-	ZipStorage(BackupRequest req) throws BackupException
-	{
+	ZipStorage(BackupRequest req) throws BackupException {
+
 		if(req == null)
 			throw new BackupException("backup-res.NoBackupRequest", getClass().getName() + ".ctor");
 		
@@ -73,20 +73,27 @@ class ZipStorage
 	/** 
 	 * Backups the files to a zip file.  
 	 * @throws BackupException if there were any errors writing the file.
-	 */	
-	void store() throws BackupException
-	{
+	 */
+	void store() throws BackupException {
+
+        File backupFileDir = null;
+        if (request.configOnly) {
+            backupFileDir = new File(request.domainDir, Constants.CONFIG_DIR) ;
+        } else {
+            backupFileDir = request.domainDir;
+        }
+
 		String zipName			= FileUtils.safeGetCanonicalPath(request.backupFile);
-		String domainDirName	= FileUtils.safeGetCanonicalPath(request.domainDir);
+		String domainDirName	= FileUtils.safeGetCanonicalPath(backupFileDir);
 		
-		FileListerRelative lister = new FileListerRelative(request.domainDir);
+		FileListerRelative lister = new FileListerRelative(backupFileDir);
 		lister.keepEmptyDirectories();	// we want to restore any empty directories too!
 		String[] files = lister.getFiles();
 		
 		LoggerHelper.fine("Writing " + zipName);
 		
-		try
-		{
+		try {
+
 			ZipWriter writer = new ZipWriter(zipName, domainDirName, files);
 
 			if(request.excludeDirs != null && request.excludeDirs.length > 0)
@@ -94,16 +101,16 @@ class ZipStorage
 			
 			writer.safeWrite();
 		}
-		catch(ZipFileException zfe)
-		{
+		catch(ZipFileException zfe)  {
+
 			throw new BackupException("backup-res.ZipBackupError", zfe, zipName);
 		}
 	}
 
 	///////////////////////////////////////////////////////////////////////////
 
-	void write() throws BackupException
-	{
+	void write() throws BackupException  {
+
 		
 	}
 

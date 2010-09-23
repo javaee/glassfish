@@ -62,7 +62,13 @@ class Status {
     String write(BackupRequest req) {
         props = new Properties();
         request = req;
-        statusFile = new File(request.domainDir, Constants.PROPS_FILENAME);
+        File backupFileDir = null;
+        if (request.configOnly) {
+            backupFileDir = new File(request.domainDir, Constants.CONFIG_DIR) ;
+        } else {
+            backupFileDir = request.domainDir;
+        }
+        statusFile = new File(backupFileDir, Constants.PROPS_FILENAME);
 
         try {
             setProps();
@@ -257,7 +263,8 @@ class Status {
         String type = request.configOnly ? Constants.CONFIG_ONLY :
                 Constants.FULL;
         props.setProperty(Constants.PROPS_TYPE,type);
-        props.setProperty(Constants.BACKUP_CONFIG,request.backupConfig);
+        String bc = (request.backupConfig == null) ? Constants.NO_CONFIG : request.backupConfig;
+        props.setProperty(Constants.BACKUP_CONFIG,bc);
     }
 
     private String propsToString(boolean terse) {
