@@ -107,7 +107,8 @@ public final class DeleteDomainCommand extends LocalDomainCommand {
     }
 
     private void checkRunning() throws CommandException {
-        if (super.isRunning(adminPort)) {
+        programOpts.setInteractive(false);      // don't prompt for password
+        if (isRunning(adminPort) && isThisDAS(getDomainRootDir())) {
             String msg = strings.get("domain.is.running", getDomainName(),
                                         getDomainRootDir());
             throw new IllegalStateException(msg);
