@@ -173,10 +173,8 @@ public class ResourceUtilities {
                      if(existingRes.equals(res)){
                          //duplicate within an archive
                          addResource = false;
-                         _logger.warning(localStrings.getString(
-                                 "duplicate.resource.sun.resource.xml",
-                                 getIdToCompare(res),
-                                 sunResXML.getXMLPath()));
+                         _logger.warning(localStrings.getString("duplicate.resource.sun.resource.xml",
+                                 getIdToCompare(res), sunResXML.getXMLPath()));
                          break;
                      }
                      //check if another existing resource conflicts with the
@@ -185,10 +183,8 @@ public class ResourceUtilities {
                          //conflict within an archive
                          addResource = false;
                          conflictingResources.append("\n");
-                         String message = localStrings.getString(
-                                 "conflict.resource.sun.resource.xml",
-                                 getIdToCompare(res),
-                                 sunResXML.getXMLPath());
+                         String message = localStrings.getString("conflict.resource.sun.resource.xml",
+                                 getIdToCompare(res), sunResXML.getXMLPath());
                          conflictingResources.append(message);
                          _logger.warning(message);
                          if(_logger.isLoggable(Level.FINE))
@@ -229,8 +225,7 @@ public class ResourceUtilities {
 
                  if (resources.getResourceByName(res.getClass(), id) != null) {
                      conflictingResources.append("\n");
-                     String message = localStrings.getString(
-                             "conflict.resource.with.domain.xml",
+                     String message = localStrings.getString("conflict.resource.with.domain.xml",
                              getIdToCompare(res));
                      conflictingResources.append(message);
                      _logger.warning(message);
@@ -240,7 +235,6 @@ public class ResourceUtilities {
              }
              if(conflictingResources.toString().length() > 0){
                  throw new ResourceConflictException(conflictingResources.toString());
-
              }
          }
      }
