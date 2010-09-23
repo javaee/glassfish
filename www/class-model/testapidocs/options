@@ -1,0 +1,26 @@
+-classpath
+'/home/dochez/java/svn/hk2/trunk/hk2/class-model/target/classes:/home/dochez/java/svn/hk2/trunk/hk2/class-model/target/test-classes:/home/dochez/.m2/repository/javax/annotation/jsr250-api/1.0/jsr250-api-1.0.jar:/home/dochez/.m2/repository/org/glassfish/hk2/external/asm-all-repackaged/1.0.48-SNAPSHOT/asm-all-repackaged-1.0.48-SNAPSHOT.jar:/home/dochez/.m2/repository/org/jboss/interceptor/jboss-interceptor-api/1.1/jboss-interceptor-api-1.1.jar:/home/dochez/.m2/repository/javax/enterprise/cdi-api/1.0/cdi-api-1.0.jar:/home/dochez/.m2/repository/javax/inject/javax.inject/1/javax.inject-1.jar:/home/dochez/.m2/repository/junit/junit/4.3.1/junit-4.3.1.jar'
+-encoding
+'UTF-8'
+-protected
+-sourcepath
+'/home/dochez/java/svn/hk2/trunk/hk2/class-model/src/test/java'
+-author
+-bottom
+'Copyright &#169; 2010 <a href="http://www.sun.com">Sun Microsystems, Inc.</a>. All Rights Reserved.'
+-charset
+'UTF-8'
+-d
+'/home/dochez/java/svn/hk2/trunk/hk2/class-model/target/site/testapidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'Class Model for Hk2 1.0.48-SNAPSHOT Test API'
+-link
+'../apidocs'
+-link
+'http://java.sun.com/javase/6/docs/api'
+-use
+-version
+-windowtitle
+'Class Model for Hk2 1.0.48-SNAPSHOT Test API'

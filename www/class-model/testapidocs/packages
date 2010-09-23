@@ -1,0 +1,4 @@
+org.glassfish.hk2.classmodel.reflect.test.ordering
+org.glassfish.hk2.classmodel.reflect.test
+org.glassfish.hk2.classmodel.reflect.test.model
+org.glassfish.hk2.classmodel.reflect.test.model.qualifier
