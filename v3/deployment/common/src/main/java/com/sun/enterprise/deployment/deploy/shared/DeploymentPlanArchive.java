@@ -161,8 +161,7 @@ public class DeploymentPlanArchive extends JarArchive implements ReadableArchive
                 elements = new Vector();
                 for (Enumeration e = jarFile.entries();e.hasMoreElements();) {
                     ZipEntry ze = (ZipEntry) e.nextElement();
-                    if (!ze.isDirectory() && !ze.getName().equals(
-                            JarFile.MANIFEST_NAME)) {
+                    if (!ze.isDirectory() && !ze.getName().startsWith("META-INF/")) {
                         elements.add(ze.getName());
                     }
                 }
