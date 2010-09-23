@@ -257,6 +257,7 @@ class Status {
         String type = request.configOnly ? Constants.CONFIG_ONLY :
                 Constants.FULL;
         props.setProperty(Constants.PROPS_TYPE,type);
+        props.setProperty(Constants.BACKUP_CONFIG,request.backupConfig);
     }
 
     private String propsToString(boolean terse) {
@@ -293,6 +294,9 @@ class Status {
             sb.append("\n");
             sb.append(StringHelper.get(pre + Constants.PROPS_TYPE,
                 props.getProperty(Constants.PROPS_TYPE)));
+            sb.append("\n");
+            sb.append(StringHelper.get(pre + Constants.BACKUP_CONFIG,
+                props.getProperty(Constants.BACKUP_CONFIG)));
         }
 
         return sb.toString();
