@@ -168,6 +168,7 @@ public class UpgradeToolMain {
 
                 dProcessor.copyUserLibFiles();
                 int exitValue = dProcessor.startDomain(_target.getDomainName());
+                logger.info(sm.getString("enterprise.tools.end.asadmin.out"));
 
                 if (exitValue != 0) {
                     logger.warning(sm.getString(

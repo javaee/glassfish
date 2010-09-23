@@ -42,6 +42,7 @@ package com.sun.enterprise.tools.upgrade.common;
 
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.tools.upgrade.logging.LogService;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -87,6 +88,15 @@ public class DomainsProcessor {
                 "upgrade.common.src_lib_dir_not_found", dirName));
             logUserMustCopyFiles();
             return;
+        }
+
+        // check for lib/endorsed
+        // https://glassfish.dev.java.net/issues/show_bug.cgi?id=11753
+        String [] fileNames = sLibDir.list();
+        for (String fileName : fileNames) {
+            if ("endorsed".equals(fileName)) {
+                logger.warning(stringManager.getString("lib.endorsed.warning"));
+            }
         }
 
         // target install dir is the domains directory

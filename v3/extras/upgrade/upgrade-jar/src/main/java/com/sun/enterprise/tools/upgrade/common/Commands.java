@@ -111,8 +111,8 @@ public class Commands {
         final long JOIN_TIMEOUT = 4000;
 
         int exitValue = 0;
-        logger.info(stringManager.getString("commands.executingCommandMsg") +
-            commandString);
+        logger.info(stringManager.getString("commands.executingCommandMsg",
+            commandString));
 
         try {
             // start process and threads to watch output
@@ -229,8 +229,17 @@ public class Commands {
                 if (line != null) {
                     matcher = pattern.matcher(line);
                     while (line != null) {
-                        if (log.isLoggable(Level.FINE)) {
-                            log.finer(getName() + ": " + line);
+                        /*
+                         * This is a fix for issue
+                         * https://glassfish.dev.java.net/issues/show_bug.cgi?id=11924
+                         * Without it, there's no way for a user to know if
+                         * s/he has given the wrong master password.
+                         */
+                        if (!line.startsWith("[#|") && !line.trim().isEmpty()) {
+                            log.info(stringManager.getString(
+                                "asadmin.output", line));
+                        } else if (log.isLoggable(Level.FINE)) {
+                            log.finer("fine:" + getName() + ": " + line);
                         }
                         matcher.reset(line);
                         if (matcher.matches()) {
