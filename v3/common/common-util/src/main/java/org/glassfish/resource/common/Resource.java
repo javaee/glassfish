@@ -40,8 +40,7 @@
 
 package org.glassfish.resource.common;
 
-import java.util.Properties;
-import java.util.HashMap;
+import java.util.*;
 
 import static org.glassfish.resource.common.ResourceConstants.*;
 
@@ -50,17 +49,35 @@ import static org.glassfish.resource.common.ResourceConstants.*;
  */
 public class Resource {
     public static final String CUSTOM_RESOURCE          = "custom-resource";
-    public static final String JDBC_CONNECTION_POOL     = "jdbc-connection-pool";
     public static final String CONNECTOR_RESOURCE       = "connector-resource";
     public static final String ADMIN_OBJECT_RESOURCE    = "admin-object-resource";
     public static final String JDBC_RESOURCE            = "jdbc-resource";
-    public static final String RESOURCE_ADAPTER_CONFIG  = "resource-adapter-config";
     public static final String MAIL_RESOURCE            = "mail-resource";
-    public static final String EXTERNAL_JNDI_RESOURCE   = "external-jndi-resource"; 
+    public static final String EXTERNAL_JNDI_RESOURCE   = "external-jndi-resource";
+
+    public static final String JDBC_CONNECTION_POOL     = "jdbc-connection-pool";
     public static final String CONNECTOR_CONNECTION_POOL = "connector-connection-pool";
+
+    public static final String RESOURCE_ADAPTER_CONFIG  = "resource-adapter-config";
     public static final String PERSISTENCE_MANAGER_FACTORY_RESOURCE = "persistence-manager-factory-resource";
     public static final String CONNECTOR_SECURITY_MAP    = "security-map";
     public static final String CONNECTOR_WORK_SECURITY_MAP    = "work-security-map";
+
+    public static final List BINDABLE_RESOURCES = Collections.unmodifiableList(
+            Arrays.asList(
+                CUSTOM_RESOURCE,
+                CONNECTOR_RESOURCE,
+                ADMIN_OBJECT_RESOURCE,
+                JDBC_RESOURCE,
+                MAIL_RESOURCE,
+                EXTERNAL_JNDI_RESOURCE
+            ));
+
+    public static final List RESOURCE_POOL = Collections.unmodifiableList(
+            Arrays.asList(
+                JDBC_CONNECTION_POOL,
+                CONNECTOR_CONNECTION_POOL
+            )); 
 
     private String resType;
     private HashMap attrList = new HashMap();
@@ -162,12 +179,21 @@ public class Resource {
      * this resource.
      */
     private boolean hasSameIdentity(Resource r) {
-/*
+
         //For two resources to have the same identity, atleast their types should match
-        if (!(r.getType().equals(this.getType()))) {
+
+        if(BINDABLE_RESOURCES.contains(this.getType())){
+            if(!BINDABLE_RESOURCES.contains(r.getType())){
+                return false;
+            }
+        }else if (RESOURCE_POOL.contains(this.getType())){
+            if(!RESOURCE_POOL.contains(r.getType())){
+                return false;
+            }
+        }else if (!(r.getType().equals(this.getType()))) {
             return false;
         }
-*/
+
         String rType = r.getType();
         
         //For all resources, their identity is their jndi-name
