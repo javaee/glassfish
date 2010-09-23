@@ -19,7 +19,7 @@
     </style>
     <link rel="stylesheet" href="./css/print.css" type="text/css" media="print" />
           <meta name="author" content="Kohsuke Kawaguchi" />
-        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
       </head>
   <body class="composite">
     <!-- TODO: move this into JavaScript to patch the skin
@@ -27,9 +27,7 @@
     -->
     <div id="bodyColumn">
       <div id="contentBox">
-        <div class="section"><h2>Developing a module</h2>
-<p>HK2 comes with a Maven2 plugin to make module development productive. The following POM fragment illustrates how to add this plugin to your POM:</p>
-<div class="source"><pre>&lt;project&gt;
+        <div class="section"><h2>Developing a module<a name="Developing_a_module"></a></h2><p>HK2 comes with a Maven2 plugin to make module development productive. The following POM fragment illustrates how to add this plugin to your POM:</p><div><pre>&lt;project&gt;
     &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
     &lt;groupId&gt;org.acme.foo&lt;/groupId&gt;
     &lt;artifactId&gt;mymodule&lt;/artifactId&gt;
@@ -54,26 +52,7 @@
     &lt;/repositories&gt;
 
     ...
-&lt;/project&gt;</pre>
-</div>
-<p>The plugin is marked as &quot;extension&quot; because this plugin adds a custom packaging &quot;hk2-jar&quot;. Once installed, this plugin can be accessible with the &quot;hk2&quot; prefix. This packaging forces relevant build phases to use the right mojo, which performs additional HK2-specific processing, such as:</p>
-<ul><li>Produce proper manifest entries from POM * Generating necessary <tt>META-INF/services</tt>
- files for @Service and @Contract.<p>Modules can be built and installed with usual <tt>mvn install</tt>
- and <tt>mvn deploy</tt>
-.</p>
-</li>
-</ul>
-<div class="section"><h3>Running HK2 application</h3>
-<p>You can run the HK2 module you created by using the <a href="/hk2-maven-plugin/run-mojo.html">hk2:run</a>
- goal.</p>
-</div>
-</div>
-<div class="section"><h2>Developing a mulit-module project</h2>
-<div class="section"><h3>Inter-module dependency</h3>
-<p>To depend on another HK2 module, simply refer to the dependency module in your POM as you do normally. The &quot;hk2-jar&quot; packaging will recognize that and produce the right manifest entries, causing the runtime to set up dependency appropriately.</p>
-</div>
-</div>
-
+&lt;/project&gt;</pre></div><p>The plugin is marked as &quot;extension&quot; because this plugin adds a custom packaging &quot;hk2-jar&quot;. Once installed, this plugin can be accessible with the &quot;hk2&quot; prefix. This packaging forces relevant build phases to use the right mojo, which performs additional HK2-specific processing, such as:</p><ul><li>Produce proper manifest entries from POM * Generating necessary <tt>META-INF/services</tt> files for @Service and @Contract.<p>Modules can be built and installed with usual <tt>mvn install</tt> and <tt>mvn deploy</tt>.</p></li></ul><div class="section"><h3>Running HK2 application<a name="Running_HK2_application"></a></h3><p>You can run the HK2 module you created by using the <a href="/hk2-maven-plugin/run-mojo.html">hk2:run</a> goal.</p></div></div><div class="section"><h2>Developing a mulit-module project<a name="Developing_a_mulit-module_project"></a></h2><div class="section"><h3>Inter-module dependency<a name="Inter-module_dependency"></a></h3><p>To depend on another HK2 module, simply refer to the dependency module in your POM as you do normally. The &quot;hk2-jar&quot; packaging will recognize that and produce the right manifest entries, causing the runtime to set up dependency appropriately.</p></div></div>
       </div>
     </div>
     <div class="clear">
@@ -83,14 +62,14 @@
       <div class="xright">&#169;  
           2010
     
-          Oracle Corporation
+          Sun Microsystems, Inc.
           
   
 
   
   
-  &nbsp;| Last Published: 04/24/2010
-  &nbsp;| Version: 1.0.11-SNAPSHOT
+  &nbsp;| Last Published: 09/22/2010
+  &nbsp;| Version: 1.0.48-SNAPSHOT
 </div>
       <div class="clear">
         <hr/>

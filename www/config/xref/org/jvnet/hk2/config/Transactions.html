@@ -164,334 +164,345 @@
 <a name="155" href="#155">155</a>                     <strong>while</strong> (latch.getCount()>0) {
 <a name="156" href="#156">156</a>                         <strong>try</strong> {
 <a name="157" href="#157">157</a>                             <strong>final</strong> FutureTask job = pendingJobs.take();
-<a name="158" href="#158">158</a>                             job.run();                            
-<a name="159" href="#159">159</a>                         }
-<a name="160" href="#160">160</a> 
-<a name="161" href="#161">161</a>                         <strong>catch</strong> (InterruptedException e) {
-<a name="162" href="#162">162</a>                             <em class="comment">// do anything here?</em>
-<a name="163" href="#163">163</a>                         }
-<a name="164" href="#164">164</a>                     }
-<a name="165" href="#165">165</a>                 }
-<a name="166" href="#166">166</a>                 
-<a name="167" href="#167">167</a>             });
-<a name="168" href="#168">168</a>         }
-<a name="169" href="#169">169</a> 
-<a name="170" href="#170">170</a>         <strong>void</strong> stop() {
-<a name="171" href="#171">171</a>             latch.countDown();
-<a name="172" href="#172">172</a>             <em class="comment">// last event to force the close</em>
-<a name="173" href="#173">173</a>             pendingJobs.add(prepare(<strong>new</strong> Job&lt;T, U, V>(<strong>null</strong>, <strong>null</strong>) {
-<a name="174" href="#174">174</a>                 <strong>public</strong> V process(T target) {
-<a name="175" href="#175">175</a>                     <strong>return</strong> <strong>null</strong>;
-<a name="176" href="#176">176</a>                 }
-<a name="177" href="#177">177</a>             }));
-<a name="178" href="#178">178</a>         }
-<a name="179" href="#179">179</a>     }
-<a name="180" href="#180">180</a> 
-<a name="181" href="#181">181</a>     <em>/**<em>*</em></em>
-<a name="182" href="#182">182</a> <em>     * Default listener notification pump. One thread per listener, jobs processed in</em>
-<a name="183" href="#183">183</a> <em>     * the order it was received.</em>
-<a name="184" href="#184">184</a> <em>     *</em>
-<a name="185" href="#185">185</a> <em>     * @param &lt;T> type of listener interface</em>
-<a name="186" href="#186">186</a> <em>     * @param &lt;U> type of events the listener methods are expecting</em>
-<a name="187" href="#187">187</a> <em>     * @param &lt;V> return type of the listener interface methods.</em>
-<a name="188" href="#188">188</a> <em>     */</em>
-<a name="189" href="#189">189</a>     <strong>public</strong> <strong>class</strong> ListenerNotifier&lt;T,U,V> <strong>extends</strong> Notifier&lt;T,U,V> {
-<a name="190" href="#190">190</a>         
-<a name="191" href="#191">191</a>         <strong>final</strong> T listener;
-<a name="192" href="#192">192</a> 
-<a name="193" href="#193">193</a>         <strong>public</strong> ListenerNotifier(T listener) {
-<a name="194" href="#194">194</a>             <strong>this</strong>.listener = listener;
-<a name="195" href="#195">195</a>         }
-<a name="196" href="#196">196</a> 
-<a name="197" href="#197">197</a>         <strong>protected</strong> FutureTask&lt;V> prepare(<strong>final</strong> Job&lt;T, U, V> job) {
-<a name="198" href="#198">198</a>             <strong>return</strong> <strong>new</strong> FutureTask&lt;V>(<strong>new</strong> Callable&lt;V>() {
-<a name="199" href="#199">199</a>                     <strong>public</strong> V call() throws Exception {
-<a name="200" href="#200">200</a>                         <strong>try</strong> {
-<a name="201" href="#201">201</a>                             <strong>if</strong> ( job.mEvents.size() != 0 ) {
-<a name="202" href="#202">202</a>                                 <strong>return</strong> job.process(listener);
-<a name="203" href="#203">203</a>                            }
-<a name="204" href="#204">204</a>                         } <strong>finally</strong> {
-<a name="205" href="#205">205</a>                             job.releaseLatch();
-<a name="206" href="#206">206</a>                         }
-<a name="207" href="#207">207</a>                         <strong>return</strong> <strong>null</strong>;
-<a name="208" href="#208">208</a>                     }
-<a name="209" href="#209">209</a>                 });
-<a name="210" href="#210">210</a>         }   
-<a name="211" href="#211">211</a>         
-<a name="212" href="#212">212</a>     }
-<a name="213" href="#213">213</a> 
-<a name="214" href="#214">214</a>     <em>/**<em>*</em></em>
-<a name="215" href="#215">215</a> <em>     * Configuration listener notification pump. All Listeners are notified within their own thread, only on thread</em>
-<a name="216" href="#216">216</a> <em>     * takes care of the job pump.</em>
-<a name="217" href="#217">217</a> <em>     * </em>
-<a name="218" href="#218">218</a> <em>     */</em>
-<a name="219" href="#219">219</a>     <strong>public</strong> <strong>class</strong> ConfigListenerNotifier <strong>extends</strong> Notifier&lt;ConfigListener,PropertyChangeEvent,UnprocessedChangeEvents> {
-<a name="220" href="#220">220</a> 
-<a name="221" href="#221">221</a>         <strong>protected</strong> FutureTask&lt;UnprocessedChangeEvents>
-<a name="222" href="#222">222</a>             prepare(<strong>final</strong> Job&lt;ConfigListener, PropertyChangeEvent, UnprocessedChangeEvents> job) {
-<a name="223" href="#223">223</a> 
-<a name="224" href="#224">224</a>         <em class="comment">// first, calculate the recipients.</em>
-<a name="225" href="#225">225</a>         <strong>final</strong> Set&lt;ConfigListener> configListeners = <strong>new</strong> HashSet&lt;ConfigListener>();
-<a name="226" href="#226">226</a>         <strong>for</strong> (PropertyChangeEvent event : job.mEvents) {
-<a name="227" href="#227">227</a>             <strong>final</strong> <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom = (Dom) ((ConfigView) Proxy.getInvocationHandler(event.getSource())).getMasterView();
-<a name="228" href="#228">228</a>             configListeners.addAll(dom.getListeners());
+<a name="158" href="#158">158</a>                             <em class="comment">// when listeners start a transaction themselves, several jobs try to get published</em>
+<a name="159" href="#159">159</a>                             <em class="comment">// simultaneously so we cannot block the pump while delivering the messages. </em>
+<a name="160" href="#160">160</a>                             executor.submit(<strong>new</strong> Runnable() {
+<a name="161" href="#161">161</a>                                 <strong>public</strong> <strong>void</strong> run() {
+<a name="162" href="#162">162</a>                                     job.run();
+<a name="163" href="#163">163</a>                                 }
+<a name="164" href="#164">164</a>                             });
+<a name="165" href="#165">165</a>                         }
+<a name="166" href="#166">166</a> 
+<a name="167" href="#167">167</a>                         <strong>catch</strong> (InterruptedException e) {
+<a name="168" href="#168">168</a>                             <em class="comment">// do anything here?</em>
+<a name="169" href="#169">169</a>                         }
+<a name="170" href="#170">170</a>                     }
+<a name="171" href="#171">171</a>                 }
+<a name="172" href="#172">172</a>                 
+<a name="173" href="#173">173</a>             });
+<a name="174" href="#174">174</a>         }
+<a name="175" href="#175">175</a> 
+<a name="176" href="#176">176</a>         <strong>void</strong> stop() {
+<a name="177" href="#177">177</a>             latch.countDown();
+<a name="178" href="#178">178</a>             <em class="comment">// last event to force the close</em>
+<a name="179" href="#179">179</a>             pendingJobs.add(prepare(<strong>new</strong> Job&lt;T, U, V>(<strong>null</strong>, <strong>null</strong>) {
+<a name="180" href="#180">180</a>                 <strong>public</strong> V process(T target) {
+<a name="181" href="#181">181</a>                     <strong>return</strong> <strong>null</strong>;
+<a name="182" href="#182">182</a>                 }
+<a name="183" href="#183">183</a>             }));
+<a name="184" href="#184">184</a>         }
+<a name="185" href="#185">185</a>     }
+<a name="186" href="#186">186</a> 
+<a name="187" href="#187">187</a>     <em>/**<em>*</em></em>
+<a name="188" href="#188">188</a> <em>     * Default listener notification pump. One thread per listener, jobs processed in</em>
+<a name="189" href="#189">189</a> <em>     * the order it was received.</em>
+<a name="190" href="#190">190</a> <em>     *</em>
+<a name="191" href="#191">191</a> <em>     * @param &lt;T> type of listener interface</em>
+<a name="192" href="#192">192</a> <em>     * @param &lt;U> type of events the listener methods are expecting</em>
+<a name="193" href="#193">193</a> <em>     * @param &lt;V> return type of the listener interface methods.</em>
+<a name="194" href="#194">194</a> <em>     */</em>
+<a name="195" href="#195">195</a>     <strong>public</strong> <strong>class</strong> ListenerNotifier&lt;T,U,V> <strong>extends</strong> Notifier&lt;T,U,V> {
+<a name="196" href="#196">196</a>         
+<a name="197" href="#197">197</a>         <strong>final</strong> T listener;
+<a name="198" href="#198">198</a> 
+<a name="199" href="#199">199</a>         <strong>public</strong> ListenerNotifier(T listener) {
+<a name="200" href="#200">200</a>             <strong>this</strong>.listener = listener;
+<a name="201" href="#201">201</a>         }
+<a name="202" href="#202">202</a> 
+<a name="203" href="#203">203</a>         <strong>protected</strong> FutureTask&lt;V> prepare(<strong>final</strong> Job&lt;T, U, V> job) {
+<a name="204" href="#204">204</a>             <strong>return</strong> <strong>new</strong> FutureTask&lt;V>(<strong>new</strong> Callable&lt;V>() {
+<a name="205" href="#205">205</a>                     <strong>public</strong> V call() throws Exception {
+<a name="206" href="#206">206</a>                         <strong>try</strong> {
+<a name="207" href="#207">207</a>                             <strong>if</strong> ( job.mEvents.size() != 0 ) {
+<a name="208" href="#208">208</a>                                 <strong>return</strong> job.process(listener);
+<a name="209" href="#209">209</a>                            }
+<a name="210" href="#210">210</a>                         } <strong>finally</strong> {
+<a name="211" href="#211">211</a>                             job.releaseLatch();
+<a name="212" href="#212">212</a>                         }
+<a name="213" href="#213">213</a>                         <strong>return</strong> <strong>null</strong>;
+<a name="214" href="#214">214</a>                     }
+<a name="215" href="#215">215</a>                 });
+<a name="216" href="#216">216</a>         }   
+<a name="217" href="#217">217</a>         
+<a name="218" href="#218">218</a>     }
+<a name="219" href="#219">219</a> 
+<a name="220" href="#220">220</a>     <em>/**<em>*</em></em>
+<a name="221" href="#221">221</a> <em>     * Configuration listener notification pump. All Listeners are notified within their own thread, only on thread</em>
+<a name="222" href="#222">222</a> <em>     * takes care of the job pump.</em>
+<a name="223" href="#223">223</a> <em>     * </em>
+<a name="224" href="#224">224</a> <em>     */</em>
+<a name="225" href="#225">225</a>     <strong>public</strong> <strong>class</strong> ConfigListenerNotifier <strong>extends</strong> Notifier&lt;ConfigListener,PropertyChangeEvent,UnprocessedChangeEvents> {
+<a name="226" href="#226">226</a> 
+<a name="227" href="#227">227</a>         <strong>protected</strong> FutureTask&lt;UnprocessedChangeEvents>
+<a name="228" href="#228">228</a>             prepare(<strong>final</strong> Job&lt;ConfigListener, PropertyChangeEvent, UnprocessedChangeEvents> job) {
 <a name="229" href="#229">229</a> 
-<a name="230" href="#230">230</a>             <em class="comment">// we also notify the parent.</em>
-<a name="231" href="#231">231</a>             <strong>if</strong> (dom.parent()!=<strong>null</strong>) {
-<a name="232" href="#232">232</a>                 configListeners.addAll(dom.parent().getListeners());
-<a name="233" href="#233">233</a>             }
-<a name="234" href="#234">234</a>         }
-<a name="235" href="#235">235</a> 
-<a name="236" href="#236">236</a>         <strong>return</strong> <strong>new</strong> FutureTask&lt;UnprocessedChangeEvents>(<strong>new</strong> Callable&lt;UnprocessedChangeEvents>() {
-<a name="237" href="#237">237</a>             <strong>public</strong> <a href="../../../../org/jvnet/hk2/config/UnprocessedChangeEvents.html">UnprocessedChangeEvents</a> call() throws Exception {
-<a name="238" href="#238">238</a> 
-<a name="239" href="#239">239</a>                 <strong>try</strong> {
-<a name="240" href="#240">240</a>                     <em class="comment">// temporary structure to store our future notifications</em>
-<a name="241" href="#241">241</a>                     List&lt;Future&lt;UnprocessedChangeEvents>> futures = <strong>new</strong> ArrayList&lt;Future&lt;UnprocessedChangeEvents>>();
-<a name="242" href="#242">242</a> 
-<a name="243" href="#243">243</a>                     <strong>for</strong> (<strong>final</strong> ConfigListener listener : configListeners) {
-<a name="244" href="#244">244</a>                         <em class="comment">// each listener is notified in it's own thread.</em>
-<a name="245" href="#245">245</a> 
-<a name="246" href="#246">246</a>                         futures.add(executor.submit(<strong>new</strong> Callable&lt;UnprocessedChangeEvents>() {
-<a name="247" href="#247">247</a>                             <strong>public</strong> <a href="../../../../org/jvnet/hk2/config/UnprocessedChangeEvents.html">UnprocessedChangeEvents</a> call() throws Exception {
-<a name="248" href="#248">248</a>                                 <strong>return</strong> job.process(listener);
-<a name="249" href="#249">249</a>                             }
-<a name="250" href="#250">250</a>                         }));
-<a name="251" href="#251">251</a>                     }
-<a name="252" href="#252">252</a>                     List&lt;UnprocessedChangeEvents> unprocessed = <strong>new</strong> ArrayList&lt;UnprocessedChangeEvents>(futures.size());
-<a name="253" href="#253">253</a>                     <strong>for</strong> (Future&lt;UnprocessedChangeEvents> future : futures) {
-<a name="254" href="#254">254</a>                         <strong>try</strong> {
-<a name="255" href="#255">255</a>                             <a href="../../../../org/jvnet/hk2/config/UnprocessedChangeEvents.html">UnprocessedChangeEvents</a> result = future.get(200, TimeUnit.SECONDS);
-<a name="256" href="#256">256</a>                             <strong>if</strong> (result.getUnprocessed()!=<strong>null</strong> &amp;&amp; result.getUnprocessed().size()>0) {
-<a name="257" href="#257">257</a>                                 <strong>for</strong> (UnprocessedChangeEvent event : result.getUnprocessed()) {
-<a name="258" href="#258">258</a>                                     Logger.getAnonymousLogger().log(Level.WARNING, <span class="string">"Unprocessed event : "</span> + event);
-<a name="259" href="#259">259</a>                                 }
-<a name="260" href="#260">260</a>                                 unprocessed.add(result);
-<a name="261" href="#261">261</a>                             }
-<a name="262" href="#262">262</a>                         } <strong>catch</strong> (InterruptedException e) {
-<a name="263" href="#263">263</a>                             Logger.getAnonymousLogger().log(Level.SEVERE, <span class="string">"Config Listener notification got interruped"</span>, e);
-<a name="264" href="#264">264</a>                         } <strong>catch</strong> (ExecutionException e) {
-<a name="265" href="#265">265</a>                             Logger.getAnonymousLogger().log(Level.SEVERE, <span class="string">"Config Listener notification got interruped"</span>, e);
-<a name="266" href="#266">266</a>                         } <strong>catch</strong> (TimeoutException e) {
-<a name="267" href="#267">267</a>                             Logger.getAnonymousLogger().log(Level.SEVERE, <span class="string">"Config Listener notification took too long"</span>, e);
-<a name="268" href="#268">268</a>                         }
-<a name="269" href="#269">269</a>                     }
-<a name="270" href="#270">270</a> 
-<a name="271" href="#271">271</a>                     <em class="comment">// all notification have been successful, I just need to notify the unprocessed events.</em>
-<a name="272" href="#272">272</a>                     <em class="comment">// note these events are always synchronous so far.</em>
-<a name="273" href="#273">273</a>                     <strong>if</strong> (!unprocessed.isEmpty()) {
-<a name="274" href="#274">274</a>                         Job unprocessedJob = <strong>new</strong> UnprocessedEventsJob(unprocessed, <strong>null</strong>);
-<a name="275" href="#275">275</a>                         <strong>for</strong> (Holder&lt;ListenerNotifier&lt;TransactionListener, ?, Void>> listener : Transactions.<strong>this</strong>.listeners) {
-<a name="276" href="#276">276</a>                             listener.get().add(unprocessedJob);
-<a name="277" href="#277">277</a>                         }
-<a name="278" href="#278">278</a>                     }
-<a name="279" href="#279">279</a>                 } <strong>finally</strong> {
-<a name="280" href="#280">280</a>                     job.releaseLatch();
-<a name="281" href="#281">281</a>                 }
-<a name="282" href="#282">282</a> 
-<a name="283" href="#283">283</a>                 <em class="comment">// in theory I should aggregate my unprocessed events but nobody cares.</em>
-<a name="284" href="#284">284</a>                 <strong>return</strong> <strong>null</strong>;
-<a name="285" href="#285">285</a>             }
-<a name="286" href="#286">286</a>         });
-<a name="287" href="#287">287</a>     }
-<a name="288" href="#288">288</a> 
-<a name="289" href="#289">289</a>     }
-<a name="290" href="#290">290</a> 
-<a name="291" href="#291">291</a> 
-<a name="292" href="#292">292</a>     <em>/**<em>*</em></em>
-<a name="293" href="#293">293</a> <em>        A job contains an optional CountdownLatch so that a caller can learn when the</em>
-<a name="294" href="#294">294</a> <em>        transaction has "cleared" by blocking until that time.</em>
-<a name="295" href="#295">295</a> <em>     */</em>
-<a name="296" href="#296">296</a>     <strong>private</strong> <strong>abstract</strong> <strong>static</strong> <strong>class</strong> Job&lt;T,U,V> {
-<a name="297" href="#297">297</a> 
-<a name="298" href="#298">298</a>         <strong>private</strong> <strong>final</strong> CountDownLatch mLatch;
-<a name="299" href="#299">299</a>         <strong>protected</strong> <strong>final</strong> List&lt;U> mEvents;
-<a name="300" href="#300">300</a>         
-<a name="301" href="#301">301</a>         <strong>public</strong> Job(List&lt;U> events, <strong>final</strong> CountDownLatch latch ) {
-<a name="302" href="#302">302</a>             mLatch  = latch;
-<a name="303" href="#303">303</a>             mEvents = events;
-<a name="304" href="#304">304</a>         }
-<a name="305" href="#305">305</a>         
-<a name="306" href="#306">306</a>         <strong>public</strong> <strong>void</strong> waitForLatch() throws InterruptedException {
-<a name="307" href="#307">307</a>             <strong>if</strong> ( mLatch != <strong>null</strong> ) {
-<a name="308" href="#308">308</a>                 mLatch.await();
-<a name="309" href="#309">309</a>             }
-<a name="310" href="#310">310</a>         }
+<a name="230" href="#230">230</a>         <em class="comment">// first, calculate the recipients.</em>
+<a name="231" href="#231">231</a>         <strong>final</strong> Set&lt;ConfigListener> configListeners = <strong>new</strong> HashSet&lt;ConfigListener>();
+<a name="232" href="#232">232</a>             <strong>if</strong> (job.mEvents != <strong>null</strong>) {
+<a name="233" href="#233">233</a>                 <strong>for</strong> (PropertyChangeEvent event : job.mEvents) {
+<a name="234" href="#234">234</a>                     <strong>final</strong> <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom = (Dom) ((ConfigView) Proxy.getInvocationHandler(event.getSource())).getMasterView();
+<a name="235" href="#235">235</a>                     configListeners.addAll(dom.getListeners());
+<a name="236" href="#236">236</a> 
+<a name="237" href="#237">237</a>                     <em class="comment">// we also notify the parent.</em>
+<a name="238" href="#238">238</a>                     <strong>if</strong> (dom.parent()!=<strong>null</strong>) {
+<a name="239" href="#239">239</a>                         configListeners.addAll(dom.parent().getListeners());
+<a name="240" href="#240">240</a>                     }
+<a name="241" href="#241">241</a>                 }
+<a name="242" href="#242">242</a>             }
+<a name="243" href="#243">243</a> 
+<a name="244" href="#244">244</a>             <strong>return</strong> <strong>new</strong> FutureTask&lt;UnprocessedChangeEvents>(<strong>new</strong> Callable&lt;UnprocessedChangeEvents>() {
+<a name="245" href="#245">245</a>             <strong>public</strong> <a href="../../../../org/jvnet/hk2/config/UnprocessedChangeEvents.html">UnprocessedChangeEvents</a> call() throws Exception {
+<a name="246" href="#246">246</a> 
+<a name="247" href="#247">247</a>                 <strong>try</strong> {
+<a name="248" href="#248">248</a>                     <em class="comment">// temporary structure to store our future notifications with pointer to the</em>
+<a name="249" href="#249">249</a>                     <em class="comment">// originator config listener</em>
+<a name="250" href="#250">250</a>                     Map&lt;Future&lt;UnprocessedChangeEvents>, ConfigListener> futures = <strong>new</strong> HashMap&lt;Future&lt;UnprocessedChangeEvents>, ConfigListener>();
+<a name="251" href="#251">251</a> 
+<a name="252" href="#252">252</a>                     <strong>for</strong> (<strong>final</strong> ConfigListener listener : configListeners) {
+<a name="253" href="#253">253</a>                         <em class="comment">// each listener is notified in it's own thread.</em>
+<a name="254" href="#254">254</a>                         futures.put(executor.submit(<strong>new</strong> Callable&lt;UnprocessedChangeEvents>() {
+<a name="255" href="#255">255</a>                             <strong>public</strong> <a href="../../../../org/jvnet/hk2/config/UnprocessedChangeEvents.html">UnprocessedChangeEvents</a> call() throws Exception {
+<a name="256" href="#256">256</a>                                 <a href="../../../../org/jvnet/hk2/config/UnprocessedChangeEvents.html">UnprocessedChangeEvents</a> e = job.process(listener);
+<a name="257" href="#257">257</a>                                 <strong>return</strong> e;
+<a name="258" href="#258">258</a> 
+<a name="259" href="#259">259</a>                             }
+<a name="260" href="#260">260</a>                         }), listener);
+<a name="261" href="#261">261</a>                     }
+<a name="262" href="#262">262</a>                     List&lt;UnprocessedChangeEvents> unprocessed = <strong>new</strong> ArrayList&lt;UnprocessedChangeEvents>(futures.size());
+<a name="263" href="#263">263</a>                     <strong>for</strong> (Future&lt;UnprocessedChangeEvents> future : futures.keySet()) {
+<a name="264" href="#264">264</a>                         <strong>try</strong> {
+<a name="265" href="#265">265</a>                             <a href="../../../../org/jvnet/hk2/config/UnprocessedChangeEvents.html">UnprocessedChangeEvents</a> result = future.get(200, TimeUnit.SECONDS);
+<a name="266" href="#266">266</a>                             <strong>if</strong> (result.getUnprocessed()!=<strong>null</strong> &amp;&amp; result.getUnprocessed().size()>0) {
+<a name="267" href="#267">267</a>                                 <strong>for</strong> (UnprocessedChangeEvent event : result.getUnprocessed()) {
+<a name="268" href="#268">268</a>                                     Logger.getAnonymousLogger().log(Level.WARNING, <span class="string">"Unprocessed event : "</span> + event);
+<a name="269" href="#269">269</a>                                 }
+<a name="270" href="#270">270</a>                                 unprocessed.add(result);
+<a name="271" href="#271">271</a>                             }
+<a name="272" href="#272">272</a>                         } <strong>catch</strong> (InterruptedException e) {
+<a name="273" href="#273">273</a>                             Logger.getAnonymousLogger().log(Level.SEVERE, <span class="string">"Config Listener notification got interrupted"</span>, e);
+<a name="274" href="#274">274</a>                         } <strong>catch</strong> (ExecutionException e) {
+<a name="275" href="#275">275</a>                             Logger.getAnonymousLogger().log(Level.SEVERE, <span class="string">"Config Listener notification got interrupted"</span>, e);
+<a name="276" href="#276">276</a>                         } <strong>catch</strong> (TimeoutException e) {
+<a name="277" href="#277">277</a>                             <a href="../../../../org/jvnet/hk2/config/ConfigListener.html">ConfigListener</a> cl = futures.get(future);
+<a name="278" href="#278">278</a>                             Logger.getAnonymousLogger().log(Level.SEVERE, <span class="string">"Config Listener "</span> + cl.getClass() + <span class="string">" notification took too long"</span>, e);
+<a name="279" href="#279">279</a>                         }
+<a name="280" href="#280">280</a>                     }
+<a name="281" href="#281">281</a> 
+<a name="282" href="#282">282</a>                     <em class="comment">// all notification have been successful, I just need to notify the unprocessed events.</em>
+<a name="283" href="#283">283</a>                     <em class="comment">// note these events are always synchronous so far.</em>
+<a name="284" href="#284">284</a>                     <strong>if</strong> (!unprocessed.isEmpty()) {
+<a name="285" href="#285">285</a>                         Job unprocessedJob = <strong>new</strong> UnprocessedEventsJob(unprocessed, <strong>null</strong>);
+<a name="286" href="#286">286</a>                         <strong>for</strong> (Holder&lt;ListenerNotifier&lt;TransactionListener, ?, Void>> listener : Transactions.<strong>this</strong>.listeners) {
+<a name="287" href="#287">287</a>                             listener.get().add(unprocessedJob);
+<a name="288" href="#288">288</a>                         }
+<a name="289" href="#289">289</a>                     }
+<a name="290" href="#290">290</a>                 } <strong>finally</strong> {
+<a name="291" href="#291">291</a>                     job.releaseLatch();
+<a name="292" href="#292">292</a>                 }
+<a name="293" href="#293">293</a> 
+<a name="294" href="#294">294</a>                 <em class="comment">// in theory I should aggregate my unprocessed events but nobody cares.</em>
+<a name="295" href="#295">295</a>                 <strong>return</strong> <strong>null</strong>;
+<a name="296" href="#296">296</a>             }
+<a name="297" href="#297">297</a>         });
+<a name="298" href="#298">298</a>     }
+<a name="299" href="#299">299</a> 
+<a name="300" href="#300">300</a>     }
+<a name="301" href="#301">301</a> 
+<a name="302" href="#302">302</a> 
+<a name="303" href="#303">303</a>     <em>/**<em>*</em></em>
+<a name="304" href="#304">304</a> <em>        A job contains an optional CountdownLatch so that a caller can learn when the</em>
+<a name="305" href="#305">305</a> <em>        transaction has "cleared" by blocking until that time.</em>
+<a name="306" href="#306">306</a> <em>     */</em>
+<a name="307" href="#307">307</a>     <strong>private</strong> <strong>abstract</strong> <strong>static</strong> <strong>class</strong> Job&lt;T,U,V> {
+<a name="308" href="#308">308</a> 
+<a name="309" href="#309">309</a>         <strong>private</strong> <strong>final</strong> CountDownLatch mLatch;
+<a name="310" href="#310">310</a>         <strong>protected</strong> <strong>final</strong> List&lt;U> mEvents;
 <a name="311" href="#311">311</a>         
-<a name="312" href="#312">312</a>         <strong>public</strong> <strong>void</strong> releaseLatch() {
-<a name="313" href="#313">313</a>             <strong>if</strong> ( mLatch != <strong>null</strong> ) {
-<a name="314" href="#314">314</a>                 mLatch.countDown();
-<a name="315" href="#315">315</a>             }
-<a name="316" href="#316">316</a>         }
-<a name="317" href="#317">317</a>         
-<a name="318" href="#318">318</a>         <strong>public</strong> <strong>abstract</strong> V process(T target);
-<a name="319" href="#319">319</a>     }
-<a name="320" href="#320">320</a>     
-<a name="321" href="#321">321</a>     <strong>private</strong> <strong>static</strong> <strong>class</strong> TransactionListenerJob <strong>extends</strong> Job&lt;TransactionListener, PropertyChangeEvent, Void> {
-<a name="322" href="#322">322</a> 
-<a name="323" href="#323">323</a>         <strong>public</strong> TransactionListenerJob(List&lt;PropertyChangeEvent> events, CountDownLatch latch) {
-<a name="324" href="#324">324</a>             <strong>super</strong>(events,  latch);
-<a name="325" href="#325">325</a>         }
-<a name="326" href="#326">326</a>         
-<a name="327" href="#327">327</a>         @Override
-<a name="328" href="#328">328</a>         <strong>public</strong> Void process(<a href="../../../../org/jvnet/hk2/config/TransactionListener.html">TransactionListener</a> listener) {
-<a name="329" href="#329">329</a>             <strong>try</strong> {
-<a name="330" href="#330">330</a>                 listener.transactionCommited(mEvents);
-<a name="331" href="#331">331</a>             } <strong>catch</strong>(Exception e) {
-<a name="332" href="#332">332</a>                 e.printStackTrace();
-<a name="333" href="#333">333</a>             }
-<a name="334" href="#334">334</a>             <strong>return</strong> <strong>null</strong>;
-<a name="335" href="#335">335</a>         }
-<a name="336" href="#336">336</a>     }
-<a name="337" href="#337">337</a> 
-<a name="338" href="#338">338</a>     <strong>private</strong> <strong>static</strong> <strong>class</strong> UnprocessedEventsJob <strong>extends</strong> Job&lt;TransactionListener, UnprocessedChangeEvents, Void> {
-<a name="339" href="#339">339</a> 
-<a name="340" href="#340">340</a>         <strong>public</strong> UnprocessedEventsJob(List&lt;UnprocessedChangeEvents> events, CountDownLatch latch) {
-<a name="341" href="#341">341</a>             <strong>super</strong>(events, latch);
-<a name="342" href="#342">342</a>         }
-<a name="343" href="#343">343</a> 
-<a name="344" href="#344">344</a>         @Override
-<a name="345" href="#345">345</a>         <strong>public</strong> Void process(<a href="../../../../org/jvnet/hk2/config/TransactionListener.html">TransactionListener</a> listener) {
-<a name="346" href="#346">346</a>             <strong>try</strong> {
-<a name="347" href="#347">347</a>                 listener.unprocessedTransactedEvents(mEvents);
-<a name="348" href="#348">348</a>             } <strong>catch</strong>(Exception e) {
-<a name="349" href="#349">349</a>                 e.printStackTrace();
-<a name="350" href="#350">350</a>             }
-<a name="351" href="#351">351</a>             <strong>return</strong> <strong>null</strong>;
-<a name="352" href="#352">352</a>         }
-<a name="353" href="#353">353</a>     }
+<a name="312" href="#312">312</a>         <strong>public</strong> Job(List&lt;U> events, <strong>final</strong> CountDownLatch latch ) {
+<a name="313" href="#313">313</a>             mLatch  = latch;
+<a name="314" href="#314">314</a>             mEvents = events;
+<a name="315" href="#315">315</a>         }
+<a name="316" href="#316">316</a>         
+<a name="317" href="#317">317</a>         <strong>public</strong> <strong>void</strong> waitForLatch() throws InterruptedException {
+<a name="318" href="#318">318</a>             <strong>if</strong> ( mLatch != <strong>null</strong> ) {
+<a name="319" href="#319">319</a>                 mLatch.await();
+<a name="320" href="#320">320</a>             }
+<a name="321" href="#321">321</a>         }
+<a name="322" href="#322">322</a>         
+<a name="323" href="#323">323</a>         <strong>public</strong> <strong>void</strong> releaseLatch() {
+<a name="324" href="#324">324</a>             <strong>if</strong> ( mLatch != <strong>null</strong> ) {
+<a name="325" href="#325">325</a>                 mLatch.countDown();
+<a name="326" href="#326">326</a>             }
+<a name="327" href="#327">327</a>         }
+<a name="328" href="#328">328</a>         
+<a name="329" href="#329">329</a>         <strong>public</strong> <strong>abstract</strong> V process(T target);
+<a name="330" href="#330">330</a>     }
+<a name="331" href="#331">331</a>     
+<a name="332" href="#332">332</a>     <strong>private</strong> <strong>static</strong> <strong>class</strong> TransactionListenerJob <strong>extends</strong> Job&lt;TransactionListener, PropertyChangeEvent, Void> {
+<a name="333" href="#333">333</a> 
+<a name="334" href="#334">334</a>         <strong>public</strong> TransactionListenerJob(List&lt;PropertyChangeEvent> events, CountDownLatch latch) {
+<a name="335" href="#335">335</a>             <strong>super</strong>(events,  latch);
+<a name="336" href="#336">336</a>         }
+<a name="337" href="#337">337</a>         
+<a name="338" href="#338">338</a>         @Override
+<a name="339" href="#339">339</a>         <strong>public</strong> Void process(<a href="../../../../org/jvnet/hk2/config/TransactionListener.html">TransactionListener</a> listener) {
+<a name="340" href="#340">340</a>             <strong>try</strong> {
+<a name="341" href="#341">341</a>                 listener.transactionCommited(mEvents);
+<a name="342" href="#342">342</a>             } <strong>catch</strong>(Exception e) {
+<a name="343" href="#343">343</a>                 e.printStackTrace();
+<a name="344" href="#344">344</a>             }
+<a name="345" href="#345">345</a>             <strong>return</strong> <strong>null</strong>;
+<a name="346" href="#346">346</a>         }
+<a name="347" href="#347">347</a>     }
+<a name="348" href="#348">348</a> 
+<a name="349" href="#349">349</a>     <strong>private</strong> <strong>static</strong> <strong>class</strong> UnprocessedEventsJob <strong>extends</strong> Job&lt;TransactionListener, UnprocessedChangeEvents, Void> {
+<a name="350" href="#350">350</a> 
+<a name="351" href="#351">351</a>         <strong>public</strong> UnprocessedEventsJob(List&lt;UnprocessedChangeEvents> events, CountDownLatch latch) {
+<a name="352" href="#352">352</a>             <strong>super</strong>(events, latch);
+<a name="353" href="#353">353</a>         }
 <a name="354" href="#354">354</a> 
-<a name="355" href="#355">355</a>     <strong>public</strong> <strong>class</strong> ConfigListenerJob <strong>extends</strong> Job&lt;ConfigListener, PropertyChangeEvent, UnprocessedChangeEvents> {
-<a name="356" href="#356">356</a> 
-<a name="357" href="#357">357</a>         <strong>final</strong> PropertyChangeEvent[] eventsArray;
-<a name="358" href="#358">358</a> 
-<a name="359" href="#359">359</a>         <strong>public</strong> ConfigListenerJob(List&lt;PropertyChangeEvent> events, CountDownLatch latch) {
-<a name="360" href="#360">360</a>             <strong>super</strong>(events, latch);
-<a name="361" href="#361">361</a>             eventsArray = mEvents.toArray(<strong>new</strong> PropertyChangeEvent[mEvents.size()]);            
-<a name="362" href="#362">362</a>         }
-<a name="363" href="#363">363</a> 
-<a name="364" href="#364">364</a>         <strong>public</strong> <a href="../../../../org/jvnet/hk2/config/UnprocessedChangeEvents.html">UnprocessedChangeEvents</a> process(<a href="../../../../org/jvnet/hk2/config/ConfigListener.html">ConfigListener</a> target) {
-<a name="365" href="#365">365</a>             <strong>return</strong> target.changed(eventsArray);
-<a name="366" href="#366">366</a>         }
-<a name="367" href="#367">367</a>     }
-<a name="368" href="#368">368</a>     
-<a name="369" href="#369">369</a>     <em>/**<em>*</em></em>
-<a name="370" href="#370">370</a> <em>     * add a new listener to all transaction events.</em>
-<a name="371" href="#371">371</a> <em>     *</em>
-<a name="372" href="#372">372</a> <em>     * @param listener to be added.</em>
-<a name="373" href="#373">373</a> <em>     */</em>
-<a name="374" href="#374">374</a>     <strong>public</strong> <strong>void</strong> addTransactionsListener(<strong>final</strong> <a href="../../../../org/jvnet/hk2/config/TransactionListener.html">TransactionListener</a> listener) {
-<a name="375" href="#375">375</a>         <strong>synchronized</strong>(listeners) {
-<a name="376" href="#376">376</a>             listeners.add(<strong>new</strong> Holder&lt;ListenerNotifier&lt;TransactionListener, ?, Void>>() {
-<a name="377" href="#377">377</a> 
-<a name="378" href="#378">378</a>                 <strong>final</strong> ListenerNotifier tsListener = <strong>new</strong> ListenerNotifier&lt;TransactionListener, PropertyChangeEvent, Void>(listener);
-<a name="379" href="#379">379</a>                 <strong>final</strong> CountDownLatch initialized = <strong>new</strong> CountDownLatch(1);
-<a name="380" href="#380">380</a> 
-<a name="381" href="#381">381</a>                 <strong>public</strong> ListenerNotifier&lt;TransactionListener, PropertyChangeEvent, Void> get() {
-<a name="382" href="#382">382</a>                     <strong>synchronized</strong>(initialized) {
-<a name="383" href="#383">383</a>                         <strong>if</strong> (initialized.getCount()>0) {
-<a name="384" href="#384">384</a>                             tsListener.start();
-<a name="385" href="#385">385</a>                             initialized.countDown();
-<a name="386" href="#386">386</a>                         }
-<a name="387" href="#387">387</a>                     }
-<a name="388" href="#388">388</a>                     <strong>return</strong> tsListener;
-<a name="389" href="#389">389</a>                 }
-<a name="390" href="#390">390</a>             });
-<a name="391" href="#391">391</a>         }
-<a name="392" href="#392">392</a>     }
-<a name="393" href="#393">393</a> 
-<a name="394" href="#394">394</a>     <em>/**<em>*</em></em>
-<a name="395" href="#395">395</a> <em>     * Removes an existing listener for transaction events</em>
-<a name="396" href="#396">396</a> <em>     * @param listener the registered listener</em>
-<a name="397" href="#397">397</a> <em>     * @return true if the listener unregistration was successful</em>
-<a name="398" href="#398">398</a> <em>     */</em>
-<a name="399" href="#399">399</a>     <strong>public</strong> <strong>boolean</strong> removeTransactionsListener(<a href="../../../../org/jvnet/hk2/config/TransactionListener.html">TransactionListener</a> listener) {
-<a name="400" href="#400">400</a>         <strong>synchronized</strong>(listeners) {
-<a name="401" href="#401">401</a>             <strong>for</strong> (Holder&lt;ListenerNotifier&lt;TransactionListener, ?, Void>> holder : listeners) {
-<a name="402" href="#402">402</a>                 ListenerNotifier info = holder.get();
-<a name="403" href="#403">403</a>                 <strong>if</strong> (info.listener==listener) {
-<a name="404" href="#404">404</a>                     info.stop();
-<a name="405" href="#405">405</a>                     <strong>return</strong> listeners.remove(holder);
-<a name="406" href="#406">406</a>                 }
-<a name="407" href="#407">407</a>             }
-<a name="408" href="#408">408</a>         }
-<a name="409" href="#409">409</a>         <strong>return</strong> false;
-<a name="410" href="#410">410</a>     }
-<a name="411" href="#411">411</a>     
-<a name="412" href="#412">412</a>     <strong>public</strong> List&lt;TransactionListener> currentListeners() {
-<a name="413" href="#413">413</a>         <strong>synchronized</strong>(listeners) {            
-<a name="414" href="#414">414</a>             List&lt;TransactionListener> l = <strong>new</strong> ArrayList&lt;TransactionListener>();
-<a name="415" href="#415">415</a>             <strong>for</strong> (Holder&lt;ListenerNotifier&lt;TransactionListener, ?, Void>> holder : listeners) {
-<a name="416" href="#416">416</a>                 ListenerNotifier&lt;TransactionListener, ?, Void> info = holder.get();
-<a name="417" href="#417">417</a>                 l.add(info.listener);
+<a name="355" href="#355">355</a>         @Override
+<a name="356" href="#356">356</a>         <strong>public</strong> Void process(<a href="../../../../org/jvnet/hk2/config/TransactionListener.html">TransactionListener</a> listener) {
+<a name="357" href="#357">357</a>             <strong>try</strong> {
+<a name="358" href="#358">358</a>                 listener.unprocessedTransactedEvents(mEvents);
+<a name="359" href="#359">359</a>             } <strong>catch</strong>(Exception e) {
+<a name="360" href="#360">360</a>                 e.printStackTrace();
+<a name="361" href="#361">361</a>             }
+<a name="362" href="#362">362</a>             <strong>return</strong> <strong>null</strong>;
+<a name="363" href="#363">363</a>         }
+<a name="364" href="#364">364</a>     }
+<a name="365" href="#365">365</a> 
+<a name="366" href="#366">366</a>     <strong>public</strong> <strong>class</strong> ConfigListenerJob <strong>extends</strong> Job&lt;ConfigListener, PropertyChangeEvent, UnprocessedChangeEvents> {
+<a name="367" href="#367">367</a> 
+<a name="368" href="#368">368</a>         <strong>final</strong> PropertyChangeEvent[] eventsArray;
+<a name="369" href="#369">369</a> 
+<a name="370" href="#370">370</a>         <strong>public</strong> ConfigListenerJob(List&lt;PropertyChangeEvent> events, CountDownLatch latch) {
+<a name="371" href="#371">371</a>             <strong>super</strong>(events, latch);
+<a name="372" href="#372">372</a>             eventsArray = mEvents.toArray(<strong>new</strong> PropertyChangeEvent[mEvents.size()]);            
+<a name="373" href="#373">373</a>         }
+<a name="374" href="#374">374</a> 
+<a name="375" href="#375">375</a>         <strong>public</strong> <a href="../../../../org/jvnet/hk2/config/UnprocessedChangeEvents.html">UnprocessedChangeEvents</a> process(<a href="../../../../org/jvnet/hk2/config/ConfigListener.html">ConfigListener</a> target) {
+<a name="376" href="#376">376</a>             <strong>return</strong> target.changed(eventsArray);
+<a name="377" href="#377">377</a>         }
+<a name="378" href="#378">378</a>     }
+<a name="379" href="#379">379</a>     
+<a name="380" href="#380">380</a>     <em>/**<em>*</em></em>
+<a name="381" href="#381">381</a> <em>     * add a new listener to all transaction events.</em>
+<a name="382" href="#382">382</a> <em>     *</em>
+<a name="383" href="#383">383</a> <em>     * @param listener to be added.</em>
+<a name="384" href="#384">384</a> <em>     */</em>
+<a name="385" href="#385">385</a>     <strong>public</strong> <strong>void</strong> addTransactionsListener(<strong>final</strong> <a href="../../../../org/jvnet/hk2/config/TransactionListener.html">TransactionListener</a> listener) {
+<a name="386" href="#386">386</a>         <strong>synchronized</strong>(listeners) {
+<a name="387" href="#387">387</a>             listeners.add(<strong>new</strong> Holder&lt;ListenerNotifier&lt;TransactionListener, ?, Void>>() {
+<a name="388" href="#388">388</a> 
+<a name="389" href="#389">389</a>                 <strong>final</strong> ListenerNotifier&lt;TransactionListener, PropertyChangeEvent, Void> tsListener = <strong>new</strong> ListenerNotifier&lt;TransactionListener, PropertyChangeEvent, Void>(listener);
+<a name="390" href="#390">390</a>                 <strong>final</strong> CountDownLatch initialized = <strong>new</strong> CountDownLatch(1);
+<a name="391" href="#391">391</a> 
+<a name="392" href="#392">392</a>                 <strong>public</strong> ListenerNotifier&lt;TransactionListener, PropertyChangeEvent, Void> get() {
+<a name="393" href="#393">393</a>                     <strong>synchronized</strong>(initialized) {
+<a name="394" href="#394">394</a>                         <strong>if</strong> (initialized.getCount()>0) {
+<a name="395" href="#395">395</a>                             tsListener.start();
+<a name="396" href="#396">396</a>                             initialized.countDown();
+<a name="397" href="#397">397</a>                         }
+<a name="398" href="#398">398</a>                     }
+<a name="399" href="#399">399</a>                     <strong>return</strong> tsListener;
+<a name="400" href="#400">400</a>                 }
+<a name="401" href="#401">401</a>             });
+<a name="402" href="#402">402</a>         }
+<a name="403" href="#403">403</a>     }
+<a name="404" href="#404">404</a> 
+<a name="405" href="#405">405</a>     <em>/**<em>*</em></em>
+<a name="406" href="#406">406</a> <em>     * Removes an existing listener for transaction events</em>
+<a name="407" href="#407">407</a> <em>     * @param listener the registered listener</em>
+<a name="408" href="#408">408</a> <em>     * @return true if the listener unregistration was successful</em>
+<a name="409" href="#409">409</a> <em>     */</em>
+<a name="410" href="#410">410</a>     <strong>public</strong> <strong>boolean</strong> removeTransactionsListener(<a href="../../../../org/jvnet/hk2/config/TransactionListener.html">TransactionListener</a> listener) {
+<a name="411" href="#411">411</a>         <strong>synchronized</strong>(listeners) {
+<a name="412" href="#412">412</a>             <strong>for</strong> (Holder&lt;ListenerNotifier&lt;TransactionListener, ?, Void>> holder : listeners) {
+<a name="413" href="#413">413</a>                 ListenerNotifier info = holder.get();
+<a name="414" href="#414">414</a>                 <strong>if</strong> (info.listener==listener) {
+<a name="415" href="#415">415</a>                     info.stop();
+<a name="416" href="#416">416</a>                     <strong>return</strong> listeners.remove(holder);
+<a name="417" href="#417">417</a>                 }
 <a name="418" href="#418">418</a>             }
-<a name="419" href="#419">419</a>             <strong>return</strong> l;
-<a name="420" href="#420">420</a>         }
+<a name="419" href="#419">419</a>         }
+<a name="420" href="#420">420</a>         <strong>return</strong> false;
 <a name="421" href="#421">421</a>     }
-<a name="422" href="#422">422</a> 
-<a name="423" href="#423">423</a> 
-<a name="424" href="#424">424</a>     <em>/**<em>*</em></em>
-<a name="425" href="#425">425</a> <em>     * Synchronous notification of a new transactional configuration change operation.</em>
-<a name="426" href="#426">426</a> <em>     *</em>
-<a name="427" href="#427">427</a> <em>     * @param events list of changes </em>
-<a name="428" href="#428">428</a> <em>     */</em>
-<a name="429" href="#429">429</a>     <strong>void</strong> addTransaction( <strong>final</strong> List&lt;PropertyChangeEvent> events) {
-<a name="430" href="#430">430</a>         addTransaction(events, <strong>true</strong>);
-<a name="431" href="#431">431</a>     }
-<a name="432" href="#432">432</a>         
-<a name="433" href="#433">433</a>     <em>/**<em>*</em></em>
-<a name="434" href="#434">434</a> <em>     * Notification of a new transation completion</em>
-<a name="435" href="#435">435</a> <em>     *</em>
-<a name="436" href="#436">436</a> <em>     * @param events accumulated list of changes</em>
-<a name="437" href="#437">437</a> <em>     * @param waitTillCleared  synchronous semantics; wait until all change events are sent</em>
-<a name="438" href="#438">438</a> <em>     */</em>
-<a name="439" href="#439">439</a>     @SuppressWarnings(<span class="string">"cast"</span>)
-<a name="440" href="#440">440</a>     <strong>void</strong> addTransaction(
-<a name="441" href="#441">441</a>         <strong>final</strong> List&lt;PropertyChangeEvent> events,
-<a name="442" href="#442">442</a>         <strong>final</strong> <strong>boolean</strong> waitTillCleared ) {
+<a name="422" href="#422">422</a>     
+<a name="423" href="#423">423</a>     <strong>public</strong> List&lt;TransactionListener> currentListeners() {
+<a name="424" href="#424">424</a>         <strong>synchronized</strong>(listeners) {            
+<a name="425" href="#425">425</a>             List&lt;TransactionListener> l = <strong>new</strong> ArrayList&lt;TransactionListener>();
+<a name="426" href="#426">426</a>             <strong>for</strong> (Holder&lt;ListenerNotifier&lt;TransactionListener, ?, Void>> holder : listeners) {
+<a name="427" href="#427">427</a>                 ListenerNotifier&lt;TransactionListener, ?, Void> info = holder.get();
+<a name="428" href="#428">428</a>                 l.add(info.listener);
+<a name="429" href="#429">429</a>             }
+<a name="430" href="#430">430</a>             <strong>return</strong> l;
+<a name="431" href="#431">431</a>         }
+<a name="432" href="#432">432</a>     }
+<a name="433" href="#433">433</a> 
+<a name="434" href="#434">434</a> 
+<a name="435" href="#435">435</a>     <em>/**<em>*</em></em>
+<a name="436" href="#436">436</a> <em>     * Synchronous notification of a new transactional configuration change operation.</em>
+<a name="437" href="#437">437</a> <em>     *</em>
+<a name="438" href="#438">438</a> <em>     * @param events list of changes </em>
+<a name="439" href="#439">439</a> <em>     */</em>
+<a name="440" href="#440">440</a>     <strong>void</strong> addTransaction( <strong>final</strong> List&lt;PropertyChangeEvent> events) {
+<a name="441" href="#441">441</a>         addTransaction(events, <strong>true</strong>);
+<a name="442" href="#442">442</a>     }
 <a name="443" href="#443">443</a>         
-<a name="444" href="#444">444</a>         <strong>final</strong> List&lt;ListenerNotifier&lt;TransactionListener, ?, Void>> listInfos = <strong>new</strong> ArrayList&lt;ListenerNotifier&lt;TransactionListener, ?, Void>>();
-<a name="445" href="#445">445</a>         <strong>for</strong> (Holder&lt;ListenerNotifier&lt;TransactionListener, ?, Void>> holder : listeners) {
-<a name="446" href="#446">446</a>             ListenerNotifier&lt;TransactionListener, ?, Void> info = holder.get();
-<a name="447" href="#447">447</a>             listInfos.add(info);
-<a name="448" href="#448">448</a>         }
-<a name="449" href="#449">449</a>         
-<a name="450" href="#450">450</a>         <em class="comment">// create a CountDownLatch to implement waiting for events to actually be sent</em>
-<a name="451" href="#451">451</a>         <strong>final</strong> Job&lt;TransactionListener, ?, Void> job = <strong>new</strong> TransactionListenerJob( events,
-<a name="452" href="#452">452</a>                                 waitTillCleared ? <strong>new</strong> CountDownLatch(listInfos.size()) : <strong>null</strong>);
-<a name="453" href="#453">453</a>         
-<a name="454" href="#454">454</a>         <strong>final</strong> ConfigListenerJob configJob = <strong>new</strong> ConfigListenerJob(events,
-<a name="455" href="#455">455</a>                 waitTillCleared? <strong>new</strong> CountDownLatch(1):<strong>null</strong>);
-<a name="456" href="#456">456</a>         
-<a name="457" href="#457">457</a>         <em class="comment">// NOTE that this is put() which blocks, *not* add() which will not block and will</em>
-<a name="458" href="#458">458</a>         <em class="comment">// throw an IllegalStateException if the queue is full.</em>
-<a name="459" href="#459">459</a>         <strong>try</strong> {
-<a name="460" href="#460">460</a>             <strong>for</strong> (ListenerNotifier listener : listInfos) {
-<a name="461" href="#461">461</a>                 listener.add(job);
-<a name="462" href="#462">462</a>             }
-<a name="463" href="#463">463</a> 
-<a name="464" href="#464">464</a>             configListenerNotifier.get().add(configJob);
-<a name="465" href="#465">465</a> 
-<a name="466" href="#466">466</a>             job.waitForLatch();
-<a name="467" href="#467">467</a>             configJob.waitForLatch();
-<a name="468" href="#468">468</a>         } <strong>catch</strong> (InterruptedException e ) {
-<a name="469" href="#469">469</a>             <strong>throw</strong> <strong>new</strong> RuntimeException(e);
-<a name="470" href="#470">470</a>         }
-<a name="471" href="#471">471</a>     }
-<a name="472" href="#472">472</a> 
-<a name="473" href="#473">473</a>     <strong>public</strong> <strong>void</strong> waitForDrain() {
-<a name="474" href="#474">474</a>         <em class="comment">// insert a dummy Job and block until is has been processed.  This guarantees</em>
-<a name="475" href="#475">475</a>         <em class="comment">// that all prior jobs have finished</em>
-<a name="476" href="#476">476</a>         addTransaction( <strong>new</strong> ArrayList&lt;PropertyChangeEvent>(), <strong>true</strong> );
-<a name="477" href="#477">477</a>         <em class="comment">// at this point all prior transactions are guaranteed to have cleared</em>
-<a name="478" href="#478">478</a>     }    
-<a name="479" href="#479">479</a> }
-<a name="480" href="#480">480</a> 
-<a name="481" href="#481">481</a> 
-<a name="482" href="#482">482</a> 
+<a name="444" href="#444">444</a>     <em>/**<em>*</em></em>
+<a name="445" href="#445">445</a> <em>     * Notification of a new transaction completion</em>
+<a name="446" href="#446">446</a> <em>     *</em>
+<a name="447" href="#447">447</a> <em>     * @param events accumulated list of changes</em>
+<a name="448" href="#448">448</a> <em>     * @param waitTillCleared  synchronous semantics; wait until all change events are sent</em>
+<a name="449" href="#449">449</a> <em>     */</em>
+<a name="450" href="#450">450</a>     @SuppressWarnings(<span class="string">"cast"</span>)
+<a name="451" href="#451">451</a>     <strong>void</strong> addTransaction(
+<a name="452" href="#452">452</a>         <strong>final</strong> List&lt;PropertyChangeEvent> events,
+<a name="453" href="#453">453</a>         <strong>final</strong> <strong>boolean</strong> waitTillCleared ) {
+<a name="454" href="#454">454</a>         
+<a name="455" href="#455">455</a>         <strong>final</strong> List&lt;ListenerNotifier&lt;TransactionListener, ?, Void>> listInfos = <strong>new</strong> ArrayList&lt;ListenerNotifier&lt;TransactionListener, ?, Void>>();
+<a name="456" href="#456">456</a>         <strong>for</strong> (Holder&lt;ListenerNotifier&lt;TransactionListener, ?, Void>> holder : listeners) {
+<a name="457" href="#457">457</a>             ListenerNotifier&lt;TransactionListener, ?, Void> info = holder.get();
+<a name="458" href="#458">458</a>             listInfos.add(info);
+<a name="459" href="#459">459</a>         }
+<a name="460" href="#460">460</a>         
+<a name="461" href="#461">461</a>         <em class="comment">// create a CountDownLatch to implement waiting for events to actually be sent</em>
+<a name="462" href="#462">462</a>         <strong>final</strong> Job&lt;TransactionListener, ?, Void> job = <strong>new</strong> TransactionListenerJob( events,
+<a name="463" href="#463">463</a>                                 waitTillCleared ? <strong>new</strong> CountDownLatch(listInfos.size()) : <strong>null</strong>);
+<a name="464" href="#464">464</a>         
+<a name="465" href="#465">465</a>         <strong>final</strong> ConfigListenerJob configJob = <strong>new</strong> ConfigListenerJob(events,
+<a name="466" href="#466">466</a>                 waitTillCleared? <strong>new</strong> CountDownLatch(1):<strong>null</strong>);
+<a name="467" href="#467">467</a>         
+<a name="468" href="#468">468</a>         <em class="comment">// NOTE that this is put() which blocks, *not* add() which will not block and will</em>
+<a name="469" href="#469">469</a>         <em class="comment">// throw an IllegalStateException if the queue is full.</em>
+<a name="470" href="#470">470</a>         <strong>try</strong> {
+<a name="471" href="#471">471</a>             <strong>for</strong> (ListenerNotifier listener : listInfos) {
+<a name="472" href="#472">472</a>                 listener.add(job);
+<a name="473" href="#473">473</a>             }
+<a name="474" href="#474">474</a> 
+<a name="475" href="#475">475</a>             configListenerNotifier.get().add(configJob);
+<a name="476" href="#476">476</a> 
+<a name="477" href="#477">477</a>             job.waitForLatch();
+<a name="478" href="#478">478</a>             configJob.waitForLatch();
+<a name="479" href="#479">479</a>         } <strong>catch</strong> (InterruptedException e ) {
+<a name="480" href="#480">480</a>             <strong>throw</strong> <strong>new</strong> RuntimeException(e);
+<a name="481" href="#481">481</a>         }
+<a name="482" href="#482">482</a>     }
 <a name="483" href="#483">483</a> 
-<a name="484" href="#484">484</a> 
-<a name="485" href="#485">485</a> 
+<a name="484" href="#484">484</a>     <strong>public</strong> <strong>void</strong> waitForDrain() {
+<a name="485" href="#485">485</a>         <em class="comment">// insert a dummy Job and block until is has been processed.  This guarantees</em>
+<a name="486" href="#486">486</a>         <em class="comment">// that all prior jobs have finished</em>
+<a name="487" href="#487">487</a>         addTransaction( <strong>new</strong> ArrayList&lt;PropertyChangeEvent>(), <strong>true</strong> );
+<a name="488" href="#488">488</a>         <em class="comment">// at this point all prior transactions are guaranteed to have cleared</em>
+<a name="489" href="#489">489</a>     }    
+<a name="490" href="#490">490</a> }
+<a name="491" href="#491">491</a> 
+<a name="492" href="#492">492</a> 
+<a name="493" href="#493">493</a> 
+<a name="494" href="#494">494</a> 
+<a name="495" href="#495">495</a> 
+<a name="496" href="#496">496</a> 
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

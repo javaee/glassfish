@@ -48,83 +48,106 @@
 <a name="39" href="#39">39</a>  <strong>import</strong> org.jvnet.hk2.component.ComponentException;
 <a name="40" href="#40">40</a>  <strong>import</strong> org.jvnet.hk2.component.Habitat;
 <a name="41" href="#41">41</a>  <strong>import</strong> org.jvnet.hk2.component.Inhabitant;
-<a name="42" href="#42">42</a>  <strong>import</strong> org.jvnet.hk2.component.Inhabitants;
-<a name="43" href="#43">43</a>  <strong>import</strong> org.jvnet.hk2.component.MultiMap;
-<a name="44" href="#44">44</a>  <strong>import</strong> org.jvnet.hk2.component.Womb;
-<a name="45" href="#45">45</a>  <strong>import</strong> org.jvnet.hk2.component.Wombs;
-<a name="46" href="#46">46</a>  
-<a name="47" href="#47">47</a>  <em>/**<em>*</em></em>
-<a name="48" href="#48">48</a>  <em> * @author Kohsuke Kawaguchi</em>
-<a name="49" href="#49">49</a>  <em> */</em>
-<a name="50" href="#50">50</a>  <strong>public</strong> <strong>class</strong> LazyInhabitant&lt;T> <strong>extends</strong> AbstractInhabitantImpl&lt;T> {
-<a name="51" href="#51">51</a>      <strong>private</strong> <strong>final</strong> String typeName;
+<a name="42" href="#42">42</a>  <strong>import</strong> org.jvnet.hk2.component.MultiMap;
+<a name="43" href="#43">43</a>  <strong>import</strong> org.jvnet.hk2.component.Womb;
+<a name="44" href="#44">44</a>  <strong>import</strong> org.jvnet.hk2.component.Wombs;
+<a name="45" href="#45">45</a>  
+<a name="46" href="#46">46</a>  <em>/**<em>*</em></em>
+<a name="47" href="#47">47</a>  <em> * @author Kohsuke Kawaguchi</em>
+<a name="48" href="#48">48</a>  <em> */</em>
+<a name="49" href="#49">49</a>  <strong>public</strong> <strong>class</strong> LazyInhabitant&lt;T> <strong>extends</strong> EventPublishingInhabitant&lt;T> {
+<a name="50" href="#50">50</a>      <strong>private</strong> <strong>final</strong> String typeName;
+<a name="51" href="#51">51</a>  
 <a name="52" href="#52">52</a>      <em>/**<em>*</em></em>
-<a name="53" href="#53">53</a>  <em>     * Real {@link Inhabitant} object. Lazily created.</em>
+<a name="53" href="#53">53</a>  <em>     * Lazy reference to {@link ClassLoader}.</em>
 <a name="54" href="#54">54</a>  <em>     */</em>
-<a name="55" href="#55">55</a>      <strong>private</strong> <strong>volatile</strong> Inhabitant&lt;T> real;
-<a name="56" href="#56">56</a>      <em>/**<em>*</em></em>
-<a name="57" href="#57">57</a>  <em>     * Lazy reference to {@link ClassLoader}.</em>
-<a name="58" href="#58">58</a>  <em>     */</em>
-<a name="59" href="#59">59</a>      <strong>private</strong> <strong>final</strong> Holder&lt;ClassLoader> classLoader;
-<a name="60" href="#60">60</a>  
-<a name="61" href="#61">61</a>      <strong>protected</strong> <strong>final</strong> <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat;
+<a name="55" href="#55">55</a>      <strong>private</strong> <strong>final</strong> Holder&lt;ClassLoader> classLoader;
+<a name="56" href="#56">56</a>  
+<a name="57" href="#57">57</a>      <strong>protected</strong> <strong>final</strong> <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat;
+<a name="58" href="#58">58</a>  
+<a name="59" href="#59">59</a>      <strong>private</strong> <strong>final</strong> MultiMap&lt;String,String> metadata;
+<a name="60" href="#60">60</a>      
+<a name="61" href="#61">61</a>      <strong>private</strong> <strong>final</strong> Inhabitant&lt;?> lead;
 <a name="62" href="#62">62</a>  
-<a name="63" href="#63">63</a>      <strong>private</strong> <strong>final</strong> MultiMap&lt;String,String> metadata;
-<a name="64" href="#64">64</a>  
-<a name="65" href="#65">65</a>      <strong>public</strong> <a href="../../../../com/sun/hk2/component/LazyInhabitant.html">LazyInhabitant</a>(<a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat, Holder&lt;ClassLoader> cl, String typeName, MultiMap&lt;String,String> metadata) {
-<a name="66" href="#66">66</a>          assert metadata!=<strong>null</strong>;
-<a name="67" href="#67">67</a>          <strong>this</strong>.habitat = habitat;
-<a name="68" href="#68">68</a>          <strong>this</strong>.classLoader = cl;
-<a name="69" href="#69">69</a>          <strong>this</strong>.typeName = typeName;
-<a name="70" href="#70">70</a>          <strong>this</strong>.metadata = metadata;
-<a name="71" href="#71">71</a>      }
-<a name="72" href="#72">72</a>  
-<a name="73" href="#73">73</a>      <strong>public</strong> String typeName() {
-<a name="74" href="#74">74</a>          <strong>return</strong> typeName;
+<a name="63" href="#63">63</a>      
+<a name="64" href="#64">64</a>      <strong>public</strong> <a href="../../../../com/sun/hk2/component/LazyInhabitant.html">LazyInhabitant</a>(<a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat, Holder&lt;ClassLoader> cl, String typeName, MultiMap&lt;String,String> metadata) {
+<a name="65" href="#65">65</a>          <strong>this</strong>(habitat, cl, typeName, metadata, <strong>null</strong>);
+<a name="66" href="#66">66</a>      }
+<a name="67" href="#67">67</a>  
+<a name="68" href="#68">68</a>      <strong>public</strong> <a href="../../../../com/sun/hk2/component/LazyInhabitant.html">LazyInhabitant</a>(<a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat, Holder&lt;ClassLoader> cl, String typeName, MultiMap&lt;String,String> metadata, Inhabitant&lt;?> lead) {
+<a name="69" href="#69">69</a>        assert metadata!=<strong>null</strong>;
+<a name="70" href="#70">70</a>        <strong>this</strong>.habitat = habitat;
+<a name="71" href="#71">71</a>        <strong>this</strong>.classLoader = cl;
+<a name="72" href="#72">72</a>        <strong>this</strong>.typeName = typeName;
+<a name="73" href="#73">73</a>        <strong>this</strong>.metadata = metadata;
+<a name="74" href="#74">74</a>        <strong>this</strong>.lead = lead;
 <a name="75" href="#75">75</a>      }
 <a name="76" href="#76">76</a>  
-<a name="77" href="#77">77</a>      <strong>public</strong> Class&lt;T> type() {
-<a name="78" href="#78">78</a>          fetch();
-<a name="79" href="#79">79</a>          <strong>return</strong> real.type();
+<a name="77" href="#77">77</a>      @Override
+<a name="78" href="#78">78</a>      <strong>public</strong> Inhabitant&lt;?> lead() {
+<a name="79" href="#79">79</a>          <strong>return</strong> lead;
 <a name="80" href="#80">80</a>      }
-<a name="81" href="#81">81</a>  
-<a name="82" href="#82">82</a>      <strong>public</strong> MultiMap&lt;String,String> metadata() {
-<a name="83" href="#83">83</a>          <strong>return</strong> metadata;
-<a name="84" href="#84">84</a>      }
-<a name="85" href="#85">85</a>  
-<a name="86" href="#86">86</a>      @SuppressWarnings(<span class="string">"unchecked"</span>)
-<a name="87" href="#87">87</a>      <strong>private</strong> <strong>synchronized</strong> <strong>void</strong> fetch() {
-<a name="88" href="#88">88</a>          <strong>if</strong>(real!=<strong>null</strong>)  <strong>return</strong>;
-<a name="89" href="#89">89</a>  
-<a name="90" href="#90">90</a>          <strong>try</strong> {
-<a name="91" href="#91">91</a>              Class&lt;T> c = (Class&lt;T>) classLoader.get().loadClass(typeName);
-<a name="92" href="#92">92</a>              real = Inhabitants.wrapByScope(c,createWomb(c),habitat);
-<a name="93" href="#93">93</a>          } <strong>catch</strong> (ClassNotFoundException e) {
-<a name="94" href="#94">94</a>              <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(<span class="string">"Failed to load "</span>+typeName+<span class="string">" from "</span>+classLoader.get(),e);
-<a name="95" href="#95">95</a>          }
-<a name="96" href="#96">96</a>      }
-<a name="97" href="#97">97</a>  
-<a name="98" href="#98">98</a>      <em>/**<em>*</em></em>
-<a name="99" href="#99">99</a>  <em>     * Creates {@link Womb} for instantiating objects.</em>
-<a name="100" href="#100">100</a> <em>     */</em>
-<a name="101" href="#101">101</a>     <strong>protected</strong> Womb&lt;T> createWomb(Class&lt;T> c) {
-<a name="102" href="#102">102</a>         <strong>return</strong> Wombs.create(c,habitat,metadata);
+<a name="81" href="#81">81</a>      
+<a name="82" href="#82">82</a>      @Override
+<a name="83" href="#83">83</a>      <strong>public</strong> String typeName() {
+<a name="84" href="#84">84</a>          <strong>return</strong> typeName;
+<a name="85" href="#85">85</a>      }
+<a name="86" href="#86">86</a>      
+<a name="87" href="#87">87</a>      @Override
+<a name="88" href="#88">88</a>      <strong>public</strong> Class&lt;T> type() {
+<a name="89" href="#89">89</a>        <em class="comment">// fetching is too heavy of an operation because it will activate/write the class</em>
+<a name="90" href="#90">90</a>  <em class="comment">//        fetch();</em>
+<a name="91" href="#91">91</a>  
+<a name="92" href="#92">92</a>          Inhabitant&lt;T> real = <strong>this</strong>.real;
+<a name="93" href="#93">93</a>          <strong>if</strong> (<strong>null</strong> != real) {
+<a name="94" href="#94">94</a>              <strong>return</strong> real.type();
+<a name="95" href="#95">95</a>          } <strong>else</strong> {
+<a name="96" href="#96">96</a>              <strong>return</strong> loadClass();
+<a name="97" href="#97">97</a>          }
+<a name="98" href="#98">98</a>      }
+<a name="99" href="#99">99</a>  
+<a name="100" href="#100">100</a>     @Override
+<a name="101" href="#101">101</a>     <strong>public</strong> MultiMap&lt;String,String> metadata() {
+<a name="102" href="#102">102</a>         <strong>return</strong> metadata;
 <a name="103" href="#103">103</a>     }
 <a name="104" href="#104">104</a> 
-<a name="105" href="#105">105</a>     <strong>public</strong> T get(<a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> onBehalfOf) throws ComponentException {
-<a name="106" href="#106">106</a>         fetch();
-<a name="107" href="#107">107</a>         <strong>return</strong> real.get(onBehalfOf);
-<a name="108" href="#108">108</a>     }
-<a name="109" href="#109">109</a> 
-<a name="110" href="#110">110</a>     <strong>public</strong> <strong>void</strong> release() {
-<a name="111" href="#111">111</a>         <strong>if</strong>(real!=<strong>null</strong>)
-<a name="112" href="#112">112</a>             real.release();
-<a name="113" href="#113">113</a>     }
-<a name="114" href="#114">114</a> 
-<a name="115" href="#115">115</a>     <strong>public</strong> <strong>boolean</strong> isInstantiated() {
-<a name="116" href="#116">116</a>         <strong>return</strong> (real!=<strong>null</strong> &amp;&amp; real.isInstantiated());
-<a name="117" href="#117">117</a>     }
-<a name="118" href="#118">118</a> }
+<a name="105" href="#105">105</a>     @Override
+<a name="106" href="#106">106</a>     <strong>protected</strong> <strong>synchronized</strong> <strong>void</strong> fetch() {
+<a name="107" href="#107">107</a>         <strong>if</strong> (<strong>null</strong> == real) {
+<a name="108" href="#108">108</a>           Class&lt;T> c = loadClass();
+<a name="109" href="#109">109</a>           real = Inhabitants.wrapByScope(c,createWomb(c),habitat);
+<a name="110" href="#110">110</a>         }
+<a name="111" href="#111">111</a>     }
+<a name="112" href="#112">112</a>     
+<a name="113" href="#113">113</a>     <strong>public</strong> <strong>final</strong> ClassLoader getClassLoader() {
+<a name="114" href="#114">114</a>         <strong>return</strong> classLoader.get();
+<a name="115" href="#115">115</a>     }
+<a name="116" href="#116">116</a>     
+<a name="117" href="#117">117</a>     @SuppressWarnings(<span class="string">"unchecked"</span>)
+<a name="118" href="#118">118</a>     <strong>private</strong> Class&lt;T> loadClass() {
+<a name="119" href="#119">119</a>         <strong>final</strong> ClassLoader cl = getClassLoader();
+<a name="120" href="#120">120</a>         <strong>try</strong> {
+<a name="121" href="#121">121</a>             Class&lt;T> c = (Class&lt;T>) cl.loadClass(typeName);
+<a name="122" href="#122">122</a>             <strong>return</strong> c;
+<a name="123" href="#123">123</a>         } <strong>catch</strong> (ClassNotFoundException e) {
+<a name="124" href="#124">124</a>             <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(<span class="string">"Failed to load "</span>+typeName+<span class="string">" from "</span> + cl, e);
+<a name="125" href="#125">125</a>         }
+<a name="126" href="#126">126</a>     }
+<a name="127" href="#127">127</a> 
+<a name="128" href="#128">128</a>     @Override
+<a name="129" href="#129">129</a>     <strong>public</strong> <strong>synchronized</strong> <strong>void</strong> release() {
+<a name="130" href="#130">130</a>         <strong>super</strong>.release();
+<a name="131" href="#131">131</a>         real = <strong>null</strong>;
+<a name="132" href="#132">132</a>     }
+<a name="133" href="#133">133</a> 
+<a name="134" href="#134">134</a>     <em>/**<em>*</em></em>
+<a name="135" href="#135">135</a> <em>     * Creates {@link Womb} for instantiating objects.</em>
+<a name="136" href="#136">136</a> <em>     */</em>
+<a name="137" href="#137">137</a>     <strong>protected</strong> Womb&lt;T> createWomb(Class&lt;T> c) {
+<a name="138" href="#138">138</a>         <strong>return</strong> Wombs.create(c,habitat,metadata);
+<a name="139" href="#139">139</a>     }
+<a name="140" href="#140">140</a> 
+<a name="141" href="#141">141</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

@@ -103,45 +103,56 @@
 <a name="94" href="#94">94</a>  
 <a name="95" href="#95">95</a>      <em>/**<em>*</em></em>
 <a name="96" href="#96">96</a>  <em>     * Performs a deep copy of this configuration element and returns it.</em>
-<a name="97" href="#97">97</a>  <em>     *</em>
-<a name="98" href="#98">98</a>  <em>     * @return a deep copy of itself.</em>
-<a name="99" href="#99">99</a>  <em>     */</em>
-<a name="100" href="#100">100</a>     @DuckTyped
-<a name="101" href="#101">101</a>     <strong>public</strong> <a href="../../../../org/jvnet/hk2/config/ConfigBeanProxy.html">ConfigBeanProxy</a> deepCopy();
-<a name="102" href="#102">102</a> 
-<a name="103" href="#103">103</a>     <strong>public</strong> <strong>class</strong> Duck {
-<a name="104" href="#104">104</a> 
-<a name="105" href="#105">105</a>         <strong>public</strong> <strong>static</strong> <a href="../../../../org/jvnet/hk2/config/ConfigBeanProxy.html">ConfigBeanProxy</a> getParent(<a href="../../../../org/jvnet/hk2/config/ConfigBeanProxy.html">ConfigBeanProxy</a> self) {
-<a name="106" href="#106">106</a>             <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom = Dom.unwrap(self);
-<a name="107" href="#107">107</a>             <strong>return</strong> dom.parent().createProxy();
-<a name="108" href="#108">108</a>         }
-<a name="109" href="#109">109</a> 
-<a name="110" href="#110">110</a>         <strong>public</strong> <strong>static</strong> &lt;T <strong>extends</strong> ConfigBeanProxy> T getParent(<a href="../../../../org/jvnet/hk2/config/ConfigBeanProxy.html">ConfigBeanProxy</a> self, Class&lt;T> c) {
-<a name="111" href="#111">111</a>              <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom = Dom.unwrap(self);
-<a name="112" href="#112">112</a>             <strong>return</strong> dom.parent().createProxy(c);
-<a name="113" href="#113">113</a>         }
-<a name="114" href="#114">114</a> 
-<a name="115" href="#115">115</a>         <strong>public</strong> <strong>static</strong> &lt;T <strong>extends</strong> ConfigBeanProxy> T createChild(<a href="../../../../org/jvnet/hk2/config/ConfigBeanProxy.html">ConfigBeanProxy</a> self, Class&lt;T> c)
-<a name="116" href="#116">116</a>             throws <a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a> {
-<a name="117" href="#117">117</a>             
-<a name="118" href="#118">118</a>              <strong>try</strong> {
-<a name="119" href="#119">119</a>                  <a href="../../../../org/jvnet/hk2/config/WriteableView.html">WriteableView</a> bean = WriteableView.<strong>class</strong>.<strong>cast</strong>(Proxy.getInvocationHandler(Proxy.<strong>class</strong>.<strong>cast</strong>(self)));
-<a name="120" href="#120">120</a>                  <strong>return</strong> bean.allocateProxy(c);
-<a name="121" href="#121">121</a>              } <strong>catch</strong> (ClassCastException e) {
-<a name="122" href="#122">122</a>                  <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a>(<span class="string">"Must use a locked parent config object for instantiating new config object"</span>, e);
-<a name="123" href="#123">123</a>              }
-<a name="124" href="#124">124</a> 
-<a name="125" href="#125">125</a>         }
-<a name="126" href="#126">126</a> 
-<a name="127" href="#127">127</a>         <strong>public</strong> <strong>static</strong> <a href="../../../../org/jvnet/hk2/config/ConfigBeanProxy.html">ConfigBeanProxy</a> deepCopy(<a href="../../../../org/jvnet/hk2/config/ConfigBeanProxy.html">ConfigBeanProxy</a> self) {
-<a name="128" href="#128">128</a>             <a href="../../../../org/jvnet/hk2/config/ConfigBean.html">ConfigBean</a> configBean = (ConfigBean) Dom.unwrap(self);
-<a name="129" href="#129">129</a>             <a href="../../../../org/jvnet/hk2/config/ConfigBean.html">ConfigBean</a> copy = <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/ConfigBean.html">ConfigBean</a>(configBean);
-<a name="130" href="#130">130</a>             <strong>return</strong> copy.createProxy();
-<a name="131" href="#131">131</a>         }
-<a name="132" href="#132">132</a> 
-<a name="133" href="#133">133</a>     }
-<a name="134" href="#134">134</a> 
-<a name="135" href="#135">135</a> }
+<a name="97" href="#97">97</a>  <em>     * The parent of this configuration must be locked in a transaction and the newly created</em>
+<a name="98" href="#98">98</a>  <em>     * child will be automatically enrolled in the parent's transaction.</em>
+<a name="99" href="#99">99</a>  <em>     *</em>
+<a name="100" href="#100">100</a> <em>     * @param parent the writable copy of the parent</em>
+<a name="101" href="#101">101</a> <em>     * @return a deep copy of itself.</em>
+<a name="102" href="#102">102</a> <em>     * @throws TransactionFailure if the transaction cannot be completed.</em>
+<a name="103" href="#103">103</a> <em>     */</em>
+<a name="104" href="#104">104</a>     @DuckTyped
+<a name="105" href="#105">105</a>     <strong>public</strong> <a href="../../../../org/jvnet/hk2/config/ConfigBeanProxy.html">ConfigBeanProxy</a> deepCopy(<a href="../../../../org/jvnet/hk2/config/ConfigBeanProxy.html">ConfigBeanProxy</a> parent) throws TransactionFailure;
+<a name="106" href="#106">106</a> 
+<a name="107" href="#107">107</a>     <strong>public</strong> <strong>class</strong> Duck {
+<a name="108" href="#108">108</a> 
+<a name="109" href="#109">109</a>         <strong>public</strong> <strong>static</strong> <a href="../../../../org/jvnet/hk2/config/ConfigBeanProxy.html">ConfigBeanProxy</a> getParent(<a href="../../../../org/jvnet/hk2/config/ConfigBeanProxy.html">ConfigBeanProxy</a> self) {
+<a name="110" href="#110">110</a>             <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom = Dom.unwrap(self);
+<a name="111" href="#111">111</a>             <strong>return</strong> dom.parent().createProxy();
+<a name="112" href="#112">112</a>         }
+<a name="113" href="#113">113</a> 
+<a name="114" href="#114">114</a>         <strong>public</strong> <strong>static</strong> &lt;T <strong>extends</strong> ConfigBeanProxy> T getParent(<a href="../../../../org/jvnet/hk2/config/ConfigBeanProxy.html">ConfigBeanProxy</a> self, Class&lt;T> c) {
+<a name="115" href="#115">115</a>              <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom = Dom.unwrap(self);
+<a name="116" href="#116">116</a>             <strong>return</strong> dom.parent().createProxy(c);
+<a name="117" href="#117">117</a>         }
+<a name="118" href="#118">118</a> 
+<a name="119" href="#119">119</a>         <strong>public</strong> <strong>static</strong> &lt;T <strong>extends</strong> ConfigBeanProxy> T createChild(<a href="../../../../org/jvnet/hk2/config/ConfigBeanProxy.html">ConfigBeanProxy</a> self, Class&lt;T> c)
+<a name="120" href="#120">120</a>             throws <a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a> {
+<a name="121" href="#121">121</a>             
+<a name="122" href="#122">122</a>              <strong>try</strong> {
+<a name="123" href="#123">123</a>                  <a href="../../../../org/jvnet/hk2/config/WriteableView.html">WriteableView</a> bean = WriteableView.<strong>class</strong>.<strong>cast</strong>(Proxy.getInvocationHandler(Proxy.<strong>class</strong>.<strong>cast</strong>(self)));
+<a name="124" href="#124">124</a>                  <strong>return</strong> bean.allocateProxy(c);
+<a name="125" href="#125">125</a>              } <strong>catch</strong> (ClassCastException e) {
+<a name="126" href="#126">126</a>                  <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a>(<span class="string">"Must use a locked parent config object for instantiating new config object"</span>, e);
+<a name="127" href="#127">127</a>              }
+<a name="128" href="#128">128</a> 
+<a name="129" href="#129">129</a>         }
+<a name="130" href="#130">130</a> 
+<a name="131" href="#131">131</a>         <strong>public</strong> <strong>static</strong> <a href="../../../../org/jvnet/hk2/config/ConfigBeanProxy.html">ConfigBeanProxy</a> deepCopy(<a href="../../../../org/jvnet/hk2/config/ConfigBeanProxy.html">ConfigBeanProxy</a> self, <a href="../../../../org/jvnet/hk2/config/ConfigBeanProxy.html">ConfigBeanProxy</a> parent) throws TransactionFailure {
+<a name="132" href="#132">132</a>             <a href="../../../../org/jvnet/hk2/config/ConfigBean.html">ConfigBean</a> configBean = (ConfigBean) Dom.unwrap(self);
+<a name="133" href="#133">133</a>             <em class="comment">// ensure the parent is locked</em>
+<a name="134" href="#134">134</a>             <a href="../../../../org/jvnet/hk2/config/Transaction.html">Transaction</a> t = Transaction.getTransaction(parent);
+<a name="135" href="#135">135</a> 
+<a name="136" href="#136">136</a>             <strong>if</strong> (t==<strong>null</strong>) {
+<a name="137" href="#137">137</a>                 <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a>(<span class="string">"Must use a locked parent config object for copying new config object"</span>);
+<a name="138" href="#138">138</a>             }
+<a name="139" href="#139">139</a> 
+<a name="140" href="#140">140</a>             <a href="../../../../org/jvnet/hk2/config/ConfigBean.html">ConfigBean</a> copy = configBean.copy(configBean.parent());
+<a name="141" href="#141">141</a>             <strong>return</strong> t.enroll(copy.createProxy());
+<a name="142" href="#142">142</a>         }
+<a name="143" href="#143">143</a> 
+<a name="144" href="#144">144</a>     }
+<a name="145" href="#145">145</a> 
+<a name="146" href="#146">146</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

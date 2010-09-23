@@ -10,24 +10,23 @@
 
 Introduction
 
-    HK2 for Hundred Kilobytes Kernel is a module subsystem coupled with a simple yet powerful component model to build software.
-It is the foundation for the GlassFish V3 application server and consist of two technologies :
+    HK2 for Hundred Kilobytes Kernel is an abstraction to a module subsystem coupled with a simple yet powerful component model to build software. It is the foundation for the GlassFish V3 application server and consist of two technologies :
 
- * Modules subsystem
+ * Modules subsystem abstraction
 
-    Modern Java software usually rely on a module subsystem to offer a better level of isolation between parts of the
+    Modern large Java software usually rely on a module subsystem to offer a better level of isolation between parts of the
  application. Many technologies have been around for years, HK2 proposes a model which is aimed to be friendly to
- existing technologies such as OSGi yet will provide a path to the implementation of modules in Java SE 7.
+ existing technologies such as OSGi by providing a direct mapping from its abstraction to most OSGi features while preserving the user code from dealing with modules directly in their code. The independence from OSGi APIs in hk2 enabled projects greatly simplifies the programmer's life by concentrating on services and dependencies rather than on modules (building blocks). 
 
    Link to {{{modules.html}Modules Subsystem}}
 
  * Component Model
 
-    On top of the module subsystem, HK2 define components which can also be seen as Services. These components can be
+    On top of the module subsystem abstraction, HK2 define components which can also be seen as Services. These components can be
 automatically and dynamically discovered by the runtime and can use innovative tachnologies such as Inversion of Control
 or injection of dependencies as well as automatic resolution of dependencies.
 
    Link to {{{components.html}Component Model}}
 
 []
-[images/300px-K2-big.jpg] K2
+[images/300px-K2-big.jpg] HK2

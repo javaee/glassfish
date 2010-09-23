@@ -134,588 +134,593 @@
 <a name="125" href="#125">125</a>             <em class="comment">// getter, maybe one of our changed properties</em>
 <a name="126" href="#126">126</a>             <strong>if</strong> (changedAttributes.containsKey(property.xmlName())) {
 <a name="127" href="#127">127</a>                 <em class="comment">// serve masked changes.</em>
-<a name="128" href="#128">128</a>                 <strong>return</strong> changedAttributes.get(property.xmlName()).getNewValue();
-<a name="129" href="#129">129</a>             } <strong>else</strong> {
-<a name="130" href="#130">130</a>                 <em class="comment">// pass through.</em>
-<a name="131" href="#131">131</a>                 <strong>return</strong> getter(property, method.getGenericReturnType());
-<a name="132" href="#132">132</a>             }
-<a name="133" href="#133">133</a>         } <strong>else</strong> {
-<a name="134" href="#134">134</a>             setter(property, args[0], method.getGenericParameterTypes()[0]);
-<a name="135" href="#135">135</a>             <strong>return</strong> <strong>null</strong>;
-<a name="136" href="#136">136</a>         }
-<a name="137" href="#137">137</a>     }
-<a name="138" href="#138">138</a> 
-<a name="139" href="#139">139</a>     <strong>public</strong> String getPropertyValue(String propertyName) {
-<a name="140" href="#140">140</a> 
-<a name="141" href="#141">141</a>         ConfigModel.Property prop = <strong>this</strong>.getProperty(propertyName);
-<a name="142" href="#142">142</a>         <strong>if</strong> (prop!=<strong>null</strong>) {
-<a name="143" href="#143">143</a>             <strong>if</strong> (changedAttributes.containsKey(prop.xmlName())) {
-<a name="144" href="#144">144</a>                 <em class="comment">// serve masked changes.</em>
-<a name="145" href="#145">145</a>                 <strong>return</strong> (String) changedAttributes.get(prop.xmlName()).getNewValue();
-<a name="146" href="#146">146</a>             } <strong>else</strong> {
-<a name="147" href="#147">147</a>                 <strong>return</strong> (String) getter(prop, String.<strong>class</strong>);
-<a name="148" href="#148">148</a>             }
-<a name="149" href="#149">149</a>         }
-<a name="150" href="#150">150</a>         <strong>return</strong> <strong>null</strong>;
-<a name="151" href="#151">151</a>     }
-<a name="152" href="#152">152</a> 
-<a name="153" href="#153">153</a>     <strong>public</strong> Object getter(ConfigModel.Property property, java.lang.reflect.Type t) {
-<a name="154" href="#154">154</a>         Object value =  bean._getter(property, t);
-<a name="155" href="#155">155</a>         <strong>if</strong> (value instanceof List) {
-<a name="156" href="#156">156</a>             <strong>if</strong> (!changedCollections.containsKey(property.xmlName())) {
-<a name="157" href="#157">157</a>                 <em class="comment">// wrap collections so we can record events on that collection mutation.</em>
-<a name="158" href="#158">158</a>                 changedCollections.put(property.xmlName(),
-<a name="159" href="#159">159</a>                         <strong>new</strong> ProtectedList(List.<strong>class</strong>.<strong>cast</strong>(value), defaultView, property.xmlName()));
-<a name="160" href="#160">160</a>             }
-<a name="161" href="#161">161</a>             <strong>return</strong> changedCollections.get(property.xmlName());
-<a name="162" href="#162">162</a>         }
-<a name="163" href="#163">163</a>         <strong>return</strong> value;
-<a name="164" href="#164">164</a>     }
-<a name="165" href="#165">165</a> 
-<a name="166" href="#166">166</a>     <strong>public</strong> <strong>void</strong> setter(ConfigModel.Property property,
-<a name="167" href="#167">167</a>         Object newValue, java.lang.reflect.Type t)  {
-<a name="168" href="#168">168</a>         
-<a name="169" href="#169">169</a>         <em class="comment">// are we still in a transaction</em>
-<a name="170" href="#170">170</a>         <strong>if</strong> (currentTx==<strong>null</strong>) {
-<a name="171" href="#171">171</a>             <strong>throw</strong> <strong>new</strong> IllegalStateException(<span class="string">"Not part of a transation"</span>);
-<a name="172" href="#172">172</a>         }
-<a name="173" href="#173">173</a>         <strong>try</strong> {
-<a name="174" href="#174">174</a>             <strong>if</strong> (newValue != <strong>null</strong>)
-<a name="175" href="#175">175</a>                 handleValidation(property, newValue);
-<a name="176" href="#176">176</a>         } <strong>catch</strong>(Exception v) {
-<a name="177" href="#177">177</a>             bean.getLock().unlock();
-<a name="178" href="#178">178</a>             <strong>throw</strong> <strong>new</strong> RuntimeException(v);
-<a name="179" href="#179">179</a>         }
-<a name="180" href="#180">180</a> 
-<a name="181" href="#181">181</a>         <em class="comment">// Following is a check to avoid duplication of elements with same key</em>
-<a name="182" href="#182">182</a>         <em class="comment">// attribute values. See Issue 7956</em>
-<a name="183" href="#183">183</a>         <strong>if</strong> (property instanceof ConfigModel.AttributeLeaf) {
-<a name="184" href="#184">184</a> 
-<a name="185" href="#185">185</a>             <em class="comment">// First check if the key leaf attribute is being set</em>
-<a name="186" href="#186">186</a>             ConfigModel.AttributeLeaf al =
-<a name="187" href="#187">187</a>                 (ConfigModel.AttributeLeaf)property;
-<a name="188" href="#188">188</a> 
-<a name="189" href="#189">189</a>             <a href="../../../../org/jvnet/hk2/config/ConfigBean.html">ConfigBean</a> master = getMasterView();
-<a name="190" href="#190">190</a>             String key = master.model.key;
-<a name="191" href="#191">191</a> 
-<a name="192" href="#192">192</a>             <em class="comment">// A key attribute may not exist at all if none of the attribs of</em>
-<a name="193" href="#193">193</a>             <em class="comment">// an element are annotated with key=true. If one exists, make sure</em>
-<a name="194" href="#194">194</a>             <em class="comment">// that attribute is actually the one being set</em>
-<a name="195" href="#195">195</a>             <strong>if</strong> ((key != <strong>null</strong>) &amp;&amp; (key.substring(1).equals(property.xmlName))) {
+<a name="128" href="#128">128</a>                 Object changedValue = changedAttributes.get(property.xmlName()).getNewValue();
+<a name="129" href="#129">129</a>                 <strong>if</strong> (changedValue instanceof Dom) {
+<a name="130" href="#130">130</a>                     <strong>return</strong> ((Dom) changedValue).createProxy();
+<a name="131" href="#131">131</a>                 } <strong>else</strong> {
+<a name="132" href="#132">132</a>                     <strong>return</strong> changedValue;
+<a name="133" href="#133">133</a>                 }
+<a name="134" href="#134">134</a>             } <strong>else</strong> {
+<a name="135" href="#135">135</a>                 <em class="comment">// pass through.</em>
+<a name="136" href="#136">136</a>                 <strong>return</strong> getter(property, method.getGenericReturnType());
+<a name="137" href="#137">137</a>             }
+<a name="138" href="#138">138</a>         } <strong>else</strong> {
+<a name="139" href="#139">139</a>             setter(property, args[0], method.getGenericParameterTypes()[0]);
+<a name="140" href="#140">140</a>             <strong>return</strong> <strong>null</strong>;
+<a name="141" href="#141">141</a>         }
+<a name="142" href="#142">142</a>     }
+<a name="143" href="#143">143</a> 
+<a name="144" href="#144">144</a>     <strong>public</strong> String getPropertyValue(String propertyName) {
+<a name="145" href="#145">145</a> 
+<a name="146" href="#146">146</a>         ConfigModel.Property prop = <strong>this</strong>.getProperty(propertyName);
+<a name="147" href="#147">147</a>         <strong>if</strong> (prop!=<strong>null</strong>) {
+<a name="148" href="#148">148</a>             <strong>if</strong> (changedAttributes.containsKey(prop.xmlName())) {
+<a name="149" href="#149">149</a>                 <em class="comment">// serve masked changes.</em>
+<a name="150" href="#150">150</a>                 <strong>return</strong> (String) changedAttributes.get(prop.xmlName()).getNewValue();
+<a name="151" href="#151">151</a>             } <strong>else</strong> {
+<a name="152" href="#152">152</a>                 <strong>return</strong> (String) getter(prop, String.<strong>class</strong>);
+<a name="153" href="#153">153</a>             }
+<a name="154" href="#154">154</a>         }
+<a name="155" href="#155">155</a>         <strong>return</strong> <strong>null</strong>;
+<a name="156" href="#156">156</a>     }
+<a name="157" href="#157">157</a> 
+<a name="158" href="#158">158</a>     <strong>public</strong> Object getter(ConfigModel.Property property, java.lang.reflect.Type t) {
+<a name="159" href="#159">159</a>         Object value =  bean._getter(property, t);
+<a name="160" href="#160">160</a>         <strong>if</strong> (value instanceof List) {
+<a name="161" href="#161">161</a>             <strong>if</strong> (!changedCollections.containsKey(property.xmlName())) {
+<a name="162" href="#162">162</a>                 <em class="comment">// wrap collections so we can record events on that collection mutation.</em>
+<a name="163" href="#163">163</a>                 changedCollections.put(property.xmlName(),
+<a name="164" href="#164">164</a>                         <strong>new</strong> ProtectedList(List.<strong>class</strong>.<strong>cast</strong>(value), defaultView, property.xmlName()));
+<a name="165" href="#165">165</a>             }
+<a name="166" href="#166">166</a>             <strong>return</strong> changedCollections.get(property.xmlName());
+<a name="167" href="#167">167</a>         }
+<a name="168" href="#168">168</a>         <strong>return</strong> value;
+<a name="169" href="#169">169</a>     }
+<a name="170" href="#170">170</a> 
+<a name="171" href="#171">171</a>     <strong>public</strong> <strong>void</strong> setter(ConfigModel.Property property,
+<a name="172" href="#172">172</a>         Object newValue, java.lang.reflect.Type t)  {
+<a name="173" href="#173">173</a>         
+<a name="174" href="#174">174</a>         <em class="comment">// are we still in a transaction</em>
+<a name="175" href="#175">175</a>         <strong>if</strong> (currentTx==<strong>null</strong>) {
+<a name="176" href="#176">176</a>             <strong>throw</strong> <strong>new</strong> IllegalStateException(<span class="string">"Not part of a transation"</span>);
+<a name="177" href="#177">177</a>         }
+<a name="178" href="#178">178</a>         <strong>try</strong> {
+<a name="179" href="#179">179</a>             <strong>if</strong> (newValue != <strong>null</strong>)
+<a name="180" href="#180">180</a>                 handleValidation(property, newValue);
+<a name="181" href="#181">181</a>         } <strong>catch</strong>(Exception v) {
+<a name="182" href="#182">182</a>             bean.getLock().unlock();
+<a name="183" href="#183">183</a>             <strong>throw</strong> <strong>new</strong> RuntimeException(v);
+<a name="184" href="#184">184</a>         }
+<a name="185" href="#185">185</a> 
+<a name="186" href="#186">186</a>         <em class="comment">// Following is a check to avoid duplication of elements with same key</em>
+<a name="187" href="#187">187</a>         <em class="comment">// attribute values. See Issue 7956</em>
+<a name="188" href="#188">188</a>         <strong>if</strong> (property instanceof ConfigModel.AttributeLeaf) {
+<a name="189" href="#189">189</a> 
+<a name="190" href="#190">190</a>             <em class="comment">// First check if the key leaf attribute is being set</em>
+<a name="191" href="#191">191</a>             ConfigModel.AttributeLeaf al =
+<a name="192" href="#192">192</a>                 (ConfigModel.AttributeLeaf)property;
+<a name="193" href="#193">193</a> 
+<a name="194" href="#194">194</a>             <a href="../../../../org/jvnet/hk2/config/ConfigBean.html">ConfigBean</a> master = getMasterView();
+<a name="195" href="#195">195</a>             String key = master.model.key;
 <a name="196" href="#196">196</a> 
-<a name="197" href="#197">197</a>                 <em class="comment">// remove leading @</em>
-<a name="198" href="#198">198</a>                 key = key.substring(1);
-<a name="199" href="#199">199</a>                 <em class="comment">// Extract the old key value</em>
-<a name="200" href="#200">200</a>                 String oldKeyValue = getPropertyValue(key);
+<a name="197" href="#197">197</a>             <em class="comment">// A key attribute may not exist at all if none of the attribs of</em>
+<a name="198" href="#198">198</a>             <em class="comment">// an element are annotated with key=true. If one exists, make sure</em>
+<a name="199" href="#199">199</a>             <em class="comment">// that attribute is actually the one being set</em>
+<a name="200" href="#200">200</a>             <strong>if</strong> ((key != <strong>null</strong>) &amp;&amp; (key.substring(1).equals(property.xmlName))) {
 <a name="201" href="#201">201</a> 
-<a name="202" href="#202">202</a>                 <em class="comment">// Get the Parent Element which has the key attribute specified</em>
-<a name="203" href="#203">203</a>                 <em class="comment">// through the input paramater 'property'. For e.g. in case of</em>
-<a name="204" href="#204">204</a>                 <em class="comment">// Domain->Resources->ConnectorConnectionPool->name(key attrib)</em>
-<a name="205" href="#205">205</a>                 <em class="comment">// thisview will equal ConnectorConnectionPool</em>
-<a name="206" href="#206">206</a>                 <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> thisview = Dom.unwrap(defaultView);
-<a name="207" href="#207">207</a> 
-<a name="208" href="#208">208</a>                 <em class="comment">// parent will equal Resources</em>
-<a name="209" href="#209">209</a>                 <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> parent = thisview.parent();
-<a name="210" href="#210">210</a> 
-<a name="211" href="#211">211</a>                 <em class="comment">// siblings will contain all ConnectorConnectionPools under</em>
-<a name="212" href="#212">212</a>                 <em class="comment">// Resources</em>
-<a name="213" href="#213">213</a>                 List&lt;Dom> siblings = 
-<a name="214" href="#214">214</a>                     parent.domNodeByTypeElements(thisview.getProxyType());
+<a name="202" href="#202">202</a>                 <em class="comment">// remove leading @</em>
+<a name="203" href="#203">203</a>                 key = key.substring(1);
+<a name="204" href="#204">204</a>                 <em class="comment">// Extract the old key value</em>
+<a name="205" href="#205">205</a>                 String oldKeyValue = getPropertyValue(key);
+<a name="206" href="#206">206</a> 
+<a name="207" href="#207">207</a>                 <em class="comment">// Get the Parent Element which has the key attribute specified</em>
+<a name="208" href="#208">208</a>                 <em class="comment">// through the input paramater 'property'. For e.g. in case of</em>
+<a name="209" href="#209">209</a>                 <em class="comment">// Domain->Resources->ConnectorConnectionPool->name(key attrib)</em>
+<a name="210" href="#210">210</a>                 <em class="comment">// thisview will equal ConnectorConnectionPool</em>
+<a name="211" href="#211">211</a>                 <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> thisview = Dom.unwrap(defaultView);
+<a name="212" href="#212">212</a> 
+<a name="213" href="#213">213</a>                 <em class="comment">// parent will equal Resources</em>
+<a name="214" href="#214">214</a>                 <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> parent = thisview.parent();
 <a name="215" href="#215">215</a> 
-<a name="216" href="#216">216</a>                 <em class="comment">// Iterate through each sibling element and see if anyone has</em>
-<a name="217" href="#217">217</a>                 <em class="comment">// same key. If true throw an exception after unlocking this</em>
-<a name="218" href="#218">218</a>                 <em class="comment">// element</em>
-<a name="219" href="#219">219</a>                 <strong>for</strong> (Dom sibling : siblings) {
-<a name="220" href="#220">220</a>                     String siblingKey = sibling.getKey();
-<a name="221" href="#221">221</a>                     <strong>if</strong> (newValue.equals(siblingKey)) {
-<a name="222" href="#222">222</a>                         bean.getLock().unlock();
-<a name="223" href="#223">223</a>                         <strong>throw</strong> <strong>new</strong> IllegalArgumentException(
-<a name="224" href="#224">224</a>                             <span class="string">"Keys cannot be duplicate. Old value of this key "</span> +
-<a name="225" href="#225">225</a>                             <span class="string">"property, "</span> + oldKeyValue + <span class="string">"will be retained"</span>);
-<a name="226" href="#226">226</a>                     }
-<a name="227" href="#227">227</a>                 }
-<a name="228" href="#228">228</a>             }
-<a name="229" href="#229">229</a>         }
-<a name="230" href="#230">230</a> 
-<a name="231" href="#231">231</a>         <em class="comment">// setter</em>
-<a name="232" href="#232">232</a>         Object oldValue = bean.getter(property, t);
-<a name="233" href="#233">233</a>         <strong>if</strong> (newValue instanceof ConfigBeanProxy) {
-<a name="234" href="#234">234</a>             <a href="../../../../org/jvnet/hk2/config/ConfigView.html">ConfigView</a> bean = (ConfigView)
-<a name="235" href="#235">235</a>                 Proxy.getInvocationHandler((ConfigBeanProxy) newValue);
-<a name="236" href="#236">236</a>             newValue = bean.getMasterView();
-<a name="237" href="#237">237</a>         }
-<a name="238" href="#238">238</a>         PropertyChangeEvent evt = <strong>new</strong> PropertyChangeEvent(
-<a name="239" href="#239">239</a>             defaultView,property.xmlName(), oldValue, newValue);
-<a name="240" href="#240">240</a>         <strong>try</strong> {
-<a name="241" href="#241">241</a>             <strong>for</strong> (ConfigBeanInterceptor interceptor : bean.getOptionalFeatures()) {
-<a name="242" href="#242">242</a>                 interceptor.beforeChange(evt);
-<a name="243" href="#243">243</a>             }
-<a name="244" href="#244">244</a>         } <strong>catch</strong>(PropertyVetoException e) {
-<a name="245" href="#245">245</a>             <strong>throw</strong> <strong>new</strong> RuntimeException(e);
-<a name="246" href="#246">246</a>         }
-<a name="247" href="#247">247</a> 
-<a name="248" href="#248">248</a>         changedAttributes.put(property.xmlName(), evt);
-<a name="249" href="#249">249</a>         <strong>for</strong> (ConfigBeanInterceptor interceptor : bean.getOptionalFeatures()) {
-<a name="250" href="#250">250</a>             interceptor.afterChange(evt, System.currentTimeMillis());
+<a name="216" href="#216">216</a>                 <em class="comment">// siblings will contain all ConnectorConnectionPools under</em>
+<a name="217" href="#217">217</a>                 <em class="comment">// Resources</em>
+<a name="218" href="#218">218</a>                 List&lt;Dom> siblings = 
+<a name="219" href="#219">219</a>                     parent.domNodeByTypeElements(thisview.getProxyType());
+<a name="220" href="#220">220</a> 
+<a name="221" href="#221">221</a>                 <em class="comment">// Iterate through each sibling element and see if anyone has</em>
+<a name="222" href="#222">222</a>                 <em class="comment">// same key. If true throw an exception after unlocking this</em>
+<a name="223" href="#223">223</a>                 <em class="comment">// element</em>
+<a name="224" href="#224">224</a>                 <strong>for</strong> (Dom sibling : siblings) {
+<a name="225" href="#225">225</a>                     String siblingKey = sibling.getKey();
+<a name="226" href="#226">226</a>                     <strong>if</strong> (newValue.equals(siblingKey)) {
+<a name="227" href="#227">227</a>                         bean.getLock().unlock();
+<a name="228" href="#228">228</a>                         <strong>throw</strong> <strong>new</strong> IllegalArgumentException(
+<a name="229" href="#229">229</a>                             <span class="string">"Keys cannot be duplicate. Old value of this key "</span> +
+<a name="230" href="#230">230</a>                             <span class="string">"property, "</span> + oldKeyValue + <span class="string">"will be retained"</span>);
+<a name="231" href="#231">231</a>                     }
+<a name="232" href="#232">232</a>                 }
+<a name="233" href="#233">233</a>             }
+<a name="234" href="#234">234</a>         }
+<a name="235" href="#235">235</a> 
+<a name="236" href="#236">236</a>         <em class="comment">// setter</em>
+<a name="237" href="#237">237</a>         Object oldValue = bean.getter(property, t);
+<a name="238" href="#238">238</a>         <strong>if</strong> (newValue instanceof ConfigBeanProxy) {
+<a name="239" href="#239">239</a>             <a href="../../../../org/jvnet/hk2/config/ConfigView.html">ConfigView</a> bean = (ConfigView)
+<a name="240" href="#240">240</a>                 Proxy.getInvocationHandler((ConfigBeanProxy) newValue);
+<a name="241" href="#241">241</a>             newValue = bean.getMasterView();
+<a name="242" href="#242">242</a>         }
+<a name="243" href="#243">243</a>         PropertyChangeEvent evt = <strong>new</strong> PropertyChangeEvent(
+<a name="244" href="#244">244</a>             defaultView,property.xmlName(), oldValue, newValue);
+<a name="245" href="#245">245</a>         <strong>try</strong> {
+<a name="246" href="#246">246</a>             <strong>for</strong> (ConfigBeanInterceptor interceptor : bean.getOptionalFeatures()) {
+<a name="247" href="#247">247</a>                 interceptor.beforeChange(evt);
+<a name="248" href="#248">248</a>             }
+<a name="249" href="#249">249</a>         } <strong>catch</strong>(PropertyVetoException e) {
+<a name="250" href="#250">250</a>             <strong>throw</strong> <strong>new</strong> RuntimeException(e);
 <a name="251" href="#251">251</a>         }
-<a name="252" href="#252">252</a>     }
-<a name="253" href="#253">253</a> 
-<a name="254" href="#254">254</a>     <strong>public</strong> ConfigModel.Property getProperty(String xmlName) {
-<a name="255" href="#255">255</a>         <strong>return</strong> bean.model.findIgnoreCase(xmlName);
-<a name="256" href="#256">256</a>     }
-<a name="257" href="#257">257</a> 
-<a name="258" href="#258">258</a>     <em>/**<em>*</em></em>
-<a name="259" href="#259">259</a> <em>     * Enter a new Transaction, this method should return false if this object</em>
-<a name="260" href="#260">260</a> <em>     * is already enlisted in another transaction, or cannot be enlisted with</em>
-<a name="261" href="#261">261</a> <em>     * the passed transaction. If the object returns true, the object</em>
-<a name="262" href="#262">262</a> <em>     * is enlisted in the passed transaction and cannot be enlisted in another</em>
-<a name="263" href="#263">263</a> <em>     * transaction until either commit or abort has been issued.</em>
-<a name="264" href="#264">264</a> <em>     *</em>
-<a name="265" href="#265">265</a> <em>     * @param t the transaction to enlist with</em>
-<a name="266" href="#266">266</a> <em>     * @return true if the enlisting with the passed transaction was accepted,</em>
-<a name="267" href="#267">267</a> <em>     *         false otherwise</em>
-<a name="268" href="#268">268</a> <em>     */</em>
-<a name="269" href="#269">269</a>     <strong>public</strong> <strong>synchronized</strong> <strong>boolean</strong> join(<a href="../../../../org/jvnet/hk2/config/Transaction.html">Transaction</a> t) {
-<a name="270" href="#270">270</a>         <strong>if</strong> (currentTx==<strong>null</strong>) {
-<a name="271" href="#271">271</a>             currentTx = t;
-<a name="272" href="#272">272</a>             t.addParticipant(<strong>this</strong>);
-<a name="273" href="#273">273</a>             <strong>return</strong> <strong>true</strong>;
-<a name="274" href="#274">274</a>         }
-<a name="275" href="#275">275</a>         <strong>return</strong> false;
-<a name="276" href="#276">276</a>     }
-<a name="277" href="#277">277</a> 
-<a name="278" href="#278">278</a>     <em>/**<em>*</em></em>
-<a name="279" href="#279">279</a> <em>     * Returns true of this Transaction can be committed on this object</em>
-<a name="280" href="#280">280</a> <em>     *</em>
-<a name="281" href="#281">281</a> <em>     * @param t is the transaction to commit, should be the same as the</em>
-<a name="282" href="#282">282</a> <em>     *          one passed during the join(Transaction t) call.</em>
-<a name="283" href="#283">283</a> <em>     * @return true if the trsaction commiting would be successful</em>
-<a name="284" href="#284">284</a> <em>     */</em>
-<a name="285" href="#285">285</a>     <strong>public</strong> <strong>synchronized</strong> <strong>boolean</strong> canCommit(<a href="../../../../org/jvnet/hk2/config/Transaction.html">Transaction</a> t) throws TransactionFailure {
-<a name="286" href="#286">286</a>         Set constraintViolations =
-<a name="287" href="#287">287</a>             beanValidator.validate(<strong>this</strong>.getProxy(<strong>this</strong>.getProxyType()));
-<a name="288" href="#288">288</a> 
-<a name="289" href="#289">289</a>         <strong>if</strong> (constraintViolations != <strong>null</strong>) {
-<a name="290" href="#290">290</a>             Iterator it = constraintViolations.iterator();
-<a name="291" href="#291">291</a>             <strong>boolean</strong> violated = false;
-<a name="292" href="#292">292</a>             String msg = <span class="string">"Constraints for this bean "</span> +
-<a name="293" href="#293">293</a>                    <span class="string">"violated. \n Message = "</span>;
-<a name="294" href="#294">294</a>             <strong>while</strong> (it.hasNext()) {
-<a name="295" href="#295">295</a>                 violated = <strong>true</strong>;
-<a name="296" href="#296">296</a>                 ConstraintViolation cv = (ConstraintViolation) it.next();
-<a name="297" href="#297">297</a>                 msg = msg + cv.getPropertyPath() + <span class="string">" "</span> + cv.getMessage();
-<a name="298" href="#298">298</a>             }
-<a name="299" href="#299">299</a>             <strong>if</strong> (violated) {
-<a name="300" href="#300">300</a>                 bean.getLock().unlock();
-<a name="301" href="#301">301</a>                 <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a>(msg);
-<a name="302" href="#302">302</a>             }
-<a name="303" href="#303">303</a>         }
-<a name="304" href="#304">304</a>         
-<a name="305" href="#305">305</a>         <strong>return</strong> currentTx==t;
-<a name="306" href="#306">306</a>     }
-<a name="307" href="#307">307</a> 
-<a name="308" href="#308">308</a>      
-<a name="309" href="#309">309</a>     <em>/**<em>* remove @ or &lt;> eg "@foo" => "foo" or "&lt;foo>" => "foo" */</em></em>
-<a name="310" href="#310">310</a>     <strong>public</strong> <strong>static</strong> String stripMarkers(<strong>final</strong> String s ) {
-<a name="311" href="#311">311</a>         <strong>if</strong> ( s.startsWith(<span class="string">"@"</span>) ) {
-<a name="312" href="#312">312</a>             <strong>return</strong> s.substring(1);
-<a name="313" href="#313">313</a>         }
-<a name="314" href="#314">314</a>         <strong>else</strong> <strong>if</strong> ( s.startsWith(<span class="string">"&lt;"</span>) ) {
-<a name="315" href="#315">315</a>             <strong>return</strong> s.substring(1, s.length()-1);
-<a name="316" href="#316">316</a>         }
-<a name="317" href="#317">317</a>         <strong>return</strong> s;
-<a name="318" href="#318">318</a>     }
-<a name="319" href="#319">319</a>     
-<a name="320" href="#320">320</a>     <em>/**<em>*</em></em>
-<a name="321" href="#321">321</a> <em>     * Commit this Transaction.</em>
-<a name="322" href="#322">322</a> <em>     *</em>
-<a name="323" href="#323">323</a> <em>     * @param t the transaction commiting.</em>
-<a name="324" href="#324">324</a> <em>     * @throws TransactionFailure</em>
-<a name="325" href="#325">325</a> <em>     *          if the transaction commit failed</em>
-<a name="326" href="#326">326</a> <em>     */</em>
-<a name="327" href="#327">327</a>     <strong>public</strong> <strong>synchronized</strong> List&lt;PropertyChangeEvent> commit(<a href="../../../../org/jvnet/hk2/config/Transaction.html">Transaction</a> t) throws TransactionFailure {
-<a name="328" href="#328">328</a>         <strong>if</strong> (currentTx==t) {
-<a name="329" href="#329">329</a>             currentTx=<strong>null</strong>;
-<a name="330" href="#330">330</a>         }
-<a name="331" href="#331">331</a>         
-<a name="332" href="#332">332</a>         <em class="comment">// a key attribute must be non-null and have length >= 1</em>
-<a name="333" href="#333">333</a>         <strong>final</strong> <a href="../../../../org/jvnet/hk2/config/ConfigBean.html">ConfigBean</a> master = getMasterView();
-<a name="334" href="#334">334</a>         <strong>final</strong> String keyStr = master.model.key;
-<a name="335" href="#335">335</a>         <strong>if</strong> ( keyStr != <strong>null</strong>) {
-<a name="336" href="#336">336</a>             <strong>final</strong> String key = stripMarkers(keyStr);
-<a name="337" href="#337">337</a>             <strong>final</strong> String value = getPropertyValue(key);
-<a name="338" href="#338">338</a>             <strong>if</strong> ( value == <strong>null</strong> ) {
-<a name="339" href="#339">339</a>                 <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a>( <span class="string">"Key value cannot be null: "</span> + key );
-<a name="340" href="#340">340</a>             }
-<a name="341" href="#341">341</a>             <strong>if</strong> ( value.length() == 0 ) {
-<a name="342" href="#342">342</a>                 <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a>( <span class="string">"Key value cannot be empty string: "</span> + key );
-<a name="343" href="#343">343</a>             }
-<a name="344" href="#344">344</a>         }
-<a name="345" href="#345">345</a> 
-<a name="346" href="#346">346</a> 
-<a name="347" href="#347">347</a>         <strong>try</strong> {
-<a name="348" href="#348">348</a>             List&lt;PropertyChangeEvent> appliedChanges = <strong>new</strong> ArrayList&lt;PropertyChangeEvent>();
-<a name="349" href="#349">349</a>             <strong>for</strong> (PropertyChangeEvent event : changedAttributes.values()) {
-<a name="350" href="#350">350</a>                 ConfigModel.Property property = bean.model.findIgnoreCase(event.getPropertyName());
-<a name="351" href="#351">351</a>                 <a href="../../../../org/jvnet/hk2/config/ConfigBeanInterceptor.html">ConfigBeanInterceptor</a> interceptor  = bean.getOptionalFeature(ConfigBeanInterceptor.<strong>class</strong>);
-<a name="352" href="#352">352</a>                 <strong>try</strong> {
-<a name="353" href="#353">353</a>                     <strong>if</strong> (interceptor!=<strong>null</strong>) {
-<a name="354" href="#354">354</a>                         interceptor.beforeChange(event);
-<a name="355" href="#355">355</a>                     }
-<a name="356" href="#356">356</a>                 } <strong>catch</strong> (PropertyVetoException e) {
-<a name="357" href="#357">357</a>                     <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a>(e.getMessage(), e);
-<a name="358" href="#358">358</a>                 }
-<a name="359" href="#359">359</a>                 property.set(bean, event.getNewValue());
-<a name="360" href="#360">360</a>                 <strong>if</strong> (interceptor!=<strong>null</strong>) {
-<a name="361" href="#361">361</a>                     interceptor.afterChange(event, System.currentTimeMillis());
-<a name="362" href="#362">362</a>                 }
-<a name="363" href="#363">363</a>                 appliedChanges.add(event);
-<a name="364" href="#364">364</a>             }
-<a name="365" href="#365">365</a>             <strong>for</strong> (ProtectedList entry :  changedCollections.values())  {
-<a name="366" href="#366">366</a>                 List&lt;Object> originalList = entry.readOnly;
-<a name="367" href="#367">367</a>                 <strong>for</strong> (PropertyChangeEvent event : entry.changeEvents) {
-<a name="368" href="#368">368</a>                     <strong>if</strong> (event.getOldValue()==<strong>null</strong>) {
-<a name="369" href="#369">369</a>                         originalList.add(event.getNewValue());
-<a name="370" href="#370">370</a>                     } <strong>else</strong> {
-<a name="371" href="#371">371</a>                         <strong>final</strong> Object toBeRemovedObj = event.getOldValue();
-<a name="372" href="#372">372</a>                         <strong>if</strong> ( toBeRemovedObj instanceof ConfigBeanProxy ) {
-<a name="373" href="#373">373</a>                             <strong>final</strong> <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> toBeRemoved = Dom.unwrap((ConfigBeanProxy)toBeRemovedObj);
-<a name="374" href="#374">374</a>                             <strong>for</strong> (<strong>int</strong> index=0;index&lt;originalList.size();index++) {
-<a name="375" href="#375">375</a>                                 Object element = originalList.get(index);
-<a name="376" href="#376">376</a>                                 <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom = Dom.unwrap((ConfigBeanProxy) element);
-<a name="377" href="#377">377</a>                                 <strong>if</strong> (dom==toBeRemoved) {
-<a name="378" href="#378">378</a>                                     originalList.remove(index);
-<a name="379" href="#379">379</a>                                 }
-<a name="380" href="#380">380</a>                             }
-<a name="381" href="#381">381</a>                         }
-<a name="382" href="#382">382</a>                         <strong>else</strong> <strong>if</strong> ( toBeRemovedObj instanceof String ) {
-<a name="383" href="#383">383</a>                             <strong>final</strong> String toBeRemoved = (String)toBeRemovedObj;
-<a name="384" href="#384">384</a>                             <strong>for</strong> (<strong>int</strong> index=0;index&lt;originalList.size();index++) {
-<a name="385" href="#385">385</a>                                 <strong>final</strong> String item = (String)originalList.get(index);
-<a name="386" href="#386">386</a>                                 <strong>if</strong> (item.equals(toBeRemoved)) {
-<a name="387" href="#387">387</a>                                     originalList.remove(index);
-<a name="388" href="#388">388</a>                                 }
-<a name="389" href="#389">389</a>                             }
-<a name="390" href="#390">390</a>                         }
-<a name="391" href="#391">391</a>                         <strong>else</strong> {
-<a name="392" href="#392">392</a>                               <strong>throw</strong> <strong>new</strong> IllegalArgumentException();
-<a name="393" href="#393">393</a>                         }
-<a name="394" href="#394">394</a>                     }
-<a name="395" href="#395">395</a>                     appliedChanges.add(event);
-<a name="396" href="#396">396</a>                 }
-<a name="397" href="#397">397</a>             }
-<a name="398" href="#398">398</a>             changedAttributes.clear();
-<a name="399" href="#399">399</a>             <strong>return</strong> appliedChanges;
-<a name="400" href="#400">400</a>         } <strong>catch</strong>(<a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a> e) {
-<a name="401" href="#401">401</a>             <strong>throw</strong> e;
-<a name="402" href="#402">402</a>         } <strong>catch</strong>(Exception e) {
-<a name="403" href="#403">403</a>             <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a>(e.getMessage(), e);
-<a name="404" href="#404">404</a>         } <strong>finally</strong> {
-<a name="405" href="#405">405</a>             bean.getLock().unlock();
-<a name="406" href="#406">406</a>         }
-<a name="407" href="#407">407</a> 
-<a name="408" href="#408">408</a>     }
-<a name="409" href="#409">409</a> 
-<a name="410" href="#410">410</a>     <em>/**<em>*</em></em>
-<a name="411" href="#411">411</a> <em>     * Aborts this Transaction, reverting the state</em>
-<a name="412" href="#412">412</a> <em>     *</em>
-<a name="413" href="#413">413</a> <em>     * @param t the aborting transaction</em>
-<a name="414" href="#414">414</a> <em>     */</em>
-<a name="415" href="#415">415</a>     <strong>public</strong> <strong>synchronized</strong> <strong>void</strong> abort(<a href="../../../../org/jvnet/hk2/config/Transaction.html">Transaction</a> t) {
-<a name="416" href="#416">416</a>         currentTx=<strong>null</strong>;
-<a name="417" href="#417">417</a>         bean.getLock().unlock();
-<a name="418" href="#418">418</a>         changedAttributes.clear();
-<a name="419" href="#419">419</a> 
-<a name="420" href="#420">420</a>     }
-<a name="421" href="#421">421</a> 
-<a name="422" href="#422">422</a>     <em>/**<em>*</em></em>
-<a name="423" href="#423">423</a> <em>     * Allocate a new ConfigBean object as part of the Transaction</em>
-<a name="424" href="#424">424</a> <em>     * associated with this configuration object. This will eventually</em>
-<a name="425" href="#425">425</a> <em>     * be moved to a factory.</em>
-<a name="426" href="#426">426</a> <em>     *</em>
-<a name="427" href="#427">427</a> <em>     * @param type the request configuration object type</em>
-<a name="428" href="#428">428</a> <em>     * @return the propertly constructed configuration object</em>
-<a name="429" href="#429">429</a> <em>     * @throws TransactionFailure if the allocation failed </em>
-<a name="430" href="#430">430</a> <em>     */</em>
-<a name="431" href="#431">431</a> 
-<a name="432" href="#432">432</a>     <strong>public</strong> &lt;T <strong>extends</strong> ConfigBeanProxy> T allocateProxy(Class&lt;T> type) throws TransactionFailure {
-<a name="433" href="#433">433</a>         <strong>if</strong> (currentTx==<strong>null</strong>) {
-<a name="434" href="#434">434</a>             <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a>(<span class="string">"Not part of a transaction"</span>, <strong>null</strong>);
-<a name="435" href="#435">435</a>         }
-<a name="436" href="#436">436</a>         <a href="../../../../org/jvnet/hk2/config/ConfigBean.html">ConfigBean</a> newBean = bean.allocate(type);
-<a name="437" href="#437">437</a>         <a href="../../../../org/jvnet/hk2/config/WriteableView.html">WriteableView</a> writeableView = bean.getHabitat().getComponent(ConfigSupport.<strong>class</strong>).getWriteableView(newBean.getProxy(type), newBean);
-<a name="438" href="#438">438</a>         writeableView.join(currentTx);
-<a name="439" href="#439">439</a> 
-<a name="440" href="#440">440</a>         <strong>return</strong> writeableView.getProxy(type);
-<a name="441" href="#441">441</a>    }
-<a name="442" href="#442">442</a> 
-<a name="443" href="#443">443</a>     <strong>public</strong> <a href="../../../../org/jvnet/hk2/config/ConfigBean.html">ConfigBean</a> getMasterView() {
-<a name="444" href="#444">444</a>         <strong>return</strong> bean;
-<a name="445" href="#445">445</a>     }
-<a name="446" href="#446">446</a> 
-<a name="447" href="#447">447</a>     <strong>public</strong> <strong>void</strong> setMasterView(<a href="../../../../org/jvnet/hk2/config/ConfigView.html">ConfigView</a> view) {
-<a name="448" href="#448">448</a> 
-<a name="449" href="#449">449</a>     }
-<a name="450" href="#450">450</a> 
-<a name="451" href="#451">451</a>     <strong>public</strong> &lt;T <strong>extends</strong> ConfigBeanProxy> Class&lt;T> getProxyType() {
-<a name="452" href="#452">452</a>         <strong>return</strong> bean.getProxyType();
-<a name="453" href="#453">453</a>     }
-<a name="454" href="#454">454</a> 
-<a name="455" href="#455">455</a>     @SuppressWarnings(<span class="string">"unchecked"</span>)    
-<a name="456" href="#456">456</a>     <strong>public</strong> &lt;T <strong>extends</strong> ConfigBeanProxy> T getProxy(Class&lt;T> type) {
-<a name="457" href="#457">457</a>         <strong>final</strong> <a href="../../../../org/jvnet/hk2/config/ConfigBean.html">ConfigBean</a> sourceBean = getMasterView();
-<a name="458" href="#458">458</a>         <strong>if</strong> (!(type.getName().equals(sourceBean.model.targetTypeName))) {
-<a name="459" href="#459">459</a>             <strong>throw</strong> <strong>new</strong> IllegalArgumentException(<span class="string">"This config bean interface is "</span> + sourceBean.model.targetTypeName
-<a name="460" href="#460">460</a>                     + <span class="string">" not "</span>  + type.getName());
-<a name="461" href="#461">461</a>         }
-<a name="462" href="#462">462</a>         Class[] interfacesClasses = { type };
-<a name="463" href="#463">463</a>         <strong>return</strong> (T) Proxy.newProxyInstance(type.getClassLoader(), interfacesClasses, <strong>this</strong>);
-<a name="464" href="#464">464</a>     }
-<a name="465" href="#465">465</a> 
-<a name="466" href="#466">466</a> <em>/**<em>*</em></em>
-<a name="467" href="#467">467</a> <em> * A Protected List is a @Link java.util.List implementation which mutable</em>
-<a name="468" href="#468">468</a> <em> * operations are constrained by the owner of the list.</em>
-<a name="469" href="#469">469</a> <em> *</em>
-<a name="470" href="#470">470</a> <em> * @author Jerome Dochez</em>
-<a name="471" href="#471">471</a> <em> */</em>
-<a name="472" href="#472">472</a> <strong>private</strong> <strong>class</strong> ProtectedList <strong>extends</strong> AbstractList {
-<a name="473" href="#473">473</a> 
-<a name="474" href="#474">474</a>     <strong>final</strong> <a href="../../../../org/jvnet/hk2/config/ConfigBeanProxy.html">ConfigBeanProxy</a> readView;
-<a name="475" href="#475">475</a>     <strong>final</strong> List&lt;Object> readOnly;
-<a name="476" href="#476">476</a>     <strong>final</strong> String id;
-<a name="477" href="#477">477</a>     <strong>final</strong> List&lt;PropertyChangeEvent> changeEvents = <strong>new</strong> ArrayList&lt;PropertyChangeEvent>();
-<a name="478" href="#478">478</a>     <strong>final</strong> List proxied;
-<a name="479" href="#479">479</a> 
-<a name="480" href="#480">480</a>     ProtectedList(List&lt;Object> readOnly, <a href="../../../../org/jvnet/hk2/config/ConfigBeanProxy.html">ConfigBeanProxy</a> parent, String id) {
-<a name="481" href="#481">481</a>         proxied = Collections.synchronizedList(<strong>new</strong> ArrayList&lt;Object>(readOnly));
-<a name="482" href="#482">482</a>         <strong>this</strong>.readView = parent;
-<a name="483" href="#483">483</a>         <strong>this</strong>.readOnly = readOnly;
-<a name="484" href="#484">484</a>         <strong>this</strong>.id = id;
-<a name="485" href="#485">485</a>     }
-<a name="486" href="#486">486</a> 
-<a name="487" href="#487">487</a>     <em>/**<em>*</em></em>
-<a name="488" href="#488">488</a> <em>     * Returns the number of elements in this collection.  If the collection</em>
-<a name="489" href="#489">489</a> <em>     * contains more than &lt;tt>Integer.MAX_VALUE&lt;/tt> elements, returns</em>
-<a name="490" href="#490">490</a> <em>     * &lt;tt>Integer.MAX_VALUE&lt;/tt>.</em>
-<a name="491" href="#491">491</a> <em>     *</em>
-<a name="492" href="#492">492</a> <em>     * @return the number of elements in this collection.</em>
-<a name="493" href="#493">493</a> <em>     */</em>
-<a name="494" href="#494">494</a>     <strong>public</strong> <strong>int</strong> size() {
-<a name="495" href="#495">495</a>         <strong>return</strong> proxied.size();
-<a name="496" href="#496">496</a>     }
-<a name="497" href="#497">497</a> 
-<a name="498" href="#498">498</a>     <em>/**<em>*</em></em>
-<a name="499" href="#499">499</a> <em>     * Returns the element at the specified position in this list.</em>
-<a name="500" href="#500">500</a> <em>     *</em>
-<a name="501" href="#501">501</a> <em>     * @param index index of element to return.</em>
-<a name="502" href="#502">502</a> <em>     * @return the element at the specified position in this list.</em>
-<a name="503" href="#503">503</a> <em>     * @throws IndexOutOfBoundsException if the given index is out of range</em>
-<a name="504" href="#504">504</a> <em>     *                                   (&lt;tt>index &amp;lt; 0 || index &amp;gt;= size()&lt;/tt>).</em>
-<a name="505" href="#505">505</a> <em>     */</em>
-<a name="506" href="#506">506</a>     <strong>public</strong> Object get(<strong>int</strong> index) {
-<a name="507" href="#507">507</a>         <strong>return</strong> proxied.get(index);
-<a name="508" href="#508">508</a>     }
-<a name="509" href="#509">509</a> 
-<a name="510" href="#510">510</a>     @Override
-<a name="511" href="#511">511</a>     <strong>public</strong> <strong>synchronized</strong> <strong>boolean</strong> add(Object object) {
-<a name="512" href="#512">512</a>         Object param = object;
-<a name="513" href="#513">513</a>         Object handler = <strong>null</strong>;
-<a name="514" href="#514">514</a>         <strong>try</strong> {
-<a name="515" href="#515">515</a>             handler = Proxy.getInvocationHandler(object);
-<a name="516" href="#516">516</a>         } <strong>catch</strong>(IllegalArgumentException e) {
-<a name="517" href="#517">517</a>             <em class="comment">// ignore, this is a leaf</em>
-<a name="518" href="#518">518</a>         }
-<a name="519" href="#519">519</a>         <strong>if</strong> (handler!=<strong>null</strong> &amp;&amp; handler instanceof WriteableView) {
-<a name="520" href="#520">520</a>             <a href="../../../../org/jvnet/hk2/config/ConfigBean.html">ConfigBean</a> master = ((WriteableView) handler).getMasterView();
-<a name="521" href="#521">521</a>             String key = master.model.key;
-<a name="522" href="#522">522</a>             <strong>if</strong> (key!=<strong>null</strong>) {
-<a name="523" href="#523">523</a>                 <em class="comment">// remove leading @</em>
-<a name="524" href="#524">524</a>                 key = key.substring(1);
-<a name="525" href="#525">525</a>                 <em class="comment">// check that we are not adding a duplicate key element</em>
-<a name="526" href="#526">526</a>                 String keyValue = ((WriteableView) handler).getPropertyValue(key);
-<a name="527" href="#527">527</a>                 <strong>for</strong> (Object o : proxied) {
-<a name="528" href="#528">528</a>                     <em class="comment">// the proxied object can be a read-only or a writeable view, we need</em>
-<a name="529" href="#529">529</a>                     <em class="comment">// to be careful</em>
-<a name="530" href="#530">530</a>                     <em class="comment">// ToDo : we need to encasulate this test.</em>
-<a name="531" href="#531">531</a>                     String value;
-<a name="532" href="#532">532</a>                     <strong>if</strong> (Proxy.getInvocationHandler(o) instanceof WriteableView) {
-<a name="533" href="#533">533</a>                         value = ((WriteableView) Proxy.getInvocationHandler(o)).getPropertyValue(key);
-<a name="534" href="#534">534</a>                     }  <strong>else</strong> {
-<a name="535" href="#535">535</a>                         <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> cbo = Dom.unwrap((ConfigBeanProxy) o);
-<a name="536" href="#536">536</a>                         value = cbo.attribute(key);
-<a name="537" href="#537">537</a>                     }
-<a name="538" href="#538">538</a>                     <strong>if</strong> (keyValue!=<strong>null</strong> &amp;&amp; keyValue.equals(value)) {
-<a name="539" href="#539">539</a>                         <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> parent = Dom.unwrap(readView);
-<a name="540" href="#540">540</a>                         <strong>throw</strong> <strong>new</strong> IllegalArgumentException(<span class="string">"A "</span> + master.getProxyType().getSimpleName() +
-<a name="541" href="#541">541</a>                                 <span class="string">" with the same key \&quot;"</span> + keyValue + <span class="string">"\&quot; already exists in "</span> +
-<a name="542" href="#542">542</a>                                 parent.getProxyType().getSimpleName() + <span class="string">" "</span> + parent.getKey()) ;
-<a name="543" href="#543">543</a> 
-<a name="544" href="#544">544</a>                     }
-<a name="545" href="#545">545</a>                 }
-<a name="546" href="#546">546</a>             }
-<a name="547" href="#547">547</a>             param = ((WriteableView) handler).getMasterView().createProxy(master.type());
+<a name="252" href="#252">252</a> 
+<a name="253" href="#253">253</a>         changedAttributes.put(property.xmlName(), evt);
+<a name="254" href="#254">254</a>         <strong>for</strong> (ConfigBeanInterceptor interceptor : bean.getOptionalFeatures()) {
+<a name="255" href="#255">255</a>             interceptor.afterChange(evt, System.currentTimeMillis());
+<a name="256" href="#256">256</a>         }
+<a name="257" href="#257">257</a>     }
+<a name="258" href="#258">258</a> 
+<a name="259" href="#259">259</a>     <strong>public</strong> ConfigModel.Property getProperty(String xmlName) {
+<a name="260" href="#260">260</a>         <strong>return</strong> bean.model.findIgnoreCase(xmlName);
+<a name="261" href="#261">261</a>     }
+<a name="262" href="#262">262</a> 
+<a name="263" href="#263">263</a>     <em>/**<em>*</em></em>
+<a name="264" href="#264">264</a> <em>     * Enter a new Transaction, this method should return false if this object</em>
+<a name="265" href="#265">265</a> <em>     * is already enlisted in another transaction, or cannot be enlisted with</em>
+<a name="266" href="#266">266</a> <em>     * the passed transaction. If the object returns true, the object</em>
+<a name="267" href="#267">267</a> <em>     * is enlisted in the passed transaction and cannot be enlisted in another</em>
+<a name="268" href="#268">268</a> <em>     * transaction until either commit or abort has been issued.</em>
+<a name="269" href="#269">269</a> <em>     *</em>
+<a name="270" href="#270">270</a> <em>     * @param t the transaction to enlist with</em>
+<a name="271" href="#271">271</a> <em>     * @return true if the enlisting with the passed transaction was accepted,</em>
+<a name="272" href="#272">272</a> <em>     *         false otherwise</em>
+<a name="273" href="#273">273</a> <em>     */</em>
+<a name="274" href="#274">274</a>     <strong>public</strong> <strong>synchronized</strong> <strong>boolean</strong> join(<a href="../../../../org/jvnet/hk2/config/Transaction.html">Transaction</a> t) {
+<a name="275" href="#275">275</a>         <strong>if</strong> (currentTx==<strong>null</strong>) {
+<a name="276" href="#276">276</a>             currentTx = t;
+<a name="277" href="#277">277</a>             t.addParticipant(<strong>this</strong>);
+<a name="278" href="#278">278</a>             <strong>return</strong> <strong>true</strong>;
+<a name="279" href="#279">279</a>         }
+<a name="280" href="#280">280</a>         <strong>return</strong> false;
+<a name="281" href="#281">281</a>     }
+<a name="282" href="#282">282</a> 
+<a name="283" href="#283">283</a>     <em>/**<em>*</em></em>
+<a name="284" href="#284">284</a> <em>     * Returns true of this Transaction can be committed on this object</em>
+<a name="285" href="#285">285</a> <em>     *</em>
+<a name="286" href="#286">286</a> <em>     * @param t is the transaction to commit, should be the same as the</em>
+<a name="287" href="#287">287</a> <em>     *          one passed during the join(Transaction t) call.</em>
+<a name="288" href="#288">288</a> <em>     * @return true if the trsaction commiting would be successful</em>
+<a name="289" href="#289">289</a> <em>     */</em>
+<a name="290" href="#290">290</a>     <strong>public</strong> <strong>synchronized</strong> <strong>boolean</strong> canCommit(<a href="../../../../org/jvnet/hk2/config/Transaction.html">Transaction</a> t) throws TransactionFailure {
+<a name="291" href="#291">291</a>         Set constraintViolations =
+<a name="292" href="#292">292</a>             beanValidator.validate(<strong>this</strong>.getProxy(<strong>this</strong>.getProxyType()));
+<a name="293" href="#293">293</a> 
+<a name="294" href="#294">294</a>         <strong>if</strong> (constraintViolations != <strong>null</strong>) {
+<a name="295" href="#295">295</a>             Iterator it = constraintViolations.iterator();
+<a name="296" href="#296">296</a>             <strong>boolean</strong> violated = false;
+<a name="297" href="#297">297</a>             String msg = <span class="string">"Constraints for this bean "</span> +
+<a name="298" href="#298">298</a>                    <span class="string">"violated. \n Message = "</span>;
+<a name="299" href="#299">299</a>             <strong>while</strong> (it.hasNext()) {
+<a name="300" href="#300">300</a>                 violated = <strong>true</strong>;
+<a name="301" href="#301">301</a>                 ConstraintViolation cv = (ConstraintViolation) it.next();
+<a name="302" href="#302">302</a>                 msg = msg + cv.getPropertyPath() + <span class="string">" "</span> + cv.getMessage();
+<a name="303" href="#303">303</a>             }
+<a name="304" href="#304">304</a>             <strong>if</strong> (violated) {
+<a name="305" href="#305">305</a>                 bean.getLock().unlock();
+<a name="306" href="#306">306</a>                 <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a>(msg);
+<a name="307" href="#307">307</a>             }
+<a name="308" href="#308">308</a>         }
+<a name="309" href="#309">309</a>         
+<a name="310" href="#310">310</a>         <strong>return</strong> currentTx==t;
+<a name="311" href="#311">311</a>     }
+<a name="312" href="#312">312</a> 
+<a name="313" href="#313">313</a>      
+<a name="314" href="#314">314</a>     <em>/**<em>* remove @ or &lt;> eg "@foo" => "foo" or "&lt;foo>" => "foo" */</em></em>
+<a name="315" href="#315">315</a>     <strong>public</strong> <strong>static</strong> String stripMarkers(<strong>final</strong> String s ) {
+<a name="316" href="#316">316</a>         <strong>if</strong> ( s.startsWith(<span class="string">"@"</span>) ) {
+<a name="317" href="#317">317</a>             <strong>return</strong> s.substring(1);
+<a name="318" href="#318">318</a>         }
+<a name="319" href="#319">319</a>         <strong>else</strong> <strong>if</strong> ( s.startsWith(<span class="string">"&lt;"</span>) ) {
+<a name="320" href="#320">320</a>             <strong>return</strong> s.substring(1, s.length()-1);
+<a name="321" href="#321">321</a>         }
+<a name="322" href="#322">322</a>         <strong>return</strong> s;
+<a name="323" href="#323">323</a>     }
+<a name="324" href="#324">324</a>     
+<a name="325" href="#325">325</a>     <em>/**<em>*</em></em>
+<a name="326" href="#326">326</a> <em>     * Commit this Transaction.</em>
+<a name="327" href="#327">327</a> <em>     *</em>
+<a name="328" href="#328">328</a> <em>     * @param t the transaction commiting.</em>
+<a name="329" href="#329">329</a> <em>     * @throws TransactionFailure</em>
+<a name="330" href="#330">330</a> <em>     *          if the transaction commit failed</em>
+<a name="331" href="#331">331</a> <em>     */</em>
+<a name="332" href="#332">332</a>     <strong>public</strong> <strong>synchronized</strong> List&lt;PropertyChangeEvent> commit(<a href="../../../../org/jvnet/hk2/config/Transaction.html">Transaction</a> t) throws TransactionFailure {
+<a name="333" href="#333">333</a>         <strong>if</strong> (currentTx==t) {
+<a name="334" href="#334">334</a>             currentTx=<strong>null</strong>;
+<a name="335" href="#335">335</a>         }
+<a name="336" href="#336">336</a>         
+<a name="337" href="#337">337</a>         <em class="comment">// a key attribute must be non-null and have length >= 1</em>
+<a name="338" href="#338">338</a>         <strong>final</strong> <a href="../../../../org/jvnet/hk2/config/ConfigBean.html">ConfigBean</a> master = getMasterView();
+<a name="339" href="#339">339</a>         <strong>final</strong> String keyStr = master.model.key;
+<a name="340" href="#340">340</a>         <strong>if</strong> ( keyStr != <strong>null</strong>) {
+<a name="341" href="#341">341</a>             <strong>final</strong> String key = stripMarkers(keyStr);
+<a name="342" href="#342">342</a>             <strong>final</strong> String value = getPropertyValue(key);
+<a name="343" href="#343">343</a>             <strong>if</strong> ( value == <strong>null</strong> ) {
+<a name="344" href="#344">344</a>                 <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a>( <span class="string">"Key value cannot be null: "</span> + key );
+<a name="345" href="#345">345</a>             }
+<a name="346" href="#346">346</a>             <strong>if</strong> ( value.length() == 0 ) {
+<a name="347" href="#347">347</a>                 <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a>( <span class="string">"Key value cannot be empty string: "</span> + key );
+<a name="348" href="#348">348</a>             }
+<a name="349" href="#349">349</a>         }
+<a name="350" href="#350">350</a> 
+<a name="351" href="#351">351</a> 
+<a name="352" href="#352">352</a>         <strong>try</strong> {
+<a name="353" href="#353">353</a>             List&lt;PropertyChangeEvent> appliedChanges = <strong>new</strong> ArrayList&lt;PropertyChangeEvent>();
+<a name="354" href="#354">354</a>             <strong>for</strong> (PropertyChangeEvent event : changedAttributes.values()) {
+<a name="355" href="#355">355</a>                 ConfigModel.Property property = bean.model.findIgnoreCase(event.getPropertyName());
+<a name="356" href="#356">356</a>                 <a href="../../../../org/jvnet/hk2/config/ConfigBeanInterceptor.html">ConfigBeanInterceptor</a> interceptor  = bean.getOptionalFeature(ConfigBeanInterceptor.<strong>class</strong>);
+<a name="357" href="#357">357</a>                 <strong>try</strong> {
+<a name="358" href="#358">358</a>                     <strong>if</strong> (interceptor!=<strong>null</strong>) {
+<a name="359" href="#359">359</a>                         interceptor.beforeChange(event);
+<a name="360" href="#360">360</a>                     }
+<a name="361" href="#361">361</a>                 } <strong>catch</strong> (PropertyVetoException e) {
+<a name="362" href="#362">362</a>                     <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a>(e.getMessage(), e);
+<a name="363" href="#363">363</a>                 }
+<a name="364" href="#364">364</a>                 property.set(bean, event.getNewValue());
+<a name="365" href="#365">365</a>                 <strong>if</strong> (interceptor!=<strong>null</strong>) {
+<a name="366" href="#366">366</a>                     interceptor.afterChange(event, System.currentTimeMillis());
+<a name="367" href="#367">367</a>                 }
+<a name="368" href="#368">368</a>                 appliedChanges.add(event);
+<a name="369" href="#369">369</a>             }
+<a name="370" href="#370">370</a>             <strong>for</strong> (ProtectedList entry :  changedCollections.values())  {
+<a name="371" href="#371">371</a>                 List&lt;Object> originalList = entry.readOnly;
+<a name="372" href="#372">372</a>                 <strong>for</strong> (PropertyChangeEvent event : entry.changeEvents) {
+<a name="373" href="#373">373</a>                     <strong>if</strong> (event.getOldValue()==<strong>null</strong>) {
+<a name="374" href="#374">374</a>                         originalList.add(event.getNewValue());
+<a name="375" href="#375">375</a>                     } <strong>else</strong> {
+<a name="376" href="#376">376</a>                         <strong>final</strong> Object toBeRemovedObj = event.getOldValue();
+<a name="377" href="#377">377</a>                         <strong>if</strong> ( toBeRemovedObj instanceof ConfigBeanProxy ) {
+<a name="378" href="#378">378</a>                             <strong>final</strong> <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> toBeRemoved = Dom.unwrap((ConfigBeanProxy)toBeRemovedObj);
+<a name="379" href="#379">379</a>                             <strong>for</strong> (<strong>int</strong> index=0;index&lt;originalList.size();index++) {
+<a name="380" href="#380">380</a>                                 Object element = originalList.get(index);
+<a name="381" href="#381">381</a>                                 <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> dom = Dom.unwrap((ConfigBeanProxy) element);
+<a name="382" href="#382">382</a>                                 <strong>if</strong> (dom==toBeRemoved) {
+<a name="383" href="#383">383</a>                                     originalList.remove(index);
+<a name="384" href="#384">384</a>                                 }
+<a name="385" href="#385">385</a>                             }
+<a name="386" href="#386">386</a>                         }
+<a name="387" href="#387">387</a>                         <strong>else</strong> <strong>if</strong> ( toBeRemovedObj instanceof String ) {
+<a name="388" href="#388">388</a>                             <strong>final</strong> String toBeRemoved = (String)toBeRemovedObj;
+<a name="389" href="#389">389</a>                             <strong>for</strong> (<strong>int</strong> index=0;index&lt;originalList.size();index++) {
+<a name="390" href="#390">390</a>                                 <strong>final</strong> String item = (String)originalList.get(index);
+<a name="391" href="#391">391</a>                                 <strong>if</strong> (item.equals(toBeRemoved)) {
+<a name="392" href="#392">392</a>                                     originalList.remove(index);
+<a name="393" href="#393">393</a>                                 }
+<a name="394" href="#394">394</a>                             }
+<a name="395" href="#395">395</a>                         }
+<a name="396" href="#396">396</a>                         <strong>else</strong> {
+<a name="397" href="#397">397</a>                               <strong>throw</strong> <strong>new</strong> IllegalArgumentException();
+<a name="398" href="#398">398</a>                         }
+<a name="399" href="#399">399</a>                     }
+<a name="400" href="#400">400</a>                     appliedChanges.add(event);
+<a name="401" href="#401">401</a>                 }
+<a name="402" href="#402">402</a>             }
+<a name="403" href="#403">403</a>             changedAttributes.clear();
+<a name="404" href="#404">404</a>             <strong>return</strong> appliedChanges;
+<a name="405" href="#405">405</a>         } <strong>catch</strong>(<a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a> e) {
+<a name="406" href="#406">406</a>             <strong>throw</strong> e;
+<a name="407" href="#407">407</a>         } <strong>catch</strong>(Exception e) {
+<a name="408" href="#408">408</a>             <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a>(e.getMessage(), e);
+<a name="409" href="#409">409</a>         } <strong>finally</strong> {
+<a name="410" href="#410">410</a>             bean.getLock().unlock();
+<a name="411" href="#411">411</a>         }
+<a name="412" href="#412">412</a> 
+<a name="413" href="#413">413</a>     }
+<a name="414" href="#414">414</a> 
+<a name="415" href="#415">415</a>     <em>/**<em>*</em></em>
+<a name="416" href="#416">416</a> <em>     * Aborts this Transaction, reverting the state</em>
+<a name="417" href="#417">417</a> <em>     *</em>
+<a name="418" href="#418">418</a> <em>     * @param t the aborting transaction</em>
+<a name="419" href="#419">419</a> <em>     */</em>
+<a name="420" href="#420">420</a>     <strong>public</strong> <strong>synchronized</strong> <strong>void</strong> abort(<a href="../../../../org/jvnet/hk2/config/Transaction.html">Transaction</a> t) {
+<a name="421" href="#421">421</a>         currentTx=<strong>null</strong>;
+<a name="422" href="#422">422</a>         bean.getLock().unlock();
+<a name="423" href="#423">423</a>         changedAttributes.clear();
+<a name="424" href="#424">424</a> 
+<a name="425" href="#425">425</a>     }
+<a name="426" href="#426">426</a> 
+<a name="427" href="#427">427</a>     <em>/**<em>*</em></em>
+<a name="428" href="#428">428</a> <em>     * Allocate a new ConfigBean object as part of the Transaction</em>
+<a name="429" href="#429">429</a> <em>     * associated with this configuration object. This will eventually</em>
+<a name="430" href="#430">430</a> <em>     * be moved to a factory.</em>
+<a name="431" href="#431">431</a> <em>     *</em>
+<a name="432" href="#432">432</a> <em>     * @param type the request configuration object type</em>
+<a name="433" href="#433">433</a> <em>     * @return the propertly constructed configuration object</em>
+<a name="434" href="#434">434</a> <em>     * @throws TransactionFailure if the allocation failed </em>
+<a name="435" href="#435">435</a> <em>     */</em>
+<a name="436" href="#436">436</a> 
+<a name="437" href="#437">437</a>     <strong>public</strong> &lt;T <strong>extends</strong> ConfigBeanProxy> T allocateProxy(Class&lt;T> type) throws TransactionFailure {
+<a name="438" href="#438">438</a>         <strong>if</strong> (currentTx==<strong>null</strong>) {
+<a name="439" href="#439">439</a>             <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a>(<span class="string">"Not part of a transaction"</span>, <strong>null</strong>);
+<a name="440" href="#440">440</a>         }
+<a name="441" href="#441">441</a>         <a href="../../../../org/jvnet/hk2/config/ConfigBean.html">ConfigBean</a> newBean = bean.allocate(type);
+<a name="442" href="#442">442</a>         <a href="../../../../org/jvnet/hk2/config/WriteableView.html">WriteableView</a> writeableView = bean.getHabitat().getComponent(ConfigSupport.<strong>class</strong>).getWriteableView(newBean.getProxy(type), newBean);
+<a name="443" href="#443">443</a>         writeableView.join(currentTx);
+<a name="444" href="#444">444</a> 
+<a name="445" href="#445">445</a>         <strong>return</strong> writeableView.getProxy(type);
+<a name="446" href="#446">446</a>    }
+<a name="447" href="#447">447</a> 
+<a name="448" href="#448">448</a>     <strong>public</strong> <a href="../../../../org/jvnet/hk2/config/ConfigBean.html">ConfigBean</a> getMasterView() {
+<a name="449" href="#449">449</a>         <strong>return</strong> bean;
+<a name="450" href="#450">450</a>     }
+<a name="451" href="#451">451</a> 
+<a name="452" href="#452">452</a>     <strong>public</strong> <strong>void</strong> setMasterView(<a href="../../../../org/jvnet/hk2/config/ConfigView.html">ConfigView</a> view) {
+<a name="453" href="#453">453</a> 
+<a name="454" href="#454">454</a>     }
+<a name="455" href="#455">455</a> 
+<a name="456" href="#456">456</a>     <strong>public</strong> &lt;T <strong>extends</strong> ConfigBeanProxy> Class&lt;T> getProxyType() {
+<a name="457" href="#457">457</a>         <strong>return</strong> bean.getProxyType();
+<a name="458" href="#458">458</a>     }
+<a name="459" href="#459">459</a> 
+<a name="460" href="#460">460</a>     @SuppressWarnings(<span class="string">"unchecked"</span>)    
+<a name="461" href="#461">461</a>     <strong>public</strong> &lt;T <strong>extends</strong> ConfigBeanProxy> T getProxy(Class&lt;T> type) {
+<a name="462" href="#462">462</a>         <strong>final</strong> <a href="../../../../org/jvnet/hk2/config/ConfigBean.html">ConfigBean</a> sourceBean = getMasterView();
+<a name="463" href="#463">463</a>         <strong>if</strong> (!(type.getName().equals(sourceBean.model.targetTypeName))) {
+<a name="464" href="#464">464</a>             <strong>throw</strong> <strong>new</strong> IllegalArgumentException(<span class="string">"This config bean interface is "</span> + sourceBean.model.targetTypeName
+<a name="465" href="#465">465</a>                     + <span class="string">" not "</span>  + type.getName());
+<a name="466" href="#466">466</a>         }
+<a name="467" href="#467">467</a>         Class[] interfacesClasses = { type };
+<a name="468" href="#468">468</a>         <strong>return</strong> (T) Proxy.newProxyInstance(type.getClassLoader(), interfacesClasses, <strong>this</strong>);
+<a name="469" href="#469">469</a>     }
+<a name="470" href="#470">470</a> 
+<a name="471" href="#471">471</a> <em>/**<em>*</em></em>
+<a name="472" href="#472">472</a> <em> * A Protected List is a @Link java.util.List implementation which mutable</em>
+<a name="473" href="#473">473</a> <em> * operations are constrained by the owner of the list.</em>
+<a name="474" href="#474">474</a> <em> *</em>
+<a name="475" href="#475">475</a> <em> * @author Jerome Dochez</em>
+<a name="476" href="#476">476</a> <em> */</em>
+<a name="477" href="#477">477</a> <strong>private</strong> <strong>class</strong> ProtectedList <strong>extends</strong> AbstractList {
+<a name="478" href="#478">478</a> 
+<a name="479" href="#479">479</a>     <strong>final</strong> <a href="../../../../org/jvnet/hk2/config/ConfigBeanProxy.html">ConfigBeanProxy</a> readView;
+<a name="480" href="#480">480</a>     <strong>final</strong> List&lt;Object> readOnly;
+<a name="481" href="#481">481</a>     <strong>final</strong> String id;
+<a name="482" href="#482">482</a>     <strong>final</strong> List&lt;PropertyChangeEvent> changeEvents = <strong>new</strong> ArrayList&lt;PropertyChangeEvent>();
+<a name="483" href="#483">483</a>     <strong>final</strong> List proxied;
+<a name="484" href="#484">484</a> 
+<a name="485" href="#485">485</a>     ProtectedList(List&lt;Object> readOnly, <a href="../../../../org/jvnet/hk2/config/ConfigBeanProxy.html">ConfigBeanProxy</a> parent, String id) {
+<a name="486" href="#486">486</a>         proxied = Collections.synchronizedList(<strong>new</strong> ArrayList&lt;Object>(readOnly));
+<a name="487" href="#487">487</a>         <strong>this</strong>.readView = parent;
+<a name="488" href="#488">488</a>         <strong>this</strong>.readOnly = readOnly;
+<a name="489" href="#489">489</a>         <strong>this</strong>.id = id;
+<a name="490" href="#490">490</a>     }
+<a name="491" href="#491">491</a> 
+<a name="492" href="#492">492</a>     <em>/**<em>*</em></em>
+<a name="493" href="#493">493</a> <em>     * Returns the number of elements in this collection.  If the collection</em>
+<a name="494" href="#494">494</a> <em>     * contains more than &lt;tt>Integer.MAX_VALUE&lt;/tt> elements, returns</em>
+<a name="495" href="#495">495</a> <em>     * &lt;tt>Integer.MAX_VALUE&lt;/tt>.</em>
+<a name="496" href="#496">496</a> <em>     *</em>
+<a name="497" href="#497">497</a> <em>     * @return the number of elements in this collection.</em>
+<a name="498" href="#498">498</a> <em>     */</em>
+<a name="499" href="#499">499</a>     <strong>public</strong> <strong>int</strong> size() {
+<a name="500" href="#500">500</a>         <strong>return</strong> proxied.size();
+<a name="501" href="#501">501</a>     }
+<a name="502" href="#502">502</a> 
+<a name="503" href="#503">503</a>     <em>/**<em>*</em></em>
+<a name="504" href="#504">504</a> <em>     * Returns the element at the specified position in this list.</em>
+<a name="505" href="#505">505</a> <em>     *</em>
+<a name="506" href="#506">506</a> <em>     * @param index index of element to return.</em>
+<a name="507" href="#507">507</a> <em>     * @return the element at the specified position in this list.</em>
+<a name="508" href="#508">508</a> <em>     * @throws IndexOutOfBoundsException if the given index is out of range</em>
+<a name="509" href="#509">509</a> <em>     *                                   (&lt;tt>index &amp;lt; 0 || index &amp;gt;= size()&lt;/tt>).</em>
+<a name="510" href="#510">510</a> <em>     */</em>
+<a name="511" href="#511">511</a>     <strong>public</strong> Object get(<strong>int</strong> index) {
+<a name="512" href="#512">512</a>         <strong>return</strong> proxied.get(index);
+<a name="513" href="#513">513</a>     }
+<a name="514" href="#514">514</a> 
+<a name="515" href="#515">515</a>     @Override
+<a name="516" href="#516">516</a>     <strong>public</strong> <strong>synchronized</strong> <strong>boolean</strong> add(Object object) {
+<a name="517" href="#517">517</a>         Object param = object;
+<a name="518" href="#518">518</a>         Object handler = <strong>null</strong>;
+<a name="519" href="#519">519</a>         <strong>try</strong> {
+<a name="520" href="#520">520</a>             handler = Proxy.getInvocationHandler(object);
+<a name="521" href="#521">521</a>         } <strong>catch</strong>(IllegalArgumentException e) {
+<a name="522" href="#522">522</a>             <em class="comment">// ignore, this is a leaf</em>
+<a name="523" href="#523">523</a>         }
+<a name="524" href="#524">524</a>         <strong>if</strong> (handler!=<strong>null</strong> &amp;&amp; handler instanceof WriteableView) {
+<a name="525" href="#525">525</a>             <a href="../../../../org/jvnet/hk2/config/ConfigBean.html">ConfigBean</a> master = ((WriteableView) handler).getMasterView();
+<a name="526" href="#526">526</a>             String key = master.model.key;
+<a name="527" href="#527">527</a>             <strong>if</strong> (key!=<strong>null</strong>) {
+<a name="528" href="#528">528</a>                 <em class="comment">// remove leading @</em>
+<a name="529" href="#529">529</a>                 key = key.substring(1);
+<a name="530" href="#530">530</a>                 <em class="comment">// check that we are not adding a duplicate key element</em>
+<a name="531" href="#531">531</a>                 String keyValue = ((WriteableView) handler).getPropertyValue(key);
+<a name="532" href="#532">532</a>                 <strong>for</strong> (Object o : proxied) {
+<a name="533" href="#533">533</a>                     <em class="comment">// the proxied object can be a read-only or a writeable view, we need</em>
+<a name="534" href="#534">534</a>                     <em class="comment">// to be careful</em>
+<a name="535" href="#535">535</a>                     <em class="comment">// ToDo : we need to encasulate this test.</em>
+<a name="536" href="#536">536</a>                     String value;
+<a name="537" href="#537">537</a>                     <strong>if</strong> (Proxy.getInvocationHandler(o) instanceof WriteableView) {
+<a name="538" href="#538">538</a>                         value = ((WriteableView) Proxy.getInvocationHandler(o)).getPropertyValue(key);
+<a name="539" href="#539">539</a>                     }  <strong>else</strong> {
+<a name="540" href="#540">540</a>                         <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> cbo = Dom.unwrap((ConfigBeanProxy) o);
+<a name="541" href="#541">541</a>                         value = cbo.attribute(key);
+<a name="542" href="#542">542</a>                     }
+<a name="543" href="#543">543</a>                     <strong>if</strong> (keyValue!=<strong>null</strong> &amp;&amp; keyValue.equals(value)) {
+<a name="544" href="#544">544</a>                         <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> parent = Dom.unwrap(readView);
+<a name="545" href="#545">545</a>                         <strong>throw</strong> <strong>new</strong> IllegalArgumentException(<span class="string">"A "</span> + master.getProxyType().getSimpleName() +
+<a name="546" href="#546">546</a>                                 <span class="string">" with the same key \&quot;"</span> + keyValue + <span class="string">"\&quot; already exists in "</span> +
+<a name="547" href="#547">547</a>                                 parent.getProxyType().getSimpleName() + <span class="string">" "</span> + parent.getKey()) ;
 <a name="548" href="#548">548</a> 
-<a name="549" href="#549">549</a>         }
-<a name="550" href="#550">550</a>         changeEvents.add(<strong>new</strong> PropertyChangeEvent(defaultView, id, <strong>null</strong>, param));
-<a name="551" href="#551">551</a>         <strong>return</strong> proxied.add(object);
-<a name="552" href="#552">552</a>     }
+<a name="549" href="#549">549</a>                     }
+<a name="550" href="#550">550</a>                 }
+<a name="551" href="#551">551</a>             }
+<a name="552" href="#552">552</a>             param = ((WriteableView) handler).getMasterView().createProxy(master.type());
 <a name="553" href="#553">553</a> 
-<a name="554" href="#554">554</a>     @Override
-<a name="555" href="#555">555</a>     <strong>public</strong> <strong>synchronized</strong> <strong>void</strong> clear() {
-<a name="556" href="#556">556</a>         <em class="comment">// make a temporary list, iterating while removing doesn't work</em>
-<a name="557" href="#557">557</a>         <strong>final</strong> List allItems = <strong>new</strong> ArrayList( proxied );
-<a name="558" href="#558">558</a>         <strong>for</strong>( <strong>final</strong> Object item : allItems ) {
-<a name="559" href="#559">559</a>             remove( item );
-<a name="560" href="#560">560</a>         }
-<a name="561" href="#561">561</a>     }
-<a name="562" href="#562">562</a>     
-<a name="563" href="#563">563</a>     @Override
-<a name="564" href="#564">564</a>     <strong>public</strong> <strong>synchronized</strong> <strong>boolean</strong> retainAll( <strong>final</strong> Collection keepers ) {
-<a name="565" href="#565">565</a>         <strong>final</strong> List toRemoveList = <strong>new</strong> ArrayList();
-<a name="566" href="#566">566</a>         <strong>for</strong>( <strong>final</strong> Object iffy : proxied ) {
-<a name="567" href="#567">567</a>             <strong>if</strong> ( ! keepers.contains(<strong>if</strong>fy) ) {
-<a name="568" href="#568">568</a>                 toRemoveList.add(iffy);
-<a name="569" href="#569">569</a>             }
-<a name="570" href="#570">570</a>         }
-<a name="571" href="#571">571</a>         <strong>final</strong> <strong>boolean</strong> changed = removeAll(toRemoveList);
-<a name="572" href="#572">572</a>         
-<a name="573" href="#573">573</a>         <strong>return</strong> changed;
-<a name="574" href="#574">574</a>     }
-<a name="575" href="#575">575</a>     
-<a name="576" href="#576">576</a>     @Override
-<a name="577" href="#577">577</a>     <strong>public</strong> <strong>synchronized</strong> <strong>boolean</strong> removeAll( <strong>final</strong> Collection goners ) {
-<a name="578" href="#578">578</a>         <strong>boolean</strong> listChanged = false;
-<a name="579" href="#579">579</a>         <strong>for</strong>( <strong>final</strong> Object goner : goners ) {
-<a name="580" href="#580">580</a>             <strong>if</strong> ( remove(goner) ) {
-<a name="581" href="#581">581</a>                 listChanged = <strong>true</strong>;
-<a name="582" href="#582">582</a>             }
-<a name="583" href="#583">583</a>         }
-<a name="584" href="#584">584</a> 
-<a name="585" href="#585">585</a>         <strong>return</strong> listChanged;
-<a name="586" href="#586">586</a>     }
-<a name="587" href="#587">587</a> 
-<a name="588" href="#588">588</a>     @Override
-<a name="589" href="#589">589</a>     <strong>public</strong> <strong>synchronized</strong> <strong>boolean</strong> remove(Object object) {
-<a name="590" href="#590">590</a>         changeEvents.add(<strong>new</strong> PropertyChangeEvent(defaultView, id, object, <strong>null</strong>));
-<a name="591" href="#591">591</a> 
-<a name="592" href="#592">592</a>         <strong>try</strong> {
-<a name="593" href="#593">593</a>             <a href="../../../../org/jvnet/hk2/config/ConfigView.html">ConfigView</a> handler = ((ConfigView) Proxy.getInvocationHandler(object)).getMasterView();
-<a name="594" href="#594">594</a>             <strong>for</strong> (<strong>int</strong> index = 0 ; index&lt;proxied.size() ; index++) {
-<a name="595" href="#595">595</a>                 Object target = proxied.get(index);
-<a name="596" href="#596">596</a>                 <strong>try</strong> {
-<a name="597" href="#597">597</a>                     <a href="../../../../org/jvnet/hk2/config/ConfigView.html">ConfigView</a> targetHandler = ((ConfigView) Proxy.getInvocationHandler(target)).getMasterView();
-<a name="598" href="#598">598</a>                     <strong>if</strong> (targetHandler==handler) {
-<a name="599" href="#599">599</a>                         <strong>return</strong> (proxied.remove(index)!=<strong>null</strong>);
-<a name="600" href="#600">600</a>                     }
-<a name="601" href="#601">601</a>                 } <strong>catch</strong>(IllegalArgumentException ex) {
-<a name="602" href="#602">602</a>                     <em class="comment">// ignore</em>
-<a name="603" href="#603">603</a>                 }
-<a name="604" href="#604">604</a>             }
-<a name="605" href="#605">605</a>         } <strong>catch</strong>(IllegalArgumentException e) {
-<a name="606" href="#606">606</a>             <em class="comment">// ignore, this is a leaf</em>
-<a name="607" href="#607">607</a>             <strong>return</strong> proxied.remove(object);
-<a name="608" href="#608">608</a> 
-<a name="609" href="#609">609</a>         }
-<a name="610" href="#610">610</a>         <strong>return</strong> false;
-<a name="611" href="#611">611</a>     }
-<a name="612" href="#612">612</a> 
-<a name="613" href="#613">613</a> }
-<a name="614" href="#614">614</a> 
-<a name="615" href="#615">615</a>     <strong>private</strong> String toCamelCase(String xmlName) {
-<a name="616" href="#616">616</a>         StringTokenizer st =  <strong>new</strong> StringTokenizer(xmlName, <span class="string">"-"</span>);
-<a name="617" href="#617">617</a>         StringBuffer camelCaseName = <strong>null</strong>;
-<a name="618" href="#618">618</a>         <strong>if</strong> (st.hasMoreTokens()) {
-<a name="619" href="#619">619</a>             camelCaseName = <strong>new</strong> StringBuffer(st.nextToken());
-<a name="620" href="#620">620</a>         }
-<a name="621" href="#621">621</a>         StringBuffer sb = <strong>null</strong>;
-<a name="622" href="#622">622</a>         <strong>while</strong> (st.hasMoreTokens()) {
-<a name="623" href="#623">623</a>             sb = <strong>new</strong> StringBuffer(st.nextToken());
-<a name="624" href="#624">624</a>             <strong>char</strong> startChar = sb.<strong>char</strong>At(0);
-<a name="625" href="#625">625</a>             sb.setCharAt(0,Character.toUpperCase(startChar));
-<a name="626" href="#626">626</a>             camelCaseName.append(sb);
-<a name="627" href="#627">627</a>         }
-<a name="628" href="#628">628</a>         <strong>return</strong> camelCaseName.toString();
-<a name="629" href="#629">629</a>     }
-<a name="630" href="#630">630</a>     
-<a name="631" href="#631">631</a>     <strong>private</strong> <strong>void</strong> handleValidation(ConfigModel.Property property, Object value)
-<a name="632" href="#632">632</a>     throws <a href="../../../../org/jvnet/hk2/config/ValidationException.html">ValidationException</a> { 
-<a name="633" href="#633">633</a> 
-<a name="634" href="#634">634</a>         <em class="comment">// First check for dataType constraints -- as was done for v3 Prelude</em>
-<a name="635" href="#635">635</a>         <em class="comment">// see PrimitiveDataType.java</em>
-<a name="636" href="#636">636</a>         <em class="comment">// These validations could be transformed into BV custom annotations</em>
-<a name="637" href="#637">637</a>         <em class="comment">// such as AssertBoolean, AssertInteger etc. But since GUI and other</em>
-<a name="638" href="#638">638</a>         <em class="comment">// config clients such as AMX need dataType key in @Attribute it's been</em>
-<a name="639" href="#639">639</a>         <em class="comment">// decided to validate using existing annotation information</em>
-<a name="640" href="#640">640</a>         <strong>if</strong> (property instanceof ConfigModel.AttributeLeaf) {
-<a name="641" href="#641">641</a>             ConfigModel.AttributeLeaf al = (ConfigModel.AttributeLeaf)property;
-<a name="642" href="#642">642</a>             validateDataType(al, value.toString());
-<a name="643" href="#643">643</a>         }
-<a name="644" href="#644">644</a> 
-<a name="645" href="#645">645</a>         Set constraintViolations =
-<a name="646" href="#646">646</a>             beanValidator.validateValue(
-<a name="647" href="#647">647</a>                 bean.getProxyType(), toCamelCase(property.xmlName()), value);
-<a name="648" href="#648">648</a> 
-<a name="649" href="#649">649</a>         <strong>if</strong> (constraintViolations != <strong>null</strong>) {
-<a name="650" href="#650">650</a>             Iterator it = constraintViolations.iterator();
-<a name="651" href="#651">651</a>             <strong>boolean</strong> violated = false;
-<a name="652" href="#652">652</a>             String msg = <span class="string">"Constraints for this bean "</span> +
-<a name="653" href="#653">653</a>                    <span class="string">"violated. \n Message = "</span>;
-<a name="654" href="#654">654</a>             <strong>while</strong> (it.hasNext()) {
-<a name="655" href="#655">655</a>                 violated = <strong>true</strong>;
-<a name="656" href="#656">656</a>                 ConstraintViolation cv = (ConstraintViolation) it.next();
-<a name="657" href="#657">657</a>                 msg = msg + cv.getPropertyPath() + <span class="string">" "</span> + cv.getMessage();
-<a name="658" href="#658">658</a>             }
-<a name="659" href="#659">659</a>             <strong>if</strong> (violated) {
-<a name="660" href="#660">660</a>                 <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/ValidationException.html">ValidationException</a>(msg);
-<a name="661" href="#661">661</a>             }
-<a name="662" href="#662">662</a>         }
-<a name="663" href="#663">663</a>     }
-<a name="664" href="#664">664</a> 
-<a name="665" href="#665">665</a>     <strong>private</strong> <strong>void</strong> validateDataType(ConfigModel.AttributeLeaf al, String value)
-<a name="666" href="#666">666</a>     throws <a href="../../../../org/jvnet/hk2/config/ValidationException.html">ValidationException</a> {
-<a name="667" href="#667">667</a> 
-<a name="668" href="#668">668</a>         <strong>if</strong> (value.startsWith(<span class="string">"${"</span>) &amp;&amp; value.endsWith(<span class="string">"}"</span>))
-<a name="669" href="#669">669</a>           <strong>return</strong>;
-<a name="670" href="#670">670</a> 
-<a name="671" href="#671">671</a>         <strong>boolean</strong> isValid = String.<strong>class</strong>.getName().equals(al.dataType);
-<a name="672" href="#672">672</a>         <strong>if</strong> (<span class="string">"int"</span>.equals(al.dataType) ||
-<a name="673" href="#673">673</a>             <span class="string">"java.lang.Integer"</span>.equals(al.dataType))
-<a name="674" href="#674">674</a>             isValid = representsInteger(value);
-<a name="675" href="#675">675</a>         <strong>else</strong> <strong>if</strong> (<span class="string">"boolean"</span>.equals(al.dataType) ||
-<a name="676" href="#676">676</a>                  <span class="string">"java.lang.Boolean"</span>.endsWith(al.dataType))
-<a name="677" href="#677">677</a>             isValid = representsBoolean(value);
-<a name="678" href="#678">678</a>         <strong>else</strong> <strong>if</strong> (<span class="string">"char"</span>.equals(al.dataType) ||
-<a name="679" href="#679">679</a>                  <span class="string">"java.lang.Character"</span>.equals(al.dataType))
-<a name="680" href="#680">680</a>             isValid = representsChar(value);        
-<a name="681" href="#681">681</a>         <strong>if</strong> (!isValid) {
-<a name="682" href="#682">682</a>             String msg = <span class="string">"Validation Failed: "</span> +
-<a name="683" href="#683">683</a>                          value + <span class="string">" is not of data type: "</span> + al.dataType;
-<a name="684" href="#684">684</a>             <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/ValidationException.html">ValidationException</a>(msg);            
-<a name="685" href="#685">685</a>         }
-<a name="686" href="#686">686</a>     }
-<a name="687" href="#687">687</a>     
-<a name="688" href="#688">688</a>     <strong>private</strong> <strong>boolean</strong> representsBoolean(String value) {
-<a name="689" href="#689">689</a>         <strong>boolean</strong> isBoolean = 
-<a name="690" href="#690">690</a>            <span class="string">"true"</span>.equalsIgnoreCase(value) || <span class="string">"false"</span>.equalsIgnoreCase(value);
-<a name="691" href="#691">691</a>         <strong>return</strong> (isBoolean);
-<a name="692" href="#692">692</a>     }
-<a name="693" href="#693">693</a> 
-<a name="694" href="#694">694</a>     <strong>private</strong> <strong>boolean</strong> representsChar(String value) {
-<a name="695" href="#695">695</a>             <strong>if</strong> (value.length() == 1)
-<a name="696" href="#696">696</a>                 <strong>return</strong> <strong>true</strong>;
-<a name="697" href="#697">697</a>             <strong>return</strong> false;
-<a name="698" href="#698">698</a>     }
-<a name="699" href="#699">699</a> 
-<a name="700" href="#700">700</a>     <strong>private</strong> <strong>boolean</strong> representsInteger(String value) {
-<a name="701" href="#701">701</a>         <strong>try</strong> {
-<a name="702" href="#702">702</a>             Integer.parseInt(value);
-<a name="703" href="#703">703</a>             <strong>return</strong> <strong>true</strong>;
-<a name="704" href="#704">704</a>         } <strong>catch</strong>(NumberFormatException ne) {
-<a name="705" href="#705">705</a>             <strong>return</strong> false;
-<a name="706" href="#706">706</a>         }
-<a name="707" href="#707">707</a>     }
-<a name="708" href="#708">708</a> 
-<a name="709" href="#709">709</a> }
+<a name="554" href="#554">554</a>         }
+<a name="555" href="#555">555</a>         changeEvents.add(<strong>new</strong> PropertyChangeEvent(defaultView, id, <strong>null</strong>, param));
+<a name="556" href="#556">556</a>         <strong>return</strong> proxied.add(object);
+<a name="557" href="#557">557</a>     }
+<a name="558" href="#558">558</a> 
+<a name="559" href="#559">559</a>     @Override
+<a name="560" href="#560">560</a>     <strong>public</strong> <strong>synchronized</strong> <strong>void</strong> clear() {
+<a name="561" href="#561">561</a>         <em class="comment">// make a temporary list, iterating while removing doesn't work</em>
+<a name="562" href="#562">562</a>         <strong>final</strong> List allItems = <strong>new</strong> ArrayList( proxied );
+<a name="563" href="#563">563</a>         <strong>for</strong>( <strong>final</strong> Object item : allItems ) {
+<a name="564" href="#564">564</a>             remove( item );
+<a name="565" href="#565">565</a>         }
+<a name="566" href="#566">566</a>     }
+<a name="567" href="#567">567</a>     
+<a name="568" href="#568">568</a>     @Override
+<a name="569" href="#569">569</a>     <strong>public</strong> <strong>synchronized</strong> <strong>boolean</strong> retainAll( <strong>final</strong> Collection keepers ) {
+<a name="570" href="#570">570</a>         <strong>final</strong> List toRemoveList = <strong>new</strong> ArrayList();
+<a name="571" href="#571">571</a>         <strong>for</strong>( <strong>final</strong> Object iffy : proxied ) {
+<a name="572" href="#572">572</a>             <strong>if</strong> ( ! keepers.contains(<strong>if</strong>fy) ) {
+<a name="573" href="#573">573</a>                 toRemoveList.add(iffy);
+<a name="574" href="#574">574</a>             }
+<a name="575" href="#575">575</a>         }
+<a name="576" href="#576">576</a>         <strong>final</strong> <strong>boolean</strong> changed = removeAll(toRemoveList);
+<a name="577" href="#577">577</a>         
+<a name="578" href="#578">578</a>         <strong>return</strong> changed;
+<a name="579" href="#579">579</a>     }
+<a name="580" href="#580">580</a>     
+<a name="581" href="#581">581</a>     @Override
+<a name="582" href="#582">582</a>     <strong>public</strong> <strong>synchronized</strong> <strong>boolean</strong> removeAll( <strong>final</strong> Collection goners ) {
+<a name="583" href="#583">583</a>         <strong>boolean</strong> listChanged = false;
+<a name="584" href="#584">584</a>         <strong>for</strong>( <strong>final</strong> Object goner : goners ) {
+<a name="585" href="#585">585</a>             <strong>if</strong> ( remove(goner) ) {
+<a name="586" href="#586">586</a>                 listChanged = <strong>true</strong>;
+<a name="587" href="#587">587</a>             }
+<a name="588" href="#588">588</a>         }
+<a name="589" href="#589">589</a> 
+<a name="590" href="#590">590</a>         <strong>return</strong> listChanged;
+<a name="591" href="#591">591</a>     }
+<a name="592" href="#592">592</a> 
+<a name="593" href="#593">593</a>     @Override
+<a name="594" href="#594">594</a>     <strong>public</strong> <strong>synchronized</strong> <strong>boolean</strong> remove(Object object) {
+<a name="595" href="#595">595</a>         changeEvents.add(<strong>new</strong> PropertyChangeEvent(defaultView, id, object, <strong>null</strong>));
+<a name="596" href="#596">596</a> 
+<a name="597" href="#597">597</a>         <strong>try</strong> {
+<a name="598" href="#598">598</a>             <a href="../../../../org/jvnet/hk2/config/ConfigView.html">ConfigView</a> handler = ((ConfigView) Proxy.getInvocationHandler(object)).getMasterView();
+<a name="599" href="#599">599</a>             <strong>for</strong> (<strong>int</strong> index = 0 ; index&lt;proxied.size() ; index++) {
+<a name="600" href="#600">600</a>                 Object target = proxied.get(index);
+<a name="601" href="#601">601</a>                 <strong>try</strong> {
+<a name="602" href="#602">602</a>                     <a href="../../../../org/jvnet/hk2/config/ConfigView.html">ConfigView</a> targetHandler = ((ConfigView) Proxy.getInvocationHandler(target)).getMasterView();
+<a name="603" href="#603">603</a>                     <strong>if</strong> (targetHandler==handler) {
+<a name="604" href="#604">604</a>                         <strong>return</strong> (proxied.remove(index)!=<strong>null</strong>);
+<a name="605" href="#605">605</a>                     }
+<a name="606" href="#606">606</a>                 } <strong>catch</strong>(IllegalArgumentException ex) {
+<a name="607" href="#607">607</a>                     <em class="comment">// ignore</em>
+<a name="608" href="#608">608</a>                 }
+<a name="609" href="#609">609</a>             }
+<a name="610" href="#610">610</a>         } <strong>catch</strong>(IllegalArgumentException e) {
+<a name="611" href="#611">611</a>             <em class="comment">// ignore, this is a leaf</em>
+<a name="612" href="#612">612</a>             <strong>return</strong> proxied.remove(object);
+<a name="613" href="#613">613</a> 
+<a name="614" href="#614">614</a>         }
+<a name="615" href="#615">615</a>         <strong>return</strong> false;
+<a name="616" href="#616">616</a>     }
+<a name="617" href="#617">617</a> 
+<a name="618" href="#618">618</a> }
+<a name="619" href="#619">619</a> 
+<a name="620" href="#620">620</a>     <strong>private</strong> String toCamelCase(String xmlName) {
+<a name="621" href="#621">621</a>         StringTokenizer st =  <strong>new</strong> StringTokenizer(xmlName, <span class="string">"-"</span>);
+<a name="622" href="#622">622</a>         StringBuffer camelCaseName = <strong>null</strong>;
+<a name="623" href="#623">623</a>         <strong>if</strong> (st.hasMoreTokens()) {
+<a name="624" href="#624">624</a>             camelCaseName = <strong>new</strong> StringBuffer(st.nextToken());
+<a name="625" href="#625">625</a>         }
+<a name="626" href="#626">626</a>         StringBuffer sb = <strong>null</strong>;
+<a name="627" href="#627">627</a>         <strong>while</strong> (st.hasMoreTokens()) {
+<a name="628" href="#628">628</a>             sb = <strong>new</strong> StringBuffer(st.nextToken());
+<a name="629" href="#629">629</a>             <strong>char</strong> startChar = sb.<strong>char</strong>At(0);
+<a name="630" href="#630">630</a>             sb.setCharAt(0,Character.toUpperCase(startChar));
+<a name="631" href="#631">631</a>             camelCaseName.append(sb);
+<a name="632" href="#632">632</a>         }
+<a name="633" href="#633">633</a>         <strong>return</strong> camelCaseName.toString();
+<a name="634" href="#634">634</a>     }
+<a name="635" href="#635">635</a>     
+<a name="636" href="#636">636</a>     <strong>private</strong> <strong>void</strong> handleValidation(ConfigModel.Property property, Object value)
+<a name="637" href="#637">637</a>     throws <a href="../../../../org/jvnet/hk2/config/ValidationException.html">ValidationException</a> { 
+<a name="638" href="#638">638</a> 
+<a name="639" href="#639">639</a>         <em class="comment">// First check for dataType constraints -- as was done for v3 Prelude</em>
+<a name="640" href="#640">640</a>         <em class="comment">// see PrimitiveDataType.java</em>
+<a name="641" href="#641">641</a>         <em class="comment">// These validations could be transformed into BV custom annotations</em>
+<a name="642" href="#642">642</a>         <em class="comment">// such as AssertBoolean, AssertInteger etc. But since GUI and other</em>
+<a name="643" href="#643">643</a>         <em class="comment">// config clients such as AMX need dataType key in @Attribute it's been</em>
+<a name="644" href="#644">644</a>         <em class="comment">// decided to validate using existing annotation information</em>
+<a name="645" href="#645">645</a>         <strong>if</strong> (property instanceof ConfigModel.AttributeLeaf) {
+<a name="646" href="#646">646</a>             ConfigModel.AttributeLeaf al = (ConfigModel.AttributeLeaf)property;
+<a name="647" href="#647">647</a>             validateDataType(al, value.toString());
+<a name="648" href="#648">648</a>         }
+<a name="649" href="#649">649</a> 
+<a name="650" href="#650">650</a>         Set constraintViolations =
+<a name="651" href="#651">651</a>             beanValidator.validateValue(
+<a name="652" href="#652">652</a>                 bean.getProxyType(), toCamelCase(property.xmlName()), value);
+<a name="653" href="#653">653</a> 
+<a name="654" href="#654">654</a>         <strong>if</strong> (constraintViolations != <strong>null</strong>) {
+<a name="655" href="#655">655</a>             Iterator it = constraintViolations.iterator();
+<a name="656" href="#656">656</a>             <strong>boolean</strong> violated = false;
+<a name="657" href="#657">657</a>             String msg = <span class="string">"Constraints for this bean "</span> +
+<a name="658" href="#658">658</a>                    <span class="string">"violated. \n Message = "</span>;
+<a name="659" href="#659">659</a>             <strong>while</strong> (it.hasNext()) {
+<a name="660" href="#660">660</a>                 violated = <strong>true</strong>;
+<a name="661" href="#661">661</a>                 ConstraintViolation cv = (ConstraintViolation) it.next();
+<a name="662" href="#662">662</a>                 msg = msg + cv.getPropertyPath() + <span class="string">" "</span> + cv.getMessage();
+<a name="663" href="#663">663</a>             }
+<a name="664" href="#664">664</a>             <strong>if</strong> (violated) {
+<a name="665" href="#665">665</a>                 <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/ValidationException.html">ValidationException</a>(msg);
+<a name="666" href="#666">666</a>             }
+<a name="667" href="#667">667</a>         }
+<a name="668" href="#668">668</a>     }
+<a name="669" href="#669">669</a> 
+<a name="670" href="#670">670</a>     <strong>private</strong> <strong>void</strong> validateDataType(ConfigModel.AttributeLeaf al, String value)
+<a name="671" href="#671">671</a>     throws <a href="../../../../org/jvnet/hk2/config/ValidationException.html">ValidationException</a> {
+<a name="672" href="#672">672</a> 
+<a name="673" href="#673">673</a>         <strong>if</strong> (value.startsWith(<span class="string">"${"</span>) &amp;&amp; value.endsWith(<span class="string">"}"</span>))
+<a name="674" href="#674">674</a>           <strong>return</strong>;
+<a name="675" href="#675">675</a> 
+<a name="676" href="#676">676</a>         <strong>boolean</strong> isValid = String.<strong>class</strong>.getName().equals(al.dataType);
+<a name="677" href="#677">677</a>         <strong>if</strong> (<span class="string">"int"</span>.equals(al.dataType) ||
+<a name="678" href="#678">678</a>             <span class="string">"java.lang.Integer"</span>.equals(al.dataType))
+<a name="679" href="#679">679</a>             isValid = representsInteger(value);
+<a name="680" href="#680">680</a>         <strong>else</strong> <strong>if</strong> (<span class="string">"boolean"</span>.equals(al.dataType) ||
+<a name="681" href="#681">681</a>                  <span class="string">"java.lang.Boolean"</span>.endsWith(al.dataType))
+<a name="682" href="#682">682</a>             isValid = representsBoolean(value);
+<a name="683" href="#683">683</a>         <strong>else</strong> <strong>if</strong> (<span class="string">"char"</span>.equals(al.dataType) ||
+<a name="684" href="#684">684</a>                  <span class="string">"java.lang.Character"</span>.equals(al.dataType))
+<a name="685" href="#685">685</a>             isValid = representsChar(value);        
+<a name="686" href="#686">686</a>         <strong>if</strong> (!isValid) {
+<a name="687" href="#687">687</a>             String msg = <span class="string">"Validation Failed: "</span> +
+<a name="688" href="#688">688</a>                          value + <span class="string">" is not of data type: "</span> + al.dataType;
+<a name="689" href="#689">689</a>             <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/ValidationException.html">ValidationException</a>(msg);            
+<a name="690" href="#690">690</a>         }
+<a name="691" href="#691">691</a>     }
+<a name="692" href="#692">692</a>     
+<a name="693" href="#693">693</a>     <strong>private</strong> <strong>boolean</strong> representsBoolean(String value) {
+<a name="694" href="#694">694</a>         <strong>boolean</strong> isBoolean = 
+<a name="695" href="#695">695</a>            <span class="string">"true"</span>.equalsIgnoreCase(value) || <span class="string">"false"</span>.equalsIgnoreCase(value);
+<a name="696" href="#696">696</a>         <strong>return</strong> (isBoolean);
+<a name="697" href="#697">697</a>     }
+<a name="698" href="#698">698</a> 
+<a name="699" href="#699">699</a>     <strong>private</strong> <strong>boolean</strong> representsChar(String value) {
+<a name="700" href="#700">700</a>             <strong>if</strong> (value.length() == 1)
+<a name="701" href="#701">701</a>                 <strong>return</strong> <strong>true</strong>;
+<a name="702" href="#702">702</a>             <strong>return</strong> false;
+<a name="703" href="#703">703</a>     }
+<a name="704" href="#704">704</a> 
+<a name="705" href="#705">705</a>     <strong>private</strong> <strong>boolean</strong> representsInteger(String value) {
+<a name="706" href="#706">706</a>         <strong>try</strong> {
+<a name="707" href="#707">707</a>             Integer.parseInt(value);
+<a name="708" href="#708">708</a>             <strong>return</strong> <strong>true</strong>;
+<a name="709" href="#709">709</a>         } <strong>catch</strong>(NumberFormatException ne) {
+<a name="710" href="#710">710</a>             <strong>return</strong> false;
+<a name="711" href="#711">711</a>         }
+<a name="712" href="#712">712</a>     }
+<a name="713" href="#713">713</a> 
+<a name="714" href="#714">714</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

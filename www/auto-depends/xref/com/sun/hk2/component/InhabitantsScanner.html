@@ -48,77 +48,86 @@
 <a name="39" href="#39">39</a>  <strong>import</strong> org.jvnet.hk2.component.ComponentException;
 <a name="40" href="#40">40</a>  
 <a name="41" href="#41">41</a>  <strong>import</strong> java.io.BufferedReader;
-<a name="42" href="#42">42</a>  <strong>import</strong> java.io.IOException;
-<a name="43" href="#43">43</a>  <strong>import</strong> java.io.InputStream;
-<a name="44" href="#44">44</a>  <strong>import</strong> java.io.InputStreamReader;
-<a name="45" href="#45">45</a>  <strong>import</strong> java.util.Iterator;
-<a name="46" href="#46">46</a>  
-<a name="47" href="#47">47</a>  <em>/**<em>*</em></em>
-<a name="48" href="#48">48</a>  <em> * Scans the stream that follows the &lt;tt>/META-INF/inhabitants/*&lt;/tt> format.</em>
-<a name="49" href="#49">49</a>  <em> *</em>
-<a name="50" href="#50">50</a>  <em> * &lt;p></em>
-<a name="51" href="#51">51</a>  <em> * This class implements {@link Iterable} so that it can be used in for-each loop,</em>
-<a name="52" href="#52">52</a>  <em> * but it cannot parse the same stream twice.</em>
-<a name="53" href="#53">53</a>  <em> *</em>
-<a name="54" href="#54">54</a>  <em> * @author Kohsuke Kawaguchi</em>
-<a name="55" href="#55">55</a>  <em> */</em>
-<a name="56" href="#56">56</a>  <strong>public</strong> <strong>class</strong> <a href="../../../../com/sun/hk2/component/InhabitantsScanner.html">InhabitantsScanner</a> implements Iterable&lt;KeyValuePairParser> {
-<a name="57" href="#57">57</a>      <strong>private</strong> <strong>int</strong> lineNumber = 0;
-<a name="58" href="#58">58</a>      <strong>private</strong> <strong>final</strong> String systemId;
-<a name="59" href="#59">59</a>      <strong>private</strong> <strong>final</strong> BufferedReader r;
-<a name="60" href="#60">60</a>      <strong>private</strong> <strong>final</strong> <a href="../../../../com/sun/hk2/component/KeyValuePairParser.html">KeyValuePairParser</a> kvpp = <strong>new</strong> <a href="../../../../com/sun/hk2/component/KeyValuePairParser.html">KeyValuePairParser</a>();
-<a name="61" href="#61">61</a>  
-<a name="62" href="#62">62</a>      <strong>public</strong> <a href="../../../../com/sun/hk2/component/InhabitantsScanner.html">InhabitantsScanner</a>(InputStream in, String systemId) throws IOException {
-<a name="63" href="#63">63</a>          r = <strong>new</strong> BufferedReader(<strong>new</strong> InputStreamReader(in,<span class="string">"UTF-8"</span>));
-<a name="64" href="#64">64</a>          <strong>this</strong>.systemId = systemId;
-<a name="65" href="#65">65</a>      }
-<a name="66" href="#66">66</a>  
-<a name="67" href="#67">67</a>      <strong>public</strong> String getSystemId() {
-<a name="68" href="#68">68</a>          <strong>return</strong> systemId;
-<a name="69" href="#69">69</a>      }
-<a name="70" href="#70">70</a>  
-<a name="71" href="#71">71</a>      <strong>public</strong> <strong>int</strong> getLineNumber() {
-<a name="72" href="#72">72</a>          <strong>return</strong> lineNumber;
-<a name="73" href="#73">73</a>      }
-<a name="74" href="#74">74</a>  
-<a name="75" href="#75">75</a>      <strong>public</strong> Iterator&lt;KeyValuePairParser> iterator() {
-<a name="76" href="#76">76</a>          <strong>return</strong> <strong>new</strong> Iterator&lt;KeyValuePairParser>() {
-<a name="77" href="#77">77</a>              <strong>private</strong> String nextLine;
-<a name="78" href="#78">78</a>  
-<a name="79" href="#79">79</a>              <strong>public</strong> <strong>boolean</strong> hasNext() {
-<a name="80" href="#80">80</a>                  fetch();
-<a name="81" href="#81">81</a>                  <strong>return</strong> nextLine!=<strong>null</strong>;
-<a name="82" href="#82">82</a>              }
-<a name="83" href="#83">83</a>  
-<a name="84" href="#84">84</a>              <strong>private</strong> <strong>void</strong> fetch() {
-<a name="85" href="#85">85</a>                  <strong>if</strong>(nextLine!=<strong>null</strong>)  <strong>return</strong>;
-<a name="86" href="#86">86</a>  
-<a name="87" href="#87">87</a>                  <strong>try</strong> {
-<a name="88" href="#88">88</a>                      <strong>while</strong>((nextLine=r.readLine())!=<strong>null</strong>) {
-<a name="89" href="#89">89</a>                          lineNumber++;
-<a name="90" href="#90">90</a>                          <strong>if</strong>(nextLine.startsWith(<span class="string">"#"</span>))
-<a name="91" href="#91">91</a>                              <strong>continue</strong>;   <em class="comment">// comment</em>
-<a name="92" href="#92">92</a>  
-<a name="93" href="#93">93</a>                          <strong>return</strong>; <em class="comment">// found the next line</em>
-<a name="94" href="#94">94</a>                      }
-<a name="95" href="#95">95</a>                  } <strong>catch</strong> (IOException e) {
-<a name="96" href="#96">96</a>                      <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(<span class="string">"Failed to parse line "</span> + lineNumber + <span class="string">" of "</span> + systemId,e);
-<a name="97" href="#97">97</a>                  }
-<a name="98" href="#98">98</a>              }
-<a name="99" href="#99">99</a>  
-<a name="100" href="#100">100</a>             <strong>public</strong> <a href="../../../../com/sun/hk2/component/KeyValuePairParser.html">KeyValuePairParser</a> next() {
-<a name="101" href="#101">101</a>                 fetch();
-<a name="102" href="#102">102</a>                 kvpp.set(nextLine);
-<a name="103" href="#103">103</a>                 nextLine=<strong>null</strong>;
-<a name="104" href="#104">104</a>                 <strong>return</strong> kvpp;
-<a name="105" href="#105">105</a>             }
-<a name="106" href="#106">106</a> 
-<a name="107" href="#107">107</a>             <strong>public</strong> <strong>void</strong> remove() {
-<a name="108" href="#108">108</a>                 <strong>throw</strong> <strong>new</strong> UnsupportedOperationException();
-<a name="109" href="#109">109</a>             }
-<a name="110" href="#110">110</a>         };
-<a name="111" href="#111">111</a>     }
-<a name="112" href="#112">112</a> }
+<a name="42" href="#42">42</a>  <strong>import</strong> java.io.Closeable;
+<a name="43" href="#43">43</a>  <strong>import</strong> java.io.IOException;
+<a name="44" href="#44">44</a>  <strong>import</strong> java.io.InputStream;
+<a name="45" href="#45">45</a>  <strong>import</strong> java.io.InputStreamReader;
+<a name="46" href="#46">46</a>  <strong>import</strong> java.util.Iterator;
+<a name="47" href="#47">47</a>  
+<a name="48" href="#48">48</a>  <em>/**<em>*</em></em>
+<a name="49" href="#49">49</a>  <em> * Scans the stream that follows the &lt;tt>/META-INF/inhabitants/*&lt;/tt> format.</em>
+<a name="50" href="#50">50</a>  <em> *</em>
+<a name="51" href="#51">51</a>  <em> * &lt;p></em>
+<a name="52" href="#52">52</a>  <em> * This class implements {@link Iterable} so that it can be used in for-each loop,</em>
+<a name="53" href="#53">53</a>  <em> * but it cannot parse the same stream twice.</em>
+<a name="54" href="#54">54</a>  <em> *</em>
+<a name="55" href="#55">55</a>  <em> * @author Kohsuke Kawaguchi</em>
+<a name="56" href="#56">56</a>  <em> */</em>
+<a name="57" href="#57">57</a>  <strong>public</strong> <strong>class</strong> <a href="../../../../com/sun/hk2/component/InhabitantsScanner.html">InhabitantsScanner</a> implements Iterable&lt;InhabitantParser>, Closeable {
+<a name="58" href="#58">58</a>      <strong>private</strong> <strong>int</strong> lineNumber = 0;
+<a name="59" href="#59">59</a>      <strong>private</strong> <strong>final</strong> String systemId;
+<a name="60" href="#60">60</a>      <strong>private</strong> BufferedReader r;
+<a name="61" href="#61">61</a>      <strong>private</strong> <strong>final</strong> <a href="../../../../com/sun/hk2/component/KeyValuePairParser.html">KeyValuePairParser</a> kvpp = <strong>new</strong> <a href="../../../../com/sun/hk2/component/KeyValuePairParser.html">KeyValuePairParser</a>();
+<a name="62" href="#62">62</a>  
+<a name="63" href="#63">63</a>      <strong>public</strong> <a href="../../../../com/sun/hk2/component/InhabitantsScanner.html">InhabitantsScanner</a>(InputStream in, String systemId) throws IOException {
+<a name="64" href="#64">64</a>          r = <strong>new</strong> BufferedReader(<strong>new</strong> InputStreamReader(in,<span class="string">"UTF-8"</span>));
+<a name="65" href="#65">65</a>          <strong>this</strong>.systemId = systemId;
+<a name="66" href="#66">66</a>      }
+<a name="67" href="#67">67</a>  
+<a name="68" href="#68">68</a>      <strong>public</strong> String getSystemId() {
+<a name="69" href="#69">69</a>          <strong>return</strong> systemId;
+<a name="70" href="#70">70</a>      }
+<a name="71" href="#71">71</a>  
+<a name="72" href="#72">72</a>      <strong>public</strong> <strong>int</strong> getLineNumber() {
+<a name="73" href="#73">73</a>          <strong>return</strong> lineNumber;
+<a name="74" href="#74">74</a>      }
+<a name="75" href="#75">75</a>  
+<a name="76" href="#76">76</a>      <strong>public</strong> Iterator&lt;InhabitantParser> iterator() {
+<a name="77" href="#77">77</a>          <strong>return</strong> <strong>new</strong> Iterator&lt;InhabitantParser>() {
+<a name="78" href="#78">78</a>              <strong>private</strong> String nextLine;
+<a name="79" href="#79">79</a>  
+<a name="80" href="#80">80</a>              <strong>public</strong> <strong>boolean</strong> hasNext() {
+<a name="81" href="#81">81</a>                  fetch();
+<a name="82" href="#82">82</a>                  <strong>return</strong> nextLine!=<strong>null</strong>;
+<a name="83" href="#83">83</a>              }
+<a name="84" href="#84">84</a>  
+<a name="85" href="#85">85</a>              <strong>private</strong> <strong>void</strong> fetch() {
+<a name="86" href="#86">86</a>                  <strong>if</strong>(<strong>null</strong> == r || nextLine!=<strong>null</strong>)  <strong>return</strong>;
+<a name="87" href="#87">87</a>  
+<a name="88" href="#88">88</a>                  <strong>try</strong> {
+<a name="89" href="#89">89</a>                      <strong>while</strong>((nextLine=r.readLine())!=<strong>null</strong>) {
+<a name="90" href="#90">90</a>                          lineNumber++;
+<a name="91" href="#91">91</a>                          <strong>if</strong>(nextLine.startsWith(<span class="string">"#"</span>))
+<a name="92" href="#92">92</a>                              <strong>continue</strong>;   <em class="comment">// comment</em>
+<a name="93" href="#93">93</a>  
+<a name="94" href="#94">94</a>                          <strong>return</strong>; <em class="comment">// found the next line</em>
+<a name="95" href="#95">95</a>                      }
+<a name="96" href="#96">96</a>                  } <strong>catch</strong> (IOException e) {
+<a name="97" href="#97">97</a>                      <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(<span class="string">"Failed to parse line "</span> + lineNumber + <span class="string">" of "</span> + systemId,e);
+<a name="98" href="#98">98</a>                  }
+<a name="99" href="#99">99</a>              }
+<a name="100" href="#100">100</a> 
+<a name="101" href="#101">101</a>             <strong>public</strong> <a href="../../../../com/sun/hk2/component/InhabitantParser.html">InhabitantParser</a> next() {
+<a name="102" href="#102">102</a>                 fetch();
+<a name="103" href="#103">103</a>                 kvpp.set(nextLine);
+<a name="104" href="#104">104</a>                 nextLine=<strong>null</strong>;
+<a name="105" href="#105">105</a>                 <strong>return</strong> <strong>new</strong> <a href="../../../../com/sun/hk2/component/InhabitantFileBasedParser.html">InhabitantFileBasedParser</a>(kvpp);
+<a name="106" href="#106">106</a>             }
+<a name="107" href="#107">107</a> 
+<a name="108" href="#108">108</a>             <strong>public</strong> <strong>void</strong> remove() {
+<a name="109" href="#109">109</a>                 <strong>throw</strong> <strong>new</strong> UnsupportedOperationException();
+<a name="110" href="#110">110</a>             }
+<a name="111" href="#111">111</a>         };
+<a name="112" href="#112">112</a>     }
+<a name="113" href="#113">113</a> 
+<a name="114" href="#114">114</a>     @Override
+<a name="115" href="#115">115</a>     <strong>public</strong> <strong>void</strong> close() throws IOException {
+<a name="116" href="#116">116</a>       <strong>if</strong> (<strong>null</strong> != r) {
+<a name="117" href="#117">117</a>         r.close();
+<a name="118" href="#118">118</a>         r = <strong>null</strong>;
+<a name="119" href="#119">119</a>       }
+<a name="120" href="#120">120</a>     }
+<a name="121" href="#121">121</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

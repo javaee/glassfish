@@ -60,7 +60,7 @@
 <a name="51" href="#51">51</a>  <em> *</em>
 <a name="52" href="#52">52</a>  <em> * @author Kohsuke Kawaguchi</em>
 <a name="53" href="#53">53</a>  <em> */</em>
-<a name="54" href="#54">54</a>  <strong>public</strong> <strong>class</strong> <a href="../../../../org/jvnet/hk2/config/DomDocument.html">DomDocument</a> {
+<a name="54" href="#54">54</a>  <strong>public</strong> <strong>class</strong> DomDocument&lt;T <strong>extends</strong> Dom> {
 <a name="55" href="#55">55</a>      <em>/**<em>*</em></em>
 <a name="56" href="#56">56</a>  <em>     * A hook to perform variable replacements on the attribute/element values</em>
 <a name="57" href="#57">57</a>  <em>     * that are found in the configuration file.</em>
@@ -75,7 +75,7 @@
 <a name="66" href="#66">66</a>  
 <a name="67" href="#67">67</a>      <em class="comment">/*<em class="comment">package*/</em> <strong>final</strong> Habitat habitat;</em>
 <a name="68" href="#68">68</a>  
-<a name="69" href="#69">69</a>      <em class="comment">/*<em class="comment">package*/</em> <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> root;</em>
+<a name="69" href="#69">69</a>      <em class="comment">/*<em class="comment">package*/</em> T root;</em>
 <a name="70" href="#70">70</a>  
 <a name="71" href="#71">71</a>      <strong>private</strong> <strong>final</strong> Map&lt;String, DataType> validators = <strong>new</strong> HashMap&lt;String, DataType>();
 <a name="72" href="#72">72</a>      
@@ -197,7 +197,7 @@
 <a name="188" href="#188">188</a>         <strong>return</strong> buildModel(c);
 <a name="189" href="#189">189</a>     }
 <a name="190" href="#190">190</a> 
-<a name="191" href="#191">191</a>     <strong>public</strong> <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> make(Habitat habitat, XMLStreamReader in, <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> parent, <a href="../../../../org/jvnet/hk2/config/ConfigModel.html">ConfigModel</a> model) {
+<a name="191" href="#191">191</a>     <strong>public</strong> <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> make(Habitat habitat, XMLStreamReader in, T parent, <a href="../../../../org/jvnet/hk2/config/ConfigModel.html">ConfigModel</a> model) {
 <a name="192" href="#192">192</a>         <strong>return</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a>(habitat,<strong>this</strong>,parent,model,in);
 <a name="193" href="#193">193</a>     }
 <a name="194" href="#194">194</a> 

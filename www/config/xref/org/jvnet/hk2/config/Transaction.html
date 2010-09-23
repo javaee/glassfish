@@ -53,74 +53,123 @@
 <a name="44" href="#44">44</a>  <strong>import</strong> java.beans.PropertyChangeEvent;
 <a name="45" href="#45">45</a>  <strong>import</strong> java.beans.PropertyVetoException;
 <a name="46" href="#46">46</a>  <strong>import</strong> java.beans.VetoableChangeListener;
-<a name="47" href="#47">47</a>  <strong>import</strong> java.util.ArrayList;
-<a name="48" href="#48">48</a>  <strong>import</strong> java.util.Collections;
-<a name="49" href="#49">49</a>  <strong>import</strong> java.util.LinkedList;
-<a name="50" href="#50">50</a>  <strong>import</strong> java.util.List;
-<a name="51" href="#51">51</a>  
-<a name="52" href="#52">52</a>  <em>/**<em>*</em></em>
-<a name="53" href="#53">53</a>  <em> * Simple transaction mechanism for config-api objects</em>
-<a name="54" href="#54">54</a>  <em> *</em>
-<a name="55" href="#55">55</a>  <em> * @author Jerome Dochez</em>
-<a name="56" href="#56">56</a>  <em> */</em>
-<a name="57" href="#57">57</a>  <strong>public</strong> <strong>class</strong> <a href="../../../../org/jvnet/hk2/config/Transaction.html">Transaction</a> {
-<a name="58" href="#58">58</a>  
-<a name="59" href="#59">59</a>      <strong>final</strong> LinkedList&lt;Transactor> participants = <strong>new</strong> LinkedList&lt;Transactor>();
-<a name="60" href="#60">60</a>  
-<a name="61" href="#61">61</a>      <em>/**<em>*</em></em>
-<a name="62" href="#62">62</a>  <em>	 * Enlists a new participant in this transaction</em>
-<a name="63" href="#63">63</a>  <em>     *</em>
-<a name="64" href="#64">64</a>  <em>     * @param t new participant to this transaction</em>
-<a name="65" href="#65">65</a>  <em>	 * </em>
-<a name="66" href="#66">66</a>  <em>	 */</em>
-<a name="67" href="#67">67</a>      <strong>synchronized</strong> <strong>void</strong> addParticipant(<a href="../../../../org/jvnet/hk2/config/Transactor.html">Transactor</a> t) {
-<a name="68" href="#68">68</a>          <em class="comment">// add participants first so the lastly created elements are processed before the parent</em>
-<a name="69" href="#69">69</a>          <em class="comment">// is modified, this is expecially important when sub elements have key attributes the parent</em>
-<a name="70" href="#70">70</a>          <em class="comment">// need (or the habitat).</em>
-<a name="71" href="#71">71</a>            participants.addFirst(t);
-<a name="72" href="#72">72</a>      }
-<a name="73" href="#73">73</a>  
-<a name="74" href="#74">74</a>  	<em>/**<em>*</em></em>
-<a name="75" href="#75">75</a>  <em>	 * Rollbacks all participants to this transaction. </em>
-<a name="76" href="#76">76</a>  <em>	 */</em>
-<a name="77" href="#77">77</a>      <strong>public</strong> <strong>synchronized</strong> <strong>void</strong> rollback() {
-<a name="78" href="#78">78</a>          <strong>for</strong> (Transactor t : participants) {
-<a name="79" href="#79">79</a>              t.abort(<strong>this</strong>);
-<a name="80" href="#80">80</a>          }
-<a name="81" href="#81">81</a>      }
-<a name="82" href="#82">82</a>  
-<a name="83" href="#83">83</a>  	<em>/**<em>*</em></em>
-<a name="84" href="#84">84</a>  <em>	 * Commits all participants to this transaction</em>
-<a name="85" href="#85">85</a>  <em>	 * </em>
-<a name="86" href="#86">86</a>  <em>	 * @return list of PropertyChangeEvent for the changes that were applied to the </em>
-<a name="87" href="#87">87</a>  <em>	 * participants during the transaction.</em>
-<a name="88" href="#88">88</a>  <em>     * @throws RetryableException if the transaction cannot commit at this time but</em>
-<a name="89" href="#89">89</a>  <em>     * could succeed later.</em>
-<a name="90" href="#90">90</a>  <em>     * @throws TransactionFailure if the transaction commit failed.</em>
-<a name="91" href="#91">91</a>  <em>	 */</em>
-<a name="92" href="#92">92</a>      <strong>public</strong> <strong>synchronized</strong> List&lt;PropertyChangeEvent> commit()
-<a name="93" href="#93">93</a>              throws RetryableException, <a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a> {
-<a name="94" href="#94">94</a>  
-<a name="95" href="#95">95</a>          <strong>for</strong> (Transactor t : participants) {
-<a name="96" href="#96">96</a>              <strong>if</strong> (!t.canCommit(<strong>this</strong>)) {
-<a name="97" href="#97">97</a>                  <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/RetryableException.html">RetryableException</a>();
-<a name="98" href="#98">98</a>              }
-<a name="99" href="#99">99</a>          }
-<a name="100" href="#100">100</a>         List&lt;PropertyChangeEvent> transactionChanges = <strong>new</strong> ArrayList&lt;PropertyChangeEvent>();
-<a name="101" href="#101">101</a>         <strong>for</strong> (Transactor t : participants) {
-<a name="102" href="#102">102</a>             transactionChanges.addAll(t.commit(<strong>this</strong>));            
-<a name="103" href="#103">103</a>         }
-<a name="104" href="#104">104</a>         <em class="comment">// any ConfigBean in our transactor should result in sending transaction events, but only once.</em>
-<a name="105" href="#105">105</a>         <strong>for</strong> (Transactor t : participants) {
-<a name="106" href="#106">106</a>             <strong>if</strong> (t instanceof WriteableView) {
-<a name="107" href="#107">107</a>                 ((<a href="../../../../org/jvnet/hk2/config/WriteableView.html">WriteableView</a>) t).getMasterView().getHabitat().getComponent(Transactions.<strong>class</strong>).addTransaction(transactionChanges);
-<a name="108" href="#108">108</a>                 <strong>break</strong>;
-<a name="109" href="#109">109</a>             }
-<a name="110" href="#110">110</a>         }
-<a name="111" href="#111">111</a>         <strong>return</strong> transactionChanges;
-<a name="112" href="#112">112</a>     }
+<a name="47" href="#47">47</a>  <strong>import</strong> java.lang.reflect.Proxy;
+<a name="48" href="#48">48</a>  <strong>import</strong> java.util.ArrayList;
+<a name="49" href="#49">49</a>  <strong>import</strong> java.util.Collections;
+<a name="50" href="#50">50</a>  <strong>import</strong> java.util.LinkedList;
+<a name="51" href="#51">51</a>  <strong>import</strong> java.util.List;
+<a name="52" href="#52">52</a>  
+<a name="53" href="#53">53</a>  <em>/**<em>*</em></em>
+<a name="54" href="#54">54</a>  <em> * Simple transaction mechanism for config-api objects</em>
+<a name="55" href="#55">55</a>  <em> *</em>
+<a name="56" href="#56">56</a>  <em> * @author Jerome Dochez</em>
+<a name="57" href="#57">57</a>  <em> */</em>
+<a name="58" href="#58">58</a>  <strong>public</strong> <strong>class</strong> <a href="../../../../org/jvnet/hk2/config/Transaction.html">Transaction</a> {
+<a name="59" href="#59">59</a>  
+<a name="60" href="#60">60</a>      <strong>final</strong> LinkedList&lt;Transactor> participants = <strong>new</strong> LinkedList&lt;Transactor>();
+<a name="61" href="#61">61</a>  
+<a name="62" href="#62">62</a>      <em>/**<em>*</em></em>
+<a name="63" href="#63">63</a>  <em>	 * Enlists a new participant in this transaction</em>
+<a name="64" href="#64">64</a>  <em>     *</em>
+<a name="65" href="#65">65</a>  <em>     * @param t new participant to this transaction</em>
+<a name="66" href="#66">66</a>  <em>	 * </em>
+<a name="67" href="#67">67</a>  <em>	 */</em>
+<a name="68" href="#68">68</a>      <strong>synchronized</strong> <strong>void</strong> addParticipant(<a href="../../../../org/jvnet/hk2/config/Transactor.html">Transactor</a> t) {
+<a name="69" href="#69">69</a>          <em class="comment">// add participants first so the lastly created elements are processed before the parent</em>
+<a name="70" href="#70">70</a>          <em class="comment">// is modified, this is expecially important when sub elements have key attributes the parent</em>
+<a name="71" href="#71">71</a>          <em class="comment">// need (or the habitat).</em>
+<a name="72" href="#72">72</a>            participants.addFirst(t);
+<a name="73" href="#73">73</a>      }
+<a name="74" href="#74">74</a>  
+<a name="75" href="#75">75</a>  	<em>/**<em>*</em></em>
+<a name="76" href="#76">76</a>  <em>	 * Rollbacks all participants to this transaction. </em>
+<a name="77" href="#77">77</a>  <em>	 */</em>
+<a name="78" href="#78">78</a>      <strong>public</strong> <strong>synchronized</strong> <strong>void</strong> rollback() {
+<a name="79" href="#79">79</a>          <strong>for</strong> (Transactor t : participants) {
+<a name="80" href="#80">80</a>              t.abort(<strong>this</strong>);
+<a name="81" href="#81">81</a>          }
+<a name="82" href="#82">82</a>      }
+<a name="83" href="#83">83</a>  
+<a name="84" href="#84">84</a>      <em>/**<em>*</em></em>
+<a name="85" href="#85">85</a>  <em>     * Tests if the transaction participants will pass the prepare phase successfully.</em>
+<a name="86" href="#86">86</a>  <em>     * The prepare phase will invoke validation of the changes, so a positive return</em>
+<a name="87" href="#87">87</a>  <em>     * usually means the changes are valid and unless a external factor arise, the</em>
+<a name="88" href="#88">88</a>  <em>     * {@link #commit()} method will succeed.</em>
+<a name="89" href="#89">89</a>  <em>     *</em>
+<a name="90" href="#90">90</a>  <em>     * @return true if the participants changes are valid, false otherwise</em>
+<a name="91" href="#91">91</a>  <em>     * @throws TransactionFailure if the changes are not valid </em>
+<a name="92" href="#92">92</a>  <em>     */</em>
+<a name="93" href="#93">93</a>      <strong>public</strong> <strong>boolean</strong> canCommit() throws TransactionFailure {
+<a name="94" href="#94">94</a>          <strong>for</strong> (Transactor t : participants) {
+<a name="95" href="#95">95</a>              <strong>if</strong> (!t.canCommit(<strong>this</strong>)) {
+<a name="96" href="#96">96</a>                  <strong>return</strong> false;
+<a name="97" href="#97">97</a>              }
+<a name="98" href="#98">98</a>          }
+<a name="99" href="#99">99</a>          <strong>return</strong> <strong>true</strong>;
+<a name="100" href="#100">100</a>     }
+<a name="101" href="#101">101</a> 
+<a name="102" href="#102">102</a> 	<em>/**<em>*</em></em>
+<a name="103" href="#103">103</a> <em>	 * Commits all participants to this transaction</em>
+<a name="104" href="#104">104</a> <em>	 * </em>
+<a name="105" href="#105">105</a> <em>	 * @return list of PropertyChangeEvent for the changes that were applied to the </em>
+<a name="106" href="#106">106</a> <em>	 * participants during the transaction.</em>
+<a name="107" href="#107">107</a> <em>     * @throws RetryableException if the transaction cannot commit at this time but</em>
+<a name="108" href="#108">108</a> <em>     * could succeed later.</em>
+<a name="109" href="#109">109</a> <em>     * @throws TransactionFailure if the transaction commit failed.</em>
+<a name="110" href="#110">110</a> <em>	 */</em>
+<a name="111" href="#111">111</a>     <strong>public</strong> <strong>synchronized</strong> List&lt;PropertyChangeEvent> commit()
+<a name="112" href="#112">112</a>             throws RetryableException, <a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a> {
 <a name="113" href="#113">113</a> 
-<a name="114" href="#114">114</a> }
+<a name="114" href="#114">114</a>         <strong>if</strong> (!canCommit()) {
+<a name="115" href="#115">115</a>             <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/RetryableException.html">RetryableException</a>();
+<a name="116" href="#116">116</a>         }
+<a name="117" href="#117">117</a>         List&lt;PropertyChangeEvent> transactionChanges = <strong>new</strong> ArrayList&lt;PropertyChangeEvent>();
+<a name="118" href="#118">118</a>         <strong>for</strong> (Transactor t : participants) {
+<a name="119" href="#119">119</a>             transactionChanges.addAll(t.commit(<strong>this</strong>));            
+<a name="120" href="#120">120</a>         }
+<a name="121" href="#121">121</a>         <em class="comment">// any ConfigBean in our transactor should result in sending transaction events, but only once.</em>
+<a name="122" href="#122">122</a>         <strong>for</strong> (Transactor t : participants) {
+<a name="123" href="#123">123</a>             <strong>if</strong> (t instanceof WriteableView) {
+<a name="124" href="#124">124</a>                 ((<a href="../../../../org/jvnet/hk2/config/WriteableView.html">WriteableView</a>) t).getMasterView().getHabitat().getComponent(Transactions.<strong>class</strong>).addTransaction(transactionChanges);
+<a name="125" href="#125">125</a>                 <strong>break</strong>;
+<a name="126" href="#126">126</a>             }
+<a name="127" href="#127">127</a>         }
+<a name="128" href="#128">128</a>         <strong>return</strong> transactionChanges;
+<a name="129" href="#129">129</a>     }
+<a name="130" href="#130">130</a> 
+<a name="131" href="#131">131</a>     <em>/**<em>*</em></em>
+<a name="132" href="#132">132</a> <em>     * Retuns the transaction associated with a writable view</em>
+<a name="133" href="#133">133</a> <em>     * @param source the proxy to the writable view</em>
+<a name="134" href="#134">134</a> <em>     * @return the transaction object for that view or null if not transaction is in progress</em>
+<a name="135" href="#135">135</a> <em>     */</em>
+<a name="136" href="#136">136</a>     <strong>public</strong> <strong>static</strong> &lt;T <strong>extends</strong> ConfigBeanProxy> <a href="../../../../org/jvnet/hk2/config/Transaction.html">Transaction</a> getTransaction(<strong>final</strong> T source) {
+<a name="137" href="#137">137</a>         Object sourceBean = Proxy.getInvocationHandler(source);
+<a name="138" href="#138">138</a>         <strong>if</strong> (sourceBean instanceof WriteableView) {
+<a name="139" href="#139">139</a>             <strong>return</strong> ((WriteableView) sourceBean).getTransaction();
+<a name="140" href="#140">140</a>         }
+<a name="141" href="#141">141</a>         <strong>return</strong> <strong>null</strong>;
+<a name="142" href="#142">142</a>     }
+<a name="143" href="#143">143</a> 
+<a name="144" href="#144">144</a>    <em>/**<em>*</em></em>
+<a name="145" href="#145">145</a> <em>     * Enroll a configuration object in a transaction and returns a writeable view of it</em>
+<a name="146" href="#146">146</a> <em>     *</em>
+<a name="147" href="#147">147</a> <em>     * @param source the configured interface implementation</em>
+<a name="148" href="#148">148</a> <em>     * @return the new interface implementation providing write access</em>
+<a name="149" href="#149">149</a> <em>     * @throws TransactionFailure if the object cannot be enrolled (probably already enrolled in</em>
+<a name="150" href="#150">150</a> <em>     * another transaction).</em>
+<a name="151" href="#151">151</a> <em>     */</em>
+<a name="152" href="#152">152</a>     <strong>public</strong> &lt;T <strong>extends</strong> ConfigBeanProxy> T enroll(<strong>final</strong> T source)
+<a name="153" href="#153">153</a>         throws <a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a> {
+<a name="154" href="#154">154</a> 
+<a name="155" href="#155">155</a>         <a href="../../../../org/jvnet/hk2/config/ConfigView.html">ConfigView</a> sourceBean = (ConfigView) Proxy.getInvocationHandler(source);
+<a name="156" href="#156">156</a>         <a href="../../../../org/jvnet/hk2/config/WriteableView.html">WriteableView</a> writeableView = ConfigSupport.getWriteableView(source, (ConfigBean) sourceBean.getMasterView());
+<a name="157" href="#157">157</a>         <strong>if</strong> (!writeableView.join(<strong>this</strong>)) {
+<a name="158" href="#158">158</a>             <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a>(<span class="string">"Cannot join transaction : "</span> + sourceBean.getProxyType());
+<a name="159" href="#159">159</a>         }
+<a name="160" href="#160">160</a>         <strong>return</strong> (T) writeableView.getProxy(sourceBean.getProxyType());
+<a name="161" href="#161">161</a>     }
+<a name="162" href="#162">162</a> 
+<a name="163" href="#163">163</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
