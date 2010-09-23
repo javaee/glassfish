@@ -2,6 +2,7 @@ copyright-exclude
 deployment/schemas/
 deployment/dtds/
 connectors/descriptors/src/main/resources/glassfish/lib/dtds/
+connectors/descriptors/src/main/resources/glassfish/lib/schemas/
 connectors/javax.resource/src/main/java/connector_1_5.dtd
 /yui/
 /zlib-1.1.4/
