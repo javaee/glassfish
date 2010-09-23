@@ -98,7 +98,7 @@
                                     values={"$attribute{status}",
                                             "$boolean{false}",
                                             "$attribute{resName}",
-                                            "$attribute{link}",
+                                            "$attribute{link}?name=$attribute{resName}",
                                             "$attribute{type}"}
                                     map="#{requestScope.oneRowMap}");
                                 listAdd(list="$attribute{listOfRows}" value="#{requestScope.oneRowMap}");
