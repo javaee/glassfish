@@ -61,9 +61,6 @@ import java.util.Set;
 
 
 /**
- *
- * <p>Copyright: Copyright (c) 2002</p>
- * <p>Organisation: </p>
  * @author unbekannt
  * @version 1.0
  */

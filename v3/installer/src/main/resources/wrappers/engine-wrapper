@@ -352,7 +352,7 @@ done
 if [ -n "${VERSIONFLAG}" ] ; then
     ${ECHO} "openInstaller Install Framework 0.9.5"
     ${ECHO}
-    echo `${GETTEXT} "Copyright 2006, 2007 Sun Microsystems, Inc. All rights reserved."`
+    echo `${GETTEXT} "Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved."`
     echo `${GETTEXT} "Use is subject to license terms."`
     ${ECHO}
     ${PRINTF} "`${GETTEXT} 'Version      : %s'`\n" "0.9.5"
