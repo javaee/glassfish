@@ -328,8 +328,8 @@
         <echo message="@@## embeddedweb-resourcesxml-defaultconnpool ##@@"/>
         <ant dir="../embeddedweb-resourcesxml-defaultconnpool" target="all"/>
 
-<!--        <echo message="@@## beanvalidation-simple-resources-xml ##@@"/>
-        <ant dir="beanvalidation-simple-resources-xml" target="all"/>-->
+        <echo message="@@## beanvalidation-simple-resources-xml ##@@"/>
+        <ant dir="beanvalidation-simple-resources-xml" target="all"/>
 
         <echo message="@@## embeddedweb-resources-xml ##@@"/>
         <ant dir="embeddedweb-resources-xml" target="all"/>
