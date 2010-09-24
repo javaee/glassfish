@@ -558,17 +558,12 @@ public class ASMainHelper {
          * Adds JDK tools.jar to classpath.
          */
         void addJDKToolsJar() {
+            File jdkToolsJar = Util.getJDKToolsJar();
             try {
-
-                File jdkToolsJar = Util.getJDKToolsJar();
-                if (jdkToolsJar.exists()) {
-                    cpb.addJar(jdkToolsJar);
-                } else {
-                    // on the mac, it happens all the time
-                    logger.fine("JDK tools.jar does not exist at " + jdkToolsJar);
-                }
-            } catch (IOException e) {
-                throw new Error(e);
+                cpb.addJar(jdkToolsJar);
+            } catch (IOException ioe) {
+                // on the mac, it happens all the time
+                logger.fine("JDK tools.jar does not exist at " + jdkToolsJar);
             }
         }
 
