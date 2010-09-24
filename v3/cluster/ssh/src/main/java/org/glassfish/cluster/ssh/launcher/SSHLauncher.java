@@ -322,6 +322,12 @@ public class SSHLauncher {
         connection = null;
     }
 
+    /* validate user provided ars
+     *          check connecton to host
+     *          check that the install dir is correct
+     *          landmarkPath must be relative to the installdir
+     */
+
     public void validate(String host, int port,
                              String userName, String password,
                              String keyFile, String keyPassPhrase,
@@ -339,13 +345,8 @@ public class SSHLauncher {
             SFTPClient sftpClient = new SFTPClient(connection);
             if (sftpClient.exists(testPath)) {
                 // Nodehome exists. Now check for landmark if provided
-                if (StringUtils.ok(landmarkPath)) {
-                    File f = new File(landmarkPath);
-                    if (f.isAbsolute()) {
-                        testPath = landmarkPath;
-                    } else {
-                        testPath = nodeHome + "/" + landmarkPath;
-                    }
+                if (StringUtils.ok(landmarkPath)) {                    
+                    testPath = nodeHome + "/" + landmarkPath;
                 }
                 validNodeHome = sftpClient.exists(testPath);
             } else {

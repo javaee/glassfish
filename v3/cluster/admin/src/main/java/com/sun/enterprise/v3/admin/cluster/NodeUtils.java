@@ -305,6 +305,7 @@ public class NodeUtils {
             // sshpassword and sshkeypassphrase may be password alias.
             // Those aliases are handled by sshLauncher
             String resolvedInstallDir = resolver.resolve(installdir);
+
             sshL.validate(resolver.resolve(nodehost),
                           port,
                           resolver.resolve(sshuser),
@@ -313,7 +314,7 @@ public class NodeUtils {
                           sshkeypassphrase, 
                           resolvedInstallDir,
                           // Landmark file to ensure valid GF install
-                          resolvedInstallDir + LANDMARK_FILE,
+                          LANDMARK_FILE,
                           logger);
         } catch (IOException e) {
             String m1 = e.getMessage();
