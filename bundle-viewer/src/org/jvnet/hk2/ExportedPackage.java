@@ -53,10 +53,18 @@ public class ExportedPackage extends Named implements Comparable<ExportedPackage
      */
     public final Set<String> uses;
 
+    public final String include;
+
     public final String version;
 
     ExportedPackage(Lexer sc) {
         super(sc);
+        if (sc.at(INCLUDE)) {
+            sc.read(INCLUDE);
+            include = sc.readUntil(';');
+        } else {
+            include=null;
+        }
         if(sc.at(USES)) {
             sc.read(USES);
             uses = Collections.unmodifiableSet(

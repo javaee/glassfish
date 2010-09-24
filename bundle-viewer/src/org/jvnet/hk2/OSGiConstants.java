@@ -47,6 +47,8 @@ import java.util.regex.Pattern;
 final class OSGiConstants {
     static final Pattern PACKAGE = Pattern.compile("[^,;]+");
     static final Pattern USES = Pattern.compile(";uses:=\"");
+    static final Pattern INCLUDE = Pattern.compile(";include:=");
     static final Pattern VERSION = Pattern.compile(";version=");
+    static final Pattern RESOLUTION = Pattern.compile(";resolution:=");
     static final Pattern POSSIBLY_QUOTED_TOKEN = Pattern.compile("([^\",;][^,;]+)|(\"[^\"]+\")");
 }

@@ -85,6 +85,8 @@ public class Lexer {
      *      String without 'ch'.
      */
     public String readUntil(char ch) {
+        if (str.indexOf(ch)==-1)
+            return str;
         return consume(str.indexOf(ch));
     }
 

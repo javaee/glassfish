@@ -37,6 +37,8 @@
 
 package org.jvnet.hk2;
 
+import java.util.*;
+
 import static org.jvnet.hk2.OSGiConstants.*;
 
 /**
@@ -44,9 +46,24 @@ import static org.jvnet.hk2.OSGiConstants.*;
  */
 public final class ImportedPackage extends Named implements Comparable<ImportedPackage> {
     public final String version;
+    public final Map<String, Set<String>> resolutions;
 
     ImportedPackage(Lexer sc) {
         super(sc);
+        if(sc.at(RESOLUTION)) {
+            resolutions=new HashMap<String, Set<String>>();
+            while (sc.at(RESOLUTION)) {
+                sc.read(RESOLUTION);
+                String resolutionType = sc.readUntil(',');
+                if (!resolutions.containsKey(resolutionType)) {
+                    resolutions.put(resolutionType, new HashSet<String>());
+                }
+                resolutions.get(resolutionType).addAll(Arrays.asList(sc.readUntil(';').split(",")));
+            }
+        } else {
+            resolutions=Collections.emptyMap();
+        }
+
         if(sc.at(VERSION)) {
             sc.read(VERSION);
             version = unquote(sc.read(POSSIBLY_QUOTED_TOKEN));
