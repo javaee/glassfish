@@ -177,6 +177,7 @@ public class ListInstancesCommand implements AdminCommand {
             }
         }
         extraProps.put("instanceList", instanceList);
+        report.setMessage(sb.toString());
         report.setExtraProperties(extraProps);
     }
 
