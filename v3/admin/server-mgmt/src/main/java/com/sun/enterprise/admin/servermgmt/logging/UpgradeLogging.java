@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.admin.servermgmt.logging;
 
+import com.sun.enterprise.config.serverbeans.Configs;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
@@ -74,17 +75,22 @@ import java.util.HashMap;
 @Service
 public class UpgradeLogging implements ConfigurationUpgrade, PostConstruct {
     
-    @Inject ( name="server-config")
-    Config config;
+    @Inject
+    Configs configs;
     
     @Inject
     LoggingConfigImpl logConfig;
-    
 
     public void postConstruct() {
-    	// v3 uses logging.properties to configure the logging facility.  
-    	// move all log-service elements to logging.properties
-    	final LogService logService = config.getLogService();
+        for (Config config : configs.getConfig()) {
+            doUpgrade(config);
+        }
+    }
+
+    private void doUpgrade(Config config) {
+        // v3 uses logging.properties to configure the logging facility.
+        // move all log-service elements to logging.properties
+        final LogService logService = config.getLogService();
         
     	// check if null and exit
     	if (logService == null )
