@@ -94,9 +94,14 @@ public class JVMThreadSystemStatsProvider {
     public StringStatistic getAllThreadIds() {
         long[] ids = this.threadBean.getAllThreadIds();
         StringBuffer sb = new StringBuffer();
+        boolean first = true;
         for (long id : ids) {
+            if(first)
+                first = false;
+            else
+                sb.append(',');
+
             sb.append(id);
-            sb.append(',');
         }
         this.allThreadIds.setCurrent(sb.toString());
         return allThreadIds;
