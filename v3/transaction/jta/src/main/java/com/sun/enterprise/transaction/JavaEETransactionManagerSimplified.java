@@ -1008,15 +1008,15 @@ public class JavaEETransactionManagerSimplified
      * <p> If an application has not called this method, the transaction
      * service uses some default value for the transaction timeout.
      *
-     * @param seconds The value of the timeout in seconds. If the value
-     *    is zero, the transaction service restores the default value.
-     *
      * @exception SystemException Thrown if the transaction manager
      *    encounters an unexpected error condition
      *
      */
     public void setTransactionTimeout(int seconds) throws SystemException {
-        if (seconds < 0) seconds = 0;
+        if (seconds < 0) {
+            throw new SystemException(sm.getString("enterprise_distributedtx.invalid_timeout"));
+        }
+
         txnTmout.set(seconds);
         // transactionTimeout = seconds;
     }

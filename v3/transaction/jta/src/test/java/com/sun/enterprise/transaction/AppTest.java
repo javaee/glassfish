@@ -292,6 +292,39 @@ public class AppTest extends TestCase {
         }
     }
 
+    public void testWrongTMTimeout() {
+        System.out.println("**Testing Wrong TM Timeout ===>");
+        try {
+            System.out.println("**Calling TM setTransactionTimeout ===>");
+            t.setTransactionTimeout(-1);
+            System.out.println("**WRONG: TM setTransactionTimeout successful <===");
+            assert (false);
+        } catch (SystemException ex) {
+            System.out.println("**Caught SystemException <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+    }
+
+    public void testWrongUTXTimeout() {
+        System.out.println("**Testing Wrong UTX Timeout ===>");
+        try {
+            UserTransaction utx = createUtx();
+            System.out.println("**Calling UTX setTransactionTimeout ===>");
+            utx.setTransactionTimeout(-1);
+            System.out.println("**WRONG: UTX setTransactionTimeout successful <===");
+            assert (false);
+        } catch (SystemException ex) {
+            System.out.println("**Caught SystemException <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+    }
+
     public void testWrongUTXCommit() {
         System.out.println("**Testing Wrong UTX commit ===>");
         try {

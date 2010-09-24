@@ -285,8 +285,6 @@ public class UserTransactionImpl implements UserTransaction, Serializable
             checkUserTransactionMethodAccess(inv);
         }
         
-        if (seconds < 0) seconds = 0;
-        // transactionTimeout = seconds;
         transactionManager.setTransactionTimeout(seconds);
     }
 
