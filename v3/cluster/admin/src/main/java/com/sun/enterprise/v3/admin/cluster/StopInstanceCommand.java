@@ -166,9 +166,9 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
         // this should be replaced with method from Node config bean.  
         dasPort = helper.getAdminPort(SystemPropertyConstants.DAS_SERVER_NAME);
         dasHost = System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY);
-        rch = new RemoteConnectHelper(habitat, nodeList, logger, dasHost, dasPort);
+        rch = new RemoteConnectHelper(habitat, node, logger, dasHost, dasPort);
 
-        if (rch.isLocalhost(node)){
+        if (rch.isLocalhost()){
             if (pidFile.exists()){
                     //server still not down completely, do we poll?
                 errorMessage = pollForRealDeath("local");

@@ -52,8 +52,6 @@ import org.glassfish.api.admin.CommandRunner.CommandInvocation;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import java.util.logging.Logger;
-import org.glassfish.cluster.ssh.connect.RemoteConnectHelper;
-import org.glassfish.cluster.ssh.connect.RemoteConnectHelper;
 import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 
 
@@ -104,7 +102,7 @@ public class DeleteNodeSshCommand implements AdminCommand, PostConstruct {
             return;
         }
 
-        if (!(node.getType().equals("SSH") )){
+        if ((node.getType() != null) && !(node.getType().equals("SSH") )){
             //no node to delete  nothing to do here
             String msg = Strings.get("notSshNodeType", name);
             logger.warning(msg);

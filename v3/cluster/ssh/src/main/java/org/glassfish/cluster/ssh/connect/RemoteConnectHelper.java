@@ -70,6 +70,8 @@ public class RemoteConnectHelper  {
 
     private Habitat habitat;
 
+    private Node node;
+
     private HashMap<String, Node> nodeMap;
 
     private Logger logger;
@@ -97,9 +99,17 @@ public class RemoteConnectHelper  {
         this.dasPort=dasPort;
 
     }
+        public RemoteConnectHelper(Habitat habitat, Node node, Logger logger, String dasHost, int dasPort) {
+        this.logger = logger;
+        this.habitat = habitat;
+        this.node = node;
+        this.dasHost=dasHost;
+        this.dasPort=dasPort;
 
-    public boolean isLocalhost(Node nodeRef) {
-        String nodeHost = nodeRef.getNodeHost();
+    }
+
+    public boolean isLocalhost() {
+        String nodeHost = node.getNodeHost();
         if (nodeHost.equals("localhost"))
             return true;
         if (NetUtils.IsThisHostLocal(nodeHost))
@@ -107,22 +117,17 @@ public class RemoteConnectHelper  {
         return false;
     }
 
-    public boolean isRemoteConnectRequired(String nodeRef) {
+    public boolean isRemoteConnectRequired() {
 
-        Node node = nodeMap.get(nodeRef);
-        if (node != null){
-            String t = node.getType();
+        String t = node.getType();
+        if (t != null){
             if (t.equals("SSH"))
                 return true;
             else
                 return false;
-                        
-        }   else {
-            logger.warning("Invalid node ref "+ nodeRef);
+        } else {
             return false;
-
         }
-
 
     }
 
@@ -132,20 +137,21 @@ public class RemoteConnectHelper  {
 
     // need to get the command options that were specified too
 
-    public int runCommand(String noderef, String cmd, final ParameterMap parameters,
+    public int runCommand(String cmd, final ParameterMap parameters,
             StringBuilder outputString )throws SSHCommandExecutionException {
 
         //get the node ref and see if ssh connection is setup if so use it
         try{
-
+ /*
             Node node = nodeMap.get(noderef);
             if (node == null){
                 logger.severe("Could not find node "+ noderef);
                 return 1;
             }
+            */
             String nodeHome = node.getInstallDir();
-            if( nodeHome == null) {  // what can we assume here?
-                logger.severe("Invalid installdir "+noderef);
+            if( nodeHome == null) {  
+                logger.severe("Invalid installdir "+nodeHome +" for node "+node.getName());
                 return 1;
             }
             SshConnector connector = node.getSshConnector();
@@ -161,7 +167,7 @@ public class RemoteConnectHelper  {
                 String prefix = nodeHome +File.separator+ "bin"+ File.separator+"asadmin " +
                         " --host " + dasHost + " --port " + dasPort +
                         " " + cmd;
-                String unixStyleSlash = prefix.replaceAll("\\\\","/");     // need to remove this
+                String unixStyleSlash = prefix.replaceAll("\\\\","/");     
                  //get the params for the command
                 // we don't validate since called by other commands directly
                 String instanceName = new String();
