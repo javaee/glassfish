@@ -754,20 +754,30 @@ public class RemoteAdminCommand {
     private StringBuilder addFileOption(
             StringBuilder uriString,
             String optionName,
-            String filename) throws IOException {
+            String filename) throws IOException, CommandException {
         File f = SmartFile.sanitize(new File(filename));
         logger.finer("FILE PARAM: " + optionName + " = " + f);
         final boolean uploadThisFile = doUpload && ! f.isDirectory();
         // attach the file to the payload - include the option name in the
         // relative URI to avoid possible conflicts with same-named files
         // in different directories
-        if (uploadThisFile)
+        if (uploadThisFile) {
+            try {
             outboundPayload.attachFile(FILE_PAYLOAD_MIME_TYPE,
                 URI.create(optionName + "/" + f.getName() + (f.isDirectory() ? "/" : "")),
                 optionName,
                 null,
                 f,
                 true /* isRecursive - in case it's a directory */);
+            } catch (FileNotFoundException fnfe) {
+                /*
+                 * Probably due to an attempt to upload a non-existent file.
+                 * Convert this to a CommandException so it's better handled
+                 * by the rest of the command running infrastructure.
+                 */
+                throw new CommandException(strings.get("UploadedFileNotFound", f.getAbsolutePath()));
+            }
+        }
         if (f != null) {
             // if we are about to upload it -- give just the name
             // o/w give the full path

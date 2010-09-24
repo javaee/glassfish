@@ -515,7 +515,7 @@ public class PayloadImpl implements Payload {
                 final String contentType,
                 final String name,
                 final Properties props,
-                final File file) {
+                final File file) throws FileNotFoundException {
             return new Filed(contentType, name, props, file);
         }
 
@@ -617,7 +617,7 @@ public class PayloadImpl implements Payload {
             Filed(final String contentType,
                     final String name,
                     final Properties props,
-                    final File file) {
+                    final File file) throws FileNotFoundException {
                 super(contentType, name, props);
                 this.file = file;
                 validateFile(file);
@@ -641,9 +641,13 @@ public class PayloadImpl implements Payload {
                 }
             }
 
-            private void validateFile(final File f) {
+            private void validateFile(final File f) throws FileNotFoundException {
                 if ( f != null && ! f.canRead()) {
-                    logger.log(Level.WARNING, "payload.errProcFile", f.getAbsolutePath());
+                    /*
+                     * Throw an exception so, for example, an asadmin user will
+                     * become aware of the problem.
+                     */
+                    throw new FileNotFoundException(f.getAbsolutePath());
                 }
             }
 
