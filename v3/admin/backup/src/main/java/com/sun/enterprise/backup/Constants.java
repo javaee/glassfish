@@ -71,5 +71,5 @@ public interface Constants
     final static String         CONFIG_ONLY ="configOnly";
     final static String         FULL ="full";
     final static String         CONFIG_DIR="config";
-    final static String         NO_CONFIG="no backup config";
+    final static String         NO_CONFIG=" ";
 }

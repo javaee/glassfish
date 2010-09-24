@@ -125,7 +125,7 @@ public class ListManager extends BackupRestoreManager
                         filename = strings.get("backup-list.unavailable");
 
                     cf.addRow(new Object[] {
-                        "----",
+                        status.getBackupConfigName(),
                         status.getUserName(),
                         status.getTimeStamp(),
                         filename
