@@ -38,6 +38,7 @@
 package org.jvnet.hk2;
 
 import java.io.PrintStream;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -60,6 +61,10 @@ public class PlainTextPrinter implements Printer {
             int w = Named.getLongestName(m.exportPackages);
             for (ExportedPackage b : m.exportPackages) {
                 out.print("  "+pad(b.name,w));
+                if (b.include!=null) {
+                    out.println();
+                    out.print("    "+pad("include: " + b.include,w));
+                }
                 if(b.version!=null)
                     out.print(" "+b.version);
                 out.println();
@@ -71,6 +76,14 @@ public class PlainTextPrinter implements Printer {
             int w = Named.getLongestName(m.importedPackages);
             for (ImportedPackage b : m.importedPackages) {
                 out.print("  "+pad(b.name,w));
+                for (Map.Entry<String, Set<String>> resolution : b.resolutions.entrySet()) {
+                    out.print("    resolution: " + resolution.getKey());
+                    out.println();
+                    for (String packageName : resolution.getValue()) {
+                        out.print("      " + packageName);
+                        out.println();
+                    }
+                }
                 if(b.version!=null)
                     out.print(" "+b.version);
                 out.println();
