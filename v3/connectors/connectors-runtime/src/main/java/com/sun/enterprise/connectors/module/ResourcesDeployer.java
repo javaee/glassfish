@@ -734,7 +734,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
 
     private void processResources(DeploymentContext dc, DeployCommandParameters deployParams) {
         try{
-            if (deployParams.origin == OpsParams.Origin.deploy) {
+            if (deployParams.origin == OpsParams.Origin.deploy || deployParams.origin == OpsParams.Origin.deploy_instance) {
                 Properties properties = deployParams.properties;
                 if(properties != null){
                     //handle if "preserveAppScopedResources" property is set (during deploy --force=true)
@@ -877,7 +877,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
      */
     private void cleanupResources(String appName, OpsParams.Origin deploymentPhase){
         try{
-            if (deploymentPhase == OpsParams.Origin.deploy) {
+            if (deploymentPhase == OpsParams.Origin.deploy || deploymentPhase == OpsParams.Origin.deploy_instance) {
                 Map<String, Resources> allResources = resourceConfigurations.remove(appName);
                 if(allResources != null){
                     for(Map.Entry<String, Resources> entry : allResources.entrySet()){
@@ -940,7 +940,8 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
         if (Deployment.DEPLOYMENT_FAILURE.equals(event.type())) {
             final DeployCommandParameters deployCommandParameters =
                     dc.getCommandParameters(DeployCommandParameters.class);
-            if (deployCommandParameters.origin == OpsParams.Origin.deploy) {
+            if (deployCommandParameters.origin == OpsParams.Origin.deploy ||
+                    deployCommandParameters.origin == OpsParams.Origin.deploy_instance) {
                 Properties properties = deployCommandParameters.properties;
                 String appName = deployCommandParameters.name();
                 cleanupPreservedResources(appName, properties);
