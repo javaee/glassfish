@@ -46,10 +46,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.Properties;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.io.File;
-
-import java.text.MessageFormat;
 
 import com.sun.appserv.server.ServerLifecycleException;
 import com.sun.appserv.server.LifecycleEventContext;
@@ -59,6 +56,7 @@ import com.sun.logging.LogDomains;
 
 import org.glassfish.loader.util.ASClassLoaderUtil;
 import org.glassfish.internal.api.ServerContext;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 /**
  * @author Sridatta Viswanath
@@ -81,9 +79,10 @@ public final class ServerLifecycleModule {
 
     private static Logger _logger = null;
     private static boolean _isTraceEnabled = false;
-    private static ResourceBundle _rb = null;
 
     private final static String LIFECYCLE_PREFIX = "lifecycle_"; 
+
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ServerLifecycleModule.class);
 
     ServerLifecycleModule(ServerContext ctx, String name, String className) {
         this.name = name;
@@ -94,7 +93,6 @@ public final class ServerLifecycleModule {
         _logger = LogDomains.getLogger(ServerLifecycleModule.class, 
             LogDomains.CORE_LOGGER);
         _isTraceEnabled = _logger.isLoggable(Level.FINE);
-        _rb = _logger.getResourceBundle();
     }
     
     void setClasspath(String classpath) {
@@ -161,12 +159,7 @@ public final class ServerLifecycleModule {
             Class cl = Class.forName(className, true, classLoader);
             slcl = (LifecycleListener) cl.newInstance();
         } catch (Exception ee) {
-            ee.printStackTrace();
-            String msg = _rb.getString("lifecyclemodule.load_exception");
-            Object[] params = { this.name, ee.toString() };
-            msg = MessageFormat.format(msg, params);
-
-            _logger.log(Level.WARNING, msg);
+            _logger.log(Level.WARNING, localStrings.getLocalString("lifecyclemodule.load_exception", "Exception loading lifecycle module", this.name, ee.toString()), ee) ;
         }
 
         return slcl;
@@ -182,11 +175,7 @@ public final class ServerLifecycleModule {
                                     throws ServerLifecycleException {
         if (slcl == null) {
             if (isFatal) {
-                String msg = _rb.getString("lifecyclemodule.loadExceptionIsFatal");
-                Object[] params = { this.name };
-                msg = MessageFormat.format(msg, params);
-
-                throw new ServerLifecycleException(msg);
+                throw new ServerLifecycleException(localStrings.getLocalString("lifecyclemodule.loadExceptionIsFatal", "Treating failure loading the lifecycle module as fatal", this.name));
             }
 
             return;
@@ -199,26 +188,15 @@ public final class ServerLifecycleModule {
         try {
             slcl.handleEvent(slcEvent);
         } catch (ServerLifecycleException sle) {
-
-            String msg = _rb.getString("lifecyclemodule.event_ServerLifecycleException");
-
-            Object[] params = { this.name };
-            msg = MessageFormat.format(msg, params);
-
-            _logger.log(Level.WARNING, msg, sle);
+            _logger.log(Level.WARNING, localStrings.getLocalString("lifecyclemodule.event_ServerLifecycleException", "Lifecycle module threw ServerLifecycleException", this.name), sle);
 
             if (isFatal)
                 throw sle;
         } catch (Exception ee) {
-            String msg = _rb.getString("lifecyclemodule.event_Exception");
-
-            Object[] params = { this.name };
-            msg = MessageFormat.format(msg, params);
-
-            _logger.log(Level.WARNING, msg, ee);
+            _logger.log(Level.WARNING, localStrings.getLocalString("lifecyclemodule.event_Exception", "Lifecycle module threw an Exception", this.name), ee);
 
             if (isFatal) {
-                throw new ServerLifecycleException(_rb.getString("lifecyclemodule.event_exceptionIsFatal"), ee);
+                throw new ServerLifecycleException(localStrings.getLocalString("lifecyclemodule.event_exceptionIsFatal", "Treating the exception from lifecycle module event handler as fatal"), ee);
             }
         }
     }
