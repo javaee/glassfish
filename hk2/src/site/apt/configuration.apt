@@ -74,6 +74,10 @@ Mapping
 		@Attribute
 		String getName();
 		void setName(String name);
+		
+		@Attribute 
+		String getPort();
+		void setPort(String port);
 
 		@Element
 		HttpListener getHttpListener();
@@ -84,10 +88,90 @@ Mapping
 
 	<....>
 		<http-server name="..." ... >
-			\<http-listener name="..." .../>
+			<http-listener name="..." port="8090" .../>
 		</http-server-name>
-        </...>
+    </...>
 	
 +-------------------------------+
 
+* Transaction
 
+	In order to change any configuration elements, one must start a configuration transaction that
+ensures restricted access to the configuration. The configuration uses a view mechanism to give access
+to the underlying configuration bean. By default, injected code gets a readable view while code 
+using a transaction to mutate configuration will obtain a writeable view automatically. While a transaction
+is in effect, other threads will continue seeing the un-modified values through their redable views 
+while threads having access to the writeable view will be able to change the configuration and see
+ the mutated values. As soon as the transaction is successfully commited, the readable views will
+ give access to the changed configuration. 
+ 
+** Single configuration object mutation
+ 
+ 	In the simple case, code needs to mutate one configuration object during a transaction. The 
+simple ConfigSupport.apply method should be used :
+
++-------------------------------+
+
+    /**
+     * Execute some logic on one config bean of type T protected by a transaction
+     *
+     * @param code code to execute
+     * @param param config object participating in the transaction
+     * @return list of events that represents the modified config elements.
+     * @throws TransactionFailure when code did not run successfully
+     */
+ public static <T extends ConfigBeanProxy> Object apply(final SingleConfigCode<T> code, T param)
+        throws TransactionFailure 
++-------------------------------+
+
+*** Example 
+
+	In the example below, let's change our HttpListener port value :
+
+	before the transaction is started, the xml looks like : 
+
++-------------------------------+
+	<....>
+		<http-server name="..." ... >
+			<http-listener name="..." port="8090".../>
+		</http-server-name>
+    </...>	
++-------------------------------+
+
+	the following code is the actually transaction invocation :
+
++-------------------------------+
+@Inject
+HttpListener httpListener;
+
+ConfigSupport.apply(new SingleCodeCode<HttpListener>() {
+	public Object run(HttpListener wListener) {
+		wListener.setPort("8080");
+	}, httpListener);	
++-------------------------------+
+
+	will have the resulting effect on the xml 
+
++-------------------------------+
+	<....>
+		<http-server name="..." ... >
+			<http-listener name="..." port="8080".../>
+		</http-server-name>
+    </...>	
++-------------------------------+
+
+** Vetoing changes
+
+	Any code can register itself to listen to changes as they happen within a transaction. Such
+listeners have the ability to raise a PropertyVetoException that will force the pending transaction to
+be rolled back (all changes to all beans will then be discarded).
+
+	Note the code below will be simplified soon : 
++-------------------------------+
+        ((ConfigBean) ConfigSupport.getImpl(target)).getOptionalFeature(ConstrainedBeanListener.class).addVetoableChangeListener(this);
++-------------------------------+
+
+** Changes notification
+
+    Any code that wishes to receive notification of changes of configuration bean can implement
+the ConfigListener interface. 
