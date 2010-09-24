@@ -56,7 +56,7 @@ public class ResourceAdapterConfigsTest extends BaseSeleniumTestClass {
         try {
             // If this exists, delete it so the test below won't explode.  If it doesn't, just move along silently
             deleteRow("propertyForm:poolTable:topActionsGroup1:button1", "propertyForm:poolTable", "jmsra");
-        } catch (AssertionError e) {
+        } catch (AssertionError e) { 
 
         }
 
