@@ -182,7 +182,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
                         message = "Request returned " + status;
                     }
 
-                    reportError(req, res, status, message);
+//                    reportError(req, res, status, message);
                 }
             }
         } catch(InterruptedException e) {

@@ -50,30 +50,55 @@ import static org.junit.Assert.*;
  *
  * @author jasonlee
  */
-public class JdbcConnectionPoolTest extends RestTestBase {
-    public static final String BASE_JDBC_CP_URL = "/domain/resources/jdbc-connection-pool";
+public class JdbcTest extends RestTestBase {
+    public static final String BASE_JDBC_RESOURCE_URL = "/domain/resources/jdbc-resource";
+    public static final String BASE_JDBC_CONNECTION_POOL_URL = "/domain/resources/jdbc-connection-pool";
     @Test
-    public void testReading() {
-        Map<String, String> entity = getEntityValues(get(BASE_JDBC_CP_URL + "/__TimerPool"));
+    public void testReadingPoolEntity() {
+        Map<String, String> entity = getEntityValues(get(BASE_JDBC_CONNECTION_POOL_URL + "/__TimerPool"));
         assertEquals("__TimerPool", entity.get("name"));
     }
 
     @Test
-    public void testCreateAndDelete() {
+    public void testCreateAndDeletePool() {
         String poolName = "TestPool" + generateRandomString();
         Map<String, String> params = new HashMap<String, String>();
         params.put("name", poolName);
         params.put("datasourceClassname","org.apache.derby.jdbc.ClientDataSource");
-        ClientResponse response = post(BASE_JDBC_CP_URL, params);
+        ClientResponse response = post(BASE_JDBC_CONNECTION_POOL_URL, params);
         assertTrue(isSuccess(response));
 
-        Map<String, String> entity = getEntityValues(get(BASE_JDBC_CP_URL + "/"+poolName));
+        Map<String, String> entity = getEntityValues(get(BASE_JDBC_CONNECTION_POOL_URL + "/"+poolName));
         assertNotSame(0, entity.size());
 
-        response = delete(BASE_JDBC_CP_URL+"/"+poolName, new HashMap<String, String>());
+        response = delete(BASE_JDBC_CONNECTION_POOL_URL+"/"+poolName, new HashMap<String, String>());
         assertTrue(isSuccess(response));
 
-        response = get(BASE_JDBC_CP_URL + "/" + poolName);
+        response = get(BASE_JDBC_CONNECTION_POOL_URL + "/" + poolName);
         assertEquals(404, response.getStatus());
+    }
+
+    @Test
+    public void createDuplicateResource() {
+        final String resourceName = "jdbc/default";
+        Map<String, String> params = new HashMap<String, String>() {{
+           put("id", resourceName);
+           put("poolName", "DerbyPool");
+        }};
+
+        ClientResponse response = post (BASE_JDBC_RESOURCE_URL, params);
+        assertFalse(isSuccess(response));
+    }
+
+    @Test
+    public void createDuplicateConnectionPool() {
+        final String poolName = "DerbyPool";
+        Map<String, String> params = new HashMap<String, String>() {{
+           put("id", poolName);
+           put("datasourceClassname", "org.apache.derby.jdbc.ClientDataSource");
+        }};
+
+        ClientResponse response = post (BASE_JDBC_CONNECTION_POOL_URL, params);
+        assertFalse(isSuccess(response));
     }
 }

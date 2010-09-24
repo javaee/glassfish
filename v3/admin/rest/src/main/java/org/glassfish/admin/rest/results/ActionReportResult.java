@@ -40,8 +40,8 @@
 
 package org.glassfish.admin.rest.results;
 
+import com.sun.enterprise.v3.common.ActionReporter;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
-import org.glassfish.api.ActionReport;
 import org.jvnet.hk2.config.ConfigBean;
 
 
@@ -94,7 +94,7 @@ public class ActionReportResult extends Result {
     /**
      * Returns the result string this object represents
      */
-    public ActionReport getActionReport() {
+    public ActionReporter getActionReport() {
         return __message;
     }
 

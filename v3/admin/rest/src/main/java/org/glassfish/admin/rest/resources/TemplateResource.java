@@ -542,6 +542,7 @@ public class TemplateResource {
     //******************************************************************************************************************
     protected ActionReportResult buildActionReportResult(boolean showEntityValues) {
         RestActionReporter ar = new RestActionReporter();
+        ar.setExtraProperties(new Properties());
         ConfigBean entity = (ConfigBean) getEntity();
         ar.setActionDescription(upperCaseFirstLetter(childModel.getTagName()));
         if (showEntityValues) {

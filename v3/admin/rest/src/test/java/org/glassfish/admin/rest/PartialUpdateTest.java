@@ -52,7 +52,7 @@ import static org.junit.Assert.*;
 public class PartialUpdateTest extends RestTestBase {
     @Test
     public void testPartialUpdate() {
-        final String endpoint = JdbcConnectionPoolTest.BASE_JDBC_CP_URL + "/DerbyPool";
+        final String endpoint = JdbcTest.BASE_JDBC_CONNECTION_POOL_URL + "/DerbyPool";
         final String newDesc = generateRandomString();
         Map<String, String> origAttrs = getEntityValues(get(endpoint));
         Map<String, String> newAttrs = new HashMap<String, String>() {{

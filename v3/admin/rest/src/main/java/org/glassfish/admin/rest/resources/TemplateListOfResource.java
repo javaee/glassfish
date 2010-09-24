@@ -40,12 +40,10 @@
 
 package org.glassfish.admin.rest.resources;
 
-import org.jvnet.hk2.component.Habitat;
-import org.glassfish.api.admin.RestRedirect;
-import org.glassfish.admin.rest.CliFailureException;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.jersey.api.core.ResourceContext;
 import com.sun.jersey.multipart.FormDataMultiPart;
+import org.glassfish.admin.rest.CliFailureException;
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.Util;
@@ -54,12 +52,19 @@ import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.results.OptionsResult;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport;
-import org.jvnet.hk2.config.*;
+import org.glassfish.api.admin.RestRedirect;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigModel;
+import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.DomDocument;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static org.glassfish.admin.rest.Util.*;
 
@@ -76,9 +81,9 @@ public abstract class TemplateListOfResource {
 
     @Context
     protected UriInfo uriInfo;
+    
     @Context
     protected ResourceContext resourceContext;
-
 
     @Context
     protected Habitat habitat;
@@ -91,8 +96,8 @@ public abstract class TemplateListOfResource {
 
     @GET
     @Produces({"text/html;qs=2", MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public ActionReportResult get(@QueryParam("expandLevel") @DefaultValue("1") int expandLevel) {
-        return buildActionReportResult();
+    public Response get(@QueryParam("expandLevel") @DefaultValue("1") int expandLevel) {
+        return Response.ok().entity(buildActionReportResult()).build();
 /*
         List<Dom> domList = new ArrayList();
         List<Dom> entities = getEntity();
@@ -117,12 +122,13 @@ public abstract class TemplateListOfResource {
             MediaType.APPLICATION_XML})
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML,
             MediaType.APPLICATION_FORM_URLENCODED})
-    public ActionReportResult createResource(HashMap<String, String> data) {
+    public Response createResource(HashMap<String, String> data) {
         try {
             if (data.containsKey("error")) {
                 String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
                         "Unable to parse the input entity. Please check the syntax.");
-                return ResourceUtil.getActionReportResult(400, errorMessage, requestHeaders, uriInfo);
+                ActionReportResult arr = ResourceUtil.getActionReportResult(400, errorMessage, requestHeaders, uriInfo);
+                return Response.status(400).entity(arr).build();
             }
 
             ResourceUtil.purgeEmptyEntries(data);
@@ -144,11 +150,13 @@ public abstract class TemplateListOfResource {
                     String successMessage =
                             localStrings.getLocalString("rest.resource.create.message",
                                     "\"{0}\" created successfully.", resourceToCreate);
-                    return ResourceUtil.getActionReportResult(201, successMessage, requestHeaders, uriInfo);
+                    ActionReportResult arr = ResourceUtil.getActionReportResult(201, successMessage, requestHeaders, uriInfo);
+                    return Response.ok(arr).build();
                 }
 
                 String errorMessage = getErrorMessage(data, actionReport);
-                return ResourceUtil.getActionReportResult(400, errorMessage, requestHeaders, uriInfo);
+                ActionReportResult arr = ResourceUtil.getActionReportResult(400, errorMessage, requestHeaders, uriInfo);
+                return Response.status(400).entity(arr).build();
             } else {
                 // create it on the fly without a create CLI command.
 
@@ -174,7 +182,7 @@ public abstract class TemplateListOfResource {
 
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public ActionReportResult post(FormDataMultiPart formData) {
+    public Response post(FormDataMultiPart formData) {
         /* data passed to the generic command running
        *
        * */
@@ -185,14 +193,160 @@ public abstract class TemplateListOfResource {
 
     @OPTIONS
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML, MediaType.APPLICATION_XML})
-    public ActionReportResult options() {
-        return buildActionReportResult();
-//        OptionsResult optionsResult = new OptionsResult(Util.getResourceName(uriInfo));
-//        Map<String, MethodMetaData> mmd = getMethodMetaData();
-//        optionsResult.putMethodMetaData("GET", mmd.get("GET"));
-//        optionsResult.putMethodMetaData("POST", mmd.get("POST"));
-//
-//        return optionsResult;
+    public Response options() {
+        return Response.ok().entity(buildActionReportResult()).build();
+    }
+
+    public void setEntity(List<Dom> p) {
+        entity = p;
+    }
+
+    public List<Dom> getEntity() {
+        return entity;
+    }
+
+    public void setParentAndTagName(Dom parent, String tagName) {
+        this.parent = parent;
+        this.tagName = tagName;
+        if (parent!=null)
+            entity = parent.nodeElements(tagName);
+
+    }
+
+    /**
+     * allows for remote files to be put in a tmp area and we pass the
+     * local location of this file to the corresponding command instead of the content of the file
+     * * Yu need to add  enctype="multipart/form-data" in the form
+     * for ex:  <form action="http://localhost:4848/management/domain/applications/application" method="post" enctype="multipart/form-data">
+     * then any param of type="file" will be uploaded, stored locally and the param will use the local location
+     * on the server side (ie. just the path)
+     */
+    public String getPostCommand() {
+        ConfigModel.Property p = parent.model.getElement(tagName);
+
+        if (p==null){ //"*"
+            ConfigModel.Property childElement = parent.model.getElement("*");
+            if (childElement!=null) {
+                ConfigModel.Node node = (ConfigModel.Node) childElement;
+                ConfigModel childModel = node.getModel();
+                List<ConfigModel> subChildConfigModels = ResourceUtil.getRealChildConfigModels(childModel, parent.document);
+                for (ConfigModel subChildConfigModel : subChildConfigModels) {
+                    if (subChildConfigModel.getTagName().equals(tagName)) {
+                                return ResourceUtil.getCommand(RestRedirect.OpType.POST, subChildConfigModel);
+                    }
+                }
+
+                }
+        }else {
+            ConfigModel.Node n = (ConfigModel.Node) p;
+           return ResourceUtil.getCommand(RestRedirect.OpType.POST, n.getModel());
+        }
+
+        return null;
+    }
+
+    public String[][] getCommandResourcesPaths() {
+        return new String[][]{};
+    }
+
+    public static Class<? extends ConfigBeanProxy> getElementTypeByName(Dom parentDom, String elementName)
+            throws ClassNotFoundException {
+
+        DomDocument document = parentDom.document;
+        ConfigModel.Property a = parentDom.model.getElement(elementName);
+        if (a != null) {
+            if (a.isLeaf()) {
+                //  : I am not too sure, but that should be a String @Element
+                return null;
+            } else {
+                ConfigModel childModel = ((ConfigModel.Node) a).getModel();
+                return (Class<? extends ConfigBeanProxy>) childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName);
+            }
+        }
+        // global lookup
+        ConfigModel model = document.getModelByElementName(elementName);
+        if (model != null) {
+            return (Class<? extends ConfigBeanProxy>) model.classLoaderHolder.get().loadClass(model.targetTypeName);
+        }
+
+        return null;
+    }
+
+    protected ActionReportResult buildActionReportResult() {
+        if (entity == null) {//wrong resource
+            String errorMessage = localStrings.getLocalString("rest.resource.erromessage.noentity",
+                    "Resource not found.");
+            return ResourceUtil.getActionReportResult(404, errorMessage, requestHeaders, uriInfo);
+        }
+        RestActionReporter ar = new RestActionReporter();
+        final String typeKey = upperCaseFirstLetter((decode(getName(uriInfo.getPath(), '/'))));
+        ar.setActionDescription(typeKey);
+
+        OptionsResult optionsResult = new OptionsResult(Util.getResourceName(uriInfo));
+        Map<String, MethodMetaData> mmd = getMethodMetaData();
+        optionsResult.putMethodMetaData("GET", mmd.get("GET"));
+        optionsResult.putMethodMetaData("POST", mmd.get("POST"));
+
+        ResourceUtil.addMethodMetaData(ar, mmd);
+        ar.getExtraProperties().put("childResources", ResourceUtil.getResourceLinks(getEntity(), uriInfo));
+        ar.getExtraProperties().put("commands", ResourceUtil.getCommandLinks(getCommandResourcesPaths()));
+
+        // FIXME:  I'd rather not keep using OptionsResult, but I don't have the time at this point to do it "right."  This is
+        // an internal impl detail, so it can wait
+        return new ActionReportResult(ar, optionsResult);
+    }
+
+    //called in case of POST on application resource (deployment).
+    //resourceToCreate is the name attribute if provided.
+    private Response createResource(HashMap<String, String> data, String resourceToCreate) {
+        try {
+            if (data.containsKey("error")) {
+                String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
+                        "Unable to parse the input entity. Please check the syntax.");
+                return Response.status(400).entity(ResourceUtil.getActionReportResult(400, errorMessage, requestHeaders, uriInfo)).build();
+            }
+
+            ResourceUtil.purgeEmptyEntries(data);
+
+            //Command to execute
+            String commandName = getPostCommand();
+            ResourceUtil.defineDefaultParameters(data);
+
+            if ((resourceToCreate == null) || (resourceToCreate.equals(""))) {
+                String newResourceName = data.get("DEFAULT");
+                if (newResourceName.contains("/")) {
+                    newResourceName = Util.getName(newResourceName, '/');
+                } else {
+                    if (newResourceName.contains("\\")) {
+                        newResourceName = Util.getName(newResourceName, '\\');
+                    }
+                }
+                resourceToCreate = uriInfo.getAbsolutePath() + "/" + newResourceName;
+            } else {
+                resourceToCreate = uriInfo.getAbsolutePath() + "/" + resourceToCreate;
+            }
+
+            if (null != commandName) {
+                String typeOfResult = ResourceUtil.getResultType(requestHeaders);
+                ActionReport actionReport = ResourceUtil.runCommand(commandName, data, habitat, typeOfResult);
+
+                ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
+                if (exitCode != ActionReport.ExitCode.FAILURE) {
+                    String successMessage = localStrings.getLocalString("rest.resource.create.message",
+                            "\"{0}\" created successfully.", new Object[]{resourceToCreate});
+                    return Response.ok().entity(ResourceUtil.getActionReportResult(201, successMessage, requestHeaders, uriInfo)).build();
+                }
+
+                String errorMessage = getErrorMessage(data, actionReport);
+                Response.status(400).entity(ResourceUtil.getActionReportResult(400, errorMessage, requestHeaders, uriInfo)).build();
+            }
+            String message = localStrings.getLocalString("rest.resource.post.forbidden",
+                    "POST on \"{0}\" is forbidden.", new Object[]{resourceToCreate});
+            return Response.status(403).entity(ResourceUtil.getActionReportResult(403, message, requestHeaders, uriInfo)).build();
+
+        } catch (Exception e) {
+            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
+        }
     }
 
     private Map<String, MethodMetaData> getMethodMetaData() {
@@ -245,137 +399,6 @@ public abstract class TemplateListOfResource {
         return map;
     }
 
-    public void setEntity(List<Dom> p) {
-        entity = p;
-    }
-
-    public List<Dom> getEntity() {
-        return entity;
-    }
-
-    public void setParentAndTagName(Dom parent, String tagName) {
-        this.parent = parent;
-        this.tagName = tagName;
-        if (parent!=null)
-            entity = parent.nodeElements(tagName);
-
-    }
-
-
-    public static Class<? extends ConfigBeanProxy> getElementTypeByName(Dom parentDom, String elementName)
-            throws ClassNotFoundException {
-
-        DomDocument document = parentDom.document;
-        ConfigModel.Property a = parentDom.model.getElement(elementName);
-        if (a != null) {
-            if (a.isLeaf()) {
-                //  : I am not too sure, but that should be a String @Element
-                return null;
-            } else {
-                ConfigModel childModel = ((ConfigModel.Node) a).getModel();
-                return (Class<? extends ConfigBeanProxy>) childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName);
-            }
-        }
-        // global lookup
-        ConfigModel model = document.getModelByElementName(elementName);
-        if (model != null) {
-            return (Class<? extends ConfigBeanProxy>) model.classLoaderHolder.get().loadClass(model.targetTypeName);
-        }
-
-        return null;
-    }
-
-    //called in case of POST on application resource (deployment).
-    //resourceToCreate is the name attribute if provided.
-
-    private ActionReportResult createResource(HashMap<String, String> data, String resourceToCreate) {
-        try {
-            if (data.containsKey("error")) {
-                String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
-                        "Unable to parse the input entity. Please check the syntax.");
-                return ResourceUtil.getActionReportResult(400, errorMessage, requestHeaders, uriInfo);
-            }
-
-            ResourceUtil.purgeEmptyEntries(data);
-
-            //Command to execute
-            String commandName = getPostCommand();
-            ResourceUtil.defineDefaultParameters(data);
-
-            if ((resourceToCreate == null) || (resourceToCreate.equals(""))) {
-                String newResourceName = data.get("DEFAULT");
-                if (newResourceName.contains("/")) {
-                    newResourceName = Util.getName(newResourceName, '/');
-                } else {
-                    if (newResourceName.contains("\\")) {
-                        newResourceName = Util.getName(newResourceName, '\\');
-                    }
-                }
-                resourceToCreate = uriInfo.getAbsolutePath() + "/" + newResourceName;
-            } else {
-                resourceToCreate = uriInfo.getAbsolutePath() + "/" + resourceToCreate;
-            }
-
-            if (null != commandName) {
-                String typeOfResult = ResourceUtil.getResultType(requestHeaders);
-                ActionReport actionReport = ResourceUtil.runCommand(commandName, data, habitat, typeOfResult);
-
-                ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
-                if (exitCode != ActionReport.ExitCode.FAILURE) {
-                    String successMessage = localStrings.getLocalString("rest.resource.create.message",
-                            "\"{0}\" created successfully.", new Object[]{resourceToCreate});
-                    return ResourceUtil.getActionReportResult(201, successMessage, requestHeaders, uriInfo);
-                }
-
-                String errorMessage = getErrorMessage(data, actionReport);
-                return ResourceUtil.getActionReportResult(400, errorMessage, requestHeaders, uriInfo);
-            }
-            String message = localStrings.getLocalString("rest.resource.post.forbidden",
-                    "POST on \"{0}\" is forbidden.", new Object[]{resourceToCreate});
-            return ResourceUtil.getActionReportResult(403, message, requestHeaders, uriInfo);
-
-        } catch (Exception e) {
-            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-
-    /**
-     * allows for remote files to be put in a tmp area and we pass the
-     * local location of this file to the corresponding command instead of the content of the file
-     * * Yu need to add  enctype="multipart/form-data" in the form
-     * for ex:  <form action="http://localhost:4848/management/domain/applications/application" method="post" enctype="multipart/form-data">
-     * then any param of type="file" will be uploaded, stored locally and the param will use the local location
-     * on the server side (ie. just the path)
-     */
-    public String getPostCommand() {
-        ConfigModel.Property p = parent.model.getElement(tagName);
-
-        if (p==null){ //"*"
-            ConfigModel.Property childElement = parent.model.getElement("*");
-            if (childElement!=null) {
-                ConfigModel.Node node = (ConfigModel.Node) childElement;
-                ConfigModel childModel = node.getModel();
-                List<ConfigModel> subChildConfigModels = ResourceUtil.getRealChildConfigModels(childModel, parent.document);
-                for (ConfigModel subChildConfigModel : subChildConfigModels) {
-                    if (subChildConfigModel.getTagName().equals(tagName)) {
-                                return ResourceUtil.getCommand(RestRedirect.OpType.POST, subChildConfigModel);
-                    }
-                }
-
-                }
-        }else {
-            ConfigModel.Node n = (ConfigModel.Node) p;
-           return ResourceUtil.getCommand(RestRedirect.OpType.POST, n.getModel());
-        }
-
-        return null;
-    }
-
-    public String[][] getCommandResourcesPaths() {
-        return new String[][]{};
-    }
-
     private String getErrorMessage(HashMap<String, String> data, ActionReport ar) {
         String message;
         //error info
@@ -390,29 +413,5 @@ public abstract class TemplateListOfResource {
             }
         }*/
         return message;
-    }
-
-    protected ActionReportResult buildActionReportResult() {
-        if (entity == null) {//wrong resource
-            String errorMessage = localStrings.getLocalString("rest.resource.erromessage.noentity",
-                    "Resource not found.");
-            return ResourceUtil.getActionReportResult(404, errorMessage, requestHeaders, uriInfo);
-        }
-        RestActionReporter ar = new RestActionReporter();
-        final String typeKey = upperCaseFirstLetter((decode(getName(uriInfo.getPath(), '/'))));
-        ar.setActionDescription(typeKey);
-
-        OptionsResult optionsResult = new OptionsResult(Util.getResourceName(uriInfo));
-        Map<String, MethodMetaData> mmd = getMethodMetaData();
-        optionsResult.putMethodMetaData("GET", mmd.get("GET"));
-        optionsResult.putMethodMetaData("POST", mmd.get("POST"));
-
-        ResourceUtil.addMethodMetaData(ar, mmd);
-        ar.getExtraProperties().put("childResources", ResourceUtil.getResourceLinks(getEntity(), uriInfo));
-        ar.getExtraProperties().put("commands", ResourceUtil.getCommandLinks(getCommandResourcesPaths()));
-
-        // FIXME:  I'd rather not keep using OptionsResult, but I don't have the time at this point to do it "right."  This is
-        // an internal impl detail, so it can wait
-        return new ActionReportResult(ar, optionsResult);
     }
 }

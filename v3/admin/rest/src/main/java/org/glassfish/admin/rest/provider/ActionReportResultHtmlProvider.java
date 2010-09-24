@@ -69,7 +69,7 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
     @Override
     public String getContent(ActionReportResult proxy) {
         RestActionReporter ar = (RestActionReporter) proxy.getActionReport();
-        StringBuilder result = new StringBuilder(ProviderUtil.getHtmlHeader(uriInfo.getBaseUri().toASCIIString()));
+        StringBuilder result = new StringBuilder(ProviderUtil.getHtmlHeader(getBaseUri()));
 
         result.append("<h1>")
                 .append(ar.getActionDescription())
@@ -176,6 +176,13 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
             }
         }
         return result.append("</div></body></html>").toString();
+    }
+
+    protected String getBaseUri() {
+        if (uriInfo != null) {
+            return uriInfo.getBaseUri().toASCIIString();
+        }
+        return "";
     }
 
     protected String getResourcesLinks(Map<String, String> childResources) {

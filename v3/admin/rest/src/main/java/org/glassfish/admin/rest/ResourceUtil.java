@@ -305,7 +305,7 @@ public class ResourceUtil {
      * Constructs and returns the resource method meta-data. This method is
      * called to get meta-data in case of update method (POST).
      *
-     * @param configBean the config bean associated with the resource.
+     * @param configBeanModel the config bean associated with the resource.
      * @return MethodMetaData the meta-data store for the resource method.
      */
     public static MethodMetaData getMethodMetaData(ConfigModel configBeanModel) {
@@ -316,7 +316,7 @@ public class ResourceUtil {
      * Constructs and returns the resource method meta-data. This method is
      * called to get meta-data in case of update method (POST).
      *
-     * @param configBean    the config bean associated with the resource.
+     * @param configBeanModel    the config bean associated with the resource.
      * @param parameterType the type of parameter. Possible values are
      *                      Constants.QUERY_PARAMETER and Constants.MESSAGE_PARAMETER
      * @return MethodMetaData the meta-data store for the resource method.
@@ -444,7 +444,7 @@ public class ResourceUtil {
     /**
      * Constructs and returns the parameter meta-data.
      *
-     * @param command the command associated with the resource method
+     * @param commandName the command associated with the resource method
      * @param habitat the habitat
      * @param logger  the logger to use
      * @return Collection the meta-data for the parameter of the resource method.
@@ -461,7 +461,7 @@ public class ResourceUtil {
     /**
      * Constructs and returns the parameter meta-data.
      *
-     * @param command             the command associated with the resource method
+     * @param commandName             the command associated with the resource method
      * @param commandParamsToSkip the command parameters for which not to
      *                            include the meta-data.
      * @param habitat             the habitat
