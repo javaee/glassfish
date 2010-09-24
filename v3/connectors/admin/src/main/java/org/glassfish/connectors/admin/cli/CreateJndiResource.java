@@ -40,13 +40,12 @@
 
 package org.glassfish.connectors.admin.cli;
 
-import org.glassfish.admin.cli.resources.ResourceUtil;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
-import org.jvnet.hk2.config.types.Property;
+import org.glassfish.resource.common.ResourceStatus;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
@@ -54,17 +53,16 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.*;
 
+import java.util.HashMap;
 import java.util.Properties;
-import java.beans.PropertyVetoException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import static org.glassfish.resource.common.ResourceConstants.ENABLED;
+import static org.glassfish.resource.common.ResourceConstants.*;
 
 /**
  * Create Jndi Resource
@@ -107,7 +105,56 @@ public class CreateJndiResource implements AdminCommand {
     private Domain domain;
 
     @Inject
-    private ResourceUtil resourceUtil;
+    private JndiResourceManager jndiResManager;
+
+
+    /**
+     * Executes the command with the command parameters passed as Properties
+     * where the keys are the parameter names and the values the parameter values
+     *
+     * @param context information
+     */
+    public void execute(AdminCommandContext context) {
+        final ActionReport report = context.getActionReport();
+
+        HashMap attrList = new HashMap();
+        attrList.put(FACTORY_CLASS, factoryClass);
+        attrList.put(RES_TYPE, resType);
+        attrList.put(JNDI_LOOKUP, jndiLookupName);
+        attrList.put(ENABLED, enabled.toString());
+        attrList.put(JNDI_NAME, jndiName);
+        attrList.put(ServerTags.DESCRIPTION, description);
+
+        ResourceStatus rs;
+
+        try {
+            rs = jndiResManager.create(domain.getResources(), attrList, properties, target);
+        } catch(Exception e) {
+            Logger.getLogger(CreateJndiResource.class.getName()).log(Level.SEVERE,
+                    "Unable to create jndi resource " + jndiName, e);
+            String def = "jndi resource: {0} could not be created, reason: {1}";
+            report.setMessage(localStrings.getLocalString("create.jndi.resource.fail",
+                    def, jndiName) + " " + e.getLocalizedMessage());
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setFailureCause(e);
+            return;
+        }
+        ActionReport.ExitCode ec = ActionReport.ExitCode.SUCCESS;
+        if (rs.getStatus() == ResourceStatus.FAILURE) {
+            ec = ActionReport.ExitCode.FAILURE;
+            if (rs.getMessage() == null) {
+                 report.setMessage(localStrings.getLocalString("create.jndi.resource.fail",
+                    "jndi resource {0} creation failed", jndiName, ""));
+            }
+            if (rs.getException() != null)
+                report.setFailureCause(rs.getException());
+        }
+        if(rs.getMessage() != null){
+            report.setMessage(rs.getMessage());
+        }
+        report.setActionExitCode(ec);
+    }
+
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -115,7 +162,7 @@ public class CreateJndiResource implements AdminCommand {
      *
      * @param context information
      */
-    public void execute(AdminCommandContext context) {
+  /*  public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
         // ensure we don't already have one of this name
@@ -176,5 +223,5 @@ public class CreateJndiResource implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(tfe);
         }
-    }
+    } */
 }
