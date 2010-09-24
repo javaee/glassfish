@@ -143,6 +143,9 @@ public class OSGiEJBDeployer extends AbstractOSGiDeployer {
             OSGiApplicationInfo osgiApplicationInfo = OSGiApplicationInfo.class.cast(context.getService(reference));
             String exportEJB = (String) osgiApplicationInfo.getBundle().getHeaders().get(Constants.EXPORT_EJB);
             if (exportEJB != null) {
+                // remove spaces. I once spent 1 hour trying to debug why EJB was not getting registered
+                // and it turned out that user had specified "ALL " in the manifest.
+                exportEJB = exportEJB.trim();
                 ApplicationInfo ai = osgiApplicationInfo.getAppInfo();
                 Application app = ai.getMetaData(Application.class);
                 Collection<EjbDescriptor> ejbs = app.getEjbDescriptors();
