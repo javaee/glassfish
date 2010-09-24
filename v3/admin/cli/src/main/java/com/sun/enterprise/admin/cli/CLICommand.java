@@ -815,16 +815,16 @@ public abstract class CLICommand implements PostConstruct {
                 continue;
             String pwdname = opt.getName();
             String pwd = getPassword(opt, null, true);
-            String description = null;
-            if (opt instanceof ParamModelData)
-                description = ((ParamModelData)opt).getDescription();
-            if (!ok(description))
-                description = pwdname;
             if (pwd == null) {
                 if (opt.getParam().optional())
                     continue;       // not required, skip it
-                throw new CommandValidationException(
-                            strings.get("missingPassword", name, description));
+                // if not terse, provide more advice about what to do
+                String msg;
+                if (programOpts.isTerse())
+                    msg = strings.get("missingPassword", name, pwdname);
+                else
+                    msg = strings.get("missingPasswordAdvice", name, pwdname);
+                throw new CommandValidationException(msg);
             }
             options.set(pwdname, pwd);
         }
