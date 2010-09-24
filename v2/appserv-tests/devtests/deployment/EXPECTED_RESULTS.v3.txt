@@ -3,7 +3,7 @@ Results of deployment dev tests with v3
 
 1. Running with PE installation and EE installation on DAS
 
-PASS: 236 
+PASS: 244 
 FAIL: 0
 UNKNOWN: 0
 
@@ -213,6 +213,8 @@ UNKNOWN: 0
 [PASSED] simple-versioned-servlet : xml.version(4) deploy jsr88 - logID=39 - (server) - (sucess expected)  
 [PASSED] simple-versioned-servlet : xml.version(5) redeploy jsr88 - logID=40 - (server) - (sucess expected)  
 [PASSED] simple-versioned-servlet : xml.version(6) autodeploy - logID=41 - (server) - (sucess expected)  
+[PASSED] simple-versioned-servlet : xml.version(7) deploy-stream jsr88 - logID=42 - (server) - (sucess expected)
+[PASSED] simple-versioned-servlet : xml.version(8) deploy-stream jsr88 - logID=43 - (server) - (sucess expected)
 [PASSED] simple-versioned-servlet : get-client-stubs(1) untagged - logID=42 - (server) - (sucess expected)  
 [PASSED] simple-versioned-servlet : get-client-stubs(2) ALPHA-1.0.0 - logID=43 - (server) - (sucess expected)  
 [PASSED] simple-versioned-appclient : xml.version(1) - logID=1 - (server) - (sucess expected)  
@@ -221,6 +223,8 @@ UNKNOWN: 0
 [PASSED] simple-versioned-appclient : xml.version(4) deploy jsr88 - logID=4 - (server) - (sucess expected)  
 [PASSED] simple-versioned-appclient : xml.version(5) redeploy jsr88 - logID=5 - (server) - (sucess expected)  
 [PASSED] simple-versioned-appclient : xml.version(6) autodeploy - logID=6 - (server) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(7) deploy-stream jsr88 - logID=7 - (server) - (sucess expected)
+[PASSED] simple-versioned-appclient : xml.version(8) deploy-stream jsr88 - logID=8 - (server) - (sucess expected
 [PASSED] simple-versioned-appclient : sample.scenarios(1) - logID=7 (server)  
 [PASSED] simple-versioned-appclient : sample.scenarios(2) - logID=8 (server)  
 [PASSED] simple-versioned-appclient : sample.scenarios(3) - logID=9 (server)  
@@ -237,18 +241,22 @@ UNKNOWN: 0
 [PASSED] simple-versioned-ejb : xml.version(4) deploy jsr88 - logID=4 - (server) - (sucess expected)  
 [PASSED] simple-versioned-ejb : xml.version(5) redeploy jsr88 - logID=5 - (server) - (sucess expected)  
 [PASSED] simple-versioned-ejb : xml.version(6) autodeploy - logID=6 - (server) - (sucess expected)  
+[PASSED] simple-versioned-ejb : xml.version(7) deploy-stream jsr88 - logID=7 - (server) - (sucess expected)
+[PASSED] simple-versioned-ejb : xml.version(8) deploy-stream jsr88 - logID=8 - (server) - (sucess expected)
 [PASSED] simple-versioned-ear : xml.version(1) - logID=1 - (server) - (sucess expected)  
 [PASSED] simple-versioned-ear : xml.version(2) - logID=2 - (server) - (sucess expected)  
 [PASSED] simple-versioned-ear : xml.version(3) deploy jsr88 - logID=3 - (server) - (sucess expected)  
 [PASSED] simple-versioned-ear : xml.version(4) deploy jsr88 - logID=4 - (server) - (sucess expected)  
 [PASSED] simple-versioned-ear : xml.version(5) redeploy jsr88 - logID=5 - (server) - (sucess expected)  
 [PASSED] simple-versioned-ear : xml.version(6) autodeploy - logID=6 - (server) - (sucess expected)
+[PASSED] simple-versioned-ear : xml.version(7) deploy-stream jsr88 - logID=7 - (server) - (sucess expected)
+[PASSED] simple-versioned-ear : xml.version(8) deploy-stream jsr88 - logID=8 - (server) - (sucess expected)
 ===========================================================
 
 2. Running with EE installation on Remote Instance 
    (DEPL_TARGET=SERVER)
 
-PASS: 169
+PASS: 177
 FAIL: 0
 UNKNOWN: 0
 
@@ -396,11 +404,15 @@ UNKNOWN: 0
 [PASSED] simple-versioned-servlet : xml.version(3) deploy jsr88 - logID=38 - (depltest-server) - (sucess expected)  
 [PASSED] simple-versioned-servlet : xml.version(4) deploy jsr88 - logID=39 - (depltest-server) - (sucess expected)  
 [PASSED] simple-versioned-servlet : xml.version(5) redeploy jsr88 - logID=40 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-servlet : xml.version(7) deploy-stream jsr88 - logID=41 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-servlet : xml.version(8) deploy-stream jsr88 - logID=42 - (depltest-server) - (sucess expected)
 [PASSED] simple-versioned-appclient : xml.version(1) - logID=1 - (depltest-server) - (sucess expected)  
 [PASSED] simple-versioned-appclient : xml.version(2) - logID=2 - (depltest-server) - (sucess expected)  
 [PASSED] simple-versioned-appclient : xml.version(3) deploy jsr88 - logID=3 - (depltest-server) - (sucess expected)  
 [PASSED] simple-versioned-appclient : xml.version(4) deploy jsr88 - logID=4 - (depltest-server) - (sucess expected)  
 [PASSED] simple-versioned-appclient : xml.version(5) redeploy jsr88 - logID=5 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(7) deploy-stream jsr88 - logID=6 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-appclient : xml.version(8) deploy-stream jsr88 - logID=7 - (depltest-server) - (sucess expected)
 [PASSED] simple-versioned-appclient : sample.scenarios(1) - logID=6 (server)  
 [PASSED] simple-versioned-appclient : sample.scenarios(2) - logID=7 (server)  
 [PASSED] simple-versioned-appclient : sample.scenarios(3) - logID=8 (server)  
@@ -416,17 +428,21 @@ UNKNOWN: 0
 [PASSED] simple-versioned-ejb : xml.version(3) deploy jsr88 - logID=3 - (depltest-server) - (sucess expected)  
 [PASSED] simple-versioned-ejb : xml.version(4) deploy jsr88 - logID=4 - (depltest-server) - (sucess expected)  
 [PASSED] simple-versioned-ejb : xml.version(5) redeploy jsr88 - logID=5 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-ejb : xml.version(7) deploy-stream jsr88 - logID=6 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-ejb : xml.version(8) deploy-stream jsr88 - logID=7 - (depltest-server) - (sucess expected)
 [PASSED] simple-versioned-ear : xml.version(1) - logID=1 - (depltest-server) - (sucess expected)  
 [PASSED] simple-versioned-ear : xml.version(2) - logID=2 - (depltest-server) - (sucess expected)  
 [PASSED] simple-versioned-ear : xml.version(3) deploy jsr88 - logID=3 - (depltest-server) - (sucess expected)  
 [PASSED] simple-versioned-ear : xml.version(4) deploy jsr88 - logID=4 - (depltest-server) - (sucess expected)  
 [PASSED] simple-versioned-ear : xml.version(5) redeploy jsr88 - logID=5 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-ear : xml.version(7) deploy-stream jsr88 - logID=6 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-ear : xml.version(8) deploy-stream jsr88 - logID=7 - (depltest-server) - (sucess expected)
 ===========================================================
 
 3. Running with EE installation on Remote Instance and Cluster
    (DEPL_TARGET=CLUSTER)
 
-PASS: 313
+PASS: 329
 FAIL: 0
 UNKNOWN: 0
 
@@ -693,6 +709,10 @@ UNKNOWN: 0
 [PASSED] simple-versioned-servlet : xml.version(4) deploy jsr88 - logID=50 - (depltest-server) - (sucess expected)  
 [PASSED] simple-versioned-servlet : xml.version(5) redeploy jsr88 - logID=51 - (depltest-cluster) - (sucess expected)  
 [PASSED] simple-versioned-servlet : xml.version(5) redeploy jsr88 - logID=52 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-servlet : xml.version(7) deploy-stream jsr88 - logID=53 - (depltest-cluster) - (sucess expected)
+[PASSED] simple-versioned-servlet : xml.version(7) deploy-stream jsr88 - logID=54 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-servlet : xml.version(8) deploy-stream jsr88 - logID=55 - (depltest-cluster) - (sucess expected)
+[PASSED] simple-versioned-servlet : xml.version(8) deploy-stream jsr88 - logID=56 - (depltest-server) - (sucess expected)
 [PASSED] simple-versioned-appclient : xml.version(1) - logID=1 - (depltest-cluster) - (sucess expected)  
 [PASSED] simple-versioned-appclient : xml.version(1) - logID=2 - (depltest-server) - (sucess expected)  
 [PASSED] simple-versioned-appclient : xml.version(2) - logID=3 - (depltest-cluster) - (sucess expected)  
@@ -703,6 +723,10 @@ UNKNOWN: 0
 [PASSED] simple-versioned-appclient : xml.version(4) deploy jsr88 - logID=8 - (depltest-server) - (sucess expected)  
 [PASSED] simple-versioned-appclient : xml.version(5) redeploy jsr88 - logID=9 - (depltest-cluster) - (sucess expected)  
 [PASSED] simple-versioned-appclient : xml.version(5) redeploy jsr88 - logID=10 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(7) deploy-stream jsr88 - logID=11 - (depltest-cluster) - (sucess expected)
+[PASSED] simple-versioned-appclient : xml.version(7) deploy-stream jsr88 - logID=12 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-appclient : xml.version(8) deploy-stream jsr88 - logID=13 - (depltest-cluster) - (sucess expected)
+[PASSED] simple-versioned-appclient : xml.version(8) deploy-stream jsr88 - logID=14 - (depltest-server) - (sucess expected)
 [PASSED] simple-versioned-appclient : sample.scenarios(1) - logID=11 (server)  
 [PASSED] simple-versioned-appclient : sample.scenarios(1) - logID=11 (cluster-inst1)  
 [PASSED] simple-versioned-appclient : sample.scenarios(2) - logID=12 (server)  
@@ -733,6 +757,10 @@ UNKNOWN: 0
 [PASSED] simple-versioned-ejb : xml.version(4) deploy jsr88 - logID=8 - (depltest-server) - (sucess expected)  
 [PASSED] simple-versioned-ejb : xml.version(5) redeploy jsr88 - logID=9 - (depltest-cluster) - (sucess expected)  
 [PASSED] simple-versioned-ejb : xml.version(5) redeploy jsr88 - logID=10 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-ejb : xml.version(7) deploy-stream jsr88 - logID=11 - (depltest-cluster) - (sucess expected)
+[PASSED] simple-versioned-ejb : xml.version(7) deploy-stream jsr88 - logID=12 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-ejb : xml.version(8) deploy-stream jsr88 - logID=13 - (depltest-cluster) - (sucess expected)
+[PASSED] simple-versioned-ejb : xml.version(8) deploy-stream jsr88 - logID=14 - (depltest-server) - (sucess expected)
 [PASSED] simple-versioned-ear : xml.version(1) - logID=1 - (depltest-cluster) - (sucess expected)  
 [PASSED] simple-versioned-ear : xml.version(1) - logID=2 - (depltest-server) - (sucess expected)  
 [PASSED] simple-versioned-ear : xml.version(2) - logID=3 - (depltest-cluster) - (sucess expected)  
@@ -743,3 +771,7 @@ UNKNOWN: 0
 [PASSED] simple-versioned-ear : xml.version(4) deploy jsr88 - logID=8 - (depltest-server) - (sucess expected)  
 [PASSED] simple-versioned-ear : xml.version(5) redeploy jsr88 - logID=9 - (depltest-cluster) - (sucess expected)  
 [PASSED] simple-versioned-ear : xml.version(5) redeploy jsr88 - logID=10 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-ear : xml.version(7) deploy-stream jsr88 - logID=11 - (depltest-cluster) - (sucess expected)
+[PASSED] simple-versioned-ear : xml.version(7) deploy-stream jsr88 - logID=12 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-ear : xml.version(8) deploy-stream jsr88 - logID=13 - (depltest-cluster) - (sucess expected)
+[PASSED] simple-versioned-ear : xml.version(8) deploy-stream jsr88 - logID=14 - (depltest-server) - (sucess expected)
