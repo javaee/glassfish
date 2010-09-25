@@ -1,0 +1,26 @@
+-classpath
+'/home/dochez/java/svn/hk2/trunk/hk2/core/target/classes:/home/dochez/java/svn/hk2/trunk/hk2/core/target/test-classes:/home/dochez/.m2/repository/org/glassfish/hk2/external/asm-all-repackaged/1.0.48-SNAPSHOT/asm-all-repackaged-1.0.48-SNAPSHOT.jar:/home/dochez/.m2/repository/org/glassfish/hk2/external/bean-validator/1.0.48-SNAPSHOT/bean-validator-1.0.48-SNAPSHOT.jar:/home/dochez/.m2/repository/junit/junit/4.3.1/junit-4.3.1.jar:/home/dochez/.m2/repository/com/googlecode/jtype/jtype/0.1.0/jtype-0.1.0.jar:/home/dochez/.m2/repository/com/sun/enterprise/auto-depends/1.0.48-SNAPSHOT/auto-depends-1.0.48-SNAPSHOT.jar:/home/dochez/.m2/repository/com/sun/enterprise/config/1.0.48-SNAPSHOT/config-1.0.48-SNAPSHOT.jar'
+-encoding
+'UTF-8'
+-protected
+-sourcepath
+'/home/dochez/java/svn/hk2/trunk/hk2/core/test/java'
+-author
+-bottom
+'Copyright &#169; 2010 <a href="http://www.sun.com">Sun Microsystems, Inc.</a>. All Rights Reserved.'
+-charset
+'UTF-8'
+-d
+'/home/dochez/java/svn/hk2/trunk/hk2/core/target/site/testapidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'HK2 core module 1.0.48-SNAPSHOT Test API'
+-link
+'../apidocs'
+-link
+'http://java.sun.com/j2se/1.5.0/docs/api'
+-use
+-version
+-windowtitle
+'HK2 core module 1.0.48-SNAPSHOT Test API'
