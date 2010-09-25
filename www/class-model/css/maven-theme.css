@@ -4,24 +4,6 @@ code{
 a {
   text-decoration: none;
 }
-
-#legend li.externalLink {
-  background: url(../images/external.png) left top no-repeat;
-  padding-left: 18px;
-}
-a.externalLink, a.externalLink:link, a.externalLink:visited, a.externalLink:active, a.externalLink:hover {
-  background: url(../images/external.png) right center no-repeat;
-  padding-right: 18px;
-}
-#legend li.newWindow {
-  background: url(../images/newwindow.png) left top no-repeat;
-  padding-left: 18px;
-}
-a.newWindow, a.newWindow:link, a.newWindow:visited, a.newWindow:active, a.newWindow:hover {
-  background: url(../images/newwindow.png) right center no-repeat;
-  padding-right: 18px;
-}
-
 .source {
   border: 1px solid #999;
 }
