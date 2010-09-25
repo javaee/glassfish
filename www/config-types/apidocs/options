@@ -1,0 +1,24 @@
+-classpath
+'/home/dochez/java/svn/hk2/trunk/hk2/config-types/target/classes:/home/dochez/.m2/repository/org/glassfish/hk2/external/asm-all-repackaged/1.0.48-SNAPSHOT/asm-all-repackaged-1.0.48-SNAPSHOT.jar:/home/dochez/.m2/repository/org/glassfish/hk2/external/bean-validator/1.0.48-SNAPSHOT/bean-validator-1.0.48-SNAPSHOT.jar:/home/dochez/.m2/repository/com/googlecode/jtype/jtype/0.1.0/jtype-0.1.0.jar:/home/dochez/.m2/repository/com/sun/enterprise/auto-depends/1.0.48-SNAPSHOT/auto-depends-1.0.48-SNAPSHOT.jar:/home/dochez/.m2/repository/com/sun/enterprise/config/1.0.48-SNAPSHOT/config-1.0.48-SNAPSHOT.jar'
+-encoding
+'UTF-8'
+-protected
+-sourcepath
+'/home/dochez/java/svn/hk2/trunk/hk2/config-types/src/main/java:/home/dochez/java/svn/hk2/trunk/hk2/config-types/target/apt-generated-sources'
+-author
+-bottom
+'Copyright &#169; 2010 <a href="http://www.sun.com">Sun Microsystems, Inc.</a>. All Rights Reserved.'
+-charset
+'UTF-8'
+-d
+'/home/dochez/java/svn/hk2/trunk/hk2/config-types/target/site/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'HK2 config types 1.0.48-SNAPSHOT API'
+-link
+'http://java.sun.com/j2se/1.5.0/docs/api'
+-use
+-version
+-windowtitle
+'HK2 config types 1.0.48-SNAPSHOT API'

@@ -1,0 +1,24 @@
+-classpath
+'/home/dochez/java/svn/hk2/trunk/hk2/dependency-visualizer/target/classes:/home/dochez/.m2/repository/args4j/args4j/2.0.12/args4j-2.0.12.jar'
+-encoding
+'UTF-8'
+-protected
+-sourcepath
+'/home/dochez/java/svn/hk2/trunk/hk2/dependency-visualizer/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2010 <a href="http://www.sun.com">Sun Microsystems, Inc.</a>. All Rights Reserved.'
+-charset
+'UTF-8'
+-d
+'/home/dochez/java/svn/hk2/trunk/hk2/dependency-visualizer/target/site/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'hk2-dependency-visualizer 1.0.48-SNAPSHOT API'
+-link
+'http://java.sun.com/j2se/1.5.0/docs/api'
+-use
+-version
+-windowtitle
+'hk2-dependency-visualizer 1.0.48-SNAPSHOT API'
