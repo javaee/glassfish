@@ -66,6 +66,10 @@
                 @Attribute
                 String getName();
                 void setName(String name);
+                
+                @Attribute 
+                String getPort();
+                void setPort(String port);
 
                 @Element
                 HttpListener getHttpListener();
@@ -76,10 +80,34 @@
 
         &lt;....&gt;
                 &lt;http-server name=&quot;...&quot; ... &gt;
-                        \&lt;http-listener name=&quot;...&quot; .../&gt;
+                        &lt;http-listener name=&quot;...&quot; port=&quot;8090&quot; .../&gt;
                 &lt;/http-server-name&gt;
-        &lt;/...&gt;
-        </pre></div></div></div></div>
+    &lt;/...&gt;
+        </pre></div></div></div><div class="section"><h3>Transaction<a name="Transaction"></a></h3><p>In order to change any configuration elements, one must start a configuration transaction that ensures restricted access to the configuration. The configuration uses a view mechanism to give access to the underlying configuration bean. By default, injected code gets a readable view while code using a transaction to mutate configuration will obtain a writeable view automatically. While a transaction is in effect, other threads will continue seeing the un-modified values through their redable views while threads having access to the writeable view will be able to change the configuration and see the mutated values. As soon as the transaction is successfully commited, the readable views will give access to the changed configuration. </p><div class="section"><h4>Single configuration object mutation<a name="Single_configuration_object_mutation"></a></h4><p>In the simple case, code needs to mutate one configuration object during a transaction. The simple ConfigSupport.apply method should be used :</p><div class="source"><pre>
+    /**
+     * Execute some logic on one config bean of type T protected by a transaction
+     *
+     * @param code code to execute
+     * @param param config object participating in the transaction
+     * @return list of events that represents the modified config elements.
+     * @throws TransactionFailure when code did not run successfully
+     */
+ public static &lt;T extends ConfigBeanProxy&gt; Object apply(final SingleConfigCode&lt;T&gt; code, T param)
+        throws TransactionFailure </pre></div><div class="section"><h5>Example <a name="Example"></a></h5><p>In the example below, let's change our HttpListener port value :</p><p>before the transaction is started, the xml looks like : </p><div class="source"><pre>        &lt;....&gt;
+                &lt;http-server name=&quot;...&quot; ... &gt;
+                        &lt;http-listener name=&quot;...&quot; port=&quot;8090&quot;.../&gt;
+                &lt;/http-server-name&gt;
+    &lt;/...&gt;      </pre></div><p>the following code is the actually transaction invocation :</p><div class="source"><pre>@Inject
+HttpListener httpListener;
+
+ConfigSupport.apply(new SingleCodeCode&lt;HttpListener&gt;() {
+        public Object run(HttpListener wListener) {
+                wListener.setPort(&quot;8080&quot;);
+        }, httpListener);       </pre></div><p>will have the resulting effect on the xml </p><div class="source"><pre>        &lt;....&gt;
+                &lt;http-server name=&quot;...&quot; ... &gt;
+                        &lt;http-listener name=&quot;...&quot; port=&quot;8080&quot;.../&gt;
+                &lt;/http-server-name&gt;
+    &lt;/...&gt;      </pre></div></div></div><div class="section"><h4>Vetoing changes<a name="Vetoing_changes"></a></h4><p>Any code can register itself to listen to changes as they happen within a transaction. Such listeners have the ability to raise a PropertyVetoException that will force the pending transaction to be rolled back (all changes to all beans will then be discarded).</p><p>Note the code below will be simplified soon : +-------------------------------+ ((ConfigBean) ConfigSupport.getImpl(target)).getOptionalFeature(ConstrainedBeanListener.class).addVetoableChangeListener(this); +-------------------------------+</p></div><div class="section"><h4>Changes notification<a name="Changes_notification"></a></h4><p>Any code that wishes to receive notification of changes of configuration bean can implement the ConfigListener interface. </p></div></div></div>
       </div>
     </div>
     <div class="clear">
@@ -95,7 +123,7 @@
 
   
   
-  &nbsp;| Last Published: 09/22/2010
+  &nbsp;| Last Published: 09/24/2010
   &nbsp;| Version: 1.0.48-SNAPSHOT
 </div>
       <div class="clear">
