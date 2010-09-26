@@ -40,12 +40,12 @@
 
 -->
 
+<!initPage
+    setResourceBundle(key="i18n" bundle="org.glassfish.common.admingui.Strings")
+/>
 <sun:page id="page">
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.common.restartRequired}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.masthead.restartRequired}" >
 <!define name="content">
-    <event>    
-        <!beforeCreate setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");/>
-    </event>
 <f:verbatim>
         <style type="text/css">
             .collapsed { background-image: url(#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/table/grouprow_collapsed.gif); }
@@ -55,7 +55,7 @@
         <sun:form id="form">
             <!-- Page Title -->
 #include "/common/shared/alertMsg.inc"                
-            <sun:title id="title" title="$resource{i18n.common.restartRequired}"  helpText="$resource{i18n.restart.RestartHelpText}" >
+            <sun:title id="title" title="$resource{i18n.masthead.restartRequired}"  helpText="$resource{i18n.restart.RestartHelpText}" >
                 <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">
                         <sun:button id="stopInstance" style="margin-left: 8pt"
@@ -69,7 +69,7 @@
                     </sun:panelGroup>
                 </facet>
             </sun:title>
-            "<ul>
+            "<ul style="margin-left: 20px;">
             <foreach key="reason" list="#{unprocessedChanges}">
                 "<li style="display: list-item; list-style: disc outside none">#{reason}</li>
             </foreach>
