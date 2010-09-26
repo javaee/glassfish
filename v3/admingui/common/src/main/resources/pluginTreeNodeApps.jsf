@@ -65,10 +65,6 @@
 		alt="$resource{i18n.tree.applications}"
 		border="0" immediate="true" />
     </facet>
-    <!--
-	FIXME: Update...
-	<!filterTree filterOutLifecycle() />
-    -->
 </dynamicTreeNode>
 
 <dynamicTreeNode  childNameKey="message"
@@ -94,8 +90,4 @@
 	<sun:iconHyperlink id="treeLink" icon="TREE_FOLDER" url="/common/applications/lifecycles.jsf"
 	    alt="$resource{i18n.tree.lifecycle}" border="0" immediate="true" />
     </facet>
-    <!--
-	FIXME: Update...
-    <!filterTree filterOutNonLifecycle() />
-    -->
 </dynamicTreeNode>
