@@ -67,6 +67,12 @@
 </sun:title>
         "<br><br>
 #include "/common/applications/lifecycleAttr.inc"
+<event>
+    <!afterCreate
+        setPageSessionAttribute(key="setDefaultTarget" value="true");
+        includeIntegrations(type="org.glassfish.admingui:uploadPropertySheetTargetSection" );
+    />
+</event>
 	<sun:hidden id="helpKey" value="$resource{help.lifecycleNew}" />
         </sun:form>
 </define>
