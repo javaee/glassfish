@@ -50,8 +50,12 @@
         urlencode(value="#{pageSession.appName}" encoding="UTF-8" result="#{pageSession.encodedAppName}");
         getRequestValue(key="moduleName" value="#{pageSession.moduleName}");
         getRequestValue(key="ddPath" value="#{pageSession.ddPath}");
-        getDeploymentDescriptor(appName="#{pageSession.appName}", moduleName="#{pageSession.moduleName}", descriptorName="#{pageSession.ddPath}",
-        content="#{descriptorContent}", encoding="#{encoding}");
+        gf.restRequest(
+            endpoint="#{sessionScope.REST_URL}/applications/application/#{pageSession.encodedAppName}/_get-deployment-configurations"
+            method="GET",
+            result="#{requestScope.result}");
+        gf.getDeploymentDescriptor(appName="#{pageSession.appName}", moduleName="#{pageSession.moduleName}",  descriptorName="#{pageSession.ddPath}",
+            data="#{requestScope.result.data.children}"  content="#{descriptorContent}", encoding="#{encoding}");
         setEncoding("#{encoding}");
     />
     </event>
