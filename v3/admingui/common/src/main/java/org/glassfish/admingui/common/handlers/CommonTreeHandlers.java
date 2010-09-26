@@ -44,13 +44,8 @@ import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import javax.management.ObjectName;
-import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admingui.common.tree.FilterTreeEvent;
-import org.glassfish.admingui.common.util.AppUtil;
-import org.glassfish.admingui.common.util.V3AMX;
-
 
 /**
  *
@@ -64,44 +59,6 @@ public class CommonTreeHandlers {
     public CommonTreeHandlers() {
     }
     
-    /**
-     *  <p> This handler filters out all apps that is not a lifecycle from the list of objName available
-     *      through the event object, based on the object-type attribute.
-     * The resulting list consists only of lifecycle module.
-     */
-    @Handler( id="filterOutNonLifecycle")
-    public static Object filterOutNonLifecycle(HandlerContext context) {
-        FilterTreeEvent event = (FilterTreeEvent) context.getEventObject();
-        List<ObjectName> apps = (List<ObjectName>)event.getChildObjects();
-        List result = new ArrayList();
-        for(ObjectName oneApp :apps){
-            if (AppUtil.isLifecycle(oneApp)){
-                result.add(oneApp);
-            }
-        }
-        return result;
-    }
-
-    /**
-     *  <p> This handler filters out all the lifecycle from the list of objName available
-     *      through the event object, based on the object-type attribute.
-     * The resulting list consists all apps that is NOT a lifecycle.
-     */
-    @Handler( id="filterOutLifecycle")
-    public static Object filterOutLifecycle(HandlerContext context) {
-        FilterTreeEvent event = (FilterTreeEvent) context.getEventObject();
-        List<ObjectName> apps = (List<ObjectName>)event.getChildObjects();
-        List result = new ArrayList();
-        if (apps != null){
-            for(ObjectName oneApp :apps){
-                if (! AppUtil.isLifecycle(oneApp)){
-                    result.add(oneApp);
-                }
-            }
-        }
-        return result;
-    }
-
     @Handler( id="filterOutNonJms")
     public static Object filterOutNonJms(HandlerContext context) {
         FilterTreeEvent event = (FilterTreeEvent) context.getEventObject();
@@ -111,11 +68,11 @@ public class CommonTreeHandlers {
             for(ObjectName connector : connectors){
 //                AMXProxy amx = V3AMX.objectNameToProxy(connector.toString());
 //                Map props = V3AMX.getAttrsMap(connector);
-                String raName = (String) V3AMX.getAttrsMap(connector).get("ResourceAdapterName");
-
-                if ("jmsra".equals(raName)) {
-                    result.add(connector);
-                }
+//                String raName = (String) V3AMX.getAttrsMap(connector).get("ResourceAdapterName");
+//
+//                if ("jmsra".equals(raName)) {
+//                    result.add(connector);
+//                }
             }
         }
         return result;

@@ -45,64 +45,32 @@
 
 package org.glassfish.admingui.common.util;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import org.glassfish.admingui.common.handlers.RestApiHandlers;
 
+import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
+
+import org.glassfish.admingui.common.handlers.RestApiHandlers;
 
 /**
  *
  * @author anilam
  */
-public class AppUtil {
+public class RestUtil {
 
-    public static List<String> getSnifferListOfModule(String appName, String moduleName){
-        Map subMap = RestApiHandlers.restRequest(
-            GuiUtil.getSessionValue("REST_URL")+"/applications/application/" + appName + "/module/" + moduleName + "/engine", null, "GET", null);
-        final Map dataMap = (Map) subMap.get("data");
-        List sniffersList = new ArrayList();
-        if (dataMap != null){
-            final Map extraProperties = (Map)(dataMap).get("extraProperties");
-            if (extraProperties != null){
-                final Map<String, Object> childResourcesMap = (Map) extraProperties.get("childResources");
-                if (childResourcesMap != null){
-                    //List<String> sniffers =  new ArrayList( childResourcesMap.keySet());
-                    for (String oneSniffer: childResourcesMap.keySet()){
-                        if (sniffersHide.contains(oneSniffer) )
-                            continue;
-                        sniffersList.add(oneSniffer);
-                    }
-                    Collections.sort(sniffersList);
-                    return sniffersList;
+    public static String getPropValue(String endpoint, String propName, HandlerContext handlerCtx){
+        Map responseMap = (Map) RestApiHandlers.restRequest(endpoint+"/property.json", null, "GET", handlerCtx);
+        Map extraPropertiesMap = (Map)((Map)responseMap.get("data")).get("extraProperties");
+        if (extraPropertiesMap != null){
+            List<Map> props = (List)extraPropertiesMap.get("properties");
+            for(Map oneProp: props){
+                if (oneProp.get("name").equals(propName)){
+                    return (String) oneProp.get("value");
                 }
             }
         }
-        return sniffersList;
+        return "";
     }
 
-    public static boolean isApplicationEnabled(String appName,  String target){
-        String prefix = (String) GuiUtil.getSessionValue("REST_URL");
-        List clusters = TargetUtil.getClusters();
-        List standalone = TargetUtil.getStandaloneInstances();
-        standalone.add("server");
-        Map attrs = null;
-        String endpoint="";
-        if (clusters.contains(target)){
-            endpoint = prefix + "/clusters/cluster/" + target + "/application-ref/" + appName;
-            attrs = RestApiHandlers.getAttributesMap(prefix + endpoint);
-        }else{
-            endpoint = prefix+"/servers/server/" + target + "/application-ref/" + appName;
-            attrs = RestApiHandlers.getAttributesMap(endpoint);
-        }
-        return Boolean.parseBoolean((String) attrs.get("enabled"));
-    }
 
-    
-    static final public List sniffersHide = new ArrayList();
-    static {
-        sniffersHide.add("security");
-    }
 }
-

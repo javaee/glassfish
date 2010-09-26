@@ -71,8 +71,6 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.admin.amx.intf.config.VirtualServer;
 import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.TargetUtil;

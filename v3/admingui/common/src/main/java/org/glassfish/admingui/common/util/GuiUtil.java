@@ -75,13 +75,12 @@ import javax.faces.context.ExternalContext;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
-import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admingui.common.security.AdminConsoleAuthModule;
 import org.glassfish.deployment.client.DeploymentFacility;
 import org.glassfish.deployment.client.ServerConnectionIdentifier;
 
 import org.jvnet.hk2.component.Habitat;
-import org.glassfish.admin.amx.util.ExceptionUtil;
+import org.glassfish.admingui.common.handlers.RestApiHandlers;
 
 /**
  *
@@ -146,13 +145,6 @@ public class GuiUtil {
         getLogger().info("admin console: initSessionAttributes()" );
         ExternalContext externalCtx = FacesContext.getCurrentInstance().getExternalContext();
         Map<String, Object> sessionMap = externalCtx.getSessionMap();
-        try{
-            sessionMap.put("domainName", V3AMX.getInstance().getDomainRoot().getAppserverDomainName());
-        }catch(Exception ex){
-            ex.printStackTrace();
-            sessionMap.put("domainName", "");
-        }
-
         String user = externalCtx.getRemoteUser();
         sessionMap.put("userName", (user == null) ? "" : user);
 
@@ -171,17 +163,16 @@ public class GuiUtil {
             //should never get here.
             sessionMap.put("serverName", "");
         }
+        sessionMap.put("domainName", RestUtil.getPropValue((String)(sessionMap.get("REST_URL")), "administrative.domain.name", null));
         sessionMap.put("_noNetwork", (System.getProperty("com.sun.enterprise.tools.admingui.NO_NETWORK", "false").equals("true"))? Boolean.TRUE: Boolean.FALSE);
         sessionMap.put("supportCluster", Boolean.FALSE);
-        sessionMap.put("appServerVersion", V3AMX.getInstance().getDomainRoot().getApplicationServerFullVersion());
+        Map version = RestApiHandlers.restRequest(sessionMap.get("REST_URL")+"/version", null, "GET" ,null);
+        sessionMap.put("appServerVersion", ((Map)version.get("data")).get("message"));
         sessionMap.put("reqMsg", GuiUtil.getMessage("msg.JS.enterValue"));
         sessionMap.put("reqMsgSelect", GuiUtil.getMessage("msg.JS.selectValue"));
         sessionMap.put("reqInt", GuiUtil.getMessage("msg.JS.enterIntegerValue"));
         sessionMap.put("reqNum", GuiUtil.getMessage("msg.JS.enterNumericValue"));
         sessionMap.put("reqPort", GuiUtil.getMessage("msg.JS.enterPortValue"));
-        sessionMap.put("RUNTIME", V3AMX.getInstance().getRuntime().objectName());
-        sessionMap.put("DOMAIN_ROOT", V3AMX.getInstance().getDomainRoot().objectName());
-        sessionMap.put("ADMIN_LISTENER", V3AMX.getInstance().getAdminListener().objectName());
         sessionMap.put("_SESSION_INITIALIZED","TRUE");
         sessionMap.put("restartRequired", Boolean.FALSE);
 
@@ -191,8 +182,8 @@ public class GuiUtil {
          * Otherwise GUI's main page can't come up.
          */
         try {
-            AMXProxy das = V3AMX.getInstance().getConfig("server-config").getAdminService().child("das-config");
-            String timeOut = (String) das.attributesMap().get("AdminSessionTimeoutInMinutes");
+            Map result = RestApiHandlers.restRequest(GuiUtil.getSessionValue("REST_URL")+"/configs/config/server-config/admin-service/das-config", null, "GET", null);
+            String timeOut = (String)((Map)((Map)((Map)result.get("data")).get("extraProperties")).get("entity")).get("adminSessionTimeoutInMinutes");
             if ((timeOut != null) && (!timeOut.equals(""))) {
                 int time = new Integer(timeOut).intValue();
                 if (time == 0) {
@@ -444,10 +435,6 @@ public class GuiUtil {
         return (test == null) ? "" : test;
     }
 
-    public static Throwable getRootCause(final Throwable ex) {
-        return ExceptionUtil.getRootCause(ex);
-    }
-
     public static List<String> convertListOfStrings(List l) {
         List<String> arrList = new ArrayList<String>();
         for (Object o : l) {
@@ -675,7 +662,61 @@ public class GuiUtil {
 
         return list;
     }
-    
+
+
+
+    /**
+    Get the chain of exceptions via getCause(). The first element is the
+    Exception passed.
+
+    @param start	the Exception to traverse
+    @return		a Throwable[] or an Exception[] as appropriate
+     */
+    public static Throwable[] getCauses(final Throwable start)
+    {
+        final ArrayList<Throwable> list = new ArrayList<Throwable>();
+
+        boolean haveNonException = false;
+
+        Throwable t = start;
+        while (t != null)
+        {
+            list.add(t);
+
+            if (!(t instanceof Exception))
+            {
+                haveNonException = true;
+            }
+
+            final Throwable temp = t.getCause();
+            if (temp == null)
+            {
+                break;
+            }
+            t = temp;
+        }
+
+        final Throwable[] results = haveNonException ? new Throwable[list.size()] : new Exception[list.size()];
+
+        list.toArray(results);
+
+        return (results);
+    }
+
+    /**
+    Get the original troublemaker.
+
+    @param e	the Exception to dig into
+    @return		the original Throwable that started the problem
+     */
+    public static Throwable getRootCause(final Throwable e)
+    {
+        final Throwable[] causes = getCauses(e);
+
+        return (causes[causes.length - 1]);
+    }
+
+
     public static final String I18N_RESOURCE_BUNDLE = "__i18n_resource_bundle";
     public static final String RESOURCE_NAME = "org.glassfish.admingui.core.Strings";
     public static final String LOGGER_NAME = "org.glassfish.admingui";

@@ -62,19 +62,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import java.util.Set;
-import javax.management.Attribute;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
-import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.admin.amx.intf.config.Application;
 import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.common.util.AppUtil;
 import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.common.util.V3AMXUtil;
-import org.glassfish.deployment.client.DFDeploymentProperties;
 
 import javax.management.openmbean.TabularData;
-import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.intf.config.Property;
 import org.glassfish.admin.amx.monitoring.ServerMon;
 import org.glassfish.admingui.common.util.DeployUtil;
@@ -87,50 +80,6 @@ public class WebAppHandlers {
     /** Creates a new instance of ApplicationsHandler */
     public WebAppHandlers() {
     }
-
-
-    @Handler(id = "getSubComponents",
-        input = {
-            @HandlerInput(name = "appName", type = String.class, required = true)},
-        output = {
-            @HandlerOutput(name = "result", type = java.util.List.class)})
-    public static void getSubComponents(HandlerContext handlerCtx) {
-        List result = new ArrayList();
-        String appName = (String) handlerCtx.getInputValue("appName");
-        Map<String, AMXProxy> modules = V3AMX.getInstance().getApplication(appName).childrenMap("module");
-        for(AMXProxy oneModule: modules.values()){
-            Map oneRow = new HashMap();
-            List<String> snifferList = AppUtil.getSnifferListOfModule(oneModule);
-            String moduleName = oneModule.getName();
-            oneRow.put("moduleName", moduleName);
-            oneRow.put("name", " ----------- ");
-            oneRow.put("type", " ----------- ");
-            oneRow.put("hasEndpoint", false);
-            oneRow.put("hasLaunch", false);
-            oneRow.put("hasAppClientLaunch", false);
-            oneRow.put("sniffers", snifferList.toString());
-            Application application = V3AMX.getInstance().getApplication(appName);
-            if (snifferList.contains("web") &&  AppUtil.isApplicationEnabled(application)){
-                String launchLink = V3AMXUtil.getLaunchLink((String)GuiUtil.getSessionValue("serverName"), appName);
-                if (!GuiUtil.isEmpty(launchLink)){
-                    oneRow.put("hasLaunch", true);
-                    String ctxRoot = calContextRoot(V3AMX.getInstance().getRuntime().getContextRoot(appName, moduleName));
-                    oneRow.put("launchLink", launchLink +  ctxRoot);
-                }
-            }
-            if (snifferList.contains("appclient")){
-                String jwEnabled = V3AMX.getPropValue(V3AMX.getInstance().getApplication(appName), "javaWebStartEnabled");
-                if (!GuiUtil.isEmpty(jwEnabled) && jwEnabled.equals("true") ){
-                    String appClientLaunch = V3AMX.getInstance().getRuntime().getRelativeJWSURI(appName, moduleName);
-                    oneRow.put("hasAppClientLaunch", !GuiUtil.isEmpty(appClientLaunch));
-                }
-            }
-            result.add(oneRow);
-            getSubComponentDetail(appName, moduleName, snifferList, result);
-        }
-        handlerCtx.setOutputValue("result", result);
-    }
-
 
     @Handler(id = "getAppclinetLaunchURL",
         input = {
@@ -195,26 +144,6 @@ public class WebAppHandlers {
     }
 
     
-    private static List<Map> getSubComponentDetail(String appName, String moduleName, List<String> snifferList, List<Map> result){
-        Map<String, String> sMap = V3AMX.getInstance().getRuntime().getSubComponentsOfModule(appName, moduleName);
-        for(String cName: sMap.keySet()){
-            Map oneRow = new HashMap();
-            oneRow.put("moduleName", moduleName);
-            oneRow.put("name", cName);
-            oneRow.put("type", sMap.get(cName));
-            oneRow.put("hasLaunch", false);
-            oneRow.put("sniffers", "");
-            oneRow.put("hasEndpoint", false);
-            oneRow.put("hasAppClientLaunch", false);
-            if (snifferList.contains("webservices")){
-                if (!getEndpointMap(appName, moduleName, cName, sMap.get(cName)).isEmpty()){
-                    oneRow.put("hasEndpoint", true );
-                }
-            }
-            result.add(oneRow);
-        }
-        return result;
-    }
 
      private static TabularData getEndpointMap (String appName,  String moduleName, String componentName, String type){
         ServerMon serverMon = V3AMX.getInstance().getDomainRoot().getMonitoringRoot().getServerMon().get("server").as(ServerMon.class);
@@ -349,13 +278,4 @@ public class WebAppHandlers {
         return ctxRoot;
     }
 
-   private static List skipLifecyclePropsList = new ArrayList();
-    static {
-        skipLifecyclePropsList.add(DFDeploymentProperties.CLASS_NAME);
-        skipLifecyclePropsList.add(DFDeploymentProperties.CLASSPATH);
-        skipLifecyclePropsList.add(DFDeploymentProperties.LOAD_ORDER);
-        skipLifecyclePropsList.add(DFDeploymentProperties.IS_FAILURE_FATAL);
-        skipLifecyclePropsList.add(DFDeploymentProperties.IS_LIFECYCLE);
-    }
-  
 }

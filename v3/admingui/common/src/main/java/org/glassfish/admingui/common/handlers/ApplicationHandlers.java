@@ -69,7 +69,10 @@ import java.util.Set;
 import java.util.TreeSet;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.DeployUtil;
+import org.glassfish.admingui.common.util.RestUtil;
 import org.glassfish.admingui.common.util.TargetUtil;
+import org.glassfish.admingui.common.util.AppUtil;
+
 
 
 public class ApplicationHandlers {
@@ -136,7 +139,84 @@ public class ApplicationHandlers {
     }
 
 
-    //gf.getLifecyclesInfo(#{requestScope.resp.data.children}, result=>$attribute{listOfRows} );
+    @Handler(id = "getSubComponents",
+        input = {
+            @HandlerInput(name = "appName", type = String.class, required = true),
+            @HandlerInput(name = "appType", type = String.class, required = true),
+            @HandlerInput(name = "moduleList", type = List.class, required = true)},
+        output = {
+            @HandlerOutput(name = "result", type = java.util.List.class)})
+    public static void getSubComponents(HandlerContext handlerCtx) {
+        List result = new ArrayList();
+        String appName = (String) handlerCtx.getInputValue("appName");
+        String appType = (String) handlerCtx.getInputValue("appType");
+        List<String> modules = (List) handlerCtx.getInputValue("moduleList");
+
+        for(String oneModule: modules){
+            Map oneRow = new HashMap();
+            List<String> snifferList = AppUtil.getSnifferListOfModule(appName, oneModule);
+
+            String moduleName = oneModule;
+            oneRow.put("moduleName", moduleName);
+            oneRow.put("name", " ----------- ");
+            oneRow.put("type", " ----------- ");
+            oneRow.put("hasEndpoint", false);
+            oneRow.put("hasLaunch", false);
+            oneRow.put("hasAppClientLaunch", false);
+            oneRow.put("sniffers", snifferList.toString());
+
+            //TODO:  Siraj to add launch link.
+//            if (snifferList.contains("web") &&  AppUtil.isApplicationEnabled(appName, "server")){
+//            }
+
+//            if (snifferList.contains("appclient")){
+//                String jwEnabled = V3AMX.getPropValue(V3AMX.getInstance().getApplication(appName), "javaWebStartEnabled");
+//                if (!GuiUtil.isEmpty(jwEnabled) && jwEnabled.equals("true") ){
+//                    String appClientLaunch = V3AMX.getInstance().getRuntime().getRelativeJWSURI(appName, moduleName);
+//                    oneRow.put("hasAppClientLaunch", !GuiUtil.isEmpty(appClientLaunch));
+//                }
+//            }
+            result.add(oneRow);
+            getSubComponentDetail(appName, moduleName, snifferList, result);
+        }
+        handlerCtx.setOutputValue("result", result);
+    }
+
+
+
+    private static List<Map> getSubComponentDetail(String appName, String moduleName, List<String> snifferList, List<Map> result){
+
+        Map attrMap = new HashMap();
+        attrMap.put("appName", appName);
+        attrMap.put("moduleName", moduleName);
+        String endpoint = GuiUtil.getSessionValue("REST_URL") + "/applications/application/list-sub-components";
+        Map subMap = RestApiHandlers.restRequest(endpoint, attrMap, "GET", null);
+        Map data = (Map)subMap.get("data");
+        if(data != null){
+            Map<String, Object> props = (Map) data.get("properties");
+            if (props == null){
+                return result;
+            }
+            for(String cName: props.keySet()){
+                Map oneRow = new HashMap();
+                oneRow.put("moduleName", moduleName);
+                oneRow.put("name", cName);
+                oneRow.put("type", props.get(cName));
+                oneRow.put("hasLaunch", false);
+                oneRow.put("sniffers", "");
+                oneRow.put("hasEndpoint", false);
+                oneRow.put("hasAppClientLaunch", false);
+    //            if (snifferList.contains("webservices")){
+    //                if (!getEndpointMap(appName, moduleName, cName, sMap.get(cName)).isEmpty()){
+    //                    oneRow.put("hasEndpoint", true );
+    //                }
+    //            }
+                result.add(oneRow);
+            }
+        }
+        return result;
+    }
+
 
     @Handler(id = "gf.getLifecyclesInfo",
         input = {
@@ -160,7 +240,7 @@ public class ApplicationHandlers {
                 oneRow.put("name", name);
                 oneRow.put("encodedName", encodedName);
                 oneRow.put("selected", false);
-                oneRow.put("loadOrder", getPropValue(prefix+encodedName, "load-order", handlerCtx));
+                oneRow.put("loadOrder", RestUtil.getPropValue(prefix+encodedName, "load-order", handlerCtx));
                 oneRow.put("enableURL", DeployUtil.getTargetEnableInfo(name, true, true));
                 result.add(oneRow);
             }catch(Exception ex){
@@ -168,21 +248,6 @@ public class ApplicationHandlers {
             }
         }
         handlerCtx.setOutputValue("result", result);
-    }
-
-
-    private static String getPropValue(String endpoint, String propName, HandlerContext handlerCtx){
-        Map responseMap = (Map) RestApiHandlers.restRequest(endpoint+"/property.json", null, "GET", handlerCtx);
-        Map extraPropertiesMap = (Map)((Map)responseMap.get("data")).get("extraProperties");
-        if (extraPropertiesMap != null){
-            List<Map> props = (List)extraPropertiesMap.get("properties");
-            for(Map oneProp: props){
-                if (oneProp.get("name").equals(propName)){
-                    return (String) oneProp.get("value");
-                }
-            }
-        }
-        return "";
     }
 
     private static void getLaunchInfo(String serverName, String appName,  Map oneRow) {

@@ -840,14 +840,29 @@ public class UtilHandlers {
      *	<p> This handler returns the <code>Set</code> of keys for the given
      *	    <code>Map</code>.</p>
      */
-    @Handler(id="mapKeySet",
+    @Handler(id="mapGetKeys",
 	input = {
 	    @HandlerInput(name="map", type=Map.class, required=true)},
 	output = {
-	    @HandlerOutput(name="keyList", type=List.class)})
-    public static void mapKeySet(HandlerContext handlerCtx) {
+	    @HandlerOutput(name="keys", type=List.class)})
+    public static void mapGetKeys(HandlerContext handlerCtx) {
         Map map = (Map) handlerCtx.getInputValue("map");
-        handlerCtx.setOutputValue("set", map.keySet());
+        handlerCtx.setOutputValue("keys", new ArrayList(map.keySet()));
+    }
+
+    /**
+     *	<p> This handler returns the <code>Set</code> of keys for the given
+     *	    <code>Map</code>.</p>
+     */
+    @Handler(id="mapValues",
+	input = {
+	    @HandlerInput(name="map", type=Map.class, required=true)},
+	output = {
+	    @HandlerOutput(name="values", type=Object.class)})
+    public static void mapValues(HandlerContext handlerCtx) {
+        Map map = (Map) handlerCtx.getInputValue("map");
+        Object xx = map.values();
+        handlerCtx.setOutputValue("values", xx);
     }
     
     @Handler(id = "convertStrToBoolean",
