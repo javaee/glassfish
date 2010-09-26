@@ -53,11 +53,13 @@
         setPageSessionAttribute(key="instanceName" value="server");
         setSessionAttribute(key="serverInstTabs" value="general");
         setPageSessionAttribute(key="pageName" value="common/appServer/serverInstGeneralPe.jsf");
-        getProxyAttrs(objectNameStr="#{sessionScope.DOMAIN_ROOT}" valueMap="#{pageSession.valueMap}")
-        getProxyAttrs(objectNameStr="amx:pp=/domain/configs/config[server-config],type=java-config" valueMap="#{pageSession.valueMap2}")
-        getDebugInfo(debugEnabled="#{pageSession.valueMap2['DebugEnabled']}"
-            debugOptions="#{pageSession.valueMap2['DebugOptions']}" debugInfo="#{pageSession.debugInfo}")
-        />   
+
+        <!-- TODO: Need to get the
+            configRoot Directory
+            Debug Info
+            through REST
+        -->
+        />
     </event>
     <sun:form id="propertyForm">
 #include "/common/appServer/serverInstTabs.inc"
@@ -125,16 +127,16 @@
                 </sun:property>
 
                 <sun:property id="confiDirProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.configDirLabel}">
-                    <sun:staticText id="configDir" text="#{pageSession.valueMap['ConfigDir']}"/>
+                    <sun:staticText id="configDir" text=" TBD "/>
                 </sun:property>
 
 
                 <sun:property id="versionProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.versionLabel}">
-                    <sun:staticText id="version" text="#{pageSession.valueMap['ApplicationServerFullVersion']}"/>
+                    <sun:staticText id="version" text="#{sessionScope.appServerVersion}"/>
                 </sun:property>
 
                 <sun:property id="debugProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.debugLabel}">
-                    <sun:staticText id="debugPort" text="#{pageSession.debugInfo}"/>
+                    <sun:staticText id="debugPort" text=" TBD "/>
                 </sun:property>
             </sun:propertySheetSection>
             <event>
