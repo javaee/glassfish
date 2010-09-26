@@ -97,7 +97,7 @@
     />
 </event>
 
-<sun:hidden id="helpKey" value="$resource{help.manageTarget}" />
+<sun:hidden id="helpKey" value="$resource{help_common.manageTarget}" />
     </sun:form>
 
 #include "/common/shared/changeButtonsJS.inc"
