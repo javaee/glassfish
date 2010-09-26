@@ -39,11 +39,11 @@ public interface HttpServer extends ConfigBeanProxy {
         String getName();
         void setName(String name);
 
-}</pre></div><p>will result in the following xml snippet : +-------------------------------+ <i>....</i> <i>http-server name=&quot;...&quot; ... /</i> <i>/...</i> +-------------------------------+</p></div><div class="section"><h4>Elements<a name="Elements"></a></h4><p>Sub elements of a configuration node are represented in the configuration definition with <a href="./apidocs/org/jvnet/hk2/config/Element.html">Element</a> annotation.</p><p>Let's imagine another configuration mapping : </p><div class="source"><pre>        @Configured 
-        public interface HttpListener extends ConfigBeanProxy {
-                @Attribute
-                String getName();
-        }</pre></div><p>now our example can be enhanced with : </p><div class="source"><pre>@Configured
+}</pre></div><p>will result in the following xml snippet : +-------------------------------+ <i>....</i> <i>http-server name=&quot;...&quot; ... /</i> <i>/...</i> +-------------------------------+</p></div><div class="section"><h4>Elements<a name="Elements"></a></h4><p>Sub elements of a configuration node are represented in the configuration definition with <a href="./apidocs/org/jvnet/hk2/config/Element.html">Element</a> annotation.</p><p>Let's imagine another configuration mapping : </p><div class="source"><pre>@Configured 
+public interface HttpListener extends ConfigBeanProxy {
+        @Attribute
+        String getName();
+}</pre></div><p>now our example can be enhanced with : </p><div class="source"><pre>@Configured
 public interface HttpServer extends ConfigBeanProxy {
 
         @Attribute
@@ -57,7 +57,11 @@ public interface HttpServer extends ConfigBeanProxy {
         @Element
         HttpListener getHttpListener();
         void setHttpListener(HttpListener listener);
-}</pre></div><p>will result in the following xml snippet : +-------------------------------+ <i>....</i> <i>http-server name=&quot;...&quot; ... </i> <i>http-listener name=&quot;...&quot; port=&quot;8090&quot; .../</i> <i>/http-server-name</i> <i>/...</i> +-------------------------------+</p></div></div><div class="section"><h3>Transaction<a name="Transaction"></a></h3><p>In order to change any configuration elements, one must start a configuration transaction that ensures restricted access to the configuration. The configuration uses a view mechanism to give access to the underlying configuration bean. By default, injected code gets a readable view while code using a transaction to mutate configuration will obtain a writeable view automatically. While a transaction is in effect, other threads will continue seeing the un-modified values through their redable views while threads having access to the writeable view will be able to change the configuration and see the mutated values. As soon as the transaction is successfully commited, the readable views will give access to the changed configuration. </p><div class="section"><h4>Single configuration object mutation<a name="Single_configuration_object_mutation"></a></h4><p>In the simple case, code needs to mutate one configuration object during a transaction. The simple ConfigSupport.apply method should be used :</p><div class="source"><pre>
+}</pre></div><p>will result in the following xml snippet :</p><div class="source"><pre>&lt;....&gt;
+        &lt;http-server name=&quot;...&quot; ... &gt;
+                &lt;http-listener name=&quot;...&quot; port=&quot;8090&quot; .../&gt;
+        &lt;/http-server-name&gt;
+&lt;/...&gt;  </pre></div></div></div><div class="section"><h3>Transaction<a name="Transaction"></a></h3><p>In order to change any configuration elements, one must start a configuration transaction that ensures restricted access to the configuration. The configuration uses a view mechanism to give access to the underlying configuration bean. By default, injected code gets a readable view while code using a transaction to mutate configuration will obtain a writeable view automatically. While a transaction is in effect, other threads will continue seeing the un-modified values through their redable views while threads having access to the writeable view will be able to change the configuration and see the mutated values. As soon as the transaction is successfully commited, the readable views will give access to the changed configuration. </p><div class="section"><h4>Single configuration object mutation<a name="Single_configuration_object_mutation"></a></h4><p>In the simple case, code needs to mutate one configuration object during a transaction. The simple ConfigSupport.apply method should be used :</p><div class="source"><pre>
     /**
      * Execute some logic on one config bean of type T protected by a transaction
      *
@@ -81,7 +85,7 @@ ConfigSupport.apply(new SingleCodeCode&lt;HttpListener&gt;() {
         &lt;http-server name=&quot;...&quot; ... &gt;
                 &lt;http-listener name=&quot;...&quot; port=&quot;8080&quot;.../&gt;
         &lt;/http-server-name&gt;
-&lt;/...&gt;  </pre></div></div></div><div class="section"><h4>Vetoing changes<a name="Vetoing_changes"></a></h4><p>Any code can register itself to listen to changes as they happen within a transaction. Such listeners have the ability to raise a PropertyVetoException that will force the pending transaction to be rolled back (all changes to all beans will then be discarded).</p><p>Note the code below will be simplified soon : +-------------------------------+ ((ConfigBean) ConfigSupport.getImpl(target)).getOptionalFeature(ConstrainedBeanListener.class).addVetoableChangeListener(this); +-------------------------------+</p></div><div class="section"><h4>Changes notification<a name="Changes_notification"></a></h4><p>Any code that wishes to receive notification of changes of configuration bean can implement the ConfigListener interface. </p></div></div></div>
+&lt;/...&gt;  </pre></div></div></div><div class="section"><h4>Vetoing changes<a name="Vetoing_changes"></a></h4><p>Any code can register itself to listen to changes as they happen within a transaction. Such listeners have the ability to raise a PropertyVetoException that will force the pending transaction to be rolled back (all changes to all beans will then be discarded).</p><p>Note the code below will be simplified soon : </p><div class="source"><pre>        ((ConfigBean) ConfigSupport.getImpl(target)).getOptionalFeature(ConstrainedBeanListener.class).addVetoableChangeListener(this);</pre></div></div><div class="section"><h4>Changes notification<a name="Changes_notification"></a></h4><p>Any code that wishes to receive notification of changes of configuration bean can implement the ConfigListener interface. </p></div></div></div>
       </div>
     </div>
     <div class="clear">
