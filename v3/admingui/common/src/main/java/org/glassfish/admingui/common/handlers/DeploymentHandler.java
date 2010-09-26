@@ -50,7 +50,6 @@ import java.util.Properties;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.admin.amx.base.RuntimeRoot;
 import org.glassfish.deployment.client.DFDeploymentStatus;
 import org.glassfish.deployment.client.DeploymentFacility;
 import org.glassfish.deployment.client.DFProgressObject;
@@ -74,7 +73,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.TargetUtil;
-import org.glassfish.admingui.common.util.V3AMX;
 import org.w3c.dom.Document;
 
 /**
@@ -383,34 +381,38 @@ public class DeploymentHandler {
      *  <p> Output value: "descriptors" -- Type: <code>java.util.List</code>/</p>
      *	@param	handlerCtx	The HandlerContext.
      */
-    @Handler(id = "getDeploymentDescriptorList",
+            
+    @Handler(id = "gf.getDeploymentDescriptorList",
     input = {
-        @HandlerInput(name = "appName", type = String.class, required = true)},
+        @HandlerInput(name = "appName", type = String.class, required = true),
+        @HandlerInput(name = "data", type = List.class, required = true)},
     output = {
         @HandlerOutput(name = "descriptors", type = List.class)
     })
     public static void getDeploymentDescriptorList(HandlerContext handlerCtx) {
         String appName = (String) handlerCtx.getInputValue("appName");
+        List<Map<String, Object>> ddList = (List) handlerCtx.getInputValue("data");
         List result = new ArrayList();
-        RuntimeRoot runtimeMgr = V3AMX.getInstance().getRuntime();
-        List<Map<String, String>> ddList = runtimeMgr.getDeploymentConfigurations(appName);
         if (ddList.size() > 0) {
-            for (Map<String, String> oneDD : ddList) {
+            for (Map<String, Object> oneDD : ddList) {
                 HashMap oneRow = new HashMap();
-                oneRow.put("moduleName", oneDD.get(RuntimeRoot.MODULE_NAME_KEY));
-                oneRow.put("ddPath", oneDD.get(RuntimeRoot.DD_PATH_KEY));
-//                    oneRow.put("ddContent", oneDD.get(RuntimeRoot.DD_CONTENT_KEY) );
+                Map<String, String> props = (Map) oneDD.get("properties");
+                final String mName = props.get(MODULE_NAME_KEY);
+                oneRow.put("moduleName", (mName==null)?  "" : mName);
+                final String ddPath = props.get(DD_PATH_KEY);
+                oneRow.put("ddPath", (ddPath==null)? "" : ddPath);
                 result.add(oneRow);
             }
         }
         handlerCtx.setOutputValue("descriptors", result);
     }
 
-    @Handler(id = "getDeploymentDescriptor",
+    @Handler(id = "gf.getDeploymentDescriptor",
     input = {
         @HandlerInput(name = "appName", type = String.class, required = true),
         @HandlerInput(name = "moduleName", type = String.class, required = true),
-        @HandlerInput(name = "descriptorName", type = String.class, required = true)
+        @HandlerInput(name = "descriptorName", type = String.class, required = true),
+        @HandlerInput(name = "data", type = List.class, required = true)
     }, output = {
         @HandlerOutput(name = "content", type = String.class),
         @HandlerOutput(name = "encoding", type = String.class)
@@ -422,13 +424,13 @@ public class DeploymentHandler {
             moduleName = "";   //for application.xml and sun-application.xml  where it is at top leverl, with a module name.
         }
         String descriptorName = (String) handlerCtx.getInputValue("descriptorName");
-        RuntimeRoot runtimeMgr = V3AMX.getInstance().getRuntime();
-        List<Map<String, String>> ddList = runtimeMgr.getDeploymentConfigurations(appName);
+        List<Map<String, Object>> ddList = (List) handlerCtx.getInputValue("data");
         if (ddList.size() > 0) {
-            for (Map<String, String> oneDD : ddList) {
-                if (oneDD.get(RuntimeRoot.MODULE_NAME_KEY).equals(moduleName) && oneDD.get(RuntimeRoot.DD_PATH_KEY).equals(descriptorName)) {
-                    String content = oneDD.get(RuntimeRoot.DD_CONTENT_KEY);
-
+            for (Map<String, Object> oneDD : ddList) {
+                Map<String, String> props = (Map) oneDD.get("properties");
+                if (moduleName.equals(props.get(MODULE_NAME_KEY)) && descriptorName.equals(props.get(DD_PATH_KEY))) {
+                    final String ddContent = props.get(DD_CONTENT_KEY);
+                    String content = (ddContent==null)? "" : ddContent;
                     handlerCtx.setOutputValue("content", content);
                     handlerCtx.setOutputValue("encoding", getEncoding(content));
                 }
@@ -451,4 +453,9 @@ public class DeploymentHandler {
         }
         return encoding;
     }
+
+    private static final String MODULE_NAME_KEY = "module-name";
+    private static final String DD_PATH_KEY = "dd-path";
+    private static final String DD_CONTENT_KEY = "dd-content";
+
 }
