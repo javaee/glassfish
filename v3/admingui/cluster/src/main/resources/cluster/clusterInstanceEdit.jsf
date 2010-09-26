@@ -42,11 +42,11 @@
 
 <!-- cluster/clusterInstanceEdit.jsf -->
 <!initPage
-    setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+    setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
     setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.clusterInstance.GeneralTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="  $resource{i18ncs.clusterInstance.PageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
@@ -56,6 +56,7 @@
         getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
         urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
         setSessionAttribute(key="selfPage" value="#{request.contextPath}/cluster/clusterInstanceEdit.jsf?clusterName=#{pageSession.encodedClusterName}&instanceName=#{pageSession.encodedInstanceName}");
+        gf.getInstanceInfo(instanceName="#{pageSession.encodedInstanceName}", info="#{pageSession.info}");
     />
     </event>
     <sun:form id="propertyForm">
@@ -128,18 +129,16 @@
                     jvmWin.focus(); return false;" />
             </sun:property>
 
-            <sun:property id="confiDirProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.configDirLabel}">
-                <sun:staticText id="configDir" text="#{pageSession.valueMap['ConfigDir']}"/>
+            <sun:property id="confiDir" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.configDirLabel}">
+                <sun:staticText id="configDir" text="#{pageSession.info.configRoot}"/>
+            </sun:property>
+            <sun:property id="version" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.versionLabel}">
+                <sun:staticText id="version" text="#{pageSession.info.version}"/>
+            </sun:property>
+            <sun:property id="debugEnabled" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.debugLabel}">
+                <sun:staticText id="debugEnabled" text="#{pageSession.info.debugEnabled}"/>
             </sun:property>
 
-
-            <sun:property id="versionProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.versionLabel}">
-                <sun:staticText id="version" text="#{pageSession.valueMap['ApplicationServerFullVersion']}"/>
-            </sun:property>
-
-            <sun:property id="debugProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.debugLabel}">
-                <sun:staticText id="debugPort" text="#{pageSession.debugInfo}"/>
-            </sun:property>
         </sun:propertySheetSection>
         <event>
             <!afterCreate
