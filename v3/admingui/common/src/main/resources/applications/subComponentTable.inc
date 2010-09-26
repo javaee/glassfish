@@ -52,8 +52,9 @@ println("sectionDetail =  $attribute{sectionDetail}");
 
 <sun:table id="subcomponents"  title="$resource{i18n.ComponentTable.tableTitle}" style="padding: 10pt; width:95%" >
     <!beforeCreate
-        getSubComponents(appName="#{appName}"  result="#{requestScope.listOfRows}");
-    />
+        gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/applications/application/#{pageSession.encodedAppName}/module" result="#{pageSession.moduleList}");
+        getSubComponents(appName="#{pageSession.appName}" appType="#{pageSession.appType}" moduleList="#{pageSession.moduleList}" result="#{requestScope.listOfRows}");
+        />
      <sun:tableRowGroup id="rowGroup1"  data={"$attribute{listOfRows}"} sourceVar="td">
         <sun:tableColumn headerText="$resource{i18n.ComponentTable.colModule}" sort="moduleName" rowHeader="$boolean{true}" id="colModule">
             <staticText id="nameCol" value="#{td.value.moduleName}" />

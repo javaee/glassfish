@@ -66,8 +66,8 @@
             }
         }
         if(! #{requestScope.found}){                gf.restRequest(endpoint="#{sessionScope.REST_URL}/applications/application/#{pageSession.appName}/module"                method="GET", result="#{requestScope.result}");
-            gf.getMapKeys(Map="#{requestScope.result.data.extraProperties.childResources}" Keys="#{requestScope.keys}");
-            gf.restRequest(endpoint="#{sessionScope.REST_URL}/applications/application/#{pageSession.appName}/module/#{requestScope.keys[0]}/engine" method="GET", result="#{requestScope.result}");
+        gf.getMapKeys(Map="#{requestScope.result.data.extraProperties.childResources}" Keys="#{requestScope.keys}");
+        gf.restRequest(endpoint="#{sessionScope.REST_URL}/applications/application/#{pageSession.appName}/module/#{requestScope.keys[0]}/engine" method="GET", result="#{requestScope.result}");
             setAttribute(key="snifferMap" value="#{requestScope.result.data.extraProperties.childResources}");
             gf.getApplicationType(snifferMap="#{requestScope.result.data.extraProperties.childResources}", appType="#{pageSession.appType}");
         }
@@ -76,7 +76,7 @@
         if (! #{requestScope.dPage}){
             mapGet(Map="#{requestScope.editMap}"  Key="other"  Value="#{requestScope.dPage}")
         }
-        gf.redirect(page="#{request.contextPath}/#{requestScope.dPage}?appName=#{pageSession.encodedAppName}")
+        gf.redirect(page="#{request.contextPath}/#{requestScope.dPage}?appName=#{pageSession.encodedAppName}&appType=#{pageSession.appType}")
      />
     </event>
 </define>
