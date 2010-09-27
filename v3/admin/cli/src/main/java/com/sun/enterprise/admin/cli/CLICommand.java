@@ -293,6 +293,9 @@ public abstract class CLICommand implements PostConstruct {
         for (ParamModel opt : usageOptions()) {
             optText.setLength(0);
             final String optName = lc(opt.getName());
+            // "--terse" is part of asadmin utility options
+            if (optName.equals("terse"))
+                continue;
             // skip "hidden" options
             if (optName.startsWith("_"))
                 continue;
