@@ -41,8 +41,8 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
+import org.glassfish.simpleglassfishapi.spi.RuntimeBuilder;
 import org.glassfish.simpleglassfishapi.*;
-import org.glassfish.simpleglassfishapi.Constants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -55,7 +55,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import static org.glassfish.simpleglassfishapi.Constants.INSTALL_ROOT_PROP_NAME;
+import static org.glassfish.simpleglassfishapi.BootstrapConstants.INSTALL_ROOT_PROP_NAME;
 
 /**
  * This {@link GlassFishRuntime.RuntimeBuilder} is responsible for setting up a {@link GlassFishRuntime}
@@ -73,7 +73,7 @@ import static org.glassfish.simpleglassfishapi.Constants.INSTALL_ROOT_PROP_NAME;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class EmbeddedOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.RuntimeBuilder {
+public class EmbeddedOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
 
     private BundleContext bundleContext;
 
@@ -86,13 +86,14 @@ public class EmbeddedOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.Run
 
     private static final String JAR_EXT = ".jar";
 
-    public boolean handles(Properties properties) {
-        return EmbeddedOSGiGlassFishRuntimeBuilder.class.getName().equals(properties.getProperty(BUILDER_NAME_PROPERTY));
+    public boolean handles(BootstrapOptions bsOptions) {
+        return EmbeddedOSGiGlassFishRuntimeBuilder.class.getName().
+                equals(bsOptions.getAllOptions().getProperty(BUILDER_NAME_PROPERTY));
     }
 
-    public GlassFishRuntime build(Properties properties) throws Exception {
+    public GlassFishRuntime build(BootstrapOptions bsOptions) throws GlassFishException {
         this.bundleContext = getBundleContext();
-        installRoot = properties.getProperty(INSTALL_ROOT_PROP_NAME);
+        installRoot = bsOptions.getInstallRoot();
 
         // Install all gf bundles, start the primordial bundle and wait for GlassFishRuntime service to be available
         installBundles();
@@ -102,6 +103,8 @@ public class EmbeddedOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.Run
         try {
             st.open();
             return GlassFishRuntime.class.cast(st.waitForService(0));
+        }catch(Exception e) {
+            throw new GlassFishException(e);
         } finally {
             st.close();
         }
@@ -109,7 +112,7 @@ public class EmbeddedOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.Run
 
     private void configureBundles() {
         // Set this, because some stupid downstream code may be relying on this property
-        System.setProperty(Constants.PLATFORM_PROPERTY_KEY, Constants.Platform.GenericOSGi.toString());
+        System.setProperty(BootstrapConstants.PLATFORM_PROPERTY_KEY, BootstrapConstants.Platform.GenericOSGi.toString());
     }
 
     /**
@@ -166,7 +169,8 @@ public class EmbeddedOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.Run
         }
     }
 
-    public void destroy() throws Exception {
+    @Override
+    public void destroy() throws GlassFishException {
         // Nothing to do for now. Should we uninstall every bundle that have been installed by us?
     }
 

@@ -43,7 +43,10 @@ package com.sun.enterprise.glassfish.bootstrap;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
-import org.glassfish.simpleglassfishapi.Constants;
+import org.glassfish.simpleglassfishapi.BootstrapConstants;
+import org.glassfish.simpleglassfishapi.BootstrapOptions;
+import org.glassfish.simpleglassfishapi.GlassFishConstants;
+import org.glassfish.simpleglassfishapi.GlassFishException;
 import org.glassfish.simpleglassfishapi.GlassFishRuntime;
 
 import java.io.File;
@@ -55,6 +58,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.simpleglassfishapi.spi.RuntimeBuilder;
 
 /**
  * This {@link GlassFishRuntime.RuntimeBuilder} is responsible for setting up a
@@ -77,15 +81,15 @@ import java.util.logging.Logger;
  * @author bhavanishankar@dev.java.net
  */
 
-public class NonOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.RuntimeBuilder {
+public class NonOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
 
     private static Logger logger = Util.getLogger();
     private static final String JAR_EXT = ".jar";
 
-    public GlassFishRuntime build(Properties properties) throws Exception {
+    public GlassFishRuntime build(BootstrapOptions bsOptions) throws GlassFishException {
         /* Step 1. Build the classloader. */
         // The classloades should contain installRoot/modules/**/*.jar files.
-        String installRoot = properties.getProperty(Constants.INSTALL_ROOT_PROP_NAME);
+        String installRoot = bsOptions.getInstallRoot();
         List<URL> moduleJarURLs = getModuleJarURLs(installRoot);
         ClassLoader cl = new StaticClassLoader(getClass().getClassLoader(), moduleJarURLs);
 
@@ -98,20 +102,24 @@ public class NonOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.RuntimeB
         // Step 3. Create NonOSGIGlassFishRuntime
         GlassFishRuntime glassFishRuntime = new NonOSGiGlassFishRuntime(main);
         logger.logp(Level.FINER, getClass().getName(), "build", "Created GlassFishRuntime {0} " +
-                "with Bootstrap Properties {1}", new Object[]{glassFishRuntime, properties});
+                "with Bootstrap Options {1}", new Object[]{glassFishRuntime, bsOptions});
         return glassFishRuntime;
     }
 
-    public boolean handles(Properties properties) {
+    public boolean handles(BootstrapOptions bsOptions) {
         try {
-            if (!Constants.Platform.Static.toString().equals(
-                    properties.getProperty(Constants.PLATFORM_PROPERTY_KEY))) {
+            if (!BootstrapConstants.Platform.Static.name().equals(
+                    bsOptions.getPlatformProperty())) {
                 return false;
             }
-            String installRoot = properties.getProperty(Constants.INSTALL_ROOT_PROP_NAME);
-            String instanceRoot = properties.getProperty(Constants.INSTANCE_ROOT_PROP_NAME);
+            String installRoot = bsOptions.getInstallRoot();
+            // XXX: Commented by Prasad . We need to eliminate this here as only the
+            // Bootstrap options will be passed.
+            //String instanceRoot = properties.getProperty(GlassFishConstants.INSTANCE_ROOT_PROP_NAME);
             if(isValidInstallRoot(installRoot)) {
-                ASMainHelper.verifyDomainRoot(new File(instanceRoot));
+                // XXX : Need to verify if this is correct.
+                File instanceRoot = ASMainHelper.findInstanceRoot(new File(installRoot), ASMainHelper.parseAsEnv(new File(installRoot)));
+                ASMainHelper.verifyDomainRoot(instanceRoot);
                 return true;
             }
         } catch (Exception ex) {
@@ -119,7 +127,7 @@ public class NonOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.RuntimeB
         return false;
     }
 
-    public void destroy() throws Exception {
+    public void destroy() throws GlassFishException {
         // TODO : do any clean up
     }
 

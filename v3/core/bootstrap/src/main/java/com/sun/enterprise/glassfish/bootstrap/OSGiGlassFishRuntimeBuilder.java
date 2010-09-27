@@ -40,8 +40,11 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.glassfish.simpleglassfishapi.spi.RuntimeBuilder;
 import org.glassfish.simpleglassfishapi.*;
-import org.glassfish.simpleglassfishapi.Constants;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.launch.Framework;
 
 import java.util.Properties;
@@ -75,7 +78,7 @@ import java.util.Properties;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public final class OSGiGlassFishRuntimeBuilder implements GlassFishRuntime.RuntimeBuilder {
+public final class OSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
     private Framework framework;
 
     /**
@@ -83,25 +86,29 @@ public final class OSGiGlassFishRuntimeBuilder implements GlassFishRuntime.Runti
      */
     public OSGiGlassFishRuntimeBuilder() {}
 
-    public GlassFishRuntime build(Properties properties) throws Exception {
-        ASMainHelper.buildStartupContext(properties);
-        final OSGiFrameworkLauncher fwLauncher = new OSGiFrameworkLauncher(properties);
-        this.framework = fwLauncher.launchOSGiFrameWork();
-        debug("Initialized " + framework);
-        return fwLauncher.getService(GlassFishRuntime.class);
+    public GlassFishRuntime build(BootstrapOptions bsOptions) throws GlassFishException {
+        ASMainHelper.buildStartupContext(bsOptions.getAllOptions());
+        final OSGiFrameworkLauncher fwLauncher = new OSGiFrameworkLauncher(bsOptions.getAllOptions());
+        try {
+            this.framework = fwLauncher.launchOSGiFrameWork();
+            debug("Initialized " + framework);
+            return fwLauncher.getService(GlassFishRuntime.class);
+        } catch (Exception e) {
+            throw new GlassFishException(e);
+        }
     }
 
-    public boolean handles(Properties properties) {
+    public boolean handles(BootstrapOptions bsOptions) {
         /*
          * This builder can't handle GOSGi platform, because we read framework configuration from a framework
          * specific file in ASMainHelper.buildStartupContext(properties);
          */
-        final String platformStr = properties.getProperty(Constants.PLATFORM_PROPERTY_KEY);
+        final String platformStr = bsOptions.getPlatformProperty();
         if (platformStr == null || platformStr.trim().isEmpty()) {
             return false;
         }
-        Constants.Platform platform =
-                Constants.Platform.valueOf(platformStr);
+        BootstrapConstants.Platform platform =
+                BootstrapConstants.Platform.valueOf(platformStr);
         switch (platform) {
             case Felix:
             case Equinox:
@@ -111,9 +118,15 @@ public final class OSGiGlassFishRuntimeBuilder implements GlassFishRuntime.Runti
         return false;
     }
 
-    public void destroy() throws Exception {
-        framework.stop();
-        framework.waitForStop(0);
+    public void destroy() throws GlassFishException {
+        try {
+            framework.stop();
+            framework.waitForStop(0);
+        } catch (InterruptedException ex) {
+            throw new GlassFishException(ex);
+        } catch (BundleException ex) {
+            throw new GlassFishException(ex);
+        }
     }
 
     private static void debug(String s) {

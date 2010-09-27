@@ -40,7 +40,7 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
-import org.glassfish.simpleglassfishapi.Constants;
+import org.glassfish.simpleglassfishapi.BootstrapConstants;
 import org.glassfish.simpleglassfishapi.Deployer;
 import org.glassfish.simpleglassfishapi.GlassFish;
 import org.glassfish.simpleglassfishapi.GlassFishRuntime;
@@ -53,6 +53,8 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Properties;
 
+import org.glassfish.simpleglassfishapi.BootstrapOptions;
+import org.glassfish.simpleglassfishapi.GlassFishOptions;
 import static com.sun.enterprise.module.bootstrap.ArgumentManager.argsToMap;
 
 /**
@@ -72,7 +74,7 @@ public class GlassFishMain {
         System.out.println("Launching GlassFish on " + platform + " platform");
 
         // Set the system property if downstream code wants to know about it
-        System.setProperty(Constants.PLATFORM_PROPERTY_KEY, platform); // TODO(Sahoo): Why is this a system property?
+        System.setProperty(BootstrapConstants.PLATFORM_PROPERTY_KEY, platform); // TODO(Sahoo): Why is this a system property?
 
         File installRoot = ASMainHelper.findInstallRoot();
 
@@ -107,14 +109,15 @@ public class GlassFishMain {
          * Only this class has compile time dependency on glassfishapi.
          */
         private static volatile GlassFish gf;
+        private static volatile GlassFishRuntime gfr;
 
         public Launcher() {
         }
 
         public void launch(Properties ctx) throws Exception {
             addShutdownHook();
-            GlassFishRuntime gfr = GlassFishRuntime.bootstrap(ctx, getClass().getClassLoader());
-            gf = gfr.newGlassFish(ctx);
+            gfr = GlassFishRuntime.bootstrap(new BootstrapOptions(ctx), getClass().getClassLoader());
+            gf = gfr.newGlassFish(new GlassFishOptions(ctx));
             if (Boolean.valueOf(Util.getPropertyOrSystemProperty(ctx, "GlassFish_Interactive", "false"))) {
                 startConsole();
             } else {
@@ -190,7 +193,7 @@ public class GlassFishMain {
                         if (gf != null) {
                             gf.stop();
                         }
-                        GlassFishRuntime.shutdown();
+                        gfr.shutdown();
                     }
                     catch (Exception ex) {
                         System.err.println("Error stopping framework: " + ex);

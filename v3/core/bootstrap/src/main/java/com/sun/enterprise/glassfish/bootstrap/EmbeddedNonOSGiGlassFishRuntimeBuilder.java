@@ -43,7 +43,8 @@ package com.sun.enterprise.glassfish.bootstrap;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
-import org.glassfish.simpleglassfishapi.Constants;
+import org.glassfish.simpleglassfishapi.BootstrapOptions;
+import org.glassfish.simpleglassfishapi.GlassFishException;
 import org.glassfish.simpleglassfishapi.GlassFishRuntime;
 
 import java.io.File;
@@ -58,6 +59,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.simpleglassfishapi.BootstrapConstants;
+import org.glassfish.simpleglassfishapi.GlassFishConstants;
+import org.glassfish.simpleglassfishapi.spi.RuntimeBuilder;
 
 /**
  * This {@link GlassFishRuntime.RuntimeBuilder} is responsible for setting up a
@@ -71,23 +75,25 @@ import java.util.logging.Logger;
  * @author bhavanishankar@dev.java.net
  */
 
-public class EmbeddedNonOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.RuntimeBuilder {
+public class EmbeddedNonOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
 
     private static Logger logger = Util.getLogger();
     private static final String JAR_EXT = ".jar";
 
-    public boolean handles(Properties properties) {
-        boolean handles = false;
-        if (org.glassfish.simpleglassfishapi.Constants.Platform.Static.toString().equals(
-                properties.getProperty(Constants.PLATFORM_PROPERTY_KEY))) {
-            String installRoot = properties.getProperty(Constants.INSTALL_ROOT_PROP_NAME);
-            String instanceRoot = properties.getProperty(Constants.INSTANCE_ROOT_PROP_NAME);
+    public boolean handles(BootstrapOptions bsOptions) {
+        boolean handles = false;  
+        if (org.glassfish.simpleglassfishapi.BootstrapConstants.Platform.Static.toString().equals(
+                bsOptions.getAllOptions().getProperty(BootstrapConstants.PLATFORM_PROPERTY_KEY))) {
+            String installRoot = bsOptions.getInstallRoot();             
+             //XXX : Commented out by Prasad
+            // Why do we need this here ?
+            String instanceRoot =bsOptions.getAllOptions().getProperty(GlassFishConstants.INSTANCE_ROOT_PROP_NAME);            
             try {
-                ASMainHelper.verifyDomainRoot(new File(instanceRoot));
+                //ASMainHelper.verifyDomainRoot(new File(instanceRoot));
                 // instanceRoot is valid, let us check if installRoot is valid.
                 if (!isValidInstallRoot(installRoot)) {
-                    // installRoot is not pointing to existing installation, so we handle.
-                    handles = true;
+                    // installRoot is not pointing to existing installation, so we handle.                  
+                    handles = true;                 
                 }
             } catch (Exception ex) {
                 // instanceRoot is not pointing to existing installation, so we handle.
@@ -97,28 +103,32 @@ public class EmbeddedNonOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.
         return handles;
     }
 
-    public GlassFishRuntime build(Properties properties) throws Exception {
+    public GlassFishRuntime build(BootstrapOptions bsOptions) throws GlassFishException {
         // Create installRoot & instanceRoot directories.
-        String instanceRoot = properties.getProperty(Constants.INSTANCE_ROOT_PROP_NAME);
+        // XXX: Should this class know anything about instance root ?
+        try {
+        Properties properties = bsOptions.getAllOptions();
+        String instanceRoot = properties.getProperty(GlassFishConstants.INSTANCE_ROOT_PROP_NAME);
         if (instanceRoot == null) {
             instanceRoot = createDefaultInstanceRoot();
-            properties.setProperty(Constants.INSTANCE_ROOT_PROP_NAME, instanceRoot);
-            properties.setProperty(Constants.INSTANCE_ROOT_URI_PROP_NAME,
+            properties.setProperty(GlassFishConstants.INSTANCE_ROOT_PROP_NAME, instanceRoot);
+            properties.setProperty(GlassFishConstants.INSTANCE_ROOT_URI_PROP_NAME,
                     new File(instanceRoot).toURI().toString());
         }
         provisionInstanceRoot(new File(instanceRoot), properties);
-
-        String installRoot = properties.getProperty(Constants.INSTALL_ROOT_PROP_NAME);
+        
+        String installRoot = bsOptions.getInstallRoot();
         if (installRoot == null) {
             installRoot = createDefaultInstallRoot(instanceRoot);
-            properties.setProperty(Constants.INSTALL_ROOT_PROP_NAME, installRoot);
-            properties.setProperty(Constants.INSTALL_ROOT_URI_PROP_NAME,
+            properties.setProperty(BootstrapConstants.INSTALL_ROOT_PROP_NAME, installRoot);
+            properties.setProperty(BootstrapConstants.INSTALL_ROOT_URI_PROP_NAME,
                     new File(installRoot).toURI().toString());
         }
         provisionInstallRoot(new File(installRoot));
 
+        //XXX : Should this class know anything about config files ?
         // Copy the configFile to the instanceRoot/config
-        copyConfigFile(properties.getProperty(Constants.CONFIG_FILE_URI_PROP_NAME), instanceRoot);
+        copyConfigFile(properties.getProperty(GlassFishConstants.CONFIG_FILE_URI_PROP_NAME), instanceRoot);
 
         /* Step 1. Build the classloader. */
         List<URL> moduleJarURLs = getModuleJarURLs(installRoot);
@@ -132,13 +142,17 @@ public class EmbeddedNonOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.
 
         // Step 3. Create NonOSGIGlassFishRuntime
         GlassFishRuntime glassFishRuntime = new NonOSGiGlassFishRuntime(main);
+        
 
         logger.logp(Level.FINER, getClass().getName(), "build", "Created GlassFishRuntime {0} " +
-                "with Bootstrap Properties {1}", new Object[]{glassFishRuntime, properties});
+                "with Bootstrap Properties {1}", new Object[]{glassFishRuntime, bsOptions.getAllOptions()});
         return glassFishRuntime;
+        } catch(Exception ex) {
+             throw new GlassFishException(ex);
+        }
     }
 
-    public void destroy() throws Exception {
+    public void destroy() throws GlassFishException {
         // TODO : do any clean up
     }
 
@@ -148,6 +162,7 @@ public class EmbeddedNonOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.
 
     private boolean isValidInstallRoot(String installRootPath) {
         if (installRootPath == null || !new File(installRootPath).exists()) {
+          System.err.println("Return false from isValidInstallRoot"); 
             return false;
         }
         if (!new File(installRootPath, "modules").exists()) {
@@ -274,7 +289,7 @@ public class EmbeddedNonOSGiGlassFishRuntimeBuilder implements GlassFishRuntime.
         return moduleJarURLs;
     }
 
-    private class StaticClassLoader extends URLClassLoader {
+   private class StaticClassLoader extends URLClassLoader {
         public StaticClassLoader(ClassLoader parent, List<URL> moduleJarURLs) {
             super(moduleJarURLs.toArray(new URL[0]), parent);
         }

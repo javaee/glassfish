@@ -41,7 +41,8 @@
 package com.sun.enterprise.glassfish.bootstrap;
 
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
-import org.glassfish.simpleglassfishapi.Configurator;
+import org.glassfish.simpleglassfishapi.CommandRunner;
+import org.glassfish.simpleglassfishapi.Deployer;
 import org.glassfish.simpleglassfishapi.GlassFish;
 import org.jvnet.hk2.component.Habitat;
 
@@ -92,7 +93,7 @@ public class GlassFishImpl implements GlassFish {
     }
 
     public synchronized void dispose() {
-        throw new UnsupportedOperationException();
+       //TODO : 
     }
 
     public synchronized Status getStatus() {
@@ -108,6 +109,16 @@ public class GlassFishImpl implements GlassFish {
         // getComponent(Class, String) only searches contract map.
         return serviceName != null ? habitat.getComponent(serviceType, serviceName) :
                 habitat.getComponent(serviceType);
+    }
+
+    @Override
+    public Deployer getDeployer() {
+        return lookupService(Deployer.class, null);
+    }
+
+    @Override
+    public CommandRunner getCommandRunner() {
+        return lookupService(CommandRunner.class, null);
     }
 
 }
