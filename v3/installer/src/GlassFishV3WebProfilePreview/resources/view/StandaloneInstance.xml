@@ -66,6 +66,15 @@
           </apt:visual>
         </apt:property>
 
+          <apt:property apt:name="DOMAIN_PARTITION"
+             apt:dataPath=""
+             apt:type="xs:string">
+            <apt:prop-value>$DAS_PARTITION_TEXT</apt:prop-value>
+         <apt:visual>
+            <apt:htmlPanel/>
+         </apt:visual>
+         </apt:property>
+
            <apt:property apt:name="SERVER_HOST_NAME"
               apt:label="$SERVER_HOST_NAME_TEXT"
               apt:dataPath="Configuration.SERVER_HOST_NAME"
