@@ -633,11 +633,15 @@ public class ResourcesXMLParser implements EntityResolver
         Node statementLeakReclaimNode =
                 attributes.getNamedItem(STATEMENT_LEAK_RECLAIM);
 
-        String datasource = datasourceNode.getNodeValue();
-        
+
         Resource jdbcConnPool = new Resource(Resource.JDBC_CONNECTION_POOL);
         jdbcConnPool.setAttribute(CONNECTION_POOL_NAME, name);
-        jdbcConnPool.setAttribute(DATASOURCE_CLASS, datasource);
+
+        if(datasourceNode != null){
+            String datasource = datasourceNode.getNodeValue();
+            jdbcConnPool.setAttribute(DATASOURCE_CLASS, datasource);
+        }
+
         if (nSteadyPoolSizeNode != null) {
            String sSteadyPoolSize = nSteadyPoolSizeNode.getNodeValue();
            jdbcConnPool.setAttribute(STEADY_POOL_SIZE, sSteadyPoolSize);
