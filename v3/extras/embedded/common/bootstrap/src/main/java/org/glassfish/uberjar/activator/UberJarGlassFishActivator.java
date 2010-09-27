@@ -40,7 +40,6 @@
 
 package org.glassfish.uberjar.activator;
 
-import org.glassfish.simpleglassfishapi.Constants;
 import org.glassfish.simpleglassfishapi.GlassFish;
 import org.glassfish.simpleglassfishapi.GlassFishRuntime;
 import org.osgi.framework.BundleActivator;
@@ -51,6 +50,9 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Properties;
 import java.util.logging.Logger;
+import org.glassfish.simpleglassfishapi.BootstrapConstants;
+import org.glassfish.simpleglassfishapi.BootstrapOptions;
+import org.glassfish.simpleglassfishapi.GlassFishOptions;
 
 /**
  * @author bhavanishankar@dev.java.net
@@ -109,7 +111,7 @@ public class UberJarGlassFishActivator implements BundleActivator {
             public Void run() {
                 try {
                     Properties props = new Properties();
-                    props.setProperty(Constants.PLATFORM_PROPERTY_KEY, Constants.Platform.Felix.toString());
+                    props.setProperty(BootstrapConstants.PLATFORM_PROPERTY_KEY, BootstrapConstants.Platform.Felix.toString());
 
                     logger.info("ThreadContextClassLoader = " + Thread.currentThread().getContextClassLoader() +
                             ", classloader = " + getClass().getClassLoader());
@@ -123,13 +125,15 @@ public class UberJarGlassFishActivator implements BundleActivator {
 
                     long startTime = System.currentTimeMillis();
                     GlassFishRuntime gfr = GlassFishRuntime.bootstrap(
-                            props, getClass().getClassLoader());  // don't use thread context classloader, otherwise the META-INF/services will not be found.
+                            new BootstrapOptions(props), getClass().getClassLoader());  // don't use thread context classloader, otherwise the META-INF/services will not be found.
                     long timeTaken = System.currentTimeMillis() - startTime;
 
                     logger.info("created gfr = " + gfr + ", timeTaken = " + timeTaken);
 
                     startTime = System.currentTimeMillis();
-                    GlassFish gf = gfr.newGlassFish(props);
+                    // XXX : Why are we passing the same set of properties to
+                    // both bootstrap and newGlassFish ?
+                    GlassFish gf = gfr.newGlassFish(new GlassFishOptions(props));
                     timeTaken = System.currentTimeMillis() - startTime;
                     System.out.println("created gf = " + gf + ", timeTaken = " + timeTaken);
 
