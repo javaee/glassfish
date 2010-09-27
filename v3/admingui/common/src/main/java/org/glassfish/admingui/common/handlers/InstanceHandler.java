@@ -67,7 +67,6 @@ import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.common.util.GuiUtil;
 
 import javax.management.ObjectName;
-import javax.management.Attribute;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admingui.common.util.RestResponse;
 
@@ -232,47 +231,6 @@ public class InstanceHandler {
         list.add(0, key);
         list.add(1, value);
         return list;
-    }
-    
-    /**
-     *	<p> This handler restart DAS immediately.</p>
-     */
-    @Handler(id = "restartDomain")
-    public static void restartDomain(HandlerContext handlerCtx) {
-        V3AMX.getInstance().getRuntime().restartDomain();
-    }
-
-
-    /**
-     *	<p> This handler stops DAS immediately.</p>
-     */
-    @Handler(id = "stopDomain")
-    public static void stopDomain(HandlerContext handlerCtx) {
-        V3AMX.getInstance().getDomainRoot().stopDomain();
-    }
-
-    /**
-     *	<p> This method returns values for the JVM Report </p>
-     *  <p> Output value: "ViewsList" -- Type: <code>java.util.Array</code>/</p>
-     *	@param	context	The HandlerContext.
-     */
-    @Handler(id="getJvmReport",
-    input={
-        @HandlerInput(name="type",            type=String.class) },
-    output={
-        @HandlerOutput(name="report",        type=String.class) })
-    public static void getJvmReport(HandlerContext handlerCtx) {
-        String type = (String)handlerCtx.getInputValue("type");
-        if(type == null || type.equals("")){
-            type = "summary";
-        }
-        try{
-            String report = V3AMX.getInstance().getRuntime().getJVMReport(type);
-            handlerCtx.setOutputValue("report", report);
-        }catch(Exception ex){
-            ex.printStackTrace();
-            handlerCtx.setOutputValue("report", "");
-        }
     }
 
     private static final String PROPERTY_VALUE = "value";
