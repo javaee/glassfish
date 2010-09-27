@@ -40,9 +40,9 @@
 
 package com.sun.enterprise.v3.admin;
 
+import com.sun.enterprise.glassfish.bootstrap.Configurator;
 import org.glassfish.simpleglassfishapi.CommandRunner;
-import org.glassfish.simpleglassfishapi.Configurator;
-import org.glassfish.simpleglassfishapi.Constants;
+import org.glassfish.simpleglassfishapi.GlassFishConstants;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -67,9 +67,9 @@ public class ConfiguratorImpl implements Configurator {
     private static final Map<String, String> simpleConfigurators = new HashMap();
 
     static {
-        simpleConfigurators.put(Constants.HTTP_PORT,
+        simpleConfigurators.put(GlassFishConstants.HTTP_PORT,
                 "server.network-config.network-listeners.network-listener.http-listener-1.port={0}");
-        simpleConfigurators.put(Constants.HTTPS_PORT,
+        simpleConfigurators.put(GlassFishConstants.HTTPS_PORT,
                 "server.network-config.network-listeners.network-listener.http-listener-2.port={0}");
         // TODO :: support other simple configurations like jmx.port and jms.port
     }

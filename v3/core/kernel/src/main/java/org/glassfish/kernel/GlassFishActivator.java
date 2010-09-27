@@ -42,9 +42,12 @@ package org.glassfish.kernel;
 
 import com.sun.enterprise.glassfish.bootstrap.*;
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
@@ -59,6 +62,8 @@ import java.io.File;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Properties;
+import org.glassfish.simpleglassfishapi.GlassFishException;
+import org.glassfish.simpleglassfishapi.GlassFishOptions;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -83,23 +88,32 @@ public class GlassFishActivator implements BundleActivator, EventListener {
         hk2Tracker.open();
         bundleContext.registerService(GlassFishRuntime.class.getName(), new GlassFishRuntime() {
             @Override
-            public GlassFish newGlassFish(Properties properties) throws Exception {
-                // set env props before updating config, because configuration update may actually trigger
-                // some code to be executed which may be depending on the environment variable values.
-                setEnv(properties);
-                final StartupContext startupContext = new StartupContext(properties);
-                final Main main = (Main) hk2Tracker.waitForService(0);
-                final ModulesRegistry mr = ModulesRegistry.class.cast(
-                        bundleContext.getService(bundleContext.getServiceReference(ModulesRegistry.class.getName())));
-                final Habitat habitat = main.createHabitat(mr, startupContext);
-                final ModuleStartup gfKernel = main.findStartupService(mr, habitat, null, startupContext);
-                System.out.println("gfKernel = " + gfKernel);
-                GlassFish glassFish = new GlassFishImpl(gfKernel, habitat, properties);
-                events = habitat.getComponent(Events.class);
-                events.register(GlassFishActivator.this);
-                // register GlassFish in service registry
-                bundleContext.registerService(GlassFish.class.getName(), glassFish, properties);
-                return glassFish;
+            public GlassFish newGlassFish(GlassFishOptions gfOptions) throws GlassFishException {
+                try {
+                    // set env props before updating config, because configuration update may actually trigger
+                    // some code to be executed which may be depending on the environment variable values.
+                    setEnv(gfOptions.getAllOptions());
+                    final StartupContext startupContext = new StartupContext(gfOptions.getAllOptions());
+                    final Main main = (Main) hk2Tracker.waitForService(0);
+                    final ModulesRegistry mr = ModulesRegistry.class.cast(bundleContext.getService(bundleContext.getServiceReference(ModulesRegistry.class.getName())));
+                    final Habitat habitat = main.createHabitat(mr, startupContext);
+                    final ModuleStartup gfKernel = main.findStartupService(mr, habitat, null, startupContext);
+                    System.out.println("gfKernel = " + gfKernel);
+                    GlassFish glassFish = new GlassFishImpl(gfKernel, habitat, gfOptions.getAllOptions());
+                    events = habitat.getComponent(Events.class);
+                    events.register(GlassFishActivator.this);
+                    // register GlassFish in service registry
+                    bundleContext.registerService(GlassFish.class.getName(), glassFish, gfOptions.getAllOptions());
+                    return glassFish;
+                } catch (BootException ex) {
+                    throw new GlassFishException(ex);
+                } catch (InterruptedException ex) {
+                    throw new GlassFishException(ex);
+                }
+            }
+
+            public void disposeGlassFishInstances() {
+                // XXX : To be implemented
             }
         }, null);
     }

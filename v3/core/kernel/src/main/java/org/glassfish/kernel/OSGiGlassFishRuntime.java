@@ -43,7 +43,8 @@ package org.glassfish.kernel;
 import org.glassfish.simpleglassfishapi.GlassFish;
 import org.glassfish.simpleglassfishapi.GlassFishRuntime;
 
-import java.util.Properties;
+import org.glassfish.simpleglassfishapi.GlassFishException;
+import org.glassfish.simpleglassfishapi.GlassFishOptions;
 
 /**
  * This is what gets registered in OSGi Service registry as GlassFishRuntime
@@ -53,8 +54,13 @@ import java.util.Properties;
 /* package */ class OSGiGlassFishRuntime extends GlassFishRuntime {
 
     @Override
-    public GlassFish newGlassFish(Properties properties) throws Exception {
+    public GlassFish newGlassFish(GlassFishOptions options) throws GlassFishException {
         return null;  //TODO(Sahoo): Not Yet Implemented
+    }
+
+    @Override
+    public void disposeGlassFishInstances() {
+        
     }
 
 }
