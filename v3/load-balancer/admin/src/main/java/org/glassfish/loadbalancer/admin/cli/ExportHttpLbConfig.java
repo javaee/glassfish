@@ -41,7 +41,6 @@
 package org.glassfish.loadbalancer.admin.cli;
 
 import java.io.File;
-import java.util.Date;
 import java.io.FileOutputStream;
 
 import org.glassfish.api.I18n;
@@ -59,6 +58,7 @@ import org.glassfish.loadbalancer.admin.cli.reader.api.LoadbalancerReader;
 import java.util.HashSet;
 import java.util.List;
 import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.ServerEnvironment;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
@@ -83,7 +83,7 @@ public class ExportHttpLbConfig implements AdminCommand {
     String lbConfigName;
     @Param(name = "lbname", optional = true)
     String lbName;
-    @Param(name = "file_name", primary = true)
+    @Param(name = "file_name", optional= true, primary = true)
     String fileName;
     @Param(name = "property", optional = true, separator = ':')
     Properties properties;
@@ -91,13 +91,19 @@ public class ExportHttpLbConfig implements AdminCommand {
     Domain domain;
     @Inject
     ApplicationRegistry appRegistry;
+    @Inject
+    ServerEnvironment env;
+
+    private static final String DEFAULT_LB_XML_FILE_NAME =
+            "loadbalancer.xml";
 
     @Override
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
         try {
-            process();
+            String msg = process();
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+            report.setMessage(msg);
         } catch (Throwable t) {
             String msg = LbLogUtil.getStringManager().getString("ExportHttpLbConfigFailed", t.getMessage());
             LbLogUtil.getLogger().log(Level.WARNING, msg);
@@ -110,8 +116,8 @@ public class ExportHttpLbConfig implements AdminCommand {
         }
     }
 
-    public void process() throws Exception {
-        File f = new File(fileName);
+    public String process() throws Exception {
+        
         LoadbalancerReader lbr = null;
         if (lbName != null && lbConfigName == null && target == null) {
             LoadBalancer lb = LbConfigHelper.getLoadBalancer(domain, lbName);
@@ -127,6 +133,33 @@ public class ExportHttpLbConfig implements AdminCommand {
             throw new Exception(msg);
         }
 
+        if(fileName == null){
+            String configName = lbr.getName();
+            if(configName != null){
+                fileName = DEFAULT_LB_XML_FILE_NAME + "." + configName;
+            } else {
+                fileName = DEFAULT_LB_XML_FILE_NAME;
+            }
+        }
+
+        File f = new File(fileName);
+        if(!f.isAbsolute()){
+            File generatedDir = env.getApplicationStubPath();
+            f = new File(generatedDir, fileName);
+        }
+        
+        if (f.exists()) {
+            String msg = LbLogUtil.getStringManager().getString(
+                    "FileExists", f.getPath());
+            throw new Exception(msg);
+        }
+
+        if ( !(f.getParentFile().exists()) ) {
+            String msg = LbLogUtil.getStringManager().getString(
+                    "ParentFileMissing", f.getParent());
+            throw new Exception(msg);
+        }
+
         FileOutputStream fo = null;
 
         try {
@@ -134,9 +167,10 @@ public class ExportHttpLbConfig implements AdminCommand {
                 f.createNewFile();
             }
             fo = new FileOutputStream(f);
-            String footer = LbLogUtil.getStringManager().getString("GeneratedFileFooter",
-                    new Date().toString());
             LbConfigHelper.exportXml(lbr, fo);
+            String msg = LbLogUtil.getStringManager().getString(
+                    "GeneratedFileLocation", f.getAbsolutePath());
+            return msg;
         } finally {
             if (fo != null) {
                 fo.close();

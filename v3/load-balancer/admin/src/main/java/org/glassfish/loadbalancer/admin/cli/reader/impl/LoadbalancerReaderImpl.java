@@ -188,7 +188,7 @@ public class LoadbalancerReaderImpl implements LoadbalancerReader {
         if (_lbConfig != null) {
             return _lbConfig.getName();
         }
-        return "default-load-balancer";
+        return null;
     }
 
     // --- VISITOR IMPLEMENTATION ---
