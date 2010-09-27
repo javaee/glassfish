@@ -64,11 +64,9 @@
 
         gf.restRequest(endpoint="#{sessionScope.REST_URL}/applications/application/#{pageSession.encodedName}/property.json"  method="GET" result="#{requestScope.resp}");
         setPageSessionAttribute(key="propsMap" value="#{requestScope.resp.data.extraProperties.properties}");
-        gf.getTargetEnableInfo(appName="#{pageSession.appName}" status="#{pageSession.status}")
+        gf.getTargetEnableInfo(appName="#{pageSession.name}" status="#{pageSession.status}")
         if (#{pageSession.onlyDASExist}){
-            gf.getEntityAttrs(endpoint="#{pageSession.appRefUrl}" valueMap="#{pageSession.valueMap2}");
             mapPut(map="#{pageSession.valueMap}"  key="enabled" value="#{pageSession.status}");
-            setPageSessionAttribute(key="origState" value="#{pageSession.status}");
         }
         setPageSessionAttribute(key="attrList" value={"classpath" , "is-failure-fatal", "class-name", "load-order", "isLifecycle"} );
         setPageSessionAttribute(key="tableList" value={});
