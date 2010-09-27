@@ -42,9 +42,12 @@ package org.glassfish.api.embedded;
 
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.glassfish.api.container.Sniffer;
-import org.glassfish.simpleglassfishapi.Constants;
 import org.glassfish.simpleglassfishapi.GlassFish;
 import org.glassfish.simpleglassfishapi.GlassFishRuntime;
+import org.glassfish.simpleglassfishapi.BootstrapConstants;
+import org.glassfish.simpleglassfishapi.BootstrapOptions;
+import org.glassfish.simpleglassfishapi.GlassFishConstants;
+import org.glassfish.simpleglassfishapi.GlassFishOptions;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
@@ -56,6 +59,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 
 /**
@@ -231,20 +235,20 @@ public class Server {
             String instanceRoot = fs.instanceRoot != null ? fs.instanceRoot.getAbsolutePath() : null;
             String installRoot = fs.installRoot != null ? fs.installRoot.getAbsolutePath() : instanceRoot;
             if (installRoot != null) {
-                props.setProperty(Constants.INSTALL_ROOT_PROP_NAME, installRoot);
-                props.setProperty(Constants.INSTALL_ROOT_URI_PROP_NAME,
+                props.setProperty(BootstrapConstants.INSTALL_ROOT_PROP_NAME, installRoot);
+                props.setProperty(BootstrapConstants.INSTALL_ROOT_URI_PROP_NAME,
                         new File(installRoot).toURI().toString());
             }
             if (instanceRoot != null) {
-                props.setProperty(Constants.INSTANCE_ROOT_PROP_NAME, fs.instanceRoot.getAbsolutePath());
-                props.setProperty(Constants.INSTANCE_ROOT_URI_PROP_NAME,
+                props.setProperty(GlassFishConstants.INSTANCE_ROOT_PROP_NAME, fs.instanceRoot.getAbsolutePath());
+                props.setProperty(GlassFishConstants.INSTANCE_ROOT_URI_PROP_NAME,
                         new File(instanceRoot).toURI().toString());
             }
         }
         try {
             URL url = (fs != null && fs.configFile != null) ? fs.configFile.toURI().toURL() :
                     getClass().getClassLoader().getResource("org/glassfish/embed/domain.xml");
-            props.setProperty(Constants.CONFIG_FILE_URI_PROP_NAME, url.toURI().toString());
+            props.setProperty(GlassFishConstants.CONFIG_FILE_URI_PROP_NAME, url.toURI().toString());
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -262,20 +266,20 @@ public class Server {
             if(properties == null) {
                 properties = new Properties();
             }
-            EmbeddedFileSystem fs = builder.fileSystem;
+            EmbeddedFileSystem fs = builder.fileSystem;                               
             setProperties(fs, properties);
-            glassfishRuntime = GlassFishRuntime.bootstrap(properties,
+            glassfishRuntime = GlassFishRuntime.bootstrap(new BootstrapOptions(properties),
                     getClass().getClassLoader());
 
-            glassfish = glassfishRuntime.newGlassFish(properties);
+            glassfish = glassfishRuntime.newGlassFish(new GlassFishOptions(properties));
             glassfish.start();
             if(fs == null ||  fs.installRoot == null || fs.instanceRoot == null) {
                 EmbeddedFileSystem.Builder fsBuilder = new EmbeddedFileSystem.Builder();
                 if(fs != null) {
                     fs.copy(fsBuilder);
                 }
-                fsBuilder.instanceRoot(new File(properties.getProperty(Constants.INSTANCE_ROOT_PROP_NAME)));
-                fsBuilder.installRoot(new File(properties.getProperty(Constants.INSTALL_ROOT_PROP_NAME)));
+                fsBuilder.instanceRoot(new File(properties.getProperty(GlassFishConstants.INSTANCE_ROOT_PROP_NAME)));
+                fsBuilder.installRoot(new File(properties.getProperty(BootstrapConstants.INSTALL_ROOT_PROP_NAME)));
                 fsBuilder.autoDelete(fs == null || fs.instanceRoot ==null);
                 fs = fsBuilder.build();
             }
@@ -561,7 +565,7 @@ public class Server {
                 logger.finer("GlassFish has been stopped");
             }
             if (glassfishRuntime != null) {
-                GlassFishRuntime.shutdown();
+                glassfishRuntime.shutdown();
                 logger.finer("GlassFishruntime has been shutdown");
             }
         } catch (Exception ex) {
