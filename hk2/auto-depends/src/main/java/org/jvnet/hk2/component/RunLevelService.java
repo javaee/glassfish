@@ -37,13 +37,15 @@
 package org.jvnet.hk2.component;
 
 import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
 
 /**
  * The run level service for a particular class of <code>RunLevel</code>,
  * identified by environment.
  * <p>
  * Implementations of this service are responsible for orchestrating
- * lifecycle events for services annotated with <code>RunLevel</code>.
+ * lifecycle events for services annotated with <code>RunLevel</code>. This
+ * includes inhabitant activations (aka get) and deactivations (aka release).
  * <p>
  * The default RunLevelService uses T==Void.class, and is registered in
  * the habitat with the name "default".
@@ -52,7 +54,10 @@ import org.jvnet.hk2.annotations.Contract;
  * in habitat creation lifecycle.  As a result, they should not rely
  * on the Habitat being fully initialized in any <code>PostConstruct</code>
  * call.  Alternatively, they should implement HabitatListener, and
- * wait for a habitat initialization event.
+ * wait for a habitat initialization event before doing any initialization
+ * work.
+ * 
+ * @see DefaultRunLevelService
  * 
  * @author Jeff Trent
  * 
