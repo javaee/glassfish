@@ -67,21 +67,7 @@
         <sun:textField id="desc" columns="$int{70}" maxLength="#{sessionScope.fieldLengths['maxLength.common.description']}" text="#{pageSession.valueMap['description']}" />
     </sun:property>
 
-    <!-- uncomment the following when issue# 13620 is fixed.
-    <sun:property id="vsProp"  rendered="#{pageSession.onlyDASExist}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.virtualServerLabel}" helpText="$resource{i18n.deploy.vsHelp}">
-        <sun:listbox id="vs" immediate="#{true}" multiple="#{true}"  rows="$int{4}" labels="$pageSession{availableVS}" selected="#{pageSession.valueMap['virtualservers']}" >
-            <!beforeCreate
-                getVsForDeployment(result="#{pageSession.vsList}");
-                getListBoxOptions(
-                    availableList="#{pageSession.vsList}",
-                    selectedCommaString="",
-                    availableListResult="#{pageSession.availableVS}",
-                    selectedOptions="#{pageSession.valueMap['virtualservers']}"
-                    addEmptyFirstChoice="true");
-            />
-        </sun:listbox>
-    </sun:property>
-    -->
+    <!-- Virtual Server doesn't apply to lifecycle module. refer to issue# 13620 -->
 
     <sun:property id="statusNew" rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
         <sun:checkbox id="status" label="$resource{i18n.common.Enabled}"  selected="#{pageSession.valueMap['enabled']}" selectedValue="true" />

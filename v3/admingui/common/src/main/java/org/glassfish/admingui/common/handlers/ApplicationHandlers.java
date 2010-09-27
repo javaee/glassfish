@@ -254,34 +254,25 @@ public class ApplicationHandlers {
 
     @Handler(id = "gf.deleteLifecycle",
         input = {
-            @HandlerInput(name = "selectedList", type = List.class, required=true),
-            @HandlerInput(name = "onlyDASExist", type = boolean.class, required=true)})
+            @HandlerInput(name = "selectedList", type = List.class, required=true)})
 
     public static void deleteLifecycle(HandlerContext handlerCtx) {
         List<Map> selectedList = (List) handlerCtx.getInputValue("selectedList");
-        boolean onlyDASExist = (Boolean) handlerCtx.getInputValue("onlyDASExist");
         String endpoint = GuiUtil.getSessionValue("REST_URL") + "/applications/application/delete-lifecycle-module" ;
         Map attrs = new HashMap();
-        if (onlyDASExist){
-            attrs.put("target", "server");
-        }
         try{
             for(Map oneRow: selectedList){
                 String name = (String) oneRow.get("name");
                 String encodedName = URLEncoder.encode(name, "UTF-8");
                 attrs.put("id", encodedName);
-                if (onlyDASExist){
-                    RestApiHandlers.restRequest( endpoint, attrs, "POST", handlerCtx);
-                } else{
-                    //delete all application-ref first
-                    List<Map> appRefs = DeployUtil.getRefEndpoints(name, "application-ref");
-                    for(Map  oneRef:  appRefs){
-                        attrs.put("target", oneRef.get("targetName"));
-                        RestApiHandlers.restRequest((String)oneRef.get("endpoint"), attrs, "DELETE", null);
-                    }
-                    attrs.put("target", "domain");
-                    RestApiHandlers.restRequest( endpoint, attrs, "POST", null);
+                //delete all application-ref first
+                List<Map> appRefs = DeployUtil.getRefEndpoints(name, "application-ref");
+                for(Map  oneRef:  appRefs){
+                    attrs.put("target", oneRef.get("targetName"));
+                    RestApiHandlers.restRequest((String)oneRef.get("endpoint"), attrs, "DELETE", null);
                 }
+                attrs.put("target", "domain");
+                RestApiHandlers.restRequest( endpoint, attrs, "POST", handlerCtx);
             }
         }catch(Exception ex){
             GuiUtil.prepareException(handlerCtx, ex);

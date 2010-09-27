@@ -142,10 +142,8 @@
         <sun:tableColumn headerText="$resource{i18n.deployTable.colEnabled}" sort="enabled" rowHeader="$boolean{true}" id="col2">
             <staticText id="typeCol" value="#{td.value.enabled}" />
         </sun:tableColumn>
-        <sun:tableColumn headerText="$resource{i18n.TargetTable.colVirtualServer}" rendered="#{hasActionColumn}" rowHeader="$boolean{true}" id="col3">
-            <sun:hyperlink id="link" text="$resource{i18n.TargetTable.virtualServerLink}"
-                url="/common/applications/manageVirtualServers.jsf?appName=#{pageSession.encodedName}&targetName=#{td.value.targetName}&targetPageLink=#{targetPageLink}&highLight=lifecycle" />
-        </sun:tableColumn>
+
+         <!-- Virtual Server doesn't apply to lifecycle module. refer to issue# 13620 -->
 
     </sun:tableRowGroup>
  </sun:table>

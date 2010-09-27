@@ -66,7 +66,7 @@
             <!command
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                gf.deleteLifecycle(selectedList="#{requestScope.selectedRows}" , onlyDASExist="#{pageSession.onlyDASExist}" );
+                gf.deleteLifecycle(selectedList="#{requestScope.selectedRows}");
                 gf.redirect(page="#{pageSession.listPageLink}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
             />
          </sun:button>

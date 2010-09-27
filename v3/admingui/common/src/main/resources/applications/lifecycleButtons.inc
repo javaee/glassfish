@@ -97,13 +97,6 @@
             if (!#{pageSession.onlyDASExist}){
               // mapPut(map="#{pageSession.valueMap}" key="target" value="domain");
             }
-
-            //## uncomment the following when issue# 13620 is fixed.
-            //## if (#{pageSession.onlyDASExist}){
-            //##    convertArrayToCommaString(array="#{pageSession.valueMap['virtualservers']}", commaString="#{pageSession.valueMap['virtualservers']}");
-            //## }
-            
-            
             gf.mapValueNullToFalse(map="#{pageSession.valueMap}"  keys={"enabled", "failurefatal" } result="#{requestScope.attrMap}")
             gf.restRequest(
                 endpoint="#{sessionScope.REST_URL}/applications/application/create-lifecycle-module"
