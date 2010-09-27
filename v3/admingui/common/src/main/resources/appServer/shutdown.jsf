@@ -70,7 +70,7 @@
     <sun:form id="form">
     <sun:button id="stopInstance" visible="false">
         <!command
-            stopDomain();
+            gf.restRequest(endpoint="#{sessionScope.REST_URL}/stop" method="POST");
         />
     </sun:button>
 <f:verbatim>

@@ -72,7 +72,7 @@
     <sun:form id="form">
     <sun:button id="restartInstance" visible="false">
         <!command
-            restartDomain();
+            gf.restRequest(endpoint="#{sessionScope.REST_URL}/restart" method="POST");
         />
     </sun:button>
 <f:verbatim>
@@ -95,7 +95,7 @@
             <td width="260"><img src="/resource/images/dot.gif" width="260" height="245" alt="" /></td>
             <td width="415" bgcolor="#FFFFFF" valign="top" align="left">&nbsp;
                 <img name="Login.welcomeImg"  src="/resource/images/LoginProductName.png"
-                     "alt="GlassFish v3 Adminstration Console" border="0" height="42" width="318" />
+                     "alt="GlassFish Adminstration Console" border="0" height="42" width="318" />
 
               <table border="0" cellspacing="0" cellpadding="0">
                 <tr>

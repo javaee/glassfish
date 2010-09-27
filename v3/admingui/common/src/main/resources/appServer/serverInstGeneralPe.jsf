@@ -71,7 +71,7 @@
                             else {return false;} " >
                      <!command
                         gf.redirect("#{facesContext.externalContext.requestContextPath}/common/appServer/shutdown.jsf");
-                 />
+                    />
                 </sun:button>
 
                 <sun:button id="restartInstance" text="$resource{i18n.button.Restart}" disabled="#{false}" primary="#{false}"
