@@ -39,6 +39,7 @@ package org.jvnet.hk2.component.internal.runlevel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Stack;
 
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.component.ComponentException;
@@ -57,11 +58,13 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
  * A single Recorder instance is responsible for a single RunLevel.
  * 
  * @author Jeff Trent
+ * 
+ * @since 3.1
  */
 /*public*/ class Recorder implements InhabitantListener {
 
   private final int runLevel;
-  final List<Inhabitant<?>> activations;
+  private final Stack<Inhabitant<?>> activations;
   private final Class<?> targetEnv;
   
   Recorder(int runLevel, Class<?> targetEnv) {
@@ -73,7 +76,8 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
   }
   
   Recorder(List<Inhabitant<?>> list, int runLevel, Class<?> targetEnv) {
-    this.activations = list;
+    this.activations = new Stack<Inhabitant<?>>();
+    this.activations.addAll(list);
     this.runLevel = runLevel;
     this.targetEnv = targetEnv;
   }
@@ -86,10 +90,22 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
     return Collections.unmodifiableList(activations);
   }
   
+  void push(Inhabitant<?> inhabitant) {
+    synchronized (activations) {
+      activations.add(inhabitant);
+    }
+  }
+
+  Inhabitant<?> pop() {
+    synchronized (activations) {
+      return activations.isEmpty() ? null : activations.pop();
+    }
+  }
+  
   @Override
   public String toString() {
     return getClass().getSimpleName() + "-" + System.identityHashCode(this) + 
-        "(" + getRunLevel() + ", " + activations + ")";
+        "(" + runLevel + ", " + activations + ")\n";
   }
   
   @Override
@@ -97,11 +113,12 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
     if (EventType.INHABITANT_ACTIVATED == eventType) {
       assert(inhabitant.isInstantiated());
       assert(AbstractInhabitantImpl.class.isInstance(inhabitant));
+   
       RunLevel rl = ((AbstractInhabitantImpl<?>)inhabitant).getAnnotation(RunLevel.class);
       // actually, it should really never be null (in real life we could consider tossing an exception)
       if (null != rl) {
-        if (null == rl.environment() || targetEnv == rl.environment()) {
-          activations.add(inhabitant);
+        if (targetEnv == rl.environment()) {
+          push(inhabitant);
           
           // verify it is not to a bad dependency
           if (rl.value() > runLevel) {
@@ -110,6 +127,7 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
         }
       }
     }
+    
     return true;
   }
 

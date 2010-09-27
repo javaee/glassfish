@@ -2,7 +2,6 @@ package org.jvnet.hk2.component.internal.runlevel;
 
 import static org.junit.Assert.*;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,7 +12,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hk2.annotations.Inject;
@@ -214,10 +212,11 @@ public class RunLevelServiceTest {
   public void proceedUpTo49ThenDownTo11() {
     installTestRunLevelService(false);
     rls.proceedTo(49);
+    assertInhabitantsState(49);
     rls.proceedTo(11);
     assertEquals(null, defRLS.getPlannedRunLevel());
 
-    assertEquals(2, recorders.size());
+    assertEquals(3, recorders.size());
     Recorder recorder = recorders.get(5);
     assertNotNull(recorder);
     recorder = recorders.get(10);
@@ -267,7 +266,7 @@ public class RunLevelServiceTest {
     rls.proceedTo(0);
     assertEquals(null, defRLS.getPlannedRunLevel());
 
-    assertEquals(0, recorders.size());
+    assertEquals(3, recorders.size());
 
     assertInhabitantsState(0);
     assertListenerState(true, true, false);
@@ -290,23 +289,14 @@ public class RunLevelServiceTest {
   public void serviceABC_startUp_and_shutDown() throws Exception {
     installTestRunLevelService(false);
     
-    Field fldCurrent = DefaultRunLevelService.class.getDeclaredField("current");
-    fldCurrent.setAccessible(true);
-    fldCurrent.set(defRLS, 10);
+    RunLevelServiceBase.count = 0;
+    rls.proceedTo(9);
+    assertEquals(0, RunLevelServiceBase.count);
 
-    Field fldPlanned = DefaultRunLevelService.class.getDeclaredField("planned");
-    fldPlanned.setAccessible(true);
-    fldPlanned.set(defRLS, 10);
-    
-    Field fldActive = DefaultRunLevelService.class.getDeclaredField("activeRunLevel");
-    fldActive.setAccessible(true);
-    fldActive.set(defRLS, 10);
-
-    Field fldUpSide = DefaultRunLevelService.class.getDeclaredField("upSide");
-    fldUpSide.setAccessible(true);
-    fldUpSide.set(defRLS, true);
+    recorders.clear();
 
     RunLevelServiceBase.count = 0;
+    rls.proceedTo(10);
     
     assertNotNull(h.getComponent(ServiceB.class));
     assertNotNull(h.getComponent(ServiceA.class));
@@ -319,7 +309,24 @@ public class RunLevelServiceTest {
     assertNotNull(recorder);
 
     List<Inhabitant<?>> activations = recorder.getActivations();
-    assertEquals(3, activations.size());
+    assertFalse("activations empty", activations.isEmpty());
+    try {
+      Iterator<Inhabitant<?>> iter = activations.iterator();
+      iter.remove();
+      fail("expected read-only collection");
+    } catch (UnsupportedOperationException e) {
+      // expected
+    }
+    
+    activations = new ArrayList<Inhabitant<?>>(activations);
+    Iterator<Inhabitant<?>> iter = activations.iterator();
+    while (iter.hasNext()) {
+      Inhabitant<?> i = iter.next();
+      if (!i.typeName().contains(".RunLevelService")) {
+        iter.remove();
+      }
+    }
+    assertEquals("activations: " + activations, 3, activations.size());
     
     Inhabitant<?> iB = h.getInhabitantByContract(ServiceB.class.getName(), null);
     Inhabitant<?> iA = h.getInhabitantByContract(ServiceA.class.getName(), null);
@@ -329,28 +336,26 @@ public class RunLevelServiceTest {
     assertTrue(iA.isInstantiated());
     assertTrue(iC.isInstantiated());
     
-    Iterator<Inhabitant<?>> iter = activations.iterator();
+    iter = activations.iterator();
     assertSame("order is important", iC, iter.next());
     assertSame("order is important", iB, iter.next());
     assertSame("order is important", iA, iter.next());
 
-    Method resetMthd = DefaultRunLevelService.class.getDeclaredMethod("reset", (Class<?>[])null);
-    resetMthd.setAccessible(true);
-    resetMthd.invoke(defRLS, (Object[])null);
-    
     RunLevelServiceBase a = (RunLevelServiceBase) iA.get();
     RunLevelServiceBase b = (RunLevelServiceBase) iB.get();
     RunLevelServiceBase c = (RunLevelServiceBase) iC.get();
-    
+
     RunLevelServiceBase.count = 0;
     defRLS.proceedTo(0);
     assertFalse(iB.isInstantiated());
     assertFalse(iA.isInstantiated());
     assertFalse(iC.isInstantiated());
 
-    assertEquals(recorders.toString(), 0, recorders.size());
+    assertEquals(recorders.toString(), 1, recorders.size());
+    assertNotNull(recorders.toString(), recorders.get(10));
+    assertTrue(recorders.toString(), recorders.get(10).getActivations().isEmpty());
+
     assertEquals("count", 3, RunLevelServiceBase.count);
-    
     assertEquals("order is important on shutdown too: A", 0, a.countStamp);
     assertEquals("order is important on shutdown too: B", 1, b.countStamp);
     assertEquals("order is important on shutdown too: C", 2, c.countStamp);
@@ -528,9 +533,12 @@ public class RunLevelServiceTest {
     rls = new TestDefaultRunLevelService(h, false, Exception.class, recorders); 
 
     ExceptionRunLevelManagedService.constructCount = 0;
+    ExceptionRunLevelManagedService.exceptionCtor = null;
 
     rls.proceedTo(5);
 
+    assertEquals(1, ExceptionRunLevelManagedService.constructCount);
+    
     this.defRLlistener = (TestRunLevelListener) listener;
     defRLlistener.calls.clear();
 
@@ -547,7 +555,7 @@ public class RunLevelServiceTest {
   
   /**
    * Proceeds to level 5, encountering an exception along the way, and the onError
-   * nests a call to proceedTo level 1.
+   * nests a call to proceedTo level 0.
    */
   @Test
   public void exceptionsEncounteredOnUpSideWithChainedShutdown() throws Exception {
@@ -556,7 +564,7 @@ public class RunLevelServiceTest {
 
     this.defRLlistener = (TestRunLevelListener) listener;
     defRLlistener.calls.clear();
-    defRLlistener.setErrorProceedTo(1, rls);
+    defRLlistener.setErrorProceedTo(0, rls);
 
     ExceptionRunLevelManagedService.exceptionCtor = 
       RuntimeException.class.getConstructor((Class<?>[])null);
@@ -565,11 +573,11 @@ public class RunLevelServiceTest {
     
     rls.proceedTo(5);
     
-    assertEquals(2, ExceptionRunLevelManagedService.constructCount);
+    assertEquals(1, ExceptionRunLevelManagedService.constructCount);
     assertEquals(0, ExceptionRunLevelManagedService.destroyCount);
     assertListenerState(false, true, false);
 
-    assertEquals(1, defRLS.getCurrentRunLevel());
+    assertEquals(0, defRLS.getCurrentRunLevel());
     assertEquals(null, defRLS.getPlannedRunLevel());
   }
   
@@ -591,7 +599,7 @@ public class RunLevelServiceTest {
   
   /**
    * Proceeds to level 5, encountering an exception along the way, and the onError
-   * nests a call to proceedTo level 1.  But the onCancelled even that gets called
+   * nests a call to proceedTo level 1.  But the onCancelled event that gets called
    * after the onError also issues a proceedTo level 0.  The last proceedTo (in
    * this case onCancelled) should take precedence.
    */
@@ -664,9 +672,9 @@ public class RunLevelServiceTest {
   /**
    * This is testing the non-async version of RLS in the following scenario:
    * 
-   *  - Thread #1 issues a proceedTo(whatever)
+   *  - Thread #1 issues a proceedTo(2)
    *  - A service {@link InterruptRunLevelManagedService2b} hangs
-   *  - Thread #2 (a watchdog thread) finds that Thread #1 is hung, and issues a proceedTo(whatever)
+   *  - Thread #2 (a watchdog thread) finds that Thread #1 is hung, and issues a proceedTo(1)
    */
   @SuppressWarnings("unchecked")
   @Test
@@ -750,9 +758,8 @@ public class RunLevelServiceTest {
     this.defRLlistener = (TestRunLevelListener) listener;
     defRLlistener.calls.clear();
     
-    // we want 1a to not be involved in this test
     InterruptRunLevelManagedService1a.rls = rls;
-
+    InterruptRunLevelManagedService1a.swallowExceptionsInProceedTo = false;
     InterruptRunLevelManagedService2b.i = 0;
     
     final List problems = new ArrayList();
@@ -802,22 +809,34 @@ public class RunLevelServiceTest {
 
     assertNeverGotToRunLevel(2);
     
-    assertListenerState(true, false, 2);
+    assertListenerState(true, false, 1);
   }
   
   /**
    * This is testing the async version of RLS in the following scenario:
    * 
-   *  - Thread #1 issues a proceedTo(whatever)
-   *  - One of the services activated {@link InterruptRunLevelManagedService1a} calls
-   *      proceedTo(2)
-   *  - A service {@link InterruptRunLevelManagedService2b} hangs, but in
-   *      a way that can't be interrupted
-   *  - Thread #2 (a watchdog thread) finds that Thread #1 is hung, and issues a proceedTo(0)
+   *  - Thread #1 issues a proceedTo(whatever).  RLS will spawn a new thread
+   *      that performs the "work" (see {@link DefaultRunLevelService#proceedToWorker} in impl).
+   *      Let's call this new thread thread 1b.
+   *  - One of the services activated in 1b, {@link InterruptRunLevelManagedService1a}, calls
+   *      proceedTo(2). It also swallows all exceptions (e.g., any interrupt)!
+   *  - A service {@link InterruptRunLevelManagedService2b} in RunLevel 2 hangs, but in
+   *      a way that can't be interrupted!
+   *  - Thread #2 (a watchdog thread) finds that Thread #1/1b is hung, and then
+   *      issues a proceedTo(0)
+   *  
+   * The expected behavior for async is that the thread #1b is "orphaned" and thread #2
+   * picks up the work.
+   * 
+   * We need to make sure that when thread 1b returns (if it returns) it does not continue
+   * with the 1/1b proceedTo() --- so we break out of that loop, by being a RunLevelListener.
+   * 
+   * Important Note: this scenario could not readily be supported today in the sync case of the default RLS.
+   * It may work, but the test is written is such a way (i.e., RunLevelListener on 2b) that this
+   * becomes an invalid test for the sync case.
    */
-  @SuppressWarnings("unchecked")
-  // TODO:
-  @Test @Ignore
+  @SuppressWarnings({ "unchecked", "static-access" })
+  @Test
   public void multiThreadedInterrupt3Async() throws Exception {
     recorders = new LinkedHashMap<Integer, Recorder>();
     rls = defRLS = new TestDefaultRunLevelService(h, true, String.class, recorders); 
@@ -825,8 +844,8 @@ public class RunLevelServiceTest {
     this.defRLlistener = (TestRunLevelListener) listener;
     defRLlistener.calls.clear();
     
-    // we want 1a to not be involved in this test
     InterruptRunLevelManagedService1a.rls = rls;
+    InterruptRunLevelManagedService1a.swallowExceptionsInProceedTo = true;
 
     InterruptRunLevelManagedService2b.i = 0;
     InterruptRunLevelManagedService2b.doSleep = false;
@@ -840,17 +859,19 @@ public class RunLevelServiceTest {
             Logger.getAnonymousLogger().log(Level.INFO, "issuing proceedTo(0) interrupt from thread: " + this);
             // this will hang {@link InterruptRunLevelManagedService2b}
             rls.proceedTo(0);
+            Logger.getAnonymousLogger().log(Level.INFO, "out of proceedTo(0) interrupt from thread: " + this);
           } catch (Exception e) {
             problems.add(e);
           }
         }
       };
+      watchDog.setDaemon(true);
       watchDog.start();
       
       Logger.getAnonymousLogger().log(Level.INFO, "issuing proceedTo(1) from main thread: " + this);
       // this main thread will be interrupted to go to 0 but only after proceedTo(2) is sent (see above)
       rls.proceedTo(1);
-      
+
       watchDog.join();
 
       if (null != rls.getState().getPlannedRunLevel()) {
@@ -891,6 +912,13 @@ public class RunLevelServiceTest {
       assertListenerState(true, false, 2);
     } finally {
       InterruptRunLevelManagedService2b.doSleep = true;
+      InterruptRunLevelManagedService1a.swallowExceptionsInProceedTo = false;
+
+      // get thread #1 unstuck and wait for completion (not really needed since its daemon)
+      while (null == InterruptRunLevelManagedService2b.self) {
+        Thread.currentThread().sleep(500);
+        InterruptRunLevelManagedService2b.breakOut = true;
+      }      
     }
   }
   
@@ -914,7 +942,14 @@ public class RunLevelServiceTest {
     this.defRLlistener = (TestRunLevelListener) listener;
     defRLlistener.calls.clear();
     
-    oldRLS.setDelegate((RunLevelState)rls);
+    try {
+      Method m = DefaultRunLevelService.class.getDeclaredMethod("setDelegate", RunLevelState.class);
+      assert(null != m);
+      m.setAccessible(true);
+      m.invoke(oldRLS, (RunLevelState)rls);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
   
   

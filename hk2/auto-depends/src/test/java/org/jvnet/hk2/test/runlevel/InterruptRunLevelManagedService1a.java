@@ -19,6 +19,8 @@ public class InterruptRunLevelManagedService1a implements RunLevelContract, Post
 
   public static RunLevelService<?> rls;
   
+  public static boolean swallowExceptionsInProceedTo;
+  
   @Override
   public void postConstruct() {
     Logger.getAnonymousLogger().log(Level.INFO, "here");
@@ -26,7 +28,16 @@ public class InterruptRunLevelManagedService1a implements RunLevelContract, Post
       Logger.getAnonymousLogger().log(Level.INFO, "proceedTo(2)");
       RunLevelService<?> r = rls;
       rls = null;
-      r.proceedTo(2);
+      
+      if (swallowExceptionsInProceedTo) {
+        try {
+          r.proceedTo(2);
+        } catch (Exception e) {
+          Logger.getAnonymousLogger().log(Level.INFO, "Swallowed Exception", e);
+        }
+      } else {
+        r.proceedTo(2);
+      }
     }
   }
   
