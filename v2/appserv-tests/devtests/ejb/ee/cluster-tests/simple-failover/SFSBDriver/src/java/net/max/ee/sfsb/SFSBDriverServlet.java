@@ -20,7 +20,7 @@ import javax.servlet.http.HttpSession;
  *
  * @author mk
  */
-public class SimpleSFSBDriverServlet extends HttpServlet {
+public class SFSBDriverServlet extends HttpServlet {
 
    
     /** 
@@ -64,8 +64,8 @@ public class SimpleSFSBDriverServlet extends HttpServlet {
             if (sfsb1 == null) {
                 InitialContext ctx = new InitialContext();
 
-                sfsb1 = (SimpleSessionBean) ctx.lookup("java:global/SimpleSFSBDriver/SimpleSessionBean");
-                sfsb2 = (SimpleSessionBean) ctx.lookup("java:global/SimpleSFSBDriver/SimpleShoppingCartBean");
+                sfsb1 = (SimpleSessionBean) ctx.lookup("java:global/SFSBDriver/SimpleSessionBean");
+                sfsb2 = (SimpleSessionBean) ctx.lookup("java:global/SFSBDriver/SimpleSessionBean");
                 
                 out.println("<h1>Created SFSB[1]: " + sfsb1.asString() + " </h1>");
                 out.println("<h1>Created SFSB[2]: " + sfsb2.asString() + " </h1>");
