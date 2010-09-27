@@ -83,6 +83,19 @@ public interface GlassFish {
      */
     <T> T lookupService(Class<T> serviceType, String servicetName);
 
+    /**
+     * Gets a Deployer instance to deploy an application
+     * @return A Deployer instance
+     */
+    Deployer getDeployer();
+
+    /**
+     * Gets a CommandRunner instance, using which the user can run asadmin command
+     * in an embedded setup.
+     * @return CommandRunner instance
+     */
+    CommandRunner getCommandRunner();
+
     enum Status {
         // Because server can take time to start or stop, we have STARTING and STOPPING states.
         INIT, STARTING, STARTED, STOPPING, STOPPED, DISPOSED

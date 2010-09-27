@@ -40,6 +40,7 @@
 
 package org.glassfish.simpleglassfishapi;
 
+import org.glassfish.simpleglassfishapi.spi.RuntimeBuilder;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.ServiceConfigurationError;
@@ -64,25 +65,39 @@ public abstract class GlassFishRuntime {
 
     /**
      * Bootstrap GlassFish runtime based on runtime configuration passed in the properties object.
-     * Calling this method multiple times has no effect.
+     * Calling this method twice will throw a GlassFishException
      *
-     * @param properties properties used to setup the runtime
+     * @param options  BootstrapOptions used to setup the runtime
      * @param cl         ClassLoader used as parent loader by GlassFish modules. If null is passed, the class loader
      *                   of this class is used.
      * @return a GlassFishRuntime
-     * @throws Exception
+     * @throws GlassFishException
      */
-    public synchronized static GlassFishRuntime bootstrap(Properties properties, ClassLoader cl) throws Exception {
-        if (me != null) return me;
-        runtimeBuilder = getRuntimeBuilder(properties, cl != null ? cl : GlassFishRuntime.class.getClassLoader());
-        me = runtimeBuilder.build(properties);
+    public synchronized static GlassFishRuntime bootstrap(BootstrapOptions options, ClassLoader cl) throws GlassFishException {
+        if (me != null)  {
+         // TODO throw an exception
+            return me;
+        }
+        runtimeBuilder = getRuntimeBuilder(options, cl != null ? cl : GlassFishRuntime.class.getClassLoader());
+        me = runtimeBuilder.build(options);
         return me;
     }
 
-    public synchronized static void shutdown() throws Exception {
-        runtimeBuilder.destroy();
-        me = null;
+    /**
+     * Shuts down the Runtime and dispose off all the GlassFish objects
+     * created via this Runtime
+     * @throws GlassFishException
+     */
+    public synchronized  void shutdown() throws GlassFishException {
+        disposeGlassFishInstances();
+        try {
+            runtimeBuilder.destroy();
+            me = null;
+        } catch (Exception e) {
+            throw new GlassFishException(e);
+        }
     }
+
 
     public synchronized static GlassFishRuntime get() {
         if (me == null) {
@@ -90,10 +105,25 @@ public abstract class GlassFishRuntime {
         }
         return me;
     }
+     
 
-    public abstract GlassFish newGlassFish(Properties properties) throws Exception;
+    /**
+     *  Creates a new instance of GlassFish
+     * @param option GlassFishOption used to setup the GlassFish instance
+     * @return GlassFish
+     * @throws GlassFishException
+     */
+    public abstract GlassFish newGlassFish(GlassFishOptions options) throws GlassFishException;
 
-    private static RuntimeBuilder getRuntimeBuilder(Properties properties, ClassLoader cl) {
+    /**
+     * Dispose all the GlassFish instances created.
+     * @return List
+     */
+    protected abstract void disposeGlassFishInstances();
+
+
+
+    private static RuntimeBuilder getRuntimeBuilder(BootstrapOptions  options, ClassLoader cl) {
 //        StringBuilder sb = new StringBuilder("Launcher Class Loader = " + cl);
 //        if (cl instanceof URLClassLoader) {
 //            sb.append("has following Class Path: ");
@@ -106,27 +136,14 @@ public abstract class GlassFishRuntime {
         while (runtimeBuilders.hasNext()) {
             try {
                 RuntimeBuilder builder = runtimeBuilders.next();
-                if (builder.handles(properties)) {
+                if (builder.handles(options)) {
                     return builder;
                 }
             } catch (ServiceConfigurationError sce) {
                 // Ignore the exception and move ahead to the next builder.
             }
         }
-        throw new RuntimeException("No runtime builder for this configuration: " + properties);
-    }
-
-    /**
-     * Internal interface. Not for public use.
-     * This is an SPI for GlassFishRuntime. Different implementations exist to provide different runtime
-     * enviornment such as Felix/Equinox based or non-OSGi based runtime.
-     */
-    public interface RuntimeBuilder {
-        GlassFishRuntime build(Properties properties) throws Exception;
-
-        boolean handles(Properties properties);
-
-        void destroy() throws Exception;
+        throw new RuntimeException("No runtime builder for this configuration: " + options.getAllOptions());
     }
 
 }
