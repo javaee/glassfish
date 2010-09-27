@@ -20,7 +20,7 @@ import javax.servlet.http.HttpSession;
  *
  * @author mk
  */
-public class SFSBDriverServlet extends HttpServlet {
+public class SimpleSFSBDriverServlet extends HttpServlet {
 
    
     /** 
@@ -42,6 +42,7 @@ public class SFSBDriverServlet extends HttpServlet {
             out.println("<body>");
             out.println("<h1>Servlet SFSBDriverServlet at " + request.getContextPath () + "</h1>");
             out.println("<h1>SFSBDriverServlet looking up jndi using: java:global/SFSBDriver/SimpleSessionBean </h1>");
+            out.println("<h1>SFSBDriverServlet looking up jndi using: java:global/SFSBDriver/SimpleShoppingCartBean </h1>");
 
             HttpSession session = request.getSession(true);
             Integer intAttr = (Integer) session.getAttribute("intAttr");
@@ -50,7 +51,7 @@ public class SFSBDriverServlet extends HttpServlet {
             String KEY_2 = "SFSB_2";
 
             SimpleSessionBean sfsb1 = (SimpleSessionBean) session.getAttribute(KEY_1);
-            SimpleSessionBean sfsb2 = (SimpleSessionBean) session.getAttribute(KEY_2);
+            SimpleShoppingCartBean sfsb2 = (SimpleShoppingCartBean) session.getAttribute(KEY_2);
 
 
             out.println("Integer attr: " + intAttr);
@@ -63,8 +64,8 @@ public class SFSBDriverServlet extends HttpServlet {
             if (sfsb1 == null) {
                 InitialContext ctx = new InitialContext();
 
-                sfsb1 = (SimpleSessionBean) ctx.lookup("java:global/SFSBDriver/SimpleSessionBean");
-                sfsb2 = (SimpleSessionBean) ctx.lookup("java:global/SFSBDriver/SimpleSessionBean");
+                sfsb1 = (SimpleSessionBean) ctx.lookup("java:global/SimpleSFSBDriver/SimpleSessionBean");
+                sfsb2 = (SimpleShoppingCartBean) ctx.lookup("java:global/SimpleSFSBDriver/SimpleShoppingCartBean");
                 
                 out.println("<h1>Created SFSB[1]: " + sfsb1.asString() + " </h1>");
                 out.println("<h1>Created SFSB[2]: " + sfsb2.asString() + " </h1>");
@@ -80,7 +81,7 @@ public class SFSBDriverServlet extends HttpServlet {
 
                 try {
                     out.println("<h1>Retrieved SFSB[2]: " + sfsb2.asString() + " </h1>");
-                    sfsb2.incrementCounter();
+                    sfsb2.addItem();
                 } catch (Exception ex2) {
                     out.println("<h1>Error while accessing SFSB[2] </h1>");
                     ex2.printStackTrace(out);

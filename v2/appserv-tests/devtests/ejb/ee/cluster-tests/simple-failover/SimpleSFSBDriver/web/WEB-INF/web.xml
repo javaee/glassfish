@@ -2,12 +2,12 @@
 <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
     <distributable/>
     <servlet>
-        <servlet-name>SFSBDriverServlet</servlet-name>
-        <servlet-class>net.max.ee.sfsb.SFSBDriverServlet</servlet-class>
+        <servlet-name>SimpleSFSBDriverServlet</servlet-name>
+        <servlet-class>net.max.ee.sfsb.SimpleSFSBDriverServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>SFSBDriverServlet</servlet-name>
-        <url-pattern>/SFSBDriverServlet</url-pattern>
+        <servlet-name>SimpleSFSBDriverServlet</servlet-name>
+        <url-pattern>/SimpleSFSBDriverServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
