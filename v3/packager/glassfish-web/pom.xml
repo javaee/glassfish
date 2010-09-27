@@ -116,6 +116,23 @@
             <artifactId>osgi-web-container</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <!-- Add the dependency here so that packager bundles this as well. 
+                 This is needed by osgi-web-container to function correctly -->
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.eventadmin</artifactId>
+            <exclusions>
+                <!-- This is needed otherwise core and compendium jars become part of distribution unnecessarily. -->
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.compendium</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     	<dependency>
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-web-plugin</artifactId>
