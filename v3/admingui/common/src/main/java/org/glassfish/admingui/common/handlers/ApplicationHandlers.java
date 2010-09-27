@@ -627,7 +627,7 @@ public class ApplicationHandlers {
             HashMap oneRow = new HashMap();
             if (clusters.contains(oneTarget)){
                 endpoint = prefix + "/clusters/cluster/" + oneTarget + "/application-ref/" + appName;
-                attrs = RestApiHandlers.getAttributesMap(prefix + endpoint);
+                attrs = RestApiHandlers.getAttributesMap(endpoint);
             }else{
                 endpoint = prefix+"/servers/server/" + oneTarget + "/application-ref/" + appName;
                 attrs = RestApiHandlers.getAttributesMap(endpoint);
