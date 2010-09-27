@@ -73,7 +73,7 @@ import java.util.Properties;
 @I18n("create.lifecycle.module")
 @ExecuteOn(value={RuntimeType.DAS, RuntimeType.INSTANCE})
 @Scoped(PerLookup.class)
-@TargetType(value={CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
+@TargetType(value={CommandTarget.DOMAIN, CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
 public class CreateLifecycleModuleCommand implements AdminCommand {
 
     @Param(primary=true)
@@ -114,11 +114,9 @@ public class CreateLifecycleModuleCommand implements AdminCommand {
         final Logger logger = context.getLogger();
 
         if (deployment.isRegistered(name)) {
-            report.setMessage("Lifecycle module with name [" + name + 
-                "] already exists");
+            report.setMessage(localStrings.getLocalString("lifecycle.alreadyreg","Lifecycle module {0} already registered", name));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
-
         }
 
         DeployCommandParameters commandParams = new DeployCommandParameters();

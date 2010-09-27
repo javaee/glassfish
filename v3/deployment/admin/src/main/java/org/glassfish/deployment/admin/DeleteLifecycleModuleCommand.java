@@ -41,26 +41,35 @@
 package org.glassfish.deployment.admin;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
 import org.glassfish.internal.deployment.Deployment;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.admin.util.ClusterOperationUtil;
+import org.glassfish.common.util.admin.ParameterMapExtractor;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ExecuteOn;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.admin.FailurePolicy;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.component.Habitat;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Delete lifecycle modules.
@@ -70,7 +79,7 @@ import java.util.logging.Level;
 @I18n("delete.lifecycle.module")
 @Scoped(PerLookup.class)
 @ExecuteOn(value={RuntimeType.DAS, RuntimeType.INSTANCE})
-@TargetType(value={CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
+@TargetType(value={CommandTarget.DOMAIN, CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
 public class DeleteLifecycleModuleCommand implements AdminCommand {
 
     @Param(primary=true)
@@ -85,6 +94,12 @@ public class DeleteLifecycleModuleCommand implements AdminCommand {
     @Inject
     Domain domain;
 
+    @Inject
+    ServerEnvironment env;
+
+    @Inject
+    Habitat habitat;
+
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteLifecycleModuleCommand.class);
    
     public void execute(AdminCommandContext context) {
@@ -98,14 +113,31 @@ public class DeleteLifecycleModuleCommand implements AdminCommand {
             return;
         }
 
-        ApplicationRef ref = domain.getApplicationRefInTarget(name, target);
-        if (ref == null) {
-            report.setMessage(localStrings.getLocalString("lifecycle.not.referenced.target","Lifecycle module {0} is not referenced by target {1}", name, target));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
+        if (!DeploymentUtils.isDomainTarget(target)) {
+            ApplicationRef ref = domain.getApplicationRefInTarget(name, target);
+            if (ref == null) {
+                report.setMessage(localStrings.getLocalString("lifecycle.not.referenced.target","Lifecycle module {0} is not referenced by target {1}", name, target));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }
         }
 
         deployment.validateUndeploymentTarget(target, name);
+
+        if (env.isDas() && DeploymentUtils.isDomainTarget(target)) {
+            List<String> targets = domain.getAllReferencedTargetsForApplication(name);
+            // replicate command to all referenced targets
+            try {
+                ParameterMapExtractor extractor = new ParameterMapExtractor(this);
+                ParameterMap paramMap = extractor.extract(Collections.EMPTY_LIST);
+                paramMap.set("DEFAULT", name);
+
+                ClusterOperationUtil.replicateCommand("delete-lifecycle-module", FailurePolicy.Error, FailurePolicy.Warn, targets, context, paramMap, habitat);
+            } catch (Exception e) {
+                report.failure(logger, e.getMessage());
+                return;
+            }
+        }
 
         try {
             deployment.unregisterAppFromDomainXML(name, target);
