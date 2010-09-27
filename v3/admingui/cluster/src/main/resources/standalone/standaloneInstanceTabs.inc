@@ -53,7 +53,7 @@
 
    <sun:tab id="standaloneApps" immediate="$boolean{true}" text="$resource{i18ncs.cluster.ApplicationsTab}">
 	<!command
-            setSessionAttribute(key="standaloneInstanceTabs" value="servInstApp");
+            setSessionAttribute(key="standaloneInstanceTabs" value="standaloneApps");
             gf.redirect(page="#{request.contextPath}/cluster/standalone/standaloneApplications.jsf?instanceName=#{pageSession.encodedInstanceName}");
         />
     </sun:tab>
