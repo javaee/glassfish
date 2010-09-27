@@ -54,11 +54,11 @@ public enum ConnectionPoolErrorMessages {
     
     STMT_WRAPPING_DISABLED ("Statement Wrapping should be set to true before performing this operation"),
     
-    RES_TYPE_MANDATORY ("Must specify a datasource/driver classname. " +
-            "DatasourceClassname is mandatory when resType is " +
-                    "javax.sql.DataSource/javax.sql.ConnectionPoolDataSource/" +
-                            "javax.sql.XADataSource. DriverClassname is mandatory" +
-                                    "when resType is java.sql.Driver.");
+    RES_TYPE_MANDATORY ("Must specify either datasource-classname or driver-classname. " +
+            "datasource-classname is mandatory when res-type is " +
+                    "javax.sql.DataSource or javax.sql.ConnectionPoolDataSource or " +
+                            "javax.sql.XADataSource. driver-classname is mandatory " +
+                                    "when res-type is java.sql.Driver.");
     
     private ConnectionPoolErrorMessages(String message) {
         this.message = message;
