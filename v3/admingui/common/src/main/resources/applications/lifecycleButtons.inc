@@ -95,17 +95,22 @@
             onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
         <!command
             if (!#{pageSession.onlyDASExist}){
-                mapPut(map="#{pageSession.valueMap}" key="target" value="domain");
+              // mapPut(map="#{pageSession.valueMap}" key="target" value="domain");
             }
+
+            //## uncomment the following when issue# 13620 is fixed.
+            //## if (#{pageSession.onlyDASExist}){
+            //##    convertArrayToCommaString(array="#{pageSession.valueMap['virtualservers']}", commaString="#{pageSession.valueMap['virtualservers']}");
+            //## }
+            
+            
             gf.mapValueNullToFalse(map="#{pageSession.valueMap}"  keys={"enabled", "failurefatal" } result="#{requestScope.attrMap}")
             gf.restRequest(
                 endpoint="#{sessionScope.REST_URL}/applications/application/create-lifecycle-module"
                 attrs="#{requestScope.attrMap}"
                 method="POST");
             if (!#{pageSession.onlyDASExist}){
-                    convertListToArray( list="#{pageSession.selectedTargets}" array="#{requestScope.TargetArray}" ){
-                    gf.changeAppTargets(appName="#{pageSession.valueMap['name']" targets="#{requestScope.TargetArray}");
-                }
+                gf.changeAppTargets(appName="#{pageSession.valueMap['name']}" targets="#{pageSession.selectedTargets}"  status="#{requestScope.attrMap['enabled']}");
             }
             gf.redirect(page="#{pageSession.listPageLink}")
         />

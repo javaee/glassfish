@@ -101,7 +101,6 @@
                     getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
                     setAttribute(key="click" value="$this{component}");
                     setAttribute(key="actionValue" value="#{click.selected}")
-//println("========== #{requestScope.selectedRows}")
                     createMap(result="#{requestScope.attrsMap}");
                     if( ${actionValue}=enable){
                         mapPut(map="#{requestScope.attrsMap}"  key="enabled" value="true");
@@ -110,7 +109,7 @@
                         mapPut(map="#{requestScope.attrsMap}"  key="enabled" value="false");
                     }
                     foreach (var="row" list="#{requestScope.selectedRows}") {
-                        mapPut(map="#{requestScope.attrsMap}"  key="enabled" value="#{row['name']}");
+                        mapPut(map="#{requestScope.attrsMap}"  key="ref" value="#{row['name']}");
                         gf.restRequest(
                             endpoint="#{row['endpoint']}"
                             attrs="#{requestScope.attrsMap}"

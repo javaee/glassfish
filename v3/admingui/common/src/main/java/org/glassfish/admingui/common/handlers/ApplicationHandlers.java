@@ -250,6 +250,45 @@ public class ApplicationHandlers {
         handlerCtx.setOutputValue("result", result);
     }
 
+
+
+    @Handler(id = "gf.deleteLifecycle",
+        input = {
+            @HandlerInput(name = "selectedList", type = List.class, required=true),
+            @HandlerInput(name = "onlyDASExist", type = boolean.class, required=true)})
+
+    public static void deleteLifecycle(HandlerContext handlerCtx) {
+        List<Map> selectedList = (List) handlerCtx.getInputValue("selectedList");
+        boolean onlyDASExist = (Boolean) handlerCtx.getInputValue("onlyDASExist");
+        String endpoint = GuiUtil.getSessionValue("REST_URL") + "/applications/application/delete-lifecycle-module" ;
+        Map attrs = new HashMap();
+        if (onlyDASExist){
+            attrs.put("target", "server");
+        }
+        try{
+            for(Map oneRow: selectedList){
+                String name = (String) oneRow.get("name");
+                String encodedName = URLEncoder.encode(name, "UTF-8");
+                attrs.put("id", encodedName);
+                if (onlyDASExist){
+                    RestApiHandlers.restRequest( endpoint, attrs, "POST", handlerCtx);
+                } else{
+                    //delete all application-ref first
+                    List<Map> appRefs = DeployUtil.getRefEndpoints(name, "application-ref");
+                    for(Map  oneRef:  appRefs){
+                        attrs.put("target", oneRef.get("targetName"));
+                        RestApiHandlers.restRequest((String)oneRef.get("endpoint"), attrs, "DELETE", null);
+                    }
+                    attrs.put("target", "domain");
+                    RestApiHandlers.restRequest( endpoint, attrs, "POST", null);
+                }
+            }
+        }catch(Exception ex){
+            GuiUtil.prepareException(handlerCtx, ex);
+        }
+    }
+
+
     private static void getLaunchInfo(String serverName, String appName,  Map oneRow) {
         String endpoint = GuiUtil.getSessionValue("REST_URL") + "/applications/application/" + appName + ".json";
         Map map = RestApiHandlers.restRequest(endpoint, null, "GET", null);
@@ -471,9 +510,11 @@ public class ApplicationHandlers {
      @Handler(id="gf.changeAppTargets",
         input={
         @HandlerInput(name="appName", type=String.class, required=true),
-        @HandlerInput(name="targets", type=String[].class, required=true )})
+        @HandlerInput(name="targets", type=String[].class, required=true),
+        @HandlerInput(name="status", type=String.class)})
     public static void changeAppTargets(HandlerContext handlerCtx) {
         String appName = (String)handlerCtx.getInputValue("appName");
+        String status = (String)handlerCtx.getInputValue("status");
         String[] selTargets = (String[])handlerCtx.getInputValue("targets");
         List<String> selectedTargets = Arrays.asList(selTargets);
 
@@ -499,6 +540,9 @@ public class ApplicationHandlers {
                     endpoint = serverEndpoint + newTarget + "/application-ref" ;
                 }
                 attrs.put("target", newTarget);
+                if (status != null){
+                    attrs.put("enabled", status);
+                }
                 RestApiHandlers.restRequest(endpoint, attrs, "post", handlerCtx);
             }
          }

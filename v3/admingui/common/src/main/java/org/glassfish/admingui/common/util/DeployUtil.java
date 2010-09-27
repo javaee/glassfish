@@ -58,6 +58,9 @@ import org.glassfish.deployment.client.DFDeploymentProperties;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 import javax.enterprise.deploy.spi.Target;
 import org.glassfish.admingui.common.handlers.RestApiHandlers;
 /**
@@ -198,6 +201,39 @@ public class DeployUtil {
         }
         return targets;
     }
+    
+    static public List<Map> getRefEndpoints(String name, String ref){
+        List endpoints = new ArrayList();
+        try{
+            String encodedName = URLEncoder.encode(name, "UTF-8");
+            //check if any cluster has this application-ref
+            List<String> clusters = TargetUtil.getClusters();
+            for(String oneCluster:  clusters){
+                List appRefs = new ArrayList(RestApiHandlers.getChildMap(GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster/"+oneCluster+"/"+ref).keySet());
+                if (appRefs.contains(name)){
+                    Map aMap = new HashMap();
+                    aMap.put("endpoint", GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster/"+oneCluster+"/" + ref + "/" + encodedName);
+                    aMap.put("targetName", oneCluster);
+                    endpoints.add(aMap);
+                }
+            }
+            List<String> servers = TargetUtil.getStandaloneInstances();
+            servers.add("server");
+            for(String oneServer:  servers){
+                List appRefs = new ArrayList(RestApiHandlers.getChildMap(GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + oneServer + "/" + ref).keySet());
+                if (appRefs.contains(name)){
+                    Map aMap = new HashMap();
+                    aMap.put("endpoint", GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + oneServer + "/" + ref + "/" + encodedName);
+                    aMap.put("targetName", oneServer);
+                    endpoints.add(aMap);
+                }
+            }
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        return endpoints;
+    }
+
 
     public static String getTargetEnableInfo(String appName, boolean useImage, boolean isApp){
         String prefix = (String) GuiUtil.getSessionValue("REST_URL");

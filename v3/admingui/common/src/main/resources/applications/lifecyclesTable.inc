@@ -66,17 +66,8 @@
             <!command
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                foreach (var="row" list="#{requestScope.selectedRows}") {
-                    createMap(result="#{requestScope.attrsMap}");
-                    mapPut(map="#{requestScope.attrsMap}"  key="name" value="#{row['name']}");
-                    mapPut(map="#{requestScope.attrsMap}"  key="target" value="domain");
-                    gf.restRequest(
-                        endpoint="#{sessionScope.REST_URL}/applications/application/delete-lifecycle-module"
-                        //attrs="#{requestScope.attrsMap}"
-                        method="POST"
-                        result="#{requestScope.result}");
-                }
-                gf.redirect(page="#{listPageLink}");
+                gf.deleteLifecycle(selectedList="#{requestScope.selectedRows}" , onlyDASExist="#{pageSession.onlyDASExist}" );
+                gf.redirect(page="#{pageSession.listPageLink}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
             />
          </sun:button>
         <sun:button id="button2" rendered="#{pageSession.onlyDASExist}" text="$resource{i18n.button.Enable}" disabled="#{true}" primary="#{false}"

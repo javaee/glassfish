@@ -58,7 +58,7 @@
     />
     </event>
 
-            <sun:form id="propertyForm">
+    <sun:form id="form">
 #include "/common/shared/alertMsg.inc"
 
         <!-- Page Title -->
