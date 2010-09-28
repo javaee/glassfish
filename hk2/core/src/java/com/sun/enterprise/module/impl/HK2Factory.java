@@ -35,7 +35,6 @@
  * holder.
  */
 
-
 package com.sun.enterprise.module.impl;
 
 import com.sun.enterprise.module.common_impl.AbstractFactory;
@@ -51,7 +50,7 @@ public class HK2Factory extends AbstractFactory {
 
     public synchronized static void initialize() {
         if (Instance != null) {
-            LogHelper.getDefaultLogger().warning("Singleton already initialized as " + getInstance());
+            LogHelper.getDefaultLogger().fine("Singleton already initialized as " + getInstance());
         }
         Instance = new HK2Factory();
     }
@@ -60,14 +59,12 @@ public class HK2Factory extends AbstractFactory {
         return new ModulesRegistryImpl(null);
     }
 
-    public ModuleId createModuleId(String name, String version)
-    {
+    public ModuleId createModuleId(String name, String version) {
         // In HK2, we don't yet use version to compare modules.
         return new ModuleId(name);
     }
 
-    public ModuleId createModuleId(ModuleDefinition md)
-    {
+    public ModuleId createModuleId(ModuleDefinition md) {
         // In HK2, we don't yet use version to compare modules.
         return new ModuleId(md.getName());
     }
