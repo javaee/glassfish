@@ -242,7 +242,6 @@ final class InstallerThread extends Thread {
                 app.setObjectType("system-admin"); //TODO
                 app.setDirectoryDeployed("true");
                 app.setContextRoot(contextRoot);
-                File warFile = getWarFile();
                 try {
                     app.setLocation("${com.sun.aas.installRootURI}/lib/install/applications/" + AdminConsoleAdapter.ADMIN_APP_NAME);
                 } catch (Exception me) {
