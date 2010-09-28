@@ -87,7 +87,8 @@ public class BaseSeleniumTestClass {
 
             selenium = new DefaultSelenium("localhost", Integer.parseInt(seleniumPort), "*" + browser, baseUrl);
             selenium.start();
-            (new BaseSeleniumTestClass()).openAndWait("/common/index.jsf", TRIGGER_COMMON_TASKS, 360); // Make sure the server has started and the user logged in
+            selenium.setTimeout("60000");
+            (new BaseSeleniumTestClass()).openAndWait("/", TRIGGER_COMMON_TASKS, 480); // Make sure the server has started and the user logged in
         }
 
         URL rotateLogUrl = new URL(baseUrl + "/management/domain/rotate-log");
@@ -136,7 +137,8 @@ public class BaseSeleniumTestClass {
     protected String generateRandomString() {
         SecureRandom random = new SecureRandom();
 
-        return new BigInteger(130, random).toString(16);
+        // prepend a letter to insure valid JSF ID, which is causing failures in some areas
+        return "a" + new BigInteger(130, random).toString(16);
     }
 
     protected int generateRandomNumber() {
@@ -255,7 +257,7 @@ public class BaseSeleniumTestClass {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            sleep(1000);
+            sleep(1500);
         }
     }
 

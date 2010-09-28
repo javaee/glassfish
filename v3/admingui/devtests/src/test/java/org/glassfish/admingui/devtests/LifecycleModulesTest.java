@@ -60,32 +60,34 @@ public class LifecycleModulesTest extends BaseSeleniumTestClass {
     public void testLifecycleModules() {
         final String lifecycleName = "TestLifecycle"+generateRandomString();
         final String lifecycleClassname = "org.foo.nonexistent.Lifecyclemodule";
+
+        clickAndWait("treeForm:tree:lifecycle:lifecycle_link", TRIGGER_LIFECYCLE_MODULES);
+        clickAndWait("propertyForm:deployTable:topActionsGroup1:newButton", TRIGGER_NEW_LIFECYCLE_MODULE);
+        selenium.type("form:propertySheet:propertSectionTextField:IdTextProp:IdText", lifecycleName);
+        selenium.type("form:propertySheet:propertSectionTextField:classNameProp:classname", lifecycleClassname);
+
+        /*
         final String property = "property";
         final String value = "value";
         final String description = "description";
-
-        clickAndWait("treeForm:tree:lifecycle:lifecycle_link", TRIGGER_LIFECYCLE_MODULES);
-        clickAndWait("propertyForm:deployTable:topActionsGroup1:deployButton", TRIGGER_NEW_LIFECYCLE_MODULE);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:IdTextProp:IdText", lifecycleName);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:classNameProp:classname", lifecycleClassname);
-
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
 
         selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", property);
         selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", value);
         selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", description);
-        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_LIFECYCLE_MODULES);
+        */
+        clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_LIFECYCLE_MODULES);
         assertTrue(selenium.isTextPresent(lifecycleName));
 
         testDisableButton(lifecycleName, "propertyForm:deployTable", "propertyForm:deployTable:topActionsGroup1:button3",
-                "propertyForm:propertySheet:propertSectionTextField:statusProp:status",
+                "propertyForm:propertySheet:propertSectionTextField:statusEdit:status",
                 "propertyForm:propertyContentPage:topButtons:cancelButton",
                 TRIGGER_LIFECYCLE_MODULES,
                 TRIGGER_EDIT_LIFECYCLE_MODULE,
                 "off");
 
         testEnableButton(lifecycleName, "propertyForm:deployTable", "propertyForm:deployTable:topActionsGroup1:button2",
-                "propertyForm:propertySheet:propertSectionTextField:statusProp:status",
+                "propertyForm:propertySheet:propertSectionTextField:statusEdit:status",
                 "propertyForm:propertyContentPage:topButtons:cancelButton",
                 TRIGGER_LIFECYCLE_MODULES,
                 TRIGGER_EDIT_LIFECYCLE_MODULE,
