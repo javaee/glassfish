@@ -563,6 +563,13 @@ public class EJBTimerService
             BaseContainer container = getContainer(containerId);
             if( container != null ) {
                 
+                // Update applicationId if it is null (from previous version)
+                long appid = timer.getApplicationId();
+                if (appid == 0) {
+                    timer.setApplicationId(container.getApplicationId());
+                }
+                //  End update
+
                 Date initialExpiration = timer.getInitialExpiration();
                
                 // Create an instance of RuntimeTimerState. 
