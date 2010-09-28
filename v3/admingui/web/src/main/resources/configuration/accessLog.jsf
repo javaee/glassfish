@@ -60,7 +60,7 @@
         gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="GET" result="#{requestScope.propTable}");
         setPageSessionAttribute(key="tableList" value="#{requestScope.propTable.data.extraProperties.properties}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/configuration/accessLog.jsf?configName=#{pageSession.configName}");
-        setPageSessionAttribute(key="convertToFalseList" value={"ssoEnabled", "accessLogEnabled" });
+        setPageSessionAttribute(key="convertToFalseList" value={"ssoEnabled", "accessLoggingEnabled" });
 
         setPageSessionAttribute(key="has2Objects" value="#{true}" );  //for editPageButtons.inc
         setPageSessionAttribute(key="childType2" value="access-log");
