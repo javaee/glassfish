@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hk2.annotations.Inject;
@@ -549,7 +550,7 @@ public class RunLevelServiceTest {
     rls.proceedTo(0);
     
     assertEquals(1, ExceptionRunLevelManagedService.destroyCount);
-    assertEquals(defRLlistener.calls.toString(), 6, defRLlistener.calls.size());
+    assertEquals(defRLlistener.calls.toString(), 7, defRLlistener.calls.size());
     assertListenerState(true, true, false);
   }
   

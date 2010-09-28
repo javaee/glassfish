@@ -600,6 +600,10 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
           }
         } else if (planned < current) {
           upSide = false;
+
+          // start things off we a notification of the current runLevel
+          setCurrent(this, current);
+
           int rl = current;
           while (rl > planned) {
             downActiveRecorder(rl);
