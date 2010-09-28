@@ -50,7 +50,9 @@ import org.apache.catalina.core.StandardContext;
 import org.glassfish.web.ha.session.management.*;
 import org.glassfish.web.valve.GlassFishValve;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
 
 import java.util.HashMap;
 
@@ -59,6 +61,7 @@ import java.util.HashMap;
  */
 
 @Service(name="replicated")
+@Scoped(PerLookup.class)
 public class ReplicatedWebMethodSessionStrategyBuilder extends BasePersistenceStrategyBuilder {
     @Inject
     ReplicationWebEventPersistentManager rwepMgr;

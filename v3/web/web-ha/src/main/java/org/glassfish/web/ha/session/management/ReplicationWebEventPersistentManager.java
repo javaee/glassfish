@@ -145,14 +145,18 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
     *   The session to store
     */    
     public void doValveSave(Session session) {
-        _logger.info("in doValveSave");
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("in doValveSave");
+        }
 
             try {
                 ReplicationStore replicationStore = (ReplicationStore) this.getStore();
                 // update this one's cache
                 //replicationStore.getSessions().put(session.getIdInternal(), session);
                 replicationStore.doValveSave(session);
-                _logger.info("FINISHED repStore.valveSave");
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("FINISHED repStore.valveSave");
+                }
             } catch (Exception ex) {
                 ex.printStackTrace();
 
