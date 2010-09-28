@@ -41,7 +41,6 @@
 package com.sun.ejb.spi.distributed;
 
 import com.sun.ejb.containers.EjbContainerUtil;
-import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.ejb.containers.EJBTimerService;
 import com.sun.enterprise.transaction.api.RecoveryResourceRegistry;
 import com.sun.enterprise.transaction.spi.RecoveryEventListener;
