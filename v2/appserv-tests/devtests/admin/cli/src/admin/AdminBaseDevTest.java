@@ -266,7 +266,7 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
         for (String line : lines) {
             if (line.indexOf(iname) >= 0) {
                 printf("Line from list-instances = " + line);
-                return line.indexOf(iname + " running") >= 0;
+                return line.indexOf("  running") >= 0;
             }
         }
         return false;
