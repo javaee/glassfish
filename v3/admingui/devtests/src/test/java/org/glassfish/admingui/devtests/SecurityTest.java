@@ -46,24 +46,25 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class SecurityTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_SECURITY_REALMS = "Manage security realms.";
-    private static final String TRIGGER_EDIT_REALM = "Edit Realm";
-    private static final String TRIGGER_FILE_USERS = "File Users";
-    private static final String TRIGGER_NEW_FILE_REALM_USER = "New File Realm User";
-    private static final String TRIGGER_AUDIT_MODULES = "com.sun.enterprise.security.Audit";
+    public static final String TRIGGER_NEW_REALM = "Create a new security (authentication) realm";
+    public static final String TRIGGER_SECURITY_REALMS = "Create, modify, or delete security (authentication) realms.";
+    public static final String TRIGGER_EDIT_REALM = "Edit Realm";
+    public static final String TRIGGER_FILE_USERS = "File Users";
+    public static final String TRIGGER_NEW_FILE_REALM_USER = "New File Realm User";
+    public static final String TRIGGER_AUDIT_MODULES = "com.sun.enterprise.security.Audit";
     //"Use audit modules to develop an audit trail of all authentication and authorization decisions.";
-    private static final String TRIGGER_NEW_AUDIT_MODULE = "New Audit Module";
-    private static final String TRIGGER_EDIT_AUDIT_MODULE = "Edit Audit Module";
-    private static final String TRIGGER_JACC_PROVIDERS = "Manage Java Authorization Contract for Containers (JACC) providers to define an interface for pluggable authorization providers.";
-    private static final String TRIGGER_NEW_JACC_PROVIDER = "New JACC Provider";
-    private static final String TRIGGER_EDIT_JACC_PROVIDER = "Edit JACC Provider";
-    private static final String TRIGGER_MESSAGE_SECURITY_CONFIGURATIONS = "Message Security Configurations";
-    private static final String TRIGGER_NEW_MESSAGE_SECURITY_CONFIGURATION = "New Message Security Configuration";
-    private static final String TRIGGER_EDIT_MESSAGE_SECURITY_CONFIGURATION = "Edit Message Security Configuration";
-    private static final String TRIGGER_EDIT_PROVIDER_CONFIGURATION = "Edit Provider Configuration";
-    private static final String ADMIN_PWD_DOMAIN_ATTRIBUTES = "Domain Attributes";
-    private static final String ADMIN_PWD_NEW_ADMINPWD = "New Administrator Password";
-    private static final String ADMIN_PWD_SUCCESS = "New values successfully saved";
+    public static final String TRIGGER_NEW_AUDIT_MODULE = "New Audit Module";
+    public static final String TRIGGER_EDIT_AUDIT_MODULE = "Edit Audit Module";
+    public static final String TRIGGER_JACC_PROVIDERS = "Manage Java Authorization Contract for Containers (JACC) providers.";
+    public static final String TRIGGER_NEW_JACC_PROVIDER = "New JACC Provider";
+    public static final String TRIGGER_EDIT_JACC_PROVIDER = "Edit JACC Provider";
+    public static final String TRIGGER_MESSAGE_SECURITY_CONFIGURATIONS = "Message Security Configurations";
+    public static final String TRIGGER_NEW_MESSAGE_SECURITY_CONFIGURATION = "New Message Security Configuration";
+    public static final String TRIGGER_EDIT_MESSAGE_SECURITY_CONFIGURATION = "Edit Message Security Configuration";
+    public static final String TRIGGER_EDIT_PROVIDER_CONFIGURATION = "Edit Provider Configuration";
+    public static final String ADMIN_PWD_DOMAIN_ATTRIBUTES = "Domain Attributes";
+    public static final String ADMIN_PWD_NEW_ADMINPWD = "New Administrator Password";
+    public static final String ADMIN_PWD_SUCCESS = "New values successfully saved";
 
     @Test
     public void testNewSecurityRealm() {
@@ -71,7 +72,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         final String contextName = "Context" + generateRandomString();
 
         clickAndWait("treeForm:tree:configurations:server-config:security:realms:realms_link", TRIGGER_SECURITY_REALMS);
-        clickAndWait("propertyForm:realmsTable:topActionsGroup1:newButton", "Create a new security realm.");
+        clickAndWait("propertyForm:realmsTable:topActionsGroup1:newButton", TRIGGER_NEW_REALM);
         selenium.type("form1:propertySheet:propertySectionTextField:NameTextProp:NameText", realmName);
         selenium.select("form1:propertySheet:propertySectionTextField:cp:Classname", "label=com.sun.enterprise.security.auth.realm.file.FileRealm");
         selenium.type("form1:fileSection:jaax:jaax", contextName);
