@@ -61,8 +61,8 @@
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                     saveJvmOptionValues(endpoint="#{pageSession.profilerUrl}/jvm-options" options="$attribute{newList}");
-                    //prepareSuccessfulMsg();
-                    gf.redirect(page="#{selfPage}?configName=#{pageSession.configName}");
+                    prepareSuccessfulMsg();
+                    gf.redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
                 />
             </sun:button>
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
