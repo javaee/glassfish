@@ -91,6 +91,8 @@ function checkClassname() {
 		checkRequired(id="form1:jdbcSection:pswd:pswd" , '#{reqMsg}' )  &&
 		checkRequired(id="form1:jdbcSection:groupTable:groupTable" , '#{reqMsg}' )  &&
 		checkRequired(id="form1:jdbcSection:groupName:groupName" , '#{reqMsg}' );
+	} else if (type.match('PamRealm') != null) {
+	    return checkRequired(id="form1:pamSection:jaax:jaax" , '#{reqMsg}') ;
 	} else if (type == '') {
 	    return showAlert('$resource{i18n.msg.JS.realm.needClassName}');
 	}
@@ -111,12 +113,13 @@ function showDisplay(testtype) {
     document.getElementById('#{ldapSectionId}').style.display = 'none'; 
     document.getElementById('#{jdbcSectionId}').style.display = 'none'; 
     document.getElementById('#{certSectionId}').style.display = 'none'; 
-    document.getElementById('#{solarisSectionId}').style.display = 'none'; 
-  
+    document.getElementById('#{solarisSectionId}').style.display = 'none';
+    document.getElementById('#{pamSectionId}').style.display = 'none';
+    
     if (testtype.match('none')){  
         return;  
     }  
-    type = getSelectElement('#{classnameDropdownId}').value; 
+    type = getSelectElement('#{classnameDropdownId}').value;
     rtype = type.match('FileRealm');  
     if (rtype != null){  
         document.getElementById('#{fileSectionId}').style.display = 'block';   
@@ -141,7 +144,12 @@ function showDisplay(testtype) {
     if (rtype != null){  
         document.getElementById('#{certSectionId}').style.display = 'block';   
         return;  
-    }  
+    }
+    rtype = type.match('PamRealm');
+    if (rtype != null){
+        document.getElementById('#{pamSectionId}').style.display = 'block';
+        return;
+    }
 }    
 
 </script>

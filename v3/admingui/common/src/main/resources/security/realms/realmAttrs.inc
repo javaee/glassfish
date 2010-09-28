@@ -135,6 +135,15 @@
         </sun:property> 
     </sun:propertySheetSection>
 
+    <sun:propertySheetSection id="pamSection" visible="#{false}" label="$resource{i18nc.realm.specificProps}">
+        <!afterCreate
+            getClientId(component="$this{component}" clientId=>$page{pamSectionId});
+        />
+        <sun:property id="jaax" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.realm.jaax}" helpText="$resource{i18nc.realm.jaaxHelp}" >
+            <sun:textField id="jaax" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.realm.jaax']}" text="#{attrMap.pamJaax}" required="#{true}" />
+        </sun:property>
+    </sun:propertySheetSection>
+
     <sun:propertySheetSection id="jdbcSection" visible="#{false}" label="$resource{i18nc.realm.specificProps}">
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{jdbcSectionId});

@@ -142,6 +142,9 @@ public class SecurityHandler {
                 attrMap.put("solarisJaax", origProps.get("jaas-context"));
                 attrMap.put("solarisAsGroups", origProps.get("assign-groups"));
             }else
+            if(classname.indexOf("PamRealm")!= -1){
+                attrMap.put("pamJaax", origProps.get("jaas-context"));
+            }else
             if(classname.indexOf("JDBCRealm")!= -1){
                 attrMap.put("jdbcJaax", origProps.get("jaas-context"));
                 attrMap.put("jdbcAsGroups", origProps.get("assign-groups"));
@@ -249,6 +252,9 @@ public class SecurityHandler {
             if(classname.indexOf("SolarisRealm")!= -1){
                 putOptional(attrMap, propList, "jaas-context", "solarisJaax");
                 putOptional(attrMap, propList, "assign-groups", "solarisAsGroups");
+            }else
+            if(classname.indexOf("PamRealm")!= -1){
+                putOptional(attrMap, propList, "jaas-context", "pamJaax");
             }else
             if(classname.indexOf("JDBCRealm")!= -1){
                 putOptional(attrMap, propList, "jaas-context", "jdbcJaax");

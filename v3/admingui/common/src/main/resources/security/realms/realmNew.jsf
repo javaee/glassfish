@@ -56,6 +56,7 @@
     setComponentRequired(id="form1:ldapSection:directory:directory" required="$boolean{false}" );
     setComponentRequired(id="form1:ldapSection:baseDn:baseDn" required="$boolean{false}" );
     setComponentRequired(id="form1:solarisSection:jaax:jaax" required="$boolean{false}" );
+    setComponentRequired(id="form1:pamSection:jaax:jaax" required="$boolean{false}" );
     setComponentRequired(id="form1:jdbcSection:jaax:jaax" required="$boolean{false}" );
     setComponentRequired(id="form1:jdbcSection:jndi:jndi" required="$boolean{false}" );
     setComponentRequired(id="form1:jdbcSection:userTable:userTable" required="$boolean{false}" );
