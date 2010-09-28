@@ -74,7 +74,7 @@
         setPageSessionAttribute(key="selfUrl2", value="#{pageSession.parentUrl2}/#{pageSession.childType2}/#{pageSession.encodedProtocolName}");
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}", valueMap="#{pageSession.valueMap2}");
 
-        setPageSessionAttribute(key="convertToFalseList2" value={"SecurityEnabled"});
+        setPageSessionAttribute(key="convertToFalseList2" value={"securityEnabled"});
 
         //set the following for including buttons.inc
         setPageSessionAttribute(key="has2Objects" value="#{true}" );
@@ -124,7 +124,7 @@
         </sun:property>
 
         <sun:property id="security"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.security}"  >
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap2['securityenabled']}" selectedValue="true" />
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap2['securityEnabled']}" selectedValue="true" />
         </sun:property>
         
         <sun:property id="JkEnabled"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.JkEnabled}" helpText="$resource{i18n_web.grizzly.networkListener.JkEnabledHelp}">
