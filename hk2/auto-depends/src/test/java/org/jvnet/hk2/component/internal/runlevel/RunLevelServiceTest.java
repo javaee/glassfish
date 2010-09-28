@@ -1097,7 +1097,7 @@ public class RunLevelServiceTest {
   private static class TestDefaultRunLevelService extends DefaultRunLevelService {
     TestDefaultRunLevelService(Habitat habitat, boolean async, Class<?> targetEnv,
         HashMap<Integer, Recorder> recorders) {
-      super(habitat, async, targetEnv, recorders);
+      super(habitat, async, null, targetEnv, recorders);
     }
   }
   

@@ -218,5 +218,21 @@ public class HabitatTest extends TestCase {
     assertNotNull(coll);
     assertEquals(0, coll.size());
   }
-  
+
+  public void testGetByContractAndName() {
+    Inhabitant i1 = new ExistingSingletonInhabitant(String.class, "named");
+    Inhabitant i2 = new ExistingSingletonInhabitant(String.class, "unnamed");
+
+    h.add(i2);
+    h.addIndex(i2, String.class.getName(), null);
+    h.add(i1);
+    h.addIndex(i1, String.class.getName(), "named");
+
+    Collection<Inhabitant> coll = h.getAllByContract(String.class.getName());
+    assertEquals("should have the named and the unnamed instance" + coll.toString(), 2, coll.size());
+
+    String ret = (String)h.getComponent(String.class.getName(), "named");
+    assertEquals("named", ret);
+  }
+
 }

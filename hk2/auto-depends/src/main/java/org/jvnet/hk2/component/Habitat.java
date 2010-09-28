@@ -162,7 +162,7 @@ public class Habitat {
         ExistingSingletonInhabitant<RunLevelService> rlsI = 
           new ExistingSingletonInhabitant<RunLevelService>(RunLevelService.class, rls);
         add(rlsI);
-        addIndex(rlsI, RunLevelService.class.getName(), "default");
+        addIndex(rlsI, RunLevelService.class.getName(), DefaultRunLevelService.NAME);
     }
     
     /**
