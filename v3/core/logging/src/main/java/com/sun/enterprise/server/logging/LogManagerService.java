@@ -46,14 +46,12 @@ import com.sun.common.util.logging.LoggingXMLNames;
 import com.sun.enterprise.admin.monitor.callflow.Agent;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.server.logging.FormatterDelegate;
-import com.sun.enterprise.server.logging.UniformLogFormatter;
 import com.sun.enterprise.util.EarlyLogger;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.admin.FileMonitoring;
-import org.glassfish.internal.api.*;
+import org.glassfish.internal.api.Init;
 import org.glassfish.internal.config.UnprocessedConfigListener;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
@@ -69,7 +67,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.*;
 import java.util.logging.*;
-import java.util.logging.LogManager;
 
 /**
  * Reinitialzie the log manager using our logging.properties file.
@@ -286,11 +283,13 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
                 LoggingOutputStream.LoggingPrintStream perr = los.new  LoggingPrintStream(los);
                 System.setErr(perr);
              */
-        LoggingOutputStream los = new LoggingOutputStream(Logger.getAnonymousLogger(), Level.INFO);
+        Logger anonymousLogger = Logger.getAnonymousLogger();
+        anonymousLogger.setUseParentHandlers(false);
+        LoggingOutputStream los = new LoggingOutputStream(anonymousLogger, Level.INFO);
         PrintStream pout = new PrintStream(los, true);
         System.setOut(pout);
 
-        los = new LoggingOutputStream(Logger.getAnonymousLogger(), Level.SEVERE);
+        los = new LoggingOutputStream(anonymousLogger, Level.SEVERE);
         PrintStream perr = new PrintStream(los, true);
         System.setErr(perr);
 
