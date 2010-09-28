@@ -201,6 +201,9 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     RunLevelState<Void>, InhabitantListener, HabitatListener, InhabitantSorter, InhabitantActivator {
   // the initial run level
   public static final int INITIAL_RUNLEVEL = -2;
+  
+  // the default name
+  public static final String NAME = "default";
 
   // the default mode - sync or async.
   static final boolean ASYNC_ENABLED = false;
@@ -224,6 +227,9 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
   // async mode.
   private final ExecutorService exec;
 
+  // the name for this instance, defaulting to NAME
+  protected final String name;
+  
   // the target environment, defaulting to Void.class
   private final Class<?> targetEnv;
 
@@ -248,10 +254,11 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
   }
 
   public DefaultRunLevelService(Habitat habitat) {
-    this(habitat, ASYNC_ENABLED, Void.class, new LinkedHashMap<Integer, Recorder>());
+    this(habitat, ASYNC_ENABLED, null, null, new LinkedHashMap<Integer, Recorder>());
   }
 
-  DefaultRunLevelService(Habitat habitat, boolean async, Class<?> targetEnv,
+  protected DefaultRunLevelService(Habitat habitat, boolean async, 
+      String name, Class<?> targetEnv,
       HashMap<Integer, Recorder> recorders) {
     this.habitat = habitat;
     assert (null != habitat);
@@ -271,7 +278,8 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     } else {
       this.exec = null;
     }
-    this.targetEnv = targetEnv;
+    this.name = (null == name) ? NAME : name;
+    this.targetEnv = (null == targetEnv) ? Void.class : targetEnv;
     this.recorders = recorders;
 
     // subscribe to events in the habitat since we cannot rely on PostConstruct.
@@ -303,6 +311,10 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     assert (this != stateProvider);
     assert (getEnvironment() == stateProvider.getEnvironment());
     this.delegate = stateProvider;
+  }
+  
+  public String getName() {
+    return name;
   }
 
   @Override
@@ -570,13 +582,35 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     inhabitant.release();
   }
   
+  /**
+   * Obtains the "best" InhabitantSorter, first looking up out of
+   * the habitat any service registered under the same name as ourself,
+   * then defaulting to the first one registered by type alone, followed
+   * by ourself.
+   * 
+   * @return an InhabitantActivator, defaulting to ourself
+   */
   protected InhabitantSorter getInhabitantSorter() {
-    InhabitantSorter is = habitat.getByContract(InhabitantSorter.class);
+    InhabitantSorter is = habitat.getComponent(InhabitantSorter.class, getName());
+    if (null == is) {
+      is = habitat.getByContract(InhabitantSorter.class);
+    }
     return (null == is) ? this : is;
   }
 
+  /**
+   * Obtains the "best" InhabitantActivator, first looking up out of
+   * the habitat any service registered under the same name as ourself,
+   * then defaulting to the first one registered by type alone, followed
+   * by ourself.
+   * 
+   * @return an InhabitantActivator, defaulting to ourself
+   */
   protected InhabitantActivator getInhabitantActivator() {
-    InhabitantActivator ia = habitat.getByContract(InhabitantActivator.class);
+    InhabitantActivator ia = habitat.getComponent(InhabitantActivator.class, getName());
+    if (null == ia) {
+      ia = habitat.getByContract(InhabitantActivator.class);
+    }
     return (null == ia) ? this : ia;
   }
 
