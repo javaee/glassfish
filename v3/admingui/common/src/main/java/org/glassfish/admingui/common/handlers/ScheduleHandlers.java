@@ -59,70 +59,74 @@ public class ScheduleHandlers {
 
     @Handler(id = "gf.getScheduleData",
         input = {
-            @HandlerInput(name = "scheduleName", type = String.class, required=true)},
+            @HandlerInput(name = "scheduleName", type = String.class)},
         output = {
-            @HandlerOutput(name = "type", type = String.class),
-            @HandlerOutput(name = "data", type = java.util.Map.class)})
+            @HandlerOutput(name = "dayOfWeek", type = java.util.Map.class),
+            @HandlerOutput(name = "dayOfMonth", type = java.util.Map.class),
+            @HandlerOutput(name = "month", type = java.util.Map.class)})
 
     public static void getScheduleData(HandlerContext handlerCtx) {
         String scheduleName = (String) handlerCtx.getInputValue("scheduleName");
-        String endPoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/server-config/schedules/schedule/" +
-                scheduleName;
-        String type = "custom";
+        String dayOfWeek = "*", dayOfMonth = "*", month = "*";
 
-        Map attribs = RestApiHandlers.getAttributesMap(endPoint);
-        String dayOfWeek = (String)attribs.get("dayOfWeek");
-        String dayOfMonth = (String)attribs.get("dayOfMonth");
-        String month = (String)attribs.get("month");
-        String data = "";
-        boolean allDaysOfWeek = false, allDaysOfMonth = false, allMonths = false;
+        if (scheduleName != null) {
+            String endPoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/server-config/schedules/schedule/" +
+                    scheduleName;
 
-        if (dayOfWeek == null || "*".equals(dayOfWeek))
-            allDaysOfWeek = true;
-        else
-            data = dayOfWeek;
+            Map attribs = RestApiHandlers.getAttributesMap(endPoint);
 
-        if (dayOfMonth == null || "*".equals(dayOfMonth))
-            allDaysOfMonth = true;
-        else {
-            if (data.length() > 1) data = data + ",";
-            data = data + dayOfMonth;
+            dayOfWeek = (String)attribs.get("dayOfWeek");
+            dayOfMonth = (String)attribs.get("dayOfMonth");
+            month = (String)attribs.get("month");
         }
+        Map dayOfWeekMap = getDataMap(dayOfWeek);
+        Map dayOfMonthMap = getDataMap(dayOfMonth);
+        Map monthMap = getDataMap(month);
 
-        if (month == null || "*".equals(month))
-            allMonths = true;
+        handlerCtx.setOutputValue("dayOfWeek", dayOfWeekMap);
+        handlerCtx.setOutputValue("dayOfMonth", dayOfMonthMap);
+        handlerCtx.setOutputValue("month", monthMap);
 
-        if (allDaysOfWeek && allDaysOfMonth && allMonths)
-            type = "daily";
-        else if (!allDaysOfWeek) {
-            if (allDaysOfMonth && allMonths) {
-                type="weekly";
-            }
-        }
-        else if (!allDaysOfMonth) {
-            if (allDaysOfWeek && allMonths) {
-                type="monthly";
-            }
-        }
+    }
 
+    private static Map getDataMap(String data) {
         List<String> dataList = GuiUtil.parseStringList(data, ",");
-
         Map dataMap = new HashMap();
         for (String dataItem : dataList) {
             dataMap.put(dataItem, "true");
         }
-        handlerCtx.setOutputValue("data", dataMap);
-        handlerCtx.setOutputValue("type", type);
-
+        return dataMap;
     }
-
-    /*
-    @Handler(id = "gf.setScheduleData",
+    @Handler(id = "gf.convertBooleanMapToString",
         input = {
-            @HandlerInput(name = "values", type = java.util.Map.class, required=true)})
+            @HandlerInput(name = "map", type = java.util.Map.class, required=true),
+            @HandlerInput(name = "delimiter", type = String.class)
+        },
+        output = {
+            @HandlerOutput(name = "str", type = String.class)
+        })
 
-    public static void setScheduleData(HandlerContext handlerCtx) {
-        System.out.println("VALUES = " + handlerCtx.getInputValue("values"));
+    public static void convertBooleanMapToString(HandlerContext handlerCtx) {
+
+        Map<String, String> map = (Map) handlerCtx.getInputValue("map");
+        String delimiter = (String)handlerCtx.getInputValue("delimiter");
+        if (delimiter == null)
+            delimiter =",";
+        String str = "";
+
+        for (String key : map.keySet()) {
+            String val = map.get(key);
+            if (val != null && val.equals("true")) {
+                if (key.equals("*")) {
+                    str = "*";
+                    break;
+                }
+                if (str.length() > 0)
+                    str = str + ",";
+                str = str + key;
+            }
+        }
+        handlerCtx.setOutputValue("str", str);
+
     }
-    */
 }
