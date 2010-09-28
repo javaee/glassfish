@@ -167,6 +167,9 @@ public class MonitoringHandlers {
                 if (doesProxyExist(endpoint)) {
                     Map<String, Object> stats = getMonitoringStatInfo(endpoint);
                     for (String statName : stats.keySet()) {
+                        if (!(stats.get(statName).getClass().equals(HashMap.class))) {
+                            continue;
+                        }
                         Map<String, Object> monAttrs = (Map<String, Object>) stats.get(statName);
                         Map<String, String> statMap = new HashMap();
                         String val = "";
@@ -203,20 +206,23 @@ public class MonitoringHandlers {
                             if (monAttrs.containsKey("count")) {
                                 val = monAttrs.get("count") + " " + unit;
                             } else if (monAttrs.containsKey("current")) {
-                                if (statName.equals("transaction-service")) {
-                                    String str = (String) monAttrs.get("current");
-                                    String formatStr = formatActiveIdsForDisplay(str);
-                                    if (!formatStr.isEmpty() && !formatStr.equals("")) {
-                                        val = formatStr;
-                                    }
-                                } else {
-                                    if (unit != null) {
-                                        if (unit.equals("String")) {
-                                            val = (String) monAttrs.get("current");
+                                if (unit != null) {
+                                    if (unit.equals("String")) {
+                                        if (mname.equals("LiveThreads")) {
+                                            String str = (String) monAttrs.get("current");
+                                            val = formatStringForDisplay(str);
                                         } else {
-                                            Long currentVal = (Long) monAttrs.get("current");
-                                            val = currentVal + unit;
+                                            val = (String) monAttrs.get("current");
                                         }
+                                    } else if (unit.equals("List")) {
+                                        String str = (String) monAttrs.get("current");
+                                        String formatStr = formatActiveIdsForDisplay(str);
+                                        if (!formatStr.isEmpty() && !formatStr.equals("")) {
+                                            val = formatStr;
+                                        }
+                                    } else {
+                                        Long currentVal = (Long) monAttrs.get("current");
+                                        val = currentVal + unit;
                                     }
                                 }
                             } else if (monAttrs.containsKey("applicationtype")) {
@@ -806,8 +812,10 @@ public class MonitoringHandlers {
         @HandlerInput(name="monitorURL",   type=String.class, required=true),
         @HandlerInput(name="moduleProps",   type=Map.class, required=true)},
        output = {
-        @HandlerOutput(name = "webStatUrl", type = String.class),
-        @HandlerOutput(name = "webStatType", type = String.class)
+        @HandlerOutput(name = "webServletUrl", type = String.class),
+        @HandlerOutput(name = "webServletType", type = String.class),
+        @HandlerOutput(name = "webUrl", type = String.class),
+        @HandlerOutput(name = "webType", type = String.class)
        })
     public static void getWebStatsUrl(HandlerContext handlerCtx) {
         String app = (String) handlerCtx.getInputValue("app");
@@ -815,33 +823,35 @@ public class MonitoringHandlers {
         List<String> vsList = (List<String>) handlerCtx.getInputValue("vsList");
         String compVal = (String) handlerCtx.getInputValue("compVal");
         Map<String, String> moduleProps = (Map<String, String>) handlerCtx.getInputValue("moduleProps");
-        String webStatUrl = "EMPTY";
+        String webUrl = "EMPTY";
+        String webServletUrl = "EMPTY";
         String statType = "EMPTY";
+        String webType = "EMPTY";
         String monitorEndpoint = monitorURL + "/applications/" + app;
 
-        if (compVal == null || compVal.equals("")) {
-            for (String vs : vsList) {
-                monitorEndpoint = monitorEndpoint + "/" + vs;
-                if (doesProxyExist(monitorEndpoint)) {
-                    webStatUrl = monitorEndpoint;
-                    statType = "Web";
-                    break;
-                }
+        for (String vs : vsList) {
+            if (doesMonitoringDataExist(monitorEndpoint + "/" + vs)) {
+                webUrl = monitorEndpoint + "/" + vs;
+                webType = "Web";
+                break;
             }
-        } else {
+        }
+        if (compVal != null && !(compVal.equals(""))) {
             String[] compStrs = compVal.split("/");
             if (vsList.contains(compStrs[0])) {
                 if (moduleProps.containsKey(compStrs[1]) && moduleProps.get(compStrs[1]).equals("Servlet")) {
                     monitorEndpoint = monitorEndpoint + "/" + compVal;
                     if (doesProxyExist(monitorEndpoint)) {
-                        webStatUrl = monitorEndpoint;
+                        webServletUrl = monitorEndpoint;
                         statType = "ServletInstance";
                     }
                 }
             }
         }
-        handlerCtx.setOutputValue("webStatUrl", webStatUrl);
-        handlerCtx.setOutputValue("webStatType", statType);
+        handlerCtx.setOutputValue("webServletUrl", webServletUrl);
+        handlerCtx.setOutputValue("webServletType", statType);
+        handlerCtx.setOutputValue("webUrl", webUrl);
+        handlerCtx.setOutputValue("webType", webType);
     }
 
     @Handler(id = "getStatsUrl",
@@ -895,7 +905,7 @@ public class MonitoringHandlers {
         List stats = new ArrayList();
         if (webStats != null) {
             for (Map webStat : webStats) {
-                String statName = (String) webStat.get("Name");
+                String statName = (String) webStat.get("name");
                 if (requestStatNames.contains(statName) && statType.equals("Request")) {
                     stats.add(webStat);
                 } else if (statName.contains(statType) && !(statType.equals("Request"))) {
@@ -1038,7 +1048,7 @@ public class MonitoringHandlers {
                 return propsMap;
             }
         } catch (Exception ex) {
-            GuiUtil.getLogger().severe("Error in doesAppProxyExist ; \nendpoint = " + endpoint + "attrs=" + attrs + "method=GET");
+            GuiUtil.getLogger().severe("Error in getSubComponents ; \nendpoint = " + endpoint + "attrs=" + attrs + "method=GET");
             //we don't need to call GuiUtil.handleError() because thats taken care of in restRequest() when we pass in the handler.
         }
         return null;
@@ -1047,6 +1057,15 @@ public class MonitoringHandlers {
     public static Boolean doesProxyExist(String endpoint) {
         if (RestApiHandlers.get(endpoint).isSuccess()) {
             return true;
+        }
+        return false;
+    }
+
+    public static Boolean doesMonitoringDataExist(String endpoint) {
+        if (RestApiHandlers.get(endpoint).isSuccess()) {
+            if (getMonitoringStatInfo(endpoint).size() > 0) {
+                return true;
+            }
         }
         return false;
     }
@@ -1173,6 +1192,25 @@ public class MonitoringHandlers {
             values = values + "</table>";
         }
         return values;
+    }
+
+    private static String formatStringForDisplay(String strToFormat) {
+        String[] strs = strToFormat.split(",");
+        String formattedStr = "";
+        if (strs != null && strs.length > 10) {
+            for (int i = 0; i < strs.length; i++) {
+                String str = strs[i];
+                if (!formattedStr.equals("")) {
+                    formattedStr = formattedStr + ",";
+                }
+                if (i % 10 == 0 && i != 0) {
+                    formattedStr = formattedStr + "\n";
+                }
+                formattedStr = formattedStr + str;
+            }
+            return formattedStr;
+        }
+        return strToFormat;
     }
 
     private static Map<String, Object> getMonitoringStatInfo(String endpoint) {

@@ -520,6 +520,9 @@ public class WoodstockHandler {
         List menuList = new ArrayList();
         Set<String> compChildSet = null;
         try {
+            if (appname.equals(modulename)) {
+                endpoint = monitorURL + "/applications/" + appname + "/" + compName;
+            }
             compChildSet = RestApiHandlers.getChildMap(endpoint).keySet();
         } catch (Exception ex) {
             GuiUtil.getLogger().severe("Error in getEJBComponentMenuOptions ; \nendpoint = " + endpoint + "method=GET");
@@ -547,7 +550,7 @@ public class WoodstockHandler {
     }
 
     private static List getWebComponentMenuOptions(String appname, String modulename, List vsList, String monitorURL, HandlerContext handlerCtx) {
-        String endpoint = monitorURL + "/applications/" + appname + "/" + modulename;
+        String endpoint = monitorURL + "/applications/" + appname;
         List menuList = new ArrayList();
 
         if (vsList != null) {

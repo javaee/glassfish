@@ -73,7 +73,7 @@
             setPageSessionAttribute(key="propsMap" value="#{requestScope.result.data.properties}");
         }
         
-        getWebStatsUrl(app="#{appFullName}", compVal="#{cVal}", monitorURL="#{pageSession.monitorURL}", vsList="#{pageSession.vsList}", moduleProps="#{pageSession.propsMap}", webStatUrl=>$attribute{webStatUrl}, webStatType=>$attribute{webStatType});
+        getWebStatsUrl(app="#{appFullName}", compVal="#{cVal}", monitorURL="#{pageSession.monitorURL}", vsList="#{pageSession.vsList}", moduleProps="#{pageSession.propsMap}", webServletUrl=>$attribute{webServletUrl}, webUrl=>$attribute{webUrl}, webServletType=>$attribute{webServletType}, webType=>$attribute{webType});
         getNameforMbean(appName="#{viewVal}", compVal="#{cVal}", end="true", mbeanName=>$attribute{mbName});
         getStatsUrl(app="#{appFullName}", compVal="#{cVal}", monitorURL="#{pageSession.monitorURL}", moduleProps="#{pageSession.propsMap}", statUrl=>$attribute{statUrl}, statType=>$attribute{statType});
         calculateHelpUrl(pluginId="#{pluginId}", helpKey: "$resource{help_web.monitorApps}", url="#{olhLink}");
@@ -306,7 +306,7 @@
     <sun:tableRowGroup id="servletsInstance" rendered="#{hasStatsSI}" data={"$attribute{servletInstanceList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.servletInstanceStatistics} : #{viewVal}/#{cVal}"
         groupToggleButton="$boolean{true}" collapsed="#{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStats(endpoint="#{webStatUrl}", statType="#{webStatType}", type="ServletInstance", result=>$attribute{servletInstanceList}  hasStats=>$attribute{hasStatsSI});
+            getStats(endpoint="#{webServletUrl}", statType="#{webServletType}", type="ServletInstance", result=>$attribute{servletInstanceList}  hasStats=>$attribute{hasStatsSI});
 
          />
 #include "/common/monitor/monitoringTableRows.inc"
@@ -319,7 +319,7 @@
             if(#{hasStatsSI} || #{hasStatsJersey}) {
                 setAttribute(key="collapseServlets" value="#{true}");
             }
-            getStats(endpoint="#{webStatUrl}", statType="#{webStatType}", type="Web", result=>$attribute{servletList}  hasStats=>$attribute{hasStatsSS});
+            getStats(endpoint="#{webUrl}", statType="#{webType}", type="Web", result=>$attribute{servletList}  hasStats=>$attribute{hasStatsSS});
             filterWebStats(webStats="$attribute{servletList}", statType="Servlet", stats=>$attribute{servletList});
          />
 #include "/common/monitor/monitoringTableRows.inc"
@@ -329,7 +329,7 @@
     <sun:tableRowGroup id="session" rendered="#{hasStatsSSP}" data={"$attribute{sessionList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.sessionStatisticsWeb} : #{viewVal}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStats(endpoint="#{webStatUrl}", statType="#{webStatType}", type="Web", result=>$attribute{sessionList}  hasStats=>$attribute{hasStatsSSP});
+            getStats(endpoint="#{webUrl}", statType="#{webType}", type="Web", result=>$attribute{sessionList}  hasStats=>$attribute{hasStatsSSP});
             filterWebStats(webStats="$attribute{sessionList}", statType="Session", stats=>$attribute{sessionList});
          />
 
@@ -339,7 +339,7 @@
     <sun:tableRowGroup id="requestStats" rendered="#{hasStatsWR}" data={"$attribute{requestStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.requestStatisticsWeb} : #{viewVal}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStats(endpoint="#{webStatUrl}", statType="#{webStatType}", type="Web", result=>$attribute{requestStatsList}  hasStats=>$attribute{hasStatsWR});
+            getStats(endpoint="#{webUrl}", statType="#{webType}", type="Web", result=>$attribute{requestStatsList}  hasStats=>$attribute{hasStatsWR});
             filterWebStats(webStats="$attribute{requestStatsList}", statType="Request", stats=>$attribute{requestStatsList});
          />
 
@@ -349,7 +349,7 @@
     <sun:tableRowGroup id="jspStats" rendered="#{hasStatsJSP}" data={"$attribute{jspStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.jspStatisticsWeb} : #{viewVal} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getStats(endpoint="#{webStatUrl}", statType="#{webStatType}", type="Web", result=>$attribute{jspStatsList}  hasStats=>$attribute{hasStatsJSP});
+            getStats(endpoint="#{webUrl}", statType="#{webType}", type="Web", result=>$attribute{jspStatsList}  hasStats=>$attribute{hasStatsJSP});
             filterWebStats(webStats="$attribute{jspStatsList}", statType="Jsp", stats=>$attribute{jspStatsList});
          />
 

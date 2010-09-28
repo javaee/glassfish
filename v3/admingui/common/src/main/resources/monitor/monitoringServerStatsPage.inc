@@ -144,7 +144,7 @@
             getClientId(component="$this{component}" clientId=>$page{tableId});
         />
         <sun:tableRowGroup id="virtualServerStats" rendered="#{hasStatsVS}" data={"$attribute{virtualServerStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.virtualServerStatistics} : #{viewVal}"
-            groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
+            groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
             <!beforeCreate
                 getStats(endpoint="#{pageSession.monitorURL}/http-service/#{viewVal}", result=>$attribute{virtualServerStatsList} hasStats=>$attribute{hasStatsVS});
             />
@@ -153,7 +153,7 @@
             "<br/>
         </sun:tableRowGroup>
         <sun:tableRowGroup id="httpServiceStats" rendered="#{hasStatsHTTP}" data={"$attribute{httpServiceStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.requestStatisticsHttp} : #{viewVal}"
-            groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
+            groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
             <!beforeCreate
                 getStats(endpoint="#{pageSession.monitorURL}/http-service/#{viewVal}/request", result=>$attribute{httpServiceStatsList} hasStats=>$attribute{hasStatsHTTP});
             />
@@ -162,7 +162,7 @@
             "<br/>
         </sun:tableRowGroup>
         <sun:tableRowGroup id="fileCacheStats" rendered="#{hasStatsFC}" data={"$attribute{fileCacheStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.FileCacheStats} : #{viewVal}"
-            groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
+            groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
             <!beforeCreate
                 getStats(endpoint="#{pageSession.monitorURL}/network/#{viewVal}/file-cache", result=>$attribute{fileCacheStatsList} hasStats=>$attribute{hasStatsFC});
             />
@@ -208,7 +208,7 @@
          </sun:tableRowGroup>
 
         <sun:tableRowGroup id="jvmThreadInfoStats" rendered="#{hasStatsJVMThreadInfo}" data={"$attribute{jvmThreadInfoStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.ThreadInfo}"
-            groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}"  extraHeaderHtml="colspan='6'">
+            groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}"  extraHeaderHtml="colspan='6'">
             <!beforeCreate
                 getStats(endpoint="#{pageSession.monitorURL}/jvm/thread-system/#{viewVal}", result=>$attribute{jvmThreadInfoStatsList}  hasStats=>$attribute{hasStatsJVMThreadInfo});
              />
@@ -217,7 +217,7 @@
             "<br/>
         </sun:tableRowGroup>
         <sun:tableRowGroup id="gcStats" rendered="#{hasStatsGC}" data={"$attribute{gcStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.jvm.garbageCollectorsStats} : #{viewVal}"
-            groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}"  extraHeaderHtml="colspan='6'">
+            groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}"  extraHeaderHtml="colspan='6'">
             <!beforeCreate
                 getStats(endpoint="#{pageSession.monitorURL}/jvm/garbage-collectors/#{viewVal}", result=>$attribute{gcStatsList}  hasStats=>$attribute{hasStatsGC});
             />
@@ -226,7 +226,7 @@
             "<br/>
         </sun:tableRowGroup>
         <sun:tableRowGroup id="txnServiceStats" rendered="#{hasStatsTXN}" data={"$attribute{txnServiceStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.transaction}"
-            groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
+            groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
 
 #include "/common/monitor/monitoringTableRows.inc"
             "<br/>
