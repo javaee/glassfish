@@ -532,7 +532,8 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                             return;
                         }
                         if (event.is(EventTypes.SERVER_SHUTDOWN)) {
-                            logger.log(Level.FINE, "Calling gms.shutdown()...");
+                            logger.log(Level.INFO, "gmsservice.server_shutdown.received",
+                                       new Object[]{gms.getInstanceName(), gms.getGroupName(), event.toString()});
 
                             // todo: remove these when removing the test register ones above.
                             removeJoinedAndReadyNotificationListener(GMSAdapterImpl.this);
@@ -557,7 +558,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 //                                } catch(Throwable t) {}
 //                            }
 //                          validateCoreMembers();
-                            gms.reportJoinedAndReadyState(clusterName);
+                            gms.reportJoinedAndReadyState();
                         }
                     }
                 };
