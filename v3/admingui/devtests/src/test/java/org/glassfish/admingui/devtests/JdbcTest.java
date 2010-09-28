@@ -47,16 +47,16 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class JdbcTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_JDBC_CONNECTION_POOLS = "To store, organize, and retrieve data, most applications use relational databases.";
-    private static final String TRIGGER_JDBC_RESOURCES = "JDBC resources provide applications with a means to connect to a database.";
-    private static final String TRIGGER_EDIT_JDBC_RESOURCE = "Edit JDBC Resource";
-    private static final String TRIGGER_NEW_JDBC_CONNECTION_POOL_STEP_1 = "New JDBC Connection Pool (Step 1 of 2)";
-    private static final String TRIGGER_NEW_JDBC_CONNECTION_POOL_STEP_2 = "New JDBC Connection Pool (Step 2 of 2)";
-    private static final String TRIGGER_NEW_JDBC_RESOURCE = "New JDBC Resource";
+    public static final String TRIGGER_JDBC_CONNECTION_POOLS = "To store, organize, and retrieve data, most applications use relational databases.";
+    public static final String TRIGGER_JDBC_RESOURCES = "JDBC resources provide applications with a means to connect to a database.";
+    public static final String TRIGGER_EDIT_JDBC_RESOURCE = "Edit JDBC Resource";
+    public static final String TRIGGER_NEW_JDBC_CONNECTION_POOL_STEP_1 = "New JDBC Connection Pool (Step 1 of 2)";
+    public static final String TRIGGER_NEW_JDBC_CONNECTION_POOL_STEP_2 = "New JDBC Connection Pool (Step 2 of 2)";
+    public static final String TRIGGER_NEW_JDBC_RESOURCE = "New JDBC Resource";
 
     @Test
     public void testPoolPing() {
-        clickAndWait("treeForm:tree:resources:JDBC:connectionPoolResources:amxppdomainresourcestypejdbc-connection-poolname__TimerPool:link", "Edit JDBC Connection Pool");
+        clickAndWait("treeForm:tree:resources:JDBC:connectionPoolResources:__TimerPool:link", "Edit JDBC Connection Pool");
         clickAndWait("propertyForm:propertyContentPage:ping", "Ping Succeeded");
     }
 
