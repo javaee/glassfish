@@ -230,7 +230,7 @@ class Log {
         // If the log open failed, report the error.
 
         catch( LogException le ) {
-			_logger.log(Level.SEVERE,"jts.log_error",le.toString());
+			_logger.log(Level.SEVERE,"jts.log_error",le);
 			 String msg = LogFormatter.getLocalizedMessage(_logger,"jts.log_error",
 			 							new java.lang.Object[] {le.toString()});
 			  throw  new org.omg.CORBA.INTERNAL(msg);
