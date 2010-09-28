@@ -40,74 +40,14 @@
 
 package org.glassfish.api.embedded.web;
 
-import org.apache.catalina.connector.Connector;
-import org.glassfish.api.embedded.LifecycleException;
-import org.glassfish.api.embedded.web.config.WebListenerConfig;
-
 /**
  * @author Rajiv Mordani
  * @author Amy Roh
  */
-public class AjpListener extends Connector implements WebListener  {
-
-    private WebListenerConfig config;
+public class AjpListener extends WebListenerBase  {
 
     public AjpListener() {
-        super();
         this.setProtocol("AJP/1.3");
     }
-
-    /**
-     * Sets the id for this <tt>WebListener</tt>.
-     */
-    public void setId(String id) {
-        setName(id);
-    }
-
-    /**
-     * Gets the id of this <tt>WebListener</tt>.
-     */
-    public String getId() {
-        return getName();
-    }
-
-    /**
-     * Reconfigures this <tt>WebListener</tt> with the given
-     * configuration.
-     */
-    public void setConfig(WebListenerConfig config) throws ConfigException {
-        this.config = config;
-        setAllowTrace(config.isTraceEnabled());
-    }
-
-    /**
-     * Gets the current configuration of this <tt>WebListener</tt>.
-     */
-    public WebListenerConfig getConfig() {
-        return config;
-    }
-
-    /**
-     * Enables this component.
-     */
-    public void enable() throws LifecycleException {
-       try {
-            start();
-        } catch (org.apache.catalina.LifecycleException e) {
-            throw new LifecycleException(e);
-        }
-    }
-
-    /**
-     * Disables this component.
-     */
-    public void disable() throws LifecycleException {
-       try {
-            stop();
-        } catch (org.apache.catalina.LifecycleException e) {
-            throw new LifecycleException(e);
-        }
-    }
-
     
 }

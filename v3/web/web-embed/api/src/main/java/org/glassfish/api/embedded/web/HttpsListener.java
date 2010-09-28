@@ -40,11 +40,8 @@
 
 package org.glassfish.api.embedded.web;
 
-import org.apache.catalina.connector.Connector;
-import org.glassfish.api.embedded.LifecycleException;
 import org.glassfish.api.embedded.web.config.SslConfig;
 import org.glassfish.api.embedded.web.config.SslType;
-import org.glassfish.api.embedded.web.config.WebListenerConfig;
 
 import java.io.File;
 import java.util.Set;
@@ -54,64 +51,9 @@ import java.util.Set;
  * @author Amy Roh
  * TODO
  */
-public class HttpsListener extends Connector implements WebListener  {
-
-
-    private WebListenerConfig config;
+public class HttpsListener extends WebListenerBase  {
 
     private SslConfig sslConfig;
-    
-    /**
-     * Sets the id for this <tt>WebListener</tt>.
-     */
-    public void setId(String id) {
-        setName(id);
-    }
-
-    /**
-     * Gets the id of this <tt>WebListener</tt>.
-     */
-    public String getId() {
-        return getName();
-    }
-
-    /**
-     * Reconfigures this <tt>WebListener</tt> with the given
-     * configuration.
-     */
-    public void setConfig(WebListenerConfig config) throws ConfigException {
-        this.config = config;
-        setAllowTrace(config.isTraceEnabled());
-    }
-
-    /**
-     * Gets the current configuration of this <tt>WebListener</tt>.
-     */
-    public WebListenerConfig getConfig() {
-        return config;
-    }
-
-    /**
-     * Enables this component.
-     */
-    public void enable() throws LifecycleException {
-       try {
-            start();
-        } catch (org.apache.catalina.LifecycleException e) {
-            throw new LifecycleException(e);
-        }
-    }
-
-    /**
-     * Disables this component.
-     */
-    public void disable() throws LifecycleException {
-       try {
-            stop();
-        } catch (org.apache.catalina.LifecycleException e) {
-            throw new LifecycleException(e);
-        }
-    }
 
     /**
      * Sets the SSL configuration for this web listener

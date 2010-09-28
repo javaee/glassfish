@@ -40,11 +40,6 @@
 
 package org.glassfish.api.embedded.web;
 
-import org.apache.catalina.connector.Connector;
-import org.glassfish.api.embedded.LifecycleException;
-import org.glassfish.api.embedded.web.ConfigException;
-import org.glassfish.api.embedded.web.config.WebListenerConfig;
-
 
 /**
  * HTTP Listener listens on a TCP port for incoming HTTP connection
@@ -53,67 +48,10 @@ import org.glassfish.api.embedded.web.config.WebListenerConfig;
  * @author Jan Luehe
  * @author Amy Roh
  */
-public class HttpListener extends Connector implements WebListener  {
-
-
-    private WebListenerConfig config;
-
+public class HttpListener extends WebListenerBase  {
+    
     public HttpListener() {
-        super();
         this.setProtocol("HTTP/1.1");
     }
-
-    /**
-     * Sets the id for this <tt>WebListener</tt>.
-     */
-    public void setId(String id) {
-        setName(id);
-    }
-
-    /**
-     * Gets the id of this <tt>WebListener</tt>.
-     */
-    public String getId() {
-        return getName();
-    }
-
-    /**
-     * Reconfigures this <tt>WebListener</tt> with the given
-     * configuration.
-     */
-    public void setConfig(WebListenerConfig config) throws ConfigException {
-        this.config = config;
-        setAllowTrace(config.isTraceEnabled());
-    }
-
-    /**
-     * Gets the current configuration of this <tt>WebListener</tt>.
-     */
-    public WebListenerConfig getConfig() {
-        return config;
-    }
-
-    /**
-     * Enables this component.
-     */
-    public void enable() throws LifecycleException {
-       try {
-            start();
-        } catch (org.apache.catalina.LifecycleException e) {
-            throw new LifecycleException(e);
-        }
-    }
-
-    /**
-     * Disables this component.
-     */ 
-    public void disable() throws LifecycleException {
-       try {
-            stop();
-        } catch (org.apache.catalina.LifecycleException e) {
-            throw new LifecycleException(e);
-        }
-    }
-    
 
 }
