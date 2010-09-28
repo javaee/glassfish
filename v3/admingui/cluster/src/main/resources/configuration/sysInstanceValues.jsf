@@ -82,11 +82,13 @@
                 gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server/#{instance}", method="get", result="#{requestScope.instanceResults}");
                 if ("#{requestScope.instanceResults.data.extraProperties.entity.configRef}=#{pageSession.configName}") {
                     createMap(result="#{requestScope.instanceMap}");
-                    gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server/#{instance}/system-property/#{pageSession.propName}", method="get", result="#{requestScope.result}");
+                    gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server/#{instance}/system-properties", method="get", result="#{requestScope.result}");
                     mapPut(map="#{requestScope.instanceMap}", key="instance", value="#{instance}");
                     mapPut(map="#{requestScope.instanceMap}", key="overrideValue", value="");
-                    if (#{requestScope.result.data.extraProperties.entity.value}) {
-                        mapPut(map="#{requestScope.instanceMap}", key="overrideValue", value="#{requestScope.result.data.extraProperties.entity.value}");
+                    foreach(var="sysprop", list="#{requestScope.result.data.extraProperties.systemProperties}") {
+                        if ("#{sysprop.name}=#{propName}") {
+                            mapPut(map="#{requestScope.instanceMap}", key="overrideValue", value="#{sysprop.value}");
+                        }
                     }
                     setAttribute(key="tmp" value="#{instance}");
                     mapPut(map="#{requestScope.instanceMap}", key="cluster", value="#{requestScope.instanceMapping['$attribute{tmp}']}");

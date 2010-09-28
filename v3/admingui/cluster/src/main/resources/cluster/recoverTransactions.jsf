@@ -45,7 +45,7 @@
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="help_cs" bundle="org.glassfish.cluster.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.cluster.recoverTransactions}"
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.cluster.instance.recoverTransactions}"
         guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:clusterTreeNode');" >
 <!define name="content">
     <event>
@@ -80,7 +80,7 @@
 #include "/cluster/cluster/clusterTabs.inc"
 #include "/common/shared/alertMsg.inc"
 <!-- Page Title -->
-    <sun:title id="propertyContentPage" title="$resource{i18ncs.cluster.recoverTransactions}">
+    <sun:title id="propertyContentPage" title="$resource{i18ncs.cluster.instance.recoverTransactions}">
         <!facet pageButtonsTop>
             <sun:panelGroup id="topButtons">
                 <sun:button id="saveButton" text="$resource{i18n.button.OK}" disabled="#{empty runningInstances}">
@@ -89,6 +89,7 @@
                         mapPut(map="#{requestScope.attrs}", key="transactionlogdir", value="#{pageSession.txnLogDir}");
                         mapPut(map="#{requestScope.attrs}", key="destination", value="#{pageSession.destInstance}");
                         gf.restRequest(endpoint="#{pageSession.resourceUrl}/recover-transactions", attrs="#{requestScope.attrs}", method="post", result="#{requestScope.results}");
+println("***** requestScope.results = #{requestScope.results}");
                         prepareAlertMsg(type="success", summary="#{requestScope.results.data.message}");
                         gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                     />
@@ -101,10 +102,6 @@
             </sun:panelGroup>
         </facet>
     </sun:title>
-"<h2>#{alertSummary}</h2>
-"<hr/>
-"<h2>#{requestScope.alertSummary}</h2>
-"<hr/>
     <sun:propertySheet id="propertySheet">
         <!-- Text Field section -->
         <sun:propertySheetSection id="propertSectionTextField">
