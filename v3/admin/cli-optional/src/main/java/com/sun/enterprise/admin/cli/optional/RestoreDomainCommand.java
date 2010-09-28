@@ -79,6 +79,9 @@ public final class RestoreDomainCommand extends BackupCommands {
     @Param(name= "force", optional = true, defaultValue = "false")
     private boolean force;
 
+    @Param(name= "description", optional = true, obsolete = true)
+    private String description;
+
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(BackupDomainCommand.class);
 
