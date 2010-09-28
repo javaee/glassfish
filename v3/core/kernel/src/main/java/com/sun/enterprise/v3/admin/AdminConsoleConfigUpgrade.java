@@ -86,6 +86,27 @@ public class AdminConsoleConfigUpgrade
     @Override
     public void postConstruct() {
         for (Config config : configs.getConfig()) {
+            // we only want to handle configs that have an admin listener
+            try {
+                if (config.getAdminListener() == null) {
+                    EarlyLogger.add(Level.FINE, String.format(
+                        "Skipping config %s. No admin listener.",
+                        config.getName()));
+                    continue;
+                }
+            } catch (IllegalStateException ise) {
+                /*
+                 * I've only seen the exception rather than
+                 * getAdminListener returning null. This should
+                 * typically happen for any config besides
+                 * <server-config>, but we'll proceed if any
+                 * config has an admin listener.
+                 */
+                EarlyLogger.add(Level.FINE, String.format(
+                    "Skipping config %s. getAdminListener threw: %s",
+                    config.getName(), ise.getLocalizedMessage()));
+                continue;
+            }
             SecurityService s = config.getSecurityService();
             if (s == null) {
                 continue;
