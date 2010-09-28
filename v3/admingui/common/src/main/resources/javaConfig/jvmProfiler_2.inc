@@ -89,6 +89,7 @@
                     else {return false;} " >
                 <!command
                     gf.restRequest(endpoint="#{pageSession.deleteProfilerUrl}", method="delete");
+                    prepareAlertMsg(type="success", summary="$resource{i18nc.jvm.ProfilerDeleted}");
                     gf.redirect(page="#{selfPage}?configName=#{pageSession.configName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
