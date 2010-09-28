@@ -84,6 +84,8 @@ public class NodeRunner  {
         if (node == null) {
             throw new IllegalArgumentException();
         }
+        if (node.getType() ==null)
+            return false;
         return node.getType().equals("SSH");
     }
 
