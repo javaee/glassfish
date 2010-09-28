@@ -61,7 +61,7 @@ public class ResourceAdapterConfigsTest extends BaseSeleniumTestClass {
         }
 
         clickAndWait("propertyForm:poolTable:topActionsGroup1:newButton", TRIGGER_NEW_RESOURCE_ADAPTER);
-        selenium.select("propertyForm:propertySheet:propertSectionTextField:threadPoolsIdProp:threadpoolsid", "label=thread-pool");
+        selenium.select("propertyForm:propertySheet:propertSectionTextField:threadPoolsIdProp:threadpoolsid", "label=thread-pool-1");
         clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_RESOURCE_ADAPTER_CONFIGS);
 
         assertTrue(selenium.isTextPresent("jmsra"));
