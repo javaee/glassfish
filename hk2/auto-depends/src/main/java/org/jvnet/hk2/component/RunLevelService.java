@@ -37,18 +37,26 @@
 package org.jvnet.hk2.component;
 
 import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
 
 /**
- * The run level service for a particular class of <code>RunLevel</code>,
- * identified by environment.
+ * Implementations of this contract are responsible for orchestration
+ * lifecycle events (i.e., start levels) in Hk2.
+ * <p>
+ * Each resident run level service is responsible for a particular
+ * class of <code>RunLevel</code> that is identified by an environment value.
  * <p>
  * Implementations of this service are responsible for orchestrating
  * lifecycle events for services annotated with <code>RunLevel</code>. This
- * includes inhabitant activations (aka get) and deactivations (aka release).
+ * consists of inhabitant activations (i.e., get) and deactivations (i.e., release).
  * <p>
  * The default RunLevelService uses T==Void.class, and is registered in
- * the habitat with the name "default".
+ * the habitat with the name "default" and is the primary service instance
+ * responsible for the "platform".
+ * <p>
+ * Third parties (or otherwise any sub-component) may choose to define other
+ * implementation variations of this contract for other specific needs.
  * <p>
  * RunLevelServices are special in that they are constructed early on
  * in habitat creation lifecycle.  As a result, they should not rely
@@ -56,8 +64,18 @@ import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
  * call.  Alternatively, they should implement HabitatListener, and
  * wait for a habitat initialization event before doing any initialization
  * work.
+ * <p>
+ * Each implementation of the RunLevelService may vary, but in general it is
+ * encouraged that the implementation use habitat resident {@link RunLevelListener}(s)
+ * for event notification, habitat resident {@link InhabitantSorter}(s) for arranging
+ * the order of inhabitants to be activated at a given {@link RunLevel}, and finally
+ * habitat resident {@link InhabitantActivator}(s) for the activation (i.e. get) and
+ * deactivation (i.e., release) of the sorted inhabitants. 
  * 
  * @see DefaultRunLevelService
+ * @see RunLevelListener
+ * @see InhabitantSorter
+ * @see InhabitantActivator
  * 
  * @author Jeff Trent
  * 

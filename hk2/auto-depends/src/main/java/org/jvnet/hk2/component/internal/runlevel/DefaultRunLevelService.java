@@ -56,7 +56,9 @@ import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.HabitatListener;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.InhabitantActivator;
 import org.jvnet.hk2.component.InhabitantListener;
+import org.jvnet.hk2.component.InhabitantSorter;
 import org.jvnet.hk2.component.RunLevelListener;
 import org.jvnet.hk2.component.RunLevelService;
 import org.jvnet.hk2.component.RunLevelState;
@@ -67,7 +69,8 @@ import com.sun.hk2.component.LazyInhabitant;
 import com.sun.hk2.component.RunLevelInhabitant;
 
 /**
- * The default RunLevelService implementation for Hk2.
+ * The default {@link RunLevelService} implementation for Hk2.  See the 
+ * {@link RunLevelService} javadoc for general details regarding this service.
  * 
  * Here is a brief example of the behavior of this service:<br>
  * Assume ServiceA, ServiceB, and ServiceC are all in the same RunLevel X and the
@@ -177,13 +180,25 @@ import com.sun.hk2.component.RunLevelInhabitant;
  * All calls to the {@Link RunLevelListener} happens synchronously on the
  * same thread that caused the Inhabitant to be activated.  Therefore, implementors
  * of this interface should be careful and avoid calling long operations.
+ * <p>
+ * ~~~
+ * <p>
+ * This service implements contracts {@link InhabitantSorter} as well as
+ * {@link InhabitantActivator}.  The implementation will first attempt to find a
+ * habitat resident singleton for each of these contracts respectively, and failing to find an
+ * implementation will handle each itself.  This lookup occurs iteratively just prior to a
+ * run level progression event.  Note, however, that {@link InhabitantSorter} is only used
+ * as part of activations since the {@link Recorder} is chiefly responsible for ensuring
+ * release of the inhabitants occur in a consistent order.  See earlier notes on this subject.
+ * 
+ * @see RunLevelService
  * 
  * @author Jeff Trent
  * 
  * @since 3.1
  */
 public class DefaultRunLevelService implements RunLevelService<Void>,
-    RunLevelState<Void>, InhabitantListener, HabitatListener {
+    RunLevelState<Void>, InhabitantListener, HabitatListener, InhabitantSorter, InhabitantActivator {
   // the initial run level
   public static final int INITIAL_RUNLEVEL = -2;
 
@@ -526,6 +541,45 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     worker.proceedTo(runLevel);
   }
   
+  /**
+   * Called when we are responsible for handling the {@link InhabitantSorter} work.
+   * 
+   * The implementation returns the inhabitants argument as-is .
+   */
+  @SuppressWarnings("unchecked")
+  @Override
+  public List<Inhabitant> sort(List<Inhabitant> inhabitants) {
+    return inhabitants;
+  }
+
+  /**
+   * Called when we are responsible for handling the {@link InhabitantActivator} work.
+   */
+  @SuppressWarnings("unchecked")
+  @Override
+  public void activate(Inhabitant inhabitant) {
+    inhabitant.get();
+  }
+
+  /**
+   * Called when we are responsible for handling the {@link InhabitantActivator} work.
+   */
+  @SuppressWarnings("unchecked")
+  @Override
+  public void deactivate(Inhabitant inhabitant) {
+    inhabitant.release();
+  }
+  
+  protected InhabitantSorter getInhabitantSorter() {
+    InhabitantSorter is = habitat.getByContract(InhabitantSorter.class);
+    return (null == is) ? this : is;
+  }
+
+  protected InhabitantActivator getInhabitantActivator() {
+    InhabitantActivator ia = habitat.getByContract(InhabitantActivator.class);
+    return (null == ia) ? this : ia;
+  }
+
   
   private abstract class Worker implements Runnable {
     // the target runLevel we want to achieve
@@ -628,7 +682,10 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
       setCurrent(this, runLevel);
     }
     
+    @SuppressWarnings("unchecked")
     private void activateRunLevel() {
+      List<Inhabitant> activations = new ArrayList<Inhabitant>();
+      
       // TODO: we could cache this in top-level proceedTo()
       Collection<Inhabitant<?>> runLevelInhabitants = 
         habitat.getAllInhabitantsByContract(RunLevel.class.getName());
@@ -639,14 +696,29 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
         if (accept(ai, rl, activeRunLevel)) {
           RunLevelInhabitant<?,?> rli = RunLevelInhabitant.class.cast(ai);
           checkBinding(rli);
-          
+          activations.add(rli);
+        }
+      }
+      
+      if (!activations.isEmpty()) {
+        InhabitantSorter is = getInhabitantSorter();
+        if (logger.isLoggable(Level.FINER)) {
+          logger.log(Level.FINER, "sorting {0}", activations);
+        }
+        activations = is.sort(activations);
+        assert(null != activations);
+        
+        InhabitantActivator ia = getInhabitantActivator();
+        for (Inhabitant<?> rli : activations) {
           if (logger.isLoggable(Level.FINER)) {
             logger.log(Level.FINER, "activating {0} - " + getDescription(true), rli);
           }
-          
+        
           try {
-            rli.get();
-            assert(rli.isInstantiated());
+            ia.activate(rli);
+  //        assert(rli.isInstantiated());
+            
+            // an escape hatch if we've been interrupted in some way
             checkInterrupt(null, rli);
           } catch (Exception e) {
             checkInterrupt(e, rli);
@@ -677,6 +749,9 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
           // Causes release of the entire activationSet.  Release occurs in the inverse
           // order of the recordings.  So A->B->C will have startUp ordering be (C,B,A)
           // because of dependencies.  The shutdown ordering will b (A,B,C).
+
+          InhabitantActivator ia = getInhabitantActivator();
+          
           Inhabitant<?> i;
           while (null != (i = downRecorder.pop())) {
             if (logger.isLoggable(Level.FINER)) {
@@ -684,8 +759,8 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
             }
             
             try{
-              i.release();
-              assert(!i.isInstantiated());
+              ia.deactivate(i);
+//              assert(!i.isInstantiated());
               checkInterrupt(null, i);
             } catch (Exception e) {
               checkInterrupt(e, i);

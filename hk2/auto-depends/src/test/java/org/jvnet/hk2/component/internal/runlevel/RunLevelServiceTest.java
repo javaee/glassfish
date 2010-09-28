@@ -19,6 +19,8 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.InhabitantActivator;
+import org.jvnet.hk2.component.InhabitantSorter;
 import org.jvnet.hk2.component.RunLevelListener;
 import org.jvnet.hk2.component.RunLevelService;
 import org.jvnet.hk2.component.RunLevelState;
@@ -924,6 +926,35 @@ public class RunLevelServiceTest {
   }
   
   @SuppressWarnings("unchecked")
+  @Test
+  public void inhabitantSorterAndActivatorPresent() {
+    installTestRunLevelService(false);
+
+    rls.proceedTo(0);
+
+    TestInhabitantSorter is = new TestInhabitantSorter();
+    ExistingSingletonInhabitant isi = new ExistingSingletonInhabitant(is);
+    h.addIndex(isi, InhabitantSorter.class.getName(), null);
+    
+    TestInhabitantActivator ia = new TestInhabitantActivator();
+    ExistingSingletonInhabitant iai = new ExistingSingletonInhabitant(ia);
+    h.addIndex(iai, InhabitantActivator.class.getName(), null);
+    
+    rls.proceedTo(5);
+    
+    assertEquals("sort operations", 1, is.callCount);
+    assertEquals("activation operations", 3, ia.activateCount);
+    assertEquals("deactivation operations", 0, ia.releaseCount);
+
+    rls.proceedTo(0);
+    
+    assertEquals("sort operations", 1, is.callCount);
+    assertEquals("activation operations", 3, ia.activateCount);
+    assertEquals("deactivation operations", 1, ia.releaseCount);
+  }
+  
+  
+  @SuppressWarnings("unchecked")
   private void installTestRunLevelService(boolean async) {
     Inhabitant<RunLevelService> r = 
       (Inhabitant<RunLevelService>) h.getInhabitant(RunLevelService.class, "default");
@@ -1064,12 +1095,43 @@ public class RunLevelServiceTest {
   
   
   private static class TestDefaultRunLevelService extends DefaultRunLevelService {
-
     TestDefaultRunLevelService(Habitat habitat, boolean async, Class<?> targetEnv,
         HashMap<Integer, Recorder> recorders) {
       super(habitat, async, targetEnv, recorders);
     }
-    
   }
   
+  
+  @SuppressWarnings("unchecked")
+  private static class TestInhabitantSorter implements InhabitantSorter {
+    public int callCount;
+
+    @Override
+    public List<Inhabitant> sort(List<Inhabitant> inhabitants) {
+      callCount++;
+      return inhabitants;
+    }
+  }
+  
+
+  @SuppressWarnings("unchecked")
+  private static class TestInhabitantActivator implements InhabitantActivator {
+    public int activateCount;
+    public int releaseCount;
+    
+    @Override
+    public void activate(Inhabitant inhabitant) {
+      activateCount++;
+      System.out.println(inhabitant);
+      inhabitant.get();
+    }
+    
+    @Override
+    public void deactivate(Inhabitant inhabitant) {
+      releaseCount++;
+      System.out.println(inhabitant);
+//      inhabitant.release();
+    }
+  }
+
 }
