@@ -76,7 +76,7 @@ public class WebHandlers {
         StringBuffer sb = new StringBuffer();
         for(AMXProxy oneListener:  networkListeners.values()){
             sb.append(oneListener.attributesMap().get("Port"));
-            sb.append(" ,");
+            sb.append(", ");
         }
         String ports = (sb.length() == 0) ? "" : sb.substring(0, sb.length()-2);
         handlerCtx.setOutputValue("ports", ports);
