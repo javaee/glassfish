@@ -107,7 +107,6 @@ public class ScheduleHandlers {
         })
 
     public static void convertBooleanMapToString(HandlerContext handlerCtx) {
-
         Map<String, String> map = (Map) handlerCtx.getInputValue("map");
         String delimiter = (String)handlerCtx.getInputValue("delimiter");
         if (delimiter == null)
@@ -126,7 +125,8 @@ public class ScheduleHandlers {
                 str = str + key;
             }
         }
+        if (str.length() == 0)
+            str = "*";
         handlerCtx.setOutputValue("str", str);
-
     }
 }
