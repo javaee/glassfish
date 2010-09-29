@@ -133,7 +133,18 @@
                 </sun:listbox>
             </sun:property>
             <sun:property id="MaxMsgSizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_corba.orb.maxMsgSizeLabel}" helpText="$resource{i18n_corba.orb.maxMsgSizeHelp}">
-                <sun:dropDown id="MaxMsgSize" selected="#{pageSession.valueMap['messageFragmentSize']}" labels={"1024", "2048", "4096", "8192", "16384", "32768"} />
+                <sun:dropDown id="MaxMsgSize" selected="#{pageSession.valueMap['messageFragmentSize']}" labels="$pageSession{availableMsgSize}" >
+                    <!beforeCreate
+                        createList(size="0" result="#{pageSession.availableMsgSize}");
+                        listAdd(value="#{pageSession.valueMap['messageFragmentSize']}" list="#{pageSession.availableMsgSize}");
+                        listAdd(value="1024" list="#{pageSession.availableMsgSize}");
+                        listAdd(value="2048" list="#{pageSession.availableMsgSize}");
+                        listAdd(value="4096" list="#{pageSession.availableMsgSize}");
+                        listAdd(value="8192" list="#{pageSession.availableMsgSize}");
+                        listAdd(value="16384" list="#{pageSession.availableMsgSize}");
+                        listAdd(value="32768" list="#{pageSession.availableMsgSize}");
+                    />
+                </sun:dropDown>
                 <sun:staticText id="bytes" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
             </sun:property>
             <sun:property id="TotalConnsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_corba.orb.totalConnsLabel}" helpText="$resource{i18n_corba.orb.totalConnsHelp}">
