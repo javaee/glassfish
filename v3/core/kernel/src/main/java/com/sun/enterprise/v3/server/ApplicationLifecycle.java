@@ -1971,8 +1971,8 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
         }
 
         if (snifferTypes.isEmpty()) {
-            logger.log(Level.SEVERE, "cannot.determine.type", 
-                new Object[] {app.getLocation()});
+            // for the upgrade scenario, we cannot get the sniffers from the 
+            // domain.xml, so we need to re-process it during deployment
             return null;
         }
 
