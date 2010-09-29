@@ -284,7 +284,6 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
                 System.setErr(perr);
              */
         Logger anonymousLogger = Logger.getAnonymousLogger();
-        anonymousLogger.setUseParentHandlers(false);
         LoggingOutputStream los = new LoggingOutputStream(anonymousLogger, Level.INFO);
         PrintStream pout = new PrintStream(los, true);
         System.setOut(pout);
