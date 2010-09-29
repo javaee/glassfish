@@ -213,8 +213,7 @@ public class CreateInstanceCommand implements AdminCommand {
         registerInstanceMessage = report.getMessage();
 
         // Then go create the instance filesystem on the node
-        createInstanceFilesystem(context);
-
+        createInstanceFilesystem(context);            
     }
 
     /**
@@ -330,7 +329,8 @@ public class CreateInstanceCommand implements AdminCommand {
     }
 
     public void createInstanceFilesystem(AdminCommandContext context) {
-
+        ActionReport report = ctx.getActionReport();
+       
         NodeUtils nodeUtils = new NodeUtils(habitat, logger);
         Server dasServer =
                 servers.getServer(SystemPropertyConstants.DAS_SERVER_NAME);
@@ -358,6 +358,13 @@ public class CreateInstanceCommand implements AdminCommand {
         command.add(instance);
 
         humanCommand = makeCommandHuman(command);
+        if (!theNode.getType().equals("SSH")){
+            String msg = Strings.get("create.instance.config",
+                    instance, humanCommand);
+            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+            report.setMessage(msg);
+            return;
+        }
 
         // First error message displayed if we fail
         String firstErrorMessage = Strings.get("create.instance.filesystem.failed",
@@ -368,8 +375,6 @@ public class CreateInstanceCommand implements AdminCommand {
         // Run the command on the node and handle errors.
         nodeUtils.runAdminCommandOnNode(theNode, command, ctx, firstErrorMessage,
                 humanCommand, output);
-
-        ActionReport report = ctx.getActionReport();
 
         if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
             return;
