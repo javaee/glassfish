@@ -47,6 +47,7 @@ package org.glassfish.api.embedded.web;
 public class AjpListener extends WebListenerBase  {
 
     public AjpListener() {
+        super();
         this.setProtocol("AJP/1.3");
     }
     

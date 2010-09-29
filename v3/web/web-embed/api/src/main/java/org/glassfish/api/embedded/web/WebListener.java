@@ -83,6 +83,20 @@ public interface WebListener extends Lifecycle  {
     public int getPort();
 
     /**
+     * Sets the protocol for this <tt>WebListener</tt>.
+     *
+     * @param protocol the protocol for this <tt>WebListener</tt>
+     */
+    public void setProtocol(String protocol);
+
+    /**
+     * Gets the protocol of this <tt>WebListener</tt>.
+     *
+     * @return the protocol of this <tt>WebListener</tt>
+     */
+    public String getProtocol();
+
+    /**
      * Reconfigures this <tt>WebListener</tt> with the given
      * configuration.
      *

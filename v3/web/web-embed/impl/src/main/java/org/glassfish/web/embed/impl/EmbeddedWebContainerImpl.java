@@ -349,6 +349,81 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
         }
     }
 
+    /**
+     * Starts this <tt>EmbeddedWebContainer</tt> and any of the
+     * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
+     * registered with it.
+     *
+     * <p>This method also creates and starts a default
+     * <tt>VirtualServer</tt> with id <tt>server</tt> and hostname
+     * <tt>localhost</tt>, as well as a default <tt>WebListener</tt>
+     * with id <tt>http-listener-1</tt> on port 8080 if no other virtual server
+     * or listener configuration exists.
+     *
+     * @throws Exception if an error occurs during the start up of this
+     * <tt>EmbeddedWebContainer</tt> or any of its registered
+     * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances
+     *
+     * @param webContainerConfig the embedded instance configuration
+     */
+    public void start(WebContainerConfig webContainerConfig) throws LifecycleException {
+
+        if (log.isLoggable(Level.INFO)) {
+            log.info("EmbeddedWebContainer is starting");
+        }
+
+        webContainer = habitat.getInhabitant(org.glassfish.api.container.Container.class,
+                "com.sun.enterprise.web.WebContainer");
+        if (webContainer==null) {
+            log.severe("Cannot find webcontainer implementation");
+            throw new LifecycleException(new Exception("Cannot find web container implementation"));
+        }
+
+        embeddedInhabitant = habitat.getInhabitantByType("com.sun.enterprise.web.EmbeddedWebContainer");
+        if (embeddedInhabitant==null) {
+            log.severe("Cannot find embedded implementation");
+            throw new LifecycleException(new Exception("Cannot find embedded implementation"));
+        }
+
+        // force the start
+        try {
+            webContainer.get();
+            embedded = (Embedded)embeddedInhabitant.get();
+            Engine[] engines = embedded.getEngines();
+            if (engines!=null) {
+                engine = engines[0];
+            } else {
+                throw new LifecycleException(new Exception("Cannot find engine implementation"));
+            }
+
+            String virtualServerId = webContainerConfig.getVirtualServerId();
+            VirtualServer vs = findVirtualServer(virtualServerId);
+            if (vs != null) {
+                defaultVirtualServer = vs;
+            } else {
+                defaultVirtualServer = createVirtualServer(virtualServerId, webContainerConfig.getDocRootDir());
+                addVirtualServer(defaultVirtualServer);
+            }
+            listings = webContainerConfig.getListings();
+            if (listings) {
+                for (Context context : defaultVirtualServer.getContexts()) {
+                    context.setDirectoryListing(listings);
+                }
+            }
+
+            if (config.getNetworkListeners().getNetworkListener().isEmpty()) {
+                if (log.isLoggable(Level.INFO)) {
+                    log.info("Listener does not exist - creating a new listener at port 8080");
+                }
+                WebListener listener = createWebListener(webContainerConfig.getListenerName(), HttpListener.class);
+                listener.setPort(webContainerConfig.getPort());
+                addWebListener(listener);
+            }
+
+        } catch (Exception e) {
+            throw new LifecycleException(e);
+        }
+    }
     
     /**
      * Stops this <tt>EmbeddedWebContainer</tt> and any of the
@@ -377,6 +452,45 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
            }
        }
     }
+
+    /**
+     * Creates a <tt>Context</tt> and configures it with the given
+     * docroot and classloader.
+     *
+     * <p>The classloader of the class on which this method is called
+     * will be used.
+     *
+     * <p>In order to access the new <tt>Context</tt> or any of its
+     * resources, the <tt>Context</tt> must be registered with a
+     * <tt>VirtualServer</tt> that has been started.
+     *
+     * @param docRoot the docroot of the <tt>Context</tt>
+     *
+     * @return the new <tt>Context</tt>
+     *
+     * @see VirtualServer#addContext
+     */
+    public Context createContext(File docRoot) {
+
+        if (log.isLoggable(Level.INFO)) {
+            log.info("Creating context with docBase '" + docRoot.getPath() + "'");
+        }
+
+        ContextImpl context = new ContextImpl();
+        context.setDocBase(docRoot.getAbsolutePath());
+        context.setDirectoryListing(listings);
+        context.setParentClassLoader(Thread.currentThread().getContextClassLoader());
+
+        Realm realm = habitat.getByContract(Realm.class);
+        // TODO RealmAdapter.initializeRealm
+        context.setRealm(realm);
+
+        ContextConfig config = new ContextConfig();
+        context.addLifecycleListener(config);
+
+        return context;
+
+    }
     
     /**
      * Creates a <tt>Context</tt>, configures it with the given
@@ -403,27 +517,34 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
                      docRoot.getPath() + "'");
         }
 
-        String appName = null;
-        Context context = null;
+        ContextImpl context = new ContextImpl();
+        context.setDocBase(docRoot.getPath());
+        context.setPath(contextRoot);
+        context.setDirectoryListing(listings);
+        if (classLoader != null) {
+            context.setParentClassLoader(classLoader);
+        } else {
+            context.setParentClassLoader(
+                    Thread.currentThread().getContextClassLoader());
+        }
+
+        Realm realm = habitat.getByContract(Realm.class);
+        // TODO RealmAdapter.initializeRealm
+        context.setRealm(realm);
+
+        ContextConfig config = new ContextConfig();
+        context.addLifecycleListener(config);
+
         try {
-            EmbeddedDeployer deployer = habitat.getByContract(EmbeddedDeployer.class);
-            ScatteredArchive.Builder builder = new ScatteredArchive.Builder(contextRoot, docRoot);
-            builder.resources(docRoot);
-            builder.addClassPath(docRoot.toURL());
-            DeployCommandParameters dp = new DeployCommandParameters(docRoot);
-            appName = deployer.deploy(builder.buildWar(), dp);
-            if (!appName.startsWith("/")) {
-                appName = "/"+appName;
+            if (defaultVirtualServer!=null) {
+                defaultVirtualServer.addContext(context, contextRoot);
             }
         } catch (Exception ex) {
-            log.severe(ex.getMessage());
-        }
-        for (Container vs : engine.findChildren()) {
-            context = (Context) ((VirtualServer)vs).findContext(appName);
+            log.severe("Couldn't add context "+contextRoot+" to default virtual server");
         }
 
         return context;
-        
+
     }
 
     /**
@@ -453,27 +574,52 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
             log.info("Creating context with docBase '" + docRoot.getPath() + "'");
         }
 
-        String appName = null;
-        Context context = null;
-        try {
-            EmbeddedDeployer deployer = habitat.getByContract(EmbeddedDeployer.class);
-            ScatteredArchive.Builder builder = new ScatteredArchive.Builder("", docRoot);
-            builder.resources(docRoot);
-            builder.addClassPath(docRoot.toURL());
-            DeployCommandParameters dp = new DeployCommandParameters(docRoot);
-            appName = deployer.deploy(builder.buildWar(), dp);
-            if (!appName.startsWith("/")) {
-                appName = "/"+appName;
-            }
-        } catch (Exception ex) {
-            log.severe(ex.getMessage());
+        ContextImpl context = new ContextImpl();
+        context.setDocBase(docRoot.getAbsolutePath());
+        context.setDirectoryListing(listings);
+        if (classLoader != null) {
+            context.setParentClassLoader(classLoader);
+        } else {
+            context.setParentClassLoader(
+                    Thread.currentThread().getContextClassLoader());
         }
-        for (Container vs : engine.findChildren()) {
-            context = (Context) ((VirtualServer)vs).findContext(appName);
-        }
-        
+
+        Realm realm = habitat.getByContract(Realm.class);
+        // TODO RealmAdapter.initializeRealm
+        context.setRealm(realm);
+
+        ContextConfig config = new ContextConfig();
+        context.addLifecycleListener(config);
+
         return context;
         
+    }
+
+    /**
+     * Registers the given <tt>Context</tt> with all <tt>VirtualServer</tt>
+     * at the given context root.
+     *
+     * <p>If <tt>VirtualServer</tt> has already been started, the
+     * given <tt>context</tt> will be started as well.
+     *
+     * @param context the <tt>Context</tt> to register
+     * @param contextRoot the context root at which to register
+     *
+     * @throws ConfigException if a <tt>Context</tt> already exists
+     * at the given context root on <tt>VirtualServer</tt>
+     * @throws org.glassfish.api.embedded.LifecycleException if the given <tt>context</tt> fails
+     * to be started
+     */
+    public void addContext(Context context, String contextRoot)
+            throws ConfigException, LifecycleException {
+
+        for (VirtualServer vs : getVirtualServers()) {
+            if (vs.findContext(contextRoot)!=null) {
+                throw new ConfigException("Context with contextRoot "+
+                        contextRoot+" is already registered");
+            }
+            vs.addContext(context, contextRoot);
+        }
     }
 
     /**
@@ -560,8 +706,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
         try {
             Ports ports = habitat.getComponent(Ports.class);
             Port port = ports.createPort(webListener.getPort());
-            // TODO webListneer.protocol
-            bind(port, "http");
+            bind(port, webListener.getProtocol());
         } catch (java.io.IOException ex) {
             throw new ConfigException(ex);
         }

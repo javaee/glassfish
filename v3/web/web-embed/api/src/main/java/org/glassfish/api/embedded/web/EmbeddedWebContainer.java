@@ -84,6 +84,25 @@ public interface EmbeddedWebContainer extends EmbeddedContainer {
     public void start() throws LifecycleException;
 
     /**
+     * Starts this <tt>EmbeddedWebContainer</tt> and any of the
+     * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
+     * registered with it.
+     *
+     * <p>This method also creates and starts a default
+     * <tt>VirtualServer</tt> with id <tt>server</tt> and hostname
+     * <tt>localhost</tt>, as well as a default <tt>WebListener</tt>
+     * with id <tt>http-listener-1</tt> on port 8080 if no other virtual server
+     * or listener configuration exists.
+     *
+     * @throws Exception if an error occurs during the start up of this
+     * <tt>EmbeddedWebContainer</tt> or any of its registered
+     * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances
+     *
+     * @param config the embedded instance configuration
+     */
+    public void start(WebContainerConfig config) throws LifecycleException;
+
+    /**
      * Stops this <tt>EmbeddedWebContainer</tt> and any of the
      * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
      * registered with it.
@@ -93,6 +112,25 @@ public interface EmbeddedWebContainer extends EmbeddedContainer {
      * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances 
      */
     public void stop() throws LifecycleException;
+
+    /**
+     * Creates a <tt>Context</tt> and configures it with the given
+     * docroot and classloader.
+     *
+     * <p>The classloader of the class on which this method is called
+     * will be used.
+     *
+     * <p>In order to access the new <tt>Context</tt> or any of its
+     * resources, the <tt>Context</tt> must be registered with a
+     * <tt>VirtualServer</tt> that has been started.
+     *
+     * @param docRoot the docroot of the <tt>Context</tt>
+     *
+     * @return the new <tt>Context</tt>
+     *
+     * @see VirtualServer#addContext
+     */
+    public Context createContext(File docRoot);
 
     /**
      * Creates a <tt>Context</tt>, configures it with the given
@@ -136,6 +174,24 @@ public interface EmbeddedWebContainer extends EmbeddedContainer {
      * @see VirtualServer#addContext
      */
     public Context createContext(File docRoot, ClassLoader classLoader);
+
+    /**
+     * Registers the given <tt>Context</tt> with all <tt>VirtualServer</tt>
+     * at the given context root.
+     *
+     * <p>If <tt>VirtualServer</tt> has already been started, the
+     * given <tt>context</tt> will be started as well.
+     *
+     * @param context the <tt>Context</tt> to register
+     * @param contextRoot the context root at which to register
+     *
+     * @throws ConfigException if a <tt>Context</tt> already exists
+     * at the given context root on <tt>VirtualServer</tt>
+     * @throws org.glassfish.api.embedded.LifecycleException if the given <tt>context</tt> fails
+     * to be started
+     */
+    public void addContext(Context context, String contextRoot)
+        throws ConfigException, LifecycleException;
 
     /**
      * Creates a <tt>WebListener</tt> from the given class type and

@@ -39,7 +39,8 @@
  */
 
 package org.glassfish.api.embedded.web;
-
+        
+import org.glassfish.api.embedded.Port;
 
 /**
  * HTTP Listener listens on a TCP port for incoming HTTP connection
@@ -51,7 +52,8 @@ package org.glassfish.api.embedded.web;
 public class HttpListener extends WebListenerBase  {
     
     public HttpListener() {
-        this.setProtocol("HTTP/1.1");
+        super();
+        this.setProtocol(Port.HTTP_PROTOCOL);
     }
 
 }

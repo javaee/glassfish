@@ -40,6 +40,7 @@
 
 package org.glassfish.api.embedded.web;
 
+import org.glassfish.api.embedded.Port;
 import org.glassfish.api.embedded.web.config.SslConfig;
 import org.glassfish.api.embedded.web.config.SslType;
 
@@ -54,6 +55,11 @@ import java.util.Set;
 public class HttpsListener extends WebListenerBase  {
 
     private SslConfig sslConfig;
+
+    public HttpsListener() {
+        super();
+        this.setProtocol(Port.HTTPS_PROTOCOL);
+    }
 
     /**
      * Sets the SSL configuration for this web listener
