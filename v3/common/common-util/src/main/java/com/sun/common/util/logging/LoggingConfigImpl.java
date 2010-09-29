@@ -112,7 +112,6 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
             fis.close();
             return true;
         } catch (java.io.FileNotFoundException e) {
-            Logger.getAnonymousLogger().log(Level.INFO, "Cannot read logging.properties file. ");
             return false;
         } catch (IOException e) {
             Logger.getAnonymousLogger().log(Level.SEVERE, "Cannot read logging.properties file : ", e);
@@ -164,7 +163,6 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
             fis.close();
             return true;
         } catch (java.io.FileNotFoundException e) {
-            Logger.getAnonymousLogger().log(Level.INFO, "Cannot read logging.properties file. ");
             return false;
         } catch (IOException e) {
             Logger.getAnonymousLogger().log(Level.SEVERE, "Cannot read logging.properties file : ", e);
