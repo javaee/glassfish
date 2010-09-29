@@ -146,7 +146,7 @@
     </target>
 
     <target name="undeploy" depends="init-common">
-        <echo message="Stopping cluster"/>
+        <echo message="undeploying application"/>
         <java  fork="on"
               failonerror="true"
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
