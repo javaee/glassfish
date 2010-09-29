@@ -64,7 +64,6 @@
         }
     />
     </event>
-"<h4> baseUrl = #{pageSession.baseUrl}</h4>
 #include "/common/shared/alertMsg.inc"
     <sun:form id="jmsPhysDestForm">
 #include "jmsPhysicalDestinationSheet.inc"
