@@ -41,6 +41,8 @@
 package org.glassfish.config.support;
 
 import com.sun.enterprise.config.serverbeans.AccessLog;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Inject;
@@ -58,32 +60,36 @@ import java.util.logging.Logger;
 @Service
 public class HttpServicePropertiesUpgrade extends BaseLegacyConfigurationUpgrade {
     @Inject
-    private HttpService service;
+    private Configs configs;
 
     public void execute(AdminCommandContext context) {
-        boolean done = false;
-        try {
-            final List<Property> properties = service.getProperty();
-            final Iterator<Property> iterator = properties.iterator();
-            while (!done && iterator.hasNext()) {
-                final Property property = iterator.next();
-                String name = property.getName();
-                if ("accessLoggingEnabled".equals(name)
-                    || "accessLogBufferSize".equals(name)
-                    || "accessLogWriteInterval".equals(name)
-                    || "sso-enabled".equals(name)) {
-                    done = true;
-                    upgrade(context, property);
+        for (Config config : configs.getConfig()) {
+            HttpService service = config.getHttpService();
+            boolean done = false;
+            try {
+                final List<Property> properties = service.getProperty();
+                final Iterator<Property> iterator = properties.iterator();
+                while (!done && iterator.hasNext()) {
+                    final Property property = iterator.next();
+                    String name = property.getName();
+                    if ("accessLoggingEnabled".equals(name)
+                        || "accessLogBufferSize".equals(name)
+                        || "accessLogWriteInterval".equals(name)
+                        || "sso-enabled".equals(name)) {
+                        done = true;
+                        upgrade(context, property, service);
+                    }
                 }
+            } catch (TransactionFailure tf) {
+                Logger.getAnonymousLogger().log(Level.SEVERE, "Failure while upgrading http-service properties."
+                    + "  Please check logs for errors", tf);
+                throw new RuntimeException(tf);
             }
-        } catch (TransactionFailure tf) {
-            Logger.getAnonymousLogger().log(Level.SEVERE, "Failure while upgrading http-service properties."
-                + "  Please check logs for errors", tf);
-            throw new RuntimeException(tf);
         }
     }
 
-    private void upgrade(final AdminCommandContext context, final Property property) throws TransactionFailure {
+    private void upgrade(final AdminCommandContext context, final Property property, final HttpService service)
+            throws TransactionFailure {
         if ("accessLoggingEnabled".equals(property.getName())) {
             updatePropertyToAttribute(context, service, "accessLoggingEnabled", "accessLoggingEnabled");
         } else if ("accessLogBufferSize".equals(property.getName())) {
