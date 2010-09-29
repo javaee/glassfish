@@ -45,44 +45,44 @@
     setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
     getProxyAttribute( objectNameStr="amx:pp=/ext,type=realms" attrName="AnonymousLogin" value="#{pageSession.anonLogin}" )
     if(!$session{supportCluster}) {
-	setPageSessionAttribute(key="configName" value="server-config");
+        setPageSessionAttribute(key="configName" value="server-config");
     }
     getPluginIdFromViewId(viewId="#{facesContext.viewRoot.viewId}", pluginId="#{pluginId}");
 </ui:event>
 <event>
     <!-- Before Create must be inside a component, cannot be at page-level -->
     <ui:event type="beforeCreate">
-	setPartialRequest("false");
+        setPartialRequest("false");
     </ui:event>
     <ui:event type="beforeEncode">
-	<!-- Set request-scoped restart flag to compare w/ session -->
-	if (!$session{supportCluster}) {
+        <!-- Set request-scoped restart flag to compare w/ session -->
+        if (!$session{supportCluster}) {
             //checkRestart(RestartRequired="#{sessionScope.restartRequired}", unprocessedChanges="#{sessionScope.unprocessedChanges}");
             gf.restRequest(endpoint="#{sessionScope.REST_URL}/_get-restart-required", method="get", result="#{requestScope.result}");
             setSessionAttribute(key="restartRequired", value="#{requestScope.result.data.extraProperties.entity.restartRequired}");
             setSessionAttribute(key="unprocessedChanges", value="#{requestScope.result.data.extraProperties.entity.unprocessedChanges}");
-	}
-	if($session{supportCluster}) {
-	    setAttribute(key="restartRequired" value="$boolean{false}");
-	}
-	testLoginBypass(byPass="#{requestScope.byPassLogin}");
-	setSessionAttribute(key="showLogoutButton" value="#{! requestScope.byPassLogin}");
-	if ("!(#{requestScope.restartRequired})") {
-	    if ("!(#{sessionScope.showLogoutButton})") {
-		setAttribute(key="reloadJS" value="if (document.getElementById('Masthead:statusPanel:restartLink') || document.getElementById('Masthead:logoutLink')) {reloadHeaderFrame();}");
-	    }
-	    if ("#{sessionScope.showLogoutButton}") {
-		setAttribute(key="reloadJS" value="if (document.getElementById('Masthead:statusPanel:restartLink') || !document.getElementById('Masthead:logoutLink')) {reloadHeaderFrame();}");
-	    }
-	}
-	if ("#{requestScope.restartRequired}") {
-	    if ("!(#{sessionScope.showLogoutButton})") {
-		setAttribute(key="reloadJS" value="if (!document.getElementById('Masthead:statusPanel:restartLink') || document.getElementById('Masthead:logoutLink')) {reloadHeaderFrame();}");
-	    }
-	    if ("#{sessionScope.showLogoutButton}") {
-		setAttribute(key="reloadJS" value="if (!document.getElementById('Masthead:statusPanel:restartLink') || !document.getElementById('Masthead:logoutLink')) {reloadHeaderFrame();}");
-	    }
-	}
+        }
+        if($session{supportCluster}) {
+            setSessionAttribute(key="restartRequired" value="$boolean{false}");
+        }
+        testLoginBypass(byPass="#{requestScope.byPassLogin}");
+        setSessionAttribute(key="showLogoutButton" value="#{! requestScope.byPassLogin}");
+        if ("!(#{sessionScope.restartRequired})") {
+            if ("!(#{sessionScope.showLogoutButton})") {
+                setAttribute(key="reloadJS" value="if (document.getElementById('Masthead:statusPanel:restartLink') || document.getElementById('Masthead:logoutLink')) {reloadHeaderFrame();}");
+            }
+            if ("#{sessionScope.showLogoutButton}") {
+                setAttribute(key="reloadJS" value="if (document.getElementById('Masthead:statusPanel:restartLink') || !document.getElementById('Masthead:logoutLink')) {reloadHeaderFrame();}");
+            }
+        }
+        if ("#{sessionScope.restartRequired}") {
+            if ("!(#{sessionScope.showLogoutButton})") {
+                setAttribute(key="reloadJS" value="if (!document.getElementById('Masthead:statusPanel:restartLink') || document.getElementById('Masthead:logoutLink')) {reloadHeaderFrame();}");
+            }
+            if ("#{sessionScope.showLogoutButton}") {
+                setAttribute(key="reloadJS" value="if (!document.getElementById('Masthead:statusPanel:restartLink') || !document.getElementById('Masthead:logoutLink')) {reloadHeaderFrame();}");
+            }
+        }
     </ui:event>
 </event>
 
@@ -92,7 +92,7 @@
 //******************************************************************************
 "<div class="guiPageContent">
     <!insert name="content">
-	Content Missing!
+        Content Missing!
     </insert>
 "</div>
 <f:verbatim>
