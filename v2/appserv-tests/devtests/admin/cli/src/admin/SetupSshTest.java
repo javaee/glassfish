@@ -151,7 +151,7 @@ public class SetupSshTest extends AdminBaseDevTest {
 
         //ssh already setup
         AsadminReturn ret = asadminWithOutput("setup-ssh", SSH_USER_OPTION, sshUser, remoteHost);
-        boolean success = ret.outAndErr.indexOf("SSH public key access already setup") >= 0;
+        boolean success = ret.outAndErr.indexOf("SSH public key authentication is already configured") >= 0;
 
         if (success) {
             //no point in running the tests if ssh already works, so bail out..
@@ -161,7 +161,7 @@ public class SetupSshTest extends AdminBaseDevTest {
         }
 
         //invalid host name
-        report("setup-ssh-password-failure", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "foo"));
+        report("setup-ssh-password-failure", !asadmin("setup-ssh", SSH_USER_OPTION, "foo", remoteHost));
 
         //invalid key file
         report("setup-ssh-invalid-keyfile", !asadmin("setup-ssh", "--sshkeyfile", "foo", remoteHost));
@@ -173,7 +173,7 @@ public class SetupSshTest extends AdminBaseDevTest {
         //report("setup-ssh-without-password", !asadmin("setup-ssh", remoteHost));        
 
         //should succeed second time as well
-        report("setup-ssh-with-password", asadmin("setup-ssh", SSH_USER_OPTION, sshUser, remoteHost));
+        report("setup-ssh-with-password", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, remoteHost));
 
         return res;
     }       
