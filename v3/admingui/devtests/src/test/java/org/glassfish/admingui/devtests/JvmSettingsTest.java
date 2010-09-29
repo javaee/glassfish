@@ -40,7 +40,6 @@
 
 package org.glassfish.admingui.devtests;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -51,7 +50,6 @@ public class JvmSettingsTest extends BaseSeleniumTestClass {
     public static final String TRIGGER_JVM_PROFILER_SETTINGS = "JVM Profiler Settings";
 
     @Test
-    @Ignore
     public void testJvmGeneralSettings() {
         clickAndWait("treeForm:tree:configurations:server-config:jvmSettings:jvmSettings_link", TRIGGER_JVM_GENERAL_SETTINGS);
         selenium.click("propertyForm:propertySheet:propertSectionTextField:debugEnabledProp:debug");
@@ -62,7 +60,6 @@ public class JvmSettingsTest extends BaseSeleniumTestClass {
     }
 
     @Test
-    @Ignore
     public void testJvmSettings() {
         clickAndWait("treeForm:tree:configurations:server-config:jvmSettings:jvmSettings_link", TRIGGER_JVM_GENERAL_SETTINGS);
         clickAndWait("propertyForm:javaConfigTab:jvmOptions", TRIGGER_JVM_OPTIONS);
