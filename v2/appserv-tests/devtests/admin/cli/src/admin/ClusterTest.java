@@ -724,11 +724,11 @@ public class ClusterTest extends AdminBaseDevTest {
 
         // check that the instances are there
         AsadminReturn ret = asadminWithOutput("list-instances");
-        boolean success = ret.outAndErr.indexOf(i1name+" running") >= 0;
+        boolean success = checkListInstancesOutputIfRunning(ret.outAndErr, i1name);
         report(tn+"test-in1-running", success);
-        success = ret.outAndErr.indexOf(i2name+" running") >= 0;
+        success = checkListInstancesOutputIfRunning(ret.outAndErr, i2name);
         report(tn+"test-in2-running", success);
-        success = ret.outAndErr.indexOf(i3name+" running") >= 0;
+        success = checkListInstancesOutputIfRunning(ret.outAndErr, i3name);
         report(tn+"test-in3-running", success);
 
 	// Set dynamic reconfig enabled flag for c1 to false
@@ -744,13 +744,13 @@ public class ClusterTest extends AdminBaseDevTest {
 
 	// Test instance states
         ret = asadminWithOutput("list-instances", i1name);
-        success = ret.outAndErr.indexOf("[pending config changes are : create-jdbc-connection-pool testPool") >= 0;
+        success = ret.outAndErr.indexOf("[pending config changes are: create-jdbc-connection-pool testPool") >= 0;
         report(tn+"test-in1-requires-restart", success);
         ret = asadminWithOutput("list-instances", i2name);
-        success = ret.outAndErr.indexOf("[pending config changes are : create-jdbc-connection-pool testPool") >= 0;
+        success = ret.outAndErr.indexOf("[pending config changes are: create-jdbc-connection-pool testPool") >= 0;
         report(tn+"test-in2-requires-restart", success);
         ret = asadminWithOutput("list-instances", i3name);
-        success = ret.outAndErr.indexOf(i3name+" running") >= 0;
+        success = checkListInstancesOutputIfRunning(ret.outAndErr, i3name);
         report(tn+"test-in3-does-not-require-restart", success);
 
 	// Test failed command being appended
@@ -764,34 +764,34 @@ public class ClusterTest extends AdminBaseDevTest {
 
 	// Test instance states
         ret = asadminWithOutput("list-instances", i1name);
-        success = ret.outAndErr.indexOf("[pending config changes are : create-jdbc-connection-pool testPool") >= 0;
+        success = ret.outAndErr.indexOf("[pending config changes are: create-jdbc-connection-pool testPool") >= 0;
         report(tn+"test-in1-has-1st-failed-cmd", success);
         success = ret.outAndErr.indexOf("create-jdbc-connection-pool testPool2") >= 0;
         report(tn+"test-in1-has-2nd-failed-cmd", success);
         ret = asadminWithOutput("list-instances", i2name);
-        success = ret.outAndErr.indexOf("[pending config changes are : create-jdbc-connection-pool testPool") >= 0;
+        success = ret.outAndErr.indexOf("[pending config changes are: create-jdbc-connection-pool testPool") >= 0;
         report(tn+"test-in2-has-1st-failed-cmd", success);
         success = ret.outAndErr.indexOf("create-jdbc-connection-pool testPool2") >= 0;
         report(tn+"test-in2-has-2nd-failed-cmd", success);
         ret = asadminWithOutput("list-instances", i3name);
-        success = ret.outAndErr.indexOf(i3name+" running") >= 0;
+        success = checkListInstancesOutputIfRunning(ret.outAndErr, i3name);
         report(tn+"test-in3-does-not-require-restart", success);
 
 	// Test that restart-required persisted across DAS restarts
 	asadminWithOutput("restart-domain");
 	// Test instance states
         ret = asadminWithOutput("list-instances", i1name);
-        success = ret.outAndErr.indexOf("[pending config changes are : create-jdbc-connection-pool testPool") >= 0;
+        success = ret.outAndErr.indexOf("[pending config changes are: create-jdbc-connection-pool testPool") >= 0;
         report(tn+"test-in1-state-after-restart", success);
         success = ret.outAndErr.indexOf("create-jdbc-connection-pool testPool2") >= 0;
         report(tn+"test-in1-state-after-restart", success);
         ret = asadminWithOutput("list-instances", i2name);
-        success = ret.outAndErr.indexOf("[pending config changes are : create-jdbc-connection-pool testPool") >= 0;
+        success = ret.outAndErr.indexOf("[pending config changes are: create-jdbc-connection-pool testPool") >= 0;
         report(tn+"test-in2-state-after-restart", success);
         success = ret.outAndErr.indexOf("create-jdbc-connection-pool testPool2") >= 0;
         report(tn+"test-in2-state-after-restart", success);
         ret = asadminWithOutput("list-instances", i3name);
-        success = ret.outAndErr.indexOf(i3name+" running") >= 0;
+        success = checkListInstancesOutputIfRunning(ret.outAndErr, i3name);
         report(tn+"test-in3-state-after-restart", success);
 
 	// Test that instance restart, clears restart-required flag
@@ -801,9 +801,9 @@ public class ClusterTest extends AdminBaseDevTest {
         report(tn + "start-local-instance2", asadmin("start-local-instance", i2name));
 	// Test instance states
         ret = asadminWithOutput("list-instances");
-        success = ret.outAndErr.indexOf(i1name+" running") >= 0;
+        success = checkListInstancesOutputIfRunning(ret.outAndErr, i1name);
         report(tn+"test-in1-running", success);
-        success = ret.outAndErr.indexOf(i2name+" running") >= 0;
+        success = checkListInstancesOutputIfRunning(ret.outAndErr, i2name);
         report(tn+"test-in2-running", success);
 
         // Cleanup
@@ -1034,5 +1034,9 @@ public class ClusterTest extends AdminBaseDevTest {
 		}
 	else
         report("verify-list-of-zero-clusters", success);
+    }
+
+    boolean checkListInstancesOutputIfRunning(String output, String iname) {
+        return output.split(iname + " +running").length == 2;
     }
 }
