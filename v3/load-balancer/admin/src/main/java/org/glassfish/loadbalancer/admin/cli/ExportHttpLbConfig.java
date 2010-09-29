@@ -42,6 +42,7 @@ package org.glassfish.loadbalancer.admin.cli;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -51,6 +52,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.LoadBalancer;
+import java.net.URI;
 import org.glassfish.api.admin.AdminCommandContext;
 
 import org.glassfish.loadbalancer.admin.cli.reader.api.LoadbalancerReader;
@@ -83,6 +85,8 @@ public class ExportHttpLbConfig implements AdminCommand {
     String lbConfigName;
     @Param(name = "lbname", optional = true)
     String lbName;
+    @Param(name = "retrievefile", optional = true, defaultValue="false")
+    boolean retrieveFile;
     @Param(name = "file_name", optional= true, primary = true)
     String fileName;
     @Param(name = "property", optional = true, separator = ':')
@@ -101,7 +105,7 @@ public class ExportHttpLbConfig implements AdminCommand {
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
         try {
-            String msg = process();
+            String msg = process(context);
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
             report.setMessage(msg);
         } catch (Throwable t) {
@@ -116,7 +120,7 @@ public class ExportHttpLbConfig implements AdminCommand {
         }
     }
 
-    public String process() throws Exception {
+    public String process(AdminCommandContext context) throws Exception {
         
         LoadbalancerReader lbr = null;
         if (lbName != null && lbConfigName == null && target == null) {
@@ -142,40 +146,71 @@ public class ExportHttpLbConfig implements AdminCommand {
             }
         }
 
-        File f = new File(fileName);
-        if(!f.isAbsolute()){
+        File lbXmlFile = new File(fileName);
+        if(!lbXmlFile.isAbsolute() && !retrieveFile){
             File generatedDir = env.getApplicationStubPath();
-            f = new File(generatedDir, fileName);
-        }
-        
-        if (f.exists()) {
-            String msg = LbLogUtil.getStringManager().getString(
-                    "FileExists", f.getPath());
-            throw new Exception(msg);
+            lbXmlFile = new File(generatedDir, fileName);
         }
 
-        if ( !(f.getParentFile().exists()) ) {
-            String msg = LbLogUtil.getStringManager().getString(
-                    "ParentFileMissing", f.getParent());
-            throw new Exception(msg);
+        File tmpLbXmlFile = null;
+        if(retrieveFile){
+            tmpLbXmlFile = File.createTempFile("load-balancer", ".xml");
+            tmpLbXmlFile.deleteOnExit();
+        } else {
+            if (lbXmlFile.exists()) {
+                String msg = LbLogUtil.getStringManager().getString(
+                        "FileExists", lbXmlFile.getPath());
+                throw new Exception(msg);
+            }
+
+            if (!(lbXmlFile.getParentFile().exists())) {
+                String msg = LbLogUtil.getStringManager().getString(
+                        "ParentFileMissing", lbXmlFile.getParent());
+                throw new Exception(msg);
+            }
+            tmpLbXmlFile = lbXmlFile;
         }
 
         FileOutputStream fo = null;
 
         try {
-            if (!f.exists()) {
-                f.createNewFile();
-            }
-            fo = new FileOutputStream(f);
+            fo = new FileOutputStream(tmpLbXmlFile);
             LbConfigHelper.exportXml(lbr, fo);
+            if(retrieveFile){
+                retrieveLbXml(context, lbXmlFile, tmpLbXmlFile);
+            }
             String msg = LbLogUtil.getStringManager().getString(
-                    "GeneratedFileLocation", f.getAbsolutePath());
+                    "GeneratedFileLocation", lbXmlFile.toString());
             return msg;
         } finally {
             if (fo != null) {
                 fo.close();
                 fo = null;
             }
+        }
+    }
+
+    private void retrieveLbXml(AdminCommandContext context, File lbXmlFile,
+            File tmpLbXmlFile) throws Exception {
+        File localFile = lbXmlFile;
+        Properties props = new Properties();
+        File parent = localFile.getParentFile();
+        if (parent == null) {
+            parent = localFile;
+        }
+        props.setProperty("file-xfer-root", parent.getPath().replace('\\', '/'));
+        URI parentURI = parent.toURI();
+        try {
+            context.getOutboundPayload().attachFile(
+                    "text/xml",
+                    parentURI.relativize(localFile.toURI()),
+                    "sync-load-balancer-xml",
+                    props,
+                    tmpLbXmlFile);
+        } catch (IOException ex) {
+            String msg = LbLogUtil.getStringManager().getString(
+                    "RetrieveFailed", lbXmlFile.getAbsolutePath());
+            throw new Exception(msg, ex);
         }
     }
 }
