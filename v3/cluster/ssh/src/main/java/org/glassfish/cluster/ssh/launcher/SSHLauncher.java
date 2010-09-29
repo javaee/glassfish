@@ -437,7 +437,7 @@ public class SSHLauncher {
             logger.fine("Key = " + keyFile);
         if (key.exists()) {
             if (checkConnection()) {
-                logger.info("SSH public key access already setup");
+                logger.info("SSH public key authentication is already configured for " + userName + "@" + node);
                 return;
             }            
         } else {
@@ -594,7 +594,7 @@ public class SSHLauncher {
             c = new Connection(host, port);
             c.connect();
             File f = new File(keyFile);
-            logger.fine("Checking connection using credentials: user=" + userName + " keyfile=" + keyFile + " keypassphrase=" + getPrintablePassword(rawKeyPassPhrase));
+            logger.fine("Checking connection...");
             status = c.authenticateWithPublicKey(userName, f, rawKeyPassPhrase);
             if (status) {
                 logger.info("Successfully connected to " + userName + "@" + host + " using keyfile " + keyFile);

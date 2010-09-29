@@ -41,6 +41,7 @@
 package com.sun.enterprise.admin.cli.cluster;
 
 import java.io.*;
+import java.util.Arrays;
 
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
@@ -133,6 +134,11 @@ public final class SetupSshKey extends CLICommand {
             sshL.init(sshuser, node,  sshport, sshpassword, sshkeyfile, sshkeypassphrase, logger);
             if (generatekey || promptPass) {
                 //prompt for password iff required
+                if (sshkeyfile != null || SSHUtil.getExistingKeyFile() != null) {
+                    if(sshL.checkConnection()) {
+                        throw new CommandException(Strings.get("SSHAlreadySetup", sshuser, node));
+                    }
+                }
                 sshpassword=getSSHPassword();
             }
             try {
@@ -223,7 +229,7 @@ public final class SetupSshKey extends CLICommand {
         if (cons != null) {
             String val = null;
             do {
-                cons.printf("%s", Strings.get("GenerateKeyPairPrompt"));
+                cons.printf("%s", Strings.get("GenerateKeyPairPrompt", sshuser, Arrays.toString(nodes)));
                 val = cons.readLine();
                 if (val != null && (val.equalsIgnoreCase("yes") || val.equalsIgnoreCase("y"))) {
                     logger.fine("Generate key!");
