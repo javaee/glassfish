@@ -358,7 +358,7 @@ public class CreateInstanceCommand implements AdminCommand {
         command.add(instance);
 
         humanCommand = makeCommandHuman(command);
-        if (!theNode.getType().equals("SSH")){
+        if (!theNode.isLocal() && !theNode.getType().equals("SSH")){
             String msg = Strings.get("create.instance.config",
                     instance, humanCommand);
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
