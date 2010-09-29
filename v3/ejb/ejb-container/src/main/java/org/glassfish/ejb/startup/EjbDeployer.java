@@ -127,7 +127,7 @@ public class EjbDeployer
 
     // Property used to persist unique id across server restart.
     static final String APP_UNIQUE_ID_PROP = "org.glassfish.ejb.container.application_unique_id";
-    private static final String IS_TIMEOUT_APP_PROP = "org.glassfish.ejb.container.is_timeout_application";
+    static final String IS_TIMEOUT_APP_PROP = "org.glassfish.ejb.container.is_timeout_application";
 
     private AtomicLong uniqueIdCounter;
     
@@ -271,8 +271,9 @@ public class EjbDeployer
 
         if (ejbApp.containsTimedObject()) {
             // Mark application as a timeout application, so that the clean() call removes the timers.
-            Properties appProps = dc.getAppProps();
-            appProps.setProperty(IS_TIMEOUT_APP_PROP, "true");
+            OpsParams params = dc.getCommandParameters(OpsParams.class);
+            ApplicationInfo appInfo = appRegistry.get(params.name());
+            appInfo.addTransientAppMetaData(IS_TIMEOUT_APP_PROP, Boolean.TRUE);
         }
 
         return ejbApp;
@@ -322,16 +323,15 @@ public class EjbDeployer
 
             Properties appProps = dc.getAppProps();
             String uniqueAppId = appProps.getProperty(APP_UNIQUE_ID_PROP);
-            boolean isTimeOutApp = Boolean.parseBoolean(appProps.getProperty(IS_TIMEOUT_APP_PROP));
             try {
-                if (isTimeOutApp && uniqueAppId != null) {
+                if (getTimeoutStatusFromApplicationInfo(params.name()) && uniqueAppId != null) {
                     String target = ((params.origin.isDeploy())? 
                             dc.getCommandParameters(DeployCommandParameters.class).target :
                             dc.getCommandParameters(UndeployCommandParameters.class).target);
 
                     EJBTimerService timerService = EjbContainerUtilImpl.getInstance().getEJBTimerService(target);
                     if (_logger.isLoggable(Level.FINE)) {
-                        _logger.log( Level.FINE, "EjbDeployer APP ID? " + uniqueAppId);
+                        _logger.log( Level.FINE, "EjbDeployer APP ID of a Timeout App? " + uniqueAppId);
                         _logger.log( Level.FINE, "EjbDeployer TimerService: " + timerService);
                     }
 
@@ -477,8 +477,8 @@ public class EjbDeployer
 
             if (isTimedApp) {
                 // Mark application as a timeout application, so that the clean() call removes the timers.
-                Properties appProps = context.getAppProps();
-                appProps.setProperty(IS_TIMEOUT_APP_PROP, "true");
+                ApplicationInfo appInfo = appRegistry.get(opsparams.name());
+                appInfo.addTransientAppMetaData(IS_TIMEOUT_APP_PROP, Boolean.TRUE);
             }
         }
     }
@@ -628,12 +628,20 @@ public class EjbDeployer
     }
 
     private boolean getKeepStateFromApplicationInfo(String appName) {
+        return getBooleanStateFromApplicationInfo(EjbApplication.KEEP_STATE, appName);
+    }
+
+    private boolean getBooleanStateFromApplicationInfo(String flag, String appName) {
         ApplicationInfo appInfo = appRegistry.get(appName);
         if (appInfo == null) {
             // appInfo can be null when running EjbDeployer.clean after a failed deploy
             return false;
         }
-        Boolean ks = appInfo.getTransientAppMetaData(EjbApplication.KEEP_STATE, Boolean.class);
-        return (ks == null ? false : ks);
+        Boolean rc = appInfo.getTransientAppMetaData(flag, Boolean.class);
+        return (rc == null ? false : rc);
+    }
+
+    private boolean getTimeoutStatusFromApplicationInfo(String appName) {
+        return getBooleanStateFromApplicationInfo(IS_TIMEOUT_APP_PROP, appName);
     }
 }
