@@ -2844,20 +2844,20 @@ public final class StatefulSessionContainer
     public void removeExpiredSessions() {
         try {
             _logger.log(Level.FINE, "StatefulContainer Removing expired sessions....");
-            long val = backingStore.removeExpired(this.removalGracePeriodInSeconds * 1000);
-
-            cacheProbeNotifier.ejbExpiredSessionsRemovedEvent(getContainerId(),
-                    containerInfo.appName, containerInfo.modName,
-                    containerInfo.ejbName, val);
-/**
-            if( sfsbStoreMonitor != null ) {
-                sfsbStoreMonitor.incrementExpiredSessionsRemoved(val);
+            long val = 0;
+            if (backingStore != null) {
+                val = backingStore.removeExpired(this.removalGracePeriodInSeconds * 1000);
             }
-**/
+
+            if (cacheProbeNotifier != null) {
+                cacheProbeNotifier.ejbExpiredSessionsRemovedEvent(getContainerId(),
+                        containerInfo.appName, containerInfo.modName,
+                        containerInfo.ejbName, val);
+            }
             _logger.log(Level.FINE, "StatefulContainer Removed " + val + " sessions....");
 
-        } catch (BackingStoreException sfsbEx) {
-            _logger.log(Level.WARNING, "Got exception from store manager",
+        } catch (Exception sfsbEx) {
+            _logger.log(Level.WARNING, "Got exception during removeExpiredSessions (but the reaper thread is still alive)",
                     sfsbEx);
         }
     }
