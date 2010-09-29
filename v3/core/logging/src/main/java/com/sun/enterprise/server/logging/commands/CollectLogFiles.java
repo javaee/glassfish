@@ -374,7 +374,8 @@ public class CollectLogFiles implements AdminCommand {
             report.setMessage(finalMessage);
 
             try {
-                // Creating zip file and returning zip file absolute path.                zipFileName = loggingConfig.createZipFile(tempDirectory.getAbsolutePath());
+                // Creating zip file and returning zip file absolute path.
+                zipFileName = loggingConfig.createZipFile(tempDirectory.getAbsolutePath());
                 if (zipFileName == null || new File(zipFileName) == null) {
                     // Failure during zip
                     final String errorMsg = localStrings.getLocalString(
@@ -431,38 +432,41 @@ public class CollectLogFiles implements AdminCommand {
             throw new IOException("");
         }
         for (File logFile : allLogFileNames) {
-            // File to copy in output file path.
-            File toFile = new File(targetDir, logFile.getName());
 
-            FileInputStream from = null;
-            FileOutputStream to = null;
+            if (logFile.isFile()) {
+                // File to copy in output file path.
+                File toFile = new File(targetDir, logFile.getName());
 
-            // Copying File
-            try {
-                from = new FileInputStream(logFile);
-                to = new FileOutputStream(toFile);
-                byte[] buffer = new byte[4096];
-                int bytesRead;
+                FileInputStream from = null;
+                FileOutputStream to = null;
 
-                while ((bytesRead = from.read(buffer)) != -1)
-                    to.write(buffer, 0, bytesRead); // write
-            }
-            catch (Exception ex) {
-                final String errorMsg = localStrings.getLocalString(
-                        "collectlogfiles.errInstanceDownloading", "Error while downloading log file from " + instanceName + ".");
-                logger.log(Level.SEVERE, errorMsg, ex);
-                report.setMessage(errorMsg);
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
-            }
+                // Copying File
+                try {
+                    from = new FileInputStream(logFile);
+                    to = new FileOutputStream(toFile);
+                    byte[] buffer = new byte[4096];
+                    int bytesRead;
+
+                    while ((bytesRead = from.read(buffer)) != -1)
+                        to.write(buffer, 0, bytesRead); // write
+                }
+                catch (Exception ex) {
+                    final String errorMsg = localStrings.getLocalString(
+                            "collectlogfiles.errInstanceDownloading", "Error while downloading log file from " + instanceName + ".");
+                    logger.log(Level.SEVERE, errorMsg, ex);
+                    report.setMessage(errorMsg);
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
 
 
-            if (!toFile.exists()) {
-                final String errorMsg = localStrings.getLocalString(
-                        "collectlogfiles.errInstanceDownloading", "Error while downloading log file from " + instanceName + ".");
-                report.setMessage(errorMsg);
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
+                if (!toFile.exists()) {
+                    final String errorMsg = localStrings.getLocalString(
+                            "collectlogfiles.errInstanceDownloading", "Error while downloading log file from " + instanceName + ".");
+                    report.setMessage(errorMsg);
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
             }
 
         }
