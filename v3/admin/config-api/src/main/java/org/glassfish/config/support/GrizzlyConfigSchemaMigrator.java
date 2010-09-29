@@ -94,16 +94,17 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
     private static final String HTTP_THREAD_POOL = "http-thread-pool";
 
     public void postConstruct() {
-        try {
-            final Config config = domain.getConfigs().getConfig().get(0);
-            rectifyThreadPools(config);
-            processHttpListeners(config);
-            promoteHttpServiceProperties(config.getHttpService());
-            promoteVirtualServerProperties(config.getHttpService());
-            promoteSystemProperties();
-        } catch (TransactionFailure tf) {
-            Logger.getAnonymousLogger().log(Level.SEVERE, "Failure while upgrading domain.xml.  Please redeploy", tf);
-            throw new RuntimeException(tf);
+        for (Config config : domain.getConfigs().getConfig()) {
+            try {
+                rectifyThreadPools(config);
+                processHttpListeners(config);
+                promoteHttpServiceProperties(config.getHttpService());
+                promoteVirtualServerProperties(config.getHttpService());
+                promoteSystemProperties();
+            } catch (TransactionFailure tf) {
+                Logger.getAnonymousLogger().log(Level.SEVERE, "Failure while upgrading domain.xml.  Please redeploy", tf);
+                throw new RuntimeException(tf);
+            }
         }
     }
 
@@ -309,6 +310,9 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
 
     private void migrateConnectionPool(NetworkConfig config, HttpService httpService) throws TransactionFailure {
         final ConnectionPool pool = httpService.getConnectionPool();
+        if (pool == null) {
+            return;
+        }
         final Transport transport = (Transport) ConfigSupport.apply(new SingleConfigCode<Transports>() {
             @Override
             public Object run(Transports param) throws TransactionFailure {
@@ -387,6 +391,9 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
 
     private void migrateKeepAlive(NetworkConfig config, HttpService httpService) throws TransactionFailure {
         final KeepAlive keepAlive = httpService.getKeepAlive();
+        if (keepAlive == null) {
+            return;
+        }
         for (Protocol protocol : config.getProtocols().getProtocol()) {
             ConfigSupport.apply(new SingleConfigCode<Http>() {
                 @Override
@@ -409,6 +416,9 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
     private void migrateRequestProcessing(final NetworkConfig config, HttpService httpService)
         throws TransactionFailure {
         final RequestProcessing request = httpService.getRequestProcessing();
+        if (request == null) {
+            return;
+        }
         ConfigSupport.apply(new SingleConfigCode<ThreadPool>() {
             @Override
             public Object run(final ThreadPool pool) throws PropertyVetoException, TransactionFailure {
@@ -449,6 +459,9 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
 
     private void migrateHttpFileCache(NetworkConfig config, HttpService httpService) throws TransactionFailure {
         final HttpFileCache httpFileCache = httpService.getHttpFileCache();
+        if (httpFileCache == null) {
+            return;
+        }
         ConfigSupport.apply(new SingleConfigCode<NetworkConfig>() {
             @Override
             public Object run(NetworkConfig param) throws TransactionFailure {
@@ -480,6 +493,9 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
 
     private void migrateHttpProtocol(NetworkConfig config, HttpService httpService) throws TransactionFailure {
         final HttpProtocol httpProtocol = httpService.getHttpProtocol();
+        if (httpProtocol == null) {
+            return;
+        }
         ConfigSupport.apply(new SingleConfigCode<NetworkConfig>() {
             @Override
             public Object run(NetworkConfig param) throws TransactionFailure {
