@@ -213,22 +213,26 @@ public class DisableCommand extends UndeployCommandParameters implements AdminCo
             }
         }
 
-        if (!deployment.isRegistered(appName)) {
-            report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", appName));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
-
-        if (!DeploymentUtils.isDomainTarget(target)) {
-            ApplicationRef ref = domain.getApplicationRefInTarget(appName, target);
-            if (ref == null) {
-                report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", appName, target));
+        if (env.isDas() || !isundeploy) {
+            // we should let undeployment go through
+            // on instance side for partial deployment case
+            if (!deployment.isRegistered(appName)) {
+                report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", appName));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
+
+            if (!DeploymentUtils.isDomainTarget(target)) {
+                ApplicationRef ref = domain.getApplicationRefInTarget(appName, target);
+                if (ref == null) {
+                    report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", appName, target));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
+            }
         }
 
-        if (!domain.isCurrentInstanceMatchingTarget(target, appName, server.getName(), null)) {
+        if (!isundeploy && !domain.isCurrentInstanceMatchingTarget(target, appName, server.getName(), null)) {
             try {
                 deployment.updateAppEnabledAttributeInDomainXML(appName, target, false);
             } catch(TransactionFailure e) {
@@ -245,8 +249,12 @@ public class DisableCommand extends UndeployCommandParameters implements AdminCo
             deployment.disable(this, app, appInfo, report, logger);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error during disabling: ", e);
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(e.getMessage());
+            if (env.isDas() || !isundeploy) {
+                // we should let undeployment go through
+                // on instance side for partial deployment case
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(e.getMessage());
+            }
         }
 
         if( enabledVersionsToDisable == Collections.EMPTY_SET ) {
@@ -259,7 +267,7 @@ public class DisableCommand extends UndeployCommandParameters implements AdminCo
         while (it.hasNext()) {
 
             appName = (String) it.next();
-            if (!report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
+            if (!isundeploy && !report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
                 try {
                     deployment.updateAppEnabledAttributeInDomainXML(appName, target, false);
                 } catch(TransactionFailure e) {
