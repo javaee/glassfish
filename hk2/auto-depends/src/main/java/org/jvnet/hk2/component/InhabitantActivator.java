@@ -36,6 +36,7 @@
 package org.jvnet.hk2.component;
 
 import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
 
 /**
  * Contract for handling the activation and releasing of an inhabitant.  Useful
@@ -55,6 +56,9 @@ public interface InhabitantActivator {
   /**
    * Implementations are generally expected to call {@link Inhabitant#get()} at
    * some point.
+   * <p>
+   * The {@link DefaultRunLevelService} calls activate for all Inhabitants qualifying
+   * in the activated RunLevel regardless of whether or not they need activation. 
    * 
    * @param inhabitant the inhabitant to activate
    */
@@ -63,6 +67,9 @@ public interface InhabitantActivator {
   /**
    * Implementations are generally expected to call {@link Inhabitant#release()} at
    * some point.
+   * <p>
+   * The {@link DefaultRunLevelService} calls deactivate for all Inhabitants qualifying
+   * in the activated RunLevel regardless of whether or not they need releasing. 
    * 
    * @param inhabitant the inhabitant to release
    */
