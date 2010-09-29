@@ -223,8 +223,10 @@ public class DeleteApplicationRefCommand implements AdminCommand {
                             if (!Boolean.valueOf(application.getDirectoryDeployed()) && source.exists()) {
                                 FileUtils.whack(new File(source.getURI()));
                             }
+                            deployment.unregisterAppFromDomainXML(appName, target);
+                        } else {
+                            deployment.unregisterAppFromDomainXML(appName, target, true);
                         }
-                        deployment.unregisterAppFromDomainXML(appName, target, true);
                     } catch(TransactionFailure e) {
                         logger.warning("failed to delete application ref for " + appName);
                     }

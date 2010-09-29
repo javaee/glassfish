@@ -267,14 +267,6 @@ public class ApplicationConfigListener implements TransactionListener,
         }
 
         ApplicationInfo appInfo = appRegistry.get(appName);
-        if (appInfo == null) {
-            return;
-        }
-
-        // if the application is not loaded, do not unload
-        if (!appInfo.isLoaded()) {
-            return;
-        }
 
         try {
             ActionReport report = new HTMLActionReporter();

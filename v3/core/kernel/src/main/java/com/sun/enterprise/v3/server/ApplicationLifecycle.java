@@ -269,8 +269,6 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
 
         ProgressTracker tracker = new ProgressTracker() {
             public void actOn(Logger logger) {
-                appRegistry.remove(appName);
-
                 for (EngineRef module : get("started", EngineRef.class)) {
                     try {
                         module.stop(context);
@@ -300,6 +298,8 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 if (!commandParams.keepfailedstubs) {
                     context.clean();
                 }
+                appRegistry.remove(appName);
+
             }
         };
 
@@ -1798,6 +1798,11 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
     public void disable(UndeployCommandParameters commandParams, 
         Application app, ApplicationInfo appInfo, ActionReport report, 
         Logger logger) throws Exception {
+        // if the application is not loaded, do not unload
+        if (appInfo == null || !appInfo.isLoaded()) {
+            return;
+        }
+
         final ExtendedDeploymentContext deploymentContext =
                 getBuilder(logger, commandParams, report).source(appInfo.getSource()).build();
         deploymentContext.getAppProps().putAll(
