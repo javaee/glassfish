@@ -498,9 +498,15 @@ AS_ADMIN_MASTERPASSWORD=changeit
 <!-- v3 redeploy using asadmin -->
 <!-- @param ${arg.list} (required) -->
 <target name="common.v3.redeploy.asadmin" depends="setAsadminArgs">
+    <antcall target="delAppRef">
+        <param name="testName" value="${testName}"/>
+    </antcall>
     <antcall target="common.run.asadmin">
         <param name="arg.list"
                value="${redeploy} ${ASADMIN-ARGS} ${arg.list}"/>
+    </antcall>
+    <antcall target="createAppRef">
+        <param name="testName" value="${testName}"/>
     </antcall>
 </target>
 
