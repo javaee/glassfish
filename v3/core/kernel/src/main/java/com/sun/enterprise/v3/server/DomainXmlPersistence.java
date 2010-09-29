@@ -119,7 +119,7 @@ public class DomainXmlPersistence implements ConfigurationPersistence, Configura
     }
 
     @Override
-    public void save(DomDocument doc) throws IOException, XMLStreamException {
+    public void save(DomDocument doc) throws IOException {
         File destination = getDestination();
         if (destination == null) {
             String msg = localStrings.getLocalString("NoLocation",
@@ -158,7 +158,7 @@ public class DomainXmlPersistence implements ConfigurationPersistence, Configura
                 String msg = localStrings.getLocalString("TmpFileNotSaved",
                                 "Configuration could not be saved to temporary file");
                 logger.log(Level.SEVERE, msg, e);
-                throw e;
+                throw new IOException(e.getMessage(), e);
                 // return after calling finally clause, because since temp file couldn't be saved,
                 // renaming should not be attempted
             }
@@ -170,7 +170,7 @@ public class DomainXmlPersistence implements ConfigurationPersistence, Configura
                     catch (XMLStreamException e) {
                         logger.log(Level.SEVERE, localStrings.getLocalString("CloseFailed", 
                                 "Cannot close configuration writer stream"), e);
-                        throw e;
+                        throw new IOException(e.getMessage(), e);
                     }
                 }
                 fos.close();
