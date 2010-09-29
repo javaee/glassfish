@@ -65,6 +65,7 @@ import com.sun.enterprise.config.serverbeans.SecurityMap;
 import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.Result;
 
 import java.io.PrintStream;
@@ -82,6 +83,8 @@ public class DomainXmlVerifier {
     private Domain domain;
     public boolean error;
     PrintStream _out;
+    private static final LocalStringsImpl strings =
+            new LocalStringsImpl(DomainXmlVerifier.class);
 
     public DomainXmlVerifier(Domain domain) throws Exception {
         this(domain, System.out);
@@ -111,7 +114,7 @@ public class DomainXmlVerifier {
         try {
             checkUnique(domain);
             if (!error)
-               _out.println("All Tests Passed, domain.xml is valid");
+               _out.println(strings.get("VerifySuccess"));
         } catch(Exception e) {
             error = true;
             e.printStackTrace();
@@ -205,7 +208,7 @@ public class DomainXmlVerifier {
     }
     
     public void output(Result result) {
-        _out.println(" Error: " + result.result());
+        _out.println(strings.get("VerifyError", result.result()));
     }
 
     public void checkDuplicate(Collection <? extends ConfigBeanProxy> beans) {
@@ -238,8 +241,7 @@ public class DomainXmlVerifier {
         }
 
         for (Object errorKey : errorKeyBeanMap.keySet()) {
-            Result result = new Result( "Duplicate Key : " + errorKey +
-                " for type = " + errorKeyBeanMap.get(errorKey));
+            Result result = new Result(strings.get("VerifyDupKey", errorKey, errorKeyBeanMap.get(errorKey)));
             output(result);
         }
     }    
