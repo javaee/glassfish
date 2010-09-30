@@ -47,6 +47,7 @@ package org.glassfish.admingui.common.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.glassfish.admingui.common.handlers.RestApiHandlers;
@@ -99,7 +100,34 @@ public class AppUtil {
         return Boolean.parseBoolean((String) attrs.get("enabled"));
     }
 
-    
+    static public Map getWsEndpointMap(String appName, String moduleName, List snifferList){
+
+        String prefix = GuiUtil.getSessionValue("REST_URL") + "/applications/application/";
+        Map wsAppMap = new HashMap();
+        if (snifferList.contains("webservices")){
+            Map wsAttrMap = new HashMap();
+            wsAttrMap.put("applicationname", appName);
+            wsAttrMap.put("modulename", moduleName);
+            Map wsMap = RestApiHandlers.restRequest(prefix+"list-webservices", wsAttrMap, "GET", null);
+            Map extraProps = (Map)((Map)wsMap.get("data")).get("extraProperties");
+            if (extraProps != null){
+                wsAppMap = (Map) extraProps.get(appName);
+            }
+        }
+        return wsAppMap;
+    }
+
+    static public Map getEndpointDetails(Map wsEndpointMap, String moduleName, String componentName){
+        if (wsEndpointMap == null){
+            return null;
+        }
+        Map modMap = (Map) wsEndpointMap.get(moduleName);
+        if (modMap == null){
+            return null;
+        }
+        return (Map) modMap.get(componentName);
+    }
+
     static final public List sniffersHide = new ArrayList();
     static {
         sniffersHide.add("security");
