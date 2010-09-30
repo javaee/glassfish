@@ -681,6 +681,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
         int current = (null == getCurrentRunLevel()) ? INITIAL_RUNLEVEL : getCurrentRunLevel();
         if (planned > current) {
           upSide = true;
+
           int rl = current + 1;
           while (rl <= planned) {
             upActiveRecorder(rl);
@@ -692,18 +693,24 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
           // start things off we a notification of the current runLevel
           setCurrent(this, current);
 
-          int rl = current;
-          while (rl > planned) {
-            downActiveRecorder(rl);
-            rl--;
-          }
+          down(current);
         } else { // planned == current
+          upSide = false;
+
           // force closure of any orphaned higher RunLevel services
-          downActiveRecorder(current+1);
+          down(current+1);
         }
       }
 
       finished(this);
+    }
+
+    private void down(int start) {
+      int rl = start;
+      while (rl > planned) {
+        downActiveRecorder(rl);
+        rl--;
+      }
     }
     
     private void upActiveRecorder(int runLevel) {
