@@ -446,7 +446,9 @@ public class MonitoringHandlers {
             if (fullName != null && !(name.equals(appName))) {
                 fullName = URLEncoder.encode(appName, "UTF-8") + "/" + URLEncoder.encode(name, "UTF-8");
             }
-            appName = URLEncoder.encode(appName, "UTF-8");
+            if (appName != null) {
+                appName = URLEncoder.encode(appName, "UTF-8");
+            }
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
