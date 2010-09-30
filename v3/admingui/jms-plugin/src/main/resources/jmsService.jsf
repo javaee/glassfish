@@ -42,6 +42,7 @@
 
 <!initPage
     setResourceBundle(key="i18n" bundle="org.glassfish.common.admingui.Strings");
+    setResourceBundle(key="i18nc" bundle="org.glassfish.admingui.core.Strings");
     setResourceBundle(key="i18njms" bundle="org.glassfish.jms.admingui.Strings");
     setResourceBundle(key="helpjms" bundle="org.glassfish.jms.admingui.Helplinks")
 />
