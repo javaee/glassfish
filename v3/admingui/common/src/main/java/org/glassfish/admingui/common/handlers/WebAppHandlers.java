@@ -53,23 +53,14 @@
 package org.glassfish.admingui.common.handlers;
 
 import com.sun.jsftemplating.annotation.HandlerInput;
-import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.common.util.V3AMX;
-import org.glassfish.admingui.common.util.V3AMXUtil;
-
-import javax.management.openmbean.TabularData;
-import org.glassfish.admin.amx.intf.config.Property;
-import org.glassfish.admin.amx.monitoring.ServerMon;
 import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.admingui.common.util.RestResponse;
 
@@ -79,92 +70,6 @@ public class WebAppHandlers {
 
     /** Creates a new instance of ApplicationsHandler */
     public WebAppHandlers() {
-    }
-
-    @Handler(id = "getAppclinetLaunchURL",
-        input = {
-            @HandlerInput(name = "appName", type = String.class, required = true),
-            @HandlerInput(name = "moduleName", type = String.class, required = true)},
-        output = {
-            @HandlerOutput(name = "url", type = String.class)})
-    public static void getAppclinetLaunchURL(HandlerContext handlerCtx) {
-        String appName = (String) handlerCtx.getInputValue("appName");
-        String moduleName = (String) handlerCtx.getInputValue("moduleName");
-        String appClientLaunch = V3AMX.getInstance().getRuntime().getRelativeJWSURI(appName, moduleName);
-        if (!GuiUtil.isEmpty(appClientLaunch)){
-            String httpLink = V3AMXUtil.getLaunchLink((String)GuiUtil.getSessionValue("serverName"), appName);
-            handlerCtx.setOutputValue("url", httpLink+appClientLaunch);
-        }
-    }
-
-
-
-    @Handler(id = "getEndpointInfo",
-        input = {
-            @HandlerInput(name = "appName", type = String.class, required = true),
-            @HandlerInput(name = "moduleName", type = String.class, required = true),
-            @HandlerInput(name = "subComponentName", type = String.class, required = true),
-            @HandlerInput(name = "type", type = String.class, required = true)},
-        output = {
-            @HandlerOutput(name = "result", type = Map.class)})
-    public static void getEndpointInfo(HandlerContext handlerCtx) {
-        String appName = (String) handlerCtx.getInputValue("appName");
-        String moduleName = (String) handlerCtx.getInputValue("moduleName");
-        String componentName = (String) handlerCtx.getInputValue("subComponentName");
-        String type = (String) handlerCtx.getInputValue("type");
-        Map result = new HashMap();
-        TabularData endpointMap = getEndpointMap ( appName,   moduleName,  componentName,  type);
-        if (endpointMap.isEmpty()){
-            handlerCtx.setOutputValue("result", result);
-        }
-
-        result.put("appName", (String)endpointMap.get(new Object[] {"appName"}).get("value"));
-        result.put("endpointName", (String)endpointMap.get(new Object[] {"endpointName"}).get("value"));
-        result.put("namespace", (String)endpointMap.get(new Object[] {"implClass"}).get("value"));
-        result.put("serviceName", (String)endpointMap.get(new Object[] {"namespace"}).get("value"));
-        result.put("portName", (String)endpointMap.get(new Object[] {"portName"}).get("value"));
-        result.put("implClass", (String)endpointMap.get(new Object[] {"implClass"}).get("value"));
-        result.put("address", (String)endpointMap.get(new Object[] {"address"}).get("value"));
-        result.put("wsdl", (String)endpointMap.get(new Object[] {"wsdl"}).get("value"));
-        result.put("tester", (String)endpointMap.get(new Object[] {"tester"}).get("value"));
-        result.put("implType", (String)endpointMap.get(new Object[] {"implType"}).get("value"));
-        result.put("deploymentType", (String)endpointMap.get(new Object[] {"deploymentType"}).get("value"));
-        String launchLink = V3AMXUtil.getLaunchLink((String)GuiUtil.getSessionValue("serverName"), appName);
-        if (GuiUtil.isEmpty(launchLink)){
-            result.put("disableTester", "true");
-            result.put("hasWsdlLink", false);
-        }else{
-            result.put("disableTester", "false");
-            result.put("hasWsdlLink", true);
-            result.put("testLink", launchLink+result.get("tester"));
-            result.put("wsdlLink", launchLink+result.get("wsdl"));
-        }
-        GuiUtil.getLogger().fine("Endpoint Info for " + appName + "#" + componentName  +" : " + result);
-        handlerCtx.setOutputValue("result", result);
-    }
-
-    
-
-     private static TabularData getEndpointMap (String appName,  String moduleName, String componentName, String type){
-        ServerMon serverMon = V3AMX.getInstance().getDomainRoot().getMonitoringRoot().getServerMon().get("server").as(ServerMon.class);
-        AMXConfigProxy webDeployment = serverMon.childrenMap("web-service-mon").get("webservices-deployment").as(AMXConfigProxy.class);
-        String[] params = new String[]{ appName, moduleName, componentName};
-        String[] sig = new String[]{"java.lang.String", "java.lang.String", "java.lang.String"};
-        TabularData endpointMap = null;
-        if (type.equalsIgnoreCase("Servlet")){
-            endpointMap = (TabularData) webDeployment.invokeOp("getServlet109Endpoint", params, sig);
-        }else{
-            endpointMap = (TabularData) webDeployment.invokeOp("getEjb109Endpoint", params, sig);
-        }
-        return endpointMap;
-     }
-
-
-
-    
-    private static String getA(Map<String, Property> attrs, String key) {
-        Property val = attrs.get(key);
-        return (val == null) ? "" :  val.getValue();
     }
 
    //This is called when user change the default web module of a VS.
@@ -262,20 +167,5 @@ public class WebAppHandlers {
            }
        }
    }
-
-
-    private static String calContextRoot(String contextRoot) {
-        //If context root is not specified or if the context root is "/", ensure that we don't show two // at the end.
-        //refer to issue#2853
-        String ctxRoot = "";
-        if ((contextRoot == null) || contextRoot.equals("") || contextRoot.equals("/")) {
-            ctxRoot = "/";
-        } else if (contextRoot.startsWith("/")) {
-            ctxRoot = contextRoot;
-        } else {
-            ctxRoot = "/" + contextRoot;
-        }
-        return ctxRoot;
-    }
 
 }

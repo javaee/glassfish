@@ -186,11 +186,16 @@ public class ApplicationHandlers {
 
     private static List<Map> getSubComponentDetail(String appName, String moduleName, List<String> snifferList, List<Map> result){
 
+        Map wsAppMap = null;
+        if (snifferList.contains("webservices")){
+            wsAppMap = AppUtil.getWsEndpointMap(appName, moduleName, snifferList);
+        }
+
         Map attrMap = new HashMap();
         attrMap.put("appName", appName);
         attrMap.put("moduleName", moduleName);
-        String endpoint = GuiUtil.getSessionValue("REST_URL") + "/applications/application/list-sub-components";
-        Map subMap = RestApiHandlers.restRequest(endpoint, attrMap, "GET", null);
+        String prefix = GuiUtil.getSessionValue("REST_URL") + "/applications/application/";
+        Map subMap = RestApiHandlers.restRequest(prefix + "list-sub-components", attrMap, "GET", null);
         Map data = (Map)subMap.get("data");
         if(data != null){
             Map<String, Object> props = (Map) data.get("properties");
@@ -206,11 +211,11 @@ public class ApplicationHandlers {
                 oneRow.put("sniffers", "");
                 oneRow.put("hasEndpoint", false);
                 oneRow.put("hasAppClientLaunch", false);
-    //            if (snifferList.contains("webservices")){
-    //                if (!getEndpointMap(appName, moduleName, cName, sMap.get(cName)).isEmpty()){
-    //                    oneRow.put("hasEndpoint", true );
-    //                }
-    //            }
+                if (wsAppMap != null){
+                    if (! (AppUtil.getEndpointDetails( wsAppMap, moduleName, cName) == null)){
+                        oneRow.put("hasEndpoint", true );
+                    }
+                }
                 result.add(oneRow);
             }
         }
