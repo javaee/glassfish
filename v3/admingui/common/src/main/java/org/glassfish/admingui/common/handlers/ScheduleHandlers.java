@@ -50,7 +50,7 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import org.glassfish.admingui.common.handlers.RestApiHandlers;
 import org.glassfish.admingui.common.util.GuiUtil;
-
+import java.text.*;
 /**
  *
  * @author Siraj
@@ -93,7 +93,7 @@ public class ScheduleHandlers {
         List<String> dataList = GuiUtil.parseStringList(data, ",");
         Map dataMap = new HashMap();
         for (String dataItem : dataList) {
-            dataMap.put(dataItem, "true");
+            dataMap.put(dataItem, Boolean.TRUE);
         }
         return dataMap;
     }
@@ -107,15 +107,15 @@ public class ScheduleHandlers {
         })
 
     public static void convertBooleanMapToString(HandlerContext handlerCtx) {
-        Map<String, String> map = (Map) handlerCtx.getInputValue("map");
+        Map<String, Boolean> map = (Map) handlerCtx.getInputValue("map");
         String delimiter = (String)handlerCtx.getInputValue("delimiter");
         if (delimiter == null)
             delimiter =",";
         String str = "";
 
         for (String key : map.keySet()) {
-            String val = map.get(key);
-            if (val != null && val.equals("true")) {
+            Boolean val = map.get(key);
+            if (val != null && val.equals(Boolean.TRUE)) {
                 if (key.equals("*")) {
                     str = "*";
                     break;
@@ -129,4 +129,48 @@ public class ScheduleHandlers {
             str = "*";
         handlerCtx.setOutputValue("str", str);
     }
+
+    @Handler(id = "gf.sort",
+        input = {
+            @HandlerInput(name = "months", type = String.class, required=true),
+            @HandlerInput(name = "delimiter", type = String.class)
+        },
+        output = {
+            @HandlerOutput(name = "sorted", type = String.class)
+        })
+    public static void sortMonths(HandlerContext handlerContext) {
+
+        DateFormat formatter = new SimpleDateFormat("dd-MMM-yy");
+
+        List<Date> dateList = new ArrayList();
+        String months = (String) handlerContext.getInputValue("months");
+        List<String> monthsList = GuiUtil.parseStringList(months, ",");
+        for (String month:monthsList) {
+            if (month.equals("*")) {
+//                sortedList.add("*");
+            } else {
+                try {
+                    Date date1 = formatter.parse("01-" + month + "-00");
+                    dateList.add(date1);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        Collections.sort(dateList);
+        handlerContext.setOutputValue("sortedList", dateList);
+/*
+        Date d  = Calendar.getInstance().getTime();
+        String[] shortMonths = new DateFormatSymbols().getShortMonths();
+
+        for (int i = 0; i < shortMonths.length; i++) {
+            String shortMonth = shortMonths[i];
+            if (monthsList.contains(shortMonths[i])) {
+
+            }
+        }
+ *
+ */
+    }
+
 }

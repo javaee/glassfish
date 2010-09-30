@@ -123,4 +123,10 @@ public class TargetUtil {
         }
     }
 
+    public static String getConfigName(String target) {
+        String endpoint = getTargetEndpoint(target);
+        return (String)RestApiHandlers.getAttributesMap(endpoint).get("configRef");
+    }
+
+
 }
