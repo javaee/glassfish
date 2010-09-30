@@ -152,6 +152,7 @@ public class DBVendorType  {
     private final static String CONCAT_CAST = "CONCAT_CAST"; //NOI18N
     private final static String PARAMETER_CAST = "PARAMETER_CAST"; //NOI18N
     private final static String INLINE_NUMERIC = "INLINE_NUMERIC"; //NOI18N
+    private final static String NOT_EQUAL = "NOT_EQUAL"; //NOI18N
 
     private static final String[] props = new String[] { FOR_UPDATE,
             HOLDLOCK, SUPPORTS_UPDATE_LOCK, SUPPORTS_LOCK_COLUMN_LIST,
@@ -166,7 +167,7 @@ public class DBVendorType  {
             MAP_EMPTY_STRING_TO_NULL, SPECIAL_DB_OPERATION,
             SUPPORTS_LIKE_ESCAPE, LEFT_LIKE_ESCAPE, RIGHT_LIKE_ESCAPE,
             NULL_COMPARISON_FUNCTION_NAME, MOD_FUNCTION_NAME,
-            CONCAT_CAST, PARAMETER_CAST, INLINE_NUMERIC
+            CONCAT_CAST, PARAMETER_CAST, INLINE_NUMERIC, NOT_EQUAL
     };
 
     /**
@@ -1008,6 +1009,25 @@ public class DBVendorType  {
         return b.booleanValue();
     }
 
+    /**
+     * Returns the string that represents the not-equal-to operator
+     * for this database. This has been added for Symfoware database
+     * which does not support "!=" for NOT EQUAL, and will have to use
+     * "<>".
+     */
+    public String getNotEqual() {
+        String s = (String)dbMap.get(NOT_EQUAL);
+        if (s == null)
+            s = NONE;
+
+        if (logger.isLoggable()) {
+            logger.fine("sqlstore.database.dbvendor.getnotequal", s); // NOI18N
+        }
+
+        return s;
+    }
+    
+    
 
     /**
      * Returns database vendor type

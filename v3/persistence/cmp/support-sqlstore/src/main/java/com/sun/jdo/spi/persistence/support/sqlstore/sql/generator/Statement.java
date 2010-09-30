@@ -960,7 +960,9 @@ public abstract class Statement extends Object implements Cloneable {
                 result.append(" < "); // NOI18N
                 break;
             case ActionDesc.OP_NE:
-                result.append(" != "); // NOI18N
+                result.append(" ");
+                result.append(vendorType.getNotEqual());
+                result.append(" ");
                 break;
             case ActionDesc.OP_OR:
                 result.append(" or "); // NOI18N
