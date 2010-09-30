@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.installer.conf;
 
 import java.util.logging.Level;
@@ -108,10 +107,10 @@ public class ClusterManager {
 
         clusterConfigSuccessful = true;
 
-        LOGGER.log(Level.INFO, Msg.get("CHECKIF_DOMAIN_RUNNING",new String[]{domainRef.getDomainName()}));
+        LOGGER.log(Level.INFO, Msg.get("CHECKIF_DOMAIN_RUNNING", new String[]{domainRef.getDomainName()}));
 
         if (!glassfishDomainManager.isDomainRunning(domainRef.getDomainName())) {
-            outputFromRecentRun = Msg.get("DOMAIN_NOT_RUNNING",new String[] { domainRef.getDomainName()});
+            outputFromRecentRun = Msg.get("DOMAIN_NOT_RUNNING", new String[]{domainRef.getDomainName()});
             clusterConfigSuccessful = false;
             //TODO Start the domain..
             return null;
@@ -126,11 +125,11 @@ public class ClusterManager {
         outputFromRecentRun = "";
 
         if (asadminExecuteCommand != null) {
-            LOGGER.log(Level.INFO, Msg.get("CREATE_CLUSTER", new String[] { clusterName}));
+            LOGGER.log(Level.INFO, Msg.get("CREATE_CLUSTER", new String[]{clusterName}));
 
             /* Include the commandline also in the output. */
             outputFromRecentRun += asadminExecuteCommand.expandCommand(asadminExecuteCommand.getCommand()) + "\n";
-        
+
             if (runningMode.contains("DRYRUN")) {
                 /*
                 Do not execute the command, this is useful when the clients just
@@ -142,9 +141,7 @@ public class ClusterManager {
                 asadminExecuteCommand.setCollectOutput(true);
                 asadminExecuteCommand.execute();
                 outputFromRecentRun += asadminExecuteCommand.getAllOutput();
-                // Look for the string failed till asadmin bugs related to stderr are resolved.
-                // Ugly/Buggy, but works for now.
-                if (outputFromRecentRun.indexOf(Msg.get("FAILED",null)) != -1) {
+                if (asadminExecuteCommand.getResult() == 1) {
                     clusterConfigSuccessful = false;
                     glassfishCluster = null;
                 }
@@ -155,7 +152,7 @@ public class ClusterManager {
                 clusterConfigSuccessful = false;
             }
         } else {
-            outputFromRecentRun = Msg.get("INVALID_CREATE_CLUSTER_COMMAND_LINE",null);
+            outputFromRecentRun = Msg.get("INVALID_CREATE_CLUSTER_COMMAND_LINE", null);
             clusterConfigSuccessful = false;
             glassfishCluster = null;
         }

@@ -144,9 +144,7 @@ public class InstanceManager {
                 asadminExecuteCommand.setCollectOutput(true);
                 asadminExecuteCommand.execute();
                 outputFromRecentRun += asadminExecuteCommand.getAllOutput();
-                // Look for the string failed till asadmin bugs related to stderr are resolved.
-                // Ugly/Buggy, but works for now.
-                if (outputFromRecentRun.indexOf(Msg.get("FAILED", null)) != -1) {
+                if (asadminExecuteCommand.getResult() == 1) {
                     instanceConfigSuccessful = false;
                     glassfishInstance = null;
                 }

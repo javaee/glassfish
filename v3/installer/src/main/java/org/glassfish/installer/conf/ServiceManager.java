@@ -115,9 +115,7 @@ public class ServiceManager {
                 asadminExecuteCommand.setCollectOutput(true);
                 asadminExecuteCommand.execute();
                 outputFromRecentRun = asadminExecuteCommand.getAllOutput();
-                // Look for the string failed till asadmin bugs related to stderr are resolved.
-                // Ugly/Buggy, but works for now.
-                if (outputFromRecentRun.indexOf("failed") != -1) {
+                if (asadminExecuteCommand.getResult() == 1) {
                     serviceConfigSuccessful = false;
                     glassfishService = null;
                 }

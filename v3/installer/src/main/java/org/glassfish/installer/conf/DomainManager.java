@@ -73,7 +73,7 @@ public class DomainManager {
      * Can be used to double check in the calling code to make sure that
      * configuration was indeed successful/failure.
      */
-    private boolean domainConfigSuccessful;
+    private static boolean domainConfigSuccessful;
 
     /* Logger related. */
     private static final Logger LOGGER;
@@ -149,9 +149,7 @@ public class DomainManager {
                 asadminExecuteCommand.setCollectOutput(true);
                 asadminExecuteCommand.execute();
                 outputFromRecentRun += asadminExecuteCommand.getAllOutput();
-                // Look for the string failed till asadmin bugs related to stderr are resolved.
-                // Ugly/Buggy, but works for now.
-                if (outputFromRecentRun.indexOf(Msg.get("FAILED", null)) != -1) {
+                if (asadminExecuteCommand.getResult() == 1) {
                     domainConfigSuccessful = false;
                     glassfishDomain = null;
                 }
@@ -204,9 +202,7 @@ public class DomainManager {
                 asadminExecuteCommand.setCollectOutput(true);
                 asadminExecuteCommand.execute();
                 outputFromRecentRun += asadminExecuteCommand.getAllOutput();
-                // Look for the string failed till asadmin bugs related to stderr are resolved.
-                // Ugly/Buggy, but works for now.
-                if (outputFromRecentRun.indexOf(Msg.get("FAILED", null)) != -1) {
+                if (asadminExecuteCommand.getResult() == 1) {
                     domainConfigSuccessful = false;
                 }
 
