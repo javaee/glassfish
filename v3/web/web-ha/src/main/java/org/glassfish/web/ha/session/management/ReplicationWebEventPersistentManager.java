@@ -62,8 +62,10 @@ import org.glassfish.ha.store.api.BackingStoreConfiguration;
 import org.glassfish.ha.store.api.BackingStoreException;
 import org.glassfish.ha.store.api.BackingStoreFactory;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PerLookup;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -83,6 +85,7 @@ import java.util.logging.Logger;
  * @author Rajiv Mordani
  */
 @Service
+@Scoped(PerLookup.class)
 public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
         implements WebEventPersistentManager {
     
