@@ -46,10 +46,7 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.ExecuteOn;
-import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -58,7 +55,7 @@ import org.jvnet.hk2.component.PerLookup;
 /**
  * @author cmott
  */
-@ExecuteOn({RuntimeType.INSTANCE})
+@ExecuteOn(value={RuntimeType.INSTANCE},ifOffline=FailurePolicy.Error)
 @Service(name = "rotate-log")
 @Scoped(PerLookup.class)
 @I18n("rotate.log")
@@ -76,7 +73,7 @@ public class RotateLog implements AdminCommand {
     public void execute(AdminCommandContext context) {
 
         final ActionReport report = context.getActionReport();
-        
+
         gf.rotate();
 
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
