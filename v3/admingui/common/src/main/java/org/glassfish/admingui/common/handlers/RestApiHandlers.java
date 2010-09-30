@@ -457,11 +457,13 @@ public class RestApiHandlers {
         for (Map<String, Object> method : methods) {
             if ("POST".equals(method.get("name"))) {
                 Map<String, Object> messageParameters = (Map<String, Object>) method.get("messageParameters");
-                for (Map.Entry<String, Object> entry : messageParameters.entrySet()) {
-                    String param = entry.getKey();
-                    String defaultValue = (String) ((Map) entry.getValue()).get("defaultValue");
-                    if (!"".equals(defaultValue) && (defaultValue != null)) { // null test necessary?
-                        defaultValues.put(param, defaultValue);
+                if (messageParameters != null) {
+                    for (Map.Entry<String, Object> entry : messageParameters.entrySet()) {
+                        String param = entry.getKey();
+                        String defaultValue = (String) ((Map) entry.getValue()).get("defaultValue");
+                        if (!"".equals(defaultValue) && (defaultValue != null)) { // null test necessary?
+                            defaultValues.put(param, defaultValue);
+                        }
                     }
                 }
             }

@@ -62,9 +62,9 @@
 
             setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=jms-service");
 
-            setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config");
+            setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs");
             setPageSessionAttribute(key="childType", value="config");
-            setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.configName}/jms-service");
+            setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.configName}/jms-service");
             setPageSessionAttribute(key="rest-api" value="true");
             gf.restRequest(endpoint="#{pageSession.selfUrl}", method="get", result="#{pageSession.result}");
             setPageSessionAttribute(key="valueMap", value="#{pageSession.result.data.extraProperties.entity}");

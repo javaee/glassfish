@@ -338,7 +338,7 @@ public class ProxyHandlers {
             }
         } catch (Exception ex) {
             GuiUtil.getLogger().info("objectName=" + objectNameStr + ", attributeName=" + attrName);
-            ex.printStackTrace();
+            //ex.printStackTrace();
         }
         handlerCtx.setOutputValue("value", result);
     }
