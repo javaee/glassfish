@@ -579,7 +579,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         Collection<WebService> webServices = new HashSet<WebService>();
         WebServicesDescriptor wsDesc =
             dc.getModuleMetaData(WebServicesDescriptor.class);
-        if (wsDesc != null) {
+        if (wsDesc != null && wsDesc.getWebServices().size() > 0) {
             // when there are multiple submodules in ear, we only
             // want to handle the ones local to this deployment context
             if (logger.isLoggable(Level.FINE)) {
