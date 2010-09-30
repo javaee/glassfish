@@ -157,7 +157,7 @@ public class DisableCommand extends UndeployCommandParameters implements AdminCo
 
             Map<String,Set<String>> enabledVersionsInTargets = Collections.EMPTY_MAP;
 
-            if( VersioningUtils.isVersionExpressionWithWildCard(name)){
+            if( isVersionExpressionWithWilcard ){
                 enabledVersionsInTargets =
                         versioningService.getEnabledVersionInReferencedTargetsForExpression(appName);
             } else {
