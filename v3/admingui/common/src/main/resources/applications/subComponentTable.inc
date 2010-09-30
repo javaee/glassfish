@@ -74,7 +74,7 @@ println("sectionDetail =  $attribute{sectionDetail}");
 
         <sun:tableColumn headerText="$resource{i18n.ComponentTable.colAction}"  embeddedActions="#{true}" rowHeader="$boolean{true}" id="col3">
             <sun:hyperlink id="endpointLink" rendered="#{td.value.hasEndpoint}" text="$resource{i18n.ComponentTable.viewEndPoint}"
-                url="#{request.contextPath}/common/applications/endpoint.jsf?appName=#{appName}&moduleName=#{td.value.moduleName}&subComponentName=#{td.value.name}&type=#{td.value.type}" />
+                url="#{request.contextPath}/common/applications/endpoint.jsf?appName=#{appName}&moduleName=#{td.value.moduleName}&compName=#{td.value.name}" />
 
             <sun:hyperlink id="launchLink" rendered="#{td.value.hasLaunch}" text="$resource{i18n.deployTable.launch}"
                 onClick="window.open('#{td.value.launchLink}','_blank','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,directories=yes,location=yes'); return false;"

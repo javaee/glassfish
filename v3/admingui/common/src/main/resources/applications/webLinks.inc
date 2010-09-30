@@ -39,20 +39,38 @@
     holder.
 
 -->
-
-<sun:page id="page1">
-    <!beforeCreate
-        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
-        setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
-        getRequestValue(key="appID" value="#{pageSession.appName}");
-        getRequestValue(key="contextRoot" value="#{pageSession.contextRoot}");
-        getTargetURLList(
-            AppID="#{pageSession.appName}",
-            contextRoot="#{pageSession.contextRoot}",
-            URLList=>$pageSession{urlList});
-        setPageSessionAttribute(key="pageTitle" value="$resource{i18n.webApplicationLinks.PageTitle}")
-        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.webApplicationLinks.PageHelp}")
-        setPageSessionAttribute(key="helpKey" value="$resource{help_common.webApplicationLinks}")
-    />
-#include "/common/applications/webLinks.inc"
-</sun:page>
+<sun:html id="html2">
+    <sun:head id="propertyhead" title="#{pageSession.pageTitle}" />
+    <sun:body id="body3">
+        <sun:form id="propertyForm">
+            <sun:title id="propertyContentPage" title="#{pageSession.pageTitle}" helpText="#{pageSession.pageTitleHelp}" />
+                <sun:propertySheet id="propertySheet">
+                    <sun:propertySheetSection id="propertySectionTextField">
+                        <sun:property id="nameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.ApplicationName}">
+                            <sun:staticText id="name" text="#{pageSession.appName}" />
+                        </sun:property>
+                        <sun:property id="linkProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Links}">
+                            <foreach key="list" list="#{pageSession.urlList}">
+                                <sun:hyperlink
+                                    text="#{list.url}"
+                                    url="#{list.url}"/>
+                                "<br />
+                            </foreach>
+                        </sun:property>
+                    </sun:propertySheetSection>
+                </sun:propertySheet>
+            <sun:title id="title2">
+                <!facet pageButtonsBottom>
+                <sun:panelGroup id="topButtons">
+                    <sun:button id="closeButton"
+                        onClick="javascript: window.close(); return false;"
+                        primary="#{true}"
+                        text="$resource{i18n.button.Close}">
+                    </sun:button>
+                </sun:panelGroup>
+                </facet>
+            </sun:title>
+        <sun:hidden id="helpKey" value="#{pageSession.helpKey}" />
+        </sun:form>
+    </sun:body>
+</sun:html>

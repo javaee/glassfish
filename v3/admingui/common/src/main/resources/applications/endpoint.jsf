@@ -54,12 +54,16 @@
         urlencode(value="#{pageSession.appName}" encoding="UTF-8" result="#{pageSession.encodedAppName}");
         getRequestValue(key="moduleName" value="#{pageSession.moduleName}");
         urlencode(value="#{pageSession.moduleName}" encoding="UTF-8" result="#{pageSession.encodedModuleName}");
-        getRequestValue(key="subComponentName" value="#{pageSession.subComponentName}");
-        getRequestValue(key="type" value="#{pageSession.type}");
-        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/applicationEdit.jsf?name=#{pageSession.encodedAppName}");
-        getEndpointInfo(appName="#{pageSession.appName}" moduleName="#{pageSession.moduleName}" subComponentName="#{pageSession.subComponentName}" type="#{pageSession.type}"
-                result="#{pageSession.valueMap}");
-    />
+        getRequestValue(key="compName" value="#{pageSession.compName}");
+        urlencode(value="#{pageSession.compName}" encoding="UTF-8" result="#{pageSession.encodedCompName}");
+        gf.createAttributeMap(keys={"applicationname", "modulename" ,"endpointname"}, values={"$pageSession{encodedAppName}" , "$pageSession{encodedModuleName}" , "$pageSession{encodedCompName}"}, map="#{requestScope.attrsMap}")
+        gf.restRequest(endpoint="#{sessionScope.REST_URL}/applications/application/list-webservices", attrs="#{requestScope.attrsMap}" method="get", result="#{requestScope.result}");
+        mapGet(Map="#{requestScope.result.data.extraProperties}", Key="#{pageSession.appName}" Value="#{requestScope.aMap}");
+        mapGet(Map="#{requestScope.aMap}", Key="#{pageSession.moduleName}" Value="#{requestScope.mMap}");
+        mapGet(Map="#{requestScope.mMap}", Key="#{pageSession.compName}" Value="#{pageSession.valueMap}");
+        urlencode(value="#{pageSession.valueMap.tester}" encoding="UTF-8" result="#{pageSession.encodedTester}");
+        urlencode(value="#{pageSession.valueMap.wsdl}" encoding="UTF-8" result="#{pageSession.encodedWsdl}");
+        />
     </event>
 
     <sun:form id="propertyForm">
@@ -67,15 +71,6 @@
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18nc.endpoint.PageTitle}" helpText="$resource{i18nc.endpoint.PageTitleHelp}">
 
-        <!--
-        <sun:button id="testButton" style="margin-left: 8pt"  primary="#{true}"
-            text="$resource{i18nc.endpoint.testButton}"
-            //disabled="#{pageSession.valueMap['disableTester']}"
-            rendered="#{pageSession.valueMap['hasTesterButton']}"
-            disabled="#{false}"
-            onClick="javascript:var win=window.open('#{pageSession.valueMap['testLink']}','_blank');win.focus(); return false;"
-         />
-        -->
         <!facet pageButtonsTop>
             <sun:panelGroup id="topButtons">
                 <sun:button id="backButton" immediate="#{true}" text="$resource{i18n.button.Back}" primary="#{true}">
@@ -86,7 +81,6 @@
             </sun:panelGroup>
         </facet>
     </sun:title>
-<!-- PropertySheet .... -->
     <sun:propertySheet id="propertySheet">
         <sun:propertySheetSection id="propertSectionTextField">
             <sun:property id="appName"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.endpoint.appName}" >
@@ -95,20 +89,13 @@
             </sun:property>
 
             <sun:property id="tester"   labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.endpoint.tester}" >
-                <sun:hyperlink id="tester"  text="#{pageSession.valueMap['tester']}"
-                    onClick="javascript:
-                    var tester = window.open('#{pageSession.valueMap['testLink']}','_blank'); tester.focus(); return false;"
-                />
-
+                <sun:hyperlink id="link" text="#{pageSession.valueMap['tester']}"
+                onClick="var win=window.open('applications/webServiceTester.jsf?appName=#{pageSession.encodedAppName}&tester=#{pageSession.encodedTester}','__#{pageSession.encodedAppName}_tester','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,directories=yes,location=yes');win.focus(); return false;" />
             </sun:property>
 
-
             <sun:property id="wsdl"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.endpoint.wsdl}" >
-                <sun:staticText id="wsdl" rendered="!#{pageSession.valueMap['hasWsdlLink']}" text="#{pageSession.valueMap['wsdl']}"/>
-                <sun:hyperlink id="wsdllink" rendered="#{pageSession.valueMap['hasWsdlLink']}" text="#{pageSession.valueMap['wsdl']}"
-                    onClick="javascript:
-                    var wsdlWin = window.open('#{pageSession.valueMap['wsdlLink']}','_blank'); wsdlWin.focus(); return false;"
-                />
+               <sun:hyperlink id="wsdllink" text="#{pageSession.valueMap['wsdl']}"
+                onClick="var win=window.open('applications/webServiceWsdl.jsf?appName=#{pageSession.encodedAppName}&wsdl=#{pageSession.encodedWsdl}','__#{pageSession.encodedAppName}_wsdl','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,directories=yes,location=yes');win.focus(); return false;" />
             </sun:property>
 
             <sun:property id="endpointName"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.endpoint.endpointName}" >
@@ -137,16 +124,11 @@
             <sun:property id="namespace"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.endpoint.namespace}" >
                 <sun:staticText id="namespace" text="#{pageSession.valueMap['namespace']}"/>
             </sun:property>
-
-            // <sun:property id="name"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.endpoint.name}" >
-               // <sun:staticText id="name" text="#{pageSession.valueMap['name']}"/>
-            // </sun:property>
-            
-            
-
+            <!--
             <sun:property id="description"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.endpoint.description}" >
                 <sun:staticText id="description" text="#{pageSession.valueMap['description']}"/>
             </sun:property>
+            -->
 
         </sun:propertySheetSection>
     </sun:propertySheet>

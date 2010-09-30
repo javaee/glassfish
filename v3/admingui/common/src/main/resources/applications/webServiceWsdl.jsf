@@ -43,16 +43,17 @@
 <sun:page id="page1">
     <!beforeCreate
         setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
+        setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
         setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
-        getRequestValue(key="appID" value="#{pageSession.appName}");
-        getRequestValue(key="contextRoot" value="#{pageSession.contextRoot}");
+        getRequestValue(key="appName" value="#{pageSession.appName}");
+        getRequestValue(key="wsdl" value="#{pageSession.wsdl}");
         getTargetURLList(
             AppID="#{pageSession.appName}",
-            contextRoot="#{pageSession.contextRoot}",
-            URLList=>$pageSession{urlList});
-        setPageSessionAttribute(key="pageTitle" value="$resource{i18n.webApplicationLinks.PageTitle}")
-        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.webApplicationLinks.PageHelp}")
-        setPageSessionAttribute(key="helpKey" value="$resource{help_common.webApplicationLinks}")
+            contextRoot="#{pageSession.wsdl}",
+            URLList="#{pageSession.urlList}");
+        setPageSessionAttribute(key="pageTitle" value="$resource{i18nc.webServiceWsdlLinks.PageTitle}")
+        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18nc.webServiceWsdlLinks.PageTitleHelp}")
+        setPageSessionAttribute(key="helpKey" value="$resource{help_common.webServiceWsdl}")
     />
 #include "/common/applications/webLinks.inc"
 </sun:page>
