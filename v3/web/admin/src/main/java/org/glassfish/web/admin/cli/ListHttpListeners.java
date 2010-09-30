@@ -42,10 +42,8 @@ package org.glassfish.web.admin.cli;
 
 import java.util.List;
 
-import org.glassfish.internal.api.Target;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.grizzly.config.dom.NetworkListener;
@@ -59,6 +57,7 @@ import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
+import org.glassfish.internal.api.Target;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -80,8 +79,8 @@ public class ListHttpListeners implements AdminCommand {
     @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
     String target;
 
-    @Param(name = "verbose", optional = true, defaultValue = "false")
-    String verbose;
+    @Param(optional = true, defaultValue = "false", name="long", shortName="l")
+    boolean verbose;
 
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
@@ -107,15 +106,20 @@ public class ListHttpListeners implements AdminCommand {
         }
         final ActionReport report = context.getActionReport();
         List<NetworkListener> list = config.getNetworkConfig().getNetworkListeners().getNetworkListener();
+        int size = 0;
+        for (NetworkListener networkListener : list) {
+            size = Math.max(size, networkListener.getName().length());
+        }
+        final String format = "%-" + (size + 2 ) + "s %-6s";
+        if(verbose) {
+            report.getTopMessagePart()
+                .addChild().setMessage(String.format(format, "NAME", "PORT"));
+        }
         for (NetworkListener listener : list) {
             if (listener.findHttpProtocol().getHttp() != null) {
-                StringBuilder builder = new StringBuilder(listener.getName());
-                if(Boolean.valueOf(verbose)) {
-                    builder.append(":")
-                        .append(listener.getPort());
-                }
                 report.getTopMessagePart()
-                    .addChild().setMessage(builder.toString());
+                    .addChild().setMessage(String.format(format, listener.getName(),
+                    verbose ? listener.getPort() : ""));
             }
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
