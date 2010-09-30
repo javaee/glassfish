@@ -122,7 +122,7 @@ public class DataSourceFactoryImpl implements DataSourceFactory {
     }
 
     private void populateBean(Properties properties, Class clazz, Object object) throws IntrospectionException,
-            IllegalAccessException, InvocationTargetException {
+            IllegalAccessException, InvocationTargetException, SQLException {
         BeanInfo beanInfo = Introspector.getBeanInfo(clazz);
 
         PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
@@ -134,6 +134,7 @@ public class DataSourceFactoryImpl implements DataSourceFactory {
 
             String propertyName = (String) keyIterator.next();
             String value = properties.getProperty(propertyName);
+            boolean propertyFound = false;
 
             for (PropertyDescriptor desc : propertyDescriptors) {
                 if (desc.getName().equalsIgnoreCase(propertyName)) {
@@ -163,22 +164,26 @@ public class DataSourceFactoryImpl implements DataSourceFactory {
                                 result = value;
                             }
                         } catch (Exception e) {
-                            throw new RuntimeException(e);
+                            throw new SQLException(e);
                         }
                     } else {
-                        throw new RuntimeException("Unable to find the type of property [ " + propertyName + " ]");
+                        throw new SQLException("Unable to find the type of property [ " + propertyName + " ]");
                     }
 
                     Method setter = desc.getWriteMethod();
                     if (setter != null) {
+                        propertyFound = true;
                         debug("invoking setter method [" + setter.getName() + "], value [" + result + "]");
                         setter.invoke(object, result);
                     } else {
-                        throw new RuntimeException
+                        throw new SQLException
                                 ("Unable to find the setter method for property [ " + propertyName + " ]");
                     }
                     break;
                 }
+            }
+            if(!propertyFound){
+                throw new SQLException("No such property ("+propertyName+") in " + clazz.getName());
             }
         }
     }
