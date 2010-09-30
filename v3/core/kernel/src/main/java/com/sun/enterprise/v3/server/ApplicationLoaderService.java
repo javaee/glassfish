@@ -392,7 +392,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
         allApplications.addAll(systemApplications.getApplications());
         for (Application app : allApplications) {
             ApplicationInfo appInfo = deployment.get(app.getName());
-            stopApplication(appInfo);
+            stopApplication(app, appInfo);
         }
 
         // now stop the applications which are not registered in the 
@@ -401,7 +401,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
         allAppNames.addAll(appRegistry.getAllApplicationNames());
         for (String appName : allAppNames) {
             ApplicationInfo appInfo = appRegistry.get(appName);
-            stopApplication(appInfo);
+            stopApplication(null, appInfo);
         }
 
         // stop all the containers
@@ -410,22 +410,16 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
         }
     }
 
-    private void stopApplication(ApplicationInfo appInfo) {
+    private void stopApplication(Application app, ApplicationInfo appInfo) {
         final ActionReport dummy = new HTMLActionReporter();
         if (appInfo!=null) {
             UndeployCommandParameters parameters = new UndeployCommandParameters(appInfo.getName());
             parameters.origin = UndeployCommandParameters.Origin.unload;
 
             try {
-                ExtendedDeploymentContext depContext = deployment.getBuilder(logger, parameters, dummy).source(appInfo.getSource()).build();
-                try {
-                    appInfo.stop(depContext, depContext.getLogger());
-                } catch (Throwable t) {
-                    logger.log(Level.WARNING, "cannot.stop.app", new Object[] {appInfo.getName(), t.getMessage()});
-                }
-                appInfo.unload(depContext);
-            } catch (IOException e) {
-                logger.log(Level.SEVERE, "cannot.create.unload.context", new Object[] {appInfo.getName(), e.getMessage()});
+                deployment.disable(parameters, app, appInfo, dummy, logger);
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, e.getMessage(), e);
             }
             appRegistry.remove(appInfo.getName());
         }

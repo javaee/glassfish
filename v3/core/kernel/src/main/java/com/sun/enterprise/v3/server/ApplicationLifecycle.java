@@ -296,7 +296,11 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                     }
                 }
                 if (!commandParams.keepfailedstubs) {
-                    context.clean();
+                    try {
+                        context.clean();
+                    } catch (Exception e) {
+                        // ignore
+                    }
                 }
                 appRegistry.remove(appName);
 
@@ -1805,10 +1809,13 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
 
         final ExtendedDeploymentContext deploymentContext =
                 getBuilder(logger, commandParams, report).source(appInfo.getSource()).build();
-        deploymentContext.getAppProps().putAll(
-            app.getDeployProperties());
-        deploymentContext.setModulePropsMap(
-            app.getModulePropertiesMap());
+
+        if (app != null) {
+            deploymentContext.getAppProps().putAll(
+                app.getDeployProperties());
+            deploymentContext.setModulePropsMap(
+                app.getModulePropertiesMap());
+        }
 
         if (commandParams.properties != null) {
             deploymentContext.getAppProps().putAll(commandParams.properties);
@@ -1816,6 +1823,8 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
 
         appInfo.stop(deploymentContext, deploymentContext.getLogger());
         appInfo.unload(deploymentContext);
+        
+        events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_DISABLED, appInfo));
     }
 
     public void enable(String target, Application app, ApplicationRef appRef, 
