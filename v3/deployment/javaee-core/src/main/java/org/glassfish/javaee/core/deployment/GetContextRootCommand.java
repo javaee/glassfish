@@ -38,7 +38,7 @@
  * holder.
  */
 
-package org.glassfish.deployment.admin;
+package org.glassfish.javaee.core.deployment;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -101,6 +101,7 @@ public class GetContextRootCommand implements AdminCommand {
                     bundleDesc instanceof WebBundleDescriptor) {
                     String contextRoot = ((WebBundleDescriptor)bundleDesc).getContextRoot();
                     part.addProperty(DeploymentProperties.CONTEXT_ROOT, contextRoot);
+                    part.setMessage(contextRoot);
                 }
             }
         }
