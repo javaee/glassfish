@@ -335,6 +335,8 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         //GJCINT
         isClean = true;
 
+        ManagedConnectionFactory spiMCF = (ManagedConnectionFactory) mcf;
+        resetConnectionProperties(spiMCF);
     }
 
     /**
@@ -443,7 +445,15 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         //GJCINT
         getActualConnection();
         ManagedConnectionFactory spiMCF = (ManagedConnectionFactory) mcf;
-        resetConnectionProperties(spiMCF);
+
+        String statementTimeoutString = spiMCF.getStatementTimeout();
+        if (statementTimeoutString != null) {
+            int timeoutValue = Integer.valueOf(statementTimeoutString);
+            if (timeoutValue >= 0) {
+                statementTimeout = timeoutValue;
+            }
+        }
+        
         myLogicalConnection = spiMCF.getJdbcObjectsFactory().getConnection(
                 actualConnection, this, cxReqInfo, spiMCF.isStatementWrappingEnabled(),
                 sqlTraceDelegator);
@@ -469,25 +479,15 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
      * @throws ResourceException
      */
     private void resetConnectionProperties(ManagedConnectionFactory spiMCF) throws ResourceException {
-        /**
-         * The following code in the if statement first checks if this ManagedConnection
-         * is clean or not. If it is, it resets the transaction isolation level to what
-         * it was when it was when this ManagedConnection was cleaned up depending on the
-         * ConnectionRequestInfo passed.
-         */
         if (isClean) {
+
+            // If the ManagedConnection is clean, reset the transaction isolation level to what
+            // it was when it was when this ManagedConnection was cleaned up depending on the
+            // ConnectionRequestInfo passed.
             spiMCF.resetIsolation(this, lastTransactionIsolationLevel);
-        }
 
-        // reset the autocommit value of the connection if application has modified it.
-        resetAutoCommit();
-
-        String statementTimeoutString = spiMCF.getStatementTimeout();
-        if (statementTimeoutString != null) {
-            int timeoutValue = Integer.valueOf(statementTimeoutString);
-            if (timeoutValue >= 0) {
-                statementTimeout = timeoutValue;
-            }
+            // reset the autocommit value of the connection if application has modified it.
+            resetAutoCommit();
         }
     }
 
