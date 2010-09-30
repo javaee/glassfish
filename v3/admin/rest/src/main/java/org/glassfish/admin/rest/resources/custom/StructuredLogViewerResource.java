@@ -37,11 +37,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.rest.resources.custom;
 
 import com.sun.enterprise.server.logging.logviewer.backend.LogFilter;
-import org.glassfish.admin.rest.RestService;
+import com.sun.jersey.api.core.ResourceContext;
 import org.glassfish.internal.api.LogManager;
 
 import javax.management.Attribute;
@@ -56,6 +55,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import org.glassfish.admin.rest.logviewer.LogRecord;
 import org.jvnet.hk2.component.Habitat;
@@ -70,6 +70,15 @@ public class StructuredLogViewerResource {
 
     @Context
     protected Habitat habitat;
+    @Context
+    protected ResourceContext resourceContext;
+
+    @Path("lognames/")
+    public LogNamesResource getLogNamesResource() {
+        LogNamesResource resource = resourceContext.getResource(LogNamesResource.class);
+        return resource;
+    }
+
     @GET
     @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
     public String getJson(
@@ -120,7 +129,7 @@ public class StructuredLogViewerResource {
                 maximumNumberOfResults,
                 fromTime,
                 toTime,
-                logLevel, onlyLevel, anySearch, listOfModules, instanceName, "xml",logFileRefresh);
+                logLevel, onlyLevel, anySearch, listOfModules, instanceName, "xml", logFileRefresh);
 
     }
 
