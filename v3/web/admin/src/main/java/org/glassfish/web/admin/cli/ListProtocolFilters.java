@@ -76,7 +76,7 @@ import org.jvnet.hk2.component.PerLookup;
 public class ListProtocolFilters implements AdminCommand {
     final private static LocalStringManagerImpl localStrings
         = new LocalStringManagerImpl(ListProtocolFilters.class);
-    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
     String target;
     @Param(name = "protocol", primary=true)
     String protocolName;

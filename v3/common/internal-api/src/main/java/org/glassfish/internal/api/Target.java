@@ -136,7 +136,7 @@ public class Target {
 
     /**
      * Given an instance that is part of a cluster, returns the Cluster element of the cluster to which the
-     * given instance belons
+     * given instance belongs
      * @param targetName name of target
      * @return Cluster element to which this instance below
      */

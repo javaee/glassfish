@@ -77,8 +77,11 @@ public class ListHttpListeners implements AdminCommand {
     final private static LocalStringManagerImpl localStrings
         = new LocalStringManagerImpl(ListHttpListeners.class);
 
-    @Param(name = "target", primary = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
     String target;
+
+    @Param(name = "verbose", optional = true, defaultValue = "false")
+    String verbose;
 
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
@@ -106,8 +109,13 @@ public class ListHttpListeners implements AdminCommand {
         List<NetworkListener> list = config.getNetworkConfig().getNetworkListeners().getNetworkListener();
         for (NetworkListener listener : list) {
             if (listener.findHttpProtocol().getHttp() != null) {
+                StringBuilder builder = new StringBuilder(listener.getName());
+                if(Boolean.valueOf(verbose)) {
+                    builder.append(":")
+                        .append(listener.getPort());
+                }
                 report.getTopMessagePart()
-                    .addChild().setMessage(listener.getName());
+                    .addChild().setMessage(builder.toString());
             }
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
