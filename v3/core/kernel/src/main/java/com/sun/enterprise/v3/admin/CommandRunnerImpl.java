@@ -744,7 +744,15 @@ public class CommandRunnerImpl implements CommandRunner {
     private static String encodeManPage(InputStream in) {
         if (in == null)
             return null;
-        return encodeManPage(new BufferedReader(new InputStreamReader(in)));
+        BufferedReader r = null;
+        try {
+            // man pages are always utf-8
+            r = new BufferedReader(new InputStreamReader(in, "utf-8"));
+        } catch (UnsupportedEncodingException ex) {
+            // should never happen
+            r = new BufferedReader(new InputStreamReader(in));
+        }
+        return encodeManPage(r);
     }
 
     private static String encodeManPage(BufferedReader br) {

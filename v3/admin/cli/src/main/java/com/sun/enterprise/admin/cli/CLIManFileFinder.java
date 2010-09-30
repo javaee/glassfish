@@ -44,6 +44,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -137,7 +138,15 @@ public class CLIManFileFinder {
             s = classLoader.getResourceAsStream((String)it.next());
         }
  
-        return (s == null ? (InputStreamReader)null : new InputStreamReader(s));
+        if (s == null)
+            return null;
+        Reader r;
+        try {
+            r = new InputStreamReader(s, "utf-8");
+        } catch (UnsupportedEncodingException ex) {
+            r = new InputStreamReader(s);
+        }
+        return r;
     }
 
     private static Iterator getPossibleLocations(final String cmdName,
