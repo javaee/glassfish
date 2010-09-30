@@ -2541,13 +2541,15 @@ public final class StatefulSessionContainer
     protected void doConcreteContainerShutdown(boolean appBeingUndeployed) {
 
         cancelAllTimerTasks();
-
-        if( appBeingUndeployed ) {
+        if( appBeingUndeployed && (ejbDescriptor.getApplication().getKeepStateResolved() == false)) {
 
             removeBeansOnUndeploy();
 
         } else {
-
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "StatefulSessionContainer.doConcreteContainerShutdown() called with --keepstate="
+                    + ejbDescriptor.getApplication().getKeepStateResolved());
+            }
             passivateBeansOnShutdown();
 
         }
