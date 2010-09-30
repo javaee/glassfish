@@ -479,7 +479,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         }
 
         String tranIsolation = spec.getDetail(DataSourceSpec.TRANSACTIONISOLATION);
-        if (tranIsolation != null && tranIsolation.equals("") == false) {
+        if (tranIsolation != null && !tranIsolation.equals("")) {
             int tranIsolationInt = getTransactionIsolationInt(tranIsolation);
             try {
                 con.setTransactionIsolation(tranIsolationInt);
@@ -513,10 +513,10 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         }
 
         String tranIsolation = spec.getDetail(DataSourceSpec.TRANSACTIONISOLATION);
-        if (tranIsolation != null && tranIsolation.equals("") == false) {
+        if (tranIsolation != null && !tranIsolation.equals("")) {
             String guaranteeIsolationLevel = spec.getDetail(DataSourceSpec.GUARANTEEISOLATIONLEVEL);
 
-            if (guaranteeIsolationLevel != null && guaranteeIsolationLevel.equals("") == false) {
+            if (guaranteeIsolationLevel != null && !guaranteeIsolationLevel.equals("")) {
                 boolean guarantee = Boolean.valueOf(guaranteeIsolationLevel.toLowerCase());
 
                 if (guarantee) {
