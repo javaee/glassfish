@@ -78,8 +78,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.handlers.MonitoringHandlers;
 import org.glassfish.admingui.common.handlers.RestApiHandlers;
@@ -492,26 +490,6 @@ public class WoodstockHandler {
         // Add Menu Options.
         jumpMenuOptions = (Option[]) menuList.toArray(new Option[menuList.size()]);
         handlerCtx.setOutputValue("ComponentList", jumpMenuOptions);
-    }
-
-    private static List getEJBComponentsMenuOptions(String appname, String ejbtype) {
-        List menuList = new ArrayList();
-        List ebs = MonitoringHandlers.getAllEjbComps(appname, ejbtype, "");
-        if (!ebs.isEmpty()) {
-            ListIterator li = ebs.listIterator();
-            while (li.hasNext() && li.hasNext()) {
-                List comps = (List) li.next();
-                OptionGroup menuOptions = getMenuOptions(comps, (String) comps.get(0), "", true);
-                menuList.add(menuOptions);
-                List ebsMethods = MonitoringHandlers.getEjbComps(appname, "bean-method-mon", (String) comps.get(0));
-                if (!ebsMethods.isEmpty()) {
-                    OptionGroup bmmenuOptions = getMenuOptions(ebsMethods, "bean-methods", (String) comps.get(0), true);
-                    menuList.add(bmmenuOptions);
-                }
-            }
-        }
-        return menuList;
-
     }
     
     private static List getEJBComponentMenuOptions(String appname, String modulename, String compName, String monitorURL, HandlerContext handlerCtx) {

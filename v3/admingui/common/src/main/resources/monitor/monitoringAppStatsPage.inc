@@ -47,7 +47,7 @@
         gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/applications/application" result="#{pageSession.tmpList}");
         removeListElement(list="#{pageSession.tmpList}" name="list-sub-components" finalList="#{pageSession.tmpList}");
         gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/http-service/virtual-server" result="#{pageSession.vsList}");
-        getProxyNamesByType(type="login-mon" result="#{pageSession.loginList}" firstItem="#{pageSession.firstLogin}");
+        //getProxyNamesByType(type="login-mon" result="#{pageSession.loginList}" firstItem="#{pageSession.firstLogin}");
         addToMonitorList(oldList="#{pageSession.loginList}", newList="#{pageSession.tmpList}"  result="#{pageSession.appList}");
         populateApplicationsMonitorDropDown(AppsList="#{appList}", MonitorList=>$attribute{monitorList} FirstItem=>$attribute{firstVal});
         if(!#{viewVal}) {
@@ -72,10 +72,22 @@
                 result="#{requestScope.result}" );
             setPageSessionAttribute(key="propsMap" value="#{requestScope.result.data.properties}");
         }
-        
-        getWebStatsUrl(app="#{appFullName}", compVal="#{cVal}", monitorURL="#{pageSession.monitorURL}", vsList="#{pageSession.vsList}", moduleProps="#{pageSession.propsMap}", webServletUrl=>$attribute{webServletUrl}, webUrl=>$attribute{webUrl}, webServletType=>$attribute{webServletType}, webType=>$attribute{webType});
-        getNameforMbean(appName="#{viewVal}", compVal="#{cVal}", end="true", mbeanName=>$attribute{mbName});
-        getStatsUrl(app="#{appFullName}", compVal="#{cVal}", monitorURL="#{pageSession.monitorURL}", moduleProps="#{pageSession.propsMap}", statUrl=>$attribute{statUrl}, statType=>$attribute{statType});
+
+        getWebStatsUrl(app="#{appFullName}", 
+            compVal="#{cVal}",
+            monitorURL="#{pageSession.monitorURL}",
+            vsList="#{pageSession.vsList}",
+            moduleProps="#{pageSession.propsMap}",
+            webServletUrl=>$attribute{webServletUrl},
+            webUrl=>$attribute{webUrl},
+            webServletType=>$attribute{webServletType},
+            webType=>$attribute{webType});
+        getStatsUrl(app="#{appFullName}",
+            compVal="#{cVal}",
+            monitorURL="#{pageSession.monitorURL}",
+            moduleProps="#{pageSession.propsMap}",
+            statUrl=>$attribute{statUrl},
+            statType=>$attribute{statType});
         calculateHelpUrl(pluginId="#{pluginId}", helpKey: "$resource{help_web.monitorApps}", url="#{olhLink}");
     />
 </event>    
@@ -157,13 +169,11 @@
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableId});
         />
- <sun:tableRowGroup id="jerseyStats" rendered="#{hasStatsJersey}" data={"$attribute{jerseyStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.jAppStatistics} : #{viewVal}"
+    <sun:tableRowGroup id="jerseyStats" rendered="#{hasStatsJersey}" data={"$attribute{jerseyStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.jAppStatistics} : #{viewVal}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getNameforMbeanByType(appName="applications/#{viewVal}", compVal="jersey", end="false", type="jersey-application-mon", mbeanName=>$attribute{jMbName});
-            getStatsbyTypeName(type="jersey-application-mon" name="#{jMbName}", result=>$attribute{jerseyStatsList} hasStats=>$attribute{hasStatsJersey});
-
-         />
+            getStats(endpoint="#{sessionScope.MONITOR_URL}/server/applications/#{viewVal}/jersey/resources/resource-0", statType="jersey", result=>$attribute{jerseyStatsList}  hasStats=>$attribute{hasStatsJersey});
+        />
 
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
@@ -194,16 +204,7 @@
 
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
-    </sun:tableRowGroup>
-    <sun:tableRowGroup id="ejbAppStats" rendered="#{hasStatsEJBApp}" data={"$attribute{EJBAppStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.EJB} : #{viewVal}/#{cVal} "
-        groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
-        <!beforeCreate
-            getStatsbyTypeName(type="ejb-application-mon" name="#{mbName}", result=>$attribute{EJBAppStatsList}  hasStats=>$attribute{hasStatsEJBApp});
-         />
-
-#include "/common/monitor/monitoringTableRows.inc"
-        "<br/>
-    </sun:tableRowGroup>
+    </sun:tableRowGroup>    
     <sun:tableRowGroup id="sfullStats" rendered="#{hasStatsSfull}" data={"$attribute{SfullStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.Sfull} : #{viewVal}/#{cVal} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
         <!beforeCreate
@@ -257,31 +258,7 @@
 
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
-    </sun:tableRowGroup>
-    <sun:tableRowGroup id="jRubyRuntimeStats" rendered="#{hasStatsJRT}" data={"$attribute{jRubyRuntimeStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.jRubyStatisticsRuntime} : #{viewVal} "
-        groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
-        <!beforeCreate
-            getStatsbyTypeName(type="jruby-runtime-pool-mon" name="containers/jruby/applications/#{viewVal}/runtime-pool", result=>$attribute{jRubyRuntimeStatsList}  hasStats=>$attribute{hasStatsJRT});
-         />
-#include "/common/monitor/monitoringTableRows.inc"
-        "<br/>
-    </sun:tableRowGroup>
-    <sun:tableRowGroup id="jRubyHttpStats" rendered="#{hasStatsJHTTP}" data={"$attribute{jRubyHttpStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.jRubyStatisticsHttp} : #{viewVal} "
-        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
-        <!beforeCreate
-            getStatsbyTypeName(type="jruby-http-mon" name="containers/jruby/applications/#{viewVal}/http", result=>$attribute{jRubyHttpStatsList}  hasStats=>$attribute{hasStatsJHTTP});
-         />
-#include "/common/monitor/monitoringTableRows.inc"
-        "<br/>
-    </sun:tableRowGroup>
-    <sun:tableRowGroup id="jRubyStats" rendered="#{hasStatsJPS}" data={"$attribute{jRubyStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.jRubyProbeStatistics}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
-        <!beforeCreate
-            getStatsbyTypeName(type="jruby-application-mon" name="containers/jruby/applications/#{viewVal}", result=>$attribute{jRubyStatsList}  hasStats=>$attribute{hasStatsJPS});
-         />
-#include "/common/monitor/monitoringTableRows.inc"
-        "<br/>
-    </sun:tableRowGroup>
+    </sun:tableRowGroup>    
     <sun:tableRowGroup id="wmStats" rendered="#{hasStatsWMS}" data={"$attribute{wmStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.WorkManagementStats} : #{viewVal}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
         <!beforeCreate
@@ -291,17 +268,17 @@
                         
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
-    </sun:tableRowGroup>       
-        <sun:tableRowGroup id="loginStats" rendered="#{hasStatsLogin}" data={"$attribute{loginStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.LoginStats} : #{viewVal}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
-        <!beforeCreate
-            getStatsbyTypeName(type="login-mon" name="webintegration/#{viewVal}", result=>$attribute{loginStatsList}  hasStats=>$attribute{hasStatsLogin});
-
-         />
-
-#include "/common/monitor/monitoringTableRows.inc"
-        "<br/>
     </sun:tableRowGroup>
+    //Refer the issue #13647 for login stats.
+    // <sun:tableRowGroup id="loginStats" rendered="#{hasStatsLogin}" data={"$attribute{loginStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.LoginStats} : #{viewVal}"
+    //    groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
+    //    <!beforeCreate
+    //        getStatsbyTypeName(type="login-mon" name="webintegration/#{viewVal}", result=>$attribute{loginStatsList}  hasStats=>$attribute{hasStatsLogin});
+    //     />
+
+<!--#include "/common/monitor/monitoringTableRows.inc"
+        "<br/>
+    </sun:tableRowGroup> -->
 
     <sun:tableRowGroup id="servletsInstance" rendered="#{hasStatsSI}" data={"$attribute{servletInstanceList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.servletInstanceStatistics} : #{viewVal}/#{cVal}"
         groupToggleButton="$boolean{true}" collapsed="#{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
