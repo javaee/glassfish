@@ -48,6 +48,7 @@ import java.util.logging.Logger;
 import org.glassfish.admin.rest.generator.ASMResourcesGenerator;
 import org.glassfish.admin.rest.generator.ResourcesGenerator;
 import org.glassfish.admin.rest.resources.GeneratorResource;
+import org.glassfish.admin.rest.resources.StatusGenerator;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.ConfigModel;
@@ -85,6 +86,7 @@ public class RestManagementAdapter extends RestAdapter {
 
         // uncomment if you need to run the generator:
         r.add(GeneratorResource.class);
+        r.add(StatusGenerator.class);
         //r.add(ActionReportResource.class);
 
         r.add(domainResourceClass);
