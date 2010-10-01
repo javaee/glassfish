@@ -104,7 +104,7 @@
         </sun:property>
 
         <sun:property id="debugProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njmail.javaMail.Debug}">
-            <sun:checkbox selected="#{pageSession.valueMap['debug']}" helpText="$resource{i18njmail.javaMail.DebugHelp}" label="$resource{i18n.common.Enabled}" />  
+            <sun:checkbox selected="#{pageSession.valueMap['debug']}" helpText="$resource{i18njmail.javaMail.DebugHelp}" label="$resource{i18n.common.Enabled}" selectedValue="true" />
        </sun:property>   
         "<br /><br />
     </sun:propertySheetSection>
