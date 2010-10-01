@@ -113,6 +113,7 @@ public class PropertiesBagResource {
         String resultType = ResourceUtil.getResultType(requestHeaders);
         RestActionReporter ar = new RestActionReporter();
         ar.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+        ar.setActionDescription("Property");
         List properties = new ArrayList();
 
         for (Dom child : entities) {
