@@ -108,7 +108,11 @@
     <sun:property id="http-protocol"  rendered="#{pageSession.showHttp}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="HTTP Protocol: " >
          <sun:staticText id="http-protocol" text="#{pageSession.httpProtocolName}" />
          <!beforeCreate
-            findHttpProtocol(listenerName="#{pageSession.Name}" httpProtocolName="#{pageSession.httpProtocolName}" sameAsProtocol="#{pageSession.sameAsProtocol}" )
+            gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/network-listeners/network-listener/#{pageSession.Name}/find-http-protocol.json" method="get" result="#{pageSession.httpProtocol}");
+            setPageSessionAttribute(key="httpProtocolName" value="#{pageSession.httpProtocol.data.properties.protocol}");
+            setPageSessionAttribute(key="sameAsProtocol" value="#{false}");
+            if ("#{pageSession.httpProtocolName}=#{pageSession.valueMap['protocol']}")
+                setPageSessionAttribute(key="sameAsProtocol" value="#{true}");
             if(! #{pageSession.sameAsProtocol}){
                 setPageSessionAttribute(key="showHttp" value="#{true}")
                 setPageSessionAttribute(key="protocolName" value="#{pageSession.httpProtocolName}")
