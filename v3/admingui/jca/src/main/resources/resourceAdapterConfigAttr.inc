@@ -57,7 +57,7 @@
                 <!beforeCreate
                      //REST - TO DO
                      getApplicationBySnifferType(type="connector"  result="#{pageSession.connectorList}")
-                     listAdd(list="#{pageSession.connectorList}" value="jmsra")
+                     listAdd(list="#{pageSession.connectorList}" value="jmsra" index="$int{0}")
                 />
                 <!command
                     setAttribute(key="click" value="$this{component}");

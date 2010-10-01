@@ -65,6 +65,7 @@
         createMap(result="#{pageSession.attrsMap}");
         if (#{pageSession.Name}) {
             mapPut(map="#{pageSession.attrsMap}" key="rarName" value="#{pageSession.Name}");
+            mapPut(map="#{pageSession.valueMap}" key="name" value="#{name}");
         }
         if (!#{pageSession.Name}) {
             mapPut(map="#{pageSession.attrsMap}" key="rarName" value="jmsra");
