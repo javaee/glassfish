@@ -119,8 +119,14 @@ public class InhabitantsParser {
     public void parse(Iterable<InhabitantParser> scanner, Holder<ClassLoader> classLoader) throws IOException {
         if (scanner==null)
             return;
+        
         for( InhabitantParser inhabitantParser : scanner) {
             String typeName = inhabitantParser.getImplName();
+            
+            if (isFilteredInhabitant(inhabitantParser)) {
+                continue;    
+            }
+
             if(replacements.containsKey(typeName)) {
                 // create a replacement instead
                 Class<?> target = replacements.get(typeName);
@@ -132,6 +138,7 @@ public class InhabitantsParser {
                     habitat.addIndex(i,typeName,null);
                 }
             } else {
+                
                 Set<String> indicies = new HashSet<String>();
                 Iterator<String> iter = inhabitantParser.getIndexes().iterator();
                 while (iter.hasNext()) {
@@ -144,6 +151,16 @@ public class InhabitantsParser {
                 add(i, inhabitantParser);
             }
         }
+    }
+
+    /**
+     * Returns true if this inhabitant should be ignored.
+     *  
+     * @param inhabitantParser
+     * @return
+     */
+    boolean isFilteredInhabitant(InhabitantParser inhabitantParser) {
+        return false;
     }
 
     /**
