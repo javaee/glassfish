@@ -49,7 +49,7 @@
     setResourceBundle(key="help_ejb" bundle="org.glassfish.ejb.admingui.Helplinks");
     setResourceBundle(key="i18n_ejbLite" bundle="org.glassfish.ejb-lite.admingui.Strings");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_ejb.headings.ejbMdbSettings}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_ejb.headings.ejbTimerSettings}" >
 <!define name="content">
 <event>
     <!beforeCreate
