@@ -93,6 +93,10 @@ public class NotDuplicateTargetNameValidator implements
 
         String name = bean.getName();
 
+        if (domain == null) {
+            return true;
+        }
+
         if ((checkCluster && domain.getClusterNamed(name) != null) ||
             (checkConfig  && domain.getConfigNamed(name) != null) ||
             (checkNode    && domain.getNodeNamed(name) != null) ||
