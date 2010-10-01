@@ -67,6 +67,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
      * Generate REST resource for a single config model.
      */
     public void generateSingle(ConfigModel model, DomDocument domDocument) {
+        configModelVisited(model);
         //processRedirectsAnnotation(model); // TODO need to extract info from RestRedirect Annotations
 
         String serverConfigName = ResourceUtil.getUnqualifiedTypeName(model.targetTypeName);
@@ -130,6 +131,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
     }
 
     public void generateList(ConfigModel model, DomDocument domDocument)  {
+        configModelVisited(model);
 
         String serverConfigName = ResourceUtil.getUnqualifiedTypeName(model.targetTypeName);
         String beanName = getBeanName(serverConfigName);
@@ -150,6 +152,11 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
 
         generateSingle(model, domDocument);
 
+    }
+    /* empty method to be overwritten to get a callback when a model is visited.
+     */
+    public void configModelVisited(ConfigModel model){
+        
     }
 
     private void generateCollectionLeafResource(String beanName) {
