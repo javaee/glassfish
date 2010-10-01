@@ -121,11 +121,12 @@ public class InhabitantsParser {
             return;
         
         for( InhabitantParser inhabitantParser : scanner) {
-            String typeName = inhabitantParser.getImplName();
             
             if (isFilteredInhabitant(inhabitantParser)) {
                 continue;    
             }
+
+            String typeName = inhabitantParser.getImplName();
 
             if(replacements.containsKey(typeName)) {
                 // create a replacement instead
