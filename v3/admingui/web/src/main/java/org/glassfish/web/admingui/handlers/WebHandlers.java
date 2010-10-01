@@ -51,8 +51,6 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import java.util.HashMap;
 import java.util.List;
 import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.admin.amx.intf.config.grizzly.NetworkConfig;
-import org.glassfish.admin.amx.intf.config.grizzly.NetworkListener;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.V3AMX;
 
@@ -81,24 +79,6 @@ public class WebHandlers {
         String ports = (sb.length() == 0) ? "" : sb.substring(0, sb.length()-2);
         handlerCtx.setOutputValue("ports", ports);
     }
-
-     @Handler(id="findHttpProtocol",
-        input={
-            @HandlerInput(name="listenerName", type=String.class)},
-        output={
-            @HandlerOutput(name="httpProtocolName", type=String.class),
-            @HandlerOutput(name="sameAsProtocol", type=Boolean.class)}
-     )
-    public static void findHttpProtocol(HandlerContext handlerCtx){
-        String listenerName = (String)handlerCtx.getInputValue("listenerName");
-        Map<String, NetworkListener> nls = V3AMX.getInstance().getConfig("server-config").getNetworkConfig().as(NetworkConfig.class).getNetworkListeners().getNetworkListener();
-        NetworkListener listener = nls.get(listenerName);
-        String http = listener.findHttpProtocol().getName();
-        handlerCtx.setOutputValue("httpProtocolName", http);
-        handlerCtx.setOutputValue("sameAsProtocol", http.equals(listener.findProtocol().getName()));
-     }
-
-
 
     private static void putA(Map nMap, Map attrMap, String key){
         String val = (String) attrMap.get(key);
