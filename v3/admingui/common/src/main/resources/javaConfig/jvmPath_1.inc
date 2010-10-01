@@ -53,10 +53,6 @@
         <!beforeCreate
             setSessionAttribute(key="javaConfigTab" value="pathSettings");
             getRequestValue(key="configName" value=>$page{configName} default="server-config");
-	    // FIXME: I don't think the following 2 lines are used. -Ken
-            setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config],type=java-config");
-            setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs,type=config,name=server-config");
-            
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
             setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/java-config");
             setPageSessionAttribute(key="rest-api" value="true");
