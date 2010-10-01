@@ -1,3 +1,4 @@
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -57,13 +58,34 @@ import java.text.*;
  */
 public class ScheduleHandlers {
 
+    private static final String[] DAYS_OF_WEEK ={"*", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat",};
+    private static final String[] MONTHS ={"*", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+    private static final String[] DAYS_OF_MONTH = new String[33];
+    private static final Map<String, String[]> values = new HashMap();
+
+    private static final String DAY_OF_WEEK="dayOfWeek", DAY_OF_MONTH="dayOfMonth", MONTH="month";
+
+    static {
+        DAYS_OF_MONTH[0] = "*";
+        int i = 1;
+        for (; i <= 31; i++) {
+            DAYS_OF_MONTH[i] = String.valueOf(i);
+        }
+        DAYS_OF_MONTH[i] = "last";
+
+        values.put(DAY_OF_WEEK, DAYS_OF_WEEK);
+        values.put(MONTH, MONTHS);
+        values.put(DAY_OF_MONTH, DAYS_OF_MONTH);
+    }
+
     @Handler(id = "gf.getScheduleData",
         input = {
             @HandlerInput(name = "scheduleName", type = String.class)},
         output = {
-            @HandlerOutput(name = "dayOfWeek", type = java.util.Map.class),
-            @HandlerOutput(name = "dayOfMonth", type = java.util.Map.class),
-            @HandlerOutput(name = "month", type = java.util.Map.class)})
+            @HandlerOutput(name = DAY_OF_WEEK, type = java.util.Map.class),
+            @HandlerOutput(name = DAY_OF_MONTH, type = java.util.Map.class),
+            @HandlerOutput(name = MONTH, type = java.util.Map.class)})
+
 
     public static void getScheduleData(HandlerContext handlerCtx) {
         String scheduleName = (String) handlerCtx.getInputValue("scheduleName");
@@ -75,37 +97,56 @@ public class ScheduleHandlers {
 
             Map attribs = RestApiHandlers.getAttributesMap(endPoint);
 
-            dayOfWeek = (String)attribs.get("dayOfWeek");
-            dayOfMonth = (String)attribs.get("dayOfMonth");
-            month = (String)attribs.get("month");
+            dayOfWeek = (String)attribs.get(DAY_OF_WEEK);
+            dayOfMonth = (String)attribs.get(DAY_OF_MONTH);
+            month = (String)attribs.get(MONTH);
         }
-        Map dayOfWeekMap = getDataMap(dayOfWeek);
-        Map dayOfMonthMap = getDataMap(dayOfMonth);
-        Map monthMap = getDataMap(month);
+        Map dayOfWeekMap = getDataMap(dayOfWeek, DAY_OF_WEEK);
+        Map dayOfMonthMap = getDataMap(dayOfMonth, DAY_OF_MONTH);
+        Map monthMap = getDataMap(month, MONTH);
 
-        handlerCtx.setOutputValue("dayOfWeek", dayOfWeekMap);
-        handlerCtx.setOutputValue("dayOfMonth", dayOfMonthMap);
-        handlerCtx.setOutputValue("month", monthMap);
+        handlerCtx.setOutputValue(DAY_OF_WEEK, dayOfWeekMap);
+        handlerCtx.setOutputValue(DAY_OF_MONTH, dayOfMonthMap);
+        handlerCtx.setOutputValue(MONTH, monthMap);
 
     }
 
-    private static Map getDataMap(String data) {
+    private static int getData(String dataItem, String type) {
+        String[] dataValues = values.get(type);
+        try {
+            int i = Integer.valueOf(dataItem).intValue();
+            if (i >=0 && i < dataValues.length)
+                return i;
+        } catch (NumberFormatException e) {
+        }
+        for (int i = 0; i < dataValues.length; i++) {
+            if (dataValues[i].equalsIgnoreCase(dataItem))
+                return i;
+        }
+        return -1;
+    }
+
+    private static Map getDataMap(String data, String type) {
         List<String> dataList = GuiUtil.parseStringList(data, ",");
         Map dataMap = new HashMap();
         for (String dataItem : dataList) {
-            dataMap.put(dataItem, Boolean.TRUE);
+            int value = getData(dataItem, type);
+            if (value < 0) continue;
+            dataMap.put(dataItem, String.valueOf(value));
         }
         return dataMap;
     }
+
     @Handler(id = "gf.convertBooleanMapToString",
         input = {
             @HandlerInput(name = "map", type = java.util.Map.class, required=true),
+            @HandlerInput(name = "type", type = String.class, required=true),
             @HandlerInput(name = "delimiter", type = String.class)
         },
         output = {
             @HandlerOutput(name = "str", type = String.class)
         })
-
+/*
     public static void convertBooleanMapToString(HandlerContext handlerCtx) {
         Map<String, Boolean> map = (Map) handlerCtx.getInputValue("map");
         String delimiter = (String)handlerCtx.getInputValue("delimiter");
@@ -114,8 +155,12 @@ public class ScheduleHandlers {
         String str = "";
 
         for (String key : map.keySet()) {
-            Boolean val = map.get(key);
-            if (val != null && val.equals(Boolean.TRUE)) {
+            Object o = map.get(key);
+            if (o == null)
+                continue;
+            Boolean val = Boolean.parseBoolean(o.toString());
+
+            if (val.equals(Boolean.TRUE)) {
                 if (key.equals("*")) {
                     str = "*";
                     break;
@@ -123,6 +168,41 @@ public class ScheduleHandlers {
                 if (str.length() > 0)
                     str = str + ",";
                 str = str + key;
+            }
+        }
+        if (str.length() == 0)
+            str = "*";
+        handlerCtx.setOutputValue("str", str);
+    }
+*/
+
+    public static void convertBooleanMapToString(HandlerContext handlerCtx) {
+        Map<String, Boolean> map = (Map) handlerCtx.getInputValue("map");
+        String delimiter = (String)handlerCtx.getInputValue("delimiter");
+        String type = (String)handlerCtx.getInputValue("type");
+        
+        if (delimiter == null)
+            delimiter =",";
+        String str = "";
+        String[] data = values.get(type);
+        for (String key : map.keySet()) {
+            Object o = map.get(key);
+            if (o == null)
+                continue;
+            if (key.equals("*")) {
+                str = "*";
+                break;
+            }
+            try {
+                int val = Integer.valueOf(o.toString()).intValue();
+
+                if (val >= 0 && val < data.length) {
+                    if (str.length() > 0)
+                        str = str + ",";
+                    str = str + data[val];
+                }
+            } catch(Exception ex) {
+                ex.printStackTrace();
             }
         }
         if (str.length() == 0)
