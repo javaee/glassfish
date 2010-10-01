@@ -420,7 +420,6 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                                 value);
                     }
                 } else if (name != null ) {
-                    try {
                         if (logger.isLoggable(Level.CONFIG)) {
                             logger.log(Level.CONFIG,
                                 "processing group-management-service property name=" +
@@ -429,16 +428,12 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                         if (name.startsWith(GMS_PROPERTY_PREFIX)) {
                             name = name.replaceFirst(GMS_PROPERTY_PREFIX_REGEXP, "");
                         }
-                        // next line validates that name is a valid grizzly property.
-                        GrizzlyConfigConstants key = GrizzlyConfigConstants.valueOf(name);
                         configProps.put(name, value);
-                    } catch (IllegalArgumentException iae) {
-                        logger.log(Level.WARNING,
-                            "gmsexception.ignoring.property",
-                            new Object [] {
-                                name, value, iae.getLocalizedMessage()
-                            });
-                    }
+                        if (! validateGMSProperty(name)) {
+                            logger.log(Level.WARNING, "gmsexception.ignoring.property",
+                                           new Object [] {name, value, ""} );
+                        }
+
                 }
             }
         }
@@ -461,7 +456,6 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                             value);
                     }
                 } else if (name != null ) {
-                    try {
                         if (name.startsWith(GMS_PROPERTY_PREFIX)) {
                             name = name.replaceFirst(GMS_PROPERTY_PREFIX_REGEXP, "");
                         }
@@ -476,19 +470,31 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                             configProps.put(GrizzlyConfigConstants.TCPENDPORT.toString(), value);
                          } else {
                             // handle normal case.  one to one mapping.
-                            GrizzlyConfigConstants key = GrizzlyConfigConstants.valueOf(name);
                             configProps.put(name, value);
+                            logger.log(Level.CONFIG,
+                        "processing cluster property name=" + name +
+                        " value= " + value);
+                            if (! validateGMSProperty(name)) {
+                                logger.log(Level.WARNING, "gmsexception.cluster.property.error",
+                                           new Object [] {name, value, ""} );
+                            }
                         }
-                    } catch (Throwable t) {
-                        logger.log(Level.WARNING,
-                            "gmsexception.cluster.property.error",
-                            new Object [] {
-                                name, value, t.getLocalizedMessage()
-                            });
-                    }
                 }
             }
         }
+    }
+
+    private boolean validateGMSProperty(String propertyName) {
+        boolean result = false;
+        try {
+            GrizzlyConfigConstants key = GrizzlyConfigConstants.valueOf(propertyName);
+            result = true;
+        } catch (Throwable t) {}
+        try {
+            ServiceProviderConfigurationKeys key = ServiceProviderConfigurationKeys.valueOf(propertyName);
+            result = true;
+        } catch (Throwable t) {}
+        return result;
     }
 
     private void initializeGMS() throws GMSException{
@@ -503,12 +509,11 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
         printProps(configProps);
 
         String memberType = (String) configProps.get(MEMBERTYPE_STRING);
-
+        GMSLogDomain.getLogger(GMSLogDomain.GMS_LOGGER).setLevel(Level.CONFIG);
         gms = (GroupManagementService) GMSFactory.startGMSModule(instanceName, clusterName,
                 GroupManagementService.MemberType.valueOf(memberType), configProps);
         //remove GMSLogDomain.getLogger(GMSLogDomain.GMS_LOGGER).setLevel(gmsLogLevel);
         GMSFactory.setGMSEnabledState(clusterName, Boolean.TRUE);
-        GMSLogDomain.getLogger(GMSLogDomain.GMS_LOGGER).setLevel(Level.CONFIG);
         if (gms != null) {
             try {
                 registerJoinedAndReadyNotificationListener(this);
