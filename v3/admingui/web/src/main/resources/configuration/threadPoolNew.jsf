@@ -53,7 +53,6 @@
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/configuration/threadPools.jsf");
-        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=thread-pools");
         setPageSessionAttribute(key="childType" value="thread-pool");
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/thread-pools");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
