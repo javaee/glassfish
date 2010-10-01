@@ -124,7 +124,7 @@ public class CommandResourceMetaData {
             {"Domain", "restart-domain", "POST", "restart", "Restart"},
             {"Domain", "rotate-log", "POST", "rotate-log", "RotateLog"},
             {"Domain", "set-log-levels", "POST", "set-log-levels", "LogLevel"},
-            {"Domain", "stop-domain", "POST", "stop", "Stop"},
+            {"Domain", "stop-domain", "POST", "stop", "Stop"},          
             {"Domain", "uptime", "GET", "uptime", "Uptime"},
             {"Domain", "version", "GET", "version", "Version"},
             {"Domain", "_get-runtime-info", "GET", "get-runtime-info", "Get Runtime Info"},
