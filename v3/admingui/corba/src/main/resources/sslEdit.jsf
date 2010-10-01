@@ -60,7 +60,6 @@
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/iiop-service/iiop-listener/#{pageSession.Name}");
         setPageSessionAttribute(key="rest-api" value="true");
         setPageSessionAttribute(key="childType" value="ssl")
-        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/iiop-service/iiop-listener[#{pageSession.Name}],type=ssl");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
         setPageSessionAttribute(key="showCancelButton" value="#{true}" )
 #include "/common/shared/sslPrepare.inc"
