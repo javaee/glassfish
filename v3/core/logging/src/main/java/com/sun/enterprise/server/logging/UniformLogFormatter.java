@@ -285,7 +285,7 @@ public class UniformLogFormatter extends Formatter {
             if (logMessage == null) {
                 logMessage = "The log message is null.";
             }
-            if (logMessage.indexOf("{0}") >= 0) {
+            if (logMessage.indexOf("{0}") >= 0 && record.getParameters()!=null) {
                 // If we find {0} or {1} etc., in the message, then it's most
                 // likely finer level messages for Method Entry, Exit etc.,
                 logMessage = java.text.MessageFormat.format(
