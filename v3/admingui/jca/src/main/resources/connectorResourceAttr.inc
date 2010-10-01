@@ -57,7 +57,7 @@
         </sun:property> 
 
         <sun:property id="poolNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.poolName}"  helpText="$resource{i18njca.connectorResource.poolHelp}" >
-            <sun:dropDown id="PoolName" selected="#{pageSession.valueMap['poolName']}" labels="$pageSession{connectorResourceList}"  values="$pageSession{connectorResourceList}" >
+            <sun:dropDown id="PoolName" styleClass="required" selected="#{pageSession.valueMap['poolName']}" labels="$pageSession{connectorResourceList}"  values="$pageSession{connectorResourceList}" required="#{true}" >
             <!beforeCreate
                 gf.getChildrenNamesList(endpoint="#{pageSession.parentUrl}/connector-connection-pool", result="#{pageSession.connectorResourceList}");
             />
