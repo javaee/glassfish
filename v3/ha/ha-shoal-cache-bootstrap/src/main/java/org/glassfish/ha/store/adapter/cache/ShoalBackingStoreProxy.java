@@ -41,6 +41,8 @@
 package org.glassfish.ha.store.adapter.cache;
 
 import org.glassfish.api.Startup;
+import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.Events;
 import org.glassfish.ha.store.api.*;
 import org.glassfish.ha.store.spi.BackingStoreFactoryRegistry;
 import org.jvnet.hk2.annotations.Inject;
@@ -52,6 +54,7 @@ import java.io.Serializable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.api.event.EventListener;
 
 /**
  * @author Mahesh Kannan
@@ -62,6 +65,9 @@ public class ShoalBackingStoreProxy
 
     @Inject
     Habitat habitat;
+
+    @Inject
+    Events events;
 
     /**
      * Returns the lifecyle of the service. This service may not be needed
@@ -88,6 +94,16 @@ public class ShoalBackingStoreProxy
     public void postConstruct() {
         BackingStoreFactoryRegistry.register("replicated", this);
         Logger.getLogger(ShoalBackingStoreProxy.class.getName()).log(Level.INFO, "Registered SHOAL BackingStore Proxy with persistence-type = replicated");
+        EventListener glassfishEventListener = new EventListener() {
+            @Override
+            public void event(Event event) {
+                if (event.is(EventTypes.SERVER_SHUTDOWN)) {
+                    BackingStoreFactoryRegistry.unregister("replicated");
+                    Logger.getLogger(ShoalBackingStoreProxy.class.getName()).log(Level.INFO, "Unregistered SHOAL BackingStore Proxy with persistence-type = replicated");                                                            
+                } // else if (event.is(EventTypes.SERVER_READY)) {  }
+            }
+        };
+        events.register(glassfishEventListener);
     }
 
     @Override

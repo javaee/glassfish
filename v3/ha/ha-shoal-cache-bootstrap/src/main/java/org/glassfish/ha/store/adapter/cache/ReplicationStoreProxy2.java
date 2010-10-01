@@ -41,6 +41,9 @@
 package org.glassfish.ha.store.adapter.cache;
 
 import org.glassfish.api.Startup;
+import org.glassfish.api.event.EventListener;
+import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.Events;
 import org.glassfish.ha.store.api.*;
 import org.glassfish.ha.store.spi.BackingStoreFactoryRegistry;
 import org.jvnet.hk2.annotations.Inject;
@@ -62,6 +65,9 @@ public class ReplicationStoreProxy2
 
     @Inject
     Habitat habitat;
+
+    @Inject
+    Events events;
 
     /**
      * Returns the lifecyle of the service. This service may not be needed
@@ -88,6 +94,16 @@ public class ReplicationStoreProxy2
     public void postConstruct() {
         BackingStoreFactoryRegistry.register("replication", this);
         Logger.getLogger(ReplicationStoreProxy2.class.getName()).log(Level.INFO, "Registered ReplicationStoreProxy with persistence-type = replication");
+        EventListener glassfishEventListener = new EventListener() {
+            @Override
+            public void event(Event event) {
+                if (event.is(EventTypes.SERVER_SHUTDOWN)) {
+                    BackingStoreFactoryRegistry.unregister("replication");
+                    Logger.getLogger(ReplicationStoreProxy2.class.getName()).log(Level.INFO, "Unregistered ReplicationStoreProxy with persistence-type = replication");                                              
+                } //else if (event.is(EventTypes.SERVER_READY)) { }                                                                                        
+            }
+        };
+        events.register(glassfishEventListener);
     }
 
     @Override
