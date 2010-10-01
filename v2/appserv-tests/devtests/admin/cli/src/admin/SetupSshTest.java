@@ -160,6 +160,16 @@ public class SetupSshTest extends AdminBaseDevTest {
             report("setup-ssh-key", ret.returnValue);
         }
 
+        return res;
+    }       
+
+    private void testKeyGeneration() {
+
+        //will fail since default value of generatekey=false
+        report("setup-ssh-with-missing-key-pair", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, remoteHost));
+
+        report("setup-ssh-with-key-generation", asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", remoteHost));
+
         //invalid host name
         report("setup-ssh-password-failure", !asadmin("setup-ssh", SSH_USER_OPTION, "foo", remoteHost));
 
@@ -170,20 +180,10 @@ public class SetupSshTest extends AdminBaseDevTest {
         report("setup-ssh-invalid-public-keyfile", !asadmin("setup-ssh", "--sshpublickeyfile", "foo", remoteHost));
 
         //without ssh password
-        //report("setup-ssh-without-password", !asadmin("setup-ssh", remoteHost));        
+        //report("setup-ssh-without-password", !asadmin("setup-ssh", remoteHost));
 
         //should succeed second time as well
         report("setup-ssh-with-password", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, remoteHost));
-
-        return res;
-    }       
-
-    private void testKeyGeneration() {
-
-        //will fail since default value of generatekey=false
-        report("setup-ssh-with-missing-key-pair", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, remoteHost));
-
-        report("setup-ssh-with-key-generation", asadmin("setup-ssh", SSH_USER_OPTION, sshUser, "--generatekey", remoteHost));
 
     }
 
