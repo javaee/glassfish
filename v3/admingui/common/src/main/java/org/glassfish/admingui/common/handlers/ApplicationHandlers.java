@@ -142,87 +142,92 @@ public class ApplicationHandlers {
     @Handler(id = "getSubComponents",
         input = {
             @HandlerInput(name = "appName", type = String.class, required = true),
-            @HandlerInput(name = "appType", type = String.class, required = true),
             @HandlerInput(name = "moduleList", type = List.class, required = true)},
         output = {
             @HandlerOutput(name = "result", type = java.util.List.class)})
     public static void getSubComponents(HandlerContext handlerCtx) {
         List result = new ArrayList();
-        String appName = (String) handlerCtx.getInputValue("appName");
-        String appType = (String) handlerCtx.getInputValue("appType");
-        List<String> modules = (List) handlerCtx.getInputValue("moduleList");
+        try{
+            String appName = (String) handlerCtx.getInputValue("appName");
+            String encodedAppName = URLEncoder.encode(appName, "UTF-8");
+            List<String> modules = (List) handlerCtx.getInputValue("moduleList");
+            for(String oneModule: modules){
+                String encodedModuleName = URLEncoder.encode(oneModule, "UTF-8");
+                Map oneRow = new HashMap();
+                List<String> snifferList = AppUtil.getSnifferListOfModule(encodedAppName, encodedModuleName);
+                String moduleName = oneModule;
+                oneRow.put("moduleName", moduleName);
+                oneRow.put("name", " ----------- ");
+                oneRow.put("type", " ----------- ");
+                oneRow.put("hasEndpoint", false);
+                oneRow.put("hasLaunch", false);
+                oneRow.put("hasAppClientLaunch", false);
+                oneRow.put("sniffers", snifferList.toString());
 
-        for(String oneModule: modules){
-            Map oneRow = new HashMap();
-            List<String> snifferList = AppUtil.getSnifferListOfModule(appName, oneModule);
+                if (snifferList.contains("web") &&  AppUtil.isApplicationEnabled(appName, "server")) {
+                    String endpoint =  GuiUtil.getSessionValue("REST_URL") + "/applications/application/get-context-root.xml?appname="
+                            + encodedAppName + "&modulename=" + encodedModuleName;
+                    Map map = (Map)RestApiHandlers.restRequest(endpoint, null, "GET", null).get("data");
+                    Map props = (Map)map.get("properties");
+                    String contextRoot = (String) props.get("contextRoot");
+                    getLaunchInfo(appName, contextRoot, oneRow);
+                }
 
-            String moduleName = oneModule;
-            oneRow.put("moduleName", moduleName);
-            oneRow.put("name", " ----------- ");
-            oneRow.put("type", " ----------- ");
-            oneRow.put("hasEndpoint", false);
-            oneRow.put("hasLaunch", false);
-            oneRow.put("hasAppClientLaunch", false);
-            oneRow.put("sniffers", snifferList.toString());
-
-            if (snifferList.contains("web") &&  AppUtil.isApplicationEnabled(appName, "server")) {
-                String endpoint =  GuiUtil.getSessionValue("REST_URL") + "/applications/application/get-context-root.xml?appname="
-                        + appName + "&modulename=" + moduleName;
-                Map map = (Map)RestApiHandlers.restRequest(endpoint, null, "GET", null).get("data");
-                Map props = (Map)map.get("properties");
-                String contextRoot = (String) props.get("contextRoot");
-                getLaunchInfo(appName, contextRoot, oneRow);
+                if (snifferList.contains("appclient")){
+                    String jwEnabled = RestUtil.getPropValue(GuiUtil.getSessionValue("REST_URL") + "/applications/application/"+encodedAppName, "javaWebStartEnabled",  handlerCtx);
+                    if (!GuiUtil.isEmpty(jwEnabled) && jwEnabled.equals("true") ){
+                        oneRow.put("hasAppClientLaunch", true);
+                    }
+                }
+                result.add(oneRow);
+                getSubComponentDetail(appName, moduleName, snifferList, result);
             }
-
-//            if (snifferList.contains("appclient")){
-//                String jwEnabled = V3AMX.getPropValue(V3AMX.getInstance().getApplication(appName), "javaWebStartEnabled");
-//                if (!GuiUtil.isEmpty(jwEnabled) && jwEnabled.equals("true") ){
-//                    String appClientLaunch = V3AMX.getInstance().getRuntime().getRelativeJWSURI(appName, moduleName);
-//                    oneRow.put("hasAppClientLaunch", !GuiUtil.isEmpty(appClientLaunch));
-//                }
-//            }
-            result.add(oneRow);
-            getSubComponentDetail(appName, moduleName, snifferList, result);
-        }
-        handlerCtx.setOutputValue("result", result);
+          }catch(Exception ex){
+              ex.printStackTrace();
+          }
+          handlerCtx.setOutputValue("result", result);
     }
 
 
 
     private static List<Map> getSubComponentDetail(String appName, String moduleName, List<String> snifferList, List<Map> result){
-        Map wsAppMap = null;
-        if (snifferList.contains("webservices")){
-            wsAppMap = AppUtil.getWsEndpointMap(appName, moduleName, snifferList);
-        }
-
-
-        Map attrMap = new HashMap();
-        attrMap.put("appName", appName);
-        attrMap.put("moduleName", moduleName);
-        String prefix = GuiUtil.getSessionValue("REST_URL") + "/applications/application/";
-        Map subMap = RestApiHandlers.restRequest(prefix + "list-sub-components", attrMap, "GET", null);
-        Map data = (Map)subMap.get("data");
-        if(data != null){
-            Map<String, Object> props = (Map) data.get("properties");
-            if (props == null){
-                return result;
+        try{
+            String encodedAppName = URLEncoder.encode(appName, "UTF-8");
+            String encodedModuleName = URLEncoder.encode(moduleName, "UTF-8");
+            Map wsAppMap = null;
+            if (snifferList.contains("webservices")){
+                wsAppMap = AppUtil.getWsEndpointMap(appName, moduleName, snifferList);
             }
-            for(String cName: props.keySet()){
-                Map oneRow = new HashMap();
-                oneRow.put("moduleName", moduleName);
-                oneRow.put("name", cName);
-                oneRow.put("type", props.get(cName));
-                oneRow.put("hasLaunch", false);
-                oneRow.put("sniffers", "");
-                oneRow.put("hasEndpoint", false);
-                oneRow.put("hasAppClientLaunch", false);
-                if (wsAppMap != null){
-                    if (! (AppUtil.getEndpointDetails( wsAppMap, moduleName, cName) == null)){
-                        oneRow.put("hasEndpoint", true );
-                    }
+            Map attrMap = new HashMap();
+            attrMap.put("appName", encodedAppName);
+            attrMap.put("moduleName", encodedModuleName);
+            String prefix = GuiUtil.getSessionValue("REST_URL") + "/applications/application/";
+            Map subMap = RestApiHandlers.restRequest(prefix + "list-sub-components", attrMap, "GET", null);
+            Map data = (Map)subMap.get("data");
+            if(data != null){
+                Map<String, Object> props = (Map) data.get("properties");
+                if (props == null){
+                    return result;
                 }
-                result.add(oneRow);
+                for(String cName: props.keySet()){
+                    Map oneRow = new HashMap();
+                    oneRow.put("moduleName", moduleName);
+                    oneRow.put("name", cName);
+                    oneRow.put("type", props.get(cName));
+                    oneRow.put("hasLaunch", false);
+                    oneRow.put("sniffers", "");
+                    oneRow.put("hasEndpoint", false);
+                    oneRow.put("hasAppClientLaunch", false);
+                    if (wsAppMap != null){
+                        if (! (AppUtil.getEndpointDetails( wsAppMap, moduleName, cName) == null)){
+                            oneRow.put("hasEndpoint", true );
+                        }
+                    }
+                    result.add(oneRow);
+                }
             }
+        }catch(Exception ex){
+            ex.printStackTrace();
         }
         return result;
     }

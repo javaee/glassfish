@@ -45,6 +45,7 @@
 
 package org.glassfish.admingui.common.util;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -101,18 +102,23 @@ public class AppUtil {
     }
 
     static public Map getWsEndpointMap(String appName, String moduleName, List snifferList){
-
-        String prefix = GuiUtil.getSessionValue("REST_URL") + "/applications/application/";
         Map wsAppMap = new HashMap();
-        if (snifferList.contains("webservices")){
-            Map wsAttrMap = new HashMap();
-            wsAttrMap.put("applicationname", appName);
-            wsAttrMap.put("modulename", moduleName);
-            Map wsMap = RestApiHandlers.restRequest(prefix+"list-webservices", wsAttrMap, "GET", null);
-            Map extraProps = (Map)((Map)wsMap.get("data")).get("extraProperties");
-            if (extraProps != null){
-                wsAppMap = (Map) extraProps.get(appName);
+        try{
+            String encodedAppName = URLEncoder.encode(appName, "UTF-8");
+            String encodedModuleName = URLEncoder.encode(moduleName, "UTF-8");
+            String prefix = GuiUtil.getSessionValue("REST_URL") + "/applications/application/";
+            if (snifferList.contains("webservices")){
+                Map wsAttrMap = new HashMap();
+                wsAttrMap.put("applicationname", encodedAppName);
+                wsAttrMap.put("modulename", encodedModuleName);
+                Map wsMap = RestApiHandlers.restRequest(prefix+"list-webservices", wsAttrMap, "GET", null);
+                Map extraProps = (Map)((Map)wsMap.get("data")).get("extraProperties");
+                if (extraProps != null){
+                    wsAppMap = (Map) extraProps.get(appName);
+                }
             }
+        }catch(Exception ex){
+            ex.printStackTrace();
         }
         return wsAppMap;
     }

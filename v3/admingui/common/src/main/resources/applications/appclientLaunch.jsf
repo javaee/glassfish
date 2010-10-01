@@ -51,11 +51,17 @@
         getRequestValue(key="appName" value="#{pageSession.appName}");
         getRequestValue(key="moduleName" value="#{pageSession.moduleName}");
         urlencode(value="#{pageSession.appName}" encoding="UTF-8" result="#{pageSession.encodedAppName}");
-        getAppclinetLaunchURL(
-            appName="#{pageSession.appName}"
-            moduleName="#{pageSession.moduleName}"
-            url="#{pageSession.url}"
-        );
+        urlencode(value="#{pageSession.moduleName}" encoding="UTF-8" result="#{pageSession.encodedModuleName}");
+        gf.createAttributeMap(keys={"appname", "modulename" }, values={"$pageSession{encodedAppName}" , "$pageSession{encodedModuleName}"}, map="#{requestScope.attrsMap}")
+        gf.restRequest(endpoint="#{sessionScope.REST_URL}/applications/application/_get-relative-jws-uri", attrs="#{requestScope.attrsMap}" method="get", result="#{requestScope.result}");
+        mapGet(Map="#{requestScope.result.data}" Key="properties" Value="#{requestScope.propMap}");
+        mapGet(Map="#{requestScope.propMap}" Key="relative-uri" Value="#{pageSession.relativeURI}");
+        getTargetURLList(AppID="#{pageSession.appName}",contextRoot="#{pageSession.relativeURI}",  URLList="#{requestScope.uList}");
+        foreach(var="list" list="#{requestScope.uList}"){
+            listAdd(list="#{pageSession.urlList}" value="#{requestScope.list.url}" result="#{pageSession.urlList}");
+        }
+        gf.convertListToOptionArray(list="#{pageSession.urlList}", optionArray="#{pageSession.linkOptions}");
+        setPageSessionAttribute(key="selectedLink" value="#{pageSession.urlList[0]}");
     />
     </event>
         <sun:form id="propertyForm">
@@ -65,9 +71,8 @@
             <!facet pageButtonsTop>
                 <sun:panelGroup id="topButtons">
                     <sun:button id="launchButton" primary="#{true}" text="$resource{i18n.deployTable.launch}"
-                        onClick="
-                            var args=getTextElement('#{pageSession.argId}').value;
-                            window.open('#{pageSession.url}?'+args,'_blank','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,directories=yes,location=yes'); return false;"
+                        //onClick="alert('AAA'); launchAppClient(); return false;"
+                        onClick="var win=window.open('#{pageSession.selectedLink}?#{pageSession.args}','','width='+.50*screen.width+',height='+.50*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,location=yes');win.focus(); return false;" />
                     />
                     <sun:button id="backButton" immediate="#{true}"
                         text="$resource{i18n.button.Back}" primary="#{false}" >
@@ -79,23 +84,21 @@
             </facet>
             </sun:title>
         "<br><br>
-<!-- PropertySheet .... -->
         <sun:propertySheet id="propertySheet">
             <sun:propertySheetSection id="propertySheetSection">
                 <sun:property id="appProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.appClientLaunch.application}">
                     <sun:staticText id="app" text="#{pageSession.appName}" />
                 </sun:property>
-
-                
-
                 <sun:property id="module"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.appClientLaunch.module}">
                     <sun:staticText id="module" text="#{pageSession.moduleName}" />
                 </sun:property>
 
-                <sun:property id="url"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.appClientLaunch.linkLabel}">
-                    <sun:staticText id="url" text="#{pageSession.url}" />
+                <sun:property id="linksProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.appClientLaunch.linkLabel}">
+                    <sun:radioButtonGroup id="linksCluster"
+                        items="#{pageSession.linkOptions}"
+                        selected="#{pageSession.selectedLink}">
+                    </sun:radioButtonGroup>
                 </sun:property>
-
                 <sun:property id="argsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.appClientLaunch.argLabel}">
                     <sun:textField id="args" text="#{pageSession.args}" columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.appClientLaunch.args']}" >
                         <!afterCreate
@@ -109,6 +112,23 @@
 <sun:hidden id="helpKey" value="$resource{help.appclientLaunch}" />
 
 </sun:form>
+
+<f:verbatim>
+    <script type="text/javascript">
+
+    function launchAppClient() {
+        alert('here');
+            url = getSelectedValue('propertyForm:propertySheet:propertySheetSection:linksProp:linksCluster');
+            var args = getTextElement('propertyForm:propertySheet:propertySheetSection:argsProp:args').value;
+            if (args.length > 1) {
+                url=url+'?'+args;
+            }
+            alert(url);
+            var win = window.open(url, '', 'width='+.5*screen.width+',height='+.5*screen.height+',top=0,left=0,toolbar=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,directories=yes,location=yes'); win.focus(); return false;
+        }
+
+</f:verbatim>
+
 </define>
 </composition>
     
