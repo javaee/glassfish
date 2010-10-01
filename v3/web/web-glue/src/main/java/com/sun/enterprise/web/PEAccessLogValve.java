@@ -110,7 +110,7 @@ public final class PEAccessLogValve
     /**
      * The minimum size a buffer can have.
      */
-    private final static int MIN_BUFFER_SIZE = 4096;
+    private final static int MIN_BUFFER_SIZE = 5120;
     
     
     // ----------------------------------------------------- Instance Variables
@@ -335,8 +335,12 @@ public final class PEAccessLogValve
     public void setBufferSize(int size){
         if ( size > 0 ){
             flushRealTime = false;
-        }        
-        bufferSize = size;
+        }
+        if (size < MIN_BUFFER_SIZE) {
+            bufferSize = MIN_BUFFER_SIZE;
+        } else {
+            bufferSize = size;
+        }
     }
     
     /**
@@ -592,7 +596,7 @@ public final class PEAccessLogValve
                         log();
                     }
                     break;
-                 } catch (BufferOverflowException ex) {  
+                 } catch (BufferOverflowException ex) {
                     charBuffer.position(pos);
                     log();
                     
@@ -603,7 +607,7 @@ public final class PEAccessLogValve
                             new Object[] {ex});   
                         return;
                     }
-                    charBuffer = CharBuffer.allocate(MIN_BUFFER_SIZE);   
+                    charBuffer = CharBuffer.allocate(bufferSize);
                 }
             }
         }
@@ -1041,7 +1045,7 @@ public final class PEAccessLogValve
 
         lifecycle.fireLifecycleEvent(START_EVENT, null);
 
-        if (bufferSize <= 0) {
+        if (bufferSize <= MIN_BUFFER_SIZE) {
             bufferSize = MIN_BUFFER_SIZE;
         }
 
