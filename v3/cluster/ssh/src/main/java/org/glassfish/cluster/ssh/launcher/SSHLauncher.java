@@ -205,8 +205,8 @@ public class SSHLauncher {
                 e.printStackTrace();
             }
         }
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine ("SSH info is " + toString());
+        if (logger.isLoggable(Level.FINER)) {
+            logger.finer("SSH info is " + toString());
         }
     }
 
@@ -433,12 +433,11 @@ public class SSHLauncher {
         boolean connected = false;
 
         File key = new File(keyFile);
-        if(logger.isLoggable(Level.FINE))
-            logger.fine("Key = " + keyFile);
+        if(logger.isLoggable(Level.FINER))
+            logger.finer("Key = " + keyFile);
         if (key.exists()) {
             if (checkConnection()) {
-                logger.info("SSH public key authentication is already configured for " + userName + "@" + node);
-                return;
+                throw new IOException("SSH public key authentication is already configured for " + userName + "@" + node);
             }            
         } else {
             if (generateKey) {
@@ -495,12 +494,16 @@ public class SSHLauncher {
                     //logger.printDebugMessage("The auth file probably doesn't exist");
                 }
 
-                logger.fine("Got the remote authorized_keys file");
+                if(logger.isLoggable(Level.FINER)) {
+                    logger.finer("Got the remote authorized_keys file");
+                }
                 File home = new File(System.getProperty("user.home"));
                 f = new File(home,SSH_DIR + AUTH_KEY_FILE +".temp");
                 oStream = new FileOutputStream(f);
                 out.writeTo(oStream);
-                logger.fine("Wrote the temp file");
+                if(logger.isLoggable(Level.FINER)) {
+                    logger.finer("Wrote the temp file");
+                }
 
                 appendPublicKey(pubKey, f);
 
@@ -510,10 +513,14 @@ public class SSHLauncher {
 
                 try {
                     if (connection.exec("test -d " + SSH_DIR , new ByteArrayOutputStream())!=0) {
-                        logger.fine(SSH_DIR + " does not exist");
+                        if(logger.isLoggable(Level.FINER)) {
+                            logger.fine(SSH_DIR + " does not exist");
+                        }
                         // .ssh directory doesn't exist, create it.
                         if (connection.exec("mkdir -p " + SSH_DIR, new ByteArrayOutputStream())!=0) {
-                            logger.fine("Created .ssh directory");
+                            if(logger.isLoggable(Level.FINER)) {
+                                logger.finer("Created .ssh directory");
+                            }
                         }
                     }
                 } catch (Exception e) {
@@ -594,7 +601,9 @@ public class SSHLauncher {
             c = new Connection(host, port);
             c.connect();
             File f = new File(keyFile);
-            logger.fine("Checking connection...");
+            if(logger.isLoggable(Level.FINER)) {
+                logger.finer("Checking connection...");
+            }
             status = c.authenticateWithPublicKey(userName, f, rawKeyPassPhrase);
             if (status) {
                 logger.info("Successfully connected to " + userName + "@" + host + " using keyfile " + keyFile);
@@ -611,7 +620,9 @@ public class SSHLauncher {
       */
     private boolean generateKeyPair() throws IOException {
         String keygenCmd = findSSHKeygen();
-        logger.fine("Using " + keygenCmd + " to generate key pair");
+        if(logger.isLoggable(Level.FINER)) {
+            logger.finer("Using " + keygenCmd + " to generate key pair");
+        }
 
         StringBuffer k = new StringBuffer();
         List<String> cmdLine = new ArrayList<String>();
@@ -645,11 +656,15 @@ public class SSHLauncher {
 
         ProcessManager pm = new ProcessManager(cmdLine);
 
-        logger.fine("Command = " + k);
+        if(logger.isLoggable(Level.FINER)) {
+            logger.finer("Command = " + k);
+        }
         pm.setTimeoutMsec(DEFAULT_TIMEOUT_MSEC);
 
-        if (logger.isLoggable(Level.FINE))
+        if (logger.isLoggable(Level.FINER))
             pm.setEcho(true);
+        else
+            pm.setEcho(false);
         int exit;
 
         try {
@@ -659,9 +674,15 @@ public class SSHLauncher {
             logger.fine("Error while executing ssh-keygen: " + ex.getMessage());
             exit = 1;
         }
-        if (exit != 0)
-            logger.fine(pm.getStderr());
-        logger.fine("ssh-keygen exit status: " + exit);
+        if (exit == 0){
+            logger.info(keygenCmd + " successfully generated the identification " + keyFile);
+        } else {
+            if(logger.isLoggable(Level.FINER)) {
+                logger.finer(pm.getStderr());
+            }
+            logger.info(keygenCmd + " failed");
+        }
+
         return (exit == 0) ? true : false;
     }
 

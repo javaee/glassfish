@@ -42,6 +42,7 @@ package com.sun.enterprise.admin.cli.cluster;
 
 import java.io.*;
 import java.util.Arrays;
+import java.util.logging.Level;
 
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
@@ -149,8 +150,7 @@ public final class SetupSshKey extends CLICommand {
             } catch (Exception e) {
                 //handle KeyStoreException
             }
-            if (sshL.checkConnection())
-                logger.fine("Connection SUCCEEDED!");
+            sshL.checkConnection();
         }
         return SUCCESS;
     }
@@ -208,7 +208,9 @@ public final class SetupSshKey extends CLICommand {
         String pwfile = programOpts.getPasswordFile();
         if (ok(pwfile)) {
             passwords = CLIUtil.readPasswordFileOptions(pwfile, true);
-            logger.fine("Passwords from password file " + passwords);
+            if(logger.isLoggable(Level.FINER)) {
+                logger.finer("Passwords from password file " + passwords);
+            }
             pass = passwords.get(name);
         }
         return pass;
@@ -232,7 +234,9 @@ public final class SetupSshKey extends CLICommand {
                 cons.printf("%s", Strings.get("GenerateKeyPairPrompt", sshuser, Arrays.toString(nodes)));
                 val = cons.readLine();
                 if (val != null && (val.equalsIgnoreCase("yes") || val.equalsIgnoreCase("y"))) {
-                    logger.fine("Generate key!");
+                    if(logger.isLoggable(Level.FINER)) {
+                        logger.finer("Generate key!");
+                    }
                     return true;
                 } else if ( val != null && (val.equalsIgnoreCase("no") || val.equalsIgnoreCase("n"))) {
                     break;
