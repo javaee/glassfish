@@ -50,9 +50,7 @@
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/security/jacc/jaccProviders.jsf");
-        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=security-service");
         setPageSessionAttribute(key="childType" value="jacc-provider");
-        setPageSessionAttribute(key="restObjStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/security-service,type=jacc-provider");
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
         setPageSessionAttribute(key="rest-api" value="true");

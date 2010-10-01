@@ -51,8 +51,6 @@
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/security/auditModules/auditModules.jsf");
         setPageSessionAttribute(key="childType" value="audit-module");
-        setPageSessionAttribute(key="restObjStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/security-service,type=audit-module");
-
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/audit-module");
         setPageSessionAttribute(key="rest-api" value="true");
