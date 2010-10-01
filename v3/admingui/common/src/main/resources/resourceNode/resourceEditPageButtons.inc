@@ -99,10 +99,10 @@
                     onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
                     if ("#{pageSession.childType}=admin-object-resource") {
-                        mapPut(map="#{pageSession.valueMap}" key="Target" value="server-config");
+                        mapPut(map="#{pageSession.valueMap}" key="target" value="server-config");
                     }
                     if ("!(#{pageSession.childType}=admin-object-resource)") {
-                        mapPut(map="#{pageSession.valueMap}" key="Target" value="domain");
+                        mapPut(map="#{pageSession.valueMap}" key="target" value="domain");
                     }                    
                     gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}"
                         attrs="#{pageSession.valueMap}"
