@@ -607,7 +607,6 @@ public final class PEAccessLogValve
                             new Object[] {ex});   
                         return;
                     }
-                    charBuffer = CharBuffer.allocate(bufferSize);
                 }
             }
         }
