@@ -123,7 +123,7 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         // check for logging patterns
         if (pattern.contains(".log-service.")) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(localStrings.getLocalString("admin.get.invalid.logservice.command", "For getting log levels use get-log-levels command."));
+            report.setMessage(localStrings.getLocalString("admin.get.invalid.logservice.command", "For getting log levels use list-log-levels command."));
             return;
         }
 
