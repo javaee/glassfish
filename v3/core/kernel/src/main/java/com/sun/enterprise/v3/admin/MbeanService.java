@@ -38,75 +38,73 @@
  * holder.
  */
 
-package org.glassfish.internal.api;
+package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import org.glassfish.api.Startup;
-import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.PropertyResolver;
+import org.glassfish.internal.api.Target;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
 
 import javax.management.InstanceNotFoundException;
-import javax.management.j2ee.Management;
-import javax.management.j2ee.ManagementHome;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.rmi.PortableRemoteObject;
 
-import java.rmi.RemoteException;
-import java.util.HashMap;
 import java.util.Properties;
 
 @Service
 @Scoped(Singleton.class)
-public class MEJBClusterService implements Startup {
-
-    private HashMap<String, Management> instanceMEjbMap = new HashMap<String, Management>();
+public class MbeanService implements Startup {
 
     @Inject
     private Domain domain;
 
     @Inject
-    private static Habitat habitat;
+    private Target tgt;
 
-    public static final String MEJB_NAME_PROP = "mejb.name";
-    public static final String MEJB_DEFAULT_NAME = "ejb/mgmt/MEJB";
+    @Inject
+    private static Habitat habitat;
 
     @Override
     public Lifecycle getLifecycle() {
         return Startup.Lifecycle.SERVER;
     }
 
-    public static MEJBClusterService getInstance() {
-        return habitat.getComponent(MEJBClusterService.class);
+    public static MbeanService getInstance() {
+        return habitat.getComponent(MbeanService.class);
     }
 
-    public synchronized Management getMEjbForInstance(String instance) throws InstanceNotFoundException {
-        if(instanceMEjbMap.containsKey(instance))
-            return instanceMEjbMap.get(instance);
+    public String getHost(String instance) throws InstanceNotFoundException {
         Server s = domain.getServerNamed(instance);
         if(s == null)
             throw new InstanceNotFoundException();
+        return s.getAdminHost();
+    }
+
+    public String getJMXPort(String instance) throws InstanceNotFoundException {
+        Server s = domain.getServerNamed(instance);
+        if(s == null)
+            throw new InstanceNotFoundException();
+        return new PropertyResolver(domain, instance).getPropertyValue("JMX_SYSTEM_CONNECTOR_PORT");
+    }
+
+    public boolean isDas() {
+        return tgt.isThisDAS();
+    }
+
+    public boolean isValidServer(String name) {
+        Server s = null;
         try {
-            Properties props = new Properties();
-            props.setProperty("org.omg.CORBA.ORBInitialHost", s.getAdminHost());
-            props.setProperty("org.omg.CORBA.ORBInitialPort",
-                    new PropertyResolver(domain, instance).getPropertyValue("IIOP_LISTENER_PORT"));
-            Context ic = new InitialContext(props);
-            String ejbName = System.getProperty( MEJB_NAME_PROP, MEJB_DEFAULT_NAME);
-            Object objref = ic.lookup(ejbName);
-            ManagementHome home = (ManagementHome) PortableRemoteObject.narrow(objref, ManagementHome.class);
-            Management mEJB = home.create();
-            instanceMEjbMap.put(instance, mEJB);
-            return mEJB;
-        } catch (Exception ex) {
-            throw new InstanceNotFoundException(ex.getLocalizedMessage());
+            s = domain.getServerNamed(name);
+        } catch(Throwable t) {
+            return false;
         }
+        return (s == null) ? false : true;
     }
 }
