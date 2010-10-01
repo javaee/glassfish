@@ -63,13 +63,8 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.common.util.GuiUtil;
-
-import javax.management.ObjectName;
-import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admingui.common.util.RestResponse;
-
 
 public class InstanceHandler {
 
