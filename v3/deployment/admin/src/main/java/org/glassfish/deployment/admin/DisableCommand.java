@@ -60,6 +60,9 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.Events;
+import org.glassfish.api.event.EventListener.Event;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.data.ApplicationInfo;
@@ -116,6 +119,9 @@ public class DisableCommand extends UndeployCommandParameters implements AdminCo
 
     @Inject
     Domain domain;
+
+    @Inject
+    Events events;
 
     @Inject
     Applications applications;
@@ -232,16 +238,20 @@ public class DisableCommand extends UndeployCommandParameters implements AdminCo
             }
         }
 
-        if (!isundeploy && !domain.isCurrentInstanceMatchingTarget(target, appName, server.getName(), null)) {
-            try {
-                deployment.updateAppEnabledAttributeInDomainXML(appName, target, false);
-            } catch(TransactionFailure e) {
-                logger.warning("failed to set enable attribute for " + appName);
+        ApplicationInfo appInfo = deployment.get(appName);
+
+        if (!domain.isCurrentInstanceMatchingTarget(target, appName, server.getName(), null)) {
+            if (!isundeploy) {
+                try {
+                    deployment.updateAppEnabledAttributeInDomainXML(appName, target, false);
+                } catch(TransactionFailure e) {
+                    logger.warning("failed to set enable attribute for " + appName);
+                }
             }
+            events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_DISABLED, appInfo));
             return;
         }
 
-        ApplicationInfo appInfo = deployment.get(appName);
         try {
             Application app = applications.getApplication(appName);
             this.name = appName;
