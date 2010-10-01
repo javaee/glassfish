@@ -60,8 +60,8 @@
       <sun:property id="defaultRealmProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.security.DefaultRealm}" helpText="$resource{i18nc.security.DefaultRealmHelp}">
             <sun:dropDown id="DefaultRealm" labels="$pageSession{realms}" selected="#{pageSession.valueMap['defaultRealm']}" />
             <!beforeCreate
-                getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=security-service"
-                type="auth-realm" result="#{pageSession.realms}");
+                gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/auth-realm"
+                    result="#{pageSession.realms}");
             />
         </sun:property>
         <sun:property id="defaultPrincipalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.security.DefaultPrincipal}" helpText="$resource{i18nc.security.DefaultPrincipalHelp}">
@@ -73,7 +73,8 @@
       <sun:property id="jaccProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.security.Jacc}" helpText="$resource{i18nc.security.JaccHelp}">
             <sun:dropDown id="Jacc" labels="$pageSession{jaccs}" selected="#{pageSession.valueMap['jacc']}" />
             <!beforeCreate
-                getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=security-service" type="jacc-provider" result="#{pageSession.jaccs}");
+                gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/jacc-provider"
+                    result="#{pageSession.jaccs}");
             />
         </sun:property>
      <sun:property id="auditModulesProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.security.AuditModules}" helpText="$resource{i18nc.security.AuditModulesHelp}">
@@ -81,7 +82,8 @@
                 labels="$pageSession{availableAudits}"
                 selected="#{pageSession.selectedAuditModules}" >
                 <!beforeCreate
-                    getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=security-service" type="audit-module" result="#{pageSession.audits}");
+                    gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/audit-module"
+                        result="#{pageSession.audits}");
                     getListBoxOptions(
                         availableList="#{pageSession.audits}",
                         selectedCommaString="#{pageSession.valueMap['auditModules']}",
