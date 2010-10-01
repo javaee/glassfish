@@ -132,7 +132,7 @@
                         "$resource{i18n.tree.externalResources}",
                         "$resource{i18n.tree.connectorResources}",
                         "$resource{i18n.tree.adminObjectResources}"}
-                 values={"", "jdbc-resource", "java-mail-resource", "custom-resource",
+                 values={"", "jdbc-resource", "mail-resource", "custom-resource",
                          "external-jndi-resource", "connector-resource", "admin-object-resource"}>
                 labels="$attribute{labelsList}" values="$attribute{valuesList}">
                 <!command

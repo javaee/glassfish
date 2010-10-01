@@ -55,7 +55,7 @@
             <!beforeCreate
                 //To get the resources table for a target
                 setAttribute(key="listOfRows" value={});
-                setPageSessionAttribute(key="resTypes" value={"jdbc-resource", "java-mail-resource", "custom-resource",
+                setPageSessionAttribute(key="resTypes" value={"jdbc-resource", "mail-resource", "custom-resource",
                                        "external-jndi-resource", "connector-resource", "admin-object-resource"});
                 setPageSessionAttribute(key="resLabels" value={
                         "$resource{i18n.tree.jdbcResources}",
