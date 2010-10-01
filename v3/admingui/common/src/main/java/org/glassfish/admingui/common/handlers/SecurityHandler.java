@@ -50,8 +50,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.glassfish.admin.amx.core.Util;
-import org.glassfish.admin.amx.intf.config.Property;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.RestResponse;
 
@@ -671,7 +669,7 @@ public class SecurityHandler {
             attrs.put("providerType", attrMap.get("ProviderType"));
             if (propList.size() > 0){
                 Map[] propMaps = (Map[])propList.toArray(new Map[propList.size()]);
-                attrs.put(Util.deduceType(Property.class), propMaps);
+                attrs.put("property", propMaps);
             }
             RestApiHandlers.sendCreateRequest(endpoint, attrs, null, null, null);
         }

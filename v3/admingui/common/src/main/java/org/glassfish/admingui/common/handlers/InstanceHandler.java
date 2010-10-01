@@ -112,28 +112,6 @@ public class InstanceHandler {
      }
 
 
-@Handler(id="getProfilerAttrs",
-    output={
-        @HandlerOutput(name="objectName",        type=String.class),
-        @HandlerOutput(name="edit",        type=Boolean.class)})
-
-        public static void getProfilerAttrs(HandlerContext handlerCtx) {
-        ObjectName objName = null;
-        Boolean edit = false; 
-        try{
-            AMXProxy amx = V3AMX.getInstance().getConfig("server-config").getJava();
-            objName = (ObjectName) amx.attributesMap().get("Profiler");
-            if (objName != null) {
-                edit = true;
-            }
-            handlerCtx.setOutputValue("edit", edit);
-            handlerCtx.setOutputValue("objectName", objName);
-        }catch (Exception ex){
-            ex.printStackTrace();
-            handlerCtx.setOutputValue("edit", false); 
-        }
-    }    
-
     @Handler(id="getJvmOptionsValues",
         input={
             @HandlerInput(name="endpoint",   type=String.class, required=true),
