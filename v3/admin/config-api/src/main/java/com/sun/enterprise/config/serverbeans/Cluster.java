@@ -40,6 +40,8 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import com.sun.enterprise.config.serverbeans.customvalidators.NotTargetKeyword;
+import com.sun.enterprise.config.serverbeans.customvalidators.NotDuplicateTargetName;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
@@ -83,6 +85,7 @@ import javax.validation.constraints.Pattern;
  */
 @Configured
 @SuppressWarnings("unused")
+@NotDuplicateTargetName
 public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer, RefContainer {
 
     /**
@@ -93,6 +96,11 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     @Param(name="name", primary = true)
     @Override
     public void setName(String value) throws PropertyVetoException;
+
+    @NotTargetKeyword
+    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
+    @Override
+    public String getName();
 
     /**
      * points to a named config. All server instances in the cluster
@@ -525,12 +533,6 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
             Logger logger = LogDomains.getLogger(Cluster.class, LogDomains.ADMIN_LOGGER);
             LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Cluster.class);
             
-            //There should be no instance/config with the same name as the cluster
-            if ((domain.getServerNamed(instance.getName()) != null) ||
-                    (domain.getConfigNamed(instance.getName()) != null)){
-                throw new TransactionFailure(localStrings.getLocalString(
-                        "cannotAddDuplicate", "There is an instance {0} already present.", instance.getName()));
-            }
             //check if cluster software is installed else fail , see issue 12023
             final CopyConfig command = (CopyConfig) runner
                     .getCommand("copy-config", context.getActionReport(), context.getLogger());

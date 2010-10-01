@@ -40,6 +40,8 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import com.sun.enterprise.config.serverbeans.customvalidators.NotTargetKeyword;
+import com.sun.enterprise.config.serverbeans.customvalidators.NotDuplicateTargetName;
 import com.sun.enterprise.config.util.ServerHelper;
 import com.sun.enterprise.config.util.PortBaseHelper;
 import com.sun.enterprise.config.util.PortManager;
@@ -90,12 +92,19 @@ import org.glassfish.api.admin.CommandRunner;
  */
 @Configured
 @SuppressWarnings("unused")
+@NotDuplicateTargetName
 public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer, RefContainer {
 
     String lbEnabledSystemProperty = "org.glassfish.lb-enabled-default";
 
     @Param(name = "name", primary = true)
+    @Override
     public void setName(String value) throws PropertyVetoException;
+
+    @NotTargetKeyword
+    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
+    @Override
+    public String getName();
 
     /**
      * Gets the value of the configRef property.
@@ -107,6 +116,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *         {@link String }
      */
     @Attribute
+    @NotTargetKeyword
     @Pattern(regexp = "[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
     String getConfigRef();
 
@@ -480,12 +490,6 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                     throw new TransactionFailure(localStrings.getLocalString(
                             "noSuchNode", "Node {0} does not exist.", node));
                 }
-            }
-            //There should be no cluster/config with the same name as the server
-            if (((clusters != null && domain.getClusterNamed(instance.getName()) != null))
-                    || (domain.getConfigNamed(instance.getName()) != null)) {
-                throw new TransactionFailure(localStrings.getLocalString(
-                        "cannotAddDuplicate", "There is an instance {0} already present.", instance.getName()));
             }
 
             if (portBase != null) {

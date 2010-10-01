@@ -40,8 +40,9 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import com.sun.enterprise.config.serverbeans.customvalidators.NotTargetKeyword;
+import com.sun.enterprise.config.serverbeans.customvalidators.NotDuplicateTargetName;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.net.NetUtils;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
@@ -61,19 +62,9 @@ import org.glassfish.api.admin.config.ReferenceContainer;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.glassfish.api.admin.config.PropertiesDesc;
-import org.jvnet.hk2.config.types.Property;
-import org.jvnet.hk2.config.types.PropertyBag;
-
-import org.glassfish.quality.ToDo;
-
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 /**
@@ -82,6 +73,7 @@ import javax.validation.constraints.Pattern;
  */
 @Configured
 @SuppressWarnings("unused")
+@NotDuplicateTargetName
 public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceContainer, RefContainer {
 
     /**
@@ -90,10 +82,13 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
      * @throws PropertyVetoException if a listener vetoes the change
      */
     @Param(name="name", primary = true)
+    @Override
     public void setName(String value) throws PropertyVetoException;
 
+    @NotTargetKeyword
     @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*",
              message="Invalid node name. Name must start with a letter or number and may contain only letters, numbers, and certain other characters.")
+    @Override
     public String getName();
 
     /**

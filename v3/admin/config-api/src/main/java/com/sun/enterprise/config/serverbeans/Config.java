@@ -47,6 +47,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.sun.enterprise.config.serverbeans.customvalidators.NotTargetKeyword;
+import com.sun.enterprise.config.serverbeans.customvalidators.NotDuplicateTargetName;
 import com.sun.common.util.logging.LoggingConfigImpl;
 import com.sun.enterprise.config.util.ServerHelper;
 import com.sun.grizzly.config.dom.NetworkConfig;
@@ -99,6 +101,7 @@ import javax.validation.constraints.Pattern;
 }) */
 
 @Configured
+@NotDuplicateTargetName
 public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag, SystemPropertyBag {
 
     /**
@@ -108,9 +111,12 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      FIXME: should set 'key=true'.  See bugs 6039, 6040
      */
     @NotNull
+    @NotTargetKeyword
     @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
+    @Override
     String getName();
 
+    @Override
     void setName(String value) throws PropertyVetoException;
 
     /**

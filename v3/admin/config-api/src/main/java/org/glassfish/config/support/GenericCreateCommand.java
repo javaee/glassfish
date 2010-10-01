@@ -41,6 +41,7 @@
 package org.glassfish.config.support;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.ExceptionUtil;
 import com.sun.hk2.component.InjectionResolver;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
@@ -206,13 +207,27 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
             String msg = localStrings.getLocalString(GenericCrudCommand.class,
                     "GenericCreateCommand.transaction_exception",
                     "Exception while adding the new configuration {0}",
-                    e.toString());
+                    getRootCauseMessage(e));
             logger.log(Level.SEVERE, msg, e);
-            result.failure(logger, msg);
+            result.failure(logger, msg, e);
         }
     }
 
     public CommandModel getModel() {
         return model;
     }
+
+    /**
+     * Return the message from the root cause of the exception. If the root
+     * cause has no message, then return the passed exception's message.
+     */
+    private String getRootCauseMessage(Exception e) {
+        String msg = ExceptionUtil.getRootCause(e).getMessage();
+        if (msg != null && msg.length() > 0) {
+            return msg;
+        } else {
+            return e.getMessage();
+        }
+    }
+
 }

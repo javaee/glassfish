@@ -407,4 +407,8 @@ public final class ConfigBeansUtilities {
 
         return writer.toString();
     }
+
+   public static Domain getDomain() {
+        return domain;
+   }
 }
