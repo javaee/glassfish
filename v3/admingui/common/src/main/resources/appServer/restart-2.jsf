@@ -113,11 +113,23 @@
                 </span></div></td>
                 </tr>
                 <tr>
+
                     <td><div class="logLbl"><span class="LblLev2Txt">
 </f:verbatim>
                     <sun:staticText text="#{pageSession.url2}" >
                         <!beforeCreate
-                            setPageSessionAttribute(key="url2", value="$resource{i18n.restart.RestartContinue, #{request.scheme}://#{request.serverName}:#{request.serverPort}}")
+                            //we have to get the scheme and port number from domain.xml instead of from #{request} because user may have changed this.
+                            gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/configs/config/server-config/network-config/network-listeners/network-listener/admin-listener", valueMap="#{requestScope.portMap}");
+                            gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/server-config/network-config/network-listeners/network-listener/admin-listener/find-http-protocol"
+                                   method="GET"
+                                   result="#{requestScope.output}" );
+                            gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/configs/config/server-config/network-config/protocols/protocol/#{requestScope.output.data.properties.protocol}", valueMap="#{requestScope.schemeMap}");
+                            setAttribute(key="scheme" value="http");
+                            if(#{requestScope.schemeMap.securityEnabled}){
+                                setAttribute(key="scheme", value="https");
+                            }
+                            setAttribute(key="url" value="#{requestScope.scheme}://#{request.serverName}:#{requestScope.portMap.port}");
+                            setPageSessionAttribute(key="url2", value="$resource{i18n.restart.RestartContinue, #{requestScope.url}}")
                         />
                     </sun:staticText>
 <f:verbatim>
