@@ -42,8 +42,11 @@ package org.glassfish.persistence.jpa;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.enterprise.deployment.*;
+import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.Events;
+import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.server.ServerEnvironmentImpl;
@@ -80,6 +83,12 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
 
     @Inject
     private Events events;
+
+    @Inject
+    private ApplicationRegistry applicationRegistry;
+
+    /** Key used to get/put emflists in transientAppMetadata */
+    private static final String EMF_KEY = EntityManagerFactory.class.toString();
 
     @Override public MetaData getMetaData() {
 
@@ -155,24 +164,10 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
     /**
      * @inheritDoc
      */
-    @Override
+    //@Override
     public JPApplicationContainer load(JPAContainer container, DeploymentContext context) {
-        final List<EntityManagerFactory> emfsInitializedForThisBundle = new ArrayList<EntityManagerFactory>();
-
-        //iterate through all the PersistenceUnitDescriptor for this bundle. If it is initialized, add it to emfsInitializedForThisBundle
-        PersistenceUnitDescriptorIterator pudIterator = new PersistenceUnitDescriptorIterator() {
-            @Override void visitPUD(PersistenceUnitDescriptor pud, DeploymentContext context) {
-                //PersistenceUnitsDescriptor corresponds to  persistence.xml. A bundle can only have one persistence.xml except
-                // when the bundle is an application which can have multiple persistence.xml under jars in root of ear and lib.
-                PersistenceUnitLoader puLoader = context.getTransientAppMetaData(getUniquePuIdentifier(pud), PersistenceUnitLoader.class);
-                if (puLoader != null) {
-                    emfsInitializedForThisBundle.add(puLoader.getEMF());
-                }
-            }
-        };
-        pudIterator.iteratePUDs(context);
-
-        return new JPApplicationContainer(emfsInitializedForThisBundle);
+        //TODO With changes to close emfs in APPLICATION_DISABLED, JPApplicationContainer does not have any functionality left. Remove it after talking with Hong.
+        return new JPApplicationContainer();
     }
 
     /**
@@ -195,29 +190,64 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
 
     @Override
     public void event(Event event) {
-        if (event.is(Deployment.APPLICATION_PREPARED) && isDas() ) { //We do java2db only on das
+        if (event.is(Deployment.APPLICATION_PREPARED) ) {
             ExtendedDeploymentContext context = (ExtendedDeploymentContext)event.hook();
             Map<String, ExtendedDeploymentContext> deploymentContexts = context.getModuleDeploymentContexts();
 
             for (DeploymentContext deploymentContext : deploymentContexts.values()) {
-                //execute java2db for each bundle level pus
-                executeJava2DB(deploymentContext);
+                //bundle level pus
+                iterateInitializedPUsAtApplicationPrepare(deploymentContext);
             }
-            //execute java2db for the app level pus
-            executeJava2DB(context);
+            //app level pus
+            iterateInitializedPUsAtApplicationPrepare(context);
+        } else if(event.is(Deployment.APPLICATION_DISABLED)) {
+            // APPLICATION_DISABLED will be generated when an app is disabled/undeployed/appserver goes down.
+            //close all the emfs created for this app
+            ApplicationInfo appInfo = (ApplicationInfo) event.hook();
+            //Suppress warning required as there is no way to pass equivalent of List<EMF>.class to the method 
+            @SuppressWarnings("unchecked")  List<EntityManagerFactory> emfsCreatedForThisApp = appInfo.getTransientAppMetaData(EMF_KEY, List.class);
+            if(emfsCreatedForThisApp != null) { // Events are always dispatched to all registered listeners. emfsCreatedForThisApp will be null for an app that does not have PUs.  
+                for (EntityManagerFactory entityManagerFactory : emfsCreatedForThisApp) {
+                    entityManagerFactory.close();
+                }
+                //Clean up the list for when the app is enabled again and new emfs are created
+                appInfo.addTransientAppMetaData(EMF_KEY, null);
+            }
         }
     }
 
-    private void executeJava2DB(final DeploymentContext context) {
+    /**
+     * Does java2db on DAS and saves emfs created during prepare to ApplicationInfo maintained by DOL.
+     * ApplicationInfo is not available during prepare() so we can not directly use it there.
+     * @param context
+     */
+    private void iterateInitializedPUsAtApplicationPrepare(final DeploymentContext context) {
 
-        //iterate through all the PersistenceUnitDescriptor for this bundle. If it is initialized, execute jdava2db on it
+        DeployCommandParameters commandParams = context.getCommandParameters(DeployCommandParameters.class);
+        String appName = commandParams.name;
+        final ApplicationInfo appInfo = applicationRegistry.get(appName);
+
+        //iterate through all the PersistenceUnitDescriptor for this bundle.
         PersistenceUnitDescriptorIterator pudIterator = new PersistenceUnitDescriptorIterator() {
             @Override void visitPUD(PersistenceUnitDescriptor pud, DeploymentContext context) {
                 //PersistenceUnitsDescriptor corresponds to  persistence.xml. A bundle can only have one persitence.xml except
                 // when the bundle is an application which can have multiple persitence.xml under jars in root of ear and lib.
                 PersistenceUnitLoader puLoader = context.getTransientAppMetaData(getUniquePuIdentifier(pud), PersistenceUnitLoader.class);
-                if (puLoader != null) {
-                    puLoader.doJava2DB();
+                if (puLoader != null) { // We have initialized PU
+                    if(isDas()) {
+                        //We execute Java2DB only on DAS
+                        puLoader.doJava2DB();
+                    }
+
+                    // Save emf in ApplicationInfo so that it can be retrieved and closed for cleanup
+                    // The PUs
+                    List<EntityManagerFactory> emfsCreatedForThisApp = appInfo.getTransientAppMetaData(EMF_KEY, List.class );
+                    if(emfsCreatedForThisApp == null) {
+                        //First EMF for this app, initialize
+                        emfsCreatedForThisApp = new ArrayList<EntityManagerFactory>();
+                        appInfo.addTransientAppMetaData(EMF_KEY, emfsCreatedForThisApp);
+                    }
+                    emfsCreatedForThisApp.add(puLoader.getEMF());
                 }
             }
         };

@@ -57,26 +57,7 @@ import com.sun.logging.LogDomains;
  */
 public class JPApplicationContainer implements ApplicationContainer {
 
-    /**
-     * emfs loaded from this bundle. These emfs are closed in stop()
-     */
-    List<EntityManagerFactory> emfs;
-
-    private static Logger logger = LogDomains.getLogger(PersistenceUnitLoader.class, LogDomains.PERSISTENCE_LOGGER);
-
-    public JPApplicationContainer(List<EntityManagerFactory> emfs) {
-        this.emfs = emfs;
-    }
-
-    private void closeAllEMFs() {
-        for(EntityManagerFactory emf : emfs) {
-            try {
-                logger.logp(Level.FINE, "JPApplicationContainer", "closeEMF", "emf = {0}", emf);
-                emf.close();
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-            }
-        }
+    public JPApplicationContainer() {
     }
 
     //-------------- Begin Methods implementing ApplicationContainer interface -------------- //
@@ -89,7 +70,6 @@ public class JPApplicationContainer implements ApplicationContainer {
     }
 
     public boolean stop(ApplicationContext stopContext) {
-        closeAllEMFs();
         return true;
     }
 
