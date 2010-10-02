@@ -310,7 +310,10 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
 
         ch.setActive(true);
         incrementCount();
-
+        //associate the MC to the supplied logical connection similar to associating the logical connection
+        //with this MC and actual-connection.
+        myLogicalConnection = ch;
+        
         //mc will be null in case we are lazily associating 
         if (mc != null) {
             mc.decrementCount();
@@ -859,7 +862,10 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
     }
 
     public void dissociateConnections() {
-        myLogicalConnection.setManagedConnection(null);
+        if(myLogicalConnection != null){
+            myLogicalConnection.dissociateConnection();
+            myLogicalConnection = null;
+        }
     }
 
     public boolean getLastAutoCommitValue() {

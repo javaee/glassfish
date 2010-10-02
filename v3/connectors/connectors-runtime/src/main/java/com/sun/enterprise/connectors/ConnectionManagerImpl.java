@@ -287,6 +287,11 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
                         "  txLevel : " + txLevel);
             }
 
+             if ( conn != null ) {
+                 spec.setConnectionToAssociate( conn );
+             }
+
+
             return getResource(txLevel, poolmgr, mcf, spec, subject, cxRequestInfo, info, desc, shareable);
 
         } catch (PoolingException ex) {

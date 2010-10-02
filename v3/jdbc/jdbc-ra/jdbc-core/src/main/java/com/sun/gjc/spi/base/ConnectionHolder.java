@@ -176,6 +176,15 @@ public abstract class ConnectionHolder implements Connection {
     }
 
     /**
+     * Dis-associate ManagedConnection and actual-connection from this user connection.
+     * Used when lazy-connection-association is ON.
+     */
+    public void dissociateConnection() {
+        this.mc = null;
+        this.con = null;
+    }
+
+    /**
      * Clears all warnings reported for the underlying connection  object.
      *
      * @throws SQLException In case of a database error.
@@ -784,9 +793,11 @@ public abstract class ConnectionHolder implements Connection {
         lazyEnlistCm_ = cm;
     }
 
+/*
     public void setManagedConnection(ManagedConnection con) {
         this.mc = con;
     }
+*/
 
     /**
      * Installs the given <code>Map</code> object as the tyoe map for this
