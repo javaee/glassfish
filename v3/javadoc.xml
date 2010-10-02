@@ -569,7 +569,7 @@ fileset refid of artifact:dependencies does not work in unjar
     <mkdir dir="${build.javadocs}"/>
     <javadoc sourcepathref="src.dir"
              destdir="${build.javadocs}"
-	     excludepackagenames="com.*,org.*,sample.*,killer.*,net.*,testing.*,java.*,javax.xml.messaging.*,javax.xml.registry.samples.*,javax.xml.namespace.*,javassist.*"
+	     excludepackagenames="com.*,org.*,sample.*,killer.*,net.*,testing.*,java.*,javax.xml.messaging.*,javax.xml.registry.samples.*,javax.xml.namespace.*,javassist.*,ch."
              maxmemory="2048m"
              author="true"
              version="true"
