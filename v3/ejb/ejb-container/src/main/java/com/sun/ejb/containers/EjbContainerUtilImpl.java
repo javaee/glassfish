@@ -516,7 +516,7 @@ public class EjbContainerUtilImpl
                         File rootScratchDir = env.getApplicationStubPath();
                         File appScratchDir = new File(rootScratchDir, appName);
                         String resourceName = getTimerResource(target);
-                        if (isDas() && !isUpgrade(resourceName) && appScratchDir.createNewFile()) {
+                        if (isDas() && !isUpgrade(resourceName, target) && appScratchDir.createNewFile()) {
                             params.origin = OpsParams.Origin.deploy;
                             if (target != null) {
                                 params.target = target;
@@ -535,14 +535,14 @@ public class EjbContainerUtilImpl
                         deployment.deploy(dc);
 
                         if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
-                            _logger.log (Level.WARNING, "Cannot deploy or load EJBTimerService: " +
+                            _logger.log (Level.WARNING, "Cannot deploy or load EJBTimerService: ",
                                     report.getFailureCause());
                         }
 
                         _logger.log(Level.INFO, "ejb.timer_service_started", new Object[] { resourceName } );
 
-                    } catch (Exception ioe) {
-                        _logger.log (Level.WARNING, "Cannot deploy or load EJBTimerService: " + ioe);
+                    } catch (Exception e) {
+                        _logger.log (Level.WARNING, "Cannot deploy or load EJBTimerService: ", e);
                     }
                 }
             }
@@ -551,11 +551,11 @@ public class EjbContainerUtilImpl
         _ejbTimerServiceVerified = true;
     }
 
-    private boolean isUpgrade(String resource) {
+    private boolean isUpgrade(String resource, String target) {
         boolean upgrade = false;
 
-        EjbTimerService ejbt = getEjbContainer().getEjbTimerService();
         Property prop = null;
+        EjbTimerService ejbt = getEjbTimerService(target);
         if (ejbt != null) {
             List<Property> properties = ejbt.getProperty();
             if (properties != null) {
@@ -614,6 +614,19 @@ public class EjbContainerUtilImpl
 
     private String getTimerResource(String target) {
         String resource = EjbContainerUtil.TIMER_RESOURCE_JNDI;
+        EjbTimerService ejbt = getEjbTimerService(target);
+        if (ejbt != null) {
+            if (ejbt.getTimerDatasource() != null) {
+                resource = ejbt.getTimerDatasource();
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("Found Timer Service resource name " + resource);
+                }
+            }
+        }
+        return resource;
+    }
+
+    private EjbTimerService getEjbTimerService(String target) {
         EjbTimerService ejbt = null;
         if (target == null) {
             if (_logger.isLoggable(Level.FINE)) {
@@ -631,15 +644,8 @@ public class EjbContainerUtilImpl
             }
             ejbt = config.getEjbContainer().getEjbTimerService();
         }
-        if (ejbt != null) {
-            if (ejbt.getTimerDatasource() != null) {
-                resource = ejbt.getTimerDatasource();
-                if (_logger.isLoggable(Level.FINE)) {
-                    _logger.fine("Found Timer Service resource name " + resource);
-                }
-            }
-        }
-        return resource;
+
+        return ejbt;
     }
 
     public ProbeProviderFactory getProbeProviderFactory() {

@@ -79,6 +79,7 @@ import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.server.ServerEnvironmentImpl;
+import com.sun.enterprise.module.bootstrap.StartupContext;
 
 import org.glassfish.api.invocation.RegisteredComponentInvocationHandler;
 import org.glassfish.ejb.security.application.EJBSecurityManager;
@@ -120,6 +121,9 @@ public class EjbDeployer
     @Inject
     private Events events;
 
+    @Inject
+    StartupContext startupContext;
+
     private Object lock = new Object();
     private volatile CMPDeployer cmpDeployer = null;
 
@@ -148,6 +152,16 @@ public class EjbDeployer
 
     @Override
     public void postConstruct() {
+        Properties arguments = startupContext.getArguments();
+        if (arguments != null) {
+            boolean isUpgrade = Boolean.valueOf(arguments.getProperty("-upgrade"));
+            if (isUpgrade) {
+                // we don't want to register this listener for the upgrade
+                // start up
+                return;
+            }
+        }
+
         events.register(this);
     }
 

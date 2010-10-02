@@ -45,6 +45,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Configs;
+import com.sun.enterprise.config.serverbeans.EjbContainer;
 import org.glassfish.api.admin.config.ConfigurationUpgrade;
 import com.sun.enterprise.config.serverbeans.EjbTimerService;
 import com.sun.ejb.containers.EjbContainerUtil;
@@ -66,39 +69,46 @@ import org.jvnet.hk2.config.types.Property;
 public class EJBTimerServiceUpgrade implements PostConstruct, ConfigurationUpgrade {
 
     @Inject
-    private EjbTimerService ts;
+    Configs configs;
 
     public void postConstruct() {
-        if (ts != null) {
-            String value = ts.getMinimumDeliveryIntervalInMillis();
-            if (value == null || "7000".equals(value)) {
-                value = "" + EjbContainerUtil.MINIMUM_TIMER_DELIVERY_INTERVAL;
+        for (Config config : configs.getConfig()) {
+            EjbContainer container = config.getEjbContainer();
+            if (container != null && container.getEjbTimerService() != null) {
+                doUpgrade(container.getEjbTimerService());
             }
+        }
+    }
 
-            List<Property> properties = ts.getProperty();
-            if (properties != null) {
-                for (Property p : properties) {
-                    if (p.getName().equals(EjbContainerUtil.TIMER_SERVICE_UPGRADED)) {
-                        return; // Already set
-                    }
+    private void doUpgrade(EjbTimerService ts) {
+        String value = ts.getMinimumDeliveryIntervalInMillis();
+        if (value == null || "7000".equals(value)) {
+            value = "" + EjbContainerUtil.MINIMUM_TIMER_DELIVERY_INTERVAL;
+        }
+
+        List<Property> properties = ts.getProperty();
+        if (properties != null) {
+            for (Property p : properties) {
+                if (p.getName().equals(EjbContainerUtil.TIMER_SERVICE_UPGRADED)) {
+                    return; // Already set
                 }
             }
-            try {
-                final String minDelivery = value;
-                ConfigSupport.apply(new SingleConfigCode<EjbTimerService>() {
+        }
+        try {
+            final String minDelivery = value;
+            ConfigSupport.apply(new SingleConfigCode<EjbTimerService>() {
 
-                    public Object run(EjbTimerService ts) throws PropertyVetoException, TransactionFailure {
-                        Property prop = ts.createChild(Property.class);
-                        ts.getProperty().add(prop);
-                        prop.setName(EjbContainerUtil.TIMER_SERVICE_UPGRADED);
-                        prop.setValue("false");
-                        ts.setMinimumDeliveryIntervalInMillis(minDelivery);
-                        return null;
-                    }
-                }, ts);
-            } catch(Exception e) {
-                e.printStackTrace();
-            }
+                public Object run(EjbTimerService ts) throws PropertyVetoException, TransactionFailure {
+                    Property prop = ts.createChild(Property.class);
+                    ts.getProperty().add(prop);
+                    prop.setName(EjbContainerUtil.TIMER_SERVICE_UPGRADED);
+                    prop.setValue("false");
+                    ts.setMinimumDeliveryIntervalInMillis(minDelivery);
+                    return null;
+                }
+            }, ts);
+        } catch(Exception e) {
+            e.printStackTrace();
         }
     }
 }
