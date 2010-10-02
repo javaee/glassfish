@@ -143,4 +143,25 @@ public class WindowsShortcutManager extends WindowsScriptManager {
 		return retStatus;
 	}
 
+
+   	/* Delete the folder that holds the shortcut. */
+	public boolean deleteShortCut(String tFolderName, String tLinkName) {
+
+		boolean retStatus = true;
+		WindowsScriptManager wsMgr = new WindowsScriptManager();
+
+		wsMgr.DELETE_ITEM_SCRIPT_CODE = wsMgr.DELETE_ITEM_SCRIPT_CODE
+				.replaceAll("%%FOLDER_NAME%%", tFolderName)
+                                .replaceAll("%%NAME%%", tLinkName);
+                try {
+
+			wsMgr.execute(wsMgr.DELETE_ITEM_SCRIPT_CODE);
+		} catch (Exception ex) {
+			// Should we log this?
+			retStatus = false;
+		}
+
+       	return retStatus;
+	}
+
 }

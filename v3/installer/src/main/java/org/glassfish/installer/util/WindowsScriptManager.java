@@ -98,7 +98,7 @@ public class WindowsScriptManager {
 	// Script code to delete the entire program group folder.
 	protected String DELETE_FOLDER_SCRIPT_CODE =
 
-	"Dim WSHShell, LinkFile, StrUserDesktop, FsObj"
+	"Dim WSHShell, StrUserDesktop, FsObj"
 			+ "\n"
 			+ "Set WSHShell = WScript.CreateObject(\"WScript.Shell\")"
 			+ "\n"
@@ -112,7 +112,7 @@ public class WindowsScriptManager {
 			+ "\n" + "End If" + "\n";
 
 	// Script code to create the entire program group folder.
-	protected String CREATE_FOLDER_SCRIPT_CODE = "Dim WSHShell, LinkFile, StrUserDesktop, FsObj"
+	protected String CREATE_FOLDER_SCRIPT_CODE = "Dim WSHShell, StrUserDesktop, FsObj"
 			+ "\n"
 			+ "Set WSHShell = WScript.CreateObject(\"WScript.Shell\")"
 			+ "\n"
@@ -125,9 +125,22 @@ public class WindowsScriptManager {
 			+ "	FsObj.CreateFolder(StrUserDesktop & \"\\%%FOLDER_NAME%%\")"
 			+ "\n" + "End If" + "\n";
 
-	// Script code to delete individual shortcuts, as we do not support
-	// incremental uninstallation now, this is a noop.
-	protected String DELETE_ITEM_SCRIPT_CODE = "NOT CURRENTLY USED";
+	// Script code to delete individual shortcuts.
+        protected String DELETE_ITEM_SCRIPT_CODE =
+            "Dim WSHShell, StrUserDesktop, FsObj"
+            + "\n"
+            + "Set WSHShell = WScript.CreateObject(\"WScript.Shell\")"
+            + "\n"
+            + "StrUserDesktop = WshShell.SpecialFolders(\"StartMenu\")"
+            + "\n \n"
+            + "Set FsObj = CreateObject(\"Scripting.FileSystemObject\")"
+            + "\n"
+            + "If FsObj.FileExists(StrUserDesktop & \"\\%%FOLDER_NAME%%\\%%NAME%%\") Then"
+            + "\n"
+            + "	FsObj.DeleteFile(StrUserDesktop & \"\\%%FOLDER_NAME%%\\%%NAME%%\")"
+            + "\n" + "End If" + "\n";
+
+
 
 	/*
 	 * Generic execute method, that takes in the cscript commands, convert it to
