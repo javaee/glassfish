@@ -221,32 +221,6 @@ public class ConnectorXAResource implements XAResource {
         listenerTable.remove(mc);
     }
 
-    private ResourceHandle getResourceHandle(JavaEETransaction javaEETransaction) throws PoolingException,
-            ResourceException {
-        ResourceHandle h = null;
-        
-        if (javaEETransaction == null) {      //Only if some thing is wrong with tx manager.
-            h = localHandle_;        //Just return the local handle.
-        } else {
-            h = (ResourceHandle)javaEETransaction.getNonXAResource();
-        //make sure that if local-tx resource is set as 'unshareable', only one resource
-        //can be acquired. If the resource in question is not the one in transaction, fail
-        if(!localHandle_.isShareable()){
-               if(h != localHandle_){
-                    throw new ResourceAllocationException("Cannot use more than one local-tx resource " +
-                            "in unshareable scope");
-                }
-            }
-        }
-        if (h.getResourceState().isUnenlisted()) {
-            ManagedConnection mc = (ManagedConnection) h.getResource();
-            // begin the local transaction if first time
-            // this ManagedConnection is used in this JTA transaction
-            mc.getLocalTransaction().begin();
-        }
-        return h;
-    }
-
     private ResourceHandle getResourceHandle() throws PoolingException {
         try {
             ResourceHandle h = null;
