@@ -43,6 +43,7 @@ import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.HabitatFactory;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.InhabitantsParserFactory;
 
 import java.io.*;
 import java.util.*;
@@ -63,20 +64,33 @@ public class Hk2TestServices {
     private Habitat habitat;
     
     private final HabitatFactory habitatFactory;
+
+    private final InhabitantsParserFactory ipFactory;
     
     private final Logger logger = Logger.getLogger(Hk2TestServices.class.getName());
     
     public Hk2TestServices() {
-        this(null);
+        this(null, null);
     }
 
     @SuppressWarnings("deprecation")
-    public Hk2TestServices(Class<? extends HabitatFactory> habitatFactoryClass) {
+    protected Hk2TestServices(Class<? extends HabitatFactory> habitatFactoryClass,
+        Class<? extends InhabitantsParserFactory> ipFactoryClass) {
       if (null == habitatFactoryClass || habitatFactoryClass.isInterface()) {
-          habitatFactory = null;
+          this.habitatFactory = null;
       } else {
           try {
-              habitatFactory = habitatFactoryClass.newInstance();
+              this.habitatFactory = habitatFactoryClass.newInstance();
+          } catch (Exception e) {
+              throw new RuntimeException(e);
+          }
+      }
+      
+      if (null == ipFactoryClass || ipFactoryClass.isInterface()) {
+        this.ipFactory = null;
+      } else {
+          try {
+            this.ipFactory = ipFactoryClass.newInstance();
           } catch (Exception e) {
               throw new RuntimeException(e);
           }
@@ -193,7 +207,7 @@ public class Hk2TestServices {
 //      System.out.println("Starting to introspect");
       logger.log(Level.FINER, "Starting to introspect");
       
-      final InhabitantsParser ip = new InhabitantsParser(habitat);
+      final InhabitantsParser ip = createInhabitantsParser(habitat);
       IntrospectionScanner is = new IntrospectionScanner(context);
       try {
           ip.parse(is, holder);
@@ -355,4 +369,12 @@ public class Hk2TestServices {
         }
         return new Habitat(); 
     }
+
+    public InhabitantsParser createInhabitantsParser(Habitat h) throws ComponentException {
+      if (null != ipFactory) {
+        return ipFactory.createInhabitantsParser(h);
+      }
+      
+      return new InhabitantsParser(h); 
+  }
 }

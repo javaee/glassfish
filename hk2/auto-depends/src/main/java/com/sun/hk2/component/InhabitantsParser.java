@@ -121,7 +121,6 @@ public class InhabitantsParser {
             return;
         
         for( InhabitantParser inhabitantParser : scanner) {
-            
             if (isFilteredInhabitant(inhabitantParser)) {
                 continue;    
             }
@@ -139,7 +138,6 @@ public class InhabitantsParser {
                     habitat.addIndex(i,typeName,null);
                 }
             } else {
-                
                 Set<String> indicies = new HashSet<String>();
                 Iterator<String> iter = inhabitantParser.getIndexes().iterator();
                 while (iter.hasNext()) {

@@ -230,7 +230,9 @@ public class Hk2Runner extends Runner {
     }
 
     private void wombInit() {
-      singleton = new Hk2TestServices(null == options ? null : options.habitatFactory());
+      singleton = new Hk2TestServices(
+          null == options ? null : options.habitatFactory(),
+          null == options ? null : options.inhabitantsParserFactory());
       
       Habitat habitat = singleton.getHabitat();
       // so far we don't support extra meta-data on our tests.
