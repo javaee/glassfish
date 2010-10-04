@@ -70,7 +70,7 @@ public abstract class BackupCommands extends LocalDomainCommand {
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(BackupCommands.class);
 
-    @Param(name = "verbose", optional = true)
+    @Param(name = "long", alias = "verbose", optional = true)
     boolean verbose;
  
     @Param(name = "domain_name", primary = true, optional = true)
