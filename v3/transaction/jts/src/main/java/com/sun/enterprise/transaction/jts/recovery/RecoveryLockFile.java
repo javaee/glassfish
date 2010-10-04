@@ -119,9 +119,7 @@ public class RecoveryLockFile implements TransactionRecoveryFence, DelegatedTran
             log_path = RecoveryManager.getLogDirectory();
             // Create (if it doesn't exist) recoveryLockFile to hold info about instance and delegated recovery
             File recoveryLockFile = LogControl.recoveryLockFile(null, log_path);
-            if (recoveryLockFile.createNewFile()) {
-                recoveryLockFile.setWritable(true, false);
-            }
+            recoveryLockFile.createNewFile();
         } catch (Exception ex) {
             _logger.log(Level.WARNING, "jts.exception_in_recovery_file_handling", ex);
         }
