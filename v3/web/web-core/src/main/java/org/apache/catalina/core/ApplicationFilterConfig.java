@@ -115,7 +115,16 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
         super();
         this.context = context;
         setFilterDef(filterDef);
-
+        // init the filter
+        try {
+            getFilter();
+        } catch(InstantiationException iex) {
+            throw iex;
+        } catch(Exception ex) {
+            InstantiationException iex = new InstantiationException();
+            iex.initCause(ex);
+            throw iex;
+        }
     }
 
 
