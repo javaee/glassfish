@@ -92,6 +92,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>osgi-ejb-container</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-ejb-lite-plugin</artifactId>
             <version>${project.version}</version>
