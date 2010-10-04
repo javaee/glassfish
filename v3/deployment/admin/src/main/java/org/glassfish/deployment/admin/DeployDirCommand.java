@@ -78,7 +78,8 @@ public class DeployDirCommand extends DeployCommand implements AdminCommand {
         ActionReport.MessagePart msgPart = report.getTopMessagePart();
         msgPart.setChildrenType("WARNING");
         ActionReport.MessagePart childPart = msgPart.addChild();
-        childPart.setMessage(localStrings.getLocalString("deploydir.command.deprecated", "{0} command deprecated.  Please use {1} command instead.", "deploydir", "deploy"));
+        String commandName = getClass().getAnnotation(Service.class).name();
+        childPart.setMessage(localStrings.getLocalString("deploydir.command.deprecated", "{0} command deprecated.  Please use {1} command instead.", commandName, "deploy"));
         super.execute(context);
     }
 }
