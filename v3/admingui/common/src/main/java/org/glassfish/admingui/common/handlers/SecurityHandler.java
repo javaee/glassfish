@@ -191,8 +191,8 @@ public class SecurityHandler {
                     continue;
                 }
                 oneRow.put("selected", false);
-                oneRow.put(m.getKey(), m.getValue());
-                oneRow.put("encodedName", GuiUtil.encode((String)m.getKey(), null,null) );
+                oneRow.put("name", m.getKey());
+                oneRow.put("value", m.getValue());
                 result.add(oneRow);
             }
         }
@@ -279,32 +279,23 @@ public class SecurityHandler {
 
         Boolean edit = (Boolean) handlerCtx.getInputValue("edit");
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
-        if (edit.booleanValue()){
-            Map values = new HashMap();
-            values.put("classname", classname);
-            String propertyStr ="";
-            for(Map oneProp: propList){
-               propertyStr = propertyStr + oneProp.get("name") + "=";
-               propertyStr = propertyStr + oneProp.get("value") + ":";
-            }
-            values.put("property", propertyStr);
-            values.put("target", attrMap.get("target"));
-            RestApiHandlers.restRequest(endpoint , values, "post", handlerCtx);
-        }else{
-            Map<String, Object> cMap = new HashMap();
-            cMap.put("name", attrMap.get("Name"));
-            cMap.put("classname", classname);
-            String propertyStr ="";
-            for(Map oneProp: propList){
-               propertyStr = propertyStr + oneProp.get("name") + "=";
-               propertyStr = propertyStr + oneProp.get("value") + ":";
-            }
-            endpoint = endpoint + "/auth-realm";
-            cMap.put("target", attrMap.get("target"));
-            cMap.put("property", propertyStr);
-            RestApiHandlers.restRequest(endpoint, cMap, "post", handlerCtx);
+        if (edit.booleanValue()) {
+            HashMap attrs = new HashMap<String, Object>();
+            RestApiHandlers.delete(endpoint, attrs);
+            endpoint = endpoint.substring(0, endpoint.indexOf("/auth-realm"));
         }
-
+        Map<String, Object> cMap = new HashMap();
+        cMap.put("name", attrMap.get("Name"));
+        cMap.put("classname", classname);
+        String propertyStr ="";
+        for(Map oneProp: propList){
+           propertyStr = propertyStr + oneProp.get("name") + "=";
+           propertyStr = propertyStr + oneProp.get("value") + ":";
+        }
+        endpoint = endpoint + "/auth-realm";
+        cMap.put("target", attrMap.get("target"));
+        cMap.put("property", propertyStr);
+        RestApiHandlers.restRequest(endpoint, cMap, "post", handlerCtx);
       }catch(Exception ex){
           GuiUtil.handleException(handlerCtx, ex);
       }
