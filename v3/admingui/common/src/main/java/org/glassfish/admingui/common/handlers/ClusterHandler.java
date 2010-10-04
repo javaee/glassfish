@@ -150,45 +150,30 @@ public class ClusterHandler {
     public static void clusterAction(HandlerContext handlerCtx) {
         String action = (String) handlerCtx.getInputValue("action");
         List<Map> rows =  (List<Map>) handlerCtx.getInputValue("rows");
-        List errorClusters = new ArrayList();
-        Map response = null;
+        String  errorMsg = null;
         String prefix = GuiUtil.getSessionValue("REST_URL") + "/clusters/cluster/";
 
         for (Map oneRow : rows) {
             String clusterName = (String) oneRow.get("name");
-
-            boolean error = false;
             if (action.equals("delete-cluster")){
                 //need to delete the clustered instance first
                 Map clusterInstanceMap = (Map)handlerCtx.getInputValue("extraInfo");
                 List<String> instanceNameList = (List) clusterInstanceMap.get(clusterName);
                 for(String instanceName : instanceNameList){
-                    response = deleteInstance(instanceName, null);
-                    if (response == null){
-                        errorClusters.add(clusterName);
-                        error = true;
-                        break;
+                    errorMsg = deleteInstance(instanceName);
+                    if (errorMsg != null){
+                        GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), errorMsg);
+                        return;
                     }
-                }
-                if (error){
-                    continue;
                 }
             }
             try{
-                response = RestApiHandlers.restRequest( prefix + clusterName + "/" + action, null, "post" ,null);
+                RestApiHandlers.restRequest( prefix + clusterName + "/" + action, null, "post" ,null);
             }catch (Exception ex){
-                GuiUtil.getLogger().severe("Error in clusterAction ; \nendpoint = " + prefix + clusterName + "/" + action + ", attrMap = null" );
-                response = null;
-            }
-            if (response == null) {
-                errorClusters.add(clusterName);
+                GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), ex.getMessage());
+                return;
             }
         }
-        if (errorClusters.size() > 0){
-            String details = GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.error."+"action" , new String[]{""+errorClusters});
-            GuiUtil.handleError(handlerCtx, details);
-        }
-
      }
 
 
@@ -199,36 +184,31 @@ public class ClusterHandler {
     public static void instanceAction(HandlerContext handlerCtx) {
         String action = (String) handlerCtx.getInputValue("action");
         List<Map> rows =  (List<Map>) handlerCtx.getInputValue("rows");
-        List errorInstances = new ArrayList();
-        Map response = null;
         String prefix = GuiUtil.getSessionValue("REST_URL") + "/servers/server/";
 
         for (Map oneRow : rows) {
             String instanceName = (String) oneRow.get("name");
             if(action.equals("delete-instance")){
-                response = deleteInstance(instanceName, (String) oneRow.get("node"));
+                String errorMsg = deleteInstance(instanceName);
+                if (errorMsg != null){
+                    GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), errorMsg);
+                    return;
+                }
             }else{
                 try {
-                   response = RestApiHandlers.restRequest(prefix + instanceName + "/" + action , null, "post" ,null);
+                   RestApiHandlers.restRequest(prefix + instanceName + "/" + action , null, "post" ,null);
                 } catch (Exception ex){
                     GuiUtil.getLogger().severe("Error in instanceAction ; \nendpoint = " + prefix + instanceName + "/" + action  + "attrsMap=" + null);
-                    response = null;
+                    GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), ex.getMessage());
+                    return;
                 }
-            }
-            if (response ==null){
-                errorInstances.add(instanceName);
             }
         }
-        if (errorInstances.size() > 0){
-            String details = GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "instance.error."+"action" , new String[]{""+errorInstances});
-            GuiUtil.handleError(handlerCtx, details);
-        }else{
-            if(action.equals("stop-instance")){
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    //e.printStackTrace();
-                }
+        if(action.equals("stop-instance")){
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                //e.printStackTrace();
             }
         }
      }
@@ -353,21 +333,16 @@ public class ClusterHandler {
         handlerCtx.setOutputValue("result", result);
      }
 
-    private static Map deleteInstance(String instanceName, String nodeName){
-       /* if (GuiUtil.isEmpty(nodeName)){
-            Map iMap = RestApiHandlers.getAttributesMap(GuiUtil.getSessionValue("REST_URL")+"/servers/server/" + instanceName);
-            nodeName = (String) iMap.get("Node");
-        }
-        Map attrsMap = new HashMap();
-        attrsMap.put("nodeagent", nodeName);
-        */
+    // If successfully deleted the instance, null will be returned, otherwise, return the error string to be displayed to user.
+    private static String deleteInstance(String instanceName){
         try{
-            return  RestApiHandlers.restRequest( GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instanceName + "/delete-instance", null, "post" ,null);
+            RestApiHandlers.restRequest( GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instanceName + "/delete-instance", null ,"post", null );
+            return null;
         }catch(Exception ex){
             GuiUtil.getLogger().severe("Error in deleteInstance ; \nendpoint = " +
-                            GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instanceName + "/delete-instance\n" +
-                            "attrsMap=" + null);
-            return null;
+                    GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instanceName + "/delete-instance\n" +
+                    "attrsMap=" + null);
+            return ex.getMessage();
         }
     }
 
