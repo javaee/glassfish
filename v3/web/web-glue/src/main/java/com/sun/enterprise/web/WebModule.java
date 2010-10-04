@@ -42,6 +42,7 @@ package com.sun.enterprise.web;
 
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.container.common.spi.util.JavaEEIOUtils;
 import com.sun.enterprise.container.common.spi.util.JavaEEObjectStreamFactory;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.annotation.handlers.ServletSecurityHandler;
@@ -1517,7 +1518,7 @@ public class WebModule extends PwcWebModule implements Context {
      * @param props the deployment context properties to which to save the
      * sessions
      */
-    void saveSessions(Properties props) {
+    void saveSessions(Properties props, JavaEEIOUtils ioUtils) {
         if (props == null) {
             return;
         }
@@ -1529,7 +1530,9 @@ public class WebModule extends PwcWebModule implements Context {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
-            manager.writeSessions(baos);
+            ObjectOutputStream oos = ioUtils.createObjectOutputStream(baos, true);
+            manager.writeSessions(oos);
+            oos.close();
             props.setProperty(getObjectName(),
                               gfEncoder.encode(baos.toByteArray()));
         } catch (Exception ex) {
@@ -1546,7 +1549,7 @@ public class WebModule extends PwcWebModule implements Context {
      * @param deploymentProperties the deployment context properties from
      * which to load the sessions
      */
-    void loadSessions(Properties deploymentProperties) {
+    void loadSessions(Properties deploymentProperties, JavaEEIOUtils ioUtils, ClassLoader cl) {
         if (deploymentProperties == null) {
             return;
         }
@@ -1561,7 +1564,9 @@ public class WebModule extends PwcWebModule implements Context {
             try {
                 ByteArrayInputStream bais = new ByteArrayInputStream(
                     gfDecoder.decodeBuffer(sessions));
-                manager.readSessions(bais);
+                ObjectInputStream ois = ioUtils.createObjectInputStream(bais, true, cl);
+                manager.readSessions(ois);
+                ois.close();
             } catch (Exception ex) {
                 String msg = rb.getString("webModule.unableToRestoreSessionsDuringRedeploy");
                 msg = MessageFormat.format(msg, getName());

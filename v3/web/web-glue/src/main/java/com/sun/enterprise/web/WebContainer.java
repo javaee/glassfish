@@ -47,6 +47,7 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.SessionProperties;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
+import com.sun.enterprise.container.common.spi.util.JavaEEIOUtils;
 import com.sun.enterprise.container.common.spi.util.JavaEEObjectStreamFactory;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
@@ -155,7 +156,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             "com.sun.enterprise.web.deployment.backend";
 
     private static final String MONITORING_NODE_SEPARATOR = "/";
-
     /**
      * The logger to use for logging ALL web container related messages.
      */
@@ -217,6 +217,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     @Inject
     private FileLoggerHandler logHandler;
+
+    @Inject
+    private JavaEEIOUtils ioUtils;
 
     private HashMap<String, WebConnector> connectorMap = new HashMap<String, WebConnector>();
 
@@ -1928,7 +1931,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         vs.addChild(ctx);
 
-        ctx.loadSessions(deploymentProperties);
+        ctx.loadSessions(deploymentProperties, ioUtils, ctx.getClassLoader());
         // release DeploymentContext in memory
         wmInfo.setDeploymentContext(null);
 
@@ -2135,7 +2138,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     || verifyAlias(hostList, host)) {
                 context = (WebModule)host.findChild(contextRoot);
                 if(context != null) {
-                    context.saveSessions(props);
+                    context.saveSessions(props, ioUtils);
                     host.removeChild(context);
 
                     webStatsProviderBootstrap.unregisterApplicationStatsProviders(
