@@ -67,13 +67,13 @@ public class CLIUtil {
     public static Map<String, String> readPasswordFileOptions(
                         final String passwordFileName, boolean withPrefix) 
                         throws CommandException {
-        
-        File file = new File(passwordFileName);
-        
+
         Map<String, String> passwordOptions = new HashMap<String, String>();
+        boolean readStdin = passwordFileName.equals("-");
         InputStream is = null;
         try {
-            is = new BufferedInputStream(new FileInputStream(file));
+            is = new BufferedInputStream(
+                readStdin ? System.in : new FileInputStream(passwordFileName));
             final Properties prop = new Properties();
             prop.load(is);
             for (Object key : prop.keySet()) {
@@ -90,7 +90,7 @@ public class CLIUtil {
             throw new CommandException(e);
         } finally {
             try {
-                if (is != null)
+                if (!readStdin && is != null)
                     is.close();
             } catch (final Exception ignore) { }
         }

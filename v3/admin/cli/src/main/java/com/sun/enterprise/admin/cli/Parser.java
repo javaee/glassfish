@@ -322,7 +322,8 @@ public class Parser {
 
         if (opt.getType() == File.class) {
             File f = new File(value);
-            if (!(f.isFile() || f.canRead())) {
+            // allow the pseudo-file name of "-" to mean stdin
+            if (!value.equals("-") && !(f.isFile() || f.canRead())) {
                 // get a real exception for why it's no good
                 InputStream is = null;
                 try {
