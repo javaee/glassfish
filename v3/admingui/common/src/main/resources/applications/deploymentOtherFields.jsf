@@ -85,6 +85,9 @@
         <sun:checkbox id="force"  selected="#{pageSession.other['force']}" selectedValue="true" />
 </sun:property>
 
+<sun:property id="osgi" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.osgiType}" helpText="$resource{i18n.deploy.osgiTypeHelp}">
+    <sun:checkbox id="osgi"  selected="#{pageSession.other['type']}" selectedValue="osgi" />
+</sun:property>
 
 <sun:property id="librariesProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Libraries}" helpText="$resource{i18n.deploy.libraryHelp}" >
 	<sun:textField id="library" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.common.Libraries']}" text="#{pageSession.other['libraries']}" />

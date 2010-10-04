@@ -48,7 +48,7 @@
         setAttribute(key="fieldMap" value="other");
         createMap(result="#{pageSession.other}")
         mapPut(map="#{pageSession.deployMap}", key="other", value="#{pageSession.other}");
-        mapPut(map="#{pageSession.other}", key="convertToFalseList", value={"enabled", "precompilejsp" ,  "verify", "force" } );
+        mapPut(map="#{pageSession.other}", key="convertToFalseList", value={"enabled", "precompilejsp" ,  "verify", "force"} );
      />
     <!afterCreate
         getClientId(component="$this{component}" clientId=>$page{otherId});
