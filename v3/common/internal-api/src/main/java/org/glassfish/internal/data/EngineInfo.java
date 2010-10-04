@@ -72,7 +72,6 @@ public class EngineInfo<T extends Container, U extends ApplicationContainer> {
     ContainerRegistry registry = null;
     Map<WeakReference<Thread>, Set<Integer>> addedThreadLocals = new HashMap();
     Deployer deployer;
-    final ClassLoader mainClassLoader;
 
     /**
      * Creates a new ContractProvider info with references to the container, the sniffer
@@ -84,7 +83,6 @@ public class EngineInfo<T extends Container, U extends ApplicationContainer> {
     public EngineInfo(Inhabitant<T> container, Sniffer sniffer, ClassLoader cloader) {
         this.container = container;
         this.sniffer = sniffer;
-        this.mainClassLoader = cloader;
     }
 
     /**
@@ -137,10 +135,6 @@ public class EngineInfo<T extends Container, U extends ApplicationContainer> {
      */
     public void setRegistry(ContainerRegistry registry) {
         this.registry = registry;
-    }
-
-    public ClassLoader getClassLoader() {
-        return mainClassLoader;
     }
 
     /**
