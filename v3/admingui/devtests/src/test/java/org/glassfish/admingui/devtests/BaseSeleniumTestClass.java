@@ -70,8 +70,10 @@ public class BaseSeleniumTestClass {
     public static final String TRIGGER_COMMON_TASKS = "Please Register";
     public static final String TRIGGER_REGISTRATION_PAGE = "Receive patch information and bug updates, screencasts and tutorials, support and training offerings, and more";
     public static final String MSG_ERROR_OCCURED = "An error has occurred";
+
     protected static Selenium selenium;
-    protected static int TIMEOUT = 30;
+    protected static final int TIMEOUT = 90;
+    protected static final int BUTTON_TIMEOUT = 20000;
     private static String currentTestClass = "";
 
     @BeforeClass
@@ -87,7 +89,7 @@ public class BaseSeleniumTestClass {
 
             selenium = new DefaultSelenium("localhost", Integer.parseInt(seleniumPort), "*" + browser, baseUrl);
             selenium.start();
-            selenium.setTimeout("60000");
+            selenium.setTimeout("90000");
             (new BaseSeleniumTestClass()).openAndWait("/", TRIGGER_COMMON_TASKS, 480); // Make sure the server has started and the user logged in
         }
 
@@ -262,12 +264,12 @@ public class BaseSeleniumTestClass {
     }
 
     protected void waitForButtonEnabled(String buttonId) {
-        waitForCondition("document.getElementById('" + buttonId + "').disabled == false", 10000);
+        waitForCondition("document.getElementById('" + buttonId + "').disabled == false", BUTTON_TIMEOUT);
     }
 
     protected void waitForButtonDisabled(String buttonId) {
         String value = selenium.getEval(CURRENT_WINDOW + ".document.getElementById('" + buttonId + "').disabled");
-        waitForCondition("document.getElementById('" + buttonId + "').disabled == true", 10000);
+        waitForCondition("document.getElementById('" + buttonId + "').disabled == true", BUTTON_TIMEOUT);
     }
 
     protected void waitForCondition(String js, int timeOutInMillis) {

@@ -117,5 +117,4 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         selenium.click("propertyForm:propertySheet:propertSectionTextField:configOptionProp:optC");
         clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_INSTANCES_PAGE);
     }
-
 }
