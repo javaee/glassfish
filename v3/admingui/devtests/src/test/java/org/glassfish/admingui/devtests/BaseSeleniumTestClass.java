@@ -75,6 +75,7 @@ public class BaseSeleniumTestClass {
     protected static final int TIMEOUT = 90;
     protected static final int BUTTON_TIMEOUT = 20000;
     private static String currentTestClass = "";
+    private boolean processingLogin = false;
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -242,6 +243,9 @@ public class BaseSeleniumTestClass {
                 Assert.fail("timeout");
             }
             try {
+                if (selenium.isElementPresent("j_username") && !processingLogin){
+                    handleLogin();
+                }
                 if (!textShouldBeMissing) {
                     if (selenium.isTextPresent(triggerText)) {
                         break;
@@ -261,6 +265,13 @@ public class BaseSeleniumTestClass {
             }
             sleep(1500);
         }
+    }
+
+    protected void handleLogin() {
+        processingLogin = true;
+        selenium.type("j_username", "admin");
+        clickAndWait("loginButton", TRIGGER_COMMON_TASKS);
+        processingLogin = false;
     }
 
     protected void waitForButtonEnabled(String buttonId) {
