@@ -45,6 +45,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -200,17 +201,17 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
     private Set<DeploymentElement> addModules(Map<?, ?> properties) {
         Set<DeploymentElement> modules = new HashSet<DeploymentElement>();
         Object obj = (properties == null)? null : properties.get(EJBContainer.MODULES);
-        Set<String> moduleNames = new HashSet<String>();
+        Map<String, Boolean> moduleNames = new HashMap<String, Boolean>();
 
         // Check EJBContainer.MODULES setting first - it can have an explicit set of files
         if (obj != null) {
             // Check module names first
             if (obj instanceof String) {
-                moduleNames.add((String)obj);
+                moduleNames.put((String)obj, false);
             } else if (obj instanceof String[]) {
                 String[] arr = (String[])obj;
                 for (String s : arr) {
-                    moduleNames.add(s);
+                    moduleNames.put(s, false);
                 }
             } else if (obj instanceof File) {
                 addModule(modules, moduleNames, (File)obj);
@@ -232,6 +233,20 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
             for (String s0 : entries) {
                 addModule(modules, moduleNames, new File(s0));
             }
+
+            if (!moduleNames.isEmpty()) {
+                StringBuffer sb = new StringBuffer();
+                for (String mn : moduleNames.keySet()) {
+                    if (!moduleNames.get(mn)) {
+                        sb.append(mn).append(", ");
+                    }
+                }
+                int l = sb.length();
+                if (l > 0) {
+                    // Errors found. Trim the constructed string
+                    throw new EJBException("Modules: [" + sb.substring(0, l-2) + "] do not match an entry in the classpath");
+                }
+            }
         }
 
         return modules;
@@ -242,7 +257,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
      * Returns null if it's an EJB module which name is not present in the list of requested
      * module names.
      */
-    private DeploymentElement getRequestedEJBModuleOrLibrary(File file, Set<String> moduleNames) 
+    private DeploymentElement getRequestedEJBModuleOrLibrary(File file, Map<String, Boolean> moduleNames) 
             throws Exception {
         DeploymentElement result = null;
         String fileName = file.getName();
@@ -275,12 +290,16 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                 _logger.fine("... is EJB module: " + isEJBModule);
                 if (isEJBModule) {
                     _logger.fine("... is Requested EJB module [" + moduleName + "]: " 
-                            + (moduleNames.isEmpty() || moduleNames.contains(moduleName)));
+                            + (moduleNames.isEmpty() || moduleNames.containsKey(moduleName)));
                 }
             }
 
-            if (!isEJBModule || moduleNames.isEmpty() || moduleNames.contains(moduleName)) {
+            if (!isEJBModule || moduleNames.isEmpty()) {
                 result = new DeploymentElement(file, isEJBModule);
+            } else if (moduleNames.containsKey(moduleName) && !moduleNames.get(moduleName)) {
+                // Is a requested EJB module and was not found already
+                result = new DeploymentElement(file, isEJBModule);
+                moduleNames.put(moduleName, true);
             }
 
             return result;
@@ -295,7 +314,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
     /**
      * Adds an a DeploymentElement to the Set of modules if it represents an EJB module or a library.
      */
-    private void addModule(Set<DeploymentElement> modules, Set<String> moduleNames, File f) {
+    private void addModule(Set<DeploymentElement> modules, Map<String, Boolean> moduleNames, File f) {
         try {
             if (f.exists() && !skipJar(f)) {
                 
