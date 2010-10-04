@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sun-ejb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD Sun ONE Application Server 8.0 EJB 2.1//EN" "http://www.sun.com/software/sunone/appserver/dtds/sun-ejb-jar_2_1-0.dtd">
+<sun-ejb-jar>
+  <enterprise-beans>
+     <ejb>
+        <ejb-name>SFSBEJB</ejb-name>
+        <jndi-name>ejb/ejb_sfsb_keepstate_SFSB</jndi-name>
+        <ejb-ref>
+            <ejb-ref-name>ejb/SimpleEntityHome</ejb-ref-name>
+            <jndi-name>ejb/ejb_sfsb_keepstate_SimpleEntity</jndi-name>
+        </ejb-ref>
+        <bean-cache>
+            <max-cache-size>8</max-cache-size>
+	    <resize-quantity>4</resize-quantity>
+        </bean-cache>
+     </ejb>
+     <ejb>
+        <ejb-name>SimpleEntity</ejb-name>
+        <jndi-name>ejb/ejb_sfsb_keepstate_SimpleEntity</jndi-name>
+        <resource-ref>
+            <res-ref-name>jdbc/DataSource</res-ref-name>
+            <jndi-name>jdbc/__default</jndi-name>
+        </resource-ref>
+     </ejb>
+     <ejb>
+        <ejb-name>SimpleEntityLocal</ejb-name>
+        <jndi-name>ejb/ejb_sfsb_keepstate_SimpleEntityLocal</jndi-name>
+        <resource-ref>
+            <res-ref-name>jdbc/DataSource</res-ref-name>
+            <jndi-name>jdbc/__default</jndi-name>
+        </resource-ref>
+	<bean-pool>
+	    <steady-pool-size>4</steady-pool-size>
+	    <max-pool-size>17</max-pool-size>
+	</bean-pool>
+     </ejb>
+   </enterprise-beans>
+</sun-ejb-jar>
