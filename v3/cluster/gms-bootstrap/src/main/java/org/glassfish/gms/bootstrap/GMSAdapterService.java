@@ -44,12 +44,15 @@ import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Clusters;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.ee.cms.core.GMSConstants;
+import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.logging.LogDomains;
 
 import java.beans.PropertyChangeEvent;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.Startup;
@@ -77,6 +80,9 @@ public class GMSAdapterService implements Startup, PostConstruct, ConfigListener
     final static Logger logger = LogDomains.getLogger(
         GMSAdapterService.class, LogDomains.CORE_LOGGER);
 
+    private static final StringManager strings =
+        StringManager.getManager(GMSAdapterService.class);
+
     @Inject
     Clusters clusters;
 
@@ -88,6 +94,9 @@ public class GMSAdapterService implements Startup, PostConstruct, ConfigListener
 
     @Inject
     Habitat habitat;
+
+    @Inject
+    StartupContext startupContext;
 
     static private final Object lock = new Object();
 
@@ -111,6 +120,12 @@ public class GMSAdapterService implements Startup, PostConstruct, ConfigListener
      */
     @Override
     public void postConstruct() {
+        if (startupContext != null) {
+            Properties args = startupContext.getArguments();
+            if (args != null && Boolean.valueOf(args.getProperty("-upgrade"))) {
+                return;
+            }
+        }
         if (clusters != null) {
             if (server.isDas()) {
                 checkAllClusters(clusters);
@@ -133,7 +148,8 @@ public class GMSAdapterService implements Startup, PostConstruct, ConfigListener
     public GMSAdapter getGMSAdapter() {
         synchronized(lock) {
             if (gmsAdapters.size() > 1) {
-                throw new IllegalStateException("use getGMSAdapterByName method when there are multiple clusters");
+                throw new IllegalStateException(
+                    strings.getString("use.getByName"));
             } else if (gmsAdapters.size() == 1) {
                 return gmsAdapters.get(0);
             } else {
