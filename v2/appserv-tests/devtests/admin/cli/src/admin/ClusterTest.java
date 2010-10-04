@@ -66,7 +66,7 @@ public class ClusterTest extends AdminBaseDevTest {
         if(o instanceof Double) {
             startingNumberOfClusters = (Double)o;
         }
-
+       
         // should fail since cluster not created yet
         report("get-health-no-cluster-before", !asadmin("get-health", "cl1"));
 
@@ -120,6 +120,7 @@ public class ClusterTest extends AdminBaseDevTest {
         testGetSetListCommands();
         testRestartRequired();
         testInfraCLIs();
+        testGMSSetGetValues();
         cleanup();
         stopDomain();
         stat.printSummary();
@@ -1003,6 +1004,177 @@ public class ClusterTest extends AdminBaseDevTest {
         report(tn + "delete-local-instance1", asadmin("delete-local-instance", i1name));
         report(tn + "delete-local-instance2", asadmin("delete-local-instance", i2name));
         report(tn + "delete-local-instance3", asadmin("delete-local-instance", i3name));
+        report(tn + "delete-cluster", asadmin("delete-cluster", cname));
+    }
+
+    private void testGMSSetGetValues() {
+        final String tn = "setgetGMSvaluescli-";
+        final String cname = "gmscl";
+        final String i1name = "i1";
+
+
+                //create-cluster for gms set get testing
+        report(tn+"create-cluster-"+cname, asadmin("create-cluster",
+                "--multicastport", "2231",
+                "--multicastaddress","228.9.1.3", cname));
+
+        // create an instance
+        report(tn + "create-instance-"+i1name, asadmin("create-instance",
+                "--node", "localhost", "--cluster", cname,
+                "--systemproperties", "GMS-BIND-INTERFACE-ADDRESS-"+cname+"=192.168.10.1:GMS_LISTENER_PORT-"+cname+"=9492",
+                i1name));
+
+        String expected="true";
+        String dottedattributename="clusters.cluster."+cname+".gms-enabled";
+        AsadminReturn ret = asadminWithOutput("get", dottedattributename);
+        boolean success = ret.outAndErr.indexOf(dottedattributename+"="+expected) >= 0;
+        report(tn+"test-get-gms-enabled="+expected, success);
+
+        expected="false";
+        dottedattributename="clusters.cluster."+cname+".gms-enabled";
+        ret = asadminWithOutput("set", dottedattributename+"="+expected);
+        ret = asadminWithOutput("get", dottedattributename);
+        success = ret.outAndErr.indexOf(dottedattributename+"="+expected) >= 0;
+        report(tn+"test-set-get-gms-enabled="+expected, success);
+        
+        expected="228.9.1.3";
+        dottedattributename="clusters.cluster."+cname+".gms-multicast-address";
+        ret = asadminWithOutput("get", dottedattributename);
+        success = ret.outAndErr.indexOf(dottedattributename+"="+expected) >= 0;
+        report(tn+"test-get-gms-multicast-address="+expected, success);
+
+        expected="229.10.2.2";
+        dottedattributename="clusters.cluster."+cname+".gms-multicast-address";
+        ret = asadminWithOutput("set", dottedattributename+"="+expected);
+        ret = asadminWithOutput("get", dottedattributename);
+        success = ret.outAndErr.indexOf(dottedattributename+"="+expected) >= 0;
+        report(tn+"test-set-get-gms-multicast-address="+expected, success);
+
+        expected="2231";
+        dottedattributename="clusters.cluster."+cname+".gms-multicast-port";
+        ret = asadminWithOutput("get", dottedattributename);
+        success = ret.outAndErr.indexOf(dottedattributename+"="+expected) >= 0;
+        report(tn+"test-get-gms-multicast-port="+expected, success);
+
+        expected="3388";
+        dottedattributename="clusters.cluster."+cname+".gms-multicast-port";
+        ret = asadminWithOutput("set", dottedattributename+"="+expected);
+        ret = asadminWithOutput("get", dottedattributename);
+        success = ret.outAndErr.indexOf(dottedattributename+"="+expected) >= 0;
+        report(tn+"test-set-get-gms-multicast-port="+expected, success); 
+
+        expected="3";
+        dottedattributename="configs.config."+cname+"-config.group-management-service.failure-detection.max-missed-heartbeats";
+        ret = asadminWithOutput("get", dottedattributename);
+        success = ret.outAndErr.indexOf(dottedattributename+"="+expected) >= 0;
+        report(tn+"test-get-max-missed-heartbeats="+expected, success);
+
+        expected="4";
+        dottedattributename="configs.config."+cname+"-config.group-management-service.failure-detection.max-missed-heartbeats";
+        ret = asadminWithOutput("set", dottedattributename+"="+expected);
+        ret = asadminWithOutput("get", dottedattributename);
+        success = ret.outAndErr.indexOf(dottedattributename+"="+expected) >= 0;
+        report(tn+"test-set-get-max-missed-heartbeats="+expected, success);
+
+        expected="2000";
+        dottedattributename="configs.config."+cname+"-config.group-management-service.failure-detection.heartbeat-frequency-in-millis";
+        ret = asadminWithOutput("get", dottedattributename);
+        success = ret.outAndErr.indexOf(dottedattributename+"="+expected) >= 0;
+        report(tn+"test-get-heartbeat-frequency-in-millis="+expected, success);
+
+        expected="3111";
+        dottedattributename="configs.config."+cname+"-config.group-management-service.failure-detection.heartbeat-frequency-in-millis";
+        ret = asadminWithOutput("set", dottedattributename+"="+expected);
+        ret = asadminWithOutput("get", dottedattributename);
+        success = ret.outAndErr.indexOf(dottedattributename+"="+expected) >= 0;
+        report(tn+"test-set-get-heartbeat-frequency-in-millis="+expected, success);
+
+        expected="1500";
+        dottedattributename="configs.config."+cname+"-config.group-management-service.failure-detection.verify-failure-waittime-in-millis";
+        ret = asadminWithOutput("get", dottedattributename);
+        success = ret.outAndErr.indexOf(dottedattributename+"="+expected) >= 0;
+        report(tn+"test-get-heartbeat-frequency-in-millis="+expected, success);
+
+        expected="2611";
+        dottedattributename="configs.config."+cname+"-config.group-management-service.failure-detection.verify-failure-waittime-in-millis";
+        ret = asadminWithOutput("set", dottedattributename+"="+expected);
+        ret = asadminWithOutput("get", dottedattributename);
+        success = ret.outAndErr.indexOf(dottedattributename+"="+expected) >= 0;
+        report(tn+"test-set-get-verify-failure-waittime-in-millis="+expected, success);
+
+        expected="10000";
+        dottedattributename="configs.config."+cname+"-config.group-management-service.failure-detection.verify-failure-connect-timeout-in-millis";
+        ret = asadminWithOutput("get", dottedattributename);
+        success = ret.outAndErr.indexOf(dottedattributename+"="+expected) >= 0;
+        report(tn+"test-get-verify-failure-connect-timeout-in-millis="+expected, success);
+
+         expected="21111";
+        dottedattributename="configs.config."+cname+"-config.group-management-service.failure-detection.verify-failure-connect-timeout-in-millis";
+        ret = asadminWithOutput("set", dottedattributename+"="+expected);
+        ret = asadminWithOutput("get", dottedattributename);
+        success = ret.outAndErr.indexOf(dottedattributename+"="+expected) >= 0;
+        report(tn+"test-set-get-verify-failure-connect-timeout-in-millis="+expected, success);
+
+        expected="GMS-BIND-INTERFACE-ADDRESS-"+cname;
+        String expected2="129.166.10.1";
+        String setValue=expected+"="+expected2;
+        dottedattributename="servers.server.server.system-property.GMS-BIND-INTERFACE-ADDRESS-"+cname+".name";
+        ret = asadminWithOutput("create-system-properties", setValue);
+        ret = asadminWithOutput("get", dottedattributename);
+        success = ret.outAndErr.indexOf(dottedattributename+"="+expected) >= 0;
+        report(tn+"test-create-system-properties-get-das-GMS-BIND-INTERFACE-ADDRESS-name="+expected, success);
+        dottedattributename="servers.server.server.system-property.GMS-BIND-INTERFACE-ADDRESS-"+cname+".value";
+        ret = asadminWithOutput("get", dottedattributename);
+        success = ret.outAndErr.indexOf(dottedattributename+"="+expected2) >= 0;
+        report(tn+"test-create-system-properties-get-das-GMS-BIND-INTERFACE-ADDRESS-value="+expected2, success);
+        
+        expected="${GMS_LISTENER_PORT-"+cname+"}";
+        dottedattributename="clusters.cluster."+cname+".property.GMS_LISTENER_PORT";
+        ret = asadminWithOutput("get", dottedattributename);
+        success = ret.outAndErr.indexOf(dottedattributename+"="+expected) >= 0;
+        report(tn+"test-get-GMS_LISTENER_PORT="+expected, success);
+
+        expected="${GMS-BIND-INTERFACE-ADDRESS-"+cname+"}";
+        dottedattributename="clusters.cluster."+cname+".gms-bind-interface-address";
+        ret = asadminWithOutput("get", dottedattributename);
+        success = ret.outAndErr.indexOf(dottedattributename+"="+expected) >= 0;
+        report(tn+"test-get-gms-bind-interface-address="+expected, success);
+
+        expected="192.168.10.1";
+        dottedattributename="servers.server."+i1name+".system-property.GMS-BIND-INTERFACE-ADDRESS-"+cname+".value";
+        ret = asadminWithOutput("get", dottedattributename);
+        success = ret.outAndErr.indexOf(dottedattributename+"="+expected) >= 0;
+        report(tn+"test-get--instance-GMS-BIND-INTERFACE-ADDRESS-value="+expected, success);
+
+        expected="193.169.11.2";
+        dottedattributename="servers.server."+i1name+".system-property.GMS-BIND-INTERFACE-ADDRESS-"+cname+".value";
+        ret = asadminWithOutput("set", dottedattributename+"="+expected);
+        ret = asadminWithOutput("get", dottedattributename);
+        success = ret.outAndErr.indexOf(dottedattributename+"="+expected) >= 0;
+        report(tn+"test-set-get-instance-GMS-BIND-INTERFACE-ADDRESS-value="+expected, success);
+
+        expected="GMS-BIND-INTERFACE-ADDRESS-"+cname;
+        dottedattributename="servers.server."+i1name+".system-property.GMS-BIND-INTERFACE-ADDRESS-"+cname+".name";
+        ret = asadminWithOutput("get", dottedattributename);
+        success = ret.outAndErr.indexOf(dottedattributename+"="+expected) >= 0;
+        report(tn+"test-get-instance-GMS-BIND-INTERFACE-ADDRESS-name="+expected, success);
+
+        expected="9492";
+        dottedattributename="servers.server."+i1name+".system-property.GMS_LISTENER_PORT-"+cname+".value";
+        ret = asadminWithOutput("get", dottedattributename);
+        success = ret.outAndErr.indexOf(dottedattributename+"="+expected) >= 0;
+        report(tn+"test-get-GMS_LISTENER_PORT-"+cname+".value="+expected, success);
+
+        expected="8583";
+        dottedattributename="servers.server."+i1name+".system-property.GMS_LISTENER_PORT-"+cname+".value";
+        ret = asadminWithOutput("set", dottedattributename+"="+expected);
+        ret = asadminWithOutput("get", dottedattributename);
+        success = ret.outAndErr.indexOf(dottedattributename+"="+expected) >= 0;
+        report(tn+"test-set-get-GMS_LISTENER_PORT-"+cname+".value="+expected, success);
+
+        // Cleanup
+        report(tn + "delete-instance", asadmin("delete-instance", i1name));
+
         report(tn + "delete-cluster", asadmin("delete-cluster", cname));
     }
 
