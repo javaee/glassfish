@@ -681,7 +681,7 @@ public class RunLevelServiceTest {
    */
   @SuppressWarnings("unchecked")
   @Test
-  public void multiThreadedInterrupt() throws Exception {
+  public void multiThreadedSoftInterrupt() throws Exception {
     recorders = new LinkedHashMap<Integer, Recorder>();
     rls = defRLS = new TestDefaultRunLevelService(h, false, String.class, recorders); 
 
@@ -751,10 +751,15 @@ public class RunLevelServiceTest {
    *      proceedTo(2)
    *  - A service {@link InterruptRunLevelManagedService2b} hangs
    *  - Thread #2 (a watchdog thread) finds that Thread #1 is hung, and issues a proceedTo(0)
+   *  
+   *  This has parallels to the Hard interrupt example
+   *  
+   *  @see #multiThreadedHardInterrupt2a()
+   *  @see #multiThreadedHardInterrupt2b()
    */
   @SuppressWarnings("unchecked")
   @Test
-  public void multiThreadedInterrupt2() throws Exception {
+  public void multiThreadedSoftInterrupt2() throws Exception {
     recorders = new LinkedHashMap<Integer, Recorder>();
     rls = defRLS = new TestDefaultRunLevelService(h, false, String.class, recorders); 
 
@@ -772,7 +777,6 @@ public class RunLevelServiceTest {
         try {
           sleep(400);
           Logger.getAnonymousLogger().log(Level.INFO, "issuing proceedTo(0) interrupt from thread: " + this);
-          // this will hang {@link InterruptRunLevelManagedService2b}
           rls.proceedTo(0);
         } catch (Exception e) {
           problems.add(e);
@@ -782,7 +786,7 @@ public class RunLevelServiceTest {
     watchDog.start();
     
     Logger.getAnonymousLogger().log(Level.INFO, "issuing proceedTo(1) from main thread: " + this);
-    // this main thread will be interrupted to go to 0 but only after proceedTo(2) is sent (see above)
+    // this main thread will be interrupted to go to 0 but only after proceedTo(2) is sent (see InterruptRunLevelManagedService1a)
     rls.proceedTo(1);
     
     watchDog.join();
@@ -812,9 +816,140 @@ public class RunLevelServiceTest {
 
     assertNeverGotToRunLevel(2);
     
-    assertListenerState(true, false, 1);
+    assertListenerState(true, false, 1, 0);
   }
   
+  /**
+   * This is testing the non-async version of RLS in the following scenario:
+   * 
+   *  - Thread #1 issues a proceedTo(whatever)
+   *  - One of the services activated {@link InterruptRunLevelManagedService1a} calls
+   *      proceedTo(2)
+   *  - A service {@link InterruptRunLevelManagedService2b} hangs
+   *  - Thread #2 (a watchdog thread) finds that Thread #1 is hung, and issues an interrupt(0)
+   *  
+   *  This has parallels to the Soft interrupt example.
+   *  
+   *  The {@link #multiThreadedHardInterrupt2b()} is the same, except for the different interrupt() called
+   *  
+   *  @see #multiThreadedSoftInterrupt2()
+   */
+  @SuppressWarnings("unchecked")
+  @Test
+  public void multiThreadedHardInterrupt2a() throws Exception {
+    recorders = new LinkedHashMap<Integer, Recorder>();
+    rls = defRLS = new TestDefaultRunLevelService(h, false, String.class, recorders); 
+
+    this.defRLlistener = (TestRunLevelListener) listener;
+    defRLlistener.calls.clear();
+    
+    InterruptRunLevelManagedService1a.rls = rls;
+    InterruptRunLevelManagedService1a.swallowExceptionsInProceedTo = false;
+    InterruptRunLevelManagedService2b.i = 0;
+    
+    final List problems = new ArrayList();
+    Thread watchDog = new Thread() {
+      @Override
+      public void run() {
+        try {
+          sleep(400);
+          Logger.getAnonymousLogger().log(Level.INFO, "issuing interrupt(0) from thread: " + this);
+          rls.interrupt(0);
+        } catch (Exception e) {
+          problems.add(e);
+        }
+      }
+    };
+    watchDog.start();
+    
+    Logger.getAnonymousLogger().log(Level.INFO, "issuing proceedTo(1) from main thread: " + this);
+    // this main thread will be interrupted to go to 0 but only after proceedTo(2) is sent (see InterruptRunLevelManagedService1a)
+    rls.proceedTo(1);
+    
+    watchDog.join();
+    
+    assertTrue("problems: " + problems, problems.isEmpty());
+    assertEquals(0, defRLS.getCurrentRunLevel());
+    assertEquals(null, defRLS.getPlannedRunLevel());
+    assertTrue("hanging service not reached", InterruptRunLevelManagedService2b.i > 0);
+    
+    Collection<Inhabitant<?>> coll = h.getInhabitantsByContract(RunLevelContract.class.getCanonicalName());
+    assertTrue(coll.size() >= 3);
+    boolean gotOne = false;
+    boolean gotTwo = false;
+    for (Inhabitant<?> i : coll) {
+      String typeName = i.typeName();
+      if (typeName.contains("InterruptRunLevelManagedService1")) {
+        gotOne = true;
+        assertFalse("expected to be in released state: " + i, i.isInstantiated());
+      }
+      if (typeName.contains("InterruptRunLevelManagedService2")) {
+        gotTwo = true;
+        assertFalse("expected to be in released state: " + i, i.isInstantiated());
+      }
+    }
+    assertTrue(gotOne);
+    assertTrue(gotTwo);
+
+    assertNeverGotToRunLevel(2);
+    
+    assertListenerState(true, false, 0, 1);
+  }
+
+  /**
+   * This is testing the non-async version of RLS in the following scenario:
+   * 
+   *  - Thread #1 issues a proceedTo(whatever)
+   *  - One of the services activated {@link InterruptRunLevelManagedService1a} calls
+   *      proceedTo(2)
+   *  - A service {@link InterruptRunLevelManagedService2b} hangs
+   *  - Thread #2 (a watchdog thread) finds that Thread #1 is hung, and issues an interrupt() --- not interrupt(0)
+   *  
+   *  @see #multiThreadedHardInterrupt2a()
+   *  @see #multiThreadedSoftInterrupt2()
+   */
+  @SuppressWarnings("unchecked")
+  @Test
+  public void multiThreadedHardInterrupt2b() throws Exception {
+    recorders = new LinkedHashMap<Integer, Recorder>();
+    rls = defRLS = new TestDefaultRunLevelService(h, false, String.class, recorders); 
+
+    this.defRLlistener = (TestRunLevelListener) listener;
+    defRLlistener.calls.clear();
+    
+    InterruptRunLevelManagedService1a.rls = rls;
+    InterruptRunLevelManagedService1a.swallowExceptionsInProceedTo = false;
+    InterruptRunLevelManagedService2b.i = 0;
+    
+    final List problems = new ArrayList();
+    Thread watchDog = new Thread() {
+      @Override
+      public void run() {
+        try {
+          sleep(400);
+          Logger.getAnonymousLogger().log(Level.INFO, "issuing interrupt() from thread: " + this);
+          rls.interrupt();
+        } catch (Exception e) {
+          problems.add(e);
+        }
+      }
+    };
+    watchDog.start();
+    
+    Logger.getAnonymousLogger().log(Level.INFO, "issuing proceedTo(1) from main thread: " + this);
+    // this main thread will be interrupted to go to 0 but only after proceedTo(2) is sent (see InterruptRunLevelManagedService1a)
+    rls.proceedTo(1);
+    
+    watchDog.join();
+    
+    assertTrue("problems: " + problems, problems.isEmpty());
+    assertEquals(2, defRLS.getCurrentRunLevel());
+    assertEquals(null, defRLS.getPlannedRunLevel());
+    assertTrue("hanging service not reached", InterruptRunLevelManagedService2b.i > 0);
+    
+    assertListenerState(true, false, 0, 1);
+  }
+
   /**
    * This is testing the async version of RLS in the following scenario:
    * 
@@ -840,7 +975,7 @@ public class RunLevelServiceTest {
    */
   @SuppressWarnings({ "unchecked", "static-access" })
   @Test
-  public void multiThreadedInterrupt3Async() throws Exception {
+  public void multiThreadedSoftInterrupt3Async() throws Exception {
     recorders = new LinkedHashMap<Integer, Recorder>();
     rls = defRLS = new TestDefaultRunLevelService(h, true, String.class, recorders); 
 
@@ -912,7 +1047,7 @@ public class RunLevelServiceTest {
   
       assertNeverGotToRunLevel(2);
       
-      assertListenerState(true, false, 2);
+      assertListenerState(true, false, 2, 0);
     } finally {
       InterruptRunLevelManagedService2b.doSleep = true;
       InterruptRunLevelManagedService1a.swallowExceptionsInProceedTo = false;
@@ -1017,15 +1152,20 @@ public class RunLevelServiceTest {
    * Verifies the listener was indeed called, and the ordering is always consistent.
    */
   private void assertListenerState(boolean expectDownSide, boolean expectErrors, boolean expectCancelled) {
-    assertListenerState(expectDownSide, expectErrors, expectCancelled ? 1 : 0);
+    assertListenerState(expectDownSide, expectErrors, expectCancelled ? 1 : 0, 0);
   }
   
-  private void assertListenerState(boolean expectDownSide, boolean expectErrors, int expectCancelled) {
+  private void assertListenerState(boolean expectDownSide,
+      boolean expectErrors,
+      int expectCancelled,
+      int expectInterruptCancelled) {
     assertTrue(defRLlistener.calls.size() > 0);
-    int last = -2;
+    int last = DefaultRunLevelService.INITIAL_RUNLEVEL;
     boolean upSide = true;
     int sawCancel = 0;
+    int sawInterruptCancel = 0;
     boolean sawError = false;
+
     for (TestRunLevelListener.Call call : defRLlistener.calls) {
       if (expectDownSide) {
         if (!upSide) {
@@ -1041,19 +1181,19 @@ public class RunLevelServiceTest {
         assertTrue(call.toString() + " and last was " + last, call.current >= last);
       }
 
-      if (upSide) {
-        // we should only see cancel and error on up side (the way we designed our tests)
-        if (call.type.equals("cancelled")) {
-          sawCancel++;
-        } else if (call.type.equals("error")) {
-          sawError = true;
-        }
-      } else {
-        if (call.type.equals("error")) {
-          sawError = true;
+      if (call.type.equals("cancelled")) {
+        if (call.isHardInterrupt) {
+          sawInterruptCancel++;
+          
+          // this is true for now, but may change in the future
+          assertNotNull("expect context for interrupt", call.context);
         } else {
-          assertEquals(call.toString(), "progress", call.type);
+          sawCancel++;
         }
+      } else if (call.type.equals("error")) {
+        sawError = true;
+      } else {
+        assertEquals(call.toString(), "progress", call.type);
       }
       
       last = call.current;
@@ -1072,8 +1212,12 @@ public class RunLevelServiceTest {
     }
     
     if (expectCancelled > 0) {
-      assertEquals("expected to see cancel in: " + defRLlistener.calls, expectCancelled, sawCancel);
+      assertEquals("expected to see cancel in: " + defRLlistener.calls,
+          expectCancelled, sawCancel);
     }
+
+    assertEquals("expected to see interrupt-style cancel in: " + defRLlistener.calls,
+        expectInterruptCancelled, sawInterruptCancel);
   }
 
   private void assertNeverGotToRunLevel(int runLevel) {

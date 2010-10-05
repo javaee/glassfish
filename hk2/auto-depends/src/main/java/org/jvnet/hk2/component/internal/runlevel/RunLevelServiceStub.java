@@ -116,6 +116,26 @@ import org.jvnet.hk2.component.RunLevelState;
   }
 
   @Override
+  public void interrupt() {
+    if (null != delegate) {
+      delegate.interrupt();
+    }
+
+    // should never be here
+    throw new IllegalStateException();
+  }
+  
+  @Override
+  public void interrupt(int runLevel) {
+    if (null != delegate) {
+      delegate.interrupt(runLevel);
+    }
+
+    // should never be here
+    throw new IllegalStateException();
+  }
+
+  @Override
   public boolean inhabitantChanged(EventType eventType, Inhabitant<?> inhabitant) {
     if (null == delegateListener) {
       if (null == delegate) {

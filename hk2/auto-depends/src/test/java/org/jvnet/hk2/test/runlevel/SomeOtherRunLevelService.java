@@ -50,4 +50,16 @@ public class SomeOtherRunLevelService extends TestInhabitantListener
     return planned;
   }
 
+  @Override
+  public void interrupt() {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void interrupt(int runLevel) {
+    // TODO Auto-generated method stub
+    
+  }
+
 }

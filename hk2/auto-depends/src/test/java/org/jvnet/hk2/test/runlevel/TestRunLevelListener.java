@@ -34,8 +34,11 @@ public class TestRunLevelListener implements RunLevelListener {
   public RunLevelService<?> cancel_proceedToRls;
   
   @Override
-  public void onCancelled(RunLevelState<?> state, int previousProceedTo) {
-    calls.add(Call.onCancelled(state, previousProceedTo));
+  public void onCancelled(RunLevelState<?> state,
+      ServiceContext context,
+      int previousProceedTo,
+      boolean isHard) {
+    calls.add(Call.onCancelled(state, context, previousProceedTo, isHard));
     if (null != cancel_proceedToGoTo &&
         null != cancel_proceedToRls) {
       int pto = cancel_proceedToGoTo;
@@ -45,8 +48,10 @@ public class TestRunLevelListener implements RunLevelListener {
   }
 
   @Override
-  public void onError(RunLevelState<?> state, ServiceContext context,
-      Throwable error, boolean willContinue) {
+  public void onError(RunLevelState<?> state,
+      ServiceContext context,
+      Throwable error,
+      boolean willContinue) {
     calls.add(Call.onError(state, context, error, willContinue));
     if (null != error_proceedToGoTo &&
         null != error_proceedToRls) {
@@ -93,13 +98,19 @@ public class TestRunLevelListener implements RunLevelListener {
     public final ServiceContext context;
     public final Throwable error;
     public final Boolean willContinue;
+    public final Boolean isHardInterrupt;
     
     public Call(String type, RunLevelState<?> rls, Integer prv) {
-      this(type, rls, prv, null, null, null);
+      this(type, rls, prv, null, null, null, null);
+    }
+    
+    public Call(String type, RunLevelState<?> rls, ServiceContext ctx,
+        Integer prv, boolean isHardInterrupt) {
+      this(type, rls, prv, ctx, null, null, isHardInterrupt);
     }
     
     public Call(String type, RunLevelState<?> rls, Integer prv, ServiceContext ctx,
-        Throwable error, Boolean willCont) {
+        Throwable error, Boolean willCont, Boolean isHardInterrupt) {
       this.type = type;
       this.current = rls.getCurrentRunLevel();
       this.planned = rls.getPlannedRunLevel();
@@ -108,20 +119,22 @@ public class TestRunLevelListener implements RunLevelListener {
       this.context = ctx;
       this.error = error;
       this.willContinue = willCont;
+      this.isHardInterrupt = isHardInterrupt;
     }
 
     @Override
     public String toString() {
-      return type + ";ctx=" + context + ";cl=" + current;
+      return type + ";ctx=" + context + ";cl=" + current + ";hrdI=" + isHardInterrupt + " ";
     }
     
-    public static Call onCancelled(RunLevelState<?> rls, int previousProceedTo) {
-      return new Call("cancelled", rls, previousProceedTo);
+    public static Call onCancelled(RunLevelState<?> rls, ServiceContext ctx,
+        int previousProceedTo, boolean isHard) {
+      return new Call("cancelled", rls, ctx, previousProceedTo, isHard);
     }
 
     public static Call onError(RunLevelState<?> rls, ServiceContext ctx,
         Throwable error, boolean willContinue) {
-      return new Call("error", rls, null, ctx, error, willContinue);
+      return new Call("error", rls, null, ctx, error, willContinue, null);
     }
 
     public static Call onProgress(RunLevelState<?> rls) {
