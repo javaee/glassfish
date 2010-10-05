@@ -840,20 +840,6 @@ public class UtilHandlers {
      *	<p> This handler returns the <code>Set</code> of keys for the given
      *	    <code>Map</code>.</p>
      */
-    @Handler(id="mapGetKeys",
-	input = {
-	    @HandlerInput(name="map", type=Map.class, required=true)},
-	output = {
-	    @HandlerOutput(name="keys", type=List.class)})
-    public static void mapGetKeys(HandlerContext handlerCtx) {
-        Map map = (Map) handlerCtx.getInputValue("map");
-        handlerCtx.setOutputValue("keys", new ArrayList(map.keySet()));
-    }
-
-    /**
-     *	<p> This handler returns the <code>Set</code> of keys for the given
-     *	    <code>Map</code>.</p>
-     */
     @Handler(id="mapValues",
 	input = {
 	    @HandlerInput(name="map", type=Map.class, required=true)},
