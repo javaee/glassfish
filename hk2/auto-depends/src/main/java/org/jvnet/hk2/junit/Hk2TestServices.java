@@ -156,7 +156,6 @@ public class Hk2TestServices {
           File f = new File(fileName);
           if (f.exists()) {
               try {
-//                  System.out.println("Beginning parsing " + fileName);
                   logger.log(Level.FINER, "Beginning parsing {0}", fileName);
                   
                   if (f.isFile()) {
@@ -171,7 +170,6 @@ public class Hk2TestServices {
                           } finally {
                               in.close();
                           }
-//                          System.out.println("Using meta-inf file for " + f.getPath());
                           logger.log(Level.FINER, "Using meta-inf file for {0}", f.getPath());
 
                           metaInfScanners.add(new InhabitantsScanner(new ByteArrayInputStream(buf),
@@ -185,7 +183,6 @@ public class Hk2TestServices {
                       // directory, for now, always parse.
                       File inhabitantFile = new File(f, InhabitantsFile.PATH+File.separator+"default");
                       if (inhabitantFile.exists()) {
-//                          System.out.println("Using meta-inf file for " + f.getPath());
                           logger.log(Level.FINER, "Using meta-inf file for {0}", f.getPath());
                           
                           metaInfScanners.add(new InhabitantsScanner(new BufferedInputStream(
@@ -205,7 +202,6 @@ public class Hk2TestServices {
       } catch (InterruptedException e) {
           throw new RuntimeException(e);
       }
-//      System.out.println("Starting to introspect");
       logger.log(Level.FINER, "Starting to introspect");
       
       final InhabitantsParser ip = createInhabitantsParser(habitat);
@@ -215,10 +211,8 @@ public class Hk2TestServices {
       } catch (IOException e) {
           throw new RuntimeException(e);
       }
-//      System.out.println("finished introspecting");
       logger.log(Level.FINER, "finished introspecting");
 
-//      System.out.println("Starting to introspect");
       logger.log(Level.FINER, "Starting to introspect");
       for (InhabitantsScanner scanner : metaInfScanners) {
           try {
@@ -228,21 +222,18 @@ public class Hk2TestServices {
               throw new RuntimeException(e);
           }
       }
-//      System.out.println("finished introspecting");
       logger.log(Level.FINER, "finished introspecting");
 
       for (IntrospectionScanner s : habitat.getAllByContract(IntrospectionScanner.class)) {
-          System.out.println("Found supplemental scanner " + s);
+          logger.log(Level.FINE, "Found supplemental scanner " + s);
           s.parse(context, holder);
       }
 
       Iterator<String> contracts = habitat.getAllContracts();
       while (contracts.hasNext()) {
           String contract = contracts.next();
-//          System.out.println("Found contract : " + contract);
           logger.log(Level.FINER, "Found contract: {0}", contract);
           for (Inhabitant<?> t : habitat.getInhabitantsByContract(contract)) {
-//              System.out.println(" --> " + t.typeName() + " "+ t.metadata());
             logger.log(Level.FINER, " --> {0} {1}", new Object[] {t.typeName(), t.metadata()});
           }
       }
@@ -347,7 +338,6 @@ public class Hk2TestServices {
         if (manifest!=null) {
             String imports = manifest.getMainAttributes().getValue("Import-Package");
             if (imports==null || imports.indexOf("hk2")==-1) {
-//                System.out.println("Ignoring service-less " + f.getName());
                 logger.log(Level.FINER, "ignoring service-less {0}", f.getName());
                 return;
             }
@@ -359,7 +349,6 @@ public class Hk2TestServices {
     private void parseAlways(Parser parser, final File f) throws IOException {
       parser.parse(f, new Runnable() {
           public void run() {
-//              System.out.println("Finished introspecting " + f.getName());
               logger.log(Level.FINER, "Finished introspecting {0}", f.getName());
           }
       });
