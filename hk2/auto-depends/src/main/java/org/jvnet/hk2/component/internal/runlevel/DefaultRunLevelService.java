@@ -722,7 +722,6 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
       logger.log(Level.FINE, "proceedTo({0}) - " + getDescription(true), planned);
       
       upSide = null;
-      isHardInterrupt = null;
       
       if (null != planned) {
         int current = (null == getCurrentRunLevel()) ? INITIAL_RUNLEVEL : getCurrentRunLevel();
@@ -925,6 +924,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
         planned = runLevel;
         nextPlannedAfterInterrupt = null;
         cancelIssued = false;
+        isHardInterrupt = null;
       }
 
       try {
@@ -946,8 +946,9 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
             // send cancel event, but only one time
             if (!cancelIssued) {
               cancelIssued = true;
-              boolean isHardInterrupt = isHardInterrupt(isHard, e);
-              event(this, ListenerEvent.CANCEL, serviceContext(e, i), null, isHardInterrupt);
+              boolean wasHardInterrupt = isHardInterrupt(isHard, e);
+              isHardInterrupt = null;
+              event(this, ListenerEvent.CANCEL, serviceContext(e, i), null, wasHardInterrupt);
             }
             
             // pop stack to last proceedTo()
@@ -1039,6 +1040,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
       super.run();
       synchronized (lock) {
         activeFuture = null;
+        isHardInterrupt = null;
       }
     }
 
