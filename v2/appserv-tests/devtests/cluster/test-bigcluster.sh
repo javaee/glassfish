@@ -51,7 +51,7 @@ bench() {
   cmd=$*
   key=$1
   echo -n $key ": "
-  (/usr/bin/time -f "$TIMEFORMAT" asadmin $cmd > /dev/null) 2>&1 || echo "<-- FAILURE"
+  (/usr/bin/time asadmin $cmd > /dev/null) 2>&1 || echo "<-- FAILURE"
 }
 
 benchmark_commands() {
