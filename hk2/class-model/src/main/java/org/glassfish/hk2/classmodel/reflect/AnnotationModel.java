@@ -23,7 +23,7 @@ public interface AnnotationModel {
 
 
     /**
-     * Returns an umodifiable collection of annotation values.
+     * Returns an unmodifiable collection of annotation values.
      *
      * @return collection of value elements of this annotation
      */

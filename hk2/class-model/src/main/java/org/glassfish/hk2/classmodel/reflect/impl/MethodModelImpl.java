@@ -47,10 +47,12 @@ public class MethodModelImpl extends AnnotatedElementImpl implements MethodModel
 
     final List<Parameter> parameters = new ArrayList<Parameter>();
     final ExtensibleType<?> owner;
+    final String signature;
 
-    public MethodModelImpl(String name, ExtensibleType owner) {
+    public MethodModelImpl(String name, ExtensibleType owner, String signature) {
         super(name);
         this.owner = owner;
+        this.signature = signature;
     }
 
     @Override
@@ -66,5 +68,15 @@ public class MethodModelImpl extends AnnotatedElementImpl implements MethodModel
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String getSignature() {
+        return signature;
+    }
+
+    @Override
+    public String getReturnType() {
+        return org.objectweb.asm.Type.getReturnType(signature).getClassName(); 
     }
 }

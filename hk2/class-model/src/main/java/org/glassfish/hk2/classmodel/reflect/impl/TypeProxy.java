@@ -36,13 +36,9 @@
 
 package org.glassfish.hk2.classmodel.reflect.impl;
 
-import org.glassfish.hk2.classmodel.reflect.ClassModel;
-import org.glassfish.hk2.classmodel.reflect.FieldModel;
-import org.glassfish.hk2.classmodel.reflect.Member;
-import org.glassfish.hk2.classmodel.reflect.Type;
+import org.glassfish.hk2.classmodel.reflect.*;
 
 import java.util.*;
-import java.net.URI;
 
 /**
  * Proxy for types, used in place until the type can be properly instantiated.

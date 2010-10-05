@@ -39,6 +39,8 @@ package com.sun.hk2.component;
 import java.util.Collection;
 
 import org.jvnet.hk2.component.*;
+import org.jvnet.hk2.tracing.TracingThreadLocal;
+import org.jvnet.hk2.tracing.TracingUtilities;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -64,9 +66,17 @@ public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> impl
     }
 
     public final T get(Inhabitant onBehalfOf) throws ComponentException {
-        T o = create(onBehalfOf);
-        initialize(o, onBehalfOf);
-        return o;
+        try {
+            if (TracingUtilities.isEnabled())
+                TracingThreadLocal.get().push(this);
+
+            T o = create(onBehalfOf);
+            initialize(o, onBehalfOf);
+            return o;
+        } finally {
+            if (TracingUtilities.isEnabled())
+                TracingThreadLocal.get().pop();
+        }
     }
 
     public boolean isInstantiated() {

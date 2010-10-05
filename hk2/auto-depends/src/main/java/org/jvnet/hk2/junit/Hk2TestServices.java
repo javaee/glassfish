@@ -110,6 +110,7 @@ public class Hk2TestServices {
       final Set<String> annotations = new HashSet<String>();
       annotations.add("org.jvnet.hk2.annotations.Contract");
       annotations.add("org.jvnet.hk2.annotations.Service");
+      annotations.add("org.jvnet.hk2.config.Configured");
 
       builder.config(new ParsingConfig() {
           final Set<String> empty = Collections.emptySet();
@@ -208,7 +209,7 @@ public class Hk2TestServices {
       logger.log(Level.FINER, "Starting to introspect");
       
       final InhabitantsParser ip = createInhabitantsParser(habitat);
-      IntrospectionScanner is = new IntrospectionScanner(context);
+      InhabitantIntrospectionScanner is = new InhabitantIntrospectionScanner(context);
       try {
           ip.parse(is, holder);
       } catch (IOException e) {
@@ -229,6 +230,11 @@ public class Hk2TestServices {
       }
 //      System.out.println("finished introspecting");
       logger.log(Level.FINER, "finished introspecting");
+
+      for (IntrospectionScanner s : habitat.getAllByContract(IntrospectionScanner.class)) {
+          System.out.println("Found supplemental scanner " + s);
+          s.parse(context, holder);
+      }
 
       Iterator<String> contracts = habitat.getAllContracts();
       while (contracts.hasNext()) {

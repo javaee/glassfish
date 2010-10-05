@@ -46,24 +46,14 @@ import java.util.*;
  */
 public class ClassModelImpl extends ExtensibleTypeImpl<ClassModel> implements ClassModel {
 
-    final Set<TypeProxy<InterfaceModel>> implementedIntf = Collections.synchronizedSet(new HashSet<TypeProxy<InterfaceModel>>());
     final Map<String, FieldModel> fields = Collections.synchronizedMap(new HashMap<String, FieldModel>());
 
     public ClassModelImpl(String name, TypeProxy<Type> sink, URI definingURI, TypeProxy parent) {
         super(name, sink, definingURI, parent);
     }
-
-    void isImplementing(TypeProxy<InterfaceModel> intf) {
-        implementedIntf.add(intf);
-    }
     
     void addField(FieldModel field) {
         fields.put(field.getName(), field);
-    }
-
-    @Override
-    public Collection<InterfaceModel> getInterfaces() {
-        return TypeProxy.adapter(implementedIntf);
     }
 
     @Override

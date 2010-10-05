@@ -47,7 +47,8 @@ import java.net.URI;
 public abstract class ExtensibleTypeImpl<T extends ExtensibleType> extends TypeImpl implements ExtensibleType<T> {
 
     final TypeProxy parent;
-
+    final Set<TypeProxy<InterfaceModel>> implementedIntf = Collections.synchronizedSet(new HashSet<TypeProxy<InterfaceModel>>());
+    
     public ExtensibleTypeImpl(String name, TypeProxy<Type> sink, URI definingURI, TypeProxy parent) {
         super(name, sink, definingURI);
         this.parent =  parent;
@@ -59,6 +60,15 @@ public abstract class ExtensibleTypeImpl<T extends ExtensibleType> extends TypeI
         } else {
             return null;
         }
+    }
+
+    void isImplementing(TypeProxy<InterfaceModel> intf) {
+        implementedIntf.add(intf);
+    }
+
+    @Override
+    public Collection<InterfaceModel> getInterfaces() {
+        return TypeProxy.adapter(implementedIntf);
     }
 
     @Override

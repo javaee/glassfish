@@ -36,6 +36,7 @@
 
 package org.glassfish.hk2.classmodel.reflect.impl;
 
+import org.glassfish.hk2.classmodel.reflect.ClassModel;
 import org.glassfish.hk2.classmodel.reflect.ExtensibleType;
 import org.glassfish.hk2.classmodel.reflect.InterfaceModel;
 import org.glassfish.hk2.classmodel.reflect.ParsingContext;
@@ -99,12 +100,13 @@ public class ModelClassVisitor implements ClassVisitor {
 
 
         try {
-            ClassModelImpl classModel = (ClassModelImpl) type;
+            ExtensibleTypeImpl classModel = (ExtensibleTypeImpl) type;
             for (String intf : interfaces) {
                 String interfaceName = org.objectweb.asm.Type.getObjectType(intf).getClassName();
                 TypeProxy<InterfaceModel> typeProxy = typeBuilder.getHolder(interfaceName, InterfaceModel.class);
                 classModel.isImplementing(typeProxy);
-                typeProxy.getImplementations().add(classModel);
+                if (classModel instanceof ClassModel)
+                    typeProxy.getImplementations().add((ClassModel) classModel);
 
             }
         } catch(ClassCastException e) {
@@ -200,7 +202,7 @@ public class ModelClassVisitor implements ClassVisitor {
             return null;
         }
 
-        final MethodModelImpl method = new MethodModelImpl(name, cm);
+        final MethodModelImpl method = new MethodModelImpl(name, cm, desc);
         type.addMethod(method);
         visitingContext.method = method;
         return methodVisitor;
@@ -222,7 +224,7 @@ public class ModelClassVisitor implements ClassVisitor {
 
     }
 
-    private class ModelMethodVisitor extends EmptyVisitor implements FieldVisitor {
+    private class ModelMethodVisitor extends EmptyVisitor implements MethodVisitor {
 
         private final VisitingContext context;
 

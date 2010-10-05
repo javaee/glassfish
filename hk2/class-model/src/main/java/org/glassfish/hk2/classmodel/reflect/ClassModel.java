@@ -45,13 +45,6 @@ import java.util.Collection;
 public interface ClassModel extends ExtensibleType<ClassModel> {
 
     /**
-     * Returns an unmodifiable list of interfaces implemented by this class
-     *
-     * @return collection of implemented interfaces
-     */
-    public Collection<InterfaceModel> getInterfaces();
-
-    /**
      * Returns an unmodifiable collection of fields models that represent
      * all the declared fields of this classes.
      *

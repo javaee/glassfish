@@ -10,32 +10,38 @@
 
 Introduction
 
-    HK2 for Hundred Kilobytes Kernel is an abstraction to a module subsystem coupled with a simple yet powerful component model to build server side software. It is the foundation for the GlassFish V3 application server and consist of two technologies :
+    HK2 for Hundred Kilobytes Kernel is an abstraction to a module subsystem coupled with a simple yet powerful component model to build server side software. It is the foundation for the GlassFish V3 application server and consist of several technologies :
 
- * Modules subsystem abstraction
+* Modules subsystem abstraction
 
     Modern large Java software usually rely on a module subsystem to offer a better level of isolation between parts of the
  application. Many technologies have been around for years, HK2 proposes a model which is aimed to be friendly to
  existing technologies such as OSGi by providing a direct mapping from its abstraction to most OSGi features while preserving the user code from dealing with modules directly in their code. The independence from OSGi APIs in hk2 enabled projects greatly simplifies the programmer's life by concentrating on services and dependencies rather than on modules (building blocks). 
 
-   Link to {{{modules.html}Modules Subsystem}}
+   Link to {{{.\/modules.html}Modules Subsystem}}
 
- * Component Model
+* Component Model
 
     On top of the module subsystem abstraction, HK2 define components which can also be seen as Services. These components can be
 automatically and dynamically discovered by the runtime and can use innovative tachnologies such as Inversion of Control
 or injection of dependencies as well as automatic resolution of dependencies.
 
-   Link to {{{components.html}Component Model}}
+   Link to {{{.\/components.html}Component Model}}
 
 * Class Model
 
-	In order to generate enough metadata to satisfy all injection points with a suitable injection target, HK2 has developped a simple class model which mimics a java class reflective API without the cost of loading the class files in a class loader. The class-model sub project can be used indenpendently of HK2, it is using ASM to load the byte code and provide a user friendly reflective APIs on the parsed classes.
+	In order to generate enough metadata to satisfy all injection points with a suitable injection target, HK2 has developped a simple class model which mimics a java class reflective API without the cost of loading the class files with a class loader. The class-model sub project can be used indenpendently of HK2, it is using ASM to load the byte code and provide a user friendly reflective APIs on the parsed classes.
 
-   
+   Link to {{{.\/class-mode/index.html}Class-Model}}
 
 * Configuration
  
 	Most sofware need to store some configuration for persisting behaviours accross restarts. Such configuration is usually stored in xml files and can be consumed like any other services in hk2. We provide a powerful abstraction to a configuration file definition, coupled with a 2 phase transactional system to mutate any configuration that ensure isolation and completness of any configuation changes.
 
-    Link to {{{configuration.html}Configuration}}
+    Link to {{{.\/config\/configuration.html}Configuration}}
+
+* Testing
+
+	An integration with JUnit is provided so users can develop their tests with dependency injection available. For more sophisticated tests, a harness is also provided to start modules and habitat during test execution
+
+    Link to {{{.\/auto-depends/tests.html}Testing}}
