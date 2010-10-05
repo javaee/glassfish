@@ -59,6 +59,9 @@ import java.util.Iterator;
  */
 public class TracingUtilities {
 
+    public interface Loader {
+        Class loadClass(String type) throws ClassNotFoundException;
+    }
 
     public static boolean isEnabled() {
         return org.jvnet.hk2.tracing.TracingUtilities.isEnabled();
@@ -77,15 +80,15 @@ public class TracingUtilities {
         }
     }
 
-    public static void traceResolution(ModulesRegistry registry, long bundleId, String bundleName) {
-        traceState(registry, "resolved", bundleId, bundleName);
+    public static void traceResolution(ModulesRegistry registry, long bundleId, String bundleName, Loader loader) {
+        traceState(registry, "resolved", bundleId, bundleName, loader);
     }
 
-    public static void traceStarted(ModulesRegistry registry, long bundleId, String bundleName) {
-        traceState(registry, "started", bundleId, bundleName);
+    public static void traceStarted(ModulesRegistry registry, long bundleId, String bundleName, Loader loader) {
+        traceState(registry, "started", bundleId, bundleName, loader);
     }
 
-    public static void traceState(ModulesRegistry registry, String state, long bundleId, String bundleName) {
+    public static void traceState(ModulesRegistry registry, String state, long bundleId, String bundleName, Loader loader) {
         File out = new File(getLocation(), state + "-" + bundleId+".log");
         Writer w = null;
         try {
@@ -119,17 +122,24 @@ public class TracingUtilities {
                     if (itr.hasNext()) {
                         Inhabitant reason = itr.next();
                         StackTraceElement caller = stack[j];
-                        Module m = registry.find(reason.type());
+                        Module m = null;
+                        try {
+                            if (reason.isInstantiated()) {
+                                m = registry.find(loader.loadClass(reason.typeName()));
+                            }
+                        } catch (ClassNotFoundException e) {
+                            m = null;
+                        }
                         if (m!=null && !m.getModuleDefinition().getName().equals(currentBundleName)) {
                             w.append("Looks like module " + currentBundleName + " was " + state + " because "+
-                                    m.getName() + " was " + state + "\nSince ");
+                                    m.getName() + " was " + state + "\nSince " + m.getName() + " contains ");
                         } else {
                             w.append("Requested by ");
                         }
                         if (m!=null)
                             currentBundleName = m.getName();
 
-                        w.append(m.getName() + " contains " + reason + " called from " + caller.getClassName()
+                        w.append(reason + " called from " + caller.getClassName()
                                 + "." + caller.getMethodName() + ":" + caller.getLineNumber()+" metadata \n" + reason.metadata()+"\n");
                         w.append("\n");
 

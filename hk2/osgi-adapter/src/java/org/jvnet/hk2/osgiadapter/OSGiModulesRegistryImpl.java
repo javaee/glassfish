@@ -79,9 +79,6 @@ public class OSGiModulesRegistryImpl
     private static final String HK2_CACHE_DIR = "com.sun.enterprise.hk2.cacheDir";
     private static final String INHABITANTS_CACHE = "inhabitants";
 
-    private static final boolean traceResolution = Boolean.getBoolean("org.glassfish.hk2.module.traceresolution");
-
-
     /*package*/ OSGiModulesRegistryImpl(BundleContext bctx) {
         super(null);
         this.bctx = bctx;
@@ -503,17 +500,31 @@ public class OSGiModulesRegistryImpl
     public void register(final ModuleLifecycleListener listener) {
         if (TracingUtilities.isEnabled()) {
             bctx.addBundleListener(new SynchronousBundleListener() {
-            public void bundleChanged(BundleEvent event) {
+            public void bundleChanged(final BundleEvent event) {
                 switch (event.getType()) {
                     case BundleEvent.RESOLVED:
                         TracingUtilities.traceResolution(OSGiModulesRegistryImpl.this,
                                 event.getBundle().getBundleId(),
-                                event.getBundle().getSymbolicName());
+                                event.getBundle().getSymbolicName(),
+                                new TracingUtilities.Loader() {
+                                    @Override
+                                    public Class loadClass(String type) throws ClassNotFoundException {
+                                        return event.getBundle().loadClass(type);
+                                    }
+                                });
                          break;
+
                     case BundleEvent.STARTED:
                         TracingUtilities.traceStarted(OSGiModulesRegistryImpl.this,
                                 event.getBundle().getBundleId(),
-                                event.getBundle().getSymbolicName());
+                                event.getBundle().getSymbolicName(),
+                                new TracingUtilities.Loader() {
+                                    @Override
+                                    public Class loadClass(String type) throws ClassNotFoundException {
+                                        return event.getBundle().loadClass(type);
+                                    }
+                                });
+                                
                         break;
                  }
             }

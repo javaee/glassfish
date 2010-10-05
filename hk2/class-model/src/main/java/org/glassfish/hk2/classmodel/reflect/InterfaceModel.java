@@ -45,16 +45,16 @@ import java.util.Collection;
 public interface InterfaceModel extends ExtensibleType<InterfaceModel> {
 
     /**
-     * Returns an unmodifiable collection of classes direcly implemeting
-     * this interface
+     * Returns an unmodifiable collection of all classes implementing this
+     * interface.
      *
      * @return list of classes directly implementing this interface
      */
     Collection<ClassModel> allImplementations();
 
     /**
-     * Returns an unmodifiable collection of all classes implementing this
-     * interface.
+     * Returns an unmodifiable collection of classes directly implementing
+     * this interface
      *
      * @return list of classes implementing this interface
      */

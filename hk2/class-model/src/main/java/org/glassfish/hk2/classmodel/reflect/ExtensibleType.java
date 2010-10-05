@@ -57,7 +57,7 @@ public interface ExtensibleType<T extends ExtensibleType> extends Type {
      *
      * @return the parent type instance or null
      */
-    public T getParent();
+    T getParent();
 
     /**
      * Returns the child subtypes of this type. A child subtype is a
@@ -65,7 +65,7 @@ public interface ExtensibleType<T extends ExtensibleType> extends Type {
      *
      * @return the immediate subtypes
      */
-    public Collection<T> subTypes();
+    Collection<T> subTypes();
 
     /**
      * Returns all the children subtypes (including grand children) of
@@ -73,5 +73,13 @@ public interface ExtensibleType<T extends ExtensibleType> extends Type {
      *
      * @return all the children
      */
-    public Collection<T> allSubTypes();
+    Collection<T> allSubTypes();
+
+    /**
+     * Returns an unmodifiable list of interfaces implemented or extended by
+     * this type.
+     *
+     * @return collection of implemented or extended interfaces
+     */
+    Collection<InterfaceModel> getInterfaces();    
 }

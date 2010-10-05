@@ -38,10 +38,9 @@ package com.sun.enterprise.module.common_impl;
 
 import com.sun.enterprise.module.ModuleMetadata;
 import com.sun.enterprise.module.InhabitantsDescriptor;
-import com.sun.enterprise.module.common_impl.ByteArrayInhabitantsDescriptor;
 import com.sun.hk2.component.InhabitantParser;
 import com.sun.hk2.component.InhabitantsFile;
-import com.sun.hk2.component.IntrospectionScanner;
+import com.sun.hk2.component.InhabitantIntrospectionScanner;
 import org.glassfish.hk2.classmodel.reflect.Parser;
 import org.glassfish.hk2.classmodel.reflect.ParsingContext;
 
@@ -135,7 +134,7 @@ public abstract class Jar {
                             throw new IOException(e);
                         }
 
-                        return new IntrospectionScanner(context);
+                        return new InhabitantIntrospectionScanner(context);
                     }                    
                 });
             }

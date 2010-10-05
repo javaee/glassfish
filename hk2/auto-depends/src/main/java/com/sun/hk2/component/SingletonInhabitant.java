@@ -39,6 +39,8 @@ package com.sun.hk2.component;
 import org.jvnet.hk2.component.Womb;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.tracing.TracingThreadLocal;
+import org.jvnet.hk2.tracing.TracingUtilities;
 
 /**
  * Specialized implementation of {@link ScopedInhabitant} for {@link Singleton}.
@@ -55,8 +57,16 @@ public class SingletonInhabitant<T> extends AbstractWombInhabitantImpl<T> {
   public T get(Inhabitant onBehalfOf) {
       if(object==null) {
           synchronized(this) {
-              if(object==null)
+              if(object==null) {
+                try {
+                    if (TracingUtilities.isEnabled())
+                        TracingThreadLocal.get().push(this);
                   object =womb.get(onBehalfOf);
+                  } finally {
+                          if (TracingUtilities.isEnabled())
+                              TracingThreadLocal.get().pop();
+                  }
+              }
           }
       }
       return object;

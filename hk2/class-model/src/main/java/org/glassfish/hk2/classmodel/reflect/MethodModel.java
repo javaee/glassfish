@@ -44,5 +44,17 @@ public interface MethodModel extends Member, AnnotatedElement {
      * Returns the class or interface model this method belongs to.
      * @return the class of this method
      */
-    public ExtensibleType<?> getDeclaringType();
+    ExtensibleType<?> getDeclaringType();
+
+    /**
+     * Returns the method signature.
+     * @return this method signature
+     */
+    String getSignature();
+
+    /**
+     * Returns the method return type
+     * @return the method's return type
+     */
+    String getReturnType();
 }

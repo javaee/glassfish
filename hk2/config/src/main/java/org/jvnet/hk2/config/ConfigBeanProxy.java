@@ -56,7 +56,7 @@ import java.lang.reflect.Proxy;
  */
 public interface ConfigBeanProxy {
 
-    /**
+    /**                      
      * Returns the parent element of this configuration element.
      *
      * It is possible to return a not null parent while the parent knows nothing of this

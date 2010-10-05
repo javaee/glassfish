@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.sun.enterprise</groupId>
         <artifactId>hk2-parent</artifactId>
-        <version>1.0.48-SNAPSHOT</version>
+        <version>1.0.49-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     
@@ -13,6 +13,8 @@
 
     <description>${project.name}</description>
     <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
         <resources>
             <resource>
                 <directory>src/resources</directory>
@@ -96,6 +98,12 @@
 	    <artifactId>bean-validator</artifactId>
             <version>${project.version}</version>
         </dependency>
+   		<dependency>
+        	<groupId>org.glassfish.hk2</groupId>
+            <artifactId>class-model</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>        
     </dependencies>
     <profiles>
         <profile>
