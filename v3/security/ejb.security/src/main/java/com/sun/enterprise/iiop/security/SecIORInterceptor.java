@@ -53,8 +53,6 @@ import com.sun.enterprise.deployment.EjbDescriptor;
 //import com.sun.enterprise.util.ORBManager;
 //import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import org.glassfish.enterprise.iiop.util.IIOPUtils;
-import org.glassfish.gms.bootstrap.GMSAdapter;
-import org.glassfish.gms.bootstrap.GMSAdapterService;
 import org.jvnet.hk2.component.Habitat;
 import org.omg.CORBA.ORB;
 
@@ -70,10 +68,7 @@ public class SecIORInterceptor extends org.omg.CORBA.LocalObject
     }
 
     private Codec codec;
-    private GMSAdapterService gmsAdapterService;
-    private GMSAdapter gmsAdapter;
     private Habitat habitat;
-
     //private GlassFishORBHelper helper = null;
     private ORB orb;
     
@@ -82,12 +77,6 @@ public class SecIORInterceptor extends org.omg.CORBA.LocalObject
         this.habitat = habitat;
         //helper = habitat.getComponent(GlassFishORBHelper.class);
         this.orb = orb;
-        this.gmsAdapterService = habitat.getComponent( GMSAdapterService.class ) ;
-        if (this.gmsAdapterService==null) {
-            this.gmsAdapter = null ;
-        } else {
-            this.gmsAdapter = gmsAdapterService.getGMSAdapter() ;
-        }
     }
     
     public void destroy() {
@@ -124,20 +113,23 @@ public class SecIORInterceptor extends org.omg.CORBA.LocalObject
 			+ " " + iorInfo );
 	}
 
-        if (gmsAdapter != null) {
-
+        /*TODO:V3:Cluster uncomment later
+        // just inject the GMSAdapterService, and check for null
+        if (gmsAdapterService != null) {
 	    // If this app server instance is part of a dynamic cluster (that is,
 	    // one that supports RMI-IIOP failover and load balancing, DO NOT
 	    // create the CSIv2 components here.  Instead, handle this in the
 	    // ORB's ServerGroupManager, in conjunctions with the 
 	    // CSIv2SSLTaggedComponentHandler.
             return;
-        }
+        }*/
 
 	if(_logger.isLoggable(Level.FINE)) {
 	    _logger.log(Level.FINE, 
 			".addCSIv2Components " );
 	}
+
+        
         
 	//ORB orb = helper.getORB();
 	int sslMutualAuthPort = getServerPort("SSL_MUTUALAUTH");
