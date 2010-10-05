@@ -530,15 +530,14 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 }
 
                 glassfishEventListener = new org.glassfish.api.event.EventListener() {
-                    @Override
                     public void event(Event event) {
                         if (gms == null) {
                             // handle cases where gms is not set and for some reason this handler did not get unregistered.
                             return;
                         }
-                        if (event.is(EventTypes.SERVER_SHUTDOWN)) {
+                        if (event.is(EventTypes.PREPARE_SHUTDOWN)) {
                             logger.log(Level.INFO, "gmsservice.server_shutdown.received",
-                                       new Object[]{gms.getInstanceName(), gms.getGroupName(), event.toString()});
+                                       new Object[]{gms.getInstanceName(), gms.getGroupName(), event.name()});
 
                             // todo: remove these when removing the test register ones above.
                             removeJoinedAndReadyNotificationListener(GMSAdapterImpl.this);
