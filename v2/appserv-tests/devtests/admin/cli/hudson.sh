@@ -6,12 +6,12 @@ then
   echo "Windows ROOT: $ROOT"
   export CYGWIN=nontsec
 fi
-rm -rf glassfishv3
+rm -rf glassfish3
 wget -q -O revision-under-test.html http://gf-hudson.sfbay.sun.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild
 grep 'Build #' revision-under-test.html
 time wget -q -O glassfish.zip http://gf-hudson.sfbay.sun.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip
 unzip -q glassfish.zip
-export S1AS_HOME="$ROOT/glassfishv3/glassfish"
+export S1AS_HOME="$ROOT/glassfish3/glassfish"
 export APS_HOME="$ROOT/appserv-tests"
 export AS_LOGFILE="$S1AS_HOME/cli.log"
 
