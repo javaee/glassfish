@@ -89,10 +89,16 @@
                     mapPut(map="#{pageSession.valueMap}" key="state" value="#{requestScope.stateGp}");
                     mapPut(map="#{pageSession.valueMap}" key="ssoEnabled" value="#{requestScope.ssoGroup}");
                     mapPut(map="#{pageSession.valueMap}" key="accessLoggingEnabled" value="#{requestScope.accessLoggingFlagGp}");
+                    setPageSessionAttribute(key="onlyUseAttrs" value={"id", "state", "target", "hosts", "logFile", "defaultWebModule", "networkListeners", "logfile"})
                     gf.createEntity(endpoint="#{pageSession.selfUrl}"
                             attrs="#{pageSession.valueMap}"
                             skipAttrs="#{pageSession.skipAttrsList}"
                             convertToFalse="#{pageSession.convertToFalseList}"
+                            onlyUseAttrs="#{pageSession.onlyUseAttrs}"
+                    );
+                    setPageSessionAttribute(key="onlyUseAttrs" value={"ssoEnabled", "accessLoggingEnabled", "docroot", "accessLog"})
+                    gf.createEntity(endpoint="#{pageSession.selfUrl}/#{pageSession.valueMap['id']}"
+                            attrs="#{pageSession.valueMap}"
                             onlyUseAttrs="#{pageSession.onlyUseAttrs}"
                     );
                     createMap(result="#{pageSession.statusAttrs}");

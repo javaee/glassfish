@@ -59,6 +59,10 @@
         gf.getDefaultValues(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
 #include "/common/shared/targetsConfig.inc"
         createList(size="0", result="#{pageSession.tableList}");
+        mapPut(map="#{pageSession.valueMap}" key="docroot" value="");
+        mapPut(map="#{pageSession.valueMap}" key="ssoEnabled" value="inherit");
+        mapPut(map="#{pageSession.valueMap}" key="accessLoggingEnabled" value="inherit");
+        mapPut(map="#{pageSession.valueMap}" key="accessLog" value="");
         setPageSessionAttribute(key="edit" value="#{false}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
