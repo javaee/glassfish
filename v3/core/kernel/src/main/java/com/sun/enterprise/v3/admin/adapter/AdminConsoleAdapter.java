@@ -608,7 +608,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             warFile = new File(iRoot.replace('/', File.separatorChar));
             writeAdminServiceProp(ServerTags.ADMIN_CONSOLE_DOWNLOAD_LOCATION, "${" + INSTALL_ROOT + "}/lib/install/applications/admingui.war");
         }else{
-            //For any non-absolute path, we start from the installation, ie glassfishv3
+            //For any non-absolute path, we start from the installation, ie glassfish3
             //eg, v3 prelude upgrade, where the location property was "glassfish/lib..."
             String locValue = locProp.getValue();
             warFile = new File (locValue);

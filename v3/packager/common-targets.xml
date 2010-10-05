@@ -42,7 +42,7 @@
 -->
 
 <project name="common-targets">
-    <property name="install.dir.name" value="glassfishv3"/>
+    <property name="install.dir.name" value="glassfish3"/>
     <target name="init">
         <available property="present" 
                    file="target/stage/${install.dir.name}/glassfish/modules" type="dir" />

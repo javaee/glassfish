@@ -132,7 +132,7 @@ public class InstallNodeCommand extends CLICommand {
         
         for (String host: hosts) {
             sshLauncher.init(sshuser, host, sshport, sshpassword, sshkeyfile, sshkeypassphrase, logger);
-            String remoteDir = installLocation + "/glassfishv3/glassfish";
+            String remoteDir = installLocation + "/glassfish3/glassfish";
 
             SFTPClient sftpClient = sshLauncher.getSFTPClient();
             SCPClient scpClient = sshLauncher.getSCPClient();

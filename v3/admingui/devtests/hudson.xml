@@ -47,7 +47,7 @@
     <property name="BROWSER" value="firefox"/>
 
     <property name="install.dir" value="binaries"/>
-    <property name="server.dir" value="${install.dir}/glassfishv3"/>
+    <property name="server.dir" value="${install.dir}/glassfish3"/>
     <property name="maven.dir" value="${install.dir}/${maven.version}"/>
 
     <property environment="env"/>

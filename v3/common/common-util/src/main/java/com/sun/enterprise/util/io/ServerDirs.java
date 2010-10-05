@@ -55,14 +55,14 @@ import java.io.File;
  * 
  * examples:
  * DAS
- * domainDir = getServerDir() == C:/glassfishv3/glassfish/domains/domain1
- * domainsDir = getServerParentDir() == C:/glassfishv3/glassfish/domains
+ * domainDir = getServerDir() == C:/glassfish3/glassfish/domains/domain1
+ * domainsDir = getServerParentDir() == C:/glassfish3/glassfish/domains
  * grandparent-dir is meaningless
  * 
  * Instance
- * instanceDir = getServerDir() == C:/glassfishv3/glassfish/nodes/mymachine/instance1
- * agentDir = getServerParentDir() == C:/glassfishv3/glassfish/nodes/mymachine
- * agentsDir = getServerGrandParentDir() == C:/glassfishv3/glassfish/nodes
+ * instanceDir = getServerDir() == C:/glassfish3/glassfish/nodes/mymachine/instance1
+ * agentDir = getServerParentDir() == C:/glassfish3/glassfish/nodes/mymachine
+ * agentsDir = getServerGrandParentDir() == C:/glassfish3/glassfish/nodes
  *
  * Currently in all cases the name of the serverDir is the name of the server --
  * by our definition.

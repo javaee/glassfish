@@ -46,17 +46,17 @@
     <target name="all">
         <taskdef name="unjar" classname="org.jvnet.maven.plugin.antrun.UnJarTask"/>
         <unjar dest="target/classes/modules/@filebasename@_jar">
-            <fileset dir="target/module_jars/glassfishv3/glassfish/modules">
+            <fileset dir="target/module_jars/glassfish3/glassfish/modules">
                 <include name="*.jar"/>
             </fileset>
         </unjar>
         <unjar dest="target/classes/modules/autostart/@filebasename@_jar">
-            <fileset dir="target/module_jars/glassfishv3/glassfish/modules/autostart">
+            <fileset dir="target/module_jars/glassfish3/glassfish/modules/autostart">
                 <include name="*.jar"/>
             </fileset>
         </unjar>
         <unjar dest="target/classes/modules/endorsed/@filebasename@_jar">
-            <fileset dir="target/module_jars/glassfishv3/glassfish/modules/endorsed">
+            <fileset dir="target/module_jars/glassfish3/glassfish/modules/endorsed">
                 <include name="*.jar"/>
             </fileset>
         </unjar>

@@ -45,7 +45,7 @@
     <property name="rootdir" value="target"/>
     <property name="zipdir" value="${rootdir}/packager_zips"/>
     <property name="jardir" value="${rootdir}/packager_jars"/>
-    <property name="modulesdir" value="${jardir}/glassfishv3/glassfish/modules"/>
+    <property name="modulesdir" value="${jardir}/glassfish3/glassfish/modules"/>
     <property name="filedir" value="${rootdir}/packager_files"/>
  
 
@@ -97,9 +97,9 @@
 
     <target name="addDtds" if="includeDtds">
         <echo message="adding dtds"/>
-        <jar jarfile="${jardir}/dtds.jar" basedir="${jardir}/glassfishv3/glassfish/lib" includes="dtds/**/*"/>
+        <jar jarfile="${jardir}/dtds.jar" basedir="${jardir}/glassfish3/glassfish/lib" includes="dtds/**/*"/>
        <!-- do not include schemas for now because of duplicate issue   
-	<jar jarfile="${jardir}/schemas.jar" basedir="${jardir}/glassfishv3/glassfish/lib" includes="schemas/**/*"/>
+	<jar jarfile="${jardir}/schemas.jar" basedir="${jardir}/glassfish3/glassfish/lib" includes="schemas/**/*"/>
 	-->
     </target>
     
@@ -135,10 +135,10 @@
 
     <target name="addRars" if="includeRars">
         <echo message="adding rars"/>
-        <jar jarfile="${jardir}/__cp_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__cp_jdbc_ra/**/*"/>
-        <jar jarfile="${jardir}/__ds_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__ds_jdbc_ra/**/*"/>
-        <jar jarfile="${jardir}/__dm_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__dm_jdbc_ra/**/*"/>
-        <jar jarfile="${jardir}/__xa_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__xa_jdbc_ra/**/*"/>
+        <jar jarfile="${jardir}/__cp_jdbc_ra.rar" basedir="${jardir}/glassfish3/glassfish" includes="lib/install/applications/__cp_jdbc_ra/**/*"/>
+        <jar jarfile="${jardir}/__ds_jdbc_ra.rar" basedir="${jardir}/glassfish3/glassfish" includes="lib/install/applications/__ds_jdbc_ra/**/*"/>
+        <jar jarfile="${jardir}/__dm_jdbc_ra.rar" basedir="${jardir}/glassfish3/glassfish" includes="lib/install/applications/__dm_jdbc_ra/**/*"/>
+        <jar jarfile="${jardir}/__xa_jdbc_ra.rar" basedir="${jardir}/glassfish3/glassfish" includes="lib/install/applications/__xa_jdbc_ra/**/*"/>
 	<copy todir="${rootdir}/temp">
   		<fileset dir="${jardir}">
     			<include name="*.rar"/>
@@ -149,9 +149,9 @@
 
   <target name="addEjbTimer" if="includeEjbTimer">
         <echo message="adding EJBTimer"/>
-	<copy file="${jardir}/glassfishv3/glassfish/lib/install/applications/ejb-timer-service-app.war" todir= "${rootdir}/temp"/>
+	<copy file="${jardir}/glassfish3/glassfish/lib/install/applications/ejb-timer-service-app.war" todir= "${rootdir}/temp"/>
 <!--
-        <jar jarfile="${finaljar}" update="true"  basedir="${jardir}/glassfishv3/glassfish/lib/install/applications" includes="ejb-timer-service-app.war"/>
+        <jar jarfile="${finaljar}" update="true"  basedir="${jardir}/glassfish3/glassfish/lib/install/applications" includes="ejb-timer-service-app.war"/>
 -->
    </target>
 
