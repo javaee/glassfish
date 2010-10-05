@@ -183,7 +183,7 @@ public class InstallNodeCommand extends CLICommand {
 
 
         FileListerRelative lister = new FileListerRelative(installRoot);
-        //lister.keepEmptyDirectories();	// we want to restore any empty directories too!
+        lister.keepEmptyDirectories();	// we want to restore any empty directories too!
         String[] files = lister.getFiles();
 
         List<String> resultFiles1 = Arrays.asList(files);
