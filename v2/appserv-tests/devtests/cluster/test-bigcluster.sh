@@ -5,7 +5,7 @@ export INSTALL_LOC=$HOME/testnode
 export DOMAIN=domain1
 echo "DOMAIN is set to $DOMAIN. Reset this if working with another domain."
 PATH=$GFHOME/bin:$PATH
-GFBUILD=/net/bat.sfbay.sun.com/repine/export2/hudson/jobs/gf-trunk-build-continuous/lastSuccessful/archive/bundles/glassfish.zip
+GFBUILDDIR=/net/bat.sfbay.sun.com/repine/export2/hudson/jobs/gf-trunk-build-continuous/lastSuccessful
 TIMEFORMAT="real: %E"
 rm -rf $TESTHOME/logs
 mkdir $TESTHOME/logs
