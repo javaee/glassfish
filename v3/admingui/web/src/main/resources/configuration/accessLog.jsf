@@ -54,6 +54,7 @@
 
         setPageSessionAttribute(key="childType" value="http-service");
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
+        setPageSessionAttribute(key="parentUrl2", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/#{pageSession.childType}");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
