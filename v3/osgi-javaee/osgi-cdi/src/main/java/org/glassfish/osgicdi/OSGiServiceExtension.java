@@ -236,7 +236,7 @@ public class OSGiServiceExtension implements Extension{
         @Override
         public void destroy(Object instance,
                 CreationalContext creationalContext) {
-          debug("destroy::" + instance);
+          //debug("destroy::" + instance);
           //unget the service reference
           OSGiServiceFactory.ungetService(instance, this.svcInjectionPoint);
         }
