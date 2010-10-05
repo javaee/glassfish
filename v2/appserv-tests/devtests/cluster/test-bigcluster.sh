@@ -51,7 +51,7 @@ bench() {
   cmd=$*
   key=$1
   echo -n $key ": "
-  (/usr/bin/time asadmin $cmd > /dev/null) 2>&1 || echo "<-- FAILURE"
+  (time asadmin $cmd > /dev/null) 2>&1 || echo "<-- FAILURE"
 }
 
 benchmark_commands() {
@@ -72,7 +72,7 @@ benchmark_commands() {
   grep 'time to parse domain.xml' $GFHOME/glassfish/domains/$DOMAIN/logs/server.log | 
     sed -e 's/^.*Total //' -e 's/|#]//' | tail -1
   echo 'size of domain.xml: ' `ls -l $GFHOME/glassfish/domains/$DOMAIN/config/domain.xml | awk '{ print $5 }'`
-  echo 'size of DAS process: ' `ps -o sz,args | grep glassfish | grep DAS | head -1 | cut -d" " -f 1` 'KB'
+  echo 'size of DAS process: ' `ps -o vsz,args | grep glassfish | grep DAS | head -1 | cut -d" " -f 1` 'KB'
 }
 
 benchmark_deploy() {
