@@ -53,7 +53,7 @@ import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
-//import com.sun.jsftemplating.util.Util;
+import com.sun.jsftemplating.util.Util;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -107,9 +107,7 @@ public class LogViewHandlers {
             @HandlerInput(name="anySearch", type = String.class),
             @HandlerInput(name="NumToDisplay", type=Integer.class),
             @HandlerInput(name="OnlyLevel", type=Boolean.class, defaultValue="false"),
-            @HandlerInput(name="LogDateSortDirection", type=Boolean.class),
-            @HandlerInput(name="TruncateMessage", type=Boolean.class),
-            @HandlerInput(name="TruncateLength", type=Integer.class)},
+            @HandlerInput(name="LogDateSortDirection", type=Boolean.class)},
         output={
             @HandlerOutput(name="attributes", type=Map.class)})
     public static void getLogQueryAttributes(HandlerContext handlerCtx) {
@@ -132,25 +130,12 @@ public class LogViewHandlers {
         Integer numberToDisplay = (Integer) handlerCtx.getInputValue("NumToDisplay");
         Boolean onlyLevel = (Boolean) handlerCtx.getInputValue("OnlyLevel");
         Boolean direction = (Boolean) handlerCtx.getInputValue("LogDateSortDirection");
-// FIXME: re-enable truncating...
-        Boolean truncMsg = (Boolean) handlerCtx.getInputValue("TruncateMessage");
-        Integer truncLenInteger = (Integer) handlerCtx.getInputValue("TruncateLength");
         String instanceName = (String) handlerCtx.getInputValue("InstanceName");
 
         List result = new ArrayList();
         String logFileDir = "";
         Boolean hasResults = Boolean.FALSE;
         if ((instanceName != null) && (logFileName != null)) {
-            // Determine if messages should be truncated
-            boolean truncateMessage = true;
-            if (truncMsg != null) {
-                truncateMessage = truncMsg.booleanValue();
-            }
-            int truncLen = 100;
-            if (truncLenInteger != null) {
-                truncLen = truncLenInteger.intValue();
-            }
-
             // Convert Date/Time fields
             if ((dateEnabledString != null) &&
 		    ("enabled".equalsIgnoreCase(dateEnabledString)
@@ -214,44 +199,6 @@ public class LogViewHandlers {
                 }
             }
 
-
-/*
-            // Deal w/ NVPs
-            //Hashtable nvpProps = null;
-            List nvpProps = null;
-            if ((nvp != null) && (nvp.toString().trim().length() != 0)) {
-                nvpProps = new ArrayList();
-                int equalsIdx;
-                String token;
-                // Iterate over the entries
-                StringTokenizer tok =
-                        new StringTokenizer(nvp.toString(), NVP_DELIMITERS);
-                while (tok.hasMoreTokens()) {
-                    token = tok.nextToken();
-                    if ((token == null) || (token.length() == 0)) {
-                        continue;
-                    }
-
-                    try {
-                        equalsIdx = token.indexOf(EQUALS);
-                        // Make sure = exists and it is not the first character
-                        if (equalsIdx < 0) {
-                            GuiUtil.handleError(handlerCtx, "Name-Value Pairs must be in the format \"" +
-                                    "<name>=<value>\".");
-                        }
-
-                        String key = null;
-                        key = token.substring(0, equalsIdx++);
-                        Attribute attr = new Attribute(key, token.substring(equalsIdx));
-                        nvpProps.add(attr);
-                    } catch (Exception ex) {
-                        GuiUtil.handleError(handlerCtx, "Name-Value Pairs must be in the format \"" +
-                                "<name>=<value>\".");
-                    }
-                }
-            }
-*/
-
             // Get the number to Display
             if (numberToDisplay == null) {
                 numberToDisplay = DEFAULT_NUMBER_TO_DISPLAY;
@@ -271,85 +218,6 @@ public class LogViewHandlers {
                 fromRecord = LogQuery.LAST_RECORD;
             }
 
-/*
-            // Search for the log entries
-            List<Serializable[]> results = null;
-            Logging logging = V3AMX.getInstance().getDomainRoot().getLogging();
-            try {
-                results =  logging.queryServerLog(
-                        logFileName,
-                        fromRecord,
-                        after,
-                        numberToDisplay,
-                        (fromDate == null) ? null : ((Date)fromDate).getTime(),
-                        (toDate == null) ? null : ((Date)toDate).getTime(),
-                        logLevel,
-                        moduleList,
-                        nvpProps,
-                        anySearch);
-            } catch (Exception ex) {
-                GuiUtil.handleError(handlerCtx, "Error while querying Log File.");
-            }
-            String message;
-            LogQueryEntry[] query = null;
-
-            if (results != null) {
-                LogQueryResult r = LogQuery.Helper.toLogQueryResult(results);
-                query = r.getEntries();
-               // Add the results to the Model
-                for (int i = 0; i < query.length; i++) {
-                    HashMap oneRow = new HashMap();
-                    LogQueryEntry row = (LogQueryEntry) query[i];
-                    oneRow.put("recNumber", row.getRecordNumber());
-                    oneRow.put("dateTime", formatDateForDisplay(
-                            GuiUtil.getLocale(), row.getDate()));
-                    String msgId = (String) row.getMessageID();
-                    String level = (String) row.getLevel();
-                    String moduleName = (String)row.getModule();
-                    //only SEVERE msg provoides diagnostic info.
-                    if (level.equalsIgnoreCase("severe")) {
-                        // NOTE: Image name/location is hard-coded
-                        oneRow.put("levelImage", GuiUtil.getMessage("common.errorGif"));
-                        oneRow.put(SHOW_LEVEL_IMAGE, new Boolean(true));
-                        oneRow.put("diagnosticCauses", getDiagnosticCauses(handlerCtx, msgId, moduleName));
-                        oneRow.put("diagnosticChecks", getDiagnosticChecks(handlerCtx, msgId, moduleName));
-//                        oneRow.put("diagnosticURI", getDiagnosticURI(handlerCtx, msgId));
-                    } else {
-                        oneRow.put(SHOW_LEVEL_IMAGE, new Boolean(false));
-                        oneRow.put("diagnostic", "");
-                    }
-                    oneRow.put("level", level);
-                    oneRow.put("productName", row.getProductName());
-                    oneRow.put("logger", moduleName);
-                    try {
-                        oneRow.put("nvp", row.getNameValuePairsMap());
-                    } catch (Exception ex) {
-                        // ignore
-                        oneRow.put("nvp", "");
-
-                    }
-                    oneRow.put("messageID", msgId);
-                    message = ((String) row.getMessage().trim());
-                    if (truncateMessage && (message.length() > truncLen)) {
-                        message = message.substring(0, truncLen).concat("...\n");
-                    }
-                    oneRow.put("message", (message == null) ? " " : Util.htmlEscape(message));
-                    result.add(oneRow);
-                }
-            }
-
-            // Set the first / last record numbers as attributes
-            if (query != null && query.length > 1) {
-                handlerCtx.setOutputValue("FirstLogRow",
-                        ((LogQueryEntry) query[0]).getRecordNumber());
-                handlerCtx.setOutputValue("LastLogRow",
-                        ((LogQueryEntry) query[query.length -1]).getRecordNumber());
-                hasResults = new Boolean(true);
-            } else {
-                handlerCtx.setOutputValue("FirstLogRow", "-1");
-                handlerCtx.setOutputValue("LastLogRow", "-1");
-            }
-*/
 	    notNullStringPut(attMap, "logFileName", logFileName);
 	    notNullStringPut(attMap, "startIndex", fromRecord);
 	    notNullStringPut(attMap, "searchForward", after);//direction
@@ -364,6 +232,77 @@ public class LogViewHandlers {
 	    //notNullStringPut(attMap, "logFileRefresh", logFileName);
         }
         handlerCtx.setOutputValue("attributes", attMap);
+    }
+
+    /**
+     *	<p> This handler creates a Map&lt;String, String&gt; which contains
+     *	    the QUERY_STRING parameters that should be passed to the REST
+     *	    logging endpoint to make a query with the given constraints.</p>
+     *
+     *	@param	context	The HandlerContext.
+     */
+    @Handler(id="gf.processLogRecords",
+        input={
+            @HandlerInput(name="logRecords", type=List.class, required=true),
+            @HandlerInput(name="truncate", type=Boolean.class, defaultValue="true"),
+            @HandlerInput(name="truncateLength", type=Integer.class, defaultValue="100")},
+	output={
+            @HandlerOutput(name="result", type=List.class),
+            @HandlerOutput(name="firstRecord", type=Integer.class),
+            @HandlerOutput(name="lastRecord", type=Integer.class)})
+    public static void processLogRecords(HandlerContext handlerCtx) {
+	// Get the input...
+	List<Map<String, Object>> records = (List<Map<String, Object>>)
+		handlerCtx.getInputValue("logRecords");
+	if (records != null) {
+		// Make sure there's something to do...
+	    boolean truncate = (Boolean) handlerCtx.getInputValue("truncate");
+	    int truncLen = (Integer) handlerCtx.getInputValue("truncateLength");
+	    Locale locale = GuiUtil.getLocale();
+
+	    // Loop through the records...
+	    for (Map<String, Object> record : records) {
+		record.put("dateTime",
+		    formatDateForDisplay(locale, new Date(new Long(
+			    record.get("loggedDateTimeInMS").toString()))));
+	    /*
+		String msgId = (String) row.getMessageID();
+		String level = (String) row.getLevel();
+		String moduleName = (String)row.getModule();
+		//only SEVERE msg provoides diagnostic info.
+		if (level.equalsIgnoreCase("severe")) {
+		    // NOTE: Image name/location is hard-coded
+		    record.put("levelImage", GuiUtil.getMessage("common.errorGif"));
+		    record.put(SHOW_LEVEL_IMAGE, new Boolean(true));
+		    record.put("diagnosticCauses", getDiagnosticCauses(handlerCtx, msgId, moduleName));
+		    record.put("diagnosticChecks", getDiagnosticChecks(handlerCtx, msgId, moduleName));
+    //                        record.put("diagnosticURI", getDiagnosticURI(handlerCtx, msgId));
+		} else {
+		    record.put(SHOW_LEVEL_IMAGE, new Boolean(false));
+		    record.put("diagnostic", "");
+		}
+		record.put("level", level);
+		record.put("productName", row.getProductName());
+		record.put("logger", moduleName);
+		*/
+		String message = ((String) record.get("Message")).trim();
+		if (truncate && (message.length() > truncLen)) {
+		    message = message.substring(0, truncLen).concat("...\n");
+		}
+		record.put("Message", (message == null) ? " " : Util.htmlEscape(message));
+	    }
+	}
+
+	// Set the first / last record numbers as attributes
+	if ((records != null) && (records.size() > 1)) {
+	    handlerCtx.setOutputValue("firstRecord", records.get(0).get("recordNumber"));
+	    handlerCtx.setOutputValue("lastRecord", records.get(records.size()-1).get("RecordNumber"));
+	    //hasResults = true;
+	} else {
+	    handlerCtx.setOutputValue("firstRecord", "-1");
+	    handlerCtx.setOutputValue("lastRecord", "-1");
+	}
+	handlerCtx.setOutputValue("result", records);
     }
 
     /**
