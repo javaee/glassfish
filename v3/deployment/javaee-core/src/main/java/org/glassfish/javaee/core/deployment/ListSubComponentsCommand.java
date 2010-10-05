@@ -136,6 +136,13 @@ public class ListSubComponentsCommand implements AdminCommand {
 
         Application application = applications.getApplication(applicationName);
 
+        if (application.isLifecycleModule() || application.isOSGiModule()) {
+            if (!terse) {
+                part.setMessage(localStrings.getLocalString("listsubcomponents.no.elements.to.list", "Nothing to List."));
+            }
+            return;
+        }
+
         ApplicationInfo appInfo = appRegistry.get(applicationName);
         if (appInfo == null) {
             report.setMessage(localStrings.getLocalString("application.not.enabled","Application {0} is not in an enabled state", applicationName));

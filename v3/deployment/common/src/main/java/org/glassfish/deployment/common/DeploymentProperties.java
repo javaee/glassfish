@@ -559,6 +559,7 @@ public class DeploymentProperties extends Properties {
     public static final String PRESERVE_APP_SCOPED_RESOURCES = "preserveAppScopedResources";
 
     public static final String OSGI = "osgi";
+    public static final String IS_SNIFFER_USER_VISIBLE = "isSnifferUserVisible";
 
     static Map keyMap;
 

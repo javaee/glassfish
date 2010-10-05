@@ -38,72 +38,50 @@
  * holder.
  */
 
-package org.glassfish.javaee.core.deployment;
+package org.glassfish.deployment.admin;
 
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.Param;
-import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
-import org.glassfish.config.support.TargetType;
-import org.glassfish.config.support.CommandTarget;
-import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.internal.data.ApplicationRegistry;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.BundleDescriptor;
-import org.glassfish.deployment.common.DeploymentProperties;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import org.glassfish.api.ActionReport;
+import org.glassfish.api.container.Sniffer;
+import org.glassfish.internal.deployment.SnifferManager;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.deployment.common.DeploymentProperties;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-/**
- * Get context root command
- */
-@Service(name="_get-context-root")
-@ExecuteOn(value={RuntimeType.DAS})
+@Service(name="_is-sniffer-user-visible")
+@org.glassfish.api.admin.ExecuteOn(value={RuntimeType.DAS})
 @Scoped(PerLookup.class)
-public class GetContextRootCommand implements AdminCommand {
+public class IsSnifferUserVisibleCommand implements AdminCommand {
 
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(GetContextRootCommand.class);
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(IsSnifferUserVisibleCommand.class);
 
     @Param(primary=true)
-    private String modulename = null;
-
-    @Param(optional=true)
-    private String appname = null;
+    public String sniffername = null;
 
     @Inject
-    ApplicationRegistry appRegistry;
+    SnifferManager snifferManager;
 
-    /**
-     * Entry point from the framework into the command execution
-     * @param context context for the command.
-     */
     public void execute(AdminCommandContext context) {
+        
         final ActionReport report = context.getActionReport();
-        final Logger logger = context.getLogger();
 
         ActionReport.MessagePart part = report.getTopMessagePart();
 
-        ApplicationInfo appInfo = appRegistry.get(appname);
-        if (appInfo != null) {
-            Application app = appInfo.getMetaData(Application.class);
-            if (app != null) {
-                BundleDescriptor bundleDesc = app.getModuleByUri(modulename);
-                if (bundleDesc != null &&
-                    bundleDesc instanceof WebBundleDescriptor) {
-                    String contextRoot = ((WebBundleDescriptor)bundleDesc).getContextRoot();
-                    part.addProperty(DeploymentProperties.CONTEXT_ROOT, contextRoot);
-                    part.setMessage(contextRoot);
-                }
-            }
+        Sniffer sniffer = snifferManager.getSniffer(sniffername);
+
+        if (sniffer != null) {
+            String isVisible = String.valueOf(sniffer.isUserVisible());
+
+            part.addProperty(DeploymentProperties.IS_SNIFFER_USER_VISIBLE, isVisible);
+
+            part.setMessage(isVisible);
         }
     }
 }

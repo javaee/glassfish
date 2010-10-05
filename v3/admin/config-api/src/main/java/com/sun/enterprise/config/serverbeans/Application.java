@@ -316,6 +316,9 @@ public interface Application extends Injectable, ApplicationName, PropertyBag {
     boolean isLifecycleModule();
 
     @DuckTyped
+    boolean isOSGiModule();
+
+    @DuckTyped
     void recordFileLocations(File app, File plan);
     
     @DuckTyped
@@ -414,6 +417,11 @@ public interface Application extends Injectable, ApplicationName, PropertyBag {
             return Boolean.valueOf(me.getDeployProperties().getProperty
                 (ServerTags.IS_LIFECYCLE));
         }
+
+        public static boolean isOSGiModule(Application me) {
+            return me.containsSnifferType(OSGI_SNIFFER_TYPE);
+        }
+
 
         public static boolean containsSnifferType(Application app, 
             String snifferType) {

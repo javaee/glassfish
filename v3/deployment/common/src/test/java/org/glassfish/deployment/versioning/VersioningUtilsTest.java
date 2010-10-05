@@ -729,6 +729,11 @@ public class VersioningUtilsTest {
         }
 
         @Override
+        public boolean isOSGiModule() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
         public boolean containsSnifferType(String snifferType) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
