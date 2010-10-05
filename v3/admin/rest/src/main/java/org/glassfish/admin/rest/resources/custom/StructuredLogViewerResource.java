@@ -86,7 +86,7 @@ public class StructuredLogViewerResource {
             @QueryParam("startIndex") @DefaultValue("-1") long startIndex,
             @QueryParam("searchForward") @DefaultValue("false") boolean searchForward,
             @QueryParam("maximumNumberOfResults") @DefaultValue("40") int maximumNumberOfResults,
-            @QueryParam("onlyLevel") @DefaultValue("true") boolean onlyLevel,
+            @QueryParam("onlyLevel") @DefaultValue("false") boolean onlyLevel,
             @QueryParam("fromTime") @DefaultValue("-1") long fromTime,
             @QueryParam("toTime") @DefaultValue("-1") long toTime,
             @QueryParam("logLevel") @DefaultValue("INFO") String logLevel,
