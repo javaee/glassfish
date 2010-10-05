@@ -67,6 +67,7 @@ public class Client {
 		try {
 		    System.out.println("Sleep a small amount to make sure the async method" +
 				   "is dispatched before we make the next call...");
+		    Thread.sleep(100);
 		    serializedBean.helloWait();
 		    throw new EJBException("Should have received timeout exception");
 		} catch(ConcurrentAccessTimeoutException cate) {
