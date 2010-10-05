@@ -76,21 +76,13 @@ import java.io.File;
 @Scoped(PerLookup.class)
 public final class CopyConfigCommand extends CopyConfig {
 
-    @Inject
-    ServerEnvironment env;
-
-    @Inject
-    ServerEnvironmentImpl envImpl;
-
-
     final private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(CopyConfigCommand.class);
 
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        SystemPropertyBag spb = null;
-
+       
         if (configs.size() != 2) {
             report.setMessage(localStrings.getLocalString("Config.badConfigNames",
                     "You must specify a source and destination config") + "\n" +
@@ -116,7 +108,7 @@ public final class CopyConfigCommand extends CopyConfig {
         }
         
         //does dest config exist
-        Config destinationConfig = domain.getConfigNamed(destConfig);
+        final Config destinationConfig = domain.getConfigNamed(destConfig);
         if (destinationConfig != null ){
             report.setMessage(localStrings.getLocalString(
                     "Config.configExists", "Config {0} already exists.", destConfig));
@@ -126,70 +118,22 @@ public final class CopyConfigCommand extends CopyConfig {
 
         //Copy the config
         final String configName = destConfig ;
-
+        final Logger logger = context.getLogger();
         try {
             final Config newCopy = (Config) ConfigSupport.apply(new SingleConfigCode<Configs>(){
                 @Override
                 public Object run(Configs configs ) throws PropertyVetoException, TransactionFailure {
-                    final Config destCopy = (Config) config.deepCopy(configs);
-                    if (systemproperties != null) {
-                        final Properties properties = GenericCrudCommand.convertStringToProperties(systemproperties,':');
-
-                        for (final Object key : properties.keySet()) {
-                            final String propName = (String) key;
-                            //cannot update a system property so remove it first
-                            List<SystemProperty> sysprops = destCopy.getSystemProperty() ;
-                            for (SystemProperty sysprop:sysprops) {
-                                if (propName.equals(sysprop.getName())) {
-                                    sysprops.remove(sysprop);
-                                    break;
-                                }
-
-                            }
-
-                            //Currently the systemproperties is not working due to this bug 12311
-                            SystemProperty newSysProp = destCopy.createChild(SystemProperty.class);
-                            newSysProp.setName(propName);
-                            newSysProp.setValue(properties.getProperty(propName));
-                            destCopy.getSystemProperty().add(newSysProp);
-                        }
-                    }
-                    destCopy.setName(configName);
-                    configs.getConfig().add(destCopy);
-                    copyOfConfig = destCopy;
-                    return destCopy;
-
+                    return copyConfig(configs,config,configName,logger);
                 }
             }   ,domain.getConfigs());
 
-            Logger logger = context.getLogger();
-            try {
-                File configConfigDir = new File(env.getConfigDirPath(),
-                        configName);
-                new File(configConfigDir, "docroot").mkdirs();
-                new File(configConfigDir, "lib/ext").mkdirs();
-
-                String rootFolder = envImpl.getProps().get(com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
-                String templateDir = rootFolder + File.separator + "lib" + File.separator + "templates";
-                File src = new File(templateDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
-                File dest = new File(configConfigDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
-                FileUtils.copy(src, dest);
-            }
-            catch(Exception e) {
-                logger.warning(localStrings.getLocalString(
-                        "Config.copyConfigError",
-                        "CopyConfig error") +
-                        "  " + e.getLocalizedMessage());
-            }
-
 
         } catch (TransactionFailure e) {
-            e.printStackTrace();
             report.setMessage(
                 localStrings.getLocalString(
                     "Config.copyConfigError",
-                    "CopyConfig error") +
-                "  " + e.getLocalizedMessage());
+                    "CopyConfig error caused by " ,
+                 e.getLocalizedMessage()));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }

@@ -605,14 +605,15 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                     throw new TransactionFailure(msg);
                 }
                final String configName = instance.getName() + "-config";
-                instance.setConfigRef(configName);
+               instance.setConfigRef(configName);
                final CopyConfig command = (CopyConfig) runner
                         .getCommand("copy-config", context.getActionReport(), context.getLogger());
-                command.configs= new ArrayList<String>();
-                command.configs.add("default-config");
-                command.configs.add(configName);
-                command.execute(context);
-                ourConfig = command.copyOfConfig;
+               
+                Configs configs = domain.getConfigs();
+                Configs writableConfigs = tx.enroll(configs);
+
+                ourConfig = command.copyConfig(writableConfigs,defaultConfig,configName,logger);
+                
 
             }
 
@@ -644,29 +645,10 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
 
             this.addClusterRefs(ourCluster, instance);
             if (checkPorts) {
-                String message = null;
-                try {
-                    PortManager pm = new PortManager(ourCluster, ourConfig, domain, instance, logger);
-                    message = pm.process(); // might throw
-                } catch (TransactionFailure tf) {
-                    if (configRef == null && clusterName == null) {  //Issue 13503
-                        Configs configsRO = domain.getConfigs();
-                        ConfigSupport.apply(new SingleConfigCode<Configs>() {
-                            final String configRef = instance.getConfigRef();
-                            public Object run(Configs param) throws PropertyVetoException, TransactionFailure {
-                                for (Config c : param.getConfig()) {
-                                    if (c.getName().equals(configRef)) {
-                                        param.getConfig().remove(c);
-                                        break;
-                                    }
-                                }
-                                return null;
-                            }
-                        }, configsRO);
-                    }
-
-                    throw tf;
-                }
+                
+                PortManager pm = new PortManager(ourCluster,
+                        ourConfig, domain, instance, logger);
+                String message = pm.process();       
 
                 if (message != null && !terse) {
                     ActionReport report = context.getActionReport();

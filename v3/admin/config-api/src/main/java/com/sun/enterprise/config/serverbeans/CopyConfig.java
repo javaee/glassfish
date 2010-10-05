@@ -41,10 +41,21 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.Param;
+import org.glassfish.config.support.GenericCrudCommand;
+import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
 
 import java.util.List;
+import java.util.Properties;
+import java.util.logging.Logger;
+import java.beans.PropertyVetoException;
+import java.io.File;
+
+import org.jvnet.hk2.config.TransactionFailure;
+import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 /**
  * This is the abstract class which will be used by the config beans
@@ -64,5 +75,66 @@ public abstract class CopyConfig implements AdminCommand {
     protected String systemproperties;
 
     protected Config copyOfConfig;
+
+
+    @Inject
+    ServerEnvironment env;
+
+    @Inject
+    ServerEnvironmentImpl envImpl;
+
+
+    final private static LocalStringManagerImpl localStrings =
+        new LocalStringManagerImpl(CopyConfig.class);
+
+
+    public Config copyConfig(Configs configs, Config config,String destConfigName,Logger logger) throws PropertyVetoException,
+    TransactionFailure{
+        final Config destCopy = (Config) config.deepCopy(configs);
+        if (systemproperties != null) {
+            final Properties properties = GenericCrudCommand.convertStringToProperties(systemproperties,':');
+
+            for (final Object key : properties.keySet()) {
+                final String propName = (String) key;
+                //cannot update a system property so remove it first
+                List<SystemProperty> sysprops = destCopy.getSystemProperty() ;
+                for (SystemProperty sysprop:sysprops) {
+                    if (propName.equals(sysprop.getName())) {
+                        sysprops.remove(sysprop);
+                        break;
+                    }
+
+                }
+                SystemProperty newSysProp = destCopy.createChild(SystemProperty.class);
+                newSysProp.setName(propName);
+                newSysProp.setValue(properties.getProperty(propName));
+                destCopy.getSystemProperty().add(newSysProp);
+            }
+        }
+        final String configName = destConfigName;
+        destCopy.setName(configName);
+        configs.getConfig().add(destCopy);
+        copyOfConfig = destCopy;
+
+        try {
+                File configConfigDir = new File(env.getConfigDirPath(),
+                        configName);
+                new File(configConfigDir, "docroot").mkdirs();
+                new File(configConfigDir, "lib/ext").mkdirs();
+
+                String rootFolder = envImpl.getProps().get(com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
+                String templateDir = rootFolder + File.separator + "lib" + File.separator + "templates";
+                File src = new File(templateDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
+                File dest = new File(configConfigDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
+                FileUtils.copy(src, dest);
+            }catch(Exception e) {
+                logger.warning(localStrings.getLocalString(
+                        "config.copyConfigError",
+                        "CopyConfig error caused by"
+                        ,e.getLocalizedMessage()));
+            }
+        return destCopy;
+    }
+
 
 }

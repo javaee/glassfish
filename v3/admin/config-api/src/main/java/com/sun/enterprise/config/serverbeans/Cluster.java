@@ -533,7 +533,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
         public void decorate(AdminCommandContext context, final Cluster instance) throws TransactionFailure, PropertyVetoException {
             Logger logger = LogDomains.getLogger(Cluster.class, LogDomains.ADMIN_LOGGER);
             LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Cluster.class);
-            
+            Transaction t = Transaction.getTransaction(instance);
             //check if cluster software is installed else fail , see issue 12023
             final CopyConfig command = (CopyConfig) runner
                     .getCommand("copy-config", context.getActionReport(), context.getLogger());
@@ -569,14 +569,12 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                             config.getName(), instance.getName()));
                 }
 
-
+                Configs configs = domain.getConfigs();
+                Configs writableConfigs = t.enroll(configs);
                 final String configName = instance.getName() + "-config";
                 instance.setConfigRef(configName);
-
-                command.configs= new ArrayList<String>();
-                command.configs.add("default-config");
-                command.configs.add(configName);
-                command.execute(context);
+                command.copyConfig(writableConfigs,config,configName,logger);
+                
 
             }  else {
 
@@ -650,10 +648,13 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     @Scoped(PerLookup.class)
     class DeleteDecorator implements DeletionDecorator<Clusters, Cluster> {
 
-        // for backward compatibility, ignored.
-        @Param(name="nodeagent", optional=true)
+        @Param(name="nodeagent", optional=true,obsolete=true)
         String nodeagent;
-        
+
+        // for backward compatibility, ignored.
+        @Param(name="autohadboverride", optional=true,obsolete=true)
+        String autohadboverride;
+
         @Inject
         private Domain domain;
 
