@@ -15,6 +15,7 @@ public class ANonDefaultRunLevelService implements RunLevelService, RunLevelStat
 
   Integer current;
   Integer planned;
+  boolean interrupted;
   
   
   @Override
@@ -27,6 +28,17 @@ public class ANonDefaultRunLevelService implements RunLevelService, RunLevelStat
     current = runLevel;
   }
 
+  @Override
+  public void interrupt() {
+    interrupted = true;
+  }
+  
+  @Override
+  public void interrupt(int runLevel) {
+    interrupted = true;
+    proceedTo(runLevel);
+  }
+  
   @Override
   public Integer getCurrentRunLevel() {
     return current;

@@ -93,10 +93,13 @@ public interface RunLevelService<T> {
    * Causes this RunLevelService to move to the specified run level for
    * all RunLevel instances (identified by environment), orchestrating
    * the appropriate lifecycle events based on the given implementation
-   * strategy.  See the javadoc for each implementation for details.
+   * strategy.  See the javadoc for each implementation for specific
+   * details.
+   * 
    * <p>
    * If the RunLevel specified is the same as the current RunLevel then
-   * the RunLevelService will return immediately.
+   * the RunLevelService may return immediately.
+   * 
    * <p>
    * Note that the underlying implementation may perform this operation
    * asynchronously. Implementors who choose the asynchronous approach
@@ -108,5 +111,23 @@ public interface RunLevelService<T> {
    * @param runLevel the run level to move to.
    */
   void proceedTo(int runLevel);
+  
+  /**
+   * Causes this RunLevelService to attempt to stop in-flight any
+   * currently progressing proceedTo() operation.  This call will
+   * have not affect if there is no current proceedTo() running.
+   * 
+   * <p>
+   * See the javadoc for each implementation for specific details 
+   */
+  void interrupt();
+  
+  /**
+   * Same as {@link #interrupt()}, with the option to immediately perform
+   * a {@link #proceedTo(int)} following the interrupt.
+   * 
+   * @param runLevel the run level to move to following the interrupt
+   */
+  void interrupt(int runLevel);
   
 }

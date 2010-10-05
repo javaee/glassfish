@@ -66,15 +66,22 @@ import org.jvnet.hk2.annotations.Contract;
 public interface RunLevelListener {
 
   /**
-   * Called when an asynchronous RunLevelService implementation's
-   * proceedTo() operation has been interrupted with a new 
-   * proceedTo() call.
+   * Called when an RunLevelService implementation's
+   * proceedTo() operation has been canceled for some reason.  This could
+   * be as a result of a new proceedTo() call or an interrupt() for example.
    * 
    * @param state the current and new planned state
+   * 
+   * @param ctx the context of the inhabitant that was is the midst of being processed at the time of the cancel
+   *    if this information is available, null otherwise 
+   * 
    * @param previousProceedTo the previousProceedTo state that is
-   *    being interrupted.  This should always be != state.plannedRunLevel
+   *    being canceled.  (This should always be != state.plannedRunLevel)
+   *    
+   * @param boolean isInterrupt set to true if the onCancelled even was as
+   *    a result of an explicit interrupt() call. 
    */
-  void onCancelled(RunLevelState<?> state, int previousProceedTo);
+  void onCancelled(RunLevelState<?> state, ServiceContext ctx, int previousProceedTo, boolean isInterrupt);
   
   /**
    * Called when a service throws an exception during lifecycle orchestration.

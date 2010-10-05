@@ -442,7 +442,18 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     return qualifying;
   }
   
-  protected void event(Worker worker, ListenerEvent event, ServiceContext context, Throwable error) {
+  protected void event(Worker worker,
+      ListenerEvent event,
+      ServiceContext context,
+      Throwable error) {
+    event(worker, event, context, error, false);
+  }
+      
+  protected void event(Worker worker,
+      ListenerEvent event,
+      ServiceContext context,
+      Throwable error,
+      boolean isHardInterrupt) {
     logger.log(Level.FINE, "event {0} - " + getDescription(true), event);
     
     if (isCancelled(worker)) {
@@ -456,7 +467,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
           if (ListenerEvent.PROGRESS == event) {
             listener.onProgress(this);
           } else if (ListenerEvent.CANCEL == event) {
-            listener.onCancelled(this, current);
+            listener.onCancelled(this, context, current, isHardInterrupt);
           } else {
             listener.onError(this, context, error, true);
           }
@@ -530,27 +541,43 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
   }
   
   @Override
-  public void proceedTo(final int runLevel) {
-    if (runLevel < -1) {
+  public void proceedTo(int runLevel) {
+    proceedTo(runLevel, false);
+  }
+
+  @Override
+  public void interrupt() {
+    proceedTo(null, true);
+  }
+  
+  @Override
+  public void interrupt(int runLevel) {
+    proceedTo(runLevel, true);
+  }
+  
+  protected void proceedTo(Integer runLevel, boolean isHardInterrupt) {
+    if (null != runLevel && runLevel < -1) {
       throw new IllegalArgumentException();
     }
 
     // see if we can interrupt first
     Worker worker = this.worker;
     if (null != worker) {
-      if (worker.interrupt(runLevel)) {
+      if (worker.interrupt(isHardInterrupt, runLevel)) {
         return;
       }
     }
 
-    // if we are here, then we couldn't interrupt and we must create a new worker
-    synchronized (lock) {
-      this.worker = worker = (asyncMode) ?
-            new AsyncProceedToOp(runLevel) :
-            new SyncProceedToOp(runLevel);
-    }
+    if (null != runLevel) {
+      // if we are here then we interrupt isn't enough and we must create a new worker
+      synchronized (lock) {
+        this.worker = worker = (asyncMode) ?
+              new AsyncProceedToOp(runLevel) :
+              new SyncProceedToOp(runLevel);
+      }
     
-    worker.proceedTo(runLevel);
+      worker.proceedTo(runLevel);
+    }
   }
   
   /**
@@ -625,6 +652,10 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     // tracks the direction of any active proceedTo worker
     protected Boolean upSide;
     
+    // records whether a cancel was actually an hard interrupt
+    protected Boolean isHardInterrupt;
+    
+    
     protected Worker(int runLevel) {
       this.planned = runLevel;
     }
@@ -642,24 +673,39 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
      * if it finds it has been.
      * 
      * @param e any error encountered during the nested proceedTo operation; may be null
+     * 
      * @param i the inhabitant that was being activated / released during the operation; may be null
+     * 
+     * @param isHard true when this is a "hard" interrupt originating from an interrupt() call,
+     *    false when it was from a "soft" interrupt involving a new proceedTo(), null when its
+     *    unknown altogether
      */
-    public void checkInterrupt(Exception e, Inhabitant<?> i) {
+    public void checkInterrupt(Exception e, Inhabitant<?> i, Boolean isHard) {
+      boolean isHardInterrupt = isHardInterrupt(isHard, e);
       if (null != e) {
-        event(this, ListenerEvent.ERROR, serviceContext(e, i), e);
+        ServiceContext ctx = serviceContext(e, i);
+        if (isHardInterrupt) {
+          event(this, ListenerEvent.CANCEL, ctx, e, isHardInterrupt);
+        } else {
+          event(this, ListenerEvent.ERROR, ctx, e, isHardInterrupt);
+        }
       }
     }
     
     /**
      * Attempts to interrupt processing to go to a new runLevel.
      * 
-     * @param runLevel the revised runLevel to proceedTo
+     * @param isHard if true, this was based on an explicit call to interrupt;
+     *  false otherwise.  The latter is the case for a new proceedTo() causing
+     *  a cancel in order to proceedTo a new runLevel.
+     *  
+     * @param runLevel optionally, the revised runLevel to proceedTo
      * 
      * @return true, if its possible to go to the new runLevel; note that
      *    implementation may handle the interrupt by other means (i.e.,
      *    throwing an InterruptException for the synchronous case)
      */
-    public abstract boolean interrupt(int runLevel);
+    public abstract boolean interrupt(boolean isHard, Integer runLevel);
 
     /**
      * Called after initialization to run the proceedTo operation
@@ -676,6 +722,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
       logger.log(Level.FINE, "proceedTo({0}) - " + getDescription(true), planned);
       
       upSide = null;
+      isHardInterrupt = null;
       
       if (null != planned) {
         int current = (null == getCurrentRunLevel()) ? INITIAL_RUNLEVEL : getCurrentRunLevel();
@@ -760,9 +807,9 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
   //        assert(rli.isInstantiated());
             
             // an escape hatch if we've been interrupted in some way
-            checkInterrupt(null, rli);
+            checkInterrupt(null, rli, null);
           } catch (Exception e) {
-            checkInterrupt(e, rli);
+            checkInterrupt(e, rli, null);
           }
         }
       }
@@ -802,13 +849,21 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
             try{
               ia.deactivate(i);
 //              assert(!i.isInstantiated());
-              checkInterrupt(null, i);
+              checkInterrupt(null, i, null);
             } catch (Exception e) {
-              checkInterrupt(e, i);
+              checkInterrupt(e, i, null);
             }
           }
         }
       }
+    }
+    
+    protected boolean isHardInterrupt(Boolean isHard, Throwable e) {
+      if (null != isHard) {
+        return isHard;
+      }
+      
+      return (null == isHardInterrupt) ? false : isHardInterrupt;
     }
   }
   
@@ -823,7 +878,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     // the next planned runLevel (after interrupt)
     protected Integer nextPlannedAfterInterrupt;
     
-    // records where a cancel was issued
+    // records whether a cancel event was issued
     private boolean cancelIssued;
     
     private SyncProceedToOp(int runLevel) {
@@ -831,32 +886,32 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     }
 
     /**
-     * Interrupts are always handles in the synchronous case.
-     * 
-     * Either by popping the stack for the reentrant call on
+     * Interrupts are always handled in the synchronous case
+     * either by popping the stack for the reentrant call on
      * same thread, or by sending a cancel event to the
      * active thread doing the proceedTo() call.
      */
     @Override
-    public boolean interrupt(int runLevel) {
+    public boolean interrupt(boolean isHard, Integer runLevel) {
       Thread ourThread = Thread.currentThread();
       
       synchronized (lock) {
         Integer planned = getPlannedRunLevel();
-        if (null != planned && planned == runLevel) {
+        if (!isHard && null != planned && planned == runLevel) {
           return true;  // short circuit
         }
         
         nextPlannedAfterInterrupt = runLevel;
 
         if (ourThread == activeThread) {
-          checkInterrupt(null, null);
+          checkInterrupt(null, null, isHard);
         } else {
           // must interrupt another thread to do the new proceedTo().
           // Note how this thread exhibits async behavior in this case.
           // The cancel notification will happen on the other thread
           logger.log(Level.FINE, "Interrupting thread {0} - " + getDescription(true), activeThread);
           
+          this.isHardInterrupt = isHard;
           activeThread.interrupt();
         }
       }
@@ -880,7 +935,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     }
     
     @Override
-    public void checkInterrupt(Exception e, Inhabitant<?> i) {
+    public void checkInterrupt(Exception e, Inhabitant<?> i, Boolean isHard) {
       synchronized (lock) {
         boolean cancelled = isCancelled(this);
         if (cancelled || null != nextPlannedAfterInterrupt) {
@@ -891,7 +946,8 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
             // send cancel event, but only one time
             if (!cancelIssued) {
               cancelIssued = true;
-              event(this, ListenerEvent.CANCEL, null, null);
+              boolean isHardInterrupt = isHardInterrupt(isHard, e);
+              event(this, ListenerEvent.CANCEL, serviceContext(e, i), null, isHardInterrupt);
             }
             
             // pop stack to last proceedTo()
@@ -900,7 +956,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
         }
       }
       
-      super.checkInterrupt(e, i);
+      super.checkInterrupt(e, i, isHard);
     }
     
     private boolean canUpdateProceedTo(Integer proposed) {
@@ -960,7 +1016,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
      * Here, we just kill the worker, and expect a new one to form.
      */
     @Override
-    public boolean interrupt(int runLevel) {
+    public boolean interrupt(boolean isHard, Integer runLevel) {
       boolean haveFuture;
       synchronized (lock) {
         haveFuture = (null != activeFuture);
@@ -972,7 +1028,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
       }
       
       if (haveFuture) {
-        event(this, ListenerEvent.CANCEL, null, null);
+        event(this, ListenerEvent.CANCEL, null, null, isHard);
       }
       
       return false;
@@ -993,16 +1049,20 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     }
 
     @Override
-    public void checkInterrupt(Exception e, Inhabitant<?> i) {
+    public void checkInterrupt(Exception e, Inhabitant<?> i, Boolean isHard) {
       if (isCancelled(this)) {
         throw new Interrupt();
       }
-      super.checkInterrupt(e, i);
+      super.checkInterrupt(e, i, isHard);
     }
   }
 
 
   protected ServiceContext serviceContext(Exception e, final Inhabitant<?> i) {
+    if (null == i) {
+      return null;
+    }
+    
     ServiceContext ctx = null;
 
     if (e instanceof ComponentException) {
