@@ -168,15 +168,17 @@ public class LogViewHandlers {
             Set moduleList = null;
             if (loggers != null) {
                 int len = ((Object[]) loggers).length;
-                moduleList = new HashSet();
-                Object val;
-                for (int count = 0; count < len; count++) {
-                    val = (((Object[]) loggers)[count]);
-                    if ((val == null) || (val.toString().trim().length() == 0)) {
-                        continue;
-                    }
-                    moduleList.add(val);
-                }
+		if (len > 0) {
+		    moduleList = new HashSet();
+		    Object val;
+		    for (int count = 0; count < len; count++) {
+			val = (((Object[]) loggers)[count]);
+			if ((val == null) || (val.toString().trim().length() == 0)) {
+			    continue;
+			}
+			moduleList.add(val);
+		    }
+		}
             }
 
             // Add custom loggers
@@ -186,7 +188,7 @@ public class LogViewHandlers {
                         customLoggers.toString(),
                         CUSTOM_LOGGER_DELIMITERS);
                 String token;
-                if(moduleList == null) {
+                if (moduleList == null) {
                     moduleList = new HashSet();
                 }
 
