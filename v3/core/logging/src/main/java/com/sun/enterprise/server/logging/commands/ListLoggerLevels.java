@@ -62,6 +62,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Created by IntelliJ IDEA.
@@ -111,9 +114,9 @@ public class ListLoggerLevels implements AdminCommand {
             }
 
             if (isCluster || isInstance) {
-                props = (HashMap) loggingConfig.getLoggingProperties(target);
+                props = (HashMap<String, String>) loggingConfig.getLoggingProperties(target);
             } else if (isDas) {
-                props = (HashMap) loggingConfig.getLoggingProperties();
+                props = (HashMap<String, String>) loggingConfig.getLoggingProperties();
             } else {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 String clusterName = "";
@@ -128,22 +131,30 @@ public class ListLoggerLevels implements AdminCommand {
                 return;
             }
 
-
-            ArrayList keys = new ArrayList();
+            List<String> keys = new ArrayList<String>();
             keys.addAll(props.keySet());
             Collections.sort(keys);
-            Iterator it2 = keys.iterator();
+            Iterator<String> it2 = keys.iterator();
+	    // The following Map & List are used to hold the REST data
+	    Map<String, String> logLevelMap = new HashMap<String, String>();
+	    List<String> loggerList = new ArrayList<String>();
             while (it2.hasNext()) {
-                String name = (String) it2.next();
+                String name = it2.next();
                 if (name.endsWith(".level") && !name.equals(".level")) {
                     final ActionReport.MessagePart part = report.getTopMessagePart()
                             .addChild();
                     String n = name.substring(0, name.lastIndexOf(".level"));
                     part.setMessage(n + ": " + (String) props.get(name));
-                    report.getTopMessagePart().addProperty(n, (String) props.get(name)); //Needed for REST xml and JSON output
+		    logLevelMap.put(n, props.get(name)); //Needed for REST xml and JSON output
+		    loggerList.add(n); //Needed for REST xml and JSON output
+                    //report.getTopMessagePart().addProperty(n, (String) props.get(name));
                 }
             }
-
+	    // Populate the extraProperties data structure for REST...
+	    Properties restData = new Properties();
+	    restData.put("logLevels", logLevelMap);
+	    restData.put("loggers", loggerList);
+	    report.setExtraProperties(restData);
 
         } catch (IOException ex) {
             report.setMessage("Unable to get the logger names");
