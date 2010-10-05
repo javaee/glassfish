@@ -1,12 +1,11 @@
 #!/bin/bash
-TESTHOME=$HOME/test
+TESTHOME=`pwd`
 GFHOME=$TESTHOME/glassfishv3
 export INSTALL_LOC=$HOME/testnode
 export DOMAIN=domain1
 echo "DOMAIN is set to $DOMAIN. Reset this if working with another domain."
 PATH=$GFHOME/bin:$PATH
-#GFNIGHTLY=/net/bat.sfbay.sun.com/z/repine/export2/hudson/jobs/gf-trunk-build-continuous/lastSuccessful/archive/bundles/glassfish.zip
-GFNIGHTLY=/net/stafas11.us.oracle.com/vol/home1/tomuell/pkgs/glassfish.zip
+GFBUILD=/net/bat.sfbay.sun.com/repine/export2/hudson/jobs/gf-trunk-build-continuous/lastSuccessful/archive/bundles/glassfish.zip
 TIMEFORMAT="real: %E"
 rm -rf $TESTHOME/logs
 mkdir $TESTHOME/logs
