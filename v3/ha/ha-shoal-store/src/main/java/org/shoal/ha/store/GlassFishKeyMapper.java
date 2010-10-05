@@ -69,7 +69,7 @@ public class GlassFishKeyMapper
             cookieStr = super.getMappedInstance(groupName, key);// super.getReplicaChoices(groupName, key);
         }
         HACookieInfo ha = new HACookieInfo(cookieStr, oldReplicaCookie);
-        System.out.println("** ## HACookieInfo.makeCookie(" + key + ", " + oldReplicaCookie + " ==> " + ha);
+        //System.out.println("** ## HACookieInfo.makeCookie(" + key + ", " + oldReplicaCookie + " ==> " + ha);
         return ha;
     }
 
