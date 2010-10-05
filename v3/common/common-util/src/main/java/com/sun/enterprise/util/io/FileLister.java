@@ -58,8 +58,12 @@ public abstract class FileLister
 	FileLister(File root)
 	{
 		mainRoot = root;
-		fileList = new ArrayList();
+		fileList = new ArrayList<File>();
 	}
+    public void keepEmptyDirectories()
+    {
+        keepEmpty = true;
+    }
 
 	abstract protected boolean relativePath();
 	
@@ -78,7 +82,7 @@ public abstract class FileLister
 		
 		for(int i = 0; i < files.length; i++)
 		{
-			files[i] = ((File)fileList.get(i)).getPath().substring(len).replace('\\', '/');
+			files[i] = (fileList.get(i)).getPath().substring(len).replace('\\', '/');
 		}
 		
 		Arrays.sort(files, String.CASE_INSENSITIVE_ORDER);
@@ -99,16 +103,16 @@ public abstract class FileLister
 			else
 				fileList.add(files[i]);	// actual file
 		}
+        // add empty directory, if the option is turned on
+        if(files.length <= 0 && keepEmpty)
+            fileList.add(root);
+
 	}
 		
 		
-    
-
-
-
-
-	private	ArrayList	fileList	= null;
-	private File		mainRoot	= null;
+    private	ArrayList<File>	fileList = null;
+    private File		mainRoot	 = null;
+    private boolean		keepEmpty	 = false;
 }
 
 
