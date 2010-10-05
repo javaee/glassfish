@@ -63,7 +63,29 @@ public class Client {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        try {
+            t.testError();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         stat.printSummary(appName + "ID");
+    }
+
+    private void testError() {
+
+        Map<String, Object> p = new HashMap<String, Object>();
+        p.put(EJBContainer.MODULES, new String[] {"sample", "foo", "bar"});
+
+        try {
+            System.out.println("Requesting wrong set of modules....");
+            EJBContainer c = EJBContainer.createEJBContainer(p);
+            stat.addStatus("EJB embedded create new container with errors in MODULES", stat.FAIL);
+        } catch (EJBException e) {
+            String msg = e.getMessage();
+            System.out.println("Caught expected: " + msg);
+            stat.addStatus("EJB embedded create new container with errors in MODULES", stat.PASS);
+        }
     }
 
     private void test() {
