@@ -58,16 +58,15 @@ import java.text.*;
  */
 public class ScheduleHandlers {
 
-    private static final String[] DAYS_OF_WEEK ={"*", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat",};
-    private static final String[] MONTHS ={"*", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+    private static final String[] DAYS_OF_WEEK ={ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat",};
+    private static final String[] MONTHS ={"", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     private static final String[] DAYS_OF_MONTH = new String[33];
     private static final Map<String, String[]> values = new HashMap();
 
     private static final String DAY_OF_WEEK="dayOfWeek", DAY_OF_MONTH="dayOfMonth", MONTH="month";
 
     static {
-        DAYS_OF_MONTH[0] = "*";
-        int i = 1;
+        int i = 0;
         for (; i <= 31; i++) {
             DAYS_OF_MONTH[i] = String.valueOf(i);
         }
@@ -111,33 +110,30 @@ public class ScheduleHandlers {
 
     }
 
-    private static int getData(String dataItem, String type) {
-        String[] dataValues = values.get(type);
-        try {
-            int i = Integer.valueOf(dataItem).intValue();
-            if (i >=0 && i < dataValues.length)
-                return i;
-        } catch (NumberFormatException e) {
-        }
-        for (int i = 0; i < dataValues.length; i++) {
-            if (dataValues[i].equalsIgnoreCase(dataItem))
-                return i;
-        }
-        return -1;
-    }
-
     private static Map getDataMap(String data, String type) {
         List<String> dataList = GuiUtil.parseStringList(data, ",");
+        String[] dataValues = values.get(type);
         Map dataMap = new HashMap();
         for (String dataItem : dataList) {
-            int value = getData(dataItem, type);
-            if (value < 0) continue;
-            dataMap.put(dataItem, String.valueOf(value));
+            if (dataItem.equals("*")) {
+                dataMap.put(dataItem, dataItem);
+                continue;
+            }
+            try {
+                int i = Integer.valueOf(dataItem).intValue();
+                if (i >=0 && i < dataValues.length)
+                    dataMap.put(dataValues[i], String.valueOf(i));
+            } catch (NumberFormatException e) {
+                for (int i = 0; i < dataValues.length; i++) {
+                    if (dataValues[i].equalsIgnoreCase(dataItem))
+                        dataMap.put(dataItem, String.valueOf(i));
+                }
+            }
         }
         return dataMap;
     }
 
-    @Handler(id = "gf.convertBooleanMapToString",
+    @Handler(id = "gf.convertScheduleToString",
         input = {
             @HandlerInput(name = "map", type = java.util.Map.class, required=true),
             @HandlerInput(name = "type", type = String.class, required=true),
@@ -146,38 +142,9 @@ public class ScheduleHandlers {
         output = {
             @HandlerOutput(name = "str", type = String.class)
         })
-/*
-    public static void convertBooleanMapToString(HandlerContext handlerCtx) {
-        Map<String, Boolean> map = (Map) handlerCtx.getInputValue("map");
-        String delimiter = (String)handlerCtx.getInputValue("delimiter");
-        if (delimiter == null)
-            delimiter =",";
-        String str = "";
 
-        for (String key : map.keySet()) {
-            Object o = map.get(key);
-            if (o == null)
-                continue;
-            Boolean val = Boolean.parseBoolean(o.toString());
-
-            if (val.equals(Boolean.TRUE)) {
-                if (key.equals("*")) {
-                    str = "*";
-                    break;
-                }
-                if (str.length() > 0)
-                    str = str + ",";
-                str = str + key;
-            }
-        }
-        if (str.length() == 0)
-            str = "*";
-        handlerCtx.setOutputValue("str", str);
-    }
-*/
-
-    public static void convertBooleanMapToString(HandlerContext handlerCtx) {
-        Map<String, Boolean> map = (Map) handlerCtx.getInputValue("map");
+    public static void convertScheduleToString(HandlerContext handlerCtx) {
+        Map<String, String> map = (Map) handlerCtx.getInputValue("map");
         String delimiter = (String)handlerCtx.getInputValue("delimiter");
         String type = (String)handlerCtx.getInputValue("type");
         
