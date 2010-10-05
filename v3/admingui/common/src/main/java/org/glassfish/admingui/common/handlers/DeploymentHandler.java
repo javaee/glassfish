@@ -289,12 +289,13 @@ public class DeploymentHandler {
                     removeFromDefaultWebModule(appName, targets);
                 }
             }else{
-                errorList.add(appName);
+                //errorList.add(appName);
+                return;
             }
         }
-        if (errorList.size() > 0){
-            GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), GuiUtil.getMessage("msg.deploy.UndeployError") + " " + GuiUtil.listToString(errorList, ","));
-        }
+//        if (errorList.size() > 0){
+//            GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), GuiUtil.getMessage("msg.deploy.UndeployError") + " " + GuiUtil.listToString(errorList, ","));
+//        }
     }
 
 
