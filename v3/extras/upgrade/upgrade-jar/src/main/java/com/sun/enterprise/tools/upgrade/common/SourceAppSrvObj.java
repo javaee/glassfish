@@ -48,8 +48,7 @@ import java.io.File;
  */
 public class SourceAppSrvObj extends BaseDomainInfoObj {
 
-	//- appsever login credential of the source domain.
-	private final Credentials credentials = new DomainCredentials();
+    private char [] masterPassword;
 
     @Override
     public boolean isValidPath(String s) {
@@ -78,10 +77,12 @@ public class SourceAppSrvObj extends BaseDomainInfoObj {
         }
         return versionEdition;
     }
-	
-    //------------------------------------
-    public Credentials getDomainCredentials() {
-        return credentials;
+
+    public char[] getMasterPassword() {
+        return masterPassword;
     }
-	
+
+    public void setMasterPassword(char[] masterPassword) {
+        this.masterPassword = masterPassword;
+    }
 }

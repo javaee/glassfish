@@ -118,6 +118,9 @@ public class DataCollectionPanel extends javax.swing.JPanel {
         if (tempStr != null) {
             targetTextField.setText(tempStr);
         }
+        if (commonInfoModel.getSource().getMasterPassword() != null) {
+            masterPWField.setEnabled(false);
+        }
 
         // add listeners for source/target browse buttons
         sourceBrowseButton.addActionListener(new ActionListener() {

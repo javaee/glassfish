@@ -42,11 +42,9 @@ package com.sun.enterprise.tools.upgrade.common;
 
 import com.sun.enterprise.tools.upgrade.logging.LogService;
 import com.sun.enterprise.util.i18n.StringManager;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.IOException;
+
+import java.io.*;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -62,14 +60,15 @@ import java.util.regex.Pattern;
 public class Commands {
 
     private static final Logger logger = LogService.getLogger();
+
     private static final StringManager stringManager =
         StringManager.getManager(Commands.class);
     
     private static boolean errorFound = false;
 
+    // this has really been cobbled together over time. please rewrite this
     public static int startDomain(String domainName, CommonInfoModel cInfo) {
         errorFound = false; // in case this is being rerun
-        Credentials c = cInfo.getSource().getDomainCredentials();
 
         String installRoot = System.getProperty(UpgradeConstants.AS_DOMAIN_ROOT);
         File installRootF = new File(installRoot);
@@ -89,23 +88,24 @@ public class Commands {
             ext = ".bat";
         }
         cb.add(asadminScript + ext);
-        cb.add("start-domain");
 
-        String passwordFile = c.getPasswordFile();
-        if (passwordFile != null && !passwordFile.isEmpty()) {
+        char [] pass =
+            CommonInfoModel.getInstance().getSource().getMasterPassword();
+        if (pass != null) {
             cb.add("--passwordfile");
-            cb.add(c.getPasswordFile());
+            cb.add("-"); // asadmin will read from standard in
         }
 
+        cb.add("start-domain");
+
         cb.add("--upgrade");
+
         cb.add("--domaindir");
         cb.add(cInfo.getTarget().getInstallDir());
 
         cb.add(domainName);
-        return executeCommand(cb.getCommand());
-    }
-   
-    private static int executeCommand(String commandString) {
+
+        final String commandString = cb.getCommand();
 
         // how long we want to wait for output after process dies
         final long JOIN_TIMEOUT = 4000;
@@ -123,6 +123,19 @@ public class Commands {
                 new StreamWatcher(proc.getInputStream(), "OUT");
             errWatcher.start();
             outWatcher.start();
+
+            // handle master password
+            if (pass != null) {
+                Writer writer = new BufferedWriter(
+                    new OutputStreamWriter(proc.getOutputStream()));
+                writer.write(UpgradeConstants.PASSWORD_KEY);
+                writer.write("=");
+                for (char c : pass) {
+                    writer.write(c);
+                }
+                writer.close();
+                Arrays.fill(pass, ' ');
+            }
 
             // wait for everything to finish (it should)
             exitValue = proc.waitFor();

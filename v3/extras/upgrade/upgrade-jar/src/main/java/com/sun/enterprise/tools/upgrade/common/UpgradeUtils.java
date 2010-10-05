@@ -43,9 +43,9 @@ package com.sun.enterprise.tools.upgrade.common;
 import com.sun.enterprise.tools.upgrade.logging.LogService;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.i18n.StringManager;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+
+import java.io.*;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
@@ -102,8 +102,8 @@ public class UpgradeUtils {
      * Copies the entire tree to a new location except the symbolic links
      * Invokes the FileUtils.java to do the same
      *
-     * @param   sourceTree  File pointing at root of tree to copy
-     * @param   destTree    File pointing at root of new tree
+     * @param   sourceDir  File pointing at root of tree to copy
+     * @param   targetDir    File pointing at root of new tree
      *
      * If target directory does not exist, it will be created.
      *
@@ -260,5 +260,30 @@ public class UpgradeUtils {
             dir.renameTo(tempFile);
         }
     }
-    
+
+    /*
+     * This is called from ARG_passwordfile, which shouldn't know about
+     * how the password is actually stored. To be honest, even I don't
+     * want to know how it's stored. To avoid ever having password
+     * information stored in a String, don't use the --passwordfile
+     * option.
+     *
+     * This should only be called after a check that the file
+     * exists and is not a directory.
+     */
+    public void parseStoreMasterPassword(File file) {
+        try {
+            Properties props = new Properties();
+            props.load(new FileInputStream(file));
+            if (props.getProperty(UpgradeConstants.PASSWORD_KEY) != null) {
+                common.getSource().setMasterPassword(props.getProperty(
+                    UpgradeConstants.PASSWORD_KEY).toCharArray());
+            }
+        } catch (FileNotFoundException fnfe) {
+            // really?
+        } catch (IOException ioe) {
+            logger.warning(stringManager.getString("could.not.parse.password",
+                ioe.getLocalizedMessage()));
+        }
+    }
 }

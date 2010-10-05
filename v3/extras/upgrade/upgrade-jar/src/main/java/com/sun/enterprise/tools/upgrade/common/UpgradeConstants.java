@@ -77,26 +77,12 @@ public class UpgradeConstants {
 
     //asupgrade related constants     
     public static final String ASUPGRADE = "asupgrade";
-    public static final String ASUPGRADE_BAT = "asupgrade.bat";   
-    public static final String ASUPGRADE_LOG = "upgrade.log";
-    public static final String BACKUP_DIR = "backup";
 	
     //application server related constants    
     public static final String AS_DOMAIN_ROOT = "com.sun.aas.domainRoot";
-    public static final String AS_BIN_DIRECTORY = "bin";
     public static final String AS_CONFIG_DIRECTORY = "config";
-    public static final String AS_ADMIN_ENV_CONF_FILE = "asadminenv.conf";
-    public static final String AS_PROPERTY_ADMIN_PROFILE = "AS_ADMIN_PROFILE=";
-    public static final String ASADMIN_COMMAND = "asadmin";
-    public static final String ASADMIN_BAT = "asadmin.bat";
     public static final String DOMAIN_XML_FILE = "domain.xml";
     public static final String DELIMITER = ";"; //-seperator for version edititon
-    public static final String LOGGING_PROPERTIES = "logging.properties";
-    public static final String SERVER_LOG_PROPERTY="com.sun.enterprise.server.logging.GFFileHandler.file";
-    public static final String SERVER_LOG_DEFAULT="logs/server.log";
-		
-    //operating system related constants    
-    public static final String OS_NAME_IDENTIFIER = "os.name";
-    public static final String OS_NAME_WINDOWS = "Windows";
+	public static final String PASSWORD_KEY = "AS_ADMIN_MASTERPASSWORD";
 
 }

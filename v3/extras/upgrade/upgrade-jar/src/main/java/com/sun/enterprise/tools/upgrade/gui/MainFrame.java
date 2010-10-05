@@ -43,11 +43,9 @@ package com.sun.enterprise.tools.upgrade.gui;
 import com.sun.enterprise.tools.upgrade.UpgradeToolMain;
 import com.sun.enterprise.tools.upgrade.common.Branding;
 import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
-import com.sun.enterprise.tools.upgrade.common.Credentials;
 import com.sun.enterprise.tools.upgrade.common.DirectoryMover;
 import com.sun.enterprise.tools.upgrade.common.UpgradeConstants;
 import com.sun.enterprise.tools.upgrade.common.UpgradeUtils;
-import com.sun.enterprise.tools.upgrade.common.arguments.ARG_passwordfile;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_source;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_target;
 import com.sun.enterprise.tools.upgrade.gui.util.Utils;
@@ -444,12 +442,12 @@ public class MainFrame extends javax.swing.JFrame implements DirectoryMover {
             return false;
         }
 
-        // store credentials if given in GUI
-        char [] masterPassword = dataCollectionPanel.getMasterPassword();
-        if (masterPassword.length > 0) {
-            Credentials creds =
-                commonInfoModel.getSource().getDomainCredentials();
-            creds.setMasterPassword(masterPassword);
+        // store credentials if given in GUI and not already set
+        if (commonInfoModel.getSource().getMasterPassword() == null) {
+            char [] masterPassword = dataCollectionPanel.getMasterPassword();
+            if (masterPassword.length > 0) {
+                commonInfoModel.getSource().setMasterPassword(masterPassword);
+            }
         }
 
         return true;
@@ -459,7 +457,6 @@ public class MainFrame extends javax.swing.JFrame implements DirectoryMover {
      * Print user input but do not reveal the passwords.
      */
     private void printArguments() {
-        Credentials c = commonInfoModel.getSource().getDomainCredentials();
         logger.info(UpgradeConstants.ASUPGRADE + " -s " +
             commonInfoModel.getSource().getInstallDir() +
             "\t -t " + commonInfoModel.getTarget().getInstallDir());

@@ -48,7 +48,6 @@ import com.sun.enterprise.util.i18n.StringManager;
 import java.io.Console;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Logger;
@@ -147,11 +146,13 @@ public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
     }
 	
     private void masterPasswordPrompt() {
+        if (commonInfoModel.getSource().getMasterPassword() != null) {
+            return;
+        }
         char[] passwordChars = console.readPassword(
             sm.getString("enterprise.tools.upgrade.cli.MasterPW_input"));
         if (passwordChars.length > 0) {
-            commonInfoModel.getSource().getDomainCredentials().setMasterPassword(
-                passwordChars);
+            commonInfoModel.getSource().setMasterPassword(passwordChars);
         }
     }
 

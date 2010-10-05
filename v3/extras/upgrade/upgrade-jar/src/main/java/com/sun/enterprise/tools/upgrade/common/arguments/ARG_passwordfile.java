@@ -40,6 +40,8 @@
 
 package com.sun.enterprise.tools.upgrade.common.arguments;
 
+import com.sun.enterprise.tools.upgrade.common.UpgradeUtils;
+
 import java.io.File;
 
 public class ARG_passwordfile extends ArgumentHandler {
@@ -51,15 +53,15 @@ public class ARG_passwordfile extends ArgumentHandler {
 
     @Override
 	public void setRawParameters(String p){
-		rawParameters = p;
-		if (p != null){
-			File userPasswordFile = new File(p);
-			if (userPasswordFile.exists() && userPasswordFile.isFile()){
-				super._isValidParameter = true;
-                commonInfo.getSource().getDomainCredentials().setPasswordFile(
-                    userPasswordFile);
-			}
-		}
+        rawParameters = p;
+        if (p != null){
+            File userPasswordFile = new File(p);
+            if (userPasswordFile.exists() && userPasswordFile.isFile()){
+                super._isValidParameter = true;
+                UpgradeUtils utils = UpgradeUtils.getUpgradeUtils(commonInfo);
+                utils.parseStoreMasterPassword(userPasswordFile);
+            }
+        }
 	}
 
 }
