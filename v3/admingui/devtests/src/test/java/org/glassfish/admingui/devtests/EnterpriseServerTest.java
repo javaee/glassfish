@@ -40,6 +40,7 @@
 
 package org.glassfish.admingui.devtests;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -51,6 +52,7 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_GENERAL_INFORMATION = "General Information";
     private static final String TRIGGER_ADVANCED_DOMAIN_ATTRIBUTES = "Directory from which applications are deployed";
     private static final String TRIGGER_SYSTEM_PROPERTIES = "A system property defines a common value for a setting at the server level. You can refer to a system property in a text field by enclosing it in a dollar sign and curly braces.";
+    public static final String TRIGGER_RESOURCES = "Enable, disable, or create a new resource type to associate with the instance.";
 
     @Test
     public void testAdvancedApplicationsConfiguration() {
@@ -116,5 +118,56 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:serverInstTabs:token", TRIGGER_SYSTEM_PROPERTIES);
 
         assertTableRowCount("form1:basicTable", count);
+    }
+
+    @Test
+    public void testServerResourcesPage() {
+        final String jndiName = "jdbcResource"+generateRandomString();
+        final String description = "devtest test for server->resources page- " + jndiName;
+        final String tableID = "propertyForm:resourcesTable";
+
+        JdbcTest jdbcTest = new JdbcTest();
+        jdbcTest.createJDBCResource(jndiName, description, "server", MonitoringTest.TARGET_SERVER_TYPE);
+        
+        clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
+        clickAndWait("propertyForm:serverInstTabs:resources", TRIGGER_RESOURCES);
+        assertTrue(selenium.isTextPresent(jndiName));
+
+        int jdbcCount = getTableRowCountByValue(tableID, "JDBC Resources", "col3:type");
+        int customCount = getTableRowCountByValue(tableID, "Custom Resources", "col3:type");
+
+        selenium.select("propertyForm:resourcesTable:topActionsGroup1:filter_list", "label=Custom Resources");
+        waitForTableRowCount(tableID, customCount);
+
+        selenium.select("propertyForm:resourcesTable:topActionsGroup1:filter_list", "label=JDBC Resources");
+        waitForTableRowCount(tableID, jdbcCount);
+
+        selectTableRowByValue("propertyForm:resourcesTable", jndiName);
+        waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:button1");
+        selenium.click("propertyForm:resourcesTable:topActionsGroup1:button1");
+        waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:button1");
+
+        /*selenium.select("propertyForm:resourcesTable:topActionsGroup1:actions", "label=JDBC Resources");
+        waitForPageLoad(JdbcTest.TRIGGER_NEW_JDBC_RESOURCE, true);
+        clickAndWait("form:propertyContentPage:topButtons:cancelButton", JdbcTest.TRIGGER_JDBC_RESOURCES);*/
+
+        jdbcTest.deleteJDBCResource(jndiName, "server", MonitoringTest.TARGET_SERVER_TYPE);
+    }
+
+    public void waitForTableRowCount(String tableID, int count) {
+        for (int i = 0;; i++) {
+            if (i >= 1000) {
+                Assert.fail("timeout");
+            }
+            try {
+                int tableCount = getTableRowCount(tableID);
+                if (tableCount == count) {
+                    break;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            sleep(500);
+        }
     }
 }

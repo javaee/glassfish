@@ -372,6 +372,23 @@ public class BaseSeleniumTestClass {
         }
     }
 
+    protected int getTableRowCountByValue(String tableId, String value, String valueColId) {
+        int tableCount = getTableRowCount(tableId);
+        int selectedCount = 0;
+        try {
+            for (int i = 0; i < tableCount; i++) {
+                String text = selenium.getText(tableId + ":rowGroup1:" + i + ":" + valueColId);
+                if (text.equals(value)) {
+                    selectedCount++;
+                }
+            }
+        } catch (Exception e) {
+            Assert.fail("The specified row was not found: " + value);
+            return 0;
+        }
+        return selectedCount;
+    }
+
     protected int addTableRow(String tableId, String buttonId) {
         return addTableRow(tableId, buttonId, "Additional Properties");
     }

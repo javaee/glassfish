@@ -42,7 +42,6 @@ package org.glassfish.admingui.devtests;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -193,5 +192,48 @@ public class JdbcTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", instanceTest.TRIGGER_INSTANCES_PAGE);
         deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
         assertFalse(selenium.isTextPresent(instanceName));
+    }
+
+    public void createJDBCResource(String jndiName, String description, String target, String targetType) {
+        if (targetType.equals(MonitoringTest.TARGET_STANDALONE_TYPE)) {
+            StandaloneTest instanceTest = new StandaloneTest();
+            instanceTest.createStandAloneInstance(target);
+        } else if (targetType.equals(MonitoringTest.TARGET_CLUSTER_TYPE)) {
+            ClusterTest clusterTest = new ClusterTest();
+            clusterTest.createCluster(target);
+        }
+        clickAndWait("treeForm:tree:resources:JDBC:jdbcResources:jdbcResources_link", TRIGGER_JDBC_RESOURCES);
+        clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_JDBC_RESOURCE);
+
+        selenium.type("form:propertySheet:propertSectionTextField:nameNew:name", jndiName);
+        selenium.type("form:propertySheet:propertSectionTextField:descProp:desc", description);
+
+        if (targetType.equals(MonitoringTest.TARGET_STANDALONE_TYPE)) {
+            selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + target);
+            selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
+        } else if (targetType.equals(MonitoringTest.TARGET_CLUSTER_TYPE)) {
+            selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + target);
+            selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
+        }
+        clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JDBC_RESOURCES);
+
+        assertTrue(selenium.isTextPresent(jndiName));
+        assertTrue(selenium.isTextPresent(description));
+    }
+
+    public void deleteJDBCResource(String jndiName, String target, String targetType) {
+        clickAndWait("treeForm:tree:resources:JDBC:jdbcResources:jdbcResources_link", TRIGGER_JDBC_RESOURCES);
+        deleteRow("propertyForm:resourcesTable:topActionsGroup1:button1", "propertyForm:resourcesTable", jndiName);
+        assertFalse(selenium.isTextPresent(jndiName));
+        if (targetType.equals(MonitoringTest.TARGET_STANDALONE_TYPE)) {
+            //Delete the instance
+            clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", StandaloneTest.TRIGGER_INSTANCES_PAGE);
+            deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", target);
+            assertFalse(selenium.isTextPresent(target));
+        } else if (targetType.equals(MonitoringTest.TARGET_CLUSTER_TYPE)) {
+            clickAndWait("treeForm:tree:clusterTreeNode:clusterTreeNode_link", ClusterTest.TRIGGER_CLUSTER_PAGE);
+            deleteRow("propertyForm:clustersTable:topActionsGroup1:button1", "propertyForm:clustersTable", target);
+            assertFalse(selenium.isTextPresent(target));
+        }
     }
 }

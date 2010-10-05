@@ -51,7 +51,8 @@ import static org.junit.Assert.assertTrue;
  * @author anilam
  */
 public class StandaloneTest  extends BaseSeleniumTestClass {
-    final String TRIGGER_INSTANCES_PAGE = "Server Instances (";
+    public static final String TRIGGER_INSTANCES_PAGE = "Server Instances (";
+    public static final String TRIGGER_INSTANCE_GENEAL_PAGE = "General Information";
     final String TRIGGER_NEW_PAGE = "Configuration:";
 
     @Test
@@ -107,6 +108,42 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
     }
 
+    @Test
+    public void testStandaloneInstanceResourcesPage() {
+        final String jndiName = "jdbcResource"+generateRandomString();
+        String target = "standAlone" + generateRandomString();
+        final String description = "devtest test for standalone instance->resources page- " + jndiName;
+        final String tableID = "propertyForm:resourcesTable";
+
+        JdbcTest jdbcTest = new JdbcTest();
+        jdbcTest.createJDBCResource(jndiName, description, target, MonitoringTest.TARGET_STANDALONE_TYPE);
+
+        clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", TRIGGER_INSTANCES_PAGE);
+        clickAndWait(getLinkIdByLinkText("propertyForm:instancesTable", target), TRIGGER_INSTANCE_GENEAL_PAGE);
+        clickAndWait("propertyForm:standaloneInstanceTabs:resources", EnterpriseServerTest.TRIGGER_RESOURCES);
+        assertTrue(selenium.isTextPresent(jndiName));
+
+        int jdbcCount = getTableRowCountByValue(tableID, "JDBC Resources", "col3:type");
+        int customCount = getTableRowCountByValue(tableID, "Custom Resources", "col3:type");
+
+        EnterpriseServerTest adminServerTest = new EnterpriseServerTest();
+        selenium.select("propertyForm:resourcesTable:topActionsGroup1:filter_list", "label=Custom Resources");
+        adminServerTest.waitForTableRowCount(tableID, customCount);
+
+        selenium.select("propertyForm:resourcesTable:topActionsGroup1:filter_list", "label=JDBC Resources");
+        adminServerTest.waitForTableRowCount(tableID, jdbcCount);
+
+        selectTableRowByValue("propertyForm:resourcesTable", jndiName);
+        waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:button1");
+        selenium.click("propertyForm:resourcesTable:topActionsGroup1:button1");
+        waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:button1");
+
+        /*selenium.select("propertyForm:resourcesTable:topActionsGroup1:actions", "label=JDBC Resources");
+        waitForPageLoad(JdbcTest.TRIGGER_NEW_JDBC_RESOURCE, true);
+        clickAndWait("form:propertyContentPage:topButtons:cancelButton", JdbcTest.TRIGGER_JDBC_RESOURCES);*/
+
+        jdbcTest.deleteJDBCResource(jndiName, target, MonitoringTest.TARGET_STANDALONE_TYPE);
+    }
 
     public void createStandAloneInstance(String instanceName){
         clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", TRIGGER_INSTANCES_PAGE);

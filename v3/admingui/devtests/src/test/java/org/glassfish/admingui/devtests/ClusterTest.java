@@ -52,7 +52,7 @@ import static org.junit.Assert.assertFalse;
 public class ClusterTest extends BaseSeleniumTestClass {
     public static final String TRIGGER_CLUSTER_EDIT = "General Information";
     public static final String TRIGGER_MIGRATE_EJB_TIMERS = "Migrate EJB timers associated with a server";
-    final String TRIGGER_CLUSTER_PAGE = "Clusters (";
+    public static final String TRIGGER_CLUSTER_PAGE = "Clusters (";
 
     final String TRIGGER_NEW_PAGE = "Server Instances to be Created";
 
@@ -61,6 +61,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
     final String TRIGGER_CLUSTER_INSTANCE_NEW_PAGE = "Node:";
 
     final String TRIGGER_CLUSTER_INSTANCES_PAGE = "Server Instances (";
+    final String TRIGGER_CLUSTER_RESOURCES_PAGE = "All instances in a cluster have the same set of resources, resulting in the same JNDI namespace.";
 
     @Test
     public void testCreateClusterWithOneInstance() {
@@ -267,6 +268,42 @@ public class ClusterTest extends BaseSeleniumTestClass {
 
         clickAndWait("treeForm:tree:clusterTreeNode:clusterTreeNode_link", TRIGGER_CLUSTER_PAGE);
         deleteRow("propertyForm:clustersTable:topActionsGroup1:button1", "propertyForm:clustersTable", clusterName);
+    }
+
+    public void testClusterResourcesPage() {
+        final String jndiName = "jdbcResource" + generateRandomString();
+        String target = "cluster" + generateRandomString();
+        final String description = "devtest test for cluster->resources page- " + jndiName;
+        final String tableID = "propertyForm:resourcesTable";
+
+        JdbcTest jdbcTest = new JdbcTest();
+        jdbcTest.createJDBCResource(jndiName, description, target, MonitoringTest.TARGET_CLUSTER_TYPE);
+
+        clickAndWait("treeForm:tree:clusterTreeNode:clusterTreeNode_link", TRIGGER_CLUSTER_PAGE);
+        clickAndWait(getLinkIdByLinkText("propertyForm:clustersTable", target), TRIGGER_CLUSTER_GENERAL_PAGE);
+        clickAndWait("propertyForm:clusterTabs:clusterResources", TRIGGER_CLUSTER_RESOURCES_PAGE);
+        assertTrue(selenium.isTextPresent(jndiName));
+
+        int jdbcCount = getTableRowCountByValue(tableID, "JDBC Resources", "col3:type");
+        int customCount = getTableRowCountByValue(tableID, "Custom Resources", "col3:type");
+
+        EnterpriseServerTest adminServerTest = new EnterpriseServerTest();
+        selenium.select("propertyForm:resourcesTable:topActionsGroup1:filter_list", "label=Custom Resources");
+        adminServerTest.waitForTableRowCount(tableID, customCount);
+
+        selenium.select("propertyForm:resourcesTable:topActionsGroup1:filter_list", "label=JDBC Resources");
+        adminServerTest.waitForTableRowCount(tableID, jdbcCount);
+
+        selectTableRowByValue("propertyForm:resourcesTable", jndiName);
+        waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:button1");
+        selenium.click("propertyForm:resourcesTable:topActionsGroup1:button1");
+        waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:button1");
+
+        /*selenium.select("propertyForm:resourcesTable:topActionsGroup1:actions", "label=JDBC Resources");
+        waitForPageLoad(JdbcTest.TRIGGER_NEW_JDBC_RESOURCE, true);
+        clickAndWait("form:propertyContentPage:topButtons:cancelButton", JdbcTest.TRIGGER_JDBC_RESOURCES);*/
+
+        jdbcTest.deleteJDBCResource(jndiName, target, MonitoringTest.TARGET_CLUSTER_TYPE);
     }
 
     public void createCluster(String clusterName, String... instanceNames) {
