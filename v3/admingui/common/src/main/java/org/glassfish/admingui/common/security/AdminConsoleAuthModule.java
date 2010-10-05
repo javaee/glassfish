@@ -127,9 +127,11 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 	if (session != null) {
 	    Subject savedClientSubject = (Subject) session.getValue(SAVED_SUBJECT);
 	    if (savedClientSubject != null) {
-		// just copy principals for testing
+		// Copy all principals...
 		clientSubject.getPrincipals().addAll(
 			savedClientSubject.getPrincipals());
+		clientSubject.getPublicCredentials().addAll(savedClientSubject.getPublicCredentials());
+		clientSubject.getPrivateCredentials().addAll(savedClientSubject.getPrivateCredentials());
 		return AuthStatus.SUCCESS;
 	    }
 	}
@@ -151,7 +153,7 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 	// See if the username / password has been passed in...
 	String username = request.getParameter("j_username");
 	String password = request.getParameter("j_password");
-	if (username == null || password == null) {
+	if ((username == null) || (password == null) || !request.getMethod().equalsIgnoreCase("post")) {
 	    // Not passed in, show the login page...
 	    RequestDispatcher rd = request.getRequestDispatcher(loginPage);
 	    try {
