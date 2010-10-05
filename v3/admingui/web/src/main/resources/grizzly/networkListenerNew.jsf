@@ -110,9 +110,6 @@
                     gf.createEntity(endpoint="#{pageSession.parentUrl}/network-listener", attrs="#{pageSession.networkListenerMap}");
                     gf.restRequest(endpoint="#{pageSession.protocolUrl}/#{pageSession.protocolName}/http.json", method="get", result="#{pageSession.protocolAttrHttp}");
                     setPageSessionAttribute(key="vsName" value="#{pageSession.protocolAttrHttp.data.extraProperties.entity['defaultVirtualServer']}");
-                    gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/http-service/virtual-server/#{vsName}.json", method="get", result="#{pageSession.vsAttrs}");
-                    changeNetworkListenersInVS(vsAttrs="#{pageSession.vsAttrs.data.extraProperties.entity}", listenerName="#{pageSession.networkListAttrs.data.extraProperties.entity['name']}", addFlag="#{true}", result="#{pageSession.vsAttrModified}");
-                    gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/http-service/virtual-server/#{vsName}", attrs="#{pageSession.vsAttrModified}", method="post");
                     gf.redirect(page="#{pageSession.parentPage}?configName=#{configName}");
                 />
             </sun:button>
