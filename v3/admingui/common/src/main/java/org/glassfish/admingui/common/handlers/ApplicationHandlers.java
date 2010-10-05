@@ -106,10 +106,6 @@ public class ApplicationHandlers {
 	    for(String oneAppName : appPropsMap.keySet()){
               try{
 		String engines = appPropsMap.get(oneAppName);
-		if (GuiUtil.isEmpty(engines)){
-		    //this is life cycle, do not display in the applications table.
-		    continue;
-		}
 		HashMap oneRow = new HashMap();
 		oneRow.put("name", oneAppName);
                 oneRow.put("encodedName", URLEncoder.encode(oneAppName, "UTF-8"));

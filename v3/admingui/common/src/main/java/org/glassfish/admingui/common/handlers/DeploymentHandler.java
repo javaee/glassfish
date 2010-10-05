@@ -393,7 +393,7 @@ public class DeploymentHandler {
         String appName = (String) handlerCtx.getInputValue("appName");
         List<Map<String, Object>> ddList = (List) handlerCtx.getInputValue("data");
         List result = new ArrayList();
-        if (ddList.size() > 0) {
+        if ((ddList != null) && ddList.size() > 0) {
             for (Map<String, Object> oneDD : ddList) {
                 HashMap oneRow = new HashMap();
                 Map<String, String> props = (Map) oneDD.get("properties");
