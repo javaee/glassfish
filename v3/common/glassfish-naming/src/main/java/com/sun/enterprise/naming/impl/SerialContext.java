@@ -99,6 +99,9 @@ public class SerialContext implements Context {
 
     private static final String JAVA_GLOBAL_URL = "java:global/";
 
+    private static final String IIOP_ENDPOINTSLIST =
+        "com.sun.appserv.ee.iiop.endpointslist" ;
+
 
     // Sets unmanaged SerialContext in test mode to prevent attempts to contact server. 
     static final String INITIAL_CONTEXT_TEST_MODE = "com.sun.enterprise.naming.TestMode";
@@ -160,7 +163,7 @@ public class SerialContext implements Context {
      * SerialContext.lookup() method. bug 5050591
      *
      */
-    public static Context getStickyContext() {
+    static Context getStickyContext() {
         return stickyContext.get().getContext() ;
     }
 
@@ -172,7 +175,7 @@ public class SerialContext implements Context {
         stickyContext.get().release() ;
     }
 
-    private void clearSticky() {
+    static void clearSticky() {
         stickyContext.get().clear() ;
     }
 
@@ -182,8 +185,8 @@ public class SerialContext implements Context {
     * e.g. JMS resource lookups (via ConnectorObjectFactory)
     */
     private static class ThreadLocalIC {
-        private Context ctx;
-        private int count = 1;
+        private Context ctx = null ;
+        private int count = 0;
 
         Context getContext() {
             return ctx ;
@@ -192,21 +195,30 @@ public class SerialContext implements Context {
         void grab( Context context ) {
             if (ctx == null) {
                 ctx = context ;
-            } else {
-                count++ ;
             }
+
+            count++ ;
         }
 
         void release() {
-            count-- ;
-            if (count == 0) {
+            if (count > 0) {
+                count-- ;
+                if (count == 0) {
+                    ctx = null ;
+                }
+            } else {
+                if (_logger.isLoggable(Level.FINE))  {
+                    _logger.log( Level.FINE,
+                        "SerialContext: attempt to release StickyContext "
+                        + " without grab") ;
+                }
                 ctx = null ;
             }
         }
 
         void clear() {
             ctx = null ;
-            count = 1 ;
+            count = 0 ;
         }
     }
 
@@ -263,16 +275,18 @@ public class SerialContext implements Context {
         } else {
             ProcessEnvironment processEnv = habitat.getComponent(ProcessEnvironment.class);
             processType = processEnv.getProcessType();
-            _logger.log(Level.FINE,
-                "Serial Context initializing with process environment {0}",
-                processEnv);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE,
+                    "Serial Context initializing with process environment {0}",
+                    processEnv);
+            }
         }
 
         // using these two temp variables allows instance variables
         // to be 'final'.
         JavaURLContext urlContextTemp = null;
 
-        if (myEnv.get("com.sun.appserv.ee.iiop.endpointslist") != null) {
+        if (myEnv.get(IIOP_ENDPOINTSLIST) != null) {
             urlContextTemp = new JavaURLContext(myEnv, this);
         } else {
             urlContextTemp = new JavaURLContext(myEnv, null);
@@ -334,6 +348,7 @@ public class SerialContext implements Context {
                     returnValue = getRemoteProvider();
                 }
             } catch(Exception e) {
+                clearSticky() ;
                 e.printStackTrace();
                 NamingException ne = new NamingException(
                     "Unable to acquire SerialContextProvider for " + this);
@@ -355,19 +370,21 @@ public class SerialContext implements Context {
     }
 
     private ProviderCacheKey getProviderCacheKey() {
-        ORB myORB = getORB();
+        final ORB myORB = getORB();
         ProviderCacheKey key;
-        // if( myORB != null) {
-            // key = new ProviderCacheKey(myORB);
-        // } else {
 
-        if (targetHost == null)  {
+        String eplist = null ;
+        if (myEnv != null) {
+            eplist = (String)myEnv.get(IIOP_ENDPOINTSLIST) ;
+        }
+
+        if (eplist != null) {
+            key = new ProviderCacheKey(eplist) ;
+        } else if(targetHost == null) {
             key = new ProviderCacheKey(myORB) ;
         }  else {
             key = new ProviderCacheKey(targetHost, targetPort);
         }
-
-        // }
 
         return key ;
     }
@@ -380,32 +397,32 @@ public class SerialContext implements Context {
 
     private SerialContextProvider getRemoteProvider() throws Exception {
         if (provider == null) {
-            ORB myORB = getORB() ;
             ProviderCacheKey key = getProviderCacheKey() ;
-
-            // For logging / exception info purposes, keep track of what the
-            // orb has as its host/port
-            ORBLocator orbHelper = habitat.getComponent(ORBLocator.class);
 
             SerialContextProvider cachedProvider;
             synchronized(SerialContext.class) {
                 cachedProvider = providerCache.get(key);
             }
 
-            if( cachedProvider == null) {
-                String corbaloc = "corbaloc:iiop:1.2@" + targetHost + ":"
-                        + targetPort + "/NameService" ;
-                org.omg.CORBA.Object cosNamingServiceRef = null;
-
-                if( targetHost != null ) {
-                    cosNamingServiceRef = orb.string_to_object( corbaloc ) ;
-                } else {
-                    cosNamingServiceRef = orb.resolve_initial_references(
-                        "NameService");
+            if (cachedProvider == null) {
+                String eplist = null ;
+                if (myEnv != null) {
+                    eplist = (String)myEnv.get(IIOP_ENDPOINTSLIST) ;
                 }
 
-                SerialContextProvider tmpProvider =
-                    narrowProvider(cosNamingServiceRef);
+                org.omg.CORBA.Object objref = null;
+                if (eplist != null) {
+                    objref = orb.string_to_object(eplist) ;
+                } else if (targetHost != null) {
+                    String corbaloc = "corbaloc:iiop:1.2@" + targetHost + ":"
+                            + targetPort + "/NameService" ;
+                    objref = orb.string_to_object( corbaloc ) ;
+                } else {
+                    objref = orb.resolve_initial_references(
+                            "NameService");
+                }
+
+                SerialContextProvider tmpProvider = narrowProvider(objref);
 
                 synchronized(SerialContext.class) {
                     cachedProvider = providerCache.get(key);
@@ -487,7 +504,7 @@ public class SerialContext implements Context {
          * be stores as a thread local variable.
          *
          */
-        if (myEnv.get("com.sun.appserv.ee.iiop.endpointslist") != null) {
+        if (myEnv.get(IIOP_ENDPOINTSLIST) != null) {
             grabSticky() ;
         }
 
@@ -1232,8 +1249,7 @@ public class SerialContext implements Context {
         // Key is either orb OR host/port combo.
         private ORB orb;
 
-        private String host;
-        private String port;
+        private String endpoints ;
 
         ProviderCacheKey(ORB orb) {
             this.orb = orb;
@@ -1241,13 +1257,16 @@ public class SerialContext implements Context {
 
         // Host and Port must both be non-null
         ProviderCacheKey(String host, String port) {
-            this.host = host;
-            this.port = port;
+            endpoints = host + ":" + port ;
+        }
+
+        ProviderCacheKey( String endpoints ) {
+            this.endpoints = endpoints ;
         }
 
         @Override
         public int hashCode() {
-            return (orb != null) ? orb.hashCode() : host.hashCode();
+            return (orb != null) ? orb.hashCode() : endpoints.hashCode();
         }
 
         @Override
@@ -1259,8 +1278,9 @@ public class SerialContext implements Context {
                 if( orb != null ) {
                     equal = (orb == otherKey.orb);
                 } else {
-                    if( (otherKey.host != null) && host.equals(otherKey.host)
-                        && port.equals(otherKey.port) ) {
+                    if( (otherKey.endpoints != null)
+                        && endpoints.equals(otherKey.endpoints)) {
+
                         equal = true;
                     }
                 }

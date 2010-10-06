@@ -40,7 +40,6 @@
 
 package com.sun.enterprise.naming.impl;
 
-import java.util.Arrays;
 import java.util.logging.Level;
 import com.sun.logging.LogDomains;
 import java.util.logging.Logger;
@@ -55,6 +54,7 @@ import java.net.UnknownHostException;
 import com.sun.jndi.cosnaming.IiopUrl;
 import com.sun.corba.ee.spi.folb.ClusterInstanceInfo;
 import com.sun.corba.ee.spi.folb.SocketInfo;
+import java.net.Inet4Address;
 import java.util.ArrayList;
 import org.glassfish.internal.api.ORBLocator;
 
@@ -103,6 +103,10 @@ import org.glassfish.internal.api.ORBLocator;
  **/
 
 public class RoundRobinPolicy {
+    // Each SocketInfo.type() must either start with SSL, or be CLEAR_TEXT
+    private static final String SSL = "SSL" ;
+    private static final String CLEAR_TEXT = "CLEAR_TEXT" ;
+
     private static final Logger _logger = LogDomains.getLogger(
         RoundRobinPolicy.class, LogDomains.JNDI_LOGGER);
 
@@ -111,7 +115,7 @@ public class RoundRobinPolicy {
     private List<ClusterInstanceInfo> endpointsList = 
 	 new LinkedList<ClusterInstanceInfo>();
 
-    private int sumOfAllWeights = 0;
+    private int totalWeight = 0;
 
     private static final int default_weight = 10;
 
@@ -134,66 +138,69 @@ public class RoundRobinPolicy {
     }
 
     //called during bootstrapping
-    public RoundRobinPolicy(String[] list) {        
-	setClusterInstanceInfo(list);
+    public RoundRobinPolicy(List<String> list) {
+	setClusterInstanceInfoFromString(list);
+    }
+
+    // Copy list, changing any type that does not start with SSL to CLEAR_TEXT.
+    private List<SocketInfo> filterSocketInfos( List<SocketInfo> sis ) {
+        final List<SocketInfo> result = new ArrayList<SocketInfo>() ;
+        for (SocketInfo si : sis) {
+            final String newType = si.type().startsWith(SSL) ?
+                si.type() : CLEAR_TEXT ;
+            final SocketInfo siCopy = new SocketInfo( newType,
+                si.host(), si.port() ) ;
+            result.add( siCopy ) ;
+        }
+        return result ;
     }
 
     //will be called after dynamic reconfig
-    public synchronized final void setClusterInstanceInfo(
+    // used in GroupInfoServiceObserverImpl
+    synchronized final void setClusterInstanceInfo(
         List<ClusterInstanceInfo> list) {
 
-	sumOfAllWeights = 0;
+	totalWeight = 0;
 
 	String policy = System.getProperty(
-            SerialInitContextFactory.LOAD_BALANCING_PROPERTY);
-	boolean isWeighted;
-	if (policy == null) {
-	    //default is ic-based
-	    policy = SerialInitContextFactory.IC_BASED;
-	}
+            SerialInitContextFactory.LOAD_BALANCING_PROPERTY,
+            SerialInitContextFactory.IC_BASED );
+	boolean isWeighted = false ;
 
 	if (policy.equals(SerialInitContextFactory.IC_BASED_WEIGHTED)) {
 	    isWeighted = true;
-	} else if (policy.equals(SerialInitContextFactory.IC_BASED)) {
-	    isWeighted = false;
-	} else {
-	    isWeighted = false;
+	} else if (!policy.equals(SerialInitContextFactory.IC_BASED)) {
 	    warnLog("loadbalancing.policy.incorrect");
 	}
 
-	fineLog( "isWeighted = {0}", isWeighted );
+	fineLog( "setClusterInstanceInfo: isWeighted = {0}", isWeighted );
 
-	//make the weights of all endpoints = default_weight
         ArrayList<ClusterInstanceInfo> newList =
             new ArrayList<ClusterInstanceInfo>() ;
 
-	for (ClusterInstanceInfo endpoint : list) {
-            ClusterInstanceInfo newEndpoint ;
-	    if (isWeighted) {
-                newEndpoint = new ClusterInstanceInfo( endpoint.name(),
-                    endpoint.weight(), endpoint.endpoints() ) ;
-	    } else {
-                newEndpoint = new ClusterInstanceInfo( endpoint.name(),
-                    default_weight, endpoint.endpoints() ) ;
-            }
-            newList.add( newEndpoint ) ;
+	for (ClusterInstanceInfo clinfo : list) {
+            final int newWeight = isWeighted ? clinfo.weight() : default_weight ;
+            fineLog( "setClusterInstanceInfo: instance {0} weight {1}",
+                clinfo.name(), clinfo.weight() ) ;
 
-            infoLog( "endpoint.weight after checking isWeight = {0}",
-                endpoint.weight());
+            final List<SocketInfo> newEndpoints =
+                filterSocketInfos( clinfo.endpoints() ) ;
+            final ClusterInstanceInfo newClinfo = new ClusterInstanceInfo(
+                clinfo.name(), newWeight, newEndpoints ) ;
+            newList.add( newClinfo ) ;
 
-	    sumOfAllWeights += newEndpoint.weight() ;
+	    totalWeight += newWeight ;
 	}
 
 	endpointsList = newList ;
 
-	infoLog( "sumOfAllWeights = {0}", sumOfAllWeights);
+	fineLog( "setClusterInstanceInfo: totalWeight = {0}", totalWeight);
     }
     
-    /**
-     * add a string array of endpoints to list
-     */
-    public synchronized final void setClusterInstanceInfo(String[] list) {
-        String[] newList = null;
+    synchronized final void setClusterInstanceInfoFromString(
+        List<String> list) {
+
+        List<String> newList = null;
 	
 	//if no endpoints are specified as a system property,
         //then look for JNDI provider url
@@ -207,7 +214,7 @@ public class RoundRobinPolicy {
 	// to DAS. 
         //So if the DAS host:port is used, 
         //then it will definitely result in a NameNotFoundException
-	if (list != null && list.length > 0) {
+	if (!list.isEmpty()) {
 	    newList = getAddressPortList(list);
 	} else {
 	    newList = getEndpointForProviderURL(
@@ -215,17 +222,17 @@ public class RoundRobinPolicy {
 	}
 
 	//randomize the list before adding it to linked list
-	if (newList != null && newList.length > 0) {
-	    String[] new_list = randomize(newList);
+	if (!newList.isEmpty()) {
+	    List<String> newList2 = randomize(newList);
 	    List<ClusterInstanceInfo> targetServerList = 
 		new LinkedList <ClusterInstanceInfo> ();
 
-	    for (int i = 0; i < new_list.length; i++) {
-		if (notDuplicate(new_list[i])) {
-		    targetServerList.add( makeClusterInstanceInfo( new_list[i],
+            for(String elem : newList2) {
+		if (notDuplicate(elem)) {
+		    targetServerList.add( makeClusterInstanceInfo( elem,
                         default_weight));
-		}
-	    }
+                }
+            }
 
 	    if (!targetServerList.isEmpty()) {
 		targetServerList.addAll(endpointsList);
@@ -246,7 +253,7 @@ public class RoundRobinPolicy {
 
 	String[] host_port = str.split(":");
 	String server_identifier = ""; //for bootstrapping, can be ""
-	String type = "CLEAR_TEXT"; //will be clear_text for bootstrapping
+	String type = CLEAR_TEXT; //will be clear_text for bootstrapping
 	SocketInfo socketInfo = new SocketInfo(
             type, host_port[0], Integer.parseInt( host_port[1]) );
         List<SocketInfo> sil = new ArrayList<SocketInfo>(1) ;
@@ -275,55 +282,51 @@ public class RoundRobinPolicy {
 	return true;
     }
     
-    /**
+    /*
      * This method checks for other ways of specifying endpoints
      * namely JNDI provider url 
      * orb host:port is used only if even env passed into 
      * getInitialContext is empty. This check is performed in 
-     * S1ASCtxFactory.getInitialContext()
+     * SerialInitContextFactory.getInitialContext()
      */
-    public String[] getEndpointForProviderURL(String providerURLString) {
-     	String[] newList = null;
+    public List<String> getEndpointForProviderURL(String providerURLString) {
 	if (providerURLString != null) {
 	    try {
-		IiopUrl providerURL = new IiopUrl(providerURLString);
-		newList = getAddressPortList(providerURL);	
+		final IiopUrl providerURL = new IiopUrl(providerURLString);
+		final List<String> newList = getAddressPortList(providerURL);
 		warnLog( "no.endpoints.selected.provider", providerURLString );
+                return newList ;
 	    } catch (MalformedURLException me) {
 		warnLog( "provider.exception", me.getMessage(),
                     providerURLString);
 	    }	    
 	} 
-	return newList;
+	return new ArrayList<String>() ;
     }
     
     /**
-     * randomize the list
+     * randomize the list.  Note: this empties its argument.
      */
-    private String[] randomize(String[] list) {
-        //randomise the list to enable loadbalancing
-	String[] randomizedList = new String[list.length];
-        for (int i = 0; i < list.length; i++) {
-	    int random;
-	    do {		
-	        random = rand.nextInt(list.length);
-		fineLog( "random ==> {0}", random );
-	    } while (list[random] == null);
-	    randomizedList[i] = list[random];
-	    fineLog( "randomisedList[{0}] ==> {1}", i, randomizedList[i] );
-	    list[random] = null;
-	}
-	return randomizedList;
+    private List<String> randomize( List<String> list ) {
+        List<String> result = new ArrayList<String>( list.size() ) ;
+        while (!list.isEmpty()) {
+            int random = rand.nextInt( list.size() ) ;
+            String elem = list.remove( random ) ;
+            result.add( elem ) ;
+        }
+
+        fineLog( "Randomized list {0}", result ) ;
+        return result ;
     }
 
-    /**
+    /*
      * get a new shape of the endpoints
      * For e.g. if list contains A,B,C
      * if the logic below chooses B as the endpoint to send the req to
      * then return B,C,A.
      * logic used is as described in Class description comments
      */
-    public synchronized Object[] getNextRotation() {
+    public synchronized List<String> getNextRotation() {
 	int lowerLimit = 0; //lowerLimit
 	int random = 0;
 	//make sure that the random # is not 0
@@ -332,15 +335,15 @@ public class RoundRobinPolicy {
 	//11-upperLimit and so
 	//on. Hence we dont want random # to be 0.
         fineLog( "RoundRobinPolicy.getNextRotation -> sumOfAllWeights = {0}",
-            sumOfAllWeights);
+            totalWeight);
 	while( random == 0) {
-	    random = rand.nextInt(sumOfAllWeights);
+	    random = rand.nextInt(totalWeight);
 	    if ( random != 0) {
 		break;
 	    }
 	}
         fineLog( "getNextRotation : random # = {0} sum of all weights = {1}",
-            new Object[]{random, sumOfAllWeights});
+            new Object[]{random, totalWeight});
 	int i = 0;
 	for (ClusterInstanceInfo endpoint : endpointsList) {
 	    int upperLimit = lowerLimit + endpoint.weight();
@@ -367,21 +370,25 @@ public class RoundRobinPolicy {
 	    i++;    
 	}
 	warnLog("Could not find an endpoint to send request to!");
-	return null;
+	return new ArrayList<String>() ;
     }
     
-    private Object[] convertIntoCorbaloc(List<ClusterInstanceInfo> list) {
+    private List<String> convertIntoCorbaloc(List<ClusterInstanceInfo> list) {
 	List<String> host_port = new ArrayList<String>();
 	for (ClusterInstanceInfo endpoint : list) {
 	    List<SocketInfo> sinfos = endpoint.endpoints();
             for (SocketInfo si : sinfos ) {
-                String element = si.host().trim() + ":" + si.port() ;
-                if (!host_port.contains( element )) {
-                    host_port.add( element ) ;
+                // XXX this needs to be revised if we ever do a secure
+                // bootstrap protocol for the initial corbaloc URL resolution
+                if (si.type().equals( CLEAR_TEXT )) {
+                    String element = si.host().trim() + ":" + si.port() ;
+                    if (!host_port.contains( element )) {
+                        host_port.add( element ) ;
+                    }
                 }
             }
 	}
-	return host_port.toArray();
+	return host_port ;
     }
 
     /**
@@ -389,28 +396,23 @@ public class RoundRobinPolicy {
      * corresponding to a particular host.
      * (multi-homed hosts).
      */
-    private String [] getAddressPortList(String [] hostPortList) {
+    private List<String> getAddressPortList(List<String> hostPortList) {
         // The list is assumed to contain <HOST NAME>:<PORT> values
         List<String> addressPortVector = new ArrayList<String>();
         for (String str : hostPortList) {
             try {
                 IiopUrl url = new IiopUrl("iiop://" + str);
-                String [] apList = getAddressPortList(url);
-                addressPortVector.addAll(Arrays.asList(apList));
+                List<String> apList = getAddressPortList(url);
+                addressPortVector.addAll(apList);
             } catch (MalformedURLException me) {
                 warnLog( "bad.host.port", str, me.getMessage() );
             }
         }
 
-        String [] ret = new String[addressPortVector.size()];
-        for (int i=0; i<ret.length; i++) {
-            ret[i] = addressPortVector.get(i);
-        }
-        // We return a list of <IP ADDRESS>:<PORT> values
-        return ret;
+        return addressPortVector ;
     }
     
-    private String [] getAddressPortList(IiopUrl iiopUrl) {
+    private List<String> getAddressPortList(IiopUrl iiopUrl) {
         // Pull out the host name and port
         IiopUrl.Address iiopUrlAddress = 
                 (IiopUrl.Address)(iiopUrl.getAddresses().elementAt(0));
@@ -421,19 +423,28 @@ public class RoundRobinPolicy {
         return getAddressPortList(host, port);        
     }
     
-    public String [] getAddressPortList(String host, String port) {
-        // Get the ip addresses corresponding to the host
+    public List<String> getAddressPortList(String host, String port) {
+        // Get the ip addresses corresponding to the host.
+        // XXX this currently does NOT support IPv6.
         try {
             InetAddress [] addresses = InetAddress.getAllByName(host);
-            String[] ret = new String[addresses.length];
-            for (int i = 0; i < addresses.length; i++) {
-                ret[i] = addresses[i].getHostAddress() + ":" + port;
+            List<InetAddress> addrs = new ArrayList<InetAddress>() ;
+            for (InetAddress addr : addresses) {
+                if (addr instanceof Inet4Address) {
+                    addrs.add( addr ) ;
+                }
             }
+
+            List<String> ret = new ArrayList<String>() ;
+            for (InetAddress addr : addrs) {
+                ret.add( addr.getHostAddress() + ":" + port ) ;
+            }
+
             // We return a list of <IP ADDRESS>:<PORT> values
             return ret;
         } catch (UnknownHostException ukhe) {
             warnLog( "unknown.host", host, ukhe.getMessage() );
-            return null;
+            return new ArrayList<String>() ;
         }
     }
 
