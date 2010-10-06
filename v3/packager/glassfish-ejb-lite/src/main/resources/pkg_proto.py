@@ -54,6 +54,7 @@ pkg = {
                       },
     "depends"       : { 
                         "pkg:/glassfish-common" : {"type" : "require" },
+                        "pkg:/glassfish-jpa" : {"type" : "require" },
                       },
     "dirtrees"      : [ "glassfish" ],
     "licenses"      : {
