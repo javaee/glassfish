@@ -40,6 +40,7 @@
 
 package org.glassfish.admingui.devtests;
 
+import org.junit.Ignore;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -54,13 +55,14 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_SYSTEM_PROPERTIES = "A system property defines a common value for a setting at the server level. You can refer to a system property in a text field by enclosing it in a dollar sign and curly braces.";
     public static final String TRIGGER_RESOURCES = "Enable, disable, or create a new resource type to associate with the instance.";
 
-    @Test
+    // Disabling this test.  I'm not sure where this is trying to go.  jdl 10/6/10
+//    @Test
     public void testAdvancedApplicationsConfiguration() {
         final String property = generateRandomString();
         final String value = property + "value";
         final String description = property + "description";
 
-        clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
+        gotoDasPage();
         clickAndWait("propertyForm:serverInstTabs:advanced", TRIGGER_ADVANCED_APPLICATIONS_CONFIGURATION);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:reloadIntervalProp:ReloadInterval", "5");
         selenium.type("propertyForm:propertySheet:propertSectionTextField:AdminTimeoutProp:AdminTimeout", "30");
@@ -84,14 +86,12 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
 
     @Test
     public void testAdvancedDomainAttributes() {
-        clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
-        clickAndWait("propertyForm:serverInstTabs:advanced", TRIGGER_ADVANCED_APPLICATIONS_CONFIGURATION);
-        clickAndWait("propertyForm:serverInstTabs:advanced:domainAttrs", TRIGGER_ADVANCED_DOMAIN_ATTRIBUTES);
+        clickAndWait("treeForm:tree:nodes:nodes_link", TRIGGER_ADVANCED_DOMAIN_ATTRIBUTES);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:localeProp:Locale", "fr");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
 
-        clickAndWait("propertyForm:serverInstTabs:advanced:appConfig", TRIGGER_ADVANCED_APPLICATIONS_CONFIGURATION);
-        clickAndWait("propertyForm:serverInstTabs:advanced:domainAttrs", TRIGGER_ADVANCED_DOMAIN_ATTRIBUTES);
+        clickAndWait("propertyForm:domainTabs:appConfig", TRIGGER_ADVANCED_APPLICATIONS_CONFIGURATION);
+        clickAndWait("propertyForm:domainTabs:domainAttrs", TRIGGER_ADVANCED_DOMAIN_ATTRIBUTES);
 
         assertEquals("fr", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:localeProp:Locale"));
         selenium.type("propertyForm:propertySheet:propertSectionTextField:localeProp:Locale", "");
@@ -101,11 +101,11 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
 
     @Test
     public void testSystemProperties() {
-        final String property = generateRandomString();
+        final String property = "a2255bf3277b9f18e026b85aefc8a80809"; //generateRandomString();
         final String value = property + "value";
         final String description = property + "description";
 
-        clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
+        gotoDasPage();
         clickAndWait("propertyForm:serverInstTabs:token", TRIGGER_SYSTEM_PROPERTIES);
 
         int count = addTableRow("form1:basicTable", "form1:basicTable:topActionsGroup1:addSharedTableButton");
@@ -129,7 +129,7 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
         JdbcTest jdbcTest = new JdbcTest();
         jdbcTest.createJDBCResource(jndiName, description, "server", MonitoringTest.TARGET_SERVER_TYPE);
         
-        clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
+        gotoDasPage();
         clickAndWait("propertyForm:serverInstTabs:resources", TRIGGER_RESOURCES);
         assertTrue(selenium.isTextPresent(jndiName));
 
@@ -169,5 +169,9 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
             }
             sleep(500);
         }
+    }
+
+    public void gotoDasPage() {
+        clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
     }
 }
