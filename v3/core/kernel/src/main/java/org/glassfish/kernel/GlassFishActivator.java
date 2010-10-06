@@ -174,6 +174,9 @@ public class GlassFishActivator implements BundleActivator, EventListener {
      */
     private void startPostStartupBundles() {
         startBundle("org.apache.felix.shell");
+        startBundle("org.apache.felix.gogo.runtime");
+        startBundle("org.apache.felix.gogo.shell");
+        startBundle("org.apache.felix.gogo.command");
         startBundle("org.apache.felix.shell.remote");
         startBundle("org.apache.felix.fileinstall");
     }
