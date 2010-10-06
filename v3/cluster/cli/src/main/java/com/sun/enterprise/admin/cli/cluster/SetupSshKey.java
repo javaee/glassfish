@@ -140,7 +140,7 @@ public final class SetupSshKey extends CLICommand {
                         throw new CommandException(Strings.get("SSHAlreadySetup", sshuser, node));
                     }
                 }
-                sshpassword=getSSHPassword();
+                sshpassword=getSSHPassword(node);
             }
             try {
                 sshL.setupKey(node, sshpublickeyfile, generatekey, sshpassword);
@@ -171,13 +171,13 @@ public final class SetupSshKey extends CLICommand {
     /**
      * Get SSH password from password file or user.
      */
-    private String getSSHPassword() throws CommandException {
+    private String getSSHPassword(String node) throws CommandException {
         String password = getFromPasswordFile("AS_ADMIN_SSH_PASSWORD");
 
         //get password from user if not found in password file
         if (password == null) {
             if (programOpts.isInteractive()) {
-                password=readSSHPassword(Strings.get("SSHPasswordPrompt"));
+                password=readSSHPassword(Strings.get("SSHPasswordPrompt", sshuser, node));
             } else {
                 throw new CommandException(Strings.get("SSHPasswordNotFound"));
             }
