@@ -60,8 +60,11 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import org.junit.AfterClass;
+import org.junit.Rule;
 
 public class BaseSeleniumTestClass {
 
@@ -71,9 +74,12 @@ public class BaseSeleniumTestClass {
     public static final String TRIGGER_REGISTRATION_PAGE = "Receive patch information and bug updates, screencasts and tutorials, support and training offerings, and more";
     public static final String MSG_ERROR_OCCURED = "An error has occurred";
 
+    @Rule
+    public SpecificTestRule specificTestRule = new SpecificTestRule();
+
     protected static Selenium selenium;
     protected static final int TIMEOUT = 90;
-    protected static final int BUTTON_TIMEOUT = 20000;
+    protected static final int BUTTON_TIMEOUT = 30000;
     private static String currentTestClass = "";
     private boolean processingLogin = false;
 
@@ -270,6 +276,7 @@ public class BaseSeleniumTestClass {
     protected void handleLogin() {
         processingLogin = true;
         selenium.type("j_username", "admin");
+        selenium.type("j_password", "");
         clickAndWait("loginButton", TRIGGER_COMMON_TASKS);
         processingLogin = false;
     }
@@ -301,8 +308,13 @@ public class BaseSeleniumTestClass {
     }
 
     protected void rowActionWithConfirm(String buttonId, String tableId, String triggerText, String selectColId, String valueColId) {
+        // A defensive getConfirmation()
+        if (selenium.isConfirmationPresent()) {
+            selenium.getConfirmation();
+        }
         selenium.chooseOkOnNextConfirmation();
         selectTableRowByValue(tableId, triggerText, selectColId, valueColId);
+        waitForButtonEnabled(buttonId);
         selenium.click(buttonId);
         if (selenium.isConfirmationPresent()) {
             selenium.getConfirmation();
@@ -338,23 +350,49 @@ public class BaseSeleniumTestClass {
     }
 
     protected void selectTableRowByValue(String tableId, String value, String selectColId, String valueColId) {
-        try {
-            int row = 0;
-            while (true) { // iterate over any rows
-                // Assume one row group for now and hope it doesn't bite us
-                String text = selenium.getText(tableId + ":rowGroup1:" + row + ":" + valueColId);
-                if (text.equals(value)) {
-                    selenium.click(tableId + ":rowGroup1:" + row + ":" + selectColId + ":select");
-                    return;
-                }
-                row++;
-            }
-        } catch (Exception e) {
-            Assert.fail("The specified row was not found: " + value);
+        List<String> rows = getTableRowsByValue(tableId, value, valueColId);
+        for (String row : rows) {
+            selenium.click(row + ":" + selectColId + ":select");
         }
-
     }
 
+    /**
+     * @See selectTableRowByValue(String tableId, String value, String selectColId, String valueColId);
+     * @param baseId
+     * @param value
+     * @return
+     */
+    protected int selectTableRowsByValue(String baseId, String value) {
+        return selectTableRowsByValue(baseId, value, "col0", "col1");
+    }
+
+    /**
+     * For the given table, this method will select each row whose value in the specified column
+     * matched the value given, returning the number of rows selected.
+     */
+    protected int selectTableRowsByValue(String tableId, String value, String selectColId, String valueColId) {
+        List<String> rows = getTableRowsByValue("propertyForm:instancesTable", "Running", "col6");
+        if (!rows.isEmpty()) {
+            for (String row : rows) {
+                selenium.click(row + ":col0:select");
+            }
+        }
+
+        return rows.size();
+    }
+
+    protected void deleteAllTableRows(String selectAllButtonId, String deleteButtonId) {
+        selenium.click(selectAllButtonId);
+        waitForButtonEnabled(deleteButtonId);
+        selenium.chooseOkOnNextConfirmation();
+        selenium.click(deleteButtonId);
+        if (selenium.isConfirmationPresent()) {
+            selenium.getConfirmation();
+        }
+        this.waitForButtonDisabled(deleteButtonId);
+    }
+
+    // TODO: write javadocs for this
     protected String getTableRowByValue(String tableId, String value, String valueColId) {
         try {
             int row = 0;
@@ -371,7 +409,26 @@ public class BaseSeleniumTestClass {
             return "";
         }
     }
+    
+    protected List<String> getTableRowsByValue(String tableId, String value, String valueColId) {
+        List<String> rows = new ArrayList<String>();
+        try {
+            int row = 0;
+            while (true) { // iterate over any rows
+                // Assume one row group for now and hope it doesn't bite us
+                String text = selenium.getText(tableId + ":rowGroup1:" + row + ":" + valueColId);
+                if (text.equals(value)) {
+                    rows.add(tableId + ":rowGroup1:" + row);
+                }
+                row++;
+            }
+        } catch (Exception e) {
+        }
 
+        return rows;
+    }
+
+    // TODO: write javadocs for this
     protected int getTableRowCountByValue(String tableId, String value, String valueColId) {
         int tableCount = getTableRowCount(tableId);
         int selectedCount = 0;
@@ -554,14 +611,8 @@ public class BaseSeleniumTestClass {
     }
 
     private static String getParameter(String paramName, String defaultValue) {
-        String value = System.getenv(paramName);
-        if (value == null) {
-            value = System.getProperty(paramName);
-        }
-        if (value == null) {
-            value = defaultValue;
-        }
+        String value = System.getProperty(paramName);
 
-        return value;
+        return value != null ? value : defaultValue;
     }
 }

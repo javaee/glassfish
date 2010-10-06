@@ -40,10 +40,12 @@
 
 package org.glassfish.admingui.devtests;
 
+
+import org.junit.Ignore;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -52,11 +54,17 @@ import static org.junit.Assert.assertTrue;
  */
 public class StandaloneTest  extends BaseSeleniumTestClass {
     public static final String TRIGGER_INSTANCES_PAGE = "Server Instances (";
-    public static final String TRIGGER_INSTANCE_GENEAL_PAGE = "General Information";
-    final String TRIGGER_NEW_PAGE = "Configuration:";
+    public static final String TRIGGER_NEW_PAGE = "Configuration:";
+    public static final String TRIGGER_GENERAL_INFO_PAGE = "General Information";
+    public static final String TRIGGER_SYS_PROPS = "Configuration System Properties";
+
+    @BeforeClass
+    public static void beforeClass() {
+        (new StandaloneTest()).deleteAllStandaloneInstances();
+    }
 
     @Test
-    public void testCreateStandaloneInstance() {
+    public void testCreateAndDeleteStandaloneInstance() {
         String instanceName = "standAlone" + generateRandomString();
         createStandAloneInstance(instanceName);
         
@@ -67,45 +75,45 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         assertEquals("localhost", selenium.getText(prefix + "col5:nodeAgentlink"));
         assertEquals("Stopped", selenium.getText(prefix + "col6"));
         assertEquals("100", selenium.getValue(prefix + "col2:weight"));
-        deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
-    }
 
-    @Test
-    public void testDeleteStandaloneInstance() {
-        String instanceName = "standAlone" + generateRandomString();
-        createStandAloneInstance(instanceName);
-        deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
-        assertFalse(selenium.isTextPresent(instanceName));
-
-    }
-
-    @Test
-    public void testStartStandaloneInstance() {
-        String instanceName = "standAlone" + generateRandomString();
-        createStandAloneInstance(instanceName);
-        rowActionWithConfirm("propertyForm:instancesTable:topActionsGroup1:button2", "propertyForm:instancesTable", instanceName);
-        waitForCondition("document.getElementById('propertyForm:instancesTable:topActionsGroup1:button2').value != 'Processing...'", 300000);
-        String prefix = getTableRowByValue("propertyForm:instancesTable", instanceName, "col1");
+        startInstance(instanceName);
         assertEquals("Running", selenium.getText(prefix + "col6"));
-        deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
-    }
 
-    @Test
-    public void testStopStandaloneInstance() {
-        String instanceName = "standAlone" + generateRandomString();
-        createStandAloneInstance(instanceName);
-
-        //start it
-        rowActionWithConfirm("propertyForm:instancesTable:topActionsGroup1:button2", "propertyForm:instancesTable", instanceName);
-        waitForCondition("document.getElementById('propertyForm:instancesTable:topActionsGroup1:button2').value != 'Processing...'", 300000);
-        String prefix = getTableRowByValue("propertyForm:instancesTable", instanceName, "col1");
-        assertEquals("Running", selenium.getText(prefix + "col6"));
-        
-        //stop it
-        rowActionWithConfirm("propertyForm:instancesTable:topActionsGroup1:button3", "propertyForm:instancesTable", instanceName);
-        waitForCondition("document.getElementById('propertyForm:instancesTable:topActionsGroup1:button3').value != 'Processing...'", 300000);
+        stopInstance(instanceName);
         assertEquals("Stopped", selenium.getText(prefix + "col6"));
-        deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
+
+        deleteStandAloneInstance(instanceName);
+    }
+
+    @Test
+    public void testProperties() {
+        String instanceName = "standAlone" + generateRandomString();
+        createStandAloneInstance(instanceName);
+
+        clickAndWait(getLinkIdByLinkText("propertyForm:instancesTable", instanceName), TRIGGER_GENERAL_INFO_PAGE);
+        clickAndWait("propertyForm:standaloneInstanceTabs:standaloneProp", TRIGGER_SYS_PROPS);
+        int sysPropCount = addTableRow("propertyForm:sysPropsTable", "propertyForm:sysPropsTable:topActionsGroup1:addSharedTableButton");
+        selenium.type("propertyForm:sysPropsTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
+        selenium.type("propertyForm:sysPropsTable:rowGroup1:0:overrideValCol:overrideVal", "value");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+
+        // Go to instance props page
+        selenium.click("propertyForm:standaloneInstanceTabs:standaloneProp:instanceProps");
+        waitForPageLoad(TRIGGER_SYS_PROPS, TIMEOUT, true);
+
+        int instancePropCount = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
+        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
+        selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+
+        // Verify that properties were persisted
+        clickAndWait("propertyForm:standaloneInstanceTabs:standaloneProp:configProps", TRIGGER_SYS_PROPS);
+        assertTableRowCount("propertyForm:sysPropsTable", sysPropCount);
+        selenium.click("propertyForm:standaloneInstanceTabs:standaloneProp:instanceProps");
+        waitForPageLoad(TRIGGER_SYS_PROPS, TIMEOUT, true);
+        assertTableRowCount("propertyForm:basicTable", instancePropCount);
+
+        deleteStandAloneInstance(instanceName);
     }
 
     @Test
@@ -119,7 +127,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         jdbcTest.createJDBCResource(jndiName, description, target, MonitoringTest.TARGET_STANDALONE_TYPE);
 
         clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", TRIGGER_INSTANCES_PAGE);
-        clickAndWait(getLinkIdByLinkText("propertyForm:instancesTable", target), TRIGGER_INSTANCE_GENEAL_PAGE);
+        clickAndWait(getLinkIdByLinkText("propertyForm:instancesTable", target), TRIGGER_GENERAL_INFO_PAGE);
         clickAndWait("propertyForm:standaloneInstanceTabs:resources", EnterpriseServerTest.TRIGGER_RESOURCES);
         assertTrue(selenium.isTextPresent(jndiName));
 
@@ -146,12 +154,59 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
     }
 
     public void createStandAloneInstance(String instanceName){
-        clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", TRIGGER_INSTANCES_PAGE);
+        gotoStandaloneInstancesPage();
         clickAndWait("propertyForm:instancesTable:topActionsGroup1:newButton", TRIGGER_NEW_PAGE );
         selenium.type("propertyForm:propertySheet:propertSectionTextField:NameTextProp:NameText", instanceName);
         selenium.select("propertyForm:propertySheet:propertSectionTextField:node:node", "label=localhost");
         selenium.select("propertyForm:propertySheet:propertSectionTextField:configProp:Config", "label=default-config");
-        selenium.click("propertyForm:propertySheet:propertSectionTextField:configOptionProp:optC");
+        selenium.check("propertyForm:propertySheet:propertSectionTextField:configOptionProp:optC");
         clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_INSTANCES_PAGE);
     }
+
+    public void deleteStandAloneInstance(String instanceName) {
+        gotoStandaloneInstancesPage();
+        stopInstance(instanceName); // Just in case it's running. If it's not, the GUI will report an error, but that's OK
+        deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
+    }
+
+    public void deleteAllStandaloneInstances() {
+        gotoStandaloneInstancesPage();
+        
+        if (selenium.isTextPresent("Server Instances (0)")) {
+            return;
+        }
+
+        // Stop all instances
+        if (selectTableRowsByValue("propertyForm:instancesTable", "Running", "col0", "col6") > 0) {
+            waitForButtonEnabled("propertyForm:instancesTable:topActionsGroup1:button3");
+            selenium.chooseOkOnNextConfirmation();
+            selenium.click("propertyForm:instancesTable:topActionsGroup1:button3");
+            if (selenium.isConfirmationPresent()) {
+                selenium.getConfirmation();
+            }
+            this.waitForButtonDisabled("propertyForm:instancesTable:topActionsGroup1:button3");
+        }
+
+        // Delete all instances
+        deleteAllTableRows("propertyForm:instancesTable:_tableActionsTop:_selectMultipleButton", "propertyForm:instancesTable:topActionsGroup1:button1");
+    }
+
+    public void startInstance(String instanceName) {
+        rowActionWithConfirm("propertyForm:instancesTable:topActionsGroup1:button2", "propertyForm:instancesTable", instanceName);
+        waitForCondition("document.getElementById('propertyForm:instancesTable:topActionsGroup1:button2').value != 'Processing...'", 300000);
+    }
+
+    public void stopInstance(String instanceName) {
+        String rowId = getTableRowByValue("propertyForm:instancesTable", instanceName, "col1");
+        String status = selenium.getText(rowId+"col6");
+        if (!"Stopped".equals(status)) {
+            rowActionWithConfirm("propertyForm:instancesTable:topActionsGroup1:button3", "propertyForm:instancesTable", instanceName);
+            waitForCondition("document.getElementById('propertyForm:instancesTable:topActionsGroup1:button3').value != 'Processing...'", 300000);
+        }
+    }
+
+    public void gotoStandaloneInstancesPage() {
+        clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", TRIGGER_INSTANCES_PAGE);
+    }
+
 }
