@@ -80,10 +80,10 @@
                         changeNetworkListenersInVS(vsAttrs="#{pageSession.vsAttrs.data.extraProperties.entity}", listenerName="#{pageSession.networkListAttrs.data.extraProperties.entity['name']}", addFlag="{#false}", result="#{pageSession.vsAttrModified}");
                         gf.restRequest(endpoint="#{pageSession.virtualServerUrl}/#{vsName}", attrs="#{pageSession.vsAttrModified}", method="post");
                     }
-                    gf.restRequest(endpoint="#{pageSession.networkListenerUrl}/#{listener}", method="delete");
+                    gf.restRequest(endpoint="#{pageSession.networkListenerUrl}/#{listener}?target=#{pageSession.valueMap['target']}", method="delete");
                 }
             }
-            gf.restRequest(endpoint="#{pageSession.protocolUrl}", method="delete");
+            gf.restRequest(endpoint="#{pageSession.protocolUrl}?target=#{pageSession.valueMap['target']}", method="delete");
         }
         gf.redirect(page="#{pageSession.listLink}");
     />
@@ -112,6 +112,9 @@
             }
             mapPut(map="#{protocol}" key="listenerList"  value="#{pageSession.listenerList}");
         }
+        createMap(result="#{pageSession.valueMap}");
+        mapPut(map="#{pageSession.valueMap}" key="target" value="server");
+#include "/common/shared/targetsConfig.inc"
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n_web.msg.JS.confirmDeleteProtocol}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/web/grizzly/protocolNew.jsf?configName=#{configName}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/web/grizzly/protocols.jsf?configName=#{configName}");
@@ -134,7 +137,7 @@
                 getClientId(component="$this{component}" clientId=>$page{tableId});
             />
 
-#include "/common/shared/listTableButtons.inc"
+#include "/common/shared/listTableConfigButtons.inc"
 
     <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
      <!afterCreate

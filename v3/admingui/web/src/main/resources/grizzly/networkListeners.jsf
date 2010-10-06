@@ -92,9 +92,9 @@
                 changeNetworkListenersInVS(vsAttrs="#{pageSession.vsAttrs.data.extraProperties.entity}", listenerName="#{pageSession.networkListAttrs.data.extraProperties.entity['name']}", addFlag="{#false}", result="#{pageSession.vsAttrModified}");
                 gf.restRequest(endpoint="#{pageSession.virtualServerUrl}/#{vsName}", attrs="#{pageSession.vsAttrModified}", method="post");
             }
-            gf.restRequest(endpoint="#{pageSession.networkListenerUrl}/#{pageSession.networkListenerName}", method="delete");
+            gf.restRequest(endpoint="#{pageSession.networkListenerUrl}/#{pageSession.networkListenerName}?target=#{pageSession.valueMap['target']}", method="delete");
             if (#{pageSession.deleteProcotol}) {
-                gf.restRequest(endpoint="#{pageSession.protocolUrl}", method="delete");
+                gf.restRequest(endpoint="#{pageSession.protocolUrl}?target=#{pageSession.valueMap['target']}", method="delete");
             }
         }
         gf.redirect(page="#{pageSession.listLink}");
@@ -111,7 +111,9 @@
         setPageSessionAttribute(key="rest-api" value="true");
 
         gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.listOfRows}");
-
+        createMap(result="#{pageSession.valueMap}");
+        mapPut(map="#{pageSession.valueMap}" key="target" value="server");
+#include "/common/shared/targetsConfig.inc"
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n_web.msg.JS.confirmDeleteNL}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/web/grizzly/networkListenerNew.jsf?configName=#{configName}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/web/grizzly/networkListeners.jsf?configName=#{configName}");
@@ -135,7 +137,7 @@
                 getClientId(component="$this{component}" clientId=>$page{tableId});
             />
 
-#include "/common/shared/listTableButtons.inc"
+#include "/common/shared/listTableConfigButtons.inc"
 
    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
      <!afterCreate
