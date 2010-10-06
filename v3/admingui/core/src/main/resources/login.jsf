@@ -43,6 +43,7 @@
 <!initPage
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
     initProductInfoAttributes();
+    // FIXME: The following needs to change...
     testLoginBypass(loginUser="#{pageSession.loginUser}" byPass="#{pageSession.byPassLogin}")
     setSessionAttribute(key="showLogoutButton" value="#{! pageSession.byPassLogin}")
     getThemeFromIntegrationPoints(themeContext=>$application{com.sun.webui.theme.THEME_CONTEXT});
@@ -54,6 +55,7 @@
 <head>
     <title>$resource{i18n.loginPageTitle}</title>
 <script type="text/javascript">
+<!-- FIXME: add code to ensure we're the top-most frame -->
     if (document.getElementById('layout-doc') != null) {
 	// Just refresh the page... login will take over
         window.location = window.location;
