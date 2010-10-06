@@ -49,6 +49,7 @@ import com.sun.corba.ee.spi.oa.rfm.ReferenceFactoryManager;
 import com.sun.corba.ee.spi.osgi.ORBFactory;
 import com.sun.corba.ee.spi.orbutil.ORBConstants;
 import com.sun.corba.ee.spi.orb.ORB ;
+import com.sun.corba.ee.impl.folb.InitialGroupInfoService ;
 
 import com.sun.logging.LogDomains;
 
@@ -88,7 +89,7 @@ import org.jvnet.hk2.config.types.Property;
 
 public final class GlassFishORBManager {
     static final Logger logger = LogDomains.getLogger(
-        GlassFishORBManager.class, LogDomains.UTIL_LOGGER);
+        GlassFishORBManager.class, LogDomains.CORBA_LOGGER);
 
     private static void fineLog( String fmt, Object... args ) {
         if (logger.isLoggable(Level.FINE)) {
@@ -210,7 +211,8 @@ public final class GlassFishORBManager {
      * All external orb/iiop access should go through orb-connector module
      */
     GlassFishORBManager(Habitat h ) {
-
+        fineLog( "GlassFishORBManager: Constructing GlassFishORBManager: h {0}",
+            h ) ;
         habitat = h;
 
         iiopUtils = habitat.getComponent(IIOPUtils.class);
@@ -221,7 +223,6 @@ public final class GlassFishORBManager {
         processType = processEnv.getProcessType();
 
         initProperties();
-
     }
 
     /**
@@ -262,6 +263,10 @@ public final class GlassFishORBManager {
                 initORB(props);
             }
 
+            if (processType == ProcessType.Server) {
+                 new InitialGroupInfoService( orb );
+            }
+
             iiopUtils.setORB(orb);
 
             return orb;
@@ -284,6 +289,9 @@ public final class GlassFishORBManager {
     }
 
     private void initProperties() {
+        fineLog( "GlassFishORBManager: initProperties: processType {0}",
+            processType ) ;
+
         if( (processType == ProcessType.ACC) || (processType == ProcessType.Other) ) {
             // No access to domain.xml.  Just init properties.
             // In this case iiopListener beans will be null.
@@ -415,21 +423,23 @@ public final class GlassFishORBManager {
                 + CSIv2SSLTaggedComponentHandlerImpl.class.getName(),"dummy");
        
 
-        gmsClient = new IiopFolbGmsClient() ;
+        if (processType == ProcessType.Server) {
+            gmsClient = new IiopFolbGmsClient( habitat ) ;
 
-        if (gmsClient.isGMSAvailable()) {
-            fineLog( "GMS available and enabled - doing EE initialization");
+            if (gmsClient.isGMSAvailable()) {
+                fineLog( "GMS available and enabled - doing EE initialization");
 
-            // Register ServerGroupManager.
-            // Causes it to register itself as an ORBInitializer
-            // that then registers it as
-            // IOR and ServerRequest Interceptors.
-            orbInitProperties.setProperty(
-                    ORBConstants.USER_CONFIGURATOR_PREFIX
-                            + "com.sun.corba.ee.impl.folb.ServerGroupManager",
-                    "dummy");
+                // Register ServerGroupManager.
+                // Causes it to register itself as an ORBInitializer
+                // that then registers it as
+                // IOR and ServerRequest Interceptors.
+                orbInitProperties.setProperty(
+                        ORBConstants.USER_CONFIGURATOR_PREFIX
+                                + "com.sun.corba.ee.impl.folb.ServerGroupManager",
+                        "dummy");
 
-            fineLog( "Did EE property initialization");
+                fineLog( "Did EE property initialization");
+            }
         }
     }
 
@@ -598,9 +608,13 @@ public final class GlassFishORBManager {
 
                 rfm = (ReferenceFactoryManager) orb.resolve_initial_references(
                         ORBConstants.REFERENCE_FACTORY_MANAGER);
+
+                new InitialGroupInfoService( orb ) ;
             }
 
-            gmsClient.setORB(orb) ;
+            if (processType == ProcessType.Server) {
+                gmsClient.setORB(orb) ;
+            }
 
             // SeeBeyond fix for 6325988: needs testing.
             // Still do not know why this might make any difference.

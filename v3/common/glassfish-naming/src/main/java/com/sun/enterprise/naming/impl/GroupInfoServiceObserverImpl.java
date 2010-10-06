@@ -67,12 +67,8 @@ public class GroupInfoServiceObserverImpl
 
     private GroupInfoService gis;
 
-    private SerialInitContextFactory ctxFactory ;
-
-    public GroupInfoServiceObserverImpl(GroupInfoService gis,
-        SerialInitContextFactory factory ) {
+    public GroupInfoServiceObserverImpl(GroupInfoService gis ) {
 	this.gis = gis;
-        ctxFactory = factory ;
     }
 
     @Override
@@ -81,7 +77,8 @@ public class GroupInfoServiceObserverImpl
 	    List<ClusterInstanceInfo> instanceInfoList =
                 gis.getClusterInstanceInfo((String[])null);
 	    if (instanceInfoList != null && instanceInfoList.size() > 0) {
-	        ctxFactory.getRRPolicy().setClusterInstanceInfo(instanceInfoList);
+	        SerialInitContextFactory.getRRPolicy()
+                    .setClusterInstanceInfo(instanceInfoList);
 	    }
 	} catch(Exception e) {
 	    _logger.log(Level.SEVERE,

@@ -41,6 +41,7 @@
 package com.sun.enterprise.naming.impl;
 
 import com.sun.enterprise.naming.util.LogFacade;
+import java.util.logging.Level;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -71,13 +72,13 @@ public class SerialContextProviderImpl implements SerialContextProvider {
     public Object lookup(String name)
             throws NamingException, RemoteException {
         try {
-            _logger.fine(" SerialContextProviderImpl :: lookup " + name);
+            _logger.log(Level.FINE, " SerialContextProviderImpl :: lookup {0}", name);
 
             return rootContext.lookup(name);
         } catch (NamingException ne) {
             throw ne;
         } catch (Exception e) {
-            _logger.severe("Exception occurred : " + e.getMessage());
+            _logger.log(Level.SEVERE, "Exception occurred : {0}", e.getMessage());
             RemoteException re = new RemoteException("", e);
             throw re;
 
