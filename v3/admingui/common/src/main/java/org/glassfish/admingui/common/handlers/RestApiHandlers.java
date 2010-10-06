@@ -397,6 +397,37 @@ public class RestApiHandlers {
     }
 
 
+    @Handler(id = "gf.deleteConfigCascade",
+            input = {
+                    @HandlerInput(name = "endpoint", type = String.class, required = true),
+                    @HandlerInput(name = "selectedRows", type = List.class, required = true),
+                    @HandlerInput(name = "id", type = String.class, defaultValue = "name"),
+                    @HandlerInput(name = "target", type = String.class, defaultValue = "server"),
+                    @HandlerInput(name = "cascade", type = String.class)
+            })
+    public static void deleteConfigCascade(HandlerContext handlerCtx) {
+        try {
+            Map<String, Object> payload = new HashMap<String, Object>();
+            String endpoint = (String) handlerCtx.getInputValue("endpoint");
+            String id = (String) handlerCtx.getInputValue("id");
+            String target = (String) handlerCtx.getInputValue("target");
+            String cascade = (String) handlerCtx.getInputValue("cascade");
+            if (cascade != null) {
+                payload.put("cascade", cascade);
+            }
+
+            for (Map oneRow : (List<Map>) handlerCtx.getInputValue("selectedRows")) {
+                RestResponse response = delete(endpoint + "/" +
+                        URLEncoder.encode((String) oneRow.get(id), "UTF-8") + "?target=" + target, payload);
+                if (!response.isSuccess()) {
+                    GuiUtil.handleError(handlerCtx, "Unable to delete the resource " + (String) oneRow.get(id));
+                }
+            }
+        } catch (Exception ex) {
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+
     /*
      * Return List<Map<String, String>> which is for displaying as table in a the page.
      * If a skipList is specified,  any child whose id is specified in the skipList will not be included.
