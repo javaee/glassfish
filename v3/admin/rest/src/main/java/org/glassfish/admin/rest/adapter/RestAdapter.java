@@ -213,20 +213,44 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     }
 
     private boolean authenticate(GrizzlyRequest req) throws LoginException, IOException {
-        boolean authenticated = false;
+        boolean authenticated = authenticateViaAnonymousUser(req);
 
-        authenticated = authenticateViaLocalPassword(req);
-
-        if(!authenticated) {
-            authenticated = authenticateViaRestToken(req);
-        }
-        
-        if(!authenticated) {
-            authenticated = authenticateViaAdminRealm(req.getRequest());
-        }
+        if (!authenticated) {
+	    authenticated = authenticateViaLocalPassword(req);
+	    if (!authenticated) {
+		authenticated = authenticateViaRestToken(req);
+		if (!authenticated) {
+		    authenticated = authenticateViaAdminRealm(req.getRequest());
+		}
+	    }
+	}
 
         return authenticated;
+    }
 
+    /**
+     *	<p> This method should return <code>true</code> if there is an
+     *	    <em>anonymous user</em>.  It should also set an attribute called
+     *	    "<code>restUser</code>" on the <code>GrizzlyRequest</code>
+     *	    containing the username of the anonymous user.  If the anonymous
+     *	    user is not valid, then this method should return
+     *	    <code>false</code>.</p>
+     *
+     *	<p> The <em>anonymous user</em> exists when there is only 1 admin user,
+     *	    and that admin user's password is set to the empty string ("").  In
+     *	    this case, the user should not be prompted for a username &amp;
+     *	    password, but instead access should be automatically granted.</p>
+     */
+    private boolean authenticateViaAnonymousUser(GrizzlyRequest req) {
+// FIXME: Implement according to JavaDoc above...
+	/*
+	if (anonymousUser) {
+	    String anonUser = 
+	    req.setAttribute("restUser", anonUser);
+	    return true;
+	}
+	*/
+	return false;
     }
 
     private boolean authenticateViaRestToken(GrizzlyRequest req) { 

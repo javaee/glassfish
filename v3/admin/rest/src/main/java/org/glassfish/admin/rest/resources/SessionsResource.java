@@ -85,6 +85,12 @@ public class SessionsResource {
     public ActionReportResult create() {
         RestActionReporter ar = new RestActionReporter();
         GrizzlyRequest grizzlyRequest = request.get();
+
+	// Check to see if the username has been set (anonymous user case)
+	String username = (String) grizzlyRequest.getAttribute("restUser");
+	if (username != null) {
+	    ar.getExtraProperties().put("username", username);
+	}
         ar.getExtraProperties().put("token", sessionManager.createSession(grizzlyRequest));
         return new ActionReportResult(ar);
     }
