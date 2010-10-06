@@ -73,7 +73,9 @@ import org.glassfish.internal.api.Globals;
 import org.glassfish.security.common.Group;
 import org.glassfish.security.common.PrincipalImpl;
 import org.jvnet.hk2.component.Habitat;
-
+import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
+import com.sun.enterprise.deployment.node.ws.WLWebServicesTagNames;
+import com.sun.enterprise.deployment.node.ws.WLServiceRefNode;
 
 /**
  * This node is responsible for handling all WebLogic runtime information for 
@@ -116,6 +118,8 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
                 WLResourceEnvDescriptionNode.class);
         registerElementHandler(new XMLElement(RuntimeTagNames.EJB_REFERENCE_DESCRIPTION),
                 WLEjbReferenceDescriptionNode.class);
+        registerElementHandler(new XMLElement(WLWebServicesTagNames.SERVICE_REFERENCE_DESCRIPTION),
+                WLServiceRefNode.class);
         registerElementHandler(new XMLElement(RuntimeTagNames.SESSION_DESCRIPTOR),
                 WLSessionDescriptorNode.class);
         registerElementHandler(new XMLElement(RuntimeTagNames.JSP_DESCRIPTOR),
@@ -245,6 +249,8 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
             } catch (IllegalArgumentException iae) {
                 DOLUtils.getDefaultLogger().warning(iae.getMessage());
             }
+        } if (newDescriptor instanceof ServiceReferenceDescriptor) {
+            descriptor.addServiceReferenceDescriptor((ServiceReferenceDescriptor) newDescriptor);
         } else {
             super.addDescriptor(newDescriptor);
         }
