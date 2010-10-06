@@ -395,7 +395,9 @@ public class TemplateResource {
         RestActionReporter ar = new RestActionReporter();
         ar.setExtraProperties(new Properties());
         ConfigBean entity = (ConfigBean) getEntity();
-        ar.setActionDescription(upperCaseFirstLetter(childModel.getTagName()));
+        if (childModel != null) {
+            ar.setActionDescription(upperCaseFirstLetter(childModel.getTagName()));
+        }
         if (showEntityValues) {
             if (entity != null) {
                 ar.getExtraProperties().put("entity", getAttributes(entity));

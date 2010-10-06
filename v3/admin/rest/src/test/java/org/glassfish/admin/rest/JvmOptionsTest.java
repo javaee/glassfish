@@ -40,6 +40,8 @@
 
 package org.glassfish.admin.rest;
 
+import com.sun.jersey.core.util.MultivaluedMapImpl;
+import javax.ws.rs.core.MultivaluedMap;
 import java.util.HashMap;
 
 import org.glassfish.admin.rest.clientutils.MarshallingUtils;
@@ -55,11 +57,12 @@ import static org.junit.Assert.*;
  * @author jasonlee
  */
 public class JvmOptionsTest extends RestTestBase {
-    protected static final String URL_JVM_OPTIONS = "/domain/configs/config/server-config/java-config/jvm-options";
+    protected static final String URL_SERVER_JVM_OPTIONS = "/domain/configs/config/server-config/java-config/jvm-options";
+    protected static final String URL_DEFAULT_JVM_OPTIONS = "/domain/configs/config/default-config/java-config/jvm-options";
 
     @Test
     public void getJvmOptions() {
-        ClientResponse response = get(URL_JVM_OPTIONS);
+        ClientResponse response = get(URL_SERVER_JVM_OPTIONS);
         assertTrue(isSuccess(response));
         Map<String, Object> responseMap = MarshallingUtils.buildMapFromDocument(response.getEntity(String.class));
         List<String> jvmOptions = (List<String>)((Map)responseMap.get("extraProperties")).get("leafList");
@@ -74,15 +77,15 @@ public class JvmOptionsTest extends RestTestBase {
         }};
 
 //        Map<String, String> payload = buildJvmOptionsPayload(newOptions);
-        ClientResponse response = post(URL_JVM_OPTIONS, newOptions);
+        ClientResponse response = post(URL_SERVER_JVM_OPTIONS, newOptions);
         assertTrue(isSuccess(response));
-        response = get(URL_JVM_OPTIONS);
+        response = get(URL_SERVER_JVM_OPTIONS);
         List<String> jvmOptions = getJvmOptions(response);
         assertTrue(jvmOptions.contains(optionName+"=someValue"));
 
-        response = delete(URL_JVM_OPTIONS, newOptions);
+        response = delete(URL_SERVER_JVM_OPTIONS, newOptions);
         assertTrue(isSuccess(response));
-        response = get(URL_JVM_OPTIONS);
+        response = get(URL_SERVER_JVM_OPTIONS);
         jvmOptions = getJvmOptions(response);
         assertFalse(jvmOptions.contains(optionName+"=someValue"));
     }
@@ -96,38 +99,53 @@ public class JvmOptionsTest extends RestTestBase {
             put(option2Name, "");
         }};
 
-        ClientResponse response = post(URL_JVM_OPTIONS, newOptions);
+        ClientResponse response = post(URL_SERVER_JVM_OPTIONS, newOptions);
         assertTrue(isSuccess(response));
-        response = get(URL_JVM_OPTIONS);
+        response = get(URL_SERVER_JVM_OPTIONS);
         List<String> jvmOptions = getJvmOptions(response);
         assertTrue(jvmOptions.contains(option1Name));
         assertFalse(jvmOptions.contains(option1Name+"="));
         assertTrue(jvmOptions.contains(option2Name));
         assertFalse(jvmOptions.contains(option2Name+"="));
 
-        response = delete(URL_JVM_OPTIONS, newOptions);
+        response = delete(URL_SERVER_JVM_OPTIONS, newOptions);
         assertTrue(isSuccess(response));
-        response = get(URL_JVM_OPTIONS);
+        response = get(URL_SERVER_JVM_OPTIONS);
         jvmOptions = getJvmOptions(response);
         assertFalse(jvmOptions.contains(option1Name));
         assertFalse(jvmOptions.contains(option2Name));
     }
 
-    protected Map<String, String> buildJvmOptionsPayload(Map<String, String> options) {
-        Map<String, String> payload = new HashMap<String, String>();
-        StringBuilder sb = new StringBuilder();
-        String sep = "";
+    @Test
+    public void testIsolatedOptionsCreationOnNewConfig() {
+        ConfigTest configTest = new ConfigTest();
+        final String optionName = "-Doption" + generateRandomString();
+        final String configName = "config-" + generateRandomString();
+        final String URL_NEW_CONFIG_JVM_OPTIONS = "/domain/configs/config/" + configName + "/java-config/jvm-options";
 
-        for (Map.Entry<String,String> entry : options.entrySet()) {
-            sb.append(sep)
-                    .append(entry.getKey())
-                    .append("=")
-                    .append(entry.getValue());
-        }
+        Map<String, String> newOptions = new HashMap<String, String>() {{
+            put(optionName, "");
+        }};
+        MultivaluedMap formData = new MultivaluedMapImpl() {{
+            add("id", "default-config");
+            add("id", configName);
+        }};
+        configTest.setup();
+        configTest.createAndVerifyConfig(configName, formData);
 
-        payload.put("id", sb.toString());
+        // Test new config to make sure option is there
+        ClientResponse response = post(URL_NEW_CONFIG_JVM_OPTIONS, newOptions);
+        assertTrue(isSuccess(response));
+        response = get(URL_NEW_CONFIG_JVM_OPTIONS);
+        List<String> jvmOptions = getJvmOptions(response);
+        assertTrue(jvmOptions.contains(optionName));
 
-        return payload;
+        // Test server-config to make sure the options are NOT there
+        response = get(URL_SERVER_JVM_OPTIONS);
+        jvmOptions = getJvmOptions(response);
+        assertFalse(jvmOptions.contains(optionName));
+
+        configTest.deleteAndVerifyConfig(configName);
     }
 
     protected List<String> getJvmOptions(ClientResponse response) {

@@ -40,6 +40,7 @@
 
 package org.glassfish.admin.rest.resources;
 
+import javax.ws.rs.core.PathSegment;
 import org.jvnet.hk2.component.Habitat;
 import java.util.HashMap;
 import java.util.List;
@@ -121,8 +122,7 @@ public abstract class CollectionLeafResource {
 
     @GET
     @Produces({"text/html;qs=2", MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
-    public ActionReportResult get(@QueryParam("expandLevel")
-            @DefaultValue("1") int expandLevel) {
+    public ActionReportResult get(@QueryParam("expandLevel") @DefaultValue("1") int expandLevel) {
         if (getEntity() == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
@@ -145,7 +145,9 @@ public abstract class CollectionLeafResource {
         }
 
         String postCommand = getPostCommand();
-        return runCommand(postCommand, processData(data, postCommand), "rest.resource.create.message",
+        final Map<String, String> payload = processData(data, postCommand);
+
+        return runCommand(postCommand, payload, "rest.resource.create.message",
             "\"{0}\" created successfully.", "rest.resource.post.forbidden","POST on \"{0}\" is forbidden.");
     }
 
@@ -297,6 +299,13 @@ public abstract class CollectionLeafResource {
             }
 
             results.put("id", options.toString());
+        }
+
+        List<PathSegment> segments = uriInfo.getPathSegments();
+
+        // TODO: Ugly hack.  This needs to be done differently
+        if (segments.get(segments.size()-1).getPath().equals("jvm-options")) {
+            results.put("target", segments.get(segments.size()-3).getPath());
         }
 
         return results;

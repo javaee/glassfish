@@ -75,7 +75,7 @@ public class ConfigTest extends RestTestBase {
         assertFalse(isSuccess(response));
     }
 
-    protected void createAndVerifyConfig(String configName, MultivaluedMap configData) {
+    public void createAndVerifyConfig(String configName, MultivaluedMap configData) {
         ClientResponse response = post(BASE_CONFIGS_URL + "/copy-config", configData);
         checkStatusForSuccess(response);
 
@@ -83,7 +83,7 @@ public class ConfigTest extends RestTestBase {
         checkStatusForSuccess(response);
     }
 
-    protected void deleteAndVerifyConfig(String configName) {
+    public void deleteAndVerifyConfig(String configName) {
         ClientResponse response = post(BASE_CONFIGS_URL + "/config/" + configName + "/delete-config");
         checkStatusForSuccess(response);
 
