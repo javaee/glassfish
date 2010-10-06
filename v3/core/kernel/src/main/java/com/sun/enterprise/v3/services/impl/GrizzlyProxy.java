@@ -260,6 +260,12 @@ public class GrizzlyProxy implements NetworkProxy {
         if(grizzlyListener.isGenericListener()) {
             return;
         }
+
+        // e.g., there is no admin service in an instance
+        if (contextRoot == null) {
+            return;
+        }
+
         if (endpointAdapter == null) {
             throw new EndpointRegistrationException(
                 "The endpoint adapter is null");

@@ -48,19 +48,7 @@ import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.Configs;
-import com.sun.enterprise.config.serverbeans.ConnectionPool;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.HttpFileCache;
-import com.sun.enterprise.config.serverbeans.HttpListener;
-import com.sun.enterprise.config.serverbeans.HttpProtocol;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.KeepAlive;
-import com.sun.enterprise.config.serverbeans.RequestProcessing;
-import com.sun.enterprise.config.serverbeans.ThreadPools;
-import com.sun.enterprise.config.serverbeans.VirtualServer;
-import com.sun.enterprise.config.serverbeans.JavaConfig;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.grizzly.config.dom.FileCache;
 import com.sun.grizzly.config.dom.Http;
 import com.sun.grizzly.config.dom.NetworkConfig;
@@ -85,24 +73,33 @@ import org.jvnet.hk2.config.TransactionFailure;
 @SuppressWarnings({"deprecation"})
 @Service
 public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostConstruct {
+
     private final static String SSL_CONFIGURATION_WANTAUTH = "com.sun.grizzly.ssl.auth";
     private final static String SSL_CONFIGURATION_SSLIMPL = "com.sun.grizzly.ssl.sslImplementation";
+
     @Inject
-    private Domain domain;
+    private Configs configs;
+
     @Inject
     private Habitat habitat;
+
     private static final String HTTP_THREAD_POOL = "http-thread-pool";
 
     public void postConstruct() {
-        for (Config config : domain.getConfigs().getConfig()) {
+        for (Config config : configs.getConfig()) {
             try {
                 rectifyThreadPools(config);
                 processHttpListeners(config);
                 promoteHttpServiceProperties(config.getHttpService());
                 promoteVirtualServerProperties(config.getHttpService());
                 promoteSystemProperties();
+            } catch (PropertyVetoException pve) {
+                Logger.getAnonymousLogger().log(Level.SEVERE,
+                    "Failure while upgrading domain.xml.", pve);
+                throw new RuntimeException(pve);
             } catch (TransactionFailure tf) {
-                Logger.getAnonymousLogger().log(Level.SEVERE, "Failure while upgrading domain.xml.  Please redeploy", tf);
+                Logger.getAnonymousLogger().log(Level.SEVERE,
+                    "Failure while upgrading domain.xml.", tf);
                 throw new RuntimeException(tf);
             }
         }
@@ -154,7 +151,7 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
     private void rectifyThreadPools(Config config) throws TransactionFailure {
         ThreadPools threadPools = config.getThreadPools();
         if (threadPools == null) {
-            threadPools = createThreadPools();
+            threadPools = createThreadPools(config);
         } else {
             final List<ThreadPool> list = threadPools.getThreadPool();
             final int[] count = {1};
@@ -262,14 +259,11 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
 
     }
 
-    private void processHttpListeners(Config config) throws TransactionFailure {
+    private void processHttpListeners(Config config)
+        throws PropertyVetoException, TransactionFailure {
         if (!config.getHttpService().getHttpListener().isEmpty()) {
-            ConfigSupport.apply(new SingleConfigCode<Domain>() {
-                public Object run(Domain param) throws TransactionFailure {
-                    migrateSettings(param);
-                    return null;
-                }
-            }, domain);
+            // all changes in this method must be in their own transactions
+            migrateSettings(config);
         }
     }
 
@@ -285,27 +279,25 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
         }, networkListeners);
     }
 
-    private ThreadPools createThreadPools() throws TransactionFailure {
+    private ThreadPools createThreadPools(Config config) throws TransactionFailure {
         return (ThreadPools) ConfigSupport.apply(new SingleConfigCode<Config>() {
             public Object run(Config param) throws PropertyVetoException, TransactionFailure {
                 final ThreadPools threadPools = param.createChild(ThreadPools.class);
                 param.setThreadPools(threadPools);
                 return threadPools;
             }
-        }, domain.getConfigs().getConfig().get(0));
+        }, config);
     }
 
-    private void migrateSettings(Domain domain) throws TransactionFailure {
-        final Configs configs = domain.getConfigs();
-        Config baseConfig = configs.getConfig().get(0);
-        final HttpService service = baseConfig.getHttpService();
-        NetworkConfig config = getNetworkConfig(baseConfig);
-        migrateHttpListeners(baseConfig, config);
-        migrateHttpProtocol(config, service);
-        migrateHttpFileCache(config, service);
-        migrateRequestProcessing(config, service);
-        migrateKeepAlive(config, service);
-        migrateConnectionPool(config, service);
+    private void migrateSettings(Config config) throws PropertyVetoException, TransactionFailure {
+        final HttpService service = config.getHttpService();
+        NetworkConfig networkConfig = getNetworkConfig(config);
+        migrateHttpListeners(config, networkConfig);
+        migrateHttpProtocol(networkConfig, service);
+        migrateHttpFileCache(networkConfig, service);
+        migrateRequestProcessing(networkConfig, service);
+        migrateKeepAlive(networkConfig, service);
+        migrateConnectionPool(networkConfig, service);
     }
 
     private void migrateConnectionPool(NetworkConfig config, HttpService httpService) throws TransactionFailure {
@@ -505,8 +497,11 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
                         public Object run(Http http) {
                             http.setVersion(httpProtocol.getVersion());
                             http.setDnsLookupEnabled(httpProtocol.getDnsLookupEnabled());
-                            http.setForcedResponseType(httpProtocol.getForcedResponseType());
-                            http.setDefaultResponseType(httpProtocol.getDefaultResponseType());
+
+                            // these are both deprecated and end up with the
+                            // value 'AttributeDeprecated' if they exist
+                            http.setForcedResponseType(null);
+                            http.setDefaultResponseType(null);
                             return null;
                         }
                     }, protocol.getHttp());
