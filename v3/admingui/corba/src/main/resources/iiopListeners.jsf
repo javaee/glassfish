@@ -61,6 +61,9 @@
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", id="id", result="#{requestScope.listOfRows}");
+        createMap(result="#{pageSession.valueMap}");
+        mapPut(map="#{pageSession.valueMap}" key="target" value="server");
+#include "/common/shared/targetsConfig.inc"
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n_corba.msg.JS.confirmDeleteIiopListener}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/corba/iiopListenerNew.jsf?configName=#{pageSession.configName}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/corba/iiopListeners.jsf?configName=#{pageSession.configName}");
@@ -83,7 +86,7 @@
         getClientId(component="$this{component}" clientId=>$page{tableId});
     />
 
-#include "/common/shared/listTableButtons.inc"
+#include "/common/shared/listTableConfigButtons.inc"
 
 <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
      <!afterCreate
