@@ -172,17 +172,6 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 //	PasswordValidationCallback pwdCallback =
 //	    new PasswordValidationCallback(clientSubject, username, pwd);
 
-	// Username and Password sent in... validate them!
-	CallerPrincipalCallback cpCallback =
-	    new CallerPrincipalCallback(clientSubject, username);
-	try {
-	    handler.handle(new Callback[] { /*pwdCallback,*/ cpCallback });
-	} catch (Exception ex) {
-	    AuthException ae = new AuthException();
-	    ae.initCause(ex);
-	    throw ae;
-	}
-
 	// Make REST Request
 	WebResource webResource = Client.create().resource(restURL);
 	webResource.addFilter(new HTTPBasicAuthFilter(username, password));
@@ -191,19 +180,41 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 
 	// Check to see if successful..
 	if (restResp.isSuccess()) {
-	    if (session != null) {
-		// Save the Subject...
-		session.putValue(SAVED_SUBJECT, clientSubject);
-
-		// Save the Rest Token...
-		Object obj = restResp.getResponse().get("data");
+	    // Get the "extraProperties" section of the response...
+	    Object obj = restResp.getResponse().get("data");
+	    Map extraProperties = null;
+	    if ((obj != null) && (obj instanceof Map)) {
+		obj = ((Map) obj).get("extraProperties");
 		if ((obj != null) && (obj instanceof Map)) {
-		    obj = ((Map) obj).get("extraProperties");
-		    if ((obj != null) && (obj instanceof Map)) {
-			session.putValue(REST_TOKEN, ((Map) obj).get("token"));
+		    extraProperties = (Map) obj;
+		    // Check to see if the username has changed...
+		    if (extraProperties.containsKey("username")) {
+			username = (String) extraProperties.get("username");
 		    }
 		}
 	    }
+
+	    // Username and Password sent in... validate them!
+	    CallerPrincipalCallback cpCallback =
+		new CallerPrincipalCallback(clientSubject, username);
+	    try {
+		handler.handle(new Callback[] { /*pwdCallback,*/ cpCallback });
+	    } catch (Exception ex) {
+		AuthException ae = new AuthException();
+		ae.initCause(ex);
+		throw ae;
+	    }
+
+	    if (session != null) {
+		// Save the Rest Token...
+		if (extraProperties != null) {
+		    session.putValue(REST_TOKEN, extraProperties.get("token"));
+		}
+
+		// Save the Subject...
+		session.putValue(SAVED_SUBJECT, clientSubject);
+	    }
+
 	    try {
 		// Redirect...
 		response.sendRedirect(response.encodeRedirectURL("/index.jsf"));
