@@ -57,6 +57,9 @@
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/audit-module");
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.listOfRows}");
+        createMap(result="#{pageSession.valueMap}");
+        mapPut(map="#{pageSession.valueMap}" key="target" value="server");
+#include "/common/shared/targetsConfig.inc"
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nc.msg.JS.confirmDeleteAuditModules}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/common/security/auditModules/auditModuleNew.jsf?configName=#{pageSession.configName}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/common/security/auditModules/auditModules.jsf?configName=#{pageSession.configName}");
@@ -81,7 +84,7 @@
         getClientId(component="$this{component}" clientId=>$page{tableId});
     />
 
-#include "/common/shared/listTableButtons.inc"
+#include "/common/shared/listTableConfigButtons.inc"
 
    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
      <!afterCreate
