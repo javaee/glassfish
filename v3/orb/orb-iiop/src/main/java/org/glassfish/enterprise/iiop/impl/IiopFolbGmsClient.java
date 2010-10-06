@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -70,13 +70,13 @@ import com.sun.enterprise.config.serverbeans.IiopService;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Servers;
 import com.sun.enterprise.ee.cms.core.CallBack;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.GlassFishConfigBean;
 import org.glassfish.config.support.PropertyResolver;
 import org.glassfish.gms.bootstrap.GMSAdapter;
 import org.glassfish.gms.bootstrap.GMSAdapterService;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import org.omg.CORBA.ORBPackage.InvalidName;
 
@@ -91,12 +91,17 @@ public class IiopFolbGmsClient implements CallBack {
        LogDomains.getLogger(IiopFolbGmsClient.class,
            LogDomains.CORBA_LOGGER);
 
-    private Habitat habitat;
-
+    @Inject
     private Domain domain ;
 
+    // Get my Server instance so we can find our cluster
+    @Inject( name=ServerEnvironment.DEFAULT_INSTANCE_NAME )
     private Server myServer ;
 
+    @Inject
+    private Habitat habitat;
+
+    @Inject( optional=true )
     private GMSAdapterService gmsAdapterService ;
 
     private GMSAdapter gmsAdapter ;
@@ -111,38 +116,19 @@ public class IiopFolbGmsClient implements CallBack {
         }
     }
 
-    public IiopFolbGmsClient( Habitat habitat ) {
-        fineLog( "IiopFolbGmsClient: constructor: habitat {0}",
-            habitat ) ;
-        this.habitat = habitat ;
-
-        gmsAdapterService = habitat.getComponent(GMSAdapterService.class) ;
-
+    public IiopFolbGmsClient() {
 	try {
-            if (gmsAdapterService == null) {
-                return ;
-            }
+            if (gmsAdapterService != null) {
+                gmsAdapter = gmsAdapterService.getGMSAdapter() ;
 
-            gmsAdapter = gmsAdapterService.getGMSAdapter() ;
-            fineLog( "IiopFolbGmsClient: gmsAdapter {0}", gmsAdapter );
-
-            if (gmsAdapter != null) {
-                domain = habitat.getComponent( Domain.class ) ;
-                fineLog( "IiopFolbGmsClient: domain {0}", domain) ;
-
-                Servers servers = habitat.getComponent(Servers.class ) ;
-                fineLog( "IiopFolbGmsClient: servers {0}", servers );
-
-                String instanceName = gmsAdapter.getModule().getInstanceName() ;
-                fineLog( "IiopFolbGmsClient: instanceName {0}", instanceName );
-
-                myServer = servers.getServer(instanceName) ;
-                fineLog( "IiopFolbGmsClient: myServer {0}", myServer );
+                fineLog( "IiopFolbGmsClient->: {0}", gmsAdapter );
 
                 gis = new GroupInfoServiceGMSImpl() ;
+
                 fineLog("IiopFolbGmsClient: IIOP GIS created");
 
                 currentMembers = getAllClusterInstanceInfo() ;
+
                 fineLog( "IiopFolbGmsClient: currentMembers = ", currentMembers ) ;
 
                 gmsAdapter.registerFailureNotificationListener(this);
@@ -151,14 +137,15 @@ public class IiopFolbGmsClient implements CallBack {
 
                 fineLog( "IiopFolbGmsClient: GMS action factories added");
             } else {
-                fineLog( "IiopFolbGmsClient: gmsAdapterService is null") ;
                 gis = new GroupInfoServiceNoGMSImpl() ;
             }
 
 	} catch (Throwable t) {
             _logger.log(Level.SEVERE, t.getLocalizedMessage(), t);
 	} finally {
-            fineLog( "IiopFolbGmsClient: gmsAdapter {0}", gmsAdapter ) ;
+            if(_logger.isLoggable(Level.FINE)) {
+		_logger.log(Level.FINE, "IiopFolbGmsClient<-: {0}", gmsAdapter );
+	    }
 	}
     }
 
@@ -169,15 +156,17 @@ public class IiopFolbGmsClient implements CallBack {
                     (org.omg.CORBA.Object) gis);
             fineLog( ".initGIS: naming registration complete: {0}", gis);
 
-            // Just for logging
-            GroupInfoService gisRef = (GroupInfoService)orb.resolve_initial_references(
-                ORBConstants.FOLB_SERVER_GROUP_INFO_SERVICE);
-            List<ClusterInstanceInfo> lcii =
-                    gisRef.getClusterInstanceInfo(null);
-            fineLog( "Results from getClusterInstanceInfo:");
-            if (lcii != null) {
-                for (ClusterInstanceInfo cii : lcii) {
-                    fineLog( cii.toString() );
+            if (_logger.isLoggable(Level.FINE)) {
+                gis = (GroupInfoService)orb.resolve_initial_references(
+                    ORBConstants.FOLB_SERVER_GROUP_INFO_SERVICE);
+                List<ClusterInstanceInfo> lcii =
+                        gis.getClusterInstanceInfo(null);
+                _logger.log(Level.FINE,
+                        "Results from getClusterInstanceInfo:");
+                if (lcii != null) {
+                    for (ClusterInstanceInfo cii : lcii) {
+                        _logger.log(Level.INFO, cii.toString() );
+                    }
                 }
             }
         } catch (InvalidName e) {
@@ -201,7 +190,6 @@ public class IiopFolbGmsClient implements CallBack {
     @Override
     public void processNotification(final Signal signal) {
         try {
-            fineLog( "processNotification: signal {0}", signal ) ;
             signal.acquire();
             handleSignal(signal);
         } catch (SignalAcquireException e) {
@@ -224,10 +212,14 @@ public class IiopFolbGmsClient implements CallBack {
 
     private void handleSignal(final Signal signal) 
     {
-        fineLog( "IiopFolbGmsClient.handleSignal: signal from: {0}",
-            signal.getMemberToken());
-        fineLog( "IiopFolbGmsClient.handleSignal: map entryset: {0}",
-            signal.getMemberDetails().entrySet());
+	if(_logger.isLoggable(Level.FINE)) {
+	    _logger.log(Level.FINE, 
+                "IiopFolbGmsClient.handleSignal: signal from: {0}",
+                signal.getMemberToken());
+	    _logger.log(Level.FINE, 
+                "IiopFolbGmsClient.handleSignal: map entryset: {0}",
+                signal.getMemberDetails().entrySet());
+	}
 
 	if (signal instanceof PlannedShutdownSignal ||
 	    signal instanceof FailureNotificationSignal) {
@@ -308,105 +300,58 @@ public class IiopFolbGmsClient implements CallBack {
     }
 
     private int resolvePort( Server server, IiopListener listener ) {
-        fineLog( "resolvePort: server {0} listener {1}", server, listener ) ;
-
         IiopListener ilRaw = GlassFishConfigBean.getRawView( listener ) ;
-        fineLog( "resolvePort: ilRaw {0}", ilRaw ) ;
-
         PropertyResolver pr = new PropertyResolver( domain, server.getName() ) ;
-        fineLog( "resolvePort: pr {0}", pr ) ;
-
         String port = pr.getPropertyValue( ilRaw.getPort() ) ;
-        fineLog( "resolvePort: port {0}", port ) ;
-
         return Integer.parseInt(port) ;
     }
 
     private ClusterInstanceInfo getClusterInstanceInfo( Server server,
         Config config ) {
-        fineLog( "getClusterInstanceInfo: server {0}, config {1}",
-            server, config ) ;
 
-        final String name = server.getName() ;
-        fineLog( "getClusterInstanceInfo: name {0}", name ) ;
+        String name = server.getName() ;
+        int weight = Integer.parseInt( server.getLbWeight() ) ;
 
-        final int weight = Integer.parseInt( server.getLbWeight() ) ;
-        fineLog( "getClusterInstanceInfo: weight {0}", weight ) ;
+        String host = server.getNodeAgentRef() ; // Is this correct?
 
-        String host = server.getNode() ;
-        if (host.equals("localhost")) {
-            try {
-                host = InetAddress.getLocalHost().getHostName() ;
-            } catch (UnknownHostException exc) {
-                fineLog( "getClusterInstanceInfo: caught exception for localhost lookup {0}",
-                    exc )  ;
-            }
-        }
-        fineLog( "getClusterInstanceInfo: host {0}", host ) ;
+        IiopService iservice = config.getIiopService() ;
+        List<IiopListener> listeners = iservice.getIiopListener() ;
 
-        final IiopService iservice = config.getIiopService() ;
-        fineLog( "getClusterInstanceInfo: iservice {0}", iservice ) ;
-
-        final List<IiopListener> listeners = iservice.getIiopListener() ;
-        fineLog( "getClusterInstanceInfo: listeners {0}", listeners ) ;
-
-        final List<SocketInfo> sinfos = new ArrayList<SocketInfo>() ;
+        List<SocketInfo> sinfos = new ArrayList<SocketInfo>() ;
         for (IiopListener il : listeners) {
-            SocketInfo sinfo = new SocketInfo( il.getId(), host,
+            SocketInfo sinfo = new SocketInfo( host, il.getId(),
                 resolvePort( server, il ) ) ;
             sinfos.add( sinfo ) ;
         }
-        fineLog( "getClusterInstanceInfo: sinfos {0}", sinfos ) ;
 
-        final ClusterInstanceInfo result = new ClusterInstanceInfo( name, weight,
+        ClusterInstanceInfo result = new ClusterInstanceInfo( name, weight,
             sinfos ) ;
-        fineLog( "getClusterInstanceInfo: result {0}", result ) ;
 
         return result ;
     }
 
     private Config getConfigForServer( Server server ) {
-        fineLog( "getConfigForServer: server {0}", server ) ;
-
         String configRef = server.getConfigRef() ;
-        fineLog( "getConfigForServer: configRef {0}", configRef ) ;
-
         Configs configs = habitat.getComponent( Configs.class ) ;
-        fineLog( "getConfigForServer: configs {0}", configs ) ;
-
         Config config = configs.getConfigByName(configRef) ;
-        fineLog( "getConfigForServer: config {0}", config ) ;
-
         return config ;
     }
 
     // For addMember
     private ClusterInstanceInfo getClusterInstanceInfo( String instanceName ) {
-        fineLog( "getClusterInstanceInfo: instanceName {0}", instanceName ) ;
+        Servers servers = habitat.getComponent( Servers.class ) ;
+        Server server = servers.getServer(instanceName) ;
 
-        final Servers servers = habitat.getComponent( Servers.class ) ;
-        fineLog( "getClusterInstanceInfo: servers {0}", servers ) ;
+        Config config = getConfigForServer( server ) ;
 
-        final Server server = servers.getServer(instanceName) ;
-        fineLog( "getClusterInstanceInfo: server {0}", server ) ;
-
-        final Config config = getConfigForServer( server ) ;
-        fineLog( "getClusterInstanceInfo: servers {0}", servers ) ;
-
-        ClusterInstanceInfo result = getClusterInstanceInfo( server, config ) ;
-        fineLog( "getClusterInstanceInfo: result {0}", result ) ;
-
-        return result ;
+        return getClusterInstanceInfo( server, config ) ;
     }
 
     private Map<String,ClusterInstanceInfo> getAllClusterInstanceInfo() {
-        final Cluster myCluster = myServer.getCluster() ;
-        fineLog( "getAllClusterInstanceInfo: myCluster {0}", myCluster ) ;
+        Cluster myCluster = myServer.getCluster() ;
+        Config myConfig = getConfigForServer( myServer ) ;
 
-        final Config myConfig = getConfigForServer( myServer ) ;
-        fineLog( "getAllClusterInstanceInfo: myConfig {0}", myConfig ) ;
-
-        final Map<String,ClusterInstanceInfo> result =
+        Map<String,ClusterInstanceInfo> result =
             new HashMap<String,ClusterInstanceInfo>() ;
 
         for (Server server : myCluster.getInstances()) {
@@ -414,15 +359,12 @@ public class IiopFolbGmsClient implements CallBack {
             result.put( server.getName(), cii ) ;
         }
 
-        fineLog( "getAllClusterInstanceInfo: result {0}", result ) ;
         return result ;
     }
 
     class GroupInfoServiceGMSImpl extends GroupInfoServiceBase {
         @Override
         public List<ClusterInstanceInfo> internalClusterInstanceInfo() {
-            fineLog( "internalClusterInstanceInfo: currentMembers {0}",
-                currentMembers ) ;
             return new ArrayList<ClusterInstanceInfo>(
                 currentMembers.values() ) ;
         }
