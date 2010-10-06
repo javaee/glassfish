@@ -88,6 +88,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
     private static final String GF_INSTALLATION_ROOT = "org.glassfish.ejb.embedded.glassfish.installation.root";
     private static final String GF_INSTANCE_ROOT = "org.glassfish.ejb.embedded.glassfish.instance.root";
     private static final String GF_DOMAIN_FILE = "org.glassfish.ejb.embedded.glassfish.configuration.file";
+    private static final String GF_INSTANCE_REUSE = "org.glassfish.ejb.embedded.glassfish.instance.reuse";
     private static final Attributes.Name ATTRIBUTE_NAME_SKIP = new Attributes.Name("Bundle-SymbolicName");
     private static final String[] ATTRIBUTE_VALUES_SKIP = 
             {"org.glassfish.", "com.sun.enterprise.", "org.eclipse."};
@@ -157,7 +158,14 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                     addWebContainerIfRequested(properties);
                 } else {
                     EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
-                    efsb.configurationFile(rs.domain_file);
+                    if (rs.reuse_instance_location) {
+                        if (_logger.isLoggable(Level.FINE)) {
+                            _logger.fine("[EJBContainerProviderImpl] Reusing instance location at: " + rs.instance_root);
+                        }
+                        efsb.instanceRoot(rs.instance_root);
+                    } else {
+                        efsb.configurationFile(rs.domain_file);
+                    }
                     efsb.installRoot(rs.installed_root, true);
 
                     builder.embeddedFileSystem(efsb.build());
@@ -171,7 +179,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
 
                 habitat = ejb.habitat;
                 try {
-                     if (rs != null) {
+                     if (rs != null && !rs.reuse_instance_location) {
                           // If we are running from an existing install, copy over security files to the temp instance
                           EmbeddedSecurity es = habitat.getByContract(EmbeddedSecurity.class);
                           if (es != null) {
@@ -401,12 +409,23 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
         String installed_root_location = null;
         String instance_root_location = null;
         String domain_file_location = null;
+        boolean reuse_instance_location = false;
 
         if (properties != null) {
             // Check if anything is set
             installed_root_location = (String) properties.get(GF_INSTALLATION_ROOT);
             instance_root_location = (String) properties.get(GF_INSTANCE_ROOT);
             domain_file_location = (String) properties.get(GF_DOMAIN_FILE);
+            Object value = properties.get(GF_INSTANCE_REUSE);
+            if (value != null) {
+                if (value instanceof String) {
+                    reuse_instance_location = Boolean.valueOf((String)value);
+                } else {
+                    try {
+                        reuse_instance_location = (Boolean) value;
+                    } catch (Exception e) {}
+                }
+            }
         }
 
         if (installed_root_location == null) {
@@ -451,23 +470,25 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                     }
                     File domain_file = getValidFile(domain_file_location);
                     if (domain_file != null) {
-                        File temp_domain_file = null;
-                        try {
-                            DomainXmlTransformer dxf = new DomainXmlTransformer(domain_file, _logger);
-                            boolean keep_ports = (properties == null)? false : ((properties.get(GF_WEB_HTTP_PORT) == null)? false : true);
-                            temp_domain_file = dxf.transform(keep_ports);
-                        } catch (Exception e) {
-                            throw new EJBException(localStrings.getString(
-                                    "ejb.embedded.exception_creating_temporary_domain_xml_file"), e);
-                        }
+                        if (!reuse_instance_location) {
+                            File temp_domain_file = null;
+                            try {
+                                DomainXmlTransformer dxf = new DomainXmlTransformer(domain_file, _logger);
+                                boolean keep_ports = (properties == null)? false : ((properties.get(GF_WEB_HTTP_PORT) == null)? false : true);
+                                temp_domain_file = dxf.transform(keep_ports);
+                            } catch (Exception e) {
+                                throw new EJBException(localStrings.getString(
+                                        "ejb.embedded.exception_creating_temporary_domain_xml_file"), e);
+                            }
 
-                        if (temp_domain_file != null) {
-                            domain_file = temp_domain_file;
-                        } else {
-                            throw new EJBException(localStrings.getString(
-                                    "ejb.embedded.failed_create_temporary_domain_xml_file"));
+                            if (temp_domain_file != null) {
+                                domain_file = temp_domain_file;
+                            } else {
+                                throw new EJBException(localStrings.getString(
+                                        "ejb.embedded.failed_create_temporary_domain_xml_file"));
+                            }
                         }
-                        rs = new Result(installed_root, instance_root, domain_file);
+                        rs = new Result(installed_root, instance_root, domain_file, reuse_instance_location);
                     }
                 }
             }
@@ -510,11 +531,13 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
         final File installed_root;
         final File instance_root;
         final File domain_file;
+        final boolean reuse_instance_location;
 
-        Result (File installed_root, File instance_root, File domain_file) {
+        Result (File installed_root, File instance_root, File domain_file, boolean reuse_instance_location) {
             this.installed_root  = installed_root;
             this.instance_root  = instance_root;
             this.domain_file  = domain_file;
+            this.reuse_instance_location  = reuse_instance_location;
         }
     }
 }
