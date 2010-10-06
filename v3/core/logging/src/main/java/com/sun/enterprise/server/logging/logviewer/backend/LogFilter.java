@@ -265,6 +265,10 @@ public class LogFilter {
         }
 
         LogFile logFile = null;
+        File loggingFileExists = new File(instanceLogFile.getAbsolutePath());
+        if(!loggingFileExists.exists()) {
+            throw new Error("Requested log file is not Found.");
+        }
         logFile = getLogFile(instanceLogFile.getAbsolutePath());
         boolean forwd = (forward == null) ? true : forward.booleanValue();
         boolean nxt = (next == null) ? true : next.booleanValue();
@@ -476,6 +480,8 @@ public class LogFilter {
             String instanceRoot = System.getProperty("com.sun.aas.instanceRoot");
             String f = fileName.replace("${com.sun.aas.instanceRoot}", instanceRoot);
             fileName = f;
+        } else {
+            fileName = System.getProperty("com.sun.aas.instanceRoot") + File.separator + "logs" + File.separator + fileName.trim();
         }
         String logFileName = fileName.trim();
         LogFile logFile = (LogFile) logFileCache.get(fileName);

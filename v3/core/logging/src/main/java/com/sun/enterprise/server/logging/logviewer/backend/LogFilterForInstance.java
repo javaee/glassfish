@@ -52,6 +52,7 @@ import org.glassfish.cluster.ssh.sftp.SFTPClient;
 import org.jvnet.hk2.component.Habitat;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.Vector;
 import java.util.logging.Logger;
 
@@ -148,21 +149,36 @@ public class LogFilterForInstance {
                                           String instanceName) throws IOException {
 
         // helper method to get all log file names for given instance
-        SSHLauncher sshL = getSSHL(habitat);
         String sNode = targetServer.getNode();
-        Nodes nodes = domain.getNodes();
-        Node node = nodes.getNode(sNode);
-        sshL.init(node, logger);
+        Vector instanceLogFileNames = new Vector();
 
-        SFTPClient sftpClient = sshL.getSFTPClient();
+        if (sNode.equals("localhost") || sNode.equals("127.0.0.1")) {
+            String sourceDir = System.getProperty("com.sun.aas.instanceRoot") + File.separator + ".." + File.separator + ".."
+                    + File.separator + "nodes" + File.separator + sNode
+                    + File.separator + instanceName + File.separator + "logs";
 
-        Vector instanceLogFileNames = sftpClient.ls(node.getInstallDir() + File.separator + "nodes" + File.separator
-                + sNode + File.separator + instanceName + File.separator + "logs");
+            File logsDir = new File(sourceDir);
+            File allLogFileNames[] = logsDir.listFiles();
+            if (allLogFileNames != null) {
+                instanceLogFileNames = new Vector(Arrays.asList(allLogFileNames));
+            }
+        } else {
+
+            SSHLauncher sshL = getSSHL(habitat);
+            Nodes nodes = domain.getNodes();
+            Node node = nodes.getNode(sNode);
+            sshL.init(node, logger);
+
+            SFTPClient sftpClient = sshL.getSFTPClient();
+
+            instanceLogFileNames = sftpClient.ls(node.getInstallDir() + File.separator + "nodes" + File.separator
+                    + sNode + File.separator + instanceName + File.separator + "logs");
+        }
 
         for (int i = 0; i < instanceLogFileNames.size(); i++) {
             String fileName = ((SFTPv3DirectoryEntry) instanceLogFileNames.get(i)).filename;
             // code to remove . and .. file which is return from sftpclient ls method
-            if (fileName.equals(".") || fileName.equals("..")) {
+            if (fileName.equals(".") || fileName.equals("..") || !fileName.contains(".log") || fileName.contains(".log.")) {
                 instanceLogFileNames.remove(i);
                 i--;
             }
@@ -178,7 +194,7 @@ public class LogFilterForInstance {
         }
         catch (NoClassDefFoundError ex) {
             throw new NoClassDefFoundError(localStrings.getLocalString(
-                        "collectlogfiles.missingclusterlibraries", "Missing Cluster libraries in your ClassPath."));
+                    "collectlogfiles.missingclusterlibraries", "Missing Cluster libraries in your ClassPath."));
         }
         return sshL;
     }
