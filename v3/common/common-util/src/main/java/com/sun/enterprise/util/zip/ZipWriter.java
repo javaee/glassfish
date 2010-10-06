@@ -45,6 +45,8 @@
 package com.sun.enterprise.util.zip;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.*;
 import java.util.zip.*;
 
@@ -81,6 +83,46 @@ public class ZipWriter
 		init(outStream, dirName);
 		createItemList(fileList);
 	}
+
+    /**
+     * Exclude any files that are under these directories.
+     * E.g. suppose you have C:/temp/x1, C:/temp/x2 and C:/temp/x3
+     * and the root is set to c:temp.  Thhen to exclude the contents of the second
+     * 2 dirs you would send in a String array with "x2" and "x3"
+     * @param dirs an array of top-level directory names
+     */
+
+    public void excludeDirs(String[] dirs)
+    {
+        // make sure the names all end with "/"
+        for(int i = 0; i < dirs.length; i++)
+        {
+            if(!dirs[i].endsWith("/"))
+                dirs[i] += "/";
+        }
+
+        // copy all the items we will retain into list
+        List<ZipItem> list = new ArrayList<ZipItem>(items.length);
+
+        for(int i = 0; i < items.length; i++)
+        {
+            for(int j = 0; j < dirs.length; j++)
+            {
+                if(!items[i].name.startsWith(dirs[j]))
+                    list.add(items[i]);
+                //else
+                    //System.out.println("REMOVING: " + items[i].name);
+            }
+        }
+
+        // reset items to the pruned list
+        if(list.size() != items.length)
+        {
+            items = new ZipItem[list.size()];
+            items = list.toArray(items);
+        }
+    }
+    
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -208,35 +250,21 @@ public class ZipWriter
 	private void addEntry(ZipItem item)  throws ZipFileException, IOException
 	{
 		int					totalBytes	= 0;
-		FileInputStream		in			= new FileInputStream(item.file);
 		ZipEntry			ze			= new ZipEntry(item.name);
 		
 		zipStream.putNextEntry(ze);
+        if(!item.name.endsWith("/"))
+		{
+            FileInputStream		in			= new FileInputStream(item.file);
 
-		for(int numBytes = in.read(buffer); numBytes > 0; numBytes = in.read(buffer))
-		{
-			zipStream.write(buffer, 0, numBytes);
-			totalBytes += numBytes;
-		}
-		
-		/* Bug 4753245
-		 * WBN 11/22/02
-		 * The in.close() method was missing -- causing problems when trying to delete this file in
-		 * other code -- at least until the garbage collector gets around to closing it.
-		 * Normally I wouldn't put this inside a try/catch -- an error ought to be returned,
-		 * but this is a special low-risk-toleration time.  Adding the try/catch is safer.  The
-		 * code will behave exactly like before if an Exception is thrown.  It can't possibly hurt anything
-		 * to add the close()
-		 */
-		try	// note: feel free to remove this try sometime in the future!
-		{
-			in.close();
-		}
-		catch(Exception e)
-		{
-			// ignore it
-			Logger.getAnonymousLogger().warning("Couldn't close the FileInputStream for the file: " + item.file);
-		}
+            for(int numBytes = in.read(buffer); numBytes > 0; numBytes = in.read(buffer))
+            {
+                zipStream.write(buffer, 0, numBytes);
+                totalBytes += numBytes;
+            }
+
+            in.close();
+        }
 		
 		zipStream.closeEntry();
 		Logger.getAnonymousLogger().finer("Wrote " + item.name + " to Zip File.  Wrote " + totalBytes + " bytes.");
@@ -263,6 +291,10 @@ public class ZipWriter
 			{
 				File f = new File(dirName + files[i]);
 				items[i] = new ZipItem(f, files[i].replace('\\', '/'));	// just in case...
+                
+                // bnevins -- add a trailing "/" to empty directories
+                if(f.isDirectory())
+                    items[i].name += "/";                
 			}
 		}
 		catch(Throwable t)
