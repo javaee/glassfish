@@ -371,7 +371,7 @@ public class BaseSeleniumTestClass {
      * matched the value given, returning the number of rows selected.
      */
     protected int selectTableRowsByValue(String tableId, String value, String selectColId, String valueColId) {
-        List<String> rows = getTableRowsByValue("propertyForm:instancesTable", "Running", "col6");
+        List<String> rows = getTableRowsByValue("propertyForm:instancesTable", value, "col6");
         if (!rows.isEmpty()) {
             for (String row : rows) {
                 selenium.click(row + ":col0:select");
