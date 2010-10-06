@@ -417,7 +417,7 @@ public class BaseSeleniumTestClass {
             while (true) { // iterate over any rows
                 // Assume one row group for now and hope it doesn't bite us
                 String text = selenium.getText(tableId + ":rowGroup1:" + row + ":" + valueColId);
-                if (text.equals(value)) {
+                if (text.contains(value)) {
                     rows.add(tableId + ":rowGroup1:" + row);
                 }
                 row++;
