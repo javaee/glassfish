@@ -58,6 +58,9 @@
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/transports");
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.listOfRows}");
+        createMap(result="#{pageSession.valueMap}");
+        mapPut(map="#{pageSession.valueMap}" key="target" value="server");
+#include "/common/shared/targetsConfig.inc"
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n_web.msg.JS.confirmDeleteTransport}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/web/grizzly/transportNew.jsf?configName=#{configName}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/web/grizzly/transports.jsf?configName=#{configName}");
@@ -81,7 +84,7 @@
                 getClientId(component="$this{component}" clientId=>$page{tableId});
             />
 
-#include "/common/shared/listTableButtons.inc"
+#include "/common/shared/listTableConfigButtons.inc"
 
     <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
      <!afterCreate
