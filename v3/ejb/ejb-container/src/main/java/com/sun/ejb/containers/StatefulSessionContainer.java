@@ -2044,10 +2044,12 @@ public final class StatefulSessionContainer
 
         try {
 
-            if ((containerState != CONTAINER_STARTED) && (containerState != CONTAINER_STOPPED)) {
-                _logger.log(TRACE_LEVEL, "passivateEJB() returning because "
-                        + "containerState: " + containerState);
-                return false;
+            if (ejbDescriptor.getApplication().getKeepStateResolved() == false) {
+                if ((containerState != CONTAINER_STARTED) && (containerState != CONTAINER_STOPPED)) {
+                    _logger.log(Level.WARNING, "1. passivateEJB() returning because "
+                            + "containerState: " + containerState);
+                    return false;
+                }
             }
 
             if (sc.getState() == BeanState.DESTROYED)
