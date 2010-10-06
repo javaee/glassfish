@@ -51,7 +51,6 @@
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableId});
         />
-<!-- Actions (Top) -->
     <!facet actionsTop>
     <sun:panelGroup id="topActionsGroup1">
         <!afterCreate

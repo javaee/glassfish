@@ -52,17 +52,19 @@
 <event>
     <!beforeCreate
         setSessionAttribute(key="serverInstTabs" value="token");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/appServer/token.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
+
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/servers,type=server,name=server");
         setPageSessionAttribute(key="childType" value="system-property");
-        //getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result=>$attribute{tableList});
-        // FIXME: The following does not work!  The REST api does not return anything
-        gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server/server/property.json", method="GET", result="#{requestScope.propTable}");
-        setAttribute(key="tableList", value="#{requestScope.propTable.data.extraProperties.properties}");
 
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/appServer/token.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
+        setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}/servers/server/server");
+        gf.restRequest(endpoint="#{pageSession.selfUrl}/property", method="GET", result="#{requestScope.propTable}");
+        setPageSessionAttribute(key="tableList", value="#{requestScope.propTable.data.extraProperties.properties}");
+
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
+        setPageSessionAttribute(key="rest-api" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
         setPageSessionAttribute(key="showCancelButton" value="#{false}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{false}" );

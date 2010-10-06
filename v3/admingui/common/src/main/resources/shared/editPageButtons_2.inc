@@ -61,75 +61,63 @@
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
                     onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
+                    <!--
+                    // no page defines hasRadioButtons yet, so we commen this out.
+                    // when need to use this, we have to ensure that we don't refer to #{param , should go through getRequestValue
+                    //if(#{pageSession.hasRadioButtons}){
+                    //    forLoop(end="#{pageSession.radioButtonCount}" varName="i"){
+                    //        setValueExpression(expression="#{pageSession.valueMap[requestScope.attrNames[i]]}"   value="#{param[requestScope.RadioButtonNames[i]]}");
+                    //    }
+                    //}
+                    -->
 
-                <!--
-                // no page defines hasRadioButtons yet, so we commen this out.
-                // when need to use this, we have to ensure that we don't refer to #{param , should go through getRequestValue
-                //if(#{pageSession.hasRadioButtons}){
-                //    forLoop(end="#{pageSession.radioButtonCount}" varName="i"){
-                //        setValueExpression(expression="#{pageSession.valueMap[requestScope.attrNames[i]]}"   value="#{param[requestScope.RadioButtonNames[i]]}");
-                //    }
-                //}
-                -->
-
-               if (#{pageSession['rest-api']}) {
-                    if(#{pageSession.hasPropertySheet}){
-                        gf.createEntity(endpoint="#{pageSession.selfUrl}"
-                            attrs="#{pageSession.valueMap}"
-                            skipAttrs="#{pageSession.skipAttrsList}"
-                            convertToFalse="#{pageSession.convertToFalseList}"
-                            onlyUseAttrs="#{pageSession.onlyUseAttrs}"
-                        );
-                    if(#{pageSession.has2Objects}){
-                            gf.createEntity(endpoint="#{pageSession.selfUrl2}"
-                                attrs="#{pageSession.valueMap2}"
-                                skipAttrs="#{pageSession.skipAttrsList2}"
-                                convertToFalse="#{pageSession.convertToFalseList2}"
-                                onlyUseAttrs="#{pageSession.onlyUseAttrs2}"
+                   if (#{pageSession['rest-api']}) {
+                        if(#{pageSession.hasPropertySheet}){
+                            gf.createEntity(endpoint="#{pageSession.selfUrl}"
+                                attrs="#{pageSession.valueMap}"
+                                skipAttrs="#{pageSession.skipAttrsList}"
+                                convertToFalse="#{pageSession.convertToFalseList}"
+                                onlyUseAttrs="#{pageSession.onlyUseAttrs}"
                             );
-                        }
-                    }
-               }
-
-               if (!#{pageSession['rest-api']}) {
-                    if(#{pageSession.hasPropertySheet}){
-                        saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
-                            skipAttrs="#{pageSession.skipAttrsList}"
-                            convertToFalse="#{pageSession.convertToFalseList}"
-                            onlyUseAttrs="#{pageSession.onlyUseAttrs}"
-                        );
                         if(#{pageSession.has2Objects}){
-                            saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr2}"  attrs="#{pageSession.valueMap2}"
-                                skipAttrs="#{pageSession.skipAttrsList2}"
-                                convertToFalse="#{pageSession.convertToFalseList2}"
-                                onlyUseAttrs="#{pageSession.onlyUseAttrs2}"
-                            );
+                                gf.createEntity(endpoint="#{pageSession.selfUrl2}"
+                                    attrs="#{pageSession.valueMap2}"
+                                    skipAttrs="#{pageSession.skipAttrsList2}"
+                                    convertToFalse="#{pageSession.convertToFalseList2}"
+                                    onlyUseAttrs="#{pageSession.onlyUseAttrs2}"
+                                );
+                            }
                         }
+                   }
+
+                   if (!#{pageSession['rest-api']}) {
+                        if(#{pageSession.hasPropertySheet}){
+                            saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
+                                skipAttrs="#{pageSession.skipAttrsList}"
+                                convertToFalse="#{pageSession.convertToFalseList}"
+                                onlyUseAttrs="#{pageSession.onlyUseAttrs}"
+                            );
+                            if(#{pageSession.has2Objects}){
+                                saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr2}"  attrs="#{pageSession.valueMap2}"
+                                    skipAttrs="#{pageSession.skipAttrsList2}"
+                                    convertToFalse="#{pageSession.convertToFalseList2}"
+                                    onlyUseAttrs="#{pageSession.onlyUseAttrs2}"
+                                );
+                            }
+                        }
+                   }
+
+                    // Save properties...
+                    if (#{pageSession.hasPropertyTable}) {
+                        javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
+                        gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json", method="POST", data="#{requestScope.tmpJSON}", result="#{requestScope.restResponse}");
                     }
-               }
 
-		// Save properties...
-		if (#{pageSession.hasPropertyTable}) {
-		    javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
-		    gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json", method="POST", data="#{requestScope.tmpJSON}", result="#{requestScope.restResponse}");
-
-		    /*
-		    Dead code:
-                    getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                    getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
-		    */
-                }
-
-                if (#{pageSession.additionalSaveHandler}) {
-                    gf.invokeHandler(handler="#{pageSession.additionalSaveHandler}", args="#{pageSession.additionalSaveHandlerArgs}" );
-                }
-                prepareSuccessfulMsg();
-                //println("======== redirect to #{pageSession.selfPage}==========");
-                //println("alertType=${alertType}");
-                //("alertSummary=${alertSummary}");
-                //println("alertDetail=${alertDetail}");
-                gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                    if (#{pageSession.additionalSaveHandler}) {
+                        gf.invokeHandler(handler="#{pageSession.additionalSaveHandler}", args="#{pageSession.additionalSaveHandlerArgs}" );
+                    }
+                    prepareSuccessfulMsg();
+                    gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
 
