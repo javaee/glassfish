@@ -362,6 +362,7 @@
                 <module>installer</module>
                 <module>sun-glassfish</module>
                 <module>sun-glassfish/packager</module>
+                <module>javaee-sdk/packager</module>
                 <module>sun-glassfish/distributions</module>
                 <module>sun-glassfish/installer</module>
                 <module>appclient</module>
@@ -415,6 +416,7 @@
                 <module>installer</module>
                 <module>sun-glassfish</module>
                 <module>sun-glassfish/packager</module>
+                <module>javaee-sdk/packager</module>
                 <module>sun-glassfish/distributions</module>
                 <module>sun-glassfish/installer</module>
                 <module>sun-glassfish/distributions/web-ri</module>
