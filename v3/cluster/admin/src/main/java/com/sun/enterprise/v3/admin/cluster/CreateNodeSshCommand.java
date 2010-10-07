@@ -77,16 +77,16 @@ public class CreateNodeSshCommand implements AdminCommand  {
     @Param(name="nodehost")
     private String nodehost;
 
-    @Param(name = "installdir", optional=true)
+    @Param(name = "installdir", optional=true, defaultValue = NodeUtils.NODE_DEFAULT_INSTALLDIR)
     private String installdir;
 
     @Param(name="nodedir", optional=true)
     private String nodedir;
 
-    @Param(name="sshport", optional=true)
+    @Param(name="sshport", optional=true, defaultValue = NodeUtils.NODE_DEFAULT_SSH_PORT)
     private String sshport;
 
-    @Param(name = "sshuser", optional = true)
+    @Param(name = "sshuser", optional = true, defaultValue = NodeUtils.NODE_DEFAULT_SSH_USER)
     private String sshuser;
 
     @Param(name = "sshkeyfile", optional = true)
@@ -111,8 +111,6 @@ public class CreateNodeSshCommand implements AdminCommand  {
         StringBuilder msg = new StringBuilder();
 
         logger = context.getLogger();
-
-        setDefaults();        
 
         ParameterMap map = new ParameterMap();
         map.add("DEFAULT", name);
@@ -158,17 +156,4 @@ public class CreateNodeSshCommand implements AdminCommand  {
 
         report.setMessage(msg.toString());
     }
-
-    private void setDefaults() {
-        if (sshport == null) {
-            sshport = NodeUtils.NODE_DEFAULT_SSH_PORT;
-        }
-        if (sshuser == null) {
-            sshuser = NodeUtils.NODE_DEFAULT_SSH_USER;
-        }
-        if (installdir == null) {
-            installdir = NodeUtils.NODE_DEFAULT_INSTALLDIR;
-        }        
-    }
-
 }
