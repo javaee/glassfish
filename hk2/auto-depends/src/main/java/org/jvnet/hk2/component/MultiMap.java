@@ -210,6 +210,20 @@ public class MultiMap<K,V> implements Serializable {
     }
 
     /**
+     * Checks if the map contains the given key(s), also extending the search
+     * to including the sub collection.
+     * 
+     * @param k1 key from top collection
+     * @param k2 key (value) from inner collection
+     * 
+     * @return true if the map contains at least one element for these keys
+     */
+    public boolean contains(K k1, V k2) {
+      List<V> list = _get(k1);
+      return list.contains(k2);
+    }
+    
+    /**
      * Removes an key value from the map
      * @param key key to be removed
      * @return the value stored under this key or null if there was none

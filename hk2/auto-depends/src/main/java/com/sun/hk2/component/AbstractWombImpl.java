@@ -108,9 +108,10 @@ public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> impl
      * This method is an utility method for subclasses for performing injection.
      */
     protected void inject(Habitat habitat, T t, Inhabitant<?> onBehalfOf) {
-        InjectionManager injectionMgr = new InjectionManager();
+        InjectionManager injectionMgr = createInjectionManager();
         
         Collection<InjectionResolver> targets = habitat.getAllByType(InjectionResolver.class);
+//        Collection<InjectionResolver> otherTargets = habitat.getAllByContract(InjectionResolver.class);
         assert(!targets.isEmpty());
         injectionMgr.inject(t, onBehalfOf, targets.toArray(new InjectionResolver[targets.size()]));
 
@@ -118,6 +119,10 @@ public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> impl
         if (t instanceof PostConstruct) {
             ((PostConstruct)t).postConstruct();
         }
+    }
+
+    protected InjectionManager createInjectionManager() {
+      return new InjectionManager();
     }
     
 }

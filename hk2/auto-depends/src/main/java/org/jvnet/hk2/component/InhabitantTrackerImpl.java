@@ -40,8 +40,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.jvnet.hk2.component.matcher.Constants;
-
 /**
  * Default implementation of InhabitantTracker 
  * 

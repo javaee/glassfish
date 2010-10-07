@@ -1,8 +1,7 @@
-package org.jvnet.hk2.component.matcher;
+package org.jvnet.hk2.component;
 
 /**
- * Common metadata properties used by the inhabitant / habitat, mainly
- * for tracking purposes.  This is loosely modeled from OSGi.
+ * Common metadata properties used by the inhabitant / habitat.
  * 
  * @author Jeff Trent
  * 
@@ -11,7 +10,8 @@ package org.jvnet.hk2.component.matcher;
 public class Constants {
 
   /**
-   * represents class / contract type name(s)
+   * Represents class / contract type name(s).  Only used by Trackers
+   * at present.
    */
   public static final String OBJECTCLASS = "objectclass";
   
@@ -20,7 +20,7 @@ public class Constants {
    * 
    * <p>
    * The service ranking is used by the Framework to determine the <i>natural
-   * order</i> of services (when specifically used with the Tracker).
+   * order</i> of services (when used specifically with the Tracker).
    * 
    * <p>
    * The default ranking is zero (0). A service with a ranking of
@@ -37,5 +37,10 @@ public class Constants {
    * for comparisons.
    */
   public static final String SERVICE_RANKING = "service.ranking";
-  
+ 
+  /**
+   * Qualifier (annotation names) used to describe the service.
+   */
+  public static final String QUALIFIER = "qualifier"; 
+
 }

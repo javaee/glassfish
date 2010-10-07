@@ -42,6 +42,7 @@ import com.sun.hk2.component.InjectionResolver;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.logging.Logger;
@@ -131,9 +132,10 @@ public class InjectionManager {
                         Annotation inject = field.getAnnotation(target.type);
                         if (inject == null)     continue;
 
+                        Type genericType = field.getGenericType();
                         Class fieldType = field.getType();
                         try {
-                            Object value = target.getValue(component, onBehalfOf, field, fieldType);
+                            Object value = target.getValue(component, onBehalfOf, field, genericType, fieldType);
                             if (value != null) {
                                 field.setAccessible(true);
                                 field.set(component, value);
@@ -147,7 +149,7 @@ public class InjectionManager {
                                 }
 
                             } else {
-                                if(!target.isOptional(field, inject)) {
+                                if (!target.isOptional(field, inject)) {
                                     Logger.getAnonymousLogger().info("Cannot inject " + field + " into component " + component);
                                     throw new UnsatisfiedDependencyException(field);
                                 }
@@ -163,10 +165,9 @@ public class InjectionManager {
                         }
                     }
                 }
+
                 for (Method method : currentClass.getDeclaredMethods()) {
-
                     for (InjectionResolver target : targets) {
-
                         Annotation inject = method.getAnnotation(target.type);
                         if (inject == null)     continue;
 
@@ -175,43 +176,70 @@ public class InjectionManager {
                         if (setter.getReturnType() != void.class) {
                             if (Collection.class.isAssignableFrom(setter.getReturnType())) {
                                 injectCollection(component, setter, 
-                                    target.getValue(component, onBehalfOf, method, setter.getReturnType()));
+                                    target.getValue(component, onBehalfOf, method, null, setter.getReturnType()));
                                 continue;
                             }
-                            throw new ComponentException("Injection failed on %s : setter method is not declared with a void return type",method.toGenericString());
+                            
+                            error_InjectMethodIsNotVoid(method);
                         }
 
                         Class<?>[] paramTypes = setter.getParameterTypes();
 
-                        if (paramTypes.length > 1) {
-                            throw new ComponentException("injection failed on %s : setter method takes more than 1 parameter",method.toGenericString());
-                        }
-                        if (paramTypes.length == 0) {
-                            throw new ComponentException("injection failed on %s : setter method does not take a parameter",method.toGenericString());
-                        }
-
-                        try {
-                            Object value = target.getValue(component, onBehalfOf, method, paramTypes[0]);
-                            if (value != null) {
-                                setter.setAccessible(true);
-                                setter.invoke(component, value);
-                                try {
+                        if (allowInjection(method, paramTypes)) {
+                            try {
+                                if (1 == paramTypes.length) {
+                                  Object value = target.getValue(component, onBehalfOf, method, null, paramTypes[0]);
+                                  if (value != null) {
+                                      setter.setAccessible(true);
+                                      setter.invoke(component, value);
+                                      try {
+                                          Injectable injectable = Injectable.class.cast(value);
+                                          if (injectable!=null) {
+                                              injectable.injectedInto(component);
+                                          }
+                                      } catch (Exception e) {
+                                      }
+                                  } else {
+                                      if (!target.isOptional(method, inject)) {
+                                          throw new UnsatisfiedDependencyException(method);
+                                      }
+                                  }
+                                } else {
+                                  // multi params
+                                  setter.setAccessible(true);
+                                  
+                                  Type gparamType[] = setter.getGenericParameterTypes();
+                                  
+                                  Object params[] = new Object[paramTypes.length]; 
+                                  for (int i = 0; i < paramTypes.length; i++) {
+                                    Object value = target.getValue(component, onBehalfOf, method, gparamType[i], paramTypes[i]);
+                                    if (value != null) {
+                                      params[i] = value;
+                                    } else {
+                                      if (!target.isOptional(method, inject)) {
+                                        throw new UnsatisfiedDependencyException(method);
+                                      }
+                                    }
+                                }
+                                  
+                                setter.invoke(component, params);
+                                for (Object value : params) {
+                                  try {
                                     Injectable injectable = Injectable.class.cast(value);
                                     if (injectable!=null) {
-                                        injectable.injectedInto(component);
+                                      injectable.injectedInto(component);
                                     }
-                                } catch (Exception e) {
+                                  } catch (Exception e) {
+                                  }
                                 }
-                            } else {
-                                if (!target.isOptional(method, inject))
-                                    throw new UnsatisfiedDependencyException(method);
+                              }
+                            } catch (IllegalAccessException e) {
+                                error_injectionException(setter, e);
+                            } catch (InvocationTargetException e) {
+                                error_injectionException(setter, e);
+                            } catch (RuntimeException e) {
+                                error_injectionException(setter, e);
                             }
-                        } catch (IllegalAccessException e) {
-                            throw new ComponentException("Injection failed on " + setter.toGenericString(), e);
-                        } catch (InvocationTargetException e) {
-                            throw new ComponentException("Injection failed on " + setter.toGenericString(), e);
-                        } catch (RuntimeException e) {
-                            throw new ComponentException("Injection failed on " + setter.toGenericString(), e);
                         }
                     }
                 }
@@ -227,7 +255,38 @@ public class InjectionManager {
             throw x;
         }
 
+    }
 
+    protected void error_injectionException(Method setter, Exception e) {
+      throw new ComponentException("Injection failed on " + setter.toGenericString(), e);
+    }
+
+    protected boolean allowInjection(Method method, Class<?>[] paramTypes) {
+      if (paramTypes.length > 1) {
+        error_InjectMethodHasMultipleParams(method);
+      }
+  
+      if (paramTypes.length == 0) {
+        error_InjectMethodHasNoParams(method);
+      }
+  
+      return true;
+    }
+
+    protected void error_InjectMethodHasMultipleParams(Method method) {
+      throw new ComponentException(
+          "injection failed on %s : setter method takes more than 1 parameter",
+          method.toGenericString());
+    }
+
+    protected void error_InjectMethodHasNoParams(Method method) {
+      throw new ComponentException(
+          "injection failed on %s : setter method does not take a parameter",
+          method.toGenericString());
+    }
+
+    protected void error_InjectMethodIsNotVoid(Method method) {
+      throw new ComponentException("Injection failed on %s : setter method is not declared with a void return type", method.toGenericString());
     }
 
     private void injectCollection(Object component, Method method, Object value) {

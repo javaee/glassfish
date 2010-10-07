@@ -41,7 +41,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.jvnet.hk2.component.matcher.Constants;
 import org.jvnet.hk2.component.matcher.SimpleLdapMatcher;
 
 /**

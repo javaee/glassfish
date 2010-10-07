@@ -38,8 +38,8 @@ package org.jvnet.hk2.component;
 
 /**
  *
- * A resource that can be injected into a component might optinally want to be notified of such
- * injection. This can be useful to track usage or to set up a notification mechanim
+ * A resource that can be injected into a component might optionally want to be notified of such
+ * injection. This can be useful to track usage or to set up a notification mechanism
  * for change happening in the injected resource.
  *
  * @author Jerome Dochez

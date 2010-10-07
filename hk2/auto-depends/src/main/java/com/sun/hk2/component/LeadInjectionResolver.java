@@ -37,6 +37,7 @@
 package com.sun.hk2.component;
 
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Type;
 
 import org.jvnet.hk2.annotations.Lead;
 import org.jvnet.hk2.component.ComponentException;
@@ -60,6 +61,7 @@ public class LeadInjectionResolver extends InjectionResolver<Lead>{
     public <V> V getValue(Object component,
                 Inhabitant<?> onBehalfOf,
                 AnnotatedElement target,
+                Type genericType,
                 Class<V> type) throws ComponentException {
         Inhabitant<?> lead = onBehalfOf.lead();
         if (lead==null) {

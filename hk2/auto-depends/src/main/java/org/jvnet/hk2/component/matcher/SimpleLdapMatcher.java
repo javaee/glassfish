@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.jvnet.hk2.component.Constants;
 import org.jvnet.hk2.component.MultiMap;
 
 /**
