@@ -233,6 +233,11 @@ public class ClusterHandler {
         for (Map oneRow : rows) {
             int code = 500;
             String nodeName = (String) oneRow.get("name");
+            if (nodeName.equals("localhost")){
+                GuiUtil.prepareAlert("error",  GuiUtil.getMessage("msg.Error"),
+                        GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "node.error.removeLocalhost"));
+                return;
+            }
             List instancesList = (List)nodeInstanceMap.get(nodeName);
             if ( instancesList!= null && (instancesList.size()) != 0){
                 GuiUtil.prepareAlert("error",  GuiUtil.getMessage("msg.Error"),
@@ -243,26 +248,11 @@ public class ClusterHandler {
                 try{
                        response = RestApiHandlers.restRequest(prefix + nodeName + "/" + action + ".json" , null, "post" ,null);
                 }catch (Exception ex){
-                    GuiUtil.getLogger().severe("Error in nodeAction ; \nendpoint = " + prefix + nodeName + "/" + action  + "attrsMap=" + null);
-                    response = null;
+                    GuiUtil.getLogger().severe("Error in nodeAction ; \nendpoint = " + prefix + nodeName + "/" + action +".json\n" + "attrsMap=" + null);
+                    GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), ex.getMessage());
+                    return;
                 }
             }
-            //TODO:  we may want to extract the exact error when issue# 12861 is fixed.
-            if (response != null){
-                code = (Integer) response.get("responseCode");
-                if (code != 200 && code != 201){
-                    Object body = response.get("responseBody");
-                    errorInstances.add(body.toString());
-                    break;
-                }
-            }else{
-                errorInstances.add(nodeName);
-                break;
-            }
-        }
-        if (errorInstances.size() > 0){
-            String details = GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "node.error.delete" , new String[]{""+errorInstances});
-            GuiUtil.prepareAlert("error",  GuiUtil.getMessage("msg.Error"), details);
         }
      }
 
@@ -287,7 +277,7 @@ public class ClusterHandler {
             try{
                 response = RestApiHandlers.restRequest( endpoint , attrsMap, "post" ,null);
             }catch (Exception ex){
-                GuiUtil.getLogger().severe("Error in createCluster ; \nendpoint = " + endpoint + "attrsMap=" + attrsMap);
+                GuiUtil.getLogger().severe("Error in createCluster ; \nendpoint = " + endpoint + "\nattrsMap=" + attrsMap);
             }
         }
 
