@@ -42,15 +42,15 @@
 
 <!-- configuration/jmxConnectorTab.inc -->
 
-<sun:tabSet id="jmxConnectorTab" immediate="$boolean{true}" selected="#{sessionScope.jmxConnectorTab}">
-    <sun:tab id="jmxConnectorEdit" immediate="$boolean{true}" text="$resource{i18n.edJmxConnector.jmxConnectorLabel}" toolTip="$resource{i18n.edJmxConnector.jmxConnectorLabel} Tab" >
+<sun:tabSet id="jmxConnectorTab" immediate="true" selected="#{sessionScope.jmxConnectorTab}">
+    <sun:tab id="jmxConnectorEdit" immediate="true" text="$resource{i18n.edJmxConnector.jmxConnectorLabel}" toolTip="$resource{i18n.edJmxConnector.jmxConnectorLabelTab}" >
         <!command
             setSessionAttribute(key="jmxConnectorTab" value="jmxConnectorEdit");
             gf.redirect(page="#{request.contextPath}/common/configuration/jmxConnectorEdit.jsf?configName=#{pageSession.configName}");
         /> 
     </sun:tab>
 
-    <sun:tab id="jmxSSLEdit" immediate="$boolean{true}" text="$resource{i18n.edJmxConnector.sslSettingsLabel}" toolTip="$resource{i18n.edJmxConnector.sslSettingsLabel} Tab" >
+    <sun:tab id="jmxSSLEdit" immediate="true" text="$resource{i18n.edJmxConnector.sslSettingsLabel}" toolTip="$resource{i18n.edJmxConnector.sslSettingsLabelTab}" >
         <!command
             setSessionAttribute(key="jmxConnectorTab" value="jmxSSLEdit");
             gf.redirect(page="#{request.contextPath}/common/configuration/jmxSSLEdit.jsf?configName=#{pageSession.configName}");
