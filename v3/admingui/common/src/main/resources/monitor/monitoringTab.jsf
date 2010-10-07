@@ -40,7 +40,7 @@
 
 -->
 
-<sun:tab id="monitoring" immediate="true" text="$resource{i18nc.monitoring}" toolTip="$resource{i18nc.monitoring} Tab">
+<sun:tab id="monitoring" immediate="true" text="$resource{i18nc.monitoring}" toolTip="$resource{i18nc.monitoringTab}">
     <!beforeCreate
         setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings");
     />

@@ -45,19 +45,19 @@
         setSessionAttribute(key="standaloneInstanceTabs" value="monitorApplications");
 	gf.redirect(page="#{request.contextPath}/common/monitor/standaloneInstanceMonitoringAppStatsPage.jsf?instanceName=#{pageSession.encodedInstanceName}");
     />
-    <sun:tab id="monitorApplications" immediate="$boolean{true}" text="$resource{i18nc.Monitor.ApplicationsTab}" toolTip="i18nc.Monitor.ApplicationsTab.tooltip" >
+    <sun:tab id="monitorApplications" immediate="true" text="$resource{i18nc.Monitor.ApplicationsTab}" toolTip="i18nc.Monitor.ApplicationsTab.tooltip" >
         <!command
             setSessionAttribute(key="standaloneInstanceTabs" value="monitorApplications");
             gf.redirect(page="#{request.contextPath}/common/monitor/standaloneInstanceMonitoringAppStatsPage.jsf?instanceName=#{pageSession.encodedInstanceName}");
         />
     </sun:tab>
-    <sun:tab id="monitorServer" immediate="$boolean{true}" text="$resource{i18nc.server}" toolTip="$resource{i18nc.server} Tab" >
+    <sun:tab id="monitorServer" immediate="true" text="$resource{i18nc.server}" toolTip="$resource{i18nc.serverTab}" >
         <!command
             setSessionAttribute(key="standaloneInstanceTabs" value="monitorServer");
             gf.redirect(page="#{request.contextPath}/common/monitor/standaloneInstanceMonitoringServerPage.jsf?instanceName=#{pageSession.encodedInstanceName}");
         />
     </sun:tab>
-    <sun:tab id="monitorResources" immediate="$boolean{true}" text="$resource{i18nc.Monitor.ResourcesTab}"  toolTip="$resource{i18nc.Monitor.ResourcesTab}" >
+    <sun:tab id="monitorResources" immediate="true" text="$resource{i18nc.Monitor.ResourcesTab}"  toolTip="$resource{i18nc.Monitor.ResourcesTab}" >
         <!command
             setSessionAttribute(key="standaloneInstanceTabs" value="monitorResources");
             gf.redirect(page="#{request.contextPath}/common/monitor/standaloneInstanceMonitoringResourcePage.jsf?instanceName=#{pageSession.encodedInstanceName}");

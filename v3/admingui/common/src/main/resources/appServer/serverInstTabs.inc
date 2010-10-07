@@ -43,19 +43,19 @@
 <!-- appServer/serverInstTabs.jsf -->
 
 <sun:tabSet id="serverInstTabs" immediate="true" selected="#{sessionScope.serverInstTabs}">
-    <sun:tab id="general" immediate="true" text="$resource{i18n.common.General}" toolTip="$resource{i18n.common.General} Tab" >
+    <sun:tab id="general" immediate="true" text="$resource{i18n.common.General}" toolTip="$resource{i18n.common.GeneralTab}" >
         <!command
             setSessionAttribute(key="serverInstTabs" value="general");
             gf.redirect(page="#{request.contextPath}/common/appServer/serverInstGeneralPe.jsf");
         />
     </sun:tab>
-    <sun:tab id="token" immediate="true" text="$resource{i18n.systemProps.tableTitle}" toolTip="$resource{i18n.systemProps.tableTitle} Tab">
+    <sun:tab id="token" immediate="true" text="$resource{i18n.appServer.tokenTitle}" toolTip="$resource{i18n.appServer.tokenTab}">
         <!command
             setSessionAttribute(key="serverInstTabs" value="token");
             gf.redirect(page="#{request.contextPath}/common/appServer/token.jsf");
         />
     </sun:tab>
-    <sun:tab id="resources" immediate="true" text="$resource{i18nc.resources}" toolTip="$resource{i18nc.resources} Tab">
+    <sun:tab id="resources" immediate="true" text="$resource{i18nc.resources}" toolTip="$resource{i18nc.resourcesTab}">
         <!command
             setSessionAttribute(key="serverInstTabs" value="resources");
             gf.redirect(page="#{request.contextPath}/common/appServer/serverInstResources.jsf?instanceName=server");
