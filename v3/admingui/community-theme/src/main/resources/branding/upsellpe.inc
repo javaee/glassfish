@@ -44,5 +44,13 @@
     setPageSessionAttribute(key="contentCSS" value="position:absolute; overflow:auto; top:0px; width:100%; height:auto; bottom:200px;");
 </ui:event>
 <f:verbatim>
-    <iframe id="upsell" style="position:absolute; bottom:0px; height:197px; width:100%; z-index:100;" frameborder="0" src="#{request.scheme}://www.sun.com/software/products/appsrvr/promotions/v3.html#instance_urn=$session{productInstanceURN}"></iframe>
+    <div id="adframe" style="position:absolute; bottom:0px; height:197px; width:100%; z-index:100;">
+	&nbsp;
+    </div>
+    <script type="text/javascript">
+	function frameOnload() {
+	    var adframe = document.getElementById('adframe');
+	    adframe.innerHTML = '<iframe id="upsell" style="height:100%; width:100%;" frameborder="0" src="#{request.scheme}://www.sun.com/software/products/appsrvr/promotions/v3.html#instance_urn=$session{productInstanceURN}"></iframe>';
+	}
+    </script>
 </f:verbatim>

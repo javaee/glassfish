@@ -41,6 +41,4 @@
 -->
 
 <sun:image url="#{request.contextPath}/resource/community-theme/images/login-product_name_open.png" 
-     alt="GlassFish v3 Administration Console"
-      height="42" width="318"
-      />
+     alt="GlassFish 3.1 Administration Console" height="42" width="318" />
