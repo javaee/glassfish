@@ -96,7 +96,7 @@
                             convertToFalse="#{pageSession.convertToFalseList}"
                             onlyUseAttrs="#{pageSession.onlyUseAttrs}"
                     );
-                    setPageSessionAttribute(key="onlyUseAttrs" value={"ssoEnabled", "accessLoggingEnabled", "docroot", "accessLog"})
+                    setPageSessionAttribute(key="onlyUseAttrs" value={"ssoEnabled", "ssoCookieHttpOnly", "accessLoggingEnabled", "docroot", "accessLog"})
                     gf.createEntity(endpoint="#{pageSession.selfUrl}/#{pageSession.valueMap['id']}"
                             attrs="#{pageSession.valueMap}"
                             onlyUseAttrs="#{pageSession.onlyUseAttrs}"
