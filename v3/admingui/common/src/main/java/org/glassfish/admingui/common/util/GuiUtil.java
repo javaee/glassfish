@@ -296,7 +296,9 @@ public class GuiUtil {
      *	<p> This method generates an ID that is safe for JSF for the given
      *	    String.  It does not guarantee that the id is unique, it is the
      *	    responsibility of the caller to pass in a String that will result
-     *	    in a UID.  All non-ascii characters will be stripped.</p>
+     *	    in a UID.  All non-ascii characters will be replaced with an
+     *	    '_'.  This method will also ensure an alpha character (or '_') is
+     *	    the first character in the id.</p>
      *
      *	@param	uid	A non-null String.
      */
@@ -312,7 +314,12 @@ public class GuiUtil {
                 chArr[newIdx++] = '_';
 	    }
         }
-        return new String(chArr, 0, newIdx);
+	String result = new String(chArr, 0, newIdx);
+	if (!Character.isLetter(chArr[0]) && (chArr[0] != '_')) {
+	    // Make it start with a '_'
+	    result = "_" + result;
+	}
+        return result;
     }
 
     public static ResourceBundle getBundle (String resourceName) {
