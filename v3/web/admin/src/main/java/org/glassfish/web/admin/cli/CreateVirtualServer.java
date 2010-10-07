@@ -90,7 +90,7 @@ public class CreateVirtualServer implements AdminCommand {
     String networkListeners;
     @Param(name = "defaultwebmodule", optional = true)
     String defaultWebModule;
-    @Param(name = "state", acceptableValues = "on, off, disabled", optional = true)
+    @Param(name = "state", defaultValue = "on", acceptableValues = "on, off, disabled", optional = true)
     String state;
     @Param(name = "logfile", optional = true)
     @ModelBinding(type=VirtualServer.class, getterMethodName ="getLogFile")
