@@ -384,7 +384,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         if (resource.endsWith(".gif")) {
             return "image/gif";
         } else if (resource.endsWith(".jpg")) {
-            return "image/jpg";
+            return "image/jpeg";
         } else {
             if (log.isLoggable(Level.FINE)) {
                 log.fine("Unhandled content-type: " + resource);
