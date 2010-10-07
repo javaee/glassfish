@@ -100,9 +100,9 @@ public class SSHUtil {
                                                 "identity"))
         {
             String h = System.getProperty("user.home") + File.separator;
-            File f = new File(h+".ssh/"+keyName);
+            File f = new File(h+".ssh"+File.separator+keyName);
             if (f.exists()) {
-                key =  h  + ".ssh/" + keyName;
+                key =  h  + ".ssh"+File.separator + keyName;
                 break;
             }
         }
