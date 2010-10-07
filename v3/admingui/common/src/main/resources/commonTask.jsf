@@ -47,7 +47,7 @@
     getProductInstanceURN();
 #include "/common/sysnet/regInit.inc"
 />
-<!composition template="/templates/default.layout" guiTitle="$resource{i18n.commonTasks.title}" guiOnLoad="if (#{askRegistration}) {initReminderBox();}">
+<!composition template="/templates/default.layout" guiTitle="$resource{i18n.commonTasks.title}" guiOnLoad="if (#{askRegistration}) {initReminderBox();}; if (frameOnload) {frameOnload();};">
 <!define name="guiExtraHead">
 <f:verbatim>
     <style type="text/css">
@@ -116,7 +116,9 @@
     "</div>
 
 <sun:script>
-    "admingui.nav.clearTreeSelection(admingui.nav.TREE_ID);
+<f:verbatim>
+    admingui.nav.clearTreeSelection(admingui.nav.TREE_ID);
+</f:verbatim>
 </sun:script>
 
       <!--  Customizing pe bottom frame -->
