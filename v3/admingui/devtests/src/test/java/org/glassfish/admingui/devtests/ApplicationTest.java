@@ -108,6 +108,8 @@ public class ApplicationTest extends BaseSeleniumTestClass {
         }
         int postCount = this.getTableRowCount(ELEMENT_DEPLOY_TABLE);
         assertTrue (preCount < postCount);
+
+        clickAndWait("propertyForm:deployTable:rowGroup1:0:col4:link", applicationName);
         
         // Disable application
         selectTableRowByValue(ELEMENT_DEPLOY_TABLE, applicationName);
