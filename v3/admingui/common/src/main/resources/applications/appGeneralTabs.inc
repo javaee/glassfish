@@ -42,22 +42,22 @@
 
 <!-- applications/appGeneralTabs.inc -->
 
-<sun:tabSet id="appGeneralTabs" immediate="$boolean{true}" selected="#{sessionScope.appGeneralTabs}">
-    <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" toolTip="$resource{i18n.common.General} Tab" >
+<sun:tabSet id="appGeneralTabs" immediate="true" selected="#{sessionScope.appGeneralTabs}">
+    <sun:tab id="general" immediate="true" text="$resource{i18n.common.General}" toolTip="$resource{i18n.common.GeneralTab}" >
         <!command
             setSessionAttribute(key="appGeneralTabs" value="general");
             gf.redirect(page="#{request.contextPath}/common/applications/applicationEdit.jsf?appName=#{pageSession.encodedAppName}&listPageLink=#{pageSession.listPageLink}");
         />       
     </sun:tab>
     
-    <sun:tab id="descriptorTab" immediate="$boolean{true}" text="$resource{i18n.common.DescriptorTab}" toolTip="$resource{i18n.common.DescriptorTab} Tab">
+    <sun:tab id="descriptorTab" immediate="true" text="$resource{i18n.common.DescriptorTab}" toolTip="$resource{i18n.common.DescriptorTab} Tab">
         <!command
             setSessionAttribute(key="appGeneralTabs" value="descriptorTab");
             gf.redirect(page="#{request.contextPath}/common/applications/webDDEdit.jsf?appName=#{pageSession.encodedAppName}&listPageLink=#{pageSession.listPageLink}");
         />
     </sun:tab>
 
-     <sun:tab id="targetTab" rendered="#{!pageSession.onlyDASExist}" immediate="$boolean{true}" text="$resource{i18n.common.TargetTab}" toolTip="$resource{i18n.common.TargetTab} Tab">
+     <sun:tab id="targetTab" rendered="#{!pageSession.onlyDASExist}" immediate="true" text="$resource{i18n.common.TargetTab}" toolTip="$resource{i18n.common.TargetTab} Tab">
         <!command
             setSessionAttribute(key="appGeneralTabs" value="targetTab");
             gf.redirect(page="#{request.contextPath}/common/applications/targetListing.jsf?appName=#{pageSession.encodedAppName}&listPageLink=#{pageSession.listPageLink}");

@@ -40,15 +40,15 @@
 
 -->
 
-<sun:tabSet id="lcGeneralTabs" immediate="$boolean{true}" selected="#{sessionScope.lcGeneralTabs}">
-    <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" toolTip="$resource{i18n.common.General} Tab" >
+<sun:tabSet id="lcGeneralTabs" immediate="true" selected="#{sessionScope.lcGeneralTabs}">
+    <sun:tab id="general" immediate="true" text="$resource{i18n.common.General}" toolTip="$resource{i18n.common.GeneralTab}" >
         <!command
             setSessionAttribute(key="lcGeneralTabs" value="general");
             gf.redirect(page="#{request.contextPath}/common/applications/lifecycleEdit.jsf?appName=#{pageSession.encodedName}&listPageLink=#{pageSession.listPageLink}");
         />       
     </sun:tab>
     
-     <sun:tab id="targetTab" rendered="#{!pageSession.onlyDASExist}" immediate="$boolean{true}" text="$resource{i18n.common.TargetTab}" toolTip="$resource{i18n.common.TargetTab} Tab">
+     <sun:tab id="targetTab" rendered="#{!pageSession.onlyDASExist}" immediate="true" text="$resource{i18n.common.TargetTab}" toolTip="$resource{i18n.common.TargetTab} Tab">
         <!command
             setSessionAttribute(key="lcGeneralTabs" value="targetTab");
             gf.redirect(page="#{request.contextPath}/common/applications/lifecycleTargetListing.jsf?appName=#{pageSession.encodedName}&listPageLink=#{pageSession.listPageLink}");
