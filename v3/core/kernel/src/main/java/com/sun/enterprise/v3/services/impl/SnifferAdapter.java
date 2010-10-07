@@ -39,6 +39,7 @@
  */
 package com.sun.enterprise.v3.services.impl;
 
+import com.sun.logging.LogDomains;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -81,8 +82,7 @@ public class SnifferAdapter implements Adapter {
     @Inject
     ModulesRegistry modulesRegistry;
 
-    @Inject
-    Logger logger;
+    private Logger logger = LogDomains.getLogger(SnifferAdapter.class, LogDomains.CORE_LOGGER);
     
     private Sniffer sniffer;
     private ContainerMapper mapper;
@@ -126,7 +126,7 @@ public class SnifferAdapter implements Adapter {
                 containerRegistry.getContainer(sniffer.getContainersNames()[0]).getContainer();
             } else {
                 final long startTime = System.currentTimeMillis();
-                logger.log(Level.INFO, "Attempting to start the {0} container", sniffer.getModuleType());
+                logger.log(Level.INFO, "core.snifferadapter.starting.container", sniffer.getModuleType());
                 Module snifferModule = modulesRegistry.find(sniffer.getClass());
                 try {
                     Collection<EngineInfo> containersInfo = containerStarter.startContainer(sniffer, snifferModule);
@@ -137,14 +137,17 @@ public class SnifferAdapter implements Adapter {
                                 logger.log(Level.FINE, "Got container, deployer is {0}", info.getDeployer());
                             }
                             info.getContainer();
-                            logger.log(Level.INFO, "Done with starting {0} container in {1} ms",
+                            logger.log(Level.INFO, "core.snifferadapter.container.started",
                                     new Object[]{sniffer.getModuleType(), System.currentTimeMillis() - startTime});
                         }
                     } else {
-                        logger.severe("Could not start container , no exception provided");
+                        logger.severe("core.snifferadapter.no.container.available");
                     }
                 } catch (Exception e) {
-                    logger.log(Level.SEVERE, "Exception while starting container " + sniffer.getContainersNames()[0], e);
+                    logger.log(Level.SEVERE,
+                               "core.snifferadapter.exception.starting.container",
+                               new Object[] { sniffer.getContainersNames()[0] });
+                    logger.log(Level.SEVERE, e.toString(), e);
                 }
             }
 
@@ -166,7 +169,7 @@ public class SnifferAdapter implements Adapter {
                     throw new RuntimeException("SnifferAdapter cannot map themself.");
                 }
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "Exception while mapping the request", e);
+                logger.log(Level.SEVERE, "core.snifferadapter.exception.mapping.request", e);
                 throw e;
             }
 
