@@ -41,26 +41,26 @@
 -->
 
 <!-- updateCenter/ucTabs.inc -->
-<sun:tabSet id="ucSet" immediate="$boolean{true}" selected="#{sessionScope.ucTabs}" width="100%">
-        <sun:tab id="addOn" immediate="$boolean{true}" text="$resource{i18nUC.updateCenter.AddOnTab}" toolTip="$resource{i18nUC.updateCenter.AddOnTab} Tab">
+<sun:tabSet id="ucSet" immediate="true" selected="#{sessionScope.ucTabs}" width="100%">
+        <sun:tab id="addOn" immediate="true" text="$resource{i18nUC.updateCenter.AddOnTab}" toolTip="$resource{i18nUC.updateCenter.AddOnTab.tooltip}">
             <!command
                 setSessionAttribute(key="ucTabs" value="addOn");
                 gf.redirect(page="#{request.contextPath}/updateCenter/addOn.jsf");
             />
         </sun:tab>
-        <sun:tab id="update" immediate="$boolean{true}" text="$resource{i18nUC.updateCenter.UpdateTab}" toolTip="$resource{i18nUC.updateCenter.UpdateTab} Tab">
+        <sun:tab id="update" immediate="true" text="$resource{i18nUC.updateCenter.UpdateTab}" toolTip="$resource{i18nUC.updateCenter.UpdateTab.tooltip}">
             <!command
                 setSessionAttribute(key="ucTabs" value="update");
                 gf.redirect(page="#{request.contextPath}/updateCenter/update.jsf");
             />
         </sun:tab>
-        <sun:tab id="installed" immediate="$boolean{true}" text="$resource{i18nUC.updateCenter.InstalledTab}" toolTip="$resource{i18nUC.updateCenter.InstalledTab} Tab" >
+        <sun:tab id="installed" immediate="true" text="$resource{i18nUC.updateCenter.InstalledTab}" toolTip="$resource{i18nUC.updateCenter.InstalledTab.tooltip}" >
                 <!command
                     setSessionAttribute(key="ucTabs" value="installed");
                     gf.redirect(page="#{request.contextPath}/updateCenter/installed.jsf");
                 />       
         </sun:tab>
-        <sun:tab id="config" immediate="$boolean{true}" text="$resource{i18nUC.updateCenter.ConfigTab}" toolTip="$resource{i18nUC.updateCenter.ConfigTab} Tab" >
+        <sun:tab id="config" immediate="true" text="$resource{i18nUC.updateCenter.ConfigTab}" toolTip="$resource{i18nUC.updateCenter.ConfigTab.tooltip}" >
                 <!command
                     setSessionAttribute(key="ucTabs" value="config");
                     gf.redirect(page="#{request.contextPath}/updateCenter/ucConfig.jsf");

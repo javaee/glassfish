@@ -44,11 +44,6 @@
 
 
             <sun:form id="propertyForm">
-<f:verbatim>
-    <script type="text/javascript">
-        admingui.nav.selectTreeNodeById('form:tree:updateCenter');
-    </script>
-</f:verbatim>
 #include "/updateCenter/ucTabs.inc"
 #include "/common/shared/alertMsg.inc"
         <!-- Page Title -->
@@ -71,3 +66,8 @@
 	<sun:hidden id="helpKey" value="$attribute{helpKey}" />
             </sun:form>
 #include "/common/shared/changeButtonsJS.inc"
+<f:verbatim>
+    <script type="text/javascript">
+        admingui.nav.selectTreeNodeById('treeForm:tree:updateCenterPlugIN');
+    </script>
+</f:verbatim>

@@ -52,11 +52,6 @@
 <!define name="content">
  
             <sun:form id="propertyForm">
-<f:verbatim>
-    <script type="text/javascript">
-        admingui.nav.selectTreeNodeById('form:tree:updateCenter');
-    </script>
-</f:verbatim>
 #include "/updateCenter/ucTabs.inc"
 #include "/common/shared/alertMsg.inc"
 <!-- Page Title -->
@@ -128,14 +123,12 @@
     
  </sun:form>
 
-        <f:verbatim>
+    <f:verbatim>
         <script type="text/javascript">
-            
             function showProxyFields(value) {
                 webui.suntheme.common.setVisible('#{hostId}', value);
-                webui.suntheme.common.setVisible( '#{portId}', value);
+                webui.suntheme.common.setVisible('#{portId}', value);
             }
-            
             function showSection(which){
                 if(which == 'direct'){
                     showProxyFields(false);
@@ -143,8 +136,6 @@
                     showProxyFields(true);
                 }
             }
-            
-            
             function validateProxyField(){
                 ss = getSelectedValue('proxyGroup');
                 if( ss =='useProxy'){
@@ -159,8 +150,6 @@
                 }
                 return true;
             }
-            
-           
             function checkProxyPort(componentId){
                 var component = getTextElement(componentId);
                 var value = component.value;
@@ -171,9 +160,9 @@
                 return true;
             }
                     
+	    // Make sure tree is highlighted
+	    admingui.nav.selectTreeNodeById('treeForm:tree:updateCenterPlugIN');
         </script>
-</f:verbatim>
-
+    </f:verbatim>
     </define>
-    
 </composition>
