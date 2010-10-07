@@ -844,7 +844,7 @@ public class MonitoringHandlers {
     public static final String WEB_SERVICES_CONTAINER = "Web Services Container";
     public static final String JPA = "JPA";
     public static final String SECURITY = "Security";
-    public static final String JERSEY = "Jersey";
+    public static final String JERSEY = "RESTful Web Services";
 
     final private static List monDisplayList= new ArrayList();
     static{
