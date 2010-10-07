@@ -69,8 +69,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.glassfish.admingui.common.util.GuiUtil;
-// FIXME: Remove...
-import org.glassfish.admingui.common.util.V3AMX;
+//import org.glassfish.admingui.common.util.V3AMX;
 //import org.glassfish.admin.amx.logging.LogQueryResult;
 import org.glassfish.admin.amx.logging.LogQuery;
 //import org.glassfish.admin.amx.logging.LogQueryEntry;
@@ -268,6 +267,8 @@ public class LogViewHandlers {
 		    formatDateForDisplay(locale, new Date(new Long(
 			    record.get("loggedDateTimeInMS").toString()))));
 	    /*
+		// FIXME: Should we add this code back in?  It was not being
+		// FIXME: used in the current version.
 		String msgId = (String) row.getMessageID();
 		String level = (String) row.getLevel();
 		String moduleName = (String)row.getModule();
@@ -317,299 +318,6 @@ public class LogViewHandlers {
     }
 
     /**
-     *	<p> This handler returns the list of Clusters and config info for populating the table.
-     *	@param	context	The HandlerContext.
-     */
-    /*
-    @Handler(id="getLogResultsTable",
-        input={
-            @HandlerInput(name="InstanceName", type=String.class, required=true),
-            @HandlerInput(name="LogFileName", type=String.class, required=true),
-            @HandlerInput(name="LogLevel", type=String.class, required=true),
-            @HandlerInput(name="FromRecord", type=Integer.class),
-            @HandlerInput(name="AfterRecord", type=Boolean.class),
-            @HandlerInput(name="DateEnabled", type=String.class),
-            @HandlerInput(name="FromDate", type=Object.class),
-            @HandlerInput(name="FromTime", type=Object.class),
-            @HandlerInput(name="ToDate", type=Object.class),
-            @HandlerInput(name="ToTime", type=Object.class),
-            @HandlerInput(name="Loggers", type=Object.class),
-            @HandlerInput(name="CustomLoggers", type=Object.class),
-            @HandlerInput(name="Nvp", type=Object.class),
-            @HandlerInput(name = "anySearch", type = String.class),
-            @HandlerInput(name="NumToDisplay", type=Integer.class),
-            @HandlerInput(name="OnlyLevel", type=Boolean.class),
-            @HandlerInput(name="LogDateSortDirection", type=Boolean.class),
-            @HandlerInput(name="TruncateMessage", type=Boolean.class),
-            @HandlerInput(name="TruncateLength", type=Integer.class)},
-        output={
-            @HandlerOutput(name="result", type=java.util.List.class),
-            @HandlerOutput(name="HasResults", type=Boolean.class),
-            @HandlerOutput(name="FirstLogRow", type=Integer.class),
-            @HandlerOutput(name="LastLogRow", type=Integer.class)}
-     )
-    public static void getLogResultsTable(HandlerContext handlerCtx) {
-        // Attempt to read values passed in
-        String logFileName = (String) handlerCtx.getInputValue("LogFileName");
-        Integer fromRecord = (Integer) handlerCtx.getInputValue("FromRecord");
-        Boolean after = (Boolean) handlerCtx.getInputValue("AfterRecord");
-        String dateEnabledString = (String) handlerCtx.getInputValue("DateEnabled");
-        Object fromDate = handlerCtx.getInputValue("FromDate");
-        Object fromTime = handlerCtx.getInputValue("FromTime");
-        Object toDate = handlerCtx.getInputValue("ToDate");
-        Object toTime = handlerCtx.getInputValue("ToTime");
-        Object loggers = handlerCtx.getInputValue("Loggers");
-        String logLevel = (String) handlerCtx.getInputValue("LogLevel");
-        Object customLoggers = handlerCtx.getInputValue("CustomLoggers");
-        Object nvp = handlerCtx.getInputValue("Nvp");
-        String anySearch = (String) handlerCtx.getInputValue("anySearch");
-        Integer numberToDisplay = (Integer) handlerCtx.getInputValue("NumToDisplay");
-        Boolean onlyLevel =
-                (Boolean) handlerCtx.getInputValue("OnlyLevel");
-        Boolean direction =
-                (Boolean) handlerCtx.getInputValue("LogDateSortDirection");
-        Boolean truncMsg =
-                (Boolean) handlerCtx.getInputValue("TruncateMessage");
-
-        Integer truncLenInteger =
-                (Integer) handlerCtx.getInputValue("TruncateLength");
-        List result = new ArrayList();
-        String instanceName = (String) handlerCtx.getInputValue("InstanceName");
-        String logFileDir = "";
-        Boolean hasResults = new Boolean(false);
-        if (instanceName != null && logFileName != null) {
-            // Determine if messages should be truncated
-            boolean truncateMessage = true;
-            if (truncMsg != null) {
-                truncateMessage = truncMsg.booleanValue();
-            }
-            int truncLen = 100;
-            if (truncateMessage && (truncLenInteger != null)) {
-                truncLen = truncLenInteger.intValue();
-            }
-
-            Boolean dateEnabled = null;
-            // Convert Date/Time fields
-            if ("enabled".equals(dateEnabledString)) {
-                dateEnabled = Boolean.TRUE;
-            }
-            boolean dateEnabledFlag = false;
-            if (dateEnabled != null) {
-                dateEnabledFlag = dateEnabled.booleanValue();
-            }
-            if (dateEnabledFlag) {
-                // Date is enabled, figure out what the values are
-                fromDate = convertDateTime(handlerCtx, fromDate, fromTime);
-                toDate = convertDateTime(handlerCtx, toDate, toTime);
-                if ((fromDate == null)) {
-                    GuiUtil.handleError(handlerCtx, "Specific Date Range was chosen, however, date fields are incomplete.");
-                }
-                if (toDate != null && fromDate != null) {
-                    if (((Date) fromDate).after((Date) toDate)) {
-                        GuiUtil.handleError(handlerCtx, "Timestamp value of 'From: ' field " + fromDate +
-                                " must not be greater than 'To: ' field value " + toDate);
-                    }
-                }
-            } else {
-                // Date not enabled, ignore from/to dates
-                fromDate = null;
-                toDate = null;
-            }
-
-            if (logLevel != null) {
-                if (logLevel.toString().trim().length() == 0) {
-                    logLevel = null;
-                }
-            }
-
-            if (onlyLevel == null) {
-                onlyLevel = Boolean.FALSE;
-            }
-
-            // Convert module array to List
-            //List moduleList = null;
-            //Set moduleList = new HashSet();
-            Set moduleList = null;
-            if (loggers != null) {
-                int len = ((Object[]) loggers).length;
-                moduleList = new HashSet();
-                Object val;
-                for (int count = 0; count < len; count++) {
-                    val = (((Object[]) loggers)[count]);
-                    if ((val == null) || (val.toString().trim().length() == 0)) {
-                        continue;
-                    }
-                    moduleList.add(val);
-                }
-            }
-
-            // Add custom loggers
-            if ((customLoggers != null) &&
-                    (customLoggers.toString().trim().length() != 0)) {
-                StringTokenizer tok = new StringTokenizer(
-                        customLoggers.toString(),
-                        CUSTOM_LOGGER_DELIMITERS);
-                String token;
-                if(moduleList == null) {
-                    moduleList = new HashSet();
-                }
-
-                while (tok.hasMoreTokens()) {
-                    token = tok.nextToken();
-
-                    if ((token == null) || (token.length() == 0)) {
-                        continue;
-                    }
-                    moduleList.add(token);
-                }
-            }
-
-
-            // Deal w/ NVPs
-            //Hashtable nvpProps = null;
-            List nvpProps = null;
-            if ((nvp != null) && (nvp.toString().trim().length() != 0)) {
-                nvpProps = new ArrayList();
-                int equalsIdx;
-                String token;
-                // Iterate over the entries
-                StringTokenizer tok =
-                        new StringTokenizer(nvp.toString(), NVP_DELIMITERS);
-                while (tok.hasMoreTokens()) {
-                    token = tok.nextToken();
-                    if ((token == null) || (token.length() == 0)) {
-                        continue;
-                    }
-
-                    try {
-                        equalsIdx = token.indexOf(EQUALS);
-                        // Make sure = exists and it is not the first character
-                        if (equalsIdx < 0) {
-                            GuiUtil.handleError(handlerCtx, "Name-Value Pairs must be in the format \"" +
-                                    "<name>=<value>\".");
-                        }
-
-                        String key = null;
-                        key = token.substring(0, equalsIdx++);
-                        Attribute attr = new Attribute(key, token.substring(equalsIdx));
-                        nvpProps.add(attr);
-                    } catch (Exception ex) {
-                        GuiUtil.handleError(handlerCtx, "Name-Value Pairs must be in the format \"" +
-                                "<name>=<value>\".");
-                    }
-                }
-            }
-
-
-            // Get the number to Display
-            if (numberToDisplay == null) {
-                numberToDisplay = DEFAULT_NUMBER_TO_DISPLAY;
-            } else {
-                numberToDisplay.intValue();
-            }
-
-            // Get the direction
-            if (direction == null) {
-                direction = Boolean.FALSE;
-            }
-
-            // Get AfterRecord flag
-            if (after == null) {
-                // Not supplied, use direction
-                after = direction;
-            }
-            if (fromRecord == null) {
-                fromRecord = LogQuery.LAST_RECORD;
-            } else {
-                fromRecord.intValue();
-            }
-
-            // Search for the log entries
-            List<Serializable[]> results = null;
-            Logging logging = V3AMX.getInstance().getDomainRoot().getLogging();
-            try {
-                results =  logging.queryServerLog(
-                        logFileName,
-                        fromRecord,
-                        after,
-                        numberToDisplay,
-                        (fromDate == null) ? null : ((Date)fromDate).getTime(),
-                        (toDate == null) ? null : ((Date)toDate).getTime(),
-                        logLevel,
-                        moduleList,
-                        nvpProps,
-                        anySearch);
-            } catch (Exception ex) {
-                GuiUtil.handleError(handlerCtx, "Error while querying Log File.");
-            }
-            String message;
-            LogQueryEntry[] query = null;
-
-            if (results != null) {
-                LogQueryResult r = LogQuery.Helper.toLogQueryResult(results);
-                query = r.getEntries();
-               // Add the results to the Model
-                for (int i = 0; i < query.length; i++) {
-                    HashMap oneRow = new HashMap();
-                    LogQueryEntry row = (LogQueryEntry) query[i];
-                    oneRow.put("recNumber", row.getRecordNumber());
-                    oneRow.put("dateTime", formatDateForDisplay(
-                            GuiUtil.getLocale(), row.getDate()));
-                    String msgId = (String) row.getMessageID();
-                    String level = (String) row.getLevel();
-                    String moduleName = (String)row.getModule();
-                    //only SEVERE msg provoides diagnostic info.
-                    if (level.equalsIgnoreCase("severe")) {
-                        // NOTE: Image name/location is hard-coded
-                        oneRow.put("levelImage", GuiUtil.getMessage("common.errorGif"));
-                        oneRow.put(SHOW_LEVEL_IMAGE, new Boolean(true));
-                        oneRow.put("diagnosticCauses", getDiagnosticCauses(handlerCtx, msgId, moduleName));
-                        oneRow.put("diagnosticChecks", getDiagnosticChecks(handlerCtx, msgId, moduleName));
-//                        oneRow.put("diagnosticURI", getDiagnosticURI(handlerCtx, msgId));
-                    } else {
-                        oneRow.put(SHOW_LEVEL_IMAGE, new Boolean(false));
-                        oneRow.put("diagnostic", "");
-                    }
-                    oneRow.put("level", level);
-                    oneRow.put("productName", row.getProductName());
-                    oneRow.put("logger", moduleName);
-                    try {
-                        oneRow.put("nvp", row.getNameValuePairsMap());
-                    } catch (Exception ex) {
-                        // ignore
-                        oneRow.put("nvp", "");
-
-                    }
-                    oneRow.put("messageID", msgId);
-                    message = ((String) row.getMessage().trim());
-                    if (truncateMessage && (message.length() > truncLen)) {
-                        message = message.substring(0, truncLen).concat("...\n");
-                    }
-                    oneRow.put("message", (message == null) ? " " : Util.htmlEscape(message));
-                    result.add(oneRow);
-                }
-            }
-
-            // Set the first / last record numbers as attributes
-            if (query != null && query.length > 1) {
-                handlerCtx.setOutputValue("FirstLogRow",
-                        ((LogQueryEntry) query[0]).getRecordNumber());
-                handlerCtx.setOutputValue("LastLogRow",
-                        ((LogQueryEntry) query[query.length -1]).getRecordNumber());
-                hasResults = new Boolean(true);
-            } else {
-                handlerCtx.setOutputValue("FirstLogRow", "-1");
-                handlerCtx.setOutputValue("LastLogRow", "-1");
-            }
-
-        }
-        handlerCtx.setOutputValue("result", result);
-        handlerCtx.setOutputValue("HasResults", hasResults);
-    }
-    */
-
-
-    /**
      *	This method converts a date/time string to a Date.
      *
      *	@param	request	The ServletRequest
@@ -629,9 +337,9 @@ public class LogViewHandlers {
 	}
 
 	// Get the date / time string
-        //if(time != null && time.toString().trim().length() == 0){
-	//    time = null;
-	//}
+        if((time != null) && (time.toString().trim().length() == 0)) {
+	    time = null;
+	}
 	String dateTime = date.toString()+
 	    ((time == null) ? "" : (" "+time.toString()));
 	DateFormat df = DateFormat.getDateInstance(
@@ -712,9 +420,8 @@ public class LogViewHandlers {
 	}
     }
 
-   /**
-     * * This method get the diagnostic Checks based on the message id
-     */
+    /**
+     *	<p> This method get the diagnostic Checks based on the message id.</p>
     private static String getDiagnosticChecks(HandlerContext handlerCtx, String msgId, String moduleName) {
         if (msgId == null || "".equals(msgId)) {
             return formatArrayForDisplay(null);
@@ -725,13 +432,11 @@ public class LogViewHandlers {
         return res;
 
     }
-
-    /**
-     * * This method get the diagnostic based on the message id
      */
 
+    /**
+     *	<p> This method get the diagnostic based on the message id.</p>
     private static String getDiagnosticCauses(HandlerContext handlerCtx, String msgId, String moduleName) {
-
         if (msgId == null || "".equals(msgId)) {
             return formatArrayForDisplay(null);
         }
@@ -741,30 +446,23 @@ public class LogViewHandlers {
         String res = formatArrayForDisplay(results);
         return res;
     }
-
-     public static String getLogFilesDirectory(String instanceName){
-        if (GuiUtil.isEmpty(instanceName))
-            return "";
-        String dir = "";
-
-        return dir;
-     }
-
-   /**
-     * <p> This handler returns the first and last log record </p>
-     *
-     * <p> Output value: "LogFileNames" -- Type: <code>java.util.SelectItem</code>
-     * @param  context The HandlerContext.
      */
 
+    /**
+     *	<p> This handler returns the first and last log record.</p>
+     *
+     *	<p> Output value: "LogFileNames" -- Type: <code>java.util.SelectItem</code>
+     *
+     *	@param  context The HandlerContext.
+     */
     @Handler(id="getFirstLastRecord",
         input={
-        @HandlerInput(name="FirstRecord", type=String.class, required=true),
-        @HandlerInput(name="LastRecord", type=String.class, required=true)},
+	    @HandlerInput(name="FirstRecord", type=String.class, required=true),
+	    @HandlerInput(name="LastRecord", type=String.class, required=true)},
         output={
             @HandlerOutput(name="First", type=String.class),
             @HandlerOutput(name="Last", type=String.class)})
-        public static void getFirstLastRecord(HandlerContext handlerCtx) {
+    public static void getFirstLastRecord(HandlerContext handlerCtx) {
 	// Get the first/last row numbers
 	String firstLogRow = (String)handlerCtx.getInputValue("FirstRecord");
 	String lastLogRow = (String)handlerCtx.getInputValue("LastRecord");
@@ -792,8 +490,7 @@ public class LogViewHandlers {
     }
 
     /**
-     * * This method get the diagnostic Checks based on the message id
-     */
+     *	This method get the diagnostic Checks based on the message id.
     private static String getDiagnosticURI(HandlerContext handlerCtx, String msgId, String moduleName) {
         if (msgId == null || "".equals(msgId)) {
             return "";
@@ -801,8 +498,8 @@ public class LogViewHandlers {
         Logging logging = V3AMX.getInstance().getDomainRoot().getLogging();
         String res = logging.getDiagnosticURI(msgId);
         return res;
-
     }
+     */
 
         /**
      *  This method formats the diagnostic to be displayed for HTML
@@ -883,37 +580,6 @@ public class LogViewHandlers {
 	handlerCtx.setOutputValue("Date", df.format(new Date()));
     }
 
-       /**
-     *	<p> This handler returns the values for loggers
-     *      in LogViewer Page.</p>
-     *  <p> Output value: "LoggerList" -- Type: <code>java.util.Array</code></p>
-     *	@param	context	The HandlerContext.
-     */
-    @Handler(id="getLoggers",
-        input={
-            @HandlerInput(name="selectedLoggers", type=String[].class)},
-    output={
-        @HandlerOutput(name="LoggerList", type=List.class),
-        @HandlerOutput(name="SelectLoggersCommaString", type=String.class)})
-
-        public static void getLoggers(HandlerContext handlerCtx) {
-	String[] selectedLoggers = (String[])handlerCtx.getInputValue("selectedLoggers");
-        String selected = GuiUtil.arrayToString(selectedLoggers, ",");
-        List loggernames = new ArrayList();
-        Logging logging = V3AMX.getInstance().getDomainRoot().getLogging();
-        Map<String, String> loggers = logging.getLoggingProperties();
-        if (loggers != null)   {
-            for(String oneLogger:  loggers.keySet()){
-                if (oneLogger.endsWith(".level")&& !oneLogger.equals(".level") ){
-                    loggernames.add(oneLogger.substring(0,oneLogger.lastIndexOf(".level")));
-
-                }
-            }
-        }
-        handlerCtx.setOutputValue("LoggerList", loggernames);
-    }
-
-
     /**
      *	<P>This method returns the formatted date (as a String). </P>
      *
@@ -925,18 +591,17 @@ public class LogViewHandlers {
         output={
             @HandlerOutput(name="Time", type=String.class),
             @HandlerOutput(name="Date", type=String.class)})
-      public void getFormattedDateTime(HandlerContext handlerCtx) {
-          String ts = (String )handlerCtx.getInputValue("Timestamp");
-          Boolean addHour =
-	    (Boolean)handlerCtx.getInputValue("AddHour");
+    public void getFormattedDateTime(HandlerContext handlerCtx) {
+          String timeStamp = (String) handlerCtx.getInputValue("Timestamp");
+          Boolean addHour = (Boolean) handlerCtx.getInputValue("AddHour");
           Date date = null;
-          if (ts == null || "".equals(ts)){
-            date = new Date(System.currentTimeMillis());
+          if ((timeStamp == null) || "".equals(timeStamp)) {
+	      date = new Date(System.currentTimeMillis());
           } else {
-              if(addHour != null) {
-                date = new Date( Long.parseLong(ts)+ ONE_HOUR);
+              if (addHour != null) {
+		  date = new Date(Long.parseLong(timeStamp) + ONE_HOUR);
               } else {
-              date = new Date( Long.parseLong(ts));
+		  date = new Date(Long.parseLong(timeStamp));
               }
           }
           DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, GuiUtil.getLocale());
