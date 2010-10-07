@@ -46,7 +46,7 @@
 <sun:treeNode id="configurations"
 	text="$resource{i18n.tree.configurations}"
 // FIXME: Should be configurations.jsf
-	url="/common/configuration/configurations.jsf"
+	url="#{request.contextPath}/common/configuration/configurations.jsf"
 	imageURL="/resource/images/configurations.gif"
 	expanded="true">
     <!afterCreate
@@ -54,7 +54,7 @@
     />
     <sun:treeNode id="${configNameId}" 
 	    text="${configName}"
-	    url="/configuration/configuration.jsf?configName=${configName}"
+	    url="#{request.contextPath}/common/configuration/configuration.jsf?configName=${configName}"
 	    imageURL="/resource/common/images/configurations.gif"
 	    expanded="false">
 	<!afterCreate
