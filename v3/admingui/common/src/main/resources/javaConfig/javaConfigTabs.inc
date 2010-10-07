@@ -45,28 +45,28 @@
 
 <sun:tabSet id="javaConfigTab" immediate="true" selected="#{sessionScope.javaConfigTab}" >
 
-	<sun:tab id="jvmGeneral" immediate="true" text="$resource{i18n.common.General}" toolTip="$resource{i18n.common.General} Tab">
+	<sun:tab id="jvmGeneral" immediate="true" text="$resource{i18n.common.General}" toolTip="$resource{i18n.common.GeneralTab}">
 	<!command
             setSessionAttribute(key="javaConfigTab" value="jvmGeneral");
             gf.redirect(page="#{request.contextPath}/common/javaConfig/serverInstJvmGeneral.jsf?configName=#{configName}");
 	/>
 	</sun:tab>
 
-	<sun:tab id="pathSettings" immediate="true" text="$resource{i18nc.jvm.PathSettings}" toolTip="$resource{i18nc.jvm.PathSettings} Tab">
+	<sun:tab id="pathSettings" immediate="true" text="$resource{i18nc.jvm.PathSettings}" toolTip="$resource{i18nc.jvm.PathSettingsTab}">
 	    <!command
                 setSessionAttribute(key="javaConfigTab" value="pathSettings");
 		gf.redirect(page="#{request.contextPath}/common/javaConfig/serverInstJvmPathSettings.jsf?configName=#{configName}");
 	    />        
 	</sun:tab>
 
-	<sun:tab id="jvmOptions" immediate="true" text="$resource{i18nc.jvm.Options}" toolTip="$resource{i18nc.jvm.Options} Tab" >
+	<sun:tab id="jvmOptions" immediate="true" text="$resource{i18nc.jvm.Options}" toolTip="$resource{i18nc.jvm.OptionsTab}" >
 	    <!command
                 setSessionAttribute(key="javaConfigTab" value="jvmOptions");
 		gf.redirect(page="#{request.contextPath}/common/javaConfig/serverJvmOptions.jsf?configName=#{configName}");
 	    />        
 	</sun:tab>
 
-	<sun:tab id="profiler" immediate="true" text="$resource{i18nc.jvm.Profiler}" toolTip="$resource{i18nc.jvm.Profiler} Tab" >
+	<sun:tab id="profiler" immediate="true" text="$resource{i18nc.jvm.Profiler}" toolTip="$resource{i18nc.jvm.ProfilerTab}">
 	    <!command
                 setSessionAttribute(key="javaConfigTab" value="profiler");
 		gf.redirect(page="#{request.contextPath}/common/javaConfig/serverInstProfiler.jsf?configName=#{configName}");

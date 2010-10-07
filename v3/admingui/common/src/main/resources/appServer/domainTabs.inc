@@ -43,19 +43,19 @@
 <!-- appServer/domainTabs.jsf -->
 
 <sun:tabSet id="domainTabs" immediate="true" selected="#{sessionScope.domainTabs}">
-    <sun:tab id="domainAttrs" immediate="true" text="$resource{i18n.headings.DomainAttributes}" toolTip="$resource{i18n.headings.DomainAttributes} Tab" >
+    <sun:tab id="domainAttrs" immediate="true" text="$resource{i18n.headings.DomainAttributesTab}" toolTip="$resource{i18n.headings.DomainAttributesTab}">
         <!command
             setSessionAttribute(key="domainTabs" value="domainAttrs");
             gf.redirect(page="#{request.contextPath}/common/appServer/serverInstDomainAttrs.jsf");
         />
     </sun:tab>
-    <sun:tab id="appConfig" immediate="true" text="$resource{i18n.headings.AppConfig}" toolTip="$resource{i18n.headings.AppConfig} Tab" >
+    <sun:tab id="appConfig" immediate="true" text="$resource{i18n.headings.AppConfig}" toolTip="$resource{i18n.headings.AppConfigTab}" >
         <!command
             setSessionAttribute(key="domainTabs" value="appConfig");
             gf.redirect(page="#{request.contextPath}/common/appServer/serverInstAppsConfig.jsf");
         />
     </sun:tab>
-    <sun:tab id="adminPassword" immediate="true" text="$resource{i18n.headings.AdminPassword}" toolTip="$resource{i18n.headings.AdminPassword} Tab" >
+    <sun:tab id="adminPassword" immediate="true" text="$resource{i18n.headings.AdminPassword}" toolTip="$resource{i18n.headings.AdminPasswordTab}" >
         <!command
             setSessionAttribute(key="domainTabs" value="adminPassword");
             gf.redirect(page="#{request.contextPath}/common/appServer/serverInstAdminPassword.jsf");
