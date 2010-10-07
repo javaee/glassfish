@@ -223,12 +223,12 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
             }
 
         } catch (java.io.IOException ex) {
-            logger.log(Level.WARNING, "logging.read.error", ex);
+            logger.log(Level.SEVERE, "logging.read.error", ex);
 
         } catch (ClassNotFoundException exc) {
-            logger.log(Level.WARNING, "logging.formatter.load ", formatterClassname);
+            logger.log(Level.SEVERE, "logging.formatter.load ", formatterClassname);
         } catch (Exception e) {
-            logger.log(Level.WARNING, "logging.set.formatter ", e);
+            logger.log(Level.SEVERE, "logging.set.formatter ", e);
         }
 
         Collection<Handler> handlers = habitat.getAllByContract(Handler.class);

@@ -135,9 +135,17 @@ public class LogFilter {
         //return getLogRecordsUsingQuery(logFileName, fromRecord, next, forward, requestedCount,
         //        fromDate, toDate, logLevel, onlyLevel, listOfModules, nameValueMap, anySearch, "in2", false);
 
+
         LogFile logFile = null;
         if ((logFileName != null)
                 && (logFileName.length() != 0)) {
+            if (logFileName.contains("${com.sun.aas.instanceRoot}")) {
+                String instanceRoot = System.getProperty("com.sun.aas.instanceRoot");
+                String f = logFileName.replace("${com.sun.aas.instanceRoot}", instanceRoot);
+                logFileName = f;
+            } else {
+                logFileName = System.getProperty("com.sun.aas.instanceRoot") + File.separator + "logs" + File.separator + logFileName.trim();
+            }
             logFile = getLogFile(logFileName);
         } else {
             logFile = getLogFile();
@@ -176,8 +184,8 @@ public class LogFilter {
                     reqCount, fromDate, toDate, logLevel,
                     onlyLevel.booleanValue(), listOfModules, nameValueMap, anySearch);
         } catch (Exception ex) {
-            logger.log(Level.WARNING, "logging.backend.error.fetchrecord", ex);
-            throw new RuntimeException(ex);
+            logger.log(Level.SEVERE, "logging.backend.error.fetchrecord", ex);
+            return new AttributeList();
         }
     }
 
@@ -188,15 +196,19 @@ public class LogFilter {
         if (targetServer.isDas()) {
             File logsDir = new File(env.getDomainRoot() + File.separator + "logs");
             File allLogFileNames[] = logsDir.listFiles();
-            for (File fName : allLogFileNames) {
-                allInstanceFileNames.add(fName.getName());
+            for (File file : allLogFileNames) {
+                String fileName = file.getName();
+                if (file.isFile() && !fileName.equals(".") && !fileName.equals("..")
+                        && fileName.contains(".log") && !fileName.contains(".log.")) {
+                    allInstanceFileNames.add(fileName);
+                }
             }
         } else {
             try {
                 allInstanceFileNames = new LogFilterForInstance().getInstanceLogFileNames(habitat, targetServer, domain, logger, instanceName);
             } catch (IOException ex) {
-                logger.log(Level.WARNING, "logging.backend.error.fetchrecord", ex);
-                throw new RuntimeException(ex);
+                logger.log(Level.SEVERE, "logging.backend.error.fetchrecord", ex);
+                return new Vector();
             }
         }
         return allInstanceFileNames;
@@ -243,8 +255,8 @@ public class LogFilter {
                         instanceLogFile = new LogFilterForInstance().downloadGivenInstanceLogFile(habitat, targetServer,
                                 domain, logger, instanceName, env.getDomainRoot().getAbsolutePath(), logFileName);
                     } catch (IOException e) {
-                        logger.log(Level.WARNING, "logging.backend.error.instance", e);
-                        throw new RuntimeException(e);
+                        logger.log(Level.SEVERE, "logging.backend.error.instance", e);
+                        return new AttributeList();
                     }
                 } else {
                     if (logFileRefresh) {
@@ -253,8 +265,8 @@ public class LogFilter {
                             instanceLogFile = new LogFilterForInstance().downloadGivenInstanceLogFile(habitat, targetServer,
                                     domain, logger, instanceName, env.getDomainRoot().getAbsolutePath(), logFileName);
                         } catch (IOException e) {
-                            logger.log(Level.WARNING, "logging.backend.error.instance", e);
-                            throw new RuntimeException(e);
+                            logger.log(Level.SEVERE, "logging.backend.error.instance", e);
+                            return new AttributeList();
                         }
                     } else {
                         // if file is already there then using existing instance log file
@@ -266,8 +278,9 @@ public class LogFilter {
 
         LogFile logFile = null;
         File loggingFileExists = new File(instanceLogFile.getAbsolutePath());
-        if(!loggingFileExists.exists()) {
-            throw new Error("Requested log file is not Found.");
+        if (!loggingFileExists.exists()) {
+            logger.log(Level.WARNING, "logging.backend.error.filenotfound", instanceLogFile.getAbsolutePath());
+            return new AttributeList();
         }
         logFile = getLogFile(instanceLogFile.getAbsolutePath());
         boolean forwd = (forward == null) ? true : forward.booleanValue();
@@ -303,8 +316,8 @@ public class LogFilter {
                     reqCount, fromDate, toDate, logLevel,
                     onlyLevel.booleanValue(), listOfModules, nameValueMap, anySearch);
         } catch (Exception ex) {
-            logger.log(Level.WARNING, "logging.backend.error.fetchrecord", ex);
-            throw new RuntimeException(ex);
+            logger.log(Level.SEVERE, "logging.backend.error.fetchrecord", ex);
+            return new AttributeList();
         }
     }
 
@@ -476,13 +489,6 @@ public class LogFilter {
     public LogFile getLogFile(String fileName) {
         // No need to check for null or zero length string as the
         // test is already done before.
-        if (fileName.contains("${com.sun.aas.instanceRoot}")) {
-            String instanceRoot = System.getProperty("com.sun.aas.instanceRoot");
-            String f = fileName.replace("${com.sun.aas.instanceRoot}", instanceRoot);
-            fileName = f;
-        } else {
-            fileName = System.getProperty("com.sun.aas.instanceRoot") + File.separator + "logs" + File.separator + fileName.trim();
-        }
         String logFileName = fileName.trim();
         LogFile logFile = (LogFile) logFileCache.get(fileName);
         String parent = null;
@@ -564,7 +570,7 @@ public class LogFilter {
                 && (levelCheck(entry.getLoggedLevel(), queryLevel, onlyLevel))
                 && (moduleCheck(entry.getLoggedLoggerName(), listOfModules))
                 && (nameValueCheck(entry.getLoggedNameValuePairs(), nameValueMap))
-                && (messageDataCheck(entry.getLoggedMessage(), anySearch))) {
+                && (messageDataCheck(entry.getLoggedMessage(), entry.getLoggedNameValuePairs(), anySearch))) {
             return true;
         }
 
@@ -682,15 +688,17 @@ public class LogFilter {
         return false;
     }
 
-    protected boolean messageDataCheck(String message,
+    protected boolean messageDataCheck(String message, String nvp,
                                        String anySearch) {
-        if ((message == null) || (anySearch == null) || message.length() == 0 || anySearch.length() < 3) {
+
+        if (anySearch == null || ("").contains(anySearch) || anySearch.length() < 3) {
             return true;
         }
 
-        if (message.contains(anySearch)) {
+        if ((message != null && message.contains(anySearch)) || (nvp != null && nvp.contains(anySearch))) {
             return true;
         }
+
         return false;
     }
 

@@ -137,7 +137,7 @@ public class LogFilterForInstance {
         for (int i = 0; i < allInstanceLogFileName.size(); i++) {
             remoteFileNames[i] = node.getInstallDir() + File.separator + "nodes" + File.separator
                     + sNode + File.separator + instanceName + File.separator + "logs" + File.separator
-                    + ((SFTPv3DirectoryEntry) allInstanceLogFileName.get(i)).filename;
+                    + allInstanceLogFileName.get(i);
         }
 
         scpClient.get(remoteFileNames, logFileDirectoryOnServer.getAbsolutePath());
@@ -151,6 +151,7 @@ public class LogFilterForInstance {
         // helper method to get all log file names for given instance
         String sNode = targetServer.getNode();
         Vector instanceLogFileNames = new Vector();
+        Vector instanceLogFileNamesAsString = new Vector();
 
         if (sNode.equals("localhost") || sNode.equals("127.0.0.1")) {
             String sourceDir = System.getProperty("com.sun.aas.instanceRoot") + File.separator + ".." + File.separator + ".."
@@ -161,6 +162,16 @@ public class LogFilterForInstance {
             File allLogFileNames[] = logsDir.listFiles();
             if (allLogFileNames != null) {
                 instanceLogFileNames = new Vector(Arrays.asList(allLogFileNames));
+            }
+
+            for (int i = 0; i < instanceLogFileNames.size(); i++) {
+                File file = (File) instanceLogFileNames.get(i);
+                String fileName = file.getName();
+                // code to remove . and .. file which is return
+                if (file.isFile() && !fileName.equals(".") && !fileName.equals("..") && fileName.contains(".log")
+                        && !fileName.contains(".log.")) {
+                    instanceLogFileNamesAsString.add(fileName);
+                }
             }
         } else {
 
@@ -173,18 +184,19 @@ public class LogFilterForInstance {
 
             instanceLogFileNames = sftpClient.ls(node.getInstallDir() + File.separator + "nodes" + File.separator
                     + sNode + File.separator + instanceName + File.separator + "logs");
-        }
 
-        for (int i = 0; i < instanceLogFileNames.size(); i++) {
-            String fileName = ((SFTPv3DirectoryEntry) instanceLogFileNames.get(i)).filename;
-            // code to remove . and .. file which is return from sftpclient ls method
-            if (fileName.equals(".") || fileName.equals("..") || !fileName.contains(".log") || fileName.contains(".log.")) {
-                instanceLogFileNames.remove(i);
-                i--;
+            for (int i = 0; i < instanceLogFileNames.size(); i++) {
+                SFTPv3DirectoryEntry file = (SFTPv3DirectoryEntry) instanceLogFileNames.get(i);
+                String fileName = file.filename;
+                // code to remove . and .. file which is return from sftpclient ls method
+                if (!file.attributes.isDirectory() && !fileName.equals(".") && !fileName.equals("..")
+                        && fileName.contains(".log") && !fileName.contains(".log.")) {
+                    instanceLogFileNamesAsString.add(fileName);
+                }
             }
         }
 
-        return instanceLogFileNames;
+        return instanceLogFileNamesAsString;
     }
 
     private SSHLauncher getSSHL(Habitat habitat) {
