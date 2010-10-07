@@ -79,7 +79,7 @@
         }
     />
     </event>
-"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":configuration:jmsConfiguration:jmsHosts");</script>
+"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":configurations:#{pageSession.configName}:jmsConfiguration:jmsHosts");</script>
     <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
         <sun:title id="propertyContentPage" title="$resource{i18njms.jmsHosts.ListPageTitle}" helpText="$resource{i18njms.jmsHosts.ListPageHelp}"/>
