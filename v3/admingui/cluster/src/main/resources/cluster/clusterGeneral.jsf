@@ -53,7 +53,7 @@
         getRequestValue(key="clusterName" value="#{pageSession.clusterName}");
         urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/cluster/clusterGeneral.jsf?clusterName=#{pageSession.encodedClusterName}");
-        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/cluster/clusters.jsf");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/cluster/cluster/clusters.jsf");
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/clusters");
         setPageSessionAttribute(key="childType" value="cluster");
         setPageSessionAttribute(key="resourceUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedClusterName}");
