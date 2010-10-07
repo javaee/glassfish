@@ -267,24 +267,26 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
     private String pollForRealDeath(String mode){
         int counter = 0;  // 30 seconds
 
-        while (++counter < 10) {
+        // 24 * 5 = 120 seconds
+        while (++counter < 24) {
             try {
-            if (mode.equals("local")){
-                if(!pidFile.exists()){
-                    return null;
+                if (mode.equals("local")){
+                    if(!pidFile.exists()){
+                        return null;
+                    }
+                }else {
+                    if (!ftpClient.exists(pidFile.toString()))
+                        return null;
                 }
-            }else
-                if (!ftpClient.exists(pidFile.toString()))
-                    return null;
-
-            Thread.sleep(1500);
-            }
-            catch (Exception e) {
+                // Fairly long interval between tries because checking over
+                // SSH is expensive.
+                Thread.sleep(5000);
+            } catch (Exception e) {
                 // ignore
             }
 
         }
-        return Strings.get("stop.instance.timeout", instanceName);
+        return Strings.get("stop.instance.timeout.completely", instanceName);
 
     }
 }
