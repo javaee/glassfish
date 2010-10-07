@@ -53,7 +53,7 @@
 <sun:property>
     <sun:hyperlink 
         toolTip="$resource{i18n.tree.loggerSettings.tooltip}"
-        url="/common/configuration/loggerGeneral.jsf"
+        url="/common/configuration/loggerGeneral.jsf?configName=#{configName}"
         >
         <sun:image url="/resource/images/logger.gif" />
         <sun:staticText text="$resource{i18n.tree.loggerSettings}" />
