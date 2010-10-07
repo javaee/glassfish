@@ -81,19 +81,21 @@ public class CreateThreadpool implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new
             LocalStringManagerImpl(CreateThreadpool.class);
 
-    @Param(name="maxthreadpoolsize", optional=true, alias="maxThreadPoolSize")
+    // TODO:  Once Grizzly provides constants for default values, update this class to use those
+    // constants: https://grizzly.dev.java.net/issues/show_bug.cgi?id=897 -- jdlee
+    @Param(name="maxthreadpoolsize", optional=true, alias="maxThreadPoolSize", defaultValue = "5")
     String maxthreadpoolsize;
 
-    @Param(name="minthreadpoolsize", optional=true, alias="minThreadPoolSize")
+    @Param(name="minthreadpoolsize", optional=true, alias="minThreadPoolSize", defaultValue = "2")
     String minthreadpoolsize;
 
-    @Param(name= "idletimeout", optional=true, alias="idleThreadTimeoutSeconds")
+    @Param(name= "idletimeout", optional=true, alias="idleThreadTimeoutSeconds", defaultValue = "900")
     String idletimeout;
 
     @Param(name="workqueues", optional=true)
     String workqueues;
 
-    @Param(name="maxqueuesize", optional=true, alias="maxQueueSize")
+    @Param(name="maxqueuesize", optional=true, alias="maxQueueSize", defaultValue = "4096")
     String maxQueueSize;
 
     @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
