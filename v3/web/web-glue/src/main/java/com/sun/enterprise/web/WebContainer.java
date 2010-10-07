@@ -48,7 +48,6 @@ import com.sun.enterprise.config.serverbeans.SessionProperties;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.container.common.spi.util.JavaEEIOUtils;
-import com.sun.enterprise.container.common.spi.util.JavaEEObjectStreamFactory;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.archivist.WebArchivist;
@@ -213,13 +212,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     //MonitoringService monitoringService;
 
     @Inject
-    private JavaEEObjectStreamFactory javaEEObjectStreamFactory;
-
-    @Inject
     private FileLoggerHandler logHandler;
 
     @Inject
-    private JavaEEIOUtils ioUtils;
+    private JavaEEIOUtils javaEEIOUtils;
 
     private HashMap<String, WebConnector> connectorMap = new HashMap<String, WebConnector>();
 
@@ -614,8 +610,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
     }
 
-    JavaEEObjectStreamFactory getJavaEEObjectStreamFactory() {
-        return javaEEObjectStreamFactory;
+    JavaEEIOUtils getJavaEEIOUtils() {
+        return javaEEIOUtils;
     }
 
     public boolean isShutdown() {
@@ -1931,7 +1927,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         vs.addChild(ctx);
 
-        ctx.loadSessions(deploymentProperties, ioUtils, ctx.getClassLoader());
+        ctx.loadSessions(deploymentProperties);
         // release DeploymentContext in memory
         wmInfo.setDeploymentContext(null);
 
@@ -2138,7 +2134,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     || verifyAlias(hostList, host)) {
                 context = (WebModule)host.findChild(contextRoot);
                 if(context != null) {
-                    context.saveSessions(props, ioUtils);
+                    context.saveSessions(props);
                     host.removeChild(context);
 
                     webStatsProviderBootstrap.unregisterApplicationStatsProviders(

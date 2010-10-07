@@ -460,30 +460,26 @@ public class StandardManager
         sessions.clear();
 
         ObjectInputStream ois = null;
-        if (!(is instanceof ObjectInputStream)) {
-            try {
-                BufferedInputStream bis = new BufferedInputStream(is);
-                if (container != null) {
-                    ois = ((StandardContext)container).createObjectInputStream(bis);
-                } else {
-                    ois = new ObjectInputStream(bis);
-                }
-            } catch (IOException ioe) {
-                log.log(Level.SEVERE, sm.getString("standardManager.loading.ioe",
-                                                   ioe),
-                        ioe);
-                if (ois != null) {
-                    try {
-                        ois.close();
-                    } catch (IOException f) {
-                        // Ignore
-                    }
-                    ois = null;
-                }
-                throw ioe;
+        try {
+            BufferedInputStream bis = new BufferedInputStream(is);
+            if (container != null) {
+                ois = ((StandardContext)container).createObjectInputStream(bis);
+            } else {
+                ois = new ObjectInputStream(bis);
             }
-        } else {
-            ois = (ObjectInputStream) is;
+        } catch (IOException ioe) {
+            log.log(Level.SEVERE, sm.getString("standardManager.loading.ioe",
+                                               ioe),
+                    ioe);
+            if (ois != null) {
+                try {
+                    ois.close();
+                } catch (IOException f) {
+                     // Ignore
+                }
+                ois = null;
+            }
+            throw ioe;
         }
 
         synchronized (sessions) {
@@ -655,31 +651,26 @@ public class StandardManager
     private void writeSessions(OutputStream os, boolean doExpire) 
             throws IOException {
         ObjectOutputStream oos = null;
-        if (!(os instanceof ObjectOutputStream)) {
-
-            try {
-                if (container != null) {
-                    oos = ((StandardContext) container).createObjectOutputStream(
-                            new BufferedOutputStream(os));
-                } else {
-                    oos = new ObjectOutputStream(new BufferedOutputStream(os));
-                }
-            } catch (IOException e) {
-                log.log(Level.SEVERE,
-                        sm.getString("standardManager.unloading.ioe", e),
-                        e);
-                if (oos != null) {
-                    try {
-                        oos.close();
-                    } catch (IOException f) {
-                        // Ignore
-                    }
-                    oos = null;
-                }
-                throw e;
+        try {
+            if (container != null) {
+                oos = ((StandardContext) container).createObjectOutputStream(
+                        new BufferedOutputStream(os));
+            } else {
+                oos = new ObjectOutputStream(new BufferedOutputStream(os));
             }
-        } else {
-            oos = (ObjectOutputStream)os;
+        } catch (IOException e) {
+            log.log(Level.SEVERE,
+                    sm.getString("standardManager.unloading.ioe", e),
+                    e);
+            if (oos != null) {
+                try {
+                    oos.close();
+                } catch (IOException f) {
+                    // Ignore
+                }
+                oos = null;
+            }
+            throw e;
         }
 
         // Write the number of active sessions, followed by the details
