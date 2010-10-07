@@ -1034,16 +1034,16 @@ public class FileUtils {
         if (f.exists())
            return f;
 
-        InputStream is = new BufferedInputStream(Thread.currentThread().getContextClassLoader().getResourceAsStream(file));
-        if (is == null) {
-           return null;
-        }
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(file);
+        if (is == null)
+            return null;
+        InputStream bis = new BufferedInputStream(is);
 
         f.getParentFile().mkdirs();
         OutputStream os = new BufferedOutputStream(FileUtils.openFileOutputStream(f));
         byte buf[] = new byte[10240];
         int len = 0;
-        while ((len =is.read(buf)) > 0) {
+        while ((len =bis.read(buf)) > 0) {
            os.write(buf, 0, len);
         }
         os.close();
