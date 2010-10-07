@@ -42,19 +42,25 @@ package com.sun.enterprise.v3.admin.cluster;
 
 
 
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.Configs;
-import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.util.StringUtils;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
+import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.ExecuteOn;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.config.ReferenceContainer;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.config.support.CommandTarget;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
 import java.util.List;
+import java.util.LinkedList;
 
 /**
  *  This is a remote command that lists the configs.
@@ -65,17 +71,41 @@ import java.util.List;
 @Service(name = "list-configs")
 @I18n("list.configs.command")
 @Scoped(PerLookup.class)
+@ExecuteOn({RuntimeType.DAS})
+@TargetType(value={CommandTarget.CLUSTER,
+CommandTarget.CONFIG, CommandTarget.DAS, CommandTarget.DOMAIN, CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTERED_INSTANCE})
 public final class ListConfigsCommand implements AdminCommand {
 
     @Inject
-    Domain domain;
+    private Domain domain;
+
+    @Param(optional = true, primary = true, defaultValue = "domain")
+    private String target;
+
+    private ActionReport report;
+
+    @Inject
+    private Configs allConfigs;
 
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
 
-        Configs configs = domain.getConfigs();
-        List<Config> configList = configs.getConfig();
+        List<Config> configList = null;
+        //Fix for issue 13356 list-configs doesn't take an operand
+        //defaults to domain
+        if (target.equals("domain" )) {
+            Configs configs = domain.getConfigs();
+            configList = configs.getConfig();
+        } else {
+            configList = createConfigList();
+
+            if (configList == null) {
+                fail(Strings.get("list.instances.badTarget", target));
+                return;
+            }
+        }
+        
         StringBuffer sb = new StringBuffer();
         for (Config config : configList) {
             sb.append(config.getName()).append('\n');
@@ -85,6 +115,37 @@ public final class ListConfigsCommand implements AdminCommand {
         //Fix for isue 12885
         report.addSubActionsReport().setMessage(output.substring(0,output.length()-1 ));
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+    }
+
+    private void fail(String s) {
+        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+        report.setMessage(s);
+    }
+
+    /*
+    * if target was junk then return all the configs
+    */
+    private List<Config> createConfigList() {
+        // 1. no target specified
+        if (!StringUtils.ok(target))
+            return allConfigs.getConfig();
+
+        ReferenceContainer rc = domain.getReferenceContainerNamed(target);
+
+        if (rc.isServer()) {
+            Server s =((Server) rc);
+            List<Config> cl = new LinkedList<Config>();
+            cl.add(s.getConfig());
+            return  cl;
+        }
+        else if (rc.isCluster()) {
+            Cluster cluster = (Cluster) rc;
+            List<Config> cl = new LinkedList<Config>();
+            cl.add(domain.getConfigNamed(cluster.getConfigRef()));
+            return cl;
+        }
+        else
+            return null;
     }
 
 }
