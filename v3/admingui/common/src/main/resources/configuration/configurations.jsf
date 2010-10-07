@@ -80,7 +80,7 @@
         setAttribute(key="one" value="$int{1}");
     />
     </event>
-"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+"configurations");</script>
+"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":configurations");</script>
 <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
      <sun:title id="propertyContentPage" title="$resource{i18nc.configurations.PageTitle}"
@@ -118,7 +118,7 @@
             />
         </event>
         <sun:hyperlink id="link" text="#{td.value.name}"
-                   url="#{request.contextPath}/common/configuration/configuration.jsf?c=#{td.value.name}" />
+                   url="#{request.contextPath}/common/configuration/configuration.jsf?configName=#{td.value.name}" />
     </sun:tableColumn>
 
      <sun:tableColumn
