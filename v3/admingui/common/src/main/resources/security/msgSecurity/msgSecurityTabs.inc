@@ -42,14 +42,14 @@
 
 <!-- security/msgSecurity/msgSecurityTabs.inc -->
 
-<sun:tabSet id="msgSecurityTabs" immediate="$boolean{true}" selected="#{sessionScope.msgSecurityTabs}">
-    <sun:tab id="msgSecurityEdit" immediate="$boolean{true}" text="$resource{i18nc.msgSecurity.msgSecurityTab}" toolTip="$resource{i18nc.msgSecurity.msgSecurityTab} Tab" >
+<sun:tabSet id="msgSecurityTabs" immediate="true" selected="#{sessionScope.msgSecurityTabs}">
+    <sun:tab id="msgSecurityEdit" immediate="true" text="$resource{i18nc.msgSecurity.msgSecurityTab}" toolTip="$resource{i18nc.msgSecurity.msgSecurityTab.tooltip}" >
         <!command
             setSessionAttribute(key="msgSecurityTabs" value="msgSecurityEdit");
             gf.redirect(page="msgSecurityEdit.jsf?configName=#{encodedConfigName}&name=#{pageSession.encodedName}");
         />       
     </sun:tab>
-    <sun:tab id="providers" immediate="$boolean{true}" text="$resource{i18nc.msgSecurity.providersTab}" toolTip="$resource{i18nc.msgSecurity.providersTab} Tab" >
+    <sun:tab id="providers" immediate="true" text="$resource{i18nc.msgSecurity.providersTab}" toolTip="$resource{i18nc.msgSecurity.providersTab.tooltip}">
         <!command
             setSessionAttribute(key="msgSecurityTabs" value="providers");
             gf.redirect(page="providers.jsf?configName=#{encodedConfigName}&name=#{pageSession.encodedName}");
