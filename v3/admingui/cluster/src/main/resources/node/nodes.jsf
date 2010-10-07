@@ -80,7 +80,7 @@
         gf.listInstances(optionKeys={"standaloneonly" } optionValues={"true"}, instances="#{pageSession.standaloneList}");
     />
     </event>
-"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+"nodes");</script>
+"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID + ":nodeTreeNode");</script>
 <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
      <sun:title id="propertyContentPage" title="$resource{i18ncs.nodes.PageTitle}" helpText="$resource{i18ncs.nodes.PageTitleHelp}" />
