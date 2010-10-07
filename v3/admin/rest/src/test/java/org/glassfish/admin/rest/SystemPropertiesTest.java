@@ -92,6 +92,32 @@ public class SystemPropertiesTest extends RestTestBase {
         checkStatusForSuccess(response);
     }
 
+    @Test
+    public void createPropertiesWithColons() {
+        final String prop1 = "property" + generateRandomString();
+        Map<String, String> payload = new HashMap<String, String>() {{
+            put(prop1, "http://localhost:4848");
+        }};
+        ClientResponse response = post(URL_SYSTEM_PROPERTIES, payload);
+        checkStatusForSuccess(response);
+        response = get(URL_SYSTEM_PROPERTIES);
+        List<Map<String, Object>> systemProperties = getSystemProperties(MarshallingUtils.buildMapFromDocument(response.getEntity(String.class)));
+        assertNotNull(systemProperties); // This may or may not be empty, depending on whether or not other tests failed
+
+        int testPropsFound = 0;
+        for (Map<String, Object> systemProperty : systemProperties) {
+            String name = (String)systemProperty.get("name");
+            if (prop1.equals(name)) {
+                testPropsFound++;
+            }
+        }
+
+        assertEquals(1, testPropsFound);
+
+        response = delete(URL_SYSTEM_PROPERTIES+"/"+prop1);
+        checkStatusForSuccess(response);
+    }
+
     private List<Map<String, Object>> getSystemProperties(Map<String, Object> responseMap) {
         Map<String, Object> extraProperties = (Map<String, Object>)responseMap.get("extraProperties");
         return (List<Map<String, Object>>)extraProperties.get("systemProperties");

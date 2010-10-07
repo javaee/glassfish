@@ -159,7 +159,7 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
         for (Map.Entry<String, String> entry : data.entrySet()) {
             final String value = entry.getValue();
             if ((value != null) && !value.isEmpty()) {
-                options.append(sep).append(entry.getKey()).append("=").append(value);
+                options.append(sep).append(entry.getKey()).append("=").append(value.replaceAll(":", "\\\\:"));
                 sep = ":";
             }
         }
