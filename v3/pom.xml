@@ -107,7 +107,7 @@
         <jsf-api.version>2.1.0-b05</jsf-api.version>
         <jsf-impl.version>2.1.0-b05</jsf-impl.version>
         <jsf-ext.version>0.2</jsf-ext.version>
-        <woodstock.version>4.0.2.3</woodstock.version>
+        <woodstock.version>4.0.2.6</woodstock.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
         <grizzly.version>1.9.19</grizzly.version>
         <jsr250-api.version>1.0</jsr250-api.version>
