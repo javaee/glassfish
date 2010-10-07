@@ -89,32 +89,32 @@ public class CreateTransport implements AdminCommand {
         new LocalStringManagerImpl(CreateTransport.class);
     @Param(name = "transportname", primary = true)
     String transportName;
-    @Param(name = "acceptorthreads", optional = true, defaultValue = "-1")
+    @Param(name = "acceptorthreads", alias="acceptorThreads", optional = true, defaultValue = "-1")
     String acceptorThreads;
-    @Param(name = "buffersizebytes", optional = true, defaultValue = "8192")
+    @Param(name = "buffersizebytes", alias="bufferSizeBytes", optional = true, defaultValue = "8192")
     String bufferSizeBytes;
-    @Param(name = "bytebuffertype", optional = true, defaultValue = "HEAP")
+    @Param(name = "bytebuffertype", alias="byteBufferType", optional = true, defaultValue = "HEAP")
     String byteBufferType;
     @Param(name = "classname", optional = true,
         defaultValue = "com.sun.grizzly.TCPSelectorHandler")
     String className;
-    @Param(name = "displayconfiguration", optional = true, defaultValue = "false")
+    @Param(name = "displayconfiguration", alias="displayConfiguration", optional = true, defaultValue = "false")
     Boolean displayConfiguration;
-    @Param(name = "enablesnoop", optional = true, defaultValue = "false")
+    @Param(name = "enablesnoop", alias="enableSnoop", optional = true, defaultValue = "false")
     Boolean enableSnoop;
-    @Param(name = "idlekeytimeoutseconds", optional = true, defaultValue = "30")
+    @Param(name = "idlekeytimeoutseconds", alias="idleKeyTimeoutSeconds", optional = true, defaultValue = "30")
     String idleKeyTimeoutSeconds;
-    @Param(name = "maxconnectionscount", optional = true, defaultValue = "4096")
+    @Param(name = "maxconnectionscount", alias="maxConnectionsCount", optional = true, defaultValue = "4096")
     String maxConnectionsCount;
-    @Param(name = "readtimeoutmillis", optional = true, defaultValue = "30000")
+    @Param(name = "readtimeoutmillis", alias="readTimeoutMillis", optional = true, defaultValue = "30000")
     String readTimeoutMillis;
-    @Param(name = "writetimeoutmillis", optional = true, defaultValue = "30000")
+    @Param(name = "writetimeoutmillis", alias="writeTimeoutMillis", optional = true, defaultValue = "30000")
     String writeTimeoutMillis;
-    @Param(name = "selectionkeyhandler", optional = true)
+    @Param(name = "selectionkeyhandler", alias="selectionKeyHandler", optional = true)
     String selectionKeyHandler;
-    @Param(name = "selectorpolltimeoutmillis", optional = true, defaultValue = "1000")
+    @Param(name = "selectorpolltimeoutmillis", alias="selectorPollTimeoutMillis", optional = true, defaultValue = "1000")
     String selectorPollTimeoutMillis;
-    @Param(name = "tcpnodelay", optional = true, defaultValue = "false")
+    @Param(name = "tcpnodelay", alias="tcpNoDelay", optional = true, defaultValue = "false")
     Boolean tcpNoDelay;
     @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     String target;
