@@ -54,6 +54,8 @@
         setSessionAttribute(key="serverInstTabs" value="general");
         setPageSessionAttribute(key="pageName" value="common/appServer/serverInstGeneralPe.jsf");
 
+        gf.getInstanceInfo(instanceName="#{pageSession.instanceName}", info="#{pageSession.info}");
+
         <!-- TODO: Need to get the
             configRoot Directory
             Debug Info
@@ -127,7 +129,7 @@
                 </sun:property>
 
                 <sun:property id="confiDirProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.configDirLabel}">
-                    <sun:staticText id="configDir" text=" TBD "/>
+                    <sun:staticText id="configuration" text="#{pageSession.info.config}"/>
                 </sun:property>
 
 
@@ -136,7 +138,7 @@
                 </sun:property>
 
                 <sun:property id="debugProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.debugLabel}">
-                    <sun:staticText id="debugPort" text=" TBD "/>
+                    <sun:staticText id="debugEnabled" text="#{pageSession.info.debugEnabled}"/>
                 </sun:property>
             </sun:propertySheetSection>
             <event>

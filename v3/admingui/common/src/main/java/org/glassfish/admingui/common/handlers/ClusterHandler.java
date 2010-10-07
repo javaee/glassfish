@@ -405,9 +405,12 @@ public class ClusterHandler {
         String instanceConfig = (String)((Map)getExtraPropertiesEntry(result, "entity")).get("configRef");
 
         // Server status
-        result = RestApiHandlers.restRequest(REST_URL+"/list-instances", new HashMap<String, Object>() {{ put ("id", instanceName); }}, "get", null);
-        List instanceList = (List)getExtraPropertiesEntry(result, "instanceList");
-        String serverStatus = (String) ((Map)instanceList.get(0)).get("status");
+        String serverStatus = "RUNNING";
+        if (!"server".equals(instanceName)) {
+            result = RestApiHandlers.restRequest(REST_URL+"/list-instances", new HashMap<String, Object>() {{ put ("id", instanceName); }}, "get", null);
+            List instanceList = (List)getExtraPropertiesEntry(result, "instanceList");
+            serverStatus = (String) ((Map)instanceList.get(0)).get("status");
+        }
 
         // Config object
         String configUrl = REST_URL+ "/configs/config/" + instanceConfig;
