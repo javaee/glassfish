@@ -65,6 +65,8 @@ import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.io.Serializable;
 
+import java.sql.Connection;
+
 import com.sun.logging.LogDomains;
 
 import javax.ejb.EJBException;
@@ -73,6 +75,7 @@ import javax.ejb.CreateException;
 import javax.ejb.TimerConfig;
 import javax.ejb.Schedule;
 import javax.ejb.ScheduleExpression;
+import javax.sql.DataSource;
 
 import com.sun.enterprise.admin.monitor.callflow.RequestType;
 import com.sun.enterprise.admin.monitor.callflow.Agent;
@@ -84,6 +87,7 @@ import org.glassfish.server.ServerEnvironmentImpl;
 
 import org.glassfish.api.invocation.ComponentInvocation;
 import com.sun.enterprise.deployment.ScheduledTimerDescriptor;
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 
 import javax.transaction.TransactionManager;
 import javax.transaction.Transaction;
@@ -167,11 +171,20 @@ public class EJBTimerService
     // timer service would have maximim consistency with performance degration.
     private boolean performDBReadBeforeTimeout = false;
     
-    private static final String strDBReadBeforeTimeout = 
-        "com.sun.ejb.timer.ReadDBBeforeTimeout";
+    private static final String strDBReadBeforeTimeout = "com.sun.ejb.timer.ReadDBBeforeTimeout";
     private boolean foundSysPropDBReadBeforeTimeout = false;
 
     private Agent agent = ejbContainerUtil.getCallFlowAgent();
+
+    private DataSource timerDataSource = null;
+
+    // Determines what needs to be done on connection failure
+    private static final String ON_CONECTION_FAILURE = "operation-on-connection-failure";
+    private static final String OP_REDELIVER = "redeliver";
+    private static final String OP_STOP = "stop";
+
+    // Possible values "redeliver" and "stop"
+    private String operationOnConnectionFailure = null;
 
     public EJBTimerService(String appID, TimerLocal timerLocal) {
         timerLocal_ = timerLocal;
@@ -228,11 +241,19 @@ public class EJBTimerService
                 // is false. For SE/EE the correct default would set when the 
                 // EJBLifecyleImpl gets created as part of the EE lifecycle module
                 setPerformDBReadBeforeTimeout( false );
+
+                operationOnConnectionFailure = ejbt.getPropertyValue(ON_CONECTION_FAILURE);
             }
 
             // Compose owner id for all timers created with this 
             // server instance.  
             ownerIdOfThisServer_ = ejbContainerUtil.getServerEnvironment().getInstanceName();
+
+            // Store the DataSource ref to check if connections can be aquired if
+            // the timeout fails
+            String resource_name = ejbContainerUtil.getTimerResource();
+            ConnectorRuntime connectorRuntime = ejbContainerUtil.getDefaultHabitat().getByContract(ConnectorRuntime.class);
+            timerDataSource = DataSource.class.cast(connectorRuntime.lookupNonTxResource(resource_name, false));
 
         } catch(Exception e) {
             logger.log(Level.FINE, "Exception converting timer service " +
@@ -1832,13 +1853,16 @@ public class EJBTimerService
                     cancelTimer(timerId);
                 } else if( redeliver ) {
                     if( timerState.getNumFailedDeliveries() <
-                        getMaxRedeliveries() ) {
+                            getMaxRedeliveries() || redeliverOnFailedConnection()) {
                         Date redeliveryTimeout = new Date
                             (now.getTime() + getRedeliveryInterval());
                         if( logger.isLoggable(Level.FINE) ) {
                             logger.log(Level.FINE,"Redelivering " + timerState);
                         }
                         rescheduleTask(timerId, redeliveryTimeout);
+                    } else if (stopOnFailedConnection()) {
+                        // stop Timer Service
+                        shutdown();
                     } else {
                         int numDeliv = timerState.getNumFailedDeliveries() + 1;
                         logger.log(Level.INFO, 
@@ -2284,6 +2308,43 @@ public class EJBTimerService
         return ejbContainerUtil.getContainerSync(transaction);
     }
 
+    private boolean redeliverOnFailedConnection() {
+        return operationOnConnectionFailure != null && operationOnConnectionFailure.equalsIgnoreCase(OP_REDELIVER) && 
+            failedConnection();
+    }
+
+    private boolean stopOnFailedConnection() {
+        return operationOnConnectionFailure != null && operationOnConnectionFailure.equalsIgnoreCase(OP_STOP) && 
+            failedConnection();
+    }
+
+    private boolean failedConnection() {
+        boolean failed = false;
+        Connection c = null;
+        try {
+            c = timerDataSource.getConnection();
+            failed = !c.isValid(0);
+        } catch (Exception e) {
+            failed = true;
+        } finally {
+            try {
+                if (c != null) {
+                    c.close();
+                }
+            } catch (Exception e) {}
+        }
+
+        if (failed) {
+            logger.log(Level.WARNING, "Cannot acquire a connection from the database used by the EJB Timer Service");
+        } else {
+            if( logger.isLoggable(Level.FINE) ) {
+                logger.log(Level.FINE, "Connection ok");
+            }
+        }
+
+        return failed;
+    }
+
     static String txStatusToString(int txStatus) {
         String txStatusStr = "UNMATCHED TX STATUS";
 
@@ -2521,9 +2582,7 @@ public class EJBTimerService
 
     } //TimerCache{}
 
-    private File getTimerServiceShutdownFile()
-        throws Exception
-    {
+    private File getTimerServiceShutdownFile() throws Exception {
         File timerServiceShutdownDirectory;
         File timerServiceShutdownFile;
 

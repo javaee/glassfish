@@ -97,6 +97,8 @@ public interface EjbContainerUtil {
 
     public  EJBTimerService getEJBTimerService(String target);
 
+    public String getTimerResource();
+
     public  void registerContainer(BaseContainer container);
 
     public  void unregisterContainer(BaseContainer container);

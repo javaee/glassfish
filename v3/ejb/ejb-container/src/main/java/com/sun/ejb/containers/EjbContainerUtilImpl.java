@@ -612,6 +612,10 @@ public class EjbContainerUtilImpl
         return upgrade;
     }
 
+    public String getTimerResource() {
+        return getTimerResource(null);
+    }
+
     private String getTimerResource(String target) {
         String resource = EjbContainerUtil.TIMER_RESOURCE_JNDI;
         EjbTimerService ejbt = getEjbTimerService(target);

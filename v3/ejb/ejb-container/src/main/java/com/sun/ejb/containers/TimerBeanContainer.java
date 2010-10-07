@@ -99,9 +99,6 @@ public class TimerBeanContainer
             TimerLocal timerLocal = (TimerLocal) createEJBLocalBusinessObjectImpl(timerLocalIntf).
                     getClientObject(timerLocalIntf);
 
-            // TODO: call ejbContainerUtil.getTimerResource();
-            String timerResourceJndiName = EjbContainerUtil.TIMER_RESOURCE_JNDI;
-
             //descriptor object representing this application or module
             Application application = ejbDescriptor.getApplication();
         
