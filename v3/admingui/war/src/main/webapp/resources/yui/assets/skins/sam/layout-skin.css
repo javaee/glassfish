@@ -104,7 +104,7 @@ version: 2.7.0
 
 /* Give the header a blue backgorund */
 .yui-skin-sam .yui-layout .yui-layout-hd {
-    background:url(../../../../assets/skins/sam/sprite.png) repeat-x 0 -1400px;
+    background:url(../../../assets/skins/sam/sprite.png) repeat-x 0 -1400px;
     border: 1px solid #808080;
 }
 /* Set the background color */
