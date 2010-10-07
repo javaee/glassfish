@@ -223,7 +223,7 @@ public class DynamicInterceptor implements MBeanServer
                 return getDelegateMBeanServer().queryMBeans( objectName, expr );
             return getInstanceConnection(instance).queryMBeans(objectName, expr);
         } catch (Exception ex) {
-            return null;
+            return Collections.EMPTY_SET;
         }
     }
 
