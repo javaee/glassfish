@@ -67,4 +67,13 @@ public class OSGiSniffer extends GenericSniffer {
     public String[] getContainersNames() {
         return new String[] { "osgi" };
     }
+
+    @Override
+    /**
+     * @return whether this sniffer should be visible to user
+     *
+     */
+    public boolean isUserVisible() {
+        return true;
+    }
 }
