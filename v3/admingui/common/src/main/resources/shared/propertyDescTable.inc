@@ -76,12 +76,14 @@
     <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$pageSession{tableList}", "$pageSession{tableList2}"}  sourceVar="td">
         <ui:event type="beforeCreate">
             // Ensure all required fields exist
-            if ("#{pageSession.tableList[0].name}") {
-                if ("!#{pageSession.tableList[0].value}") {
-                    mapPut(map="#{pageSession.tableList[0]}" key="value" value="");
-                }
-                if ("!#{pageSession.tableList[0].description}") {
-                    mapPut(map="#{pageSession.tableList[0]}" key="description" value="");
+            foreach (var="item" list="#{pageSession.tableList}") {
+                if ("!(#{item.name}=#{null})") {
+                    if ("#{item.value}=#{null}") {
+                        mapPut(map="#{item}" key="value" value="");
+                    }
+                    if ("#{item.description}=#{null}") {
+                        mapPut(map="#{item}" key="description" value="");
+                    }
                 }
             }
 
