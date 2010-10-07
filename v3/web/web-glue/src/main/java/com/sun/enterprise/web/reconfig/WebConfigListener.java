@@ -44,6 +44,7 @@ import com.sun.enterprise.config.serverbeans.AccessLog;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.ManagerProperties;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.config.serverbeans.WebContainerAvailability;
 import com.sun.enterprise.v3.services.impl.MapperUpdateListener;
 import com.sun.enterprise.web.WebContainer;
 import com.sun.grizzly.config.dom.NetworkListener;
@@ -109,7 +110,7 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
      */
     @Override
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
-        return ConfigSupport.sortAndDispatch(events, new Changed() {
+        return ConfigSupport.sortAndDispatch(events, new Changed() {         
             @Override
             public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> tClass, T t) {
                 if (logger.isLoggable(Level.FINE)) {
@@ -130,7 +131,9 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
                         container.updateAccessLog(httpService);
                     } else if (t instanceof ManagerProperties) {
                         return new NotProcessed("ManagerProperties requires restart");
-                    } 
+                    } else if (t instanceof WebContainerAvailability) {
+                        // TODO handle dynamic reconfig for WebContainerAvailability
+                    }
                     container.updateHttpService(httpService);
                 } catch (LifecycleException le) {
                     logger.log(Level.SEVERE, "webcontainer.exceptionConfigHttpService", le);
