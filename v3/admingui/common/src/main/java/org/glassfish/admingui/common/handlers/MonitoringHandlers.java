@@ -830,21 +830,22 @@ public class MonitoringHandlers {
         levels.add("HIGH");
     }
     //monitoring component names
-    public static final String JVM = "JVM";
-    public static final String WEB_CONTAINER = "Web Container";
-    public static final String HTTP_SERVICE = "HTTP Service";
-    public static final String THREAD_POOL = "Thread Pool";
-    public static final String JDBC_CONNECTION_POOL = "JDBC Connection Pool";
-    public static final String CONNECTOR_CONNECTION_POOL = "Connector Connection Pool";
-    public static final String EJB_CONTAINER = "EJB Container";
-    public static final String TRANSACTION_SERVICE = "Transaction Service";
-    public static final String ORB = "ORB";
-    public static final String CONNECTOR_SERVICE = "Connector Service";
-    public static final String JMS_SERVICE = "JMS Service";
-    public static final String WEB_SERVICES_CONTAINER = "Web Services Container";
-    public static final String JPA = "JPA";
-    public static final String SECURITY = "Security";
-    public static final String JERSEY = "RESTful Web Services";
+    public static final String JVM = GuiUtil.getMessage("monitoring.Jvm");
+    public static final String WEB_CONTAINER = GuiUtil.getMessage("monitoring.Web");
+    public static final String HTTP_SERVICE = GuiUtil.getMessage("monitoring.Http");
+    public static final String THREAD_POOL = GuiUtil.getMessage("monitoring.ThreadPool");
+    public static final String JDBC_CONNECTION_POOL = GuiUtil.getMessage("monitoring.Jdbc");
+    public static final String CONNECTOR_CONNECTION_POOL = GuiUtil.getMessage("monitoring.Connector");
+    public static final String EJB_CONTAINER = GuiUtil.getMessage("monitoring.Ejb");
+    public static final String TRANSACTION_SERVICE = GuiUtil.getMessage("monitoring.TransactionService");
+    public static final String ORB = GuiUtil.getMessage("monitoring.Orb");
+    public static final String CONNECTOR_SERVICE = GuiUtil.getMessage("monitoring.ConnectorService");
+    public static final String JMS_SERVICE = GuiUtil.getMessage("monitoring.JmsService");
+    public static final String WEB_SERVICES_CONTAINER = GuiUtil.getMessage("monitoring.WebServices");
+    public static final String JPA = GuiUtil.getMessage("monitoring.Jpa");
+    public static final String SECURITY = GuiUtil.getMessage("monitoring.Security");
+    public static final String JERSEY = GuiUtil.getMessage("monitoring.Jersey");
+    public static final String DEPLOYMENT = GuiUtil.getMessage("monitoring.Deployment");
 
     final private static List monDisplayList= new ArrayList();
     static{
@@ -863,6 +864,7 @@ public class MonitoringHandlers {
         monDisplayList.add(JPA);
         monDisplayList.add(SECURITY);
         monDisplayList.add(JERSEY);
+        monDisplayList.add(DEPLOYMENT);
     }
     
     final private static List monNamesList = new ArrayList();
@@ -882,6 +884,7 @@ public class MonitoringHandlers {
         monNamesList.add("jpa");
         monNamesList.add("security");
         monNamesList.add("jersey");
+        monNamesList.add("deployment");
     }
 
     final private static List containerDispList= new ArrayList();    

@@ -51,17 +51,14 @@
 <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs,type=config,name=#{pageSession.configName}");
+        urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
         setPageSessionAttribute(key="childType" value="monitoring-service");
-        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=monitoring-service");
-        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.encodedConfigName}");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
         setPageSessionAttribute(key="convertToFalseList" value={"dtraceEnabled", "monitoringEnabled", "mbeanEnabled"});
-        // REST - TODO
         getMonitorLevels(endpoint="#{pageSession.parentUrl}" monitorCompList="#{requestScope.tableList}")
-        //getValidMonitorLevels(monitorLevelList="#{pageSession.levelList}")
         
     />
 </event>
@@ -82,7 +79,7 @@
                         onlyUseAttrs="#{pageSession.onlyUseAttrs}"
                     );
                     prepareSuccessfulMsg();
-                    gf.redirect(page="#{request.contextPath}/common/monitor/monitoringPage.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
+                    gf.redirect(page="#{request.contextPath}/common/monitor/monitoringPage.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.encodedConfigName}");
                 />
             </sun:button>
         </sun:panelGroup>
