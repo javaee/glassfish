@@ -308,7 +308,9 @@ public class GuiUtil {
             char test = chArr[idx];
             if (Character.isLetterOrDigit(test) || test == '_' || test == '-') {
                 chArr[newIdx++] = test;
-            }
+            } else {
+                chArr[newIdx++] = '_';
+	    }
         }
         return new String(chArr, 0, newIdx);
     }
