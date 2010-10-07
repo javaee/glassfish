@@ -104,7 +104,7 @@
         createMap(result="#{pageSession.clusterInstanceMap}");
     />
     </event>
-"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":clusters");</script>
+"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":clusterTreeNode");</script>
 <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
      <sun:title id="propertyContentPage" title="$resource{i18ncs.clusters.PageTitle}"
