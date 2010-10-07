@@ -50,6 +50,7 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
@@ -120,6 +121,10 @@ public class UpgradeStartup implements ModuleStartup {
 
     private final static String DOMAIN_TARGET = "domain";
 
+    private final static String SIGNATURE_TYPES_PARAM = "-signatureTypes";
+
+    private List<String> sigTypeList = new ArrayList<String>(); 
+
     public void setStartupContext(StartupContext startupContext) {
         appservStartup.setStartupContext(startupContext);
     }
@@ -164,6 +169,8 @@ public class UpgradeStartup implements ModuleStartup {
 
         // start the application server
         appservStartup.start();
+
+        initializeSigTypeList();
 
         // redeploy all existing applications
         for (Application app : applications.getApplications()) {
@@ -425,6 +432,12 @@ public class UpgradeStartup implements ModuleStartup {
             String entryName = e.nextElement();
             if (! entriesToExclude.contains(entryName)) {
                 InputStream sis = source.getEntry(entryName);
+                if (isSigFile(entryName)) {
+                    logger.log(Level.INFO, "Excluding signature file: " 
+                        + entryName + " from repackaged application: " + 
+                        appName + "\n");
+                    continue;
+                }
                 if (sis != null) {
                     InputStream is = new BufferedInputStream(sis);
                     OutputStream os = null;
@@ -439,6 +452,15 @@ public class UpgradeStartup implements ModuleStartup {
                     }
                 }
             }
+        }
+
+        // last is manifest if existing.
+        Manifest m = source.getManifest();
+        if (m!=null) {
+            processManifest(m, appName);
+            OutputStream os  = target.putNextEntry(JarFile.MANIFEST_NAME);
+            m.write(os);
+            target.closeEntry();
         }
 
         source.close();
@@ -477,6 +499,12 @@ public class UpgradeStartup implements ModuleStartup {
         Enumeration<String> e = source.entries();
         while (e.hasMoreElements()) {
             String entryName = e.nextElement();
+            if (isSigFile(entryName)) {
+                logger.log(Level.INFO, "Excluding signature file: " 
+                    + entryName + " from repackaged module: " + moduleName + 
+                    "\n");
+                continue;
+            }
             InputStream sis = source.getEntry(entryName);
             if (sis != null) {
                 InputStream is = new BufferedInputStream(sis);
@@ -496,6 +524,7 @@ public class UpgradeStartup implements ModuleStartup {
         // last is manifest if existing.
         Manifest m = source.getManifest();
         if (m!=null) {
+            processManifest(m, moduleName);
             OutputStream os  = target.putNextEntry(JarFile.MANIFEST_NAME);
             m.write(os);
             target.closeEntry();
@@ -527,5 +556,56 @@ public class UpgradeStartup implements ModuleStartup {
             return ".ear"; 
         }
         return null;
+    }
+
+    private void initializeSigTypeList() {
+        String sigTypesParam = env.getStartupContext().getArguments().getProperty(SIGNATURE_TYPES_PARAM);
+        if (sigTypesParam != null) {
+            sigTypeList = StringUtils.parseStringList(sigTypesParam, ",");
+        }
+        sigTypeList.add(".SF");
+        sigTypeList.add(".sf");
+        sigTypeList.add(".RSA");
+        sigTypeList.add(".rsa");
+        sigTypeList.add(".DSA");
+        sigTypeList.add(".dsa");
+        sigTypeList.add(".PGP");
+        sigTypeList.add(".pgp");
+    }
+
+    private boolean isSigFile(String entryName) {
+        for (String sigType : sigTypeList) {
+            if (entryName.endsWith(sigType)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void processManifest(Manifest m, String moduleName) {
+        // remove signature related entries from the file
+        Map<String, Attributes> entries = m.getEntries(); 
+        Iterator<String> entryKeyItr = entries.keySet().iterator(); 
+        while (entryKeyItr.hasNext()) {
+            String entryKey = entryKeyItr.next();
+            Attributes attr = entries.get(entryKey);
+            Iterator attrKeyItr  = attr.keySet().iterator();
+            while (attrKeyItr.hasNext()) {
+                Object attrKey = attrKeyItr.next();
+                if (attrKey instanceof Attributes.Name) {
+                    Attributes.Name attrKey2 = (Attributes.Name) attrKey;
+                    if (attrKey2.toString().trim().equals("Digest-Algorithms")
+                        || attrKey2.toString().indexOf("-Digest") != -1) {
+                        logger.log(Level.INFO, "Removing signature attribute " 
+                            + attrKey2 + " from manifest in "  + 
+                            moduleName + "\n");
+                        attrKeyItr.remove();
+                    }
+                }
+            }
+            if (attr.size() == 0) {
+                entryKeyItr.remove();
+            }
+        }
     }
 }
