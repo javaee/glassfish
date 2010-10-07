@@ -106,8 +106,6 @@
 	LogDateSortDirection="false",
 	FromRecord="#{fromRecord}",
 	AfterRecord="#{afterRecord}",
-	// FIXME: Remove hard-coded value!!
-	//LogFileName="/logs/server.log",
 	LogFileName="#{logFile}",
 	LogLevel="#{logLevel}",
 	OnlyLevel="#{requestScope.onlyLevel}",
