@@ -36,14 +36,10 @@
  */
 package com.sun.hk2.component;
 
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.MultiMap;
-import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.component.Scope;
-import org.jvnet.hk2.component.Singleton;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -54,11 +50,11 @@ import java.security.PrivilegedAction;
  */
 @SuppressWarnings("unchecked")
 public class ConstructorWomb<T> extends AbstractWombImpl<T> {
-    private final ScopeInstance singletonScope;
+//    private final ScopeInstance singletonScope;
 
     public ConstructorWomb(Class<T> type, Habitat habitat, MultiMap<String,String> metadata) {
         super(type, habitat, metadata);
-        singletonScope = habitat.singletonScope;
+//        singletonScope = habitat.singletonScope;
     }
 
     public T create(Inhabitant onBehalfOf) throws ComponentException {
@@ -78,8 +74,8 @@ public class ConstructorWomb<T> extends AbstractWombImpl<T> {
     public void initialize(final T t, final Inhabitant onBehalfOf) throws ComponentException {
         super.initialize(t, onBehalfOf);
         
-        Scoped scoped = t.getClass().getAnnotation(Scoped.class);
-        ScopeInstance si = (scoped == null ? singletonScope : getScope(scoped));
+//        Scoped scoped = t.getClass().getAnnotation(Scoped.class);
+//        ScopeInstance si = (scoped == null ? singletonScope : getScope(scoped));
         if (System.getSecurityManager() != null) {
           AccessController.doPrivileged(new PrivilegedAction() {
               // privileged required for running with SecurityManager ON
@@ -93,28 +89,28 @@ public class ConstructorWomb<T> extends AbstractWombImpl<T> {
         }
     }
 
-    /**
-     * Determines the {@link ScopeInstance} that stores the component.
-     *
-     * @return
-     *      null for prototype scope. (Note that in {@link Scope#current()}
-     *      null return value is an error.)
-     */
-    private ScopeInstance getScope(Scoped svc) throws ComponentException {
-        Class<? extends Scope> s = svc.value();
-        // for performance reason and to avoid infinite recursion,
-        // recognize these two fundamental built-in scopes and process them differently.
-        if(s==Singleton.class)
-            return singletonScope;
-        if(s==PerLookup.class)
-            return null;
-
-        // for all the other scopes, including user-defined ones.
-        Scope scope = habitat.getByType(s);
-        ScopeInstance si = scope.current();
-        if(si==null) // scope is an extension point, so beware for broken implementations
-            throw new ComponentException(scope+" returned null from the current() method");
-        return si;
-    }
+//    /**
+//     * Determines the {@link ScopeInstance} that stores the component.
+//     *
+//     * @return
+//     *      null for prototype scope. (Note that in {@link Scope#current()}
+//     *      null return value is an error.)
+//     */
+//    private ScopeInstance getScope(Scoped svc) throws ComponentException {
+//        Class<? extends Scope> s = svc.value();
+//        // for performance reason and to avoid infinite recursion,
+//        // recognize these two fundamental built-in scopes and process them differently.
+//        if(s==Singleton.class)
+//            return singletonScope;
+//        if(s==PerLookup.class)
+//            return null;
+//
+//        // for all the other scopes, including user-defined ones.
+//        Scope scope = habitat.getByType(s);
+//        ScopeInstance si = scope.current();
+//        if(si==null) // scope is an extension point, so beware for broken implementations
+//            throw new ComponentException(scope+" returned null from the current() method");
+//        return si;
+//    }
     
 }

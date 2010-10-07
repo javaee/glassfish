@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.jvnet.hk2.component.MultiMap;
-import org.jvnet.hk2.component.matcher.Constants;
+import org.jvnet.hk2.component.Constants;
 import org.jvnet.hk2.component.matcher.SimpleLdapMatcher;
 
 import junit.framework.TestCase;

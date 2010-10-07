@@ -70,20 +70,21 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
     public <V> V getValue(Object component,
                 Inhabitant<?> onBehalfOf,
                 AnnotatedElement target,
+                Type genericType,
                 Class<V> type) throws ComponentException {
         V result;
         
         if (type.isArray()) {
-            result = getArrayInjectValue(habitat, component, onBehalfOf, target, type);
+            result = getArrayInjectValue(habitat, component, onBehalfOf, target, genericType, type);
         } else {
           Inject inject = target.getAnnotation(Inject.class);
           if (Types.isSubClassOf(type, Holder.class)){
-              result = getHolderInjectValue(habitat, component, onBehalfOf, target, type, inject);
+              result = getHolderInjectValue(habitat, component, onBehalfOf, target, genericType, type, inject);
           } else {
               if (habitat.isContract(type)) {
-                  result = getServiceInjectValue(habitat, component, onBehalfOf, target, type, inject);
+                  result = getServiceInjectValue(habitat, component, onBehalfOf, target, genericType, type, inject);
               } else {
-                  result = getComponentInjectValue(habitat, component, onBehalfOf, target, type, inject);
+                  result = getComponentInjectValue(habitat, component, onBehalfOf, target, genericType, type, inject);
               }
           }
         }
@@ -95,6 +96,7 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
               Object component,
               Inhabitant<?> onBehalfOf,
               AnnotatedElement target,
+              Type genericType,
               Class<V> type) {
         V result;
         Class<?> ct = type.getComponentType();
@@ -113,6 +115,7 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
               Object component,
               Inhabitant<?> onBehalfOf,
               AnnotatedElement target,
+              Type genericType,
               Class<V> type,
               Inject inject) throws ComponentException {
       Type t = Types.getTypeArgument(((java.lang.reflect.Field) target).getGenericType(), 0);
@@ -135,14 +138,19 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
               Object component,
               Inhabitant<?> onBehalfOf,
               AnnotatedElement target,
+              Type genericType,
               Class<V> type,
               Inject inject) throws ComponentException {
         V result = habitat.getComponent(type, inject.name());
         return result;
     }
     
-    protected <V> V getComponentInjectValue(Habitat habitat, Object component,
-              Inhabitant<?> onBehalfOf, AnnotatedElement target, Class<V> type,
+    protected <V> V getComponentInjectValue(Habitat habitat,
+              Object component,
+              Inhabitant<?> onBehalfOf,
+              AnnotatedElement target,
+              Type genericType,
+              Class<V> type,
               Inject inject) throws ComponentException {
         // ideally we should check if type has @Service or @Configured
         V result = habitat.getByType(type);

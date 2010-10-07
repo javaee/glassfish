@@ -2,21 +2,20 @@ package org.jvnet.hk2.component;
 
 import java.util.List;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * MultiMap Tests.
  * 
  * @author Jeff Trent
  */
-@Ignore
-public class MultiMapTest extends TestCase {
+public class MultiMapTest {
   MultiMap<String, String> mm = new MultiMap<String, String>(false);
   MultiMap<String, String> mmc = new MultiMap<String, String>(true);
 
-      @Ignore
-  // for now.
+  @Ignore
   public void testGet_returnsReadOnlyMap() throws Exception {
     runTestGet_returnsReadOnlyMap(mm);
     runTestGet_returnsReadOnlyMap(mmc);
@@ -46,6 +45,7 @@ public class MultiMapTest extends TestCase {
     }
   }
 
+  @Test
   public void testRemove_KV() throws Exception {
     runTestRemove_KV(mm);
     runTestRemove_KV(mmc);
@@ -60,4 +60,20 @@ public class MultiMapTest extends TestCase {
     assertFalse(mm.remove("key", val));
     assertTrue(mm.remove("key", "val2"));
   }
+  
+  @Test
+  public void testContainsKV() {
+    runContainsKV(mm);
+    runContainsKV(mmc);
+  }
+
+  protected void runContainsKV(MultiMap<String, String> mm) {
+    assertFalse(mm.contains("a", "b"));
+    mm.add("a", "b");
+    assertFalse(mm.contains("a", null));
+    assertFalse(mm.contains("a", "a"));
+    assertTrue(mm.contains("a", "b"));
+    assertFalse(mm.contains("b", "a"));
+  }
+
 }

@@ -115,7 +115,7 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> {
     }
     
     @SuppressWarnings("unchecked")
-    private Class<T> loadClass() {
+    protected Class<T> loadClass() {
         final ClassLoader cl = getClassLoader();
         try {
             Class<T> c = (Class<T>) cl.loadClass(typeName);

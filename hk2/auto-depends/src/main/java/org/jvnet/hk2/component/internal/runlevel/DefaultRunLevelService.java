@@ -202,6 +202,9 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
   // the initial run level
   public static final int INITIAL_RUNLEVEL = -2;
   
+  // the "kernel" run level
+  public static final int KERNEL_RUNLEVEL = -1;
+  
   // the default name
   public static final String NAME = "default";
 
@@ -524,11 +527,14 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     return true;
   }
 
+  /**
+   * Once habitat is initialized we can proceed to boot through to kernel level (-1)
+   */
   @Override
   public boolean inhabitantChanged(HabitatListener.EventType eventType,
       Habitat habitat, Inhabitant<?> inhabitant) {
     if (org.jvnet.hk2.component.HabitatListener.EventType.HABITAT_INITIALIZED == eventType) {
-      proceedTo(-1);
+      proceedTo(KERNEL_RUNLEVEL);
     }
     return !habitat.isInitialized();
   }
@@ -556,7 +562,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
   }
   
   protected void proceedTo(Integer runLevel, boolean isHardInterrupt) {
-    if (null != runLevel && runLevel < -1) {
+    if (null != runLevel && runLevel < KERNEL_RUNLEVEL) {
       throw new IllegalArgumentException();
     }
 

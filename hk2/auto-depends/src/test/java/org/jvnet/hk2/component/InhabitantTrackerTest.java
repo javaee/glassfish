@@ -11,7 +11,6 @@ import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantTracker;
 import org.jvnet.hk2.component.InhabitantTrackerContext;
 import org.jvnet.hk2.component.InhabitantTrackerContextBuilder;
-import org.jvnet.hk2.component.matcher.Constants;
 
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 

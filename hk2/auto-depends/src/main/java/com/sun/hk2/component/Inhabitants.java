@@ -132,24 +132,30 @@ public class Inhabitants {
   /**
    * Creates a {@link Inhabitant} by wrapping {@link Womb} to handle scoping right.
    */
-  static <T> Inhabitant<T> wrapByScope(Class<T> c, Womb<T> womb, Habitat habitat) {
+  public static <T> Inhabitant<T> wrapByScope(Class<T> c, Womb<T> womb, Habitat habitat) {
       Scoped scoped = c.getAnnotation(Scoped.class);
       if(scoped==null)
           return new SingletonInhabitant<T>(womb); // treated as singleton
 
       Class<? extends Scope> scopeClass = scoped.value();
 
+      return wrapByScope(womb, habitat, scopeClass);
+  }
+
+  public static <T> Inhabitant<T> wrapByScope(Womb<T> womb, Habitat habitat,
+      Class<? extends Scope> scopeClass) {
       // those two scopes are so common and different that they deserve
       // specialized code optimized for them.
       if(scopeClass== PerLookup.class)
           return womb;
       if(scopeClass== Singleton.class)
           return new SingletonInhabitant<T>(womb);
-
+  
       // other general case
       Scope scope = habitat.getByType(scopeClass);
       if (scope==null)
-          throw new ComponentException("Failed to look up %s for %s",scopeClass,c);
+          throw new ComponentException("Failed to look up %s", scopeClass);
+  
       return new ScopedInhabitant<T>(womb,scope);
   }
 

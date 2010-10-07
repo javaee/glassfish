@@ -53,7 +53,6 @@ import org.jvnet.hk2.annotations.FactoryFor;
 import org.jvnet.hk2.component.HabitatListener.EventType;
 import org.jvnet.hk2.component.InhabitantTracker.Callback;
 import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
-import org.jvnet.hk2.component.matcher.Constants;
 
 import java.lang.annotation.Annotation;
 import java.util.Map.Entry;
