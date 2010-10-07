@@ -58,7 +58,6 @@
             setPageSessionAttribute(key="targetPageLink" value="#{request.contextPath}/common/applications/lifecycleTargetListing.jsf");
         />
     </event>
-"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":lifecycle");</script>
             <sun:form id="propertyForm">
 
 #include "/common/applications/lifecycleTabs.inc"
