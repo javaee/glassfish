@@ -64,6 +64,7 @@
                     if (#{pageSession.hasPropertyTable}){
                         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                        removeEmptyProps(props="#{newList}" modifiedProps="#{newList}");
                         javaToJSON(obj="#{newList}" json="#{requestScope.tmpJSON}");
                         urlencode(value="#{sessionScope.wizardMap['name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
                         gf.restRequest(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodeName}/property.json"

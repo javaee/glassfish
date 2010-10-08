@@ -48,6 +48,7 @@
         );                
         gf.updateEntity(endpoint="#{pageSession.resourceRefUrl}", attrs="#{pageSession.resourceRef}", convertToFalse={"enabled"});     
 
+        removeEmptyProps(props="#{newList}" modifiedProps="#{newList}");
         javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
         gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json", method="POST", data="#{requestScope.tmpJSON}", result="#{requestScope.restResponse}");
 
@@ -97,6 +98,7 @@
         if (#{pageSession.hasPropertyTable}){
             getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+            removeEmptyProps(props="#{newList}" modifiedProps="#{newList}");
             javaToJSON(obj="$attribute{newList}" json="#{requestScope.tmpJSON}");
             urlencode(value="#{pageSession.valueMap.name}" encoding="UTF-8" result="#{pageSession.encodedName}");
             gf.restRequest(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}/property.json",

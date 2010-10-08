@@ -64,6 +64,7 @@
                 if (#{pageSession.hasPropertyTable}){
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                    removeEmptyProps(props="#{newList}" modifiedProps="#{newList}");
                     javaToJSON(obj="#{newList}" json="#{requestScope.tmpJSON}");
                     gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="POST" data="#{requestScope.tmpJSON}" result="#{requestScope.restResponse}");
                 }
@@ -115,7 +116,8 @@
                     //-->
                     if (#{pageSession.hasPropertyTable}){
                         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                        getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});                        
+                        getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                        removeEmptyProps(props="#{newList}" modifiedProps="#{newList}");
                         javaToJSON(obj="#{newList}" json="#{requestScope.tmpJSON}");
                         urlencode(value="#{pageSession.valueMap['name']}" encoding="UTF-8" result="#{requestScope.encodeName}");
                         gf.restRequest(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}/#{requestScope.encodeName}/property.json" method="POST" data="#{requestScope.tmpJSON}" result="#{requestScope.restResponse}");

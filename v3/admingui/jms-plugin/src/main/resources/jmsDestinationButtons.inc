@@ -55,6 +55,7 @@
         mapPut(map="$attribute{nameMap}", key="value", value="#{pageSession.physDestName}");
         listAdd(list="#{pageSession.tableList}", value="$attribute{nameMap}");
 
+        removeEmptyProps(props="#{pageSession.tableList}" modifiedProps="#{pageSession.tableList}");
         javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
         gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json", method="POST", data="#{requestScope.tmpJSON}", result="#{requestScope.restResponse}");
 
@@ -102,6 +103,7 @@
         mapPut(map="$attribute{nameMap}", key="value", value="#{pageSession.physDestName}");
         listAdd(list="$attribute{newList}", value="$attribute{nameMap}");
         
+        removeEmptyProps(props="#{newList}" modifiedProps="#{newList}");
         javaToJSON(obj="$attribute{newList}" json="#{requestScope.tmpJSON}");
         urlencode(value="#{pageSession.valueMap.name}" encoding="UTF-8" result="#{pageSession.encodedName}");
         gf.restRequest(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}/property.json",

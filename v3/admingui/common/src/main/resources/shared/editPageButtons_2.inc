@@ -109,6 +109,7 @@
 
                     // Save properties...
                     if (#{pageSession.hasPropertyTable}) {
+                        removeEmptyProps(props="#{pageSession.tableList}" modifiedProps="#{pageSession.tableList}");
                         javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
                         gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json", method="POST", data="#{requestScope.tmpJSON}", result="#{requestScope.restResponse}");
                     }
@@ -175,6 +176,7 @@
 
                     if (#{pageSession.hasPropertyTable}){
                         if (#{pageSession['rest-api']}) {
+                            removeEmptyProps(props="#{pageSession.tableList}" modifiedProps="#{pageSession.tableList}");
                             javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
                             //println("payload -------------------------------> #{requestScope.tmpJSON}");
                             urlencode(value="#{pageSession.valueMap['name']}" encoding="UTF-8" result="#{pageSession.encodeName}");

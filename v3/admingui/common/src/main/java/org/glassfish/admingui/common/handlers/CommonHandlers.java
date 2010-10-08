@@ -365,6 +365,30 @@ public class CommonHandlers {
     }
 
     /**
+     *  <p> Remove the properties if the key(name) is empty.
+     * 
+     */
+    @Handler(id="removeEmptyProps",
+    input={
+        @HandlerInput(name="props", type=List.class, required=true )},
+    output={
+        @HandlerOutput(name="modifiedProps", type=List.class)}
+    )
+    public static void removeEmptyProps(HandlerContext handlerCtx) {
+        List<Map<String, String>> props = (List<Map<String, String>>) handlerCtx.getInputValue("props");
+        List<Map<String, String>> modifiedProps = new java.util.ArrayList<Map<String, String>>();
+        if (props != null) {
+            for (Map<String, String> prop : props) {
+                if (!GuiUtil.isEmpty(prop.get("name"))) {
+                    modifiedProps.add(prop);
+                }
+            }
+            props.removeAll(modifiedProps);
+        }
+        handlerCtx.setOutputValue("modifiedProps", modifiedProps);
+    }
+
+    /**
      *	<p> This handler returns the requestParameter value based on the key.
      *	    If it doesn't exists, then it will look at the request
      *	    attribute.  If there is no request attribute, it will return the

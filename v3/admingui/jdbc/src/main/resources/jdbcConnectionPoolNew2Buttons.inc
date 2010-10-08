@@ -64,6 +64,7 @@
                     convertToFalse="#{pageSession.convertToFalseList}"
                     result => $attribute{resultEndPoint});
             if (#{pageSession.hasPropertyTable}){
+                removeEmptyProps(props="#{pageSession.tableList}" modifiedProps="#{pageSession.tableList}");
                 javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
                 urlencode(value="#{wizardMap['name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
                 gf.restRequest(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodeName}/property.json"
