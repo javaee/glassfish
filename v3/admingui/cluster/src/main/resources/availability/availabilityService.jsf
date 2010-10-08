@@ -83,31 +83,6 @@
                 <sun:property id="AvailabilityEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.availability.availabilityService}" helpText="$resource{i18ncs.availability.availabilityServiceHelp}">
                      <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['availabilityEnabled']}" selectedValue="true"/>
                  </sun:property>
-                 <sun:property id="StorePoolNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.availability.storePoolName}" helpText="$resource{i18ncs.availability.storePoolNameHelp}">
-                     <sun:textField id="StorePoolName" columns="$int{25}" maxLength="#{sessionScope.fieldLengths['maxLength.availabilty.storePoolName']}" text="#{pageSession.valueMap['storePoolName']}" />
-                 </sun:property>
-                 <sun:property id="HAStoreNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.availability.haStoreName}" helpText="$resource{i18ncs.availability.haStoreNameHelp}">
-                     <sun:textField id="HAStoreName" columns="$int{25}" maxLength="#{sessionScope.fieldLengths['maxLength.availabilty.haStoreName']}" text="#{pageSession.valueMap['haStoreName']}" />
-                 </sun:property>
-                 <sun:property id="HAAgentHostsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.availability.haAgentHosts}" helpText="$resource{i18ncs.availability.haAgentHostsHelp}">
-                     <sun:textField id="HAAgentHosts" columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.availabilty.haAgentHosts']}" text="#{pageSession.valueMap['haAgentHosts']}" />
-                 </sun:property>
-                 <sun:property id="HAAgentPortProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.availability.haAgentPort}" helpText="$resource{i18ncs.availability.haAgentPortHelp}">
-                     <sun:textField id="HAAgentPort" columns="$int{15}" maxLength="#{sessionScope.fieldLengths['maxLength.availabilty.haAgentPort']}" text="#{pageSession.valueMap['haAgentPort']}" />
-                 </sun:property>
-                 <sun:property id="HAAgentPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.availability.haAgentPassword}" >
-                     <sun:textField id="HAAgentPassword" columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.availabilty.haAgentPassword']}" text="#{pageSession.valueMap['haAgentPassword']}" />
-                 </sun:property>
-                 <sun:property id="AutoManageProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.availability.autoManage}" helpText="$resource{i18ncs.availability.autoManageHelp}">
-                     <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['autoManageHaStore']}" selectedValue="true" />
-                 </sun:property>
-                 <sun:property id="StoreHealthCheckProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.availability.storeHealthCheck}" helpText="$resource{i18ncs.availability.storeHealthCheckHelp}">
-                     <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['haStoreHealthcheckEnabled']}" selectedValue="true"/>
-                 </sun:property>
-                 <sun:property id="HAStoreHealthCheckProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.availability.haStoreHealthCheck}" helpText="$resource{i18ncs.availability.haStoreHealthCheckHelp}">
-                     <sun:textField id="HAStoreHealthCheck" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['haStoreHealthcheckIntervalInSeconds']}" />
-                     <sun:staticText id="sec" style="padding: 8pt" maxLength="#{sessionScope.fieldLengths['maxLength.availabilty.haStoreHealthcheckIntervalInSeconds']}" text="$resource{i18ncs.availability.seconds}"/>
-                 </sun:property>
                 "<br /><br />
             </sun:propertySheetSection>
         </sun:propertySheet>

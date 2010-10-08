@@ -80,18 +80,9 @@
     </sun:title>
         <sun:propertySheet id="propertySheet">
             <sun:propertySheetSection id="propertSectionTextField">
-                <sun:property id="AvailabilityEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.availability.availabilityService}" helpText="$resource{i18ncs.availability.availabilityServiceHelp}">
+                <sun:property id="AvailabilityEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.availability.availabilityService}" helpText="$resource{i18n_ejb.availability.ejbAvailabilityServiceHelp}">
                     <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['availabilityEnabled']}" selectedValue="true" />
                 </sun:property>
-                <sun:property id="HAPersistenceTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejb.availability.haPersistenceType}" helpText="$resource{i18n_ejb.availability.haPersistenceTypeHelp}">
-                     <sun:textField id="HAPersistenceType" columns="$int{15}" maxLength="#{sessionScope.fieldLengths['maxLength.availability.haPersistenceType']}" text="#{pageSession.valueMap['sfsbHaPersistenceType']}" />
-                 </sun:property>
-                 <sun:property id="SFSBPersistenceTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejb.availability.sfsbPersistenceType}" helpText="$resource{i18n_ejb.availability.sfsbPersistenceTypeHelp}">
-                     <sun:textField id="SFSBPersistenceType" columns="$int{15}" maxLength="#{sessionScope.fieldLengths['maxLength.availability.sfsbPersistenceType']}" text="#{pageSession.valueMap['sfsbPersistenceType']}" />
-                 </sun:property>
-                 <sun:property id="SFSBStoreNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejb.availability.sfsbStoreName}" helpText="$resource{i18n_ejb.availability.sfsbStoreNameHelp}">
-                     <sun:textField id="SFSBStoreName" columns="$int{15}" maxLength="#{sessionScope.fieldLengths['maxLength.availability.sfsbStoreName']}" text="#{pageSession.valueMap['sfsbStorePoolName']}" />
-                 </sun:property>
                 "<br /><br />
             </sun:propertySheetSection>
         </sun:propertySheet>
