@@ -81,6 +81,7 @@ public class BaseSeleniumTestClass {
     protected static final int TIMEOUT = 90;
     protected static final int BUTTON_TIMEOUT = 30000;
     private static String currentTestClass = "";
+    protected static boolean debug;
     private boolean processingLogin = false;
 
     @BeforeClass
@@ -89,6 +90,7 @@ public class BaseSeleniumTestClass {
         String port = getParameter("admin.port", "4848");
         String seleniumPort = getParameter("selenium.port", "4444");
         String baseUrl = "http://localhost:" + port;
+        debug = Boolean.parseBoolean(getParameter("debug", "false"));
 
         if (selenium == null) {
             System.out.println("The GlassFish Admin console is at " + baseUrl + ".  The Selenium server is listening on " + seleniumPort
@@ -118,7 +120,7 @@ public class BaseSeleniumTestClass {
     @AfterClass
     public static void captureLog() {
         try {
-            if (!currentTestClass.isEmpty()) {
+            if (!currentTestClass.isEmpty() && !debug) {
                 URL url = new URL("http://localhost:" + getParameter("admin.port", "4848") + "/management/domain/view-log");
     //            URLConnection urlC = url.openConnection();
                 InputStream is = url.openStream();

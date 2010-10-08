@@ -40,7 +40,6 @@
 
 package org.glassfish.admingui.devtests;
 
-import org.junit.Ignore;
 import org.junit.Assert;
 import org.junit.Test;
 
