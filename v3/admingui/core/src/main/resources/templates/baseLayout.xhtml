@@ -43,7 +43,6 @@
 <ui:event type="initPage">
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
     setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
-    getProxyAttribute( objectNameStr="amx:pp=/ext,type=realms" attrName="AnonymousLogin" value="#{pageSession.anonLogin}" )
     getPluginIdFromViewId(viewId="#{facesContext.viewRoot.viewId}", pluginId="#{pluginId}");
 </ui:event>
 
@@ -144,7 +143,6 @@
 			    <event id="restartCheck">
 				<ui:event type="beforeEncode">
 				    if ("!$session{supportCluster}") {
-					//checkRestart(RestartRequired="#{sessionScope.restartRequired}", unprocessedChanges="#{sessionScope.unprocessedChanges}");
                                         gf.restRequest(endpoint="#{sessionScope.REST_URL}/_get-restart-required", method="get", result="#{requestScope.result}");
                                         setSessionAttribute(key="restartRequired", value="#{requestScope.result.data.extraProperties.entity.restartRequired}");
                                         setSessionAttribute(key="unprocessedChanges", value="#{requestScope.result.data.extraProperties.entity.unprocessedChanges}");
