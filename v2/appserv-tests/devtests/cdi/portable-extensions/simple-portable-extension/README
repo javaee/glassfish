@@ -3,7 +3,7 @@ Test
     - Creating a portable extension and registering the extension as a 
     service provider
     - Injection of Extension in Beans(Interceptor)
-    - Extensions can observer container lifecycle events
+    - Extensions can observe container lifecycle events
     - Extensions can modify container's metamodel (veto an annotated type's 
     processing)
-    - Extension's oberver method may inject a BeanManager  
+    - Extension's observer method may inject a BeanManager  

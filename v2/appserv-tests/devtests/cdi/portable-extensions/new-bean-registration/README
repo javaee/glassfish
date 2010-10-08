@@ -1,0 +1,5 @@
+Test
+- Testing portable extensions support 
+    - Bean interface
+    - getting all beans that exists in the application
+    - Registering a new Framework bean and ensure that is available for injection

@@ -99,6 +99,8 @@
             <ant dir="bean-interface" target="${portable-extensions-target}"/>
             <ant dir="bean-manager" target="${portable-extensions-target}"/>
             <ant dir="injection-target" target="${portable-extensions-target}"/>
+            <ant dir="new-bean-registration" target="${portable-extensions-target}"/>
+            <ant dir="new-bean-registration-extension-in-lib" target="${portable-extensions-target}"/>
         <record name="portable-extensions.output" action="stop" />
     </target>
 
