@@ -117,7 +117,6 @@ public class InstallNodeCommand extends CLICommand {
         try {
             //String baseRootValue = executeLocationsCommand();
             String baseRootValue = getSystemProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) + "/../"; 
-            System.out.println("baseRootValue is "  + baseRootValue);
             ArrayList<String>  binDirFiles = new ArrayList<String>();
             File zipFile = createZipFile(baseRootValue, binDirFiles);
             copyToHosts(zipFile, baseRootValue, binDirFiles);
