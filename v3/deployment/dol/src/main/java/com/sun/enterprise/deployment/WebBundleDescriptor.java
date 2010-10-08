@@ -1062,8 +1062,9 @@ public class WebBundleDescriptor extends BundleDescriptor
      */
 
     public void addEjbReferenceDescriptor(EjbReference ejbReference) {
-        getEjbReferenceDescriptors().add(ejbReference);
-        ejbReference.setReferringBundleDescriptor(this);
+        if (getEjbReferenceDescriptors().add(ejbReference)) {
+            ejbReference.setReferringBundleDescriptor(this);
+        }
     }
 
     /**
@@ -1082,8 +1083,9 @@ public class WebBundleDescriptor extends BundleDescriptor
     }
 
     public void removeEjbReferenceDescriptor(EjbReference ejbReferenceDescriptor) {
-        getEjbReferenceDescriptors().remove(ejbReferenceDescriptor);
-        ejbReferenceDescriptor.setReferringBundleDescriptor(null);
+        if(getEjbReferenceDescriptors().remove(ejbReferenceDescriptor)) {
+            ejbReferenceDescriptor.setReferringBundleDescriptor(null);
+        }
     }
 
     protected void combineEjbReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {

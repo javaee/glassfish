@@ -257,6 +257,18 @@ public class DefaultDOLVisitor implements ApplicationVisitor, EjbBundleVisitor, 
      */
     public void accept(WebBundleDescriptor descriptor) {
         this.bundleDescriptor = descriptor;
+        for (EjbBundleDescriptor ejbBundleDesc : descriptor.getExtensionsDescriptors(EjbBundleDescriptor.class)) {
+            // at most 1 extension EjbBundleDescriptor
+            for (EjbDescriptor ejbDesc : ejbBundleDesc.getEjbs()) {
+                // copy ejb-ref's from each EJB to WebBundleDescriptor, so ejb-ref and
+                // ejb-local-ref's declared in ejb-jar.xml can override @EJB injections,
+                // which are scanned while processing the WAR. See issue 11684.
+                for (EjbReference ejbRefInEjb : ejbDesc.getEjbReferenceDescriptors()) {
+                    descriptor.removeEjbReferenceDescriptor(ejbRefInEjb);
+                    descriptor.addEjbReferenceDescriptor(ejbRefInEjb);
+                }
+            }
+        }
     }
 
     public void accept(ManagedBeanDescriptor descriptor) {
