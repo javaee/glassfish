@@ -47,10 +47,12 @@
         <groupId>org.glassfish</groupId>
         <artifactId>glassfish-parent</artifactId>
         <version>3.1-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>        
     </parent>
     <artifactId>verifier-jdk-extension-bundle</artifactId>
     <packaging>jar</packaging>
-    <name>GlassFish Verifier Extension Bundle Extending system bundle to provide access to additional packages from jdk</name>
+    <name>GlassFish Verifier Extension Bundle</name>
+    <description>Extending system bundle to provide access to additional packages from JDK</description>
     <build>
         <plugins>
             <plugin>

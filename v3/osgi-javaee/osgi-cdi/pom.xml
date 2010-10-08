@@ -45,8 +45,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish</groupId>
-        <artifactId>glassfish-parent</artifactId>
+        <artifactId>osgi-javaee</artifactId>
         <version>3.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>osgi-cdi</artifactId>
     <packaging>hk2-jar</packaging>

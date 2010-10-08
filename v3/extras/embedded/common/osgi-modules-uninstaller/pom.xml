@@ -48,6 +48,7 @@ holder.
     <groupId>org.glassfish.extras</groupId>
     <artifactId>glassfish-embedded-common</artifactId>
     <version>3.1-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
     <artifactId>osgi-modules-uninstaller</artifactId>

@@ -47,6 +47,7 @@
         <groupId>org.glassfish</groupId>
         <artifactId>glassfish-parent</artifactId>
         <version>3.1-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>  
     <groupId>org.glassfish</groupId>
     <artifactId>simple-glassfish-api</artifactId>

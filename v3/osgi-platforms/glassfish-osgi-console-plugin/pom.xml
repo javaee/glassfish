@@ -45,6 +45,7 @@
         <groupId>org.glassfish.admingui</groupId>
         <artifactId>admingui</artifactId>
         <version>3.1-SNAPSHOT</version>
+      <relativePath>../../admingui/pom.xml</relativePath>
     </parent>
     <artifactId>glassfish-osgi-console-plugin</artifactId>
     <packaging>hk2-jar</packaging>
