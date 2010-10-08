@@ -69,7 +69,7 @@
         setPageSessionAttribute(key="editLink" value="/common/applications/applicationEdit.jsf");
         setPageSessionAttribute(key="listPageLink" value="/cluster/cluster/clusterApplications.jsf");
         setPageSessionAttribute(key="extraArgs" value="clusterName=#{pageSession.encodedClusterName}");
-        setPageSessionAttribute(key="nextPageLink" value="/common/applications/upload.jsf?listPageLink=#{listPageLink}&extraListArgs=#{pageSession.extraArgs}");
+        setPageSessionAttribute(key="nextPageLink" value="/common/applications/upload.jsf?listPageLink=#{listPageLink}&extraListArgs=#{pageSession.extraArgs}&selectedTarget=#{pageSession.clusterName}");
         setPageSessionAttribute(key="targetLink" value="/common/applications/targetListing.jsf");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmUndeploy}");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18ncs.clusterApplications.TableTitle}");
@@ -78,8 +78,7 @@
         setSessionAttribute(key="gf_application_list_page" value="#{pageSession.listPageLink}");
         setSessionAttribute(key="gf_application_cancel_page" value="#{pageSession.listPageLink}");
         setSessionAttribute(key="gf_application_extra_args" value="#{pageSession.extraArgs}");
-        setSessionAttribute(key="gf_application_predefine_target" value="#{pageSession.instanceName}");
-
+        setSessionAttribute(key="gf_application_predefine_target" value="#{pageSession.clusterName}");
     />
     
  </event>

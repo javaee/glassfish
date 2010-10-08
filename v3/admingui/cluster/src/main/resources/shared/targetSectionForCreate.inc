@@ -67,15 +67,14 @@
             //for create case, we should leave it blank and warn user to select one.
             if (#{pageSession.setDefaultTarget}){
                 gf.containedIn(list="#{pageSession.targetList}" testStr="#{pageSession.targetValue}" contain=>$attribute{selectedTargetExists});
-                if (!#{selectedTargetExists}) {
-                    setPageSessionAttribute(key="selectedTargets" value=["server"] );
+                if (!#{pageSession.selectedTargetExists}) {
+                    setPageSessionAttribute(key="selectedTargets" value=[] );
                 }
                 if (#{selectedTargetExists}) {
                     listAdd(value="#{pageSession.targetValue}" result=>$attribute{selectedTargetsList});
                     convertListToArray(list="#{selectedTargetsList}", array="#{pageSession.selectedTargets}");
                 }
-                #setPageSessionAttribute(key="selectedTargets" value=[] );
-        }
+            }
         }
         setPageSessionAttribute(key="useCheckBox" value="#{true}");
         setPageSessionAttribute(key="useString" value="#{false}");
