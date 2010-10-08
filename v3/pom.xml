@@ -364,6 +364,7 @@
                 <module>sun-glassfish/packager</module>
                 <module>javaee-sdk/packager</module>
                 <module>sun-glassfish/distributions</module>
+                <module>javaee-sdk/distributions</module>
                 <module>sun-glassfish/installer</module>
                 <module>appclient</module>
                 <module>verifier/verifier-impl</module>
@@ -418,6 +419,7 @@
                 <module>sun-glassfish/packager</module>
                 <module>javaee-sdk/packager</module>
                 <module>sun-glassfish/distributions</module>
+                <module>javaee-sdk/distributions</module>
                 <module>sun-glassfish/installer</module>
                 <module>sun-glassfish/distributions/web-ri</module>
                 <module>sun-glassfish/distributions/glassfish-ri</module>
