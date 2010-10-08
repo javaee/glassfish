@@ -1,0 +1,7 @@
+-exportcontents: \
+                        com.sun.hk2.jsr330; version=${project.osgi.version}; \
+                        com.sun.hk2.jsr330.spi; version=${project.osgi.version} \
+                        com.sun.hk2.jsr330.spi.internal; version=${project.osgi.version}
+
+Import-Package: \
+                        *
