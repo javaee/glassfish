@@ -47,7 +47,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import java.io.File;
+import java.io.IOException;
 
+import com.sun.enterprise.util.io.FileUtils;
 /**
  * @author Rajiv Mordani
  */
@@ -115,4 +117,24 @@ public class SSHUtil {
                           + ".ssh" + File.separator + "id_rsa";
           return k;
       }
+
+    /**
+     * Simple method to validate an encrypted key file
+     * @return true|false
+     * @throws CommandException
+     */
+    public static boolean isEncryptedKey(String sshkeyfile) throws IOException {
+        boolean result = false;
+        try {
+            String f = FileUtils.readSmallFile(sshkeyfile);
+            if (f.startsWith("-----BEGIN ") && f.contains("ENCRYPTED")
+                    && f.endsWith(" PRIVATE KEY-----\n")) {
+                result=true;
+            }
+        } catch (Exception ex) {
+            throw new IOException(ex.getMessage());
+        }
+
+        return result;
+    }
 }

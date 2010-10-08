@@ -102,18 +102,26 @@ public final class SetupSshKey extends CLICommand {
         if (sshkeyfile == null) {
             //if user hasn't specified a key file and there is no key file at default
             //location, then generate one
-            if (SSHUtil.getExistingKeyFile() == null) {
+            String existingKey = SSHUtil.getExistingKeyFile();
+            if (existingKey == null) {
                 sshkeyfile = SSHUtil.getDefaultKeyFile();
                 if(promptForKeyGeneration()) {
-                    generatekey=true;
-                    sshkeypassphrase=getSSHPassphrase();
+                    generatekey=true;                 
                 }
             } else {
                 //there is a key that requires to be distributed, hence need password
                 promptPass = true;
+                sshkeyfile = existingKey;
+                
+                if(isEncryptedKey()) {
+                    sshkeypassphrase=getSSHPassphrase();
+                }
             }
         } else {
             validateKeyFile(sshkeyfile);
+            if(isEncryptedKey()) {
+                sshkeypassphrase=getSSHPassphrase();
+            }
         }
 
         if (sshpublickeyfile != null) {
@@ -137,7 +145,8 @@ public final class SetupSshKey extends CLICommand {
                 //prompt for password iff required
                 if (sshkeyfile != null || SSHUtil.getExistingKeyFile() != null) {
                     if(sshL.checkConnection()) {
-                        throw new CommandException(Strings.get("SSHAlreadySetup", sshuser, node));
+                        logger.info(Strings.get("SSHAlreadySetup", sshuser, node));
+                        return SUCCESS;
                     }
                 }
                 sshpassword=getSSHPassword(node);
@@ -195,7 +204,7 @@ public final class SetupSshKey extends CLICommand {
         if (passphrase == null) {
             if (programOpts.isInteractive()) {
                 //i18n
-                passphrase=readSSHPassword(Strings.get("SSHPassphrasePrompt"));
+                passphrase=readSSHPassword(Strings.get("SSHPassphrasePrompt", sshkeyfile));
             } else {
                 passphrase=""; //empty passphrase
             }
@@ -263,5 +272,15 @@ public final class SetupSshKey extends CLICommand {
             password = new String(pc);
         }
         return password;
+    }
+
+    private boolean isEncryptedKey() throws CommandException {
+        boolean res = false;
+        try {
+            res = SSHUtil.isEncryptedKey(sshkeyfile);
+        } catch (IOException ioe) {
+            throw new CommandException(Strings.get("ErrorParsingKey", sshkeyfile, ioe.getMessage()));
+        }
+        return res;
     }
 }
