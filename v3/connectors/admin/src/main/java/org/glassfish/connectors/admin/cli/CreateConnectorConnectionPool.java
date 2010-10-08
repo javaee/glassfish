@@ -84,19 +84,19 @@ public class CreateConnectorConnectionPool implements AdminCommand {
     @Param(name=CCP_CON_DEFN_NAME, alias="connectiondefinitionname")
     String connectiondefinition;
 
-    @Param(name=CCP_STEADY_POOL_SIZE, alias="steadyPoolSize", optional=true)
+    @Param(name=CCP_STEADY_POOL_SIZE, alias="steadyPoolSize", optional=true, defaultValue="8")
     String steadypoolsize = "8";
 
-    @Param(name=CCP_MAX_POOL_SIZE, alias="maxPoolSize", optional=true)
+    @Param(name=CCP_MAX_POOL_SIZE, alias="maxPoolSize", optional=true, defaultValue="32")
     String maxpoolsize = "32";
 
-    @Param(name=CCP_MAX_WAIT_TIME, optional=true, alias="maxWaitTimeInMillis")
+    @Param(name=CCP_MAX_WAIT_TIME, optional=true, alias="maxWaitTimeInMillis", defaultValue="60000")
     String maxwait = "60000";
 
-    @Param(name=CCP_POOL_RESIZE_QTY, optional=true, alias="poolResizeQuantity")
+    @Param(name=CCP_POOL_RESIZE_QTY, optional=true, alias="poolResizeQuantity", defaultValue="2")
     String poolresize = "2";
 
-    @Param(name=CCP_IDLE_TIMEOUT, optional=true, alias="idleTimeoutInSeconds")
+    @Param(name=CCP_IDLE_TIMEOUT, optional=true, alias="idleTimeoutInSeconds", defaultValue="300")
     String idletimeout = "300";
 
     @Param(name=CCP_IS_VALIDATION_REQUIRED, optional=true, defaultValue="false", alias="isConnectionValidationRequired")
@@ -105,16 +105,16 @@ public class CreateConnectorConnectionPool implements AdminCommand {
     @Param(name=CCP_FAIL_ALL_CONNS, optional=true, defaultValue="false", alias="failAllConnections")
     Boolean failconnection;
 
-    @Param(name=CCP_LEAK_TIMEOUT, alias="connectionLeakTimeoutInSeconds", optional=true)
+    @Param(name=CCP_LEAK_TIMEOUT, alias="connectionLeakTimeoutInSeconds", optional=true, defaultValue="3")
     String leaktimeout = "0";
 
     @Param(name=CCP_LEAK_RECLAIM, alias="connectioLeakReclaim", optional=true, defaultValue="false")
     Boolean leakreclaim;
 
-    @Param(name=CCP_CON_CREATION_RETRY_ATTEMPTS, alias="connectionCreationRetryAttempts", optional=true)
+    @Param(name=CCP_CON_CREATION_RETRY_ATTEMPTS, alias="connectionCreationRetryAttempts", optional=true, defaultValue="0")
     String creationretryattempts = "0";
 
-    @Param(name=CCP_CON_CREATION_RETRY_INTERVAL, alias="connectionCreationRetryIntervalInSeconds", optional=true)
+    @Param(name=CCP_CON_CREATION_RETRY_INTERVAL, alias="connectionCreationRetryIntervalInSeconds", optional=true, defaultValue="10")
     String creationretryinterval = "10";
 
     @Param(name=CCP_LAZY_CON_ENLISTMENT, alias="lazyConnectionEnlistment", optional=true, defaultValue="false")
@@ -129,7 +129,7 @@ public class CreateConnectorConnectionPool implements AdminCommand {
     @Param(name=CCP_MATCH_CONNECTIONS, alias="matchConnections", optional=true, defaultValue="true")
     Boolean matchconnections;
 
-    @Param(name=CCP_MAX_CON_USAGE_COUNT, alias="maxConnectionUsageCount", optional=true)
+    @Param(name=CCP_MAX_CON_USAGE_COUNT, alias="maxConnectionUsageCount", optional=true, defaultValue="0")
     String maxconnectionusagecount = "0";
 
     @Param(name=CCP_PING, optional=true, defaultValue="false")
