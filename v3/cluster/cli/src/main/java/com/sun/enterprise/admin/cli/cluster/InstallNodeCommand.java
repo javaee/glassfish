@@ -43,14 +43,15 @@ package com.sun.enterprise.admin.cli.cluster;
 
 import com.sun.enterprise.admin.cli.CLICommand;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.io.FileListerRelative;
 import com.sun.enterprise.util.zip.ZipFileException;
 import com.sun.enterprise.util.zip.ZipWriter;
 import com.trilead.ssh2.SCPClient;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.CommandException;
-import org.glassfish.api.admin.ExecuteOn;
-import org.glassfish.api.admin.RuntimeType;
+//import org.glassfish.api.admin.ExecuteOn;
+//import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.sftp.SFTPClient;
 import org.jvnet.hk2.annotations.Inject;
@@ -70,7 +71,7 @@ import java.util.*;
 
 @Service(name = "install-node")
 @Scoped(PerLookup.class)
-@ExecuteOn({RuntimeType.DAS})
+//@ExecuteOn({RuntimeType.DAS})
 public class InstallNodeCommand extends CLICommand {
 
     @Param(optional = true)
@@ -89,8 +90,14 @@ public class InstallNodeCommand extends CLICommand {
     @Param(optional = false, primary = true, multiple = true)
     private String[] hosts;
 
-    @Param(name="install-location", optional = true)
-    private String installLocation;
+    @Param(name="installdir", optional = true)
+    private String installDir;
+
+    @Param(optional = true)
+    private boolean recreate;
+
+    @Param(optional = true)
+    private boolean force;
 
     private String sshpassword;
 
@@ -108,7 +115,9 @@ public class InstallNodeCommand extends CLICommand {
     @Override
     protected int executeCommand() throws CommandException {
         try {
-            String baseRootValue = executeLocationsCommand();
+            //String baseRootValue = executeLocationsCommand();
+            String baseRootValue = getSystemProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) + "/../"; 
+            System.out.println("baseRootValue is "  + baseRootValue);
             ArrayList<String>  binDirFiles = new ArrayList<String>();
             File zipFile = createZipFile(baseRootValue, binDirFiles);
             copyToHosts(zipFile, baseRootValue, binDirFiles);
@@ -126,29 +135,29 @@ public class InstallNodeCommand extends CLICommand {
     private void copyToHosts(File zipFile, String baseRootValue, ArrayList<String> binDirFiles) throws IOException, InterruptedException {
 
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        if (installLocation == null) {
-            installLocation = baseRootValue;
+        if (installDir == null) {
+            installDir = baseRootValue;
         }
         
         for (String host: hosts) {
             sshLauncher.init(sshuser, host, sshport, sshpassword, sshkeyfile, sshkeypassphrase, logger);
-            String remoteDir = installLocation + "/glassfish3/glassfish";
+            //String remoteDir = installLocation + "/glassfish3/glassfish";
 
             SFTPClient sftpClient = sshLauncher.getSFTPClient();
             SCPClient scpClient = sshLauncher.getSCPClient();
             
-            if (!sftpClient.exists(remoteDir)) {
-                sftpClient.mkdirs(remoteDir, 0755);
+            if (!sftpClient.exists(installDir)) {
+                sftpClient.mkdirs(installDir, 0755);
             }
             
 
-            scpClient.put(zipFile.getAbsolutePath(), remoteDir);
-            //String unzipCommand = "cd " + remoteDir + "; unzip glassfish.zip; chmod +x bin/*";
-            String unzipCommand = "cd " + remoteDir + "; jar -xvf glassfish.zip";
+            scpClient.put(zipFile.getAbsolutePath(), installDir);
+            //String unzipCommand = "cd " + installDir + "; unzip glassfish.zip; chmod +x bin/*";
+            String unzipCommand = "cd " + installDir + "; jar -xvf glassfish.zip";
             sshLauncher.runCommand(unzipCommand, outStream);
-            sftpClient.rm(remoteDir + "/glassfish.zip");
+            sftpClient.rm(installDir + "/glassfish.zip");
             for (String binDirFile: binDirFiles) {
-                sftpClient.chmod((remoteDir + "/" + binDirFile), 0755);
+                sftpClient.chmod((installDir + "/" + binDirFile), 0755);
             }
             
 
@@ -169,10 +178,14 @@ public class InstallNodeCommand extends CLICommand {
         File installRoot = new File(baseRootValue); 
 
         File zipFileLocation = null;
+        File glassFishZipFile = null;
 
         if (archiveDir != null) {
             zipFileLocation = new File(archiveDir);
-            if (!zipFileLocation.canWrite()) {
+            glassFishZipFile = new File(zipFileLocation, "glassfish.zip");
+            if (glassFishZipFile.exists() && !recreate) {
+                return glassFishZipFile;
+            } else if (!zipFileLocation.canWrite()) {
                 throw new IOException ("Cannot write to " + archiveDir);
             }
         } else if (installRoot.canWrite()) {
@@ -181,9 +194,14 @@ public class InstallNodeCommand extends CLICommand {
             zipFileLocation = new File(System.getProperty("java.io.tmpdir"));
         }
 
+        glassFishZipFile = new File(zipFileLocation, "glassfish.zip");
+        if (glassFishZipFile.exists() && !recreate) {
+            return glassFishZipFile;
+        }
+
 
         FileListerRelative lister = new FileListerRelative(installRoot);
-        lister.keepEmptyDirectories();	// we want to restore any empty directories too!
+        lister.keepEmptyDirectories();
         String[] files = lister.getFiles();
 
         List<String> resultFiles1 = Arrays.asList(files);
@@ -194,16 +212,10 @@ public class InstallNodeCommand extends CLICommand {
             String fileName = iter.next();
             if (fileName.contains("domains") || fileName.contains("nodes")) {
                 iter.remove();
-            } else if (fileName.startsWith("bin")) {
+            } else if (fileName.startsWith("bin") || fileName.startsWith("glassfish/bin")) {
                 binDirFiles.add(fileName);
             }
         }
-
-        File glassFishZipFile = new File(zipFileLocation, "glassfish.zip");
-        if (glassFishZipFile.exists()) {
-            return glassFishZipFile;
-        }
-
 
        String [] filesToZip = new String[resultFiles.size()];
         filesToZip = resultFiles.toArray(filesToZip);
@@ -214,5 +226,4 @@ public class InstallNodeCommand extends CLICommand {
         return glassFishZipFile;
 
     }
-
 }

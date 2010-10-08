@@ -44,12 +44,13 @@ package com.sun.enterprise.admin.cli.cluster;
 import com.sun.enterprise.admin.cli.CLICommand;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.config.serverbeans.Node;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.trilead.ssh2.SCPClient;
 import com.trilead.ssh2.SFTPv3DirectoryEntry;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.CommandException;
-import org.glassfish.api.admin.ExecuteOn;
-import org.glassfish.api.admin.RuntimeType;
+//import org.glassfish.api.admin.ExecuteOn;
+//import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.sftp.SFTPClient;
 import org.jvnet.hk2.annotations.Inject;
@@ -70,7 +71,7 @@ import java.util.List;
 
 @Service(name = "uninstall-node")
 @Scoped(PerLookup.class)
-@ExecuteOn({RuntimeType.DAS})
+//@ExecuteOn({RuntimeType.DAS})
 public class UninstallNodeCommand extends CLICommand {
 
     @Param(optional = true)
@@ -85,8 +86,8 @@ public class UninstallNodeCommand extends CLICommand {
     @Param(optional = false, primary = true, multiple = true)
     private String[] hosts;
 
-    @Param(name="install-location", optional = true)
-    private String installLocation;
+    @Param(name="installdir", optional = true)
+    private String installDir;
 
     private String sshpassword;
 
@@ -113,7 +114,8 @@ public class UninstallNodeCommand extends CLICommand {
     @Override
     protected int executeCommand() throws CommandException {
         try {
-            String baseRootValue = executeLocationsCommand();
+            //String baseRootValue = executeLocationsCommand();
+            String baseRootValue = getSystemProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) + "/../";
             deleteFromHosts(baseRootValue);
         } catch (IOException ioe) {
             throw new CommandException(ioe);
@@ -126,8 +128,8 @@ public class UninstallNodeCommand extends CLICommand {
 
     private void deleteFromHosts(String baseRootValue) throws IOException, InterruptedException {
 
-        if (installLocation == null) {
-            installLocation = baseRootValue;
+        if (installDir == null) {
+            installDir = baseRootValue;
         }
 
         for (String host: hosts) {
@@ -136,14 +138,14 @@ public class UninstallNodeCommand extends CLICommand {
             SFTPClient sftpClient = sshLauncher.getSFTPClient();
 
 
-            if (!sftpClient.exists(installLocation)) {
-                throw new IOException (installLocation + " Directory does not exist");
+            if (!sftpClient.exists(installDir)) {
+                throw new IOException (installDir + " Directory does not exist");
             }
 
             //ArrayList<String> remoteDirectories = new ArrayList<String>();
-            //deleteRemoteFiles(sftpClient, installLocation, remoteDirectories);
-            deleteRemoteFiles(sftpClient, installLocation);
-            sftpClient.rmdir(installLocation);
+            //deleteRemoteFiles(sftpClient, installDir, remoteDirectories);
+            deleteRemoteFiles(sftpClient, installDir);
+            sftpClient.rmdir(installDir);
         }
     }
 
