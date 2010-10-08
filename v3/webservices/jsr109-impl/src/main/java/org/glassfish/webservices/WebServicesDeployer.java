@@ -214,15 +214,6 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         File stubsDir = dc.getScratchDir("ejb");
         stubsDir.mkdirs();
 
-        /** TODO BM implement later
-         if(!dc.getModuleProps().getProperty("type").equals("web")) {
-         String subDirName = DeploymentUtils.getRelativeEmbeddedModulePath(moduleDir.getAbsolutePath(), bundle.getModuleDescriptor().getArchiveUri());
-
-         moduleDir =new File(moduleDir, subDirName);
-         wsdlDir =new File( wsdlDir,subDirName);
-
-         }**/
-
         String webinfLibDir = null;
         if (!XModuleType.WAR.equals(bundle.getModuleType()) &&
                 !XModuleType.EJB.equals(bundle.getModuleType())) {
@@ -255,11 +246,9 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
                 wsdlFile = new File(wsdlDir, wsdlFileUri);
             } else {
                 wsdlFileUri = ws.getWsdlFileUri();
-                if(wsdlFileUri.startsWith("/")) {
-                    wsdlFile = new File(wsdlFileUri);
-                } else {
-                    wsdlFile = new File(moduleDir, wsdlFileUri);
-                }
+                File wsdlFileAbs = new File(wsdlFileUri);
+                wsdlFile = wsdlFileAbs.isAbsolute()? wsdlFileAbs : new File(moduleDir, wsdlFileUri);
+
                 if (!wsdlFile.exists()) {
                     String errorMessage =  format(rb.getString("wsdl.notfound"),
                             ws.getWsdlFileUri(),bundle.getModuleDescriptor().getArchiveUri())  ;
