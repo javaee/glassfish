@@ -40,6 +40,7 @@
 
 import java.io.*;
 import java.net.*;
+import java.util.Map;
 import java.net.HttpURLConnection;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -51,6 +52,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+
+import org.glassfish.admingui.common.handlers.RestApiHandlers;
+import org.glassfish.admingui.common.util.RestResponse;
 
 /*
  * Unit test for Issue 9549: incorrect range stats
@@ -93,20 +97,20 @@ public class WebTest {
 
     public void doTest() {
         try {
-            int count503 = getCount("count503", "Count503");
+            int count503 = getCount("count503");
             System.out.println("count503 = " + count503);
-            int count5xx = getCount("count5xx", "Count5xx");
+            int count5xx = getCount("count5xx");
             System.out.println("count5xx = " + count5xx);
-            int errorcount = getCount("errorcount", "ErrorCount");
+            int errorcount = getCount("errorcount");
             System.out.println("errorcount = " + errorcount);
 
             invokeURL("http://" + host + ":" + port + contextRoot + "/statuscode?code=503");
             
-            int count503_2 = getCount("count503", "Count503");
+            int count503_2 = getCount("count503");
             System.out.println("count503_2 = " + count503_2);
-            int count5xx_2 = getCount("count5xx", "Count5xx");
+            int count5xx_2 = getCount("count5xx");
             System.out.println("count5xx_2 = " + count5xx_2);
-            int errorcount_2 = getCount("errorcount", "ErrorCount");
+            int errorcount_2 = getCount("errorcount");
             System.out.println("errorcount_2 = " + errorcount_2);
 
             boolean ok = (count503 >= 0 && count503_2 == (count503 + 1)) &&
@@ -166,28 +170,18 @@ public class WebTest {
         return sb.toString();
     }
 
-    private int getCount(String monitorPath, String countName) throws Exception {
-        String result = invokeURL("http://" + adminHost + ":" + adminPort +
-                "/monitoring/domain/server/http-service/" + instanceName + 
-                "/request/" + monitorPath);
-        return parseCount(result, countName);
+    private int getCount(String monitorPath) throws Exception {
+        String url = "http://" + adminHost + ":" + adminPort +
+                "/monitoring/domain/server/http-service/" + instanceName +
+                "/request/" + monitorPath;
+        String resultStr = invokeURL(url);
+        System.out.println("getCount: "+resultStr);
+        RestResponse response = RestApiHandlers.get(url);
+        Map<String, Object> map = response.getResponse();
+        
+        return ((Long)((Map)((Map)((Map)((Map)map.get("data")).get("extraProperties")).get(
+                "entity")).get(monitorPath)).get("count")).intValue();
     }
 
-    private int parseCount(String resultStr, String countName) throws Exception {
-        int count = -1;
-        System.out.println("parseCount: " + resultStr);
-        if (resultStr != null) {
-            DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document doc = db.parse(new InputSource(new ByteArrayInputStream(resultStr.getBytes())));
-            NodeList nlist = doc.getDocumentElement().getElementsByTagName(countName);
-            if (nlist != null && nlist.getLength() > 0) {
-                Element element = (Element) nlist.item(0);
-                String countStr = element.getAttribute("count");
-                if (countStr != null) {
-                    count = Integer.parseInt(countStr);
-                }
-            }
-        }
-        return count;
-    }
+
 }

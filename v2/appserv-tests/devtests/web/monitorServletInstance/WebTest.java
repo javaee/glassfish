@@ -40,6 +40,7 @@
 
 import java.io.*;
 import java.net.*;
+import java.util.Map;
 import java.net.HttpURLConnection;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -51,6 +52,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+
+import org.glassfish.admingui.common.handlers.RestApiHandlers;
+import org.glassfish.admingui.common.util.RestResponse;
 
 /*
  * Unit test for Issue 9481: v3 runtime tree is not exposing stastistics for Servlets
@@ -93,29 +97,29 @@ public class WebTest {
 
     public void doTest() {
         try {
-            long appReqCount1 = getValue("test/requestcount", "RequestCount", "count");
+            long appReqCount1 = getValue("test/requestcount", "requestcount", "count");
             System.out.println("app request count: " + appReqCount1);
-            long processTime1 = getValue("test/processingtime", "ProcessingTime", "lastsampletime");
+            long processTime1 = getValue("test/processingtime", "processingtime", "lastsampletime");
             System.out.println("app process time: " + processTime1);
 
             String testResult = invokeURL("http://" + host + ":" + port + contextRoot + "/test");
             System.out.println(testResult);
             
-            long appReqCount2 = getValue("test/requestcount", "RequestCount", "count");
+            long appReqCount2 = getValue("test/requestcount", "requestcount", "count");
             System.out.println("app request count: " + appReqCount2);
-            long processTime2 = getValue("test/processingtime", "ProcessingTime", "lastsampletime");
+            long processTime2 = getValue("test/processingtime", "processingtime", "lastsampletime");
             System.out.println("app process time: " + processTime2);
 
             boolean ok1 = (EXPECTED.equals(testResult) &&
                     (appReqCount1 >= 0 && appReqCount2 == (appReqCount1 + 1)) &&
                     (processTime2 > 0));
 
-            long appErrorCount1 = getValue("badrequest/errorcount", "ErrorCount", "count");
+            long appErrorCount1 = getValue("badrequest/errorcount", "errorcount", "count");
             System.out.println("app error count: " + appErrorCount1);
 
             invokeURL("http://" + host + ":" + port + contextRoot + "/badrequest");
             
-            long appErrorCount2 = getValue("badrequest/errorcount", "ErrorCount", "count");
+            long appErrorCount2 = getValue("badrequest/errorcount", "errorcount", "count");
             System.out.println("app error count: " + appErrorCount2);
 
             boolean ok2 = (appErrorCount1 >= 0 && appErrorCount2 == (appErrorCount1 + 1));
@@ -174,29 +178,18 @@ public class WebTest {
         return sb.toString();
     }
 
+
     private long getValue(String monitorPath, String countName, String attrName) throws Exception {
-        String result = invokeURL("http://" + adminHost + ":" + adminPort +
-                "/monitoring/domain/server/applications/" + 
-                appName + "-web/server/" + monitorPath);
-        
-        return parseValue(result, countName, attrName);
+        String url = "http://" + adminHost + ":" + adminPort +
+                "/monitoring/domain/server/applications/" +
+                appName + "-web/server/" + monitorPath;
+        String resultStr = invokeURL(url);
+        System.out.println("getCount: "+resultStr);
+        RestResponse response = RestApiHandlers.get(url);
+        Map<String, Object> map = response.getResponse();
+
+        return ((Long)((Map)((Map)((Map)((Map)map.get("data")).get("extraProperties")).get(
+                "entity")).get(countName)).get(attrName)).longValue();
     }
 
-    private long parseValue(String resultStr, String countName, String attrName) throws Exception {
-        long count = -1L;
-        System.out.println("parseValue: " + resultStr);
-        if (resultStr != null) {
-            DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document doc = db.parse(new InputSource(new ByteArrayInputStream(resultStr.getBytes())));
-            NodeList nlist = doc.getDocumentElement().getElementsByTagName(countName);
-            if (nlist != null && nlist.getLength() > 0) {
-                Element element = (Element) nlist.item(0);
-                String countStr = element.getAttribute(attrName);
-                if (countStr != null) {
-                    count = Long.parseLong(countStr);
-                }
-            }
-        }
-        return count;
-    }
 }

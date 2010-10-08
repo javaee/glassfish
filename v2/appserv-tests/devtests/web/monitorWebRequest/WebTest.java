@@ -40,6 +40,7 @@
 
 import java.io.*;
 import java.net.*;
+import java.util.Map;
 import java.net.HttpURLConnection;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -51,6 +52,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+
+import org.glassfish.admingui.common.handlers.RestApiHandlers;
+import org.glassfish.admingui.common.util.RestResponse;
 
 /*
  * Unit test for Issue 9309: [monitoring] request-count is incorrect
@@ -94,17 +98,17 @@ public class WebTest {
 
     public void doTest() {
         try {
-            int webReqCount1 = getCount("web/request/requestcount", "RequestCount");
+            int webReqCount1 = getCount("web/request/requestcount", "requestcount");
             System.out.println("web request count: " + webReqCount1);
-            int appReqCount1 = getCount("applications" + contextRoot + "-web/" + instanceName + "/requestcount", "RequestCount");
+            int appReqCount1 = getCount("applications" + contextRoot + "-web/" + instanceName + "/requestcount", "requestcount");
             System.out.println("app request count: " + appReqCount1);
 
             String testResult = invokeURL("http://" + host + ":" + port + contextRoot + "/test");
             System.out.println(testResult);
             
-            int webReqCount2 = getCount("web/request/requestcount", "RequestCount");
+            int webReqCount2 = getCount("web/request/requestcount", "requestcount");
             System.out.println("web request count: " + webReqCount2);
-            int appReqCount2 = getCount("applications" + contextRoot + "-web/" + instanceName + "/requestcount", "RequestCount");
+            int appReqCount2 = getCount("applications" + contextRoot + "-web/" + instanceName + "/requestcount", "requestcount");
             System.out.println("app request count: " + appReqCount2);
 
             boolean ok1 = (EXPECTED.equals(testResult) &&
@@ -112,16 +116,16 @@ public class WebTest {
                     (appReqCount1 >= 0 && appReqCount2 == (appReqCount1 + 1)));
 
 
-            int webErrorCount1 = getCount("web/request/errorcount", "ErrorCount");
+            int webErrorCount1 = getCount("web/request/errorcount", "errorcount");
             System.out.println("web error count: " + webErrorCount1);
-            int appErrorCount1 = getCount("applications" + contextRoot + "-web/" + instanceName + "/errorcount", "ErrorCount");
+            int appErrorCount1 = getCount("applications" + contextRoot + "-web/" + instanceName + "/errorcount", "errorcount");
             System.out.println("app error count: " + appErrorCount1);
 
             invokeURL("http://" + host + ":" + port + contextRoot + "/badrequest");
             
-            int webErrorCount2 = getCount("web/request/errorcount", "ErrorCount");
+            int webErrorCount2 = getCount("web/request/errorcount", "errorcount");
             System.out.println("web error count: " + webErrorCount2);
-            int appErrorCount2 = getCount("applications" + contextRoot + "-web/" + instanceName + "/errorcount", "ErrorCount");
+            int appErrorCount2 = getCount("applications" + contextRoot + "-web/" + instanceName + "/errorcount", "errorcount");
             System.out.println("app error count: " + appErrorCount2);
 
             boolean ok2 = (webErrorCount1 >= 0 && webErrorCount2 == (webErrorCount1 + 1)) &&
@@ -182,27 +186,15 @@ public class WebTest {
     }
 
     private int getCount(String monitorPath, String countName) throws Exception {
-        String result = invokeURL("http://" + adminHost + ":" + adminPort +
-                "/monitoring/domain/server/" + monitorPath);
-        
-        return parseCount(result, countName);
-    }
+        String url = "http://" + adminHost + ":" + adminPort +
+                "/monitoring/domain/server/" + monitorPath;
+        String resultStr = invokeURL(url);
+        System.out.println("getCount: "+resultStr);
+        RestResponse response = RestApiHandlers.get(url);
+        Map<String, Object> map = response.getResponse();
 
-    private int parseCount(String resultStr, String countName) throws Exception {
-        int count = -1;
-        System.out.println("parseCount: " + resultStr);
-        if (resultStr != null) {
-            DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document doc = db.parse(new InputSource(new ByteArrayInputStream(resultStr.getBytes())));
-            NodeList nlist = doc.getDocumentElement().getElementsByTagName(countName);
-            if (nlist != null && nlist.getLength() > 0) {
-                Element element = (Element) nlist.item(0);
-                String countStr = element.getAttribute("count");
-                if (countStr != null) {
-                    count = Integer.parseInt(countStr);
-                }
-            }
-        }
-        return count;
+        return ((Long)((Map)((Map)((Map)((Map)map.get("data")).get("extraProperties")).get(
+                "entity")).get(countName)).get("count")).intValue();
     }
+    
 }
