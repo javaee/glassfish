@@ -59,6 +59,11 @@
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorConnectionPools.jsf");
         setPageSessionAttribute(key="childType" value="connector-connection-pool");
 
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
+        setPageSessionAttribute(key="childType" value="connector-connection-pool");
+        gf.restRequest(method="get", endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", result="#{pageSession.foo}");
+        gf.getDefaultValues(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", valueMap="#{sessionScope.wizardMap}");
+
         setPageSessionAttribute(key="tableList" value="#{wizardPoolProperties}");
         setPageSessionAttribute(key="convertToFalseList" value={"ping" "failAllConnections" "isConnectionValidationRequired" });
         //set the following for including buttons.inc

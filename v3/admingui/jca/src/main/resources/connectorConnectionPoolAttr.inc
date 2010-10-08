@@ -74,12 +74,12 @@
     <sun:propertySheetSection id="poolSettingsPropertySheet" label="$resource{i18njca.jcaPool.poolSettings}">
         <sun:property id="initSizeProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}"
             label="$resource{i18njca.jcaPool.initPoolSize}" helpText="$resource{i18njca.jcaPool.initPoolSizeHelp}">
-            <sun:textField id="ds" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.jcaPool.initPoolSize']}" text="#{sessionScope.wizardMap.steadypoolsize}" />
+            <sun:textField id="ds" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.jcaPool.initPoolSize']}" text="#{sessionScope.wizardMap.steadyPoolSize}" />
             <sun:staticText escape="true" id="con1" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
         </sun:property>
 
         <sun:property id="maxProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.maxPoolSize}" helpText="$resource{i18njca.jcaPool.maxPoolSizeHelp}">
-            <sun:textField id="ds2" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.jcaPool.maxPoolSize']}" text="#{sessionScope.wizardMap.maxpoolsize}" />
+            <sun:textField id="ds2" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.jcaPool.maxPoolSize']}" text="#{sessionScope.wizardMap.maxPoolSize}" />
             <sun:staticText escape="true" id="con2" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
         </sun:property>
 
@@ -113,7 +113,7 @@
         </sun:property>
 
         <sun:property id="transprop"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorConnectionPool.transSupport}" helpText="$resource{i18njca.connectorConnectionPool.transSupportHelp}" >
-            <sun:dropDown id="trans" selected="#{sessionScope.wizardMap.transactionsupport}" labels={"" "XATransaction"  "LocalTransaction"  "NoTransaction"}/>
+            <sun:dropDown id="trans" selected="#{sessionScope.wizardMap.transactionSupport}" labels={"" "XATransaction"  "LocalTransaction"  "NoTransaction"}/>
         </sun:property>
 
         <sun:property>

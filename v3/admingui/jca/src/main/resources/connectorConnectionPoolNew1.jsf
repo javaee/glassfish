@@ -57,17 +57,19 @@
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorConnectionPools.jsf");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="childType" value="connector-connection-pool");
+
         //REST related
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getDefaultValues(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", valueMap="#{pageSession.tmpMap}");
+
         //REST - TO DO
         getApplicationBySnifferType(type="connector" result="#{requestScope.tmpList}")
         filterOutRarExtension(inList="#{requestScope.tmpList}" convertedList="#{requestScope.rarList}")
+
         //Add SystemConnectors
         gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-system-rars-allowing-pool-creation"
-                       method="GET"
-                       result="#{requestScope.result}");
+                       method="GET", result="#{requestScope.result}");
         setAttribute(key="modList" value="#{requestScope.result.data.extraProperties.rarList}");
         gf.listCombine(list="#{requestScope.modList}" list2="#{requestScope.rarList}");
         addEmptyFirstElement(in="$attribute{modList}"  out="#{pageSession.modules}")
