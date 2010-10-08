@@ -81,7 +81,7 @@ import org.openinstaller.provider.conf.ConfigHelper;
 
 theAL = new ActionListener() {
     actionPerformed(e) {
-        setRegOption("CREATE_DOMAIN");
+        updateGlobalPageSkips("CREATE_DOMAIN");
     }
 };
 return theAL;
@@ -119,7 +119,7 @@ import org.openinstaller.provider.conf.ConfigHelper;
 
 theAL = new ActionListener() {
     actionPerformed(e) {
-        setRegOption("CREATE_STANDALONEINSTANCE");
+        updateGlobalPageSkips("CREATE_STANDALONEINSTANCE");
     }
 };
 return theAL;
@@ -158,7 +158,7 @@ import org.openinstaller.provider.conf.ConfigHelper;
 
 theAL = new ActionListener() {
     actionPerformed(e) {
-        setRegOption("CREATE_CLUSTEREDINSTANCE");
+        updateGlobalPageSkips("CREATE_CLUSTEREDINSTANCE");
     }
 };
 return theAL;
@@ -196,7 +196,7 @@ import org.openinstaller.provider.conf.ConfigHelper;
 
 theAL = new ActionListener() {
     actionPerformed(e) {
-        setRegOption("NO_CONFIGURATION");
+      updateGlobalPageSkips("NO_CONFIGURATION");
     }
 };
 return theAL;
@@ -243,24 +243,21 @@ return theAL;
       return null;
     }
 
-    setRegOption(String s)  {
-        ConfigHelper.setValue("ConfigType.Option.CONFIGURATION_MODE", s);
+    updateGlobalPageSkips(String pageSequence)  {
 
+        ConfigHelper.setValue("ConfigType.Option.CONFIGURATION_MODE", pageSequence);
         List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
-
-        if (activeModes.contains("CREATE_DOMAIN"))  {
-            activeModes.remove("CREATE_DOMAIN");
-        }
-        if (activeModes.contains("CREATE_STANDALONEINSTANCE"))  {
-            activeModes.remove("CREATE_STANDALONEINSTANCE");
-        }
 
         if (activeModes.contains("CREATE_CLUSTEREDINSTANCE"))  {
             activeModes.remove("CREATE_CLUSTEREDINSTANCE");
         }
-
-        activeModes.add(s);
-
+        if (activeModes.contains("CREATE_STANDALONEINSTANCE"))  {
+            activeModes.remove("CREATE_STANDALONEINSTANCE");
+        }
+        if (activeModes.contains("CREATE_DOMAIN"))  {
+            activeModes.remove("CREATE_DOMAIN");
+        }
+        activeModes.add(pageSequence);
         ConfigHelper.setValue("PageFlow.Mode.ACTIVE_MODES_LIST", activeModes);
     }
 
@@ -292,7 +289,7 @@ return theAL;
         wizard.enableNext(true);
         wizard.enableCancel(true);
 
-      setRegOption("CREATE_DOMAIN");
+      updateGlobalPageSkips("CREATE_DOMAIN");
  
      }
 

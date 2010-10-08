@@ -80,7 +80,7 @@ import org.openinstaller.provider.conf.ConfigHelper;
 
 theAL = new ActionListener() {
     actionPerformed(e) {
-        setRegOption("BASIC_USER");
+        updateGlobalPageSkips("BASIC_USER");
     }
 };
 return theAL;
@@ -117,7 +117,7 @@ import org.openinstaller.provider.conf.ConfigHelper;
 
 theAL = new ActionListener() {
     actionPerformed(e) {
-        setRegOption("ADVANCED_USER");
+        updateGlobalPageSkips("ADVANCED_USER");
     }
 };
 return theAL;
@@ -164,8 +164,8 @@ return theAL;
       return null;
     }
 
-    setRegOption(String s)  {
-        ConfigHelper.setValue("InstallUserType.Option.USER_TYPE", s);
+    updateGlobalPageSkips(String pageSequence)  {
+        ConfigHelper.setValue("InstallUserType.Option.USER_TYPE", pageSequence);
 
         List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
 
@@ -181,7 +181,7 @@ return theAL;
             activeModes.remove("ADVANCED_USER");
         }
 
-        activeModes.add(s);
+        activeModes.add(pageSequence);
 
         ConfigHelper.setValue("PageFlow.Mode.ACTIVE_MODES_LIST", activeModes);
     }
@@ -204,7 +204,7 @@ return theAL;
         wizard.enableNext(true);
         wizard.enableCancel(true);
 
-      setRegOption("BASIC_USER");
+      updateGlobalPageSkips("BASIC_USER");
 
        if (System.getProperty("os.name").toLowerCase().startsWith("mac")) {
                 ConfigHelper.setValue

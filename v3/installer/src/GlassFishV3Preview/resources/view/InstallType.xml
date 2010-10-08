@@ -81,7 +81,7 @@ import org.openinstaller.provider.conf.ConfigHelper;
 
 theAL = new ActionListener() {
     actionPerformed(e) {
-        setRegOption("INSTALL_AND_CONFIG");
+        updateGlobalPageSkips("INSTALL_AND_CONFIG");
     }
 };
 return theAL;
@@ -119,7 +119,7 @@ import org.openinstaller.provider.conf.ConfigHelper;
 
 theAL = new ActionListener() {
     actionPerformed(e) {
-        setRegOption("INSTALL_ONLY");
+        updateGlobalPageSkips("INSTALL_ONLY");
     }
 };
 return theAL;
@@ -158,7 +158,7 @@ import org.openinstaller.provider.conf.ConfigHelper;
 
 theAL = new ActionListener() {
     actionPerformed(e) {
-        setRegOption("CONFIG_ONLY");
+        updateGlobalPageSkips("CONFIG_ONLY");
     }
 };
 return theAL;
@@ -205,24 +205,16 @@ return theAL;
       return null;
     }
 
-    setRegOption(String s)  {
-        ConfigHelper.setValue("InstallType.Option.CONFIGURATION_MODE", s);
+    updateGlobalPageSkips(String pageSequence)  {
+        ConfigHelper.setValue("InstallType.Option.CONFIGURATION_MODE", pageSequence);
 
         List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
 
-        if (activeModes.contains("INSTALL_AND_CONFIG"))  {
-            activeModes.remove("INSTALL_AND_CONFIG");
+        if (activeModes.contains(pageSequence))  {
+            activeModes.remove(pageSequence);
         }
 
-        if (activeModes.contains("INSTALL_ONLY"))  {
-            activeModes.remove("INSTALL_ONLY");
-        }
-
-        if (activeModes.contains("CONFIG_ONLY"))  {
-            activeModes.remove("CONFIG_ONLY");
-        }
-
-        activeModes.add(s);
+        activeModes.add(pageSequence);
 
         ConfigHelper.setValue("PageFlow.Mode.ACTIVE_MODES_LIST", activeModes);
     }
@@ -248,7 +240,7 @@ return theAL;
         wizard.enableNext(true);
         wizard.enableCancel(true);
 
-      setRegOption("INSTALL_AND_CONFIG");
+      updateGlobalPageSkips("INSTALL_AND_CONFIG");
 
      }
 

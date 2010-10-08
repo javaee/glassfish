@@ -182,6 +182,20 @@ import java.util.logging.Logger;
         return returnMsg;
      }
 
+    updateGlobalPageSkips(String optionValue , boolean remove)  {
+        List activeModes = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
+
+        if (activeModes.contains(optionValue))  {
+            activeModes.remove(optionValue);
+        }
+
+        if (!remove)
+        	activeModes.add(optionValue);
+
+        ConfigHelper.setValue("PageFlow.Mode.ACTIVE_MODES_LIST", activeModes);
+    }
+
+
     void run() throws EnhancedException {
         wizard.enableNext(false);
         wizard.enableCancel(true);
@@ -190,6 +204,9 @@ import java.util.logging.Logger;
         wizard.setCancelButtonText(Msg.get("CONFIG_PANEL_CANCEL_BUTTON_TEXT",null));
 
 	global.overallStatus = true;
+        updateGlobalPageSkips("CREATE_DOMAIN",true);
+        updateGlobalPageSkips("CREATE_STANDALONEINSTANCE",true);
+    	updateGlobalPageSkips("CREATE_CLUSTEREDINSTANCE",true);
         String output = formatMsg(Msg.get("CONFIG_PANEL_CONTENT_HEADER",null));
         summaryHeader = wizard.getComponentByName((Container) content, "SUMMARY_HEADER");
         summaryTab = wizard.getComponentByName((Container) content, "SUMMARY_OF_CONFIGURATION");
@@ -301,8 +318,10 @@ import java.util.logging.Logger;
     else {
         summaryHeader.setText
             ("<HTML><body><font face='Sans-Serif'>" + Msg.get("CONFIG_PANEL_FAILURE_HEADER_STATUS_TEXT",null) + "<body><HTML>");
-
+        updateGlobalPageSkips(ConfigHelper.getStringValue("ConfigType.Option.CONFIGURATION_MODE"),false);
     }
+    // Enable the previous panel, so that users can correct the errors and try again
+
     summaryHeader.repaint();
     frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
    
