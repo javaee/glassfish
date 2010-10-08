@@ -296,12 +296,23 @@ public class NonBlockingPool
             return;
         }
     	synchronized (list) {
-            for (int i=0; i<sz; i++) {
-                list.add(instances.get(i));
-                poolProbeNotifier.ejbObjectAddedEvent(beanId, appName, modName, ejbName);
+            // check current pool size & adjust add size
+            int currsize = list.size();
+            int addsz = sz;
+            if (currsize + sz > maxPoolSize) {
+                addsz = maxPoolSize - currsize;
+            }
+
+            for (int i = 0; i < addsz; i++) {
+                list.add(instances.remove(0));
             }
             createdCount += sz;
-    	}
+        }
+
+        // destroys unnecessary instances
+        for (Object o : instances) {
+            destroyObject(o);
+        }
     }
 
     /**
