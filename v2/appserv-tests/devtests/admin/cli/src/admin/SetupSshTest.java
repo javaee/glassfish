@@ -183,7 +183,7 @@ public class SetupSshTest extends AdminBaseDevTest {
         //report("setup-ssh-without-password", !asadmin("setup-ssh", remoteHost));
 
         //should succeed second time as well
-        report("setup-ssh-with-password", !asadmin("setup-ssh", SSH_USER_OPTION, sshUser, remoteHost));
+        report("setup-ssh-with-password", asadmin("setup-ssh", SSH_USER_OPTION, sshUser, remoteHost));
 
     }
 
