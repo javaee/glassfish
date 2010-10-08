@@ -42,7 +42,8 @@
 
 <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
         onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
-    <!command        
+    <!command
+        println("***** pageSession.valueMap = #{pageSession.valueMap}");
         gf.updateEntity(endpoint="#{pageSession.selfUrl}", attrs="#{pageSession.valueMap}", skipAttrs="#{pageSession.skipAttrsList}",
             convertToFalse="#{pageSession.convertToFalseList}"
         );                

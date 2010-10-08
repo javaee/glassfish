@@ -58,6 +58,7 @@
             setPageSessionAttribute(key="convertToFalseList" value={"failAllConnections", "isConnectionValidationRequired"});
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
             gf.getDefaultValues(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", valueMap="#{pageSession.valueMap}");
+            println("***** pageSession.valueMap = #{pageSession.valueMap}");
             gf.getDefaultValues(endpoint="#{pageSession.parentUrl}/#{pageSession.childType2}", valueMap="#{pageSession.valueMap2}");
             gf.getDefaultValues(endpoint="#{sessionScope.REST_URL}/servers/server/server/resource-ref", valueMap="#{pageSession.resourceRef}");
             

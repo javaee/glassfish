@@ -55,10 +55,8 @@
             setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18njms.edJmsHost.edJmsHostInfo}");
             getRequestValue(key="configName" value=>$page{configName});
 
-            setPageSessionAttribute(key="parentObjectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=jms-service");
             setPageSessionAttribute(key="childType" value="jms-host");
 
-            setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/jms-service,type=jms-host,name=#{pageSession.name}");
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/jms-service");
             setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.name}");
             setPageSessionAttribute(key="rest-api" value="true");

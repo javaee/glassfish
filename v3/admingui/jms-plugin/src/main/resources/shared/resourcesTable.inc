@@ -74,6 +74,7 @@
             <sun:staticText id="jndi" text="#{td.value.name}"  />
         </sun:tableColumn>
 
+        <!--
         <sun:tableColumn id="colEnabled1" headerText="$resource{i18njms.resourcesTable.colEnabled}" rendered="#{isConnPage}" sort="enabled" rowHeader="$boolean{true}">
             <staticText id="enabled" value="#{td.value.enabled}">
                 <!event type="beforeEncode">
@@ -86,6 +87,7 @@
                 </event>
             </staticText>
         </sun:tableColumn>
+        -->
 
         <sun:tableColumn id="colEnabled2" headerText="$resource{i18njms.resourcesTable.colEnabled}" rendered="#{!isConnPage}" sort="enabled" rowHeader="$boolean{true}">
             <staticText id="enabled" value="#{td.value.enabled}">

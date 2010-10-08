@@ -57,7 +57,6 @@
     <event>
         <!beforeCreate
             setPageSessionAttribute(key="isConnPage" value="#{true}");
-            setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain,type=resources");
             setPageSessionAttribute(key="childType" value="connector-connection-pool");
             setPageSessionAttribute(key="childType2" value="connector-resource");
             

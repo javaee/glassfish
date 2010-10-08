@@ -56,15 +56,12 @@
             setAttribute(key="edit" value="#{true}");
             setPageSessionAttribute(key="hasPropertySheet" value="#{true}");
 
-            setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs,type=config,name=#{pageSession.configName}");
             setPageSessionAttribute(key="childType" value="jms-service");
             setPageSessionAttribute(key="convertToFalseList" value={"reconnectEnabled"});
 
-            setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=jms-service");
-
-            setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs");
-            setPageSessionAttribute(key="childType", value="config");
-            setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.configName}/jms-service");
+            setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
+            setPageSessionAttribute(key="childType", value="jms-service");
+            setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
             setPageSessionAttribute(key="rest-api" value="true");
             gf.restRequest(endpoint="#{pageSession.selfUrl}", method="get", result="#{pageSession.result}");
             setPageSessionAttribute(key="valueMap", value="#{pageSession.result.data.extraProperties.entity}");

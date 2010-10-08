@@ -57,9 +57,11 @@
         <sun:property id="descProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}">
             <sun:textField id="descProp" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.common.description']}" text="#{pageSession.valueMap['description']}" />
         </sun:property>
+"<hr/>
         <sun:property id="statusProp" rendered="#{useCheckBox}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.resourceRef['enabled']}" selectedValue="true"/>
         </sun:property>
+"<hr/>
         <sun:property id="statusProp2" rendered="#{useString}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}"
             label="$resource{i18n.common.status}" helpText="$resource{i18n.application.EnableTargetHelp}">
             <sun:staticText  id="enabledStr" text="#{requestScope.enabledString}" >
@@ -67,29 +69,30 @@
                     gf.getTargetEnableInfo(appName="#{pageSession.encodedName}" isApp="#{false}" status="#{requestScope.enabledString}");
                 />
            </sun:staticText>
+"<hr/>
        </sun:property>
 
         "<br /><br />
     </sun:propertySheetSection>
     <sun:propertySheetSection id="poolPropertySheet" label="$resource{i18njms.connectionFactory.poolSettings}">
         <sun:property id="initSizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.connectionFactory.initPoolSize}" helpText="$resource{i18njms.connectionFactory.initPoolSizeHelp}">
-            <sun:textField id="ds" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.connectionFactory.initPoolSize']}" text="#{pageSession.valueMap['steadypoolsize']}" />
+            <sun:textField id="ds" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.connectionFactory.initPoolSize']}" text="#{pageSession.valueMap['steadyPoolSize']}" />
             <sun:staticText id="con1" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
         </sun:property>
         <sun:property id="maxProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.connectionFactory.maxPoolSize}" helpText="$resource{i18njms.connectionFactory.maxPoolSizeHelp}">
-            <sun:textField id="ds" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.connectionFactory.maxPoolSize']}" text="#{pageSession.valueMap['maxpoolsize']}" />
+            <sun:textField id="ds" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.connectionFactory.maxPoolSize']}" text="#{pageSession.valueMap['maxPoolSize']}" />
             <sun:staticText id="con" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
         </sun:property>
         <sun:property id="resizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.connectionFactory.poolResize}" helpText="$resource{i18njms.connectionFactory.poolResizeHelp}">
-            <sun:textField id="ds" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.connectionFactory.poolResize']}" text="#{pageSession.valueMap['poolresizequantity']}" />
+            <sun:textField id="ds" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.connectionFactory.poolResize']}" text="#{pageSession.valueMap['poolResizeQuantity']}" />
             <sun:staticText id="con" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
         </sun:property>
         <sun:property id="idleProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.connectionFactory.idleTimeout}" helpText="$resource{i18njms.connectionFactory.idleTimeoutHelp}">
-            <sun:textField id="ds" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.connectionFactory.idleTimeout']}" text="#{pageSession.valueMap['idletimeoutinseconds']}" />
+            <sun:textField id="ds" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.connectionFactory.idleTimeout']}" text="#{pageSession.valueMap['idleTimeoutInSeconds']}" />
             <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
         <sun:property id="maxWaitProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.connectionFactory.maxWait}" helpText="$resource{i18njms.connectionFactory.maxWaitHelp}">
-            <sun:textField id="ds" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.connectionFactory.maxWait']}" text="#{pageSession.valueMap['maxwaittimeinmillis']}" />
+            <sun:textField id="ds" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.connectionFactory.maxWait']}" text="#{pageSession.valueMap['maxWaitTimeInMillis']}" />
             <sun:staticText id="mil" style="padding: 8pt" text="$resource{i18n.common.Milliseconds}"/>
         </sun:property>
 
@@ -98,7 +101,7 @@
             <sun:checkbox label="$resource{i18njms.connectionFactory.closeAll}" selected="#{pageSession.valueMap['failAllConnections']}" selectedValue="true"/>
         </sun:property>
         <sun:property id="transprop"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.connectionFactory.transSupport}" helpText="$resource{i18njms.connectionFactory.transSupportHelp}" >
-            <sun:dropDown id="trans" selected="#{pageSession.valueMap['transactionsupport']}" labels={"", "XATransaction", "LocalTransaction", "NoTransaction"} />
+            <sun:dropDown id="trans" selected="#{pageSession.valueMap['transactionSupport']}" labels={"", "XATransaction", "LocalTransaction", "NoTransaction"} />
         </sun:property>
         <sun:property id="conValidationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.connectionFactory.conValidation}" helpText="$resource{i18njms.connectionFactory.conValidationHelp}">
             <sun:checkbox label="$resource{i18n.common.Required}" selected="#{pageSession.valueMap['isConnectionValidationRequired']}" selectedValue="true" />
