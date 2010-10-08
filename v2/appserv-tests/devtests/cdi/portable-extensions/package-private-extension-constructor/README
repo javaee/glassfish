@@ -1,0 +1,2 @@
+Test to reproduce issue 11923
+package private constructor for an Extension
