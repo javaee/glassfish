@@ -186,6 +186,10 @@ public class EJBTimerService
     // Possible values "redeliver" and "stop"
     private String operationOnConnectionFailure = null;
 
+    // Allow to reschedule a failed timer for the next delivery
+    private static final String RESCHEDULE_FAILED_TIMER = "reschedule-failed-timer";
+    private boolean rescheduleFailedTimer = false;
+
     public EJBTimerService(String appID, TimerLocal timerLocal) {
         timerLocal_ = timerLocal;
         timerCache_     = new TimerCache();
@@ -243,17 +247,18 @@ public class EJBTimerService
                 setPerformDBReadBeforeTimeout( false );
 
                 operationOnConnectionFailure = ejbt.getPropertyValue(ON_CONECTION_FAILURE);
+                rescheduleFailedTimer = Boolean.valueOf(ejbt.getPropertyValue(RESCHEDULE_FAILED_TIMER));
+
+                // Store the DataSource ref to check if connections can be aquired if
+                // the timeout fails
+                String resource_name = ejbContainerUtil.getTimerResource();
+                ConnectorRuntime connectorRuntime = ejbContainerUtil.getDefaultHabitat().getByContract(ConnectorRuntime.class);
+                timerDataSource = DataSource.class.cast(connectorRuntime.lookupNonTxResource(resource_name, false));
             }
 
             // Compose owner id for all timers created with this 
             // server instance.  
             ownerIdOfThisServer_ = ejbContainerUtil.getServerEnvironment().getInstanceName();
-
-            // Store the DataSource ref to check if connections can be aquired if
-            // the timeout fails
-            String resource_name = ejbContainerUtil.getTimerResource();
-            ConnectorRuntime connectorRuntime = ejbContainerUtil.getDefaultHabitat().getByContract(ConnectorRuntime.class);
-            timerDataSource = DataSource.class.cast(connectorRuntime.lookupNonTxResource(resource_name, false));
 
         } catch(Exception e) {
             logger.log(Level.FINE, "Exception converting timer service " +
@@ -1359,7 +1364,7 @@ public class EJBTimerService
             tm.commit();
 
         } catch(Exception e) {
-            logger.log(Level.FINE, "Timer restore or schedule creation error", e);
+            logger.log(Level.WARNING, "Timer restore or schedule creation error", e);
 
             try {
                 tm.rollback();
@@ -1846,12 +1851,15 @@ public class EJBTimerService
 
             synchronized(timerState) {
                 Date now = new Date();
+                boolean reschedule = false;
+
                 if( timerState.isCancelled() ) {
                     // nothing more to do.
                 } else if (timerState.isExpired()) {
                     // schedule-based timer without valid expiration
                     cancelTimer(timerId);
                 } else if( redeliver ) {
+                    int numDeliv = timerState.getNumFailedDeliveries() + 1;
                     if( timerState.getNumFailedDeliveries() <
                             getMaxRedeliveries() || redeliverOnFailedConnection()) {
                         Date redeliveryTimeout = new Date
@@ -1863,15 +1871,19 @@ public class EJBTimerService
                     } else if (stopOnFailedConnection()) {
                         // stop Timer Service
                         shutdown();
+                    } else if (rescheduleFailedTimer) {
+                        logger.log(Level.INFO, "ejb.timer_reschedule_after_max_deliveries",
+                           new Object[] { timerState.toString(), new Integer(numDeliv)});
+                        reschedule = true;
                     } else {
-                        int numDeliv = timerState.getNumFailedDeliveries() + 1;
-                        logger.log(Level.INFO, 
-                           "ejb.timer_exceeded_max_deliveries",
-                           new Object[] { timerState.toString(),
-                                              new Integer(numDeliv)});
+                        logger.log(Level.INFO, "ejb.timer_exceeded_max_deliveries",
+                           new Object[] { timerState.toString(), new Integer(numDeliv)});
                         expungeTimer(timerId, true);
                     }
-                } else if( timerState.isPeriodic() ) {
+                } else {
+                    reschedule = true;
+                }
+                if( reschedule && (redeliver || timerState.isPeriodic()) ) {
 
                     // Any necessary transactional operations would have
                     // been handled in postEjbTimeout callback.  Here, we
@@ -1887,7 +1899,7 @@ public class EJBTimerService
                 } else {
                    
                     // Any necessary transactional operations would have
-                    // been handled in postEjbTimeout callback.  Nothing
+                    // been handled above or in postEjbTimeout callback.  Nothing
                     // more to do for this single-action timer that was
                     // successfully delivered.                 
                 }
