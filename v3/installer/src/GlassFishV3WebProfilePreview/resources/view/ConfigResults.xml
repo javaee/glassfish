@@ -81,6 +81,51 @@ import java.util.logging.Logger;
   
 
 
+    setupShortCuts(Product prodRef) {
+
+        WindowsShortcutManager wsShortMgr = new WindowsShortcutManager();
+        String modifiedInstallDir = prodRef.getInstallLocation().replace("\\","\\\\");
+        // First delete the shortcut if it still exists, this is needed
+        // as we do support users iterating through configuration multiple
+        // times and in that case, the last used domain attributes will be
+        // used in the shortcuts.
+        // Create short cut for starting server.
+
+        wsShortMgr.deleteShortCut(
+                prodRef.getProductName(),
+                Msg.get("START_SERVER",null) + ".lnk");
+
+        wsShortMgr.createShortCut(
+                     prodRef.getProductName(),
+                     Msg.get("START_SERVER",null),
+                     modifiedInstallDir + "\\\\glassfish\\\\bin\\\\asadmin.bat",
+                     Msg.get("START_SERVER",null),
+                     "start-domain " +
+                        ConfigHelper.getStringValue("Domain.Configuration.DOMAIN_NAME") + "\"",
+                     modifiedInstallDir + "\\\\glassfish\\\\icons\\\\startAppserv.ico",
+                     modifiedInstallDir + "\\\\glassfish",
+                     "2");
+
+        // Create short cut for stopping server.
+         wsShortMgr.deleteShortCut(
+                prodRef.getProductName(),
+                Msg.get("STOP_SERVER",null) + ".lnk");
+
+        wsShortMgr.createShortCut(
+                     prodRef.getProductName(),
+                     Msg.get("STOP_SERVER",null),
+                     modifiedInstallDir + "\\\\glassfish\\\\bin\\\\asadmin.bat",
+                     Msg.get("STOP_SERVER",null),
+                     "stop-domain " +
+                        ConfigHelper.getStringValue("Domain.Configuration.DOMAIN_NAME") + "\"",
+                     modifiedInstallDir + "\\\\glassfish\\\\icons\\\\stopAppserv.ico",
+                     modifiedInstallDir + "\\\\glassfish",
+                     "2");
+
+     }
+
+
+
     String createDomain(Product productRef, String runningMode) throws EnhancedException {
 
        DomainManager domainManager = new DomainManager(productRef);
@@ -215,7 +260,8 @@ import java.util.logging.Logger;
         summaryHeader.repaint();
 		
 	frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        Product productRef = new Product("GlassFish",
+        Product productRef = new Product(
+                (String) TemplateProcessor.getInstance().getFromDataModel("PRODUCT_NAME"),
                 ConfigHelper.getStringValue("InstallHome.directory.INSTALL_HOME"),
                 GlassFishUtils.getGlassfishAdminScriptPath(ConfigHelper.getStringValue("InstallHome.directory.INSTALL_HOME")),
                 GlassFishUtils.getGlassfishConfigFilePath(ConfigHelper.getStringValue("InstallHome.directory.INSTALL_HOME")));
@@ -275,6 +321,15 @@ import java.util.logging.Logger;
             summaryTab.repaint();
 	    summaryTab.setCaretPosition(summaryTab.getDocument().getLength());
 
+            // Create start/stop items if the domain creation is successful.
+            if (overallStatus && OSUtils.isWindows()){
+                // Don't do this in CONFIG_ONLY mode.
+                String installMode =
+                    (String)ConfigHelper.getValue("InstallType.Option.CONFIGURATION_MODE");
+                    if (!installMode.equals("CONFIG_ONLY"))
+                        setupShortCuts(productRef);
+            }
+
             // Create a service for domain if needed.
             // Continue only when the domain is created successfully.
             if (overallStatus == true) {
@@ -290,7 +345,7 @@ import java.util.logging.Logger;
                 }
             }
 			
-			// start the recently created domain if needed.
+	    // start the recently created domain if needed.
             // Continue only when the domain is created successfully.
             if (overallStatus == true) {
 		if (ConfigHelper.getStringValue("Domain.Configuration.STARTUP_TYPE").equals("AUTOMATIC")) {
