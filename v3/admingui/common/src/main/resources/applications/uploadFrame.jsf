@@ -55,6 +55,7 @@
         setPageSessionAttribute(key="listPageLink" value="#{gf_application_list_page}");
         setPageSessionAttribute(key="extraArgs" value="#{gf_application_extra_args}");
         setPageSessionAttribute(key="cancelPage" value="#{gf_application_cancel_page}");
+        setPageSessionAttribute(key="targetValue" value="#{gf_application_predefine_target}");
        
         //println("====== listPageLink = #{pageSession.listPageLink}");
         //println("====== cancelPage = #{pageSession.cancelPage}");

@@ -70,6 +70,9 @@
 
         setSessionAttribute(key="gf_application_list_page" value="#{pageSession.listPageLink}");
         setSessionAttribute(key="gf_application_cancel_page" value="#{pageSession.listPageLink}");
+        setSessionAttribute(key="gf_application_predefine_target" value="#{null}");
+        setSessionAttribute(key="gf_application_extra_args" value="#{null}");
+
             
             <!--
             setPageSessionAttribute(key="viewKey" value="$pageSession{viewKeyValue}");
