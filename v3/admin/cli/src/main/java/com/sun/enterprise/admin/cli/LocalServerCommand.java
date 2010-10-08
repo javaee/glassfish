@@ -40,20 +40,20 @@
 
 package com.sun.enterprise.admin.cli;
 
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.security.KeyStore;
+
+import org.glassfish.api.admin.CommandException;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.security.store.PasswordAdapter;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
-import java.io.*;
-import java.io.File;
+import com.sun.enterprise.util.HostAndPort;
 import com.sun.enterprise.util.io.ServerDirs;
-import java.net.*;
-import java.security.KeyStore;
-import java.util.*;
-import java.util.Set;
-import org.glassfish.api.admin.CommandException;
 
 /**
  * A class that's supposed to capture all the behavior common to operation
@@ -119,6 +119,43 @@ public abstract class LocalServerCommand extends CLICommand {
         }
         catch (MiniXmlParserException ex) {
             throw new CommandException("admin port not found", ex);
+        }
+    }
+
+    /**
+     * Returns the admin address of the local domain. Note that this method
+     * should be called only when you own the domain that is available on
+     * an accessible file system.
+     *
+     * @return HostAndPort object with admin server address
+     * @throws CommandException in case of parsing errors
+     */
+    protected final HostAndPort getAdminAddress() throws CommandException {
+        // default:  DAS which always has the name "server"
+        return getAdminAddress("server");
+    }
+
+    /**
+     * Returns the admin address of a particular server. Note that this method
+     * should be called only when you own the server that is available on
+     * an accessible file system.
+     *
+     * @return HostAndPort object with admin server address
+     * @throws CommandException in case of parsing errors
+     */
+    protected final HostAndPort getAdminAddress(String serverName)
+            throws CommandException {
+
+        try {
+            MiniXmlParser parser = new MiniXmlParser(getDomainXml(), serverName);
+            Set<HostAndPort> addrSet = parser.getAdminAddresses();
+
+            if (addrSet.size() > 0)
+                return addrSet.iterator().next();
+            else
+                throw new CommandException("admin address not found");
+        } catch (MiniXmlParserException ex) {
+            throw new CommandException("admin address not found", ex);
         }
     }
 

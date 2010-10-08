@@ -45,6 +45,7 @@ import com.sun.common.util.logging.LoggingPropertyNames;
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.HostAndPort;
 
 import javax.xml.stream.XMLInputFactory;
 import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
@@ -167,6 +168,17 @@ public class MiniXmlParser {
             addPortsForListeners(listenerNames);
         }
         return adminPorts;
+    }
+
+    public Set<HostAndPort> getAdminAddresses() {
+        if (adminAddresses == null || adminAddresses.isEmpty()) {
+            String[] listenerNames = getListenerNamesForVS(DEFAULT_ADMIN_VS_ID, vsAttributes);
+            if (listenerNames == null || listenerNames.length == 0) {
+                listenerNames = getListenerNamesForVS(DEFAULT_VS_ID, vsAttributes); //plan B
+            }
+            addPortsForListeners(listenerNames);
+        }
+        return adminAddresses;
     }
 
     public void setupConfigDir(File configDir, File installDir) {
@@ -707,7 +719,19 @@ public class MiniXmlParser {
                 if (id != null) {
                     for (String listenerName : listenerNames) {
                         if (id.equals(listenerName)) {
-                            addPort(atts.get("port"));
+                            int port = addPort(atts.get("port"));
+                            if (port >= 0) {
+                                String addr = atts.get("address");
+                                if (!GFLauncherUtils.ok(addr))
+                                    addr = "localhost";
+                                if (StringUtils.isToken(addr))
+                                    addr = sysProps.get(
+                                                StringUtils.stripToken(addr));
+                                if (GFLauncherUtils.ok(addr))
+                                    adminAddresses.add(
+                                        // XXX - need isSecure
+                                        new HostAndPort(addr, port, false));
+                            }
                             break;
                         }
                     }
@@ -716,9 +740,11 @@ public class MiniXmlParser {
         }
     }
 
-    private void addPort(String portString) {
+    private int addPort(String portString) {
+        int port = -1;
         try {
-            adminPorts.add(Integer.parseInt(portString));
+            port = Integer.parseInt(portString);
+            adminPorts.add(port);
         }
         catch (Exception e) {
             // HEY!  Why are you not checking BEFORE the Exception?
@@ -727,13 +753,16 @@ public class MiniXmlParser {
             try {
                 portString = sysProps.get(StringUtils.stripToken(portString));
 
-                if(portString != null && portString.length() > 0)
-                    adminPorts.add(Integer.parseInt(portString));
+                if (portString != null && portString.length() > 0) {
+                    port = Integer.parseInt(portString);
+                    adminPorts.add(port);
+                }
             }
             catch (Exception e2) {
                 // GI but not GO !
             }
         }
+        return port;
     }
 
     private Map<String, String> parseAttributes() {
@@ -767,6 +796,7 @@ public class MiniXmlParser {
     private Map<String, String> profilerSysProps = new HashMap<String, String>();
     private boolean valid = false;
     private Set<Integer> adminPorts = new HashSet<Integer>();
+    private Set<HostAndPort> adminAddresses = new HashSet<HostAndPort>();
     private String domainName;
     private String logFilename;
     private static final LocalStringsImpl strings = new LocalStringsImpl(MiniXmlParser.class);

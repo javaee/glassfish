@@ -37,8 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.enterprise.admin.launcher;
 
+import java.io.*;
+import java.util.*;
+import java.util.logging.Level;
 import com.sun.enterprise.universal.collections.CollectionUtils;
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import com.sun.enterprise.universal.glassfish.TokenResolver;
@@ -48,11 +52,8 @@ import com.sun.enterprise.universal.process.ProcessStreamDrainer;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import com.sun.enterprise.util.OS;
 import com.sun.enterprise.util.net.NetUtils;
-import java.io.*;
-import java.util.*;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
-import java.util.logging.Level;
 import static com.sun.enterprise.util.SystemPropertyConstants.*;
 import static com.sun.enterprise.admin.launcher.GFLauncherConstants.*;
 
@@ -152,7 +153,7 @@ public abstract class GFLauncher {
         if (GFLauncherUtils.ok(domainName)) {
             info.setDomainName(domainName);
         }
-        info.setAdminPorts(parser.getAdminPorts());
+        info.setAdminAddresses(parser.getAdminAddresses());
         javaConfig = new JavaConfig(parser.getJavaConfig());
         setupProfilerAndJvmOptions(parser);
         setupMonitoring(parser);

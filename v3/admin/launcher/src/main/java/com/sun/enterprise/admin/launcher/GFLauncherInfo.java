@@ -40,10 +40,11 @@
 
 package com.sun.enterprise.admin.launcher;
 
-import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
-import com.sun.enterprise.universal.io.SmartFile;
 import java.io.*;
 import java.util.*;
+import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
+import com.sun.enterprise.universal.io.SmartFile;
+import com.sun.enterprise.util.HostAndPort;
 import org.glassfish.api.admin.RuntimeType;
 
 /**
@@ -175,13 +176,13 @@ public class GFLauncherInfo {
      * @return An admin listener port number.
      */
     public int getAnAdminPort() {
-        if(adminPorts != null && adminPorts.size() > 0)
-            return adminPorts.iterator().next();
+        if(adminAddresses != null && adminAddresses.size() > 0)
+            return adminAddresses.iterator().next().getPort();
         return -1;
     }
 
-    public Set<Integer> getAdminPorts() {
-        return adminPorts;
+    public Set<HostAndPort> getAdminAddresses() {
+        return adminAddresses;
     }
     public RuntimeType getType() {
         return type;
@@ -303,8 +304,8 @@ public class GFLauncherInfo {
     }
 
 
-    void setAdminPorts(Set<Integer> adminPorts) {
-        this.adminPorts = adminPorts;
+    void setAdminAddresses(Set<HostAndPort> adminAddresses) {
+        this.adminAddresses = adminAddresses;
     }
     void setup() throws GFLauncherException {
         setupFromArgs();
@@ -535,7 +536,7 @@ public class GFLauncherInfo {
     private boolean valid = false;
     private Map<String, String> argsMap;
     private ArrayList<String> argsRaw = new ArrayList<String>();
-    private Set<Integer> adminPorts;
+    private Set<HostAndPort> adminAddresses;
     private RespawnInfo respawnInfo;
     // BUG TODO get the def. domains dir from asenv 3/14/2008
     private final static String DEFAULT_DOMAIN_PARENT_DIR = "domains";

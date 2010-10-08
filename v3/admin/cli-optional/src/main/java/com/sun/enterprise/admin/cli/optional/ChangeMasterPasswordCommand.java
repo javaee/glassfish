@@ -41,20 +41,21 @@
 
 package com.sun.enterprise.admin.cli.optional;
 
-import org.glassfish.api.Param;
-import org.glassfish.api.admin.*;
-import com.sun.enterprise.admin.util.CommandModelData.ParamModelData;
-import com.sun.enterprise.admin.cli.LocalDomainCommand;
-import com.sun.enterprise.admin.servermgmt.DomainConfig;
-import com.sun.enterprise.admin.servermgmt.pe.PEDomainsManager;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
+
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.*;
+import com.sun.enterprise.admin.util.CommandModelData.ParamModelData;
+import com.sun.enterprise.admin.cli.LocalDomainCommand;
+import com.sun.enterprise.admin.servermgmt.DomainConfig;
+import com.sun.enterprise.admin.servermgmt.pe.PEDomainsManager;
+import com.sun.enterprise.util.HostAndPort;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
  * The change-master-password command.
@@ -85,7 +86,8 @@ public class ChangeMasterPasswordCommand extends LocalDomainCommand {
     protected int executeCommand()
                     throws CommandException, CommandValidationException {
         try {
-            if (super.isRunning(super.getAdminPort()))
+            HostAndPort adminAddress = getAdminAddress();
+            if (isRunning(adminAddress.getHost(), adminAddress.getPort()))
                 throw new CommandException(strings.get("domain.is.running",
                                                     getDomainName(), getDomainRootDir()));
             DomainConfig domainConfig = new DomainConfig(getDomainName(),

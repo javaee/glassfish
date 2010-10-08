@@ -40,6 +40,9 @@
 
 package com.sun.enterprise.admin.cli.optional;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
@@ -48,12 +51,11 @@ import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.servermgmt.DomainConfig;
 import com.sun.enterprise.admin.servermgmt.DomainsManager;
 import com.sun.enterprise.admin.servermgmt.pe.PEDomainsManager;
+import com.sun.enterprise.util.HostAndPort;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.appserv.management.client.prefs.LoginInfoStoreFactory;
 import com.sun.appserv.management.client.prefs.LoginInfoStore;
 import com.sun.appserv.management.client.prefs.StoreException;
-import java.io.File;
-import java.io.IOException;
 
 /**
  *  This is a local command that deletes a domain.
@@ -69,7 +71,7 @@ public final class DeleteDomainCommand extends LocalDomainCommand {
             new LocalStringsImpl(DeleteDomainCommand.class);
 
     // this is single threaded code, deliberately avoiding volatile/atomic
-    private int adminPort;
+    private HostAndPort adminAddress;
 
 
     /**
@@ -79,7 +81,7 @@ public final class DeleteDomainCommand extends LocalDomainCommand {
             throws CommandException, CommandValidationException  {
         setDomainName(domainName0);
         super.validate();
-        adminPort = super.getAdminPort();
+        adminAddress = super.getAdminAddress();
     }
  
     /**
@@ -108,7 +110,8 @@ public final class DeleteDomainCommand extends LocalDomainCommand {
 
     private void checkRunning() throws CommandException {
         programOpts.setInteractive(false);      // don't prompt for password
-        if (isRunning(adminPort) && isThisDAS(getDomainRootDir())) {
+        if (isRunning(adminAddress.getHost(), adminAddress.getPort()) &&
+                isThisDAS(getDomainRootDir())) {
             String msg = strings.get("domain.is.running", getDomainName(),
                                         getDomainRootDir());
             throw new IllegalStateException(msg);
@@ -143,7 +146,6 @@ public final class DeleteDomainCommand extends LocalDomainCommand {
      */
     private void deleteLoginInfo() throws CommandException, StoreException {
         LoginInfoStore store = LoginInfoStoreFactory.getDefaultStore();
-        // the host is always "localhost" in this case
-        store.remove("localhost", adminPort);
+        store.remove(adminAddress.getHost(), adminAddress.getPort());
     }
 }

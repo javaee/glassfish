@@ -40,18 +40,19 @@
 
 package com.sun.enterprise.admin.cli;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.logging.Logger;
 import com.sun.enterprise.admin.launcher.GFLauncher;
 import com.sun.enterprise.admin.launcher.GFLauncherException;
 import com.sun.enterprise.admin.launcher.GFLauncherInfo;
 import com.sun.enterprise.universal.StringUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.process.ProcessStreamDrainer;
+import com.sun.enterprise.util.HostAndPort;
 import com.sun.enterprise.util.io.ServerDirs;
 import com.sun.enterprise.util.net.NetUtils;
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.logging.Logger;
 import org.glassfish.api.admin.CommandException;
 import static com.sun.enterprise.admin.cli.CLIConstants.WAIT_FOR_DAS_TIME_MS;
 
@@ -73,7 +74,7 @@ public class StartServerHelper{
         terse = terse0;
         launcher = launcher0;
         info = launcher.getInfo();
-        ports = info.getAdminPorts();
+        addresses = info.getAdminAddresses();
         serverDirs = serverDirs0;
         pidFile = serverDirs.getPidFile();
         masterPassword = masterPassword0;
@@ -103,8 +104,8 @@ public class StartServerHelper{
             else {
                 // first, see if the admin port is responding
                 // if it is, the DAS is up
-                for(int port : ports) {
-                    if(NetUtils.isRunning(port)) {
+                for (HostAndPort addr : addresses) {
+                    if (NetUtils.isRunning(addr.getHost(), addr.getPort())) {
                         alive = true;
                         break pinged;
                     }
@@ -186,7 +187,6 @@ public class StartServerHelper{
         // TODO  TODO  TODO  TODO  Todo  todo
         // TODO  TODO  TODO  TODO  Todo  todo
         // TODO  TODO  TODO  TODO  Todo  todo
-        // todo add getAdminPort() to GFInfo and return first one in list
         // add logfile path to ServerDirs
         // TODO IMPORTANT have the enum itself return the strings "domain"  "instance" etc.
         // TODO  TODO  TODO  TODO  Todo  todo
@@ -264,15 +264,15 @@ public class StartServerHelper{
     }
 
     private String adminPortInUse() {
-        Set<Integer> adminPorts = info.getAdminPorts();
-        return adminPortInUse(adminPorts);
+        return adminPortInUse(info.getAdminAddresses());
     }
 
-    private String adminPortInUse(Set<Integer> adminPorts) {
+    private String adminPortInUse(Set<HostAndPort> adminAddresses) {
         // it returns a String for logging --- if desired
-        for(Integer port : adminPorts)
-            if(!NetUtils.isPortFree(port))
-                return strings.get("ServerRunning", port.toString());
+        for(HostAndPort addr : adminAddresses)
+            if(!NetUtils.isPortFree(addr.getHost(), addr.getPort()))
+                return strings.get("ServerRunning",
+                                    Integer.toString(addr.getPort()));
 
         return null;
     }
@@ -285,7 +285,7 @@ public class StartServerHelper{
     private final Logger logger;
     private final File pidFile;
     private final GFLauncherInfo info;
-    private final Set<Integer> ports;
+    private final Set<HostAndPort> addresses;
     private final ServerDirs serverDirs;
     private final String masterPassword;
     private final boolean debug;
@@ -315,9 +315,9 @@ public class StartServerHelper{
             }
 
             // The port may take some time to become free after the pipe breaks
-            Set<Integer> adminPorts = info.getAdminPorts();
+            Set<HostAndPort> adminAddresses = info.getAdminAddresses();
 
-            while(adminPortInUse(adminPorts) != null);
+            while(adminPortInUse(adminAddresses) != null);
 
             success = true;
         }

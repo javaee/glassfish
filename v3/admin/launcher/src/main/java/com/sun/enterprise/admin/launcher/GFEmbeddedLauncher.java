@@ -40,12 +40,12 @@
 
 package com.sun.enterprise.admin.launcher;
 
+import java.io.File;
+import java.util.*;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
-import java.io.File;
-import java.util.*;
-import java.util.List;
+import com.sun.enterprise.util.HostAndPort;
 
 /**
  *
@@ -123,7 +123,7 @@ class GFEmbeddedLauncher extends GFLauncher {
 
             info.setDomainRootDir(new File(System.getenv(INSTALL_HOME)));
             MiniXmlParser parser = new MiniXmlParser(dx, instanceName);
-            info.setAdminPorts(parser.getAdminPorts());
+            info.setAdminAddresses(parser.getAdminAddresses());
             File logFile = new File(dom, "logs");
             logFile = new File(logFile, "server.log");
             logFilename = logFile.getAbsolutePath();
@@ -134,12 +134,12 @@ class GFEmbeddedLauncher extends GFLauncher {
             e.printStackTrace();
         }
 
-        Set<Integer> adminPorts = info.getAdminPorts();
+        Set<HostAndPort> adminAddresses = info.getAdminAddresses();
 
-        if (adminPorts == null || adminPorts.isEmpty()) {
-            adminPorts = new HashSet<Integer>();
-            adminPorts.add(4848);
-            info.setAdminPorts(adminPorts);
+        if (adminAddresses == null || adminAddresses.isEmpty()) {
+            adminAddresses = new HashSet<HostAndPort>();
+            adminAddresses.add(new HostAndPort("localhost", 4848, false));
+            info.setAdminAddresses(adminAddresses);
         }
         GFLauncherLogger.addLogFileHandler(getLogFilename(), info);
 

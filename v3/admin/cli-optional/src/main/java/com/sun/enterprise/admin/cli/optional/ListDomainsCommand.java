@@ -52,6 +52,7 @@ import com.sun.enterprise.admin.servermgmt.DomainsManager;
 import com.sun.enterprise.admin.servermgmt.pe.PEDomainsManager;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.io.DomainDirs;
+import com.sun.enterprise.util.HostAndPort;
 
 /**
  *  This is a local command that lists the domains.
@@ -101,7 +102,8 @@ public final class ListDomainsCommand extends LocalDomainCommand {
     private String getStatus(String dn) throws IOException, CommandException {
         setDomainName(dn);
         initDomain();
-        programOpts.setPort(getAdminPort());
+        HostAndPort addr = getAdminAddress();
+        programOpts.setHostAndPort(addr);
         boolean status = isThisDAS(getDomainRootDir());
         if (status) {
             try {

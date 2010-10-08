@@ -99,10 +99,9 @@ public class StopDomainCommand extends LocalDomainCommand {
             if(getServerDirs().getLocalPassword() == null)
                 return dasNotRunning();
 
-            int adminPort = getAdminPort();
-            programOpts.setPort(adminPort);
+            programOpts.setHostAndPort(getAdminAddress());
             logger.finer("Stopping local domain on port "
-                    + adminPort);
+                    + programOpts.getPort());
 
             /*
              * If we're using the local password, we don't want to prompt

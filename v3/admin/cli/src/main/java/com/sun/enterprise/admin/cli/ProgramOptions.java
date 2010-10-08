@@ -52,6 +52,7 @@ import com.sun.enterprise.admin.util.*;
 import com.sun.enterprise.admin.util.CommandModelData.ParamModelData;
 import com.sun.enterprise.admin.util.CommandModelData.ParamData;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.util.HostAndPort;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
@@ -281,6 +282,18 @@ public class ProgramOptions {
      */
     public void setPort(int port) {
         options.set(PORT, Integer.toString(port));
+    }
+
+    /**
+     * Convenience method to set the host and port (and secure)
+     * attributes from a HostAndPort object.
+     *
+     * @param   address the HostAndPort object from which to set the attributes
+     */
+    public void setHostAndPort(HostAndPort address) {
+        setHost(address.getHost());
+        setPort(address.getPort());
+        setSecure(address.isSecure());
     }
 
     /**
