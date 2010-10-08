@@ -1267,14 +1267,14 @@ public class RunLevelServiceTest {
     @Override
     public void activate(Inhabitant inhabitant) {
       activateCount++;
-      System.out.println(inhabitant);
+//      System.out.println(inhabitant);
       inhabitant.get();
     }
     
     @Override
     public void deactivate(Inhabitant inhabitant) {
       releaseCount++;
-      System.out.println(inhabitant);
+//      System.out.println(inhabitant);
 //      inhabitant.release();
     }
   }
