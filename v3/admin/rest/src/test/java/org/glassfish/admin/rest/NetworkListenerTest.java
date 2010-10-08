@@ -40,6 +40,7 @@
 
 package org.glassfish.admin.rest;
 
+import java.util.Map;
 import com.sun.jersey.api.client.ClientResponse;
 import java.util.HashMap;
 import org.junit.Test;
@@ -51,6 +52,8 @@ import static org.junit.Assert.*;
  */
 public class NetworkListenerTest extends RestTestBase {
     protected static final String URL_PROTOCOL = "/domain/configs/config/server-config/network-config/protocols/protocol";
+    protected static final String URL_SSL = "/domain/configs/config/server-config/network-config/protocols/protocol/http-listener-2/ssl";
+
     @Test
     public void createHttpListener() {
         final String redirectProtocolName = "http-redirect"; //protocol_" + generateRandomString();
@@ -137,5 +140,35 @@ public class NetworkListenerTest extends RestTestBase {
             checkStatusForSuccess(response);
         }
         
+    }
+
+    @Test
+    public void testClearingProperties() {
+        Map<String, String> params = new HashMap<String, String>() {{
+            put("keyStore", "foo");
+            put("trustAlgorithm", "bar");
+            put("trustMaxCertLength", "15");
+            put("trustStore", "baz");
+        }};
+
+        ClientResponse response = post(URL_SSL, params);
+        assertTrue(isSuccess(response));
+        response = get(URL_SSL, params);
+        Map<String, String> entity = this.getEntityValues(response);
+        assertEquals(params.get("keyStore"), entity.get("keyStore"));
+        assertEquals(params.get("trustAlgorithm"), entity.get("trustAlgorithm"));
+        assertEquals(params.get("trustMaxCertLength"), entity.get("trustMaxCertLength"));
+        assertEquals(params.get("trustStore"), entity.get("trustStore"));
+
+        params.put("keyStore", "");
+        params.put("trustAlgorithm", "");
+        params.put("trustStore", "");
+        response = post(URL_SSL, params);
+        assertTrue(isSuccess(response));
+        response = get(URL_SSL, params);
+        entity = this.getEntityValues(response);
+        assertEquals("", entity.get("keyStore"));
+        assertEquals("", entity.get("trustAlgorithm"));
+        assertEquals("", entity.get("trustStore"));
     }
 }

@@ -505,6 +505,8 @@ public class ResourceUtil {
     //removes entries with empty value from the given Map
 
     public static void purgeEmptyEntries(Map<String, String> data) {
+        return;
+        /*
         Set<String> keys = data.keySet();
         Iterator<String> iterator = keys.iterator();
         String key;
@@ -515,6 +517,7 @@ public class ResourceUtil {
                 iterator = keys.iterator();
             }
         }
+        */
     }
 
     /**

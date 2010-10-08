@@ -80,7 +80,7 @@ public class JdbcTest extends RestTestBase {
 
     @Test
     public void createDuplicateResource() {
-        final String resourceName = "jdbc/default";
+        final String resourceName = "jdbc/__default";
         Map<String, String> params = new HashMap<String, String>() {{
            put("id", resourceName);
            put("poolName", "DerbyPool");
