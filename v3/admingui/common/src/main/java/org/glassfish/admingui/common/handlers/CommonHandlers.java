@@ -75,7 +75,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.MiscUtil;
 import org.glassfish.admingui.common.util.V3AMX;
-import org.glassfish.admingui.common.util.V3AMXUtil;
 import org.glassfish.admingui.common.util.TargetUtil;
 
 
@@ -298,25 +297,7 @@ public class CommonHandlers {
 	handlerCtx.getFacesContext().getExternalContext().invalidateSession();
     }
 
-    /**
-     *	<p> This method looks at the port of the admin-listener to generate the href to show to user so that </p>
-     *      when server restart, user can click on that link to access GUI again.  We need to do that since the </p>
-     *      port maybe changed from the current one when server restart.
-     *	<p> Output value: "url" -- Type: <code>java.lang.String</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id="getRestartURL",
-    output={
-        @HandlerOutput(name="url", type=String.class)}
-    )
-    public static void getRestartURL(HandlerContext handlerCtx) {
-        String port = ""+ V3AMXUtil.getAdminPort();
-        String security = (String) V3AMX.getInstance().getAdminListener().findProtocol().attributesMap().get("SecurityEnabled");
-        String url = security.equals("true")? "https" : "http";
-        url = url + "://" + GuiUtil.getSessionValue("serverName")+":" + port;
-        handlerCtx.setOutputValue("url", url);
-    }
-
+   
     /**
      *	<p> This method sets the required attribute of a UI component .
      *	<p> Input value: "id" -- Type: <code>java.lang.String</code></p>
@@ -474,21 +455,6 @@ public class CommonHandlers {
         handlerCtx.setOutputValue("CurrentTime", currentTime);
     }
     
-    /**
-     * <p> Returns the restart required status<p>
-     * <p> Output value: "RestartRequired" -- Type: <code>java.lang.Boolean</code></p>
-     *
-     */
-    @Handler(id="checkRestart",
-    output={
-        @HandlerOutput(name="RestartRequired", type=Boolean.class),
-        @HandlerOutput(name="unprocessedChanges", type=List.class)}
-    )
-    public void checkRestart(HandlerContext handlerCtx) {
-        List<Object[]> changes = V3AMX.getInstance().getDomainRoot().getExt().getSystemStatus().getRestartRequiredChanges();
-        handlerCtx.setOutputValue("RestartRequired", (changes.size() > 0));
-        handlerCtx.setOutputValue("unprocessedChanges", changes); 
-    }
 
     @Handler(id="gf.handleError",
     input={
