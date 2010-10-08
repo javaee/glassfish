@@ -145,7 +145,7 @@ import com.sun.hk2.component.RunLevelInhabitant;
  * implementation mode is pre-configured to be synchronous.  The
  * DefaultRunLevelService is thread safe.
  * <p>
- * In the synchronous mode, calls can be made to proceedTo() to "interrupt"
+ * In the synchronous mode, calls can be made to proceedTo() to interrupt
  * processing of any currently executing proceedTo() operation.  This might occur:
  * in another thread, in the {@link RunLevelListener} handlers, or in a
  * {@link RunLevel} annotated service's {@link PostConstruct} method call.
@@ -159,6 +159,10 @@ import com.sun.hk2.component.RunLevelInhabitant;
  * is capable of being interrupted.  In such a situation, the second proceedTo() call
  * returns immediately and the first proceedTo() is interrupted to continue to the 
  * new runLevel requested from the second thread's interrupt.
+ * <p>
+ * For this reason, it is strongly advised that {@link InterruptedException} is not
+ * swallowed by services that can be driven by the DefaultRunLevelService in
+ * synchronous mode.
  * <p>
  * proceedTo invocations from a {@link PostConstruct} callback are discouraged.  Consider
  * using {@link RunLevelListener} instead.
