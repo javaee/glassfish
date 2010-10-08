@@ -57,6 +57,8 @@ import javax.naming.InitialContext;
 import javax.rmi.PortableRemoteObject;
 
 import java.util.Properties;
+import java.util.List;
+import java.util.ArrayList;
 
 @Service
 @Scoped(Singleton.class)
@@ -77,6 +79,8 @@ public class MbeanService implements Startup {
     }
 
     public static MbeanService getInstance() {
+        if(habitat == null)
+            return null;
         return habitat.getComponent(MbeanService.class);
     }
 
@@ -106,5 +110,20 @@ public class MbeanService implements Startup {
             return false;
         }
         return (s == null) ? false : true;
+    }
+
+    public List<String> getAllInstances() {
+        return convertList(tgt.getAllInstances());
+    }
+
+    public List<String> getInstances(String name) {
+        return convertList(tgt.getInstances(name));
+    }
+
+    private List<String> convertList(List<Server> servers) {
+        List<String> serverStrings = new ArrayList<String>();
+        for(Server svr : servers)
+            serverStrings.add(svr.getName());
+        return serverStrings;
     }
 }

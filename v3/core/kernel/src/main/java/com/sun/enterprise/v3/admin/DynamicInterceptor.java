@@ -39,10 +39,12 @@
  */
 package com.sun.enterprise.v3.admin;
 
+import com.sun.logging.LogDomains;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.Collections;
+import java.util.*;
+import java.util.logging.Logger;
 
 import java.io.ObjectInputStream;
 
@@ -77,35 +79,74 @@ public class DynamicInterceptor implements MBeanServer
 {
     private volatile MBeanServer mDelegateMBeanServer;
     private static HashMap<String, MBeanServerConnection> instanceConnections;
-    
+    private static final LocalStringManagerImpl localStrings =
+                        new LocalStringManagerImpl(DynamicInterceptor.class);
+
 
     public DynamicInterceptor() {
         mDelegateMBeanServer    = null;
         instanceConnections = new HashMap<String, MBeanServerConnection>();
     }
 
-    private String getInstance(final ObjectName o) throws InstanceNotFoundException {
+    private ReplicationInfo getInstance(final ObjectName o) throws InstanceNotFoundException {
+        ReplicationInfo result = new ReplicationInfo();
+        List<String> instances = result.getInstances();
+        if(o == null) {
+            // this is possible for createMBean calls only
+            instances.add("server");
+            return result;
+        }
         String j2eeTypeProp = o.getKeyProperty("j2eeType");
+        String oName = o.toString();
 
-        // This is kludge; we set the JDK sys property in domain template but that
-        // gets set for DAS and instances. For instance, we want only default MBean server
-        // So if this instance is not DAS, we just return server so the instances will
-        // use default MbeanServer.
-        if(!MbeanService.getInstance().isDas())
-                return "server";
-
-        // J2EEDomain is on the DAS
-        if ("J2EEDomain".equals(j2eeTypeProp))
-            return "server";
-
-        // If its a J2EEServer that we are looking at
-        String name;
-        if (j2eeTypeProp != null && j2eeTypeProp.equals("J2EEServer"))
-            name = o.getKeyProperty("name");
-        else
-            // if its any other MO that has a J2EEServer as a parent
-            name = o.getKeyProperty("J2EEServer");
-        return MbeanService.getInstance().isValidServer(name) ? name : null;
+        try {
+            if(MbeanService.getInstance() == null) {
+                // This is kludge; during init the habitat is not initialized;
+                // this is to take care of that
+                instances.add("server");
+            } else if(!MbeanService.getInstance().isDas()) {
+                // This is kludge; we set the JDK sys property in domain template but that
+                // gets set for DAS and instances. For instance, we want only default MBean server
+                // So if this instance is not DAS, we just return server so the instances will
+                // use default MbeanServer.
+                instances.add("server");
+            } else if(oName.startsWith("amx:pp=/domain/configs/config[")) {
+                String configName = oName.substring(oName.indexOf("[")+1, oName.indexOf("-config"));
+                instances.add("server");
+                instances.addAll(MbeanService.getInstance().getInstances(configName));
+            } else if(oName.startsWith("amx:pp=/domain/clusters/cluster[")) {
+                String clusterName = oName.substring(oName.indexOf("[")+1, oName.indexOf("]"));
+                instances.add("server");
+                instances.addAll(MbeanService.getInstance().getInstances(clusterName));
+            } else if(oName.startsWith("amx:pp=/domain/servers/server[")) {
+                String svrName = oName.substring(oName.indexOf("[")+1, oName.indexOf("]"));
+                instances.add(svrName);
+                result.setTargetIsAnInstance(true);
+            } else if( ("amx:*".equals(oName)) || ("*.*".equals(oName)) ) {
+                instances.add("server");
+                instances.addAll(MbeanService.getInstance().getAllInstances());
+            } else if("J2EEDomain".equals(j2eeTypeProp)) {
+                // J2EEDomain is on the DAS
+                instances.add("server");
+            } else {
+                // If its a J2EEServer that we are looking at
+                String name;
+                if (j2eeTypeProp != null && j2eeTypeProp.equals("J2EEServer"))
+                    name = o.getKeyProperty("name");
+                else
+                    // if its any other MO that has a J2EEServer as a parent
+                    name = o.getKeyProperty("J2EEServer");
+                if(MbeanService.getInstance().isValidServer(name)) {
+                    instances.add(name);
+                    if(!("server".equals(name)))
+                        result.setTargetIsAnInstance(true);
+                } else
+                    instances.add("server");
+            }
+        } catch(Exception e) {
+            throw new InstanceNotFoundException(e.getLocalizedMessage());
+        }
+        return result;
     }
 
     private MBeanServerConnection getInstanceConnection(String instanceName) throws InstanceNotFoundException {
@@ -141,110 +182,174 @@ public class DynamicInterceptor implements MBeanServer
     public Object invoke( final ObjectName objectName, final String operationName,
                           final Object[] params, final String[] signature)
             throws ReflectionException, InstanceNotFoundException, MBeanException {
-        String instance = getInstance(objectName);
-        if( (instance == null) || (instance.equals("server")))
-            return getDelegateMBeanServer().invoke( objectName, operationName, params, signature );
+        if(objectName == null)
+            throw new InstanceNotFoundException();
+        ReplicationInfo result = getInstance(objectName);
+        Object returnValue = null;
         try {
-            return getInstanceConnection(instance).invoke(objectName, operationName, params, signature);
+            for(String svr : result.getInstances()) {
+                if("server".equals(svr))
+                    returnValue = getDelegateMBeanServer().invoke( objectName, operationName, params, signature );
+                else
+                    returnValue = getInstanceConnection(svr).invoke(objectName, operationName, params, signature);
+            }
         } catch (IOException ioex) {
-            throw new MBeanException(ioex);
+            throw new ReflectionException(ioex);
         }
+        return returnValue;
     }
     
     public final Object getAttribute(final ObjectName objectName, final String attributeName)
             throws InstanceNotFoundException, AttributeNotFoundException, MBeanException, ReflectionException {
-        String instance = getInstance(objectName);
-        if( (instance == null) || (instance.equals("server")))
+        if(objectName == null)
+            throw new InstanceNotFoundException();
+        ReplicationInfo result = getInstance(objectName);
+        if(!result.isTargetAnInstance())
             return getDelegateMBeanServer().getAttribute( objectName, attributeName);
         try {
-            return getInstanceConnection(instance).getAttribute(objectName, attributeName);
+            return getInstanceConnection(result.getInstances().get(0)).getAttribute(objectName, attributeName);
         } catch (IOException ioex) {
-            throw new MBeanException(ioex);
+            throw new ReflectionException(ioex);
         }
     }
     
     public void setAttribute(final ObjectName objectName, final Attribute attribute) throws
             InstanceNotFoundException, AttributeNotFoundException, MBeanException,
             ReflectionException, InvalidAttributeValueException {
-        String instance = getInstance(objectName);
-        if( (instance == null) || (instance.equals("server"))) {
-            getDelegateMBeanServer().setAttribute( objectName, attribute );
-            return;
-        }
+        if(objectName == null)
+            throw new InstanceNotFoundException();
+        ReplicationInfo result = getInstance(objectName);
         try {
-            getInstanceConnection(instance).setAttribute(objectName, attribute);
+            if(result.isTargetAnInstance()) {
+                getInstanceConnection(result.getInstances().get(0)).setAttribute(objectName, attribute);
+                return;
+            }
+            for(String svr : result.getInstances()) {
+                if("server".equals(svr))
+                    getDelegateMBeanServer().setAttribute( objectName, attribute );
+                else
+                    getInstanceConnection(svr).setAttribute(objectName, attribute);
+            }
         } catch (IOException ioex) {
-            throw new MBeanException(ioex);
+            throw new ReflectionException(ioex);
         }
     }
 
     public final AttributeList getAttributes(final ObjectName objectName, final String[] attrNames)
             throws InstanceNotFoundException, ReflectionException {
-        String instance = getInstance(objectName);
-        if( (instance == null) || (instance.equals("server")))
-            return getDelegateMBeanServer().getAttributes( objectName, attrNames );
+        if(objectName == null)
+            throw new InstanceNotFoundException();
+        ReplicationInfo result = getInstance(objectName);
         try {
-            return getInstanceConnection(instance).getAttributes(objectName, attrNames);
+            if(result.isTargetAnInstance())
+                return getInstanceConnection(result.getInstances().get(0)).getAttributes(objectName, attrNames);
+            else
+                return getDelegateMBeanServer().getAttributes( objectName, attrNames );
         } catch (IOException ioex) {
-            throw new InstanceNotFoundException(ioex.getLocalizedMessage());
+            throw new ReflectionException(ioex);
         }
     }
 
     public AttributeList setAttributes (final ObjectName objectName, final AttributeList attributeList)
             throws InstanceNotFoundException, ReflectionException {
-        String instance = getInstance(objectName);
-        if( (instance == null) || (instance.equals("server")))
-            return getDelegateMBeanServer().setAttributes( objectName, attributeList );
+        if(objectName == null)
+            throw new InstanceNotFoundException();
+        ReplicationInfo result = getInstance(objectName);
+        AttributeList ret = null;
         try {
-            return getInstanceConnection(instance).setAttributes(objectName, attributeList);
+            if(result.isTargetAnInstance())
+                return getInstanceConnection(result.getInstances().get(0)).setAttributes(objectName, attributeList);
+            for(String svr : result.getInstances()) {
+                if((result.getInstances().get(0).equals("server")))
+                    ret = getDelegateMBeanServer().setAttributes( objectName, attributeList );
+                else
+                    ret = getInstanceConnection(svr).setAttributes(objectName, attributeList);
+            }
         } catch (IOException ioex) {
-            throw new InstanceNotFoundException(ioex.getLocalizedMessage());
+            throw new ReflectionException(ioex);
         }
+        return ret;
     }
     
     public final ObjectInstance registerMBean(final Object obj, final ObjectName objectName)
             throws NotCompliantMBeanException, MBeanRegistrationException, InstanceAlreadyExistsException {
         return getDelegateMBeanServer().registerMBean( obj, objectName );
     }
-    
+
     public final void unregisterMBean(final ObjectName objectName)
             throws InstanceNotFoundException, MBeanRegistrationException {
-        getDelegateMBeanServer().unregisterMBean( objectName );
+        if(objectName == null)
+            throw new InstanceNotFoundException();
+        ReplicationInfo result = getInstance(objectName);
+        try {
+            if(result.isTargetAnInstance()) {
+                getInstanceConnection(result.getInstances().get(0)).unregisterMBean(objectName);
+                return;
+            }
+            for(String svr : result.getInstances()) {
+                if("server".equals(svr))
+                    getDelegateMBeanServer().unregisterMBean( objectName );
+                else
+                    getInstanceConnection(svr).unregisterMBean(objectName);
+            }
+        } catch(IOException io) {
+            throw new MBeanRegistrationException(io);
+        }
     }
-	
+
     public final Integer getMBeanCount() {
         return getDelegateMBeanServer().getMBeanCount( );
     }
 
     public final Set queryMBeans( final ObjectName objectName, final QueryExp expr ) {
+        if(objectName == null)
+            return Collections.EMPTY_SET;
         try {
-            String instance = getInstance(objectName);
-            if( (instance == null) || (instance.equals("server")))
-                return getDelegateMBeanServer().queryMBeans( objectName, expr );
-            return getInstanceConnection(instance).queryMBeans(objectName, expr);
-        } catch (Exception ex) {
+            Set returnVal = null;
+            List<String> instance = getInstance(objectName).getInstances();
+            for(String ins : instance) {
+                Set tmp;
+                if(ins.equals("server"))
+                    tmp = getDelegateMBeanServer().queryMBeans(objectName, expr);
+                else
+                    tmp = getInstanceConnection(ins).queryMBeans(objectName, expr);
+                if(returnVal == null)
+                    returnVal = tmp;
+                else
+                    returnVal.addAll(tmp);
+            }
+            return returnVal;
+        } catch (Exception e) {
             return Collections.EMPTY_SET;
         }
     }
 
     public final MBeanInfo getMBeanInfo( final ObjectName objectName)
             throws InstanceNotFoundException, IntrospectionException, ReflectionException {
-        String instance = getInstance(objectName);
-        if( (instance == null) || (instance.equals("server")))
-            return getDelegateMBeanServer().getMBeanInfo( objectName );
+        if(objectName == null)
+            throw new InstanceNotFoundException();
+        ReplicationInfo result = getInstance(objectName);
         try {
-            return getInstanceConnection(instance).getMBeanInfo(objectName);
+            if(result.isTargetAnInstance())
+                return getInstanceConnection(result.getInstances().get(0)).getMBeanInfo(objectName);
+            else
+                return getDelegateMBeanServer().getMBeanInfo( objectName );
         } catch (IOException ioex) {
-            throw new InstanceNotFoundException(ioex.getLocalizedMessage());
+            throw new ReflectionException(ioex);
         }
     }
 
     public final boolean isRegistered( final ObjectName objectName) {
+        if(objectName == null)
+            return false;
         try {
-            String instance = getInstance(objectName);
-            if( (instance == null) || (instance.equals("server")))
+            List<String> instance = getInstance(objectName).getInstances();
+            if(instance.size() != 1)
+                throw new InstanceNotFoundException(localStrings.getLocalString("interceptor.objectName.wrongservernames",
+                        "This mbean call does not support multiple target instances"));
+            if((instance.get(0).equals("server")))
                 return getDelegateMBeanServer().isRegistered( objectName );
-            return getInstanceConnection(instance).isRegistered(objectName);
+            return getInstanceConnection(instance.get(0)).isRegistered(objectName);
         } catch (Exception ex) {
             return false;
         }
@@ -254,39 +359,131 @@ public class DynamicInterceptor implements MBeanServer
                                                final NotificationListener notificationListener,
                                                final NotificationFilter notificationFilter, final Object obj)
             throws InstanceNotFoundException {
-        getDelegateMBeanServer().addNotificationListener(objectName, notificationListener, notificationFilter, obj);
+        if(objectName == null)
+            throw new InstanceNotFoundException();
+        ReplicationInfo result = getInstance(objectName);
+        try {
+            if(result.isTargetAnInstance()) {
+                getInstanceConnection(result.getInstances().get(0)).addNotificationListener(
+                        objectName, notificationListener, notificationFilter, obj);
+                return;
+            }
+            for(String svr : result.getInstances()) {
+                if("server".equals(svr))
+                    getDelegateMBeanServer().addNotificationListener(objectName,
+                            notificationListener, notificationFilter, obj);
+                else
+                    getInstanceConnection(svr).addNotificationListener(objectName, notificationListener,
+                        notificationFilter, obj);
+            }
+        } catch(IOException ioex) {
+            throw new InstanceNotFoundException(ioex.getLocalizedMessage());
+        }
     }
 
     public final void addNotificationListener(final ObjectName objectName, final ObjectName objectName1,
                                               final NotificationFilter notificationFilter, final Object obj)
             throws InstanceNotFoundException {
-        getDelegateMBeanServer().addNotificationListener(objectName, objectName1, notificationFilter, obj);
+        if(objectName == null)
+            throw new InstanceNotFoundException();
+        ReplicationInfo result = getInstance(objectName);
+        try {
+            if(result.isTargetAnInstance()) {
+                getInstanceConnection(result.getInstances().get(0)).addNotificationListener(
+                        objectName, objectName1, notificationFilter, obj);
+                return;
+            }
+            for(String svr : result.getInstances()) {
+                if("server".equals(svr))
+                    getDelegateMBeanServer().addNotificationListener(objectName,
+                            objectName1, notificationFilter, obj);
+                else
+                    getInstanceConnection(svr).addNotificationListener(objectName, objectName1,
+                        notificationFilter, obj);
+            }
+        } catch(IOException ioex) {
+            throw new InstanceNotFoundException(ioex.getLocalizedMessage());
+        }
     }
 
     public final ObjectInstance createMBean( final String str, final ObjectName objectName)
             throws ReflectionException, InstanceAlreadyExistsException, MBeanRegistrationException,
-            MBeanException, NotCompliantMBeanException {
-        return getDelegateMBeanServer().createMBean (str, objectName);
+                MBeanException, NotCompliantMBeanException {
+        try {
+            ReplicationInfo result = getInstance(objectName);
+            ObjectInstance ret = null;
+            if(result.isTargetAnInstance())
+                return getInstanceConnection(result.getInstances().get(0)).createMBean(str, objectName);
+            for(String svr : result.getInstances())
+                if(svr.equals("server"))
+                    ret = getDelegateMBeanServer().createMBean (str, objectName);
+                else
+                    ret = getInstanceConnection(svr).createMBean(str, objectName);
+            return ret;
+        } catch (Exception ioex) {
+            throw new MBeanException(ioex);
+        }
     }
 
     public final ObjectInstance createMBean( final String str, final ObjectName objectName,
                                              final ObjectName objectName2)
             throws ReflectionException, InstanceAlreadyExistsException, MBeanRegistrationException, MBeanException,
             NotCompliantMBeanException, InstanceNotFoundException {
-        return getDelegateMBeanServer().createMBean (str, objectName, objectName2);
+        try {
+            ReplicationInfo result = getInstance(objectName);
+            ObjectInstance ret = null;
+            if(result.isTargetAnInstance())
+                return getInstanceConnection(result.getInstances().get(0)).createMBean(str, objectName, objectName2);
+            for(String svr : result.getInstances())
+                if(svr.equals("server"))
+                    ret = getDelegateMBeanServer().createMBean (str, objectName, objectName2);
+                else
+                    ret = getInstanceConnection(svr).createMBean(str, objectName, objectName2);
+            return ret;
+        } catch (Exception ioex) {
+            throw new MBeanException(ioex);
+        }
     }
 
     public final ObjectInstance createMBean( final String str, final ObjectName objectName, final Object[] obj,
                                              final String[] str3)
-            throws ReflectionException, InstanceAlreadyExistsException, MBeanRegistrationException, MBeanException, NotCompliantMBeanException {
-        return getDelegateMBeanServer().createMBean (str, objectName, obj, str3);
+            throws ReflectionException, InstanceAlreadyExistsException, MBeanRegistrationException,
+            MBeanException, NotCompliantMBeanException {
+        try {
+            ReplicationInfo result = getInstance(objectName);
+            ObjectInstance ret = null;
+            if(result.isTargetAnInstance())
+                return getInstanceConnection(result.getInstances().get(0)).createMBean(str, objectName, obj, str3);
+            for(String svr : result.getInstances())
+                if(svr.equals("server"))
+                    ret = getDelegateMBeanServer().createMBean (str, objectName, obj, str3);
+                else
+                    ret = getInstanceConnection(svr).createMBean(str, objectName, obj, str3);
+            return ret;
+        } catch (Exception ioex) {
+            throw new MBeanException(ioex);
+        }
     }
 
     public final ObjectInstance createMBean ( final String str, final ObjectName objectName,
                                               final ObjectName objectName2, final Object[] obj, final String[] str4)
             throws ReflectionException, InstanceAlreadyExistsException, MBeanRegistrationException,
             MBeanException, NotCompliantMBeanException, InstanceNotFoundException {
-       return getDelegateMBeanServer().createMBean (str, objectName, objectName2, obj, str4);
+        try {
+            ReplicationInfo result = getInstance(objectName);
+            ObjectInstance ret = null;
+            if(result.isTargetAnInstance())
+                return getInstanceConnection(result.getInstances().get(0)).createMBean(str, objectName,
+                        objectName2, obj, str4);
+            for(String svr : result.getInstances())
+                if(svr.equals("server"))
+                    ret = getDelegateMBeanServer().createMBean (str, objectName, objectName2, obj, str4);
+                else
+                    ret = getInstanceConnection(svr).createMBean(str, objectName, objectName2, obj, str4);
+            return ret;
+        } catch (Exception ioex) {
+            throw new MBeanException(ioex);
+        }
     }
 
     public final ObjectInputStream deserialize (String str, byte[] values)
@@ -309,11 +506,16 @@ public class DynamicInterceptor implements MBeanServer
     }
     
     public final ObjectInstance getObjectInstance(ObjectName objectName) throws InstanceNotFoundException {
-        String instance = getInstance(objectName);
-        if( (instance == null) || (instance.equals("server")))
+        if(objectName == null)
+            throw new InstanceNotFoundException();
+        List<String> instance = getInstance(objectName).getInstances();
+        if(instance.size() != 1)
+            throw new InstanceNotFoundException(localStrings.getLocalString("interceptor.objectName.wrongservernames",
+                    "This mbean call does not support multiple target instances"));
+        if((instance.get(0).equals("server")))
             return getDelegateMBeanServer().getObjectInstance(objectName);
         try {
-            return getInstanceConnection(instance).getObjectInstance(objectName);
+            return getInstanceConnection(instance.get(0)).getObjectInstance(objectName);
         } catch (IOException ioex) {
             throw new InstanceNotFoundException(ioex.getLocalizedMessage());
         }
@@ -325,6 +527,8 @@ public class DynamicInterceptor implements MBeanServer
     
     public final Object instantiate( final String str, final ObjectName objectName)
             throws ReflectionException, MBeanException, InstanceNotFoundException {
+        if(objectName == null)
+            throw new InstanceNotFoundException();
         return getDelegateMBeanServer().instantiate(str, objectName);
     }
     
@@ -336,61 +540,153 @@ public class DynamicInterceptor implements MBeanServer
     public final Object instantiate( final String str, final ObjectName objectName, final Object[] obj,
                                      final String[] str3)
             throws ReflectionException, MBeanException, InstanceNotFoundException {
+        if(objectName == null)
+            throw new InstanceNotFoundException();
         return getDelegateMBeanServer().instantiate(str, objectName, obj, str3);
     }
 
     public final boolean isInstanceOf ( final ObjectName objectName,  final String str)
             throws InstanceNotFoundException {
-        String instance = getInstance(objectName);
-        if( (instance == null) || (instance.equals("server")))
+        if(objectName == null)
+            throw new InstanceNotFoundException();
+        List<String> instance = getInstance(objectName).getInstances();
+        if(instance.size() != 1)
+            throw new InstanceNotFoundException(localStrings.getLocalString("interceptor.objectName.wrongservernames",
+                    "This mbean call does not support multiple target instances"));
+        if((instance.get(0).equals("server")))
             return getDelegateMBeanServer().isInstanceOf(objectName, str);
         try {
-            return getInstanceConnection(instance).isInstanceOf(objectName, str);
+            return getInstanceConnection(instance.get(0)).isInstanceOf(objectName, str);
         } catch (IOException ioex) {
             throw new InstanceNotFoundException(ioex.getLocalizedMessage());
         }
     }
 
     public final Set queryNames( final ObjectName objectName, final QueryExp queryExp) {
+        if(objectName == null)
+            return Collections.EMPTY_SET;
         try {
-            String instance = getInstance(objectName);
-            if( (instance == null) || (instance.equals("server")))
-                return getDelegateMBeanServer().queryNames( objectName, queryExp);
-            return getInstanceConnection(instance).queryNames(objectName, queryExp);
+            Set returnVal = null;
+            List<String> instance = getInstance(objectName).getInstances();
+            for(String ins : instance) {
+                Set tmp;
+                if(ins.equals("server"))
+                    tmp = getDelegateMBeanServer().queryNames( objectName, queryExp);
+                else
+                    tmp = getInstanceConnection(ins).queryNames(objectName, queryExp);
+                if(returnVal == null)
+                    returnVal = tmp;
+                else
+                    returnVal.addAll(tmp);
+            }
+            return returnVal;
         } catch (Exception e) {
-            return null;
+            return Collections.EMPTY_SET;
         }
     }
 
     public final void removeNotificationListener(final ObjectName objectName,  final ObjectName objectName1)
             throws InstanceNotFoundException, ListenerNotFoundException {
-        getDelegateMBeanServer().removeNotificationListener( objectName, objectName1);
+        if(objectName == null)
+            throw new InstanceNotFoundException();
+        ReplicationInfo result = getInstance(objectName);
+        try {
+            if(result.isTargetAnInstance()) {
+                getInstanceConnection(result.getInstances().get(0)).removeNotificationListener(objectName, objectName1);
+                return;
+            }
+            for(String svr : result.getInstances()) {
+                if(svr.equals("server"))
+                    getDelegateMBeanServer().removeNotificationListener( objectName, objectName1);
+                else
+                    getInstanceConnection(svr).removeNotificationListener(objectName, objectName1);
+            }
+        } catch (IOException ioex) {
+            throw new InstanceNotFoundException(ioex.getLocalizedMessage());
+        }
     }
 
     public final void removeNotificationListener( final ObjectName objectName,
                                                   final NotificationListener notificationListener)
             throws InstanceNotFoundException, ListenerNotFoundException {
-        getDelegateMBeanServer().removeNotificationListener( objectName, notificationListener);
+        if(objectName == null)
+            throw new InstanceNotFoundException();
+        ReplicationInfo result = getInstance(objectName);
+        try {
+            if(result.isTargetAnInstance()) {
+                getInstanceConnection(result.getInstances().get(0)).removeNotificationListener(objectName, notificationListener);
+                return;
+            }
+            for(String svr : result.getInstances()) {
+                if(svr.equals("server"))
+                    getDelegateMBeanServer().removeNotificationListener( objectName, notificationListener);
+                else
+                    getInstanceConnection(svr).removeNotificationListener(objectName, notificationListener);
+            }
+        } catch (IOException ioex) {
+            throw new InstanceNotFoundException(ioex.getLocalizedMessage());
+        }
     }
       
     public final void removeNotificationListener( final ObjectName objectName,
                                                   final NotificationListener notificationListener,
                                                   final NotificationFilter notificationFilter, final Object obj)
             throws InstanceNotFoundException, ListenerNotFoundException {
-        getDelegateMBeanServer().removeNotificationListener(objectName, notificationListener, notificationFilter, obj);
+        if(objectName == null)
+            throw new InstanceNotFoundException();
+        ReplicationInfo result = getInstance(objectName);
+        try {
+            if(result.isTargetAnInstance()) {
+                getInstanceConnection(result.getInstances().get(0)).removeNotificationListener(objectName,
+                        notificationListener, notificationFilter, obj);
+                return;
+            }
+            for(String svr : result.getInstances()) {
+                if(svr.equals("server"))
+                    getDelegateMBeanServer().removeNotificationListener( objectName,
+                            notificationListener,notificationFilter, obj);
+                else
+                    getInstanceConnection(svr).removeNotificationListener(objectName,
+                            notificationListener, notificationFilter, obj);
+            }
+        } catch (IOException ioex) {
+            throw new InstanceNotFoundException(ioex.getLocalizedMessage());
+        }
     }
     
     public final void removeNotificationListener( final ObjectName objectName, final ObjectName objectName1,
                                                   final NotificationFilter    notificationFilter, final Object obj)
             throws InstanceNotFoundException, ListenerNotFoundException {
-        getDelegateMBeanServer().removeNotificationListener( objectName, objectName1, notificationFilter, obj);
-    }
+        if(objectName == null)
+            throw new InstanceNotFoundException();
+        ReplicationInfo result = getInstance(objectName);
+        try {
+            if(result.isTargetAnInstance()) {
+                getInstanceConnection(result.getInstances().get(0)).removeNotificationListener(objectName,
+                        objectName1, notificationFilter, obj);
+                return;
+            }
+            for(String svr : result.getInstances()) {
+                if(svr.equals("server"))
+                    getDelegateMBeanServer().removeNotificationListener( objectName,
+                            objectName1,notificationFilter, obj);
+                else
+                    getInstanceConnection(svr).removeNotificationListener(objectName,
+                            objectName1, notificationFilter, obj);
+            }
+        } catch (IOException ioex) {
+            throw new InstanceNotFoundException(ioex.getLocalizedMessage());
+        }    }
 
     public final ClassLoader getClassLoader( final ObjectName objectName) throws InstanceNotFoundException {
+        if(objectName == null)
+            throw new InstanceNotFoundException();
         return getDelegateMBeanServer().getClassLoader( objectName );
     }
     
     public final ClassLoader getClassLoaderFor( final ObjectName objectName) throws InstanceNotFoundException {
+        if(objectName == null)
+            throw new InstanceNotFoundException();
         return getDelegateMBeanServer().getClassLoaderFor( objectName );
     }
     
@@ -400,5 +696,15 @@ public class DynamicInterceptor implements MBeanServer
     
     public final String[] getDomains() {
         return getDelegateMBeanServer().getDomains();
+    }
+
+    private class ReplicationInfo {
+        private boolean instanceTarget = false;
+        private List<String> instances = new ArrayList<String>();
+
+        boolean isTargetAnInstance() { return instanceTarget;}
+        void setTargetIsAnInstance(boolean b) { instanceTarget = b;}
+        List<String> getInstances() { return instances;}
+        void addInstance(String s) { instances.add(s);}
     }
 }
