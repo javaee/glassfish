@@ -180,20 +180,6 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 
 	// Check to see if successful..
 	if (restResp.isSuccess()) {
-	    // Get the "extraProperties" section of the response...
-	    Object obj = restResp.getResponse().get("data");
-	    Map extraProperties = null;
-	    if ((obj != null) && (obj instanceof Map)) {
-		obj = ((Map) obj).get("extraProperties");
-		if ((obj != null) && (obj instanceof Map)) {
-		    extraProperties = (Map) obj;
-		    // Check to see if the username has changed...
-		    if (extraProperties.containsKey("username")) {
-			username = (String) extraProperties.get("username");
-		    }
-		}
-	    }
-
 	    // Username and Password sent in... validate them!
 	    CallerPrincipalCallback cpCallback =
 		new CallerPrincipalCallback(clientSubject, username);
@@ -206,6 +192,16 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 	    }
 
 	    if (session != null) {
+		// Get the "extraProperties" section of the response...
+		Object obj = restResp.getResponse().get("data");
+		Map extraProperties = null;
+		if ((obj != null) && (obj instanceof Map)) {
+		    obj = ((Map) obj).get("extraProperties");
+		    if ((obj != null) && (obj instanceof Map)) {
+			extraProperties = (Map) obj;
+		    }
+		}
+
 		// Save the Rest Token...
 		if (extraProperties != null) {
 		    session.putValue(REST_TOKEN, extraProperties.get("token"));
@@ -213,6 +209,9 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 
 		// Save the Subject...
 		session.putValue(SAVED_SUBJECT, clientSubject);
+
+		// Save the userName
+		session.putValue(USER_NAME, username);
 	    }
 
 	    try {
@@ -267,6 +266,7 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
     private String loginErrorPage = null;
     private static final Class [] SUPPORTED_MESSAGE_TYPES = new Class[] { HttpServletRequest.class, HttpServletResponse.class };
     private static final String SAVED_SUBJECT = "Saved_Subject";
+    private static final String USER_NAME = "userName";
     private static final String RESPONSE_TYPE = "application/json";
 
     /**
