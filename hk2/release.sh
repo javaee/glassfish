@@ -54,18 +54,8 @@ mvn -e -B -P release release:prepare
 # when we run "release:perform" later. So do the build again.
 mvn -e -P release-phase1 install
 
-# this step will fail since release:perform checks-out the tag source code 
-# to target/checkout folder and tries to build.   But we need to first build  
-# with the profile release-phase1.
-#mvn -s $SETTING_XML -e -B release:perform
-#mvn -e -B release:perform
-
-#cd target/checkout
-#mvn -e -P release-phase1 install
-#cd ../..
-
 # finally a release
-#mvn -e -B release:perform
+mvn -e -B release:perform
 
 
 # Once the bits are pushed and made visible, you just need to change v3/pom.xml <hk2.version> property
