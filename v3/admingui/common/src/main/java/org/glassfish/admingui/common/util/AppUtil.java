@@ -62,7 +62,7 @@ public class AppUtil {
 
     public static List<String> getSnifferListOfModule(String appName, String moduleName){
         Map subMap = RestApiHandlers.restRequest(
-            GuiUtil.getSessionValue("REST_URL")+"/applications/application/" + appName + "/module/" + moduleName + "/engine", null, "GET", null);
+            GuiUtil.getSessionValue("REST_URL")+"/applications/application/" + appName + "/module/" + moduleName + "/engine", null, "GET", null, false);
         final Map dataMap = (Map) subMap.get("data");
         List sniffersList = new ArrayList();
         if (dataMap != null){
@@ -111,7 +111,7 @@ public class AppUtil {
                 Map wsAttrMap = new HashMap();
                 wsAttrMap.put("applicationname", encodedAppName);
                 wsAttrMap.put("modulename", encodedModuleName);
-                Map wsMap = RestApiHandlers.restRequest(prefix+"list-webservices", wsAttrMap, "GET", null);
+                Map wsMap = RestApiHandlers.restRequest(prefix+"list-webservices", wsAttrMap, "GET", null, false);
                 Map extraProps = (Map)((Map)wsMap.get("data")).get("extraProperties");
                 if (extraProps != null){
                     wsAppMap = (Map) extraProps.get(appName);

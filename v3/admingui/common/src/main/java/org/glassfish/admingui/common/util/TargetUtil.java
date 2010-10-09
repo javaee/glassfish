@@ -72,7 +72,7 @@ public class TargetUtil {
         Map attrsMap = new HashMap();
         attrsMap.put("standaloneonly", "true");
         try{
-            Map responseMap = RestApiHandlers.restRequest( endpoint , attrsMap, "get" , null);
+            Map responseMap = RestApiHandlers.restRequest( endpoint , attrsMap, "get" , null, false);
             Map  dataMap = (Map) responseMap.get("data");
             Map<String, Object>  extraProps = (Map<String, Object>) dataMap.get("extraProperties");
             if (extraProps == null){

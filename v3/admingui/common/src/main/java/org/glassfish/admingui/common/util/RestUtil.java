@@ -59,7 +59,7 @@ import org.glassfish.admingui.common.handlers.RestApiHandlers;
 public class RestUtil {
 
     public static String getPropValue(String endpoint, String propName, HandlerContext handlerCtx){
-        Map responseMap = (Map) RestApiHandlers.restRequest(endpoint+"/property.json", null, "GET", handlerCtx);
+        Map responseMap = (Map) RestApiHandlers.restRequest(endpoint+"/property.json", null, "GET", handlerCtx, false);
         Map extraPropertiesMap = (Map)((Map)responseMap.get("data")).get("extraProperties");
         if (extraPropertiesMap != null){
             List<Map> props = (List)extraPropertiesMap.get("properties");

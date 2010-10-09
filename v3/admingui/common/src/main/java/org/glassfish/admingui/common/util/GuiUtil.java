@@ -145,8 +145,6 @@ public class GuiUtil {
         getLogger().info("admin console: initSessionAttributes()" );
         ExternalContext externalCtx = FacesContext.getCurrentInstance().getExternalContext();
         Map<String, Object> sessionMap = externalCtx.getSessionMap();
-        String user = externalCtx.getRemoteUser();
-        sessionMap.put("userName", (user == null) ? "" : user);
 
         Object request = externalCtx.getRequest();
         if (request instanceof javax.servlet.ServletRequest){
@@ -166,7 +164,7 @@ public class GuiUtil {
         sessionMap.put("domainName", RestUtil.getPropValue((String)(sessionMap.get("REST_URL")), "administrative.domain.name", null));
         sessionMap.put("_noNetwork", (System.getProperty("com.sun.enterprise.tools.admingui.NO_NETWORK", "false").equals("true"))? Boolean.TRUE: Boolean.FALSE);
         sessionMap.put("supportCluster", Boolean.FALSE);
-        Map version = RestApiHandlers.restRequest(sessionMap.get("REST_URL")+"/version", null, "GET" ,null);
+        Map version = RestApiHandlers.restRequest(sessionMap.get("REST_URL")+"/version", null, "GET" ,null, false);
         sessionMap.put("appServerVersion", ((Map)version.get("data")).get("message"));
         sessionMap.put("reqMsg", GuiUtil.getMessage("msg.JS.enterValue"));
         sessionMap.put("reqMsgSelect", GuiUtil.getMessage("msg.JS.selectValue"));
@@ -182,7 +180,7 @@ public class GuiUtil {
          * Otherwise GUI's main page can't come up.
          */
         try {
-            Map result = RestApiHandlers.restRequest(GuiUtil.getSessionValue("REST_URL")+"/configs/config/server-config/admin-service/das-config", null, "GET", null);
+            Map result = RestApiHandlers.restRequest(GuiUtil.getSessionValue("REST_URL")+"/configs/config/server-config/admin-service/das-config", null, "GET", null, false);
             String timeOut = (String)((Map)((Map)((Map)result.get("data")).get("extraProperties")).get("entity")).get("adminSessionTimeoutInMinutes");
             if ((timeOut != null) && (!timeOut.equals(""))) {
                 int time = new Integer(timeOut).intValue();
