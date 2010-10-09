@@ -198,42 +198,44 @@ public class StructuredLogViewerResource {
             sb.append("<records>\n");
         }
 
-        final AttributeList fieldAttrs = (AttributeList) ((Attribute) queryResult.get(0)).getValue();
-        String[] fieldHeaders = new String[fieldAttrs.size()];
-        for (int i = 0; i < fieldHeaders.length; ++i) {
-            final Attribute attr = (Attribute) fieldAttrs.get(i);
-            fieldHeaders[i] = (String) attr.getValue();
-        }
+	if (queryResult.size() > 0) {
+	    final AttributeList fieldAttrs = (AttributeList) ((Attribute) queryResult.get(0)).getValue();
+	    String[] fieldHeaders = new String[fieldAttrs.size()];
+	    for (int i = 0; i < fieldHeaders.length; ++i) {
+		final Attribute attr = (Attribute) fieldAttrs.get(i);
+		fieldHeaders[i] = (String) attr.getValue();
+	    }
 
-        List<List<Serializable>> srcRecords = asList(((Attribute) queryResult.get(1)).getValue());
+	    List<List<Serializable>> srcRecords = asList(((Attribute) queryResult.get(1)).getValue());
 
-        // extract every record
-        for (int recordIdx = 0; recordIdx < srcRecords.size(); ++recordIdx) {
-            List<Serializable> record = srcRecords.get(recordIdx);
+	    // extract every record
+	    for (int recordIdx = 0; recordIdx < srcRecords.size(); ++recordIdx) {
+		List<Serializable> record = srcRecords.get(recordIdx);
 
-            assert (record.size() == fieldHeaders.length);
-            //Serializable[] fieldValues = new Serializable[fieldHeaders.length];
+		assert (record.size() == fieldHeaders.length);
+		//Serializable[] fieldValues = new Serializable[fieldHeaders.length];
 
-            LogRecord rec = new LogRecord();
-            int fieldIdx = 0;
-            rec.setRecordNumber(((Long) record.get(fieldIdx++)).longValue());
-            rec.setLoggedDateTime((Date) record.get(fieldIdx++));
-            rec.setLoggedLevel((String) record.get(fieldIdx++));
-            rec.setProductName((String) record.get(fieldIdx++));
-            rec.setLoggerName((String) record.get(fieldIdx++));
-            rec.setNameValuePairs((String) record.get(fieldIdx++));
-            rec.setMessageID((String) record.get(fieldIdx++));
-            rec.setMessage((String) record.get(fieldIdx++));
-            if (type.equals("json")) {
-                sb.append(sep);
-                sb.append(rec.toJSON());
-                sep = ",";
-            } else {
-                sb.append(rec.toXML());
+		LogRecord rec = new LogRecord();
+		int fieldIdx = 0;
+		rec.setRecordNumber(((Long) record.get(fieldIdx++)).longValue());
+		rec.setLoggedDateTime((Date) record.get(fieldIdx++));
+		rec.setLoggedLevel((String) record.get(fieldIdx++));
+		rec.setProductName((String) record.get(fieldIdx++));
+		rec.setLoggerName((String) record.get(fieldIdx++));
+		rec.setNameValuePairs((String) record.get(fieldIdx++));
+		rec.setMessageID((String) record.get(fieldIdx++));
+		rec.setMessage((String) record.get(fieldIdx++));
+		if (type.equals("json")) {
+		    sb.append(sep);
+		    sb.append(rec.toJSON());
+		    sep = ",";
+		} else {
+		    sb.append(rec.toXML());
 
-            }
+		}
+	    }
+	}
 
-        }
         if (type.equals("json")) {
             sb.append("]}\n");
         } else {
