@@ -39,89 +39,71 @@
  */
 
 package com.sun.enterprise.util;
-//JDK imports
+
 import java.util.StringTokenizer;
-import java.io.Serializable;
 
 /**
-	Represents a host and a port in a convenient package that also
-	accepts a convenient constructor.
+ * Represents a host and a port in a convenient package that also
+ * accepts a convenient constructor.
  */
-public class HostAndPort implements Serializable
-{
-	/* javac 1.3 generated serialVersionUID */
-	public static final long	serialVersionUID			= 6708656762332072746L;
-	protected String			mHost						= null;
-	protected int				mPort;
-  private boolean secure = false;
+public class HostAndPort {
+    private final String host;
+    private final int port;
+    private final boolean secure;
 
+    /**
+     * Construct a HostAndPort object.
+     *
+     * @param   host    the host name
+     * @param   port    the port number
+     * @param   secure  does this host require a secure (SSL) connection?
+     */
+    public HostAndPort(String host, int port, boolean secure) {
+        this.host = host;
+        this.port = port;
+        this.secure = secure;
+    }
 
-  public HostAndPort(String host, int port, boolean secure){
-	this.mHost = host;
-	this.mPort = port;
-	this.secure = secure;
-  }
-  
-  public HostAndPort(HostAndPort rhs){
-	this(rhs.mHost,rhs.mPort,rhs.secure);
-  }
+    public HostAndPort(HostAndPort rhs) {
+        this(rhs.host, rhs.port, rhs.secure);
+    }
 
-	public HostAndPort( String host, int port ) {
-	  this(host, port, false);
-	}
+    public HostAndPort(String host, int port) {
+        this(host, port, false);
+    }
 
-  public boolean isSecure(){
-	return this.secure;
-  }
-  
-	
-	
-		public String
-	getHost()
-	{
-	        return( mHost );
-	}
-	
-		public int
-	getPort()
-	{
-            if (mPort == 0) {
-                return getDefaultPort(secure);
-            }
-            else {
-	        return( mPort );
-            }
-	}
-	
-	/**
-		Construct a new HostAndPort from a string of the form "host:port"
-		
-		@param	str	string of the form "host:port"
-	*/
-	public HostAndPort( String str )
-	{
-		StringTokenizer	tokenizer	=
-			new StringTokenizer( str, ":", false);
-		
-		mHost	= tokenizer.nextToken();
-		
-		final String portString	= tokenizer.nextToken();
-		mPort	= new Integer( portString ).intValue();
-	}
-	
-		public String
-	toString()
-	{
-		return( mHost + ":" + mPort );
-	}
+    /**
+     * Construct a new HostAndPort from a string of the form "host:port".
+     *
+     * @param  str string of the form "host:port"
+     */
+    public HostAndPort(String str) {
+        StringTokenizer tokenizer = new StringTokenizer(str, ":", false);
 
-    private int getDefaultPort(boolean securityEnabled) {
-        int port = 0;
-        if (securityEnabled) {
-            port = 8181;
+        host = tokenizer.nextToken();
+
+        final String portString = tokenizer.nextToken();
+        port = new Integer(portString).intValue();
+        secure = false;
+    }
+
+    public boolean isSecure() {
+        return secure;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public int getPort() {
+        if (port == 0) {
+            return secure ? 8181 : 8080;    // default ports
         } else {
-            port = 8080;
+            return port;
         }
-        return port;
+    }
+
+    public String toString() {
+        return host + ":" + port;
     }
 }
