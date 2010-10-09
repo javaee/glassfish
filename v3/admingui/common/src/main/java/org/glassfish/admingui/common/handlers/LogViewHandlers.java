@@ -111,7 +111,7 @@ public class LogViewHandlers {
             @HandlerOutput(name="attributes", type=Map.class)})
     public static void getLogQueryAttributes(HandlerContext handlerCtx) {
 	// Create a Map to hold the attributes
-        Map<String, String> attMap = new HashMap<String, String>();
+        Map<String, Object> attMap = new HashMap<String, Object>();
 
         // Attempt to read values passed in
         String logFileName = (String) handlerCtx.getInputValue("LogFileName");
@@ -228,8 +228,10 @@ public class LogViewHandlers {
 	    notNullStringPut(attMap, "toTime", toDate);
 	    notNullStringPut(attMap, "anySearch", anySearch);
 	    notNullStringPut(attMap, "logLevel", logLevel);
-	    notNullStringPut(attMap, "listOfModules", moduleList);
 	    notNullStringPut(attMap, "instanceName", instanceName);
+	    if (moduleList != null) {
+		attMap.put("listOfModules", moduleList);
+	    }
 	    //notNullStringPut(attMap, "logFileRefresh", logFileName);
         }
         handlerCtx.setOutputValue("attributes", attMap);
@@ -311,7 +313,7 @@ public class LogViewHandlers {
     /**
      *	Utility for adding non-null values to the map as a String.
      */
-    private static void notNullStringPut(Map<String, String> map, String key, Object val) {
+    private static void notNullStringPut(Map<String, Object> map, String key, Object val) {
 	if (val != null) {
 	    map.put(key, val.toString());
 	}
