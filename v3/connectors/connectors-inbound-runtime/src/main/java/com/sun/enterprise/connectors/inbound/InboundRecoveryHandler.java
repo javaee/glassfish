@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.connectors.inbound;
 
+import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.transaction.spi.RecoveryResourceHandler;
 import com.sun.enterprise.connectors.util.RARUtils;
 import com.sun.enterprise.connectors.util.SetMethodAction;
@@ -120,17 +121,19 @@ public class InboundRecoveryHandler implements RecoveryResourceHandler {
             ArrayList<EjbDescriptor> xaEnabledMDBList = new ArrayList<EjbDescriptor>();
 
             for (Application application : applications) {
-                Vector ejbDescVec = getEjbDescriptors(application, appsRegistry);
-                for (int j = 0; j < ejbDescVec.size(); j++) {
-                    EjbDescriptor desc = (EjbDescriptor) ejbDescVec.elementAt(j);
-                    // If EjbDescriptor is an instance of a CMT enabled MDB descriptor,
-                    // add it to the list of xaEnabledMDBList.
-                    if (desc instanceof EjbMessageBeanDescriptor &&
-                            desc.getTransactionType().
-                                    equals(EjbDescriptor.CONTAINER_TRANSACTION_TYPE)) {
-                        xaEnabledMDBList.add(desc);
-                        _logger.log(Level.FINE, "Found a CMT MDB: "
-                                + desc.getEjbClassName());
+                if(ResourcesUtil.createInstance().isEnabled(application)){
+                    Vector ejbDescVec = getEjbDescriptors(application, appsRegistry);
+                    for (int j = 0; j < ejbDescVec.size(); j++) {
+                        EjbDescriptor desc = (EjbDescriptor) ejbDescVec.elementAt(j);
+                        // If EjbDescriptor is an instance of a CMT enabled MDB descriptor,
+                        // add it to the list of xaEnabledMDBList.
+                        if (desc instanceof EjbMessageBeanDescriptor &&
+                                desc.getTransactionType().
+                                        equals(EjbDescriptor.CONTAINER_TRANSACTION_TYPE)) {
+                            xaEnabledMDBList.add(desc);
+                            _logger.log(Level.FINE, "Found a CMT MDB: "
+                                    + desc.getEjbClassName());
+                        }
                     }
                 }
             }
