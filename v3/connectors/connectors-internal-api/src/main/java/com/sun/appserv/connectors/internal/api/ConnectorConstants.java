@@ -213,7 +213,9 @@ public interface ConnectorConstants {
     public static String MONITORING_CONNECTOR_SERVICE = "connector-service";
     public static String MONITORING_JMS_SERVICE = "jms-service";
     public static String MONITORING_WORK_MANAGEMENT = "work-management";
+    public static String MONITORING_CONNECTION_FACTORIES = "connection-factories";
     public static String MONITORING_SEPARATOR = "/";
+
 
     /**
      *  Reserved sub-context where datasource-definition objets (resource and pool) are bound with generated names.

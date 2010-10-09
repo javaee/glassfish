@@ -40,7 +40,9 @@
 
 package com.sun.enterprise.resource.pool.monitor;
 
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.connectors.util.ResourcesUtil;
 import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.listener.PoolLifeCycle;
@@ -212,13 +214,53 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
                     ContainerMonitoring.CONNECTOR_CONNECTION_POOL,
                     PluginPoint.SERVER,
                     ConnectorsUtil.getPoolMonitoringSubTreeRoot(poolInfo), ccPoolStatsProvider);
-            //String ccPoolName = ccPoolStatsProvider.getCcPoolName();
+
             PoolLifeCycleListenerRegistry registry = registerPool(
                     poolInfo, getProbeProviderUtil().getJcaProbeProvider());
             ccPoolStatsProvider.setPoolRegistry(registry);
             
             ccStatsProviders.add(ccPoolStatsProvider);
-        }        
+
+            if(!ConnectorsUtil.isApplicationScopedResource(poolInfo)){
+                ResourcesUtil resourcesUtil = ResourcesUtil.createInstance();
+                ResourcePool pool = resourcesUtil.getPoolConfig(poolInfo);
+                Resources resources = resourcesUtil.getResources(poolInfo);
+                String raName = resourcesUtil.getRarNameOfResource(pool, resources);
+
+                ConnectorConnPoolStatsProvider connectorServicePoolStatsProvider =
+                        new ConnectorConnPoolStatsProvider(poolInfo, logger);
+
+                String dottedNamesHierarchy = null;
+                String monitoringModuleName = null;
+
+                if(ConnectorsUtil.isJMSRA(raName)){
+                    monitoringModuleName =  ConnectorConstants.MONITORING_JMS_SERVICE_MODULE_NAME;
+                    dottedNamesHierarchy = ConnectorConstants.MONITORING_JMS_SERVICE +
+                        ConnectorConstants.MONITORING_SEPARATOR + ConnectorConstants.MONITORING_CONNECTION_FACTORIES
+                            + ConnectorConstants.MONITORING_SEPARATOR + poolInfo.getName();
+
+                }else{
+                    monitoringModuleName =  ConnectorConstants.MONITORING_CONNECTOR_SERVICE_MODULE_NAME;
+                    dottedNamesHierarchy = ConnectorConstants.MONITORING_CONNECTOR_SERVICE_MODULE_NAME +
+                    ConnectorConstants.MONITORING_SEPARATOR + raName + ConnectorConstants.MONITORING_SEPARATOR +
+                    poolInfo.getName();
+                }
+
+                StatsProviderManager.register(monitoringModuleName, PluginPoint.SERVER,
+                    dottedNamesHierarchy, connectorServicePoolStatsProvider);
+
+                if(logger.isLoggable(Level.FINE)){
+                    logger.log(Level.FINE, "Registered pool-monitoring stats [ "+dottedNamesHierarchy+" ]  " +
+                        "for [ " + raName + " ] with monitoring-stats-registry.");
+                }
+
+                PoolLifeCycleListenerRegistry poolLifeCycleListenerRegistry = registerPool(
+                        poolInfo, getProbeProviderUtil().getJcaProbeProvider());
+                connectorServicePoolStatsProvider.setPoolRegistry(poolLifeCycleListenerRegistry);
+
+                ccStatsProviders.add(connectorServicePoolStatsProvider);
+            }
+        }
     }
 
     /**
