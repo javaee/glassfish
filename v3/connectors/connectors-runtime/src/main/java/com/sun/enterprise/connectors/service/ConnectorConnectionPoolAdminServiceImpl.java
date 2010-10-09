@@ -44,8 +44,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.logging.Level;
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
 import javax.resource.spi.ManagedConnection;
@@ -623,7 +621,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
 
         try {
             //START CR 6597868
-            if (!isPoolReferredByDatabaseResource(poolInfo)) {
+            if (!isPoolReferredByResource(poolInfo)) {
                 if (_registry.isMCFCreated(poolInfo)){
                     unloadAndKillPool(poolInfo);
                 }
@@ -727,9 +725,9 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
       * @param poolInfo pool-name
       * @return boolean indicating whether the pool is referred or not
       */
-    private boolean isPoolReferredByDatabaseResource(PoolInfo poolInfo){
+    private boolean isPoolReferredByResource(PoolInfo poolInfo){
         ResourcesUtil resUtil = ResourcesUtil.createInstance();
-        return resUtil.isJdbcPoolReferredInServerInstance(poolInfo);
+        return (resUtil.isPoolReferredInServerInstance(poolInfo) || resUtil.isJdbcPoolReferredInServerInstance(poolInfo));
     }
     //END CR 6597868
 
