@@ -476,32 +476,6 @@ public class CommonHandlers {
         handlerCtx.setOutputValue("onlyDAS", onlyDAS);
     }
 
-
-    
-    /**
-     * <p> Test if anonymous user login is allowed <p>
-     * <p> Output value: "loginUser" -- Type: <code>java.lang.String</code> the anonymous user name </p>
-     * <p> Output value: "byPass" -- Type: <code>java.lang.Boolean</code>if GUI should bypass login form </p>
-     *
-     */
-    @Handler(id="testLoginBypass",
-    output={
-        @HandlerOutput(name="byPass", type=Boolean.class),
-        @HandlerOutput(name="loginUser", type=String.class)}
-    )
-    public void testLoginBypass(HandlerContext handlerCtx) {
-        String user=null;
-        try{
-            user = V3AMX.getInstance().getRealmsMgr().getAnonymousUser();
-        }catch(Exception ex){
-            ex.printStackTrace();
-            GuiUtil.getLogger().severe("Cannot determine anonymous login.  Login enforced.");
-            user=null;
-        }
-        handlerCtx.setOutputValue("byPass", (user==null)? Boolean.FALSE: Boolean.TRUE);
-        handlerCtx.setOutputValue("loginUser", (user==null) ? "" : user);
-    }
-
     /**
      * <p> This handler sets a property on an object which is stored in an existing key
      * For example "advance.lazyConnectionEnlistment".  <strong>Note</strong>:  This does
