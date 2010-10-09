@@ -331,7 +331,7 @@ public class DeploymentHandler {
                             defWebModule = defWebModule.substring(0, index);
                         }
                         if (undeployedAppName.equals(defWebModule)){
-                            RestApiHandlers.restRequest(oneEndpoint, attrsMap, "POST", null);
+                            RestApiHandlers.restRequest(oneEndpoint, attrsMap, "POST", null, false);
                         }
                     }
                 }

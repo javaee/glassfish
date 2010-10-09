@@ -709,7 +709,7 @@ public class MonitoringHandlers {
         attrs.put("modulename", moduleName);
 
         try {
-            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, attrs, "GET", null);
+            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, attrs, "GET", null, false);
             Map<String, Object> propsMap = (Map<String, Object>) ((Map<String, Object>) responseMap.get("data")).get("properties");
             if (propsMap != null && propsMap.size() > 0) {
                 return propsMap;
@@ -808,7 +808,7 @@ public class MonitoringHandlers {
     private static Map<String, Object> getMonitoringStatInfo(String endpoint) {
         Map<String, Object> monitorInfoMap = new HashMap<String, Object>();
         try {
-            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "GET", null);
+            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "GET", null, false);
             Map<String, Object> dataMap = (Map<String, Object>) responseMap.get("data");
             if (dataMap != null) {
                 Map<String, Object> extraPropsMap = (Map<String, Object>) dataMap.get("extraProperties");

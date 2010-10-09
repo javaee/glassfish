@@ -126,7 +126,7 @@ public class ClusterHandler {
             Map attrsMap = new HashMap();
             attrsMap.put("lbWeight", oneRow.get("LbWeight"));
             try{
-                response = RestApiHandlers.restRequest( prefix+instanceName , attrsMap, "post" , null);
+                response = RestApiHandlers.restRequest( prefix+instanceName , attrsMap, "post" , null, false);
             }catch (Exception ex){
                 GuiUtil.getLogger().severe("Error in saveInstanceWeight ; \nendpoint = " + prefix + instanceName + "attrsMap=" + attrsMap);
                 response = null;
@@ -168,7 +168,7 @@ public class ClusterHandler {
                 }
             }
             try{
-                RestApiHandlers.restRequest( prefix + clusterName + "/" + action, null, "post" ,null);
+                RestApiHandlers.restRequest( prefix + clusterName + "/" + action, null, "post" ,null, false);
             }catch (Exception ex){
                 GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), ex.getMessage());
                 return;
@@ -196,7 +196,7 @@ public class ClusterHandler {
                 }
             }else{
                 try {
-                   RestApiHandlers.restRequest(prefix + instanceName + "/" + action , null, "post" ,null);
+                   RestApiHandlers.restRequest(prefix + instanceName + "/" + action , null, "post" ,null, false);
                 } catch (Exception ex){
                     GuiUtil.getLogger().severe("Error in instanceAction ; \nendpoint = " + prefix + instanceName + "/" + action  + "attrsMap=" + null);
                     GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), ex.getMessage());
@@ -246,7 +246,7 @@ public class ClusterHandler {
             }
             if(action.equals("delete-node")){
                 try{
-                       response = RestApiHandlers.restRequest(prefix + nodeName + "/" + action + ".json" , null, "post" ,null);
+                       response = RestApiHandlers.restRequest(prefix + nodeName + "/" + action + ".json" , null, "post" ,null, false);
                 }catch (Exception ex){
                     GuiUtil.getLogger().severe("Error in nodeAction ; \nendpoint = " + prefix + nodeName + "/" + action +".json\n" + "attrsMap=" + null);
                     GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), ex.getMessage());
@@ -275,7 +275,7 @@ public class ClusterHandler {
             //ignore for now till issue# 12646 is fixed
             //attrsMap.put("weight", oneInstance.get("weight"));
             try{
-                response = RestApiHandlers.restRequest( endpoint , attrsMap, "post" ,null);
+                response = RestApiHandlers.restRequest( endpoint , attrsMap, "post" ,null, false);
             }catch (Exception ex){
                 GuiUtil.getLogger().severe("Error in createCluster ; \nendpoint = " + endpoint + "\nattrsMap=" + attrsMap);
             }
@@ -326,7 +326,7 @@ public class ClusterHandler {
     // If successfully deleted the instance, null will be returned, otherwise, return the error string to be displayed to user.
     private static String deleteInstance(String instanceName){
         try{
-            RestApiHandlers.restRequest( GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instanceName + "/delete-instance", null ,"post", null );
+            RestApiHandlers.restRequest( GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instanceName + "/delete-instance", null ,"post", null, false );
             return null;
         }catch(Exception ex){
             GuiUtil.getLogger().severe("Error in deleteInstance ; \nendpoint = " +
@@ -364,7 +364,7 @@ public class ClusterHandler {
         }
         String endpoint = GuiUtil.getSessionValue("REST_URL")+"/list-instances";
         try{
-            Map responseMap = RestApiHandlers.restRequest( endpoint , attrs, "GET" , handlerCtx);
+            Map responseMap = RestApiHandlers.restRequest( endpoint , attrs, "GET" , handlerCtx, false);
             Map extraPropertiesMap = (Map)((Map)responseMap.get("data")).get("extraProperties");
             if (extraPropertiesMap != null){
                 List<Map> instanceList = (List)extraPropertiesMap.get("instanceList");
@@ -401,39 +401,39 @@ public class ClusterHandler {
         Map<String, Object> info = new HashMap<String, Object>();
         final String REST_URL = (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("REST_URL");
         final String instanceUrl = REST_URL + "/servers/server/" + instanceName;
-        Map<String, Object> result = RestApiHandlers.restRequest(instanceUrl, null, "get", null);
+        Map<String, Object> result = RestApiHandlers.restRequest(instanceUrl, null, "get", null, false);
         String instanceConfig = (String)((Map)getExtraPropertiesEntry(result, "entity")).get("configRef");
 
         // Server status
         String serverStatus = "RUNNING";
         if (!"server".equals(instanceName)) {
-            result = RestApiHandlers.restRequest(REST_URL+"/list-instances", new HashMap<String, Object>() {{ put ("id", instanceName); }}, "get", null);
+            result = RestApiHandlers.restRequest(REST_URL+"/list-instances", new HashMap<String, Object>() {{ put ("id", instanceName); }}, "get", null, false);
             List instanceList = (List)getExtraPropertiesEntry(result, "instanceList");
             serverStatus = (String) ((Map)instanceList.get(0)).get("status");
         }
 
         // Config object
         String configUrl = REST_URL+ "/configs/config/" + instanceConfig;
-        result = RestApiHandlers.restRequest(configUrl, null, "get", null);
+        result = RestApiHandlers.restRequest(configUrl, null, "get", null, false);
         Map<String, Object> config = (Map<String, Object>)((Map<String, Object>)result.get("data")).get("extraProperties");
 
         // Server version
-        result = RestApiHandlers.restRequest(configUrl + "/java-config/generate-jvm-report", null, "post", null);
+        result = RestApiHandlers.restRequest(configUrl + "/java-config/generate-jvm-report", null, "post", null, false);
         Map<String, String> jvmReport = buildExtraProperties((String)((Map<String, Object>)result.get("data")).get("message"));
         String version = (String)jvmReport.get("glassfish.version");
         String configRoot = (String)jvmReport.get("com.sun.aas.configRoot");
 
         // Debug
-        result = RestApiHandlers.restRequest(configUrl + "/java-config", null, "get", null);
+        result = RestApiHandlers.restRequest(configUrl + "/java-config", null, "get", null, false);
         Map<String, String> entity = (Map)getExtraPropertiesEntry(result, "entity");
 
         // http ports
-        result = RestApiHandlers.restRequest(configUrl + "/network-config/network-listeners/network-listener", null, "get", null);
+        result = RestApiHandlers.restRequest(configUrl + "/network-config/network-listeners/network-listener", null, "get", null, false);
         Map<String, String> children = (Map<String, String>)getExtraPropertiesEntry(result, "childResources");
         if ((children != null) && (!children.isEmpty())) {
             List<String> httpPorts = new ArrayList<String>();
             for (String child : children.values()) {
-                result = RestApiHandlers.restRequest(child, null, "get", null);
+                result = RestApiHandlers.restRequest(child, null, "get", null, false);
                 Map<String, String> iiopListener = (Map<String, String>)getExtraPropertiesEntry(result, "entity");
                 httpPorts.add(iiopListener.get("port"));
             }
@@ -441,12 +441,12 @@ public class ClusterHandler {
         }
 
         //iiop ports
-        result = RestApiHandlers.restRequest(configUrl + "/iiop-service/iiop-listener", null, "get", null);
+        result = RestApiHandlers.restRequest(configUrl + "/iiop-service/iiop-listener", null, "get", null, false);
         children = (Map<String, String>)getExtraPropertiesEntry(result, "childResources");
         if ((children != null) && (!children.isEmpty())) {
             List<String> iiopPorts = new ArrayList<String>();
             for (String child : children.values()) {
-                result = RestApiHandlers.restRequest(child, null, "get", null);
+                result = RestApiHandlers.restRequest(child, null, "get", null, false);
                 Map<String, String> iiopListener = (Map<String, String>)getExtraPropertiesEntry(result, "entity");
                 iiopPorts.add(iiopListener.get("port"));
             }

@@ -190,7 +190,7 @@ public class RestApiHandlers {
         RestResponse response  = sendCreateRequest(endpoint, attrs, (List) handlerCtx.getInputValue("skipAttrs"),
                 (List) handlerCtx.getInputValue("onlyUseAttrs"), (List) handlerCtx.getInputValue("convertToFalse"));
 
-        Map resultMap = parseResponse(response, handlerCtx, endpoint, attrs);
+        Map resultMap = parseResponse(response, handlerCtx, endpoint, attrs, false);
         //??? I believe this should return a Map, whats the point of returning the endpoint that was passed in.
         //But i haven't looked through all the code, so decide to leave it for now.
         handlerCtx.setOutputValue("result", endpoint);
@@ -208,17 +208,19 @@ public class RestApiHandlers {
                     @HandlerInput(name="attrs", type=Map.class, required=false),
                     @HandlerInput(name="data", type=Object.class, required=false),
                     @HandlerInput(name="contentType", type=String.class, required=false),
-                    @HandlerInput(name="method", type=String.class, defaultValue="post")},
+                    @HandlerInput(name="method", type=String.class, defaultValue="post"),
+                    @HandlerInput(name="quiet", type=boolean.class, defaultValue="false")},
             output = {
                     @HandlerOutput(name="result", type=Map.class)})
     public static void restRequest(HandlerContext handlerCtx) {
         Map<String, Object> attrs = (Map<String, Object>) handlerCtx.getInputValue("attrs");
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
         String method = (String) handlerCtx.getInputValue("method");
-        handlerCtx.setOutputValue("result",  restRequest(endpoint, attrs, method, handlerCtx));
+	boolean quiet = (Boolean) handlerCtx.getInputValue("quiet");
+        handlerCtx.setOutputValue("result",  restRequest(endpoint, attrs, method, handlerCtx, quiet));
     }
 
-    public static Map<String, Object> restRequest(String endpoint, Map<String, Object> attrs, String method, HandlerContext handlerCtx) {
+    public static Map<String, Object> restRequest(String endpoint, Map<String, Object> attrs, String method, HandlerContext handlerCtx, boolean quiet) {
 	boolean useData = false;
 
 	Object data = null;
@@ -257,13 +259,13 @@ public class RestApiHandlers {
             response = delete(endpoint, attrs);
         }
 
-        return parseResponse(response, handlerCtx, endpoint, attrs);
+        return parseResponse(response, handlerCtx, endpoint, attrs, quiet);
     }
 
     /**
      *
      */
-    private static Map<String, Object> parseResponse(RestResponse response, HandlerContext handlerCtx, String endpoint, Map attrs) {
+    private static Map<String, Object> parseResponse(RestResponse response, HandlerContext handlerCtx, String endpoint, Map attrs, boolean quiet) {
         // Parse the response
         String message = "";
         if (response != null) {
@@ -271,9 +273,11 @@ public class RestApiHandlers {
                 int status = response.getResponseCode();
                 Map responseMap = response.getResponse();
                 if ((status != 200) && (status != 201)) {
-                    GuiUtil.getLogger().log(
+		    if (!quiet) {
+			GuiUtil.getLogger().log(
                             Level.SEVERE, "RestResponse.getResponse() failed.  endpoint = ''{0}''; attrs = ''{1}''; RestResponse: {2}",
                             new Object[]{endpoint, attrs, response.getResponseBody()});
+		    }
                     message = (String)((Map)responseMap.get("data")).get("message");
                     if (message == null) {
                         Object msgs = responseMap.get("message");
@@ -306,9 +310,11 @@ public class RestApiHandlers {
                 }
                 return responseMap;
             } catch (Exception ex) {
-                GuiUtil.getLogger().log(
+		if (!quiet) {
+		    GuiUtil.getLogger().log(
                         Level.SEVERE, "RestResponse.getResponse() failed.  endpoint = ''{0}''; attrs = ''{1}''; RestResponse: {2}",
                         new Object[]{endpoint, attrs, response.getResponseBody()});
+		}
                 if (handlerCtx != null) {
                     //If this is called from the jsf as handler, we want to stop processing and show error
                     //instead of dumping the exception on screen.
@@ -323,7 +329,7 @@ public class RestApiHandlers {
                     if (message == null){
                         throw new RuntimeException(ex);
                     }else{
-                        throw new RuntimeException(message);
+                        throw new RuntimeException(message, ex);
                     }
                 }
             }
@@ -627,7 +633,7 @@ public class RestApiHandlers {
         Map<String, Object> valueMap = new HashMap<String, Object>();
         try {
             // Use restRequest to query the endpoint
-            Map<String, Object> result = restRequest(endpoint, (Map<String, Object>) null, "get", null);
+            Map<String, Object> result = restRequest(endpoint, (Map<String, Object>) null, "get", null, false);
             int responseCode = (Integer) result.get("responseCode");
             if ((responseCode < 200) || (responseCode > 299)) {
                 throw new RuntimeException((String) result.get("responseBody"));
@@ -750,7 +756,7 @@ public class RestApiHandlers {
 
     public static Map<String, String> getChildMap(String endpoint) throws Exception {
         Map<String, String> childElements = new TreeMap<String, String>();
-        Map responseMap = restRequest(endpoint, new HashMap<String, Object>(), "get", null);
+        Map responseMap = restRequest(endpoint, new HashMap<String, Object>(), "get", null, false);
         Map data = (Map) responseMap.get("data");
         if (data != null) {
             Map extraProperties = (Map) data.get("extraProperties");

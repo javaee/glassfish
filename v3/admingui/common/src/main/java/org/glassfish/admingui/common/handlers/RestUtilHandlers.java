@@ -87,7 +87,7 @@ public class RestUtilHandlers {
         String method = ((String) handlerCtx.getInputValue("method")).toLowerCase();
         int index = (Integer) handlerCtx.getInputValue("index");
         try{
-            Map responseMap = RestApiHandlers.restRequest( endpoint , attrs, method , handlerCtx);
+            Map responseMap = RestApiHandlers.restRequest( endpoint , attrs, method , handlerCtx, false);
             ArrayList  messages = (ArrayList) responseMap.get("messages");
             if (messages != null) {
                 Map message = (Map) messages.get(index);

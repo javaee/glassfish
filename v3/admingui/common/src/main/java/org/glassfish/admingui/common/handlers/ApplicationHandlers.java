@@ -163,7 +163,7 @@ public class ApplicationHandlers {
                 if (snifferList.contains("web") &&  AppUtil.isApplicationEnabled(appName, "server")) {
                     String endpoint =  GuiUtil.getSessionValue("REST_URL") + "/applications/application/get-context-root.xml?appname="
                             + encodedAppName + "&modulename=" + encodedModuleName;
-                    Map map = (Map)RestApiHandlers.restRequest(endpoint, null, "GET", null).get("data");
+                    Map map = (Map)RestApiHandlers.restRequest(endpoint, null, "GET", null, false).get("data");
                     Map props = (Map)map.get("properties");
                     String contextRoot = (String) props.get("contextRoot");
                     getLaunchInfo(appName, contextRoot, oneRow);
@@ -198,7 +198,7 @@ public class ApplicationHandlers {
             attrMap.put("appName", encodedAppName);
             attrMap.put("moduleName", encodedModuleName);
             String prefix = GuiUtil.getSessionValue("REST_URL") + "/applications/application/";
-            Map subMap = RestApiHandlers.restRequest(prefix + "list-sub-components", attrMap, "GET", null);
+            Map subMap = RestApiHandlers.restRequest(prefix + "list-sub-components", attrMap, "GET", null, false);
             Map data = (Map)subMap.get("data");
             if(data != null){
                 Map<String, Object> props = (Map) data.get("properties");
@@ -280,10 +280,10 @@ public class ApplicationHandlers {
                 List<Map> appRefs = DeployUtil.getRefEndpoints(name, "application-ref");
                 for(Map  oneRef:  appRefs){
                     attrs.put("target", oneRef.get("targetName"));
-                    RestApiHandlers.restRequest((String)oneRef.get("endpoint"), attrs, "DELETE", null);
+                    RestApiHandlers.restRequest((String)oneRef.get("endpoint"), attrs, "DELETE", null, false);
                 }
                 attrs.put("target", "domain");
-                RestApiHandlers.restRequest( endpoint, attrs, "POST", handlerCtx);
+                RestApiHandlers.restRequest( endpoint, attrs, "POST", handlerCtx, false);
             }
         }catch(Exception ex){
             GuiUtil.prepareException(handlerCtx, ex);
@@ -293,7 +293,7 @@ public class ApplicationHandlers {
 
     private static void getLaunchInfo(String appName, String contextRoot, Map oneRow) {
         String endpoint = GuiUtil.getSessionValue("REST_URL") + "/applications/application/" + appName + ".json";
-        Map map = RestApiHandlers.restRequest(endpoint, null, "GET", null);
+        Map map = RestApiHandlers.restRequest(endpoint, null, "GET", null, false);
         Map data = (Map)map.get("data");
         boolean enabled = false;
         if (data != null) {
@@ -391,7 +391,7 @@ public class ApplicationHandlers {
             String endpoint = (String) oneRow.get("endpoint");
             if(forLB){
                 attrs.put("lbEnabled", Enabled);
-                RestApiHandlers.restRequest(prefix+endpoint, attrs, "post", handlerCtx);
+                RestApiHandlers.restRequest(prefix+endpoint, attrs, "post", handlerCtx, false);
             }else{
                 DeployUtil.enableApp( (String)oneRow.get("name"), (String) oneRow.get("targetName"), handlerCtx,
                         Boolean.parseBoolean(Enabled));
@@ -436,7 +436,7 @@ public class ApplicationHandlers {
                 if (status != null){
                     attrs.put("enabled", status);
                 }
-                RestApiHandlers.restRequest(endpoint, attrs, "post", handlerCtx);
+                RestApiHandlers.restRequest(endpoint, attrs, "post", handlerCtx, false);
             }
          }
 
@@ -449,7 +449,7 @@ public class ApplicationHandlers {
             }
             Map attrMap = new HashMap();
             attrMap.put("target", oTarget);
-            RestApiHandlers.restRequest(endpoint + "/application-ref/" + appName, attrMap, "delete", handlerCtx);
+            RestApiHandlers.restRequest(endpoint + "/application-ref/" + appName, attrMap, "delete", handlerCtx, false);
         }
     }
 

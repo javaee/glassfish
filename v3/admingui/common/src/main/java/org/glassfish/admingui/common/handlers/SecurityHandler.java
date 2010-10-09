@@ -101,7 +101,7 @@ public class SecurityHandler {
 
         HashMap<String, Object> realmMap = (HashMap<String, Object>) RestApiHandlers.getEntityAttrs(endpoint, "entity");
         
-        HashMap<String, Object> responseMap = (HashMap<String, Object>) RestApiHandlers.restRequest(endpoint + "/property.json", null, "GET", null);
+        HashMap<String, Object> responseMap = (HashMap<String, Object>) RestApiHandlers.restRequest(endpoint + "/property.json", null, "GET", null, false);
         HashMap propsMap = (HashMap) ((Map<String, Object>) responseMap.get("data")).get("extraProperties");
         ArrayList<HashMap> propList = (ArrayList<HashMap>) propsMap.get("properties");
         HashMap origProps = new HashMap();
@@ -295,7 +295,7 @@ public class SecurityHandler {
         endpoint = endpoint + "/auth-realm";
         cMap.put("target", attrMap.get("target"));
         cMap.put("property", propertyStr);
-        RestApiHandlers.restRequest(endpoint, cMap, "post", handlerCtx);
+        RestApiHandlers.restRequest(endpoint, cMap, "post", handlerCtx, false);
       }catch(Exception ex){
           GuiUtil.handleException(handlerCtx, ex);
       }
@@ -421,7 +421,7 @@ public class SecurityHandler {
         try{
             String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
                                                                 "/security-service/auth-realm/" + realmName + "/list-users.json";
-            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "get", handlerCtx);
+            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "get", handlerCtx, false);
             responseMap = (Map<String, Object>) responseMap.get("data");
             List<HashMap> children = (List<HashMap>) responseMap.get("children");
             if(children != null) {
@@ -465,7 +465,7 @@ public class SecurityHandler {
             for(Map oneRow : selectedRows){
                 String user = (String)oneRow.get("name");
                 String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName + "/admin-service/jmx-connector/system.json";
-                Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "get", handlerCtx);
+                Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "get", handlerCtx, false);
                 Map<String, Object> valueMap = (Map<String, Object>) responseMap.get("data");
                 valueMap = (Map<String, Object>) ((Map<String, Object>) valueMap.get("extraProperties")).get("entity");
                 String authRealm = (String) valueMap.get("authRealmName");
@@ -497,7 +497,7 @@ public class SecurityHandler {
         try{
             String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
                                                                 "/security-service/auth-realm/" + realmName + "/list-group-names?username=" + userName;
-            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "get", handlerCtx);
+            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "get", handlerCtx, false);
             HashMap children = (HashMap)((Map<String, Object>) responseMap.get("data")).get("extraProperties");
             String name = (String)((List)children.get("groups")).get(0);
             return name;
@@ -512,7 +512,7 @@ public class SecurityHandler {
     private static List realmClassList = new ArrayList();
     static {
         String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/server-config/security-service/auth-realm/list-predefined-authrealm-classnames";
-        Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "GET", null);
+        Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "GET", null, false);
         Map<String, Object> valueMap = (Map<String, Object>) responseMap.get("data");
         ArrayList<HashMap> classNames = (ArrayList<HashMap>) ((ArrayList<HashMap>) valueMap.get("children"));
         for (HashMap className : classNames) {
@@ -700,7 +700,7 @@ public class SecurityHandler {
             String endpoint = GuiUtil.getSessionValue("REST_URL") +
                     "/configs/config/" + configName + "/java-config/jvm-options.json";
             ArrayList<String> list;
-            Map result = (HashMap) RestApiHandlers.restRequest(endpoint, null, "GET", null).get("data");
+            Map result = (HashMap) RestApiHandlers.restRequest(endpoint, null, "GET", null, false).get("data");
             list = (ArrayList<String>) ((Map<String, Object>) result.get("extraProperties")).get("leafList");
             if (list == null)
                 list = new ArrayList<String>();
