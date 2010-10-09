@@ -40,14 +40,29 @@
 
 -->
 
-<!initPage
+<ui:event type="initPage">
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
     initProductInfoAttributes();
-    // FIXME: The following needs to change...
-    testLoginBypass(loginUser="#{pageSession.loginUser}" byPass="#{pageSession.byPassLogin}")
+</ui:event>
+<event>
+<ui:event type="beforeCreate">
+    // See if we should auto-login...
+    // NOTE: REST_URL is not yet initialized, and can't be easily b/c the
+    // NOTE: initialization method assumes authentication has completed.
+    // NOTE: So instead, I construct the REST_URL from the pieces
+    // NOTE: below. -Ken
+    gf.restRequest(
+	endpoint="#{request.scheme}://#{sessionScope.serverName}:#{sessionScope.serverPort}/management/domain/configs/config/server-config/security-service/auth-realm/admin-realm/list-users"
+	method="GET", result="#{requestScope.result}", quiet="false");
+    setPageSessionAttribute(key="loginUser" value="#{requestScope.result.data.extraProperties.users[0].name}");
+    setPageSessionAttribute(key="byPassLogin" value="false");
+    if ("$pageSession{loginUser}") {
+	setPageSessionAttribute(key="byPassLogin" value="true");
+    }
     setSessionAttribute(key="showLogoutButton" value="#{! pageSession.byPassLogin}")
     getThemeFromIntegrationPoints(themeContext=>$application{com.sun.webui.theme.THEME_CONTEXT});
-/>
+</ui:event>
+<event>
 <!-- WE MAY HAVE TO LOCALIZE THE PRODUCT IMAGE. CHECKING IN FOR NOW UNTIL LOGIN COMPONENT IS READY -->
 <f:verbatim>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -84,6 +99,7 @@
                 if (#{byPassLogin}) {
                     //submitAndDisable(document.getElementById('loginButton'), '$resource{i18n.loginPageTitle}');
                     document.getElementById('loginButton').form.submit();
+                    //document.getElementById('loginButton').form.autocomplete="off";
                 }
             </script>
         </div>
