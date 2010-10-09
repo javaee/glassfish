@@ -85,7 +85,7 @@ public class TransactionServiceProperties {
     private static volatile boolean orbAvailable = false;
 
     public static synchronized Properties getJTSProperties (Habitat habitat, boolean isORBAvailable) {
-        if (orbAvailable != isORBAvailable && properties != null) {
+        if (orbAvailable == isORBAvailable && properties != null) {
             // We will need to update the properties if ORB availability changed
             return properties;
         }
@@ -261,18 +261,24 @@ public class TransactionServiceProperties {
     }
 
     public static void startRecoveryThread(Habitat habitat) {
-        if (properties == null) {
-            _logger.log(Level.WARNING, "", new IllegalStateException());
-            return;
-        }
+        if (habitat != null) {
+            ProcessEnvironment processEnv = habitat.getComponent(ProcessEnvironment.class);
+            if( processEnv.getProcessType().isServer()) {
 
-        String value = properties.getProperty("pending-txn-cleanup-interval");
-        if (isValueSet(value)) {
-            int interval = Integer.parseInt(value);
-            new RecoveryHelperThread(habitat, interval).start();
-            if (_logger.isLoggable(Level.FINE)) {
-               _logger.log(Level.FINE,"Asynchronous thread for incomplete "
-                           + "tx is enabled with interval " + interval);
+                if (properties == null) {
+                    _logger.log(Level.WARNING, "", new IllegalStateException());
+                    return;
+                }
+
+                String value = properties.getProperty("pending-txn-cleanup-interval");
+                if (isValueSet(value)) {
+                    int interval = Integer.parseInt(value);
+                    new RecoveryHelperThread(habitat, interval).start();
+                    if (_logger.isLoggable(Level.FINE)) {
+                       _logger.log(Level.FINE,"Asynchronous thread for incomplete "
+                               + "tx is enabled with interval " + interval);
+                    }
+                }
             }
         }
     }
