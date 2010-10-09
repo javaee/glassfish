@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -60,6 +61,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.context.FacesContext;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
@@ -236,7 +238,10 @@ public class RestApiHandlers {
         }
         method = method.toLowerCase();
 
-        GuiUtil.getLogger().log(Level.FINE, "restRequest: endpoint={0}\nattrs={1}\nmethod={2}", new Object[]{endpoint, attrs, method});
+	Logger logger = GuiUtil.getLogger();
+	if (logger.isLoggable(Level.FINE)) {
+	    logger.log(Level.FINE, "restRequest: endpoint={0}\nattrs={1}\nmethod={2}", new Object[]{endpoint, attrs, method});
+	}
 
 	// Execute the request...
         RestResponse response = null;
@@ -511,9 +516,9 @@ public class RestApiHandlers {
         MultivaluedMap formData = new MultivaluedMapImpl();
         for (final Map.Entry<String, Object> entry : payload.entrySet()) {
             final Object value = entry.getValue();
-	    if (value instanceof List) {
-		String key = entry.getKey();
-		for (Object obj : ((List) value)) {
+	    final String key = entry.getKey();
+	    if (value instanceof Collection) {
+		for (Object obj : ((Collection) value)) {
 		    try {
 			formData.add(key, obj);
 		    } catch (ClassCastException ex) {
@@ -524,12 +529,12 @@ public class RestApiHandlers {
 		    }
 		}
 	    } else {
-		//formData.putSingle(entry.getKey(), (value != null) ? value.toString() : value);
+		//formData.putSingle(key, (value != null) ? value.toString() : value);
 		try {
-		    formData.putSingle(entry.getKey(), value);
+		    formData.putSingle(key, value);
 		} catch (ClassCastException ex) {
 		    // FIXME: Change to fine()
-		    GuiUtil.getLogger().info("Unable to add key (" + entry.getKey() + ") w/ value (" + value + ").");
+		    GuiUtil.getLogger().info("Unable to add key (" + key + ") w/ value (" + value + ").");
 		    // Allow it to continue b/c this property most likely
 		    // should have been excluded for this request
 		}
