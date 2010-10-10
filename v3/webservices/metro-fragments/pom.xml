@@ -125,7 +125,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.sun.xml.ws</groupId>
+            <groupId>org.glassfish.metro</groupId>
             <artifactId>wstx-services</artifactId>
             <version>${webservices.version}</version>
             <type>war</type>
