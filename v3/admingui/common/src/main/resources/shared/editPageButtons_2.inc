@@ -192,14 +192,6 @@
                         }
                     }
 
-                    //when creating resource, need to create the resource-ref
-                    if (#{pageSession.createResourceRef}){
-                        mapPut(map="#{pageSession.valueMap2}" key="ref" value="#{pageSession.valueMap['name']}")
-                        createProxy(parentObjectNameStr="amx:pp=/domain/servers,type=server,name=server" childType="resource-ref"
-                            attrs="#{pageSession.valueMap2}"
-                            convertToFalse={"Enabled"} );
-                    }
-
                     if (#{pageSession.additionalSaveHandler}){
                         gf.invokeHandler(handler="#{pageSession.additionalSaveHandler}", args="#{pageSession.additionalSaveHandlerArgs}" );
                     }

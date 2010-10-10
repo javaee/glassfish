@@ -166,6 +166,8 @@ public class GuiUtil {
         sessionMap.put("supportCluster", Boolean.FALSE);
         Map version = RestApiHandlers.restRequest(sessionMap.get("REST_URL")+"/version", null, "GET" ,null, false);
         sessionMap.put("appServerVersion", ((Map)version.get("data")).get("message"));
+        Map locations = RestApiHandlers.restRequest(sessionMap.get("REST_URL")+"/location", null, "GET" ,null, false);
+        sessionMap.put("installationDir", ((Map)((Map)locations.get("data")).get("properties")).get("Base-Root"));
         sessionMap.put("reqMsg", GuiUtil.getMessage("msg.JS.enterValue"));
         sessionMap.put("reqMsgSelect", GuiUtil.getMessage("msg.JS.selectValue"));
         sessionMap.put("reqInt", GuiUtil.getMessage("msg.JS.enterIntegerValue"));

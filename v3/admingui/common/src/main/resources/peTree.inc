@@ -47,7 +47,6 @@ Logger Setting  common  150
 
 Web Container    web  200
 EJB Container    ejb-lite  250
-Ruby Container   jruby    280
 JMS             jms-plugin  300
 Security       common  350
 Transaction    jts  400

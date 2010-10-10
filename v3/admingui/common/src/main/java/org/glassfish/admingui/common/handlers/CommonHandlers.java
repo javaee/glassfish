@@ -74,7 +74,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.MiscUtil;
-import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.common.util.TargetUtil;
 
 
