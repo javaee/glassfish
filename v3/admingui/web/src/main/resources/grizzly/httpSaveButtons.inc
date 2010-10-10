@@ -42,19 +42,6 @@
 
 <!-- httpSaveButtons.inc -->
 
-    <!-- To use this general include files for page buttons,  the following page Session attributes should be set:
-        setPageSessionAttribute(key="edit" value="#{false}" );
-        setPageSessionAttribute(key="showDefaultButton" value="#{false}" );  //true is default
-        setPageSessionAttribute(key="showCancelButton" value="#{false}" );   // true is default
-        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );    //false is default
-        setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );   //false is default
-        
-        setPageSessionAttribute(key="has2Objects" value="#{true}" );        //false is default
-        For creating new objects, if #{pageSession.parentObjectNameStr2} is specified, it will be used as the parent for creating the 2nd config.
-        otherwise, it means the 2nd config is the sub-element, and the newly created object will be used as the parent to create
-        the 2nd object.
-
-    -->
 #include "/common/shared/editPageLoadDefaultButton.inc"
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
