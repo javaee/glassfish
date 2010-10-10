@@ -58,10 +58,8 @@
             setPageSessionAttribute(key="listLink" value="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf");
             setPageSessionAttribute(key="resourceType" value="jdbcConnectionPool");
             setPageSessionAttribute(key="jdbcpool" value="#{true}" );
-            setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain,type=resources");
             setPageSessionAttribute(key="childType" value="jdbc-connection-pool");
             setPageSessionAttribute(key="dependentType" value="jdbc-resource");
-            //getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
 
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
             setPageSessionAttribute(key="rest-api" value="true");

@@ -61,8 +61,13 @@ public class ConnectorsTest extends BaseSeleniumTestClass {
 
     @Test
     public void testConnectorResources() {
-        String testPool = generateRandomString();
-        String testConnector = generateRandomString();
+        String testPool = "connectorPool" + generateRandomString();
+        String testConnector = "connectorResource" + generateRandomString();
+
+        StandaloneTest standaloneTest = new StandaloneTest();
+        ClusterTest clusterTest = new ClusterTest();
+        standaloneTest.deleteAllStandaloneInstances();
+        clusterTest.deleteAllClusters();
 
         clickAndWait("treeForm:tree:resources:Connectors:connectorConnectionPools:connectorConnectionPools_link", TRIGGER_CONNECTOR_CONNECTION_POOLS);
 
@@ -123,9 +128,9 @@ public class ConnectorsTest extends BaseSeleniumTestClass {
 
     @Test
     public void testConnectorResourcesWithTargets() {
-        String testPool = generateRandomString();
-        String testConnector = generateRandomString();
-        final String instanceName = generateRandomString();
+        String testPool = "connectorPool" + generateRandomString();
+        String testConnector = "connectorResource" + generateRandomString();
+        final String instanceName = "standalone" + generateRandomString();
         final String enableStatus = "Enabled on All Targets";
         final String disableStatus = "Disabled on All Targets";
 
@@ -164,6 +169,7 @@ public class ConnectorsTest extends BaseSeleniumTestClass {
         selenium.type("form:basicTable:rowGroup1:0:col4:col1St", "description");
 
         selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + instanceName);
+        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=server");
         selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
 
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_CONNECTOR_RESOURCE);

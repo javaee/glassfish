@@ -61,7 +61,7 @@ public class JdbcTest extends BaseSeleniumTestClass {
 
     @Test
     public void testCreatingConnectionPool() {
-        final String poolName = generateRandomString();
+        final String poolName = "jdbcPool" + generateRandomString();
         final String description = "devtest test connection pool - " + poolName;
 
         clickAndWait("treeForm:tree:resources:JDBC:connectionPoolResources:connectionPoolResources_link", TRIGGER_JDBC_CONNECTION_POOLS);
@@ -81,8 +81,13 @@ public class JdbcTest extends BaseSeleniumTestClass {
 
     @Test
     public void testJdbcResources() {
-        final String jndiName = generateRandomString();
+        final String jndiName = "jdbcResource" + generateRandomString();
         final String description = "devtest test jdbc resource - " + jndiName;
+
+        StandaloneTest standaloneTest = new StandaloneTest();
+        ClusterTest clusterTest = new ClusterTest();
+        standaloneTest.deleteAllStandaloneInstances();
+        clusterTest.deleteAllClusters();
        
         clickAndWait("treeForm:tree:resources:JDBC:jdbcResources:jdbcResources_link", TRIGGER_JDBC_RESOURCES);
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_JDBC_RESOURCE);
@@ -126,8 +131,8 @@ public class JdbcTest extends BaseSeleniumTestClass {
 
     @Test
     public void testJdbcResourcesWithTargets() {
-        final String jndiName = generateRandomString();
-        final String instanceName = generateRandomString();
+        final String jndiName = "jdbcResource" + generateRandomString();
+        final String instanceName = "standalone" + generateRandomString();
         final String description = "devtest test jdbc resource with targets- " + jndiName;
         final String enableStatus = "Enabled on All Targets";
         final String disableStatus = "Disabled on All Targets";
@@ -147,6 +152,7 @@ public class JdbcTest extends BaseSeleniumTestClass {
         selenium.type("form:basicTable:rowGroup1:0:col4:col1St", "description");
 
         selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label="+instanceName);
+        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=server");
 	selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
 
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JDBC_RESOURCES);

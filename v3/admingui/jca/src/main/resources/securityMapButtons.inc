@@ -89,8 +89,12 @@
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}') &&  checkClassname() ) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
-                    convertStringtoList(str="#{pageSession.valueMap.userGroupCommaStr}" result=>$attribute{usersSA});
-                    convertStringtoList(str="#{pageSession.valueMap.principalCommaStr}" result=>$attribute{principalsSA});
+                    if (#{pageSession.valueMap.userGroupCommaStr}) {
+                        convertStringtoList(str="#{pageSession.valueMap.userGroupCommaStr}" result=>$attribute{usersSA});
+                    }
+                    if (#{pageSession.valueMap.principalCommaStr}) {
+                        convertStringtoList(str="#{pageSession.valueMap.principalCommaStr}" result=>$attribute{principalsSA});
+                    }
                     if($attribute{usersSA}){
                        mapPut(map="#{pageSession.valueMap}" key="userGroups" value="#{pageSession.valueMap.userGroupCommaStr}")
                     }

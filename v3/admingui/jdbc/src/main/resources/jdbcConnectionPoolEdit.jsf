@@ -56,10 +56,7 @@
         urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jdbc/jdbcConnectionPoolEdit.jsf?name=#{pageSession.encodedName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf");
-        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=jdbc-connection-pool,name=#{pageSession.Name}");
-        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
-
-
+        
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
         setPageSessionAttribute(key="childType" value="jdbc-connection-pool");
         setPageSessionAttribute(key="resourceUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");

@@ -58,8 +58,6 @@
         setSessionAttribute(key="connectorPoolTabs" value="securityMapTab");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorSecurityMapEdit.jsf?name=#{pageSession.encodedName}&mapName=#{pageSession.encodedMapName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorSecurityMaps.jsf?name=#{pageSession.encodedName}");
-        //setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources/connector-connection-pool[#{pageSession.Name}],type=security-map,name=#{pageSession.mapName}");
-        //setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/resources,type=connector-connection-pool,name=#{pageSession.Name}");
         setPageSessionAttribute(key="childType" value="security-map");
         //REST related
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources/connector-connection-pool/#{pageSession.encodedName}");

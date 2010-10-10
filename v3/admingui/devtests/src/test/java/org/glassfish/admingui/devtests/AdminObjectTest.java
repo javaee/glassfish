@@ -52,8 +52,13 @@ public class AdminObjectTest extends BaseSeleniumTestClass {
 
     @Test
     public void testAdminObjectResources() throws Exception {
-        final String resName = generateRandomString();
+        final String resName = "adminObject" + generateRandomString();
         final String description = "Admin Object Resource - " + resName;
+
+        StandaloneTest standaloneTest = new StandaloneTest();
+        ClusterTest clusterTest = new ClusterTest();
+        standaloneTest.deleteAllStandaloneInstances();
+        clusterTest.deleteAllClusters();
 
         //Go to Admin Object Resources Page.
         clickAndWait("treeForm:tree:resources:Connectors:adminObjectResources:adminObjectResources_link", TRIGGER_ADMIN_OBJECT_RESOURCES);
@@ -99,9 +104,9 @@ public class AdminObjectTest extends BaseSeleniumTestClass {
 
     @Test
     public void testAdminObjectResourcesWithTargets() {
-        final String resName = generateRandomString();
+        final String resName = "adminObject" + generateRandomString();
         final String description = "Admin Object Resource - " + resName;
-        final String instanceName = generateRandomString();
+        final String instanceName = "standalone" + generateRandomString();
         final String enableStatus = "Enabled on All Targets";
         final String disableStatus = "Disabled on All Targets";
 
@@ -123,6 +128,7 @@ public class AdminObjectTest extends BaseSeleniumTestClass {
         selenium.type("form:basicTable:rowGroup1:0:col4:col1St", "description");
 
         selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + instanceName);
+        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=server");
         selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
 
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_ADMIN_OBJECT_RESOURCES);

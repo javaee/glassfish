@@ -364,7 +364,6 @@ public class CommonHandlers {
                     modifiedProps.add(prop);
                 }
             }
-            props.removeAll(modifiedProps);
         }
         handlerCtx.setOutputValue("modifiedProps", modifiedProps);
     }

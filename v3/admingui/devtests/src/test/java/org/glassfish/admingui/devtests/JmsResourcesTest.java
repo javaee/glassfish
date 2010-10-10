@@ -62,8 +62,13 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
 
     @Test
     public void testAddingConnectionFactories() throws Exception {
-        final String poolName = generateRandomString();
+        final String poolName = "JMSConnFactory" + generateRandomString();
         final String description = "Test Pool - " + poolName;
+
+        StandaloneTest standaloneTest = new StandaloneTest();
+        ClusterTest clusterTest = new ClusterTest();
+        standaloneTest.deleteAllStandaloneInstances();
+        clusterTest.deleteAllClusters();
 
         clickAndWait("treeForm:tree:resources:jmsResources:jmsConnectionFactories:jmsConnectionFactories_link", TRIGGER_JMS_CONNECTION_FACTORIES);
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_JMS_CONN_FACT);
@@ -92,9 +97,9 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
 
     @Test
     public void testAddingConnectionFactoriesWithTargets() throws Exception {
-        final String poolName = generateRandomString();
+        final String poolName = "JMSConnFactory" + generateRandomString();
         final String description = "Test Pool - " + poolName;
-        final String instanceName = generateRandomString();
+        final String instanceName = "standalone" + generateRandomString();
         
         StandaloneTest instanceTest = new StandaloneTest();
         instanceTest.createStandAloneInstance(instanceName);
@@ -108,6 +113,7 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         selenium.select("form:propertySheet:poolPropertySheet:transprop:trans", "label=LocalTransaction");
         
         selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + instanceName);
+        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=server");
         selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
         
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JMS_CONNECTION_FACTORIES);
@@ -145,8 +151,13 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
 
     @Test
     public void testAddingDestinationResources() throws Exception {
-        final String resourceName = generateRandomString();
+        final String resourceName = "JMSDestination" + generateRandomString();
         final String description = "Test Destination - " + resourceName;
+
+        StandaloneTest standaloneTest = new StandaloneTest();
+        ClusterTest clusterTest = new ClusterTest();
+        standaloneTest.deleteAllStandaloneInstances();
+        clusterTest.deleteAllClusters();
 
         clickAndWait("treeForm:tree:resources:jmsResources:jmsDestinationResources:jmsDestinationResources_link", TRIGGER_JMS_DESTINATION_RESOURCES);
         sleep(1000);
@@ -174,8 +185,8 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
 
     @Test
     public void testAddingDestinationResourcesWithTargets() throws Exception {
-        final String resourceName = generateRandomString();
-        final String instanceName = generateRandomString();
+        final String resourceName = "JMSDestination" + generateRandomString();
+        final String instanceName = "standalone" + generateRandomString();
         final String description = "Test Destination - " + resourceName;
 
         StandaloneTest instanceTest = new StandaloneTest();
@@ -189,6 +200,7 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         selenium.type("form:propertyContentPage:propertySheet:propertSectionTextField:descProp:desc", description);
 
         selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + instanceName);
+        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=server"); 
         selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
 
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JMS_DESTINATION_RESOURCES);

@@ -605,7 +605,7 @@ public class BaseSeleniumTestClass {
         selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
         waitForButtonDisabled("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
         clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGGER_VALUES_SAVED);
-        Assert.assertFalse(selenium.isTextPresent(instanceName));
+        waitForPageLoad(instanceName, false);
         Assert.assertTrue(selenium.isTextPresent(DEFAULT_SERVER));
 
         //Go Back to Resources Page

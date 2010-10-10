@@ -61,7 +61,12 @@ public class JndiTest extends BaseSeleniumTestClass {
 
     @Test
     public void testCustomResources() {
-        final String resourceName = generateRandomString();
+        final String resourceName = "customResource" + generateRandomString();
+
+        StandaloneTest standaloneTest = new StandaloneTest();
+        ClusterTest clusterTest = new ClusterTest();
+        standaloneTest.deleteAllStandaloneInstances();
+        clusterTest.deleteAllClusters();
 
         clickAndWait("treeForm:tree:resources:jndi:customResources:customResources_link", TRIGGER_CUSTOM_RESOURCES);
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_CUSTOM_RESOURCE);
@@ -99,8 +104,8 @@ public class JndiTest extends BaseSeleniumTestClass {
 
     @Test
     public void testCustomResourcesWithTargets() {
-        final String resourceName = generateRandomString();
-        final String instanceName = generateRandomString();
+        final String resourceName = "customResource" + generateRandomString();
+        final String instanceName = "standalone" + generateRandomString();
        
         StandaloneTest instanceTest = new StandaloneTest();
         instanceTest.createStandAloneInstance(instanceName);
@@ -117,6 +122,7 @@ public class JndiTest extends BaseSeleniumTestClass {
         selenium.type("form:basicTable:rowGroup1:0:col4:col1St", "description");
         
         selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + instanceName);
+        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=server");
         selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_CUSTOM_RESOURCES);
 
@@ -161,8 +167,13 @@ public class JndiTest extends BaseSeleniumTestClass {
     
     @Test
     public void testExternalResources() {
-        final String resourceName = generateRandomString();
+        final String resourceName = "externalResource" + generateRandomString();
         final String description = resourceName + " - description";
+
+        StandaloneTest standaloneTest = new StandaloneTest();
+        ClusterTest clusterTest = new ClusterTest();
+        standaloneTest.deleteAllStandaloneInstances();
+        clusterTest.deleteAllClusters();
 
         clickAndWait("treeForm:tree:resources:jndi:externalResources:externalResources_link", TRIGGER_EXTERNAL_RESOURCES);
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_EXTERNAL_RESOURCE);
@@ -219,9 +230,9 @@ public class JndiTest extends BaseSeleniumTestClass {
 
     @Test
     public void testExternalResourcesWithTargets() {
-        final String resourceName = generateRandomString();
+        final String resourceName = "externalResource" + generateRandomString();
         final String description = resourceName + " - description";
-        final String instanceName = generateRandomString();
+        final String instanceName = "standalone" + generateRandomString();
 
         StandaloneTest instanceTest = new StandaloneTest();
         instanceTest.createStandAloneInstance(instanceName);
@@ -240,6 +251,7 @@ public class JndiTest extends BaseSeleniumTestClass {
         selenium.type("form:basicTable:rowGroup1:0:col4:col1St", "description");
 
         selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + instanceName);
+        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=server");
         selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_EXTERNAL_RESOURCES);
 
