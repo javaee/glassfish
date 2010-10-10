@@ -46,8 +46,8 @@
 <sun:form>
     <sun:versionPage id="version"
         productImageURL="/resource/community-theme/images/VersionProductName.png"
-        productImageDescription="$resource{theme.versionImage.description}"
+        productImageDescription="$resource{theme.productName}"
         versionString="#{sessionScope.appServerVersion}"
-        copyrightString="$resource{i18n.copyright.shortMessage}"
+        copyrightString="$resource{theme.copyright.fullPage}"
     />
 </sun:form>
