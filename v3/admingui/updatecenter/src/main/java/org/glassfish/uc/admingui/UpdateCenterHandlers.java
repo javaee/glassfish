@@ -70,9 +70,6 @@ import com.sun.pkg.client.SystemInfo.UpdateCheckFrequency;
 import com.sun.pkg.client.Version;
 
 import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.common.util.V3AMXUtil;
-
-
 
 /**
  *
@@ -570,7 +567,7 @@ public class UpdateCenterHandlers {
     private static Image getUpdateCenterImage(){
         String ucDir = (String) GuiUtil.getSessionValue(UCDIR);
         if (ucDir == null){
-            String installDir = (String)V3AMXUtil.getInstallDir();
+            String installDir = (String) GuiUtil.getSessionValue("installationDir");
             //installDir will only give the glassfish installation. need to get its parent for UC info
             ucDir = (new File (installDir)).getParent();
             GuiUtil.setSessionValue(UCDIR, ucDir);
