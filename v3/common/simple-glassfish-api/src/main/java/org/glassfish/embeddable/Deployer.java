@@ -38,7 +38,7 @@
  * holder.
  */
 
-package org.glassfish.simpleglassfishapi;
+package org.glassfish.embeddable;
 
 import java.io.File;
 import java.net.URI;

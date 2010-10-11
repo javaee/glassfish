@@ -41,8 +41,8 @@
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.glassfish.bootstrap.Configurator;
-import org.glassfish.simpleglassfishapi.CommandRunner;
-import org.glassfish.simpleglassfishapi.GlassFishConstants;
+import org.glassfish.embeddable.CommandRunner;
+import org.glassfish.embeddable.GlassFishConstants;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;

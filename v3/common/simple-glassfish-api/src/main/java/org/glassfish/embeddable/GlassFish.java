@@ -38,7 +38,7 @@
  * holder.
  */
 
-package org.glassfish.simpleglassfishapi;
+package org.glassfish.embeddable;
 
 /**
  * This is our primary interface to communicate with the server,

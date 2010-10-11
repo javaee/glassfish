@@ -54,10 +54,10 @@ import java.util.Map;
  * @author bhavanishankar@dev.java.net
  */
 @Service()
-@ContractProvided(org.glassfish.simpleglassfishapi.CommandRunner.class)
+@ContractProvided(org.glassfish.embeddable.CommandRunner.class)
 // bcos CommandRunner interface can't depend on HK2, we need ContractProvided here.
 
-public class CommandExecutorImpl implements org.glassfish.simpleglassfishapi.CommandRunner {
+public class CommandExecutorImpl implements org.glassfish.embeddable.CommandRunner {
 
     @Inject
     CommandRunner commandRunner;

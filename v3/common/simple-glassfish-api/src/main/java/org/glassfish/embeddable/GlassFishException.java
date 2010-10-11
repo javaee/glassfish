@@ -38,37 +38,16 @@
  * holder.
  */
 
-package org.glassfish.simpleglassfishapi;
-
-import java.util.Map;
+package org.glassfish.embeddable;
 
 /**
- * Interface for executing advanced commands in {@link GlassFish}
+ * A custom Exception type used in the embedded glassfish startup modules.
  *
- * This interface supports programatically executing the commands which
- * will otherwise be done via asadmin utility.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
+ * @author prasad
  */
-public interface CommandRunner {
-
-    /**
-     * Execute an administrative command in {@link GlassFish} using the supplied
-     * command arguments.
-     *
-     * Example : To add an additional http listener:
-     *
-     *      Map&lt;String, String>&gt args = new HashMap();
-     *      args.put("listenerport", "9090");
-     *      args.put("listeneraddress", "localhost");
-     *      args.put("securityenabled", "false");
-     *      args.put("default-virtual-server", "server");
-     *      args.put("listener_id", "my-http-listener-1");
-     *      commandRunner.run("create-http-listener", args);
-     *
-     * @param command command to be executed.
-     * @param args command arguments.
-     * @return true if the command is successfully, false otherwise.
-     */
-    boolean run(String command, Map<String, String> args);
+public class GlassFishException extends Exception {
+    
+    public GlassFishException(Exception e) {
+        super(e);
+    }
 }

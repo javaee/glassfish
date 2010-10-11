@@ -41,7 +41,7 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
-import org.glassfish.simpleglassfishapi.*;
+import org.glassfish.embeddable.*;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -79,7 +79,7 @@ public class GlassFishMainActivator implements BundleActivator {
 
     private Properties prepareStartupContext(BundleContext context) {
         Properties properties = new Properties();
-        String installRoot = context.getProperty(org.glassfish.simpleglassfishapi.BootstrapConstants.INSTALL_ROOT_PROP_NAME);
+        String installRoot = context.getProperty(org.glassfish.embeddable.BootstrapConstants.INSTALL_ROOT_PROP_NAME);
 
         if (installRoot == null) {
             installRoot = guessInstallRoot(context);
@@ -88,7 +88,7 @@ public class GlassFishMainActivator implements BundleActivator {
             } else {
                 System.out.println("Deduced install root as : " + installRoot + " from location of bundle. " +
                         "If this is not correct, set correct value in a property called " +
-                       org.glassfish.simpleglassfishapi.BootstrapConstants.INSTALL_ROOT_PROP_NAME);
+                       org.glassfish.embeddable.BootstrapConstants.INSTALL_ROOT_PROP_NAME);
             }
         }
         if (!new File(installRoot).exists()) {

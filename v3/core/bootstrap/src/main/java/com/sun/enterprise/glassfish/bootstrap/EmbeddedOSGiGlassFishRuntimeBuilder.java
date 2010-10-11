@@ -41,8 +41,8 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
-import org.glassfish.simpleglassfishapi.spi.RuntimeBuilder;
-import org.glassfish.simpleglassfishapi.*;
+import org.glassfish.embeddable.spi.RuntimeBuilder;
+import org.glassfish.embeddable.*;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -53,9 +53,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
-
-import static org.glassfish.simpleglassfishapi.BootstrapConstants.INSTALL_ROOT_PROP_NAME;
 
 /**
  * This {@link GlassFishRuntime.RuntimeBuilder} is responsible for setting up a {@link GlassFishRuntime}

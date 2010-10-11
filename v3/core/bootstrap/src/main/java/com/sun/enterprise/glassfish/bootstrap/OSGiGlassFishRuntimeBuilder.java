@@ -40,22 +40,18 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.glassfish.simpleglassfishapi.spi.RuntimeBuilder;
-import org.glassfish.simpleglassfishapi.*;
+import org.glassfish.embeddable.spi.RuntimeBuilder;
+import org.glassfish.embeddable.*;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.launch.Framework;
 
-import java.util.Properties;
-
 /**
  * This RuntimeBuilder can only handle GlassFish_Platform of following types:
- * {@link org.glassfish.simpleglassfishapi.Constants.Platform#Felix},
- * {@link org.glassfish.simpleglassfishapi.Constants.Platform#Equinox},
- * and {@link org.glassfish.simpleglassfishapi.Constants.Platform#Knopflerfish}.
+ * {@link org.glassfish.embeddable.Constants.Platform#Felix},
+ * {@link org.glassfish.embeddable.Constants.Platform#Equinox},
+ * and {@link org.glassfish.embeddable.Constants.Platform#Knopflerfish}.
  *
- * It can't handle {@link org.glassfish.simpleglassfishapi.Constants.Platform#GenericOSGi} platform,
+ * It can't handle {@link org.glassfish.embeddable.Constants.Platform#GenericOSGi} platform,
  * because it reads framework configuration from a framework specific file when it calls
  * {@link ASMainHelper#buildStartupContext(java.util.Properties)}.
  *

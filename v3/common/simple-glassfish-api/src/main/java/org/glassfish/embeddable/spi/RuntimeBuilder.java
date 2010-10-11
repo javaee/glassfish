@@ -1,7 +1,8 @@
+package org.glassfish.embeddable.spi;
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,16 +39,37 @@
  * holder.
  */
 
-package org.glassfish.simpleglassfishapi;
+
+
+import org.glassfish.embeddable.*;
+
 
 /**
- * A custom Exception type used in the embedded glassfish startup modules.
- *
- * @author prasad
+ * Internal interface. Not for public use.
+ * This is an SPI for GlassFishRuntime. Different implementations exist to provide different runtime
+ * enviornment such as Felix/Equinox based or non-OSGi based runtime.
  */
-public class GlassFishException extends Exception {
-    
-    public GlassFishException(Exception e) {
-        super(e);
-    }
+public interface RuntimeBuilder {
+
+    /**
+     * Builds a custom GlassFishRuntime with the supplied bootstrap options
+     * @param options
+     * @return
+     * @throws GlassFishException
+     */
+    GlassFishRuntime build(BootstrapOptions options) throws GlassFishException;
+
+    /**
+     * Returns true if this RuntimeBuilder is capable of creating a GlassFishRuntime
+     * for the supplied BootstrapOptions
+     * @param options
+     * @return
+     */
+    boolean handles(BootstrapOptions options);
+
+    /**
+     * Destroy the RuntimeBuilder and follow up with cleaing up operations
+     * @throws Exception
+     */
+    void destroy() throws GlassFishException;
 }

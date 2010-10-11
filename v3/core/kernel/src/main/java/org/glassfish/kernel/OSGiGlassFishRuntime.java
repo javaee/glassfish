@@ -40,11 +40,11 @@
 
 package org.glassfish.kernel;
 
-import org.glassfish.simpleglassfishapi.GlassFish;
-import org.glassfish.simpleglassfishapi.GlassFishRuntime;
+import org.glassfish.embeddable.GlassFish;
+import org.glassfish.embeddable.GlassFishRuntime;
 
-import org.glassfish.simpleglassfishapi.GlassFishException;
-import org.glassfish.simpleglassfishapi.GlassFishOptions;
+import org.glassfish.embeddable.GlassFishException;
+import org.glassfish.embeddable.GlassFishOptions;
 
 /**
  * This is what gets registered in OSGi Service registry as GlassFishRuntime

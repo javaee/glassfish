@@ -38,47 +38,24 @@
  * holder.
  */
 
-package org.glassfish.simpleglassfishapi;
+package org.glassfish.embeddable;
 
 /**
- * Set of constants to be used while bootstrapping GlassFishRuntime
+ * Set of constants to be used when getting a GlassFish instance from the
+ * GlassFishRuntime
  * @author prasad
  */
-public class BootstrapConstants {
+public class GlassFishConstants {
 
-    public final static String PLATFORM_PROPERTY_KEY = "GlassFish_Platform";
-    public static final String INSTALL_ROOT_PROP_NAME = "com.sun.aas.installRoot";
-    public static final String INSTALL_ROOT_URI_PROP_NAME = "com.sun.aas.installRootURI";
+    public final static String INSTANCE_ROOT_PROP_NAME = "com.sun.aas.instanceRoot";
+    public static final String INSTANCE_ROOT_URI_PROP_NAME = "com.sun.aas.instanceRootURI";
+    public static final String CONFIG_FILE_URI_PROP_NAME = "com.sun.aas.configFileURI";
 
-    private BootstrapConstants(){}
+    //added temporarily
+    public static final String HTTP_PORT = "http.port";
+    public static final String HTTPS_PORT = "https.port";
 
-    // Supported platform we know about, not limited to.
-    public enum Platform {
-        /**
-         * Felix OSGi platform
-         */
-        Felix,
 
-        /**
-         * Equinox OSGi platform
-         */
-        Equinox,
-
-        /**
-         * Knopflerfish OSGi platform
-         */
-        Knopflerfish,
-
-        /**
-         * Generic OSGi R4.2 or higher platform.
-         * When this is chosen, we expect the framework to be set up in launcher classloader by user.
-         */
-        GenericOSGi,
-
-        /**
-         * Proprietary non-modular hk2 module system
-         */
-        Static
-    }
+    private GlassFishConstants(){}
 
 }

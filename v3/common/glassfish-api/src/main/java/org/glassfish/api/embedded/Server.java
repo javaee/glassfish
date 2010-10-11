@@ -42,12 +42,12 @@ package org.glassfish.api.embedded;
 
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.glassfish.api.container.Sniffer;
-import org.glassfish.simpleglassfishapi.GlassFish;
-import org.glassfish.simpleglassfishapi.GlassFishRuntime;
-import org.glassfish.simpleglassfishapi.BootstrapConstants;
-import org.glassfish.simpleglassfishapi.BootstrapOptions;
-import org.glassfish.simpleglassfishapi.GlassFishConstants;
-import org.glassfish.simpleglassfishapi.GlassFishOptions;
+import org.glassfish.embeddable.GlassFish;
+import org.glassfish.embeddable.GlassFishRuntime;
+import org.glassfish.embeddable.BootstrapConstants;
+import org.glassfish.embeddable.BootstrapOptions;
+import org.glassfish.embeddable.GlassFishConstants;
+import org.glassfish.embeddable.GlassFishOptions;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;

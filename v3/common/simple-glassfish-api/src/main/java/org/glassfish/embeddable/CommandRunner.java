@@ -38,24 +38,37 @@
  * holder.
  */
 
-package org.glassfish.simpleglassfishapi;
+package org.glassfish.embeddable;
+
+import java.util.Map;
 
 /**
- * Set of constants to be used when getting a GlassFish instance from the
- * GlassFishRuntime
- * @author prasad
+ * Interface for executing advanced commands in {@link GlassFish}
+ *
+ * This interface supports programatically executing the commands which
+ * will otherwise be done via asadmin utility.
+ *
+ * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class GlassFishConstants {
+public interface CommandRunner {
 
-    public final static String INSTANCE_ROOT_PROP_NAME = "com.sun.aas.instanceRoot";
-    public static final String INSTANCE_ROOT_URI_PROP_NAME = "com.sun.aas.instanceRootURI";
-    public static final String CONFIG_FILE_URI_PROP_NAME = "com.sun.aas.configFileURI";
-
-    //added temporarily
-    public static final String HTTP_PORT = "http.port";
-    public static final String HTTPS_PORT = "https.port";
-
-
-    private GlassFishConstants(){}
-
+    /**
+     * Execute an administrative command in {@link GlassFish} using the supplied
+     * command arguments.
+     *
+     * Example : To add an additional http listener:
+     *
+     *      Map&lt;String, String>&gt args = new HashMap();
+     *      args.put("listenerport", "9090");
+     *      args.put("listeneraddress", "localhost");
+     *      args.put("securityenabled", "false");
+     *      args.put("default-virtual-server", "server");
+     *      args.put("listener_id", "my-http-listener-1");
+     *      commandRunner.run("create-http-listener", args);
+     *
+     * @param command command to be executed.
+     * @param args command arguments.
+     * @return true if the command is successfully, false otherwise.
+     */
+    boolean run(String command, Map<String, String> args);
 }

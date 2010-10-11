@@ -43,11 +43,10 @@ package com.sun.enterprise.glassfish.bootstrap;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
-import org.glassfish.simpleglassfishapi.BootstrapConstants;
-import org.glassfish.simpleglassfishapi.BootstrapOptions;
-import org.glassfish.simpleglassfishapi.GlassFishConstants;
-import org.glassfish.simpleglassfishapi.GlassFishException;
-import org.glassfish.simpleglassfishapi.GlassFishRuntime;
+import org.glassfish.embeddable.BootstrapConstants;
+import org.glassfish.embeddable.BootstrapOptions;
+import org.glassfish.embeddable.GlassFishException;
+import org.glassfish.embeddable.GlassFishRuntime;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -55,10 +54,9 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.simpleglassfishapi.spi.RuntimeBuilder;
+import org.glassfish.embeddable.spi.RuntimeBuilder;
 
 /**
  * This {@link GlassFishRuntime.RuntimeBuilder} is responsible for setting up a

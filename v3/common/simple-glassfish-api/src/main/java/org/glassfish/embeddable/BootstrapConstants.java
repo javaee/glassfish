@@ -1,8 +1,7 @@
-package org.glassfish.simpleglassfishapi.spi;
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,37 +38,47 @@ package org.glassfish.simpleglassfishapi.spi;
  * holder.
  */
 
-
-
-import org.glassfish.simpleglassfishapi.*;
-
+package org.glassfish.embeddable;
 
 /**
- * Internal interface. Not for public use.
- * This is an SPI for GlassFishRuntime. Different implementations exist to provide different runtime
- * enviornment such as Felix/Equinox based or non-OSGi based runtime.
+ * Set of constants to be used while bootstrapping GlassFishRuntime
+ * @author prasad
  */
-public interface RuntimeBuilder {
+public class BootstrapConstants {
 
-    /**
-     * Builds a custom GlassFishRuntime with the supplied bootstrap options
-     * @param options
-     * @return
-     * @throws GlassFishException
-     */
-    GlassFishRuntime build(BootstrapOptions options) throws GlassFishException;
+    public final static String PLATFORM_PROPERTY_KEY = "GlassFish_Platform";
+    public static final String INSTALL_ROOT_PROP_NAME = "com.sun.aas.installRoot";
+    public static final String INSTALL_ROOT_URI_PROP_NAME = "com.sun.aas.installRootURI";
 
-    /**
-     * Returns true if this RuntimeBuilder is capable of creating a GlassFishRuntime
-     * for the supplied BootstrapOptions
-     * @param options
-     * @return
-     */
-    boolean handles(BootstrapOptions options);
+    private BootstrapConstants(){}
 
-    /**
-     * Destroy the RuntimeBuilder and follow up with cleaing up operations
-     * @throws Exception
-     */
-    void destroy() throws GlassFishException;
+    // Supported platform we know about, not limited to.
+    public enum Platform {
+        /**
+         * Felix OSGi platform
+         */
+        Felix,
+
+        /**
+         * Equinox OSGi platform
+         */
+        Equinox,
+
+        /**
+         * Knopflerfish OSGi platform
+         */
+        Knopflerfish,
+
+        /**
+         * Generic OSGi R4.2 or higher platform.
+         * When this is chosen, we expect the framework to be set up in launcher classloader by user.
+         */
+        GenericOSGi,
+
+        /**
+         * Proprietary non-modular hk2 module system
+         */
+        Static
+    }
+
 }

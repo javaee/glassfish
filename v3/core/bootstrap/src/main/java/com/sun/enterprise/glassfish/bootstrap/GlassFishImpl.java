@@ -41,9 +41,9 @@
 package com.sun.enterprise.glassfish.bootstrap;
 
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
-import org.glassfish.simpleglassfishapi.CommandRunner;
-import org.glassfish.simpleglassfishapi.Deployer;
-import org.glassfish.simpleglassfishapi.GlassFish;
+import org.glassfish.embeddable.CommandRunner;
+import org.glassfish.embeddable.Deployer;
+import org.glassfish.embeddable.GlassFish;
 import org.jvnet.hk2.component.Habitat;
 
 import java.util.Properties;

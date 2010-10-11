@@ -46,13 +46,11 @@ import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
-import org.glassfish.simpleglassfishapi.GlassFish;
-import org.glassfish.simpleglassfishapi.GlassFishRuntime;
+import org.glassfish.embeddable.GlassFish;
+import org.glassfish.embeddable.GlassFishRuntime;
 import org.jvnet.hk2.component.Habitat;
 import org.osgi.framework.*;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -62,8 +60,8 @@ import java.io.File;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Properties;
-import org.glassfish.simpleglassfishapi.GlassFishException;
-import org.glassfish.simpleglassfishapi.GlassFishOptions;
+import org.glassfish.embeddable.GlassFishException;
+import org.glassfish.embeddable.GlassFishOptions;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM

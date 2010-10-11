@@ -44,8 +44,8 @@ import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
-import org.glassfish.simpleglassfishapi.GlassFish;
-import org.glassfish.simpleglassfishapi.GlassFishRuntime;
+import org.glassfish.embeddable.GlassFish;
+import org.glassfish.embeddable.GlassFishRuntime;
 import org.jvnet.hk2.component.Habitat;
 
 import java.io.File;
@@ -56,8 +56,8 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Logger;
-import org.glassfish.simpleglassfishapi.GlassFishException;
-import org.glassfish.simpleglassfishapi.GlassFishOptions;
+import org.glassfish.embeddable.GlassFishException;
+import org.glassfish.embeddable.GlassFishOptions;
 
 /**
  * The GlassFishRuntime implementation for NonOSGi environments.

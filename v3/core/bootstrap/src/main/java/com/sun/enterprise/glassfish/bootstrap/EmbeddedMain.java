@@ -54,7 +54,7 @@ import java.util.ServiceLoader;
  * Main for embedded.
  *
  * Moved from ASEmbedded.EmbeddedMain to be able to launch GlassFish in Static mode using
- * the new APIs (org.glassfish.simpleglassfishapi.*) to launch GlassFish.
+ * the new APIs (org.glassfish.embeddable.*) to launch GlassFish.
  *
  * @author dochez
  * @author bhavanishankar@dev.java.net

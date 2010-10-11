@@ -40,10 +40,10 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
-import org.glassfish.simpleglassfishapi.BootstrapConstants;
-import org.glassfish.simpleglassfishapi.Deployer;
-import org.glassfish.simpleglassfishapi.GlassFish;
-import org.glassfish.simpleglassfishapi.GlassFishRuntime;
+import org.glassfish.embeddable.BootstrapConstants;
+import org.glassfish.embeddable.Deployer;
+import org.glassfish.embeddable.GlassFish;
+import org.glassfish.embeddable.GlassFishRuntime;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -53,8 +53,8 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Properties;
 
-import org.glassfish.simpleglassfishapi.BootstrapOptions;
-import org.glassfish.simpleglassfishapi.GlassFishOptions;
+import org.glassfish.embeddable.BootstrapOptions;
+import org.glassfish.embeddable.GlassFishOptions;
 import static com.sun.enterprise.module.bootstrap.ArgumentManager.argsToMap;
 
 /**

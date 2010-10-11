@@ -38,11 +38,10 @@
  * holder.
  */
 
-package org.glassfish.simpleglassfishapi;
+package org.glassfish.embeddable;
 
-import org.glassfish.simpleglassfishapi.spi.RuntimeBuilder;
+import org.glassfish.embeddable.spi.RuntimeBuilder;
 import java.util.Iterator;
-import java.util.Properties;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 
