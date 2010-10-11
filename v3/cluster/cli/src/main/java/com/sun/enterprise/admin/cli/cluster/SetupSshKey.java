@@ -139,6 +139,8 @@ public final class SetupSshKey extends CLICommand {
         SSHLauncher sshL=habitat.getComponent(SSHLauncher.class);
         Globals.setDefaultHabitat(habitat);
 
+        String previousPassword = null;
+        boolean status = false;
         for (String node : nodes) {
             sshL.init(sshuser, node,  sshport, sshpassword, sshkeyfile, sshkeypassphrase, logger);
             if (generatekey || promptPass) {
@@ -146,10 +148,16 @@ public final class SetupSshKey extends CLICommand {
                 if (sshkeyfile != null || SSHUtil.getExistingKeyFile() != null) {
                     if(sshL.checkConnection()) {
                         logger.info(Strings.get("SSHAlreadySetup", sshuser, node));
-                        return SUCCESS;
+                        continue;
                     }
                 }
-                sshpassword=getSSHPassword(node);
+                if (previousPassword != null) {
+                    status = sshL.checkPasswordAuth();
+                }
+                if (!status) {
+                    sshpassword=getSSHPassword(node);
+                    previousPassword=sshpassword;
+                }
             }
             try {
                 sshL.setupKey(node, sshpublickeyfile, generatekey, sshpassword);

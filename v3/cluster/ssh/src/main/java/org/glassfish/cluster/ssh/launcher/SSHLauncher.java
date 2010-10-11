@@ -615,6 +615,25 @@ public class SSHLauncher {
         return status;
     }
 
+    public boolean checkPasswordAuth() {
+        boolean status = false;
+        Connection c = null;
+        try {
+            c = new Connection(host, port);
+            c.connect();
+            if(logger.isLoggable(Level.FINER)) {
+                logger.finer("Checking connection...");
+            }
+            status = c.authenticateWithPassword(userName, password);
+            if (status) {
+                logger.finer("Successfully connected to " + userName + "@" + host + " using password authentication");
+            }
+        } catch(IOException ioe) {
+            //logger.printExceptionStackTrace(ioe);
+        }
+        c.close();
+        return status;
+    }
     /**
       * Invoke ssh-keygen using ProcessManager API
       */
