@@ -48,8 +48,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.glassfish.deployment.client.DFDeploymentStatus;
 import org.glassfish.deployment.client.DeploymentFacility;
 import org.glassfish.deployment.client.DFProgressObject;
@@ -59,21 +57,22 @@ import org.glassfish.deployment.client.DFDeploymentProperties;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
+import com.sun.jsftemplating.layout.SyntaxException;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
+import com.sun.jsftemplating.layout.template.TemplateParser;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.TargetUtil;
-import org.w3c.dom.Document;
+
 
 /**
  *
@@ -439,16 +438,26 @@ public class DeploymentHandler {
         }
     }
 
-    protected static String getEncoding(String xmlDoc) {
-        String encoding = null;
-        try {
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document doc = builder.parse(new ByteArrayInputStream(xmlDoc.getBytes()));
-            encoding = doc.getXmlEncoding();
-        } catch (Exception ex) {
-            Logger.getLogger(DeploymentHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
+    private static String getEncoding(String xmlDoc) {
+	String encoding = null;
+	TemplateParser parser = new TemplateParser(new ByteArrayInputStream(xmlDoc.getBytes()));
+	try {
+	    parser.open();
+	    encoding = parser.readUntil("encoding", false);
+	    if (encoding.endsWith("encoding")) {
+		// Read encoding="..."
+		parser.readUntil('=', false);
+		encoding = (String) parser.getNVP("encoding").getValue();
+	    } else {
+		// Not found...
+		encoding = null;
+	    }
+	} catch (SyntaxException ex) {
+	    encoding = null;
+	} catch (IOException ex) {
+	    encoding = null;
+	}
+
         if (encoding == null) {
             encoding = "UTF-8";
         }
