@@ -50,9 +50,7 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.util.HashMap;
 import java.util.List;
-import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.common.util.V3AMX;
 
 /**
  *
@@ -60,25 +58,6 @@ import org.glassfish.admingui.common.util.V3AMX;
  */
 public class WebHandlers {
 
-
-    @Handler(id="getAllHttpPorts",
-        input={
-            @HandlerInput(name="configName", type=String.class, required=true)},
-        output={
-    @HandlerOutput(name="ports", type=String.class)}
-     )
-    public static void getAllHttpPorts(HandlerContext handlerCtx){
-        String configName = (String) handlerCtx.getInputValue("configName");
-        AMXProxy listeners = V3AMX.getInstance().getConfig(configName).getNetworkConfig().child("network-listeners");
-        Map<String, AMXProxy> networkListeners = listeners.childrenMap("network-listener");
-        StringBuffer sb = new StringBuffer();
-        for(AMXProxy oneListener:  networkListeners.values()){
-            sb.append(oneListener.attributesMap().get("Port"));
-            sb.append(", ");
-        }
-        String ports = (sb.length() == 0) ? "" : sb.substring(0, sb.length()-2);
-        handlerCtx.setOutputValue("ports", ports);
-    }
 
     private static void putA(Map nMap, Map attrMap, String key){
         String val = (String) attrMap.get(key);

@@ -51,6 +51,13 @@
     <!beforeCreate
         setResourceBundle(key="i18n_corba" bundle="org.glassfish.corba.admingui.Strings")
         getRequestValue(key="configName" value="#{requestScope.tmpp}" default="server-config")
-        getAllIiopPorts(configName="#{requestScope.tmpp}"  ports="#{pageSession.iiopPorts}")
+        setPageSessionAttribute(key="iiopListenerUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/iiop-service/iiop-listener");
+        gf.getChildrenNamesList(endpoint="#{pageSession.iiopListenerUrl}" result="#{pageSession.iiopList}");
+        createList(size="0" result="#{pageSession.iiopPortsList}");
+        foreach (var="row" list="#{pageSession.iiopList}") {
+            gf.restRequest(endpoint="#{pageSession.iiopListenerUrl}/#{row}.json", method="get", result="#{pageSession.iiopListenerAttrs}");
+            listAdd(value="#{pageSession.iiopListenerAttrs.data.extraProperties.entity['port']}" list="#{pageSession.iiopPortsList}");
+        }
+        convertListToCommaString(list="#{pageSession.iiopPortsList}" commaString="#{pageSession.iiopPorts}");
     />
 </sun:property> 

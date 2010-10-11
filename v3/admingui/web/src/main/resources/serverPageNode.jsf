@@ -51,6 +51,13 @@
     <!beforeCreate
         setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings")
         getRequestValue(key="configName" value="#{requestScope.tmp}" default="server-config")
-        getAllHttpPorts(configName="#{requestScope.tmp}"  ports="#{pageSession.httpPorts}")
+        setPageSessionAttribute(key="httpListenerUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/network-listeners/network-listener");
+        gf.getChildrenNamesList(endpoint="#{pageSession.httpListenerUrl}" result="#{pageSession.httpList}");
+        createList(size="0" result="#{pageSession.httpPortsList}");
+        foreach (var="row" list="#{pageSession.httpList}") {
+            gf.restRequest(endpoint="#{pageSession.httpListenerUrl}/#{row}.json", method="get", result="#{pageSession.httpListenerAttrs}");
+            listAdd(value="#{pageSession.httpListenerAttrs.data.extraProperties.entity['port']}" list="#{pageSession.httpPortsList}");
+        }
+        convertListToCommaString(list="#{pageSession.httpPortsList}" commaString="#{pageSession.httpPorts}");
     />
 </sun:property> 
