@@ -348,7 +348,7 @@ public class MiniXmlParser {
                 }
                 else if ("network-config".equals(name)) {
                     sawNetworkConfig = true;
-                    parseListeners();
+                    parseNetworkConfig();
                 }
                 else if ("monitoring-service".equals(name)) {
                     parseMonitoringService();
@@ -356,6 +356,29 @@ public class MiniXmlParser {
                 else {
                     skipTree(name);
                 }
+            }
+        }
+    }
+
+    private void parseNetworkConfig()
+                        throws XMLStreamException, EndDocumentException {
+        // cursor --> <network-config>
+        while (true) {
+            int event = next();
+            // return when we get to the </network-config>
+            if (event == END_ELEMENT) {
+                if ("network-config".equals(parser.getLocalName())) {
+                    return;
+                }
+            }
+            else if (event == START_ELEMENT) {
+                String name = parser.getLocalName();
+                if ("protocols".equals(name)) {
+                    parseProtocols();
+                } else if ("network-listeners".equals(name)) {
+                    parseListeners();
+                } else
+                    skipTree(name);
             }
         }
     }
@@ -668,6 +691,7 @@ public class MiniXmlParser {
     }
 
     private void parseListeners() throws XMLStreamException, EndDocumentException {
+        // cursor --> START_ELEMENT of network-listeners
         while (true) {
             skipToButNotPast("network-listeners", "network-listener");
             final String name = parser.getLocalName();
@@ -675,6 +699,20 @@ public class MiniXmlParser {
                 listenerAttributes.add(parseAttributes());
             }
             else if ("network-listeners".equals(name)) {
+                break;
+            }
+        }
+    }
+
+    private void parseProtocols() throws XMLStreamException, EndDocumentException {
+        // cursor --> START_ELEMENT of protocols
+        while (true) {
+            skipToButNotPast("protocols", "protocol");
+            final String name = parser.getLocalName();
+            if ("protocol".equals(name)) {
+                protocolAttributes.add(parseAttributes());
+            }
+            else if ("protocols".equals(name)) {
                 break;
             }
         }
@@ -727,10 +765,17 @@ public class MiniXmlParser {
                                 if (StringUtils.isToken(addr))
                                     addr = sysProps.get(
                                                 StringUtils.stripToken(addr));
+                                boolean secure = false;
+                                String protocol = atts.get("protocol");
+                                atts = getProtocolByName(protocol);
+                                if (atts != null) {
+                                    String sec = atts.get("security-enabled");
+                                    secure = sec != null &&
+                                                sec.equalsIgnoreCase("true");
+                                }
                                 if (GFLauncherUtils.ok(addr))
                                     adminAddresses.add(
-                                        // XXX - need isSecure
-                                        new HostAndPort(addr, port, false));
+                                        new HostAndPort(addr, port, secure));
                             }
                             break;
                         }
@@ -763,6 +808,18 @@ public class MiniXmlParser {
             }
         }
         return port;
+    }
+
+    Map<String, String> getProtocolByName(String name) {
+        for (Map<String, String> atts : protocolAttributes) {
+            String id = atts.get("name");
+            if (id == null) {
+                id = atts.get("id");
+            }
+            if (id != null && id.equals(name))
+                return atts;
+        }
+        return null;
     }
 
     private Map<String, String> parseAttributes() {
@@ -803,5 +860,6 @@ public class MiniXmlParser {
     private boolean monitoringEnabled = true; // Issue 12762 Absent <monitoring-service /> element means monitoring-enabled=true by default
     private List<Map<String, String>> vsAttributes = new ArrayList<Map<String, String>>();
     private List<Map<String, String>> listenerAttributes = new ArrayList<Map<String, String>>();
+    private List<Map<String, String>> protocolAttributes = new ArrayList<Map<String, String>>();
     private boolean sawNetworkConfig;
 }

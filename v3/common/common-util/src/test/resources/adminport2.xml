@@ -205,7 +205,7 @@
               <file-cache enabled="false" />
             </http>
           </protocol>
-          <protocol name="admin-listener2">
+          <protocol security-enabled="true" name="admin-listener2">
             <http header-buffer-length="8192" forced-response-type="text/plain; charset=iso-8859-1" default-virtual-server="__asadmin" max-connections="250" server-name="" default-response-type="text/plain; charset=iso-8859-1">
               <file-cache enabled="false" />
             </http>

@@ -49,7 +49,6 @@ import java.util.logging.Logger;
 
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Ignore;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -58,11 +57,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.sun.enterprise.util.HostAndPort;
+
 /**
  * @author bnevins
  */
 @SuppressWarnings({"StaticNonFinalField"})
-@Ignore
 public class MiniXmlParserTest {
     private static File hasProfiler;
 
@@ -304,6 +304,21 @@ public class MiniXmlParserTest {
             assertEquals(2, ports.size());
             assertTrue(ports.contains(3333));
             assertTrue(ports.contains(4444));
+            Set<HostAndPort> addrs = instance.getAdminAddresses();
+            assertEquals(2, addrs.size());
+            boolean saw3333 = false, saw4444 = false, sawSecure = false;
+            for (HostAndPort addr : addrs) {
+                if (addr.getPort() == 3333)
+                    saw3333 = true;
+                if (addr.getPort() == 4444) {
+                    saw4444 = true;
+                    if (addr.isSecure())
+                        sawSecure = true;
+                }
+            }
+            assertTrue("Saw port 3333", saw3333);
+            assertTrue("Saw port 4444", saw4444);
+            assertTrue("Saw port 4444 security-enabled", sawSecure);
         }
         catch (MiniXmlParserException ex) {
             Logger.getLogger(MiniXmlParserTest.class.getName()).log(Level.SEVERE, null, ex);
