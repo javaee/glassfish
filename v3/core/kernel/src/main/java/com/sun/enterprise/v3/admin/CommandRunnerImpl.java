@@ -42,29 +42,23 @@ package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import com.sun.enterprise.admin.util.InstanceStateService;
-import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.module.common_impl.LogHelper;
         
 import java.io.*;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.concurrent.locks.Lock;
 
-import com.sun.enterprise.util.Utility;
 import org.glassfish.admin.payload.PayloadFilesManager;
 
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Async;
-import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import org.glassfish.common.util.admin.CommandModelImpl;
@@ -81,7 +75,6 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.*;
 import com.sun.hk2.component.InjectionResolver;
 
-import com.sun.enterprise.universal.GFBase64Decoder;
 import com.sun.enterprise.universal.collections.ManifestUtils;
 import com.sun.enterprise.universal.glassfish.AdminCommandResponse;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -821,9 +814,10 @@ public class CommandRunnerImpl implements CommandRunner {
         // lets not even look Supplemental command and such. A small optimization
         boolean doReplication = false;
         if( (domain.getServers().getServer().size() > 1) || (domain.getClusters().getCluster().size() != 0) ) {
+            doReplication = true;
+        } else {
             logger.fine(adminStrings.getLocalString("dynamicreconfiguration.diagnostics.devmode",
             "The GlassFish environment does not have any clusters or instances present; Replication is turned off"));
-            doReplication = true;
         }
 
         try {
@@ -1038,10 +1032,9 @@ public class CommandRunnerImpl implements CommandRunner {
 
             ClusterOperationUtil.clearInstanceList();
             // Run Supplemental commands that have to run before this command on this instance type
-            SupplementalCommandExecutor supplementalExecutor = habitat.getComponent(SupplementalCommandExecutor.class,
-                    "SupplementalCommandExecutorImpl");
-            if(doReplication && supplementalExecutor!= null) {
-
+            SupplementalCommandExecutor supplementalExecutor;
+            if (doReplication && (supplementalExecutor = habitat.getComponent(SupplementalCommandExecutor.class,
+                    "SupplementalCommandExecutorImpl")) != null) {
                 logger.fine(adminStrings.getLocalString("dynamicreconfiguration.diagnostics.presupplemental",
                         "Command execution stage 2 : Call pre supplemental commands for " + inv.name()));
                 ActionReport.ExitCode supplementalReturn = supplementalExecutor.execute(model.getCommandName(),
