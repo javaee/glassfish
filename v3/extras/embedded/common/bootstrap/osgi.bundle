@@ -40,7 +40,7 @@
 
 Bundle-Activator: org.glassfish.uberjar.activator.UberJarGlassFishActivator
 
--exportcontents: org.glassfish.simpleglassfishapi; version=${project.osgi.version}
+-exportcontents: org.glassfish.embeddable; version=${project.osgi.version}
 
 Main-Class: org.glassfish.uberjar.UberJarMain
 

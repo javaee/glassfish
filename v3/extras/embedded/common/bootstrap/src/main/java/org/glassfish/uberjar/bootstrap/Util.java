@@ -40,7 +40,7 @@
 
 package org.glassfish.uberjar.bootstrap;
 
-import org.glassfish.simpleglassfishapi.GlassFish;
+import org.glassfish.embeddable.GlassFish;
 
 import java.io.File;
 import java.io.FileOutputStream;

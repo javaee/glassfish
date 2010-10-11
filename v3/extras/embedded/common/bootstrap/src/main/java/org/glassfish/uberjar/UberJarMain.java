@@ -40,18 +40,21 @@
 
 package org.glassfish.uberjar;
 
-import org.glassfish.simpleglassfishapi.GlassFish;
-import org.glassfish.simpleglassfishapi.GlassFishRuntime;
+import org.glassfish.embeddable.GlassFish;
+import org.glassfish.embeddable.GlassFishRuntime;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Properties;
 import java.util.logging.Logger;
-import org.glassfish.simpleglassfishapi.BootstrapConstants;
-import org.glassfish.simpleglassfishapi.BootstrapOptions;
-import org.glassfish.simpleglassfishapi.GlassFishOptions;
+import org.glassfish.embeddable.BootstrapConstants;
+import org.glassfish.embeddable.BootstrapOptions;
+import org.glassfish.embeddable.GlassFishOptions;
 
 /**
+ *
+ * This is a main class for 'java -jar glassfish-uber.jar'
+ * 
  * @author bhavanishankar@dev.java.net
  */
 

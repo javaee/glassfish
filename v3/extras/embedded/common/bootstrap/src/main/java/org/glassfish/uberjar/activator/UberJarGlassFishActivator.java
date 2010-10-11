@@ -40,8 +40,8 @@
 
 package org.glassfish.uberjar.activator;
 
-import org.glassfish.simpleglassfishapi.GlassFish;
-import org.glassfish.simpleglassfishapi.GlassFishRuntime;
+import org.glassfish.embeddable.GlassFish;
+import org.glassfish.embeddable.GlassFishRuntime;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.launch.Framework;
@@ -50,11 +50,14 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Properties;
 import java.util.logging.Logger;
-import org.glassfish.simpleglassfishapi.BootstrapConstants;
-import org.glassfish.simpleglassfishapi.BootstrapOptions;
-import org.glassfish.simpleglassfishapi.GlassFishOptions;
+import org.glassfish.embeddable.BootstrapConstants;
+import org.glassfish.embeddable.BootstrapOptions;
+import org.glassfish.embeddable.GlassFishOptions;
 
 /**
+ * This is an activator to allow just dropping the uber jar
+ * into a running OSGi environment.
+ *
  * @author bhavanishankar@dev.java.net
  */
 
