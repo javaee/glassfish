@@ -40,10 +40,7 @@
 
 package org.glassfish.maven;
 
-import org.glassfish.simpleglassfishapi.CommandRunner;
-import org.glassfish.simpleglassfishapi.Deployer;
-import org.glassfish.simpleglassfishapi.GlassFish;
-import org.glassfish.simpleglassfishapi.GlassFishRuntime;
+import org.glassfish.simpleglassfishapi.*;
 
 import java.io.File;
 import java.util.HashMap;
@@ -81,9 +78,12 @@ public class PluginUtil {
 
     public static void stopGlassFish(String serverId) throws Exception {
         GlassFish gf = gfMap.remove(serverId);
-        if (gf != null) {
+        if (gf != null && gf.getStatus().equals(GlassFish.Status.STARTED)) {
+            GlassFishRuntime gfr = gf.lookupService(GlassFishRuntime.class, null);
             gf.stop();
-            GlassFishRuntime.shutdown();
+            if(gfr != null) {
+                gfr.shutdown();
+            }
         }
         logger.logp(Level.INFO, "PluginUtil", "stopGlassFish", "Stopped GlassFish ServerId = {0}, GlassFish = {1}",
                 new Object[]{serverId, gf});
@@ -124,13 +124,15 @@ public class PluginUtil {
         if (gf == null) {
             long startTime = System.currentTimeMillis();
             logger.logp(Level.INFO, "PluginUtil", "getGlassFish", "Creating GlassFish ServerId = {0}", serverId);
-            GlassFishRuntime gfr = GlassFishRuntime.bootstrap(bootstrapProperties,
+            BootstrapOptions bootstrapOptions = new BootstrapOptions(bootstrapProperties);
+            GlassFishRuntime gfr = GlassFishRuntime.bootstrap(bootstrapOptions,
                     PluginUtil.class.getClassLoader());
             logger.logp(Level.INFO, "PluginUtil", "getGlassFish", "Created GlassFishRuntime ServerId = {0}, " +
                     "GlassFishRuntime = {1}, TimeTaken = {2} ms",
                     new Object[]{serverId, gfr, System.currentTimeMillis() - startTime});
             startTime = System.currentTimeMillis();
-            gf = gfr.newGlassFish(bootstrapProperties);
+            GlassFishOptions gfOptions = new GlassFishOptions(bootstrapProperties);
+            gf = gfr.newGlassFish(gfOptions);
             logger.logp(Level.INFO, "PluginUtil", "getGlassFish", "Created GlassFish ServerId = {0}, " +
                     "GlassFish = {1}, GlassFish Status = {2}, TimeTaken = {3} ms",
                     new Object[]{serverId, gf, gf.getStatus(), System.currentTimeMillis() - startTime});
