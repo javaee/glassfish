@@ -74,6 +74,7 @@
                     EnsureDefaultWebModule(endpoint="#{pageSession.selfUrl}",vsName="#{pageSession.valueMap['id']}",instanceList="#{requestScope.instanceList}");
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                    removeEmptyProps(props="#{pageSession.tableList}" modifiedProps="#{pageSession.tableList}");
                     javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
 		    gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="POST" data="#{requestScope.tmpJSON}"
                                         result="#{requestScope.restResponse}");
@@ -114,6 +115,7 @@
                     EnsureDefaultWebModule(endpoint="#{pageSession.selfUrl}",vsName="#{pageSession.valueMap['id']}",instanceList="#{requestScope.instanceList}");
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                    removeEmptyProps(props="#{pageSession.tableList}" modifiedProps="#{pageSession.tableList}");
                     javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
 		    gf.restRequest(endpoint="#{pageSession.selfUrl}/#{pageSession.valueMap['id']}/property.json" method="POST" data="#{requestScope.tmpJSON}" result="#{requestScope.restResponse}");
                     gf.redirect(page="#{parentPage}?configName=#{configName}")
