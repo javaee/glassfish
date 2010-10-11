@@ -43,7 +43,7 @@
 # logging and diagnostics are used by amx!
 -exportcontents: com.sun.enterprise.server.logging.logviewer.backend, com.sun.enterprise.server.logging.diagnostics, com.sun.enterprise.server.logging
 
-Import-Package: \
-					org.glassfish.cluster.*;resolution:=optional, \
-					com.trilead.*;resolution:=optional, \
-					*
+DynamicImport-Package: \
+					org.glassfish.cluster.ssh.launcher, \
+                                        org.glassfish.cluster.ssh.sftp, \
+					com.trilead.ssh2
