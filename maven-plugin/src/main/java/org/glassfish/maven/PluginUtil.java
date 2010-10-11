@@ -40,7 +40,7 @@
 
 package org.glassfish.maven;
 
-import org.glassfish.simpleglassfishapi.*;
+import org.glassfish.embeddable.*;
 
 import java.io.File;
 import java.util.HashMap;
