@@ -148,8 +148,12 @@ public class ExportHttpLbConfig implements AdminCommand {
 
         File lbXmlFile = new File(fileName);
         if(!lbXmlFile.isAbsolute() && !retrieveFile){
-            File generatedDir = env.getApplicationStubPath();
-            lbXmlFile = new File(generatedDir, fileName);
+            File loadbalancerDir = new File(env.getInstanceRoot(),
+                    "load-balancer");
+            if(!loadbalancerDir.exists()){
+                loadbalancerDir.mkdir();
+            }
+            lbXmlFile = new File(loadbalancerDir, fileName);
         }
 
         File tmpLbXmlFile = null;
