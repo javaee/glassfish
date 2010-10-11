@@ -53,6 +53,9 @@
                         convertToFalse={"securityEnabled"},
                         result => $attribute{newProxy});
 
+                if ("#{pageSession.httpMap['redirectPort']}=#{null}") {
+                    mapPut(map="#{pageSession.httpMap}", key="redirectPort", value="0");
+                }
                 gf.createEntity(endpoint="${newProxy}/#{pageSession.valueMap['Name']}/#{pageSession.childType2}"
                         attrs="#{pageSession.httpMap}"
                         onlyUseAttrs={"enableCometSupport", "defaultVirtualServer", "serverName", "redirectPort"}
@@ -61,7 +64,7 @@
 
                 gf.createEntity(endpoint="${newHttp}/#{pageSession.childType3}"
                         attrs="#{pageSession.fileMap}"
-                        convertToFalse={"Enabled"},
+                        convertToFalse={"enabled"},
                 );
 
                 gf.redirect(page="#{parentPage}?configName=#{configName}")
