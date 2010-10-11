@@ -31,7 +31,20 @@ public class ManifestProxy extends Manifest {
                     this.mappings.put(mapping.key, mapping.separator);
                 }
             }
-            Method met = cl.getClass().getMethod("findResources", String.class);
+            Method met  = null;
+            Class<?> t = cl.getClass();
+            while (t!=null && met==null) {
+                try {
+                    met = t.getDeclaredMethod("findResources", String.class);
+                } catch(NoSuchMethodException e) {
+                    // ignore
+                }
+                t=t.getSuperclass();
+            }
+            if (met==null) {
+                Logger.getLogger(ManifestProxy.class.getName()).log(Level.SEVERE, "Cannot get findResources method handle");
+                return;
+            }
             Enumeration<URL> urls=null;
             try {
                 met.setAccessible(true);
@@ -66,8 +79,6 @@ public class ManifestProxy extends Manifest {
                     }
                 }
             }
-        } catch (NoSuchMethodException ex) {
-            Logger.getLogger(ManifestProxy.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SecurityException ex) {
             Logger.getLogger(ManifestProxy.class.getName()).log(Level.SEVERE, null, ex);
         }
