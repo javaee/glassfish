@@ -60,6 +60,7 @@
         gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="GET" result="#{requestScope.propTable}");
         setPageSessionAttribute(key="tableList" value="#{requestScope.propTable.data.extraProperties.properties}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/configuration/webContainerStore.jsf?configName=#{pageSession.configName}");
+        setPageSessionAttribute(key="skipAttrsList" value={"reapIntervalInSeconds"});
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
