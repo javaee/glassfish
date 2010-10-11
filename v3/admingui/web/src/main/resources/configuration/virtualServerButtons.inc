@@ -101,6 +101,7 @@
                     gf.createEntity(endpoint="#{pageSession.selfUrl}/#{pageSession.valueMap['id']}"
                             attrs="#{pageSession.valueMap}"
                             onlyUseAttrs="#{pageSession.onlyUseAttrs}"
+                            convertToFalse="#{pageSession.convertToFalseList}"
                     );
                     createMap(result="#{pageSession.statusAttrs}");
                     mapPut(map="#{pageSession.statusAttrs}" key="DEFAULT" value="#{pageSession.configName}" );
