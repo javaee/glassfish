@@ -94,7 +94,7 @@ public class MonitorTask extends TimerTask {
             title = String.format("%1$-4s %2$-4s %3$-6s %4$-4s",
             "ec", "mt", "pt", "rc");
         } else if ("jvm".equals(type)) {
-            title = String.format("%1$45s", "JVM Monitoring");
+            title = String.format("%1$45s", strings.get("monitor.jvm.title"));
             logger.info(title);
             // row title
             title = null;
@@ -107,12 +107,14 @@ public class MonitorTask extends TimerTask {
             }
             if (title == null) {
                 // default jvm stats
-                title = String.format("%1$-35s %2$-40s", "UpTime(ms)",
-                                        "Heap and NonHeap Memory(bytes)");
+                title = String.format("%1$-35s %2$-40s", strings.get("monitor.jvm.uptime.title"),
+                                        strings.get("monitor.jvm.memory.title"));
                 logger.info(title);
                 title = String.format(
                     "%1$-25s %2$-10s %3$-10s %4$-10s %5$-10s %6$-10s",
-                    "current", "min", "max", "low", "high", "count");
+                    strings.get("monitor.jvm.current"), strings.get("monitor.jvm.min"), 
+                    strings.get("monitor.jvm.max"), strings.get("monitor.jvm.low"),
+                    strings.get("monitor.jvm.high"), strings.get("monitor.jvm.count"));
             }
         } else if ("webmodule".equals(type)) {
             title = String.format(
