@@ -48,6 +48,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.util.OS;
 
 /**
@@ -65,9 +66,7 @@ public final class StopDatabaseCommand extends DatabaseCommand {
     @Param(name = "dbuser", optional = true)
     private String dbUser;
 
-    @Param(name = "dbpasswordfile", optional = true)
     private File dbPasswordFile;
-
     private String dbPassword;
 
     private static final LocalStringsImpl strings =
@@ -80,6 +79,11 @@ public final class StopDatabaseCommand extends DatabaseCommand {
      */
     public String[] stopDatabaseCmd() throws Exception {
         passwords = new HashMap<String, String>();
+        String passwordfile = this.getOption(ProgramOptions.PASSWORDFILE);
+        if (passwordfile != null) {
+            dbPasswordFile = new File(passwordfile);
+            dbPasswordFile = SmartFile.sanitize(dbPasswordFile);
+        }
         if (dbPasswordFile != null) {
             passwords =
                 CLIUtil.readPasswordFileOptions(dbPasswordFile.getPath(), true);
