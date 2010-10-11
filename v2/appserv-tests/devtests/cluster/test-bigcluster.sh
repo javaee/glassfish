@@ -72,7 +72,8 @@ benchmark_commands() {
   grep 'time to parse domain.xml' $GFHOME/glassfish/domains/$DOMAIN/logs/server.log | 
     sed -e 's/^.*Total //' -e 's/|#]//' | tail -1
   echo 'size of domain.xml: ' `ls -l $GFHOME/glassfish/domains/$DOMAIN/config/domain.xml | awk '{ print $5 }'`
-  echo 'size of DAS process: ' `ps -o vsz,args | grep glassfish | grep DAS | head -1 | cut -d" " -f 1` 'KB'
+  daspid=`cat $TESTHOME/glassfish3/glassfish/domains/domain1/config/pid`
+  echo 'size of DAS process: ' `ps -o vsz= -p $daspid` ' KB'
 }
 
 benchmark_deploy() {
@@ -123,12 +124,7 @@ create_hosted_clusters() {
   while [ "$c" -lt "$cnum" ]
   do
     c=`expr $c + 1`
-    echo "create-cluster --gmsenabled=false ch$c"
-    echo "set configs.config.ch${c}-config.availability-service.availability-enabled=false"
-    echo "set configs.config.ch${c}-config.availability-service.web-container-availability.availability-enabled=false"
-    echo "set configs.config.ch${c}-config.availability-service.ejb-container-availability.availability-enabled=false"
-    echo "set configs.config.ch${c}-config.jms-service.type=REMOTE"
-    echo "create-jvm-options --target ch$c '-XX\:+UnsyncloadClass'"
+    echo "create-cluster ch$c"
     n=0
     while [ "$n" -lt "$nnum" ]
     do
