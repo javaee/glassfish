@@ -45,7 +45,7 @@
 
 <!initPage
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks")
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18n.resources.targetListing.PageTitle}"
@@ -178,7 +178,7 @@
     </sun:tableRowGroup>
  </sun:table>
 
-	<sun:hidden id="helpKey" value="$resource{help.resources.targetListing}" />
+	<sun:hidden id="helpKey" value="$resource{help_common.resources.targetListing}" />
             </sun:form>
 
 #include "/common/shared/changeButtonsJS.inc"
