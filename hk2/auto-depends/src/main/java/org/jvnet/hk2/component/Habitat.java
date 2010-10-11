@@ -419,11 +419,21 @@ public class Habitat {
 
     protected void addIndex(Inhabitant<?> i, String index, String name, boolean notify) {
       byContract.add(index,new NamedInhabitant(name,i));
+      
       if (notify) {
         notify(i, EventType.INHABITANT_INDEX_ADDED, index, name, null, null);
       }
     }
 
+    protected static Long getServiceRanking(Inhabitant<?> i, boolean wantNonNull) {
+      MultiMap<String, String> meta = i.metadata();
+      String sr = meta.getOne(Constants.SERVICE_RANKING);
+      if (null == sr) {
+        return (wantNonNull) ? 0L : null;
+      }
+      return Long.valueOf(sr);
+    }
+    
     /**
      * Removes an inhabitant
      *

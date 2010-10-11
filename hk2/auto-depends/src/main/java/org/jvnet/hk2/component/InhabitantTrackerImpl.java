@@ -115,10 +115,10 @@ import java.util.concurrent.CopyOnWriteArraySet;
         if (null == best) {
           best = next;
         } else {
-          Long sr = getServiceRanking(next, false);
+          Long sr = Habitat.getServiceRanking(next, false);
           if (null != sr) {
             if (null == bestSr) {
-              bestSr = getServiceRanking(best, true);
+              bestSr = Habitat.getServiceRanking(best, true);
             }
             
             if (sr > bestSr) {
@@ -136,15 +136,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
     }
     
     return (Inhabitant<T>) best;
-  }
-
-  protected Long getServiceRanking(Inhabitant<?> i, boolean wantNonNull) {
-    MultiMap<String, String> meta = i.metadata();
-    String sr = meta.getOne(Constants.SERVICE_RANKING);
-    if (null == sr) {
-      return (wantNonNull) ? 0L : null;
-    }
-    return Long.valueOf(sr);
   }
 
   @SuppressWarnings("unchecked")

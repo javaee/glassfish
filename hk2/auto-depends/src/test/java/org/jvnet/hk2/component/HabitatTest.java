@@ -1,5 +1,7 @@
 package org.jvnet.hk2.component;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -233,6 +235,67 @@ public class HabitatTest extends TestCase {
 
     String ret = (String)h.getComponent(String.class.getName(), "named");
     assertEquals("named", ret);
+  }
+
+  public void testGetAllByContractWithNoServiceRanking() {
+    populateHabitatForServiceRankingTest(false);
+    Collection<String> coll = h.getAllByContract(String.class);
+    verifyEquals("natural order expected since no service ranking", coll, "a", "b", "c", "d", "e", "f");
+  }
+
+  // TODO
+  public void xxx_testGetAllByContractWithServiceRanking() {
+    populateHabitatForServiceRankingTest(true);
+    Collection<String> coll = h.getAllByContract(String.class);
+    verifyEquals("ranking order expected since service ranking present", coll, "d", "c", "f", "a", "b", "f");
+  }
+  
+  public void populateHabitatForServiceRankingTest(boolean hasRankings) {
+    Inhabitant i1, i2, i3, i4, i5, i6;
+    
+    if (hasRankings) {
+      i1 = new ExistingSingletonInhabitant(String.class, "a");
+      i2 = new ExistingSingletonInhabitant(String.class, "b", metdata(null, Constants.SERVICE_RANKING, "x"));
+      i3 = new ExistingSingletonInhabitant(String.class, "c", metdata(null, Constants.SERVICE_RANKING, "2"));
+      i4 = new ExistingSingletonInhabitant(String.class, "d", metdata(null, Constants.SERVICE_RANKING, "1"));
+      i5 = new ExistingSingletonInhabitant(String.class, "e", metdata(null, Constants.SERVICE_RANKING, "3"));
+      i6 = new ExistingSingletonInhabitant(String.class, "f");
+    } else {
+      i1 = new ExistingSingletonInhabitant(String.class, "a");
+      i2 = new ExistingSingletonInhabitant(String.class, "b", metdata(null, "whatever", "x"));
+      i3 = new ExistingSingletonInhabitant(String.class, "c", metdata(null, "whatever", "2"));
+      i4 = new ExistingSingletonInhabitant(String.class, "d", metdata(null, "whatever", "1"));
+      i5 = new ExistingSingletonInhabitant(String.class, "e", metdata(null, "whatever", "3"));
+      i6 = new ExistingSingletonInhabitant(String.class, "f");
+    }
+
+    add(i1, "a");
+    add(i2, null);
+    add(i3, "c");
+    add(i4, null);
+    add(i5, "e");
+    add(i6, null);
+  }
+
+  private void verifyEquals(String msg, Collection<?> coll, String... vals) {
+    ArrayList x = new ArrayList(coll);
+    ArrayList y = new ArrayList(Arrays.asList(vals));
+    assertEquals(msg, x, y);
+  }
+  
+  private void add(Inhabitant i, String name) {
+    h.add(i);
+    h.addIndex(i, String.class.getName(), name);
+  }
+
+  private MultiMap metdata(MultiMap mm, String key, String val) {
+    if (null == mm) {
+      mm = new MultiMap();
+    }
+    
+    mm.add(key, val);
+    
+    return mm;
   }
 
 }
