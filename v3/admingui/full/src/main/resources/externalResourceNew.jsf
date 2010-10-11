@@ -46,7 +46,7 @@
     setResourceBundle(key="i18njmail" bundle="org.glassfish.full.admingui.Strings");
     setResourceBundle(key="help_jmail" bundle="org.glassfish.full.admingui.Helplinks")
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njmail.jndiResource.newPageTitle}" guiOnLoad="initClassname('#{myOption}');" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njmail.jndiResource.newPageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
