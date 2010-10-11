@@ -134,7 +134,8 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
     
     final boolean wasActive = real.isInstantiated();
     T result = real.get(onBehalfOf);
-    if (!wasActive && real.isInstantiated()) {
+    Inhabitant<T> real = this.real;
+    if (!wasActive && null != real && real.isInstantiated()) {
       notify(InhabitantListener.EventType.INHABITANT_ACTIVATED);
     }
     

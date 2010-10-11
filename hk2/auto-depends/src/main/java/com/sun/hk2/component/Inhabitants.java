@@ -80,8 +80,8 @@ public class Inhabitants {
       // this is a RunLevel service, we need to load type in order to get
       // more type information about it, namely it's environment and actual RunLevel id
       RunLevel rl = i.getAnnotation(RunLevel.class);
-      assert(null != rl) : typeName + " is a problem for " + i;
-      assert(!i.isInstantiated()) : "inhabitant should not be active";
+      assert(null != rl) : typeName + " is a problem; " + i + " has no RunLevel annotation";
+      assert(!i.isInstantiated()) : "inhabitant should not be active: " + i;
 
       // get the appropriate RLS for this RunLevel
       RunLevelService<?> rls = runLevelServices.get(habitat, rl);
