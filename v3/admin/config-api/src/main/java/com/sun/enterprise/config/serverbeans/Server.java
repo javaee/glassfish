@@ -481,11 +481,12 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                         "noTransaction", "Internal Error - Cannot obtain transaction object"));
             }
 
-
+/*
             if (node == null) {
                 instance.setNode("localhost");  //remove?
             }
-            else {
+            else { */
+            if (node != null){
                 if (domain.getNodeNamed(node) == null) {
                     throw new TransactionFailure(localStrings.getLocalString(
                             "noSuchNode", "Node {0} does not exist.", node));
