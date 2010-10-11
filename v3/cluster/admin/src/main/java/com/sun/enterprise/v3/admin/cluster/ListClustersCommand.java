@@ -84,7 +84,7 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
     @Inject
     InstanceStateService stateService;
     private RemoteInstanceCommandHelper helper;
-    private List<InstanceInfo> infos = new LinkedList<InstanceInfo>();
+
     private static final String NONE = "Nothing to list.";
     private static final String EOL = "\n";
 
@@ -127,8 +127,7 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
             sb.append(NONE);
         }
 
-        boolean atleastOneInstanceRunning = false;
-        boolean allInstancesRunning = true;
+
         int timeoutInMsec = 2000;
 
         //List the cluster and also the state
@@ -141,6 +140,9 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
 
 
         for (Cluster cluster : clusterList) {
+            boolean atleastOneInstanceRunning = false;
+            boolean allInstancesRunning = true;
+            List<InstanceInfo> infos = new LinkedList<InstanceInfo>();
             String clusterName = cluster.getName();
 
             List<Server> servers = cluster.getInstances();
