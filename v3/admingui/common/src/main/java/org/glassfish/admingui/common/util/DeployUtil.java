@@ -276,13 +276,16 @@ public class DeployUtil {
         }
                 
         int numTargets = targetList.size();
+        /*
         if (numEnabled == numTargets){
             return GuiUtil.getMessage("deploy.allEnabled");
         }
         if (numDisabled == numTargets){
             return GuiUtil.getMessage("deploy.allDisabled");
         }
-        return GuiUtil.getMessage("deploy.someEnabled", new String[]{""+numEnabled});
+         */
+        return (numTargets==0) ?  GuiUtil.getMessage("deploy.noTarget") :
+                GuiUtil.getMessage("deploy.someEnabled", new String[]{""+numEnabled, ""+numTargets });
         
     }
 
