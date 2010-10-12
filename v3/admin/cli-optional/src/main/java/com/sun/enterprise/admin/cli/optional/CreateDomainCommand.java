@@ -825,6 +825,7 @@ public final class CreateDomainCommand extends CLICommand {
         Properties properties = new Properties();
         properties.setProperty(StartupContext.STARTUP_MODULESTARTUP_NAME,
                                         "DomainCreation");
+        properties.setProperty("-domain", domainConfig.getDomainName());
         Server server = builder.build(properties);
 
         server.start();
