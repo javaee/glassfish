@@ -36,6 +36,7 @@
  */
 package com.sun.enterprise.tools.apt;
 
+import com.sun.enterprise.tools.InhabitantsDescriptor;
 import com.sun.hk2.component.InhabitantsFile;
 import com.sun.hk2.component.CompanionSeed;
 import static com.sun.hk2.component.InhabitantsFile.COMPANION_CLASS_METADATA_KEY;
@@ -198,11 +199,12 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
                     }
                 }
 
+                String qualifiedName = d.getQualifiedName();
 
                 StringBuilder buf = new StringBuilder();
                  buf.append(InhabitantsFile.CLASS_KEY).append('=').append(service);
                  buf.append(",").append(INDEX_KEY).append("=").append(contract).append(":").append(name);
-                 buf.append(",").append(TARGET_TYPE).append("=").append(d.getQualifiedName());
+                 buf.append(",").append(TARGET_TYPE).append("=").append(qualifiedName);
                  for (AnnotationTypeElementDeclaration ated : a.getAnnotationType().getDeclaration().getMethods()) {
                      for (AnnotationMirror am : ated.getAnnotationMirrors()) {
                          if (am.getAnnotationType().getDeclaration().getSimpleName().equals(InhabitantMetadata.class.getSimpleName())) {
