@@ -200,7 +200,8 @@ public class StartServerHelper{
         String adminPortString = "-1";
 
         try {
-            adminPort = info.getAnAdminPort();
+            if (addresses != null && addresses.size() > 0)
+                adminPort = addresses.get(0).getPort();
             // To avoid having the logger do this: port = 4,848
             // so we do the conversion to a string ourselves
             adminPortString = "" + adminPort;
@@ -267,7 +268,7 @@ public class StartServerHelper{
         return adminPortInUse(info.getAdminAddresses());
     }
 
-    private String adminPortInUse(Set<HostAndPort> adminAddresses) {
+    private String adminPortInUse(List<HostAndPort> adminAddresses) {
         // it returns a String for logging --- if desired
         for(HostAndPort addr : adminAddresses)
             if(!NetUtils.isPortFree(addr.getHost(), addr.getPort()))
@@ -285,7 +286,7 @@ public class StartServerHelper{
     private final Logger logger;
     private final File pidFile;
     private final GFLauncherInfo info;
-    private final Set<HostAndPort> addresses;
+    private final List<HostAndPort> addresses;
     private final ServerDirs serverDirs;
     private final String masterPassword;
     private final boolean debug;
@@ -315,9 +316,8 @@ public class StartServerHelper{
             }
 
             // The port may take some time to become free after the pipe breaks
-            Set<HostAndPort> adminAddresses = info.getAdminAddresses();
-
-            while(adminPortInUse(adminAddresses) != null);
+            while (adminPortInUse(addresses) != null)
+                ;
 
             success = true;
         }

@@ -159,18 +159,7 @@ public class MiniXmlParser {
         return domainName;
     }
 
-    public Set<Integer> getAdminPorts() {
-        if (adminPorts == null || adminPorts.isEmpty()) {
-            String[] listenerNames = getListenerNamesForVS(DEFAULT_ADMIN_VS_ID, vsAttributes);
-            if (listenerNames == null || listenerNames.length == 0) {
-                listenerNames = getListenerNamesForVS(DEFAULT_VS_ID, vsAttributes); //plan B
-            }
-            addPortsForListeners(listenerNames);
-        }
-        return adminPorts;
-    }
-
-    public Set<HostAndPort> getAdminAddresses() {
+    public List<HostAndPort> getAdminAddresses() {
         if (adminAddresses == null || adminAddresses.isEmpty()) {
             String[] listenerNames = getListenerNamesForVS(DEFAULT_ADMIN_VS_ID, vsAttributes);
             if (listenerNames == null || listenerNames.length == 0) {
@@ -746,7 +735,7 @@ public class MiniXmlParser {
     }
 
     private void addPortsForListeners(String[] listenerNames) {
-        // get the port numbers for all the listeners
+        // get the addresses and port numbers for all the listeners
         // normally there is one listener
         if (listenerNames != null && listenerNames.length > 0) {
             for (Map<String, String> atts : listenerAttributes) {
@@ -757,7 +746,7 @@ public class MiniXmlParser {
                 if (id != null) {
                     for (String listenerName : listenerNames) {
                         if (id.equals(listenerName)) {
-                            int port = addPort(atts.get("port"));
+                            int port = getPort(atts.get("port"));
                             if (port >= 0) {
                                 String addr = atts.get("address");
                                 if (!GFLauncherUtils.ok(addr))
@@ -785,11 +774,10 @@ public class MiniXmlParser {
         }
     }
 
-    private int addPort(String portString) {
+    private int getPort(String portString) {
         int port = -1;
         try {
             port = Integer.parseInt(portString);
-            adminPorts.add(port);
         }
         catch (Exception e) {
             // HEY!  Why are you not checking BEFORE the Exception?
@@ -800,7 +788,6 @@ public class MiniXmlParser {
 
                 if (portString != null && portString.length() > 0) {
                     port = Integer.parseInt(portString);
-                    adminPorts.add(port);
                 }
             }
             catch (Exception e2) {
@@ -852,8 +839,7 @@ public class MiniXmlParser {
     private Map<String, String> sysProps = new HashMap<String, String>();
     private Map<String, String> profilerSysProps = new HashMap<String, String>();
     private boolean valid = false;
-    private Set<Integer> adminPorts = new HashSet<Integer>();
-    private Set<HostAndPort> adminAddresses = new HashSet<HostAndPort>();
+    private List<HostAndPort> adminAddresses = new ArrayList<HostAndPort>();
     private String domainName;
     private String logFilename;
     private static final LocalStringsImpl strings = new LocalStringsImpl(MiniXmlParser.class);

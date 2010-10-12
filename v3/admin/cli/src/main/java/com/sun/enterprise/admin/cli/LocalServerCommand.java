@@ -84,45 +84,6 @@ public abstract class LocalServerCommand extends CLICommand {
     /// Section:  protected methods that are notOK to override.
     ////////////////////////////////////////////////////////////////
     /**
-     * Returns the admin port of the local domain. Note that this method should
-     * be called only when you own the domain that is available on accessible
-     * file system.
-     *
-     * @return an integer that represents admin port
-     * @throws CommandException in case of parsing errors
-     */
-    protected final int getAdminPort()
-            throws CommandException {
-        // default:  DAS which always has the name "server"
-        return getAdminPort("server");
-    }
-
-    /**
-     * Returns the admin port of a particular server. Note that this method should
-     * be called only when you own the server that is available on accessible
-     * file system.
-     *
-     * @return an integer that represents admin port
-     * @throws CommandException in case of parsing errors
-     */
-    protected final int getAdminPort(String serverName)
-            throws CommandException {
-
-        try {
-            MiniXmlParser parser = new MiniXmlParser(getDomainXml(), serverName);
-            Set<Integer> portsSet = parser.getAdminPorts();
-
-            if (portsSet.size() > 0)
-                return portsSet.iterator().next();
-            else
-                throw new CommandException("admin port not found");
-        }
-        catch (MiniXmlParserException ex) {
-            throw new CommandException("admin port not found", ex);
-        }
-    }
-
-    /**
      * Returns the admin address of the local domain. Note that this method
      * should be called only when you own the domain that is available on
      * an accessible file system.
@@ -148,10 +109,10 @@ public abstract class LocalServerCommand extends CLICommand {
 
         try {
             MiniXmlParser parser = new MiniXmlParser(getDomainXml(), serverName);
-            Set<HostAndPort> addrSet = parser.getAdminAddresses();
+            List<HostAndPort> addrSet = parser.getAdminAddresses();
 
             if (addrSet.size() > 0)
-                return addrSet.iterator().next();
+                return addrSet.get(0);
             else
                 throw new CommandException("admin address not found");
         } catch (MiniXmlParserException ex) {

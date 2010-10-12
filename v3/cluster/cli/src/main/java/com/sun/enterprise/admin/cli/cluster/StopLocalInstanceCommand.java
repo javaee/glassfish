@@ -48,6 +48,7 @@ import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.*;
+import com.sun.enterprise.util.HostAndPort;
 
 /**
  * Stop a local server instance.
@@ -103,9 +104,9 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
             return instanceNotRunning();
 
         String serverName = getServerDirs().getServerName();
-        int adminPort = getAdminPort(serverName);
-        programOpts.setPort(adminPort);
-        logger.finer("StopInstance.stoppingMessage" + adminPort);
+        HostAndPort addr = getAdminAddress(serverName);
+        programOpts.setHostAndPort(addr);
+        logger.finer("StopInstance.stoppingMessage" + addr.getPort());
 
         /*
          * If we're using the local password, we don't want to prompt

@@ -43,7 +43,6 @@ package com.sun.enterprise.universal.xml;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -300,11 +299,7 @@ public class MiniXmlParserTest {
     public void findTwoAdminPorts() {
         try {
             MiniXmlParser instance = new MiniXmlParser(adminport2, "server");
-            Set<Integer> ports = instance.getAdminPorts();
-            assertEquals(2, ports.size());
-            assertTrue(ports.contains(3333));
-            assertTrue(ports.contains(4444));
-            Set<HostAndPort> addrs = instance.getAdminAddresses();
+            List<HostAndPort> addrs = instance.getAdminAddresses();
             assertEquals(2, addrs.size());
             boolean saw3333 = false, saw4444 = false, sawSecure = false;
             for (HostAndPort addr : addrs) {
@@ -333,21 +328,21 @@ public class MiniXmlParserTest {
     public void findOneAdminPort() {
         try {
             MiniXmlParser instance = new MiniXmlParser(adminport, "server");
-            Set<Integer> ports = instance.getAdminPorts();
-            assertEquals(1, ports.size());
-            assertTrue(ports.contains(3333));
+            List<HostAndPort> addrs = instance.getAdminAddresses();
+            assertEquals(1, addrs.size());
+            assertEquals(3333, addrs.iterator().next().getPort());
 
             // clean v2 domain.xml
             instance = new MiniXmlParser(v2DomainXml, "server");
-            ports = instance.getAdminPorts();
-            assertEquals(1, ports.size());
-            assertTrue(ports.contains(4848));
+            addrs = instance.getAdminAddresses();
+            assertEquals(1, addrs.size());
+            assertEquals(4848, addrs.iterator().next().getPort());
 
             // domain.xml from issue 9127
             instance = new MiniXmlParser(issue9127DomainXml, "server");
-            ports = instance.getAdminPorts();
-            assertEquals(1, ports.size());
-            assertTrue(ports.contains(4848));
+            addrs = instance.getAdminAddresses();
+            assertEquals(1, addrs.size());
+            assertEquals(4848, addrs.iterator().next().getPort());
         }
         catch (MiniXmlParserException ex) {
             Logger.getLogger(MiniXmlParserTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -388,8 +383,8 @@ public class MiniXmlParserTest {
     public void testOldSchema() throws MiniXmlParserException {
         final MiniXmlParser parser = new MiniXmlParser(
             new File(getClass().getClassLoader().getResource("olddomain.xml").getPath()), "server");
-        Set<Integer> ports = parser.getAdminPorts();
-        assertEquals(1, ports.size());
+        List<HostAndPort> addrs = parser.getAdminAddresses();
+        assertEquals(1, addrs.size());
     }
 
     @Test

@@ -168,20 +168,7 @@ public class GFLauncherInfo {
         return instanceName;
     }
 
-    /**
-     * Picks out an admin port and returns it.  Normally there is just one port.
-     * returns -1 in case there are no ports at all.
-	 * It is named getAnAdminPort  instead of GetAdminPort() to make it obvious that 
-	 * there may be more ports and that it is randomly selected.
-     * @return An admin listener port number.
-     */
-    public int getAnAdminPort() {
-        if(adminAddresses != null && adminAddresses.size() > 0)
-            return adminAddresses.iterator().next().getPort();
-        return -1;
-    }
-
-    public Set<HostAndPort> getAdminAddresses() {
+    public List<HostAndPort> getAdminAddresses() {
         return adminAddresses;
     }
     public RuntimeType getType() {
@@ -304,7 +291,7 @@ public class GFLauncherInfo {
     }
 
 
-    void setAdminAddresses(Set<HostAndPort> adminAddresses) {
+    void setAdminAddresses(List<HostAndPort> adminAddresses) {
         this.adminAddresses = adminAddresses;
     }
     void setup() throws GFLauncherException {
@@ -536,7 +523,7 @@ public class GFLauncherInfo {
     private boolean valid = false;
     private Map<String, String> argsMap;
     private ArrayList<String> argsRaw = new ArrayList<String>();
-    private Set<HostAndPort> adminAddresses;
+    private List<HostAndPort> adminAddresses;
     private RespawnInfo respawnInfo;
     // BUG TODO get the def. domains dir from asenv 3/14/2008
     private final static String DEFAULT_DOMAIN_PARENT_DIR = "domains";

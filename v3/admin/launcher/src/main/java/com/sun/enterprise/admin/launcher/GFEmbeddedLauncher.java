@@ -134,10 +134,10 @@ class GFEmbeddedLauncher extends GFLauncher {
             e.printStackTrace();
         }
 
-        Set<HostAndPort> adminAddresses = info.getAdminAddresses();
+        List<HostAndPort> adminAddresses = info.getAdminAddresses();
 
         if (adminAddresses == null || adminAddresses.isEmpty()) {
-            adminAddresses = new HashSet<HostAndPort>();
+            adminAddresses = new ArrayList<HostAndPort>();
             adminAddresses.add(new HostAndPort("localhost", 4848, false));
             info.setAdminAddresses(adminAddresses);
         }
