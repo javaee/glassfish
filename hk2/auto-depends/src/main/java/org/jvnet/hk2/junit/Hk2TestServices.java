@@ -43,7 +43,7 @@ import org.jvnet.hk2.component.HabitatFactory;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantsParserFactory;
 import org.jvnet.hk2.component.classmodel.ClassPathHelper;
-import org.jvnet.hk2.component.classmodel.InhabitantsHabitatFeed;
+import org.jvnet.hk2.component.classmodel.InhabitantsFeed;
 import org.jvnet.hk2.component.classmodel.InhabitantsParsingContextGenerator;
 
 import java.io.*;
@@ -115,8 +115,8 @@ public class Hk2TestServices {
           }
       }
 
-      InhabitantsHabitatFeed feed = InhabitantsHabitatFeed.create(habitat, ip);
-      feed.populateHabitat(ipcgen, habitat.getAllByContract(IntrospectionScanner.class));
+      InhabitantsFeed feed = InhabitantsFeed.create(habitat, ip);
+      feed.populate(ipcgen, habitat.getAllByContract(IntrospectionScanner.class));
 
       if (logger.isLoggable(Level.FINER)) {
         Iterator<String> contracts = habitat.getAllContracts();

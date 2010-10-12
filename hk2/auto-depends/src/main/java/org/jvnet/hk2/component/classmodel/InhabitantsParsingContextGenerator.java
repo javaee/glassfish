@@ -187,6 +187,20 @@ public abstract class InhabitantsParsingContextGenerator {
   }
   
   /**
+   * Add the collection of files to the current InhabitantsGenerator context.
+   * 
+   * @param files
+   *          the files to parse.
+   * @throws IOException 
+   */
+  public void addFileOrDirectory(Collection<File> files) throws IOException {
+    for (File file : files) {
+      addFileOrDirectory(file);
+    }
+  }
+  
+  
+  /**
    * Retrieves the parsing context that can be used for model generation elsewhere.
    * 
    * @return the parsing context given the code sources provided
