@@ -184,6 +184,14 @@
     </modules>
     <profiles>
         <profile>
+            <id>test-packager</id>
+            <modules>
+                <module>extras</module>
+                <module>packager</module>
+            </modules>
+        </profile>
+
+        <profile>
             <!-- this profile is used during the development -->
             <id>default</id>
             <activation>
@@ -363,6 +371,7 @@
                 <module>sun-glassfish</module>
                 <module>sun-glassfish/packager</module>
                 <module>sun-glassfish/distributions</module>
+                <module>javaee-sdk</module>
                 <module>javaee-sdk/packager</module>
                 <module>javaee-sdk/distributions</module>
                 <module>sun-glassfish/installer</module>
@@ -419,6 +428,7 @@
                 <module>sun-glassfish</module>
                 <module>sun-glassfish/packager</module>
                 <module>sun-glassfish/distributions</module>
+                <module>javaee-sdk</module>
                 <module>javaee-sdk/packager</module>
                 <module>javaee-sdk/distributions</module>
                 <module>sun-glassfish/installer</module>
