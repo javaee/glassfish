@@ -135,7 +135,7 @@ public class InhabitantsParser {
                     Inhabitant i = Inhabitants.create(target,habitat,inhabitantParser.getMetaData());
                     add(i, inhabitantParser);
                     // add index so that the new component can be looked up by the name of the old component.
-                    habitat.addIndex(i,typeName,null);
+                    addIndex(i, typeName, null);
                 }
             } else {
                 Set<String> indicies = new HashSet<String>();
@@ -173,13 +173,21 @@ public class InhabitantsParser {
             int idx = v.indexOf(':');
             if(idx==-1) {
                 // no name
-                habitat.addIndex(i,v,null);
+                addIndex(i,v,null);
             } else {
                 // v=contract:name
                 String contract = v.substring(0, idx);
                 String name = v.substring(idx + 1);
-                habitat.addIndex(i, contract, name);
+                addIndex(i, contract, name);
             }
         }
     }
+
+    /**
+     * Adds the given inhabitant index to the habitat
+     */
+    protected void addIndex(Inhabitant<?> i, String typeName, String name) {
+      habitat.addIndex(i, typeName, name);
+    }
+
 }
