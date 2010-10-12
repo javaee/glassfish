@@ -61,10 +61,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -210,7 +207,7 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
         final InjectionResolver<Param> delegate = injector;
         return new InjectionResolver<Param>(Param.class) {
             @Override
-            public <V> V getValue(Object component, Inhabitant<?> onBehalfOf, AnnotatedElement annotated, Class<V> type) throws ComponentException {
+            public <V> V getValue(Object component, Inhabitant<?> onBehalfOf, AnnotatedElement annotated, Type genericType, Class<V> type) throws ComponentException {
                 if (type.isAssignableFrom(List.class)) {
                     final List<ConfigBeanProxy> values;
                     try {
@@ -241,7 +238,7 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                         logger.severe(msg);
                         throw new ComponentException(msg, e);
                     }
-                    Object value = delegate.getValue(component, null, annotated, type);
+                    Object value = delegate.getValue(component, null, annotated, genericType, type);
                     if (value==null) {
                         if (logger.isLoggable(level)) {
                             logger.log(level, "Value of " + annotated.toString() + " is null");
@@ -312,7 +309,7 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                                 }
 
                                 @Override
-                                public <V> V getValue(Object component, Inhabitant<?> onBehalfOf, AnnotatedElement annotated, Class<V> type) throws ComponentException {
+                                public <V> V getValue(Object component, Inhabitant<?> onBehalfOf, AnnotatedElement annotated, Type genericType, Class<V> type) throws ComponentException {
                                     String name = annotated.getAnnotation(Attribute.class).value();
                                     if (name==null || name.length()==0) {
 
@@ -342,7 +339,7 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                     }
                     return null;
                 }
-                return delegate.getValue(component, null, annotated, type);
+                return delegate.getValue(component, null, annotated, genericType, type);
             }
 
             @Override

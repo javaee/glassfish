@@ -88,7 +88,7 @@ public class MapInjectionResolver extends InjectionResolver<Param> {
     }
 
     @Override
-    public <V> V getValue(Object component, Inhabitant<?> onBehalfOf, AnnotatedElement target, Class<V> type) throws ComponentException {
+    public <V> V getValue(Object component, Inhabitant<?> onBehalfOf, AnnotatedElement target, Type genericType, Class<V> type) throws ComponentException {
 	// look for the name in the list of parameters passed.
 	Param param = target.getAnnotation(Param.class);
 	String paramName = CommandModel.getParamName(param, target);

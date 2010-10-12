@@ -49,6 +49,7 @@ import com.sun.enterprise.module.common_impl.LogHelper;
 import java.io.*;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
@@ -1255,7 +1256,7 @@ public class CommandRunnerImpl implements CommandRunner {
         }
 
         @Override
-        public <V> V getValue(Object component, Inhabitant<?> onBehalfOf, AnnotatedElement target, Class<V> type) throws ComponentException {
+        public <V> V getValue(Object component, Inhabitant<?> onBehalfOf, AnnotatedElement target, Type genericType, Class<V> type) throws ComponentException {
 
             // look for the name in the list of parameters passed.
             if (target instanceof Field) {
