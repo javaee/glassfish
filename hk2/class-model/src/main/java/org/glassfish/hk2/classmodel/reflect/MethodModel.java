@@ -57,4 +57,10 @@ public interface MethodModel extends Member, AnnotatedElement {
      * @return the method's return type
      */
     String getReturnType();
+
+    /**
+     * Returns the parameter types as string
+     * @return the parameter types
+     */
+    String[] getArgumentTypes();
 }
