@@ -166,13 +166,17 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
                     return;
                 }
 
-                //delegate to adapter managed by Jersey.
+                //Use double checked locking to lazily initialize adapter
                 if (adapter == null) {
-                    //is the URL contains ?ASM=true, force ASM for now. This is for testing period for now.
-                    boolean useASM = "true".equals(req.getParameter("ASM"));
-                    exposeContext(useASM);
+                    synchronized(com.sun.grizzly.tcp.Adapter.class) {
+                        if(adapter == null) {
+                            exposeContext();  //Initializes adapter
+                        }
+                    }
+
                 }
 
+                //delegate to adapter managed by Jersey.
                 ((GrizzlyAdapter)adapter).service(req, res);
                 int status = res.getStatus();
                 if (status < 200 || status > 299) {
@@ -375,7 +379,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
 
 
-    protected abstract Set<Class<?>> getResourcesConfig(boolean useASM);
+    protected abstract Set<Class<?>> getResourcesConfig();
 
     private String getAcceptedMimeType(GrizzlyRequest req) {
         String type = null;
@@ -424,12 +428,12 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 //    }
 
 
-    private void exposeContext(boolean useASM)
+    private void exposeContext()
             throws EndpointRegistrationException {
         String context = getContextRoot();
         logger.fine("Exposing rest resource context root: " + context);
         if ((context != null) || (!"".equals(context))) {
-            Set<Class<?>> classes = getResourcesConfig(useASM);
+            Set<Class<?>> classes = getResourcesConfig();
             adapter = LazyJerseyInit.exposeContext(classes, sc, habitat);
             ((GrizzlyAdapter) adapter).setResourcesContextPath(context);
             
@@ -466,7 +470,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
         }
     }
 
-    private com.sun.grizzly.tcp.Adapter adapter = null;
+    private volatile com.sun.grizzly.tcp.Adapter adapter = null;
     private boolean isRegistered = false;
     private AdminEndpointDecider epd = null;
 }

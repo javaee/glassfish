@@ -69,18 +69,16 @@ public class RestManagementAdapter extends RestAdapter {
     }
 
     @Override
-    protected Set<Class<?>> getResourcesConfig(boolean useASM) {
+    protected Set<Class<?>> getResourcesConfig() {
 
          Class domainResourceClass =null;//org.glassfish.admin.rest.resources.generated.DomainResource.class;
 
-     //   if (useASM) { //Generate the ASM classes and use the top level one for the DomainResource
-            generateASM();
-            try {
-                domainResourceClass = Class.forName("org.glassfish.admin.rest.resources.generatedASM.DomainResource");
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(RestManagementAdapter.class.getName()).log(Level.SEVERE, null, ex);
-            }
-     //   }
+        generateASM();
+        try {
+            domainResourceClass = Class.forName("org.glassfish.admin.rest.resources.generatedASM.DomainResource");
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(RestManagementAdapter.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         final Set<Class<?>> r = new HashSet<Class<?>>();
 
