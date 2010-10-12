@@ -69,6 +69,7 @@ public class CommandModelImpl extends CommandModel {
     // use a LinkedHashMap so params appears in the order they are declared in the class.
     final private Map<String, CommandModel.ParamModel> params;
     final private String commandName;
+    final private Class<?> commandClass;
     final private ExecuteOn execOn;
     final private I18n i18n;
     final private boolean dashOk;
@@ -78,6 +79,7 @@ public class CommandModelImpl extends CommandModel {
 
         Service service = commandType.getAnnotation(Service.class);
         commandName = service != null ? service.name() : null;
+        commandClass = commandType;
         i18n = commandType.getAnnotation(I18n.class);
         execOn = commandType.getAnnotation(ExecuteOn.class);
         localStrings = new LocalStringManagerImpl(commandType);
@@ -148,6 +150,11 @@ public class CommandModelImpl extends CommandModel {
 
     public Collection<String> getParametersNames() {
         return params.keySet();
+    }
+
+    @Override
+    public Class<?> getCommandClass() {
+        return commandClass;
     }
 
     @Override

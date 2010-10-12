@@ -104,6 +104,11 @@ public class CommandModelData extends CommandModel {
     }
 
     @Override
+    public Class getCommandClass() {
+        return null;
+    }
+
+    @Override
     public ExecuteOn getClusteringAttributes() {
         return null;
     }

@@ -98,6 +98,18 @@ public abstract class CommandModel {
     public abstract Collection<String> getParametersNames();
 
     /**
+     * Return the class that defines the command.  Normally this will be
+     * the class that provides the implementation of the command, but for
+     * generic CRUD commands it might be the config class that defines the
+     * command.  The command class is used to locate resources related to
+     * the command, e.g., the command's man page.  If the command model
+     * isn't associated with a command class, null is returned.
+     *
+     * @return the command class, or null if none
+     */
+    public abstract Class<?> getCommandClass();
+
+    /**
      * Return the cluster parameters for this command  or null if none are
      * specified and defaults should be used.
      *

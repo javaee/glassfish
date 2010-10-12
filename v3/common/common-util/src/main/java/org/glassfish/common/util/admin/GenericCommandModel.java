@@ -60,6 +60,7 @@ public class GenericCommandModel extends CommandModel {
 
     final HashMap<String, ParamModel> params = new HashMap<String, ParamModel>();
     final String commandName;
+    final Class<?> commandClass;
     final ExecuteOn cluster;
     final I18n i18n;
     final LocalStringManager localStrings;
@@ -72,6 +73,7 @@ public class GenericCommandModel extends CommandModel {
                                String commandName,
                                Class<?>... extraTypes) {
         this.commandName = commandName;
+        this.commandClass = targetType;
         this.cluster = cluster;
         this.i18n = i18n;
         this.localStrings = localStrings;
@@ -132,6 +134,11 @@ public class GenericCommandModel extends CommandModel {
 
     public Collection<String> getParametersNames() {
         return params.keySet();
+    }
+
+    @Override
+    public Class<?> getCommandClass() {
+        return commandClass;
     }
 
     @Override

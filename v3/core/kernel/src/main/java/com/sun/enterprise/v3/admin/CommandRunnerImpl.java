@@ -613,10 +613,13 @@ public class CommandRunnerImpl implements CommandRunner {
 	    return "STRING";
     }
 
-    public InputStream getManPage(String commandName, AdminCommand command) {
-        // bnevins -- too bad there is no AdminCommand baseclass.  We could make it
-        // do the work but, alas, there is no such thing.
-        Class clazz = command.getClass();
+    /**
+     * Return an InputStream for the man page for the named command.
+     */
+    public static InputStream getManPage(String commandName, CommandModel model) {
+        Class clazz = model.getCommandClass();
+        if (clazz == null)
+            return null;
         Package pkg = clazz.getPackage();
         String manPage = pkg.getName().replace('.', '/');
         manPage += "/" + commandName + ".1";
@@ -847,7 +850,7 @@ public class CommandRunnerImpl implements CommandRunner {
             }
 
             if (isSet(parameters, "help") || isSet(parameters, "Xhelp")) {
-                InputStream in = getManPage(model.getCommandName(), command);
+                InputStream in = getManPage(model.getCommandName(), model);
                 String manPage = encodeManPage(in);
 
                 if (manPage != null && isSet(parameters, "help")) {
