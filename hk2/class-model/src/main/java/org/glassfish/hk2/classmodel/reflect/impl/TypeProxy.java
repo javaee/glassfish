@@ -62,6 +62,11 @@ public class TypeProxy<T extends Type> {
         fieldRefs = Collections.synchronizedSet(new HashSet<Member>());
         subTypeRefs = Collections.synchronizedSet(new HashSet<Type>());
     }
+    
+    @Override
+    public String toString() {
+      return "TypeProxy:" + name;
+    }
 
     public void set(T  value) {
         this.value = value;
