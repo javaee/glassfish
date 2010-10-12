@@ -72,9 +72,10 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
     /*
      * puts current in the first non empty iterator.
      */
+    @SuppressWarnings("unchecked")
     private void fetch() {
         if (!inhabitantAnnotations.hasNext()) {
-            current = (new ArrayList<AnnotatedElement>()).iterator();
+            current = Collections.EMPTY_LIST.iterator();
             return;
         }
         do {
