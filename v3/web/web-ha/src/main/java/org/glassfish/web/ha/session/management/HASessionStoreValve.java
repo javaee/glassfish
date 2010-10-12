@@ -94,8 +94,8 @@ public class HASessionStoreValve extends ValveBase {
         StandardContext  context;
 
 
-        //HttpSession session = httpServletrequest.getSession(false);
-        Session session = request.getSessionInternal(false);
+        HttpServletRequest httpServletrequest = (HttpServletRequest)request.getRequest();
+        HttpSession session = httpServletrequest.getSession(false);
         if (session != null) {
             sessionId = session.getId();
       
@@ -105,7 +105,7 @@ public class HASessionStoreValve extends ValveBase {
 
 
                 String oldJreplicaValue = null;
-                HttpServletRequest httpServletrequest = (HttpServletRequest)request.getRequest();
+
                 Cookie[] cookies = httpServletrequest.getCookies();
                 for (Cookie cookie: cookies) {
                     if (cookie.getName().equalsIgnoreCase("jreplica")) {
@@ -113,7 +113,7 @@ public class HASessionStoreValve extends ValveBase {
                     }
                 }
                 String replica = manager.getReplicaFromPredictor(sessionId, oldJreplicaValue);
-                httpServletrequest.setAttribute("jreplicaLocation", replica);
+                httpServletrequest.getSession(false).setAttribute("jreplicaLocation", replica);
             }
         }
 

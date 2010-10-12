@@ -46,6 +46,8 @@
 
 package org.glassfish.web.ha.session.management;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import java.io.IOException;
@@ -68,11 +70,6 @@ public abstract class BaseHASession extends StandardSession
 
     protected String userName="";
     protected boolean persistentFlag = false;
-//    private transient HttpSessionExtraParams extraParams;
-//    private transient String previousOwnerInstanceName;
-//    private transient String currentOwnerInstanceName;
-    private transient AtomicBoolean isSuspect 
-        = new AtomicBoolean(false);
 
     /** Creates a new instance of BaseHASession */
     public BaseHASession(Manager manager) {
@@ -86,14 +83,14 @@ public abstract class BaseHASession extends StandardSession
      */
     public void setId(String id) {
         super.setId(id);
-        
+
+        // Set the jreplica value for the first request here when the session is created - after that it is done in the valve
+        ReplicationManagerBase manager = (ReplicationManagerBase)(getManager());
+        String jReplicaValue = manager.getReplicaFromPredictor(id, null);
+        setAttribute("jreplicaLocation", jReplicaValue);
+
     } 
 
-    /**
-     * Gets the name of the instance.that previously owned this HttpSession.
-     *
-     * @return The name of the instance that previously owned this HttpSession
-     */
 
     /**
      * always return true for isDirty()
@@ -197,13 +194,6 @@ public abstract class BaseHASession extends StandardSession
 
         // Deserialize the scalar instance variables (except Manager)
         userName = (String) stream.readObject();
-/*
-        previousOwnerInstanceName = (String) stream.readObject();
-        currentOwnerInstanceName = ReplicationUtil.getInstanceName();
-
-        extraParams = new HttpSessionExtraParams(this);
-*/        
-        isSuspect = new AtomicBoolean(false);
     }    
     
     /**
@@ -236,24 +226,6 @@ public abstract class BaseHASession extends StandardSession
      */
     public String superToString() {
 
-        // STARTS S1AS
-        /*
-        StringBuffer sb = new StringBuffer();
-        sb.append("StandardSession[");
-        sb.append(id);
-        sb.append("]");
-        return (sb.toString());
-        */
-        // END S1AS
-        // START S1AS
-/*
-        StringBuffer sb = null;
-        if(!this.isValid) {
-            sb = new StringBuffer();
-        } else {
-            sb = new StringBuffer(1000);
-        }
-*/
         StringBuffer sb = new StringBuffer(1000);
         sb.append("BaseHASession[");
         sb.append(id);

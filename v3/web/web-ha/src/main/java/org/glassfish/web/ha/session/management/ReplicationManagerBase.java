@@ -40,12 +40,15 @@
 
 package org.glassfish.web.ha.session.management;
 
+import com.sun.logging.LogDomains;
 import org.apache.catalina.Session;
 import org.apache.catalina.session.PersistentManagerBase;
 import org.glassfish.ha.store.api.BackingStore;
+import org.glassfish.ha.store.api.BackingStoreException;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 /**
  * @author Rajiv Mordani
@@ -56,6 +59,8 @@ public abstract class ReplicationManagerBase extends PersistentManagerBase {
     protected SessionFactory sessionFactory;
 
     protected static final String name = "ReplicationManagerBase";
+
+    protected Logger logger = LogDomains.getLogger(ReplicationManagerBase.class, LogDomains.WEB_LOGGER);
 
     public BackingStore getBackingStore() {
         return this.backingStore;
@@ -82,7 +87,11 @@ public abstract class ReplicationManagerBase extends PersistentManagerBase {
     }
 
     public void doRemove(String id) {
-        
+        try {
+            backingStore.remove(id);
+        } catch (BackingStoreException e) {
+            logger.warning("Failed to remove session from backing store");
+        }
     }
 
     public boolean isSessionVersioningSupported() {
@@ -90,4 +99,6 @@ public abstract class ReplicationManagerBase extends PersistentManagerBase {
     }
 
     public abstract void doValveSave(Session session);
+
+    public abstract String getReplicaFromPredictor(String sessionId, String oldJreplicaValue); 
 }

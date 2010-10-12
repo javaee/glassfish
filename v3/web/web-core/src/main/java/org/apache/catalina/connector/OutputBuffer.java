@@ -67,6 +67,7 @@ import org.apache.catalina.Session;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.util.RequestUtil;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Writer;
 import java.security.AccessController;
@@ -729,19 +730,21 @@ public class OutputBuffer extends Writer
      * Adds JSESSIONID cookie whose value includes jvmRoute if necessary.
      */
     private void addSessionCookieWithJReplica(Request request, StandardContext ctx) {
-        String replicaLocation = (String)request.getAttribute("jreplicaLocation");
+        String replicaLocation = null;
+
+
+
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            replicaLocation = (String)session.getAttribute("jreplicaLocation");
+        }
 
         if (replicaLocation != null) {
+            session.removeAttribute("jreplicaLocation");
             Cookie cookie = new Cookie(
                 "JREPLICA", replicaLocation);
             request.configureSessionCookie(cookie);
             if (request.isRequestedSessionIdFromCookie()) {
-                /*
-                 * Have the JSESSIONIDVERSION cookie inherit the
-                 * security setting of the JSESSIONID cookie to avoid
-                 * session loss when switching from HTTPS to HTTP,
-                 * see IT 7414
-                 */
                 cookie.setSecure(
                     request.isRequestedSessionIdFromSecureCookie());
             }
