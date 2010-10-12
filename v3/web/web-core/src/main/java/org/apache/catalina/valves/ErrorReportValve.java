@@ -74,6 +74,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.Locale;
 
 /**
@@ -177,6 +178,11 @@ public class ErrorReportValve
             String responseCharEnc = sresp.getCharacterEncoding();
             // END PWC 6254469
 
+            HttpServletResponse sresponse = (HttpServletResponse) response;
+            // START IT 13858
+            Collection<String> cookieHeaders = sresponse.getHeaders("Set-Cookie");
+            // END IT 13858
+
             // Reset the response (if possible)
             try {
                 sresp.reset();
@@ -198,15 +204,19 @@ public class ErrorReportValve
             }
             // END PWC 6254469
 
-            ServletResponse sresponse = (ServletResponse) response;
+            // START IT 13858
+            for (String cookieHeader : cookieHeaders) {
+                sresponse.addHeader("Set-Cookie", cookieHeader);
+            }
+            // END IT 13858
+
             /* GlassFish 6386229
             if (sresponse instanceof HttpServletResponse)
                 ((HttpServletResponse) sresponse).sendError
                     (HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             */
             // START GlassFish 6386229
-            ((HttpServletResponse) sresponse).sendError
-                (HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            sresponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             // END GlassFish 6386229
         }
 
