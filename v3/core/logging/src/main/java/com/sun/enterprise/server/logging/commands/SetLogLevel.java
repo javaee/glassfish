@@ -126,7 +126,7 @@ public class SetLogLevel implements AdminCommand {
                         m.put(logger_name + ".level", level);
                         vlvl = true;
                         successMsg += localStrings.getLocalString(
-                                "set.log.level.properties", logger_name + " package set with log level " + level + ".\n");
+                                "set.log.level.properties", "{0} package set with log level {1}.\n", logger_name, level);
                     }
                 }
                 if (!vlvl) {
@@ -168,8 +168,8 @@ public class SetLogLevel implements AdminCommand {
 
                     if (targetServer != null && targetServer.isInstance()) {
                         clusterName = targetServer.getCluster().getName();
-                        msg = localStrings.getLocalString("invalid.target.sys.props",
-                                "Instance {0} is part of the Cluster so valid target value is '" + clusterName + "'.", target);
+                        msg = localStrings.getLocalString("invalid.target.sys.props1",
+                                "Instance {0} is part of the Cluster so valid target value is {1}.", target,clusterName);
                     }
 
                     report.setMessage(msg);
@@ -178,7 +178,7 @@ public class SetLogLevel implements AdminCommand {
 
                 if (success) {
                     successMsg += localStrings.getLocalString(
-                            "set.log.level.success", "These logging levels are set for " + target + ".");
+                            "set.log.level.success", "These logging levels are set for {0}.",target);
                     report.setMessage(successMsg);
                     report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
                 }
@@ -186,7 +186,7 @@ public class SetLogLevel implements AdminCommand {
 
         } catch (IOException e) {
             report.setMessage(localStrings.getLocalString("set.log.level.failed",
-                    "Could not set logger levels for " + target + "."));
+                    "Could not set logger levels for {0}.",target));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
         }
     }
