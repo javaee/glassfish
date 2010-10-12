@@ -43,6 +43,7 @@ import org.jvnet.hk2.component.MultiMap;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -55,10 +56,12 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
     final Iterator<AnnotatedElement> inhabitantAnnotations;
     Iterator<AnnotatedElement> current;
 
+    @SuppressWarnings("unchecked")
     public InhabitantIntrospectionScanner(ParsingContext context) {
-        AnnotationType am = context.getTypes().getBy(AnnotationType.class, InhabitantAnnotation.class.getName());
+        Types types = context.getTypes();
+        AnnotationType am = types.getBy(AnnotationType.class, InhabitantAnnotation.class.getName());
         if (am==null) {                                  
-            inhabitantAnnotations = (new ArrayList<AnnotatedElement>()).iterator();
+            inhabitantAnnotations = Collections.EMPTY_LIST.iterator();
         } else {
             Collection<AnnotatedElement> ccc = am.allAnnotatedTypes();
             inhabitantAnnotations = ccc.iterator();

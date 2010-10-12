@@ -51,16 +51,17 @@ import com.sun.hk2.component.InhabitantsScanner;
 import com.sun.hk2.component.IntrospectionScanner;
 
 /**
- * Responsible for feeding inhabitants into a habitat.
+ * Responsible for feeding inhabitants into a habitat, thru the 
+ * provided {@link InhabitantsParser}.
  *  
  * @author Jerome Dochez
  * @author Jeff Trent
  *
  * @since 3.1
  */
-public abstract class InhabitantsHabitatFeed {
+public abstract class InhabitantsFeed {
 
-  private final Logger logger = Logger.getLogger(InhabitantsHabitatFeed.class.getName());
+  private final Logger logger = Logger.getLogger(InhabitantsFeed.class.getName());
   
   private final InhabitantsParser ip; 
   
@@ -70,15 +71,15 @@ public abstract class InhabitantsHabitatFeed {
    * Creates an InhabitantsHabitatFeed.
    * 
    * @param h reserved for future use
-   * @param ip the inhabitants parser sync
+   * @param ip the inhabitants parser sync target
    * 
    * @return the InhabitantsHabitatFeed
    */
-  public static InhabitantsHabitatFeed create(Habitat h, InhabitantsParser ip) {
-    return new InhabitantsHabitatFeed(ip) {};
+  public static InhabitantsFeed create(Habitat h, InhabitantsParser ip) {
+    return new InhabitantsFeed(ip) {};
   }
   
-  protected InhabitantsHabitatFeed(InhabitantsParser ip) {
+  protected InhabitantsFeed(InhabitantsParser ip) {
     this.ip = ip;
     setClassLoaderContext(getClass().getClassLoader());
   }
@@ -87,12 +88,11 @@ public abstract class InhabitantsHabitatFeed {
     classLoaderHolder = new Holder.Impl<ClassLoader>(cl);
   }
 
-  public void populateHabitat(InhabitantsParsingContextGenerator ipcgen,
+  public void populate(InhabitantsParsingContextGenerator ipcgen,
       Collection<IntrospectionScanner> supplementalScanners) {
     logger.log(Level.FINER, "Starting to introspect");
     ParsingContext context = ipcgen.getContext();
-    InhabitantIntrospectionScanner is = new InhabitantIntrospectionScanner(
-        context);
+    InhabitantIntrospectionScanner is = new InhabitantIntrospectionScanner(context);
     try {
       ip.parse(is, classLoaderHolder);
     } catch (IOException e) {
