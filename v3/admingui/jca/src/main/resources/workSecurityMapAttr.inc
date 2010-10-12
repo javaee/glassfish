@@ -42,6 +42,7 @@
 
 <!-- jca/workSecurityMapAttr.inc -->
 
+#include "/common/applications/applicationHandlers.inc"
 <!-- PropertySheet .... -->
 <sun:propertySheet id="propertySheet">
     <sun:propertySheetSection id="propertSectionTextField">
@@ -95,8 +96,9 @@
         <sun:property id="resAdaptorProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}" helpText="$resource{i18njca.adminObjectResource.resourceAdapterHelp}">
             <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['raname']}" labels="$pageSession{connectorList}"  >
                 <!beforeCreate
-                     //REST - TO DO
-                     getApplicationBySnifferType(type="connector"  result="#{pageSession.connectorList}")
+                     setPageSessionAttribute(key="snifferType" value="connector");                     
+                     gf.getApplicationsBySnifferType();
+                     setPageSessionAttribute(key="connectorList" value="#{pageSession.snifferTypeApplicationsList}");
                      listAdd(list="#{pageSession.connectorList}" value="jmsra")
                 />
            </sun:dropDown>

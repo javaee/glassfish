@@ -43,7 +43,7 @@
 <!-- jca/resourceAdapterConfigAttr.inc -->
 <!-- used by resourceAdapterConfigNew.jsf and resourceAdapterConfigEdit.jsf -->
    
-
+#include "/common/applications/applicationHandlers.inc"
 <sun:propertySheet id="propertySheet">
     <!-- Text Field section -->
     <sun:propertySheetSection id="propertSectionTextField">
@@ -55,8 +55,9 @@
             <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['name']}" labels="$pageSession{connectorList}"
                     required="#{true}" submitForm="#{true}" immediate="#{true}" >
                 <!beforeCreate
-                     //REST - TO DO
-                     getApplicationBySnifferType(type="connector"  result="#{pageSession.connectorList}")
+                     setPageSessionAttribute(key="snifferType" value="connector");
+                     gf.getApplicationsBySnifferType();
+                     setPageSessionAttribute(key="connectorList" value="#{pageSession.snifferTypeApplicationsList}");
                      listAdd(list="#{pageSession.connectorList}" value="jmsra" index="$int{0}")
                 />
                 <!command

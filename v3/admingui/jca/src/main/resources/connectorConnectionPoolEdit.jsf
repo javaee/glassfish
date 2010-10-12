@@ -66,14 +66,7 @@
         setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
         setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
-        //REST-TO DO
-        getApplicationBySnifferType(type="connector"  result="#{requestScope.rarList}");
-        //Add SystemConnectors
-        gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-system-rars-allowing-pool-creation"
-                       method="GET"
-                       result="#{requestScope.result}");
-        setPageSessionAttribute(key="modList" value="#{requestScope.result.data.extraProperties.rarList}");
-        gf.listCombine(list="#{pageSession.modList}" list2="#{requestScope.rarList}");
+
         //To get the connection definitions for RA
         if (!#{resAdapterChoosen}) {
             setAttribute(key="resAdapterName" value="#{pageSession.valueMap.resourceAdapterName}");
@@ -88,17 +81,28 @@
                            attrs="#{requestScope.connDefAttrs}"
                            method="GET"
                            result="#{requestScope.result}");
-            setPageSessionAttribute(key="cdList" value="#{requestScope.result.data.extraProperties.defnNames}");            
+            setPageSessionAttribute(key="cdList" value="#{requestScope.result.data.extraProperties.defnNames}");
         }
     />
 </event>
 <sun:form id="propertyForm">
+#include "/common/applications/applicationHandlers.inc"
 #include "/jca/connectorConnectionPoolTabs.inc"    
 #include "/common/shared/alertMsg.inc"
     
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18njca.connectorConnectionPool.editPageTitle}" helpText="$resource{i18njca.connectorConnectionPool.editPageTitleHelp}" >
-
+    <!beforeCreate
+        setPageSessionAttribute(key="snifferType" value="connector");
+        gf.getApplicationsBySnifferType();
+        setAttribute(key="rarList" value="#{pageSession.snifferTypeApplicationsList}");
+        //Add SystemConnectors
+        gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-system-rars-allowing-pool-creation"
+                       method="GET"
+                       result="#{requestScope.result}");
+        setPageSessionAttribute(key="modList" value="#{requestScope.result.data.extraProperties.rarList}");
+        gf.listCombine(list="#{pageSession.modList}" list2="#{requestScope.rarList}");
+    />
     <!facet pageButtonsTop>
     <sun:panelGroup id="topButtons">
         <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
@@ -161,9 +165,9 @@
     </sun:button>
 
     </sun:title>
-    
+
 #include "/jca/connectorConnectionPoolAttrEdit.inc"
-    
+
     <sun:hidden id="helpKey" value="$resource{help_jca.connectorConnectionPoolEdit}" />
 </sun:form>
             "<br/>

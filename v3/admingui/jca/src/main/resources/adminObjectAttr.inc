@@ -43,7 +43,7 @@
 <!-- jca/adminObjectAttr.inc -->
 <!-- used by adminObjectNew.jsf and adminObjectEdit.jsf -->
    
-
+#include "/common/applications/applicationHandlers.inc"
 <sun:propertySheet id="propertySheet">
     <!-- Text Field section -->
     <sun:propertySheetSection id="propertSectionTextField">
@@ -67,7 +67,9 @@
         <sun:property id="resAdaptorProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}" helpText="$resource{i18njca.adminObjectResource.resourceAdapterHelp}">
             <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['resAdapter']}" labels="$pageSession{connectorList}"  values="$pageSession{connectorList}" required="#{true}" submitForm="#{true}" immediate="#{true}">
                 <!beforeCreate
-                     getApplicationBySnifferType(type="connector"  result="#{pageSession.connectorList}")
+                     setPageSessionAttribute(key="snifferType" value="connector");
+                     gf.getApplicationsBySnifferType();
+                     setPageSessionAttribute(key="connectorList" value="#{pageSession.snifferTypeApplicationsList}");
                      listAdd(list="#{pageSession.connectorList}" value="jmsra")
                 />
                 <!afterCreate

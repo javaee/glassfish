@@ -61,39 +61,11 @@
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getDefaultValues(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", valueMap="#{pageSession.tmpMap}");
-
-        //REST - TO DO
-        getApplicationBySnifferType(type="connector" result="#{requestScope.tmpList}")
-        filterOutRarExtension(inList="#{requestScope.tmpList}" convertedList="#{requestScope.rarList}")
-
-        //Add SystemConnectors
-        gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-system-rars-allowing-pool-creation"
-                       method="GET", result="#{requestScope.result}");
-        setAttribute(key="modList" value="#{requestScope.result.data.extraProperties.rarList}");
-        gf.listCombine(list="#{requestScope.modList}" list2="#{requestScope.rarList}");
-        addEmptyFirstElement(in="$attribute{modList}"  out="#{pageSession.modules}")
-        gf.getConnectorConnectionPoolWizard(
-                fromStep1="$attribute{fromStep1}"
-                fromStep2="$attribute{fromStep2}"
-                poolName="$attribute{poolName}"
-                attrMap="#{pageSession.tmpMap}"
-                resAdapter="$attribute{resAdapterChoosen}" 
-                resultAdapter=>$attribute{resultAdapter} )
-                //To get the connection definitions
-        if("#{resultAdapter}") {
-            gf.createAttributeMap(keys={"rarName"} values={"$attribute{resultAdapter}"} map="#{requestScope.connDefAttrs}");
-            gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-connection-definition-names"
-                           attrs="#{requestScope.connDefAttrs}"
-                           method="GET"
-                           result="#{requestScope.result}");
-            setAttribute(key="connectionDefinitions" value="#{requestScope.result.data.extraProperties.defnNames}");            
-        }
-        
     />
-      
     />
     </event>
             <sun:form id="propertyForm">
+#include "/common/applications/applicationHandlers.inc"
 #include "/common/shared/alertMsg.inc"
 
                 <!-- Page Title -->
@@ -137,8 +109,37 @@
                     </facet>                     
                 </sun:title>
                     <!-- PropertySheet .... -->
-                    <sun:propertySheet id="propertySheet">			 
+                    <sun:propertySheet id="propertySheet">
                         <sun:propertySheetSection id="generalPropertySheet" >
+                            <!beforeCreate
+                                setPageSessionAttribute(key="snifferType" value="connector");
+                                gf.getApplicationsBySnifferType();
+                                setAttribute(key="tmpList" value="#{pageSession.snifferTypeApplicationsList}");
+                                filterOutRarExtension(inList="#{requestScope.tmpList}" convertedList="#{requestScope.rarList}")
+
+                                //Add SystemConnectors
+                                gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-system-rars-allowing-pool-creation"
+                                               method="GET", result="#{requestScope.result}");
+                                setAttribute(key="modList" value="#{requestScope.result.data.extraProperties.rarList}");
+                                gf.listCombine(list="#{requestScope.modList}" list2="#{requestScope.rarList}");
+                                addEmptyFirstElement(in="$attribute{modList}"  out="#{pageSession.modules}")
+                                gf.getConnectorConnectionPoolWizard(
+                                        fromStep1="$attribute{fromStep1}"
+                                        fromStep2="$attribute{fromStep2}"
+                                        poolName="$attribute{poolName}"
+                                        attrMap="#{pageSession.tmpMap}"
+                                        resAdapter="$attribute{resAdapterChoosen}"
+                                        resultAdapter=>$attribute{resultAdapter} )
+                                        //To get the connection definitions
+                                if("#{resultAdapter}") {
+                                    gf.createAttributeMap(keys={"rarName"} values={"$attribute{resultAdapter}"} map="#{requestScope.connDefAttrs}");
+                                    gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-connection-definition-names"
+                                                   attrs="#{requestScope.connDefAttrs}"
+                                                   method="GET"
+                                                   result="#{requestScope.result}");
+                                    setAttribute(key="connectionDefinitions" value="#{requestScope.result.data.extraProperties.defnNames}");
+                                }
+                            />
                             <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.poolName}" helpText="$resource{i18n.common.jndiNameHelp}">
                                 <sun:textField id="name" styleClass="required" columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.poolName']}" text="#{wizardPoolExtra.name}" required="#{true}" >
                                 <!afterCreate
@@ -167,7 +168,7 @@
                         </sun:propertySheetSection>
                     </sun:propertySheet> 
 
-	<sun:hidden id="helpKey" value="$resource{help_jca.connectorConnectionPoolNew1}" />
+<sun:hidden id="helpKey" value="$resource{help_jca.connectorConnectionPoolNew1}" />
             </sun:form>
                         "<br/>
 #include "/common/shared/changeButtonsJS.inc" 
