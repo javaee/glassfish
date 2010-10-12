@@ -109,7 +109,7 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
     @Override
     protected void validate()
             throws CommandException {
-        
+        echoCommand();
         if (configName != null && clusterName != null) {
             throw new CommandException(
                     Strings.get("ConfigClusterConflict"));
@@ -496,6 +496,13 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
             return false;
         } else {
             return true;
+        }
+    }
+
+    private void echoCommand() {
+        if (this.programOpts.isEcho()) {
+            logger.info(this.toString());
+            programOpts.setEcho(false); // only echo this command
         }
     }
 }
