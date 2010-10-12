@@ -89,7 +89,7 @@ public class EmbeddedNonOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
             // Why do we need this here ?
             String instanceRoot =bsOptions.getAllOptions().getProperty(GlassFishConstants.INSTANCE_ROOT_PROP_NAME);            
             try {
-                //ASMainHelper.verifyDomainRoot(new File(instanceRoot));
+                ASMainHelper.verifyDomainRoot(new File(instanceRoot));
                 // instanceRoot is valid, let us check if installRoot is valid.
                 if (!isValidInstallRoot(installRoot)) {
                     // installRoot is not pointing to existing installation, so we handle.                  
