@@ -98,6 +98,7 @@
   <path id="v3.src.path">
     <dirset dir="${basedir}">
       <include name="external/hk2/**"/>
+      <include name="external/org.osgi.core/**"/>
       <include name="common/glassfish-api/src/main/java/**"/>
       <include name="common/amx-core/src/main/java/**"/>
       <include name="common/amx-config/src/main/java/**"/>
@@ -168,7 +169,8 @@
       <antcall target="uel.download" />
       <antcall target="bean-validator.download" />
       <antcall target="weld-osgi-bundle.download" />
-      <antcall target="hk2.download" />
+      <antcall target="hk2.svn.checkout" />
+      <antcall target="org.osgi.core-svn.checkout" />
       <antcall target="flashlight.download" />
   </target>
 
@@ -510,8 +512,41 @@ fileset refid of artifact:dependencies does not work in unjar
               <include name="**/*.jar"/>
           </fileset>
       </unjar>
+      <!-- remove javax.annoation sources since it's bundled in the weld-osgi-bundle sources -->
+      <!-- and we don't want to use this class to generate the javadoc.                      -->
+      <delete dir="${external.dir}/weld-osgi-bundle/javax/annotation" />
   </target>
 
+  <target name="hk2.svn.checkout" description="Checkout hk2 sources" >
+      <echo message="checkout hk2 from ${hk2.svn.url}."/>
+      <!-- checkout hk2 source -->
+      <exec executable="svn" dir="${external.dir}" failonerror="true" >
+	  <arg line="checkout" />
+          <arg line="${hk2.svn.url}" />
+          <arg line="--username" />
+          <arg line="guest" />
+          <arg line="hk2" />
+	</exec>
+  </target>
+
+  <!-- need to checkout org.osgi.core sources since there are some annotation tags from hk2   -->
+  <!-- referencing classes in org.osgi.core.  Without this, the javadoc an ClassCastException --> 
+  <!-- is thrown.  see:  http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6442982           -->
+  <!-- the workaround is either adding the jar or sources in the classpath.                   -->
+  <target name="org.osgi.core-svn.checkout" description="Checkout org.osgi.core  sources" >
+      <echo message="checkout hk2 from ${org.osgi.core-svn.url}."/>
+      <!-- checkout hk2 source -->
+      <exec executable="svn" dir="${external.dir}" failonerror="true" >
+	  <arg line="checkout" />
+          <arg line="${org.osgi.core-svn.url}" />
+          <arg line="--username" />
+          <arg line="guest" />
+          <arg line="org.osgi.core" />
+	</exec>
+  </target>
+
+
+  <!-- cannot use hk2 maven artifact since some of the sources are not published to maven repo -->
   <target name="hk2.download" description="Download hk2" depends="initialize.maven" >
       <artifact:dependencies sourcesFilesetId="sources.dependency.hk2" >
           <dependency groupId="com.sun.enterprise" artifactId="hk2" version="1.0.47" classifier="sources" />
@@ -606,7 +641,7 @@ fileset refid of artifact:dependencies does not work in unjar
        <group title="GlassFish specific, Non-platform Packages"
           packages="com.sun.*:org.jvnet.*:org.glassfish.*"/>
        <link href="http://java.sun.com/javase/6/docs/api/"/>
-
+       <sourcepath refid="v3.src.path"/>
 
        <!--
        -->
@@ -645,7 +680,8 @@ fileset refid of artifact:dependencies does not work in unjar
        <excludepackage name="com.sun.appserv.connectors.internal.*"/>
        <excludepackage name="com.sun.enterprise.module.common_impl.*"/>
        <excludepackage name="com.sun.enterprise.module.impl.*"/>
-       <sourcepath refid="v3.src.path"/>
+       <excludepackage name="org.osgi.*"/>
+
     </javadoc>
   </target>
 
