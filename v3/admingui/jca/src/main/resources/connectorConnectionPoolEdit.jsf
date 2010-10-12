@@ -102,6 +102,7 @@
                        result="#{requestScope.result}");
         setPageSessionAttribute(key="modList" value="#{requestScope.result.data.extraProperties.rarList}");
         gf.listCombine(list="#{pageSession.modList}" list2="#{requestScope.rarList}");
+        filterOutRarExtension(inList="#{pageSession.modList}" convertedList="#{pageSession.modList}");
     />
     <!facet pageButtonsTop>
     <sun:panelGroup id="topButtons">
