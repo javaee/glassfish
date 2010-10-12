@@ -36,6 +36,8 @@
  */
 package com.sun.enterprise.tools.apt;
 
+import com.sun.enterprise.tools.InhabitantsDescriptor;
+import com.sun.enterprise.tools.Messager;
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 
 import java.util.Map;
@@ -86,13 +88,21 @@ final class DescriptorList {
         }
     }
 
-    public void write(AnnotationProcessorEnvironment env) {
+    public void write(final AnnotationProcessorEnvironment env) {
         String outDirectory = env.getOptions().get("-d");
         if (outDirectory==null) outDirectory = env.getOptions().get("-s");
         if(outDirectory==null)  outDirectory = System.getProperty("user.home");
 
+        Messager messager = new Messager() {
+          @Override
+          public void printError(String msg, Exception e) {
+            e.printStackTrace();
+            env.getMessager().printError(msg);
+          }
+        };
+        
         for (Entry<String, InhabitantsDescriptor> e : descriptors.entrySet()) {
-            e.getValue().write(new File(outDirectory),env,e.getKey());
+            e.getValue().write(new File(outDirectory), messager, e.getKey());
         }
     }
 

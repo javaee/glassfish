@@ -34,73 +34,109 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.tools.apt;
+package com.sun.enterprise.tools;
+
+import static com.sun.hk2.component.InhabitantsFile.INDEX_KEY;
 
 import com.sun.hk2.component.InhabitantParser;
 import com.sun.hk2.component.InhabitantsFile;
 import com.sun.hk2.component.InhabitantsScanner;
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Inhabitants descriptor as a map from the class name to its line.
- *
+ * 
  * @author Kohsuke Kawaguchi
+ * @author Jeff Trent
  */
-final class InhabitantsDescriptor extends HashMap<String,String> {
-    private boolean dirty = false;
-    public InhabitantsDescriptor() {
+public class InhabitantsDescriptor extends HashMap<String, String> {
+  private boolean dirty = false;
+
+  public InhabitantsDescriptor() {
+  }
+
+  public InhabitantsDescriptor(File f) throws IOException {
+    load(f);
+  }
+
+  /**
+   * Loads an existing file.
+   */
+  public void load(File f) throws IOException {
+    InhabitantsScanner scanner = new InhabitantsScanner(new FileInputStream(f),
+        f.getPath());
+    for (InhabitantParser kvpp : scanner)
+      put(kvpp.getImplName(), kvpp.getLine());
+  }
+
+  public String put(String key, String value) {
+    dirty = true;
+    return super.put(key, value);
+  }
+
+  public String putAll(String service, Collection<String> contracts,
+      String name, Map<String, String> meta) {
+    StringBuilder buf = new StringBuilder();
+    buf.append(InhabitantsFile.CLASS_KEY).append('=').append(service);
+    for (String contract : contracts) {
+      buf.append(",").append(INDEX_KEY).append("=").append(contract);
+      if (null != name) {
+        buf.append(":").append(name);
+      }
     }
 
-    public InhabitantsDescriptor(File f) throws IOException {
-        load(f);
+    if (null != meta) {
+      for (Map.Entry<String, String> entry : meta.entrySet()) {
+        buf.append(",").append(entry.getKey()).append("=").append(
+            entry.getValue());
+      }
     }
+    
+    return put(service, buf.toString());
+  }
 
-    /**
-     * Loads an existing file.
-     */
-    public void load(File f) throws IOException {
-        InhabitantsScanner scanner = new InhabitantsScanner(new FileInputStream(f),f.getPath());
-        for (InhabitantParser kvpp : scanner)
-            put(kvpp.getImplName(),kvpp.getLine());
+  public String remove(Object key) {
+    dirty = true;
+    return super.remove(key);
+  }
+
+  /**
+   * Writes the descriptor to a file.
+   */
+  public void write(File outputDir, Messager messager, String habitatName) {
+    if (!dirty)
+      return; // no need to write.
+
+    PrintWriter w = null;
+    try {
+      File out = new File(new File(outputDir, InhabitantsFile.PATH), habitatName);
+      out.getParentFile().mkdirs();
+      w = new PrintWriter(out, "UTF-8");
+
+      write(w);
+    } catch (IOException e) {
+      messager.printError("Failed to write inhabitants file " + habitatName, e);
+    } finally {
+      if (null != w) {
+        w.close();
+      }
     }
+  }
 
-
-    public String put(String key, String value) {
-        dirty = true;
-        return super.put(key, value);
+  public void write(PrintWriter w) {
+    w.println("# generated on " + new Date().toGMTString());
+    for (String line : values()) {
+      w.println(line);
     }
+  }
 
-    public String remove(Object key) {
-        dirty = true;
-        return super.remove(key);
-    }
-
-    /**
-     * Writes the descriptor to a file.
-     */
-    public void write(File outputDir, AnnotationProcessorEnvironment env,String habitatName) {
-        if(!dirty)  return; // no need to write.
-
-        try {
-            File out = new File(new File(outputDir,InhabitantsFile.PATH),habitatName);
-            out.getParentFile().mkdirs();
-            PrintWriter w = new PrintWriter(out,"UTF-8");
-
-            w.println("# generated on "+new Date().toGMTString());
-            for (String line : values()) {
-                w.println(line);
-            }
-            w.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            env.getMessager().printError("Failed to write inhabitants file "+habitatName);
-        }
-    }
 }
