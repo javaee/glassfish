@@ -94,10 +94,12 @@ public class InhabitantsDescriptor extends HashMap<String, String> {
 
   public String putAll(String service,
       Collection<String> contracts,
+      Collection<String> annotations,
       String name,
       Map<String, String> meta) {
     StringBuilder buf = new StringBuilder();
     buf.append(InhabitantsFile.CLASS_KEY).append('=').append(service);
+    
     for (String contract : contracts) {
       buf.append(",").append(INDEX_KEY).append("=").append(contract);
       if (null != name) {
@@ -105,6 +107,10 @@ public class InhabitantsDescriptor extends HashMap<String, String> {
       }
     }
 
+    for (String contract : annotations) {
+      buf.append(",").append(INDEX_KEY).append("=").append(contract);
+    }
+    
     if (null != meta) {
       for (Map.Entry<String, String> entry : meta.entrySet()) {
         buf.append(",").append(entry.getKey()).append("=").append(
