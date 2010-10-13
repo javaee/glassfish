@@ -44,13 +44,14 @@ public class InhabitantsGeneratorTest {
     
     String output = out.toString();
     assertNotNull(output);
-//    System.out.println(output);
+    System.out.println(output);
     assertEquals(expected(), output);
   }
 
   String expected() {
     StringBuilder sb = new StringBuilder();
     sb.append("class=com.sun.enterprise.tools.classmodel.test.BService,index=com.sun.enterprise.tools.classmodel.test.BContract\r\n");
+    sb.append("class=com.sun.enterprise.tools.classmodel.test.RunLevelCloseableService,index=java.io.Closeable:closeable,index=org.jvnet.hk2.annotations.RunLevel\r\n");
     sb.append("class=com.sun.enterprise.tools.classmodel.test.AService,index=com.sun.enterprise.tools.classmodel.test.AContract:aservice,a=1,b=2\r\n");
     sb.append("class=com.sun.enterprise.tools.classmodel.test.FactoryForCService,index=org.jvnet.hk2.annotations.FactoryFor:com.sun.enterprise.tools.classmodel.test.CService\r\n");
     sb.append("class=com.sun.enterprise.tools.classmodel.test.CService\r\n");
@@ -91,8 +92,10 @@ public class InhabitantsGeneratorTest {
     for (String entry : cpSet) {
       if (entry.contains("test-classes")) {
         entries.add(new File(entry));
-//      } else if (entry.contains("auto-depends")) {
-//        entries.add(new File(entry));
+      } else if (entry.contains("auto-depends")) {
+        entries.add(new File(entry));
+      } else if (entry.contains("tiger-types")) {
+        entries.add(new File(entry));
       }
 //      entries.add(new File(entry));
     }

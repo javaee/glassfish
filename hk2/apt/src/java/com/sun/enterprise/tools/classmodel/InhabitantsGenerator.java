@@ -16,11 +16,15 @@ import org.glassfish.hk2.classmodel.reflect.AnnotationType;
 import org.glassfish.hk2.classmodel.reflect.ClassModel;
 import org.glassfish.hk2.classmodel.reflect.InterfaceModel;
 import org.glassfish.hk2.classmodel.reflect.ParsingContext;
+import org.glassfish.hk2.classmodel.reflect.Type;
 import org.glassfish.hk2.classmodel.reflect.Types;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.FactoryFor;
+import org.jvnet.hk2.annotations.InhabitantAnnotation;
+import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.classmodel.InhabitantsFeed;
 import org.jvnet.hk2.component.classmodel.InhabitantsParsingContextGenerator;
@@ -86,7 +90,7 @@ public class InhabitantsGenerator {
     descriptor.clear();
 
     InhabitantsParserDescriptorWriter ip = new InhabitantsParserDescriptorWriter(descriptor);
-    InhabitantsFeed feed = InhabitantsFeed.create(null, ip);
+    InhabitantsFeed feed = InhabitantsFeed.create(new Habitat(), ip);
     // TODO: the standard machinery (w/o TemporaryIntrospectionScanner) should just work
     feed.populate(ipcGen, 
         (Collection)Collections.singleton(
@@ -97,6 +101,9 @@ public class InhabitantsGenerator {
   }
 
   public static void main(String [] args) throws Exception {
+    String classpathDebug = System.getProperty("java.class.path");
+    System.out.println(InhabitantsGenerator.class.getSimpleName() + " classpath is " + classpathDebug);
+
     String arg = System.getProperty(PARAM_INHABITANT_FILE);
     File targetInhabitantFile = new File(arg);
     
@@ -168,12 +175,16 @@ public class InhabitantsGenerator {
 //      Type notThere = types.getBy(InhabitantAnnotation.class.getName());
       
       AnnotationType at = types.getBy(AnnotationType.class, Service.class.getName());
-      // TODO: This should have contained InhabitantAnnotation but it didn't 
-//      Collection<AnnotationModel> notThere2 = at.getAnnotations();
-      
-      Collection<AnnotatedElement> coll = at.allAnnotatedTypes();
-      for (AnnotatedElement ae : coll) {
-        process(ae, types);
+
+      // TODO: how can this be null --- but it is from time to time?
+      if (null != at) {
+        // TODO: This should have contained InhabitantAnnotation but it didn't 
+//        Collection<AnnotationModel> notThere2 = at.getAnnotations();
+        
+        Collection<AnnotatedElement> coll = at.allAnnotatedTypes();
+        for (AnnotatedElement ae : coll) {
+          process(ae, types);
+        }
       }
     }
 
@@ -183,6 +194,7 @@ public class InhabitantsGenerator {
         
         ClassModel classModel = ClassModel.class.cast(ae);
         Collection<String> contracts = getContracts(classModel, types);
+        Collection<String> annotations = getAnnotations(classModel, types);
 
         AnnotationModel am = ae.getAnnotation(Service.class.getCanonicalName());
         Object nameObj = am.getValues().get("name");
@@ -205,12 +217,13 @@ public class InhabitantsGenerator {
         }
 
         // add it to the descriptors
-        descriptor.putAll(service, contracts, name, mm);
+        descriptor.putAll(service, contracts, annotations, name, mm);
       }
     }
 
     protected Collection<String> getContracts(ClassModel classModel, Types types) {
       Collection<String> contracts = new ArrayList<String>();
+
       Collection<InterfaceModel> ifModels = classModel.getInterfaces();
       for (InterfaceModel ifModel : ifModels) {
         if (null != ifModel) {
@@ -220,10 +233,7 @@ public class InhabitantsGenerator {
           }
         }
       }
-
-      // TODO: getting annotations off of FactoryFor does NOT show @Contract, and it should!
-//      AnnotationType type = types.getBy(AnnotationType.class, name);
-
+      
       Collection<AnnotationModel> amColl = classModel.getAnnotations();
       for (AnnotationModel am : amColl) {
         AnnotationType at = am.getType();
@@ -234,10 +244,47 @@ public class InhabitantsGenerator {
             String c = clean(t.toString());
             contracts.add(c);
           }
-        } else if (name.equals(FactoryFor.class.getName())) {
+        }
+      }
+      
+      return contracts;
+    }
+    
+    protected Collection<String> getAnnotations(ClassModel classModel, Types types) {
+      Collection<String> contracts = new ArrayList<String>();
+      
+      // TODO: getting annotations off of FactoryFor does NOT show @Contract, and it should!
+//      AnnotationType type = types.getBy(AnnotationType.class, name);
+
+      Collection<AnnotationModel> amColl = classModel.getAnnotations();
+      for (AnnotationModel am : amColl) {
+        AnnotationType at = am.getType();
+        String name = at.getName();
+        if (name.equals(FactoryFor.class.getName())) {
           Object t = am.getValues().get("value");
           String c = clean(t.toString());
           contracts.add(name + ":" + c);
+        } else if (name.equals(RunLevel.class.getName())) {
+          contracts.add(name);
+        } else {
+          Collection<AnnotationModel> subAnn = am.getType().getAnnotations();
+          for (AnnotationModel z : subAnn) {
+            name = z.getType().getName();
+            if (name.equals(RunLevel.class.getName())) {
+              Object debug = z.getValues();
+              contracts.add(name);
+            } else {
+              // check meta-annotations one level up
+              Collection<AnnotationModel> subAnn2 = z.getType().getAnnotations();
+              for (AnnotationModel z1 : subAnn2) {
+                Object debug = z1.getValues();
+                name = z1.getType().getName();
+                if (name.equals(RunLevel.class.getName())) {
+                  contracts.add(name);
+                }
+              }
+            }
+          }
         }
       }
       
