@@ -83,6 +83,7 @@ import com.sun.enterprise.resource.pool.monitor.ConnectionPoolProbeProviderUtil;
 import com.sun.enterprise.security.jmac.callback.ContainerCallbackHandler;
 import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
+import org.glassfish.admin.monitor.MonitoringBootstrap;
 import org.glassfish.resource.common.PoolInfo;
 import org.glassfish.resource.common.ResourceInfo;
 import org.jvnet.hk2.config.types.Property;
@@ -229,6 +230,10 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      */
     public ProcessEnvironment.ProcessType getEnvironment() {
         return processType;
+    }
+
+    public MonitoringBootstrap getMonitoringBootstrap(){
+        return habitat.getComponent(MonitoringBootstrap.class);
     }
 
     /**

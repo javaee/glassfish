@@ -175,7 +175,12 @@ public class ConnectorService implements ConnectorConstants {
             try {
                 //Do this only for System RA
                 if (ConnectorsUtil.belongsToSystemRA(rarModuleName)) {
-                    _runtime.createActiveResourceAdapter(ConnectorsUtil.getSystemModuleLocation(rarModuleName), rarModuleName, null);
+                    String systemModuleLocation = ConnectorsUtil.getSystemModuleLocation(rarModuleName);
+                    if(_runtime.isServer()){
+                        _runtime.getMonitoringBootstrap().registerProbes(rarModuleName,
+                                new File(systemModuleLocation), _runtime.getSystemRARClassLoader(rarModuleName));
+                    }
+                    _runtime.createActiveResourceAdapter(systemModuleLocation, rarModuleName, null);
                 } /* not needed as long as standalone + embedded rars are loaded before recovery
                 else if (rarModuleName.indexOf(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER) != -1) {
                     createActiveResourceAdapterForEmbeddedRar(rarModuleName);

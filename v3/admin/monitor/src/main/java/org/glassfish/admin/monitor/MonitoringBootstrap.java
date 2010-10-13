@@ -71,8 +71,6 @@ import com.sun.enterprise.module.ModuleState;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.ModuleLifecycleListener;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.logging.LogDomains;
 
 import java.io.File;
@@ -123,8 +121,7 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
     protected ProbeClientMediator pcm;
     @Inject
     Events events;
-    @Inject
-    ClassLoaderHierarchy classloader;
+
     @Inject
     ServerEnvironment serverEnv;
 
@@ -147,7 +144,6 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
     private StatsProviderManagerDelegateImpl spmd;
     private boolean monitoringEnabled;
     private boolean hasDiscoveredXMLProviders = false;
-    private ClassLoader connectorClassLoader = null;
 
     public void postConstruct() {
         // wbn: This value sticks for the life of the bootstrapping.  If the user changes it
@@ -183,22 +179,6 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
             }
         }
 
-        //system applications
-        File root = new File(System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY));
-        File applicationsDir = new File(root, "lib" + File.separator +"install" + File.separator + "applications");
-        connectorClassLoader = classloader.getConnectorClassLoader(null); // Make more generic?
-        String[] appChild = null;
-        if (applicationsDir != null) {
-            appChild = applicationsDir.list();
-            if (appChild != null) {
-                for (String a : appChild) {
-                    File childDir = new File(applicationsDir, a);
-                    if (childDir.isDirectory()) {
-                        verifyApp(a, childDir);
-                    }
-                }
-            }
-        }
     }
 
     public void preDestroy() {
@@ -256,11 +236,23 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
         }
     }
 
-    private synchronized void verifyApp(String app, File appDir) {
-        if (app == null) return;
-        if (!appList.contains(app)) {
-            appList.add(app);
-            addProvider(appDir);
+    /**
+     * An application that has probes can be registered.
+     * @param appName application-name
+     * @param appDir directory where application bits are present.
+     * @param cl classloader that is used to load application files.
+     */
+    public synchronized void registerProbes(String appName, File appDir, ClassLoader cl) {
+        if (appName == null) return;
+        if (cl == null) {
+            if (logger.isLoggable(Level.FINE)){
+                logger.fine("Null classloader passed for application : " + appName);
+            }
+            return;
+        }
+        if (!appList.contains(appName)) {
+            appList.add(appName);
+            addProvider(appDir, cl);
         }
     }
 
@@ -301,7 +293,7 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
         handleFutureStatsProviders();
     }
 
-    private void addProvider(File appDir) {
+    private void addProvider(File appDir, ClassLoader classLoader) {
         //get manifest entries and process
         File manifestFile = new File(appDir, "META-INF" + File.separator + "MANIFEST.MF");
         String appDirPath = "";
@@ -319,7 +311,7 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
                 return;
             }
             if (mf != null) {
-                processManifest(mf, connectorClassLoader);
+                processManifest(mf, classLoader);
             }
         }
 
@@ -433,28 +425,19 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
                 providerMap.put(moduleName, file);
                 if (logger.isLoggable(Level.FINE))
                     logger.fine(" The provider xml belongs to - \"" + moduleName + "\"");
-                if (!map.containsKey(moduleName) && !appList.contains(moduleName)) {
+                if (!map.containsKey(moduleName)) {
                     continue;
                 }
                 if (logger.isLoggable(Level.FINE))
                     logger.fine (" Module found (containsKey)");
                 Module module = map.get(moduleName);
-                int idx = appList.indexOf(moduleName);
-                String app = null;
-                if (idx != -1) {
-                    app = appList.get(idx);
-                }
-                if (module == null && app == null) {
+
+                if (module == null) {
                     logger.log(Level.SEVERE,
                                 "monitoringMissingModuleFromXmlProbeProviders",
                                         new Object[] {moduleName});
                 } else {
-                    ClassLoader mcl = null;
-                    if (module != null) {
-                        mcl = module.getClassLoader();
-                    } else if (app != null) {
-                        mcl = connectorClassLoader;
-                    }
+                    ClassLoader mcl = module.getClassLoader();
 
                     if (logger.isLoggable(Level.FINE)) {
                         logger.fine("ModuleClassLoader = " + mcl);
@@ -462,9 +445,7 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
                     }
                     processProbeProviderXML(mcl, file.getAbsolutePath(), false);
                 }
-
             }
-
         }
     }
 
