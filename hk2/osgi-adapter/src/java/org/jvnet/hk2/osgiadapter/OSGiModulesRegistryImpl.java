@@ -498,39 +498,7 @@ public class OSGiModulesRegistryImpl
     }
 
     public void register(final ModuleLifecycleListener listener) {
-        if (TracingUtilities.isEnabled()) {
-            bctx.addBundleListener(new SynchronousBundleListener() {
-            public void bundleChanged(final BundleEvent event) {
-                switch (event.getType()) {
-                    case BundleEvent.RESOLVED:
-                        TracingUtilities.traceResolution(OSGiModulesRegistryImpl.this,
-                                event.getBundle().getBundleId(),
-                                event.getBundle().getSymbolicName(),
-                                new TracingUtilities.Loader() {
-                                    @Override
-                                    public Class loadClass(String type) throws ClassNotFoundException {
-                                        return event.getBundle().loadClass(type);
-                                    }
-                                });
-                         break;
-
-                    case BundleEvent.STARTED:
-                        TracingUtilities.traceStarted(OSGiModulesRegistryImpl.this,
-                                event.getBundle().getBundleId(),
-                                event.getBundle().getSymbolicName(),
-                                new TracingUtilities.Loader() {
-                                    @Override
-                                    public Class loadClass(String type) throws ClassNotFoundException {
-                                        return event.getBundle().loadClass(type);
-                                    }
-                                });
-                                
-                        break;
-                 }
-            }
-            });
-        }
-        // This is purposefully made an asyncronous bundle listener
+        // This is purposefully made an asynchronous bundle listener
         BundleListener bundleListener = new BundleListener() {
             public void bundleChanged(BundleEvent event) {
                 switch (event.getType()) {
