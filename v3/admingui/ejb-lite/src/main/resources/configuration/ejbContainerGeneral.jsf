@@ -88,10 +88,14 @@
                  <sun:textField id="SessionStore" columns="$int{65}" maxLength="#{sessionScope.fieldLengths['maxLength.ejbSettings.sessionStore']}"  text="#{pageSession.valueMap['sessionStore']}" />
              </sun:property>
              <sun:property id="commitOptionProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejbLite.ejbSettings.commitOptionLabel}">
-                 <sun:radioButton id="optB"  name="commitOptGrp" label="$resource{i18n_ejbLite.ejbSettings.optB}" selected="#{pageSession.valueMap['commitOption']}" selectedValue="B" />
-                 <sun:helpInline id="optBHelpText" style="padding: 4pt" style="font-size: 8pt" text="$resource{i18n_ejbLite.ejbSettings.optBHelp}"/>
+                 <sun:radioButton id="optB"  name="commitOptGrp" label="$resource{i18n_ejbLite.ejbSettings.optB}" selected="#{pageSession.valueMap['commitOption']}" selectedValue="B"
+                            onClick="document.getElementById('form1:option').value='B';"
+                  />
+                 <sun:helpInline id="optBHelpText" style="padding: 4pt" style="font-size: 8pt" text="AAAAA$resource{i18n_ejbLite.ejbSettings.optBHelp}"/>
                  "<br />
-                 <sun:radioButton id="optC"  name="commitOptGrp" label="$resource{i18n_ejbLite.ejbSettings.optC}" selected="#{pageSession.valueMap['commitOption']}" selectedValue="C" />
+                 <sun:radioButton id="optC"  name="commitOptGrp" label="$resource{i18n_ejbLite.ejbSettings.optC}" selected="#{pageSession.valueMap['commitOption']}" selectedValue="C"
+                                  onClick="document.getElementById('form1:option').value='C';"
+                  />
                  <sun:helpInline id="optCHelpText" style="padding: 4pt" style="font-size: 8pt" text="$resource{i18n_ejbLite.ejbSettings.optCHelp}"/>
                  "<br />
              </sun:property>
@@ -145,6 +149,7 @@
 #include "/common/shared/editPageBottomButtons.inc"
                
 	<sun:hidden id="helpKey" value="$resource{help_ejbLite.ejbContainerGeneral}" />
+        <sun:hidden id="option" value="#{pageSession.valueMap['commitOption']}" />
     </sun:form>
     "<br/>
 #include "/common/shared/changeButtonsJS.inc"
