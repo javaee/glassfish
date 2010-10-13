@@ -76,6 +76,11 @@
             <param name="password" value="${testpassword}"/>
             <param name="groups" value="${testgroup}"/>
         </antcall>
+        <antcall target="create-user-common">
+            <param name="user" value="${testuser2}"/>
+            <param name="password" value="${testpassword2}"/>
+            <param name="groups" value="${testgroup2}"/>
+        </antcall>
     </target>
 
     <target name="build" depends="compile">
@@ -115,6 +120,9 @@
     <target name="restore" depends="init-common">
         <antcall target="delete-user-common">
             <param name="user" value="${testuser}"/>
+        </antcall>
+        <antcall target="delete-user-common">
+            <param name="user" value="${testuser2}"/>
         </antcall>
     </target>
 
