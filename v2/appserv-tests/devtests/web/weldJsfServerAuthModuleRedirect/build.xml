@@ -68,12 +68,6 @@
     </target>
 
     <target name="setup" depends="init-common">
-        <antcall target="asadmin-common-ignore-fail">
-            <param name="admin.command" value="set" />
-            <param name="operand.props"
-                   value="configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.enabled=true"/>
-        </antcall>
-
         <copy file="${appserver.instance.dir}/lib/test-${appname}-provider.jar"
             todir="${env.S1AS_HOME}/lib"/>
 
@@ -127,12 +121,6 @@
     </target>   
 
     <target name="restore" depends="init-common">
-        <antcall target="asadmin-common-ignore-fail">
-            <param name="admin.command" value="set" />
-            <param name="operand.props"
-                   value="configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.enabled=false"/>
-        </antcall>
-
         <antcall target="asadmin-common">
             <param name="admin.command" value="delete-message-security-provider"/>
             <param name="as.props" value="${as.props} --layer HttpServlet"/>
