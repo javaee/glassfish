@@ -146,8 +146,8 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
                 xaresArray[i] = (XAResource) xaresList.elementAt(i);
             }
             if (_logger.isLoggable(Level.FINE)) {
-                String msg = localStrings.getString("xaresource.recovering", new Object[]
-                    {"Recovering {0} XA resources...", String.valueOf(size)});
+                String msg = localStrings.getStringWithDefault("xaresource.recovering", 
+                        "Recovering {0} XA resources...", new Object[] {String.valueOf(size)});
 
                 _logger.log(Level.FINE, msg);
             }
@@ -236,8 +236,8 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
 
                 resourceRecoveryStarted();
                 if (_logger.isLoggable(Level.FINE)) {
-                    String msg = localStrings.getString("xaresource.recovering",
-                        new Object[]{"Recovering {0} XA resources...", String.valueOf(size)});
+                    String msg = localStrings.getStringWithDefault("xaresource.recovering",
+                        "Recovering {0} XA resources...", new Object[]{String.valueOf(size)});
 
                     _logger.log(Level.FINE, msg);
                 }

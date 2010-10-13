@@ -1215,8 +1215,8 @@ class CoordinatorLog extends java.lang.Object implements LogUpcallTarget {
         // time.
 
         String serverName = null;
+        // Always reopen logFile for a delegated recovery: do not check for logStateHolder.logFile == null
         if( logStateHolder.log != null &&
-            logStateHolder.logFile == null &&
             (serverName = Configuration.getServerName(logPath)) != null ) {
 
 	    // get a coordinator log object from cache instead

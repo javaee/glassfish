@@ -178,7 +178,8 @@ public class DelegatedRecoveryManager {
             if (state.resyncCoords == 0) {
                 try {
                     resyncComplete(true, true, logPath);
-                } catch (Throwable exc) {}
+                } catch (Throwable exc) {
+                }
             }
         }
         
@@ -228,7 +229,6 @@ public class DelegatedRecoveryManager {
                 (new TopCoordinator()).delegated_reconstruct((CoordinatorLog) logRecords.nextElement(), logPath);
             } catch(Exception exc) {
                 _logger.log(Level.SEVERE,"jts.recovery_in_doubt_exception",exc);
-                _logger.log(Level.SEVERE,"jts.recovery_in_doubt",exc.toString());
                 String msg = LogFormatter.getLocalizedMessage(_logger, "jts.recovery_in_doubt",
                 new java.lang.Object[] {exc.toString()});
                 throw  new org.omg.CORBA.INTERNAL(msg);
