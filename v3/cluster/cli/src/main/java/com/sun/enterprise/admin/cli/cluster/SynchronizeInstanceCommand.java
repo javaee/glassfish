@@ -304,16 +304,19 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
             // the returned files are automatically saved by the command
         } catch (IOException ex) {
             logger.finer("Got exception: " + ex);
-            throw new CommandException(Strings.get("Sync.failed", sr.dir), ex);
+            throw new CommandException(
+                Strings.get("Sync.failed", sr.dir, ex.toString()), ex);
         } catch (JAXBException jex) {
             logger.finer("Got exception: " + jex);
-            throw new CommandException(Strings.get("Sync.failed", sr.dir), jex);
+            throw new CommandException(
+                Strings.get("Sync.failed", sr.dir, jex.toString()), jex);
         } catch (CommandException cex) {
             logger.finer("Got exception: " + cex);
             logger.finer("  cause: " + cex.getCause());
             if (cex.getCause() instanceof ConnectException)
                 throw (ConnectException)cex.getCause();
-            throw new CommandException(Strings.get("Sync.failed", sr.dir), cex);
+            throw new CommandException(
+                Strings.get("Sync.failed", sr.dir, cex.getMessage()), cex);
         } finally {
             // remove tempFile
             if (tempFile != null)
