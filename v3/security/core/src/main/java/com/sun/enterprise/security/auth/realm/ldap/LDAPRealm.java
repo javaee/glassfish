@@ -357,8 +357,19 @@ public final class LDAPRealm extends IASRealm
         String srcFilter = null;
         try {
             ctx = new InitialDirContext(getLdapBindProps());
+
             X500Name name = new X500Name(userDN);
             String _username = name.getCommonName();
+            if (_username == null && userDN != null && userDN.startsWith("uid")) {
+                //handle uid=XXX here where cn is not present
+                //TODO :maybe there is a better way to handle this??
+                int first = userDN.indexOf("uid=");
+                int last = userDN.indexOf(",");
+                if (first != -1 && last != -1) {
+                    _username = userDN.substring(first + 4, last);
+                }
+
+            }
             StringBuffer sb = new StringBuffer(getProperty(PARAM_GRP_SEARCH_FILTER));
             substitute(sb, SUBST_SUBJECT_NAME, _username);
             substitute(sb, SUBST_SUBJECT_DN, userDN);
