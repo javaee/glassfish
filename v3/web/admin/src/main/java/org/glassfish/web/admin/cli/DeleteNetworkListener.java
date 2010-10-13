@@ -42,6 +42,7 @@ package org.glassfish.web.admin.cli;
 
 import java.beans.PropertyVetoException;
 
+import com.sun.grizzly.config.dom.Protocol;
 import org.glassfish.internal.api.Target;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
@@ -109,9 +110,10 @@ public class DeleteNetworkListener implements AdminCommand {
         ActionReport report = context.getActionReport();
         NetworkListeners networkListeners = config.getNetworkConfig().getNetworkListeners();
         try {
-            if (findListener(report)) {
+            if (findListener(networkListeners, report)) {
+                final Protocol httpProtocol = listenerToBeRemoved.findHttpProtocol();
                 final VirtualServer virtualServer = config.getHttpService().getVirtualServerByName(
-                        listenerToBeRemoved.findHttpProtocol().getHttp().getDefaultVirtualServer());
+                        httpProtocol.getHttp().getDefaultVirtualServer());
 
                 ConfigSupport.apply(new ConfigCode() {
                     public Object run(ConfigBeanProxy... params) throws PropertyVetoException {
@@ -133,8 +135,12 @@ public class DeleteNetworkListener implements AdminCommand {
         }
     }
 
-    private boolean findListener(ActionReport report) {
-        listenerToBeRemoved = config.getNetworkConfig().getNetworkListener(networkListenerName);
+    private boolean findListener(final NetworkListeners networkListeners, ActionReport report) {
+        for (NetworkListener listener : networkListeners.getNetworkListener()) {
+            if(listener.getName().equals(networkListenerName)) {
+                listenerToBeRemoved = listener;
+            }
+        }
         if (listenerToBeRemoved == null) {
             report.setMessage(localStrings.getLocalString("delete.network.listener.notexists",
                 "{0} Network Listener doesn't exist", networkListenerName));

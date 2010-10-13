@@ -37,14 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.web.admin.cli;
 
 import java.util.List;
 
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.grizzly.config.dom.NetworkListener;
 import org.glassfish.api.ActionReport;
@@ -70,38 +68,30 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name = "list-http-listeners")
 @Scoped(PerLookup.class)
 @I18n("list.http.listeners")
-@ExecuteOn(RuntimeType.DAS)   
-@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
+@ExecuteOn(RuntimeType.DAS)
+@TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER, CommandTarget.CONFIG})
 public class ListHttpListeners implements AdminCommand {
-    final private static LocalStringManagerImpl localStrings
-        = new LocalStringManagerImpl(ListHttpListeners.class);
-
-    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
+    @Param(primary = true, optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
     String target;
-
-    @Param(optional = true, defaultValue = "false", name="long", shortName="l")
+    @Param(optional = true, defaultValue = "false", name = "long", shortName = "l")
     boolean verbose;
-
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
-    
     @Inject
     Domain domain;
-
     @Inject
     Habitat habitat;
 
     /**
-     * Executes the command with the command parameters passed as Properties
-     * where the keys are the paramter names and the values the parameter
-     * values
+     * Executes the command with the command parameters passed as Properties where the keys are the parameter names and
+     * the values the parameter values
      *
      * @param context information
      */
     public void execute(AdminCommandContext context) {
         Target targetUtil = habitat.getComponent(Target.class);
         Config newConfig = targetUtil.getConfig(target);
-        if (newConfig!=null) {
+        if (newConfig != null) {
             config = newConfig;
         }
         final ActionReport report = context.getActionReport();
@@ -110,8 +100,8 @@ public class ListHttpListeners implements AdminCommand {
         for (NetworkListener networkListener : list) {
             size = Math.max(size, networkListener.getName().length());
         }
-        final String format = "%-" + (size + 2 ) + "s %-6s";
-        if(verbose) {
+        final String format = "%-" + (size + 2) + "s %-6s";
+        if (verbose) {
             report.getTopMessagePart()
                 .addChild().setMessage(String.format(format, "NAME", "PORT"));
         }
