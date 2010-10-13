@@ -47,7 +47,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,12 +59,22 @@ import java.util.Map;
  */
 public class InhabitantsDescriptor extends HashMap<String, String> {
   private boolean dirty = false;
-
+  private boolean dateEnabled = true;
+  private String comment;
+  
   public InhabitantsDescriptor() {
   }
 
   public InhabitantsDescriptor(File f) throws IOException {
     load(f);
+  }
+  
+  public void enableDateOutput(boolean enabled) {
+    this.dateEnabled = enabled;
+  }
+  
+  public void setComment(String comment) {
+    this.comment = comment;
   }
 
   /**
@@ -83,8 +92,10 @@ public class InhabitantsDescriptor extends HashMap<String, String> {
     return super.put(key, value);
   }
 
-  public String putAll(String service, Collection<String> contracts,
-      String name, Map<String, String> meta) {
+  public String putAll(String service,
+      Collection<String> contracts,
+      String name,
+      Map<String, String> meta) {
     StringBuilder buf = new StringBuilder();
     buf.append(InhabitantsFile.CLASS_KEY).append('=').append(service);
     for (String contract : contracts) {
@@ -133,7 +144,14 @@ public class InhabitantsDescriptor extends HashMap<String, String> {
   }
 
   public void write(PrintWriter w) {
-    w.println("# generated on " + new Date().toGMTString());
+    if (dateEnabled) {
+      w.println("# generated on " + new Date().toGMTString());
+    }
+    
+    if (null != comment) {
+      w.println("# " + comment);
+    }
+    
     for (String line : values()) {
       w.println(line);
     }
