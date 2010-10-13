@@ -203,7 +203,7 @@
         <!-- Time period fileinstaller thread in ms. -->
         <jvm-options>-Dfelix.fileinstall.poll=5000</jvm-options>
         <!-- log level: 1 for error, 2 for warning, 3 for info and 4 for debug. -->
-        <jvm-options>-Dfelix.fileinstall.log.level=3</jvm-options>
+        <jvm-options>-Dfelix.fileinstall.log.level=2</jvm-options>
         <!-- should new bundles be started or installed only? 
              true => start, false => only install 
         -->
