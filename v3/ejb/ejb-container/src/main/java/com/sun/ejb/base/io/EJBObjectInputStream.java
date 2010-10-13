@@ -48,9 +48,6 @@ import com.sun.enterprise.naming.util.ObjectInputOutputStreamFactory;
 
 import com.sun.logging.LogDomains;
 
-
-import com.sun.ejb.containers.EjbContainerUtilImpl;
-
 import java.io.*;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
@@ -60,6 +57,7 @@ import java.util.logging.Logger;
 
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import org.glassfish.enterprise.iiop.api.ProtocolManager;
+import org.glassfish.internal.api.Globals;
 
 /**
  * A class that is used to restore SFSB conversational state
@@ -125,7 +123,7 @@ class EJBObjectInputStream extends ObjectInputStream
      * this runtime.
      */
     private ProtocolManager getProtocolManager() {
-	GlassFishORBHelper orbHelper = EjbContainerUtilImpl.getInstance().getORBHelper();
+	GlassFishORBHelper orbHelper = Globals.getDefaultHabitat().getComponent(GlassFishORBHelper.class);
 	return orbHelper.isORBInitialized() ? orbHelper.getProtocolManager() : null;
     }
 

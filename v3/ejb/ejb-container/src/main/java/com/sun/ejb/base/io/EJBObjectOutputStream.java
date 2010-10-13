@@ -62,6 +62,8 @@ import java.util.logging.Logger;
 
 import org.glassfish.enterprise.iiop.api.ProtocolManager;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
+import org.glassfish.internal.api.Globals;
+import org.glassfish.api.naming.GlassfishNamingManager;
 
 import com.sun.enterprise.naming.util.ObjectInputOutputStreamFactoryFactory;
 import com.sun.enterprise.naming.util.ObjectInputOutputStreamFactory;
@@ -77,7 +79,7 @@ class EJBObjectOutputStream
 {
 
     protected static final Logger _ejbLogger =
-            EjbContainerUtilImpl.getInstance().getLogger();
+            LogDomains.getLogger(EJBObjectOutputStream.class, LogDomains.EJB_LOGGER);
 
 
     static final int EJBID_OFFSET = 0;
@@ -154,7 +156,7 @@ class EJBObjectOutputStream
      * this runtime.
      */
     private ProtocolManager getProtocolManager() {
-	GlassFishORBHelper orbHelper = EjbContainerUtilImpl.getInstance().getORBHelper();
+	GlassFishORBHelper orbHelper = Globals.getDefaultHabitat().getComponent(GlassFishORBHelper.class);
 	return orbHelper.isORBInitialized() ? orbHelper.getProtocolManager() : null;
     }
 
@@ -252,7 +254,7 @@ final class SerializableJNDIContext
             if ((name == null) || (name.length() == 0)) {
                 return new InitialContext();
             } else {
-                return EjbContainerUtilImpl.getInstance().getGlassfishNamingManager().restoreJavaCompEnvContext(name);
+                return Globals.getDefaultHabitat().getComponent(GlassfishNamingManager.class).restoreJavaCompEnvContext(name);
             }
         } catch (NamingException namEx) {
             IOException ioe = new IOException();
