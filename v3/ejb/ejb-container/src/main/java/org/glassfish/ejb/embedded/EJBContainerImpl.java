@@ -116,7 +116,8 @@ public class EJBContainerImpl extends EJBContainer {
      */
     void deploy(Map<?, ?> properties, Set<DeploymentElement> modules) throws EJBException {
         try {
-            res_app = DeploymentElement.getOrCreateApplication(modules);
+            String appName = (properties == null)? null : (String)properties.get(EJBContainer.APP_NAME);
+            res_app = DeploymentElement.getOrCreateApplication(modules, appName);
             Object app = res_app.getApplication();
             
             if (app == null) {
@@ -127,10 +128,7 @@ public class EJBContainerImpl extends EJBContainer {
                 _logger.info("[EJBContainerImpl] Deploying app: " + app);
             }
             DeployCommandParameters dp = new DeployCommandParameters();
-            if (properties != null && DeploymentElement.countEJBModules(modules) > 1) {
-                dp.name = (String)properties.get(EJBContainer.APP_NAME);
-            }
-
+            dp.name = appName;
             if (app instanceof File) {
                 File f = (File)app;
                 dp.path = f;

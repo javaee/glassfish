@@ -151,39 +151,45 @@ public class DeploymentElement {
      * @param modules the Set of DeploymentElements.
      * @return deployable application.
      */
-    public static ResultApplication getOrCreateApplication(Set<DeploymentElement> modules)
+    public static ResultApplication getOrCreateApplication(Set<DeploymentElement> modules, String appName)
             throws EJBException, IOException {
         Object result = null;
         boolean deleteOnExit = false;
         if (modules == null || modules.size() == 0 || !DeploymentElement.hasEJBModule(modules)) {
             _logger.severe("[DeploymentElement] No modules found");
-        } else if (modules.size() == 1) {
-            // Single EJB module
-            result = modules.iterator().next().getElement();
-        } else if(DeploymentElement.countEJBModules(modules) == 1 && DeploymentElement.hasWar(modules)) {
+        } else if (appName == null && DeploymentElement.countEJBModules(modules) == 1) {
+            // Use the single component as-is
+            if (modules.size() == 1) {
+                // Single EJB module
+                result = modules.iterator().next().getElement();
+            } else if(DeploymentElement.countEJBModules(modules) == 1 && DeploymentElement.hasWar(modules)) {
+                // A WAR file with an EJB
                 result = DeploymentElement.getWar(modules).getElement();
-        } else if (DeploymentElement.countEJBModules(modules) == 1) {
-            // EJB molule with libraries - create ScatteredArchive
-            String aName = null;
-            Collection<URL> archives = new ArrayList<URL>();
-            for (DeploymentElement m : modules) {
-                boolean isEJBModule = m.isEJBModule();
-                File f = m.getElement();
-                String name = f.getName();
-                if (_logger.isLoggable(Level.INFO)) {
-                    _logger.info("[DeploymentElement] adding " + ((isEJBModule)? "EJB module" : "library") + " to ScatteredArchive " + name);
+            } else {
+                // EJB molule with libraries - create ScatteredArchive
+                String aName = null;
+                Collection<URL> archives = new ArrayList<URL>();
+                for (DeploymentElement m : modules) {
+                    boolean isEJBModule = m.isEJBModule();
+                    File f = m.getElement();
+                    String name = f.getName();
+                    if (_logger.isLoggable(Level.INFO)) {
+                        _logger.info("[DeploymentElement] adding " + ((isEJBModule)? "EJB module" : "library") + " to ScatteredArchive " + name);
+                    }
+        
+                    if (isEJBModule) {
+                        // Need to give archive some meaningful name
+                        aName = name;
+                    }
+                    archives.add(f.toURI().toURL());
                 }
-    
-                if (isEJBModule) {
-                    // Need to give archive some meaningful name
-                    aName = name;
-                }
-                archives.add(f.toURI().toURL());
+                ScatteredArchive.Builder saBuilder = new ScatteredArchive.Builder(aName,
+                        Collections.unmodifiableCollection(archives));
+                result = saBuilder.buildJar();
             }
-            ScatteredArchive.Builder saBuilder = new ScatteredArchive.Builder(aName,
-                    Collections.unmodifiableCollection(archives));
-            result = saBuilder.buildJar();
         } else {
+            // Create an ear if appName is set or if there is more than 1 EJB module
+
             // Create a temp dir by creating a temp file first, then
             // delete the file and create a directory in its place.
             File resultFile = File.createTempFile("ejb-app", "");
