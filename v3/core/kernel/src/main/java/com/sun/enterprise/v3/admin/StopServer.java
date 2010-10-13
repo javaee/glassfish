@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.module.ModulesRegistry;
@@ -61,6 +60,8 @@ public class StopServer {
      */
     protected final void doExecute(ModulesRegistry registry, Logger logger, boolean force) {
         logger.info(localStrings.getLocalString("stop.domain.init", "Server shutdown initiated"));
+        boolean noSysExit = Boolean.parseBoolean(System.getenv("AS_NO_SYSTEM_EXIT"));
+
         Collection<Module> modules = registry.getModules(
                 "org.glassfish.core.glassfish");
         if (modules.size() == 1) {
@@ -70,7 +71,8 @@ public class StopServer {
         else {
             logger.warning(modules.size() + " no of primordial modules found");
         }
-        if (force) {
+
+        if (!noSysExit && force) {
             System.exit(0);
         }
     }
