@@ -42,7 +42,6 @@
 package com.sun.enterprise.admin.cli.cluster;
 
 import com.sun.enterprise.admin.cli.CLICommand;
-import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.io.FileListerRelative;
 import com.sun.enterprise.util.zip.ZipFileException;
@@ -50,8 +49,6 @@ import com.sun.enterprise.util.zip.ZipWriter;
 import com.trilead.ssh2.SCPClient;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.CommandException;
-//import org.glassfish.api.admin.ExecuteOn;
-//import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.sftp.SFTPClient;
 import org.jvnet.hk2.annotations.Inject;
@@ -62,7 +59,10 @@ import org.jvnet.hk2.component.PerLookup;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Rajiv Mordani
@@ -71,7 +71,6 @@ import java.util.*;
 
 @Service(name = "install-node")
 @Scoped(PerLookup.class)
-//@ExecuteOn({RuntimeType.DAS})
 public class InstallNodeCommand extends CLICommand {
 
     @Param(optional = true)
@@ -115,7 +114,7 @@ public class InstallNodeCommand extends CLICommand {
     @Override
     protected int executeCommand() throws CommandException {
         try {
-            //String baseRootValue = executeLocationsCommand();
+
             String baseRootValue = getSystemProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) + "/../"; 
             ArrayList<String>  binDirFiles = new ArrayList<String>();
             File zipFile = createZipFile(baseRootValue, binDirFiles);
@@ -151,7 +150,6 @@ public class InstallNodeCommand extends CLICommand {
             
 
             scpClient.put(zipFile.getAbsolutePath(), installDir);
-            //String unzipCommand = "cd " + installDir + "; unzip glassfish.zip; chmod +x bin/*";
             String unzipCommand = "cd " + installDir + "; jar -xvf glassfish.zip";
             sshLauncher.runCommand(unzipCommand, outStream);
             sftpClient.rm(installDir + "/glassfish.zip");
@@ -163,14 +161,6 @@ public class InstallNodeCommand extends CLICommand {
         }
     }
 
-    private String executeLocationsCommand() throws CommandException {
-        RemoteCommand cmd =
-                new RemoteCommand("__locations", programOpts, env);
-        Map<String, String> attrs =
-                cmd.executeAndReturnAttributes(new String[]{"__locations"});
-        return attrs.get("Base-Root_value");
-       
-    }
 
     private File createZipFile(String baseRootValue, ArrayList<String> binDirFiles) throws IOException, ZipFileException {
 
