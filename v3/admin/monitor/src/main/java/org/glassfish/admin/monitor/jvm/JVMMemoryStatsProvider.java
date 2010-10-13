@@ -57,10 +57,6 @@ import org.glassfish.gmbal.ManagedObject;
 @ManagedObject
 @Description( "JVM Memory Statistics" )
 public class JVMMemoryStatsProvider {
-    
-    private MemoryMXBean memBean = ManagementFactory.getMemoryMXBean();
-    private MemoryUsage memUsageHeap = memBean.getHeapMemoryUsage();
-    private MemoryUsage memUsageNonHeap = memBean.getNonHeapMemoryUsage();
 
     private CountStatisticImpl committedHeap = new CountStatisticImpl(
             "CommittedHeapSize", "bytes",
@@ -93,63 +89,63 @@ public class JVMMemoryStatsProvider {
     @ManagedAttribute(id="committedheapsize-count")
     @Description( "amount of memory in bytes that is committed for the Java virtual machine to use" )
     public CountStatistic getCommittedHeap() {
-        committedHeap.setCount(memUsageHeap.getCommitted());
+        committedHeap.setCount(ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getCommitted());
         return committedHeap;
     }
 
     @ManagedAttribute(id="initheapsize-count")
     @Description( "amount of memory in bytes that the Java virtual machine initially requests from the operating system for memory management" )
     public CountStatistic getInitHeap() {
-        initHeap.setCount(memUsageHeap.getInit());
+        initHeap.setCount(ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getInit());
         return initHeap;
     }
 
     @ManagedAttribute(id="maxheapsize-count")
     @Description( "maximum amount of memory in bytes that can be used for memory management" )
     public CountStatistic getMaxHeap() {
-        maxHeap.setCount(memUsageHeap.getMax());
+        maxHeap.setCount(ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
         return maxHeap;
     }
 
     @ManagedAttribute(id="usedheapsize-count")
     @Description( "amount of used memory in bytes" )
     public CountStatistic getUsedHeap() {
-        usedHeap.setCount(memUsageHeap.getUsed());
+        usedHeap.setCount(ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed());
         return usedHeap;
     }
 
     @ManagedAttribute(id="committednonheapsize-count")
     @Description( "amount of memory in bytes that is committed for the Java virtual machine to use" )
     public CountStatistic getCommittedNonHeap() {
-        committedNonHeap.setCount(memUsageNonHeap.getCommitted());
+        committedNonHeap.setCount(ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().getCommitted());
         return committedNonHeap;
     }
 
     @ManagedAttribute(id="initnonheapsize-count")
     @Description( "amount of memory in bytes that the Java virtual machine initially requests from the operating system for memory management" )
     public CountStatistic getInitNonHeap() {
-        initNonHeap.setCount(memUsageNonHeap.getInit());
+        initNonHeap.setCount(ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().getInit());
         return initNonHeap;
     }
 
     @ManagedAttribute(id="maxnonheapsize-count")
     @Description( "maximum amount of memory in bytes that can be used for memory management" )
     public CountStatistic getMaxNonHeap() {
-        maxNonHeap.setCount(memUsageNonHeap.getMax());
+        maxNonHeap.setCount(ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().getMax());
         return maxNonHeap;
     }
 
     @ManagedAttribute(id="usednonheapsize-count")
     @Description( "amount of used memory in bytes" )
     public CountStatistic getUsedNonHeap() {
-        usedNonHeap.setCount(memUsageNonHeap.getUsed());
+        usedNonHeap.setCount(ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().getUsed());
         return usedNonHeap;
     }
 
     @ManagedAttribute(id="objectpendingfinalizationcount-count")
     @Description( "approximate number of objects for which finalization is pending" )
     public CountStatistic getObjectPendingFinalizationCount() {
-        objectPendingFinalizationCount.setCount(memBean.getObjectPendingFinalizationCount());
+        objectPendingFinalizationCount.setCount(ManagementFactory.getMemoryMXBean().getObjectPendingFinalizationCount());
         return objectPendingFinalizationCount;
     }
 }
