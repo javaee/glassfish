@@ -100,6 +100,10 @@ public class InhabitantsGenerator {
     descriptor.write(writer);
   }
 
+  InhabitantsParsingContextGenerator getContextGenerator() {
+    return ipcGen;
+  }
+  
   public static void main(String [] args) throws Exception {
     String classpathDebug = System.getProperty("java.class.path");
     System.out.println(InhabitantsGenerator.class.getSimpleName() + " classpath is " + classpathDebug);
