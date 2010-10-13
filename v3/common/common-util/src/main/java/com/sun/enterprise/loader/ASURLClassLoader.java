@@ -68,23 +68,13 @@ import java.security.ProtectionDomain;
 import java.security.SecureClassLoader;
 import java.security.cert.Certificate;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.Vector;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.sun.appserv.server.util.PreprocessorUtil;
@@ -123,8 +113,11 @@ public class ASURLClassLoader
     /** logger for this class */
     private static final Logger _logger=LogDomains.getLogger(ASURLClassLoader.class, LogDomains.LOADER_LOGGER);
 
-    /** list of url entries of this class loader */
-    private final List<URLEntry> urlSet = Collections.synchronizedList(new ArrayList<URLEntry>());
+    /*
+       list of url entries of this class loader. Using LinkedHashSet instead of original ArrayList
+       for faster search.      
+    */
+    private final Set<URLEntry> urlSet = Collections.synchronizedSet(new LinkedHashSet<URLEntry>());
 
     /** cache of not found resources */
     private final Map<String,String> notFoundResources   = new ConcurrentHashMap<String,String>();
@@ -225,8 +218,7 @@ public class ASURLClassLoader
 
             // closes the jar handles and sets the url entries to null
             int i = 0;
-            while (i < this.urlSet.size()) {
-                URLEntry u = (URLEntry) this.urlSet.get(i);
+            for (URLEntry u : this.urlSet) {
                 if (u.zip != null) {
                     try {
                         u.zip.reallyClose();
@@ -356,11 +348,12 @@ public class ASURLClassLoader
 
         URL[] url  = null;
 
+        int i=0;
         if (this.urlSet != null) {
             url  = new URL[this.urlSet.size()];
 
-            for (int i=0; i<url.length; i++) {
-                url[i] = ((URLEntry)this.urlSet.get(i)).source;
+            for (URLEntry urlEntry : urlSet) {
+                url[i++] = (urlEntry).source;
             }
         } else {
             url = new URL[0];
@@ -529,8 +522,7 @@ public class ASURLClassLoader
 
         int i = 0;
         synchronized(this) {
-            while (i < this.urlSet.size()) {
-                final URLEntry u = this.urlSet.get(i);
+            for (final URLEntry u : this.urlSet) {
 
                 if (!u.hasItem(name)) {
                     i++;
@@ -794,9 +786,7 @@ public class ASURLClassLoader
         String entryName = name.replace('.', '/') + ".class";
 
         int i = 0;
-        while (i < urlSet.size()) {
-            URLEntry u = (URLEntry) this.urlSet.get(i);
-
+        for (URLEntry u : this.urlSet) {
             if (!u.hasItem(entryName)) {
                 i++;
                 continue;
