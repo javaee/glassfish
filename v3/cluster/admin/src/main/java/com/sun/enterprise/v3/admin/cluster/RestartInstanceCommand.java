@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.admin.remote.RemoteAdminCommand;
@@ -118,7 +117,12 @@ public class RestartInstanceCommand implements AdminCommand {
                     host, port, false, "admin", null, logger);
 
             // notice how we do NOT send in the instance's name as an operand!!
-            rac.executeCommand(new ParameterMap());
+            ParameterMap map = new ParameterMap();
+
+            if (debug != null)
+                map.add("debug", debug);
+
+            rac.executeCommand(map);
         }
         catch (CommandException ex) {
             return Strings.get("restart.instance.racError", instanceName,
@@ -133,6 +137,9 @@ public class RestartInstanceCommand implements AdminCommand {
     private ServerEnvironment env;
     @Param(optional = false, primary = true)
     private String instanceName;
+    // no default value!  We use the Boolean as a tri-state.
+    @Param(name = "debug", optional = true)
+    private String debug;
     private Logger logger;
     private RemoteInstanceCommandHelper helper;
     private ActionReport report;
