@@ -595,9 +595,8 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
    * 
    * The implementation returns the inhabitants argument as-is .
    */
-  @SuppressWarnings("unchecked")
   @Override
-  public List<Inhabitant> sort(List<Inhabitant> inhabitants) {
+  public List<Inhabitant<?>> sort(List<Inhabitant<?>> inhabitants) {
     return inhabitants;
   }
 
@@ -779,9 +778,8 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
       setCurrent(this, runLevel);
     }
     
-    @SuppressWarnings("unchecked")
     private void activateRunLevel() {
-      List<Inhabitant> activations = new ArrayList<Inhabitant>();
+      List<Inhabitant<?>> activations = new ArrayList<Inhabitant<?>>();
       
       // TODO: we could cache this in top-level proceedTo()
       Collection<Inhabitant<?>> runLevelInhabitants = 

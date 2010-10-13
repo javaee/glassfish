@@ -49,7 +49,6 @@ import org.jvnet.hk2.annotations.Contract;
  * @since 3.1
  */
 @Contract
-@SuppressWarnings("unchecked")
 public interface InhabitantSorter {
 
   /**
@@ -61,6 +60,6 @@ public interface InhabitantSorter {
    * 
    * @return the sorted list --- must not be null
    */
-  public List<Inhabitant> sort(List<Inhabitant> inhabitants);
+  public List<Inhabitant<?>> sort(List<Inhabitant<?>> inhabitants);
   
 }
