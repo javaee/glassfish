@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.webservices.metroglue;
 
 import java.io.File;
@@ -48,6 +47,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.text.MessageFormat;
 
+import com.sun.enterprise.config.serverbeans.AvailabilityService;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.util.io.FileUtils;
@@ -81,6 +81,7 @@ import org.jvnet.hk2.component.Singleton;
 @Service(name = "org.glassfish.webservices.metroglue.MetroContainer")
 @Scoped(Singleton.class)
 public class MetroContainer implements PostConstruct, Container, WebServiceDeploymentListener {
+
     private static final Logger logger = LogDomains.getLogger(MetroContainer.class, LogDomains.WEBSERVICES_LOGGER);
     private static final ResourceBundle rb = logger.getResourceBundle();
     //
@@ -98,13 +99,15 @@ public class MetroContainer implements PostConstruct, Container, WebServiceDeplo
     private ServerEnvironmentImpl env;
     @Inject
     GMSAdapterService gmsAdapterService;
+    @Inject(optional = true)
+    private AvailabilityService availabilityService;
 
     @Override
     public void postConstruct() {
         WebServicesDeployer.getDeploymentNotifier().addListener(this);
         logger.info("endpoint.event.listener.registered");
-        
-        if(isCluster()) {
+
+        if (isCluster() && isHaEnabled()) {
             final String clusterName = gmsAdapterService.getGMSAdapter().getClusterName();
             final String instanceName = gmsAdapterService.getGMSAdapter().getModule().getInstanceName();
 
@@ -224,4 +227,22 @@ public class MetroContainer implements PostConstruct, Container, WebServiceDeplo
         return !env.isDas() && !env.isEmbedded() && gmsAdapterService.isGmsEnabled();
     }
 
+    private boolean isHaEnabled() {
+        boolean haEnabled = false;
+        if (availabilityService != null) {
+            haEnabled = Boolean.valueOf(availabilityService.getAvailabilityEnabled());
+        }
+
+//        if (haEnabled) {
+//            DeploymentContext dc = getDynamicDeploymentContext();
+//            if (dc != null) {
+//                DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
+//                if (params != null) {
+//                    haEnabled = params.availabilityenabled;
+//                }
+//            }
+//        }
+
+        return haEnabled;
+    }
 }
