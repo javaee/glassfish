@@ -21,6 +21,11 @@ public class AnnotationModelImpl implements AnnotationModel {
         this.type = type;
         this.element = element;
     }
+    
+    @Override
+    public String toString() {
+      return "AnnotationModel:" + type + "-" + element;
+    }
 
     public void addValue(String name, Object value) {
         values.put(name, value);
