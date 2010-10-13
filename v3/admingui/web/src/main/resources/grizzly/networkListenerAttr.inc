@@ -58,7 +58,7 @@
 
 
     <sun:property id="prop1" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.protocol}">
-    <sun:radioButton id="rdBtn" name="rdBtn" selected="#{pageSession.rdBtn}" selectedValue="create" onClick="radioBtnAction('create');"  >
+    <sun:radioButton id="rdBtn" name="rdBtn" selected="#{pageSession.rdBtn}" selectedValue="create" onClick="radioBtnAction('create');setProtocolName();"  >
       <!beforeCreate
             setPageSessionAttribute(key="rdBtn", value="create");
       />
