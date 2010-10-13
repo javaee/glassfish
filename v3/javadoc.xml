@@ -212,7 +212,9 @@
 
   <target name="javamail.download" description="Download JavaMail 1.4.3" depends="initialize.maven">
       <artifact:dependencies sourcesFilesetId="sources.dependency.javamail">
-          <dependency groupId="javax.mail" artifactId="mail" version="1.4.3"/>
+          <dependency groupId="javax.mail" artifactId="mail" version="1.4.3">
+              <exclusion groupId="javax.activation" artifactId="activation" />
+          </dependency>
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -288,6 +290,7 @@ fileset refid of artifact:dependencies does not work in unjar
       <artifact:dependencies sourcesFilesetId="sources.dependency.jaxws-api">
           <dependency groupId="javax.xml.ws" artifactId="jaxws-api" version="2.2.1">
               <exclusion groupId="javax.annotation" artifactId="jsr250-api" />
+              <exclusion groupId="javax.activation" artifactId="activation" />
           </dependency>
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
