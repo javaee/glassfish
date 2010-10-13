@@ -6,20 +6,20 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.glassfish.hk2.classmodel.reflect.AnnotatedElement;
 import org.glassfish.hk2.classmodel.reflect.AnnotationModel;
 import org.glassfish.hk2.classmodel.reflect.AnnotationType;
 import org.glassfish.hk2.classmodel.reflect.ClassModel;
 import org.glassfish.hk2.classmodel.reflect.InterfaceModel;
-import org.glassfish.hk2.classmodel.reflect.Member;
 import org.glassfish.hk2.classmodel.reflect.ParsingContext;
 import org.glassfish.hk2.classmodel.reflect.Types;
-import org.glassfish.hk2.classmodel.reflect.Type;
-import org.glassfish.hk2.classmodel.reflect.impl.AnnotationTypeImpl;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractProvided;
+import org.jvnet.hk2.annotations.FactoryFor;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.classmodel.InhabitantsFeed;
@@ -43,10 +43,21 @@ public class InhabitantsGenerator {
   public static final String PARAM_INHABITANT_FILE = "inhabitants.target.file";
   public static final String PARAM_INHABITANTS_SOURCE_FILES = "inhabitants.source.files";
 
-  private InhabitantsParsingContextGenerator ipcGen;
+  private final InhabitantsDescriptor descriptor;
+  private final InhabitantsParsingContextGenerator ipcGen;
   
   public InhabitantsGenerator() {
-    ipcGen = InhabitantsParsingContextGenerator.create(null);
+    this(null);
+  }
+  
+  public InhabitantsGenerator(InhabitantsDescriptor descriptor) {
+    this.ipcGen = InhabitantsParsingContextGenerator.create(null);
+    if (null != descriptor) {
+      this.descriptor = descriptor;
+    } else {
+      this.descriptor = new InhabitantsDescriptor();
+      this.descriptor.setComment("by " + getClass().getCanonicalName());
+    }
   }
   
   public void add(List<File> sourceFiles) throws IOException {
@@ -72,7 +83,8 @@ public class InhabitantsGenerator {
   
   @SuppressWarnings("unchecked")
   public void generate(PrintWriter writer, String habitatName) throws IOException {
-    InhabitantsDescriptor descriptor = new InhabitantsDescriptor();
+    descriptor.clear();
+
     InhabitantsParserDescriptorWriter ip = new InhabitantsParserDescriptorWriter(descriptor);
     InhabitantsFeed feed = InhabitantsFeed.create(null, ip);
     // TODO: the standard machinery (w/o TemporaryIntrospectionScanner) should just work
@@ -119,15 +131,19 @@ public class InhabitantsGenerator {
       this.descriptor = descriptor;
     }
 
+    /**
+     * The idea is to put the inhabitant into the descriptors instead of the habitat here
+     */
     @Override
     protected void add(Inhabitant<?> i, InhabitantParser parser) {
-      // do nothing
       // TODO: do something once we fix the kludge, taking out TemporaryIntrospectionScanner
     }
     
+    /**
+     * The idea is to merge the inhabitant index into the descriptors instead of the habitat here
+     */
     @Override
     protected void addIndex(Inhabitant<?> i, String typeName, String name) {
-      // do nothing
       // TODO: do something once we fix the kludge, taking out TemporaryIntrospectionScanner
     }
   }
@@ -147,45 +163,81 @@ public class InhabitantsGenerator {
     @Override
     public void parse(ParsingContext context, Holder<ClassLoader> loader) {
       Types types = context.getTypes();
-      Type type = types.getBy(AnnotationType.class, Service.class.getName());
-      if (AnnotationType.class.isInstance(type)) {
-        AnnotationType at = AnnotationType.class.cast(type);
-        Collection<AnnotatedElement> coll = at.allAnnotatedTypes();
-        for (AnnotatedElement ae : coll) {
-          process(ae);
-        }
+      
+      // TODO: This should have contained InhabitantAnnotation but it didn't 
+//      Type notThere = types.getBy(InhabitantAnnotation.class.getName());
+      
+      AnnotationType at = types.getBy(AnnotationType.class, Service.class.getName());
+      // TODO: This should have contained InhabitantAnnotation but it didn't 
+//      Collection<AnnotationModel> notThere2 = at.getAnnotations();
+      
+      Collection<AnnotatedElement> coll = at.allAnnotatedTypes();
+      for (AnnotatedElement ae : coll) {
+        process(ae, types);
       }
     }
 
-    protected void process(AnnotatedElement ae) {
+    protected void process(AnnotatedElement ae, Types types) {
       if (ClassModel.class.isInstance(ae)) {
         String service = ae.getName();
         
         ClassModel classModel = ClassModel.class.cast(ae);
-        Collection<String> contracts = getContracts(classModel);
+        Collection<String> contracts = getContracts(classModel, types);
 
+        AnnotationModel am = ae.getAnnotation(Service.class.getCanonicalName());
+        Object nameObj = am.getValues().get("name");
+        String name = (null == nameObj) ? null : nameObj.toString();
+        
+        Map<String, String> mm = null;
+        Object metaObj = am.getValues().get("metadata");
+        if (null != metaObj) {
+          String meta = metaObj.toString();
+          String [] split = meta.split(",");
+          for (String entry : split) {
+            String [] split2 = entry.split("=");
+            if (2 == split2.length) {
+              if (null == mm) {
+                mm = new LinkedHashMap<String, String>();
+              }
+              mm.put(split2[0], split2[1]);
+            }
+          }
+        }
 
-        // TODO:
-        descriptor.putAll(service, contracts, null, null);
+        // add it to the descriptors
+        descriptor.putAll(service, contracts, name, mm);
       }
     }
 
-    protected Collection<String> getContracts(ClassModel classModel) {
+    protected Collection<String> getContracts(ClassModel classModel, Types types) {
       Collection<String> contracts = new ArrayList<String>();
       Collection<InterfaceModel> ifModels = classModel.getInterfaces();
       for (InterfaceModel ifModel : ifModels) {
-        AnnotationModel am = ifModel.getAnnotation(Contract.class.getCanonicalName());
-        if (null != am) {
-          contracts.add(ifModel.getName());
+        if (null != ifModel) {
+          AnnotationModel am = ifModel.getAnnotation(Contract.class.getCanonicalName());
+          if (null != am) {
+            contracts.add(ifModel.getName());
+          }
         }
       }
-      
-      AnnotationModel am = classModel.getAnnotation(ContractProvided.class.getCanonicalName());
-      if (null != am) {
-        Object t = am.getValues().get("value");
-        if (null != t) {
+
+      // TODO: getting annotations off of FactoryFor does NOT show @Contract, and it should!
+//      AnnotationType type = types.getBy(AnnotationType.class, name);
+
+      Collection<AnnotationModel> amColl = classModel.getAnnotations();
+      for (AnnotationModel am : amColl) {
+        AnnotationType at = am.getType();
+        String name = at.getName();
+        if (name.equals(ContractProvided.class.getName())) {
+          Object t = am.getValues().get("value");
+          if (null != t) {
+            String c = clean(t.toString());
+            contracts.add(c);
+          }
+        } else if (name.equals(FactoryFor.class.getName())) {
+          Object t = am.getValues().get("value");
           String c = clean(t.toString());
-          contracts.add(c);
+          contracts.add(name + ":" + c);
         }
       }
       
