@@ -12,9 +12,17 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Set;
 
+import org.glassfish.hk2.classmodel.reflect.AnnotationType;
+import org.glassfish.hk2.classmodel.reflect.ParsingContext;
+import org.glassfish.hk2.classmodel.reflect.Type;
+import org.glassfish.hk2.classmodel.reflect.Types;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.annotations.InhabitantAnnotation;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.classmodel.ClassPathHelper;
+import org.jvnet.hk2.component.classmodel.InhabitantsParsingContextGenerator;
 
 import com.sun.enterprise.tools.InhabitantsDescriptor;
 
@@ -27,19 +35,42 @@ public class InhabitantsGeneratorTest {
 
   @Ignore
   @Test
+  public void sanityTest() throws Exception {
+    ArrayList<File> testDir = getTestClassPathEntries();
+
+    InhabitantsGenerator generator = new InhabitantsGenerator();
+    generator.add(testDir);
+
+    InhabitantsParsingContextGenerator ipcGen = generator.getContextGenerator();
+    ParsingContext pc = ipcGen.getContext();
+    assertNotNull(pc);
+    
+    Types types = pc.getTypes();
+    
+    AnnotationType ia = types.getBy(AnnotationType.class, InhabitantAnnotation.class.getName());
+    AnnotationType s = types.getBy(AnnotationType.class, Service.class.getName());
+    AnnotationType c = types.getBy(AnnotationType.class, Contract.class.getName());
+    
+    assertNotNull("@InhabitantAnnotation not found", ia);
+    assertNotNull("Service not found", s);
+    assertNotNull("@Contract not found", c);
+  }
+
+  @Ignore
+  @Test
   public void testHabitatFileGeneration() throws IOException {
     ArrayList<File> testDir = getTestClassPathEntries();
 
     InhabitantsDescriptor descriptor = new InhabitantsDescriptor();
     descriptor.enableDateOutput(false);
     
-    InhabitantsGenerator ipcGen = new InhabitantsGenerator(descriptor);
-    ipcGen.add(testDir);
+    InhabitantsGenerator generator = new InhabitantsGenerator(descriptor);
+    generator.add(testDir);
     
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     PrintWriter writer = new PrintWriter(out);
     
-    ipcGen.generate(writer, null);
+    generator.generate(writer, null);
     writer.close();
     
     String output = out.toString();
@@ -83,7 +114,7 @@ public class InhabitantsGeneratorTest {
     
     assertTrue(sb.toString() + " was not found in output file", sb.toString().contains(expected()));
   }
-
+  
   public ArrayList<File> getTestClassPathEntries() {
     ArrayList<File> entries = new ArrayList<File>();
     
