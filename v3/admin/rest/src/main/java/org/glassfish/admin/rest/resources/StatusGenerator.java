@@ -41,7 +41,9 @@ package org.glassfish.admin.rest.resources;
 
 import com.sun.enterprise.config.serverbeans.Domain;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -80,12 +82,13 @@ public class StatusGenerator {
     private Set<String> commandsUsed = new TreeSet<String>();
     private Set<String> allCommands = new TreeSet<String>();
     private Set<String> restRedirectCommands = new TreeSet<String>();
+    private Map<String, String> commandsToResources = new TreeMap<String, String>();
 
     @GET
     @Produces({"text/plain"})
     public String get() {
-
-        status.append("Status of Command usage\n");
+//        status.append("\n------------------------");
+//        status.append("Status of Command usage\n");
         try {
             Domain entity = habitat.getComponent(Domain.class);
             Dom dom = Dom.unwrap(entity);
@@ -100,7 +103,8 @@ public class StatusGenerator {
             //retVal = "Exception encountered during generation process: " + ex.toString() + "\nPlease look at server.log for more information.";
         }
 
-        status.append("-------All Commands:\n");
+        status.append("\n------------------------");
+        status.append("All Commands used in REST Admin:\n");
         for (String ss : commandsUsed) {
             status.append(ss + "\n");
         }
@@ -110,15 +114,25 @@ public class StatusGenerator {
             allCommands.remove(ss);
         }
 
-        status.append("-------Missing Commands:\n");
+        status.append("\n------------------------");
+        status.append("Missing Commands not used in REST Admin:\n");
 
         for (String ss : allCommands) {
             status.append(ss + "\n");
         }
-        status.append("-------REST-REDIRECT Commands:\n");
+        status.append("\n------------------------");
+        status.append("REST-REDIRECT Commands defined on ConfigBeans:\n");
 
         for (String ss : restRedirectCommands) {
             status.append(ss + "\n");
+        }
+        
+        
+                status.append("\n------------------------");
+        status.append("Commands to Resources Mapping Usage in REST Admin:\n");
+
+        for (String ss : commandsToResources.keySet()) {
+            status.append(ss + "   :::   "+commandsToResources.get(ss)+"\n");
         }
         return status.toString();
     }
@@ -147,21 +161,33 @@ public class StatusGenerator {
 
     class NOOPClassWriter implements ClassWriter {
 
+        private String className;
+
         public NOOPClassWriter(String className, String baseClassName, String resourcePath) {
-            StatusGenerator.this.status.append(className);
-            StatusGenerator.this.status.append("\n");
+            this.className = className;
+//            StatusGenerator.this.status.append(className);
+//            StatusGenerator.this.status.append("\n");
         }
 
         @Override
         public void createGetCommandResourcePaths(List<CommandResourceMetaData> commandMetaData) {
             for (CommandResourceMetaData metaData : commandMetaData) {
-                StatusGenerator.this.status.append("   ");
-                StatusGenerator.this.status.append(metaData.command);
+//                StatusGenerator.this.status.append("   ");
+//                StatusGenerator.this.status.append(metaData.command);
                 commandsUsed.add(metaData.command);
-                StatusGenerator.this.status.append("\n");
+
+                if (commandsToResources.containsKey(metaData.command)) {
+                    String val = commandsToResources.get(metaData.command) + ", " + className;
+                    commandsToResources.put(metaData.command, val);
+
+                } else {
+                    commandsToResources.put(metaData.command, className);
+                }
+
+//                StatusGenerator.this.status.append("\n");
             }
 
-            StatusGenerator.this.status.append("\n");
+//            StatusGenerator.this.status.append("\n");
 
         }
 
@@ -183,18 +209,32 @@ public class StatusGenerator {
 
         @Override
         public void createGetDeleteCommand(String commandName) {
-            StatusGenerator.this.status.append("   ");
-            StatusGenerator.this.status.append(commandName);
-            StatusGenerator.this.status.append("\n");
+//            StatusGenerator.this.status.append("   ");
+//            StatusGenerator.this.status.append(commandName);
+//            StatusGenerator.this.status.append("\n");
             commandsUsed.add(commandName);
+            if (commandsToResources.containsKey(commandName)) {
+                String val = commandsToResources.get(commandName) + ", " + className;
+                commandsToResources.put(commandName, val);
+
+            } else {
+                commandsToResources.put(commandName, className);
+            }
         }
 
         @Override
         public void createGetPostCommand(String commandName) {
-            StatusGenerator.this.status.append("   ");
-            StatusGenerator.this.status.append(commandName);
-            StatusGenerator.this.status.append("\n");
+//            StatusGenerator.this.status.append("   ");
+//            StatusGenerator.this.status.append(commandName);
+//            StatusGenerator.this.status.append("\n");
             commandsUsed.add(commandName);
+            if (commandsToResources.containsKey(commandName)) {
+                String val = commandsToResources.get(commandName) + ", " + className;
+                commandsToResources.put(commandName, val);
+
+            } else {
+                commandsToResources.put(commandName, className);
+            }
         }
 
         @Override
@@ -207,18 +247,32 @@ public class StatusGenerator {
 
         @Override
         public void createGetPostCommandForCollectionLeafResource(String commandName) {
-            StatusGenerator.this.status.append("   ");
-            StatusGenerator.this.status.append(commandName);
-            StatusGenerator.this.status.append("\n");
+//            StatusGenerator.this.status.append("   ");
+//            StatusGenerator.this.status.append(commandName);
+//            StatusGenerator.this.status.append("\n");
             commandsUsed.add(commandName);
+            if (commandsToResources.containsKey(commandName)) {
+                String val = commandsToResources.get(commandName) + ", " + className;
+                commandsToResources.put(commandName, val);
+
+            } else {
+                commandsToResources.put(commandName, className);
+            }
         }
 
         @Override
         public void createGetDeleteCommandForCollectionLeafResource(String commandName) {
-            StatusGenerator.this.status.append("   ");
-            StatusGenerator.this.status.append(commandName);
-            StatusGenerator.this.status.append("\n");
+//            StatusGenerator.this.status.append("   ");
+//            StatusGenerator.this.status.append(commandName);
+//            StatusGenerator.this.status.append("\n");
             commandsUsed.add(commandName);
+            if (commandsToResources.containsKey(commandName)) {
+                String val = commandsToResources.get(commandName) + ", " + className;
+                commandsToResources.put(commandName, val);
+
+            } else {
+                commandsToResources.put(commandName, className);
+            }
         }
 
         @Override
@@ -259,4 +313,3 @@ public class StatusGenerator {
         }
     }
 }
-
