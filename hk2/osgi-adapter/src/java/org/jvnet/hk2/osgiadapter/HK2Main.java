@@ -44,6 +44,7 @@ import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
+import com.sun.enterprise.module.common_impl.TracingUtilities;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
@@ -138,15 +139,52 @@ public class HK2Main extends Main implements
 
         OSGiFactoryImpl.initialize(ctx);
 
-        createModulesRegistry();
+        ModulesRegistry mr = createModulesRegistry();
+        if (TracingUtilities.isEnabled())
+            registerBundleDumper(mr);
 
         ctx.registerService(Main.class.getName(), this, null);
     }
 
-    protected void createModulesRegistry() {
+    private void registerBundleDumper(final ModulesRegistry mr) {
+
+        ctx.addBundleListener(new SynchronousBundleListener() {
+            public void bundleChanged(final BundleEvent event) {
+                switch (event.getType()) {
+                    case BundleEvent.RESOLVED:
+                        TracingUtilities.traceResolution(mr,
+                                event.getBundle().getBundleId(),
+                                event.getBundle().getSymbolicName(),
+                                new TracingUtilities.Loader() {
+                                    @Override
+                                    public Class loadClass(String type) throws ClassNotFoundException {
+                                        return event.getBundle().loadClass(type);
+                                    }
+                                });
+                        break;
+
+                    case BundleEvent.STARTED:
+                        TracingUtilities.traceStarted(mr,
+                                event.getBundle().getBundleId(),
+                                event.getBundle().getSymbolicName(),
+                                new TracingUtilities.Loader() {
+                                    @Override
+                                    public Class loadClass(String type) throws ClassNotFoundException {
+                                        return event.getBundle().loadClass(type);
+                                    }
+                                });
+
+                        break;
+                }
+            }
+        });
+    }
+
+    protected ModulesRegistry createModulesRegistry() {
         assert (mrReg == null);
         ModulesRegistry mr = AbstractFactory.getInstance().createModulesRegistry();
         mrReg = ctx.registerService(ModulesRegistry.class.getName(), mr, null);
+        return mr;
     }
 
     @Override

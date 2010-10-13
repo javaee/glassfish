@@ -43,7 +43,6 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.MultiMap;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -113,7 +112,7 @@ public class ConfiguredScanner implements IntrospectionScanner {
     }
 
     private void generate(FieldModel f) {
-        throw new NotImplementedException();
+        throw new RuntimeException("Not implemented");
     }
 
     private void generate(MethodModel m, MultiMap<String, String> metadata) {

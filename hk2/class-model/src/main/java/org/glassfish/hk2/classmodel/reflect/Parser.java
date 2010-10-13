@@ -63,17 +63,20 @@ public class Parser {
     private final Map<URI, Types> processedURI = Collections.synchronizedMap(new HashMap<URI, Types>());
 
     private final List<Future<Result>> futures = Collections.synchronizedList(new ArrayList<Future<Result>>());
-    private ExecutorService executorService = null;
+    private final ExecutorService executorService;
+    private final boolean ownES;
     
     public Parser(ParsingContext context) {
         this.context = context;
-        executorService = context.executorService;
+        executorService = (context.executorService==null?createExecutorService():context.executorService);
+        ownES = context.executorService==null;
         parent = null;
     }
 
     private Parser(ParsingContext context, Parser parent) {
         this.context = context;
-        executorService = context.executorService;
+        executorService = (context.executorService==null?createExecutorService():context.executorService);
+        ownES = context.executorService==null;
         this.parent = parent;
     }
     public Exception[] awaitTermination() throws InterruptedException {
@@ -105,9 +108,9 @@ public class Parser {
             } catch (ExecutionException e) {
                 exceptions.add(e);
             }
-            if (executorService!=null) {
+            // if we own the executor service, time to shut it down.
+            if (executorService!=null && ownES) {
                 executorService.shutdown();
-                executorService=null;
             }
         }
         return exceptions.toArray(new Exception[exceptions.size()]);
@@ -136,6 +139,10 @@ public class Parser {
 
     public synchronized void parse(final ArchiveAdapter source, final Runnable doneHook) throws IOException {
 
+        if (executorService.isShutdown()) {
+            throw new RuntimeException("Executor service is shutdown, since awaitTermination was called, " +
+                    "provide an executor service instance from the context to avoid automatic shutdown");
+        }
         final Logger logger = context.logger;
         Types types = getResult(source.getURI());
         if (types!=null) {
@@ -151,7 +158,7 @@ public class Parser {
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "submitting file " + source.getURI().getPath());
         }
-        futures.add(getExecutorService().submit(new Callable<Result>() {
+        futures.add(executorService.submit(new Callable<Result>() {
             @Override
             public Result call() throws Exception {
                 try {
@@ -243,20 +250,17 @@ public class Parser {
         return context;
     }
 
-    private synchronized ExecutorService getExecutorService() {
-        if (executorService==null) {
-            Runtime runtime = Runtime.getRuntime();
-            int nrOfProcessors = runtime.availableProcessors();
-            executorService = Executors.newFixedThreadPool(nrOfProcessors, new ThreadFactory() {
-                    @Override
-                    public Thread newThread(Runnable r) {
-                        Thread t = new Thread(r);
-                        t.setName("Hk2-jar-scanner");
-                        return t;
-                    }
-                });
-        }
-        return executorService;
+    private ExecutorService createExecutorService() {
+        Runtime runtime = Runtime.getRuntime();
+        int nrOfProcessors = runtime.availableProcessors();
+        return Executors.newFixedThreadPool(nrOfProcessors, new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r);
+                t.setName("Hk2-jar-scanner");
+                return t;
+            }
+        });
     }
     
 
