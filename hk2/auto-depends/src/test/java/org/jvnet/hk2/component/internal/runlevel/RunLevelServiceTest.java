@@ -1247,12 +1247,11 @@ public class RunLevelServiceTest {
   }
   
   
-  @SuppressWarnings("unchecked")
   private static class TestInhabitantSorter implements InhabitantSorter {
     public int callCount;
 
     @Override
-    public List<Inhabitant> sort(List<Inhabitant> inhabitants) {
+    public List<Inhabitant<?>> sort(List<Inhabitant<?>> inhabitants) {
       callCount++;
       return inhabitants;
     }
