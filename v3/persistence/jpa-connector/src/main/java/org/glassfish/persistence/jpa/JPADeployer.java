@@ -206,12 +206,14 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
             ApplicationInfo appInfo = (ApplicationInfo) event.hook();
             //Suppress warning required as there is no way to pass equivalent of List<EMF>.class to the method 
             @SuppressWarnings("unchecked")  List<EntityManagerFactory> emfsCreatedForThisApp = appInfo.getTransientAppMetaData(EMF_KEY, List.class);
-            if(emfsCreatedForThisApp != null) { // Events are always dispatched to all registered listeners. emfsCreatedForThisApp will be null for an app that does not have PUs.  
+            if(emfsCreatedForThisApp != null) { // Events are always dispatched to all registered listeners. emfsCreatedForThisApp will be null for an app that does not have PUs.
                 for (EntityManagerFactory entityManagerFactory : emfsCreatedForThisApp) {
                     entityManagerFactory.close();
                 }
-                //Clean up the list for when the app is enabled again and new emfs are created
-                appInfo.addTransientAppMetaData(EMF_KEY, null);
+                // We no longer have the emfs in open state clear the list.
+                // On app enable(after a disable), for a cluster, the deployment framework calls prepare() for instances but not for DAS.
+                // So on DAS, at a disable, the emfs will be closed and we will not attempt to close emfs when appserver goes down even if the app is re-enabled.
+                emfsCreatedForThisApp.clear();
             }
         }
     }
