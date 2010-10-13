@@ -78,12 +78,10 @@ public class Client {
         try {
             System.out.println("Looking up EJB...");
             Simple ejb = (Simple) ic.lookup("java:global/foo/sample/SimpleEjb");
-            if (ejb!=null) {
-                System.out.println("Invoking EJB...");
-                System.out.println("EJB said: " + ejb.saySomething());
-                System.out.println("Other EJB said: " + ejb.askOther());
-                System.out.println("JPA call returned: " + ejb.testJPA());
-            }
+            System.out.println("Invoking EJB...");
+            System.out.println("EJB said: " + ejb.saySomething());
+            System.out.println("Other EJB said: " + ejb.askOther());
+            System.out.println("JPA call returned: " + ejb.testJPA());
 
         } catch (Exception e) {
             pass = false;

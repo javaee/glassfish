@@ -80,20 +80,18 @@ public class Client {
         try {
             System.err.println("Looking up EJB...");
             SimpleEjb ejb = (SimpleEjb) ic.lookup("java:global/sample/SimpleEjb");
-            if (ejb!=null) {
-                System.err.println("Invoking EJB...");
-                int count = ejb.testJPA();
-                if (count == 1) {
-                    System.err.println("1st call returned 1");
-                } else {
-                    throw new Exception("ERROR: 1st call returned " + count);
-                }
-                count = ejb.testJPA();
-                if (count == 2) {
-                    System.err.println("2nd call returned 2");
-                } else {
-                    throw new Exception("ERROR: 2nd call returned " + count);
-                }
+            System.err.println("Invoking EJB...");
+            int count = ejb.testJPA();
+            if (count == 1) {
+                System.err.println("1st call returned 1");
+            } else {
+                throw new Exception("ERROR: 1st call returned " + count);
+            }
+            count = ejb.testJPA();
+            if (count == 2) {
+                System.err.println("2nd call returned 2");
+            } else {
+                throw new Exception("ERROR: 2nd call returned " + count);
             }
 
             stat.addStatus("EJB 2container embedded with JPA", stat.PASS);

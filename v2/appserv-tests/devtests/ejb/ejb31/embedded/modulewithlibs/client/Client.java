@@ -77,11 +77,9 @@ public class Client {
         try {
             System.out.println("Looking up EJB...");
             SimpleEjb ejb = (SimpleEjb) ic.lookup("java:global/sample/SimpleEjb");
-            if (ejb!=null) {
-                System.out.println("Invoking EJB...");
-                System.out.println("EJB said: " + ejb.saySomething());
-                System.out.println("JPA call returned: " + ejb.testJPA());
-            }
+            System.out.println("Invoking EJB...");
+            System.out.println("EJB said: " + ejb.saySomething());
+            System.out.println("JPA call returned: " + ejb.testJPA());
 
             stat.addStatus("EJB embedded with JPA", stat.PASS);
         } catch (Exception e) {

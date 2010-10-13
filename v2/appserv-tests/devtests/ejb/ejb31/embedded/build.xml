@@ -17,6 +17,7 @@
         <antcall target="twomodules"/>
         <antcall target="timertest"/>
         <antcall target="modulewithlibs"/>
+        <antcall target="modulewithappname"/>
         <antcall target="twomoduleswithlibs"/>
         <antcall target="ejbinwar"/>
         <antcall target="ejbandwar"/>
@@ -50,6 +51,12 @@
         <record name="modulewithlibs.output" action="start" />
             <ant dir="modulewithlibs" target="all"/>
         <record name="modulewithlibs.output" action="stop" />
+    </target>
+
+    <target name="modulewithappname">
+        <record name="modulewithappname.output" action="start" />
+            <ant dir="modulewithappname" target="all"/>
+        <record name="modulewithappname.output" action="stop" />
     </target>
 
     <target name="twomoduleswithlibs">

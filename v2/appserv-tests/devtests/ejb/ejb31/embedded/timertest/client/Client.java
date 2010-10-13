@@ -76,15 +76,13 @@ public class Client {
         try {
             System.err.println("Looking up EJB...");
             SimpleEjb ejb = (SimpleEjb) ic.lookup("java:global/" + module + "/SimpleEjb");
-            if (ejb!=null) {
-                System.err.println("Invoking EJB...");
-                ejb.createTimer();
-                Thread.sleep(4000);
-                boolean result = ejb.verifyTimer();
-                System.err.println("EJB timer called: " + result);
-                if (!result)
-                    throw new Exception ("EJB timer was NOT called for 1 or 2 timers");
-            }
+            System.err.println("Invoking EJB...");
+            ejb.createTimer();
+            Thread.sleep(4000);
+            boolean result = ejb.verifyTimer();
+            System.err.println("EJB timer called: " + result);
+            if (!result)
+                throw new Exception ("EJB timer was NOT called for 1 or 2 timers");
 
             stat.addStatus("EJB embedded with timertest", stat.PASS);
         } catch (Exception e) {

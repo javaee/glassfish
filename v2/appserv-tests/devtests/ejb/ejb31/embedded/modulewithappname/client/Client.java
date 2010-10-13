@@ -36,7 +36,7 @@
 
 package com.acme;
 
-import org.glassfish.tests.ejb.profile.SimpleEjb;
+import org.glassfish.tests.ejb.sample.SimpleEjb;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -56,53 +56,42 @@ public class Client {
 
     public static void main(String[] s) {
         appName = s[0];
-        System.out.println(".......... Testing module: " + appName);
         stat.addDescription(appName);
         Client t = new Client();
         try {
-            t.test(appName);
+            t.test();
         } catch (Exception e) {
             e.printStackTrace();
         }
         stat.printSummary(appName + "ID");
-        System.exit(0);
-
     }
 
-    private void test(String module) {
+    private void test() {
 
-        long startTime0 = now();
-        long startTime = startTime0;
-        EJBContainer c = EJBContainer.createEJBContainer();
-        System.err.println("\n==> Spent on CREATE: " + (now() - startTime) + " msec");
+        Map<String, Object> p = new HashMap<String, Object>();
+        p.put(EJBContainer.MODULES, "sample");
+        p.put(EJBContainer.APP_NAME, "foo");
+
+        EJBContainer c = EJBContainer.createEJBContainer(p);
         // ok now let's look up the EJB...
         Context ic = c.getContext();
         try {
             System.out.println("Looking up EJB...");
-            startTime = now();
-            SimpleEjb ejb = (SimpleEjb) ic.lookup("java:global/" + module + "/SimpleEjb");
-            System.err.println("\n==> Spent on LOOKUP: " + (now() - startTime) + " msec");
+            SimpleEjb ejb = (SimpleEjb) ic.lookup("java:global/foo/sample/SimpleEjb");
             System.out.println("Invoking EJB...");
-            startTime = now();
-            String result = ejb.saySomething();
-            System.err.println("\n==> Spent on CALL: " + (now() - startTime) + " msec");
-            System.out.println("EJB said: " + result);
+            System.out.println("EJB said: " + ejb.saySomething());
+            System.out.println("JPA call returned: " + ejb.testJPA());
 
-            startTime = now();
-            c.close();
-            System.err.println("\n==> Spent on CLOSE: " + (now() - startTime) + " msec");
-            stat.addStatus("EJB embedded with profile", stat.PASS);
+            stat.addStatus("EJB embedded with JPA", stat.PASS);
         } catch (Exception e) {
-            stat.addStatus("EJB embedded with profile", stat.FAIL);
+            stat.addStatus("EJB embedded with JPA", stat.FAIL);
             System.out.println("ERROR calling EJB:");
             e.printStackTrace();
         }
         System.out.println("Done calling EJB");
-        System.err.println("\n==> Spent on TEST: " + (now() - startTime0) + " msec");
-    }
 
-    private long now() {
-        return System.currentTimeMillis();
-    }
+        c.close();
 
+        System.out.println("..........FINISHED Embedded test");
+    }
 }

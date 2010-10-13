@@ -77,11 +77,9 @@ public class Client {
         try {
             System.out.println("Looking up EJB...");
             SimpleRemote ejb = (SimpleRemote) ic.lookup("java:global/" + module + "/SimpleEjb");
-            if (ejb!=null) {
-                System.out.println("Invoking EJB...");
-                String result = ejb.saySomething();
-                System.out.println("EJB said: " + result);
-            }
+            System.out.println("Invoking EJB...");
+            String result = ejb.saySomething();
+            System.out.println("EJB said: " + result);
 
             c.close();
             stat.addStatus("EJB embedded with remote", stat.PASS);

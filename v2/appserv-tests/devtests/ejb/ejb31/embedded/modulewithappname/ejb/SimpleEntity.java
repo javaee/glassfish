@@ -34,67 +34,52 @@
  * holder.
  */
 
-package com.acme;
+/*
+ * SimpleEntity.java
+ *
+ * @author Marina Vatkina
+ */
 
-import org.glassfish.tests.ejb.sample.Simple;
+package org.glassfish.tests.ejb.sample;
 
-import java.util.Map;
-import java.util.HashMap;
-import javax.ejb.*;
-import javax.ejb.embeddable.EJBContainer;
-import javax.naming.Context;
-import javax.naming.NamingException;
+import javax.persistence.*;
+import static javax.persistence.CascadeType.*;
+import static javax.persistence.FetchType.*;
 
-import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
+@Entity
+@NamedQueries({
+    @NamedQuery(name = "SimpleEntity.findAll", query = "select e from SimpleEntity e")
+})
+public class SimpleEntity {
+    
+    @Id 
+    @GeneratedValue
+    private int id;
+    private String name;
 
-public class Client {
-
-    private static SimpleReporterAdapter stat =
-        new SimpleReporterAdapter("appserv-tests");
-
-    private static String appName;
-
-    public static void main(String[] s) {
-        appName = s[0];
-        stat.addDescription(appName);
-        Client t = new Client();
-        try {
-            t.test();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        stat.printSummary(appName + "ID");
+    @OneToOne(cascade=PERSIST, fetch=LAZY)
+    private SimpleRelated related;
+    
+    public SimpleEntity(String name) {
+        setName(name);
     }
-
-    private void test() {
-
-        boolean pass = true;
-        EJBContainer c = EJBContainer.createEJBContainer();
-        // ok now let's look up the EJB...
-        Context ic = c.getContext();
-        try {
-            System.out.println("Looking up EJB...");
-            Simple ejb = (Simple) ic.lookup("java:global/sample/SimpleEjb");
-            System.out.println("Invoking EJB...");
-            System.out.println("EJB said: " + ejb.saySomething());
-            System.out.println("JPA call returned: " + ejb.testJPA());
-
-        } catch (Exception e) {
-            pass = false;
-            System.out.println("ERROR calling EJB:");
-            e.printStackTrace();
-        }
-        System.out.println("Done calling EJB");
-
-        System.out.println("Closing container ...");
-        try {
-            c.close();
-        } catch (Exception e) {
-            pass = false;
-            System.out.println("ERROR Closing container:");
-            e.printStackTrace();
-        }
-        stat.addStatus("EJB embedded with JPA", (pass)? stat.PASS : stat.FAIL);
-        System.out.println("..........FINISHED Embedded test");
+    
+    public SimpleEntity() {
     }
+    
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public SimpleRelated getRelated() {
+        return related;
+    }
+    public void setRelated(SimpleRelated related) {
+        this.related = related;
+    }
+    
+    
 }

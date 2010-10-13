@@ -106,11 +106,9 @@ public class Client {
             Context ic = c.getContext();
             System.out.println("Looking up EJB...");
             SimpleEjb ejb = (SimpleEjb) ic.lookup("java:global/foo/sample/SimpleEjb");
-            if (ejb!=null) {
-                System.out.println("Invoking EJB from module 1...");
-                System.out.println("EJB said: " + ejb.saySomething());
-                System.out.println("JPA call returned: " + ejb.testJPA());
-            }
+            System.out.println("Invoking EJB from module 1...");
+            System.out.println("EJB said: " + ejb.saySomething());
+            System.out.println("JPA call returned: " + ejb.testJPA());
 
             System.out.println("Done calling EJB from module 1");
 
