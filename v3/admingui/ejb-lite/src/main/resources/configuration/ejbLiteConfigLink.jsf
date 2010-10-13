@@ -43,7 +43,7 @@
 <sun:property>
     <sun:hyperlink 
         toolTip="$resource{i18n.tree.ejbContainer.tooltip}"
-        url="/ejb-lite/configuration/ejbContainerGeneral.jsf?#{configName}"
+        url="/ejb-lite/configuration/ejbContainerGeneral.jsf?configName=#{configName}"
         >
         <sun:image url="/resource/ejb-lite/images/container.gif" />
         <sun:staticText text="$resource{i18n.tree.ejbContainer}" />
