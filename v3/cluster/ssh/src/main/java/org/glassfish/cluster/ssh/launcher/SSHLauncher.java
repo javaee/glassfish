@@ -254,13 +254,13 @@ public class SSHLauncher {
             }
         }
         if (!isAuthenticated && SSHUtil.checkString(keyFile) != null) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Specified key file is " + keyFile);
+            if (logger.isLoggable(Level.FINER)) {
+                logger.finer("Specified key file is " + keyFile);
             }
             File key = new File(keyFile);
             if (key.exists()) {
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.fine("Specified key file exists at " + key);
+                if (logger.isLoggable(Level.FINER)) {
+                    logger.finer("Specified key file exists at " + key);
                 }
 
 
@@ -301,7 +301,9 @@ public class SSHLauncher {
                                             InterruptedException 
     {
         command = SFTPClient.normalizePath(command);
-        logger.fine("Running command " + command + " on host: " + this.host);
+        if (logger.isLoggable(Level.FINER)) {
+            logger.finer("Running command " + command + " on host: " + this.host);
+        }
 
         openConnection();
 
