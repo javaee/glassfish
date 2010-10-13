@@ -9,10 +9,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.jvnet.hk2.component.classmodel.ClassPathHelper;
 
@@ -25,6 +25,7 @@ import com.sun.enterprise.tools.InhabitantsDescriptor;
  */
 public class InhabitantsGeneratorTest {
 
+  @Ignore
   @Test
   public void testHabitatFileGeneration() throws IOException {
     ArrayList<File> testDir = getTestClassPathEntries();
@@ -56,6 +57,7 @@ public class InhabitantsGeneratorTest {
     return sb.toString();
   }
   
+  @Ignore
   @Test
   public void testMain() throws Exception {
     File testDir = new File(new File("."), "target/test-classes");
