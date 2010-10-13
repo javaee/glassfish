@@ -72,7 +72,11 @@ public class ActionReportResultJsonProvider extends BaseProvider<ActionReportRes
             JSONObject result = processReport(ar);
             int indent = getFormattingIndentLevel();
             if (indent > -1) {
-                return result.toString(indent);
+                if (JSONP==null){
+                    return result.toString(indent);
+                }else{
+                    return JSONP +"("+result.toString(indent)+")";
+                }
             } else {
                 if (JSONP==null){
                     return result.toString();

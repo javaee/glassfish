@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.rest;
 
 import org.glassfish.api.admin.config.ConfigExtension;
@@ -45,24 +44,43 @@ import org.jvnet.hk2.config.Attribute;
 
 import org.jvnet.hk2.config.Configured;
 
-
-
 /**
  * RestConfig configuration.  This defines a rest-config element.
  *
  * @author Ludovic Champenois
  *
  */
-
-
 @Configured
+
 public interface RestConfig extends ConfigExtension {
 
-    @Attribute(defaultValue="false", dataType=Boolean.class)
+    @Attribute(defaultValue = "false", dataType = Boolean.class)
     public String getDebug();
+
     public void setDebug(String debugFlag);
-    
-    @Attribute(defaultValue="-1", dataType=Integer.class)
+
+    @Attribute(defaultValue = "-1", dataType = Integer.class)
     public String getIndentLevel();
+
     public void setIndentLevel(String indentLevel);
+
+    @Attribute(defaultValue = "true", dataType = Boolean.class)
+    public String getWadlGeneration();
+
+    public void setWadlGeneration(String wadlGeneration);
+
+    @Attribute(defaultValue = "false", dataType = Boolean.class)
+    public String getShowHiddenCommands();
+
+    public void setShowHiddenCommands(String showHiddenCommands);
+
+    @Attribute(defaultValue = "false", dataType = Boolean.class)
+    public String getLogOutput();
+
+    public void setLogOutput(String logOutput);
+
+    @Attribute(defaultValue = "false", dataType = Boolean.class)
+    public String getLogInput();
+
+    public void setLogInput(String logInput);
 }

@@ -114,32 +114,52 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
     public abstract String getContent(T proxy);
 
     protected int getFormattingIndentLevel() {
-        if (isDebug()) {
-            return 4;
-        } else {
+        RestConfig rg = getRestConfig();
+        if (rg == null){
             return -1;
         }
+        else {
+            return Integer.parseInt(rg.getIndentLevel());
+        }
+        
     }
-
-    /* check for the __debug request header
-     *
-     */
-    protected boolean isDebug() {
-        //TODO need to fix this to return correct value while running on an instance. Currently it will always return false
+    
+    protected RestConfig getRestConfig() {
         if (habitat == null) {
-            return true;
+            return null;
         }
         Domain domain = habitat.getComponent(Domain.class);
         if (domain != null) {
             Config config = domain.getConfigNamed("server-config");
             if (config != null) {
-                RestConfig rg = config.getExtensionByType(RestConfig.class);
-                if ((rg != null) && (rg.getDebug().equalsIgnoreCase("true"))) {
-                    return true;
-                }
+                return config.getExtensionByType(RestConfig.class);
+
             }
         }
+        return null;
 
+    }
+    
+    protected boolean canShowHiddenCommands() {
+
+        RestConfig rg = getRestConfig();
+        if ((rg != null) && (rg.getShowHiddenCommands().equalsIgnoreCase("true"))) {
+            return true;
+        }
+        return false;
+    }
+        
+
+    /* check for the __debug request header
+     *
+     */
+    protected boolean isDebug() {
+
+        RestConfig rg = getRestConfig();
+        if ((rg != null) && (rg.getDebug().equalsIgnoreCase("true"))) {
+            return true;
+        }
+    
         if (requestHeaders == null) {
             return true;
         }

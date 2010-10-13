@@ -201,11 +201,11 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
 
     protected String getCommandLinks(List<Map<String, String>> commands) {
         StringBuilder result = new StringBuilder("<div>");
-        boolean debug = isDebug();
+        boolean showHiddenCommands = canShowHiddenCommands();
         for (Map<String, String> commandList : commands) {
             String command = commandList.get("command");
             String path = commandList.get("path");
-            if (path.startsWith("_")&&(debug==false)) {//hidden cli command name
+            if (path.startsWith("_")&&(showHiddenCommands==false)) {//hidden cli command name
                 result.append("<!--");//hide the link in a comment
             }
             result.append("<a href=\"")
@@ -213,7 +213,7 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
                     .append("\">")
                     .append(command)
                     .append("</a><br>");
-            if (path.startsWith("_")&&(debug==false)) {//hidden cli
+            if (path.startsWith("_")&&(showHiddenCommands==false)) {//hidden cli
                 result.append("-->");
             }
         }

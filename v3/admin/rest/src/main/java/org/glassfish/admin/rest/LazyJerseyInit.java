@@ -40,11 +40,14 @@
 
 package org.glassfish.admin.rest;
 
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.jersey.api.container.ContainerFactory;
 import com.sun.jersey.api.core.ResourceConfig;
 import org.glassfish.api.container.EndpointRegistrationException;
 import com.sun.grizzly.tcp.Adapter;
+import com.sun.jersey.api.container.filter.LoggingFilter;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.spi.inject.SingletonTypeInjectableProvider;
 import java.util.Set;
@@ -67,9 +70,7 @@ import org.jvnet.hk2.component.Habitat;
  */
 public class LazyJerseyInit {
 
-    LazyJerseyInit() {
-    }
-
+    
     /**
      * Called via introspection in the RestAdapter service() method only when the GrizzlyAdapter is not initialized
      * @param classes set of Jersey Resources classes
@@ -79,19 +80,29 @@ public class LazyJerseyInit {
      */
     public static GrizzlyAdapter exposeContext(Set classes, ServerContext sc, Habitat habitat)
             throws EndpointRegistrationException {
+        
 
         Adapter adapter = null;
-
+        Reloader r = new Reloader();
         ResourceConfig rc = new DefaultResourceConfig(classes);
         rc.getMediaTypeMappings().put("xml", MediaType.APPLICATION_XML_TYPE);
         rc.getMediaTypeMappings().put("json", MediaType.APPLICATION_JSON_TYPE);
         rc.getMediaTypeMappings().put("html", MediaType.TEXT_HTML_TYPE);
         rc.getMediaTypeMappings().put("js", new MediaType("application","x-javascript"));
-//  not yet      rc.getContainerRequestFilters().add(LoggingFilter.class);
-//        rc.getContainerResponseFilters().add(LoggingFilter.class);
-//        rc.getFeatures().put(ResourceConfig.FEATURE_DISABLE_WADL, Boolean.TRUE);
+        
+        RestConfig restConf = getRestConfig(habitat);
+        if (restConf != null) {
+            if (restConf.getLogOutput().equalsIgnoreCase("true")) { //enable output logging
+                rc.getContainerResponseFilters().add(LoggingFilter.class);
+            }
+            if (restConf.getLogInput().equalsIgnoreCase("true")) { //enable input logging
+                rc.getContainerRequestFilters().add(LoggingFilter.class);
+            }
+            if (restConf.getWadlGeneration().equalsIgnoreCase("false")) { //disable WADL
 
-        Reloader r = new Reloader();
+                rc.getFeatures().put(ResourceConfig.FEATURE_DISABLE_WADL, Boolean.TRUE);
+            }
+        }
 
         rc.getProperties().put(ResourceConfig.PROPERTY_CONTAINER_NOTIFIER, r);
         rc.getClasses().add(ReloadResource.class);
@@ -112,7 +123,25 @@ public class LazyJerseyInit {
         } finally {
             Thread.currentThread().setContextClassLoader(originalContextClassLoader);
         }
-
+        //add a rest config listener for possible reload of Jersey
+        new RestConfigChangeListener(habitat, r ,rc , sc);
         return (GrizzlyAdapter) adapter;
+    }
+    
+    
+    static protected RestConfig getRestConfig(Habitat habitat) {
+        if (habitat == null) {
+            return null;
+        }
+        Domain domain = habitat.getComponent(Domain.class);
+        if (domain != null) {
+            Config config = domain.getConfigNamed("server-config");
+            if (config != null) {
+                return config.getExtensionByType(RestConfig.class);
+
+            }
+        }
+        return null;
+
     }
 }
