@@ -459,8 +459,13 @@ public class ASURLClassLoader
                              *locking the jar file until JVM exit.
                              */
                             InternalURLStreamHandler handler = new InternalURLStreamHandler(res, name);
-                            URI uri = new URI("jar", res.source + "!/" + name, null /* fragment */);
-                            URL ret = new URL(uri.toURL(), "" /* spec */, handler);
+
+                            // Create a new sub URL from the resource URL (i.e. res.source). To avoid double encoding
+                            // (see https://glassfish.dev.java.net/issues/show_bug.cgi?id=13045)
+                            // use URL constructor instead of first creating a URI and then calling toURL().
+                            // If the resource URL is not properly encoded, that's not our problem.
+                            // Whoever has supplied the resource URL is at fault.
+                            URL ret = new URL("jar", null /* host */, -1 /* port */, res.source + "!/" + name, handler);
                             handler.tieUrl(ret);
                             return ret;
                         }
