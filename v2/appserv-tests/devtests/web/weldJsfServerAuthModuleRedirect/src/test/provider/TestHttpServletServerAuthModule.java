@@ -92,12 +92,6 @@ public class TestHttpServletServerAuthModule implements ServerAuthModule {
             final HttpServletRequest request = (HttpServletRequest) messageInfo.getRequestMessage();
             final HttpServletResponse response = (HttpServletResponse) messageInfo.getResponseMessage();
 
-            //XXX
-            /*
-            if (!isMandatory(messageInfo) && !request.getRequestURI().endsWith(LOGIN_ACTION_URI)) {
-                System.out.println(request.getRequestURI() + " Ignoring - Mandatory=" + isMandatory(messageInfo)
-                        + " isLoginAction=" + request.getRequestURI().endsWith(LOGIN_ACTION_URI));
-            */
             if (!request.getRequestURI().endsWith(LOGIN_ACTION_URI)) {
                 return AuthStatus.SUCCESS;
             }
@@ -110,25 +104,6 @@ public class TestHttpServletServerAuthModule implements ServerAuthModule {
             throw authException;
         }
     }
-
-    /*
-    protected void redirectToPage(final HttpServletRequest request, final HttpServletResponse response, final String path)
-            throws ServletException, IOException {
-        if (request.isSecure()) {
-            final RequestDispatcher disp = request.getRequestDispatcher(path);
-            disp.forward(request, response);
-        } else {
-            final String encodedRedirectURL = response.encodeRedirectURL(request.getContextPath() + path);
-            response.sendRedirect(encodedRedirectURL);
-        }
-    }
-    */
-
-    /*
-    private boolean isMandatory(final MessageInfo messageInfo) {
-        return Boolean.parseBoolean((String) messageInfo.getMap().get("javax.security.auth.message.MessagePolicy.isMandatory"));
-    }
-    */
 
     @Override
     public AuthStatus secureResponse(final MessageInfo messageInfo, final Subject serviceSubject) throws AuthException {
