@@ -54,6 +54,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.jar.JarFile;
@@ -66,9 +67,12 @@ import java.util.logging.Logger;
  * name suggests, Common Class Loader is common to all deployed applications.
  * Common Class Loader is responsible for loading classes from
  * following URLs (the order is strictly maintained):
- * lib/*.jar:domain_dir/lib/classes:domain_dir/lib/*.jar.
+ * lib/*.jar:domain_dir/lib/classes:domain_dir/lib/*.jar:DERBY_DRIVERS.
  * Please note that domain_dir/lib/classes comes before domain_dir/lib/*.jar,
  * just like WEB-INF/classes is searched first before WEB-INF/lib/*.jar.
+ * DERBY_DRIVERS are added to this class loader, because GlassFish ships with Derby database by default
+ * and it makes them available to users by default. Earlier, they used to be available to applications via
+ * launcher classloader, but now they are available via this class loader (see issue 13612 for more details on this). 
  *
  * It applies a special rule while handling jars in install_root/lib.
  * In order to maintain file layout compatibility (see  issue #9526),
@@ -137,6 +141,9 @@ public class CommonClassLoaderServiceImpl implements PostConstruct {
             Collections.addAll(cpElements,
                     domainLib.listFiles(new JarFileFilter()));
         }
+        // See issue https://glassfish.dev.java.net/issues/show_bug.cgi?id=13612
+        // We no longer add derby jars to launcher class loader, we add them to common class loader instead.
+        cpElements.addAll(findDerbyClient());
         List<URL> urls = new ArrayList<URL>();
         StringBuilder cp = new StringBuilder();
         for (File f : cpElements) {
@@ -171,6 +178,35 @@ public class CommonClassLoaderServiceImpl implements PostConstruct {
 
     public String getCommonClassPath() {
         return commonClassPath;
+    }
+
+    private List<File> findDerbyClient() {
+        final String DERBY_HOME_PROP = "AS_DERBY_INSTALL";
+        String derbyHome = env.getStartupContext().getArguments().getProperty(DERBY_HOME_PROP,
+                System.getProperty(DERBY_HOME_PROP));
+        File derbyLib = null;
+        if (derbyHome != null) {
+            derbyLib = new File(derbyHome, "lib");
+        }
+        if (derbyLib == null || !derbyLib.exists()) {
+            // maybe the jdk...
+            if (System.getProperty("java.version").compareTo("1.6") > 0) {
+                File jdkHome = new File(System.getProperty("java.home"));
+                derbyLib = new File(jdkHome, "../db/lib");
+            }
+        }
+        if (!derbyLib.exists()) {
+            logger.info("Cannot find javadb client jar file, derby jdbc driver will not be available by default.");
+            return Collections.EMPTY_LIST;
+        }
+
+        return Arrays.asList(derbyLib.listFiles(new FilenameFilter(){
+            public boolean accept(File dir, String name) {
+                // Include only files having .jar extn and exclude all localisation jars, because they are
+                // already mentioned in the Class-Path header of the main jars
+                return (name.endsWith(".jar") && !name.startsWith("derbyLocale_"));
+            }
+        }));
     }
 
     private static class JarFileFilter implements FilenameFilter {

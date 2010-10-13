@@ -483,7 +483,7 @@ public class ASMainHelper {
     /**
      * This method is responsible for setting up the launcher class loader and
      * setting the context class loader as well.
-     * Launcher class loader is used to load jdk tools.jar, derby classes (why?) and
+     * Launcher class loader is used to load jdk tools.jar (why?), and
      * OSGi framework classes) and glassfish.jar, which contains glassfish bootstrap API classes.
      * Our hierarchy looks like this:
      *
@@ -495,7 +495,6 @@ public class ASMainHelper {
             clb.addLauncherJar();
             clb.addFrameworkJars();
             clb.addJDKToolsJar();
-            clb.findDerbyClient();
             return clb.build();
         } catch (IOException e) {
             throw new Error(e);
@@ -565,29 +564,6 @@ public class ASMainHelper {
                 // on the mac, it happens all the time
                 logger.fine("JDK tools.jar does not exist at " + jdkToolsJar);
             }
-        }
-
-        void findDerbyClient() throws IOException {
-            // Sahoo: Why do we have to add derby to this class loader? Find out from Jerome.
-            String derbyHome = parseAsEnv(glassfishDir).getProperty("AS_DERBY_INSTALL");
-            File derbyLib = null;
-            if (derbyHome != null) {
-                derbyLib = new File(derbyHome, "lib");
-            }
-            if (derbyLib == null || !derbyLib.exists()) {
-                // maybe the jdk...
-                if (System.getProperty("java.version").compareTo("1.6") > 0) {
-                    File jdkHome = new File(System.getProperty("java.home"));
-                    derbyLib = new File(jdkHome, "../db/lib");
-                }
-            }
-            if (!derbyLib.exists()) {
-                logger.info("Cannot find javadb client jar file, jdbc driver not available");
-                return;
-            }
-            // Add all derby jars, as embedded driver is one jar and network driver
-            // is in another.
-            cpb.addGlob(derbyLib, "derby*.jar");
         }
 
         public ClassLoader build() {
