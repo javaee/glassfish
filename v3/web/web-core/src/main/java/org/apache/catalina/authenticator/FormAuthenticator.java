@@ -64,11 +64,9 @@ import org.apache.catalina.HttpRequest;
 import org.apache.catalina.HttpResponse;
 import org.apache.catalina.Realm;
 import org.apache.catalina.Session;
-import org.apache.catalina.core.ApplicationDispatcher;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.deploy.SecurityConstraint;
 
-import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
