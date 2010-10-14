@@ -71,7 +71,7 @@ public class ExportCommand extends CLICommand {
         // if no operands, print out everything
         if (vars == null || vars.size() == 0) {
             for (Map.Entry<String, String> e : env.entrySet())
-                logger.info(e.getKey() + " = " + e.getValue());
+                logger.info(e.getKey() + " = " + quote(e.getValue()));
         } else {
             // otherwise, process each operand
             for (String arg : vars) {

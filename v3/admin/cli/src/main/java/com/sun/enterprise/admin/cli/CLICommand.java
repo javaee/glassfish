@@ -439,7 +439,7 @@ public abstract class CLICommand implements PostConstruct {
                 String value = getOption(opt.getName());
                 if (value == null)
                     value = opt.getParam().defaultValue();
-                if (ok(value)) {
+                if (value != null) {
                     sb.append("--").append(lc(opt.getName()));
                     if (opt.getType() == Boolean.class ||
                         opt.getType() == boolean.class) {
@@ -448,21 +448,71 @@ public abstract class CLICommand implements PostConstruct {
                         else
                             sb.append("=").append("false");
                     } else {    // STRING or FILE
-                        sb.append(" ").append(value);
+                        sb.append(" ").append(quote(value));
                     }
                     sb.append(' ');
                 }
             }
-            for (Object o : operands)
-                sb.append(o).append(' ');
+            for (String o : operands)
+                sb.append(quote(o)).append(' ');
         } else if (argv != null) {
             // haven't parsed any options, include raw arguments, if any
             for (String arg : argv)
-                sb.append(arg).append(' ');
+                sb.append(quote(arg)).append(' ');
         }
 
         sb.setLength(sb.length() - 1);  // strip trailing space
         return sb.toString();
+    }
+
+    /**
+     * Quote a value, if the value contains any special characters.
+     *
+     * @param   value   value to be quoted
+     * @return          the possibly quoted value
+     */
+    public static String quote(String value) {
+        int len = value.length();
+        if (len == 0)
+            return "\"\"";      // an empty string is handled specially
+
+        /*
+         * Look for any special characters.  Escape and
+         * quote the entire string if necessary.
+         */
+        boolean needQuoting = false;
+        for (int i = 0; i < len; i++) {
+            char c = value.charAt(i);
+            if (c == '"' || c == '\\' || c == '\r' || c == '\n') {
+                // need to escape them and then quote the whole string
+                StringBuffer sb = new StringBuffer(len + 3);
+                sb.append('"');
+                sb.append(value.substring(0, i));
+                int lastc = 0;
+                for (int j = i; j < len; j++) {
+                    char cc = value.charAt(j);
+                    if ((cc == '"') || (cc == '\\') || 
+                        (cc == '\r') || (cc == '\n'))
+                        if (cc == '\n' && lastc == '\r')
+                            ;   // do nothing, CR was already escaped
+                        else
+                            sb.append('\\');    // Escape the character
+                    sb.append(cc);
+                    lastc = cc;
+                }
+                sb.append('"');
+                return sb.toString();
+            } else if (c <= 040 || c >= 0177)
+                // These characters cause the string to be quoted
+                needQuoting = true;
+        }
+
+        if (needQuoting) {
+            StringBuffer sb = new StringBuffer(len + 2);
+            sb.append('"').append(value).append('"');
+            return sb.toString();
+        } else 
+            return value;
     }
 
     /**

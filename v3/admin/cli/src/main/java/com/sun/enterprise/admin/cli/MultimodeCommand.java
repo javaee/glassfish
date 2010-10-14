@@ -72,6 +72,8 @@ public class MultimodeCommand extends CLICommand {
     @Param(optional = true)
     private String encoding;
 
+    private boolean echo;       // saved echo flag
+
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(MultimodeCommand.class);
 
@@ -88,6 +90,12 @@ public class MultimodeCommand extends CLICommand {
             printPrompt = printPromptOpt.booleanValue();
         else
             printPrompt = programOpts.isInteractive();
+        /*
+         * Save value of --echo because CLICommand will reset it
+         * before calling our executeCommand method but we want it
+         * to also apply to all commands in multimode.
+         */
+        echo = programOpts.isEcho();
     }
 
     /**
@@ -112,6 +120,7 @@ public class MultimodeCommand extends CLICommand {
     protected int executeCommand()
             throws CommandException, CommandValidationException {
         BufferedReader reader = null;
+        programOpts.setEcho(echo);       // restore echo flag, saved in validate
         try {
             if (file == null) {
                 System.out.println(strings.get("multimodeIntro"));
