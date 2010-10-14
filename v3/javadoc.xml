@@ -88,7 +88,9 @@
       <include name="external/jstl-api/**"/>
       <include name="external/mq-distribution/mq/src/share/java/**"/>
       <include name="external/eclipse.persistence/**"/>
+<!--
       <include name="external/saaj-api/**" />
+-->
       <include name="external/uel/**"/>
       <include name="external/validation-api/**"/>
       <include name="external/weld-osgi-bundle/**"/>
@@ -165,7 +167,9 @@
       <antcall target="jstl-api.download" />
       <antcall target="mq.download" />
       <antcall target="eclipse-persistence.download" />
-      <antcall target="saaj-api.download" />
+      <!-- javax.xml.soap is included in SE api doc 
+          <antcall target="saaj-api.download" />
+      -->
       <antcall target="uel.download" />
       <antcall target="bean-validator.download" />
       <antcall target="weld-osgi-bundle.download" />
@@ -291,6 +295,8 @@ fileset refid of artifact:dependencies does not work in unjar
           <dependency groupId="javax.xml.ws" artifactId="jaxws-api" version="2.2.1">
               <exclusion groupId="javax.annotation" artifactId="jsr250-api" />
               <exclusion groupId="javax.activation" artifactId="activation" />
+              <exclusion groupId="javax.xml.soap" artifactId="saaj-api" />
+              <exclusion groupId="javax.xml.stream" artifactId="stax-api" />
           </dependency>
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
@@ -441,7 +447,7 @@ fileset refid of artifact:dependencies does not work in unjar
       </unjar>
   </target>
 
-
+  
   <target name="saaj-api.download" description="Download Saaj-API" depends="initialize.maven" >
       <artifact:dependencies sourcesFilesetId="sources.dependency.saaj-api" >
           <dependency groupId="javax.xml.soap" artifactId="saaj-api" version="1.3" classifier="sources" />
