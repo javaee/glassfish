@@ -59,76 +59,61 @@ import java.util.List;
 @Scoped(PerLookup.class)
 public final class ValidateMulticastCommand extends CLICommand {
 
-    /*
-     * These are copied from the Shoal workspace. We could get the
-     * values from public fields in that code, but we don't want them
-     * to be able to be changed out from under us.
-     */
-    private static final String DASH = "--";
-    private static final String PORT_OPTION = "multicastport";
-    private static final String ADDRESS_OPTION = "multicastaddress";
-    private static final String BIND_INT_OPTION = "bindinterface";
-    private static final String PERIOD_OPTION = "sendperiod";
-    private static final String TIMEOUT_OPTION = "timeout";
-    private static final String TTL_OPTION = "timetolive";
-    private static final String DEBUG_OPTION = "debug";
-
-    @Param(name=PORT_OPTION, optional=true)
+    @Param(name="multicastport", optional=true)
     private String port;
 
-    @Param(name=ADDRESS_OPTION, optional=true)
+    @Param(name="multicastaddress", optional=true)
     private String address;
 
-    @Param(name=BIND_INT_OPTION, optional=true)
+    @Param(name="bindaddress", optional=true)
     private String bindInterface;
 
-    @Param(name=PERIOD_OPTION, optional=true)
+    @Param(name="sendperiod", optional=true)
     private String period;
 
-    @Param(name=TIMEOUT_OPTION, optional=true)
+    @Param(name="timeout", optional=true)
     private String timeout;
 
-    @Param(name=TTL_OPTION, optional=true)
+    @Param(name="timetolive", optional=true)
     private String ttl;
 
-    @Param(optional = true, defaultValue = "false")
+    @Param(optional=true, shortName="v", defaultValue="false")
     private boolean verbose;
 
     @Override
     protected int executeCommand() throws CommandException {
-        // todo: see if we can have exceptions come back to us for decent return value
-        MulticastTester.main(createArgs());
-        return 0;
+        MulticastTester mt = new MulticastTester();
+        return mt.run(createArgs());
     }
 
     private String [] createArgs() {
         List<String> argList = new ArrayList<String>();
         if (port != null && !port.isEmpty()) {
-            argList.add(DASH + PORT_OPTION);
+            argList.add(MulticastTester.PORT_OPTION);
             argList.add(port);
         }
         if (address != null && !address.isEmpty()) {
-            argList.add(DASH + ADDRESS_OPTION);
+            argList.add(MulticastTester.ADDRESS_OPTION);
             argList.add(address);
         }
         if (bindInterface != null && !bindInterface.isEmpty()) {
-            argList.add(DASH + BIND_INT_OPTION);
+            argList.add(MulticastTester.BIND_OPTION);
             argList.add(bindInterface);
         }
         if (period != null && !period.isEmpty()) {
-            argList.add(DASH + PERIOD_OPTION);
+            argList.add(MulticastTester.WAIT_PERIOD_OPTION);
             argList.add(period);
         }
         if (timeout != null && !timeout.isEmpty()) {
-            argList.add(DASH + TIMEOUT_OPTION);
+            argList.add(MulticastTester.TIMEOUT_OPTION);
             argList.add(timeout);
         }
         if (ttl != null && !ttl.isEmpty()) {
-            argList.add(DASH + TTL_OPTION);
+            argList.add(MulticastTester.TTL_OPTION);
             argList.add(ttl);
         }
         if (verbose) {
-            argList.add(DASH + DEBUG_OPTION);
+            argList.add(MulticastTester.DEBUG_OPTION);
         }
         return argList.toArray(new String[argList.size()]);
     }
