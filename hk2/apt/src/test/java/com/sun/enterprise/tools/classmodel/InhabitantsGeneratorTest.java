@@ -28,115 +28,106 @@ import com.sun.enterprise.tools.InhabitantsDescriptor;
 
 /**
  * Tests the introspective type of InhabitantsGenerator.
- * 
+ *
  * @author Jeff Trent
  */
 public class InhabitantsGeneratorTest {
 
-  @Ignore
-  @Test
-  public void sanityTest() throws Exception {
-    ArrayList<File> testDir = getTestClassPathEntries();
+    @Test
+    public void sanityTest() throws Exception {
+        ArrayList<File> sources = getTestClassPathEntries();
 
-    InhabitantsGenerator generator = new InhabitantsGenerator();
-    generator.add(testDir);
+        InhabitantsGenerator generator = new InhabitantsGenerator();
+        InhabitantsParsingContextGenerator ipcGen = generator.getContextGenerator();
+        ipcGen.parse(sources);
+        
+        ParsingContext pc = ipcGen.getContext();
+        assertNotNull(pc);
 
-    InhabitantsParsingContextGenerator ipcGen = generator.getContextGenerator();
-    ParsingContext pc = ipcGen.getContext();
-    assertNotNull(pc);
-    
-    Types types = pc.getTypes();
-    
-    AnnotationType ia = types.getBy(AnnotationType.class, InhabitantAnnotation.class.getName());
-    AnnotationType s = types.getBy(AnnotationType.class, Service.class.getName());
-    AnnotationType c = types.getBy(AnnotationType.class, Contract.class.getName());
-    
-    assertNotNull("@InhabitantAnnotation not found", ia);
-    assertNotNull("Service not found", s);
-    assertNotNull("@Contract not found", c);
-  }
+        Types types = pc.getTypes();
 
-  @Ignore
-  @Test
-  public void testHabitatFileGeneration() throws IOException {
-    ArrayList<File> testDir = getTestClassPathEntries();
+        AnnotationType ia = types.getBy(AnnotationType.class, InhabitantAnnotation.class.getName());
+        AnnotationType s = types.getBy(AnnotationType.class, Service.class.getName());
+        AnnotationType c = types.getBy(AnnotationType.class, Contract.class.getName());
 
-    InhabitantsDescriptor descriptor = new InhabitantsDescriptor();
-    descriptor.enableDateOutput(false);
-    
-    InhabitantsGenerator generator = new InhabitantsGenerator(descriptor);
-    generator.add(testDir);
-    
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    PrintWriter writer = new PrintWriter(out);
-    
-    generator.generate(writer, null);
-    writer.close();
-    
-    String output = out.toString();
-    assertNotNull(output);
-    System.out.println(output);
-    assertEquals(expected(), output);
-  }
+        assertNotNull("@InhabitantAnnotation not found", ia);
+        assertNotNull("Service not found", s);
+        assertNotNull("@Contract not found", c);
+    }
 
-  String expected() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class=com.sun.enterprise.tools.classmodel.test.BService,index=com.sun.enterprise.tools.classmodel.test.BContract\r\n");
-    sb.append("class=com.sun.enterprise.tools.classmodel.test.RunLevelCloseableService,index=java.io.Closeable:closeable,index=org.jvnet.hk2.annotations.RunLevel\r\n");
-    sb.append("class=com.sun.enterprise.tools.classmodel.test.AService,index=com.sun.enterprise.tools.classmodel.test.AContract:aservice,a=1,b=2\r\n");
-    sb.append("class=com.sun.enterprise.tools.classmodel.test.FactoryForCService,index=org.jvnet.hk2.annotations.FactoryFor:com.sun.enterprise.tools.classmodel.test.CService\r\n");
-    sb.append("class=com.sun.enterprise.tools.classmodel.test.CService\r\n");
-    return sb.toString();
-  }
-  
-  @Ignore
-  @Test
-  public void testMain() throws Exception {
-    File testDir = new File(new File("."), "target/test-classes");
-    File outputFile = new File(testDir, "META-INF/inhabitants/default");
+    @Ignore
+    @Test
+    public void testHabitatFileGeneration() throws IOException {
+        ArrayList<File> testDir = getTestClassPathEntries();
+
+        InhabitantsDescriptor descriptor = new InhabitantsDescriptor();
+        descriptor.enableDateOutput(false);
+
+        InhabitantsGenerator generator = new InhabitantsGenerator(descriptor);
+        generator.add(testDir);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PrintWriter writer = new PrintWriter(out);
+
+        generator.generate(writer, null);
+        writer.close();
+
+        String output = out.toString();
+        assertNotNull(output);
+        assertEquals(expected(), output);
+    }
+
+    String expected() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("class=com.sun.enterprise.tools.classmodel.test.BService,index=com.sun.enterprise.tools.classmodel.test.BContract\r\n");
+        sb.append("class=com.sun.enterprise.tools.classmodel.test.RunLevelCloseableService,index=java.io.Closeable:closeable,index=org.jvnet.hk2.annotations.RunLevel\r\n");
+        sb.append("class=com.sun.enterprise.tools.classmodel.test.AService,index=com.sun.enterprise.tools.classmodel.test.AContract:aservice,a=1,b=2\r\n");
+        sb.append("class=com.sun.enterprise.tools.classmodel.test.FactoryForCService,index=org.jvnet.hk2.annotations.FactoryFor:com.sun.enterprise.tools.classmodel.test.CService\r\n");
+        sb.append("class=com.sun.enterprise.tools.classmodel.test.CService\r\n");
+        return sb.toString();
+    }
+
+    @Ignore
+    @Test
+    public void testMain() throws Exception {
+        File testDir = new File(new File("."), "target/test-classes");
+        File outputFile = new File(testDir, "META-INF/inhabitants/default");
 //    System.out.println(outputFile.getAbsolutePath());
-    outputFile.delete();
-    
-    System.setProperty(InhabitantsGenerator.PARAM_INHABITANT_FILE, outputFile.getAbsolutePath());
-    System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_SOURCE_FILES, testDir.getAbsolutePath());
-    InhabitantsGenerator.main(null);
-    
-    assertTrue("expect to find: " + outputFile, outputFile.exists());
+        outputFile.delete();
 
-    StringBuilder sb = new StringBuilder();
-    FileInputStream fis = new FileInputStream(outputFile);
-    BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
-    String line;
-    while (null != (line = reader.readLine())) {
-      sb.append(line).append("\r\n");
-    }
-    fis.close();
-    
-    assertTrue(sb.toString() + " was not found in output file", sb.toString().contains(expected()));
-  }
-  
-  public ArrayList<File> getTestClassPathEntries() {
-    ArrayList<File> entries = new ArrayList<File>();
-    
-    ClassPathHelper classpath = ClassPathHelper.create(null, false);
-    Set<String> cpSet = classpath.getEntries();
-    for (String entry : cpSet) {
-      if (entry.contains("test-classes")) {
-        entries.add(new File(entry));
-      } else if (entry.contains("auto-depends")) {
-        entries.add(new File(entry));
-      } else if (entry.contains("tiger-types")) {
-        entries.add(new File(entry));
-      }
-//      entries.add(new File(entry));
-    }
-    
-    if (entries.isEmpty()) {
-      throw new RuntimeException("can't find test-classes in " + cpSet);
+        System.setProperty(InhabitantsGenerator.PARAM_INHABITANT_FILE, outputFile.getAbsolutePath());
+        System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_SOURCE_FILES, testDir.getAbsolutePath());
+        InhabitantsGenerator.main(null);
+
+        assertTrue("expect to find: " + outputFile, outputFile.exists());
+
+        StringBuilder sb = new StringBuilder();
+        FileInputStream fis = new FileInputStream(outputFile);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
+        String line;
+        while (null != (line = reader.readLine())) {
+            sb.append(line).append("\r\n");
+        }
+        fis.close();
+
+        assertTrue(sb.toString() + " was not found in output file", sb.toString().contains(expected()));
     }
 
-    System.out.println("classpath is " + entries);
-    
-    return entries;
-  }
+    public ArrayList<File> getTestClassPathEntries() {
+        ArrayList<File> entries = new ArrayList<File>();
+
+        ClassPathHelper classpath = ClassPathHelper.create(null, false);
+        Set<String> cpSet = classpath.getEntries();
+        for (String entry : cpSet) {
+            entries.add(new File(entry));
+        }
+
+        if (entries.isEmpty()) {
+            throw new RuntimeException("can't find test-classes in " + cpSet);
+        }
+
+        System.out.println("classpath is " + entries);
+
+        return entries;
+    }
 }

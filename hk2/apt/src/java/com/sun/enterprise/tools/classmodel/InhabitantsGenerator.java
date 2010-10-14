@@ -65,13 +65,14 @@ public class InhabitantsGenerator {
   }
   
   public void add(List<File> sourceFiles) throws IOException {
+      
     for (File file : sourceFiles) {
       add(file);
     }
   }
 
   public void add(File file) throws IOException {
-    ipcGen.addFileOrDirectory(file);
+    ipcGen.parse(file);
   }
   
   public void generate(File targetInhabitantFile) throws IOException {
@@ -92,9 +93,10 @@ public class InhabitantsGenerator {
     InhabitantsParserDescriptorWriter ip = new InhabitantsParserDescriptorWriter(descriptor);
     InhabitantsFeed feed = InhabitantsFeed.create(new Habitat(), ip);
     // TODO: the standard machinery (w/o TemporaryIntrospectionScanner) should just work
-    feed.populate(ipcGen, 
-        (Collection)Collections.singleton(
-            new TemporaryIntrospectionScanner(descriptor)));
+//    feed.populate(ipcGen,
+//        (Collection)Collections.singleton(
+//            new TemporaryIntrospectionScanner(descriptor)));
+      feed.populate(ipcGen, Collections.EMPTY_LIST);
     
     // i/o the descriptor(s) out
     descriptor.write(writer);
