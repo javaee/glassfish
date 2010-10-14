@@ -143,12 +143,14 @@
                 priority="100"
                 parentId="#{configNameId}"
                 content="pluginTreeNodeJVM.jsf" />
+        <!--   Comment out until Logger General and Logger Setting page converts to REST
         <integration-point
                 id="common_logger"
                 type="org.glassfish.admingui:navNode"
                 priority="150"
                 parentId="#{configNameId}"
                 content="pluginTreeNodeLogger.jsf" />
+        -->
         <integration-point
                 id="common_security"
                 type="org.glassfish.admingui:navNode"
