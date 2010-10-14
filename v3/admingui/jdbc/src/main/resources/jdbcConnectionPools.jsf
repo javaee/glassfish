@@ -48,7 +48,7 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18njdbc.jdbcConnectionPools.pageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:JDBC:connectionPoolResources');"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:JDBC'); "
 >
 <!define name="content">
     <event>
