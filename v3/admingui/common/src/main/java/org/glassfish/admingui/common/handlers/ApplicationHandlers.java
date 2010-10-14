@@ -597,7 +597,7 @@ public class ApplicationHandlers {
     }
 
 
-    @Handler(id="gf.getTargetURLList",
+    @Handler(id="getTargetURLList",
         input={
             @HandlerInput(name="AppID", type=String.class, required=true),
             @HandlerInput(name="contextRoot", type=String.class)},
