@@ -47,7 +47,6 @@
         gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/applications/application" result="#{pageSession.tmpList}");
         removeListElement(list="#{pageSession.tmpList}" name="list-sub-components" finalList="#{pageSession.tmpList}");
         gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/http-service/virtual-server" result="#{pageSession.vsList}");
-        //getProxyNamesByType(type="login-mon" result="#{pageSession.loginList}" firstItem="#{pageSession.firstLogin}");
         addToMonitorList(oldList="#{pageSession.loginList}", newList="#{pageSession.tmpList}"  result="#{pageSession.appList}");
         populateApplicationsMonitorDropDown(AppsList="#{appList}", MonitorList=>$attribute{monitorList} FirstItem=>$attribute{firstVal});
         if(!#{viewVal}) {

@@ -54,7 +54,6 @@
                         convertToFalse="#{pageSession.convertToFalseList}"
                         result => $attribute{objStr});
    
-                    ////REST-TODO  need to take care setProxyProperties()
                     if (#{pageSession.hasPropertyTable}){
                         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});

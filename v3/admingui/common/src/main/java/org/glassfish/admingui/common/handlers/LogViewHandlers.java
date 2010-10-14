@@ -69,11 +69,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.glassfish.admingui.common.util.GuiUtil;
-//import org.glassfish.admingui.common.util.V3AMX;
-//import org.glassfish.admin.amx.logging.LogQueryResult;
-import org.glassfish.admin.amx.logging.LogQuery;
-//import org.glassfish.admin.amx.logging.LogQueryEntry;
-import org.glassfish.admin.amx.logging.Logging;
 
 
 public class LogViewHandlers {
@@ -215,9 +210,17 @@ public class LogViewHandlers {
                 // Not supplied, use direction
                 after = direction;
             }
+
+            /*
+            TODO:  THIS LogQuery is from AMX package.  comment out right now.
+                   see issue# 12509
+            import org.glassfish.admin.amx.logging.LogQuery;
+
             if (fromRecord == null) {
                 fromRecord = LogQuery.LAST_RECORD;
             }
+             *
+             */
 
 	    notNullStringPut(attMap, "logFileName", logFileName);
 	    notNullStringPut(attMap, "startIndex", fromRecord);
@@ -422,33 +425,6 @@ public class LogViewHandlers {
 	}
     }
 
-    /**
-     *	<p> This method get the diagnostic Checks based on the message id.</p>
-    private static String getDiagnosticChecks(HandlerContext handlerCtx, String msgId, String moduleName) {
-        if (msgId == null || "".equals(msgId)) {
-            return formatArrayForDisplay(null);
-        }
-        Logging logging = V3AMX.getInstance().getDomainRoot().getLogging();
-        String[] results = logging.getDiagnosticChecks(msgId, moduleName);
-        String res = formatArrayForDisplay(results);
-        return res;
-
-    }
-     */
-
-    /**
-     *	<p> This method get the diagnostic based on the message id.</p>
-    private static String getDiagnosticCauses(HandlerContext handlerCtx, String msgId, String moduleName) {
-        if (msgId == null || "".equals(msgId)) {
-            return formatArrayForDisplay(null);
-        }
-        Logging logging = V3AMX.getInstance().getDomainRoot().getLogging();
-        String[] results = logging.getDiagnosticCauses(msgId, moduleName);
-
-        String res = formatArrayForDisplay(results);
-        return res;
-    }
-     */
 
     /**
      *	<p> This handler returns the first and last log record.</p>
@@ -490,18 +466,6 @@ public class LogViewHandlers {
 	    // ignore
 	}
     }
-
-    /**
-     *	This method get the diagnostic Checks based on the message id.
-    private static String getDiagnosticURI(HandlerContext handlerCtx, String msgId, String moduleName) {
-        if (msgId == null || "".equals(msgId)) {
-            return "";
-        }
-        Logging logging = V3AMX.getInstance().getDomainRoot().getLogging();
-        String res = logging.getDiagnosticURI(msgId);
-        return res;
-    }
-     */
 
         /**
      *  This method formats the diagnostic to be displayed for HTML

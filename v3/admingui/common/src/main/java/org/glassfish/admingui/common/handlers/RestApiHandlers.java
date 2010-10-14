@@ -82,8 +82,8 @@ import org.xml.sax.SAXException;
  */
 public class RestApiHandlers {
     public static final String FORM_ENCODING = "application/x-www-form-urlencoded";
-    // FIXME: Change this to "application/json"
-    public static final String RESPONSE_TYPE = "application/xml";
+    //default to .json instead of .xml
+    public static final String RESPONSE_TYPE = "application/json";
     public static final String GUI_TOKEN_FOR_EMPTY_PROPERTY_VALUE = "()";
     public static final Client JERSEY_CLIENT = Client.create();
 

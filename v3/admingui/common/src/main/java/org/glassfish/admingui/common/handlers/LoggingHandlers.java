@@ -62,10 +62,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 
-import org.glassfish.admingui.common.util.V3AMX;
-
-import org.glassfish.admin.amx.intf.config.Config;
-import org.glassfish.admin.amx.logging.Logging;
 import org.glassfish.admingui.common.util.GuiUtil;
 
 
@@ -75,6 +71,7 @@ public class LoggingHandlers {
     public LoggingHandlers() {
     }
 
+    /*
 
     @Handler(id = "getLoggerLevels",
     output = {
@@ -98,7 +95,7 @@ public class LoggingHandlers {
         }
         handlerCtx.setOutputValue("loggerList",  result);
      }
-
+*/
 
     @Handler(id = "changeLoggerLevels",
     input = {
@@ -123,7 +120,7 @@ public class LoggingHandlers {
         }
         handlerCtx.setOutputValue("newList",  allRows);
      }
-
+/*
 
     @Handler(id = "updateLoggerLevels",
     input = {
@@ -178,7 +175,7 @@ public class LoggingHandlers {
         }
         logging.updateLoggingAttributes(longAttrs);
      }
-
+*/
 
     @Handler(id = "getValidLogLevels",
     output = {
