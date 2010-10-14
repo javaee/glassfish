@@ -45,6 +45,8 @@ import org.objectweb.asm.commons.EmptyVisitor;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * ASM class visitor, used to build to model
@@ -141,7 +143,8 @@ public class ModelClassVisitor implements ClassVisitor {
         type.addAnnotation(am);
 
         if (ctx.getConfig().getInjectionTargetAnnotations().contains(desc)) {
-            System.out.println("Inspecting fields of " + type.getName());
+            Logger.getAnonymousLogger().log(Level.FINER, 
+                "Inspecting fields of {0}", type.getName());
             deepVisit =true;
         }
         visitingContext.annotation=am;
