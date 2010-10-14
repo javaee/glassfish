@@ -48,7 +48,7 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18njca.connectorConnectionPools.pageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:Connectors:connectorConnectionPools');
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:Connectors');
         admingui.nav.refreshTree('treeForm:tree:resources:jmsResources:jmsConnectionFactories');"
 >
 <!define name="content">
