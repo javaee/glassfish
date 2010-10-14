@@ -67,10 +67,7 @@ public class Parser {
     private final boolean ownES;
     
     public Parser(ParsingContext context) {
-        this.context = context;
-        executorService = (context.executorService==null?createExecutorService():context.executorService);
-        ownES = context.executorService==null;
-        parent = null;
+        this(context, null);
     }
 
     private Parser(ParsingContext context, Parser parent) {
@@ -139,9 +136,13 @@ public class Parser {
 
     public synchronized void parse(final ArchiveAdapter source, final Runnable doneHook) throws IOException {
 
-        if (executorService.isShutdown()) {
-            throw new RuntimeException("Executor service is shutdown, since awaitTermination was called, " +
+        ExecutorService es = executorService;
+        boolean immediateShutdown = false;
+        if (es.isShutdown()) {
+            Logger.getAnonymousLogger().info("Executor service is shutdown, since awaitTermination was called, " +
                     "provide an executor service instance from the context to avoid automatic shutdown");
+            es = createExecutorService();
+            immediateShutdown = true;
         }
         final Logger logger = context.logger;
         Types types = getResult(source.getURI());
@@ -158,7 +159,7 @@ public class Parser {
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "submitting file " + source.getURI().getPath());
         }
-        futures.add(executorService.submit(new Callable<Result>() {
+        futures.add(es.submit(new Callable<Result>() {
             @Override
             public Result call() throws Exception {
                 try {
@@ -174,6 +175,9 @@ public class Parser {
                 }
             }
         }));
+        if (immediateShutdown) {
+            es.shutdown();
+        }
     }
 
     private Types getResult(URI uri) {
