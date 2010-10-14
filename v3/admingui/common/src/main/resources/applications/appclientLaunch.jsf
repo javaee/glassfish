@@ -43,6 +43,7 @@
 <!initPage
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+    setAttribute(key="index" value="-1");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.appClientLaunch.PageTitle}" >
 <!define name="content">
@@ -60,19 +61,21 @@
         foreach(var="list" list="#{requestScope.uList}"){
             listAdd(list="#{pageSession.urlList}" value="#{requestScope.list.url}" result="#{pageSession.urlList}");
         }
-        gf.convertListToOptionArray(list="#{pageSession.urlList}", optionArray="#{pageSession.linkOptions}");
-        setPageSessionAttribute(key="selectedLink" value="#{pageSession.urlList[0]}");
+        setPageSessionAttribute(key="configOption" value="#{pageSession.urlList[0]}");
+        setPageSessionAttribute(key="myOption" value="#{pageSession.configOption}");
+        setAttribute(key="index" value="-1");
     />
     </event>
-        <sun:form id="propertyForm">
+        <sun:form id="form1">
 #include "/common/shared/alertMsg.inc"
         <!-- Page Title -->
         <sun:title id="propertyContentPage" title="$resource{i18nc.appClientLaunch.PageTitle}" helpText="$resource{i18nc.appClientLaunch.PageTitleHelp}">
             <!facet pageButtonsTop>
                 <sun:panelGroup id="topButtons">
                     <sun:button id="launchButton" primary="#{true}" text="$resource{i18n.deployTable.launch}"
-                        //onClick="alert('AAA'); launchAppClient(); return false;"
-                        onClick="var win=window.open('#{pageSession.selectedLink}?#{pageSession.args}','','width='+.50*screen.width+',height='+.50*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,location=yes');win.focus(); return false;" />
+                        onClick="var pfix=document.getElementById('form1:option').value;
+                        var win=window.open(pfix+'?#{pageSession.args}','appclient','width='+.50*screen.width+',height='+.50*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,location=yes');
+                        win.focus(); return false;"
                     />
                     <sun:button id="backButton" immediate="#{true}"
                         text="$resource{i18n.button.Back}" primary="#{false}" >
@@ -86,6 +89,7 @@
         "<br><br>
         <sun:propertySheet id="propertySheet">
             <sun:propertySheetSection id="propertySheetSection">
+
                 <sun:property id="appProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.appClientLaunch.application}">
                     <sun:staticText id="app" text="#{pageSession.appName}" />
                 </sun:property>
@@ -93,12 +97,21 @@
                     <sun:staticText id="module" text="#{pageSession.moduleName}" />
                 </sun:property>
 
-                <sun:property id="linksProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.appClientLaunch.linkLabel}">
-                    <sun:radioButtonGroup id="linksCluster"
-                        items="#{pageSession.linkOptions}"
-                        selected="#{pageSession.selectedLink}">
-                    </sun:radioButtonGroup>
+                <sun:property id="configOptionProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{true}" label=" ">
+                    "<br><br>
+                    <foreach key="oneUrl" list="#{pageSession.urlList}">
+                        <event>
+                        <!beforeEncode
+                            inc(number="${index}" value="#{requestScope.index}");
+                        />
+                        </event>
+                        <sun:radioButton id="A${index}" name="configOptionGrp" label="#{pageSession.urlList[requestScope.index]}" selected="#{configOption}" selectedValue="#{pageSession.urlList[requestScope.index]}"
+                           onClick="document.getElementById('form1:option').value='#{pageSession.urlList[requestScope.index]}'; "
+                        />
+                        "<br><br>
+                    </foreach>
                 </sun:property>
+
                 <sun:property id="argsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.appClientLaunch.argLabel}">
                     <sun:textField id="args" text="#{pageSession.args}" columns="$int{50}" maxLength="#{sessionScope.fieldLengths['maxLength.appClientLaunch.args']}" >
                         <!afterCreate
@@ -109,26 +122,11 @@
                 </sun:property>
             </sun:propertySheetSection>
         </sun:propertySheet>
-<sun:hidden id="helpKey" value="$resource{help.appclientLaunch}" />
+        <sun:hidden id="option"  value="#{myOption}" />
+        <sun:hidden id="helpKey" value="$resource{help.appclientLaunch}" />
 
 </sun:form>
 
-<f:verbatim>
-    <script type="text/javascript">
-
-    function launchAppClient() {
-        alert('here');
-            url = getSelectedValue('propertyForm:propertySheet:propertySheetSection:linksProp:linksCluster');
-            var args = getTextElement('propertyForm:propertySheet:propertySheetSection:argsProp:args').value;
-            if (args.length > 1) {
-                url=url+'?'+args;
-            }
-            alert(url);
-            var win = window.open(url, '', 'width='+.5*screen.width+',height='+.5*screen.height+',top=0,left=0,toolbar=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,directories=yes,location=yes'); win.focus(); return false;
-        }
-
-</f:verbatim>
-
 </define>
 </composition>
-    
+
