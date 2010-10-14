@@ -42,6 +42,7 @@ package org.glassfish.ejb.embedded;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
@@ -346,8 +347,31 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
      * of the other known implementation modules.
      */
     private boolean skipJar(File file) throws Exception {
-        if (!file.isFile() ) {
-            return false; // probably a directory
+        if (file.isDirectory() ) {
+            File m_file = new File(file, "META-INF/MANIFEST.MF");
+            if (!m_file.exists()) {
+                return false;
+            }
+            InputStream is = null;
+            try {
+                is = new FileInputStream(m_file);
+                if(containsMainClass(new Manifest(is))) {
+                    // Ignore dirs with a Manifest file with a Main-Class attribute
+                    _logger.info("... skipping... " + file.getName());
+                    return true;
+                } else {
+                    return false;
+                }
+            } finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (IOException ex) {
+                        _logger.log(Level.FINE, "Exception while closing Manifest file under "
+                                + file + ": ", ex);
+                    }
+                }
+            }
         }
 
         JarFile jf = null;
@@ -355,6 +379,12 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
             jf = new JarFile(file);
             Manifest m = jf.getManifest();
             if (m != null) {
+                if (containsMainClass(m)) {
+                    // Ignore jars with a Main-Class attribute
+                    _logger.info("... skipping... " + file.getName());
+                    return true;
+                }
+
                 java.util.jar.Attributes attributes = m.getMainAttributes();
                 String value = attributes.getValue(ATTRIBUTE_NAME_SKIP);
                 if (value != null) {
@@ -400,6 +430,20 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
         }
         return f;
     }
+
+    /**
+     * Returns true if the Manifest file contains Main-Class attribute
+     */
+    private boolean containsMainClass(Manifest m) {
+        if (m != null) {
+            java.util.jar.Attributes attributes = m.getMainAttributes();
+            String value = attributes.getValue(Attributes.Name.MAIN_CLASS);
+            return (value != null && value.length() > 0);
+        } 
+
+        return false;
+    }
+
 
     /**
      * Create File objects corresponding to instance root and domain.xml location.
