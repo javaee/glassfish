@@ -130,6 +130,18 @@
             <version>${project.version}</version>
 	    <scope>provided</scope>
         </dependency>
+	  <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>amx-core</artifactId>
+            <version>${project.version}</version>
+	    <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>amx-config</artifactId>
+            <version>${project.version}</version>
+	    <scope>provided</scope>
+    </dependency>
         <!-- Woodstock dependency -->
         <dependency>
             <groupId>com.sun.woodstock</groupId>

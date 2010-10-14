@@ -50,10 +50,10 @@
 <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        //setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs,type=config,name=#{pageSession.configName}");
-        //setPageSessionAttribute(key="childType" value="system-property");
-        //setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs,type=config,name=#{pageSession.configName}");
-        //getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs,type=config,name=#{pageSession.configName}");
+        setPageSessionAttribute(key="childType" value="system-property");
+        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs,type=config,name=#{pageSession.configName}");
+        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
 	// FIXME: The following does not work!  The REST api does not return anything
 	gf.restRequest(
 	    endpoint="#{REST_URL}/system-property.json"

@@ -59,10 +59,25 @@
             }
         />
         <!command
+            if (#{pageSession['rest-api']}){
                 gf.getDefaultValues(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}" orig="#{pageSession.valueMap}" valueMap="#{pageSession.valueMap}")
                 if(#{pageSession.has2Objects}&#{pageSession.parentUrl2}){
                     gf.getDefaultValues(endpoint="#{pageSession.parentUrl2}/#{pageSession.childType2}" orig="#{pageSession.valueMap2}" valueMap="#{pageSession.valueMap2}")
                 }
+            }
+
+            <!-- after all the pages has converted to use REST, the following section should be removed. 
+                 REST-TODO
+             -->
+
+            if (!#{pageSession['rest-api']}){
+                //println("!!!!!!!!!!!!!!! original !!!!!!!!");
+                getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  orig="#{pageSession.valueMap}" valueMap="#{pageSession.valueMap}")
+                if(#{pageSession.has2Objects}&#{pageSession.parentObjectNameStr2}){
+                    getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr2}" childType="#{pageSession.childType2}"  orig="#{pageSession.valueMap2}" valueMap="#{pageSession.valueMap2}")
+
+                }
+            }
         />
     </sun:button>
    

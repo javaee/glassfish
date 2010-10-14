@@ -90,6 +90,23 @@
                         }
                    }
 
+                   if (!#{pageSession['rest-api']}) {
+                        if(#{pageSession.hasPropertySheet}){
+                            saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
+                                skipAttrs="#{pageSession.skipAttrsList}"
+                                convertToFalse="#{pageSession.convertToFalseList}"
+                                onlyUseAttrs="#{pageSession.onlyUseAttrs}"
+                            );
+                            if(#{pageSession.has2Objects}){
+                                saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr2}"  attrs="#{pageSession.valueMap2}"
+                                    skipAttrs="#{pageSession.skipAttrsList2}"
+                                    convertToFalse="#{pageSession.convertToFalseList2}"
+                                    onlyUseAttrs="#{pageSession.onlyUseAttrs2}"
+                                );
+                            }
+                        }
+                   }
+
                     // Save properties...
                     if (#{pageSession.hasPropertyTable}) {
                         removeEmptyProps(props="#{pageSession.tableList}" modifiedProps="#{pageSession.tableList}");
@@ -134,6 +151,29 @@
                     }
                     }
 
+                    //REST-TODO  Remove the following section after all pages converted.
+                    if (!#{pageSession['rest-api']}){
+                    createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
+                        attrs="#{pageSession.valueMap}"
+                        convertToFalse="#{pageSession.convertToFalseList}"
+                        result => $attribute{objStr});
+                    if(#{pageSession.has2Objects}){
+                        if (#{pageSession.parentObjectNameStr2}){
+                            createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr2}" childType="#{pageSession.childType2}"
+                                attrs="#{pageSession.valueMap2}"
+                                convertToFalse="#{pageSession.convertToFalseList2}"
+                                result => $attribute{objStr2});
+                        }
+                        if (!#{pageSession.parentObjectNameStr2}){
+                            //create as a sub-element
+                            createProxy(parentObjectNameStr="$attribute{objStr}" childType="#{pageSession.childType2}"
+                                attrs="#{pageSession.valueMap2}"
+                                convertToFalse="#{pageSession.convertToFalseList2}"
+                                result => $attribute{objStr2});
+                        }
+                    }
+                    }
+
                     if (#{pageSession.hasPropertyTable}){
                         if (#{pageSession['rest-api']}) {
                             removeEmptyProps(props="#{pageSession.tableList}" modifiedProps="#{pageSession.tableList}");
@@ -144,6 +184,11 @@
                                            method="POST"
                                            data="#{requestScope.tmpJSON}"
                                            result="#{requestScope.restResponse}");
+                        }
+                        if ("!#{pageSession['rest-api']}") {
+                            getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+                            getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                            setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
                         }
                     }
 
