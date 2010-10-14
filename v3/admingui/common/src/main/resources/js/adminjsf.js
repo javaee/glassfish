@@ -808,11 +808,12 @@ admingui.nav = {
                     }
 
                     if (childNodes) {
-                        childNodes.innerHTML = content.childNodes[1].innerHTML;
+                        var newChildren = content.childNodes[1];
                         oldNode = previousState.childNodes;
-                        childNodes.className = oldNode.className;
-                        childNodes.style["display"] = oldNode.style["display"];
-                        admingui.nav.copyStyleAndClass(childNodes, oldNode);
+                        newChildren.className = oldNode.className;
+                        newChildren.style["display"] = oldNode.style["display"];
+                        admingui.nav.copyStyleAndClass(oldNode, newChildren);
+                        childNodes.innerHTML = newChildren.innerHTML;
                     }
                 } catch (err) {
 alert(err);
@@ -905,6 +906,9 @@ alert(err);
                     if (name == dest.childNodes[cnt].id) {
                         dest.childNodes[cnt].style["display"] = src.childNodes[idx].style["display"];
                         dest.childNodes[cnt].className = src.childNodes[idx].className;
+			if (src.childNodes[idx].nodeName == 'IMG'){
+			   dest.childNodes[cnt].src = src.childNodes[idx].src; 
+			}
                         admingui.nav.copyStyleAndClass(src.childNodes[idx], dest.childNodes[cnt]);
                     }
                 }
