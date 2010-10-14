@@ -135,7 +135,7 @@ public class ApplicationHandlers {
     }
 
 
-    @Handler(id = "getSubComponents",
+    @Handler(id = "gf.getSubComponents",
         input = {
             @HandlerInput(name = "appName", type = String.class, required = true),
             @HandlerInput(name = "moduleList", type = List.class, required = true)},
@@ -172,7 +172,8 @@ public class ApplicationHandlers {
                 if (snifferList.contains("appclient")){
                     String jwEnabled = RestUtil.getPropValue(GuiUtil.getSessionValue("REST_URL") + "/applications/application/"+encodedAppName, "javaWebStartEnabled",  handlerCtx);
                     if (!GuiUtil.isEmpty(jwEnabled) && jwEnabled.equals("true") ){
-                        oneRow.put("hasAppClientLaunch", true);
+                        List<String> targetList = DeployUtil.getApplicationTarget(appName, "application-ref");
+                        oneRow.put("hasAppClientLaunch", (targetList.isEmpty())? false: true);
                     }
                 }
                 result.add(oneRow);
@@ -596,7 +597,7 @@ public class ApplicationHandlers {
     }
 
 
-    @Handler(id="getTargetURLList",
+    @Handler(id="gf.getTargetURLList",
         input={
             @HandlerInput(name="AppID", type=String.class, required=true),
             @HandlerInput(name="contextRoot", type=String.class)},
@@ -684,7 +685,7 @@ public class ApplicationHandlers {
     private static List getURLs(List<String> vsList, String configName) {
         List URLs = new ArrayList();
         if (vsList == null || vsList.size() == 0) {
-            return null;
+            return URLs;
         }
         //Just to ensure we look at "server" first.
         if (vsList.contains("server")){
