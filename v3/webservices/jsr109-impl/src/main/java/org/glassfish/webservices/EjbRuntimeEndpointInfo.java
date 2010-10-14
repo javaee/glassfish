@@ -56,6 +56,7 @@ import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.ws.soap.AddressingFeature;
+import java.net.URI;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.Collection;
@@ -69,6 +70,9 @@ import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.ejb.api.EJBInvocation;
+import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.data.ApplicationRegistry;
+import org.jvnet.hk2.component.Habitat;
 
 
 /**
@@ -202,40 +206,49 @@ public class EjbRuntimeEndpointInfo {
                         Collection docs = null;
                         if(endpoint.getWebService().hasWsdlFile()) {
 
-                            //TODO BM handle this later
-                            /*BaseManager mgr;
-                            if(endpoint.getBundleDescriptor().getApplication().isVirtual()) {
-                                mgr = DeploymentServiceUtils.getInstanceManager(DeployableObjectType.EJB);
+                            /*
+                                                Code from GF V2
+                                                BaseManager mgr;
+                                                if(endpoint.getBundleDescriptor().getApplication().isVirtual()) {
+                                                    mgr = DeploymentServiceUtils.getInstanceManager(DeployableObjectType.EJB);
+                                                } else {
+                                                    mgr = DeploymentServiceUtils.getInstanceManager(DeployableObjectType.APP);
+                                                }
+                                                String deployedDir =
+                                                    mgr.getLocation(endpoint.getBundleDescriptor().getApplication().getRegistrationName());
+                                                 */
+
+                            /*
+                                                Does not work with directory deployment
+                                                WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
+                                                ServerEnvironment servEnv = wscImpl.getServerEnvironmentImpl();
+                                                String deployedDir = new File(servEnv.getApplicationRepositoryPath().getAbsolutePath(),
+                                                endpoint.getBundleDescriptor().getApplication().getRegistrationName()).getAbsolutePath();
+                                                */
+
+                            /*
+                                                Does not work for EJB web servcies packaged in war, as the WebAppCL does not find resources udner WEB-INF
+                                                URL pkgedWsdl = clazz.getResource('/' + endpoint.getWebService().getWsdlFileUri());
+                                                if (pkgedWsdl == null) {
+                                                    pkgedWsdl = endpoint.getWebService().getWsdlFileUrl();
+                                                }*/
+
+                            WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
+                            ApplicationRegistry appRegistry = wscImpl.getHabitat().getByType(ApplicationRegistry.class);
+                            ApplicationInfo appInfo = appRegistry.get(endpoint.getBundleDescriptor().getApplication().getRegistrationName());
+                            URI deployedDir =appInfo.getSource().getURI();
+
+                            URL pkgedWsdl;
+                            if(deployedDir != null) {
+                                if(endpoint.getBundleDescriptor().getApplication().isVirtual()) {
+                                    pkgedWsdl = deployedDir.resolve(endpoint.getWebService().getWsdlFileUri()).toURL();
+                                } else {
+                                    pkgedWsdl = deployedDir.resolve(endpoint.getBundleDescriptor().getModuleDescriptor().getArchiveUri().replaceAll("\\.", "_") +
+                                            File.separator + endpoint.getWebService().getWsdlFileUri()).toURL();
+                                }
                             } else {
-                                mgr = DeploymentServiceUtils.getInstanceManager(DeployableObjectType.APP);
-                            }
-                            String deployedDir =
-                                mgr.getLocation(endpoint.getBundleDescriptor().getApplication().getRegistrationName());
-                                */
-//                            WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
-//                            ServerEnvironment servEnv = wscImpl.getServerEnvironmentImpl();
-//                            String deployedDir = new File(servEnv.getApplicationRepositoryPath().getAbsolutePath(),
-//                                               endpoint.getBundleDescriptor().getApplication().getRegistrationName()).getAbsolutePath();
-//
-//
-//                            URL pkgedWsdl = null;
-//                            if(deployedDir != null) {
-//                                if(endpoint.getBundleDescriptor().getApplication().isVirtual()) {
-//                                    pkgedWsdl = new File(deployedDir+File.separator+
-//                                                endpoint.getWebService().getWsdlFileUri());
-//                                } else {
-//                                    pkgedWsdl = new File(deployedDir+File.separator+
-//                                            endpoint.getBundleDescriptor().getModuleDescriptor().getArchiveUri().replaceAll("\\.", "_") +
-//                                            File.separator + endpoint.getWebService().getWsdlFileUri());
-//                                }
-//                            } else {
-//                                pkgedWsdl = new File(endpoint.getWebService().getWsdlFileUrl().getFile());
-//                            }
-                            URL pkgedWsdl = clazz.getResource('/' + endpoint.getWebService().getWsdlFileUri());
-                            if (pkgedWsdl == null) {
                                 pkgedWsdl = endpoint.getWebService().getWsdlFileUrl();
                             }
-
                             if (pkgedWsdl != null) {
                                 primaryWsdl = SDDocumentSource.create(pkgedWsdl);
                                 docs = wsu.getWsdlsAndSchemas(pkgedWsdl);
