@@ -94,7 +94,7 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
     @Param (name="basedn", shortName="b", optional=false)
     public volatile String basedn;
 
-    @Param(name="url", shortName="u", optional=true)
+    @Param(name="url", optional=true)
     public volatile String url = "ldap://localhost:389"; // the default port for LDAP on localhost
 
 
