@@ -146,9 +146,13 @@ public final class SetupSshKey extends CLICommand {
             if (generatekey || promptPass) {
                 //prompt for password iff required
                 if (sshkeyfile != null || SSHUtil.getExistingKeyFile() != null) {
-                    if(sshL.checkConnection()) {
-                        logger.info(Strings.get("SSHAlreadySetup", sshuser, node));
-                        continue;
+                    try {
+                        if(sshL.checkConnection()) {
+                            logger.info(Strings.get("SSHAlreadySetup", sshuser, node));
+                            continue;
+                        }
+                    } catch (IOException ioe) {
+                        //ignore
                     }
                 }
                 if (previousPassword != null) {
@@ -167,7 +171,18 @@ public final class SetupSshKey extends CLICommand {
             } catch (Exception e) {
                 //handle KeyStoreException
             }
-            sshL.checkConnection();
+
+            boolean res = false;
+            try {
+                res = sshL.checkConnection();
+            } catch (IOException ioe) {
+                if (logger.isLoggable(Level.FINER)) {
+                    ioe.printStackTrace();
+                }
+            }
+            if (!res) {
+                throw new CommandException(Strings.get("ConnFailed"));
+            }
         }
         return SUCCESS;
     }

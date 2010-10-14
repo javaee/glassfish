@@ -530,7 +530,15 @@ public class SSHLauncher {
                     throw new IOException("Error while creating .ssh directory on remote host:" + e.getMessage());
                 }
 
-                scp.put(theBytes, AUTH_KEY_FILE, SSH_DIR);
+                try {
+                    scp.put(theBytes, AUTH_KEY_FILE, SSH_DIR);
+                } catch (Exception e) {
+                    if(logger.isLoggable(Level.FINER)) {
+                        e.printStackTrace();
+                    }
+                    throw new IOException("Failed to copy public key to remote host "
+                                            + host + ": " + e.getMessage());
+                }
 
                 logger.info("Copied keyfile " + pubKeyFile + " to " + userName + "@" + host);           
             } finally {
@@ -596,22 +604,18 @@ public class SSHLauncher {
         return o;
     }
 
-    public boolean checkConnection() {
+    public boolean checkConnection() throws IOException {
         boolean status = false;
         Connection c = null;
-        try {
-            c = new Connection(host, port);
-            c.connect();
-            File f = new File(keyFile);
-            if(logger.isLoggable(Level.FINER)) {
-                logger.finer("Checking connection...");
-            }
-            status = c.authenticateWithPublicKey(userName, f, rawKeyPassPhrase);
-            if (status) {
-                logger.info("Successfully connected to " + userName + "@" + host + " using keyfile " + keyFile);
-            }
-        } catch(IOException ioe) {
-            //logger.printExceptionStackTrace(ioe);
+        c = new Connection(host, port);
+        c.connect();
+        File f = new File(keyFile);
+        if(logger.isLoggable(Level.FINER)) {
+            logger.finer("Checking connection...");
+        }
+        status = c.authenticateWithPublicKey(userName, f, rawKeyPassPhrase);
+        if (status) {
+            logger.info("Successfully connected to " + userName + "@" + host + " using keyfile " + keyFile);
         }
         c.close();
         return status;
@@ -632,6 +636,9 @@ public class SSHLauncher {
             }
         } catch(IOException ioe) {
             //logger.printExceptionStackTrace(ioe);
+            if (logger.isLoggable(Level.FINER)) {
+                ioe.printStackTrace();
+            }
         }
         c.close();
         return status;
