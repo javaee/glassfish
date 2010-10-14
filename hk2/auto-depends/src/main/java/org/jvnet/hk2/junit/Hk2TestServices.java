@@ -108,7 +108,7 @@ public class Hk2TestServices {
           File f = new File(fileName);
           if (f.exists()) {
             try {
-              ipcgen.addFileOrDirectory(f);
+              ipcgen.parse(f);
             } catch (IOException e) {
               e.printStackTrace();
             }

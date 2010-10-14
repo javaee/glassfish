@@ -68,202 +68,148 @@ import com.sun.hk2.component.InhabitantsScanner;
 /**
  * Responsible for generating the collection of inhabitants, decoupling from
  * implementation detail for the caller.
- * 
- * <p>
+ * <p/>
+ * <p/>
  * The caller is expected to continually build up the InhabitantsGenerator
  * context by calling add*(), followed by calling getModelInhabitants() to
  * obtain the progenitors of the inhabitants.
- * 
+ *
  * @author Jerome Dochez
  * @author Jeff Trent
- * 
  * @since 3.1
  */
 public abstract class InhabitantsParsingContextGenerator {
 
-  private final Logger logger = Logger
-      .getLogger(InhabitantsParsingContextGenerator.class.getName());
+    private final Logger logger = Logger
+            .getLogger(InhabitantsParsingContextGenerator.class.getName());
 
-  private final Parser parser;
-  private final ParsingContext context;
-  
-  private final LinkedHashMap<String, InhabitantsScanner> metaInfScanners = new LinkedHashMap<String, InhabitantsScanner>();
+    private final Parser parser;
+    private final ParsingContext context;
 
-  /**
-   * Factory for the {@link InhabitantsParsingContextGenerator}
-   * 
-   * @param h
-   *          habitat not currently used; reserved for future use
-   * 
-   * @return an empty context InhabitantsGenerator
-   */
-  public static InhabitantsParsingContextGenerator create(Habitat h) {
-    return new InhabitantsParsingContextGenerator() {};
-  }
+    private final LinkedHashMap<String, InhabitantsScanner> metaInfScanners = new LinkedHashMap<String, InhabitantsScanner>();
 
-  protected InhabitantsParsingContextGenerator() {
-    // setup the parser
-    ParsingContext.Builder builder = new ParsingContext.Builder();
-    final Set<String> annotations = new HashSet<String>();
-    annotations.add(Contract.class.getCanonicalName());
-    annotations.add(Service.class.getCanonicalName());
-    // TODO: relocate "@Configured" declaration into core
-    annotations.add("org.jvnet.hk2.config.Configured");
+    /**
+     * Factory for the {@link InhabitantsParsingContextGenerator}
+     *
+     * @param h habitat not currently used; reserved for future use
+     * @return an empty context InhabitantsGenerator
+     */
+    public static InhabitantsParsingContextGenerator create(Habitat h) {
+        return new InhabitantsParsingContextGenerator() {
+        };
+    }
 
-    builder.config(new ParsingConfig() {
-      final Set<String> empty = Collections.emptySet();
+    protected InhabitantsParsingContextGenerator() {
+        // setup the parser
+        ParsingContext.Builder builder = new ParsingContext.Builder();
+        final Set<String> annotations = new HashSet<String>();
+        annotations.add(Contract.class.getCanonicalName());
+        annotations.add(Service.class.getCanonicalName());
+        // TODO: relocate "@Configured" declaration into core
+        annotations.add("org.jvnet.hk2.config.Configured");
 
-      public Set<String> getInjectionTargetAnnotations() {
-        return empty;
-      }
+        builder.config(new ParsingConfig() {
+            final Set<String> empty = Collections.emptySet();
 
-      public Set<String> getInjectionTargetInterfaces() {
-        return annotations;
-      }
+            public Set<String> getInjectionTargetAnnotations() {
+                return empty;
+            }
 
-      public Set<String> getInjectionPointsAnnotations() {
-        return empty;
-      }
-    });
+            public Set<String> getInjectionTargetInterfaces() {
+                return annotations;
+            }
 
-    context = builder.build();
-    parser = new Parser(context);
-  }
+            public Set<String> getInjectionPointsAnnotations() {
+                return empty;
+            }
+        });
 
-  /**
-   * Add a file to the current InhabitantsGenerator context.
-   * 
-   * If the jar has a habitat then it is used explicitly. If it does not then
-   * the jar's classes are introspected.
-   * 
-   * @param file
-   *          the file to parse.
-   * @throws IOException 
-   */
-  @SuppressWarnings("deprecation")
-  public void addFileOrDirectory(File file) throws IOException {
-    logger.log(Level.FINER, "Beginning parsing {0}", file);
-    assert(file.exists());
-    
-    if (file.isFile()) {
-      JarFile jarFile = new JarFile(file);
-      // TODO : add support for other habitat than default.
-      JarEntry entry = jarFile.getJarEntry(InhabitantsFile.PATH + "/default");
-      if (entry != null) {
-        byte[] buf = new byte[(int) entry.getSize()];
-        DataInputStream in = new DataInputStream(jarFile.getInputStream(entry));
-        try {
-          in.readFully(buf);
-        } finally {
-          in.close();
+        context = builder.build();
+        parser = new Parser(context);
+    }
+
+    /**
+     * Add the collection of files to the current InhabitantsGenerator context.
+     *
+     * @param files the files to parse.
+     * @throws IOException
+     */
+    public void parse(Collection<File> files) throws IOException {
+        for (File file : files) {
+            parse(file);
         }
-        logger.log(Level.FINER, "Using meta-inf file for {0}", file.getPath());
-
-        String name = "jar:" + file.toURL() + "!/" + entry.getName();
-        InhabitantsScanner is = new InhabitantsScanner(
-            new ByteArrayInputStream(buf), name);
-        addInhabitantsScanner(name, is);
-      } else {
-        // it's a file but no inhabitant file...
-        parse(parser, file);
-      }
-      jarFile.close();
-    } else {
-      // directory, for now, always parse.
-      File inhabitantFile = new File(file, InhabitantsFile.PATH + File.separator + "default");
-      if (inhabitantFile.exists()) {
-        logger.log(Level.FINER, "Using meta-inf file for {0}", file.getPath());
-
-        String name = inhabitantFile.getPath();
-        InhabitantsScanner is = new InhabitantsScanner(new BufferedInputStream(
-            new FileInputStream(inhabitantFile)), name);
-        addInhabitantsScanner(name, is);
-      } else {
-        // it's a directory that is not expected to ever have an inhabitants
-        // file so do it unconditionally
-        parseAlways(parser, file);
-      }
     }
-  }
-  
-  /**
-   * Add the collection of files to the current InhabitantsGenerator context.
-   * 
-   * @param files
-   *          the files to parse.
-   * @throws IOException 
-   */
-  public void addFileOrDirectory(Collection<File> files) throws IOException {
-    for (File file : files) {
-      addFileOrDirectory(file);
-    }
-  }
-  
-  
-  /**
-   * Retrieves the parsing context that can be used for model generation elsewhere.
-   * 
-   * @return the parsing context given the code sources provided
-   */
-  public ParsingContext getContext() {
-    try {
-      parser.awaitTermination();
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    }
-    return context;
-  }
-  
-  /**
-   * @return the collection of {@link InhabitantsScanner}s being maintained
-   */
-  public Collection<InhabitantsScanner> getInhabitantsScanners() {
-    return Collections.unmodifiableCollection(metaInfScanners.values());
-  }
 
-  protected void addInhabitantsScanner(String name, InhabitantsScanner is) {
-    synchronized (metaInfScanners) {
-      if (!metaInfScanners.containsKey(name)) {
-        metaInfScanners.put(name, is);
-      }
-    }
-  }
 
-  protected void parse(Parser parser, final File f) throws IOException {
-    Manifest manifest = null;
-    if (f.isDirectory()) {
-      File manifestFile = new File(f, JarFile.MANIFEST_NAME);
-      if (manifestFile.exists()) {
-        InputStream is = new BufferedInputStream(new FileInputStream(manifestFile));
+    /**
+     * Retrieves the parsing context that can be used for model generation elsewhere.
+     *
+     * @return the parsing context given the code sources provided
+     */
+    public ParsingContext getContext() {
         try {
-          manifest = new Manifest(is);
-        } finally {
-          is.close();
+            parser.awaitTermination();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
-      }
-    } else {
-      JarFile jar = new JarFile(f);
-      manifest = jar.getManifest();
-      jar.close();
+        return context;
     }
 
-    if (manifest != null) {
-      String imports = manifest.getMainAttributes().getValue("Import-Package");
-      if (imports == null || imports.indexOf("hk2") == -1) {
-        logger.log(Level.FINER, "ignoring service-less {0}", f.getName());
-        return;
-      }
+    /**
+     * @return the collection of {@link InhabitantsScanner}s being maintained
+     */
+    public Collection<InhabitantsScanner> getInhabitantsScanners() {
+        return Collections.unmodifiableCollection(metaInfScanners.values());
     }
 
-    parseAlways(parser, f);
-  }
+    protected void addInhabitantsScanner(String name, InhabitantsScanner is) {
+        synchronized (metaInfScanners) {
+            if (!metaInfScanners.containsKey(name)) {
+                metaInfScanners.put(name, is);
+            }
+        }
+    }
 
-  protected void parseAlways(Parser parser, final File f) throws IOException {
-    parser.parse(f, new Runnable() {
-      public void run() {
-        logger.log(Level.FINER, "Finished introspecting {0}", f.getName());
-      }
-    });
-  }
+    public void parse(final File f) throws IOException {
+        Manifest manifest = null;
+        if (f.isDirectory()) {
+            File manifestFile = new File(f, JarFile.MANIFEST_NAME);
+            if (manifestFile.exists()) {
+                InputStream is = new BufferedInputStream(new FileInputStream(manifestFile));
+                try {
+                    manifest = new Manifest(is);
+                } finally {
+                    is.close();
+                }
+            }
+        } else {
+            JarFile jar = new JarFile(f);
+            manifest = jar.getManifest();
+            jar.close();
+        }
+
+        if (manifest != null) {
+            // check first for Bundle-SymbolicName: com.sun.enterprise.auto-depends
+            String bundleName = manifest.getMainAttributes().getValue("Bundle-SymbolicName");
+            if (bundleName != null && !bundleName.equals("com.sun.enterprise.auto-depends"))
+            {
+                // if this is not me, it must be importing me !
+                String imports = manifest.getMainAttributes().getValue("Import-Package");
+                if (imports == null || imports.indexOf("hk2") == -1) {
+                    logger.log(Level.FINER, "ignoring service-less {0}", f.getName());
+                    return;
+                }
+            }
+        }
+        parseAlways(parser, f);
+    }
+
+    protected void parseAlways(Parser parser, final File f) throws IOException {
+        parser.parse(f, new Runnable() {
+            public void run() {
+                logger.log(Level.FINER, "Finished introspecting {0}", f.getName());
+            }
+        });
+    }
 
 }

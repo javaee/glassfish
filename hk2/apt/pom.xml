@@ -29,7 +29,13 @@
             <groupId>com.sun.enterprise</groupId>
             <artifactId>auto-depends</artifactId>
             <version>${project.parent.version}</version>
-        </dependency>  
+        </dependency>
+   		<dependency>
+        	<groupId>org.glassfish.hk2</groupId>
+            <artifactId>class-model</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>        
         <dependency>
             <groupId>org.jvnet</groupId>
             <artifactId>tiger-types</artifactId>
