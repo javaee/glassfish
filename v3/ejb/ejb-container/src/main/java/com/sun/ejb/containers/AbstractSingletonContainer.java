@@ -528,7 +528,9 @@ public abstract class AbstractSingletonContainer
 
 
         } catch ( Throwable th ) {
-            ejbInv.exception = th;
+            if (ejbInv != null) {
+                ejbInv.exception = th;
+            }
             singletonInitializationFailed = true;
             CreateException creEx = new CreateException("Initialization failed for Singleton " +
                                     ejbDescriptor.getName());
@@ -537,18 +539,22 @@ public abstract class AbstractSingletonContainer
         } finally {
             initializationInProgress = false;
             if (ejbInv != null) {
-                invocationManager.postInvoke(ejbInv);
                 try {
+                    invocationManager.postInvoke(ejbInv);
                     if( initGotToPreInvokeTx ) {
                         postInvokeTx(ejbInv);
                     }
                 } catch(Exception pie) {
-                    ejbInv.exception = pie;
-                    singletonInitializationFailed = true;
-                    CreateException creEx = new CreateException("Initialization failed for Singleton " +
-                                    ejbDescriptor.getName());
-                    creEx.initCause(pie);
-                    throw creEx;
+                    if (ejbInv.exception != null) {
+                        _logger.log(Level.WARNING, "Exception during Singleton startup postInvoke ", pie);
+                    } else {
+                        ejbInv.exception = pie;
+                        singletonInitializationFailed = true;
+                        CreateException creEx = new CreateException("Initialization failed for Singleton " +
+                                        ejbDescriptor.getName());
+                        creEx.initCause(pie);
+                        throw creEx;
+                    }
                 }
             }
         }
