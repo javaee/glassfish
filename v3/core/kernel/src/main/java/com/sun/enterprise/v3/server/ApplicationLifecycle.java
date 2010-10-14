@@ -108,6 +108,7 @@ import java.io.File;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.concurrent.*;
 import java.net.URI;
 import java.net.URLClassLoader;
 import java.lang.instrument.ClassFileTransformer;
@@ -169,8 +170,10 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
     protected DeploymentLifecycleProbeProvider 
         deploymentLifecycleProbeProvider = null;
 
+    private ExecutorService executorService = null;
 
     public void postConstruct() {
+        executorService = createExecutorService();
         deploymentLifecycleProbeProvider = 
             new DeploymentLifecycleProbeProvider();
     }
@@ -465,7 +468,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 try {
                     // scan the jar and store the result in the deployment context.
                     ReadableArchiveScannerAdapter scannerAdapter = new ReadableArchiveScannerAdapter(context.getSource());
-                    ParsingContext parsingContext = new ParsingContext.Builder().logger(context.getLogger()).build();
+                    ParsingContext parsingContext = new ParsingContext.Builder().logger(context.getLogger()).executorService(executorService).build();
                     Parser parser = new Parser(parsingContext);
                     parser.parse(scannerAdapter, null);
                     parser.awaitTermination();
@@ -2012,4 +2015,19 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
 
         return sniffers;
     }
+
+    private ExecutorService createExecutorService() {
+        Runtime runtime = Runtime.getRuntime();
+        int nrOfProcessors = runtime.availableProcessors();
+        return Executors.newFixedThreadPool(nrOfProcessors, new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r);
+                t.setName("deployment-jar-scanner");
+                t.setDaemon(true);
+                return t;
+            }
+        });
+    }
+
 }
