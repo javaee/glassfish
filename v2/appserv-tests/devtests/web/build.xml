@@ -430,6 +430,7 @@
         <ant dir="welcomePageExtensionMatch" target="all"/>
         <ant dir="weldJsfLoginPage" target="all"/>
         <ant dir="weldJsfServerAuthModuleRedirect" target="all"/>
+        <ant dir="weldJsfFormLoginHttpSessionListener" target="all"/>
         <ant dir="oneSessionCookieHeader" target="all"/>
         <ant dir="cachingHang" target="all"/>
         <ant dir="jsessionIdParameter" target="all"/>
