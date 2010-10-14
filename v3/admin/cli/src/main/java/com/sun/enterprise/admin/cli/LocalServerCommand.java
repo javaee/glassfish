@@ -114,9 +114,9 @@ public abstract class LocalServerCommand extends CLICommand {
             if (addrSet.size() > 0)
                 return addrSet.get(0);
             else
-                throw new CommandException("admin address not found");
+                throw new CommandException(strings.get("NoAdminPort"));
         } catch (MiniXmlParserException ex) {
-            throw new CommandException("admin address not found", ex);
+            throw new CommandException(strings.get("NoAdminPortEx", ex), ex);
         }
     }
 
