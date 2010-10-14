@@ -73,7 +73,4 @@ public class Constants {
     public static final String DEFAULT_SERVLET_NAME = "default";
 
     public static final String IS_DEFAULT_ERROR_PAGE_ENABLED_INIT_PARAM = "org.glassfish.web.isDefaultErrorPageEnabled";
-
-    static final String FIRE_REQUEST_INIT_EVENT = "fireRequestInitEvent";
-    static final String FIRE_REQUEST_DESTROY_EVENT = "fireRequestDestroyEvent";
 }

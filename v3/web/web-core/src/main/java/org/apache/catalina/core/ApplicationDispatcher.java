@@ -329,11 +329,6 @@ public final class ApplicationDispatcher
         boolean isCommit = (DispatcherType.FORWARD.equals(dispatcherType) ||
             DispatcherType.ERROR.equals(dispatcherType));
 
-        boolean fireRequestEvent = !needRequestInit(request);
-        if (fireRequestEvent) {
-            context.fireRequestInitializedEvent(request);
-        }
-
         if (Globals.IS_SECURITY_ENABLED) {
             try {
                 PrivilegedDispatch dp = new PrivilegedDispatch(
@@ -350,26 +345,15 @@ public final class ApplicationDispatcher
                 if (e instanceof ServletException)
                     throw (ServletException) e;
                 throw (IOException) e;
-            } finally {
-                if (fireRequestEvent) {
-                    context.fireRequestDestroyedEvent(request);
-                }
             }
         } else {
-            try {
-                doDispatch(request, response, dispatcherType);
-                // START SJSAS 6374990
-                if (isCommit) {
-                    ApplicationDispatcherForward.commit(request, response,
-                        context, wrapper);
-                }
-                // END SJSAS 6374990
-            } finally {
-                //XXX
-                if (fireRequestEvent) {
-                    context.fireRequestDestroyedEvent(request);
-                }
+            doDispatch(request, response, dispatcherType);
+            // START SJSAS 6374990
+            if (isCommit) {
+                ApplicationDispatcherForward.commit(request, response,
+                    context, wrapper);
             }
+            // END SJSAS 6374990
         }
     }
 
@@ -503,38 +487,6 @@ public final class ApplicationDispatcher
         }
     }
 
-    /**
-     * This method will return the note value of Globals.FIRE_REQUEST_INIT_EVENT
-     * and then set FIRE_REQUEST_INIT_EVENT and
-     * FIRE_REQUEST_DESTROY_EVENT notes to Boolean.TRUE.
-     *
-     * This is not an idempotent operation.
-     */
-    private static boolean needRequestInit(ServletRequest request) {
-        boolean alreadyInit = false;
-        ServletRequest sreq = request;
-
-        while (sreq != null) {
-            if (sreq instanceof RequestFacade) {
-                RequestFacade reqFacade = (RequestFacade)sreq;
-                alreadyInit =
-                    Boolean.TRUE.equals(reqFacade.getNote(Constants.FIRE_REQUEST_INIT_EVENT));
-                if (!alreadyInit) {
-                    Request req = reqFacade.getUnwrappedCoyoteRequest();
-                    req.setNote(Constants.FIRE_REQUEST_INIT_EVENT, Boolean.TRUE);
-                    req.setNote(Constants.FIRE_REQUEST_DESTROY_EVENT, Boolean.TRUE);
-                }
-                break;
-            } else if (sreq instanceof ServletRequestWrapper) {
-                sreq = ((ServletRequestWrapper)sreq).getRequest();
-            } else {
-                break;
-            }
-        }
-
-        return alreadyInit;
-    }
-    
     /**
      * Combines the servletPath and the pathInfo.
      *
