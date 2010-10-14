@@ -360,7 +360,12 @@ public class AppServerStartup implements ModuleStartup {
             if (context.getArguments().containsKey("--noforcedshutdown")) {
                 params.set("force", "false");    
             }
-            runner.getCommandInvocation("stop-domain", new PlainTextActionReporter()).parameters(params).execute();
+            if (env.isDas()) {
+                runner.getCommandInvocation("stop-domain", new PlainTextActionReporter()).parameters(params).execute();
+            } else {
+                params.set("DEFAULT", env.getInstanceName());
+                runner.getCommandInvocation("stop-instance", new PlainTextActionReporter()).parameters(params).execute();
+            }
         }
     }
 
@@ -404,6 +409,7 @@ public class AppServerStartup implements ModuleStartup {
                     }
                 }
             }
+
 
             // first send the shutdown event synchronously
             env.setStatus(ServerEnvironment.Status.stopped);

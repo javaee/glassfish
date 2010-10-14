@@ -100,7 +100,8 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                     "GenericCrudCommand.too_many_indexes",
                     "The metadata for this generic implementation has more than one index {0}",
                     sb.toString());
-            logger.severe(msg);
+            Object[] params = new Object[] { sb.toString()};
+            logger.log(Level.SEVERE, "GenericCrudCommand.too_many_indexes", params);
             throw new ComponentException(msg);
         }
         String index = indexes.get(0);
@@ -109,7 +110,8 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                     "GenericCrudCommand.unamed_service",
                     "The service {0} is un-named, for generic command, the service name is the command name and must be provided",
                     index);
-            logger.severe(msg);
+            Object[] params = new Object[] { index};
+            logger.log(Level.SEVERE, "GenericCrudCommand.unamed_service", params);
             throw new ComponentException(msg);            
         }
         commandName = index.substring(index.indexOf(":")+1);
@@ -125,7 +127,8 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                     "GenericCrudCommand.configbean_not_found",
                     "The Config Bean {0} cannot be loaded by the generic command implementation : {1}",
                     parentTypeName, e.getMessage());
-            logger.severe(msg);
+            Object[] params = new Object[] { parentTypeName, e.getMessage()};
+            logger.log(Level.SEVERE, "GenericCrudCommand.configbean_not_found",params);
             throw new ComponentException(msg, e);
         }
 
@@ -144,7 +147,8 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                     "GenericCrudCommand.configbean_not_found",
                     "The Config Bean {0} cannot be loaded by the generic command implementation : {1}",
                     parentTypeName, methodName);
-            logger.severe(msg);
+            Object[] params = new Object[] { parentTypeName, methodName};
+            logger.log(Level.SEVERE,"GenericCrudCommand.configbean_not_found", params);
             throw new ComponentException(msg);
         }
 
@@ -220,7 +224,8 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                                     "GenericCrudCommand.invalid_type",
                                     "Invalid annotated type {0} passed to InjectionResolver:getValue()",
                                     annotated.getClass().toString());
-                            logger.severe(msg);
+                            Object[] params = new Object[] { annotated.getClass().toString()};
+                            logger.log(Level.SEVERE, "GenericCrudCommand.invalid_type", params);
                             throw new ComponentException(msg);
                         }
                     } catch (IllegalAccessException e) {
@@ -228,14 +233,16 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                                 "GenericCrudCommand.invocation_failure",
                                 "Failure {0} while getting List<?> values from component",
                                 e.getMessage());
-                        logger.severe(msg);
+                        Object[] params = new Object[] { e.getMessage()};
+                        logger.log(Level.SEVERE, "GenericCrudCommand.invocation_failure", params);
                         throw new ComponentException(msg, e);
                     } catch (InvocationTargetException e) {
                         String msg = localStrings.getLocalString(GenericCrudCommand.class,
                                 "GenericCrudCommand.invocation_failure",
                                 "Failure {0} while getting List<?> values from component",
                                 e.getMessage());
-                        logger.severe(msg);
+                        Object[] params = new Object[] { e.getMessage()};
+                        logger.log(Level.SEVERE, "GenericCrudCommand.invocation_failure", params);
                         throw new ComponentException(msg, e);
                     }
                     Object value = delegate.getValue(component, null, annotated, genericType, type);
@@ -256,7 +263,8 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                                     "GenericCrudCommand.nongeneric_type",
                                     "The List type returned by {0} must be a generic type",
                                     annotated.toString());
-                            logger.severe(msg);
+                            Object[] params = new Object[] {annotated.toString()};
+                            logger.log(Level.SEVERE, "GenericCrudCommand.nongeneric_type", params);
                             throw new ComponentException(msg);
                     }
                     if (!ConfigBeanProxy.class.isAssignableFrom(itemType)) {
@@ -264,7 +272,8 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                                 "GenericCrudCommand.wrong_type",
                                 "The generic type {0} is not supported, only List<? extends ConfigBeanProxy> is",
                                 annotated.toString());
-                        logger.severe(msg);
+                        Object[] params = new Object[] { annotated.toString()};
+                        logger.log(Level.SEVERE, "GenericCrudCommand.wrong_type", params);
                         throw new ComponentException(msg);
                         
                     }
@@ -282,7 +291,8 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                                 "GenericCrudCommand.introspection_failure",
                                 "Failure {0} while instrospecting {1} to find all getters and setters",
                                 e.getMessage(), itemType.getName());
-                        logger.severe(msg);
+                        Object[] params = new Object[] { e.getMessage(), itemType.getName()};
+                        logger.log(Level.SEVERE, "GenericCrudCommand.introspection_failure", params);
                         throw new ComponentException(msg, e);
                     }
                     for (final Map.Entry<Object, Object> entry : props.entrySet()) {
@@ -332,7 +342,8 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                                 "GenericCrudCommand.transactionException",
                                 "Transaction exception {0} while injecting {1}",
                                 transactionFailure.getMessage(), itemType);
-                            logger.severe(msg);
+                            Object[] params = new Object[] { transactionFailure.getMessage(), itemType};
+                            logger.log(Level.SEVERE, "GenericCrudCommand.transactionException", params);
                             throw new ComponentException(msg, transactionFailure);
                         }
 
