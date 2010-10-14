@@ -84,7 +84,7 @@ public class CreateProtocolFilter implements AdminCommand {
     String protocolName;
     @Param(name = "classname", optional = false)
     String classname;
-    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
     String target;
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;

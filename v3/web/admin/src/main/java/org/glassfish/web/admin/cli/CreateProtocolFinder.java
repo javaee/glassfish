@@ -82,11 +82,11 @@ public class CreateProtocolFinder implements AdminCommand {
     String name;
     @Param(name = "protocol", optional = false)
     String protocolName;
-    @Param(name = "target-protocol", optional = false)
+    @Param(name = "targetprotocol", optional = false)
     String targetName;
     @Param(name = "classname", optional = false)
     String classname;
-    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
     String target;
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
