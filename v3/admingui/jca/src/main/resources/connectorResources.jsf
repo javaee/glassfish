@@ -59,8 +59,6 @@
         //REST code
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
         setPageSessionAttribute(key="rest-api" value="true");
-        gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.tmpRows}", id="jndiName");
-        gf.getResourceRealStatus(endpoint="#{sessionScope.REST_URL}/servers/server/server/resource-ref" rows="#{requestScope.tmpRows}" result="#{requestScope.listOfRows}")
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18njca.msg.JS.confirmDeleteCR}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/jca/connectorResourceNew.jsf");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/jca/connectorResources.jsf");

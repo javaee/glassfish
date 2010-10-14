@@ -94,7 +94,7 @@
     <sun:title id="propertyContentPage" title="$resource{i18njca.connectorConnectionPool.editPageTitle}" helpText="$resource{i18njca.connectorConnectionPool.editPageTitleHelp}" >
     <!beforeCreate
         setPageSessionAttribute(key="snifferType" value="connector");
-        gf.getApplicationsBySnifferType();
+        gfr.getApplicationsBySnifferType();
         setAttribute(key="rarList" value="#{pageSession.snifferTypeApplicationsList}");
         //Add SystemConnectors
         gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-system-rars-allowing-pool-creation"

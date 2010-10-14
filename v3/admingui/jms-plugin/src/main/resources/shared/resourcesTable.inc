@@ -49,9 +49,22 @@
         getClientId(component="$this{component}" clientId=>$page{tableId});
     />
 
+#include "/common/resourceNode/resourceHandlers.inc"
 #include "/jms/shared/tableButtons.inc"
 
-    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
+    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$pageSession{listOfRows}"} sourceVar="td">
+        <!beforeCreate
+            if (#{pageSession.isConnPage}) {
+                gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{pageSession.tmpRows}");
+                filterTable(table="#{pageSession.tmpRows}", key="resourceAdapterName", value="jmsra")
+                gfr.getResourcesTableData();
+            }
+            if (!#{pageSession.isConnPage}) {
+                gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{pageSession.tmpRows}", id="jndiName");
+                gfr.getResourcesTableData();
+                filterTable(table="#{pageSession.listOfRows}", key="resAdapter", value="jmsra")
+            }
+        />
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableRowGroupId});
         />

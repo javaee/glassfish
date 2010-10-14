@@ -53,49 +53,17 @@
             onClick="if (getConfirm(this,'$pageSession{confirmDeleteMsg}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
         <!command
             getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
-            getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-            foreach (var="row" list="#{requestScope.selectedRows}") {                
-                urlencode(value="#{row['name']}" result="#{requestScope.encodedResName}");
-                setAttribute(key="targetUrlsList" value="#{row['targetUrls']}");
-                foreach (var="targetUrl" list="#{requestScope.targetUrlsList}") {
-                    createMap(result="#{requestScope.attrMap}");
-                    mapGet(Map="#{row['targetsMap']}" Key="#{requestScope.targetUrl}" Value="#{requestScope.targetVal}");
-                    mapPut(map="#{requestScope.attrMap}" key="target" value="#{targetVal}");
-                    gf.restRequest(
-                        endpoint="#{requestScope.targetUrl}/resource-ref/#{requestScope.encodedResName}"
-                        attrs="#{requestScope.attrMap}"
-                        method="DELETE"
-                        result="#{requestScope.foo}");
-                }
-                createMap(result="#{requestScope.attrMap}");
-                mapPut(map="#{requestScope.attrMap}" key="target" value="domain");
-                gf.restRequest(
-                    endpoint="#{pageSession.parentUrl}/#{pageSession.childType}/#{requestScope.encodedResName}"
-                    attrs="#{requestScope.attrMap}"
-                    method="DELETE"
-                    result="#{requestScope.foo}");
-            }
+            getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$pageSession{selectedRows});
+            gfr.deleteSelectedResources();
             gf.redirect(page="#{pageSession.listLink}");
         />
         </sun:button>
         <sun:button id="button2" text="$resource{i18n.button.Enable}" disabled="#{true}" primary="#{false}" >
         <!command
             getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
-            getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-            // enable the resource for all targets
-            foreach (var="row" list="#{requestScope.selectedRows}") {
-                gf.createAttributeMap(keys={"enabled"} values={"true"} map="#{requestScope.attrMap}");
-                urlencode(value="#{row['name']}" result="#{requestScope.encodedResName}");
-                setAttribute(key="targetUrlsList" value="#{row['targetUrls']}");
-                foreach (var="targetUrl" list="#{requestScope.targetUrlsList}") {
-                    gf.restRequest(
-                        endpoint="#{requestScope.targetUrl}/resource-ref/#{requestScope.encodedResName}"
-                        attrs="#{requestScope.attrMap}"
-                        method="POST"
-                        result="#{requestScope.foo}");
-                }
-            }
-            setAttribute(key="selectedRows" value="${selectedRows}");
+            getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$pageSession{selectedRows});
+            gfr.enableSelectedResources();
+            setAttribute(key="selectedRows" value="$pageSession{selectedRows}");
             prepareAlertMsg(summary="$resource{i18n.msg.enableResourceSuccessful}", type="success");
             gf.redirect(page="#{pageSession.listLink}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
         />
@@ -103,21 +71,9 @@
         <sun:button id="button3" text="$resource{i18n.button.Disable}" disabled="#{true}" primary="#{false}" >
         <!command
             getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
-            getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-            // disable the resource for all targets
-            foreach (var="row" list="#{requestScope.selectedRows}") {
-                gf.createAttributeMap(keys={"enabled"} values={"false"} map="#{requestScope.attrMap}");
-                urlencode(value="#{row['name']}" result="#{requestScope.encodedResName}");
-                setAttribute(key="targetUrlsList" value="#{row['targetUrls']}");
-                foreach (var="targetUrl" list="#{requestScope.targetUrlsList}") {
-                    gf.restRequest(
-                        endpoint="#{requestScope.targetUrl}/resource-ref/#{requestScope.encodedResName}"
-                        attrs="#{requestScope.attrMap}"
-                        method="POST"
-                        result="#{requestScope.foo}");
-                }
-            }
-            setAttribute(key="selectedRows" value="${selectedRows}");
+            getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$pageSession{selectedRows});
+            gfr.disableSelectedResources();
+            setAttribute(key="selectedRows" value="$pageSession{selectedRows}");
             prepareAlertMsg(summary="$resource{i18n.msg.disableResourceSuccessful}", type="success");
             gf.redirect(page="#{pageSession.listLink}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
         />

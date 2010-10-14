@@ -51,9 +51,14 @@
             getClientId(component="$this{component}" clientId=>$page{tableId});
         />
     
+#include "/common/resourceNode/resourceHandlers.inc"
 #include "/jca/tableButtons.inc"
 
-   <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
+   <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$pageSession{listOfRows}"} sourceVar="td">
+       <!beforeCreate
+           gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", id="jndiName", result="#{pageSession.tmpRows}");
+           gfr.getResourcesTableData();
+        />
      <!afterCreate
          getClientId(component="$this{component}" clientId=>$page{tableRowGroupId});
         />
@@ -84,7 +89,7 @@
     </sun:tableColumn>
     
     <sun:tableColumn headerText="$resource{i18njca.resourcesTable.colResType}" sort="resType" rendered="#{pageSession.hasResType}"  rowHeader="$boolean{true}" id="coltype">
-        <sun:staticText escape="true" id="typeCol" rendered="#{pageSession.hasResType}" value="#{td.value.resType}" />
+        <sun:staticText escape="true" id="resType" rendered="#{pageSession.hasResType}" value="#{td.value.resType}" />
     </sun:tableColumn>
 
     <!-- TODO enable when we enable cluster support

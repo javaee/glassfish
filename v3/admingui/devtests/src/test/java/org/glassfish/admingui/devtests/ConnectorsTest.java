@@ -131,8 +131,8 @@ public class ConnectorsTest extends BaseSeleniumTestClass {
         String testPool = "connectorPool" + generateRandomString();
         String testConnector = "connectorResource" + generateRandomString();
         final String instanceName = "standalone" + generateRandomString();
-        final String enableStatus = "Enabled on All Targets";
-        final String disableStatus = "Disabled on All Targets";
+        final String enableStatus = "Enabled on 2 of 2 Target(s)";
+        final String disableStatus = "Enabled on 0 of 2 Target(s)";
 
         clickAndWait("treeForm:tree:resources:Connectors:connectorConnectionPools:connectorConnectionPools_link", TRIGGER_CONNECTOR_CONNECTION_POOLS);
 

@@ -68,7 +68,7 @@
             <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['resAdapter']}" labels="$pageSession{connectorList}"  values="$pageSession{connectorList}" required="#{true}" submitForm="#{true}" immediate="#{true}">
                 <!beforeCreate
                      setPageSessionAttribute(key="snifferType" value="connector");
-                     gf.getApplicationsBySnifferType();
+                     gfr.getApplicationsBySnifferType();
                      setPageSessionAttribute(key="connectorList" value="#{pageSession.snifferTypeApplicationsList}");
                      listAdd(list="#{pageSession.connectorList}" value="jmsra")
                 />

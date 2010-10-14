@@ -547,8 +547,8 @@ public class BaseSeleniumTestClass {
             String jndiName,
             String instanceName) {
         final String TRIGGER_EDIT_RESOURCE_TARGETS = "Resource Targets";
-        final String enableStatus = "Enabled on All Targets";
-        final String disableStatus = "Disabled on All Targets";
+        final String enableStatus = "Enabled on 2 of 2 Target(s)";
+        final String disableStatus = "Enabled on 0 of 2 Target(s)";
         final String TRIGGER_MANAGE_TARGETS = "Manage Targets";
         final String TRIGGGER_VALUES_SAVED = "New values successfully saved.";
         final String DEFAULT_SERVER = "server";

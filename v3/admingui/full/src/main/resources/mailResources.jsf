@@ -79,9 +79,7 @@ foreach(var="entry" list="#{requestScope.entries}") {
 	// NOTE:  The old way of doing this... this is more complicated so I
 	// NOTE:  removed it.  This pattern is done in other places, so I left
 	// NOTE:  it in as a reminder to change those other places.
-        gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.tmpRows}", id="jndiName");
-        gf.getResourceRealStatus(endpoint="#{sessionScope.REST_URL}/servers/server/server/resource-ref" rows="#{requestScope.tmpRows}" result="#{requestScope.listOfRows}")
-
+        
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18njmail.msg.JS.confirmDeleteCR}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/full/mailResourceNew.jsf");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/full/mailResources.jsf");

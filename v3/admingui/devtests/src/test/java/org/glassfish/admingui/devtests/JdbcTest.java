@@ -134,8 +134,8 @@ public class JdbcTest extends BaseSeleniumTestClass {
         final String jndiName = "jdbcResource" + generateRandomString();
         final String instanceName = "standalone" + generateRandomString();
         final String description = "devtest test jdbc resource with targets- " + jndiName;
-        final String enableStatus = "Enabled on All Targets";
-        final String disableStatus = "Disabled on All Targets";
+        final String enableStatus = "Enabled on 2 of 2 Target(s)";
+        final String disableStatus = "Enabled on 0 of 2 Target(s)";
 
         StandaloneTest instanceTest = new StandaloneTest();
         instanceTest.createStandAloneInstance(instanceName);

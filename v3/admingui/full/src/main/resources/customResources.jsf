@@ -57,9 +57,7 @@
     <!beforeCreate
         setPageSessionAttribute(key="childType" value="custom-resource");
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
-        gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.tmpRows}", id="jndiName");
-        gf.getResourceRealStatus(endpoint="#{sessionScope.REST_URL}/servers/server/server/resource-ref" rows="#{requestScope.tmpRows}" result="#{requestScope.listOfRows}")
-        
+
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18njmail.msg.JS.confirmDeleteCR}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/full/customResourceNew.jsf");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/full/customResources.jsf");

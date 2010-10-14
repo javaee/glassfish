@@ -113,7 +113,7 @@
                         <sun:propertySheetSection id="generalPropertySheet" >
                             <!beforeCreate
                                 setPageSessionAttribute(key="snifferType" value="connector");
-                                gf.getApplicationsBySnifferType();
+                                gfr.getApplicationsBySnifferType();
                                 setAttribute(key="tmpList" value="#{pageSession.snifferTypeApplicationsList}");
                                 filterOutRarExtension(inList="#{requestScope.tmpList}" convertedList="#{requestScope.rarList}")
 

@@ -46,7 +46,7 @@
      Input : isFullName
      Output: snifferTypeApplicationsList
 -->
-<handler id="gf.getApplicationsBySnifferType">
+<handler id="gfr.getApplicationsBySnifferType">
     setPageSessionAttribute(key="snifferTypeApplicationsList" value={});
     if ("#{pageSession.isFullName}=#{null}") {
         setPageSessionAttribute(key="isFullName" value="#{true}");

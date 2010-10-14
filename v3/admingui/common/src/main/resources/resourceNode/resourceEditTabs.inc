@@ -58,15 +58,30 @@
             setPageSessionAttribute(key="useCheckBox" value="#{true}");
             setPageSessionAttribute(key="parentUrl2", value="#{sessionScope.REST_URL}/servers/server/server");
             setPageSessionAttribute(key="childType2", value="resource-ref");
-            if ("#{pageSession.childType2} = connector-resource") {
+            if ("#{pageSession.resChildType} = connector-resource") {
                 setPageSessionAttribute(key="resourceRefUrl", value="#{pageSession.parentUrl2}/#{pageSession.childType2}/#{pageSession.encodedName}");
-                gf.getEntityAttrs(endpoint="#{pageSession.resourceRefUrl}",  valueMap="#{pageSession.resourceRef}");
+                gf.checkIfEndPointExist(endpoint="#{pageSession.resourceRefUrl}" exists="#{requestScope.hasAssociatedTarget}");
+                if (#{hasAssociatedTarget}) {
+                    gf.getEntityAttrs(endpoint="#{pageSession.resourceRefUrl}",  valueMap="#{pageSession.resourceRef}");
+                }
+                if (!#{hasAssociatedTarget}) {
+                    createMap(result="#{pageSession.resourceRef}");
+                    gf.getEntityAttrs(endpoint="#{pageSession.parentUrl}/#{pageSession.resChildType}/#{pageSession.encodedName}",  valueMap="#{requestScope.resValueMap}");
+                    mapPut(map="#{pageSession.resourceRef}", key="enabled", value="#{resValueMap.enabled}");
+                }
             }
-            if ("!(#{pageSession.childType2} = connector-resource)") {
+            if ("!(#{pageSession.resChildType} = connector-resource)") {
                 setPageSessionAttribute(key="has2Objects" value="#{true}");
                 setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
                 setPageSessionAttribute(key="selfUrl2", value="#{pageSession.parentUrl2}/#{pageSession.childType2}/#{pageSession.encodedName}");
-                gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}", valueMap="#{pageSession.valueMap2}");
+                gf.checkIfEndPointExist(endpoint="#{pageSession.selfUrl2}" exists="#{requestScope.hasAssociatedTarget}");
+                if (#{hasAssociatedTarget}) {
+                    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}", valueMap="#{pageSession.valueMap2}");
+                }
+                if (!#{hasAssociatedTarget}) {
+                    createMap(result="#{pageSession.valueMap2}");                    
+                    mapPut(map="#{pageSession.valueMap2}", key="enabled", value="#{pageSession.valueMap.enabled}");
+                }
             }            
         }
     />

@@ -54,8 +54,8 @@ public class JndiTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_NEW_EXTERNAL_RESOURCE = "New External Resource";
 
     private static final String TRIGGER_EDIT_RESOURCE_TARGETS = "Resource Targets";
-    private static final String ENABLE_STATUS = "Enabled on All Targets";
-    private static final String DISABLE_STATUS = "Disabled on All Targets";
+    private static final String ENABLE_STATUS = "Enabled on 2 of 2 Target(s)";
+    private static final String DISABLE_STATUS = "Enabled on 0 of 2 Target(s)";
     private static final String TRIGGER_MANAGE_TARGETS = "Manage Targets";
     private static final String TRIGGGER_VALUES_SAVED = "New values successfully saved.";
 

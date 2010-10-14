@@ -63,7 +63,7 @@
             setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jms/jmsConnections.jsf");
 
             setPageSessionAttribute(key="childType" value="connector-connection-pool");
-            setPageSessionAttribute(key="childType2" value="connector-resource");
+            setPageSessionAttribute(key="resChildType" value="connector-resource");
             setPageSessionAttribute(key="convertToFalseList" value={"failAllConnections", "isConnectionValidationRequired"});
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
             setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");

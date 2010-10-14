@@ -107,8 +107,8 @@ public class AdminObjectTest extends BaseSeleniumTestClass {
         final String resName = "adminObject" + generateRandomString();
         final String description = "Admin Object Resource - " + resName;
         final String instanceName = "standalone" + generateRandomString();
-        final String enableStatus = "Enabled on All Targets";
-        final String disableStatus = "Disabled on All Targets";
+        final String enableStatus = "Enabled on 2 of 2 Target(s)";
+        final String disableStatus = "Enabled on 0 of 2 Target(s)";
 
         StandaloneTest instanceTest = new StandaloneTest();
         instanceTest.createStandAloneInstance(instanceName);

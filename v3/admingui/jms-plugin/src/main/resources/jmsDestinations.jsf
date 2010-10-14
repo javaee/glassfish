@@ -58,10 +58,7 @@
             setPageSessionAttribute(key="isConnPage" value="#{false}");
             setPageSessionAttribute(key="childType" value="admin-object-resource");
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
-            gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.tmpRows}", id="jndiName");
-            gf.getResourceRealStatus(endpoint="#{sessionScope.REST_URL}/servers/server/server/resource-ref" rows="#{requestScope.tmpRows}" result="#{requestScope.listOfRows}")
-            filterTable(table="#{requestScope.listOfRows}", key="resAdapter", value="jmsra")
-
+            
             setPageSessionAttribute(key="tableTitle" value="$resource{i18njms.resourcesTable.destResources}");
             setPageSessionAttribute(key="createLink" value="/jms/jmsDestinationNew.jsf");
             setPageSessionAttribute(key="editLink" value="/jms/jmsDestinationEdit.jsf");

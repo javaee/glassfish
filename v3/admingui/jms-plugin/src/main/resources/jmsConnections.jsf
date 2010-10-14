@@ -62,10 +62,7 @@
             
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
             setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/connector-connection-pool");
-            gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.tmpRows}");
-            filterTable(table="#{requestScope.tmpRows}", key="resourceAdapterName", value="jmsra")
-            gf.getResourceRealStatus(endpoint="#{sessionScope.REST_URL}/servers/server/server/resource-ref" rows="#{requestScope.tmpRows}" result="#{requestScope.listOfRows}")
-
+            
             setPageSessionAttribute(key="tableTitle" value="$resource{i18njms.resourcesTable.connectionFactories}");
             setPageSessionAttribute(key="editLink" value="/jms/jmsConnectionEdit.jsf");
             setPageSessionAttribute(key="createLink" value="/jms/jmsConnectionNew.jsf");
