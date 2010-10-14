@@ -79,6 +79,7 @@ public class PEFileLayout
         createDirectory(getApplicationsRootDir());
         createDirectory(getAutoDeployDir());
         createDirectory(getAutoDeployStatusDir());
+        createDirectory(getAutoDeployOSGiBundlesDir());
         
         createDirectory(getLibDir());
         createDirectory(getClassesDir());
@@ -653,6 +654,11 @@ public class PEFileLayout
     public File getAutoDeployStatusDir()
     {
         return new File(getAutoDeployDir(), AUTO_DEPLOY_STATUS);
+    }
+
+    private static final String AUTO_DEPLOY_OSGI_BUNDLES_DIR = "bundles";
+    private File getAutoDeployOSGiBundlesDir() {
+        return new File(getAutoDeployDir(), AUTO_DEPLOY_OSGI_BUNDLES_DIR);
     }
 
     public static final String KEY_FILE_TEMPLATE = "keyfile";
