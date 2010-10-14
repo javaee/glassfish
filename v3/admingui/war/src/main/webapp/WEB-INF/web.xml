@@ -129,34 +129,27 @@
 	<exception-type>javax.faces.application.ViewExpiredException</exception-type>
         <location>/</location>
     </error-page>
+    <!--
     <error-page>
 	<error-code>403</error-code>
-	<location>/accessDenied.jsf</location>
+	<location>/</location>
     </error-page>
+    -->
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>noaccess</web-resource-name>
-            <url-pattern>/theme/*</url-pattern>
-            <http-method>DELETE</http-method>
-            <http-method>GET</http-method>
-            <http-method>POST</http-method>
-            <http-method>PUT</http-method>
+	    <url-pattern>/*</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <role-name>noaccess</role-name>
-        </auth-constraint>
+	</auth-constraint>
     </security-constraint>
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>protected</web-resource-name>
-            <url-pattern>*.jsf</url-pattern>
-            <url-pattern>/download/*</url-pattern>
-            <!-- We need to change this when we have a fix for the plugin url security issue -->
-            <!--<url-pattern>/resource/*</url-pattern>-->
-            <http-method>DELETE</http-method>
+	    <url-pattern>/*</url-pattern>
             <http-method>GET</http-method>
             <http-method>POST</http-method>
-            <http-method>PUT</http-method>
         </web-resource-collection>
         <auth-constraint>
             <role-name>admin</role-name>
@@ -167,12 +160,7 @@
             <web-resource-name>public</web-resource-name>
             <url-pattern>/theme/com/*</url-pattern>
             <url-pattern>/theme/org/*</url-pattern>        
-            <url-pattern>/accessDenied.jsf</url-pattern>
             <url-pattern>/resource/*</url-pattern>
-            <!--<url-pattern>/resource/theme/*</url-pattern>-->           		
-            <!--<url-pattern>/resource/js/*</url-pattern>-->
-            <!--<url-pattern>/resource/css/*</url-pattern>-->
-            <!--<url-pattern>/resource/images/*</url-pattern>-->
             <url-pattern>/theme/META-INF/*</url-pattern>
             <http-method>GET</http-method>
         </web-resource-collection>
