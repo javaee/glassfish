@@ -93,6 +93,10 @@ public class RunLevelServices {
 
     // TODO: If environment was on annotation of the RunLevelService impl instead of
     //      a method of the instance, we wouldn't have to activate the RunLevelService(s)
+
+    if (null == habitat) {
+      return null;
+    }
     
     Collection<RunLevelService> coll = habitat.getAllByContract(RunLevelService.class);
     RunLevelService<?> theOne = null;
@@ -155,6 +159,10 @@ public class RunLevelServices {
 
 
   private void initialize(Habitat habitat, RunLevel rl) {
+    if (null == habitat) {
+      return;
+    }
+    
     if (habitat.isInitialized()) {
       throw new ComponentException("no RunLevelService found appropriate for RunLevel: " + rl);
     }
