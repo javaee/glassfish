@@ -21,6 +21,7 @@
         <antcall target="twomoduleswithlibs"/>
         <antcall target="ejbinwar"/>
         <antcall target="ejbandwar"/>
+        <antcall target="skipjar"/>
     </target>
 
     <target name="basic">
@@ -75,6 +76,12 @@
         <record name="ejbandwar.output" action="start" />
             <ant dir="ejbandwar" target="all"/>
         <record name="ejbandwar.output" action="stop" />
+    </target>
+
+    <target name="skipjar">
+        <record name="skipjar.output" action="start" />
+            <ant dir="skipjar" target="all"/>
+        <record name="skipjar.output" action="stop" />
     </target>
 
     <target name="usage">
