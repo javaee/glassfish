@@ -51,72 +51,68 @@ import com.sun.hk2.component.InhabitantsScanner;
 import com.sun.hk2.component.IntrospectionScanner;
 
 /**
- * Responsible for feeding inhabitants into a habitat, thru the 
+ * Responsible for feeding inhabitants into a habitat, thru the
  * provided {@link InhabitantsParser}.
- *  
+ *
  * @author Jerome Dochez
  * @author Jeff Trent
- *
  * @since 3.1
  */
 public abstract class InhabitantsFeed {
 
-  private final Logger logger = Logger.getLogger(InhabitantsFeed.class.getName());
-  
-  private final InhabitantsParser ip; 
-  
-  private Holder<ClassLoader> classLoaderHolder;
-  
-  /**
-   * Creates an InhabitantsHabitatFeed.
-   * 
-   * @param h reserved for future use
-   * @param ip the inhabitants parser sync target
-   * 
-   * @return the InhabitantsHabitatFeed
-   */
-  public static InhabitantsFeed create(Habitat h, InhabitantsParser ip) {
-    return new InhabitantsFeed(ip) {};
-  }
-  
-  protected InhabitantsFeed(InhabitantsParser ip) {
-    this.ip = ip;
-    setClassLoaderContext(getClass().getClassLoader());
-  }
-  
-  public void setClassLoaderContext(ClassLoader cl) {
-    classLoaderHolder = new Holder.Impl<ClassLoader>(cl);
-  }
+    private final Logger logger = Logger.getLogger(InhabitantsFeed.class.getName());
 
-  public void populate(InhabitantsParsingContextGenerator ipcgen,
-      Collection<IntrospectionScanner> supplementalScanners) {
-    logger.log(Level.FINER, "Starting to introspect");
-    ParsingContext context = ipcgen.getContext();
-    InhabitantIntrospectionScanner is = new InhabitantIntrospectionScanner(context);
-    try {
-      ip.parse(is, classLoaderHolder);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-    logger.log(Level.FINER, "finished introspecting");
+    private final InhabitantsParser ip;
 
-    logger.log(Level.FINER, "Starting to introspect");
-    Collection<InhabitantsScanner> metaInfScanners = ipcgen.getInhabitantsScanners();
-    for (InhabitantsScanner scanner : metaInfScanners) {
-      try {
-        ip.parse(scanner, classLoaderHolder);
-        scanner.close();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-    logger.log(Level.FINER, "finished introspecting");
+    private Holder<ClassLoader> classLoaderHolder;
 
-    if (null != supplementalScanners) {
-      for (IntrospectionScanner s : supplementalScanners) {
-        logger.log(Level.FINE, "parsing with supplemental scanner {0}", s);
-        s.parse(context, classLoaderHolder);
-      }
+    /**
+     * Creates an InhabitantsHabitatFeed.
+     *
+     * @param h  reserved for future use
+     * @param ip the inhabitants parser sync target
+     * @return the InhabitantsHabitatFeed
+     */
+    public static InhabitantsFeed create(Habitat h, InhabitantsParser ip) {
+        return new InhabitantsFeed(ip) {
+        };
     }
-  }
+
+    protected InhabitantsFeed(InhabitantsParser ip) {
+        this.ip = ip;
+        setClassLoaderContext(getClass().getClassLoader());
+    }
+
+    public void setClassLoaderContext(ClassLoader cl) {
+        classLoaderHolder = new Holder.Impl<ClassLoader>(cl);
+    }
+
+    public void populate(InhabitantsParsingContextGenerator ipcgen) {
+        logger.log(Level.FINER, "Starting to introspect");
+        ParsingContext context = ipcgen.getContext();
+        InhabitantIntrospectionScanner is = new InhabitantIntrospectionScanner(context);
+        try {
+            ip.parse(is, classLoaderHolder);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        logger.log(Level.FINER, "finished introspecting");
+
+        logger.log(Level.FINER, "Starting to introspect");
+        Collection<InhabitantsScanner> metaInfScanners = ipcgen.getInhabitantsScanners();
+        for (InhabitantsScanner scanner : metaInfScanners) {
+            try {
+                ip.parse(scanner, classLoaderHolder);
+                scanner.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        logger.log(Level.FINER, "finished introspecting");
+
+        for (IntrospectionScanner s : ip.habitat.getAllByContract(IntrospectionScanner.class)) {
+            logger.log(Level.FINE, "parsing with supplemental scanner {0}", s);
+            s.parse(context, classLoaderHolder);
+        }
+    }
 }

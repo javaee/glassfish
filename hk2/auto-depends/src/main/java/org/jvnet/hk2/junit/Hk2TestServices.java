@@ -116,7 +116,7 @@ public class Hk2TestServices {
       }
 
       InhabitantsFeed feed = InhabitantsFeed.create(habitat, ip);
-      feed.populate(ipcgen, habitat.getAllByContract(IntrospectionScanner.class));
+      feed.populate(ipcgen);
 
       if (logger.isLoggable(Level.FINER)) {
         Iterator<String> contracts = habitat.getAllContracts();
