@@ -260,6 +260,19 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
                     whackee));
         }
 
+        // IT 12680 -- perhaps a new empty dir was created.  Get rid of it and 
+        // make this an error.
+        File[] files = whackee.listFiles();
+
+        if(files == null || files.length <= 0) {
+            // empty dir
+            if(files != null)
+                FileUtils.whack(whackee);
+
+            throw new CommandException(Strings.get("DeleteInstance.noWhack",
+                    whackee));
+        }
+
         // Rename the instance directory to a temporary name to ensure that
         // the directory tree can be deleted on Windows.
         // The FileUtils.renameFile method has a retry built in.
