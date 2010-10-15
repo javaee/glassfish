@@ -92,7 +92,6 @@ public class MiscCommandsTest extends AdminBaseDevTest {
             "--timeout", String.valueOf(seconds));
         time1 = System.currentTimeMillis();
         String out = ret.outAndErr;
-        report("validate-multicast-params", ret.returnValue);
         report("validate-multicast-param-port",
             out.contains(port));
         report("validate-multicast-param-address",
