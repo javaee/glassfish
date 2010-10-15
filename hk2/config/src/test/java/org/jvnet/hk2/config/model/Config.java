@@ -38,21 +38,14 @@ package org.jvnet.hk2.config.model;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-
-import java.util.List;
 
 /**
- * Domain test interface
+ * Sample configuration binding 
  */
 @Configured
-public interface Domain {
+public interface Config {
 
-    @Attribute
+    @Attribute(key=true)
     String getName();
     void setName(String name);
-
-    @Element
-    List<Config> getConfigs();
-
 }

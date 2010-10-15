@@ -58,6 +58,7 @@ public class SimpleConfiguredTest extends Hk2Test {
         Collection<Inhabitant<?>> inhabitants = habitat.getInhabitantsByContract(InjectionTarget.class.getName());
         for (Inhabitant<?> inhabitant : inhabitants) {
             System.out.println("Found inhabitant " + inhabitant);
+            System.out.println("metadata " + inhabitant.metadata());
         }
     }
 }

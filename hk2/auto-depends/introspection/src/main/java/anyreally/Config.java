@@ -34,25 +34,20 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.config.model;
+package anyreally;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-
-import java.util.List;
 
 /**
- * Domain test interface
+ * Config object
  */
 @Configured
-public interface Domain {
-
-    @Attribute
+public interface Config extends ConfigBeanProxy {
+    
+    @Attribute(key=true)
     String getName();
     void setName(String name);
-
-    @Element
-    List<Config> getConfigs();
 
 }

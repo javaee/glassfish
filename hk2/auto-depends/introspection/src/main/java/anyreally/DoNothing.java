@@ -34,25 +34,29 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.config.model;
+package anyreally;
 
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-
-import java.util.List;
+import com.sun.enterprise.module.bootstrap.ModuleStartup;
+import com.sun.enterprise.module.bootstrap.StartupContext;
+import org.jvnet.hk2.annotations.Service;
 
 /**
- * Domain test interface
+ * do nothing really, I only care about the inhabitant file generation
  */
-@Configured
-public interface Domain {
+@Service
+public class DoNothing implements ModuleStartup  {
+    @Override
+    public void setStartupContext(StartupContext context) {
 
-    @Attribute
-    String getName();
-    void setName(String name);
+    }
 
-    @Element
-    List<Config> getConfigs();
+    @Override
+    public void start() {
 
+    }
+
+    @Override
+    public void stop() {
+        
+    }
 }

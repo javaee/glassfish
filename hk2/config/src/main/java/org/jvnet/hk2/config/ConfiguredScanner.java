@@ -2,7 +2,7 @@
  *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2007-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -130,7 +130,7 @@ public class ConfiguredScanner implements IntrospectionScanner {
     }
 
     private void generateAttribute(AnnotationModel attribute, MethodModel m, MultiMap<String, String> metadata) {
-        String name = Dom.convertName(m.getReturnType());
+        String name = Dom.convertName(m.getName());
         String xmlTokenName = '@' + name;
         boolean isRequired = Boolean.parseBoolean((String) attribute.getValues().get("isRequired"));
         metadata.add(xmlTokenName,isRequired?"required":"optional");
@@ -164,6 +164,11 @@ public class ConfiguredScanner implements IntrospectionScanner {
             // node
             metadata.add(xmlTokenName, makeCollectionIfNecessary(refTypeAsString, refTypeAsString));
         }
+        Boolean isKey = (Boolean) attribute.getValues().get("key");
+        if (isKey!=null && isKey) {
+            metadata.add(ConfigMetadata.KEY, xmlTokenName);
+            metadata.add(ConfigMetadata.KEYED_AS,m.getDeclaringType().getName());
+        }
     }
 
     private String makeCollectionIfNecessary(String type, String value) {
@@ -175,7 +180,27 @@ public class ConfiguredScanner implements IntrospectionScanner {
     }
 
     private void generateElement(AnnotationModel element, MethodModel m, MultiMap<String, String> metadata) {
-
+        String name = Dom.convertName(m.getName());
+        String xmlTokenName = "<" + name + ">";
+        String[] arguments = m.getArgumentTypes();
+        String refTypeAsString;
+        if (arguments.length==0) {
+            refTypeAsString = m.getReturnType();
+        } else {
+            if (arguments.length!=1) {
+                throw new RuntimeException("@Element method cannot have more than 1 argument " + m.getSignature());
+            }
+            refTypeAsString = arguments[0];
+        }        
+        boolean isReference = Boolean.parseBoolean((String) element.getValues().get("isReference"));
+        Type refType = context.getTypes().getBy(refTypeAsString);
+        if (refType==null || isReference) {
+            // leaf
+            metadata.add(xmlTokenName, makeCollectionIfNecessary(refTypeAsString, "leaf"));
+        } else {
+            // node
+            metadata.add(xmlTokenName, makeCollectionIfNecessary(refTypeAsString, refTypeAsString));
+        }
     }
 
 }
