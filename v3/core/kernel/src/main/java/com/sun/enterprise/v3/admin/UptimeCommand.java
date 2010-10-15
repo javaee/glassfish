@@ -72,6 +72,7 @@ public class UptimeCommand implements AdminCommand {
         final ActionReport report = context.getActionReport();
         long totalTime_ms = getUptime();
         Duration duration = new Duration(totalTime_ms);
+        duration.setTerse();
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         String message;
 

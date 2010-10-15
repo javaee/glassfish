@@ -48,6 +48,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * Thread Safe.  
  * Immutable
  */
+
 public final class Duration {
     public Duration(long msec) {
         long msecLeftover = msec;
@@ -70,10 +71,44 @@ public final class Duration {
         numMilliSeconds = msecLeftover;
     }
 
+    /**
+     * Use more compact output
+     * ref: https://glassfish.dev.java.net/issues/show_bug.cgi?id=12606
+     */
+    final public void setTerse() {
+        terse = true;
+    }
+
     @Override
     public String toString() {
+        if(terse)
+            return toStringTerse();
+        else
+            return toStringRegular();
+    }
+
+    private String toStringTerse() {
         String s = "";
-        
+
+        if(numWeeks > 0)
+            s = strings.get("weeks_t", numWeeks, numDays);
+        else if(numDays > 0)
+            s = strings.get("days_t", numDays);
+        else if(numHours > 0)
+            s = strings.get("hours_t", numHours, numMinutes);
+        else if(numMinutes > 0)
+            s = strings.get("minutes_t", numMinutes, numSeconds);
+        else if(numSeconds > 0)
+            s = strings.get("seconds_t", numSeconds);
+        else
+            s = strings.get("milliseconds_t", numMilliSeconds);
+
+        return s;
+    }
+
+    private String toStringRegular() {
+        String s = "";
+
         if(numWeeks > 0)
             s = strings.get("weeks", numWeeks, numDays, numHours, numMinutes, numSeconds);
         else if(numDays > 0)
@@ -86,7 +121,7 @@ public final class Duration {
             s = strings.get("seconds", numSeconds);
         else
             s = strings.get("milliseconds", numMilliSeconds);
-        
+
         return s;
     }
 
@@ -105,4 +140,6 @@ public final class Duration {
     public final static long MSEC_PER_WEEK = MSEC_PER_DAY * 7;
     
     private final LocalStringsImpl strings = new LocalStringsImpl(Duration.class);
+    private boolean terse;
+
 }
