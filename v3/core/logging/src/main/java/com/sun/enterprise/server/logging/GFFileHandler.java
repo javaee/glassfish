@@ -103,9 +103,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
 
     private int flushFrequency =1;
 
-
-
-    private static final String LOGGING_MAX_HISTORY_FILES = "com.sun.enterprise.server.logging.max_history_files";
+    private int maxHistoryFiles = 10;
 
     // For now the mimimum rotation value is 0.5 MB.
     private static final int MINIMUM_FILE_ROTATION_VALUE = 500000;
@@ -286,7 +284,16 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
             }
         }
 
-        
+        try {
+                maxHistoryFiles = Integer.parseInt(manager.getProperty(cname + ".maxHistoryFiles"));
+            } catch (NumberFormatException e) {
+                lr = new LogRecord(Level.WARNING,
+                    "Cannot read maxHistoryFiles property from logging config file. Using default.");
+                lr.setThreadID((int)Thread.currentThread().getId());
+                this.publish(lr);
+            }
+        if (maxHistoryFiles < 0)
+            maxHistoryFiles = 10;        
     }
 
     public void preDestroy() {
@@ -422,24 +429,15 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
     }
 
     /**
-     * cleanup the history log file based on JVM system property "max_history_files".
+     * cleanup the history log file based on attributes set under logging.properties file".
      * 
      * If it is defined with valid number, we only keep that number of history logfiles;
      * If "max_history_files" is defined without value, then default that number to be 10;
-     * If "max_history_files" is defined with value 0, no histry log file will
-     * be keeped; and server.log is the only log file. 
+     * If "max_history_files" is defined with value 0, any number of history files are kept.
      */
     public void cleanUpHistoryLogFiles() {
-        String nStr = System.getProperty(LOGGING_MAX_HISTORY_FILES);
-        if (nStr==null) return;
-
-        int maxHistryFiles = 10;
-        if (!"".equals(nStr)) {
-            try {
-                maxHistryFiles = Integer.parseInt(nStr);
-            } catch (NumberFormatException e) {};
-        }
-        if (maxHistryFiles<0) return;
+        if (maxHistoryFiles==0) 
+            return;
 
         File   dir  = absoluteFile.getParentFile();
         if (dir==null) return;
@@ -453,12 +451,12 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
                  candidates.add(fset[i].getAbsolutePath() );
             }
         }
-        if (candidates.size() <= maxHistryFiles) return;
+        if (candidates.size() <= maxHistoryFiles) return;
 
         Object[] pathes = candidates.toArray();
         java.util.Arrays.sort(pathes);
         try {
-            for (int i=0; i<pathes.length-maxHistryFiles; i++) {
+            for (int i=0; i<pathes.length-maxHistoryFiles; i++) {
 		new File((String)pathes[i]).delete();
             }
         } catch (Exception e) {
