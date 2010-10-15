@@ -17,6 +17,7 @@
         <module>test1</module>
         <module>test2</module>
         <module>test-config</module>
+        <module>introspection</module>
     </modules>
     
     <build>
