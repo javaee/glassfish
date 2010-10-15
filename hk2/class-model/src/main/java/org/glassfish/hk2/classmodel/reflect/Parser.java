@@ -59,56 +59,63 @@ import java.util.logging.Logger;
 public class Parser {
 
     private final ParsingContext context;
-    private final Parser parent;
-    private final Map<URI, Types> processedURI = Collections.synchronizedMap(new HashMap<URI, Types>());
+    private final Map<String, Types> processedURI = Collections.synchronizedMap(new HashMap<String, Types>());
 
-    private final List<Future<Result>> futures = Collections.synchronizedList(new ArrayList<Future<Result>>());
+    private final Stack<Future<Result>> futures = new Stack<Future<Result>>();
     private final ExecutorService executorService;
     private final boolean ownES;
     
     public Parser(ParsingContext context) {
-        this(context, null);
-    }
-
-    private Parser(ParsingContext context, Parser parent) {
         this.context = context;
         executorService = (context.executorService==null?createExecutorService():context.executorService);
         ownES = context.executorService==null;
-        this.parent = parent;
     }
     public Exception[] awaitTermination() throws InterruptedException {
         return awaitTermination(10, TimeUnit.SECONDS);
     }
 
 
-    public synchronized Exception[] awaitTermination(int timeOut, TimeUnit unit) throws InterruptedException {
+    public Exception[] awaitTermination(int timeOut, TimeUnit unit) throws InterruptedException {
+
 
         List<Exception> exceptions = new ArrayList<Exception>();
-        if (context.logger.isLoggable(Level.FINE)) {
-            context.logger.log(Level.FINE, "awaiting termination of " + futures.size() + " tasks");
-        }
-
-        for (Future<Result> f : futures) {
-            try {
-                Result result = f.get(timeOut, unit);
-                if (context.logger.isLoggable(Level.FINER)) {
-                    context.logger.log(Level.FINER, "result " + result);
-                    if (result!=null && result.fault!=null) {
-                        context.logger.log(Level.FINER, "result fault" + result);
+        while(futures.size()>0) {
+            if (context.logger.isLoggable(Level.FINE)) {
+                 context.logger.log(Level.FINE, "Await iterating at " + System.currentTimeMillis() + " waiting for " + futures.size());
+            }
+            Future<Result> f=null;
+            synchronized(futures) {
+                try {
+                    f = futures.pop();
+                } catch(EmptyStackException e) {
+                    // it's ok, another thread took the load from us.
+                    f = null;
+                }
+            }
+            if (f!=null) {
+                try {
+                    Result result = f.get(timeOut, unit);
+                     context.logger.log(Level.FINE, "future finished at " + System.currentTimeMillis() + " for " + result.name);
+                    if (context.logger.isLoggable(Level.FINER)) {
+                        context.logger.log(Level.FINER, "result " + result);
+                        if (result!=null && result.fault!=null) {
+                            context.logger.log(Level.FINER, "result fault" + result);
+                        }
                     }
+                    if (result!=null && result.fault!=null) {
+                        exceptions.add(result.fault);
+                    }
+                } catch (TimeoutException e) {
+                    exceptions.add(e);
+                } catch (ExecutionException e) {
+                    exceptions.add(e);
                 }
-                if (result!=null && result.fault!=null) {
-                    exceptions.add(result.fault);
-                }
-            } catch (TimeoutException e) {
-                exceptions.add(e);
-            } catch (ExecutionException e) {
-                exceptions.add(e);
             }
-            // if we own the executor service, time to shut it down.
-            if (executorService!=null && ownES) {
-                executorService.shutdown();
-            }
+
+        }
+        // if we own the executor service, time to shut it down.
+        if (executorService!=null && ownES) {
+            executorService.shutdown();
         }
         return exceptions.toArray(new Exception[exceptions.size()]);
     }
@@ -134,7 +141,7 @@ public class Parser {
         parse(adapter, cleanUpAndNotify);
     }
 
-    public synchronized void parse(final ArchiveAdapter source, final Runnable doneHook) throws IOException {
+    public void parse(final ArchiveAdapter source, final Runnable doneHook) throws IOException {
 
         ExecutorService es = executorService;
         boolean immediateShutdown = false;
@@ -147,56 +154,57 @@ public class Parser {
         final Logger logger = context.logger;
         Types types = getResult(source.getURI());
         if (types!=null) {
-            if (!processedURI.containsKey(source.getURI())) {
-                processedURI.put(source.getURI(), types);    
-            }
             if (logger.isLoggable(Level.FINE)) {
                 logger.fine("Skipping reparsing..." + source.getURI());
             }
             return;
         }
-        
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "at " + System.currentTimeMillis() + "in " + this + " submitting file " + source.getURI().getPath());
+        }
+
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "submitting file " + source.getURI().getPath());
         }
-        futures.add(es.submit(new Callable<Result>() {
+        Future<Result> future = es.submit(new Callable<Result>() {
             @Override
             public Result call() throws Exception {
                 try {
                     if (logger.isLoggable(Level.FINE)) {
                         logger.log(Level.FINE, "elected file " + source.getURI().getPath());
                     }
+                    if (logger.isLoggable(Level.FINE)) {
+                        context.logger.log(Level.FINE, "started working at " + System.currentTimeMillis() + "in "
+                                + this + " on " + source.getURI().getPath());
+                    }
                     doJob(source, doneHook);
-                    
+
                     return new Result(source.getURI().getPath(), null);
                 } catch (Exception e) {
                     logger.log(Level.SEVERE, "Exception while parsing file " + source, e);
                     return new Result(source.getURI().getPath(), e);
                 }
             }
-        }));
+        });        
+        synchronized(futures) {
+            futures.add(future);
+        }
         if (immediateShutdown) {
             es.shutdown();
         }
     }
 
-    private Types getResult(URI uri) {
-        Types types = processedURI.get(uri);
-        if (types==null && parent!=null) {
-            types = parent.getResult(uri);
-        }
-        return types;
+    private synchronized Types getResult(URI uri) {
+        return processedURI.get(uri.getPath());
     }
                                
-    private void saveResult(URI uri, Types types) {
-        this.processedURI.put(uri, types);
-        if (parent!=null) {
-            parent.saveResult(uri, types);
-        }
+    private synchronized void saveResult(URI uri, Types types) {
+        this.processedURI.put(uri.getPath(), types);
     }
 
     private void doJob(final ArchiveAdapter adapter, final Runnable doneHook) throws Exception {
         final Logger logger = context.logger;
+        long startTime = System.currentTimeMillis();
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("Parsing " + adapter.getURI() + " on thread " + Thread.currentThread().getName());
         }
@@ -232,6 +240,10 @@ public class Parser {
                     logger
             );
             saveResult(uri, context.getTypes());
+        }
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE,"Finished parsing " + adapter.getURI().getPath() + " at " + System.currentTimeMillis() + " in "
+                + (System.currentTimeMillis() - startTime) + " ms");
         }
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "before running doneHook" + adapter.getURI().getPath());
