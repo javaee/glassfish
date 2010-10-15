@@ -49,6 +49,16 @@
                     onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
 
+                    setAttribute(key="emptyStr" value="");
+                    if("#{pageSession.skipAttrsList}=#{null}") {
+                        createList(size="0", result="#{pageSession.skipAttrsList}");
+                    }
+                    if ("#{pageSession.valueMap['redirectPort']} = #{emptyStr}") {
+                        listAdd(list="#{pageSession.skipAttrsList}" value="redirectPort");
+                    }
+                    if ("#{pageSession.valueMap['noCompressionUserAgents']} = #{emptyStr}") {
+                        listAdd(list="#{pageSession.skipAttrsList}" value="noCompressionUserAgents");
+                    }
                     gf.createEntity(endpoint="#{pageSession.selfUrl}"
                                     attrs="#{pageSession.valueMap}"
                                     skipAttrs="#{pageSession.skipAttrsList}"
