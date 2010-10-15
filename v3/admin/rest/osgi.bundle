@@ -38,7 +38,8 @@
 # holder.
 #
 
--exportcontents:
+-exportcontents: \
+                        org.glassfish.admin.rest
 DynamicImport-Package: \
                         com.sun.jersey.api.container, \
                         com.sun.jersey.api.core, \

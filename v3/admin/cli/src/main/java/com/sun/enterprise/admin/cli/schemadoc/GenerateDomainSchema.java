@@ -57,6 +57,10 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.ExecuteOn;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -66,6 +70,8 @@ import org.objectweb.asm.ClassReader;
 
 @Service(name = "generate-domain-schema")
 @Scoped(PerLookup.class)
+@ExecuteOn(value={RuntimeType.DAS})
+@TargetType(value={CommandTarget.DOMAIN, CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
 public class GenerateDomainSchema implements AdminCommand {
     @Inject
     private Domain domain;
@@ -86,8 +92,7 @@ public class GenerateDomainSchema implements AdminCommand {
             docDir = new File(new File(uri), "config");
             findClasses(classDefs, locateJarFiles(System.getProperty("com.sun.aas.installRoot") + "/modules"));
 
-            getFormat().output(new Context(classDefs, docDir, Boolean.valueOf(showDeprecated),
-                Boolean.valueOf(showSubclasses), Domain.class.getName()));
+            getFormat().output(new Context(classDefs, docDir, showDeprecated, showSubclasses, Domain.class.getName()));
             context.getActionReport().setMessage("Finished generating " + format + " documentation in " + docDir);
         } catch (Exception e) {
             e.printStackTrace();

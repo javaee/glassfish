@@ -204,7 +204,6 @@ public class HtmlFormat implements SchemaOutputFormat, Comparable<HtmlFormat> {
         InputStreamReader reader = null;
         PrintWriter writer = null;
         try {
-            System.out.println("HtmlFormat.copy: resource = " + resource);
             InputStream stream = getClass().getResourceAsStream(resource);
             reader = new InputStreamReader(stream);
             writer = new PrintWriter(new File(dir, resource));
