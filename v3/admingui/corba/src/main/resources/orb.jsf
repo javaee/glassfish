@@ -65,7 +65,7 @@
         setPageSessionAttribute(key="parentUrl2", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
         setPageSessionAttribute(key="selfUrl2", value="#{pageSession.parentUrl2}/#{pageSession.childType2}");
         setPageSessionAttribute(key="rest-api" value="true");
-        setPageSessionAttribute(key="convertToFalseList2" value={"ClientAuthenticationRequired"});
+        setPageSessionAttribute(key="convertToFalseList2" value={"clientAuthenticationRequired"});
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}.json", valueMap="#{pageSession.valueMap2}");
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
