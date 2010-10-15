@@ -88,6 +88,12 @@ public class SystemPropertyConstants
         "com.sun.aas.installRoot";
 
     /**
+     * Field
+     */
+    public static final String PRODUCT_ROOT_PROPERTY =
+        "com.sun.aas.productRoot";
+
+    /**
      * Field 
      */
     public static final String JAVA_ROOT_PROPERTY = "com.sun.aas.javaRoot";

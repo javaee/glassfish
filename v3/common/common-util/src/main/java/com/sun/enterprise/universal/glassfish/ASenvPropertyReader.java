@@ -121,7 +121,12 @@ public class ASenvPropertyReader {
         props.put(SystemPropertyConstants.CONFIG_ROOT_PROPERTY, configDir.getPath());
         setProperties();
         postProcess();
-        
+        // Product root is defined to be the parent of the install root.
+        // While tempting to just use installDir.getParent() we go through
+        // these gyrations just in case setProperties() changed the value
+        // of the INSTALL_ROOT_PROPERTY property.
+        File installRoot = new File(props.get(SystemPropertyConstants.INSTALL_ROOT_PROPERTY));
+        props.put(SystemPropertyConstants.PRODUCT_ROOT_PROPERTY, installRoot.getParent());
     }
 
     /* 
