@@ -63,7 +63,8 @@
         gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="GET" result="#{requestScope.propTable}");
         setPageSessionAttribute(key="tableList" value="#{requestScope.propTable.data.extraProperties.properties}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/cluster/availability/availabilityService.jsf?configName=#{pageSession.configName}");
-        setPageSessionAttribute(key="convertToFalseList" value={"availabilityEnabled", "autoManageHaStore", "haStoreHealthcheckEnabled"});
+        setPageSessionAttribute(key="convertToFalseList" value={"availabilityEnabled"});
+        setPageSessionAttribute(key="onlyUseAttrs" value={"availabilityEnabled"})
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
