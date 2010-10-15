@@ -53,9 +53,6 @@
                         convertToFalse={"securityEnabled"},
                         result => $attribute{newProxy});
 
-                if ("#{pageSession.httpMap['redirectPort']}=#{null}") {
-                    mapPut(map="#{pageSession.httpMap}", key="redirectPort", value="0");
-                }
                 if("#{pageSession.skipAttrsList}=#{null}") {
                     createList(size="0", result="#{pageSession.skipAttrsList}");
                 }
