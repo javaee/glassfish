@@ -52,7 +52,7 @@
     <!beforeCreate
         setSessionAttribute(key="domainTabs" value="appConfig");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/appServer/serverInstAppsConfig.jsf?");
-        setPageSessionAttribute(key="convertToFalseList" value={"DynamicReloadEnabled" "AutodeployEnabled" "AutodeployVerifierEnabled" "AutodeployJspPrecompilationEnabled"});
+        setPageSessionAttribute(key="convertToFalseList" value={"dynamicReloadEnabled" "autodeployEnabled" "autodeployVerifierEnabled" "autodeployJspPrecompilationEnabled"});
 
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/server-config/admin-service");
         setPageSessionAttribute(key="childType", value="das-config");
