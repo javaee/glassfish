@@ -56,10 +56,20 @@
                 if ("#{pageSession.httpMap['redirectPort']}=#{null}") {
                     mapPut(map="#{pageSession.httpMap}", key="redirectPort", value="0");
                 }
+                if("#{pageSession.skipAttrsList}=#{null}") {
+                    createList(size="0", result="#{pageSession.skipAttrsList}");
+                }
+                if ("#{pageSession.valueMap['redirectPort']} = #{null}") {
+                    listAdd(list="#{pageSession.skipAttrsList}" value="redirectPort");
+                }
+                if ("#{pageSession.valueMap['noCompressionUserAgents']} = #{null}") {
+                    listAdd(list="#{pageSession.skipAttrsList}" value="noCompressionUserAgents");
+                }
                 gf.createEntity(endpoint="${newProxy}/#{pageSession.valueMap['Name']}/#{pageSession.childType2}"
                         attrs="#{pageSession.httpMap}"
                         onlyUseAttrs={"enableCometSupport", "defaultVirtualServer", "serverName", "redirectPort"}
                         convertToFalse={"uploadTimeoutEnabled", "cometSupportEnabled", "dnsLookupEnabled", "rcmSupportEnabled", "traceEnabled", "authPassThroughEnabled", "chunkingEnabled", "xpoweredBy"},
+                        skipAttrs="#{pageSession.skipAttrsList}"
                         result => $attribute{newHttp});
 
                 gf.createEntity(endpoint="${newHttp}/#{pageSession.childType3}"
