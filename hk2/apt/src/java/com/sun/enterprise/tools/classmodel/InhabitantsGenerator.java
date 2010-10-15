@@ -96,7 +96,7 @@ public class InhabitantsGenerator {
 //    feed.populate(ipcGen,
 //        (Collection)Collections.singleton(
 //            new TemporaryIntrospectionScanner(descriptor)));
-      feed.populate(ipcGen, Collections.EMPTY_LIST);
+      feed.populate(ipcGen);
     
     // i/o the descriptor(s) out
     descriptor.write(writer);
