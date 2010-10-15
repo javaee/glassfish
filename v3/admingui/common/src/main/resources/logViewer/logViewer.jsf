@@ -195,6 +195,9 @@
 		</sun:hyperlink>
 		<sun:hyperlink rendered="#{showAdvanced}" id="basiclink" text="$resource{i18nc.logViewer.basicSearch}">
 		    <ui:event type="command">
+                        setAttribute(key="logentries" value="#{null}");
+                        setAttribute(key="customLogger" value="#{null}");
+                        setAttribute(key="numToDisplay" value="#{null}");
 			setSessionAttribute(key="showAdvanced" value="false");
 			setAttribute(key="hasResults" value="true" );
 			gf.navigate(page="#{request.contextPath}/common/logViewer/logViewer.jsf");
@@ -431,6 +434,7 @@
 	    document.location.href = "#options";
 	}
     }
+
 </script>
 </f:verbatim>
 </sun:body>
