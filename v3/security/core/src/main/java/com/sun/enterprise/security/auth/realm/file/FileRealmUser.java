@@ -62,6 +62,7 @@ public class FileRealmUser extends PrincipalImpl implements User
 
     private byte[] salt;
     private byte[] hash;
+    private String algo;
     
     /**
      * Constructor.
@@ -85,13 +86,14 @@ public class FileRealmUser extends PrincipalImpl implements User
      *
      */
     public FileRealmUser(String name, String[] groups, String realm,
-                         byte[] salt, byte[] hash)
+                         byte[] salt, byte[] hash, String algo)
     {
         super(name);
         this.groups = groups;
         this.realm = realm;
         this.hash = hash;
         this.salt = salt;
+        this.algo = algo;
         
         attributes = new Hashtable(1);       // not really needed
         attributes.put(GROUP_KEY, groups);
@@ -205,6 +207,20 @@ public class FileRealmUser extends PrincipalImpl implements User
      */
     public Enumeration getAttributeNames () {
 	return attributes.keys();
+    }
+
+    /**
+     * @return the algo
+     */
+    public String getAlgo() {
+        return algo;
+    }
+
+    /**
+     * @param algo the algo to set
+     */
+    public void setAlgo(String algo) {
+        this.algo = algo;
     }
 
 

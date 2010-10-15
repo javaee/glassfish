@@ -63,6 +63,11 @@ import org.glassfish.internal.api.SharedSecureRandom;
 public class SSHA
 {
     private static final String SSHA_TAG = "{SSHA}";
+    private static final String SSHA_256_TAG = "{SSHA256}";
+    private static final String algoSHA = "SHA";
+    private static final String algoSHA256 = "SHA-256";
+    public static String defaultAlgo = algoSHA256;
+
     //TODO V3 need to check if second arg is correct
     private static StringManager sm =
         StringManager.getManager(SSHA.class);
@@ -78,23 +83,27 @@ public class SSHA
      * @throws IASSecurityExeption Thrown if there is an error.
      *
      */
-    public static byte[] compute(byte[] salt, byte[] password)
+    public static byte[] compute(byte[] salt, byte[] password, String algo)
         throws IASSecurityException
     {
+        
         byte[] buff = new byte[password.length + salt.length];
         System.arraycopy(password, 0, buff, 0, password.length);
         System.arraycopy(salt, 0, buff, password.length, salt.length);
 
         byte[] hash = null;
 
-        synchronized (SSHA.class) {
-            
-            if (md == null) {
-                try {
-                    md = MessageDigest.getInstance("SHA");
-                } catch (Exception e) {
-                    throw new IASSecurityException(e);
-                }    
+        boolean isSHA = false;
+        if(algoSHA.equals(algo)) {
+            isSHA = true;
+        }
+
+        synchronized (SSHA.class) {  
+
+            try {
+                md = MessageDigest.getInstance(algo);
+            } catch (Exception e) {
+                throw new IASSecurityException(e);
             }
 
             assert (md != null);
@@ -102,8 +111,19 @@ public class SSHA
             hash = md.digest(buff);
         }
 
-        assert (hash.length==20); // SHA output is 160 bits
-
+        if(!isSHA) {
+            for (int i = 2; i <= 100; i++) {
+                    md.reset();
+                    md.update(hash);
+                    hash = md.digest();
+            }
+        }
+        if(isSHA) {
+            assert (hash.length == 20); // SHA output is 20 bytes
+        }
+        else {
+            assert (hash.length == 32); //SHA-256 output is 32 bytes
+        }        
         return hash;
     }
 
@@ -119,7 +139,8 @@ public class SSHA
      * @throws IASSecurityExeption Thrown if there is an error.
      *
      */
-    public static byte[] compute(int saltBytes, byte[] password)
+    //Deprecating this method as this is nt being used.To be removed later
+  /*  public static byte[] compute(int saltBytes, byte[] password)
         throws IASSecurityException
     {
         SecureRandom rng=SharedSecureRandom.get();
@@ -127,7 +148,7 @@ public class SSHA
         rng.nextBytes(salt);
 
         return compute(salt, password);
-    }
+    }*/
 
     
     /**
@@ -138,17 +159,37 @@ public class SSHA
      * @return String Encoded string, as described in class documentation.
      *
      */
-    public static String encode(byte[] salt, byte[] hash)
-    {
-        assert (hash.length==20);
-        byte[] res = new byte[20+salt.length];
-        System.arraycopy(hash, 0, res, 0, 20);
-        System.arraycopy(salt, 0, res, 20, salt.length);
+    public static String encode(byte[] salt, byte[] hash, String algo)
+    {       
+        boolean isSHA = false;
+
+        if (algoSHA.equals(algo)) {
+            isSHA = true;
+        }
+
+        if (!isSHA) {
+            assert (hash.length == 32);
+        } else {
+            assert (hash.length == 20);
+        }
+
+        int resultLength = 32;
+        if (isSHA) {
+            resultLength = 20;
+        }
+
+        byte[] res = new byte[resultLength+salt.length];
+        System.arraycopy(hash, 0, res, 0, resultLength);
+        System.arraycopy(salt, 0, res, resultLength, salt.length);
 
         GFBase64Encoder encoder = new GFBase64Encoder();
         String encoded = encoder.encode(res);
 
-        String out = SSHA_TAG + encoded;
+        String out = SSHA_256_TAG + encoded;
+        if(isSHA) {
+            out = SSHA_TAG + encoded;
+        }
+       
         return out;
     }
 
@@ -163,12 +204,13 @@ public class SSHA
      * @throws IASSecurityExeption Thrown if there is an error.
      *
      */
-    public static String computeAndEncode(byte[] salt, byte[] password)
+    //Deprecating this method as this is nt being used.To be removed later
+  /*  public static String computeAndEncode(byte[] salt, byte[] password)
         throws IASSecurityException
     {
         byte[] hash = compute(salt, password);
-        return encode(salt, hash);
-    }
+        return encode(salt, hash, false);
+    }*/
 
 
     /**
@@ -181,7 +223,8 @@ public class SSHA
      * @throws IASSecurityExeption Thrown if there is an error.
      *
      */
-    public static String computeAndEncode(int saltBytes, byte[] password)
+    //Deprecating this method as this is nt being used.To be removed later
+    /*public static String computeAndEncode(int saltBytes, byte[] password)
         throws IASSecurityException
     {
         SecureRandom rng=SharedSecureRandom.get();
@@ -189,8 +232,8 @@ public class SSHA
         rng.nextBytes(salt);
 
         byte[] hash = compute(salt, password);
-        return encode(salt, hash);
-    }
+        return encode(salt, hash, false);
+    }*/
 
 
     /**
@@ -209,8 +252,12 @@ public class SSHA
         throws IASSecurityException
     {
         byte[] hash = new byte[20];
-        byte[] salt = decode(encoded, hash);
-        return verify(salt, hash, password);
+        String algo = algoSHA256;
+        if (encoded.startsWith(SSHA_TAG)) {
+            algo = algoSHA;
+        }
+        byte[] salt = decode(encoded, hash, algo);
+        return verify(salt, hash, password, algo);
     }
 
 
@@ -227,10 +274,10 @@ public class SSHA
      * @throws IASSecurityExeption Thrown if there is an error.
      *
      */
-    public static boolean verify(byte[] salt, byte[] hash, byte[] password)
+    public static boolean verify(byte[] salt, byte[] hash, byte[] password, String algo)
         throws IASSecurityException
     {
-        byte[] newHash = compute(salt, password);
+        byte[] newHash = compute(salt, password, algo);
         return Arrays.equals(hash, newHash);
     }
 
@@ -248,17 +295,32 @@ public class SSHA
      * @throws IASSecurityExeption Thrown if there is an error.
      *
      */
-    public static byte[] decode(String encoded, byte[] hashResult)
+    public static byte[] decode(String encoded, byte[] hashResult, String algo)
         throws IASSecurityException
     {
-        assert (hashResult.length==20);
-        if (!encoded.startsWith(SSHA_TAG)) {
+         boolean isSHA = false;
+
+        if(algoSHA.equals(algo)) {
+            isSHA = true;
+        }
+
+        if(isSHA) {
+            assert (hashResult.length==20);
+        }
+        else {
+            assert (hashResult.length == 32);
+        }
+
+        if (!encoded.startsWith(SSHA_TAG) && !encoded.startsWith(SSHA_256_TAG)) {
             String msg = sm.getString("ssha.badformat", encoded);
             throw new IASSecurityException(msg);
         }
 
-        String ssha = encoded.substring(SSHA_TAG.length());
-        
+        String ssha = encoded.substring(SSHA_256_TAG.length());
+        if (isSHA) {
+            ssha = encoded.substring(SSHA_TAG.length());
+        }
+               
         GFBase64Decoder decoder = new GFBase64Decoder();
         byte[] result = null;
       
@@ -267,12 +329,17 @@ public class SSHA
         } catch (IOException e) {
             throw new IASSecurityException(e);
         }
-        assert (result.length > 20);
-        
-        byte[] salt = new byte[result.length - 20];
 
-        System.arraycopy(result, 0, hashResult, 0, 20);
-        System.arraycopy(result, 20, salt, 0, result.length-20);
+        int resultLength = 32;
+        if(isSHA) {
+            resultLength = 20;
+        }
+        assert (result.length > resultLength);
+        
+        byte[] salt = new byte[result.length - resultLength];
+
+        System.arraycopy(result, 0, hashResult, 0, resultLength);
+        System.arraycopy(result, resultLength, salt, 0, result.length-resultLength);
 
         return salt;
     }

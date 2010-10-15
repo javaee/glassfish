@@ -113,6 +113,11 @@ public final class FileRealm extends IASRealm
     private final Hashtable<String,Integer> groupSizeMap = new Hashtable<String, Integer>(); // maps of groups with value cardinality of group
     private static final String instanceRoot = getInstanceRoot();
 
+    private static final String SSHA_TAG = "{SSHA}";
+    private static final String SSHA_256_TAG = "{SSHA256}";
+    private static final String algoSHA = "SHA";
+    private static final String algoSHA256 = "SHA-256";
+
     //private boolean constructed = false;
     
     /**
@@ -396,7 +401,7 @@ public final class FileRealm extends IASRealm
 
         try {
             
-            ok = SSHA.verify(ud.getSalt(), ud.getHash(), Utility.convertCharArrayToByteArray(password, Charset.defaultCharset().displayName()));
+            ok = SSHA.verify(ud.getSalt(), ud.getHash(), Utility.convertCharArrayToByteArray(password, Charset.defaultCharset().displayName()), ud.getAlgo());
 
         } catch (Exception e) {
             _logger.fine("File authentication failed: "+e.toString());
@@ -707,11 +712,13 @@ public final class FileRealm extends IASRealm
         if (password==null) {
             newUser.setSalt(oldUser.getSalt());
             newUser.setHash(oldUser.getHash());
+            newUser.setAlgo(oldUser.getAlgo());
             
         } else {
             setPassword(newUser, password);
-        }
-        
+            //ALways update passwords with SHA-256 algo
+            newUser.setAlgo(algoSHA256);
+        }        
         userTable.remove(name);
         userTable.put(newName, newUser);
     }
@@ -756,7 +763,11 @@ public final class FileRealm extends IASRealm
                 out = new FileOutputStream(filename);
 
                 for (Map.Entry<String, FileRealmUser> uval : userTable.entrySet()) {
-                    String entry = encodeUser(uval.getKey(), uval.getValue());
+                    String algo = uval.getValue().getAlgo();
+                  //  if(algo == null) {
+                    //    algo = algoSHA256;
+                    //}
+                    String entry = encodeUser(uval.getKey(), uval.getValue(),algo);
                     out.write(entry.getBytes());
                 }
             } catch (IOException e) {
@@ -893,7 +904,7 @@ public final class FileRealm extends IASRealm
      * @throws IASSecurityException Thrown on failure.
      *
      */
-    private static String encodeUser(String name, FileRealmUser ud)
+    private static String encodeUser(String name, FileRealmUser ud, String algo)
     {
         StringBuffer sb = new StringBuffer();
         String cryptPwd = null;
@@ -901,7 +912,7 @@ public final class FileRealm extends IASRealm
         sb.append(name);
         sb.append(FIELD_SEP);
 
-        String ssha = SSHA.encode(ud.getSalt(), ud.getHash());
+        String ssha = SSHA.encode(ud.getSalt(), ud.getHash(), algo);
 
         sb.append(ssha);
         sb.append(FIELD_SEP);
@@ -935,6 +946,7 @@ public final class FileRealm extends IASRealm
         throws IASSecurityException
     {
         StringTokenizer st = new StringTokenizer(encodedLine, FIELD_SEP);
+        String algo  = algoSHA256;
 
         String user = null;
         String pwdInfo = null;
@@ -952,8 +964,17 @@ public final class FileRealm extends IASRealm
             groupList = st.nextToken();
         }
 
-        byte[] hash = new byte[20];
-        byte[] salt = SSHA.decode(pwdInfo, hash);
+        if(encodedLine.contains(SSHA_TAG)) {
+            algo = algoSHA;
+        }
+        
+        int resultLength = 32;
+        if (algoSHA.equals(algo)) {
+            resultLength = 20;
+        }
+
+        byte[] hash = new byte[resultLength];
+        byte[] salt = SSHA.decode(pwdInfo, hash, algo);
 
         FileRealmUser ud = new FileRealmUser(user);
         ud.setHash(hash);
@@ -973,6 +994,7 @@ public final class FileRealm extends IASRealm
             }
         }
         ud.setGroups(membership);
+        ud.setAlgo(algo);
         return ud;
     }
 
@@ -997,7 +1019,10 @@ public final class FileRealm extends IASRealm
             groups = new String[0];
         }
         ud.setGroups(groups);
-        
+
+        //Always create new users with SHA-256
+        ud.setAlgo(algoSHA256);
+
         setPassword(ud, pwd);
      
         return ud;
@@ -1028,8 +1053,12 @@ public final class FileRealm extends IASRealm
         byte[] salt=new byte[SALT_SIZE];
         rng.nextBytes(salt);
         user.setSalt(salt);
+        String algo = user.getAlgo();
+        if(algo == null) {
+            algo = algoSHA256;
+        }
 
-        byte[] hash = SSHA.compute(salt, pwdBytes);
+        byte[] hash = SSHA.compute(salt, pwdBytes, algo);
         user.setHash(hash);
     }
 
@@ -1055,20 +1084,20 @@ public final class FileRealm extends IASRealm
                     }
                 }
                 FileRealmUser ud = createNewUser(args[1], args[2].toCharArray(), groups);
-                String out=encodeUser(args[1], ud);
+                String out=encodeUser(args[1], ud, algoSHA256);
                 System.out.println(out);
                 
                 FileRealmUser u=decodeUser(out, new Hashtable());
                 System.out.println("verifies: "+
                                    SSHA.verify(u.getSalt(), u.getHash(),
-                                               args[2].getBytes()));
+                                               args[2].getBytes(),algoSHA256));
 
             } else if ("-v".equals(args[0])) {
                 FileRealmUser u=decodeUser(args[2], new Hashtable());
                 System.out.println("user: "+u.getName());
                 System.out.println("verifies: "+
                                    SSHA.verify(u.getSalt(), u.getHash(),
-                                               args[1].getBytes()));
+                                               args[1].getBytes(),algoSHA256));
             }
         } catch (Exception e) {
             e.printStackTrace(System.out);
