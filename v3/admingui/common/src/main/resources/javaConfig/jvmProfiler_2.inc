@@ -54,6 +54,7 @@
                         return submitAndDisable(this, '$resource{i18n.button.Processing}');
                     }" >
                 <!command
+                    mapPut(map="#{pageSession.valueMap}" key="target" value="#{pageSession.configName}");
                     gf.createEntity(endpoint="#{pageSession.createProfilerUrl}"
                             attrs="#{pageSession.valueMap}"
                             convertToFalse="#{pageSession.convertToFalseList}"
@@ -88,7 +89,9 @@
                     { disableAllButtons(); return submitAndDisable(this, '$resource{i18n.button.Processing}');}
                     else {return false;} " >
                 <!command
-                    gf.restRequest(endpoint="#{pageSession.deleteProfilerUrl}", method="delete");
+                    createMap(result="#{pageSession.attrMap}");
+                    mapPut(map="#{pageSession.attrMap}" key="target" value="#{pageSession.configName}");
+                    gf.restRequest(endpoint="#{pageSession.deleteProfilerUrl}", attrs="#{pageSession.attrMap}", method="delete");
                     prepareAlertMsg(type="success", summary="$resource{i18nc.jvm.ProfilerDeleted}");
                     gf.redirect(page="#{selfPage}?configName=#{pageSession.configName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
