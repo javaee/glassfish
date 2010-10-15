@@ -193,12 +193,12 @@ public class HttpRedirectElement extends BaseDevTest {
         report("create-pu-protocol", asadmin("create-protocol", "pu-protocol"));
         report("create-protocol-finder-http-finder", asadmin("create-protocol-finder",
             "--protocol", "pu-protocol",
-            "--target-protocol", secureRedirect ? "http-listener-2" : "http-listener-1",
+            "--targetprotocol", secureRedirect ? "http-listener-2" : "http-listener-1",
             "--classname", HttpProtocolFinder.class.getName(),
             "http-finder"));
         report("create-protocol-finder-http-redirect", asadmin("create-protocol-finder",
             "--protocol", "pu-protocol",
-            "--target-protocol", redirectProtocol,
+            "--targetprotocol", redirectProtocol,
             "--classname", HttpProtocolFinder.class.getName(),
             redirectProtocol));
         // reset listener

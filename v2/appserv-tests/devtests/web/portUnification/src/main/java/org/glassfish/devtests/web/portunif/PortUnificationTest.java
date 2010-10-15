@@ -159,7 +159,7 @@ public class PortUnificationTest extends BaseDevTest {
             dummyName));
         report("create-protocol-finder-dummy", asadmin("create-protocol-finder",
             "--protocol", puName,
-            "--target-protocol", dummyName,
+            "--targetprotocol", dummyName,
             "--classname", DummyProtocolFinder.class.getName(),
             "dummy-finder"));
         report("create-protocol-filter-dummy", asadmin("create-protocol-filter",
@@ -176,7 +176,7 @@ public class PortUnificationTest extends BaseDevTest {
             httpName));
         report("create-protocol-finder-http", asadmin("create-protocol-finder",
             "--protocol", puName,
-            "--target-protocol", httpName,
+            "--targetprotocol", httpName,
             "--classname", HttpProtocolFinder.class.getName(),
             "http-finder"));
     }

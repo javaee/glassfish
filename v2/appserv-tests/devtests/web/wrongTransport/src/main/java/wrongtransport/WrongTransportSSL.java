@@ -114,12 +114,12 @@ public class WrongTransportSSL extends BaseDevTest {
             "pu-protocol"));
         report("create-protocol-finder-http-finder", asadmin("create-protocol-finder",
             "--protocol", "pu-protocol",
-            "--target-protocol", "http-listener-1",
+            "--targetprotocol", "http-listener-1",
             "--classname", HttpProtocolFinder.class.getName(),
             "http-finder"));
         report("create-protocol-finder-https-redirect", asadmin("create-protocol-finder",
             "--protocol", "pu-protocol",
-            "--target-protocol", "https-redirect",
+            "--targetprotocol", "https-redirect",
             "--classname", HttpProtocolFinder.class.getName(),
             "https-redirect"));
         // reset listener

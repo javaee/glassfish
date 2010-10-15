@@ -98,13 +98,13 @@ public class WrongTransport extends BaseDevTest {
         report("create-protocol-finder-http-finder", asadmin("create-protocol-finder",
             "--target", "c1",
             "--protocol", "pu-protocol",
-            "--target-protocol", "http-listener-2",
+            "--targetprotocol", "http-listener-2",
             "--classname", HttpProtocolFinder.class.getName(),
             "http-finder"));
         report("create-protocol-finder-http-redirect", asadmin("create-protocol-finder",
             "--target", "c1",
             "--protocol", "pu-protocol",
-            "--target-protocol", "http-redirect",
+            "--targetprotocol", "http-redirect",
             "--classname", HttpProtocolFinder.class.getName(),
             "http-redirect"));
         // reset listener
