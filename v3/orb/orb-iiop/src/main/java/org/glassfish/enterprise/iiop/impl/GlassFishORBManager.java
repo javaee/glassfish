@@ -596,6 +596,11 @@ public final class GlassFishORBManager {
 
 
             if( processType.isServer() ) {
+                // This MUST happen before new InitialGroupInfoService,
+                // or the ServerGroupManager will get initialized before the
+                // GIS is available.
+                gmsClient.setORB(orb) ;
+
                 // J2EEServer's persistent server port is same as ORBInitialPort.
                 orbInitialPort = getORBInitialPort();
 
@@ -610,10 +615,6 @@ public final class GlassFishORBManager {
                         ORBConstants.REFERENCE_FACTORY_MANAGER);
 
                 new InitialGroupInfoService( orb ) ;
-            }
-
-            if (processType == ProcessType.Server) {
-                gmsClient.setORB(orb) ;
             }
 
             // SeeBeyond fix for 6325988: needs testing.
