@@ -37,6 +37,8 @@
 package com.sun.hk2.component;
 
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.tracing.TracingThreadLocal;
@@ -47,6 +49,8 @@ import org.jvnet.hk2.tracing.TracingUtilities;
  */
 @SuppressWarnings("unchecked")
 public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> implements Womb<T> {
+    private final static Logger logger = Logger.getLogger(AbstractWombImpl.class.getName());
+  
     protected final Class<T> type;
     protected final Habitat habitat; 
     private final MultiMap<String,String> metadata;
@@ -71,6 +75,7 @@ public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> impl
                 TracingThreadLocal.get().push(this);
 
             T o = create(onBehalfOf);
+            logger.log(Level.FINER, "created object {0}", o);
             initialize(o, onBehalfOf);
             return o;
         } finally {
@@ -108,6 +113,8 @@ public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> impl
      * This method is an utility method for subclasses for performing injection.
      */
     protected void inject(Habitat habitat, T t, Inhabitant<?> onBehalfOf) {
+        logger.log(Level.FINER, "injection starting on {0}", t);
+
         InjectionManager injectionMgr = createInjectionManager();
         
         Collection<InjectionResolver> targets = habitat.getAllByType(InjectionResolver.class);
@@ -117,8 +124,11 @@ public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> impl
 
         // postContruct call if any
         if (t instanceof PostConstruct) {
+            logger.log(Level.FINER, "calling PostConstruct on {0}", t);
             ((PostConstruct)t).postConstruct();
         }
+        
+        logger.log(Level.FINER, "injection finished on {0}", t);
     }
 
     protected InjectionManager createInjectionManager() {

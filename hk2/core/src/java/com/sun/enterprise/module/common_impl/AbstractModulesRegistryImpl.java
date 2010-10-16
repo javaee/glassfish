@@ -49,6 +49,7 @@ import com.sun.hk2.component.InhabitantsParser;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.InhabitantsParserFactory;
 import org.jvnet.hk2.config.ConfigParser;
 
 import java.io.IOException;
@@ -77,7 +78,7 @@ import java.util.logging.*;
  * @author Jerome Dochez
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
+public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, InhabitantsParserFactory {
     /**
      * {@link ModulesRegistry} can form a tree structure by using this pointer.
      * It works in a way similar to the classloader tree. Modules defined in the parent
@@ -88,7 +89,8 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
 
     protected final Map<Integer,Repository> repositories = new TreeMap<Integer,Repository>();
 
-    private final ConcurrentMap<Class, CopyOnWriteArrayList> runningServices = new ConcurrentHashMap<Class,CopyOnWriteArrayList>();
+    private final ConcurrentMap<Class<?>, CopyOnWriteArrayList<?>> runningServices = 
+      new ConcurrentHashMap<Class<?>,CopyOnWriteArrayList<?>>();
 
     /**
      * Service provider class names and which modules they are in.
@@ -134,9 +136,13 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
     }
 
     public Habitat createHabitat(String name, Habitat h) throws ComponentException {
-        if (h==null)
+        if (h==null) {
             h = newHabitat();
-        return createHabitat(name,new InhabitantsParser(h));
+        }
+        
+        // TODO: should get the inhabitantsParser out of Main instead since
+        // this could have been overridden
+        return createHabitat(name, createInhabitantsParser(h));
     }
 
     public Habitat createHabitat(String name, InhabitantsParser parser) throws ComponentException {
@@ -354,13 +360,20 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
             Habitat h = entry.getValue();
             try
             {
-                parseInhabitants(newModule, name, new InhabitantsParser(h));
+                // TODO: should get the inhabitantsParser out of Main instead since
+                // this could have been overridden
+                parseInhabitants(newModule, name, createInhabitantsParser(h));
             }
             catch (IOException e)
             {
                 throw new RuntimeException("Not able to parse inhabitants information");
             }
         }
+    }
+    
+    @Override
+    public InhabitantsParser createInhabitantsParser(Habitat h) {
+      return new InhabitantsParser(h);
     }
     
     /**

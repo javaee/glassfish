@@ -35,11 +35,8 @@
  */
 package org.glassfish.hk2.classmodel.reflect.util;
 
-import org.glassfish.hk2.classmodel.reflect.ArchiveAdapter;
-
 import java.io.*;
 import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
 import java.net.URI;
 import java.nio.channels.FileChannel;
 import java.util.jar.JarFile;
@@ -57,6 +54,11 @@ public class DirectoryArchive extends AbstractAdapter {
         this.directory = directory;
     }
 
+    @Override
+    public String toString() {
+      return getURI().toString();
+    }
+    
     @Override
     public URI getURI() {
         return directory.toURI();
@@ -83,10 +85,15 @@ public class DirectoryArchive extends AbstractAdapter {
     }
 
     private void parse(File dir, Selector selector, EntryTask task, Logger logger) throws IOException {
-
+        File [] listFiles = dir.listFiles();
+        if (null == listFiles) {
+            System.err.println("listFiles() is null for: " + dir);
+            return;
+        }
+      
         ByteBuffer buffer = ByteBuffer.allocate(52000);
 
-        for (File f : dir.listFiles()) {
+        for (File f : listFiles) {
             Entry ae = new Entry(mangle(f), f.length(), f.isDirectory());
             if (!f.isDirectory()) {
                 if (ae.name.endsWith(".jar")) {

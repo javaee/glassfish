@@ -17,6 +17,8 @@
         <module>test1</module>
         <module>test2</module>
         <module>test-config</module>
+        <module>test-inhabitant-generator-ifaces</module>
+        <module>test-inhabitant-generator</module>
         <module>introspection</module>
     </modules>
     

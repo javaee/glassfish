@@ -13,12 +13,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Unit tests for ClassPathHelper.
+ * Unit tests for {@link ClassPath}.
  * 
  * @author Mason Taube
  * @author Jeff Trent
  */
-public class ClassPathHelperTest {
+public class ClassPathTest {
 
   private static final String JAR = ".jar";
   private static final String TMP_FILE_PREFIX = "hk2";
@@ -61,12 +61,12 @@ public class ClassPathHelperTest {
   public void testEmptyClasspath() throws Exception {
       Set<String> cpSet;
 
-      ClassPathHelper cpHelper = ClassPathHelper.create(null, "");
+      ClassPath cpHelper = ClassPath.create(null, "");
       cpSet = cpHelper.getEntries();
 
       assertTrue("unexpected classpath entry: " + cpSet, cpSet.isEmpty());
 
-      cpHelper = ClassPathHelper.create(null, null);
+      cpHelper = ClassPath.create(null, (String)null);
       cpSet = cpHelper.getEntries();
 
       assertTrue("unexpected classpath entry: " + cpSet, cpSet.isEmpty());
@@ -85,7 +85,7 @@ public class ClassPathHelperTest {
       final String classpath = jar1.getAbsolutePath() + File.pathSeparator + jar2.getAbsolutePath()
               + File.pathSeparator + jar3.getAbsolutePath() + File.pathSeparator + dir1.getAbsolutePath();
 
-      ClassPathHelper cpHelper = ClassPathHelper.create(null, classpath);
+      ClassPath cpHelper = ClassPath.create(null, classpath);
       Set<String> cpSet = cpHelper.getEntries();
 
       assertTrue("missing classpath jar", cpSet.contains(jar1.getAbsolutePath()));
@@ -120,7 +120,7 @@ public class ClassPathHelperTest {
 
       final String classpath = jar1.getAbsolutePath() + File.pathSeparator + dir1.getAbsolutePath();
 
-      ClassPathHelper cpHelper = ClassPathHelper.create(null, classpath);
+      ClassPath cpHelper = ClassPath.create(null, classpath);
       Set<String> cpSet = cpHelper.getEntries();
 
       assertTrue("missing classpath jar", cpSet.contains(jar1.getAbsolutePath()));
@@ -155,7 +155,7 @@ public class ClassPathHelperTest {
       populateTestJar(jar3, mf);
 
       final String classpath = jar1.getAbsolutePath() + File.pathSeparator + dir1.getAbsolutePath();
-      ClassPathHelper cpHelper = ClassPathHelper.create(null, classpath);
+      ClassPath cpHelper = ClassPath.create(null, classpath);
       Set<String> cpSet = cpHelper.getEntries();
       
       assertTrue("missing classpath jar", cpSet.contains(jar1.getAbsolutePath()));

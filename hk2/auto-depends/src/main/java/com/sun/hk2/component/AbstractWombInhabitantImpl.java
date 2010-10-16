@@ -36,6 +36,9 @@
  */
 package com.sun.hk2.component;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.jvnet.hk2.component.MultiMap;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Womb;
@@ -51,6 +54,8 @@ import org.jvnet.hk2.component.Inhabitant;
  * @author Kohsuke Kawaguchi
  */
 abstract class AbstractWombInhabitantImpl<T> extends AbstractInhabitantImpl<T> {
+    private static final Logger logger = Logger.getLogger(ScopeInstance.class.getName());
+
     protected final Womb<T> womb;
 
     protected AbstractWombInhabitantImpl(Womb<T> womb) {
@@ -70,7 +75,9 @@ abstract class AbstractWombInhabitantImpl<T> extends AbstractInhabitantImpl<T> {
     }
 
     protected final void dispose(T object) {
-        if (object instanceof PreDestroy)
+        if (object instanceof PreDestroy) {
+            logger.log(Level.FINER, "calling PreDestroy on {0}", object);
             ((PreDestroy)object).preDestroy();
+        }
     }
 }

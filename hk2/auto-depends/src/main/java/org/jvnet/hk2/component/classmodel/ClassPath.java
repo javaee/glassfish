@@ -37,12 +37,15 @@
 package org.jvnet.hk2.component.classmodel;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jvnet.hk2.component.Habitat;
 
@@ -54,7 +57,7 @@ import org.jvnet.hk2.component.Habitat;
  * 
  * @since 3.1
  */
-public abstract class ClassPathHelper {
+public abstract class ClassPath {
 
   public LinkedHashSet<String> classpathEntries = new LinkedHashSet<String>();
 
@@ -66,15 +69,19 @@ public abstract class ClassPathHelper {
    * 
    * @return the ClassPathHelper
    */
-  public static ClassPathHelper create(Habitat h, boolean allowTestClassPath) {
-    return new ClassPathHelper(allowTestClassPath) {};
+  public static ClassPath create(Habitat h, boolean allowTestClassPath) {
+    return new ClassPath(allowTestClassPath) {};
   }
   
-  public static ClassPathHelper create(Habitat h, String classPath) {
-    return new ClassPathHelper(classPath) {};
+  public static ClassPath create(Habitat h, String classPath) {
+    return new ClassPath(classPath) {};
   }
   
-  protected ClassPathHelper(boolean allowTestClassPath) {
+  public static ClassPath create(Habitat h, Collection<File> classPath) {
+    return new ClassPath(classPath) {};
+  }
+  
+  protected ClassPath(boolean allowTestClassPath) {
     String classPath = (allowTestClassPath) ? System
         .getProperty("surefire.test.class.path") : null;
     if (null == classPath) {
@@ -83,10 +90,18 @@ public abstract class ClassPathHelper {
     initialize(classPath);
   }
   
-  public ClassPathHelper(String classPath) {
+  public ClassPath(String classPath) {
     initialize(classPath);
   }
 
+  public ClassPath(Collection<File> classPath) {
+    if (null!= classPath) {
+      for (File file : classPath) {
+        initialize(file.getAbsolutePath());
+      }
+    }
+  }
+  
   protected void initialize(String classPath) {
     if (classPath != null) {
       String[] filenames = classPath.split(File.pathSeparator);
@@ -109,6 +124,21 @@ public abstract class ClassPathHelper {
    */
   public Set<String> getEntries() {
     return Collections.unmodifiableSet(classpathEntries);
+  }
+  
+  public Set<File> getFileEntries() {
+    LinkedHashSet<File> fileEntries = new LinkedHashSet<File>();
+    
+    Logger logger = Logger.getAnonymousLogger();
+    for (String fileName : classpathEntries) {
+      File file = new File(fileName);
+      if (!file.exists()) {
+        logger.log(Level.FINE, "warning: {0} does not exist.", fileName);
+      }
+      fileEntries.add(file);
+    }
+    
+    return Collections.unmodifiableSet(fileEntries);
   }
 
   /**

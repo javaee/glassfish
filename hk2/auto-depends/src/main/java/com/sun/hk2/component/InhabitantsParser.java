@@ -46,6 +46,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Parses <tt>/META-INF/inhabitants</tt> and populate {@link Habitat}.
@@ -58,6 +60,9 @@ import java.util.Set;
  * @author Jerome Dochez
  */
 public class InhabitantsParser {
+  
+    private final Logger logger = Logger.getLogger(InhabitantsParser.class.getCanonicalName());
+  
     public final Habitat habitat;
 
     /**
@@ -68,8 +73,8 @@ public class InhabitantsParser {
      * @see #replace(Class, Class)
      */
     // Whether this feature should belong to this base class is arguable --- perhaps a better
-    // approach is to create a sub classs that does it?
-    private final Map<String,Class> replacements = new HashMap<String,Class>();
+    // approach is to create a sub class that does it?
+    private final Map<String,Class<?>> replacements = new HashMap<String,Class<?>>();
 
     public InhabitantsParser(Habitat habitat) {
         this.habitat = habitat;
@@ -84,7 +89,7 @@ public class InhabitantsParser {
      * This is useful when the application that's hosting an HK2 environment
      * wants to tweak the inhabitant population at sub-module level.
      */
-    public void drop(Class component) {
+    public void drop(Class<?> component) {
         drop(component.getName());
     }
 
@@ -101,11 +106,11 @@ public class InhabitantsParser {
      * This is useful when the application that's hosting an HK2 environment
      * wants to tweak the inhabitant population at sub-module level.
      */
-    public void replace(Class oldComponent, Class newComponent) {
+    public void replace(Class<?> oldComponent, Class<?> newComponent) {
         replace(oldComponent.getName(),newComponent);
     }
 
-    public void replace(String oldComponentFullyQualifiedClassName, Class newComponent) {
+    public void replace(String oldComponentFullyQualifiedClassName, Class<?> newComponent) {
         replacements.put(oldComponentFullyQualifiedClassName,newComponent);
     }
 
@@ -166,7 +171,7 @@ public class InhabitantsParser {
      * Adds the given inhabitant to the habitat, with all its indices.
      */
     protected void add(Inhabitant<?> i, InhabitantParser parser) {
-        habitat.add(i);
+        add(i);
 
         for (String v : parser.getIndexes()) {
             // register inhabitant to the index
@@ -184,9 +189,21 @@ public class InhabitantsParser {
     }
 
     /**
+     * Adds the given inhabitant to the habitat
+     * @param i
+     */
+    protected void add(Inhabitant<?> i) {
+      logger.log(Level.FINE, "adding inhabitant: {0} to habitat {1}", 
+          new Object[] {i, habitat});
+      habitat.add(i);
+    }
+
+    /**
      * Adds the given inhabitant index to the habitat
      */
     protected void addIndex(Inhabitant<?> i, String typeName, String name) {
+      logger.log(Level.FINE, "adding index for inhabitant: {0} with typeName {1} and name {2} to habitat {3}",
+          new Object[] {i, typeName, name, habitat});
       habitat.addIndex(i, typeName, name);
     }
 

@@ -42,7 +42,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.HabitatFactory;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantsParserFactory;
-import org.jvnet.hk2.component.classmodel.ClassPathHelper;
+import org.jvnet.hk2.component.classmodel.ClassPath;
 import org.jvnet.hk2.component.classmodel.InhabitantsFeed;
 import org.jvnet.hk2.component.classmodel.InhabitantsParsingContextGenerator;
 
@@ -102,7 +102,7 @@ public class Hk2TestServices {
 
     protected void populateHabitat(Habitat habitat, InhabitantsParser ip) {
       InhabitantsParsingContextGenerator ipcgen = InhabitantsParsingContextGenerator.create(habitat);
-      ClassPathHelper classpath = ClassPathHelper.create(habitat, true);
+      ClassPath classpath = ClassPath.create(habitat, true);
       Set<String> cpSet = classpath.getEntries();
       for (String fileName : cpSet) {
           File f = new File(fileName);

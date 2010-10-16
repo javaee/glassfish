@@ -256,6 +256,7 @@
             </activation>
             <modules>
                 <module>auto-depends-tests</module>
+                <module>apt-test</module>
                 <module>hk2</module>
             </modules>
         </profile>
@@ -264,6 +265,7 @@
             <id>release</id>
             <modules>
                 <module>auto-depends-tests</module>
+                <module>apt-test</module>
                 <module>hk2</module>
             </modules>
         </profile>

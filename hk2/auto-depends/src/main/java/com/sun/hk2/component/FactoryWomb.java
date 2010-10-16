@@ -36,6 +36,9 @@
  */
 package com.sun.hk2.component;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Factory;
 import org.jvnet.hk2.component.Habitat;
@@ -49,6 +52,8 @@ import org.jvnet.hk2.component.MultiMap;
  */
 @SuppressWarnings("unchecked")
 public class FactoryWomb<T> extends AbstractWombImpl<T> {
+    private final static Logger logger = Logger.getLogger(FactoryWomb.class.getName());
+    
     private final Inhabitant<? extends Factory> factory;
 
     public FactoryWomb(Class<T> type, Class<? extends Factory> factory, Habitat habitat, MultiMap<String,String> metadata) {
@@ -63,7 +68,9 @@ public class FactoryWomb<T> extends AbstractWombImpl<T> {
     }
 
     public T create(Inhabitant onBehalfOf) throws ComponentException {
+        logger.log(Level.FINER, "factory {0} invoked", factory);
         T t = type.cast(factory.get().getObject());
+        logger.log(Level.FINER, "factory created object {0}", t);
         inject(habitat,t,onBehalfOf);
         return t;
     }

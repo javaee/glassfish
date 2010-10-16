@@ -1,121 +1,234 @@
+/*
+ * 
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ * 
+ * Copyright 2007-2010 Sun Microsystems, Inc. All rights reserved.
+ * 
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ * 
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ * 
+ * Contributor(s):
+ * 
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
 package com.sun.enterprise.tools.classmodel;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.glassfish.hk2.classmodel.reflect.AnnotatedElement;
-import org.glassfish.hk2.classmodel.reflect.AnnotationModel;
 import org.glassfish.hk2.classmodel.reflect.AnnotationType;
-import org.glassfish.hk2.classmodel.reflect.ClassModel;
-import org.glassfish.hk2.classmodel.reflect.InterfaceModel;
 import org.glassfish.hk2.classmodel.reflect.ParsingContext;
-import org.glassfish.hk2.classmodel.reflect.Type;
 import org.glassfish.hk2.classmodel.reflect.Types;
 import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.annotations.ContractProvided;
-import org.jvnet.hk2.annotations.FactoryFor;
 import org.jvnet.hk2.annotations.InhabitantAnnotation;
-import org.jvnet.hk2.annotations.RunLevel;
-import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.classmodel.ClassPath;
 import org.jvnet.hk2.component.classmodel.InhabitantsFeed;
 import org.jvnet.hk2.component.classmodel.InhabitantsParsingContextGenerator;
 
 import com.sun.enterprise.tools.InhabitantsDescriptor;
-import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.InhabitantParser;
 import com.sun.hk2.component.InhabitantsParser;
-import com.sun.hk2.component.IntrospectionScanner;
 
 /**
  * Generates <tt>/META-INF/inhabitants/*</tt> based on comma-delimited list
  * of jars and directories passed in as arguments.
+ * <p/>
+ * The implementation strategy is to use the full {@link #PARAM_INHABITANTS_CLASSPATH}
+ * to resolve classes using the {@link InhabitantsParsingContextGenerator}, checking
+ * each inhabitant being added against a {@link CodeSourceFilter} built from the
+ * {@link #PARAM_INHABITANTS_SOURCE_FILES} passed in as arguments.
+ * <p/>
+ * Upon matching filter matching (i.e., the inhabitants type name must reside in one of
+ * the codesources specified) then the inhabitant is written to the {@link InhabitantsDescriptor}
+ * and written out.
+ * 
+ * @see InhabitantFileBasedParser
  * 
  * @author Jeff Trent
- * 
  * @since 3.1
  */
 public class InhabitantsGenerator {
-  public static final String PARAM_INHABITANT_FILE = "inhabitants.target.file";
-  public static final String PARAM_INHABITANTS_SOURCE_FILES = "inhabitants.source.files";
 
-  private final InhabitantsDescriptor descriptor;
+  /**
+   * TODO: this should probably go directly into {@link InhabitantsParsingContextGenerator}
+   */
+  private static HashSet<String> IGNORE = new HashSet<String>();
+  static {
+    // need to determine if these are jdk jars or not too.
+    IGNORE.add("rt.jar");
+    IGNORE.add("tools.jar");
+  };
+  
+  /**
+   * This is the inhabitants file built.
+   * <p>
+   * Passed as a system property.
+   */
+  public static final String PARAM_INHABITANT_FILE = "inhabitants.target.file";
+  
+  /**
+   * This is the source files (jars | directories) to introspect and build a habitat for. 
+   * <p>
+   * Passed as a system property.
+   */
+  public static final String PARAM_INHABITANTS_SOURCE_FILES = "inhabitants.source.files";
+  
+  /**
+   * This is the working classpath the introspection machinery will use to resolve
+   * referenced contracts and annotations.  <b>Without this you may see a bogus
+   * inhabitants file being generated.</b>  The indicator for this is a habitat with
+   * only class names and missing indicies.
+   * <p>
+   * Passed as a system property.
+   */
+  public static final String PARAM_INHABITANTS_CLASSPATH = "inhabitants.classpath";
+
+  /**
+   * The filter to control scope of inhabitants being created
+   */
+  private final CodeSourceFilter codeSourceFilter;
+  
+  /**
+   * The parsing context
+   */
   private final InhabitantsParsingContextGenerator ipcGen;
-  
-  public InhabitantsGenerator() {
-    this(null);
-  }
-  
-  public InhabitantsGenerator(InhabitantsDescriptor descriptor) {
+
+  /**
+   * the descriptor to generator
+   */
+  private final InhabitantsDescriptor descriptor;
+
+  /**
+   * Construction with all of the parameters needed to generate.
+   * 
+   * @param descriptor optionally a preconfigured inhabitants descriptor
+   * @param inhabitantsSourceFiles required set of inhabitants source files (directories | jars)
+   * @param inhabitantsClassPath the fully qualified classpath in order to resolve class-model
+   */
+  public InhabitantsGenerator(InhabitantsDescriptor descriptor,
+      ClassPath inhabitantsSourceFiles,
+      ClassPath inhabitantsClassPath) {
+    
+    inhabitantsClassPath = filterIgnores(inhabitantsClassPath);
+    
     this.ipcGen = InhabitantsParsingContextGenerator.create(null);
+    
     if (null != descriptor) {
       this.descriptor = descriptor;
     } else {
       this.descriptor = new InhabitantsDescriptor();
       this.descriptor.setComment("by " + getClass().getCanonicalName());
     }
+  
+    try {
+      ipcGen.parse(inhabitantsClassPath.getFileEntries());
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    
+    codeSourceFilter = new CodeSourceFilter(inhabitantsSourceFiles);
   }
   
-  public void add(List<File> sourceFiles) throws IOException {
-      
-    for (File file : sourceFiles) {
-      add(file);
+  private ClassPath filterIgnores(ClassPath inhabitantsClassPath) {
+    LinkedHashSet<File> newFiles = new LinkedHashSet<File>();
+
+    Set<File> entries = new LinkedHashSet<File>(inhabitantsClassPath.getFileEntries());
+    for (File file : entries) {
+      if (!IGNORE.contains(file.getName())) {
+        newFiles.add(file);
+      } else {
+        Logger.getAnonymousLogger().log(Level.FINE, "ignoring {0}", file);
+      }
     }
+    
+    ClassPath newClassPath = ClassPath.create(null, newFiles);
+    return newClassPath;
   }
 
-  public void add(File file) throws IOException {
-    ipcGen.parse(file);
-  }
-  
   public void generate(File targetInhabitantFile) throws IOException {
     targetInhabitantFile.getParentFile().mkdirs();
 
     PrintWriter w = new PrintWriter(targetInhabitantFile, "UTF-8");
     try {
-      generate(w, targetInhabitantFile.getName());
+      generate(w);
     } finally {
       w.close();
     }
   }
   
   @SuppressWarnings("unchecked")
-  public void generate(PrintWriter writer, String habitatName) throws IOException {
+  public void generate(PrintWriter writer) throws IOException {
     descriptor.clear();
 
-    InhabitantsParserDescriptorWriter ip = new InhabitantsParserDescriptorWriter(descriptor);
+    InhabitantsParserDescriptorWriter ip = new InhabitantsParserDescriptorWriter();
     InhabitantsFeed feed = InhabitantsFeed.create(new Habitat(), ip);
-    // TODO: the standard machinery (w/o TemporaryIntrospectionScanner) should just work
-//    feed.populate(ipcGen,
-//        (Collection)Collections.singleton(
-//            new TemporaryIntrospectionScanner(descriptor)));
-      feed.populate(ipcGen);
+    feed.populate(ipcGen);
+
+    // flush the last inhabitant to the descriptor
+    ip.flush();
     
     // i/o the descriptor(s) out
     descriptor.write(writer);
   }
 
+  /**
+   * @return Use parsing context generated by class-model representative of {@link #PARAM_INHABITANTS_CLASSPATH}
+   */
   InhabitantsParsingContextGenerator getContextGenerator() {
     return ipcGen;
-  }
+ }
   
   public static void main(String [] args) throws Exception {
-    String classpathDebug = System.getProperty("java.class.path");
-    System.out.println(InhabitantsGenerator.class.getSimpleName() + " classpath is " + classpathDebug);
+//    String classpath = System.getProperty("java.class.path");
+//    System.out.println(InhabitantsGenerator.class.getSimpleName() + " classpath is " + classpath);
 
     String arg = System.getProperty(PARAM_INHABITANT_FILE);
+    if (null == arg || arg.isEmpty()) {
+      System.err.println("ERROR: sysprop " + PARAM_INHABITANT_FILE + " is expected");
+      System.exit(-1);
+    }
     File targetInhabitantFile = new File(arg);
     
-    List<File> sourceFiles = new ArrayList<File>();
     arg = System.getProperty(PARAM_INHABITANTS_SOURCE_FILES);
-    String [] sourceFileNames = arg.split(",: \t");
+    if (null == arg || arg.isEmpty()) {
+      System.err.println("ERROR: sysprop " + PARAM_INHABITANTS_SOURCE_FILES + " is expected");
+      System.exit(-1);
+    }
+    List<File> sourceFiles = new ArrayList<File>();
+    String [] sourceFileNames = arg.split(File.pathSeparator);
     for (String sourceFile : sourceFileNames) {
       File source = new File(sourceFile);
       if (source.exists()) {
@@ -124,32 +237,89 @@ public class InhabitantsGenerator {
         System.err.println("WARNING: can't find " + sourceFile);
       }
     }
-    
-    if (sourceFiles.isEmpty()) {
-      System.err.println("WARNING: nothing to do");
+    ClassPath inhabitantsSourceFiles = ClassPath.create(null, sourceFiles);
+
+    ClassPath inhabitantsClassPath = null;
+    arg = System.getProperty(PARAM_INHABITANTS_CLASSPATH);
+    if (null == arg || arg.isEmpty()) {
+      inhabitantsClassPath = ClassPath.create(null, false);
+      System.err.println("WARNING: sysprop " + PARAM_INHABITANTS_CLASSPATH + 
+          " is missing; defaulting to classpath=" + inhabitantsClassPath.getFileEntries() + 
+          " - this may result in an invalid inhabitants file being created!");
+    } else {
+      inhabitantsClassPath = ClassPath.create(null, arg);
     }
     
-    InhabitantsGenerator generator = new InhabitantsGenerator();
-    generator.add(sourceFiles);
+    if (sourceFiles.isEmpty()) {
+      System.err.println("WARNING: nothing to do!");
+      return;
+    }
+
+    InhabitantsGenerator generator = new InhabitantsGenerator(null, inhabitantsSourceFiles, inhabitantsClassPath);
+
+    // sanity check
+    InhabitantsParsingContextGenerator ipcGen = generator.getContextGenerator();
+    ParsingContext pc = ipcGen.getContext();
+    Types types = pc.getTypes();
+    AnnotationType ia = types.getBy(AnnotationType.class, InhabitantAnnotation.class.getName());
+    AnnotationType c = types.getBy(AnnotationType.class, Contract.class.getName());
+    if (null == ia || null == c) {
+      System.err.println("ERROR: HK2's auto-depends jar is an expected argument in " + PARAM_INHABITANTS_CLASSPATH);
+      return;
+    }
+    
     generator.generate(targetInhabitantFile);
   }
 
-  
-  private static class InhabitantsParserDescriptorWriter extends InhabitantsParser {
+  /**
+   * Marshals descriptor lines from parsed inhabitants.
+   */
+  private class InhabitantsParserDescriptorWriter extends InhabitantsParser {
 
-    private final InhabitantsDescriptor descriptor;
+    private Inhabitant<?> pendingInhabitant;
+    private List<String> pendingUnamedContracts;
     
-    public InhabitantsParserDescriptorWriter(InhabitantsDescriptor descriptor) {
+    private InhabitantsParserDescriptorWriter() {
       super(null);
-      this.descriptor = descriptor;
+    }
+    
+    /**
+     * Writes out any last pending inhabitant
+     */
+    public void flush() {
+      if (null != pendingInhabitant) {
+        descriptor.putAll(pendingInhabitant.typeName(), null, pendingUnamedContracts, null, pendingInhabitant.metadata());
+        pendingUnamedContracts = null;
+        pendingInhabitant = null;
+      }
+    }
+
+    /**
+     * Controls the filtering.  This decides whether add(i) or addIndex(...) is ultimately called.
+     */
+    @Override
+    protected void add(Inhabitant<?> i, InhabitantParser parser) {
+      assert(!i.isInstantiated());
+      String typeName = i.typeName();
+      if (codeSourceFilter.matches(typeName)) {
+        super.add(i, parser);
+        assert(!i.isInstantiated());
+      } else {
+        Logger.getAnonymousLogger().log(Level.FINE, "filtering out {0}", i);
+      }
     }
 
     /**
      * The idea is to put the inhabitant into the descriptors instead of the habitat here
      */
     @Override
-    protected void add(Inhabitant<?> i, InhabitantParser parser) {
-      // TODO: do something once we fix the kludge, taking out TemporaryIntrospectionScanner
+    protected void add(Inhabitant<?> i) {
+//      System.out.println("add\t" + i + " " + i.metadata());
+
+      // flush any previous inhabitant definition
+      flush();
+      
+      pendingInhabitant = i;
     }
     
     /**
@@ -157,156 +327,20 @@ public class InhabitantsGenerator {
      */
     @Override
     protected void addIndex(Inhabitant<?> i, String typeName, String name) {
-      // TODO: do something once we fix the kludge, taking out TemporaryIntrospectionScanner
+      // don't flush since we are building up the inhabitant descriptor definition
+      
+//      System.out.println("addIndex\t" + i + "; " + typeName + "; " + name);
+
+      if (null == pendingUnamedContracts) {
+        pendingUnamedContracts = new ArrayList<String>();
+      }
+
+      if (null == name) {
+        pendingUnamedContracts.add(typeName);
+      } else {
+        pendingUnamedContracts.add(typeName + ":" + name);
+      }
     }
   }
 
-  
-  /**
-   * TODO: Temporary kludge until I find out why the main code path doesn't work
-   */
-  private static class TemporaryIntrospectionScanner implements IntrospectionScanner {
-
-    private final InhabitantsDescriptor descriptor;
-    
-    TemporaryIntrospectionScanner(InhabitantsDescriptor descriptor) {
-      this.descriptor = descriptor;
-    }
-    
-    @Override
-    public void parse(ParsingContext context, Holder<ClassLoader> loader) {
-      Types types = context.getTypes();
-      
-      // TODO: This should have contained InhabitantAnnotation but it didn't 
-//      Type notThere = types.getBy(InhabitantAnnotation.class.getName());
-      
-      AnnotationType at = types.getBy(AnnotationType.class, Service.class.getName());
-
-      // TODO: how can this be null --- but it is from time to time?
-      if (null != at) {
-        // TODO: This should have contained InhabitantAnnotation but it didn't 
-//        Collection<AnnotationModel> notThere2 = at.getAnnotations();
-        
-        Collection<AnnotatedElement> coll = at.allAnnotatedTypes();
-        for (AnnotatedElement ae : coll) {
-          process(ae, types);
-        }
-      }
-    }
-
-    protected void process(AnnotatedElement ae, Types types) {
-      if (ClassModel.class.isInstance(ae)) {
-        String service = ae.getName();
-        
-        ClassModel classModel = ClassModel.class.cast(ae);
-        Collection<String> contracts = getContracts(classModel, types);
-        Collection<String> annotations = getAnnotations(classModel, types);
-
-        AnnotationModel am = ae.getAnnotation(Service.class.getCanonicalName());
-        Object nameObj = am.getValues().get("name");
-        String name = (null == nameObj) ? null : nameObj.toString();
-        
-        Map<String, String> mm = null;
-        Object metaObj = am.getValues().get("metadata");
-        if (null != metaObj) {
-          String meta = metaObj.toString();
-          String [] split = meta.split(",");
-          for (String entry : split) {
-            String [] split2 = entry.split("=");
-            if (2 == split2.length) {
-              if (null == mm) {
-                mm = new LinkedHashMap<String, String>();
-              }
-              mm.put(split2[0], split2[1]);
-            }
-          }
-        }
-
-        // add it to the descriptors
-        descriptor.putAll(service, contracts, annotations, name, mm);
-      }
-    }
-
-    protected Collection<String> getContracts(ClassModel classModel, Types types) {
-      Collection<String> contracts = new ArrayList<String>();
-
-      Collection<InterfaceModel> ifModels = classModel.getInterfaces();
-      for (InterfaceModel ifModel : ifModels) {
-        if (null != ifModel) {
-          AnnotationModel am = ifModel.getAnnotation(Contract.class.getCanonicalName());
-          if (null != am) {
-            contracts.add(ifModel.getName());
-          }
-        }
-      }
-      
-      Collection<AnnotationModel> amColl = classModel.getAnnotations();
-      for (AnnotationModel am : amColl) {
-        AnnotationType at = am.getType();
-        String name = at.getName();
-        if (name.equals(ContractProvided.class.getName())) {
-          Object t = am.getValues().get("value");
-          if (null != t) {
-            String c = clean(t.toString());
-            contracts.add(c);
-          }
-        }
-      }
-      
-      return contracts;
-    }
-    
-    protected Collection<String> getAnnotations(ClassModel classModel, Types types) {
-      Collection<String> contracts = new ArrayList<String>();
-      
-      // TODO: getting annotations off of FactoryFor does NOT show @Contract, and it should!
-//      AnnotationType type = types.getBy(AnnotationType.class, name);
-
-      Collection<AnnotationModel> amColl = classModel.getAnnotations();
-      for (AnnotationModel am : amColl) {
-        AnnotationType at = am.getType();
-        String name = at.getName();
-        if (name.equals(FactoryFor.class.getName())) {
-          Object t = am.getValues().get("value");
-          String c = clean(t.toString());
-          contracts.add(name + ":" + c);
-        } else if (name.equals(RunLevel.class.getName())) {
-          contracts.add(name);
-        } else {
-          Collection<AnnotationModel> subAnn = am.getType().getAnnotations();
-          for (AnnotationModel z : subAnn) {
-            name = z.getType().getName();
-            if (name.equals(RunLevel.class.getName())) {
-              Object debug = z.getValues();
-              contracts.add(name);
-            } else {
-              // check meta-annotations one level up
-              Collection<AnnotationModel> subAnn2 = z.getType().getAnnotations();
-              for (AnnotationModel z1 : subAnn2) {
-                Object debug = z1.getValues();
-                name = z1.getType().getName();
-                if (name.equals(RunLevel.class.getName())) {
-                  contracts.add(name);
-                }
-              }
-            }
-          }
-        }
-      }
-      
-      return contracts;
-    }
-    
-    // TODO: WTF
-    private String clean(String mangled) {
-      if (mangled.startsWith("L")) {
-        mangled = mangled.substring(1);
-      }
-      if (mangled.endsWith(";")) {
-        mangled = mangled.substring(0, mangled.length()-1);
-      }
-      return mangled.replace("/", ".");
-    }
-    
-  }
 }
