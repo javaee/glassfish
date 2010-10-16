@@ -42,6 +42,7 @@ package com.sun.enterprise.v3.server;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.hk2.classmodel.reflect.ArchiveAdapter;
+import org.glassfish.hk2.classmodel.reflect.Parser;
 import org.glassfish.hk2.classmodel.reflect.util.AbstractAdapter;
 
 import java.io.File;
@@ -60,9 +61,11 @@ import java.util.logging.Logger;
  */
 public class ReadableArchiveScannerAdapter extends AbstractAdapter {
     final ReadableArchive archive;
+    final Parser parser;
 
-    public ReadableArchiveScannerAdapter(ReadableArchive archive) {
+    public ReadableArchiveScannerAdapter(Parser parser, ReadableArchive archive) {
         this.archive = archive;
+        this.parser = parser;
     }
 
     @Override
@@ -98,10 +101,10 @@ public class ReadableArchiveScannerAdapter extends AbstractAdapter {
                                     " of size " + entry.size + " reported is " + read);
 
                         }
-                 } catch (Exception e) {
-                     logger.log(Level.SEVERE, "Exception while processing " + entry.name
-                             + " inside " + archive.getName() + " of size " + entry.size, e);
-                 }                        
+                    } catch (Exception e) {
+                        logger.log(Level.SEVERE, "Exception while processing " + entry.name
+                                + " inside " + archive.getName() + " of size " + entry.size, e);
+                    }
                     entryTask.on(entry, bytes);
                 } finally {
                     if (is!=null)
@@ -119,8 +122,8 @@ public class ReadableArchiveScannerAdapter extends AbstractAdapter {
                     try {
                         subArchive = archive.getSubArchive(name);
                         if (subArchive!=null) {
-                            ReadableArchiveScannerAdapter adapter = new ReadableArchiveScannerAdapter(subArchive);
-                            adapter.onSelectedEntries(selector, entryTask, logger);
+                            ReadableArchiveScannerAdapter adapter = new ReadableArchiveScannerAdapter(parser, subArchive);
+                            parser.parse(adapter, null);
                         }
                     } finally {
                         if (subArchive!=null) {

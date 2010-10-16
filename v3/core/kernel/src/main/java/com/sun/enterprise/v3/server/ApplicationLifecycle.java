@@ -467,9 +467,9 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
 
                 try {
                     // scan the jar and store the result in the deployment context.
-                    ReadableArchiveScannerAdapter scannerAdapter = new ReadableArchiveScannerAdapter(context.getSource());
                     ParsingContext parsingContext = new ParsingContext.Builder().logger(context.getLogger()).executorService(executorService).build();
                     Parser parser = new Parser(parsingContext);
+                    ReadableArchiveScannerAdapter scannerAdapter = new ReadableArchiveScannerAdapter(parser, context.getSource());
                     parser.parse(scannerAdapter, null);
                     parser.awaitTermination();
                     context.addModuleMetaData(parsingContext.getTypes());
