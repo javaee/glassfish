@@ -38,19 +38,25 @@
  * holder.
  */
 
-package com.sun.enterprise.v3.admin;
+package com.sun.enterprise.admin.cli.embeddable;
 
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.CommandException;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.embeddable.Deployer;
+import org.glassfish.embeddable.GlassFishException;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PerLookup;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,82 +69,48 @@ import java.util.Map;
  */
 
 @Service()
-@ContractProvided(Deployer.class)
-// bcos Deployer interface can't depend on HK2, we need ContractProvided here.
+@Scoped(PerLookup.class)
+@ContractProvided(Deployer.class) // bcos Deployer interface can't depend on HK2, we need ContractProvided here.
 public class DeployerImpl implements Deployer {
-    // TODO(Sahoo): Fix parameter mappings
-    @Inject
-    CommandRunner commandRunner;
     @Inject
     Habitat habitat;
-
-    public String deploy(File archive) {
-        Map<String, String> params = new HashMap();
-        params.put("name", archive.getName());
-        return deploy(archive, params);
-    }
-
-    public String deploy(File archive, Map<String, String> params) {
-        ActionReport actionReport = createActionReport();
-        CommandRunner.CommandInvocation inv =
-                commandRunner.getCommandInvocation("deploy", actionReport);
-        ParameterMap commandParams = new ParameterMap();
-        for (Map.Entry<String, String> e : params.entrySet()) {
-            commandParams.add(e.getKey(), e.getValue());
+    public String deploy(URI archive, String... params) throws GlassFishException {
+        if (!"file".equalsIgnoreCase(archive.getScheme())) {
+            throw new UnsupportedOperationException("Currently only file protocol is supported");
         }
-        commandParams.add("path", archive.getAbsolutePath());
-        inv.parameters(commandParams).execute();
-        switch (actionReport.getActionExitCode()) {
-            case FAILURE:
-            {
-                throw new RuntimeException(actionReport.getMessage(), actionReport.getFailureCause());
-            }
-            case SUCCESS:
-            {
-                String name = params.get("name");
-                if (name != null) {
-                    return name;
-                }
-                break;
-            }
-            case WARNING:
-            {
-                System.out.println("Warnings: " + actionReport.getMessage());
-                String name = params.get("name");
-                if (name != null) {
-                    return name;
-                }
-                break;
-            }
-        }
-        return null;
-    }
-
-    private ActionReport createActionReport() {return habitat.getComponent(ActionReport.class, "plain");}
-
-    public String deploy(URI archive) {
-        return null;  //TODO(Sahoo): Not Yet Implemented
-    }
-
-    public void undeploy(String appName) {
-        undeploy(appName, new HashMap<String,String>());
-    }
-    
-    public void undeploy(String appName, Map<String, String> params) {
-        ActionReport actionReport = createActionReport();
-        CommandRunner.CommandInvocation inv =
-                commandRunner.getCommandInvocation("undeploy", actionReport);
-        ParameterMap commandParams = new ParameterMap();
-        for (Map.Entry<String, String> e : params.entrySet()) {
-            commandParams.add(e.getKey(), e.getValue());
-        }
-        commandParams.add("name", appName);
-        inv.parameters(commandParams).execute();
-        switch (actionReport.getActionExitCode()) {
-            case FAILURE:
-                throw new RuntimeException(actionReport.getMessage(), actionReport.getFailureCause());
-            default:
-                System.out.println(actionReport.getMessage());
+        File file = new File(archive);
+        String[] newParams = new String[params.length + 1];
+        System.arraycopy(params, 0, newParams, 0, params.length);
+        newParams[params.length] = file.getAbsolutePath();
+        CommandExecutorImpl executer = habitat.getComponent(CommandExecutorImpl.class);
+        try {
+            ActionReport actionReport = executer.executeCommand("deploy", newParams);
+            actionReport.writeReport(System.out);
+            return ""; // TODO(Sahoo): Fix me
+        } catch (CommandException e) {
+            throw new GlassFishException(e);
+        } catch (IOException e) {
+            throw new GlassFishException(e);
         }
     }
+
+    public void undeploy(String appName, String... params) throws GlassFishException {
+        String[] newParams = new String[params.length + 1];
+        System.arraycopy(params, 0, newParams, 0, params.length);
+        newParams[params.length] = appName;
+        CommandExecutorImpl executer = habitat.getComponent(CommandExecutorImpl.class);
+        try {
+            ActionReport actionReport = executer.executeCommand("undeploy", newParams);
+            actionReport.writeReport(System.out);
+        } catch (CommandException e) {
+            throw new GlassFishException(e);
+        } catch (IOException e) {
+            throw new GlassFishException(e);
+        }
+    }
+
+    public Collection<String> getDeployedApplications() throws GlassFishException {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
 }

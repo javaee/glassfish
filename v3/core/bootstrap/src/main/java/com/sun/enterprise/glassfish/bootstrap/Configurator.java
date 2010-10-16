@@ -40,11 +40,13 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
+import org.glassfish.embeddable.GlassFishException;
+
 import java.util.Properties;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public interface Configurator {
-    void configure(Properties props);
+    void configure(Properties props) throws GlassFishException;
 }

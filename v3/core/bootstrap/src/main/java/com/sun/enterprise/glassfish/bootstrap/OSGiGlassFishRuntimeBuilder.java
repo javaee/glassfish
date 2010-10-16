@@ -114,17 +114,6 @@ public final class OSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
         return false;
     }
 
-    public void destroy() throws GlassFishException {
-        try {
-            framework.stop();
-            framework.waitForStop(0);
-        } catch (InterruptedException ex) {
-            throw new GlassFishException(ex);
-        } catch (BundleException ex) {
-            throw new GlassFishException(ex);
-        }
-    }
-
     private static void debug(String s) {
         System.out.println("OSGiGlassFishRuntime: " + s);
     }

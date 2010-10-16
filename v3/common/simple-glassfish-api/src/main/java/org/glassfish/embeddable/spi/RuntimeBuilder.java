@@ -67,9 +67,4 @@ public interface RuntimeBuilder {
      */
     boolean handles(BootstrapOptions options);
 
-    /**
-     * Destroy the RuntimeBuilder and follow up with cleaing up operations
-     * @throws Exception
-     */
-    void destroy() throws GlassFishException;
 }

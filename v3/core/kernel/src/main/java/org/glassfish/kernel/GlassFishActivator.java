@@ -53,13 +53,13 @@ import org.glassfish.embeddable.GlassFish;
 import org.glassfish.embeddable.GlassFishRuntime;
 import org.jvnet.hk2.component.Habitat;
 import org.osgi.framework.*;
+import org.osgi.framework.launch.Framework;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.util.tracker.ServiceTracker;
 
 import java.io.File;
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.Properties;
+import java.util.*;
+
 import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.embeddable.GlassFishOptions;
 
@@ -82,22 +82,26 @@ public class GlassFishActivator implements BundleActivator, EventListener {
     }
 
     private void registerGlassFishRuntime() throws InterruptedException {
-        final ServiceTracker hk2Tracker = new ServiceTracker(bundleContext, Main.class.getName(), null);
-        hk2Tracker.open();
         bundleContext.registerService(GlassFishRuntime.class.getName(), new GlassFishRuntime() {
+            List<GlassFish> gfs = new ArrayList<GlassFish>();
+
             @Override
-            public GlassFish newGlassFish(GlassFishOptions gfOptions) throws GlassFishException {
+            public synchronized GlassFish newGlassFish(GlassFishOptions gfOptions) throws GlassFishException {
                 try {
                     // set env props before updating config, because configuration update may actually trigger
                     // some code to be executed which may be depending on the environment variable values.
                     setEnv(gfOptions.getAllOptions());
                     final StartupContext startupContext = new StartupContext(gfOptions.getAllOptions());
+                    final ServiceTracker hk2Tracker = new ServiceTracker(bundleContext, Main.class.getName(), null);
+                    hk2Tracker.open();
                     final Main main = (Main) hk2Tracker.waitForService(0);
+                    hk2Tracker.close();
                     final ModulesRegistry mr = ModulesRegistry.class.cast(bundleContext.getService(bundleContext.getServiceReference(ModulesRegistry.class.getName())));
                     final Habitat habitat = main.createHabitat(mr, startupContext);
                     final ModuleStartup gfKernel = main.findStartupService(mr, habitat, null, startupContext);
                     System.out.println("gfKernel = " + gfKernel);
                     GlassFish glassFish = new GlassFishImpl(gfKernel, habitat, gfOptions.getAllOptions());
+                    gfs.add(glassFish);
                     events = habitat.getComponent(Events.class);
                     events.register(GlassFishActivator.this);
                     // register GlassFish in service registry
@@ -110,8 +114,27 @@ public class GlassFishActivator implements BundleActivator, EventListener {
                 }
             }
 
-            public void disposeGlassFishInstances() {
-                // XXX : To be implemented
+            public synchronized void shutdown() throws GlassFishException {
+                for (GlassFish gf : gfs) {
+                    if (gf.getStatus() != GlassFish.Status.DISPOSED) {
+                        try {
+                            gf.dispose();
+                        } catch (GlassFishException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                gfs.clear();
+                try {
+                    Framework framework = (Framework) bundleContext.getBundle(0); // system bundle is the framework
+                    framework.stop();
+                    framework.waitForStop(0);
+                } catch (InterruptedException ex) {
+                    throw new GlassFishException(ex);
+                } catch (BundleException ex) {
+                    throw new GlassFishException(ex);
+                }
+                shutdownInternal();
             }
         }, null);
     }

@@ -40,13 +40,14 @@
 
 package org.glassfish.embeddable;
 
-import java.util.Map;
-
 /**
- * Interface for executing advanced commands in {@link GlassFish}
+ * GlassFish has a very sophisticated command line interface (CLI) called asadmin. This interface
+ * exposes that to user. This interface supports programatic execution of the administrative commands
+ * which are otherwise done via asadmin utility. A command runner is obtained by calling
+ * {@link org.glassfish.embeddable.GlassFish#getCommandRunner()}. A command runner is a per-lookup type
+ * object, which means each time getCommandRunner is called, it returns a different instance of command runner.
  *
- * This interface supports programatically executing the commands which
- * will otherwise be done via asadmin utility.
+ * Command specific options are passed in the var-args argument of {@link #run(String, String...)} method.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
@@ -54,7 +55,8 @@ public interface CommandRunner {
 
     /**
      * Execute an administrative command in {@link GlassFish} using the supplied
-     * command arguments.
+     * command arguments. Refer to GlassFish Administration Guide to know about the commands supported
+     * in GlassFish and their usage.
      *
      * Example : To add an additional http listener:
      *
@@ -68,7 +70,17 @@ public interface CommandRunner {
      *
      * @param command command to be executed.
      * @param args command arguments.
-     * @return true if the command is successfully, false otherwise.
+     * @return exit code. Refer to actual documentation of the command to interpret the exit code.
      */
-    boolean run(String command, Map<String, String> args);
+    CommandResult run(String command, String... args) throws GlassFishException;
+
+    /**
+     * Set the terse level.
+     * If true, output data is very concise  and  in  a  format that  is  optimized  for  use  in programs
+     * instead of for reading  by  humans. Typically,  descriptive  text  and detailed  status messages are
+     * also omitted from the output data. Default is true.
+     *
+     * @param terse true to get concise output, false otherwise.
+     */
+    void setTerse(boolean terse);
 }

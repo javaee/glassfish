@@ -41,6 +41,7 @@
 package org.glassfish.embeddable;
 
 import org.glassfish.embeddable.spi.RuntimeBuilder;
+
 import java.util.Iterator;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
@@ -57,72 +58,77 @@ import java.util.ServiceLoader;
 public abstract class GlassFishRuntime {
 
     /**
-     * Singleton
-     */
-    private static GlassFishRuntime me;
-    private static RuntimeBuilder runtimeBuilder;
-
-    /**
-     * Bootstrap GlassFish runtime based on runtime configuration passed in the properties object.
-     * Calling this method twice will throw a GlassFishException
+     * Bootstrap GlassFish runtime based on runtime configuration passed in the options object.
+     * This is a convenience method. Calling this method is same as
+     * calling {@link #bootstrap(BootstrapOptions, ClassLoader)} with null as second argument.
      *
-     * @param options  BootstrapOptions used to setup the runtime
-     * @param cl         ClassLoader used as parent loader by GlassFish modules. If null is passed, the class loader
-     *                   of this class is used.
-     * @return a GlassFishRuntime
+     * @param options BootstrapOptions used to setup the runtime
      * @throws GlassFishException
      */
-    public synchronized static GlassFishRuntime bootstrap(BootstrapOptions options, ClassLoader cl) throws GlassFishException {
-        if (me != null)  {
-         // TODO throw an exception
-            return me;
-        }
-        runtimeBuilder = getRuntimeBuilder(options, cl != null ? cl : GlassFishRuntime.class.getClassLoader());
-        me = runtimeBuilder.build(options);
-        return me;
+    public static GlassFishRuntime bootstrap(BootstrapOptions options) throws GlassFishException {
+        return bootstrap(options, GlassFishRuntime.class.getClassLoader());
+    }
+
+    /**
+     * Bootstrap GlassFish runtime based on runtime configuration passed in the options object.
+     * Calling this method twice will throw a GlassFishException
+     *
+     * @param options BootstrapOptions used to setup the runtime
+     * @param cl      ClassLoader used as parent loader by GlassFish modules. If null is passed, the class loader
+     *                of this class is used.
+     * @return a bootstrapped runtime that can now be used to create new GlassFish instances
+     * @throws GlassFishException
+     */
+    public static GlassFishRuntime bootstrap(BootstrapOptions options, ClassLoader cl) throws GlassFishException {
+        return _bootstrap(options, cl);
     }
 
     /**
      * Shuts down the Runtime and dispose off all the GlassFish objects
      * created via this Runtime
+     *
      * @throws GlassFishException
      */
-    public synchronized  void shutdown() throws GlassFishException {
-        disposeGlassFishInstances();
-        try {
-            runtimeBuilder.destroy();
-            me = null;
-        } catch (Exception e) {
-            throw new GlassFishException(e);
-        }
-    }
-
-
-    public synchronized static GlassFishRuntime get() {
-        if (me == null) {
-            throw new RuntimeException("Not yet bootstrapped");
-        }
-        return me;
-    }
-     
+    public abstract void shutdown() throws GlassFishException;
 
     /**
-     *  Creates a new instance of GlassFish
-     * @param option GlassFishOption used to setup the GlassFish instance
-     * @return GlassFish
+     * Creates a new instance of GlassFish.
+     *
+     * @param options GlassFishOption used to setup the GlassFish instance
+     * @return newly instantiated GlassFish object. It will be in {@link GlassFish.Status#INIT} state.
      * @throws GlassFishException
      */
     public abstract GlassFish newGlassFish(GlassFishOptions options) throws GlassFishException;
 
-    /**
-     * Dispose all the GlassFish instances created.
-     * @return List
+
+    /*
+     * INTERNAL IMPLEMENTATION DETAILS
+     * Be careful while introducing dependencies in this class, as this is shipped as part of api jar used
+     * by users.
      */
-    protected abstract void disposeGlassFishInstances();
 
+    /**
+     * Singleton
+     */
+    private static GlassFishRuntime me;
 
+    private synchronized static GlassFishRuntime _bootstrap(BootstrapOptions options, ClassLoader cl) throws GlassFishException {
+        if (me != null) {
+            throw new GlassFishException("Already bootstrapped", null);
+        }
+        RuntimeBuilder runtimeBuilder = getRuntimeBuilder(options, cl != null ? cl : GlassFishRuntime.class.getClassLoader());
+        me = runtimeBuilder.build(options);
+        return me;
+    }
 
-    private static RuntimeBuilder getRuntimeBuilder(BootstrapOptions  options, ClassLoader cl) {
+    protected synchronized static void shutdownInternal() throws GlassFishException {
+        if (me == null) {
+            throw new GlassFishException("Already shutdown", null);
+        }
+        me = null;
+    }
+
+    private static RuntimeBuilder getRuntimeBuilder(BootstrapOptions options, ClassLoader cl) throws GlassFishException {
 //        StringBuilder sb = new StringBuilder("Launcher Class Loader = " + cl);
 //        if (cl instanceof URLClassLoader) {
 //            sb.append("has following Class Path: ");
@@ -142,7 +148,7 @@ public abstract class GlassFishRuntime {
                 // Ignore the exception and move ahead to the next builder.
             }
         }
-        throw new RuntimeException("No runtime builder for this configuration: " + options.getAllOptions());
+        throw new GlassFishException("No runtime builder available for this configuration: " + options.getAllOptions(), null);
     }
 
 }

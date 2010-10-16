@@ -42,68 +42,53 @@ package org.glassfish.embeddable;
 
 import java.io.File;
 import java.net.URI;
+import java.util.Collection;
 import java.util.Map;
 
 /**
+ * Deployer service for GlassFish. Using this service, one can deploy and undeploy applications.
+ * It accepts URI as an input for deployment and hence is very easily extensible. User can install their own
+ * custom URL handler in Java runtime and create URIs with their custom scheme and pass them to deploy method.
+ *
+ * @see org.glassfish.embeddable.GlassFish#getDeployer()
+ * @see java.net.URL#setURLStreamHandlerFactory(java.net.URLStreamHandlerFactory)
+ *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public interface Deployer {
-
     /**
-     * Deploys a jar file or an exploded directory to {@link GlassFish}.
-     *
-     * Example : deployer.deploy("myapp.war");
-     * 
-     * @param archive jar file or directory of the application
-     * @return the deployed application name
-     */
-    String deploy(File archive);
-
-    /**
-     * Deploys a jar file or an exploded directory to the server using the supplied deployment command parameters.
-     *
-     * @param archive jar file or directory of the application
-     * @param params deployment command parameters
-     * @return the deployed application name
-     */
-    String deploy(File archive, Map<String, String> params);
-
-    // TODO(Sahoo): Add more documentation about how to use 
-    /**
-     * Deploys an application identified by a URI. Please note, there is no separate deployment parameters
-     * in this method signature. All the information is encapsulated in the URI as query components.
-     * We prefer this approach as opposed to taking a separate properties argument, because one can then
-     * easily deploy from an interactive shell by encoding everything as one URI string.
+     * Deploys an application identified by a URI. URI is used as it is very extensible.
      * GlassFish does not care about what URI scheme is used as long as there is a URL handler installed
-     * in the server runtime to handle the URI scheme and a JarInputStream can be obtained from the URI.
-     *  
-     * @param archive
-     * @return
+     * in the JVM to handle the scheme and a JarInputStream can be obtained from the given URI.
+     * This method takes a var-arg argument for the deployment options. Any option that's applicable
+     * to "asadmin deploy" command is also applicable here with same semantics. Please refer to GlassFish
+     * deployment guide for all available options.
+     *
+     * Example : deployer.deploy("http://acme.com/foo.war")
+     *           deployer.deploy(new File("/tmp/bar.ear").toURI(), "--name=foo", "--force=true", "--create-tables=true")
+     *
+     * @param archive URI identifying the application to be deployed.
+     * @param params Optional list of deployment options.
+     * @return the name of the deployed application
      */
-    String deploy(URI archive);
+    String deploy(URI archive, String... params) throws GlassFishException;
 
     /**
      * Undeploys an application from {@link GlassFish}
+     * This method takes a var-arg argument for the undeployment options. Any option that's applicable
+     * to "asadmin undeploy" command is also applicable here with same semantics. Please refer to GlassFish
+     * deployment guide for all available options.
      *
-     * Example : deployer.undeploy("myapp");
+     * Example : deployer.undeploy("foo");
      *
      * @param appName Identifier of the application to be undeployed.
-     *
+     * @param params Undeployment options.
      */
-    void undeploy(String appName);
+    void undeploy(String appName, String... params) throws GlassFishException;
 
     /**
-     * Undeploys an application from {@link GlassFish} using the supplied
-     * undeployment command parameters.
-     *
-     * Example:
-     *
-     *      Map&lt;String, String>&gt params = new HashMap();
-     *      param.put("externally-managed", "true");
-     *      deployer.undeploy("myapp", params);
-     *
-     * @param appName Identifier of the application to be undeployed.
-     * @param params Undeployment parameters.
+     * Return names of all the deployed applications.
+     * @return names of deployed applications.
      */
-    void undeploy(String appName, Map<String, String> params);
+    Collection<String> getDeployedApplications() throws GlassFishException;
 }

@@ -40,21 +40,18 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
-import org.glassfish.embeddable.BootstrapConstants;
-import org.glassfish.embeddable.Deployer;
-import org.glassfish.embeddable.GlassFish;
-import org.glassfish.embeddable.GlassFishRuntime;
+import org.glassfish.embeddable.*;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Properties;
 
-import org.glassfish.embeddable.BootstrapOptions;
-import org.glassfish.embeddable.GlassFishOptions;
 import static com.sun.enterprise.module.bootstrap.ArgumentManager.argsToMap;
 
 /**
@@ -147,8 +144,14 @@ public class GlassFishMain {
                             continue;
                         }
                         Deployer deployer = gf.lookupService(Deployer.class, null);
-                        final File file = new File(command.substring(command.indexOf(" ")).trim());
-                        String name = deployer.deploy(file, new HashMap<String, String>());
+                        String[] tokens = command.split("\\s");
+                        if (tokens.length < 2) {
+                            System.out.println("Syntax: deploy <options> file");
+                            continue;
+                        }
+                        final File file = new File(tokens[tokens.length -1]);
+                        String[] params = Arrays.copyOfRange(tokens, 1, tokens.length-1);
+                        String name = deployer.deploy(file.toURI(), params);
                         System.out.println("Deployed = " + name);
                     } else if (command.startsWith("undeploy")) {
                         if (gf.getStatus() != GlassFish.Status.STARTED) {
@@ -157,12 +160,23 @@ public class GlassFishMain {
                         }
                         Deployer deployer = gf.lookupService(Deployer.class, null);
                         String name = command.substring(command.indexOf(" ")).trim();
-                        deployer.undeploy(name, new HashMap<String, String>());
+                        deployer.undeploy(name);
                         System.out.println("Undeployed = " + name);
                     } else if ("quit".equalsIgnoreCase(command)) {
                         System.exit(0);
                     } else {
-                        System.out.println("Unrecognized command:" + command);
+                        if (gf.getStatus() != GlassFish.Status.STARTED) {
+                            System.out.println("GlassFish is not started yet. Please execute start first.");
+                            continue;
+                        }
+                        CommandRunner cmdRunner = gf.getCommandRunner();
+                        String[] tokens = command.split("\\s");
+                        CommandResult result = cmdRunner.run(tokens[0], Arrays.copyOfRange(tokens, 1, tokens.length));
+                        System.out.println(result.getExitStatus());
+                        System.out.println(result.getOutput());
+                        if (result.getFailureCause() != null) {
+                            result.getFailureCause().printStackTrace();
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

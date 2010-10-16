@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,59 +38,39 @@
  * holder.
  */
 
-package com.sun.enterprise.v3.admin;
 
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.CommandRunner;
-import org.glassfish.api.admin.ParameterMap;
-import org.jvnet.hk2.annotations.ContractProvided;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
-
-import java.util.Map;
+package org.glassfish.embeddable;
 
 /**
- * @author bhavanishankar@dev.java.net
+ * Encapsulates the result of a command invoked using {@link CommandRunner#run}.
+ *
+ * @author Sanjeeb.Sahoo@Sun.COM
  */
-@Service()
-@ContractProvided(org.glassfish.embeddable.CommandRunner.class)
-// bcos CommandRunner interface can't depend on HK2, we need ContractProvided here.
-
-public class CommandExecutorImpl implements org.glassfish.embeddable.CommandRunner {
-
-    @Inject
-    CommandRunner commandRunner;
-
-    @Inject
-    Habitat habitat;
-
-    public boolean run(String command, Map<String, String> args) {
-        ActionReport actionReport = createActionReport();
-
-        org.glassfish.api.admin.CommandRunner.CommandInvocation inv =
-                commandRunner.getCommandInvocation(command, actionReport);
-        ParameterMap commandParams = new ParameterMap();
-
-        for (Map.Entry<String, String> e : args.entrySet()) {
-            commandParams.add(e.getKey(), e.getValue());
-        }
-
-        inv.parameters(commandParams).execute();
-
-        if (actionReport.hasFailures()) {
-            try {
-                actionReport.writeReport(System.err);
-            } catch (Exception ex) {
-            }
-        }
-
-        return !actionReport.hasFailures();
-
+public interface CommandResult {
+    /**
+     * A command can have following types of exit status.
+     */
+    enum ExitStatus {
+        SUCCESS,
+        WARNING,
+        FAILURE
     }
 
-    private ActionReport createActionReport() {
-        return habitat.getComponent(ActionReport.class, "plain");
-    }
+    /**
+     * @return exit status of the command
+     */
+    ExitStatus getExitStatus();
 
+    /**
+     * @return command output
+     */
+    String getOutput();
+
+    /**
+     * This method returns any exception raised during command invocation, If the command's exit status
+     * is {@link ExitStatus#SUCCESS}, then this method will return null.
+     *
+     * @return any exception that occurred during this command execution.
+     */
+    Throwable getFailureCause();
 }

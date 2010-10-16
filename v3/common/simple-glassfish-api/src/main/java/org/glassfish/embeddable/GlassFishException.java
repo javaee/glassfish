@@ -46,7 +46,11 @@ package org.glassfish.embeddable;
  * @author prasad
  */
 public class GlassFishException extends Exception {
-    
+
+    public GlassFishException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
     public GlassFishException(Exception e) {
         super(e);
     }

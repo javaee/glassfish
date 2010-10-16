@@ -38,11 +38,12 @@
  * holder.
  */
 
-package com.sun.enterprise.v3.admin;
+package com.sun.enterprise.glassfish.bootstrap;
 
 import com.sun.enterprise.glassfish.bootstrap.Configurator;
 import org.glassfish.embeddable.CommandRunner;
 import org.glassfish.embeddable.GlassFishConstants;
+import org.glassfish.embeddable.GlassFishException;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -56,12 +57,8 @@ import java.util.Properties;
 /**
  * @author bhavanishankar@dev.java.net
  */
-@Service()
-@ContractProvided(Configurator.class)
-// bcos Deployer interface can't depend on HK2, we need ContractProvided here.
-public class ConfiguratorImpl implements Configurator {
+class ConfiguratorImpl implements Configurator {
 
-    @Inject
     Habitat habitat;
 
     private static final Map<String, String> simpleConfigurators = new HashMap();
@@ -76,7 +73,11 @@ public class ConfiguratorImpl implements Configurator {
 
     private static final String COMMA_SEPARATED_VALUE = "{0},{1}";
 
-    public void configure(Properties bootstrapProps) {
+    public ConfiguratorImpl(Habitat habitat) {
+        this.habitat = habitat;
+    }
+
+    public void configure(Properties bootstrapProps) throws GlassFishException {
 
         String setValues = null;
         for (String key : simpleConfigurators.keySet()) {
@@ -91,9 +92,7 @@ public class ConfiguratorImpl implements Configurator {
 
         if (setValues != null) {
             CommandRunner commandRunner = habitat.getComponent(CommandRunner.class);
-            Map<String, String> args = new HashMap();
-            args.put("values", setValues);
-            commandRunner.run("set", args);
+            commandRunner.run("set", setValues);
         }
 
     }

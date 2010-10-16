@@ -44,6 +44,7 @@ import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import org.glassfish.embeddable.CommandRunner;
 import org.glassfish.embeddable.Deployer;
 import org.glassfish.embeddable.GlassFish;
+import org.glassfish.embeddable.GlassFishException;
 import org.jvnet.hk2.component.Habitat;
 
 import java.util.Properties;
@@ -58,18 +59,19 @@ public class GlassFishImpl implements GlassFish {
     private Habitat habitat;
     volatile Status status = Status.INIT;
 
-    public GlassFishImpl(ModuleStartup gfKernel, Habitat habitat, Properties bootstrapProps) {
+    public GlassFishImpl(ModuleStartup gfKernel, Habitat habitat, Properties gfProps) throws GlassFishException {
         this.gfKernel = gfKernel;
         this.habitat = habitat;
-
-        // If there are custom configurations like http.port, https.port, jmx.port then configure them.
-        Configurator configurator = habitat.getComponent(Configurator.class);
-        if(configurator != null) {
-            configurator.configure(bootstrapProps);
-        }
+        configure(gfProps);
     }
 
-    public synchronized void start() {
+    private void configure(Properties gfProps) throws GlassFishException {
+        // If there are custom configurations like http.port, https.port, jmx.port then configure them.
+        Configurator configurator = new ConfiguratorImpl(habitat);
+        configurator.configure(gfProps);
+    }
+
+    public synchronized void start() throws GlassFishException {
         if (status == Status.STARTED) return;
         try {
             status = Status.STARTING;
@@ -77,30 +79,37 @@ public class GlassFishImpl implements GlassFish {
             status = Status.STARTED;
 
         } catch (Exception e) {
-            throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
+            throw new GlassFishException(e);
         }
     }
 
-    public synchronized void stop() {
+    public synchronized void stop() throws GlassFishException {
         if (status != Status.STARTED) return;
         try {
             status = Status.STOPPING;
             gfKernel.stop();
             status = Status.STOPPED;
         } catch (Exception e) {
-            throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
+            throw new GlassFishException(e);
         }
     }
 
-    public synchronized void dispose() {
-       //TODO : 
+    public synchronized void dispose() throws GlassFishException {
+        if (status == Status.DISPOSED) {
+            throw new IllegalStateException("Already disposed.");
+        } else if (status != Status.STOPPED) {
+            stop();
+        }
+        this.gfKernel = null;
+        this.habitat = null;
+        this.status = Status.DISPOSED;
     }
 
     public synchronized Status getStatus() {
         return status;
     }
 
-    public synchronized <T> T lookupService(Class<T> serviceType, String serviceName) {
+    public synchronized <T> T lookupService(Class<T> serviceType, String serviceName) throws GlassFishException {
         if (status != Status.STARTED) {
             throw new IllegalArgumentException("Server is not started yet. It is in " + status + "state");
         }
@@ -111,13 +120,11 @@ public class GlassFishImpl implements GlassFish {
                 habitat.getComponent(serviceType);
     }
 
-    @Override
-    public Deployer getDeployer() {
+    public Deployer getDeployer() throws GlassFishException {
         return lookupService(Deployer.class, null);
     }
 
-    @Override
-    public CommandRunner getCommandRunner() {
+    public CommandRunner getCommandRunner() throws GlassFishException {
         return lookupService(CommandRunner.class, null);
     }
 

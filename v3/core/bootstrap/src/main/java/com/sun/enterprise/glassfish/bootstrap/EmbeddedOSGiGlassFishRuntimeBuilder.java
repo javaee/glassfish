@@ -166,11 +166,6 @@ public class EmbeddedOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
         }
     }
 
-    @Override
-    public void destroy() throws GlassFishException {
-        // Nothing to do for now. Should we uninstall every bundle that have been installed by us?
-    }
-
     private BundleContext getBundleContext() {
         return BundleReference.class.cast(getClass().getClassLoader()).getBundle().getBundleContext();
     }

@@ -61,6 +61,7 @@ import org.glassfish.embeddable.GlassFishOptions;
 
 /**
  * The GlassFishRuntime implementation for NonOSGi environments.
+ * 
  * @author bhavanishankar@dev.java.net
  */
 public class NonOSGiGlassFishRuntime extends GlassFishRuntime {
@@ -82,7 +83,7 @@ public class NonOSGiGlassFishRuntime extends GlassFishRuntime {
      * @throws Exception
      */
     @Override
-    public GlassFish newGlassFish(GlassFishOptions gfOptions) throws GlassFishException {
+    public synchronized GlassFish newGlassFish(GlassFishOptions gfOptions) throws GlassFishException {
         // set env props before updating config, because configuration update may actually trigger
         // some code to be executed which may be depending on the environment variable values.
          try {
@@ -103,10 +104,12 @@ public class NonOSGiGlassFishRuntime extends GlassFishRuntime {
     }
 
     @Override
-    protected void disposeGlassFishInstances() {
+    public synchronized void shutdown() throws GlassFishException {
         for(Object gf : gfMap.values()) {
             ((GlassFish)gf).dispose();
         }
+        gfMap.clear();
+        shutdownInternal();
     }
 
     private void setEnv(GlassFishOptions gfOptions) throws Exception {
@@ -169,7 +172,6 @@ public class NonOSGiGlassFishRuntime extends GlassFishRuntime {
 
     private void copy(final File srcDir, final File dstDir, final String... subDirs) {
         srcDir.listFiles(new FileFilter() {
-            @Override
             public boolean accept(File path) {
                 if (path.isDirectory()) {
                     path.listFiles(this);

@@ -41,7 +41,8 @@
 package org.glassfish.embeddable;
 
 /**
- * This is our primary interface to communicate with the server,
+ * This is our primary interface to communicate with GlassFish,
+ * All the methods in this interface are applicable to all types of GlassFish runtimes.
  * It provides necessary life cycle operations as well as it acts as a component registry.
  *
  * Concurrency Note:
@@ -51,53 +52,63 @@ package org.glassfish.embeddable;
  */
 public interface GlassFish {
     /**
-     * Start the server. When this method is called, all the lifecycle (aka startup) services are started.
+     * Start GlassFish.
+     * When this method is called, all the lifecycle (aka startup) services are started.
      */
-    void start();
+    void start() throws GlassFishException;
 
     /**
-     * Stop the server. When this method is called, all the lifecycle (aka startup) services are stopped.
-     * After the server is stopped, the server can be started again by calling the start method.
+     * Stop GlassFish. When this method is called, all the lifecycle (aka startup) services are stopped.
+     * GlassFish can be started again by calling the start method.
      */
-    void stop();
+    void stop() throws GlassFishException;
 
     /**
-     * Call this method if you don't need the server object any more. This method will stop the server
+     * Call this method if you don't need this GlassFish instance any more. This method will stop GlassFish
      * if not already stopped. After this method is called, calling any method except {@link #getStatus}
-     * on the server object will cause an IllegalStateException to be thrown. When this method is called,
+     * on the GlassFish object will cause an IllegalStateException to be thrown. When this method is called,
      * any resource (like temporary files, threads, etc.) is also released.
      */
-    void dispose();
+    void dispose() throws GlassFishException;
 
     /**
      * @return Status of GlassFish
      */
-    Status getStatus();
+    Status getStatus() throws GlassFishException;
 
     /**
-     * Look up a service
+     * A service has a service interface and optionally a name. For a service which is just a class with no interface,
+     * then the service class is the service interface. This method is used to look up a service.
      * @param serviceType type of component required.
      * @param servicetName name of the component. Pass null if any component will fit the bill.
      * @param <T>
-     * @return Return a component matching the requirement, null if no component found.
+     * @return Return a service matching the requirement, null if no service found.
      */
-    <T> T lookupService(Class<T> serviceType, String servicetName);
+    <T> T lookupService(Class<T> serviceType, String servicetName) throws GlassFishException;
 
     /**
-     * Gets a Deployer instance to deploy an application
-     * @return A Deployer instance
+     * Gets a Deployer instance to deploy an application.
+     * Each invocation of this method returns a new Deployer object.
+     * Calling this method is equivalent to calling <code>lookupService(Deployer.class, null)</code>
+     *
+     * @return A new Deployer instance
      */
-    Deployer getDeployer();
+    Deployer getDeployer() throws GlassFishException;
 
     /**
-     * Gets a CommandRunner instance, using which the user can run asadmin command
-     * in an embedded setup.
-     * @return CommandRunner instance
+     * Gets a CommandRunner instance, using which the user can run asadmin commands.
+     * Calling this method is equivalent to calling <code>lookupService(CommandRunner.class, null)</code>
+     * Each invocation of this method returns a new CommandRunner object.
+     *
+     * @return a new CommandRunner instance
      */
-    CommandRunner getCommandRunner();
+    CommandRunner getCommandRunner() throws GlassFishException;
 
+    /**
+     * Status of GlassFish object.
+     */
     enum Status {
-        // Because server can take time to start or stop, we have STARTING and STOPPING states.
+        // Because GlassFish can sometimes take time to start or stop, we have STARTING and STOPPING states.
         INIT, STARTING, STARTED, STOPPING, STOPPED, DISPOSED
     }
 }

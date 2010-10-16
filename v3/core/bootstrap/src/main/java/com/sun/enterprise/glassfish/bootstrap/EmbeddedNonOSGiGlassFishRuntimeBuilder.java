@@ -152,10 +152,6 @@ public class EmbeddedNonOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
         }
     }
 
-    public void destroy() throws GlassFishException {
-        // TODO : do any clean up
-    }
-
     private boolean isValidInstallRoot(File installRoot) {
         return installRoot == null ? false : isValidInstallRoot(installRoot.getAbsolutePath());
     }

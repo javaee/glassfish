@@ -42,12 +42,7 @@ package org.glassfish.api.embedded;
 
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.glassfish.api.container.Sniffer;
-import org.glassfish.embeddable.GlassFish;
-import org.glassfish.embeddable.GlassFishRuntime;
-import org.glassfish.embeddable.BootstrapConstants;
-import org.glassfish.embeddable.BootstrapOptions;
-import org.glassfish.embeddable.GlassFishConstants;
-import org.glassfish.embeddable.GlassFishOptions;
+import org.glassfish.embeddable.*;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
@@ -224,7 +219,7 @@ public class Server {
     private final Habitat habitat;
     private final List<Container> containers = new ArrayList<Container>();
     private final GlassFish glassfish;
-    private final GlassFishRuntime glassfishRuntime;
+    private static GlassFishRuntime glassfishRuntime;
 
     private static final Logger logger = Logger.getLogger("maven-embedded-glassfish-plugin");
 
@@ -545,7 +540,11 @@ public class Server {
      */
     public synchronized void start() throws LifecycleException {
         if(glassfish != null) {
-            glassfish.start();
+            try {
+                glassfish.start();
+            } catch (GlassFishException e) {
+                throw new LifecycleException(e); // TODO(Sahoo): Proper Exception Handling
+            }
             logger.finer("GlassFish has been started");
         }
     }

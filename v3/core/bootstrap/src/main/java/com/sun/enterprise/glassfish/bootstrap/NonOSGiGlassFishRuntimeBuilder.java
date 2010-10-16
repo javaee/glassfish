@@ -125,10 +125,6 @@ public class NonOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
         return false;
     }
 
-    public void destroy() throws GlassFishException {
-        // TODO : do any clean up
-    }
-
     private List<URL> getModuleJarURLs(String installRoot) {
         File modulesDir = new File(installRoot, "modules/");
         final File autostartModulesDir = new File(modulesDir, "autostart/");
