@@ -37,10 +37,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.universal.xml;
 
 import java.io.File;
+import java.net.*;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -63,34 +63,21 @@ import com.sun.enterprise.util.HostAndPort;
  */
 @SuppressWarnings({"StaticNonFinalField"})
 public class MiniXmlParserTest {
+
     private static File hasProfiler;
-
     private static File wrongOrder;
-
     private static File rightOrder;
-
     private static File noconfig;
-
     private static File adminport;
-
     private static File adminport2;
-
     private static File noCloseRightOrder;
-
     private static File noCloseWrongOrder;
-
     private static File noDomainName;
-
     private static File bigDomain;
-
     private static File monitoringFalse;
-
     private static File monitoringTrue;
-
     private static File monitoringNone;
-
     private static File v2DomainXml;
-
     private static File issue9127DomainXml;
 
     @BeforeClass
@@ -98,9 +85,9 @@ public class MiniXmlParserTest {
         String wrongOrderString = MiniXmlParserTest.class.getClassLoader().getResource("wrongorder.xml").getPath();
         wrongOrder = new File(wrongOrderString);
 
-        if(!wrongOrder.exists() && wrongOrderString.indexOf("%20")  >=  0)
-           throw new RuntimeException("You can not run unit tests if " +
-                       "your workspace has a space in its path.");
+        if (!wrongOrder.exists() && wrongOrderString.indexOf("%20") >= 0)
+            throw new RuntimeException("You can not run unit tests if "
+                    + "your workspace has a space in its path.");
 
         rightOrder = new File(MiniXmlParserTest.class.getClassLoader().getResource("rightorder.xml").getPath());
         noconfig = new File(MiniXmlParserTest.class.getClassLoader().getResource("noconfig.xml").getPath());
@@ -108,16 +95,22 @@ public class MiniXmlParserTest {
         adminport = new File(MiniXmlParserTest.class.getClassLoader().getResource("adminport.xml").getPath());
         adminport2 = new File(MiniXmlParserTest.class.getClassLoader().getResource("adminport2.xml").getPath());
         noCloseRightOrder = new File(
-            MiniXmlParserTest.class.getClassLoader().getResource("rightordernoclosedomain.xml").getPath());
+                MiniXmlParserTest.class.getClassLoader().getResource("rightordernoclosedomain.xml").getPath());
         noCloseWrongOrder = new File(
-            MiniXmlParserTest.class.getClassLoader().getResource("wrongordernoclosedomain.xml").getPath());
+                MiniXmlParserTest.class.getClassLoader().getResource("wrongordernoclosedomain.xml").getPath());
         noDomainName = new File(MiniXmlParserTest.class.getClassLoader().getResource("nodomainname.xml").getPath());
         bigDomain = new File(MiniXmlParserTest.class.getClassLoader().getResource("big.xml").getPath());
         monitoringFalse = new File(
-            MiniXmlParserTest.class.getClassLoader().getResource("monitoringFalse.xml").getPath());
+                MiniXmlParserTest.class.getClassLoader().getResource("monitoringFalse.xml").getPath());
         monitoringTrue = new File(MiniXmlParserTest.class.getClassLoader().getResource("monitoringTrue.xml").getPath());
         monitoringNone = new File(MiniXmlParserTest.class.getClassLoader().getResource("monitoringNone.xml").getPath());
-        v2DomainXml = new File(MiniXmlParserTest.class.getClassLoader().getResource("v2domain.xml").getPath());
+
+
+        if (canAccessInternet())
+            v2DomainXml = new File(MiniXmlParserTest.class.getClassLoader().getResource("v2domain.xml").getPath());
+        else
+            v2DomainXml = null;
+
         issue9127DomainXml = new File(MiniXmlParserTest.class.getClassLoader().getResource("domain9127.xml").getPath());
         assertTrue(wrongOrder.exists());
         assertTrue(rightOrder.exists());
@@ -131,7 +124,6 @@ public class MiniXmlParserTest {
     }
 
 // --------------------------- CONSTRUCTORS ---------------------------
-
     public MiniXmlParserTest() {
     }
 
@@ -212,14 +204,15 @@ public class MiniXmlParserTest {
     public void noServerConfig() throws MiniXmlParserException {
         try {
             new MiniXmlParser(noconfig, "server");
-        } catch (MiniXmlParserException ex) {
+        }
+        catch (MiniXmlParserException ex) {
             throw ex;
         }
     }
 
     /*
-    * Positive test cases -- look at <system-property>
-    */
+     * Positive test cases -- look at <system-property>
+     */
     @Test
     public void systemProperties() {
         try {
@@ -241,8 +234,8 @@ public class MiniXmlParserTest {
     }
 
     /*
-    * Positive test case -- make sure system-property in <server> overrides the one in <config>
-    */
+     * Positive test case -- make sure system-property in <server> overrides the one in <config>
+     */
     @Test
     public void systemPropertyOverrides() {
         try {
@@ -256,16 +249,16 @@ public class MiniXmlParserTest {
     }
 
     /*
-    * Positive test case -- make sure profiler is parsed correctly
-    * here is the piece of xml it will be parsing:
-    *
-           <profiler classpath="/profiler/class/path" enabled="true" name="MyProfiler" native-library-path="/bin">
-               <jvm-options>-Dprofiler3=foo3</jvm-options>
-               <jvm-options>-Dprofiler2=foo2</jvm-options>
-               <jvm-options>-Dprofiler1=foof</jvm-options>
-           </profiler>
-    *
-    */
+     * Positive test case -- make sure profiler is parsed correctly
+     * here is the piece of xml it will be parsing:
+     *
+    <profiler classpath="/profiler/class/path" enabled="true" name="MyProfiler" native-library-path="/bin">
+    <jvm-options>-Dprofiler3=foo3</jvm-options>
+    <jvm-options>-Dprofiler2=foo2</jvm-options>
+    <jvm-options>-Dprofiler1=foof</jvm-options>
+    </profiler>
+     *
+     */
     @Test
     public void profilerParsing() {
         try {
@@ -292,9 +285,9 @@ public class MiniXmlParserTest {
     }
 
     /*
-    * Exercise the parsing of asadmin virtual server, network-listener and port numbers
-    * this one tests for TWO listeners
-    */
+     * Exercise the parsing of asadmin virtual server, network-listener and port numbers
+     * this one tests for TWO listeners
+     */
     @Test
     public void findTwoAdminPorts() {
         try {
@@ -321,9 +314,9 @@ public class MiniXmlParserTest {
     }
 
     /*
-    * Exercise the parsing of asadmin virtual server, network-listener and port numbers
-    * this one tests for ONE listener
-    */
+     * Exercise the parsing of asadmin virtual server, network-listener and port numbers
+     * this one tests for ONE listener
+     */
     @Test
     public void findOneAdminPort() {
         try {
@@ -333,10 +326,12 @@ public class MiniXmlParserTest {
             assertEquals(3333, addrs.iterator().next().getPort());
 
             // clean v2 domain.xml
-            instance = new MiniXmlParser(v2DomainXml, "server");
-            addrs = instance.getAdminAddresses();
-            assertEquals(1, addrs.size());
-            assertEquals(4848, addrs.iterator().next().getPort());
+            if (v2DomainXml != null) {
+                instance = new MiniXmlParser(v2DomainXml, "server");
+                addrs = instance.getAdminAddresses();
+                assertEquals(1, addrs.size());
+                assertEquals(4848, addrs.iterator().next().getPort());
+            }
 
             // domain.xml from issue 9127
             instance = new MiniXmlParser(issue9127DomainXml, "server");
@@ -382,7 +377,7 @@ public class MiniXmlParserTest {
     @Test
     public void testOldSchema() throws MiniXmlParserException {
         final MiniXmlParser parser = new MiniXmlParser(
-            new File(getClass().getClassLoader().getResource("olddomain.xml").getPath()), "server");
+                new File(getClass().getClassLoader().getResource("olddomain.xml").getPath()), "server");
         List<HostAndPort> addrs = parser.getAdminAddresses();
         assertEquals(1, addrs.size());
     }
@@ -390,14 +385,14 @@ public class MiniXmlParserTest {
     @Test
     public void testNoNetworkConfig() throws MiniXmlParserException {
         final MiniXmlParser parser = new MiniXmlParser(
-            new File(getClass().getClassLoader().getResource("olddomain.xml").getPath()), "server");
-        assert(!parser.hasNetworkConfig());
+                new File(getClass().getClassLoader().getResource("olddomain.xml").getPath()), "server");
+        assert (!parser.hasNetworkConfig());
     }
 
     @Test
     public void testNetworkConfig() throws MiniXmlParserException {
         final MiniXmlParser parser = new MiniXmlParser(rightOrder, "server");
-        assert(parser.hasNetworkConfig());
+        assert (parser.hasNetworkConfig());
     }
 
     @Test
@@ -409,7 +404,8 @@ public class MiniXmlParserTest {
             double d = (double) (nanoStop - nanoStart);
             d *= .001;
             d *= .001;
-        } catch (MiniXmlParserException ex) {
+        }
+        catch (MiniXmlParserException ex) {
             Logger.getLogger(MiniXmlParserTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -434,7 +430,20 @@ public class MiniXmlParserTest {
 
     @Test
     public void testV2DomainXml() throws MiniXmlParserException {
-        new MiniXmlParser(v2DomainXml, "server");
+        if(v2DomainXml != null)
+            new MiniXmlParser(v2DomainXml, "server");
+    }
+
+    private static boolean canAccessInternet() {
+        String urlString = "http://www.sun.com/software/appserver/dtds/sun-domain_1_3.dtd";
+        try {
+            URL url = new URL(urlString);
+            URLConnection urlc = url.openConnection();
+            urlc.getInputStream().close(); // will throw if no internet!
+            return true;
+        }
+        catch (Exception ex) {
+            return true;
+        }
     }
 }
-
