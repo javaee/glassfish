@@ -53,6 +53,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -86,7 +87,7 @@ public class DeployerImpl implements Deployer {
         try {
             ActionReport actionReport = executer.executeCommand("deploy", newParams);
             actionReport.writeReport(System.out);
-            return ""; // TODO(Sahoo): Fix me
+            return actionReport.getResultType(String.class);
         } catch (CommandException e) {
             throw new GlassFishException(e);
         } catch (IOException e) {

@@ -403,6 +403,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                         path.getAbsolutePath()), e);
             }
             if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
+                // Set the app name in the result so that embedded deployer can retrieve it.
+                report.setResultType(String.class, name);
                 report.setMessage(localStrings.getLocalString("deploy.command.success","Application deployed with name {0}", name));
 
                 logger.info(localStrings.getLocalString(
