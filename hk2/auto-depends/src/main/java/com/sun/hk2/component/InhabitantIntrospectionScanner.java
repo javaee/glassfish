@@ -37,6 +37,8 @@ package com.sun.hk2.component;
 
 import org.glassfish.hk2.classmodel.reflect.*;
 import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.annotations.ContractProvided;
+import org.jvnet.hk2.annotations.FactoryFor;
 import org.jvnet.hk2.annotations.InhabitantAnnotation;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.MultiMap;
@@ -86,42 +88,84 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
 
     public boolean isContract(AnnotatedElement type) {
         // must be annotated with @Contract
+        if (null == type) return false;
         return type.getAnnotation(Contract.class.getName())!=null;
     }
 
-    public void findClassContracts(ClassModel cm, List<InterfaceModel> interfaces) {
+    public void findClassContracts(ClassModel cm, List<String> interfaces, List<String> annotationTypeInterfaces) {
         for (InterfaceModel im : cm.getInterfaces()) {
             if (isContract(im)) {
-                interfaces.add(im);
+                interfaces.add(im.getName());
             }
         }
-        findContractsFromAnnotations(cm, interfaces);
+        findContractsFromAnnotations(cm, interfaces, annotationTypeInterfaces);
     }
 
-    public void findInterfaceContracts(InterfaceModel im, List<InterfaceModel> interfaces) {
+    public void findInterfaceContracts(InterfaceModel im, List<String> interfaces, List<String> annInterfaces) {
         if (im.getParent()!=null) {
-            findInterfaceContracts(im.getParent(), interfaces);
+            findInterfaceContracts(im.getParent(), interfaces, annInterfaces);
         }
         if (isContract(im)) {
-            interfaces.add(im);
-        }
-        findContractsFromAnnotations(im, interfaces);
-    }
-
-    public void findContractsFromAnnotations(AnnotatedElement ae, List<InterfaceModel> interfaces) {
-
-        for (AnnotationModel am : ae.getAnnotations()) {
-            findInterfaceContracts(am.getType(), interfaces);
-        }
-    }
-
-    public void findContracts(ClassModel cm, List<InterfaceModel> interfaces) {
-        for (InterfaceModel im : cm.getInterfaces()) {
-            if (isContract(im)) {
-                interfaces.add(im);
+            if (im instanceof AnnotationType) {
+              String name = im.getName();
+              if (!name.equals(FactoryFor.class.getName())) {
+                annInterfaces.add(name);
+              }
+            } else {
+              interfaces.add(im.getName());
             }
         }
-        findContractsFromAnnotations(cm, interfaces);
+        findContractsFromAnnotations(im, interfaces, annInterfaces);
+    }
+
+    public void findContractsFromAnnotations(AnnotatedElement ae, List<String> interfaces, List<String> annInterfaces) {
+        for (AnnotationModel am : ae.getAnnotations()) {
+            AnnotationType at = am.getType();
+            findInterfaceContracts(at, interfaces, annInterfaces);
+            
+            String name = at.getName();
+            if (name.equals(ContractProvided.class.getName())) {
+              String val = scrub(am.getValues().get("value"));
+              if (null != val) {
+                interfaces.add(val);
+              }
+            } else if (name.equals(FactoryFor.class.getName())) {
+              String val = scrub(am.getValues().get("value"));
+              if (null != val) {
+                annInterfaces.add(name + ":" + val);
+              }
+            }
+        }
+    }
+    
+    public static String scrub(Object obj) {
+        if (null == obj) {
+            return null;
+        }
+        if (obj instanceof String) {
+          return (String)obj;
+        }
+        String mangled = obj.toString();
+        if (mangled.startsWith("L") && mangled.endsWith(";")) {
+            mangled = mangled.substring(1, mangled.length()-1);
+        }
+        return mangled.replace("/", ".");
+    }
+
+    public void findContracts(ClassModel cm, List<String> interfaces, List<String> annotationTypeInterfaces) {
+        for (InterfaceModel im : cm.getInterfaces()) {
+            if (isContract(im)) {
+                interfaces.add(im.getName());
+            }
+        }
+
+        findContractsFromAnnotations(cm, interfaces, annotationTypeInterfaces);
+
+        // walk parent chain too
+        ClassModel parent = cm.getParent();
+        if (null != parent) {
+          findContracts(parent, interfaces, annotationTypeInterfaces);
+        }
     }
 
     public Iterator<InhabitantParser> iterator() {
@@ -133,29 +177,37 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
             public InhabitantParser next() {
                 final AnnotatedElement ae = current.next();
                 InhabitantParser ip = new InhabitantParser() {
+                    @Override
                     public Iterable<String> getIndexes() {
                         if (ae instanceof ClassModel) {
                             final ClassModel cm = (ClassModel) ae;
 
-                            final List<InterfaceModel> implInterfaces = new ArrayList<InterfaceModel>();
-                            findContracts(cm, implInterfaces);
-
-                            final Iterator<InterfaceModel> interfaces = implInterfaces.iterator();
+                            final List<String> implInterfaces = new ArrayList<String>();
+                            final List<String> implAnnotationInterfaces = new ArrayList<String>();
+                            findContracts(cm, implInterfaces, implAnnotationInterfaces);
+                            
+                            final Iterator<String> interfaces = implInterfaces.iterator();
+                            final Iterator<String> annInterfaces = implAnnotationInterfaces.iterator();
                             return new Iterable<String>() {
                                 public Iterator<String> iterator() {
                                     return new Iterator<String>() {
                                         public boolean hasNext() {
-                                            return interfaces.hasNext();
+                                            return interfaces.hasNext() || annInterfaces.hasNext();
                                         }
 
                                         public String next() {
-                                            final AnnotationModel am = cm.getAnnotation(Service.class.getName());
-                                            String contract = interfaces.next().getName();
-                                            String name = (String) am.getValues().get("name");
-                                            if (name==null || name.isEmpty()) {
-                                                return contract;
+                                            if (interfaces.hasNext()) {
+                                              final AnnotationModel am = cm.getAnnotation(Service.class.getName());
+                                              String contract = interfaces.next();
+                                              String name = (String) am.getValues().get("name");
+                                              if (name==null || name.isEmpty()) {
+                                                  return contract;
+                                              } else {
+                                                  return contract+":"+name;
+                                              }
                                             } else {
-                                                return contract+":"+name;
+                                              String contract = annInterfaces.next();
+                                              return contract;
                                             }
                                         }
 
@@ -171,24 +223,44 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
                         return (new ArrayList<String>());
                     }
 
+                    @Override
                     public String getImplName() {
                         return ae.getName();
                     }
 
+                    @Override
                     public void setImplName(String name) {
                         throw new UnsupportedOperationException();
                     }
 
+                    @Override
                     public String getLine() {
-                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                        throw new UnsupportedOperationException();
                     }
 
+                    @Override
                     public void rewind() {
-                        //To change body of implemented methods use File | Settings | File Templates.
+                      // NOP
                     }
 
+                    @Override
                     public MultiMap<String, String> getMetaData() {
-                        return new MultiMap<String, String>();
+                        MultiMap<String, String> mm = new MultiMap<String, String>();
+                        final AnnotationModel am = ae.getAnnotation(Service.class.getName());
+                        if (null != am) {
+                          Object metaObj = am.getValues().get("metadata");
+                          if (null != metaObj) {
+                            String meta = metaObj.toString();
+                            String [] split = meta.split(",");
+                            for (String entry : split) {
+                              String [] split2 = entry.split("=");
+                              if (2 == split2.length) {
+                                mm.add(split2[0], split2[1]);
+                              }
+                            }
+                          }
+                        }
+                        return mm;
                     }
                 };
                 if (!current.hasNext()) {
@@ -197,6 +269,7 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
                 return ip;
             }
 
+            @Override
             public void remove() {
                 throw new UnsupportedOperationException();
             }

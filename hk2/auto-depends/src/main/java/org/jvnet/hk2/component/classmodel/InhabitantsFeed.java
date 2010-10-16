@@ -38,6 +38,7 @@ package org.jvnet.hk2.component.classmodel;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -110,9 +111,18 @@ public abstract class InhabitantsFeed {
         }
         logger.log(Level.FINER, "finished introspecting");
 
-        for (IntrospectionScanner s : ip.habitat.getAllByContract(IntrospectionScanner.class)) {
+        for (IntrospectionScanner s : getIntrospectionScanners()) {
             logger.log(Level.FINE, "parsing with supplemental scanner {0}", s);
             s.parse(context, classLoaderHolder);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Collection<IntrospectionScanner> getIntrospectionScanners() {
+      if (null == ip.habitat) {
+        return Collections.EMPTY_LIST;
+      }
+      
+      return ip.habitat.getAllByContract(IntrospectionScanner.class);
     }
 }

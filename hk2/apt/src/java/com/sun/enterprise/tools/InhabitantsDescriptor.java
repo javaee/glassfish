@@ -38,6 +38,7 @@ package com.sun.enterprise.tools;
 
 import static com.sun.hk2.component.InhabitantsFile.INDEX_KEY;
 
+import com.sun.hk2.component.InhabitantFileBasedParser;
 import com.sun.hk2.component.InhabitantParser;
 import com.sun.hk2.component.InhabitantsFile;
 import com.sun.hk2.component.InhabitantsScanner;
@@ -49,14 +50,20 @@ import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.jvnet.hk2.component.MultiMap;
 
 /**
  * Inhabitants descriptor as a map from the class name to its line.
  * 
+ * @see InhabitantFileBasedParser
+ * 
  * @author Kohsuke Kawaguchi
  * @author Jeff Trent
  */
+@SuppressWarnings("serial")
 public class InhabitantsDescriptor extends HashMap<String, String> {
   private boolean dirty = false;
   private boolean dateEnabled = true;
@@ -87,40 +94,56 @@ public class InhabitantsDescriptor extends HashMap<String, String> {
       put(kvpp.getImplName(), kvpp.getLine());
   }
 
+  @Override
   public String put(String key, String value) {
     dirty = true;
     return super.put(key, value);
   }
 
+  @SuppressWarnings("unchecked")
   public String putAll(String service,
       Collection<String> contracts,
       Collection<String> annotations,
       String name,
-      Map<String, String> meta) {
+      Object metaObj) {
     StringBuilder buf = new StringBuilder();
     buf.append(InhabitantsFile.CLASS_KEY).append('=').append(service);
     
-    for (String contract : contracts) {
-      buf.append(",").append(INDEX_KEY).append("=").append(contract);
-      if (null != name) {
-        buf.append(":").append(name);
+    if (null != contracts) {
+      for (String contract : contracts) {
+        buf.append(",").append(INDEX_KEY).append("=").append(contract);
+        if (null != name) {
+          buf.append(":").append(name);
+        }
       }
     }
-
-    for (String contract : annotations) {
-      buf.append(",").append(INDEX_KEY).append("=").append(contract);
+    
+    if (null != annotations) {
+      for (String contract : annotations) {
+        buf.append(",").append(INDEX_KEY).append("=").append(contract);
+      }
     }
     
-    if (null != meta) {
+    if (metaObj instanceof Map) {
+      Map<String, String> meta = (Map<String, String>)metaObj;
       for (Map.Entry<String, String> entry : meta.entrySet()) {
-        buf.append(",").append(entry.getKey()).append("=").append(
-            entry.getValue());
+        buf.append(",").append(entry.getKey()).append("=").append(entry.getValue());
+      }
+    } else if (metaObj instanceof MultiMap) {
+      MultiMap<String, String> meta = (MultiMap<String, String>)metaObj;
+      for (Map.Entry<String, List<String>> entry : meta.entrySet()) {
+        String key = entry.getKey();
+        List<String> vals = entry.getValue();
+        for (String val : vals) {
+          buf.append(",").append(key).append("=").append(val);
+        }
       }
     }
     
     return put(service, buf.toString());
   }
 
+  @Override
   public String remove(Object key) {
     dirty = true;
     return super.remove(key);
@@ -149,6 +172,7 @@ public class InhabitantsDescriptor extends HashMap<String, String> {
     }
   }
 
+  @SuppressWarnings("deprecation")
   public void write(PrintWriter w) {
     if (dateEnabled) {
       w.println("# generated on " + new Date().toGMTString());

@@ -40,6 +40,8 @@ import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.PreDestroy;
 
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A particular instanciation of a {@link org.jvnet.hk2.component.Scope}.
@@ -52,6 +54,8 @@ import java.util.Map;
  * @see org.jvnet.hk2.component.Scope#current()
  */
 public final class ScopeInstance implements PreDestroy {
+    private static final Logger logger = Logger.getLogger(ScopeInstance.class.getName());
+    
     /**
      * Human readable scope instance name for debug assistance. 
      */
@@ -84,8 +88,10 @@ public final class ScopeInstance implements PreDestroy {
     public void release() {
         synchronized(backend) {
             for (Object o : backend.values()) {
-                if(o instanceof PreDestroy)
+                if(o instanceof PreDestroy) {
+                    logger.log(Level.FINER, "calling PreDestroy on {0}", o);
                     ((PreDestroy)o).preDestroy();
+                }
             }
             backend.clear();
         }

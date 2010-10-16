@@ -38,7 +38,7 @@ package org.jvnet.hk2.component;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -75,7 +75,7 @@ public class MultiMap<K,V> implements Serializable {
      * Creates an empty multi-map with default concurrency controls
      */
     public MultiMap() {
-       this(new HashMap<K, List<V>>(), Habitat.CONCURRENCY_CONTROLS_DEFAULT);
+       this(new LinkedHashMap<K, List<V>>(), Habitat.CONCURRENCY_CONTROLS_DEFAULT);
     }
 
     /**
@@ -92,7 +92,7 @@ public class MultiMap<K,V> implements Serializable {
      * Creates an empty multi-map with option to use concurrency controls
      */
     MultiMap(boolean concurrencyControls) {
-      this(new HashMap<K, List<V>>(), concurrencyControls);
+      this(new LinkedHashMap<K, List<V>>(), concurrencyControls);
     }
     
     

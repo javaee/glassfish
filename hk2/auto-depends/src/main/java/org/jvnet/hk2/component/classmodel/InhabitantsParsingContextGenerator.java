@@ -36,21 +36,13 @@
  */
 package org.jvnet.hk2.component.classmodel;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,8 +53,6 @@ import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 
-//import com.sun.hk2.component.Holder;
-import com.sun.hk2.component.InhabitantsFile;
 import com.sun.hk2.component.InhabitantsScanner;
 
 /**
@@ -95,8 +85,7 @@ public abstract class InhabitantsParsingContextGenerator {
      * @return an empty context InhabitantsGenerator
      */
     public static InhabitantsParsingContextGenerator create(Habitat h) {
-        return new InhabitantsParsingContextGenerator() {
-        };
+        return new InhabitantsParsingContextGenerator() {};
     }
 
     protected InhabitantsParsingContextGenerator() {
@@ -140,7 +129,6 @@ public abstract class InhabitantsParsingContextGenerator {
         }
     }
 
-
     /**
      * Retrieves the parsing context that can be used for model generation elsewhere.
      *
@@ -170,37 +158,10 @@ public abstract class InhabitantsParsingContextGenerator {
         }
     }
 
+    /**
+     * Eventually we can perform optimizations here instead of a pass-thru to parseAlways.
+     */
     public void parse(final File f) throws IOException {
-        Manifest manifest = null;
-        if (f.isDirectory()) {
-            File manifestFile = new File(f, JarFile.MANIFEST_NAME);
-            if (manifestFile.exists()) {
-                InputStream is = new BufferedInputStream(new FileInputStream(manifestFile));
-                try {
-                    manifest = new Manifest(is);
-                } finally {
-                    is.close();
-                }
-            }
-        } else {
-            JarFile jar = new JarFile(f);
-            manifest = jar.getManifest();
-            jar.close();
-        }
-
-        if (manifest != null) {
-            // check first for Bundle-SymbolicName: com.sun.enterprise.auto-depends
-            String bundleName = manifest.getMainAttributes().getValue("Bundle-SymbolicName");
-            if (bundleName != null && !bundleName.equals("com.sun.enterprise.auto-depends"))
-            {
-                // if this is not me, it must be importing me !
-                String imports = manifest.getMainAttributes().getValue("Import-Package");
-                if (imports == null || imports.indexOf("hk2") == -1) {
-                    logger.log(Level.FINER, "ignoring service-less {0}", f.getName());
-                    return;
-                }
-            }
-        }
         parseAlways(parser, f);
     }
 

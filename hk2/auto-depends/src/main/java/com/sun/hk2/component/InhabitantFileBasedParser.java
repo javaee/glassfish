@@ -16,7 +16,7 @@ import static com.sun.hk2.component.InhabitantsFile.INDEX_KEY;
  * line : class=class-value, (key=value ,?)+
  * key : index | targetType | any
  * class-value : {@link Class#getName()} name of the service implementation
- * index : index-name:name(,index)*
+ * index : index-name[:name](,index)*
  * index-name : {@link Class#getName()} class name of the contract
  * name: string identifying the service name
  * targeType : class-type (, method-name)?
@@ -26,6 +26,7 @@ import static com.sun.hk2.component.InhabitantsFile.INDEX_KEY;
  * some-key : [a-z]+
  * some-value : [a-z]+
  *
+ * "Any" above contributes to the metadata portion of the inhabitant.
  */
 public class InhabitantFileBasedParser implements InhabitantParser {
     final MultiMap<String,String> metadata;
