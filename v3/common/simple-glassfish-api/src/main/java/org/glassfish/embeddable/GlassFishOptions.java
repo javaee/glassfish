@@ -127,4 +127,14 @@ public class GlassFishOptions {
         gfProperties.setProperty(GlassFishConstants.CONFIG_FILE_URI_PROP_NAME, configFileUri);
         return this;
     }
+
+    public boolean getConfigFileReadOnly() {
+        return Boolean.valueOf(gfProperties.getProperty(
+                GlassFishConstants.CONFIG_FILE_READ_ONLY, "true"));
+    }
+
+    public void setConfigFileReadOnly(boolean readOnly) {
+        gfProperties.setProperty(GlassFishConstants.CONFIG_FILE_READ_ONLY,
+                Boolean.toString(readOnly));
+    }
 }

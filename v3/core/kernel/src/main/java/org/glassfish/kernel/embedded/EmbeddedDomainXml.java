@@ -40,59 +40,52 @@
 
 package org.glassfish.kernel.embedded;
 
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.glassfish.server.ServerEnvironmentImpl;
-import org.glassfish.api.embedded.Server;
-import org.glassfish.api.embedded.EmbeddedFileSystem;
-
-import java.net.URL;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.v3.server.GFDomainXml;
-import java .io.File;
+import org.glassfish.embeddable.GlassFishConstants;
+import org.glassfish.server.ServerEnvironmentImpl;
+import org.jvnet.hk2.annotations.Inject;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 
 /**
  * Embedded domain.xml, can use externally pointed domain.xml
+ *
+ * @author Jerome Dochez
+ * @author bhavanishankar@dev.java.net
  */
 public class EmbeddedDomainXml extends GFDomainXml {
 
-    @Inject(optional=true)
-    Server server=null;
-
     @Inject
-    Logger logger;
+    StartupContext startupContext;
 
     @Override
     protected URL getDomainXml(ServerEnvironmentImpl env) throws IOException {
-        if (server!=null) {
-            EmbeddedFileSystem fs = server.getFileSystem();
-            if (fs != null) {
-                if (fs.configFile != null) {
-                    logger.log(Level.FINE, "Using configuration file at " + server.getFileSystem().configFile);
-                    return server.getFileSystem().configFile.toURI().toURL();
-                }
-                File f = new File(fs.instanceRoot, "config");
-                f = new File(f, "domain.xml");
-                if (f.exists()) {
-                    logger.log(Level.FINE, "Using configuration file at " + f);
-                    return f.toURL();
-                }
-            }
-            return getClass().getClassLoader().getResource("org/glassfish/embed/domain.xml");
-        } else {
-            return super.getDomainXml(env);
+        return getDomainXml(startupContext);
+    }
+
+    static URL getDomainXml(StartupContext startupContext) throws IOException {
+        String configFileURI = startupContext.getArguments().getProperty(
+                GlassFishConstants.CONFIG_FILE_URI_PROP_NAME);
+        if (configFileURI != null) { // user specified domain.xml
+            return URI.create(configFileURI).toURL();
         }
+        String instanceRoot = startupContext.getArguments().getProperty(
+                GlassFishConstants.INSTANCE_ROOT_PROP_NAME);
+        File domainXml = new File(instanceRoot, "config/domain.xml");
+        if (domainXml.exists()) { // domain/config/domain.xml, if exists.
+            return domainXml.toURI().toURL();
+        }
+        return EmbeddedDomainXml.class.getClassLoader().getResource(
+                "org/glassfish/embed/domain.xml");
     }
 
     @Override
     protected void upgrade() {
         // for now, we don't upgrade in embedded mode...
-        if (server==null) {
-            super.upgrade();
-        }
     }
 
 }

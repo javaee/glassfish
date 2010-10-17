@@ -50,6 +50,7 @@ public class GlassFishConstants {
     public final static String INSTANCE_ROOT_PROP_NAME = "com.sun.aas.instanceRoot";
     public static final String INSTANCE_ROOT_URI_PROP_NAME = "com.sun.aas.instanceRootURI";
     public static final String CONFIG_FILE_URI_PROP_NAME = "com.sun.aas.configFileURI";
+    public static final String CONFIG_FILE_READ_ONLY = "org.glassfish.embeddable.configFileReadOnly";
 
     //added temporarily
     public static final String HTTP_PORT = "http.port";

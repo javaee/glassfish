@@ -40,38 +40,71 @@
 
 package org.glassfish.kernel.embedded;
 
+import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.server.DomainXmlPersistence;
+import org.glassfish.embeddable.GlassFishConstants;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.config.DomDocument;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.logging.Logger;
-
-import org.jvnet.hk2.annotations.*;
-import org.glassfish.api.embedded.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 /**
  * Configuration file persistence handler for embedded
- * 
+ *
  * @author Jerome Dochez
+ * @author bhavanishankar@dev.java.net
  */
 public class EmbeddedDomainPersistence extends DomainXmlPersistence {
 
-    @Inject(optional=true)
-    EmbeddedFileSystem efs;
+    @Inject
+    StartupContext startupContext;
+
+    final static LocalStringManagerImpl localStrings =
+            new LocalStringManagerImpl(DomainXmlPersistence.class);
 
     /**
      * Returns the destination file for saving the embedded configuration file,
      * when set.
+     *
      * @return the embedded configuration file if set in read-write mode.
      * @throws IOException
      */
     @Override
     protected File getDestination() throws IOException {
-        if (efs!=null && !efs.readOnlyConfigFile) {
-            return efs.configFile;
+        String configFileReadOnly = startupContext.getArguments().getProperty(
+                GlassFishConstants.CONFIG_FILE_READ_ONLY);
+        if (configFileReadOnly != null &&
+                !Boolean.valueOf(configFileReadOnly).booleanValue()) {
+            try {
+                URI uri = EmbeddedDomainXml.getDomainXml(startupContext).toURI();
+                if ("file".equalsIgnoreCase(uri.getScheme())) {
+                    return new File(uri);
+                } else {
+                    // TODO :: localize the message.
+                    throw new IOException("configurationFile is writable but is not a file");
+                }
+            } catch (URISyntaxException ex) {
+                throw new IOException(ex);
+            }
         }
-        return null;
+        return null; // Don't persist domain.xml anywhere.
+    }
+
+    @Override
+    public void save(DomDocument doc) throws IOException {
+        File destination = getDestination();
+        if (destination == null) {
+            String msg = localStrings.getLocalString("NoLocation",
+                    "domain.xml cannot be persisted, null destination");
+            logger.finer(msg);
+            return;
+        }
+        super.save(doc);
     }
 
     @Override
