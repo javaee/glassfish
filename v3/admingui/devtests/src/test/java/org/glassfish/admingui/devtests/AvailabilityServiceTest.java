@@ -57,9 +57,6 @@ public class AvailabilityServiceTest extends BaseSeleniumTestClass {
         final String haAgentPort = Integer.toString(generateRandomNumber(65535));
         clickAndWait("treeForm:tree:configurations:default-config:default-config_turner:default-config_turner_image", TRIGGER_CONFIGURATION);
         clickAndWait("treeForm:tree:configurations:default-config:availabilityService:availabilityService_link", TRIGGER_AVAILABILTY_SERVICE);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:HAAgentPortProp:HAAgentPort", haAgentPort);
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_SUCCESS_MSG);
-        assertEquals(haAgentPort, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:HAAgentPortProp:HAAgentPort"));
 
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
         selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "a");
@@ -71,13 +68,9 @@ public class AvailabilityServiceTest extends BaseSeleniumTestClass {
 
     @Test
     public void testWebContainerAvailability() {
-        final String httpSessionStore = "jdbc/hastore" + Integer.toString(generateRandomNumber(100));
         clickAndWait("treeForm:tree:configurations:default-config:default-config_turner:default-config_turner_image", TRIGGER_CONFIGURATION);
         clickAndWait("treeForm:tree:configurations:default-config:availabilityService:availabilityService_link", TRIGGER_AVAILABILTY_SERVICE);
         clickAndWait("propertyForm:availabilityTabs:webAvailabilityTab", TRIGGER_WEB_AVAILABILTY);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:HttpSessionStoreProp:HttpSessionStore", httpSessionStore);
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_SUCCESS_MSG);
-        assertEquals(httpSessionStore, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:HttpSessionStoreProp:HttpSessionStore"));
 
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
         selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "a");
@@ -89,13 +82,9 @@ public class AvailabilityServiceTest extends BaseSeleniumTestClass {
 
     @Test
     public void testEjbContainerAvailability() {
-        final String httpSessionStore = "jdbc/hastore" + Integer.toString(generateRandomNumber(100));
         clickAndWait("treeForm:tree:configurations:default-config:default-config_turner:default-config_turner_image", TRIGGER_CONFIGURATION);
         clickAndWait("treeForm:tree:configurations:default-config:availabilityService:availabilityService_link", TRIGGER_AVAILABILTY_SERVICE);
         clickAndWait("propertyForm:availabilityTabs:ejbAvailabilityTab", TRIGGER_EJB_AVAILABILTY);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:SFSBStoreNameProp:SFSBStoreName", httpSessionStore);
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_SUCCESS_MSG);
-        assertEquals(httpSessionStore, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:SFSBStoreNameProp:SFSBStoreName"));
 
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
         selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "a");
@@ -103,9 +92,6 @@ public class AvailabilityServiceTest extends BaseSeleniumTestClass {
         selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "c");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_SUCCESS_MSG);
         assertTableRowCount("propertyForm:basicTable", count);
-
-        clickAndWait("propertyForm:propertyContentPage:loadDefaultsButton", TRIGGER_EJB_AVAILABILTY);
-        assertEquals("ha", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:HAPersistenceTypeProp:HAPersistenceType"));
     }
 
     @Test
