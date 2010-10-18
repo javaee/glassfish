@@ -757,7 +757,7 @@ public abstract class GFLauncher {
         // Process B absolutely positively does exit whether or not this code runs...
         // don't run this unless we have to because our "..." messages disappear.
 
-        if (System.console() == null && OS.isWindows()) {
+        if (System.console() == null && OS.isWindows() && !info.isVerbose()) {
             System.out.println(strings.get("ssh"));
             try {
                 System.in.close();
