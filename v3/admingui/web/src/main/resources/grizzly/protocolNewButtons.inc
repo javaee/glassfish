@@ -53,8 +53,12 @@
                         convertToFalse={"securityEnabled"},
                         result => $attribute{newProxy});
 
+                setAttribute(key="emptyStr" value="");
                 if("#{pageSession.skipAttrsList}=#{null}") {
                     createList(size="0", result="#{pageSession.skipAttrsList}");
+                }
+                if ("#{pageSession.valueMap['redirectPort']} = #{emptyStr}") {
+                    listAdd(list="#{pageSession.skipAttrsList}" value="redirectPort");
                 }
                 if ("#{pageSession.valueMap['redirectPort']} = #{null}") {
                     listAdd(list="#{pageSession.skipAttrsList}" value="redirectPort");
