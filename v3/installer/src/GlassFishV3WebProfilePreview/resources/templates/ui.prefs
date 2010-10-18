@@ -427,7 +427,8 @@ ALTERNATE_JDK=Alternate Java(TM) SDK Location
 
 UPDATETOOL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt; The Update Tool periodically checks for GlassFish Server updates; enabling&lt;BR&gt;you to stay up-to-date with the latest builds.&lt;BODY&gt;&lt;HTML&gt;
 
-UPDATE_TOOL_PRIVACY_NOTICE=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt; The Update Tool periodically checks for available updates and collects &lt;BR&gt; some system data. For more information, see &lt;a href=http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3&gt; GlassFish Usage Metrics&lt;/a&gt; &lt;BR&gt;page, at http://wikis.sun.com/display/GlassFish/UsageMetricsV3.&lt;BODY&gt;&lt;HTML&gt;
+
+UPDATE_TOOL_PRIVACY_NOTICE=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt; The Update Tool periodically checks for available updates and collects &lt;BR&gt; some system data. For more information, see &lt;a href=http://wikis.sun.com/display/glassfish/UsageMetricsV3&gt; GlassFish Usage Metrics&lt;/a&gt; &lt;BR&gt;page, at http://wikis.sun.com/display/GlassFish/UsageMetricsV3.&lt;BODY&gt;&lt;HTML&gt;
 
 
 ADMINISTRATION_SERVICE_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Provide the name of the Windows Service or a Solaris SMF service.&lt;BODY&gt;&lt;HTML&gt;
