@@ -155,7 +155,7 @@ public final class CreateServiceCommand extends CLICommand {
             // Why the messiness?  We don't want to talk about the help
             // file inside the help file thus the complications below...
             String help = service.getSuccessMessage();
-            String tellUserAboutHelp = strings.get("create.service.runtimeHelp", help);
+            String tellUserAboutHelp = strings.get("create.service.runtimeHelp", help, dirs.getServerDir());
             logger.info(tellUserAboutHelp);
             service.writeReadmeFile(help);
 
