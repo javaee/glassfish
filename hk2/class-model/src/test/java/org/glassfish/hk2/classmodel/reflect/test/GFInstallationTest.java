@@ -64,6 +64,7 @@ public class GFInstallationTest {
     @Test
     public void foo() throws IOException {
         List<File> files = new ArrayList<File>();
+        long startTime = System.currentTimeMillis();
         File gf = new File("/Users/dochez/glassfish/modules");
         Assert.assertTrue(gf.exists());
         long start = System.currentTimeMillis();
@@ -87,6 +88,11 @@ public class GFInstallationTest {
                 } catch (IOException e) {
                     return true;
                 }
+                String bundleName = manifest.getMainAttributes().getValue("Bundle-SymbolicName");
+                if (bundleName.contains("auto-depends")) {
+                    return true;
+                }
+                // if it is not auto-depends, must import it...
                 String imports = manifest.getMainAttributes().getValue("Import-Package");
                 if (imports!=null && imports.indexOf("hk2")==-1) {
                     //System.out.println("Ignoring service-less " + adapter.getName());
@@ -137,9 +143,10 @@ public class GFInstallationTest {
         System.out.println("Found " + files.size() + " files in " + (System.currentTimeMillis() - start));
         for (Type t : context.getTypes().getAllTypes()) {
             if (t instanceof AnnotationTypeImpl) {
-                System.out.println("Found annotation : " + ((AnnotationTypeImpl) t).name);
+                System.out.println("Found annotation : " + ((AnnotationTypeImpl) t).name + " in " + t.getDefiningURIs());
             }
         }
+        System.out.println("parsed " + files.size() + " in " + (System.currentTimeMillis() - startTime) + " ms");
         /*
         AnnotationTypeImpl service = TypesImpl.all.annotations.getElement("Lorg/jvnet/hk2/annotations/Service;");
         for (RefType type : service.allAnnotatedTypes()) {
@@ -147,6 +154,15 @@ public class GFInstallationTest {
         }
         */
         
+    }
+
+    public static void main(String[] args) {
+        try {
+            (new GFInstallationTest()).foo();
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
     }
 
 }

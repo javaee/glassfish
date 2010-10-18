@@ -49,8 +49,8 @@ public abstract class ExtensibleTypeImpl<T extends ExtensibleType> extends TypeI
     final TypeProxy parent;
     final Set<TypeProxy<InterfaceModel>> implementedIntf = Collections.synchronizedSet(new HashSet<TypeProxy<InterfaceModel>>());
     
-    public ExtensibleTypeImpl(String name, TypeProxy<Type> sink, URI definingURI, TypeProxy parent) {
-        super(name, sink, definingURI);
+    public ExtensibleTypeImpl(String name, TypeProxy<Type> sink, TypeProxy parent) {
+        super(name, sink);
         this.parent =  parent;
     }
 

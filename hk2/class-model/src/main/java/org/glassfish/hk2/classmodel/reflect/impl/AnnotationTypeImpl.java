@@ -48,8 +48,8 @@ public class AnnotationTypeImpl extends InterfaceModelImpl implements Annotation
 
     private final Set<AnnotatedElement> references = new HashSet<AnnotatedElement>();
 
-    public AnnotationTypeImpl(String name, TypeProxy<Type> sink, URI definingURI) {
-        super(name, sink, definingURI, null);
+    public AnnotationTypeImpl(String name, TypeProxy<Type> sink) {
+        super(name, sink, null);
     }
 
     public Collection<AnnotatedElement> allAnnotatedTypes() {
