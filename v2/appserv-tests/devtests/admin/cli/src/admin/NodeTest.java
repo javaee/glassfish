@@ -57,7 +57,7 @@ public class NodeTest extends AdminBaseDevTest {
     private String thisHost = null;
     private String thisUser = null;
     private String localHost = "localhost";
-    private String glassfishHome = null;
+    private File productInstallRoot = null;
 
     // This table maps command line options to property names. The property
     // name in the table will be precedded with nodes.node.<nodename>.
@@ -87,11 +87,14 @@ public class NodeTest extends AdminBaseDevTest {
             thisHost = "localhost";
         }
 
+        File glassfishHome = null;
         try {
-            glassfishHome = getGlassFishHome().getCanonicalPath();
+            glassfishHome = getGlassFishHome().getCanonicalFile();
         } catch (IOException e) {
-            glassfishHome = getGlassFishHome().getAbsolutePath();
+            glassfishHome = getGlassFishHome().getAbsoluteFile();
         }
+
+        productInstallRoot = glassfishHome.getParentFile();
 
         thisUser = System.getProperty("user.name");
 
@@ -137,9 +140,9 @@ public class NodeTest extends AdminBaseDevTest {
         // since for this test we just care that the values we provide are
         // reflected in the configurtion.
         String[][] testTable = {
-            {"--nodehost", thisHost, "--installdir", glassfishHome,
+            {"--nodehost", thisHost, "--installdir", productInstallRoot.getAbsolutePath(),
               "--force", "true"},
-            {"--nodehost", thisHost, "--installdir", glassfishHome,
+            {"--nodehost", thisHost, "--installdir", productInstallRoot.getAbsolutePath(),
               "--sshuser", thisUser,
               "--sshkeyfile", "/any/old/path",
               "--sshport", "22",
