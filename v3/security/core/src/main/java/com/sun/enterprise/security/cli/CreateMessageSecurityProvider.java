@@ -38,7 +38,7 @@
  * holder.
  */
 
-package com.sun.enterprise.v3.admin;
+package com.sun.enterprise.security.cli;
 
 import org.jvnet.hk2.config.types.Property;
 import com.sun.enterprise.config.serverbeans.RequestPolicy;
@@ -308,10 +308,10 @@ public class CreateMessageSecurityProvider implements AdminCommand {
                 return;
             }        
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-            report.setMessage(localStrings.getLocalString(
+           /* report.setMessage(localStrings.getLocalString(
                 "create.message.security.provider.success",
                 "Creation of message security provider named {0} completed " +
-                "successfully", providerId));                 
+                "successfully", providerId));  */
         }        
     }       
     

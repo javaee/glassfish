@@ -97,7 +97,7 @@ public class ListPasswordAlias implements AdminCommand {
     private MasterPassword masterPasswordHelper;
 
     //TODO: not sure what to do with --target here
-    @Param(name = "target", optional = true, defaultValue =
+    @Param(name = "target", primary=true, optional = true, defaultValue =
     SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     private String target;
 

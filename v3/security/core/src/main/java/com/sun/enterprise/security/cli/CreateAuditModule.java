@@ -178,8 +178,8 @@ public class CreateAuditModule implements AdminCommand {
             return;
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        report.setMessage(localStrings.getLocalString("create.audit.module.success",
-            "Creation of AuditModule {0} completed successfully", auditModuleName));        
+        //report.setMessage(localStrings.getLocalString("create.audit.module.success",
+        //    "Creation of AuditModule {0} completed successfully", auditModuleName));
     }       
     
     private void populateAuditModuleElement(AuditModule newAuditModule) 

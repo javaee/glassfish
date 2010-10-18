@@ -98,7 +98,7 @@ public class ListFileUser implements AdminCommand {
     @Param(name="authrealmname", optional=true)
     private String authRealmName;
     
-    @Param(name = "target", optional = true, defaultValue =
+    @Param(name = "target", primary=true, optional = true, defaultValue =
     SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     private String target;
 

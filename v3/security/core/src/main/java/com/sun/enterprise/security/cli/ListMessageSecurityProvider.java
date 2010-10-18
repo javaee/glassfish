@@ -38,7 +38,7 @@
  * holder.
  */
 
-package com.sun.enterprise.v3.admin;
+package com.sun.enterprise.security.cli;
 
 import java.util.List;
 
@@ -86,7 +86,7 @@ public class ListMessageSecurityProvider implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(ListMessageSecurityProvider.class);    
 
-    @Param(name = "target", optional = true, defaultValue =
+    @Param(name = "target", primary=true, optional = true, defaultValue =
         SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     private String target;
 

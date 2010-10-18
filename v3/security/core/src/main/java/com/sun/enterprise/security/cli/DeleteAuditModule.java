@@ -157,8 +157,8 @@ public class DeleteAuditModule implements AdminCommand {
             report.setFailureCause(e);
         }
 
-        report.setMessage(localStrings.getLocalString("delete.audit.module.success", 
-            "Deletion of Audit Module {0} completed successfully", auditModuleName));
+        /*report.setMessage(localStrings.getLocalString("delete.audit.module.success",
+            "Deletion of Audit Module {0} completed successfully", auditModuleName));*/
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 }

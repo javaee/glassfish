@@ -70,7 +70,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 /**
  *Usage: list-jacc-providers
  *         [--help] [--user admin_user] [--passwordfile file_name]
- *         [ --target  target_name]
+ *         [target(Default server)]
  *
  */
 @Service(name="list-jacc-providers")
@@ -83,7 +83,7 @@ public class ListJaccProviders implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(DeleteJaccProvider.class);
 
-    @Param(name = "target", optional = true, defaultValue =
+    @Param(name = "target", primary=true, optional = true, defaultValue =
     SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     private String target;
 

@@ -38,7 +38,7 @@
  * holder.
  */
 
-package com.sun.enterprise.v3.admin;
+package com.sun.enterprise.security.cli;
 
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
@@ -187,10 +187,10 @@ public class DeleteMessageSecurityProvider implements AdminCommand {
                     report.setFailureCause(e);
                     return;
                 }
-                report.setMessage(localStrings.getLocalString(
+                /*report.setMessage(localStrings.getLocalString(
                     "delete.message.security.provider.success", 
                     "Deletion of message security provider {0} completed " +
-                    "successfully", providerId));
+                    "successfully", providerId));*/
                 report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
                 return;                
             }

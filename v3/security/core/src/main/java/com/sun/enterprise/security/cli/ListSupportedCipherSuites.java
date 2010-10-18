@@ -77,9 +77,12 @@ public class ListSupportedCipherSuites implements AdminCommand {
     @Inject
     SSLUtils sslutils;
 
-    @Param(name = "target", optional = true, defaultValue =
+    /*@Param(name = "target", optional = true, defaultValue =
     SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    private String target;*/
+    @Param(optional = true, primary = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     private String target;
+
 
     @Override
     public void execute(AdminCommandContext context) {
@@ -87,8 +90,10 @@ public class ListSupportedCipherSuites implements AdminCommand {
         String[] cipherSuites = sslutils.getSupportedCipherSuites();
 
         for (String cipherSuite : cipherSuites) {
-            ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-            part.setMessage(cipherSuite);
+            if (!cipherSuite.contains("_KRB5_")) {
+                ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+                part.setMessage(cipherSuite);
+            }
         }
 
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);

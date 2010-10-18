@@ -130,9 +130,9 @@ public class DeletePasswordAlias implements AdminCommand {
             return;
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        report.setMessage(localStrings.getLocalString(
+        /*report.setMessage(localStrings.getLocalString(
             "delete.password.alias.success",
             "Password alias for the alias {0} deleted successfully",
-            aliasName));
+            aliasName));*/
     }
 }

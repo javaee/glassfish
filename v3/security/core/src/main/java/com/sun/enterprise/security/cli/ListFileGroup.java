@@ -96,7 +96,7 @@ public class ListFileGroup implements AdminCommand {
     @Param(name="name", optional=true)
     private String fileUserName;
 
-    @Param(name = "target", optional = true, defaultValue =
+    @Param(name = "target", primary=true, optional = true, defaultValue =
     SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     private String target;
 

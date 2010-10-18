@@ -89,7 +89,7 @@ public class ListAuthRealm implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(ListAuthRealm.class);    
 
-    @Param(name = "target", optional = true, defaultValue =
+    @Param(name = "target", primary=true, optional = true, defaultValue =
     SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     private String target;
 
