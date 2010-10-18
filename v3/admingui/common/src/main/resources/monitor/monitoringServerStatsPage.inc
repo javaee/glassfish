@@ -61,13 +61,14 @@
         getStats(endpoint="#{pageSession.monitorURL}/jvm/operating-system", result=>$attribute{osStatsList}  hasStats=>$attribute{hasStatsOS});
         getStats(endpoint="#{pageSession.monitorURL}/jvm/memory", result=>$attribute{jvmMemStatsList}  hasStats=>$attribute{hasStatsJVMM});
         getStats(endpoint="#{pageSession.monitorURL}/realm", result=>$attribute{realmStatsList} hasStats=>$attribute{hasStatsRealm});
-	getStats(endpoint="#{pageSession.monitorURL}/transaction-service", result=>$attribute{txnServiceStatsList} hasStats=>$attribute{hasStatsTXN});
+        getStats(endpoint="#{pageSession.monitorURL}/transaction-service", result=>$attribute{txnServiceStatsList} hasStats=>$attribute{hasStatsTXN});
         getStats(endpoint="#{pageSession.monitorURL}/security/web", result=>$attribute{webSecurityStatsList}  hasStats=>$attribute{hasStatsWSD});
         getStats(endpoint="#{pageSession.monitorURL}/webservices", result=>$attribute{webServicesStatsList}  hasStats=>$attribute{hasStatsWS});
         getStats(endpoint="#{pageSession.monitorURL}/jvm/thread-system", result=>$attribute{jvmThreadStatsList}  hasStats=>$attribute{hasStatsJVMThread});
         getStats(endpoint="#{pageSession.monitorURL}/orb/transport/connectioncache/inbound", result=>$attribute{ORBInStatsList}  hasStats=>$attribute{hasStatsORBIn});
         getStats(endpoint="#{pageSession.monitorURL}/orb/transport/connectioncache/outbound", result=>$attribute{ORBOutStatsList}  hasStats=>$attribute{hasStatsORBOut});
         getStats(endpoint="#{pageSession.monitorURL}/jms-service/work-management", result=>$attribute{JMSStatsList}  hasStats=>$attribute{hasStatsJMS});
+        getStats(endpoint="#{pageSession.monitorURL}/deployment/lifecycle", result=>$attribute{deployLifeCycleStatsList}  hasStats=>$attribute{hasStatsDeployLifeCycle});
         }
         if(#{viewVal}){
             setAttribute(key="hasStatsJVMThread" value="#{false}");
@@ -89,6 +90,7 @@
             setAttribute(key="hasStatsORBIn" value="#{false}");
             setAttribute(key="hasStatsORBOut" value="#{false}");
             setAttribute(key="hasStatsJMS" value="#{false}");
+            setAttribute(key="hasStatsDeployLifeCycle" value="#{false}");
         }
         calculateHelpUrl(pluginId="#{pluginId}", helpKey: "$resource{help_web.monitorRuntime}", url="#{olhLink}");
     />
@@ -324,6 +326,11 @@
             "<br/>
         </sun:tableRowGroup>
         <sun:tableRowGroup id="webServices" rendered="#{hasStatsWS}" data={"$attribute{webServicesStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.webServicesStats}"
+                groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
+#include "/common/monitor/monitoringTableRows.inc"
+            "<br/>
+        </sun:tableRowGroup>
+        <sun:tableRowGroup id="deployLifeCycle" rendered="#{hasStatsDeployLifeCycle}" data={"$attribute{deployLifeCycleStatsList}"}  sourceVar="td" headerText="$resource{i18nc.monitoring.deployLifeCycleStats}"
                 groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{i18nc.monitoring.webContainer.NoStats}">
 #include "/common/monitor/monitoringTableRows.inc"
             "<br/>
