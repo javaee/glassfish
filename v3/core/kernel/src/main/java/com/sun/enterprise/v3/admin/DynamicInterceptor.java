@@ -121,7 +121,8 @@ public class DynamicInterceptor implements MBeanServer
             } else if(oName.startsWith("amx:pp=/domain/servers/server[")) {
                 String svrName = oName.substring(oName.indexOf("[")+1, oName.indexOf("]"));
                 instances.add(svrName);
-                result.setTargetIsAnInstance(true);
+                if(!("server".equals(svrName)))
+                    result.setTargetIsAnInstance(true);
             } else if( ("amx:*".equals(oName)) || ("*.*".equals(oName)) ) {
                 instances.add("server");
                 instances.addAll(MbeanService.getInstance().getAllInstances());
@@ -563,26 +564,37 @@ public class DynamicInterceptor implements MBeanServer
     }
 
     public final Set queryNames( final ObjectName objectName, final QueryExp queryExp) {
+        Set returnVal = null;
         if(objectName == null)
             return Collections.EMPTY_SET;
+        List<String> instance;
         try {
-            Set returnVal = null;
-            List<String> instance = getInstance(objectName).getInstances();
-            for(String ins : instance) {
-                Set tmp;
-                if(ins.equals("server"))
-                    tmp = getDelegateMBeanServer().queryNames( objectName, queryExp);
-                else
+            instance = getInstance(objectName).getInstances();
+        } catch(InstanceNotFoundException e) {
+            return Collections.EMPTY_SET;
+        }
+        for(String ins : instance) {
+            Set tmp = null;
+            if(ins.equals("server")) {
+                tmp = getDelegateMBeanServer().queryNames( objectName, queryExp);
+            } else {
+                try {
                     tmp = getInstanceConnection(ins).queryNames(objectName, queryExp);
+                } catch(Exception e) {
+                    //Swallowing this intentionally
+                    //Because this can happen only if the instance is down / not responding
+                }
+            }
+            if(tmp != null) {
                 if(returnVal == null)
                     returnVal = tmp;
                 else
                     returnVal.addAll(tmp);
             }
-            return returnVal;
-        } catch (Exception e) {
-            return Collections.EMPTY_SET;
         }
+        if(returnVal == null)
+            return Collections.EMPTY_SET;
+        return returnVal;
     }
 
     public final void removeNotificationListener(final ObjectName objectName,  final ObjectName objectName1)
