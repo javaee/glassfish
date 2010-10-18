@@ -63,6 +63,7 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.util.Map;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -77,7 +78,7 @@ public class NodeUtils {
     static final String NODE_DEFAULT_SSH_PORT = "22";
     static final String NODE_DEFAULT_SSH_USER = "${user.name}";
     static final String NODE_DEFAULT_INSTALLDIR =
-                                                "${com.sun.aas.installRoot}";
+                                                "${com.sun.aas.productRoot}";
 
     // Command line option parameter names
     static final String PARAM_NODEHOST = "nodehost";
@@ -124,23 +125,24 @@ public class NodeUtils {
         if (node == null)
             return "";
 
-        sshL.init(node, logger);
+        List<String> command = new ArrayList<String>();
+        command.add("version");
+        command.add("--local");
+        command.add("--terse");
+        NodeRunner nr = new NodeRunner(habitat, logger);
 
-        String command = node.getInstallDir() +
-                "/bin/asadmin version --local --terse";
-
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        StringBuilder output = new StringBuilder();
         try {
-            int commandStatus = sshL.runCommand(command, outStream);
+            int commandStatus = nr.runAdminCommandOnNode(node, output, command);
             if (commandStatus != 0) {
-                return "unknown version";
+                return "unknown version: " + output.toString();
             }
-            return outStream.toString().trim();
         } catch (Exception e) {
             throw new CommandValidationException(
-                    Strings.get("failed.to.run", command,
+                    Strings.get("failed.to.run", command.toString(),
                                     node.getNodeHost()), e);
         }
+        return output.toString().trim();
     }
 
     void validate(Node node) throws
@@ -283,7 +285,7 @@ public class NodeUtils {
             CommandValidationException {
 
 
-        final String LANDMARK_FILE = "/modules/admin-cli.jar";
+        final String LANDMARK_FILE = "glassfish/modules/admin-cli.jar";
         String nodehost = map.getOne(PARAM_NODEHOST);
         String installdir = map.getOne(PARAM_INSTALLDIR);
         String nodedir = map.getOne(PARAM_NODEDIR);

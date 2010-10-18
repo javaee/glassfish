@@ -113,7 +113,7 @@ public class NodeAgentConfigUpgrade implements ConfigurationUpgrade, PostConstru
                                 String name = p.getName();
                                 if (name.equals("client-hostname")) {
                                     node.setNodeHost(p.getValue()); //create the node with a host name
-                                    node.setInstallDir("${com.sun.aas.installRoot}");                                    
+                                    node.setInstallDir("${com.sun.aas.productRoot}");
                                 }
                             }
                         }

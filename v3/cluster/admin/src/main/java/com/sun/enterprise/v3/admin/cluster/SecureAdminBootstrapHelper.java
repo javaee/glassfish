@@ -232,11 +232,11 @@ public abstract class SecureAdminBootstrapHelper {
         private String remoteNodeDir(final Node node, final String remoteNodeDir) {
             /*
              * Use the node dir if it was specified when the node was created.
-             * Otherwise derive it: ${remote-install-dir}/${node-name}
+             * Otherwise derive it: ${remote-install-dir}/glassfish/${node-name}
              */
             return (remoteNodeDir != null ? remoteNodeDir :
                 (new StringBuilder(ensureTrailingSlash(node.getInstallDirUnixStyle()))
-                    .append("nodes/")
+                    .append("glassfish/nodes/")
                     .append(node.getName())).toString());
         }
 
@@ -253,6 +253,9 @@ public abstract class SecureAdminBootstrapHelper {
         protected void mkdirs(URI dirURI) throws IOException {
             Integer instanceDirPermissions = ftpClient.lstat(remoteNodeDirURI.getPath()).permissions;
             URI remoteFileURI = remoteInstanceURI.resolve(dirURI);
+            logger.log(Level.FINE, "Creating remote bootstrap directory " +
+                       remoteFileURI.getPath() + " with permissions " +
+                       instanceDirPermissions.toString());
             ftpClient.mkdirs(remoteFileURI.getPath(), instanceDirPermissions);
         }
 

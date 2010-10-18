@@ -149,7 +149,7 @@ public class RemoteConnectHelper  {
                 return 1;
             }
             */
-            String nodeHome = node.getInstallDir();
+            String nodeHome = node.getInstallDir() + File.separator + "glassfish";
             if( nodeHome == null) {  
                 logger.severe("Invalid installdir "+nodeHome +" for node "+node.getName());
                 return 1;

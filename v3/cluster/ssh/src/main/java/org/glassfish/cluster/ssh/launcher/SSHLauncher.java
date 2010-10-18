@@ -340,31 +340,31 @@ public class SSHLauncher {
     public void validate(String host, int port,
                              String userName, String password,
                              String keyFile, String keyPassPhrase,
-                             String nodeHome, String landmarkPath,
+                             String installDir, String landmarkPath,
                              Logger logger) throws IOException
     {
-        boolean validNodeHome = false;
+        boolean validInstallDir = false;
         init(userName, host,  port, password, keyFile, keyPassPhrase, logger);
 
         openConnection();
         logger.fine("Connection settings valid");
-        String testPath = nodeHome;
+        String testPath = installDir;
         if (StringUtils.ok(testPath)) {
-            // Validate if nodeHome exists
+            // Validate if installDir exists
             SFTPClient sftpClient = new SFTPClient(connection);
             if (sftpClient.exists(testPath)) {
-                // Nodehome exists. Now check for landmark if provided
+                // installDir exists. Now check for landmark if provided
                 if (StringUtils.ok(landmarkPath)) {                    
-                    testPath = nodeHome + "/" + landmarkPath;
+                    testPath = installDir + "/" + landmarkPath;
                 }
-                validNodeHome = sftpClient.exists(testPath);
+                validInstallDir = sftpClient.exists(testPath);
             } else {
-                validNodeHome = false;
+                validInstallDir = false;
             }
             SSHUtil.unregister(connection);
             connection = null;
 
-            if (!validNodeHome) {
+            if (!validInstallDir) {
                 String msg = "Invalid install directory: could not find " +
                         testPath + " on " + host;
                 logger.warning(msg);
@@ -377,11 +377,11 @@ public class SSHLauncher {
     public void validate(String host, int port,
                              String userName, String password,
                              String keyFile, String keyPassPhrase,
-                             String nodeHome, Logger logger) throws IOException
+                             String installDir, Logger logger) throws IOException
     {
         // Validate with no landmark file
         validate(host, port, userName, password, keyFile, keyPassPhrase,
-                             nodeHome, null, logger);
+                             installDir, null, logger);
     }
 
     public SFTPClient getSFTPClient() throws IOException {

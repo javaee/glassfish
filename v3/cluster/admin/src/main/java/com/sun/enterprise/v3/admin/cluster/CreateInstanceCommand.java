@@ -231,7 +231,7 @@ public class CreateInstanceCommand implements AdminCommand {
          * 
          * If the configuration recorded an explicit directory for the node,
          * then use it.  Otherwise, use the default node directory of
-         * ${installDir}/nodes/${nodeName}.
+         * ${installDir}/glassfish/nodes/${nodeName}.
          */
         final File nodeDirFile = (nodeDir != null ?
             new File(nodeDir) :
@@ -255,7 +255,7 @@ public class CreateInstanceCommand implements AdminCommand {
         final File nodeParentDir = (
                 installDir == null
                     ? serverContext.getInstallRoot()
-                    : new File(installDir));
+                    : new File(installDir, "glassfish"));
         return new File(nodeParentDir, "nodes");
     }
 

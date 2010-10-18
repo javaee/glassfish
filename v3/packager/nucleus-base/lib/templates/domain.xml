@@ -66,7 +66,7 @@
     </server>
   </servers>
   <nodes>
-    <node name="localhost" type="CONFIG" node-host="localhost" install-dir="${com.sun.aas.installRoot}"/>
+    <node name="localhost" type="CONFIG" node-host="localhost" install-dir="${com.sun.aas.productRoot}"/>
   </nodes>
  <configs>
    <config name="%%%CONFIG_MODEL_NAME%%%">

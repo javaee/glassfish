@@ -123,7 +123,7 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         setDasDefaultsOnly = true; //Issue 12847 - Call super.validate to setDasDefaults only
         super.validate();          //so _validate-node uses das host from das.properties. No dirs created.
         if (node != null) {
-            validateNode(node, getInstallRootPath(), getInstanceHostName(true));
+            validateNode(node, getProductRootPath(), getInstanceHostName(true));
         }
 
         setDasDefaultsOnly = false;
@@ -168,7 +168,7 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         if (node == null) {
             _node = nodeDirChild.getName();
             String nodeHost = getInstanceHostName(true);
-            createNodeImplicit(_node, getInstallRootPath(), nodeHost);
+            createNodeImplicit(_node, getProductRootPath(), nodeHost);
         } else {
             _node = node;
         }
@@ -386,6 +386,7 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         rc.executeAndReturnOutput("set", dottedName);
     }
 
+    /* installdir is product install dir (parent of glassfish install root) */
     private int createNodeImplicit(String name, String installdir, String nodeHost) throws CommandException {
         ArrayList<String> argsList = new ArrayList<String>();
         argsList.add(0, "_create-node-implicit");
@@ -410,6 +411,7 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         return rc.execute(argsArray);
     }
 
+    /* installdir is product install dir (parent of glassfish install root) */
     private int validateNode(String name, String installdir, String nodeHost) throws CommandException {
         ArrayList<String> argsList = new ArrayList<String>();
         argsList.add(0, "_validate-node");

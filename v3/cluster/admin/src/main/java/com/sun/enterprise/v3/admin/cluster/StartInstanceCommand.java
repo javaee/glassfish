@@ -114,7 +114,6 @@ public class StartInstanceCommand implements AdminCommand {
     private String nodedir;
     private String nodeHost;
     private Server instance;
-    private String installDir = null;
 
     private static final String NL = System.getProperty("line.separator");
 
@@ -160,7 +159,6 @@ public class StartInstanceCommand implements AdminCommand {
         if (node != null) {
             nodedir = node.getNodeDir();
             nodeHost = node.getNodeHost();
-            installDir = node.getInstallDir();
         } else {
             msg = Strings.get("missingNode", noderef);
             logger.severe(msg);

@@ -75,7 +75,7 @@ public class InstanceDirUtils{
          *
          * If the configuration recorded an explicit directory for the node,
          * then use it.  Otherwise, use the default node directory of
-         * ${installDir}/nodes/${nodeName}.
+         * ${installDir}/glassfish/nodes/${nodeName}.
          */
         String nodeDir = node.getNodeDir();
         final File nodeDirFile = (nodeDir != null ?
@@ -102,7 +102,7 @@ public class InstanceDirUtils{
         final File nodeParentDir = (
                 installDir == null
                     ? serverContext.getInstallRoot()
-                    : new File(installDir));
+                    : new File(installDir, "glassfish"));
         return new File(nodeParentDir, "nodes");
     }
    

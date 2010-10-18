@@ -150,7 +150,7 @@ public class NodeRunner  {
             ProcessManagerException {
 
         List<String> fullcommand = new ArrayList<String>();
-        String installDir = node.getInstallDirUnixStyle();
+        String installDir = node.getInstallDirUnixStyle() + "/glassfish";
         if (!StringUtils.ok(installDir)) {
             throw new IllegalArgumentException("Node does not have an installDir");
         }
@@ -199,7 +199,7 @@ public class NodeRunner  {
                     "Node is not of type SSH");
         }
 
-        String installDir = node.getInstallDirUnixStyle();
+        String installDir = node.getInstallDirUnixStyle() + "/glassfish";
         if (!StringUtils.ok(installDir)) {
             throw new IllegalArgumentException("Node does not have an installDir");
         }

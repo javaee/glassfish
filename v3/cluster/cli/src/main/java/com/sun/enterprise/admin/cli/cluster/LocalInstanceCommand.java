@@ -312,6 +312,32 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         return installRootPath;
     }
 
+    /**
+     * Gets the GlassFish product installation root (using property
+     * com.sun.aas.productRoot), first from asenv.conf. If that's not
+     * available, then from java.lang.System.
+     *
+     * This will typically be the parent of the glassfish install root
+     *
+     * @return path of GlassFish product install root
+     * @throws CommandException if the GlassFish install root is not found
+     */
+    protected String getProductRootPath() throws CommandException {
+        String productRootPath = getSystemProperty(
+                SystemPropertyConstants.PRODUCT_ROOT_PROPERTY);
+
+        if(!StringUtils.ok(productRootPath))
+            productRootPath = System.getProperty(
+                    SystemPropertyConstants.PRODUCT_ROOT_PROPERTY);
+
+        if(!StringUtils.ok(productRootPath)) {
+            // Product install root is parent of glassfish install root
+            File installRoot = new File(getInstallRootPath());
+            return installRoot.getParent();
+        }
+        return productRootPath;
+    }
+
 // -----------------------------------------------------------------------
 // -------- everything below here is private    --------------------------
 // -----------------------------------------------------------------------

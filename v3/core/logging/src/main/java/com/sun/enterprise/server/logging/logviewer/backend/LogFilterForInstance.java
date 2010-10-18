@@ -93,8 +93,10 @@ public class LogFilterForInstance {
 
         instanceLogFile = new File(logFileDirectoryOnServer.getAbsolutePath() + File.separator + logFileName);
 
-        InputStream inputStream = sftpClient.read(node.getInstallDir() + File.separator + "nodes" + File.separator
-                + sNode + File.separator + instanceName + File.separator + "logs" + File.separator + logFileName);
+        InputStream inputStream = sftpClient.read(node.getInstallDir() +
+                File.separator + "glassfish" + File.separator + "nodes" +
+                File.separator + sNode + File.separator + instanceName +
+                File.separator + "logs" + File.separator + logFileName);
 
         BufferedInputStream in = new BufferedInputStream(inputStream);
         FileOutputStream file = new FileOutputStream(instanceLogFile);
@@ -135,9 +137,10 @@ public class LogFilterForInstance {
 
         String[] remoteFileNames = new String[allInstanceLogFileName.size()];
         for (int i = 0; i < allInstanceLogFileName.size(); i++) {
-            remoteFileNames[i] = node.getInstallDir() + File.separator + "nodes" + File.separator
-                    + sNode + File.separator + instanceName + File.separator + "logs" + File.separator
-                    + allInstanceLogFileName.get(i);
+            remoteFileNames[i] = node.getInstallDir() + File.separator +
+                    "glassfish" + File.separator + "nodes" + File.separator +
+                    sNode + File.separator + instanceName + File.separator +
+                    "logs" + File.separator + allInstanceLogFileName.get(i);
         }
 
         scpClient.get(remoteFileNames, logFileDirectoryOnServer.getAbsolutePath());
@@ -182,8 +185,10 @@ public class LogFilterForInstance {
 
             SFTPClient sftpClient = sshL.getSFTPClient();
 
-            instanceLogFileNames = sftpClient.ls(node.getInstallDir() + File.separator + "nodes" + File.separator
-                    + sNode + File.separator + instanceName + File.separator + "logs");
+            instanceLogFileNames = sftpClient.ls(node.getInstallDir() +
+                    File.separator + "glassfish" + File.separator + "nodes" +
+                    File.separator + sNode + File.separator + instanceName +
+                    File.separator + "logs");
 
             for (int i = 0; i < instanceLogFileNames.size(); i++) {
                 SFTPv3DirectoryEntry file = (SFTPv3DirectoryEntry) instanceLogFileNames.get(i);
