@@ -128,6 +128,7 @@ public class CommandResourceMetaData {
             {"Domain", "generate-domain-schema", "POST", "generate-domain-schema", "Generate Domain Schema"},
             {"Domain", "list-log-levels", "GET", "list-log-levels", "LogLevels"},
             {"Domain", "list-instances", "GET", "list-instances", "List Instances"},
+            {"Domain", "list-persistence-types", "GET", "list-persistence-types", "List Persistence Types"},
             {"Domain", "restart-domain", "POST", "restart", "Restart"},
             {"Domain", "rotate-log", "POST", "rotate-log", "RotateLog"},
             {"Domain", "set-log-levels", "POST", "set-log-levels", "LogLevel"},
