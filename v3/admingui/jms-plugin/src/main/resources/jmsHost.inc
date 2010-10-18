@@ -61,6 +61,7 @@
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}" 
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}') && checkPSW()) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
+                    mapPut(map="#{pageSession.valueMap}", key="target", value="#{pageSession.configName}");
                     gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}" attrs="#{pageSession.valueMap}"
                         convertToFalse="#{pageSession.convertToFalseList}");
                     prepareSuccessfulMsg();
