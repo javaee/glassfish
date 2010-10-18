@@ -537,14 +537,12 @@ public class ClusterTest extends AdminBaseDevTest {
         // restart the instance 1 and ensure that app is on instance1 only
         report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
         report(tn + "start-local-instance1", asadmin("start-local-instance", i1name));
-        sleep(4);
         report(tn + "CLUSTER-getapp1-dr-disabled-afterrestart", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
         report(tn + "CLUSTER-getapp2-dr-disabled-beforerestart", !matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
 
         // restart the instance 2 and ensure that app is on both instances
         report(tn + "stop-local-instance2", asadmin("stop-local-instance", i2name));
         report(tn + "start-local-instance2", asadmin("start-local-instance", i2name));
-        sleep(4);
         report(tn + "CLUSTER-getapp1-dr-disabled-afterrestart", matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
         report(tn + "CLUSTER-getapp2-dr-disabled-afterrestart", matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
 
@@ -556,14 +554,12 @@ public class ClusterTest extends AdminBaseDevTest {
         // restart the instance 1 and ensure that app is gone on instance1 only
         report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
         report(tn + "start-local-instance1", asadmin("start-local-instance", i1name));
-        sleep(4);
         report(tn + "CLUSTER-getapp1-dr-disabled-afterrestart", !matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
         report(tn + "CLUSTER-getapp2-dr-disabled-beforerestart", matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
 
         // restart the instance 2 and ensure that app is gone on both instances
         report(tn + "stop-local-instance2", asadmin("stop-local-instance", i2name));
         report(tn + "start-local-instance2", asadmin("start-local-instance", i2name));
-        sleep(4);
         report(tn + "CLUSTER-getapp1-dr-disabled-afterrestart", !matchString("Hello", getURL(i1url + "helloworld/hi.jsp")));
         report(tn + "CLUSTER-getapp2-dr-disabled-afterrestart", !matchString("Hello", getURL(i2url + "helloworld/hi.jsp")));
 
@@ -627,7 +623,6 @@ public class ClusterTest extends AdminBaseDevTest {
         // start the instances
         report(tn + "start-cluster", asadmin("start-cluster", cname));
         report(tn + "start-local-instance3", asadmin("start-local-instance", i3name));
-        sleep(4); // Work-around for issue 12967
 
         // check that the instances are there
         report(tn + "getindex1", matchString("GlassFish Server", getURL(i1url)));

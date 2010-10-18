@@ -371,7 +371,6 @@ public class ManualSyncTest extends AdminBaseDevTest {
         report("check-timestamp-"+i, dasDomainXmlTS == instDomainXmlTS);
 
         report("start-local-instance-"+i, asadmin("start-local-instance", i));
-        sleep(5);
 
         String urlStr = getURL(i1url + "helloworld/hi.jsp");
         report("check-app-"+i, matchString("Hello", urlStr));
