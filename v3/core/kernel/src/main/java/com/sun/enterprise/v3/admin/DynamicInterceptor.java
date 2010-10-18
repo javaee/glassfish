@@ -98,7 +98,8 @@ public class DynamicInterceptor implements MBeanServer
         }
         String j2eeTypeProp = o.getKeyProperty("j2eeType");
         String oName = o.toString();
-
+        //TODO : This if-else thing is ugly; got to find a better way; for now
+        // this is what we get till this thing is up and running
         try {
             if(MbeanService.getInstance() == null) {
                 // This is kludge; during init the habitat is not initialized;
@@ -110,15 +111,23 @@ public class DynamicInterceptor implements MBeanServer
                 // So if this instance is not DAS, we just return server so the instances will
                 // use default MbeanServer.
                 instances.add("server");
+            } else if(oName.startsWith("amx:pp=/domain/configs/config[AMXConfigProxyTests.TEST]")) {
+                instances.add("server");                
             } else if(oName.startsWith("amx:pp=/domain/configs/config[")) {
                 String configName = oName.substring(oName.indexOf("[")+1, oName.indexOf("-config"));
                 instances.add("server");
-                instances.addAll(MbeanService.getInstance().getInstances(configName));
+                if( (!"default".equals(configName)) && (!"server".equals(configName)) )
+                    instances.addAll(MbeanService.getInstance().getInstances(configName));
             } else if(oName.startsWith("amx:pp=/domain/clusters/cluster[")) {
                 String clusterName = oName.substring(oName.indexOf("[")+1, oName.indexOf("]"));
                 instances.add("server");
                 instances.addAll(MbeanService.getInstance().getInstances(clusterName));
             } else if(oName.startsWith("amx:pp=/domain/servers/server[")) {
+                String svrName = oName.substring(oName.indexOf("[")+1, oName.indexOf("]"));
+                instances.add(svrName);
+                if(!("server".equals(svrName)))
+                    result.setTargetIsAnInstance(true);
+            } else if(oName.startsWith("amx:pp=/mon/server-mon[")) {
                 String svrName = oName.substring(oName.indexOf("[")+1, oName.indexOf("]"));
                 instances.add(svrName);
                 if(!("server".equals(svrName)))
