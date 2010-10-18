@@ -67,6 +67,7 @@ import org.jvnet.hk2.component.MultiMap;
 public class InhabitantsDescriptor extends HashMap<String, String> {
   private boolean dirty = false;
   private boolean dateEnabled = true;
+  private boolean commentEnabled = true;
   private String comment;
   
   public InhabitantsDescriptor() {
@@ -78,6 +79,10 @@ public class InhabitantsDescriptor extends HashMap<String, String> {
   
   public void enableDateOutput(boolean enabled) {
     this.dateEnabled = enabled;
+  }
+  
+  public void enableCommentOutput(boolean enabled) {
+    this.commentEnabled = enabled;
   }
   
   public void setComment(String comment) {
@@ -178,7 +183,7 @@ public class InhabitantsDescriptor extends HashMap<String, String> {
       w.println("# generated on " + new Date().toGMTString());
     }
     
-    if (null != comment) {
+    if (commentEnabled && null != comment) {
       w.println("# " + comment);
     }
     
