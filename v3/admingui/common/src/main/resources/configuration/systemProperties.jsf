@@ -50,23 +50,16 @@
 <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs,type=config,name=#{pageSession.configName}");
         setPageSessionAttribute(key="childType" value="system-property");
-        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs,type=config,name=#{pageSession.configName}");
-        //getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-	// FIXME: The following does not work!  The REST api does not return anything
-	gf.restRequest(
-	    endpoint="#{REST_URL}/system-property.json"
-	    method="GET"
-	    result="#{requestScope.propTable}");
-	setAttribute(
-	    key="tableList"
-	    value="#{requestScope.propTable.data.extraProperties.properties}");
+        // FIXME: The following does not work!  The REST api does not return anything
+        gf.restRequest(endpoint="#{REST_URL}/system-property.json", method="GET", result="#{requestScope.propTable}");
+        setAttribute(key="tableList", value="#{requestScope.propTable.data.extraProperties.properties}");
 
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/configuration/systemProperties.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
         setPageSessionAttribute(key="convertToFalseList" value={"DynamicReconfigurationEnabled"});
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
+        setPageSessionAttribute(key="rest-api" value="true");
         setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
         setPageSessionAttribute(key="showCancelButton" value="#{false}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
@@ -90,7 +83,7 @@
 </sun:propertySheet>    
 
 #include "/common/shared/propertyDescTable.inc"
-    	<sun:hidden id="helpKey" value="$resource{help_common.systemProperties}" />
+            <sun:hidden id="helpKey" value="$resource{help_common.systemProperties}" />
 </sun:form>
             "<br/>
 #include "/common/shared/changeButtonsJS.inc" 
