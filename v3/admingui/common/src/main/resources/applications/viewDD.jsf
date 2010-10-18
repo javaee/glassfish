@@ -57,7 +57,7 @@
         gf.getDeploymentDescriptor(appName="#{pageSession.appName}", moduleName="#{pageSession.moduleName}",  descriptorName="#{pageSession.ddPath}",
             data="#{requestScope.result.data.children}"  content="#{descriptorContent}", encoding="#{encoding}");
 <!-- FIXME: This may change the encoding for the rest of the application!! -->
-        setEncoding("#{encoding}");
+        setEncoding("UTF-8");
     />
     </event>
             <sun:form id="propertyForm">
