@@ -253,6 +253,20 @@ public class SSHLauncher {
 
             }
         }
+
+        if (!isAuthenticated && SSHUtil.checkString(password) != null) {
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("Authenticating with password " + getPrintablePassword(password));
+            }
+            try {
+              isAuthenticated = connection.authenticateWithPassword(userName, password);
+            } catch (IOException iex) {
+                   if (logger.isLoggable(Level.FINE)) {
+                        logger.fine("Tried authenticating with password " + password);
+                   }
+            }
+      }
+      
         if (!isAuthenticated && SSHUtil.checkString(keyFile) != null) {
             if (logger.isLoggable(Level.FINER)) {
                 logger.finer("Specified key file is " + keyFile);
@@ -262,27 +276,20 @@ public class SSHLauncher {
                 if (logger.isLoggable(Level.FINER)) {
                     logger.finer("Specified key file exists at " + key);
                 }
+                try {
+                  isAuthenticated = connection.authenticateWithPublicKey(
+                                                      userName, key, keyPassPhrase);
+                } catch (IOException ex){
+                        if (logger.isLoggable(Level.FINE)) {
+                            logger.fine("Tried authenticating with specified key at " + key);
+                        }
 
-
-                //See if the key file is protected with passphrase
-                
-               isAuthenticated = connection.authenticateWithPublicKey(
-                                            userName, key, keyPassPhrase);
-                if (!isAuthenticated) {
-                    message = "Tried authenticating with specified key at " + key;
                 }
 
             }
-        } if (!isAuthenticated && SSHUtil.checkString(password) != null) {
-              if (logger.isLoggable(Level.FINE)) {
-                  logger.fine("Authenticating with password " + getPrintablePassword(password));
-              }
+        }
 
-          isAuthenticated = connection.authenticateWithPassword(userName, password);
-          if (!isAuthenticated) {
-              message += "Tried authenticating with password " + password;
-          }
-      }
+
 
         if (!isAuthenticated && !connection.isAuthenticationComplete()) {
             connection.close();
@@ -437,6 +444,7 @@ public class SSHLauncher {
         File key = new File(keyFile);
         if(logger.isLoggable(Level.FINER))
             logger.finer("Key = " + keyFile);
+        logger.info("keyfile "+keyFile);
         if (key.exists()) {
             if (checkConnection()) {
                 throw new IOException("SSH public key authentication is already configured for " + userName + "@" + node);
@@ -456,6 +464,7 @@ public class SSHLauncher {
             throw new IOException("SSH password is required for distributing the public key. You can specify the SSH password in a password file and pass it through --passwordfile option.");
         }
         try {
+            logger.info("got password now connect ");
             connection = new Connection(node, port);
             connection.connect();
             connected = connection.authenticateWithPassword(userName, passwd);
@@ -468,6 +477,7 @@ public class SSHLauncher {
             throw new IOException("SSH password authentication failed for user " + userName + " on host " + node);
         }
         //initiate scp client
+         logger.info("Connected");
         SCPClient scp = new SCPClient(connection);
 
         if (key.exists()) {
@@ -475,6 +485,7 @@ public class SSHLauncher {
             if (pubKeyFile == null) {
                 pubKeyFile = keyFile + ".pub";
             }
+            logger.info("pubKeyFile "+ pubKeyFile);
             
             File pubKey = new File(pubKeyFile);
             if(!pubKey.exists()) {
@@ -490,6 +501,7 @@ public class SSHLauncher {
                 out = new ByteArrayOutputStream();
                 try {
                     scp.get(SSH_DIR + AUTH_KEY_FILE, out);
+                    logger.info("scp.get passed");
                 } catch (IOException io) {
                     //ignore this, we will anyway send across the key
                     //logger.printExceptionStackTrace(io);
@@ -500,7 +512,9 @@ public class SSHLauncher {
                     logger.finer("Got the remote authorized_keys file");
                 }
                 File home = new File(System.getProperty("user.home"));
+                logger.info("home "+home);
                 f = new File(home,SSH_DIR + AUTH_KEY_FILE +".temp");
+                logger.info("tmep file "+f.toString());
                 oStream = new FileOutputStream(f);
                 out.writeTo(oStream);
                 if(logger.isLoggable(Level.FINER)) {
@@ -526,7 +540,7 @@ public class SSHLauncher {
                         }
                     }
                 } catch (Exception e) {
-                    //logger.fine("Failed to create .ssh directory on remote host:" + e.getMessage());
+                    logger.info("Failed to create .ssh directory on remote host:" + e.getMessage());
                     throw new IOException("Error while creating .ssh directory on remote host:" + e.getMessage());
                 }
 
