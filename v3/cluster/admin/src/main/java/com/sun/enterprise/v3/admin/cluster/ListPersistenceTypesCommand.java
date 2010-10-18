@@ -39,7 +39,8 @@
  */
 package com.sun.enterprise.v3.admin.cluster;
 
-import com.sun.enterprise.config.serverbeans.Cluster;
+import java.util.ArrayList;
+import java.util.Properties;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -88,6 +89,11 @@ public class ListPersistenceTypesCommand implements AdminCommand {
             sb.append(type).append(SEPARATOR);
         }
         String output = sb.toString();
+        
+        Properties extraProperties = new Properties();
+        extraProperties.put("types", new ArrayList<String>(types));
+        
+        report.setExtraProperties(extraProperties);        
         report.setMessage(output);
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
