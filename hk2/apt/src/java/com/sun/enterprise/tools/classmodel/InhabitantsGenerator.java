@@ -187,6 +187,10 @@ public class InhabitantsGenerator {
     } finally {
       w.close();
     }
+    
+    if (descriptor.isEmpty()) {
+      targetInhabitantFile.delete();
+    }
   }
   
   public void generate(PrintWriter writer) throws IOException {
