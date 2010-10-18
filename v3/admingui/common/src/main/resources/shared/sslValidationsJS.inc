@@ -42,7 +42,7 @@
 
 " <script type="text/javascript">
     " function checkSSLRequiredElements() { \
-        if (document.getElementById('#{sheetId}:ClientAuthProp:ClientAuth').getProps().checked) {   \
+        if (document.getElementById('#{sheetId}:ClientAuthProp:ClientAuth').checked) {   \
             var result = checkForValue(getTextElement('#{sheetId}:CertNicknameProp:CertNickname'));  \
             if(result != true){ \
                 return showAlert('$resource{i18n.msg.JS.ssl.errClientChecked}'); \
@@ -52,11 +52,11 @@
         var ephField = document.getElementById('#{cipherId}:EphemeralCiphersProp:ephemeralAddRemove').selectedValues.value; \
         var bitField = document.getElementById('#{cipherId}:OtherCiphersProp:otherAddRemove').selectedValues.value; \
         var eccField = document.getElementById('#{cipherId}:EccCiphersProp:eccAddRemove').selectedValues.value; \
-        var ssl3Prop = document.getElementById('#{sheetId}:SSL3Prop:SSL3').getProps().checked; \
+        var ssl3Prop = document.getElementById('#{sheetId}:SSL3Prop:SSL3').checked; \
         if(document.getElementById('#{sheetId}:SSL2Prop:SSL2')) { \
-           var ssl2Prop = document.getElementById('#{sheetId}:SSL2Prop:SSL2').getProps().checked; \
+           var ssl2Prop = document.getElementById('#{sheetId}:SSL2Prop:SSL2').checked; \
         } \
-        var tlsProp = document.getElementById('#{sheetId}:TLSProp:TLS').getProps().checked; \
+        var tlsProp = document.getElementById('#{sheetId}:TLSProp:TLS').checked; \
         if (ssl3Prop || tlsProp || ssl2Prop) {   \
             var result = checkForValue(getTextElement('#{sheetId}:CertNicknameProp:CertNickname'));  \
             if(result != true){ \
@@ -68,6 +68,7 @@
                 return showAlert('$resource{i18n.msg.JS.ssl.errCiphersSelected}'); \
             } \
         } \
+        return true;\
     } 
 
 " </script>

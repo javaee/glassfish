@@ -44,8 +44,8 @@
    
 <!facet pageButtonsTop>
     <sun:panelGroup id="topButtons">
-        <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}">
-                # onClick="return checkSSLRequiredElements(); " >
+        <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
+                 onClick="if (checkSSLRequiredElements()) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
                 convertCiphersItemsToStr(common="#{pageSession.selectedCommon}" ephemeral="#{pageSession.selectedEphemeral}" other="#{pageSession.selectedOther}" ecc="#{pageSession.selectedEcc}" ciphers="#{requestScope.ciphers}")
                 mapPut(map="#{pageSession.valueMap}" key="ssl3TlsCiphers" value="#{requestScope.ciphers}")
