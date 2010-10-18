@@ -263,9 +263,21 @@ public class DefaultDOLVisitor implements ApplicationVisitor, EjbBundleVisitor, 
                 // copy ejb-ref's from each EJB to WebBundleDescriptor, so ejb-ref and
                 // ejb-local-ref's declared in ejb-jar.xml can override @EJB injections,
                 // which are scanned while processing the WAR. See issue 11684.
+                // If there already exists an ejb-ref by the same name in the WebBundleDescriptor,
+                // need to merge its injection-targets with the corresponding ejb-ref
+                // that will be copied over.  See bug 6992465
                 for (EjbReference ejbRefInEjb : ejbDesc.getEjbReferenceDescriptors()) {
-                    descriptor.removeEjbReferenceDescriptor(ejbRefInEjb);
-                    descriptor.addEjbReferenceDescriptor(ejbRefInEjb);
+                    try {
+                        EjbReferenceDescriptor existing = descriptor.getEjbReferenceByName(ejbRefInEjb.getName());
+                        descriptor.removeEjbReferenceDescriptor(existing);
+                        EjbReferenceDescriptor addNew = new EjbReferenceDescriptor((EjbReferenceDescriptor) ejbRefInEjb);
+                        for (InjectionTarget next : existing.getInjectionTargets()) {
+                            addNew.addInjectionTarget(next);
+                        }
+                        descriptor.addEjbReferenceDescriptor(addNew);
+                    } catch (IllegalArgumentException e) {
+                        //no existing ejb-ref in WebBundleDescriptor by the same name
+                    }
                 }
             }
         }
