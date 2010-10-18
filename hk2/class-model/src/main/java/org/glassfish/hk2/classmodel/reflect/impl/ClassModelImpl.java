@@ -48,8 +48,8 @@ public class ClassModelImpl extends ExtensibleTypeImpl<ClassModel> implements Cl
 
     final Map<String, FieldModel> fields = Collections.synchronizedMap(new HashMap<String, FieldModel>());
 
-    public ClassModelImpl(String name, TypeProxy<Type> sink, URI definingURI, TypeProxy parent) {
-        super(name, sink, definingURI, parent);
+    public ClassModelImpl(String name, TypeProxy<Type> sink, TypeProxy parent) {
+        super(name, sink, parent);
     }
     
     void addField(FieldModel field) {

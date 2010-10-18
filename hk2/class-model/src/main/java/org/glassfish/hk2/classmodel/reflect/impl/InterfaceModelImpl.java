@@ -46,8 +46,8 @@ import java.util.*;
  */
 public class InterfaceModelImpl extends ExtensibleTypeImpl<InterfaceModel> implements InterfaceModel {
 
-    public InterfaceModelImpl(String name, TypeProxy<Type> sink, URI definingURI, TypeProxy parent) {
-        super(name, sink, definingURI, parent);
+    public InterfaceModelImpl(String name, TypeProxy<Type> sink, TypeProxy parent) {
+        super(name, sink, parent);
     }
 
     @Override

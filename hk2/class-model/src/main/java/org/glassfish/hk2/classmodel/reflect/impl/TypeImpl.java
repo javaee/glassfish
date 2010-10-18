@@ -52,10 +52,9 @@ public class TypeImpl extends AnnotatedElementImpl implements Type {
     final Set<URI> definingURIs=new HashSet<URI>();
 
 
-    public TypeImpl(String name, TypeProxy<Type> sink, URI definingURI) {
+    public TypeImpl(String name, TypeProxy<Type> sink) {
         super(name);
         this.sink = sink;
-        definingURIs.add(definingURI);
         this.sink.set(this);
     }
 

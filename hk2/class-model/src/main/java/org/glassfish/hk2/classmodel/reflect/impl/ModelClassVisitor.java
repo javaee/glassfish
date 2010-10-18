@@ -93,6 +93,7 @@ public class ModelClassVisitor implements ClassVisitor {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         type = ctx.getTypeBuilder(classDefURI).getType(access, className, parent);
+        type.addDefiningURI(classDefURI);
         deepVisit =ctx.getConfig().getInjectionTargetAnnotations().isEmpty();
 
         // reverse index
