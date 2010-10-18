@@ -48,10 +48,6 @@ import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.PerLookup;
 
 import javax.persistence.criteria.*;
 import javax.persistence.*;
@@ -787,14 +783,15 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
 
     public void setProperty(String propertyName, Object value) {
 
-        doTxRequiredCheck();
-
         try {
             if(callFlowAgent.isEnabled()) {
                 callFlowAgent.entityManagerMethodStart(EntityManagerMethod.SET_PROPERTY);
             }
             _getDelegate().setProperty(propertyName, value);
         } finally {
+            if( nonTxEntityManager != null ) {
+                cleanupNonTxEntityManager();
+            }
             if(callFlowAgent.isEnabled()) {
                 callFlowAgent.entityManagerMethodEnd();
             }
