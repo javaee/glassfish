@@ -102,9 +102,22 @@ public final class RestoreDomainCommand extends BackupCommands {
 
         checkOptions();
 
-        if (DASUtils.pingDASQuietly(programOpts, env)) {
-            throw new CommandException(
-                strings.get("DomainIsNotStopped", domainName));
+        try {
+            setDomainName(domainName);
+            initDomain();
+        } catch (CommandException e) {
+            if (e.getCause() != null &&
+                (e.getCause() instanceof java.io.IOException)) {
+                ; // The domain does not exist which is allowed if the
+                  // force option is used (checked later).
+            } else {
+                throw e;
+            }
+        }
+
+        if (isRunning()) {
+            throw new CommandException(strings.get("DomainIsNotStopped",
+                                       domainName));
         }
 
         if (backupFilename != null) {

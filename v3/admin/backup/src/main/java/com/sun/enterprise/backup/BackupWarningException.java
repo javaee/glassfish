@@ -46,7 +46,7 @@
 
 package com.sun.enterprise.backup;
 
-import com.sun.enterprise.backup.util.StringUtils;
+import com.sun.enterprise.util.StringUtils;
 
 /**
  *

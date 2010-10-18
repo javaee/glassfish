@@ -46,7 +46,7 @@
 
 package com.sun.enterprise.backup;
 
-import com.sun.enterprise.backup.util.FileUtils;
+import com.sun.enterprise.util.io.FileUtils;
 import java.io.*;
 import java.util.*;
 import java.util.zip.*;

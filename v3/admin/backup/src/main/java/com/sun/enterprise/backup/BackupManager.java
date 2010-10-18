@@ -40,7 +40,8 @@
 
 package com.sun.enterprise.backup;
 
-import com.sun.enterprise.backup.util.*;
+import com.sun.enterprise.backup.util.BackupUtils;
+import com.sun.enterprise.util.io.FileUtils;
 import java.io.*;
 import java.util.List;
 import java.util.Date;
@@ -109,7 +110,7 @@ public class BackupManager extends BackupRestoreManager {
         }
         finally {
             status.delete();
-            FileUtils.protect(request.backupFile);
+            BackupUtils.protect(request.backupFile);
         }
     }
     

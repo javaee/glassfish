@@ -40,7 +40,9 @@
 
 package com.sun.enterprise.backup;
 
-import com.sun.enterprise.backup.util.*;
+import com.sun.enterprise.backup.util.BackupUtils;
+import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.util.zip.ZipFile;
 import java.io.*;
 
 /**
@@ -60,6 +62,7 @@ public class RestoreManager extends BackupRestoreManager {
         try {
             checkDomainName();
             ZipFile zf = new ZipFile(request.backupFile, tempRestoreDir);
+
             zf.explode();
             sanityCheckExplodedFiles();
             copyBackups();
@@ -255,12 +258,12 @@ public class RestoreManager extends BackupRestoreManager {
 
         // note that makeExecutable(File f) will make all the files under f
         // executable if f happens to be a directory.
-        FileUtils.makeExecutable(bin);
+        BackupUtils.makeExecutable(bin);
         
-        FileUtils.protect(backups);
-        FileUtils.protect(config);
-        FileUtils.protect(masterPassword);
-        FileUtils.protect(webtmp);
+        BackupUtils.protect(backups);
+        BackupUtils.protect(config);
+        BackupUtils.protect(masterPassword);
+        BackupUtils.protect(webtmp);
         
         // Jan 19, 2005 -- rolled back the fix for 6206176.  It has been decided
         // that this is not a bug but rather a security feature.

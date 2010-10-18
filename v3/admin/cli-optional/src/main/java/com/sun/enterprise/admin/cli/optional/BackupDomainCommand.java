@@ -90,6 +90,9 @@ public final class BackupDomainCommand extends BackupCommands {
         
         checkOptions();
 
+        setDomainName(domainName);
+        initDomain();
+
         File domainFile = new File(new File(domainDirParam), domainName);
 
         if (!isWritableDirectory(domainFile)) {
@@ -98,10 +101,10 @@ public final class BackupDomainCommand extends BackupCommands {
         }
 
         if (force == null ) {
-            if (DASUtils.pingDASQuietly(programOpts, env)) {
-                throw new CommandException(
-                        strings.get("DomainIsNotStopped", domainName));
-            }
+            if (isRunning()) {
+                throw new CommandException(strings.get("DomainIsNotStopped",
+                                           domainName));
+            } 
         }
 
         int limit = 0;
@@ -129,6 +132,7 @@ public final class BackupDomainCommand extends BackupCommands {
     @Override
     protected int executeCommand()
             throws CommandException {
+
         try {            
             BackupManager mgr = new BackupManager(request);
             logger.info(mgr.backup());            

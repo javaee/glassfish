@@ -46,10 +46,9 @@
 
 package com.sun.enterprise.backup;
 
-import com.sun.enterprise.backup.util.FileListerRelative;
-import com.sun.enterprise.backup.util.FileUtils;
-import com.sun.enterprise.backup.util.ZipFileException;
-import com.sun.enterprise.backup.util.ZipWriter;
+import com.sun.enterprise.util.io.*;
+import com.sun.enterprise.util.zip.*;
+
 import java.io.*;
 
 /** 

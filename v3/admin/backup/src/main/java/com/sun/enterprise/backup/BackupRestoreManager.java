@@ -40,7 +40,7 @@
 
 package com.sun.enterprise.backup;
 
-import com.sun.enterprise.backup.util.*;
+import com.sun.enterprise.util.io.FileUtils;
 import java.io.*;
 
 /**

@@ -143,7 +143,7 @@ public class ZipFile
 				{
 					// just a directory -- make it and move on...
 					fullpath = new File(explodeDir, filename.substring(0, filename.length() - 1));
-					fullpath.mkdir();
+					fullpath.mkdirs();
 					continue;
 				}
 					
@@ -155,14 +155,14 @@ public class ZipFile
 
 				if(fullpath.delete()) {	// wipe-out pre-existing files
                                         /*
-                     *Report that a file is being overwritten.
-                     */
-                    if (_utillogger.isLoggable(Level.FINE) ) {
-                        _utillogger.log(Level.FINE, "File " + fullpath.getAbsolutePath() + " is being overwritten during expansion of " + (zipFile != null ? ("file " + zipFile.getAbsolutePath() ) : "stream"));
-                    }
-                }
+                                         * Report that a file is being overwritten.
+                                         */
+                                        if (_utillogger.isLoggable(Level.FINE) ) {
+                                            _utillogger.log(Level.FINE, "File " + fullpath.getAbsolutePath() + " is being overwritten during expansion of " + (zipFile != null ? ("file " + zipFile.getAbsolutePath() ) : "stream"));
+                                        }
+                                }
 
-				BufferedOutputStream os = new BufferedOutputStream(getOutputStream(filename), BUFFER_SIZE);
+                                BufferedOutputStream os = new BufferedOutputStream(getOutputStream(filename), BUFFER_SIZE);
 
 				if(os == null)	// e.g. if we asked to write to a directory instead of a file...
 					continue;

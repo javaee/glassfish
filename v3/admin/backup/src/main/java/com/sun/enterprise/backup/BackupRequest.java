@@ -48,8 +48,8 @@ package com.sun.enterprise.backup;
 
 import java.io.*;
 
-import com.sun.enterprise.backup.util.ObjectAnalyzer;
-import com.sun.enterprise.backup.util.FileUtils;
+import com.sun.enterprise.util.ObjectAnalyzer;
+import com.sun.enterprise.util.io.FileUtils;
 
 /**
  * This class holds all of the values that the caller needs.  
