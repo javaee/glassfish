@@ -150,6 +150,7 @@ public class CommandResourceMetaData {
             {"ListApplication", "list-components", "GET", "list-components", "List Components" },
             {"ListApplication", "list-lifecycle-modules", "GET", "list-lifecycle-modules", "List Lifecycle Modules"},
             {"ListApplication", "list-sub-components", "GET", "list-sub-components", "List Subcomponents"},
+            {"ListApplication", "_is-sniffer-user-visible", "GET", "is-sniffer-user-visible", "Is Sniffer User Visible"},
             {"ListApplication", "__list-webservices", "GET", "list-webservices", "List Webservices"},
             {"ListAuthRealm", "__list-predefined-authrealm-classnames", "GET", "list-predefined-authrealm-classnames", "List Auth Realms"},
             {"NetworkListener", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=http-listener"},
