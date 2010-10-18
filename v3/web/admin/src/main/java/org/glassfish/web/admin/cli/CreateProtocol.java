@@ -91,7 +91,7 @@ public class CreateProtocol implements AdminCommand {
     // and <protocol-chain-instance-handler/>. As each has considerable number
     // of config options and no specific ids to co-relate, we may need to choose
     // the way create-ssl has been done. Grizzly team concurs on this proposal
-    @Param(name = "securityenabled", optional = true, defaultValue = "false")
+    @Param(name = "securityenabled", alias="securityEnabled", optional = true, defaultValue = "false")
     Boolean securityEnabled = false;
     @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     String target;
