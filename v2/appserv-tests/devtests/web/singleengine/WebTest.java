@@ -100,6 +100,7 @@ public class WebTest{
         conn.connect();
 
         int responseCode = conn.getResponseCode();
+        System.out.println("Response code "+responseCode);
         if (responseCode != expectedResponseStatus) {
             throw new Exception("Unexpected return code: " + responseCode +
                 ", expected: " + expectedResponseStatus);
