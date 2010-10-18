@@ -243,6 +243,31 @@ public class InhabitantsGeneratorTest {
   }
 
   /**
+   * If there are no inhabitants then there should be no generated file
+   */
+  @Test
+  public void testMainWithNoInhabitants() throws Exception {
+    File testDir = new File(new File("."), "target/test-classes");
+    File outputFile = new File(testDir, "META-INF/inhabitants/default");
+    outputFile.delete();
+    
+    System.setProperty(InhabitantsGenerator.PARAM_INHABITANT_FILE, outputFile.getAbsolutePath());
+    System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_SOURCE_FILES, toString(getAutoDependsClassPathEntries()));
+    System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_CLASSPATH, toString(getTestClassPathEntries(true)));
+    InhabitantsGenerator.main(null);
+    
+    if (outputFile.exists()) {
+      FileInputStream fis = new FileInputStream(outputFile);
+      try {
+        assertFalse("expect NOT to find: " + outputFile +
+            "; but did containing:\n[" + toString(fis)  + "]", outputFile.exists());
+      } finally {
+        fis.close();
+      }
+    }
+  }
+  
+  /**
    * If {@link #testHabitatFileGeneration()} fails, then this guy will also always fail.
    */
 //  @Ignore
@@ -278,11 +303,23 @@ public class InhabitantsGeneratorTest {
   }
   
   /**
-   * Compares APT generation to class-model, introspection generation. 
-   * @throws IOException 
+   * Compares APT generation to class-model, introspection generation.
    */
   @Test
-  public void testAgainstAptGenerator() throws IOException {
+  public void testAgainstAptGenerator() throws Exception {
+    // generate the habitat file
+    {
+      File testDir = new File(new File("."), "target/test-classes");
+      File outputFile = new File(testDir, "META-INF/inhabitants/default");
+      outputFile.delete();
+      
+      System.setProperty(InhabitantsGenerator.PARAM_INHABITANT_FILE, outputFile.getAbsolutePath());
+      System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_SOURCE_FILES, toString(getTestClassPathEntries(false)));
+      System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_CLASSPATH, toString(getTestClassPathEntries(true)));
+      InhabitantsGenerator.main(null);
+    }
+    
+    // test it
     ClassLoader cl = new URLClassLoader(toURL(getTestClassPathEntries(false)), new ClassLoader(null) {
       @Override
       protected URL findResource(String name) {
@@ -363,6 +400,27 @@ public class InhabitantsGeneratorTest {
     }
 
     System.out.println("test classpath for worldview=" + worldView + " is " + entries);
+    
+    return entries;
+  }
+
+  public ArrayList<File> getAutoDependsClassPathEntries() {
+    ArrayList<File> entries = new ArrayList<File>();
+    
+    ClassPath classpath = ClassPath.create(null, false);
+    Set<String> cpSet = classpath.getEntries();
+    for (String entry : cpSet) {
+      if (entry.contains("auto-depends-") && 
+          !entry.contains("auto-depends-test")) {
+        entries.add(new File(entry));
+      }
+    }
+    
+    if (entries.isEmpty()) {
+      throw new RuntimeException("can't find test-classes in " + cpSet);
+    }
+    
+    System.out.println("auto-depends classpath is " + entries);
     
     return entries;
   }
