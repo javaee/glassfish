@@ -189,7 +189,6 @@ public class InhabitantsGenerator {
     }
   }
   
-  @SuppressWarnings("unchecked")
   public void generate(PrintWriter writer) throws IOException {
     descriptor.clear();
 
@@ -255,7 +254,11 @@ public class InhabitantsGenerator {
       return;
     }
 
-    InhabitantsGenerator generator = new InhabitantsGenerator(null, inhabitantsSourceFiles, inhabitantsClassPath);
+    // TODO: for now, disable date (we can make this an option later)
+    InhabitantsDescriptor descriptor = new InhabitantsDescriptor();
+    descriptor.enableDateOutput(false);
+    
+    InhabitantsGenerator generator = new InhabitantsGenerator(descriptor, inhabitantsSourceFiles, inhabitantsClassPath);
 
     // sanity check
     InhabitantsParsingContextGenerator ipcGen = generator.getContextGenerator();

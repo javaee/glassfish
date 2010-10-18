@@ -7,10 +7,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Set;
 
@@ -208,20 +212,24 @@ public class InhabitantsGeneratorTest {
   }
 
   String expected(boolean worldViewClassPath) {
+    return expected(worldViewClassPath, true);
+  }
+  
+  String expected(boolean worldViewClassPath, boolean fromClassModel) {
     StringBuilder sb = new StringBuilder();
     sb.append("class=com.sun.enterprise.tools.classmodel.test.BService,index=com.sun.enterprise.tools.classmodel.test.BContract\n");
     sb.append("class=com.sun.enterprise.tools.classmodel.test.RunLevelCloseableService,index=java.io.Closeable:closeable,index=org.jvnet.hk2.annotations.RunLevel\n");
     sb.append("class=com.sun.enterprise.tools.classmodel.test.AService,index=com.sun.enterprise.tools.classmodel.test.AContract:aservice,a=1,b=2\n");
     if (worldViewClassPath) {
       // world view classpath has full visibility so that class-model generates the true habitat
-      // dummy service should NOT be there since it should be filtered
-//      sb.append("class=com.sun.enterprise.tools.classmodel.test.external.DummyStart,index=com.sun.enterprise.module.bootstrap.ModuleStartup\t\n");
       sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithExternalContract,index=com.sun.enterprise.tools.classmodel.test.external.ExternalContract\n");
     } else {
       // without world-view, the external contracts in the inhabitants-gen-ifaces jar are not considered
       sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithExternalContract\n");
     }
-    sb.append("class=com.sun.enterprise.tools.classmodel.test.local.LocalServiceInTestDir,index=java.io.Closeable\n");
+    if (fromClassModel) {
+      sb.append("class=com.sun.enterprise.tools.classmodel.test.local.LocalServiceInTestDir,index=java.io.Closeable\n");
+    }
     sb.append("class=com.sun.enterprise.tools.classmodel.test.FactoryForCService,index=org.jvnet.hk2.annotations.FactoryFor:com.sun.enterprise.tools.classmodel.test.CService\n");
     sb.append("class=com.sun.enterprise.tools.classmodel.test.CService\n");
     if (worldViewClassPath) {
@@ -251,19 +259,66 @@ public class InhabitantsGeneratorTest {
     
     assertTrue("expect to find: " + outputFile, outputFile.exists());
 
-    StringBuilder sb = new StringBuilder();
     FileInputStream fis = new FileInputStream(outputFile);
-    BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
+    String val = toString(fis);
+    fis.close();
+    
+    assertTrue(val + " was not found to contain:\n" + 
+        expected(true), val.contains(expected(true)));
+  }
+  
+  private String toString(InputStream is) throws IOException {
+    StringBuilder sb = new StringBuilder();
+    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
     String line;
     while (null != (line = reader.readLine())) {
       sb.append(line).append("\n");
     }
-    fis.close();
-    
-    assertTrue(sb.toString() + " was not found to contain:\n" + 
-        expected(true), sb.toString().contains(expected(true)));
+    return sb.toString();
   }
   
+  /**
+   * Compares APT generation to class-model, introspection generation. 
+   * @throws IOException 
+   */
+  @Test
+  public void testAgainstAptGenerator() throws IOException {
+    ClassLoader cl = new URLClassLoader(toURL(getTestClassPathEntries(false)), new ClassLoader(null) {
+      @Override
+      protected URL findResource(String name) {
+        return null;
+      }
+    });
+
+    Enumeration<URL> en = cl.getResources("META-INF/inhabitants/default");
+    int count = 0;
+    while (en.hasMoreElements()) {
+      URL url = en.nextElement();
+      count++;
+      
+      InputStream is = (InputStream)url.getContent();
+      String val = toString(is);
+      is.close();
+
+      boolean fromClassModelIntrospection = url.getPath().toString().contains("apt-test/target/test-classes/META-INF/inhabitants/default");
+      String expected = expected(true, fromClassModelIntrospection);
+      
+      assertTrue("expected " + url + " to contain output:\n" + expected +
+          "\nbut instead was:\n" + val, val.contains(expected));
+    }
+    
+    assertEquals("inhabitants files found", 2, count);
+  }
+  
+  private URL[] toURL(ArrayList<File> testClassPathEntries) throws IOException {
+    URL urls[] = new URL[testClassPathEntries.size()];
+    int i = 0;
+    for (File file : testClassPathEntries) {
+      urls[i++] = file.toURL();
+    }
+    return urls;
+  }
+
   private String clean(String string) {
     return string.replace("\r", "");
   }
