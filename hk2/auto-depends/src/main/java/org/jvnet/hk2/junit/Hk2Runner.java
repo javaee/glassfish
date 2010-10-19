@@ -56,6 +56,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * JUnit runner for hk2 enabled tests. Life-cycle of the test will be managed by
@@ -242,9 +244,9 @@ public class Hk2Runner extends Runner {
             Hk2Test.Populator populator = Hk2Test.Populator.class.cast(instance);
             populator.populate(getHabitat());
         } catch (ClassCastException e) {
-            System.out.println(instance + " is not a populator");
+            Logger.getAnonymousLogger().fine(instance + " is not a populator");
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage(), e);
         }
         womb.initialize(instance, womb);
     }
