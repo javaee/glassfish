@@ -117,6 +117,10 @@ public class CreateJMSHost implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
+        Config targetConfig = domain.getConfigNamed(target);
+        if (targetConfig != null)
+            config = targetConfig;
+        
         Server targetServer = domain.getServerNamed(target);
         //String configRef = targetServer.getConfigRef();
         if (targetServer!=null) {
