@@ -223,7 +223,12 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
         args.add(getName());    // the command name
         args.add("--verbose=" + String.valueOf(verbose));
         args.add("--debug=" + String.valueOf(debug));
-        args.add("--nosync=" + String.valueOf(nosync));
+        
+        // IT 14015
+        // We now REQUIRE all restarted instance to do a sync.
+        // just stick with the default...
+        //args.add("--nosync=" + String.valueOf(nosync));
+
         if (ok(nodeDir)) {
             args.add("--nodedir");
             args.add(nodeDir);
