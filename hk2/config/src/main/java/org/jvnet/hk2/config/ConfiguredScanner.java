@@ -47,6 +47,8 @@ import org.jvnet.hk2.component.MultiMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Scanner for @Configured annotated classes
@@ -60,6 +62,7 @@ public class ConfiguredScanner implements IntrospectionScanner {
     Habitat habitat;
 
     ParsingContext context;
+
 
     @Override
     public void parse(ParsingContext context, Holder<ClassLoader> loader) {
@@ -158,15 +161,22 @@ public class ConfiguredScanner implements IntrospectionScanner {
             refTypeAsString = arguments[0];
         }
         // we need to handle collection types
+        boolean isCollection = refTypeAsString.startsWith("java.util.List<L");
+        if (isCollection) {
+            refTypeAsString = refTypeAsString.substring("java.util.List<L".length());
+        }
         metadata.add(xmlTokenName, "datatype:" + refTypeAsString);
         Type refType = context.getTypes().getBy(refTypeAsString);
-        boolean isReference = Boolean.parseBoolean((String) attribute.getValues().get("isReference"));
-        if (refType==null || isReference) {
+        Boolean isReference = (Boolean) attribute.getValues().get("reference");
+        if (refType==null || (isReference!=null &&isReference)) {
             // leaf
-            metadata.add(xmlTokenName, makeCollectionIfNecessary(refTypeAsString, "leaf"));
+            metadata.add(xmlTokenName, makeCollectionIfNecessary(isCollection, "leaf"));
+            if (isReference!=null && isReference) {
+                metadata.add(xmlTokenName, "reference");
+            }
         } else {
             // node
-            metadata.add(xmlTokenName, makeCollectionIfNecessary(refTypeAsString, refTypeAsString));
+            metadata.add(xmlTokenName, makeCollectionIfNecessary(isCollection, refTypeAsString));
         }
         Boolean isKey = (Boolean) attribute.getValues().get("key");
         if (isKey!=null && isKey) {
@@ -175,8 +185,8 @@ public class ConfiguredScanner implements IntrospectionScanner {
         }
     }
 
-    private String makeCollectionIfNecessary(String type, String value) {
-        if (type.startsWith("List")) {
+    private String makeCollectionIfNecessary(boolean isCollection, String value) {
+        if (isCollection) {
             return "collection:" + value;
         } else {
             return value;
@@ -195,15 +205,20 @@ public class ConfiguredScanner implements IntrospectionScanner {
                 throw new RuntimeException("@Element method cannot have more than 1 argument " + m.getSignature());
             }
             refTypeAsString = arguments[0];
-        }        
-        boolean isReference = Boolean.parseBoolean((String) element.getValues().get("isReference"));
+        }
+        boolean isCollection = refTypeAsString.startsWith("java.util.List<L");
+        if (isCollection) {
+            refTypeAsString = refTypeAsString.substring("java.util.List<L".length());
+        }
+
+        Boolean isReference = (Boolean) element.getValues().get("reference");
         Type refType = context.getTypes().getBy(refTypeAsString);
-        if (refType==null || isReference) {
+        if (refType==null || (isReference!=null && isReference)) {
             // leaf
-            metadata.add(xmlTokenName, makeCollectionIfNecessary(refTypeAsString, "leaf"));
+            metadata.add(xmlTokenName, makeCollectionIfNecessary(isCollection, "leaf"));
         } else {
             // node
-            metadata.add(xmlTokenName, makeCollectionIfNecessary(refTypeAsString, refTypeAsString));
+            metadata.add(xmlTokenName, makeCollectionIfNecessary(isCollection, refTypeAsString));
         }
     }
 

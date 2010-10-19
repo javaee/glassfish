@@ -58,5 +58,5 @@ public interface TopLevel extends ConfigBeanProxy {
     Configs getConfigs();
 
     @Element
-    List<Server> getServers();
+    Servers getServers();
 }

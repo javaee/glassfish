@@ -205,8 +205,7 @@ public class ModelClassVisitor implements ClassVisitor {
         } catch (Exception e) {
             return null;
         }
-
-        final MethodModelImpl method = new MethodModelImpl(name, cm, desc);
+        final MethodModelImpl method = new MethodModelImpl(name, cm, (signature==null?desc:signature));
         type.addMethod(method);
         visitingContext.method = method;
         return methodVisitor;

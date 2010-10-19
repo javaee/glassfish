@@ -631,6 +631,27 @@ public final class ConfigModel {
             return dv;
         }
     }
+
+    static final class ReferenceLeaf extends AttributeLeaf {
+        ReferenceLeaf(String xmlName, String dataType) {
+            super(xmlName, dataType);
+        }
+
+        @Override
+        public Object get(Dom dom, Type returnType) {
+            String id = dom.attribute(xmlName);
+            Class<?> type = Types.erasure(returnType);
+            
+            // let's look first the fast way.
+            Object candidate = dom.getHabitat().getComponent(type, id);
+            if (candidate!=null) {
+                return type.cast(candidate);
+            }
+
+            dom = dom.getSymbolSpaceRoot(id);
+            return type.cast(dom.resolveReference(id,type.getName()).get());
+        }
+    }
     
     static final class SingleLeaf extends Leaf {
         SingleLeaf(String xmlName) {
@@ -677,9 +698,13 @@ public final class ConfigModel {
                 String dv = getMetadataFieldKeyedAs(e.getValue(), "default:");  //default value
                 String dt = getMetadataFieldKeyedAs(e.getValue(), "datatype:"); //type
                 AttributeLeaf leaf = null;
-                if (dv == null)
-                    leaf = new AttributeLeaf(attributeName, dt);
-                else
+                if (dv == null) {
+                    if (e.getValue().contains("reference")) {
+                        leaf = new ReferenceLeaf(attributeName, dt);
+                    } else {
+                        leaf = new AttributeLeaf(attributeName, dt);
+                    }
+                } else
                     leaf = new AttributeLeafWithDefaultValue(attributeName, dt, dv);
                 attributes.put(attributeName, leaf);
             } else

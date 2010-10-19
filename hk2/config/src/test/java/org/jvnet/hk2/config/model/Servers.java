@@ -34,43 +34,22 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.configuration.introspection.anyreally;
+package org.jvnet.hk2.config.model;
 
-import com.sun.enterprise.module.bootstrap.ModuleStartup;
-import com.sun.enterprise.module.bootstrap.StartupContext;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.Element;
+
+import java.util.List;
 
 /**
- * do nothing really, I only care about the inhabitant file generation
+ * Collection of server instances
  */
-@Service
-public class DoNothing implements ModuleStartup  {
+@Configured
+public interface Servers extends ConfigBeanProxy {
 
-    @Inject
-    TopLevel topLevel;
+    @Element
+    List<Server> getServer();
 
-    @Override
-    public void setStartupContext(StartupContext context) {
 
-    }
-
-    @Override
-    public void start() {
-        System.out.println("Started !");
-        assert(topLevel!=null);
-        System.out.println(topLevel);
-        /*System.out.println(" and I have " + topLevel.getConfigs().getConfig().size() + " configs and " +
-            topLevel.getServers().getServers().size() + " servers");
-        for (Server server : topLevel.getServers().getServers()) {
-            System.out.println("For server " + server.getName() + " , config is " + server.getConfig().getName());
-            assert(server.getConfig().getName().equals("some-config"));
-        }
-        */
-    }
-
-    @Override
-    public void stop() {
-        
-    }
 }

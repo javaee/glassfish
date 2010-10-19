@@ -3,6 +3,8 @@
         <config name="some-config">
         </config>
     </configs>
+    <servers>
     <server name="some-server" config="some-config">        
     </server>
+    </servers>
 </top-level>
