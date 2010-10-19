@@ -36,6 +36,7 @@
  */
 package org.jvnet.hk2.component.classmodel;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -59,16 +60,18 @@ import com.sun.hk2.component.InhabitantsScanner;
  * Responsible for generating the collection of inhabitants, decoupling from
  * implementation detail for the caller.
  * <p/>
- * <p/>
  * The caller is expected to continually build up the InhabitantsGenerator
  * context by calling add*(), followed by calling getModelInhabitants() to
  * obtain the progenitors of the inhabitants.
+ * <p/>
+ * There are two ways to close this instance, either through {@link #getContext()}
+ * or through calling {@link #close()} directly.
  *
  * @author Jerome Dochez
  * @author Jeff Trent
  * @since 3.1
  */
-public abstract class InhabitantsParsingContextGenerator {
+public abstract class InhabitantsParsingContextGenerator implements Closeable {
 
     private final Logger logger = Logger
             .getLogger(InhabitantsParsingContextGenerator.class.getName());
@@ -131,6 +134,8 @@ public abstract class InhabitantsParsingContextGenerator {
 
     /**
      * Retrieves the parsing context that can be used for model generation elsewhere.
+     * <b>Note that this can be called at most once and then this instance is implicitly
+     * closed.</b>
      *
      * @return the parsing context given the code sources provided
      */
@@ -138,6 +143,7 @@ public abstract class InhabitantsParsingContextGenerator {
         try {
             parser.awaitTermination();
         } catch (InterruptedException e) {
+            close();
             throw new RuntimeException(e);
         }
         return context;
@@ -166,11 +172,23 @@ public abstract class InhabitantsParsingContextGenerator {
     }
 
     protected void parseAlways(Parser parser, final File f) throws IOException {
+      try {
         parser.parse(f, new Runnable() {
             public void run() {
                 logger.log(Level.FINER, "Finished introspecting {0}", f.getName());
             }
         });
+      } catch (IOException e) {
+        logger.log(Level.FINE, "problem during parsing - closing prematurely", e);
+        close();
+      }
+    }
+
+    @Override
+    public void close() {
+      if (null != parser) {
+        parser.close();
+      }
     }
 
 }

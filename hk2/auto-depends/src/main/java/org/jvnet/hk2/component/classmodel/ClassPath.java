@@ -115,6 +115,11 @@ public abstract class ClassPath {
     }
   }
 
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + "-" + System.identityHashCode(this) + ":" + getEntries();
+  }
+  
   /**
    * Find all jars referenced directly and indirectly via a classpath
    * specification typically drawn from java.class.path or
@@ -190,7 +195,7 @@ public abstract class ClassPath {
           }
         }
       } catch (Exception ex) {
-        ex.printStackTrace();
+        Logger.getAnonymousLogger().log(Level.FINE, "an error occurred", ex);
       }
     }
   }

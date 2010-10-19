@@ -41,6 +41,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.jvnet.hk2.component.classmodel.ClassPath;
 
 /**
@@ -60,7 +63,7 @@ public class CodeSourceFilter {
     try {
       initialize();
     } catch (IOException e) {
-      e.printStackTrace();
+      Logger.getAnonymousLogger().log(Level.FINE, "error occurred", e);
     }
   }
 
