@@ -161,39 +161,40 @@ public class ModuleInfo {
 
         Set<EngineRef> filteredEngines = new LinkedHashSet<EngineRef>();
 
-        for (EngineRef engine : _getEngineRefs()) {
+        ClassLoader currentClassLoader  = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(context.getClassLoader());
+            for (EngineRef engine : _getEngineRefs()) {
+    
+                final EngineInfo engineInfo = engine.getContainerInfo();
 
-            final EngineInfo engineInfo = engine.getContainerInfo();
+                // get the container.
+                Deployer deployer = engineInfo.getDeployer();
 
-            // get the container.
-            Deployer deployer = engineInfo.getDeployer();
-
-            ClassLoader currentClassLoader  = Thread.currentThread().getContextClassLoader();
-            try {
-                Thread.currentThread().setContextClassLoader(context.getClassLoader());
-                ApplicationContainer appCtr = deployer.load(engineInfo.getContainer(), context);
-                if (appCtr==null) {
-                    String msg = "Cannot load application in " + engineInfo.getContainer().getName() + " container";
-                    logger.fine(msg);
-                    continue;
+                try {
+                   ApplicationContainer appCtr = deployer.load(engineInfo.getContainer(), context);
+                   if (appCtr==null) {
+                       String msg = "Cannot load application in " + engineInfo.getContainer().getName() + " container";
+                       logger.fine(msg);
+                       continue;
+                   }
+                   engine.load(context, tracker);
+                   engine.setApplicationContainer(appCtr);
+                   filteredEngines.add(engine);
+                } catch(Exception e) {
+                    logger.log(Level.SEVERE, "Exception while invoking " + deployer.getClass() + " load method", e);
+                    throw e;
                 }
-                engine.load(context, tracker);
-                engine.setApplicationContainer(appCtr);
-                filteredEngines.add(engine);
-
-            } catch(Exception e) {
-                logger.log(Level.SEVERE, "Exception while invoking " + deployer.getClass() + " load method", e);
-                throw e;
-            } finally {
-                Thread.currentThread().setContextClassLoader(currentClassLoader);
             }
+            engines = filteredEngines;
+
+            if (events!=null) {
+                events.send(new Event<ModuleInfo>(Deployment.MODULE_LOADED, this), false);
+            }
+        } finally {
+            Thread.currentThread().setContextClassLoader(currentClassLoader);
         }
 
-        engines = filteredEngines;
-
-        if (events!=null) {
-            events.send(new Event<ModuleInfo>(Deployment.MODULE_LOADED, this), false);
-        }
     }    
 
     /*
@@ -227,30 +228,32 @@ public class ModuleInfo {
         if (started)
             return;
         
-        // registers all deployed items.
-        for (EngineRef engine : _getEngineRefs()) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("starting " + engine.getContainerInfo().getSniffer().getModuleType());
-            }
-
-            ClassLoader currentClassLoader  = 
-                Thread.currentThread().getContextClassLoader();
-            try {
-                Thread.currentThread().setContextClassLoader(context.getClassLoader());
-                if (!engine.start( context, tracker)) {
-                    logger.log(Level.SEVERE, "Module not started " +  engine.getApplicationContainer().toString());
-                    throw new Exception( "Module not started " +  engine.getApplicationContainer().toString());
+        ClassLoader currentClassLoader  = 
+            Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(context.getClassLoader());
+            // registers all deployed items.
+            for (EngineRef engine : _getEngineRefs()) {
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.fine("starting " + engine.getContainerInfo().getSniffer().getModuleType());
                 }
-            } catch(Exception e) {
-                logger.log(Level.SEVERE, "Exception while invoking " + engine.getApplicationContainer().getClass() + " start method", e);
-                throw e;
-            } finally {
-                Thread.currentThread().setContextClassLoader(currentClassLoader);
+
+                try {
+                    if (!engine.start( context, tracker)) {
+                        logger.log(Level.SEVERE, "Module not started " +  engine.getApplicationContainer().toString());
+                        throw new Exception( "Module not started " +  engine.getApplicationContainer().toString());
+                    }
+                } catch(Exception e) {
+                    logger.log(Level.SEVERE, "Exception while invoking " + engine.getApplicationContainer().getClass() + " start method", e);
+                    throw e;
+                }
             }
-        }
-        started=true;
-        if (events!=null) {
-            events.send(new Event<ModuleInfo>(Deployment.MODULE_STARTED, this), false);
+            started=true;
+            if (events!=null) {
+                events.send(new Event<ModuleInfo>(Deployment.MODULE_STARTED, this), false);
+            }
+        } finally {
+            Thread.currentThread().setContextClassLoader(currentClassLoader);
         }
     }
 
@@ -259,56 +262,57 @@ public class ModuleInfo {
         if (!started)
             return;
         
-        for (EngineRef module : _getEngineRefs()) {
-            ClassLoader currentClassLoader  = Thread.currentThread().getContextClassLoader();
-            try {
-                Thread.currentThread().setContextClassLoader(moduleClassLoader);
-                context.setClassLoader(moduleClassLoader);
-                module.stop(context);
-            } catch(Exception e) {
-                logger.log(Level.SEVERE, "Cannot stop module " +
+        ClassLoader currentClassLoader  = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(moduleClassLoader);
+            for (EngineRef module : _getEngineRefs()) {
+                try {
+                    context.setClassLoader(moduleClassLoader);
+                    module.stop(context);
+                } catch(Exception e) {
+                    logger.log(Level.SEVERE, "Cannot stop module " +
                         module.getContainerInfo().getSniffer().getModuleType(),e );
-            } finally {
-                Thread.currentThread().setContextClassLoader(currentClassLoader);
+                }
             }
-        }
-        started=false;
-        if (events!=null) {
-            events.send(new Event<ModuleInfo>(Deployment.MODULE_STOPPED, this), false);
+            started=false;
+            if (events!=null) {
+                events.send(new Event<ModuleInfo>(Deployment.MODULE_STOPPED, this), false);
+            }
+        } finally {
+            Thread.currentThread().setContextClassLoader(currentClassLoader);
         }
     }
 
     public void unload(ExtendedDeploymentContext context) {
 
         Logger logger = context.getLogger();
-        for (EngineRef engine : _getEngineRefs()) {
-            if (engine.getApplicationContainer()!=null && engine.getApplicationContainer().getClassLoader()!=null) {
-                classLoaders.add(engine.getApplicationContainer().getClassLoader());
-                ClassLoader currentClassLoader  = Thread.currentThread().getContextClassLoader();
-                try {
-                    Thread.currentThread().setContextClassLoader(moduleClassLoader);
-                    context.setClassLoader(moduleClassLoader);
-                    engine.unload(context);
-                } catch(Throwable e) {
-                    logger.log(Level.SEVERE, "Failed to unload from container type : " +
+        ClassLoader currentClassLoader  = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(moduleClassLoader);
+            for (EngineRef engine : _getEngineRefs()) {
+                if (engine.getApplicationContainer()!=null && engine.getApplicationContainer().getClassLoader()!=null) {
+                    classLoaders.add(engine.getApplicationContainer().getClassLoader());
+                    try {
+                        context.setClassLoader(moduleClassLoader);
+                        engine.unload(context);
+                    } catch(Throwable e) {
+                        logger.log(Level.SEVERE, "Failed to unload from container type : " +
                             engine.getContainerInfo().getSniffer().getModuleType(), e);
-                } finally {
-                    Thread.currentThread().setContextClassLoader(currentClassLoader);
-                    context.setClassLoader(null);
+                    }
                 }
             }
+            // add the module classloader to the predestroy list if it's not
+            // already there
+            if (classLoaders != null && moduleClassLoader != null) {
+                classLoaders.add(moduleClassLoader);
+            }
+            if (events!=null) {
+                events.send(new Event<ModuleInfo>(Deployment.MODULE_UNLOADED, this), false);
+            }
+        } finally {
+            Thread.currentThread().setContextClassLoader(currentClassLoader);
+            context.setClassLoader(null);
         }
-
-        // add the module classloader to the predestroy list if it's not
-        // already there
-        if (classLoaders != null && moduleClassLoader != null) {
-            classLoaders.add(moduleClassLoader);
-        }
-
-        if (events!=null) {
-            events.send(new Event<ModuleInfo>(Deployment.MODULE_UNLOADED, this), false);
-        }
-
     }
 
     public void clean(ExtendedDeploymentContext context) throws Exception {
