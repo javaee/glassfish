@@ -34,42 +34,25 @@
  * holder.
  */
 
+package com.acme;
 
-//Simple TestBean to test CDI. 
-//This bean implements Serializable as it needs to be placed into a Stateful Bean
-@javax.annotation.ManagedBean
-public class TestManagedBean {
-    TestBean tb;
-    boolean postConstructCalled = false;
+import javax.ejb.*;
+import javax.annotation.*;
 
 
-    //A Managed Bean needs to have a no-arg constructor
-    public TestManagedBean() {}
-    @javax.inject.Inject //Constructor based Injection
-    public TestManagedBean(TestBean tb){
-        this.tb = tb;
+@Singleton
+public class Singleton4 {
+
+    @PostConstruct
+    public void init() {
+        System.out.println("In SingletonBean4::init()");
+    }
+    
+    @PreDestroy
+    public void destroy() {
+        System.out.println("In SingletonBean4::destroy()");
     }
 
 
-    @javax.annotation.PostConstruct
-    public void init(){
-        System.out.println("In ManagedBean:: PostConstruct");
-        postConstructCalled = true;
-    }
-
-    @Tester
-    public void foo(){
-        System.out.println("foo called");
-    }
-
-    public boolean testPostConstructCalled(){
-        return this.postConstructCalled;
-    }
-
-    public boolean testInjection(){
-        System.out.println("In ManagedBean:: tb=" + tb);
-        postConstructCalled = true;
-        return this.tb != null;
-    }
 
 }

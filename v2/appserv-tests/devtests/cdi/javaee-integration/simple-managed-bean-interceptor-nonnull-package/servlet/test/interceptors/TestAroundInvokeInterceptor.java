@@ -1,3 +1,4 @@
+package test.interceptors;
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -34,42 +35,24 @@
  * holder.
  */
 
+import javax.interceptor.*;
 
-//Simple TestBean to test CDI. 
-//This bean implements Serializable as it needs to be placed into a Stateful Bean
-@javax.annotation.ManagedBean
-public class TestManagedBean {
-    TestBean tb;
-    boolean postConstructCalled = false;
+import test.beans.Tester;
 
+@Tester @Interceptor
+public class TestAroundInvokeInterceptor {
+    public static int aroundInvokeCount = 0;
 
-    //A Managed Bean needs to have a no-arg constructor
-    public TestManagedBean() {}
-    @javax.inject.Inject //Constructor based Injection
-    public TestManagedBean(TestBean tb){
-        this.tb = tb;
+    public static void reset(){
+        aroundInvokeCount = 0;
     }
 
-
-    @javax.annotation.PostConstruct
-    public void init(){
-        System.out.println("In ManagedBean:: PostConstruct");
-        postConstructCalled = true;
-    }
-
-    @Tester
-    public void foo(){
-        System.out.println("foo called");
-    }
-
-    public boolean testPostConstructCalled(){
-        return this.postConstructCalled;
-    }
-
-    public boolean testInjection(){
-        System.out.println("In ManagedBean:: tb=" + tb);
-        postConstructCalled = true;
-        return this.tb != null;
-    }
+   @AroundInvoke 
+   public Object testMethod(InvocationContext ctx) throws Exception {
+        System.out.println("TestAroundInvokeIntercetpr:: aroundInvoke called - target:" + ctx.getTarget() + " , params:"+ ctx.getParameters());
+        aroundInvokeCount ++;
+        ctx.proceed();
+        return null;
+   }
 
 }

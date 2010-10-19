@@ -34,42 +34,53 @@
  * holder.
  */
 
+package com.acme;
 
-//Simple TestBean to test CDI. 
-//This bean implements Serializable as it needs to be placed into a Stateful Bean
-@javax.annotation.ManagedBean
-public class TestManagedBean {
-    TestBean tb;
-    boolean postConstructCalled = false;
+import javax.annotation.*;
 
+import javax.ejb.EJB;
+import javax.annotation.Resource;
+import org.omg.CORBA.ORB;
+import javax.persistence.PersistenceContext;
+import javax.persistence.EntityManager;
 
-    //A Managed Bean needs to have a no-arg constructor
-    public TestManagedBean() {}
-    @javax.inject.Inject //Constructor based Injection
-    public TestManagedBean(TestBean tb){
-        this.tb = tb;
+@ManagedBean("somemanagedbean")
+public class FooManagedBean extends ManagedSuper implements Foo {
+
+    @EJB HelloRemote s;
+    @Resource ORB orb;
+    @Resource BarManagedBean bmb;
+    @PersistenceContext EntityManager em;
+
+    @PostConstruct
+    private void init() {
+	System.out.println("In FooManagedBean::init() " + this);
+    }
+    
+
+    public String getName() {
+	return "somemanagedbean";
+    }
+
+    public void foo() {
+	System.out.println("In FooManagedBean::foo() ");
+	bmb.bar();
+    }
+
+    public Object getThis() {
+	return this;
+    }
+
+    @PreDestroy
+    private void destroy() {
+	System.out.println("In FooManagedBean::destroy() ");
     }
 
 
-    @javax.annotation.PostConstruct
-    public void init(){
-        System.out.println("In ManagedBean:: PostConstruct");
-        postConstructCalled = true;
-    }
-
-    @Tester
-    public void foo(){
-        System.out.println("foo called");
-    }
-
-    public boolean testPostConstructCalled(){
-        return this.postConstructCalled;
-    }
-
-    public boolean testInjection(){
-        System.out.println("In ManagedBean:: tb=" + tb);
-        postConstructCalled = true;
-        return this.tb != null;
+    public String toString() {
+	return "FooManagedBean this = " + super.toString() + 
+			   " s = " + s + " , orb = " + orb + 
+	    " , bmb = " + bmb + " , em = " + em;
     }
 
 }

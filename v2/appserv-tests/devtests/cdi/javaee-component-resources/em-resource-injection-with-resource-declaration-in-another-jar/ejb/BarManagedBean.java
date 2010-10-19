@@ -34,42 +34,38 @@
  * holder.
  */
 
+package com.acme;
 
-//Simple TestBean to test CDI. 
-//This bean implements Serializable as it needs to be placed into a Stateful Bean
-@javax.annotation.ManagedBean
-public class TestManagedBean {
-    TestBean tb;
-    boolean postConstructCalled = false;
+import javax.annotation.*;
+import javax.ejb.EJB;
+import javax.annotation.Resource;
+import javax.sql.DataSource;
 
+@ManagedBean
+public class BarManagedBean {
 
-    //A Managed Bean needs to have a no-arg constructor
-    public TestManagedBean() {}
-    @javax.inject.Inject //Constructor based Injection
-    public TestManagedBean(TestBean tb){
-        this.tb = tb;
+    @EJB Hello s;
+    @Resource(name="jdbc/__default") DataSource ds;
+
+    @PostConstruct
+    private void init() {
+	System.out.println("In BarManagedBean::init() " + this);
+    }
+
+   public void bar() {
+       System.out.println("In BarManagedBean::bar() ");
     }
 
 
-    @javax.annotation.PostConstruct
-    public void init(){
-        System.out.println("In ManagedBean:: PostConstruct");
-        postConstructCalled = true;
+    @PreDestroy
+    private void destroy() {
+	System.out.println("In BarManagedBean::destroy() ");
     }
 
-    @Tester
-    public void foo(){
-        System.out.println("foo called");
-    }
+    public String toString() {
+	return "BarManagedBean this = " + super.toString() + 
+	    " s = " + s + " , ds = " + ds;
 
-    public boolean testPostConstructCalled(){
-        return this.postConstructCalled;
-    }
-
-    public boolean testInjection(){
-        System.out.println("In ManagedBean:: tb=" + tb);
-        postConstructCalled = true;
-        return this.tb != null;
     }
 
 }

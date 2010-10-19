@@ -97,6 +97,8 @@
         <record name="javaee-int.output" action="start" />
             <ant dir="builtin-beans" target="${javaee-int-target}"/>
             <ant dir="servlet-context-injection-cdi" target="${javaee-int-target}"/>
+            <ant dir="simple-managed-bean-interceptor-noargconstructor-missing" target="${javaee-int-target}"/>
+            <ant dir="simple-managed-bean-interceptor-nonnull-package" target="${javaee-int-target}"/>
         <record name="javaee-int.output" action="stop" />
     </target>
 

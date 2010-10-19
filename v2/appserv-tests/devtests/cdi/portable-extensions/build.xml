@@ -101,6 +101,7 @@
             <ant dir="injection-target" target="${portable-extensions-target}"/>
             <ant dir="new-bean-registration" target="${portable-extensions-target}"/>
             <ant dir="new-bean-registration-extension-in-lib" target="${portable-extensions-target}"/>
+            <ant dir="package-private-extension-constructor" target="${portable-extensions-target}"/>
         <record name="portable-extensions.output" action="stop" />
     </target>
 

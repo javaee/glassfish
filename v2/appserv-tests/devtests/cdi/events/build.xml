@@ -96,7 +96,9 @@
     <target name="events">
         <record name="events.output" action="start" />
             <ant dir="simple-event-observers" target="${events-target}"/>
+<!--
             <ant dir="conditional-observer" target="${events-target}"/>
+-->
             <ant dir="event-producers" target="${events-target}"/>
             <ant dir="multiple-event-qualifiers" target="${events-target}"/>
         <record name="events.output" action="stop" />

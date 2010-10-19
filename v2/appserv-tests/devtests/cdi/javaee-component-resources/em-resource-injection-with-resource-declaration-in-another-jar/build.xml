@@ -34,101 +34,76 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
+
 <!DOCTYPE project [
 <!ENTITY commonSetup SYSTEM "./../../../../config/properties.xml">
 <!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
-<!ENTITY run SYSTEM "./../../../../config/run.xml">
 <!ENTITY testproperties SYSTEM "./build.properties">
 ]>
 
-<project name="webcontainer_unittest" default="all" basedir=".">
+<project name="cdi-full-ear-App" default="usage" basedir=".">
 
     &commonSetup;
     &commonBuild;
     &testproperties;
-    &run;
 
-    <target name="all" depends="build,deploy,run,undeploy"/>
+    <target name="all" depends="clean,build,deploy,run,undeploy"/>
 
     <target name="clean" depends="init-common">
-        <antcall target="clean-common"/>
-        <delete failonerror="false">
-            <fileset dir="." includes="*.class"/>
-            <fileset dir="lib" includes="*.jar"/>
-            <fileset dir="client/test/client" includes="*.class"/>
-        </delete>
+      <antcall  target="clean-common"/>
     </target>
-       
+ 
     <target name="compile" depends="clean">
-        <!-- compile and build extension jar -->
         <antcall target="compile-common">
-            <param name="src" value="extension"/>
+            <param name="src" value="war"/>
         </antcall>
-      <mkdir dir="lib"/>
-	  <mkdir dir="${build.classes.dir}/META-INF"/>
-	  <mkdir dir="${build.classes.dir}/META-INF/services"/>
-	  <copy file="${cdi.extension}" 
-	    tofile="${build.classes.dir}/META-INF/services/javax.enterprise.inject.spi.Extension"
-	    failonerror="false"/>
-	  <copy file="${beans.xml}" 
-	    tofile="${build.classes.dir}/META-INF/beans.xml"
-	    failonerror="false"/>
-	  <jar jarfile="lib/${extension.jar}" basedir="${build.classes.dir}" update="true"
-	    includes ="${build.classes.dir}">
-	    <metainf dir="${build.classes.dir}/META-INF">
-		<include name="services/javax.enterprise.inject.spi.Extension"/>
-	    </metainf>
-	    <fileset dir="${build.classes.dir}/" casesensitive="yes">
-	      <include name="**/*class*"/>
-	    </fileset>
-	  </jar>       
-	  <delete dir="${build.classes.dir}/META-INF"/>
-	<antcall target="compile-common">
-		<param name="src" value="servlet"/>
-	</antcall>
-	  <delete dir="${build.classes.dir}/test/fwk"/>
-	  <delete dir="${build.classes.dir}/test/extension"/>
+        <antcall target="webclient-war-common">
+          <param name="hasWebclient" value="true"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="ejb"/>
+        </antcall>
 
+	<javac classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar" srcdir="client" destdir="${build.classes.dir}" debug="on" failonerror="true">
+          <compilerarg line="-endorseddirs ${env.S1AS_HOME}/modules/endorsed"/>
+	 
+        </javac>
+<!--
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+        </antcall>
+-->
     </target>
 
     <target name="build" depends="compile">
-        <property name="hasWebclient" value="yes"/> 
-        <antcall target="webclient-war-common">
-            <param name="hasWebclient" value="yes"/>
-            <param name="webclient.war.classes" value="**/*.class"/>
-        	<param name="cdi-extension.service" value="cdi-extension.service"/>
+        <mkdir dir="${assemble.dir}"/>
+        <antcall target="ejb-jar-common">
+          <param name="ejbjar.classes" value="**/Foo.class,**/Hello.class,**/HelloRemote.class,**/Singleton*.class,**/HelloStateless.class,**/HelloSingleton.class,**/FooManagedBean.class,**/BarManagedBean.class, **/FooBarManagedBean.class, **/ManagedSuper.class"/>
         </antcall>
-
-        <javac srcdir="client" classpath="${env.APS_HOME}/lib/reportbuilder.jar"
-               includes="test/client/WebTest.java"/>
-
+        <antcall target="ear-common"/>
     </target> 
-
-    <target name="build-publish-war" depends="build, publish-war-common" />
     
-    <target name="deploy" depends="init-common">
-        <antcall target="deploy-war-common"/>
+    <target name="deploy" 
+            depends="init-common">
+        <antcall target="deploy-common"/>
     </target>
-    
+
     <target name="run" depends="init-common">
-        <java classname="test.client.WebTest">
-          <arg value="${http.host}"/>
-          <arg value="${http.port}"/>
-          <arg value="${contextroot}"/>
-          <classpath>
-           <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
-           <pathelement location="client"/>
-         </classpath>
+       <java  fork="on" 
+              failonerror="true"
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classname="${se.client}">
+           <arg line="${contextroot}"/>
+           <arg line="${http.host}"/>
+           <arg line="${http.port}"/>
         </java>
     </target>
  
     <target name="undeploy" depends="init-common">
-        <antcall target="undeploy-war-common"/>
+        <antcall target="undeploy-common"/>
     </target>   
 
     <target name="usage">
         <antcall target="usage-common"/>
     </target>
-
-
 </project>

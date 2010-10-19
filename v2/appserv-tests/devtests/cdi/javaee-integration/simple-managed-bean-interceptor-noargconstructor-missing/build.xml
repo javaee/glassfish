@@ -52,55 +52,26 @@
 
     <target name="clean" depends="init-common">
         <antcall target="clean-common"/>
-        <delete failonerror="false">
+        <delete>
             <fileset dir="." includes="*.class"/>
-            <fileset dir="lib" includes="*.jar"/>
-            <fileset dir="client/test/client" includes="*.class"/>
         </delete>
     </target>
        
     <target name="compile" depends="clean">
-        <!-- compile and build extension jar -->
         <antcall target="compile-common">
-            <param name="src" value="extension"/>
+            <param name="src" value="servlet"/>
         </antcall>
-      <mkdir dir="lib"/>
-	  <mkdir dir="${build.classes.dir}/META-INF"/>
-	  <mkdir dir="${build.classes.dir}/META-INF/services"/>
-	  <copy file="${cdi.extension}" 
-	    tofile="${build.classes.dir}/META-INF/services/javax.enterprise.inject.spi.Extension"
-	    failonerror="false"/>
-	  <copy file="${beans.xml}" 
-	    tofile="${build.classes.dir}/META-INF/beans.xml"
-	    failonerror="false"/>
-	  <jar jarfile="lib/${extension.jar}" basedir="${build.classes.dir}" update="true"
-	    includes ="${build.classes.dir}">
-	    <metainf dir="${build.classes.dir}/META-INF">
-		<include name="services/javax.enterprise.inject.spi.Extension"/>
-	    </metainf>
-	    <fileset dir="${build.classes.dir}/" casesensitive="yes">
-	      <include name="**/*class*"/>
-	    </fileset>
-	  </jar>       
-	  <delete dir="${build.classes.dir}/META-INF"/>
-	<antcall target="compile-common">
-		<param name="src" value="servlet"/>
-	</antcall>
-	  <delete dir="${build.classes.dir}/test/fwk"/>
-	  <delete dir="${build.classes.dir}/test/extension"/>
-
     </target>
 
     <target name="build" depends="compile">
         <property name="hasWebclient" value="yes"/> 
         <antcall target="webclient-war-common">
             <param name="hasWebclient" value="yes"/>
-            <param name="webclient.war.classes" value="**/*.class"/>
-        	<param name="cdi-extension.service" value="cdi-extension.service"/>
+            <param name="webclient.war.classes" value="**/*.class"/> 
         </antcall>
 
-        <javac srcdir="client" classpath="${env.APS_HOME}/lib/reportbuilder.jar"
-               includes="test/client/WebTest.java"/>
+        <javac srcdir="." classpath="${env.APS_HOME}/lib/reportbuilder.jar"
+               includes="WebTest.java"/>
 
     </target> 
 
@@ -111,13 +82,13 @@
     </target>
     
     <target name="run" depends="init-common">
-        <java classname="test.client.WebTest">
+        <java classname="WebTest">
           <arg value="${http.host}"/>
           <arg value="${http.port}"/>
           <arg value="${contextroot}"/>
           <classpath>
            <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
-           <pathelement location="client"/>
+           <pathelement location="."/>
          </classpath>
         </java>
     </target>
@@ -129,6 +100,4 @@
     <target name="usage">
         <antcall target="usage-common"/>
     </target>
-
-
 </project>
