@@ -149,8 +149,15 @@ public class StartServerHelper{
             System.out.println();
 
         if(!alive) {
-            String msg = strings.get("dasNoStart",
+            String msg;
+
+            if(info.isDomain())
+                msg = strings.get("dasNoStart",
                     info.getDomainName(), (WAIT_FOR_DAS_TIME_MS / 1000));
+            else
+                msg = strings.get("instanceNoStart",
+                    info.getInstanceName(), (WAIT_FOR_DAS_TIME_MS / 1000));
+            
             throw new CommandException(msg);
         }
     }
