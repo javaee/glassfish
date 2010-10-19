@@ -78,7 +78,7 @@ public class Parser implements Closeable {
             if (context.logger.isLoggable(Level.FINE)) {
                  context.logger.log(Level.FINE, "Await iterating at " + System.currentTimeMillis() + " waiting for " + futures.size());
             }
-            Future<Result> f=null;
+            Future<Result> f;
             synchronized(futures) {
                 try {
                     f = futures.pop();

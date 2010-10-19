@@ -115,7 +115,7 @@ public class DomDocument<T extends Dom> {
     public ConfigModel buildModel(String fullyQualifiedClassName) {
         Inhabitant i = habitat.getInhabitantByAnnotation(InjectionTarget.class, fullyQualifiedClassName);
         if(i==null)
-            throw new ComponentException("ConfigInjector for %s is not found",fullyQualifiedClassName);
+            throw new ComponentException("ConfigInjector for %s is not found, is it annotated with @Configured",fullyQualifiedClassName);
         return buildModel(i);
     }
 

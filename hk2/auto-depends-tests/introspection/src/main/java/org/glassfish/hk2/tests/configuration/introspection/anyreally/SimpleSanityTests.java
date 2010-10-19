@@ -34,70 +34,36 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.config;
+package org.glassfish.hk2.tests.configuration.introspection.anyreally;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import com.sun.enterprise.module.bootstrap.ModuleStartup;
+import com.sun.enterprise.module.bootstrap.StartupContext;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.config.model.Config;
-import org.jvnet.hk2.config.model.Server;
-import org.jvnet.hk2.config.model.TopLevel;
-import org.jvnet.hk2.junit.Hk2Test;
-
-import java.net.URL;
-import java.util.Collection;
-
+import org.jvnet.hk2.annotations.Service;
 
 /**
- * Simple test to dump all @Configured interfaces
+ * some sanity checks from our generation.
  */
-public class SimpleConfiguredTest extends Hk2Test implements Hk2Test.Populator  {
-
-    @Inject
-    Habitat habitat;
+@Service
+public class SimpleSanityTests implements ModuleStartup  {
 
     @Inject
     TopLevel topLevel;
 
     @Override
-    public void populate(Habitat habitat) {
-        ConfigParser configParser = new ConfigParser(habitat);
-        URL url = SimpleConfiguredTest.class.getResource("test1.xml");
-        configParser.parse(url);
+    public void setStartupContext(StartupContext context) {
+
     }
 
-    @Test
-    @Ignore
-    public void dump() {
-        Collection<Inhabitant<?>> inhabitants = habitat.getInhabitantsByContract(InjectionTarget.class.getName());
-        for (Inhabitant<?> inhabitant : inhabitants) {
-            System.out.println("Found inhabitant " + inhabitant);
-            System.out.println("metadata " + inhabitant.metadata());
-        }
+    @Override
+    public void start() {
+        assert(topLevel!=null);
+        assert(topLevel.getConfigs().getConfig().size()>0);
+        assert(topLevel.getServers().getServer().size()>0);        
     }
 
-    @Test
-    public void testTopLevelName() {
-        assertEquals(topLevel.getName(), "something");
-    }
-
-    @Test
-    public void testConfigByName() {
-        Config config = habitat.getComponent(Config.class, "some-config");
-        assertNotNull(config);
-        assertEquals(config.getName(), "some-config");
-    }
-
-    @Test
-    public void testReference() {
-        Server server = habitat.getComponent(Server.class, "some-server");
-        assertNotNull(server);
-        assertEquals(server.getName(), "some-server");
-        Config serverConfig = server.getConfig();
-        assertNotNull(serverConfig);
-        assertEquals(serverConfig.getName(), "some-config");
+    @Override
+    public void stop() {
+        
     }
 }

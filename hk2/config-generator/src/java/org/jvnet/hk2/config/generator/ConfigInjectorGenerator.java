@@ -742,6 +742,7 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
 
                 void addMetadata(String key,TypeMirror itemType) {
                     metadata.add(key,makeCollectionIfNecessary("leaf"));
+                    metadata.add(key, "reference");
                 }
             }
         }
