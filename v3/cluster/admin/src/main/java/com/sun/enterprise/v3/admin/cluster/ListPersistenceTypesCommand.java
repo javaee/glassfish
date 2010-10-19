@@ -72,7 +72,8 @@ public class ListPersistenceTypesCommand implements AdminCommand {
 
     private ActionReport report;
     private Logger logger;
-    static final private String SEPARATOR=" ";
+    private static final String EOL = "\n";
+    private static final String SEPARATOR=EOL;
 
     @Override
     public void execute(AdminCommandContext context) {
@@ -85,11 +86,17 @@ public class ListPersistenceTypesCommand implements AdminCommand {
         Set<String> types = BackingStoreFactoryRegistry.getRegisteredTypes();
         types.remove("noop"); // implementation detail.  do not expose to users.
         StringBuilder sb = new StringBuilder("");
+        boolean removeTrailingSeparator = false;
         for (String type : types) {
             sb.append(type).append(SEPARATOR);
+            removeTrailingSeparator = true;
         }
         String output = sb.toString();
-        
+        if (removeTrailingSeparator) {
+            output = output.substring(0, output.length()-1);
+        } else {
+            output = Constants.NONE;
+        }
         Properties extraProperties = new Properties();
         extraProperties.put("types", new ArrayList<String>(types));
         
