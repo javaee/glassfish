@@ -35,19 +35,16 @@
  */
 package org.glassfish.hk2.classmodel.reflect;
 
-import org.glassfish.hk2.classmodel.reflect.impl.TypeBuilder;
-import org.glassfish.hk2.classmodel.reflect.impl.TypesImpl;
 import org.glassfish.hk2.classmodel.reflect.util.DirectoryArchive;
 import org.glassfish.hk2.classmodel.reflect.util.JarArchive;
 import org.objectweb.asm.ClassReader;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -56,7 +53,7 @@ import java.util.logging.Logger;
  *
  * @author Jerome Dochez
  */
-public class Parser {
+public class Parser implements Closeable {
 
     private final ParsingContext context;
     private final Map<String, Types> processedURI = Collections.synchronizedMap(new HashMap<String, Types>());
@@ -70,14 +67,12 @@ public class Parser {
         executorService = (context.executorService==null?createExecutorService():context.executorService);
         ownES = context.executorService==null;
     }
+    
     public Exception[] awaitTermination() throws InterruptedException {
         return awaitTermination(10, TimeUnit.SECONDS);
     }
 
-
     public Exception[] awaitTermination(int timeOut, TimeUnit unit) throws InterruptedException {
-
-
         List<Exception> exceptions = new ArrayList<Exception>();
         while(futures.size()>0) {
             if (context.logger.isLoggable(Level.FINE)) {
@@ -113,34 +108,56 @@ public class Parser {
             }
 
         }
-        // if we own the executor service, time to shut it down.
-        if (executorService!=null && ownES) {
-            executorService.shutdown();
-        }
+        close();
         return exceptions.toArray(new Exception[exceptions.size()]);
     }
 
+    @Override
+    public void close() {
+      // if we own the executor service, time to shut it down.
+      if (executorService!=null && ownES) {
+          executorService.shutdown();
+      }
+    }
+    
     public void parse(final File source, final Runnable doneHook) throws IOException {
         // todo : use protocol to lookup implementation
-        final ArchiveAdapter adapter = source.isFile()?new JarArchive(source.toURI()):new DirectoryArchive(source);
-        final Runnable cleanUpAndNotify = new Runnable() {
-          @Override
-          public void run() {
-            try {
+        final ArchiveAdapter adapter = createArchiveAdapter(source, doneHook);
+        if (null == adapter) {
+          context.logger.log(Level.FINE, "{0} is not a valid archive type - ignoring it!", source);
+        } else {
+          final Runnable cleanUpAndNotify = new Runnable() {
+            @Override
+            public void run() {
               try {
-                adapter.close();
-              } catch (IOException e) {
-                throw new RuntimeException(e);
-              }
-            } finally {
-                if (doneHook!=null)
+                try {
+                  adapter.close();
+                } catch (IOException e) {
+                  throw new RuntimeException(e);
+                }
+              } finally {
+                if (doneHook!=null) {
                     doneHook.run();
+                }
+              }
             }
-          }
-        };
-        parse(adapter, cleanUpAndNotify);
+          };
+          parse(adapter, cleanUpAndNotify);
+        }
     }
 
+    private ArchiveAdapter createArchiveAdapter(File source, Runnable doneHook) throws IOException {
+      try {
+        ArchiveAdapter aa = source.isFile()?new JarArchive(source.toURI()):new DirectoryArchive(source);
+        return aa;
+      } catch (IOException e) {
+        if (doneHook!=null) {
+          doneHook.run();
+        }
+        throw e;
+      }
+    }
+    
     public void parse(final ArchiveAdapter source, final Runnable doneHook) throws IOException {
 
         ExecutorService es = executorService;
