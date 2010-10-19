@@ -94,8 +94,6 @@ public class ListPersistenceTypesCommand implements AdminCommand {
         String output = sb.toString();
         if (removeTrailingSeparator) {
             output = output.substring(0, output.length()-1);
-        } else {
-            output = Constants.NONE;
         }
         Properties extraProperties = new Properties();
         extraProperties.put("types", new ArrayList<String>(types));
