@@ -40,8 +40,6 @@ import com.sun.enterprise.module.ImportPolicy;
 import com.sun.enterprise.module.ManifestConstants;
 import com.sun.enterprise.module.LifecyclePolicy;
 import com.sun.enterprise.module.common_impl.Jar;
-import com.sun.enterprise.module.common_impl.Jar;
-import com.sun.enterprise.module.common_impl.Jar;
 import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.project.MavenProject;

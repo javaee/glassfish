@@ -138,7 +138,7 @@ public class Hk2Runner extends Runner {
             notifier.fireTestFailure(new Failure(getDescription(),e));
             return;
         }
-        
+
         Iterator<Description> iter = description.getChildren().iterator();
         while (iter.hasNext()) {
             Description testDescription = iter.next();
@@ -230,15 +230,24 @@ public class Hk2Runner extends Runner {
     }
 
     private void wombInit() {
-      singleton = new Hk2TestServices(
-          null == options ? null : options.habitatFactory(),
-          null == options ? null : options.inhabitantsParserFactory());
-      
-      Habitat habitat = singleton.getHabitat();
-      // so far we don't support extra meta-data on our tests.
-      Womb<?> womb = Wombs.create(testClass, habitat, new MultiMap<String, String>());
-      instance = womb.get();
+        singleton = new Hk2TestServices(
+                null == options ? null : options.habitatFactory(),
+                null == options ? null : options.inhabitantsParserFactory());
+
+        Habitat habitat = singleton.getHabitat();
+        // so far we don't support extra meta-data on our tests.
+        Womb womb = Wombs.create(testClass, habitat, new MultiMap<String, String>());
+        instance = womb.create(womb);
+        try {
+            Hk2Test.Populator populator = Hk2Test.Populator.class.cast(instance);
+            populator.populate(getHabitat());
+        } catch (ClassCastException e) {
+            System.out.println(instance + " is not a populator");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        womb.initialize(instance, womb);
     }
-    
+
     static Hk2TestServices singleton;
 }

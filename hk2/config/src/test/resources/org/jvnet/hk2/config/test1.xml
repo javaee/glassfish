@@ -1,0 +1,8 @@
+<top-level name="something">
+    <configs>
+        <config name="some-config">
+        </config>
+    </configs>
+    <server name="some-server" config="some-config">        
+    </server>
+</top-level>

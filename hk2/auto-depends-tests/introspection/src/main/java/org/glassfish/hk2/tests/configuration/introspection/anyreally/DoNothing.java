@@ -34,10 +34,11 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package anyreally;
+package org.glassfish.hk2.tests.configuration.introspection.anyreally;
 
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -45,6 +46,10 @@ import org.jvnet.hk2.annotations.Service;
  */
 @Service
 public class DoNothing implements ModuleStartup  {
+
+    @Inject
+    TopLevel topLevel;
+
     @Override
     public void setStartupContext(StartupContext context) {
 
@@ -52,7 +57,16 @@ public class DoNothing implements ModuleStartup  {
 
     @Override
     public void start() {
-
+        System.out.println("Started !");
+        assert(topLevel!=null);
+        System.out.println(topLevel);
+        /*System.out.println(" and I have " + topLevel.getConfigs().getConfig().size() + " configs and " +
+            topLevel.getServers().getServers().size() + " servers");
+        for (Server server : topLevel.getServers().getServers()) {
+            System.out.println("For server " + server.getName() + " , config is " + server.getConfig().getName());
+            assert(server.getConfig().getName().equals("some-config"));
+        }
+        */
     }
 
     @Override

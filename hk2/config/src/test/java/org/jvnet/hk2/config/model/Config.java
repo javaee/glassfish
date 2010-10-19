@@ -37,13 +37,14 @@
 package org.jvnet.hk2.config.model;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
 
 /**
  * Sample configuration binding 
  */
 @Configured
-public interface Config {
+public interface Config extends ConfigBeanProxy {
 
     @Attribute(key=true)
     String getName();

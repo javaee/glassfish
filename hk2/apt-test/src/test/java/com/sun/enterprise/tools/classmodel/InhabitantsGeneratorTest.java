@@ -21,7 +21,6 @@ import java.util.Set;
 import org.glassfish.hk2.classmodel.reflect.AnnotationType;
 import org.glassfish.hk2.classmodel.reflect.ParsingContext;
 import org.glassfish.hk2.classmodel.reflect.Types;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.InhabitantAnnotation;
