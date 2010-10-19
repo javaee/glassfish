@@ -307,7 +307,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="mq")
     @Pattern(regexp="(mq|http)")
     String getMqScheme();
 
@@ -329,7 +329,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="jms")
     @Pattern(regexp="(ssljms|jms)")
     String getMqService();
 
