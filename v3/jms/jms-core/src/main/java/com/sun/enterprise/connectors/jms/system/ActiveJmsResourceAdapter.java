@@ -352,6 +352,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
     protected void startResourceAdapter(BootstrapContext bootstrapContext) throws ResourceAdapterInternalException {
         try{
         if (this.moduleName_.equals(ConnectorRuntime.DEFAULT_JMS_ADAPTER)) {
+		//System.setProperty("imq.jmsra.direct.clustered", "true");
                 AccessController.doPrivileged
                         (new java.security.PrivilegedExceptionAction() {
                             public Object run() throws
@@ -914,7 +915,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                     "Broker password", "java.lang.String");
             setProperty(cd, envProp12);
 
-            //set adminpassfile
+           /* //set adminpassfile
             if (!getJmsService().getType().equals(REMOTE)) {
                 //For LOCAL and EMBEDDED, we pass in the admin pass file path
                 //containing the MQ admin password to enable authenticated
@@ -926,7 +927,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                             "Broker admin password", "java.lang.String");
                     setProperty(cd, envProp13);
                 }
-            }
+            }*/
         }
         //Optional
         //BrokerBindAddress, RmiRegistryPort
@@ -944,22 +945,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
 	}
 
 	return properties;
-   }	   
-    private String getAdminPassFilePath(String adminPassword) {
-        try {
-            mqPassFile = File.createTempFile(MQ_PASS_FILE_PREFIX,null);
-            mqPassFile.deleteOnExit();
-            BufferedWriter out = new BufferedWriter(new FileWriter(mqPassFile));
-            out.write(MQ_PASS_FILE_KEY + adminPassword);
-            out.newLine();
-            out.flush();
-            out.close();
-            return mqPassFile.getCanonicalPath();
-        } catch (IOException e) {
-            logger.log(Level.WARNING, "IOException while creating MQ admin pass file" + e.getMessage());
-        }
-        return null;
-    }
+   }
 
     private String adjustForDirectMode(String brokerType) {
         if (! isClustered() && brokerType.equals(EMBEDDED)) {
