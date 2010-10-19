@@ -56,13 +56,13 @@
         <!beforeCreate
             if (#{pageSession.isConnPage}) {
                 gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{pageSession.tmpRows}");
-                filterTable(table="#{pageSession.tmpRows}", key="resourceAdapterName", value="jmsra")
+                gf.filterTable(table="#{pageSession.tmpRows}", key="resourceAdapterName", value="jmsra")
                 gfr.getResourcesTableData();
             }
             if (!#{pageSession.isConnPage}) {
                 gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{pageSession.tmpRows}", id="jndiName");
                 gfr.getResourcesTableData();
-                filterTable(table="#{pageSession.listOfRows}", key="resAdapter", value="jmsra")
+                gf.filterTable(table="#{pageSession.listOfRows}", key="resAdapter", value="jmsra")
             }
         />
         <!afterCreate

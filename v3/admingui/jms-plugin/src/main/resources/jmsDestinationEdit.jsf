@@ -77,7 +77,7 @@
                 setPageSessionAttribute(key="physDestName" value="#{row['value']}");
             }
         }
-        filterTable(table="#{pageSession.tableList}", key="name", value="Name", keep="false");
+        gf.filterTable(table="#{pageSession.tableList}", key="name", value="Name", keep="false");
 
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );

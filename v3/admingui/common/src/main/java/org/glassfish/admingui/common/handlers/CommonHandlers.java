@@ -578,6 +578,52 @@ public class CommonHandlers {
 	ctx.responseComplete();
     }
 
+    @Handler(id = "gf.filterTable",
+        input = {
+            @HandlerInput(name = "table", type = java.util.List.class, required = true),
+            @HandlerInput(name = "key", type = java.lang.String.class, required = true),
+            @HandlerInput(name = "value", type = java.lang.String.class, required = true),
+            @HandlerInput(name = "keep", type = java.lang.Boolean.class, defaultValue="true")
+        },
+        output = {
+            @HandlerOutput(name = "table", type = java.util.List.class)
+    })
+    public static void filterTable(HandlerContext handlerCtx) {
+        List<Map> table = (List) handlerCtx.getInputValue("table");
+        String key = (String) handlerCtx.getInputValue("key");
+        String value = (String) handlerCtx.getInputValue("value");
+        Boolean keep = (Boolean) handlerCtx.getInputValue("keep");
+        if ((key == null) || ("".equals(key))) {
+            GuiUtil.getLogger().info("'attr' must be non-null, and non-blank");
+        }
+        if ((value == null) || ("".equals(value))) {
+            GuiUtil.getLogger().info("'value' must be non-null, and non-blank");
+        }
+        if (keep == null) {
+            keep = Boolean.TRUE;
+        }
+        List<Map> results = new java.util.ArrayList<Map>();
+
+        // If we're stripping keys we don't want, prep the results table with all of the
+        // current values.  Those we don't want will be removed later.
+        if (!keep) {
+            results.addAll(table);
+        }
+
+        // Concurrent acces problems?
+        for (Map child : table) {
+            if (value.equals(child.get(key))) {
+                if (keep) {
+                    results.add(child);
+                } else {
+                    results.remove(child);
+                }
+            }
+        }
+
+        handlerCtx.setOutputValue("table", results);
+    }
+
     /**
      * If the bare attribute is found in the query string and the value is "true",
      * then add "bare=true" to the specified url string.
