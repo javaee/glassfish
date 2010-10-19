@@ -93,9 +93,7 @@ public class BaseSeleniumTestClass {
         debug = Boolean.parseBoolean(getParameter("debug", "false"));
 
         if (selenium == null) {
-            System.out.println("The GlassFish Admin console is at " + baseUrl + ".  The Selenium server is listening on " + seleniumPort
-                    + " and will use " + browser + " as the test browser.");
-
+            //System.out.println("The GlassFish Admin console is at " + baseUrl + ".  The Selenium server is listening on " + seleniumPort + " and will use " + browser + " as the test browser.");
             selenium = new DefaultSelenium("localhost", Integer.parseInt(seleniumPort), "*" + browser, baseUrl);
             selenium.start();
             selenium.setTimeout("90000");
@@ -134,6 +132,7 @@ public class BaseSeleniumTestClass {
                 in.close();
                 out.close();
             }
+            selenium.stop();
         } catch (Exception ex) {
             Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.INFO, null, ex);
         }
@@ -245,10 +244,10 @@ public class BaseSeleniumTestClass {
         waitForPageLoad(triggerText, TIMEOUT, textShouldBeMissing);
     }
 
-    protected void waitForPageLoad(String triggerText, int timeout, boolean textShouldBeMissing) {
-        for (int second = 0;; second++) {
-            if (second >= timeout) {
-                Assert.fail("timeout");
+    protected void waitForPageLoad(String triggerText, int timeoutInSeconds, boolean textShouldBeMissing) {
+        for (int halfSeconds = 0;; halfSeconds++) {
+            if (halfSeconds >= (timeoutInSeconds*2)) {
+                Assert.fail("The operation timed out waiting for the page to load.");
             }
             try {
                 if (selenium.isElementPresent("j_username") && !processingLogin){
@@ -271,7 +270,7 @@ public class BaseSeleniumTestClass {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            sleep(1500);
+            sleep(500);
         }
     }
 
