@@ -144,28 +144,7 @@
                }
             }
 
-            /* recursively looks for damaged products */
-            /*
-            boolean anyDamage(SystemProduct theProd) {
-
-              if (theProd.getState() == EntityState.DAMAGED) {
-                return true;
-              }
-
-              Set theContainedProducts = theProd.getContainedProducts();
-              if (null != theContainedProducts) {
-              for (SystemProduct theContained : theContainedProducts) {
-                if (anyDamage(theContained)) {
-                  return true;
-                    }
-                  }
-                }
-
-              // none of the contained products are damaged
-              return false;
-            }
-            */
-
+           
             /**
              * Make sure the InstallHome exists and/or is writeable.
              */
@@ -255,7 +234,7 @@
              * make sure directory is suitable
              */
 
-                       /**
+            /**
              * Set up SIMS to point to the right place.  SIMS needs to know the
              * altroot, and the domain name.  The altroot is setup during Orchestrator,
              * but the InstallHome is not known until now, so set that as SIMS' Domain Home.
@@ -267,31 +246,10 @@
                throw new EnhancedException("CANNOT_SET_SIMS_DOMAIN", theResponse.getException(), new String[] {"dir=" + theInstallHome});
              }
 
-            /**
-             * Now re-initialize SIMS with the new domain
-             */
-             SIMSControl theSIMSCntrl = new SIMSControl(SIMSCommand.INITIALIZE, null);
-             theResponse = ControlBus.getInstance().publishRequest(new BusRequest("SIMSRequest",
-                theSIMSCntrl), "svc://general/sims");
-		/*
-             if (theResponse.getException() != null) {
-               throw new EnhancedException("CANNOT_SET_SIMS_DOMAIN", theResponse.getException(), new String[] {"dir=" + theInstallHome});
-             }
-            */
-  
+            
             validateInstallHome(theInstallHomeDir);
             
-	    /* Removing redundant read, causing a hang in install panel.
-            theReq = new BusRequest("SetAllConfig",
-              new ConfigControl(ConfigControl.ConfigCommand.SET_ALL_CONFIGURATION, null));
-            theResponse = ControlBus.getInstance().publishRequest(theReq, "svc://general/conf");
-             if (theResponse.getException() != null) {
-                LOGGER.log(Level.WARNING, "CANNOT_PREFILL",
-                  "error=" + EnhancedException.getLastCause(theResponse.getException()).getLocalizedMessage());
-             }
-	    */
-
-            /*
+	     /*
              * NOTE : PLEASE READ !!!!!!!!
              * The following code determines if the upgrade page should be
              * shown or skipped. If the operation is INSTALL the page
@@ -321,70 +279,63 @@
             if (theProdMap == null) {
               throw new EnhancedException("CANNOT_CREATE_PRODUCT_MAP", new String [] {});
             }
-            /* Find out what kind of an operation it is */
-            gOpType = theProdMap.getOperation();
-            if (gOpType == Operation.OPTYPE.INSTALL) {
-		/*
-	System.out.println("Here...");
-            String installMode = ConfigHelper.getValue("InstallType.Option.CONFIGURATION_MODE");
-			 if (!installMode.equals("CONFIG_ONLY")) {
-            if (theInstallHomeDir.exists() && theInstallHomeDir.isDirectory()){
+            String installMode = ConfigHelper.getStringValue("InstallType.Option.CONFIGURATION_MODE");
+	    /* Validations in case of INSTALL_ONLY or INSTALL_AND_CONFIG Operations. */
+	     if (!installMode.equals("CONFIG_ONLY")) {
+	    if (theInstallHomeDir.exists() && theInstallHomeDir.isDirectory()){
               if (!theInstallHomeDir.canWrite()) {
-                 * TODO: Right approach would be to pop up a dialog box (gui)/or just display a
+                 /* TODO: Right approach would be to pop up a dialog box (gui)/or just display a
                  * text message (cli) and give the user chance to select another install home
                  * instead of throwing the exception. Only in silent mode the installer should
                  * die silently.
-                throw new EnhancedException("INSTALL_HOME_NOT_WRITEABLE", null,
+		 */
+	        throw new EnhancedException("INSTALL_HOME_NOT_WRITEABLE", null,
                   new String[]{"dir=" + theInstallHomeDir.getAbsolutePath()});
               }
               else {
-                 If it is writable, then check if it is not empty.
+                 // If it is writable, then check if it is not empty.
                      String[] files = theInstallHomeDir.list();
                      if (files.length > 0) {
-                   throw new EnhancedException("INSTALL_HOME_NOT_EMPTY", null,
+                     	throw new EnhancedException("INSTALL_HOME_NOT_EMPTY", null,
                         new String[]{"dir=" + theInstallHomeDir.getAbsolutePath()});
 
                       }
               }
             } else {
-		
-                 * InstallHome directory does not exists. So, create one.
+                 // InstallHome directory does not exists. So, create one.
                 if (!theInstallHomeDir.mkdirs()) {
                   throw new EnhancedException ("CANNOT_CREATE_INSTALLHOME_DIRECTORY", null,
                     new String[] {"dir=" + theInstallHomeDir.getAbsolutePath()});
                 }
             }
             }
+	    /* Validations in case of CONFIG_ONLY Operation. */
             else {
             if (theInstallHomeDir.exists() && theInstallHomeDir.isDirectory()){
               if (!theInstallHomeDir.canWrite()) {
-                 * TODO: Right approach would be to pop up a dialog box (gui)/or just display a
+                 /* TODO: Right approach would be to pop up a dialog box (gui)/or just display a
                  * text message (cli) and give the user chance to select another install home
                  * instead of throwing the exception. Only in silent mode the installer should
                  * die silently.
+		 */ 
                 throw new EnhancedException("INSTALL_HOME_NOT_GLASSFISH", null,
                   new String[]{"dir=" + theInstallHomeDir.getAbsolutePath()});
               }
               else {
-                    String installMode = (String)ConfigHelper.getUnconfirmedValue
-                            ("InstallType.Option.CONFIGURATION_MODE");
-                Check if this is the GlassFish directory.
+                // Check if this is the GlassFish directory.
                     if (!GlassFishUtils.isGlassFishInstalledHere(aInstallHomePath)) {
                         throw new EnhancedException("INSTALL_HOME_NOT_GLASSFISH", null,
                   new String[]{"dir=" + theInstallHomeDir.getAbsolutePath()});
                   }
                 }
-
             } else {
-                 * InstallHome directory does not exists. So, create one.
+                 // InstallHome directory does not exists. 
                  throw new EnhancedException("INSTALL_HOME_NOT_GLASSFISH", null,
                   new String[]{"dir=" + theInstallHomeDir.getAbsolutePath()});
             }
-            } end for Config only install validation.
-	*/
-     
-
-		// Add all the defaults.
+            } // end for Config only install validation.
+            
+	      // Add all the defaults.
               List theActiveModesList = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
               theActiveModesList.add("DO_NOT_SHOW_UPGRADE");
    		BusRequest modeReq = new BusRequest("ConfigRequest",
@@ -397,7 +348,6 @@
               		theActiveModesList.add("CREATE_DOMAIN");
 	      	}
               ConfigHelper.setValue("PageFlow.Mode.ACTIVE_MODES_LIST", theActiveModesList);
-            }
 
             ]]></onSet>
         </actions>
