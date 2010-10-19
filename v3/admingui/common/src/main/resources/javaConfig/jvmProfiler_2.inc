@@ -51,8 +51,8 @@
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18nc.button.CreateProfiler}"
                     onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')){
                         disableAllButtons();
-                        return submitAndDisable(this, '$resource{i18n.button.Processing}');
-                    }" >
+                        return submitAndDisable(this, '$resource{i18n.button.Processing}');}
+                        else {return false;}" >
                 <!command
                     mapPut(map="#{pageSession.valueMap}" key="target" value="#{pageSession.configName}");
                     gf.createEntity(endpoint="#{pageSession.createProfilerUrl}"
@@ -69,8 +69,8 @@
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
                     onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')){
                         disableAllButtons();
-                        return submitAndDisable(this, '$resource{i18n.button.Processing}');
-                    }" >
+                        return submitAndDisable(this, '$resource{i18n.button.Processing}');}
+                        else {return false;}" >
                 <!command
                     gf.createEntity(endpoint="#{pageSession.profilerUrl}" attrs="#{pageSession.valueMap}"
                             skipAttrs="#{pageSession.skipAttrsList}"
