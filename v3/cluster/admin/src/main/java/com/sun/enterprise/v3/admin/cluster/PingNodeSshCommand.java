@@ -54,13 +54,12 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.Habitat;
 
 /**
- * Remote AdminCommand to create and ssh node.  This command is run only on DAS.
- * Register the node with SSH info on DAS
+ * Remote AdminCommand to validate the connection to an SSH node.
  *
- * @author Carla Mott
+ * @author Joe Di Pol
  */
 @Service(name = "ping-node-ssh")
-@I18n("create.node.ssh")
+@I18n("ping.node.ssh")
 @Scoped(PerLookup.class)
 @ExecuteOn({RuntimeType.DAS})
 public class PingNodeSshCommand implements AdminCommand  {
@@ -77,11 +76,8 @@ public class PingNodeSshCommand implements AdminCommand  {
     @Param(name="name", primary = true)
     private String name;
 
-    @Param(optional = true, defaultValue = "false")
-    private boolean verbose;
-
-    @Param(optional = true, defaultValue = "false")
-    private boolean full;
+    @Param(optional = true, name="validate", alias="full", defaultValue = "false")
+    private boolean validate;
 
     private static final String NL = System.getProperty("line.separator");
 
@@ -116,7 +112,7 @@ public class PingNodeSshCommand implements AdminCommand  {
 
         try {
             String version = "";
-            if (full) {
+            if (validate) {
                 // Validates all parameters
                 nodeUtils.validate(theNode);
                 version = Strings.get("ping.glassfish.version",
