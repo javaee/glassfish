@@ -37,9 +37,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.servermgmt.services;
 
+import com.sun.enterprise.util.OS;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.io.ServerDirs;
 import java.io.*;
@@ -51,6 +51,7 @@ import static com.sun.enterprise.admin.servermgmt.services.Constants.*;
  * @author bnevins
  */
 public abstract class ServiceAdapter implements Service {
+
     ServiceAdapter(ServerDirs serverDirs, AppserverServiceType type) {
         info = new PlatformServicesInfo(serverDirs, type);
     }
@@ -106,7 +107,12 @@ public abstract class ServiceAdapter implements Service {
         getTokenMap().put(STOP_COMMAND_TN, info.type.stopCommand());
         getTokenMap().put(FQSN_TN, info.fqsn);
         getTokenMap().put(OS_USER_TN, info.osUser);
-        getTokenMap().put(SERVICE_NAME_TN, info.smfFullServiceName);
+
+        if (OS.isWindowsForSure()) // Windows doesn't respond well to slashes in the name!!
+            getTokenMap().put(SERVICE_NAME_TN, info.serviceName);
+        else
+            getTokenMap().put(SERVICE_NAME_TN, info.smfFullServiceName);
+
         getTokenMap().put(AS_ADMIN_PATH_TN, info.asadminScript.getPath().replace('\\', '/'));
         getTokenMap().put(DATE_CREATED_TN, info.date.toString());
         getTokenMap().put(SERVICE_TYPE_TN, info.type.toString());
