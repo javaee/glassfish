@@ -135,9 +135,9 @@ public class DeploymentLifecycleStatsProvider {
             }
 
             strBuf.append(LINE_BREAK).append(LINE_BREAK);
-            appendColumn(strBuf, "Application Name", appNameLength);
-	    appendColumn(strBuf, "Module Type", moduleTypeLength);
-            appendColumn(strBuf, "Loading Time (ms)", COLUMN_LENGTH);
+            appendColumn(strBuf, "Application_Name", appNameLength);
+	    appendColumn(strBuf, "Module_Type", moduleTypeLength);
+            appendColumn(strBuf, "Loading_Time(ms)", COLUMN_LENGTH);
             strBuf.append(LINE_BREAK);
 
             for (String appName : appsInfoMap.keySet()) {
