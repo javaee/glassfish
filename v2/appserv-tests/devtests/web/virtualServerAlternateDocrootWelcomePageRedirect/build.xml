@@ -55,10 +55,14 @@
     &testproperties;
     &run;
 
-    <target name="all" depends="restart-server-instance-common,build,setup,run,restore"/>
+    <target name="all" depends="build,deploy,setup,run,restore"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
+    </target>
+
+    <target name="deploy" depends="init-common">
+        <antcall target="deploy-war-common"/>
     </target>
        
     <target name="compile" depends="clean">
