@@ -169,7 +169,7 @@ create_local_clusters() {
 create_hosted_nodes() {
   echo Creating SSH nodes from the hosted_nodes file for domain $DOMAIN...
   grep -v '^#' $TESTHOME/hosted-nodes |
-    awk '{ printf "create-node-ssh --nodehost %s --installdir '$INSTALL_LOC'/glassfish3/glassfish --sshuser %s n-ssh-'$DOMAIN'-%d\n", $2, $1, ++n }' | 
+    awk '{ printf "create-node-ssh --nodehost %s --installdir '$INSTALL_LOC'/glassfish3 --sshuser %s n-ssh-'$DOMAIN'-%d\n", $2, $1, ++n }' | 
     asadmin
   asadmin list-nodes
 }
