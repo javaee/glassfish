@@ -671,12 +671,14 @@ public class OutputBuffer extends Writer
             return;
         }
 
-        addSessionVersionCookie(req, ctx);
-        addSessionCookieWithJvmRoute(req, ctx);
-        addSessionCookieWithJReplica(req,ctx);
-        addPersistedSessionCookie(req, ctx);
-        addJrouteCookieIfNecessary(req, ctx);
-        
+        Session sess = req.getSessionInternal(false);
+        if (sess != null) {
+            addSessionVersionCookie(req, ctx);
+            addSessionCookieWithJvmRoute(req, ctx, sess);
+            addSessionCookieWithJReplica(req, ctx, sess);
+            addPersistedSessionCookie(req, ctx, sess);
+            addJrouteCookie(req, ctx, sess);
+        }
     }
 
     /**
@@ -709,12 +711,10 @@ public class OutputBuffer extends Writer
     /**
      * Adds JSESSIONID cookie whose value includes jvmRoute if necessary.
      */
-    private void addSessionCookieWithJvmRoute(Request request, StandardContext ctx) {
-        if (ctx.getJvmRoute() == null) {
-            return;
-        }
-        Session sess = request.getSessionInternal(false);
-        if (sess == null) {
+    private void addSessionCookieWithJvmRoute(Request request, StandardContext ctx,
+            Session sess) {
+
+        if (ctx.getJvmRoute() == null || sess == null) {
             return;
         }
 
@@ -729,13 +729,14 @@ public class OutputBuffer extends Writer
     /**
      * Adds JSESSIONID cookie whose value includes jvmRoute if necessary.
      */
-    private void addSessionCookieWithJReplica(Request request, StandardContext ctx) {
+    private void addSessionCookieWithJReplica(Request request, StandardContext ctx,
+            Session sess) {
+
         String replicaLocation = null;
+        HttpSession session = null;
 
-
-
-        HttpSession session = request.getSession(false);
-        if (session != null) {
+        if (sess != null) {
+            session = sess.getSession();
             replicaLocation = (String)session.getAttribute("jreplicaLocation");
         }
 
@@ -755,8 +756,9 @@ public class OutputBuffer extends Writer
     }
 
 
-    private void addPersistedSessionCookie(Request request, StandardContext ctx) throws IOException {
-        Session sess = request.getSessionInternal(false);
+    private void addPersistedSessionCookie(Request request, StandardContext ctx,
+            Session sess) throws IOException {
+
         if (sess == null) {
             return;
         }
@@ -768,7 +770,8 @@ public class OutputBuffer extends Writer
         }
     }
 
-    private void addJrouteCookieIfNecessary(Request request, StandardContext ctx) {
+    private void addJrouteCookie(Request request, StandardContext ctx,
+            Session sess) {
 
         String jrouteId = request.getHeader(Constants.PROXY_JROUTE);
 
@@ -777,7 +780,6 @@ public class OutputBuffer extends Writer
             return;
         }
 
-        Session sess = request.getSessionInternal(false);
         if (sess == null) {
             // No session exists
             return;
