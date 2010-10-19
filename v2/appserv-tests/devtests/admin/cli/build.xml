@@ -64,8 +64,7 @@
     <pathconvert refid="class.path" property="test"/>
 
     <target name="debug-windows" depends="instance, cluster"/>
-    <!-- <target name="cli" depends="ports, instance, cluster, configs, sync, domain, backup, tokens,validation,node, load-balancer, misc-commands, manual-sync, upgrade"/> -->
-    <target name="cli" depends="ports, instance, cluster, configs, sync, domain, tokens,validation,node, load-balancer, misc-commands, manual-sync, upgrade"/>
+    <target name="cli" depends="ports, instance, cluster, configs, sync, domain, backup, tokens,validation,node, load-balancer, misc-commands, manual-sync, upgrade"/>
 
     <target name="cluster" depends="init">
         <java classname="admin.ClusterTest"  fork="true" classpath="${test}">

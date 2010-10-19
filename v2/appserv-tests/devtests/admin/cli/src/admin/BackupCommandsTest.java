@@ -210,6 +210,13 @@ public class BackupCommandsTest extends AdminBaseDevTest {
         // restore backup
         report("restore-domain-multiple-domains-in-domaindir", !asadmin("restore-domain", FORCE_OPTION));
 
+        asadmin("start-domain", DOMAIN1);
+
+        // perform a backup on domain2 while domain1 is running (13463)
+        report("backup-domain-multiple-domains-in-domaindir-13463", asadmin("backup-domain", DOMAIN2));
+
+        asadmin("stop-domain", DOMAIN1);
+
         //delete domain2
         asadmin("delete-domain", DOMAIN2);
 
