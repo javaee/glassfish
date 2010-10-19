@@ -69,7 +69,10 @@
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getEntityAttrs(endpoint="#{pageSession.resourceUrl}.json", valueMap="#{pageSession.valueMap}");
 
-        setPageSessionAttribute(key="convertToFalseList" value={"wrapJdbcObjects" "pooling" "connectionLeakReclaim" "lazyConnectionAssociation" "lazyConnectionEnlistment" "associateWithThread" "matchConnections"});
+        setPageSessionAttribute(key="convertToFalseList" value={"wrapJdbcObjects" "pooling" "connectionLeakReclaim"
+                                                                "lazyConnectionAssociation" "lazyConnectionEnlistment"
+                                                                "associateWithThread" "matchConnections" "allowNonComponentCallers"
+                                                                "isConnectionValidationRequired" "failAllConnections"});
         setPageSessionAttribute(key="skipAttrsList", value={"jndiName"});
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
