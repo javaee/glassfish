@@ -204,6 +204,8 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
 
         addModuleConfig(dc, application);
 
+        validateKeepStateOption(params, application, dc.getLogger());
+
         return application;
 
     }
@@ -357,5 +359,18 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
         } catch (Exception e) {
             Logger.getAnonymousLogger().log(Level.WARNING, "failed to add the module config", e);
         }
+    }
+
+    private void validateKeepStateOption(DeployCommandParameters params, Application app, Logger logger) {
+        if ((params.keepstate != null && params.keepstate) || 
+            app.getKeepState()) {
+            if (!DeploymentUtils.isDASTarget(params.target)) {
+                // for non-DAS target, and keepstate is set to true either 
+                // through deployment option or deployment descriptor
+                // explicitly set the deployment option to false
+                params.keepstate = false;
+                logger.log(Level.WARNING, localStrings.getLocalString("not.support.keepstate.in.cluster", "Ignoring the keepstate setting: the keepstate option is only supported in developer profile and not cluster profile."));
+            }
+        }    
     }
 }
