@@ -42,6 +42,7 @@ package org.glassfish.javaee.full.deployment;
 
 import org.glassfish.api.deployment.*;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.event.Events;
@@ -440,6 +441,9 @@ public class EarDeployer implements Deployer {
 
                 ((ExtendedDeploymentContext)context).getModuleDeploymentContexts().put(moduleUri, moduleContext);
                 moduleContext.setParentContext((ExtendedDeploymentContext)context);
+                ArchiveHandler subHandler = context.getModuleArchiveHandlers().get(moduleUri);
+                moduleContext.setArchiveHandler(subHandler);
+
                 return moduleContext;
     }
 

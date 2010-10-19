@@ -44,6 +44,18 @@ import com.sun.logging.LogDomains;
 
 import java.util.logging.Logger;
 import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.loader.util.ASClassLoaderUtil;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import java.net.URL;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.jar.Manifest;
+import java.io.File;
+import java.io.IOException;
+import com.sun.enterprise.deployment.BundleDescriptor;
+import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.util.ModuleDescriptor;
+
 
 /**
  * Utility class for convenienve methods
@@ -74,4 +86,38 @@ public class DOLUtils {
         return ((a == null && b == null) ||
                 (a != null && a.equals(b)));
     }
+
+    public static List<URL> getLibraryJars(BundleDescriptor bundleDesc, ReadableArchive archive) throws IOException {
+        List<URL> libraryURLs = new ArrayList<URL>();
+
+        String appRootPath = null;
+        File appRoot = null;
+
+        ReadableArchive parentArchive = archive.getParentArchive();
+
+        if (parentArchive != null) {
+            appRoot = new File(parentArchive.getURI());
+            appRootPath = appRoot.getPath();
+        }
+
+        // add libraries referenced through manifest
+        Manifest manifest = ASClassLoaderUtil.getManifest(archive.getURI().getPath());
+        libraryURLs.addAll(ASClassLoaderUtil.getManifestClassPathAsURLs(
+            manifest, appRootPath));
+
+        if (parentArchive == null || bundleDesc == null) {
+            // ear level or standalone module
+            return libraryURLs;
+        }
+
+        ModuleDescriptor moduleDesc = ((BundleDescriptor)bundleDesc).getModuleDescriptor();
+        Application app = ((BundleDescriptor)moduleDesc.getDescriptor()).getApplication();
+
+        // add libraries jars inside application lib directory
+        libraryURLs.addAll(ASClassLoaderUtil.getAppLibDirLibrariesAsList(
+            appRoot, app.getLibraryDirectory(), null));
+
+       return libraryURLs;
+   } 
+
 }

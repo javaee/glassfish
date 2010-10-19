@@ -51,15 +51,19 @@ import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
+import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.internal.deployment.ApplicationNameProvider;
+import org.glassfish.internal.deployment.ApplicationInfoProvider;
 import org.xml.sax.SAXParseException;
 import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
+import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.deploy.shared.DeploymentPlanArchive;
 import com.sun.enterprise.deployment.archivist.Archivist;
 import com.sun.enterprise.deployment.archivist.ArchivistFactory;
@@ -75,16 +79,19 @@ import java.util.Properties;
 import java.util.Collection;
 import java.io.IOException;
 import java.io.File;
+import java.io.FileFilter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import java.net.URL;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * ApplicationMetada
  */
 @Service
 public class DolProvider implements ApplicationMetaDataProvider<Application>, 
-        ApplicationNameProvider {
+        ApplicationInfoProvider {
 
     @Inject
     ArchivistFactory archivistFactory;
@@ -227,6 +234,67 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
             Logger.getAnonymousLogger().log(Level.WARNING, "Error occurred", e);
         }
         return null;
+    }
+
+    /*
+     * return the library URIs for the given archive
+     */
+
+    public List<URL> getLibraryJars(DeploymentContext context) {
+
+        List<URL> libraryURLs = new ArrayList<URL>();
+        try {
+            ReadableArchive archive = context.getSource();
+
+            BundleDescriptor bundleDesc =
+                context.getModuleMetaData(BundleDescriptor.class);
+
+            libraryURLs.addAll(DOLUtils.getLibraryJars(bundleDesc, archive));
+
+            libraryURLs.addAll(getModuleLibraryJars(context, archive));
+        } catch (Exception e) {
+            Logger.getAnonymousLogger().log(Level.WARNING, "failed to get library jar: ", e);
+        }
+
+        return libraryURLs;
+    }
+
+    private List<URL> getModuleLibraryJars(DeploymentContext context, 
+        ReadableArchive archive) throws Exception {
+        ArchiveHandler handler = context.getArchiveHandler();
+        String handlerName = handler.getClass().getAnnotation(Service.class).name();
+        List<URL> moduleLibraryURLs = new ArrayList<URL>();
+        File archiveFile = new File(archive.getURI());
+        if (handlerName.equals("war")) {
+            // we should add all the WEB-INF/lib jars for web module
+            File webInf = new File(archiveFile, "WEB-INF");
+            File webInfLib = new File(webInf, "lib");
+            if (webInfLib.exists()) {
+                moduleLibraryURLs = getLibDirectoryJars(webInfLib);
+            }
+        } else if (handlerName.equals("connector")) {
+            // we should add the top level jars for connector module
+            moduleLibraryURLs = getLibDirectoryJars(archiveFile);
+        }
+        return moduleLibraryURLs;
+    }
+
+    private List<URL> getLibDirectoryJars(File moduleLibDirectory) throws Exception {
+        List<URL> libLibraryURLs = new ArrayList<URL>();
+        File[] jarFiles = moduleLibDirectory.listFiles(new FileFilter() {
+            public boolean accept(File pathname) {
+                return (pathname.isFile() &&
+                        pathname.getAbsolutePath().endsWith(".jar"));
+            }
+        });
+
+        if (jarFiles != null && jarFiles.length > 0) {
+            for (File jarFile : jarFiles) {
+                libLibraryURLs.add(jarFile.toURL());
+            }
+        }
+ 
+        return libLibraryURLs;
     }
 
     protected void handleDeploymentPlan(File deploymentPlan,

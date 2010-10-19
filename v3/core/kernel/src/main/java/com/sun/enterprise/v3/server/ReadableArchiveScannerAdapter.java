@@ -70,7 +70,17 @@ public class ReadableArchiveScannerAdapter extends AbstractAdapter {
 
     @Override
     public URI getURI() {
-        return archive.getURI();
+       URI archiveURI =  archive.getURI();
+       if (archiveURI.getScheme().equals("jar")) {
+           try {
+               // let's use the file scheme for jar files as the J2SE
+               // File.toURI always returns the file scheme.
+               archiveURI = new URI("file", null /* authority */, archiveURI.getPath(), null /* query */, null /* fragment */);
+           } catch (Exception e) {
+               Logger.getAnonymousLogger().log(Level.WARNING, "failed to convert URI to use file scheme: ", e);
+           }
+       }
+       return archiveURI;
     }
 
     @Override

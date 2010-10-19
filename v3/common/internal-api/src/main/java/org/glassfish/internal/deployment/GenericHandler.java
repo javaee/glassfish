@@ -121,9 +121,9 @@ public abstract class GenericHandler implements ArchiveHandler {
      */
     public String getDefaultApplicationName(ReadableArchive archive, 
         DeploymentContext context) {
-        // first try to get the name from ApplicationNameProvider if 
+        // first try to get the name from ApplicationInfoProvider if 
         // we can find an implementation of this service
-        ApplicationNameProvider nameProvider = habitat.getComponent(ApplicationNameProvider.class);
+        ApplicationInfoProvider nameProvider = habitat.getComponent(ApplicationInfoProvider.class);
 
         String appName = null;
         if (nameProvider != null) {

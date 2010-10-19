@@ -46,6 +46,7 @@ import com.sun.enterprise.deployment.annotation.introspection.DefaultAnnotationS
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.logging.LogDomains;
 import java.io.ByteArrayOutputStream;
 import java.util.Enumeration;
@@ -58,7 +59,6 @@ import org.glassfish.hk2.classmodel.reflect.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
 import org.glassfish.deployment.common.DeploymentUtils;
-import org.glassfish.loader.util.ASClassLoaderUtil;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 
 import java.io.File;
@@ -370,22 +370,9 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
 
     protected void addLibraryJars(T bundleDesc, 
         ReadableArchive moduleArchive) throws IOException {
-        List<URL> libraryURLs = new ArrayList<URL>();
-        ModuleDescriptor moduleDesc = ((BundleDescriptor)bundleDesc).getModuleDescriptor();
-        Application app = ((BundleDescriptor)moduleDesc.getDescriptor()).getApplication();
-        ReadableArchive appArchive = moduleArchive.getParentArchive();
-        if (app != null && appArchive != null) {
-            // ear case
-            File appRoot = new File(appArchive.getURI());
-
-            // add libraries jars inside application lib directory
-            libraryURLs.addAll(ASClassLoaderUtil.getAppLibDirLibrariesAsList(
-                appRoot, app.getLibraryDirectory(), null));
-            
-            // add libraries referenced through manifest
-            Manifest manifest = ASClassLoaderUtil.getManifest(moduleArchive.getURI().getPath());
-            libraryURLs.addAll(ASClassLoaderUtil.getManifestClassPathAsURLs(
-                manifest, appRoot.getPath()));
+        List<URL> libraryURLs = new ArrayList<URL>(); 
+        if (bundleDesc instanceof BundleDescriptor) {
+            libraryURLs = DOLUtils.getLibraryJars((BundleDescriptor)bundleDesc, moduleArchive);
         }
 
         for (URL url : libraryURLs) {

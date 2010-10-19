@@ -48,6 +48,7 @@ import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.CompositeSniffer;
 import org.glassfish.internal.deployment.SnifferManager;
+import org.glassfish.internal.deployment.ApplicationInfoProvider;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.io.File;
@@ -55,6 +56,7 @@ import java.lang.annotation.Annotation;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.net.URI;
+import java.net.URL;
 
 import com.sun.enterprise.module.impl.ClassLoaderProxy;
 
@@ -194,18 +196,7 @@ public class SnifferManagerImpl implements SnifferManager {
             return Collections.emptyList();
         }
         Types types = context.getModuleMetaData(Types.class);
-        List<URI> uris = new ArrayList<URI>();
-        uris.add(context.getSource().getURI());
-        try {
-            File f = new File(context.getSource().getURI());
-            if (f.exists() && f.isDirectory()) {
-                // we automatically add web-inf/classes to acceptable loading uri to handle
-                // specificities of war files. Potentially we could check that f ends with "WAR" 
-                uris.add(new URI(context.getSource().getURI().toString()+"WEB-INF/classes/"));
-            }
-        } catch (URISyntaxException e) {
-            // ignore.
-        }
+        List<URI> uris = getURIs(context);
 
         List<T> result = new ArrayList<T>();
         for (T sniffer : sniffers) {
@@ -251,5 +242,30 @@ public class SnifferManagerImpl implements SnifferManager {
                 }
             }
         }
+    }
+
+    private List<URI> getURIs(DeploymentContext context) {
+        List<URI> uris = new ArrayList<URI>();
+        uris.add(context.getSource().getURI());
+        try {
+            File f = new File(context.getSource().getURI());
+            if (f.exists() && f.isDirectory()) {
+                // we automatically add web-inf/classes to acceptable loading uri to handle
+                // specificities of war files. Potentially we could check that f ends with "WAR"
+                uris.add(new URI(context.getSource().getURI().toString()+"WEB-INF/classes/"));
+            }
+
+            // add library jars for this module
+            ApplicationInfoProvider appInfoProvider = habitat.getComponent(ApplicationInfoProvider.class);
+            if (appInfoProvider != null) {
+                List<URL> libraryJars = appInfoProvider.getLibraryJars(context);
+                for (URL url : libraryJars) {
+                    uris.add(url.toURI());
+                }
+            }
+        } catch (URISyntaxException e) {
+            // ignore.
+        }
+        return uris;
     }
 }
