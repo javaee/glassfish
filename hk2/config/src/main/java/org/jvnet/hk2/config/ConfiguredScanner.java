@@ -50,6 +50,8 @@ import java.util.Stack;
 
 /**
  * Scanner for @Configured annotated classes
+ *
+ * @author Jerome Dochez
  */
 @Service
 public class ConfiguredScanner implements IntrospectionScanner {
@@ -76,11 +78,13 @@ public class ConfiguredScanner implements IntrospectionScanner {
             AnnotationModel c = ae.getAnnotation(Configured.class.getName());
             String elementName = (String) c.getValues().get("value");
             if(elementName==null || elementName.length()==0) { // infer default
-                elementName = Dom.convertName(ae.getName().substring(ae.getName().lastIndexOf('.')));
+                elementName = Dom.convertName(ae.getName().substring(ae.getName().lastIndexOf('.')+1));
             }
+
+            metadata.add(ConfigMetadata.TARGET, ae.getName());
+
             // register the injector.
-            String typeName = ae.getName()+"Injector";
-            LazyInhabitant inhabitant = new LazyInhabitant(habitat, loader, typeName, metadata);
+            LazyInhabitant inhabitant = new LazyInhabitant(habitat, loader, NoopConfigInjector.class.getName(), metadata);
             habitat.addIndex(inhabitant, InjectionTarget.class.getName(), ae.getName());
             habitat.addIndex(inhabitant, ConfigInjector.class.getName(), elementName);
         }

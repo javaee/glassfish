@@ -39,6 +39,7 @@ package org.jvnet.hk2.junit;
 import java.util.logging.Logger;
 
 import org.junit.runner.RunWith;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Super class for hk2 tests, so far to avoid having to annotate with @RunWith
@@ -49,5 +50,9 @@ import org.junit.runner.RunWith;
 public class Hk2Test {
     public Hk2Test() {
         Logger.getAnonymousLogger().info("Test created");
+    }
+
+    public interface Populator {
+        void populate(Habitat habitat);
     }
 }

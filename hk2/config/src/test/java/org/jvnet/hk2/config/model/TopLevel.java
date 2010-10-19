@@ -34,20 +34,29 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package anyreally;
+package org.jvnet.hk2.config.model;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.Element;
+
+import java.util.List;
 
 /**
- * Config object
+ * TopLevel test interface
  */
 @Configured
-public interface Config extends ConfigBeanProxy {
-    
-    @Attribute(key=true)
+// still using the ConfigBeanProxy, next step is to get rid of that...
+public interface TopLevel extends ConfigBeanProxy {
+
+    @Attribute
     String getName();
     void setName(String name);
 
+    @Element
+    Configs getConfigs();
+
+    @Element
+    List<Server> getServers();
 }

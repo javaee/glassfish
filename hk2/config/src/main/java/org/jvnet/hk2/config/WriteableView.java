@@ -206,7 +206,7 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
 
                 // Get the Parent Element which has the key attribute specified
                 // through the input paramater 'property'. For e.g. in case of
-                // Domain->Resources->ConnectorConnectionPool->name(key attrib)
+                // TopLevel->Resources->ConnectorConnectionPool->name(key attrib)
                 // thisview will equal ConnectorConnectionPool
                 Dom thisview = Dom.unwrap(defaultView);
 

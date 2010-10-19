@@ -38,7 +38,6 @@
 
 package org.jvnet.hk2.osgiadapter;
 
-import com.sun.enterprise.module.common_impl.TracingUtilities;
 import org.osgi.framework.*;
 import org.osgi.service.packageadmin.PackageAdmin;
 import static org.jvnet.hk2.osgiadapter.Logger.logger;

@@ -3,7 +3,6 @@ package com.sun.enterprise.module.bootstrap;
 import java.util.logging.Logger;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Properties;
 import java.io.File;
 

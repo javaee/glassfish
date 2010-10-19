@@ -34,20 +34,20 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package anyreally;
+package org.glassfish.hk2.tests.configuration.introspection.anyreally;
 
+import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-
-import java.util.List;
 
 /**
- * Domain configuration object
+ * Config object
  */
 @Configured
-public interface Domain extends ConfigBeanProxy {
+public interface Config extends ConfigBeanProxy {
+    
+    @Attribute(key=true)
+    String getName();
+    void setName(String name);
 
-    @Element
-    List<Config> getConfigs();
 }

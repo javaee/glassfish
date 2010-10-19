@@ -36,29 +36,74 @@
  */
 package org.jvnet.hk2.config;
 
+import org.junit.Ignore;
 import org.junit.Test;
+import static org.junit.Assert.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.config.model.Config;
+import org.jvnet.hk2.config.model.Server;
+import org.jvnet.hk2.config.model.TopLevel;
 import org.jvnet.hk2.junit.Hk2Test;
 
+import java.net.URL;
 import java.util.Collection;
+import java.util.logging.Logger;
+
 
 /**
  * Simple test to dump all @Configured interfaces
  */
-public class SimpleConfiguredTest extends Hk2Test {
+public class SimpleConfiguredTest extends Hk2Test implements Hk2Test.Populator  {
 
     @Inject
     Habitat habitat;
 
-    @Test
-    public void dumpConfiguredInhabitants() {
+    @Inject
+    TopLevel topLevel;
 
+    @Override
+    public void populate(Habitat habitat) {
         Collection<Inhabitant<?>> inhabitants = habitat.getInhabitantsByContract(InjectionTarget.class.getName());
         for (Inhabitant<?> inhabitant : inhabitants) {
             System.out.println("Found inhabitant " + inhabitant);
             System.out.println("metadata " + inhabitant.metadata());
-        }
+        }        
+        ConfigParser configParser = new ConfigParser(habitat);
+        URL url = SimpleConfiguredTest.class.getResource("test1.xml");
+        configParser.parse(url);
+    }
+
+    @Test
+    public void dump() {
+        System.out.println("TopLevel is " + topLevel);
+        System.out.println(" and I have " + topLevel.getConfigs() + " configs and " +
+            topLevel.getServers() + " servers");
+
+    }
+
+    @Test
+    public void testTopLevelName() {
+        assertEquals(topLevel.getName(), "something");
+    }
+
+    @Test
+    @Ignore
+    public void testConfigByName() {
+        Config config = habitat.getComponent(Config.class, "some-config");
+        assertNotNull(config);
+        assertEquals(config.getName(), "some-config");
+    }
+
+    @Test
+    @Ignore
+    public void testReference() {
+        Server server = habitat.getComponent(Server.class, "some-server");
+        assertNotNull(server);
+        assertEquals(server.getName(), "some-server");
+        Config serverConfig = server.getConfig();
+        assertNotNull(serverConfig);
+        assertEquals(serverConfig.getName(), "some-config");
     }
 }
