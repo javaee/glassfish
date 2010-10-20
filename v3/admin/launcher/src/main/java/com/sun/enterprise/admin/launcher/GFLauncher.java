@@ -758,7 +758,14 @@ public abstract class GFLauncher {
         // don't run this unless we have to because our "..." messages disappear.
 
         if (System.console() == null && OS.isWindows() && !info.isVerbose()) {
-            System.out.println(strings.get("ssh"));
+            String sname;
+
+            if(info.isDomain())
+                sname = info.getDomainName();
+            else
+                sname = info.getInstanceName();
+
+            System.out.println(strings.get("ssh", sname));
             try {
                 System.in.close();
             }
