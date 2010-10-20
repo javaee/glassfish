@@ -42,6 +42,7 @@ package com.sun.ejb.containers;
 
 import java.io.Serializable;
 import java.io.IOException;
+import java.io.ObjectStreamException;
 
 import java.util.Date;
 import java.util.Collection;
@@ -726,6 +727,21 @@ public class TimerBean implements TimerLocal {
     public Set findActiveNonPersistentTimersOwnedByThisServer() {
         EJBTimerService ejbTimerService = getEJBTimerService();
         return ejbTimerService.getActiveTimerIdsByThisServer();
+    }
+
+    /**
+     * To be used to read in TimerBean.Blob and replace with TimerState.Blob 
+     * on v2.x upgrade
+     */
+    public static class Blob implements Serializable {
+        private byte[] primaryKeyBytes_ = null;
+        private byte[] infoBytes_ = null;
+
+        private static final long serialVersionUID = 9167806434435988868L;
+
+        private Object readResolve() throws ObjectStreamException {
+            return new TimerState.Blob(primaryKeyBytes_, infoBytes_);
+        }
     }
 
 }

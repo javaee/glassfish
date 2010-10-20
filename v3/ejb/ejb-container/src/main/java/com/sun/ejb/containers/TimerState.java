@@ -488,6 +488,9 @@ public class TimerState implements Serializable {
         private byte[] primaryKeyBytes_ = null;
         private byte[] infoBytes_ = null;
 
+        // Allow deserialization even if the class has changed
+        private static final long serialVersionUID = 5022674828003386360L;
+
         public Blob() {
         }
 
@@ -499,6 +502,12 @@ public class TimerState implements Serializable {
             if( info != null ) {
                 infoBytes_ = EJBUtils.serializeObject(info);
             }
+        }
+
+        // To be used to replace TimerBean.Blob on v2.x upgrade
+        Blob(byte[] primaryKeyBytes, byte[] infoBytes) {
+            primaryKeyBytes_ = primaryKeyBytes;
+            infoBytes_ = infoBytes;
         }
         
         public Object getTimedObjectPrimaryKey(ClassLoader cl) 

@@ -512,11 +512,14 @@ public class EjbContainerUtilImpl
                     String appName = EjbContainerUtil.TIMER_SERVICE_APP_NAME;
                     params.name = appName;
 
+                    File rootScratchDir = env.getApplicationStubPath();
+                    File appScratchFile = new File(rootScratchDir, appName);
                     try {
-                        File rootScratchDir = env.getApplicationStubPath();
-                        File appScratchDir = new File(rootScratchDir, appName);
                         String resourceName = getTimerResource(target);
-                        if (isDas() && !isUpgrade(resourceName, target) && appScratchDir.createNewFile()) {
+
+                        // appScratchFile is a marker file and needs to be created on Das on the 
+                        // first access of the Timer Service application - so use & instead of &&
+                        if (isDas() && (!isUpgrade(resourceName, target) & appScratchFile.createNewFile())) {
                             params.origin = OpsParams.Origin.deploy;
                             if (target != null) {
                                 params.target = target;
@@ -543,6 +546,10 @@ public class EjbContainerUtilImpl
 
                     } catch (Exception e) {
                         _logger.log (Level.WARNING, "Cannot deploy or load EJBTimerService: ", e);
+                        if (params.origin == OpsParams.Origin.deploy && appScratchFile.exists()) {
+                            // Remove marker file if deploy failed
+                            appScratchFile.delete();
+                        }
                     }
                 }
             }
