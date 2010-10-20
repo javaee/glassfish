@@ -11,5 +11,11 @@
     <artifactId>introspection</artifactId>
     <packaging>hk2-jar</packaging>
     <name>introspection verifier</name>
-
+    <dependencies>
+   		<dependency>
+        	<groupId>org.glassfish.hk2</groupId>
+            <artifactId>class-model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

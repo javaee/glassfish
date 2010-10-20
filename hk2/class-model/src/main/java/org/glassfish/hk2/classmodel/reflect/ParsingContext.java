@@ -40,6 +40,7 @@ import org.glassfish.hk2.classmodel.reflect.impl.TypeBuilder;
 import org.glassfish.hk2.classmodel.reflect.impl.TypesCtr;
 import org.glassfish.hk2.classmodel.reflect.impl.TypesImpl;
 import org.glassfish.hk2.classmodel.reflect.util.ParsingConfig;
+import org.glassfish.hk2.classmodel.reflect.util.ResourceLocator;
 import org.objectweb.asm.ClassVisitor;
 
 import java.util.Collections;
@@ -65,6 +66,7 @@ public class ParsingContext {
         ExecutorService executorService=null;
         ArchiveSelector archiveSelector=null;
         ParsingConfig config=null;
+        ResourceLocator locator=null;
 
         public Logger logger() {
             return logger;
@@ -85,6 +87,11 @@ public class ParsingContext {
             return this;
         }
 
+        public Builder locator(ResourceLocator locator) {
+            this.locator = locator;
+            return null;
+        }
+
         public Builder config(ParsingConfig config) {
             this.config = config;
             return this;
@@ -97,11 +104,12 @@ public class ParsingContext {
 
     }
 
-    final private TypesCtr types = new TypesCtr();
+    final TypesCtr types = new TypesCtr();
     final ExecutorService executorService;
     final ArchiveSelector archiveSelector;
     final Logger logger;
-    final ParsingConfig config; 
+    final ParsingConfig config;
+    final ResourceLocator locator;
 
     private ParsingContext(Builder builder) {
         Runtime runtime = Runtime.getRuntime();
@@ -109,6 +117,7 @@ public class ParsingContext {
         this.executorService = builder.executorService;
         this.archiveSelector = builder.archiveSelector;
         this.logger = builder.logger;
+        this.locator = builder.locator;
         this.config = builder.config!=null?builder.config:new ParsingConfig() {
             final Set<String> emptyList = Collections.emptySet();
             @Override
@@ -128,12 +137,6 @@ public class ParsingContext {
         };
     }
 
-    public ParsingContext(ParsingContext parent) {
-        this.executorService = parent.executorService;
-        this.archiveSelector = parent.archiveSelector;
-        this.logger = parent.logger;
-        this.config = parent.config;
-    }
 
     Map<URI, TypeBuilder> builders = new HashMap<URI, TypeBuilder>();
 
@@ -148,6 +151,10 @@ public class ParsingContext {
 
     public Types getTypes() {
         return types;
+    }
+
+    public ResourceLocator getLocator() {
+        return locator;
     }
 
     public ClassVisitor getClassVisitor(URI uri, String entryName) {

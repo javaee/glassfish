@@ -34,43 +34,43 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.configuration.introspection.anyreally;
 
-import com.sun.enterprise.module.bootstrap.ModuleStartup;
-import com.sun.enterprise.module.bootstrap.StartupContext;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
+package org.glassfish.hk2.classmodel.reflect.test.method;
+
+import org.glassfish.hk2.classmodel.reflect.*;
+import org.glassfish.hk2.classmodel.reflect.test.ClassModelTestsUtils;
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Collection;
 
 /**
- * some sanity checks from our generation.
+ * method related tests
  */
-@Service
-public class SimpleSanityTests implements ModuleStartup  {
+public class MethodTest {
 
-    @Inject
-    TopLevel topLevel;
-
-    @Override
-    public void setStartupContext(StartupContext context) {
-
-    }
-
-    @Override
-    public void start() {
-        assert(topLevel!=null);
-        assert(topLevel.getConfigs().getConfig().size()>0);
-        assert(topLevel.getServers().getServer().size()>0);
-        try {
-            (new LocatorTest()).testLocator();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    @Test
+    public void simpleTest() throws IOException, InterruptedException{
+        Types types = ClassModelTestsUtils.getTypes();
+        Type type = types.getBy(SomeAnnotation.class.getName());
+        Assert.assertTrue(type instanceof AnnotationType);
+        AnnotationType annotation = (AnnotationType) type;
+        Collection<AnnotatedElement> aes = annotation.allAnnotatedTypes();
+        // we must find our SimpleAnnotatedMethod.setFoo method
+        Assert.assertNotNull(aes);
+        Assert.assertTrue(aes.size()>0);
+        for (AnnotatedElement ae : aes) {
+            if (ae instanceof MethodModel) {
+                MethodModel mm = (MethodModel) ae;
+                if ("setFoo".equals(mm.getName())) {
+                    if (mm.getDeclaringType().getName().equals(SimpleAnnotatedMethod.class.getName())) {
+                        // success
+                        return;
+                    }
+                }
+            }
         }
-    }
-
-    @Override
-    public void stop() {
-        
+        Assert.fail("Did not find a SimpleAnnotatedMethod.setFoo annotated method with SomeAnnotation");
     }
 }

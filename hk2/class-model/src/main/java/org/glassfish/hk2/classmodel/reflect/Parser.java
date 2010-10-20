@@ -35,14 +35,20 @@
  */
 package org.glassfish.hk2.classmodel.reflect;
 
+import org.glassfish.hk2.classmodel.reflect.impl.TypeProxy;
+import org.glassfish.hk2.classmodel.reflect.impl.TypesCtr;
 import org.glassfish.hk2.classmodel.reflect.util.DirectoryArchive;
 import org.glassfish.hk2.classmodel.reflect.util.JarArchive;
+import org.glassfish.hk2.classmodel.reflect.util.ResourceLocator;
 import org.objectweb.asm.ClassReader;
 
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Level;
@@ -74,6 +80,7 @@ public class Parser implements Closeable {
 
     public Exception[] awaitTermination(int timeOut, TimeUnit unit) throws InterruptedException {
         List<Exception> exceptions = new ArrayList<Exception>();
+        final Logger logger = context.logger;        
         while(futures.size()>0) {
             if (context.logger.isLoggable(Level.FINE)) {
                  context.logger.log(Level.FINE, "Await iterating at " + System.currentTimeMillis() + " waiting for " + futures.size());
@@ -106,7 +113,51 @@ public class Parser implements Closeable {
                     exceptions.add(e);
                 }
             }
+        }
+        // now we need to visit all the types that got referenced but not visited
+        final ResourceLocator locator = context.getLocator();
+        if (locator!=null) {
+            final byte[] bytes = new byte[52000];
+            context.types.onNotVisitedEntries(new TypesCtr.ProxyTask() {
+                @Override
+                public void on(TypeProxy<?> proxy) {
 
+                    String name = proxy.getName();
+                    // make this name a resource name...
+                    String resourceName = name.replaceAll("\\.", "/") + ".class";                    
+                    URL url = locator.getResource(resourceName);
+                    if (url==null) return;
+                    System.out.println("Parsing through locator " + name);
+
+                    // copy URL into bytes
+                    InputStream is=null;
+                    int size=0;
+                    try {
+                        is = url.openStream();
+                        size = is.read(bytes, 0, 5200);
+                    } catch(IOException e) {
+                    } finally {
+                        if (is!=null)
+                            try {
+                                is.close();
+                            } catch (IOException e) {
+
+                            }
+                    }
+
+                    // now visit...
+                    ClassReader cr = new ClassReader(bytes, 0, size);
+                    try {
+                        URI definingURI = new URI(url.getPath().substring(0,
+                                url.getPath().length() - resourceName.length()));
+                        cr.accept(context.getClassVisitor(definingURI, resourceName), ClassReader.SKIP_DEBUG);
+                    } catch (Throwable e) {
+                        logger.log(Level.SEVERE, "Exception while visiting " + name
+                                + " of size " + size, e);
+                    }
+
+                }
+            });
         }
         close();
         return exceptions.toArray(new Exception[exceptions.size()]);
