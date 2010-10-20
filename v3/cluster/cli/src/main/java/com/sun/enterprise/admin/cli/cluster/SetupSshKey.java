@@ -42,6 +42,8 @@ package com.sun.enterprise.admin.cli.cluster;
 
 import java.io.*;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.logging.Level;
 
 import org.jvnet.hk2.annotations.*;
@@ -54,6 +56,8 @@ import com.sun.enterprise.admin.cli.CLIUtil;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.util.SSHUtil;
 
+import com.sun.enterprise.universal.glassfish.TokenResolver;
+
 /**
  *  This is a local command that distributes the SSH public key to remote node(s)
  *
@@ -63,7 +67,7 @@ import org.glassfish.cluster.ssh.util.SSHUtil;
 @ExecuteOn({RuntimeType.DAS})
 public final class SetupSshKey extends CLICommand {
     
-    @Param(optional = true)
+    @Param(optional = true, defaultValue="${user.name}")
     private String sshuser;
 
     @Param(optional=true, defaultValue="22")
@@ -89,15 +93,22 @@ public final class SetupSshKey extends CLICommand {
 
     private boolean promptPass=false;
 
+    private TokenResolver resolver = null;
+
+    public SetupSshKey() {
+        // Create a resolver that can replace system properties in strings
+        Map<String, String> systemPropsMap =
+                new HashMap<String, String>((Map)(System.getProperties()));
+        resolver = new TokenResolver(systemPropsMap);
+    }
+
     /**
      */
     @Override
     protected void validate()
             throws CommandException {
-
-        if(sshuser==null) {
-            sshuser = System.getProperty("user.name");
-        }
+        
+        sshuser = resolver.resolve(sshuser);
 
         if (sshkeyfile == null) {
             //if user hasn't specified a key file and there is no key file at default
