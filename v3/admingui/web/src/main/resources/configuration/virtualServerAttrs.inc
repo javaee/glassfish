@@ -41,6 +41,7 @@
 -->
 
 <!-- web/configuration/virtualServerAttrs.inc -->
+#include "/common/applications/applicationHandlers.inc"
 <sun:propertySheet id="propertySheet">
     <sun:propertySheetSection id="propertSectionTextField">
         <sun:property id="IdStaticProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.Id}" >
@@ -99,7 +100,9 @@
         <sun:property id="webProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.DefaultWeb}" helpText="$resource{i18n_web.vs.DefaultWebHelp}">
             <sun:dropDown id="Web" labels="$pageSession{modules}" selected="#{pageSession.valueMap['defaultWebModule']}" />
             <!beforeCreate
-                getApplicationBySnifferType(type="web" fullName="#{true}" result="#{requestScope.modList}")
+                setPageSessionAttribute(key="snifferType" value="web");
+                gfr.getApplicationsBySnifferType();
+                setAttribute(key="modList" value="#{pageSession.snifferTypeApplicationsList}");
                 addEmptyFirstElement(in="$attribute{modList}"  out="#{pageSession.modules}")
             />
         </sun:property>
