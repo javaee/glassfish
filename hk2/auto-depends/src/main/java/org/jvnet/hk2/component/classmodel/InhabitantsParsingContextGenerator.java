@@ -44,6 +44,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -88,10 +89,22 @@ public abstract class InhabitantsParsingContextGenerator implements Closeable {
      * @return an empty context InhabitantsGenerator
      */
     public static InhabitantsParsingContextGenerator create(Habitat h) {
-        return new InhabitantsParsingContextGenerator() {};
+        return new InhabitantsParsingContextGenerator(null) {};
     }
 
-    protected InhabitantsParsingContextGenerator() {
+    /**
+     * Factory for the {@link InhabitantsParsingContextGenerator}
+     *
+     * @param h habitat not currently used; reserved for future use
+     * @param es the executor to use for any async processing (e.g., parsing)
+     * 
+     * @return an empty context InhabitantsGenerator
+     */
+    public static InhabitantsParsingContextGenerator create(Habitat h, ExecutorService es) {
+        return new InhabitantsParsingContextGenerator(es) {};
+    }
+    
+    protected InhabitantsParsingContextGenerator(ExecutorService es) {
         // setup the parser
         ParsingContext.Builder builder = new ParsingContext.Builder();
         final Set<String> annotations = new HashSet<String>();
@@ -116,6 +129,8 @@ public abstract class InhabitantsParsingContextGenerator implements Closeable {
             }
         });
 
+        builder.executorService(es);
+        
         context = builder.build();
         parser = new Parser(context);
     }
