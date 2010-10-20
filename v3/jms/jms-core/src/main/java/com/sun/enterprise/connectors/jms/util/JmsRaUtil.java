@@ -454,6 +454,12 @@ public class JmsRaUtil {
         SystemProperty sp = as.getSystemProperty("JMS_PROVIDER_PORT");
         if (sp != null) return sp.getValue();
 
+        Config config = as.getConfig();
+        if (config != null)
+            sp = config.getSystemProperty("JMS_PROVIDER_PORT");
+
+        if (sp != null) return sp.getValue();
+
         return null;
     }
 }
