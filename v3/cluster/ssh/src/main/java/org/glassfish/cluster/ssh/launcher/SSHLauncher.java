@@ -44,6 +44,7 @@ import java.io.*;
 
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.OS;
+import com.sun.enterprise.util.io.FileUtils;
 
 import com.sun.enterprise.universal.process.ProcessManager;
 import com.sun.enterprise.universal.process.ProcessManagerException;
@@ -438,7 +439,8 @@ public class SSHLauncher {
         return printable;
     }
 
-     public void setupKey(String node, String pubKeyFile, boolean generateKey, String passwd) throws IOException {
+     public void setupKey(String node, String pubKeyFile, boolean generateKey, String passwd)
+             throws IOException, InterruptedException {
         boolean connected = false;
 
         File key = new File(keyFile);
@@ -479,8 +481,12 @@ public class SSHLauncher {
         //initiate scp client
          logger.info("Connected");
         SCPClient scp = new SCPClient(connection);
+        SFTPClient sftp = new SFTPClient(connection);
 
         if (key.exists()) {
+
+            //fixes .ssh file mode
+            setupSSHDir();
 
             if (pubKeyFile == null) {
                 pubKeyFile = keyFile + ".pub";
@@ -492,115 +498,43 @@ public class SSHLauncher {
                 throw new IOException("Public key file " + pubKeyFile + " does not exist.");
             }
 
-            ByteArrayOutputStream out = null;
-            OutputStream oStream = null;
-            InputStream sendFile = null;
-            File f = null;
-
             try {
-                out = new ByteArrayOutputStream();
-                try {
-                    scp.get(SSH_DIR + AUTH_KEY_FILE, out);
-                    logger.info("scp.get passed");
-                } catch (IOException io) {
-                    //ignore this, we will anyway send across the key
-                    //logger.printExceptionStackTrace(io);
-                    //logger.printDebugMessage("The auth file probably doesn't exist");
-                }
-
-                if(logger.isLoggable(Level.FINER)) {
-                    logger.finer("Got the remote authorized_keys file");
-                }
-                File home = new File(System.getProperty("user.home"));
-                logger.info("home "+home);
-                f = new File(home,SSH_DIR + AUTH_KEY_FILE +".temp");
-                logger.info("tmep file "+f.toString());
-                oStream = new FileOutputStream(f);
-                out.writeTo(oStream);
-                if(logger.isLoggable(Level.FINER)) {
-                    logger.finer("Wrote the temp file");
-                }
-
-                appendPublicKey(pubKey, f);
-
-                sendFile = new FileInputStream(f);
-                byte[] theBytes = new byte[sendFile.available()];
-                sendFile.read(theBytes);
-
-                try {
-                    if (connection.exec("test -d " + SSH_DIR , new ByteArrayOutputStream())!=0) {
-                        if(logger.isLoggable(Level.FINER)) {
-                            logger.fine(SSH_DIR + " does not exist");
-                        }
-                        // .ssh directory doesn't exist, create it.
-                        if (connection.exec("mkdir -p " + SSH_DIR, new ByteArrayOutputStream())!=0) {
-                            if(logger.isLoggable(Level.FINER)) {
-                                logger.finer("Created .ssh directory");
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.info("Failed to create .ssh directory on remote host:" + e.getMessage());
-                    throw new IOException("Error while creating .ssh directory on remote host:" + e.getMessage());
-                }
-
-                try {
-                    scp.put(theBytes, AUTH_KEY_FILE, SSH_DIR);
-                } catch (Exception e) {
+                if(!sftp.exists(SSH_DIR)) {
                     if(logger.isLoggable(Level.FINER)) {
-                        e.printStackTrace();
+                        logger.fine(SSH_DIR + " does not exist");
                     }
-                    throw new IOException("Failed to copy public key to remote host "
-                                            + host + ": " + e.getMessage());
+                    sftp.mkdirs(".ssh", 0700);
                 }
-
-                logger.info("Copied keyfile " + pubKeyFile + " to " + userName + "@" + host);           
-            } finally {
-                //remove the temp file
-                //not working on Windows, investigate!
-                f.delete();
-                //clean up streams
-                if (out != null) {
-                    try {
-                        out.close();
-                    } catch (IOException io){
-                        //logger.printExceptionStackTrace(io);
-                    }
+            } catch (Exception e) {
+                if(logger.isLoggable(Level.FINER)) {
+                    e.printStackTrace();
                 }
-
-                if(oStream != null) {
-                    try {
-                        oStream.close();
-                    } catch (IOException io) {
-                        //logger.printExceptionStackTrace(io);
-                    }
-                }
-                if(sendFile != null) {
-                    try {
-                        sendFile.close();
-                    } catch (IOException io) {
-                        //logger.printExceptionStackTrace(io);
-                    }
-                }
+                throw new IOException("Error while creating .ssh directory on remote host:" + e.getMessage());
             }
 
-        }
-    }
+            //copy over the public key to remote host
+            scp.put(pubKey.getAbsolutePath(), ".ssh");            
 
-    private void appendPublicKey(File pubKey, File f) {
-        try {
-            //open file in append mode
-            BufferedWriter out = new BufferedWriter(new FileWriter(f, true));
-            InputStream in = new FileInputStream(pubKey);
-
-            int c;
-            while ((c = in.read()) != -1) {
-               out.write(c);
+            //append the public key file contents to authorized_keys file on remote host
+            String mergeCommand = "cd .ssh; cat " + pubKey.getName() + " >> " + AUTH_KEY_FILE;
+            if(logger.isLoggable(Level.FINER)) {
+                logger.finer("mergeCommand = " + mergeCommand);
             }
-            out.close();
+            if(connection.exec(mergeCommand, new ByteArrayOutputStream())!=0) {
+                throw new IOException("Failed to propogate the public key " + pubKeyFile + " to " + host);
+            }
+            logger.info("Copied keyfile " + pubKeyFile + " to " + userName + "@" + host);
 
-        } catch (Exception ex) {
-            //logger.printExceptionStackTrace(ex);
+            //remove the public key file on remote host
+            //for some reason sftp.rm() hangs for MKS ssh
+            if(connection.exec("rm .ssh/" + pubKey.getName(), new ByteArrayOutputStream())!=0) {
+                logger.warning("WARNING: Failed to remove the public key file " + pubKey.getName()
+                                + " on remote host " + host);
+            }
+            if(logger.isLoggable(Level.FINER)) {
+                logger.finer("Removed the key file on remote host");
+            }
+            connection.close();
         }
     }
 
@@ -657,6 +591,7 @@ public class SSHLauncher {
         c.close();
         return status;
     }
+
     /**
       * Invoke ssh-keygen using ProcessManager API
       */
@@ -665,6 +600,8 @@ public class SSHLauncher {
         if(logger.isLoggable(Level.FINER)) {
             logger.finer("Using " + keygenCmd + " to generate key pair");
         }
+
+        setupSSHDir();
 
         StringBuffer k = new StringBuffer();
         List<String> cmdLine = new ArrayList<String>();
@@ -749,6 +686,30 @@ public class SSHLauncher {
             }
         }
         return "ssh-keygen";
+    }
+
+    /**
+      * Create .ssh directory and set the permissions correctly
+      */
+    private void setupSSHDir() {
+        File home = new File(System.getProperty("user.home"));
+        File f = new File(home,SSH_DIR);
+
+        if(!FileUtils.safeIsDirectory(f)) {
+            f.mkdirs();
+            logger.info("Created directory " + f.toString());
+        }
+        
+        f.setWritable(false,false);
+        f.setWritable(true, true);
+        f.setReadable(false, false);
+        f.setReadable(true, true);
+        f.setExecutable(false, false);
+        f.setExecutable(true, true);
+
+        if(logger.isLoggable(Level.FINER)) {
+            logger.finer("Fixed the .ssh directory permissions to 0700");
+        }
     }
     
     @Override
