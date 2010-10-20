@@ -112,18 +112,6 @@ public final class CompositeMetadata implements Storeable {
      *                            before it can be removed.
      * @param entries             the SessionAttributeMetadata that are part of this Metadata
      */
-/*
-    public CompositeMetadata(long version, long lastAccessTime,
-                             long maxInactiveInterval, Collection<SessionAttributeMetadata> entries, byte[] state,
-                             String stringExtraParam, E extraParam) {
-        super(version, lastAccessTime, maxInactiveInterval, state, extraParam);
-        this.entries = entries;
-        this.stringExtraParam = stringExtraParam;
-
-        this.storableMap = new SessionAttributesMapImpl(entries);
-        saveMode = SAVE_ALL;
-    }
-*/
     public CompositeMetadata(long version, long lastAccessTime,
                              long maxInactiveInterval, Collection<SessionAttributeMetadata> entries, byte[] state, String stringExtraParam) {
 
@@ -293,11 +281,6 @@ public final class CompositeMetadata implements Storeable {
             lastAccessTime = dis.readLong();
             maxInactiveInterval = dis.readLong();
             dirtyBits = new boolean[]{true, true, true};
-/*
-            for (int i = 0; i < dirtyBits.length; i++) {
-                dirtyBits[i] = true; //correct?
-            }
-*/
 
             boolean[] dirtyFlags = new boolean[3];
             for (int i = 0; i < dirtyFlags.length; i++) {
