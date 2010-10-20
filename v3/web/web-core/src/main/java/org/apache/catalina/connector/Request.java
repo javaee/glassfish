@@ -3915,7 +3915,9 @@ public class Request
          * methods (in which case asyncStarted would have been set to false),
          * perform an error dispatch with a status code equal to 500.
          */
-        if (!asyncContext.isDispatchInScope() && !isAsyncComplete && isAsyncStarted()) {
+        if (asyncContext != null
+                && !asyncContext.isDispatchInScope()
+                && !isAsyncComplete && isAsyncStarted()) {
             ((HttpServletResponse) response).setStatus(
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.setError();
