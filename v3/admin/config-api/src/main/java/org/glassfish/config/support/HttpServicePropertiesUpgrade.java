@@ -65,6 +65,8 @@ public class HttpServicePropertiesUpgrade extends BaseLegacyConfigurationUpgrade
     public void execute(AdminCommandContext context) {
         for (Config config : configs.getConfig()) {
             HttpService service = config.getHttpService();
+            if(service == null)
+                continue;
             boolean done = false;
             try {
                 final List<Property> properties = service.getProperty();

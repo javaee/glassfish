@@ -54,6 +54,7 @@ import org.glassfish.external.statistics.Stats;
 import org.glassfish.external.statistics.impl.StatisticImpl;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import org.glassfish.internal.api.Target;
+import org.glassfish.config.support.CommandTarget;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -230,6 +231,10 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
             targetName = pattern;
         } else {
             targetName = pattern.substring(0, pattern.indexOf("."));
+        }
+        if( ("*".equals(targetName) && (domain.getServers().getServer().size() == 1) &&
+                (domain.getClusters().getCluster().size() == 0)) ) {
+            targetName = "server";
         }
         if (serverEnv.isDas() &&
                 !serverEnv.getInstanceName().equals(targetName)) {

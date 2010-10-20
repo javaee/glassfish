@@ -377,7 +377,11 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
                         if (Boolean.valueOf(oneHost.getLazyInit())) {
                             NetworkListener dummy = new DummyNetworkListener();
                             dummy.setPort(oneHost.getPort());
-                            dummy.setAddress(oneHost.getHost());
+                            try {
+                                dummy.setAddress(InetAddress.getByName(oneHost.getHost()).getHostAddress());
+                            } catch(UnknownHostException uex) {
+                                logger.log(Level.SEVERE, "Unable to get host address for jms-host = " + oneHost.getHost());
+                            }
                             dummy.setProtocol("light-weight-listener");
                             dummy.setTransport("tcp");
                             dummy.setName("mq-service");
