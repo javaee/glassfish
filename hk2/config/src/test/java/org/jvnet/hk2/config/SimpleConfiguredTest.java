@@ -45,6 +45,7 @@ import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.config.model.Config;
 import org.jvnet.hk2.config.model.Server;
 import org.jvnet.hk2.config.model.TopLevel;
+import org.jvnet.hk2.config.model.VirtualServer;
 import org.jvnet.hk2.junit.Hk2Test;
 
 import java.net.URL;
@@ -53,6 +54,8 @@ import java.util.Collection;
 
 /**
  * Simple test to dump all @Configured interfaces
+ *
+ * @author Jerome Dochez
  */
 public class SimpleConfiguredTest extends Hk2Test implements Hk2Test.Populator  {
 
@@ -92,12 +95,33 @@ public class SimpleConfiguredTest extends Hk2Test implements Hk2Test.Populator  
     }
 
     @Test
-    public void testReference() {
+    public void testAttributeReference() {
         Server server = habitat.getComponent(Server.class, "some-server");
         assertNotNull(server);
         assertEquals(server.getName(), "some-server");
         Config serverConfig = server.getConfig();
         assertNotNull(serverConfig);
         assertEquals(serverConfig.getName(), "some-config");
+    }
+    
+    @Test
+    public void testElementReference() {
+        Server server = habitat.getComponent(Server.class, "some-server");
+        assertNotNull(server);
+        assertEquals(server.getName(), "some-server");
+        VirtualServer defaultVS = server.getDefaultVirtualServer();
+        assertNotNull(defaultVS);
+        assertEquals(defaultVS.getName(), "some-vs");
+        System.out.println("Server " + server.getName() +
+                "'s default vs is " + defaultVS.getName());
+    }
+
+
+    @Test
+    public void defaultValueTest() {
+        Server server = habitat.getComponent(Server.class, "some-server");
+        assertNotNull(server);
+        assertEquals(server.getPort(),"80");
+
     }
 }

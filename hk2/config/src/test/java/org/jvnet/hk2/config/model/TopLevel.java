@@ -59,4 +59,7 @@ public interface TopLevel extends ConfigBeanProxy {
 
     @Element
     Servers getServers();
+
+    @Element
+    VirtualServers getVirtualServers();
 }

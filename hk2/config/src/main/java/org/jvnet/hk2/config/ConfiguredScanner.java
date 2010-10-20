@@ -141,7 +141,7 @@ public class ConfiguredScanner implements IntrospectionScanner {
         String xmlTokenName = '@' + name;
         boolean isRequired = Boolean.parseBoolean((String) attribute.getValues().get("isRequired"));
         metadata.add(xmlTokenName,isRequired?"required":"optional");
-        String defaultValue = (String) attribute.getValues().get("default");
+        String defaultValue = (String) attribute.getValues().get("defaultValue");
         if (defaultValue!=null && !defaultValue.isEmpty()) {
             if (defaultValue.indexOf(',')!=-1) {
                 metadata.add(xmlTokenName, '"' + "default:" + defaultValue + '"');
@@ -210,12 +210,14 @@ public class ConfiguredScanner implements IntrospectionScanner {
         if (isCollection) {
             refTypeAsString = refTypeAsString.substring("java.util.List<L".length());
         }
-
         Boolean isReference = (Boolean) element.getValues().get("reference");
         Type refType = context.getTypes().getBy(refTypeAsString);
         if (refType==null || (isReference!=null && isReference)) {
             // leaf
             metadata.add(xmlTokenName, makeCollectionIfNecessary(isCollection, "leaf"));
+            if (isReference!=null && isReference) {
+                metadata.add(xmlTokenName, "reference");
+            }
         } else {
             // node
             metadata.add(xmlTokenName, makeCollectionIfNecessary(isCollection, refTypeAsString));

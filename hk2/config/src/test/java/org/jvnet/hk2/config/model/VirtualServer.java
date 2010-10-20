@@ -39,27 +39,14 @@ package org.jvnet.hk2.config.model;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
 
 /**
- * Example of a server definition, indexed by its name.
+ * there can be many virtual servers per server...
  */
 @Configured
-public interface Server extends ConfigBeanProxy {
+public interface VirtualServer extends ConfigBeanProxy {
 
     @Attribute(key=true)
     String getName();
-    void setName();
-
-    @Attribute(reference = true)
-    Config getConfig();
-    void setConfig(Config config);
-    
-    @Attribute(defaultValue = "80")
-    String getPort();
-    void setPort(String name);
-
-    @Element(reference=true)
-    VirtualServer getDefaultVirtualServer();
-    void setDefaultVirtualServer(VirtualServer vs);   
+    void setName(String name);
 }

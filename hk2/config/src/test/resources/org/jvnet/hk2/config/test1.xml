@@ -4,7 +4,12 @@
         </config>
     </configs>
     <servers>
-    <server name="some-server" config="some-config">        
-    </server>
+        <server name="some-server" config="some-config">
+            <default-virtual-server>some-vs</default-virtual-server>
+        </server>
     </servers>
+    <virtual-servers>
+        <virtual-server name="some-vs">
+        </virtual-server>
+    </virtual-servers>
 </top-level>
