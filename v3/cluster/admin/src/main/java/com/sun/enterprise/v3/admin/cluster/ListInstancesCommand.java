@@ -215,7 +215,6 @@ public class ListInstancesCommand implements AdminCommand {
                         server,
                         port,
                         host,
-                        getPid(server, port, host),
                         clusterName,
                         logger,
                         timeoutInMsec,
@@ -349,25 +348,6 @@ public class ListInstancesCommand implements AdminCommand {
         }
 
         return servers;
-    }
-
-    private int getPid(Server server, int port, String host) {
-        try {
-            RemoteAdminCommand rac = new RemoteAdminCommand("_get-runtime-info", host, port);
-            ParameterMap map = new ParameterMap();
-            rac.executeCommand(map);
-            Map<String,String> att = rac.getAttributes();
-            String pidString = att.get("pid_value");
-            int at = pidString.indexOf('@');
-
-            if(at < 0)
-                return -1;
-
-            return Integer.parseInt(pidString.substring(0, at));
-        }
-        catch (Exception ex) {
-            return -1;
-        }
     }
 
     /*

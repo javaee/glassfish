@@ -67,13 +67,6 @@ public final class InstanceInfo {
 
     public InstanceInfo(Server svr, int port0, String host0, String cluster0,
             Logger logger0, int timeout0, ActionReport report, InstanceStateService stateService) {
-        this(svr, port0, host0,
-                -1, // just to make it clear what I'm doing here!!!
-                cluster0, logger0, timeout0, report, stateService);
-    }
-
-    public InstanceInfo(Server svr, int port0, String host0, int pid0, String cluster0,
-            Logger logger0, int timeout0, ActionReport report, InstanceStateService stateService) {
         if (svr == null || host0 == null)
             throw new NullPointerException("null arguments");
 
@@ -83,7 +76,6 @@ public final class InstanceInfo {
         host = host0;
         logger = logger0;
         timeoutInMsec = timeout0;
-        pid = pid0;
         this.report = report;
         this.stateService = stateService;
         /*
@@ -108,7 +100,9 @@ public final class InstanceInfo {
                 + ", host: " + getHost()
                 + ", port: " + getPort()
                 + cl
-                + ", uptime: " + uptime;
+                + ", uptime: " + uptime
+                + ", pid: " + pid;
+
     }
 
     public final String getDisplayCluster() {
@@ -131,15 +125,18 @@ public final class InstanceInfo {
         return name;
     }
 
-    private int getPid() {
-        return pid;
-    }
-
     public final long getUptime() {
         if (uptime == -1) {
             getFutureResult();
         }
         return uptime;
+    }
+
+    public final int getPid() {
+        if (pid < 0) {
+            getFutureResult();
+        }
+        return pid;
     }
 
     public final String getDisplayState() {
@@ -189,9 +186,19 @@ public final class InstanceInfo {
                 uptime = -1;
                 state = NOT_RUNNING;
                 running = false;
+                pid = -1;
             }
             else {
                 String uptimeStr = res.getReport().getTopMessagePart().getProps().getProperty("Uptime");
+                String pidstr = res.getReport().getTopMessagePart().getProps().getProperty("Pid");
+
+                try {
+                    pid = Integer.parseInt(pidstr);
+                }
+                catch(Exception e) {
+                    // no I don't want to use the enclosing catch...
+                    pid = -1;
+                }
                 uptime = new Long(uptimeStr);
                 state = formatTime(uptime);
                 running = true;
@@ -201,6 +208,7 @@ public final class InstanceInfo {
             uptime = -1;
             state = NOT_RUNNING;
             running = false;
+            pid = -1;
         }
     }
     /////////////////////////////////////////////////////////////////////////
@@ -276,7 +284,7 @@ public final class InstanceInfo {
     private final ActionReport report;
     private final InstanceStateService stateService;
     private final Server svr;
-    private final int pid;
+    private int pid;
     private boolean running;
     private static final String NOT_RUNNING = Strings.get("ListInstances.NotRunning");
     private static final String NAME = Strings.get("ListInstances.name");

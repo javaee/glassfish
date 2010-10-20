@@ -40,6 +40,8 @@
 
 package com.sun.enterprise.v3.admin;
 
+import com.sun.enterprise.universal.process.ProcessUtils;
+import org.glassfish.api.ActionReport.MessagePart;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandLock;
@@ -72,10 +74,12 @@ public class LocationsCommand implements AdminCommand {
         ActionReport report = context.getActionReport();
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         report.setMessage(env.getInstanceRoot().getAbsolutePath().replace('\\', '/'));
-        report.getTopMessagePart().addProperty("Base-Root", StartupContextUtil.getInstallRoot(env.getStartupContext()).getAbsolutePath());
-        report.getTopMessagePart().addProperty("Domain-Root", env.getDomainRoot().getAbsolutePath());
-        report.getTopMessagePart().addProperty("Instance-Root", env.getInstanceRoot().getAbsolutePath());
-        report.getTopMessagePart().addProperty("Uptime", ""+getUptime());
+        MessagePart mp = report.getTopMessagePart();
+        mp.addProperty("Base-Root", StartupContextUtil.getInstallRoot(env.getStartupContext()).getAbsolutePath());
+        mp.addProperty("Domain-Root", env.getDomainRoot().getAbsolutePath());
+        mp.addProperty("Instance-Root", env.getInstanceRoot().getAbsolutePath());
+        mp.addProperty("Uptime", ""+getUptime());
+        mp.addProperty("Pid", ""+ProcessUtils.getPid());
     }
 
     private long getUptime() {
