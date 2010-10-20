@@ -108,8 +108,8 @@ public class PersistenceStrategyBuilderFactory {
                 _logger.finest("Could not find PersistentStrategyBuilder for persistenceType  " + persistenceType);
             }
         } else {
-                if (_logger.isLoggable(Level.INFO)) {
-                    _logger.info(
+                if (_logger.isLoggable(Level.FINEST)) {
+                    _logger.finest(
                     "PersistenceStrategyBuilderFactory>>createPersistenceStrategyBuilder: "
                     + "CandidateBuilderClassName = " + builder.getClass());
                 }
