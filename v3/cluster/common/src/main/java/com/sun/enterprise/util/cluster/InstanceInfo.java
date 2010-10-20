@@ -37,16 +37,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.util.cluster;
 
-import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import com.sun.enterprise.admin.util.InstanceCommandExecutor;
 import com.sun.enterprise.admin.util.InstanceStateService;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.StringUtils;
 
-import java.io.File;
 import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -68,14 +65,14 @@ import org.glassfish.api.admin.InstanceState;
  */
 public final class InstanceInfo {
 
-    /*
-    public InstanceInfo(String name0, int port0, String host0,
-            Logger logger0, int timeout0) {
-        this(name0, port0, host0, null, logger0, timeout0);
-    }
-    */
-    
     public InstanceInfo(Server svr, int port0, String host0, String cluster0,
+            Logger logger0, int timeout0, ActionReport report, InstanceStateService stateService) {
+        this(svr, port0, host0,
+                -1, // just to make it clear what I'm doing here!!!
+                cluster0, logger0, timeout0, report, stateService);
+    }
+
+    public InstanceInfo(Server svr, int port0, String host0, int pid0, String cluster0,
             Logger logger0, int timeout0, ActionReport report, InstanceStateService stateService) {
         if (svr == null || host0 == null)
             throw new NullPointerException("null arguments");
@@ -86,11 +83,12 @@ public final class InstanceInfo {
         host = host0;
         logger = logger0;
         timeoutInMsec = timeout0;
+        pid = pid0;
         this.report = report;
         this.stateService = stateService;
         /*
         state = uptime == -1 ? NOT_RUNNING : formatTime(uptime);
-        */
+         */
 
         if (!StringUtils.ok(cluster0))
             cluster = null;
@@ -133,41 +131,46 @@ public final class InstanceInfo {
         return name;
     }
 
+    private int getPid() {
+        return pid;
+    }
+
     public final long getUptime() {
-        if(uptime == -1) {
+        if (uptime == -1) {
             getFutureResult();
         }
         return uptime;
     }
 
     public final String getDisplayState() {
-        String display = (isRunning()) ? InstanceState.StateType.RUNNING.getDisplayString() :
-                    InstanceState.StateType.NOT_RUNNING.getDisplayString();
+        String display = (isRunning()) ? InstanceState.StateType.RUNNING.getDisplayString()
+                : InstanceState.StateType.NOT_RUNNING.getDisplayString();
         List<String> failedCmds = stateService.getFailedCommands(name);
-        InstanceState.StateType istate = isRunning() ?
-                    (stateService.setState(name, InstanceState.StateType.RUNNING, false)) :
-                    (stateService.setState(name, InstanceState.StateType.NOT_RUNNING, false));
+        InstanceState.StateType istate = isRunning()
+                ? (stateService.setState(name, InstanceState.StateType.RUNNING, false))
+                : (stateService.setState(name, InstanceState.StateType.NOT_RUNNING, false));
 
         if (istate == InstanceState.StateType.RESTART_REQUIRED) {
             if (isRunning()) {
                 display += ("; " + InstanceState.StateType.RESTART_REQUIRED.getDisplayString());
             }
             String list = "";
-            for(String z : failedCmds) list += (z + "; ");
+            for (String z : failedCmds)
+                list += (z + "; ");
             display += (" [pending config changes are: " + list + "]");
         }
         return display;
     }
 
     public final String getState() {
-        if(state == null) {
+        if (state == null) {
             getFutureResult();
         }
         return state;
     }
 
     public final boolean isRunning() {
-        if(state == null) {
+        if (state == null) {
             getFutureResult();
         }
         return running;
@@ -180,19 +183,21 @@ public final class InstanceInfo {
             String instanceLocation = res.getCommandOutput();
             // Remove the pesky \n out
             instanceLocation = (instanceLocation == null) ? "" : instanceLocation.trim();
-            
-            if ((!instanceLocation.endsWith(res.getServer().getName())) ||
-                    (res.getReport().getActionExitCode() != ActionReport.ExitCode.SUCCESS)) {
+
+            if ((!instanceLocation.endsWith(res.getServer().getName()))
+                    || (res.getReport().getActionExitCode() != ActionReport.ExitCode.SUCCESS)) {
                 uptime = -1;
                 state = NOT_RUNNING;
                 running = false;
-            } else {
+            }
+            else {
                 String uptimeStr = res.getReport().getTopMessagePart().getProps().getProperty("Uptime");
                 uptime = new Long(uptimeStr);
                 state = formatTime(uptime);
                 running = true;
             }
-        } catch(Exception e) {
+        }
+        catch (Exception e) {
             uptime = -1;
             state = NOT_RUNNING;
             running = false;
@@ -201,17 +206,19 @@ public final class InstanceInfo {
     /////////////////////////////////////////////////////////////////////////
     ////////  static formatting stuff below   ///////////////////////////////
     /////////////////////////////////////////////////////////////////////////
+
     public static String format(List<InstanceInfo> infos) {
-        String headings[] = { NAME, HOST, PORT, CLUSTER, STATE };
+        String headings[] = {NAME, HOST, PORT, PID, CLUSTER, STATE};
         ColumnFormatter cf = new ColumnFormatter(headings);
         for (InstanceInfo info : infos) {
-            cf.addRow(new Object[] {
-                info.getName(),
-                info.getHost(),
-                info.getPort(),
-                info.getDisplayCluster(),
-                info.getDisplayState()
-            });
+            cf.addRow(new Object[]{
+                        info.getName(),
+                        info.getHost(),
+                        info.getPort(),
+                        info.getPid(),
+                        info.getDisplayCluster(),
+                        info.getDisplayState()
+                    });
         }
         return cf.toString();
     }
@@ -219,14 +226,13 @@ public final class InstanceInfo {
     public static String formatBrief(List<InstanceInfo> infos) {
         ColumnFormatter cf = new ColumnFormatter();
         for (InstanceInfo info : infos) {
-            cf.addRow(new Object[] {
-                info.getName(),
-                info.getDisplayState()
-            });
+            cf.addRow(new Object[]{
+                        info.getName(),
+                        info.getDisplayState()
+                    });
         }
         return cf.toString();
     }
-
 
     // TODO what about security????
     private Future<InstanceCommandResult> pingInstance() {
@@ -237,17 +243,17 @@ public final class InstanceInfo {
             map.set("type", "terse");
             InstanceCommandExecutor ice =
                     new InstanceCommandExecutor("__locations", FailurePolicy.Error, FailurePolicy.Error,
-                            svr, host, port, logger, map, aReport, aResult);
+                    svr, host, port, logger, map, aReport, aResult);
             return stateService.submitJob(svr, ice, aResult);
             /*
             String ret = rac.executeCommand(map).trim();
 
             if (ret == null || (!ret.endsWith("/" + name)))
-                return -1;
+            return -1;
             running = true;
             String uptimeStr = rac.getAttributes().get("Uptime_value");
             return Long.parseLong(uptimeStr);
-            */
+             */
         }
         catch (CommandException ex) {
             running = false;
@@ -258,7 +264,6 @@ public final class InstanceInfo {
     private String formatTime(long uptime) {
         return Strings.get("instanceinfo.uptime", new Duration(uptime));
     }
-
     private final String host;
     private final int port;
     private final String name;
@@ -271,13 +276,14 @@ public final class InstanceInfo {
     private final ActionReport report;
     private final InstanceStateService stateService;
     private final Server svr;
+    private final int pid;
     private boolean running;
     private static final String NOT_RUNNING = Strings.get("ListInstances.NotRunning");
     private static final String NAME = Strings.get("ListInstances.name");
     private static final String HOST = Strings.get("ListInstances.host");
     private static final String PORT = Strings.get("ListInstances.port");
+    private static final String PID = Strings.get("ListInstances.pid");
     private static final String STATE = Strings.get("ListInstances.state");
     private static final String CLUSTER = Strings.get("ListInstances.cluster");
     private static final String NO_CLUSTER = "---";
-
 }

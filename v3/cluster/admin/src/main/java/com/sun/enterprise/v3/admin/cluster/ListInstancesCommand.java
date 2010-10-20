@@ -37,9 +37,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.admin.cluster;
 
+import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import com.sun.enterprise.admin.util.InstanceStateService;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.config.serverbeans.Cluster;
@@ -83,7 +83,7 @@ public class ListInstancesCommand implements AdminCommand {
     private Servers allServers;
     @Inject
     InstanceStateService stateService;
-    @Param(optional = true, defaultValue = "false", name="long", shortName="l")
+    @Param(optional = true, defaultValue = "false", name = "long", shortName = "l")
     private boolean long_opt;
     @Param(optional = true, defaultValue = "2000")
     private String timeoutmsec;
@@ -135,7 +135,8 @@ public class ListInstancesCommand implements AdminCommand {
 
         if (nostatus) {
             noStatus(serverList);
-        }  else {
+        }
+        else {
             yesStatus(serverList, timeoutInMsec, logger);
         }
 
@@ -165,7 +166,8 @@ public class ListInstancesCommand implements AdminCommand {
             if (notDas(name)) {
                 if (firstServer) {
                     firstServer = false;
-                }  else {
+                }
+                else {
                     sb.append(EOL);
                 }
 
@@ -191,6 +193,8 @@ public class ListInstancesCommand implements AdminCommand {
 
         for (Server server : serverList) {
             boolean clustered = server.getCluster() != null;
+            int port = helper.getAdminPort(server);
+            String host = server.getAdminHost();
 
             if (standaloneonly && clustered) {
                 continue;
@@ -208,8 +212,15 @@ public class ListInstancesCommand implements AdminCommand {
             if (notDas(name)) {
                 ActionReport tReport = habitat.getComponent(ActionReport.class, "html");
                 InstanceInfo ii = new InstanceInfo(
-                        server, helper.getAdminPort(server), server.getAdminHost(),
-                        clusterName, logger, timeoutInMsec, tReport, stateService);
+                        server,
+                        port,
+                        host,
+                        getPid(server, port, host),
+                        clusterName,
+                        logger,
+                        timeoutInMsec,
+                        tReport,
+                        stateService);
                 infos.add(ii);
             }
         }
@@ -223,25 +234,25 @@ public class ListInstancesCommand implements AdminCommand {
 
         for (InstanceInfo ii : infos) {
             String name = ii.getName();
-            String value = (ii.isRunning()) ? InstanceState.StateType.RUNNING.getDescription() :
-                    InstanceState.StateType.NOT_RUNNING.getDescription();
-            InstanceState.StateType state = (ii.isRunning()) ?
-                    (stateService.setState(name, InstanceState.StateType.RUNNING, false)) :
-                    (stateService.setState(name, InstanceState.StateType.NOT_RUNNING, false));
+            String value = (ii.isRunning()) ? InstanceState.StateType.RUNNING.getDescription()
+                    : InstanceState.StateType.NOT_RUNNING.getDescription();
+            InstanceState.StateType state = (ii.isRunning())
+                    ? (stateService.setState(name, InstanceState.StateType.RUNNING, false))
+                    : (stateService.setState(name, InstanceState.StateType.NOT_RUNNING, false));
             List<String> failedCmds = stateService.getFailedCommands(name);
-            if(state == InstanceState.StateType.RESTART_REQUIRED) {
-                if(ii.isRunning()) {
-                    value += (";"+ InstanceState.StateType.RESTART_REQUIRED.getDescription());
+            if (state == InstanceState.StateType.RESTART_REQUIRED) {
+                if (ii.isRunning()) {
+                    value += (";" + InstanceState.StateType.RESTART_REQUIRED.getDescription());
                 }
             }
 
             HashMap<String, Object> insDetails = new HashMap<String, Object>();
             insDetails.put("name", name);
             insDetails.put("status", value);
-            if(state == InstanceState.StateType.RESTART_REQUIRED) {
+            if (state == InstanceState.StateType.RESTART_REQUIRED) {
                 insDetails.put("restartReasons", failedCmds);
             }
-            if(ii.isRunning()) {
+            if (ii.isRunning()) {
                 insDetails.put("uptime", ii.getUptime());
             }
             instanceList.add(insDetails);
@@ -251,7 +262,8 @@ public class ListInstancesCommand implements AdminCommand {
 
         if (long_opt) {
             report.setMessage(InstanceInfo.format(infos));
-        }  else {
+        }
+        else {
             report.setMessage(InstanceInfo.formatBrief(infos));
         }
     }
@@ -314,7 +326,8 @@ public class ListInstancesCommand implements AdminCommand {
         }
         if (!foundNode) {
             return null;
-        } else {
+        }
+        else {
             return domain.getInstancesOnNode(whichTarget);
         }
     }
@@ -338,6 +351,24 @@ public class ListInstancesCommand implements AdminCommand {
         return servers;
     }
 
+    private int getPid(Server server, int port, String host) {
+        try {
+            RemoteAdminCommand rac = new RemoteAdminCommand("_get-runtime-info", host, port);
+            ParameterMap map = new ParameterMap();
+            rac.executeCommand(map);
+            Map<String,String> att = rac.getAttributes();
+            String pidString = att.get("pid_value");
+            int at = pidString.indexOf('@');
+
+            if(at < 0)
+                return -1;
+
+            return Integer.parseInt(pidString.substring(0, at));
+        }
+        catch (Exception ex) {
+            return -1;
+        }
+    }
 
     /*
      * false means error

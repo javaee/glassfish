@@ -178,6 +178,15 @@ public class RemoteAdminCommand {
     }
 
     /**
+     * Helper ctor
+     * 
+     */
+    public RemoteAdminCommand(String name, String host, int port)
+            throws CommandException {
+
+        this(name, host, port, false, "admin", null, Logger.getAnonymousLogger());
+    }
+    /**
      * Construct a new remote command object.  The command and arguments
      * are supplied later using the execute method in the superclass.
      */
