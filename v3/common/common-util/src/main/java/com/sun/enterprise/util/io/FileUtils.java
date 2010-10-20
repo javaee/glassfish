@@ -1142,7 +1142,7 @@ public class FileUtils {
     /*
     *The following property names are private, unsupported, and unpublished.
     */
-    private static final int FILE_OPERATION_MAX_RETRIES = Integer.getInteger("com.sun.appserv.winFileLockRetryLimit", 4).intValue();
-        private static final int FILE_OPERATION_SLEEP_DELAY_MS = Integer.getInteger("com.sun.appserv.winFileLockRetryDelay", 100).intValue();
+    private static final int FILE_OPERATION_MAX_RETRIES = Integer.getInteger("com.sun.appserv.winFileLockRetryLimit", 5).intValue();
+        private static final int FILE_OPERATION_SLEEP_DELAY_MS = Integer.getInteger("com.sun.appserv.winFileLockRetryDelay", 1000).intValue();
         private static final Level FILE_OPERATION_LOG_LEVEL = Level.FINE;
 }
