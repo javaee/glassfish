@@ -115,7 +115,9 @@ public class CommandResourceMetaData {
             {"Cluster", "migrate-timers", "POST", "migrate-timers", "Migrate Timers"},
             {"Cluster", "start-cluster", "POST", "start-cluster", "Start Cluster", "id=$parent"},
             {"Cluster", "stop-cluster", "POST", "stop-cluster", "Stop Cluster", "id=$parent"},
+            {"Cluster", "__resolve-tokens", "GET", "resolve-tokens", "Resolve Tokens", "target=$parent"},
             {"Config", "delete-config", "POST", "delete-config", "Delete Config", "id=$parent"},
+            {"Config", "__resolve-tokens", "GET", "resolve-tokens", "Resolve Tokens", "target=$parent"},
             {"Configs", "copy-config", "POST", "copy-config", "Copy Config"},
             {"ConnectionPool", "ping-connection-pool", "GET", "ping", "Ping"},
             {"Domain", "enable-monitoring", "POST", "enable-monitoring", "Enable Monitoring"},
@@ -202,6 +204,7 @@ public class CommandResourceMetaData {
             {"Server", "restart-instance", "POST", "restart-instance", "Restart Instance", "id=$parent"},
             {"Server", "stop-instance", "POST", "stop-instance", "Stop Instance", "id=$parent"},
             {"Server", "recover-transactions", "POST", "recover-transactions", "Recover", "id=$parent"},
+            {"Server", "__resolve-tokens", "GET", "resolve-tokens", "Resolve Tokens", "target=$parent"},
             {"WorkSecurityMap", "update-connector-work-security-map", "POST", "update-connector-work-security-map", "Update", "id=$parent"}
     };
 }
