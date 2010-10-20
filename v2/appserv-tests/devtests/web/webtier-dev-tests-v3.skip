@@ -1,9 +1,6 @@
 servlet-3.0/servletContainerInitializer/sharedLibWithWars # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=12091 is fixed
 singleengine # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=14014 is fixed
 weldJsfFormLoginHttpSessionListener # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=7548 is fixed
-servlet-3.0/asyncContextCreateListener # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=14045 is fixed
-servlet-3.0/asyncContextSetTimeout # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=14045 is fixed
-servlet-3.0/asyncListenerOnComplete # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=14045 is fixed
 servlet-3.0/absoluteOrderingWebFragments # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=14046 is fixed
 servlet-3.0/multiWebFragments # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=14046 is fixed
 servlet-3.0/relativeOrderingWebFragments # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=14046 is fixed
