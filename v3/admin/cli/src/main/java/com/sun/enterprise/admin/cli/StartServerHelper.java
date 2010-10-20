@@ -118,14 +118,21 @@ public class StartServerHelper{
                 Process p = launcher.getProcess();
                 int exitCode = p.exitValue();
                 // uh oh, DAS died
+                String sname;
+
+                if(info.isDomain())
+                    sname = "domain " + info.getDomainName();
+                else
+                    sname = "instance " + info.getInstanceName();
+
                 ProcessStreamDrainer psd = launcher.getProcessStreamDrainer();
                 String output = psd.getOutErrString();
                 if(StringUtils.ok(output))
-                    throw new CommandException(strings.get("dasDiedOutput",
-                            info.getDomainName(), exitCode, output));
+                    throw new CommandException(strings.get("serverDiedOutput",
+                            sname, exitCode, output));
                 else
-                    throw new CommandException(strings.get("dasDied",
-                            info.getDomainName(), exitCode));
+                    throw new CommandException(strings.get("serverDied",
+                            sname, exitCode));
             }
             catch (GFLauncherException ex) {
                 // should never happen
