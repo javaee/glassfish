@@ -45,13 +45,16 @@ import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.JaccProvider;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import java.beans.PropertyVetoException;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.config.ConfigurationUpgrade;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
@@ -74,6 +77,11 @@ public class SecurityUpgradeService implements ConfigurationUpgrade, PostConstru
     @Inject
     Configs configs;
 
+    @Inject
+    ServerEnvironment env;
+
+    private static final String DIR_GENERATED_POLICY = "generated" + File.separator + "policy";
+
     public void postConstruct() {
         for (Config config : configs.getConfig()) {
             SecurityService service = config.getSecurityService();
@@ -81,6 +89,19 @@ public class SecurityUpgradeService implements ConfigurationUpgrade, PostConstru
                 upgradeJACCProvider(service);
             }
         }
+
+        //Clear up the old policy files for applications
+        String instanceRoot = env.getInstanceRoot().getAbsolutePath();
+        File genPolicyDir = new File(instanceRoot, DIR_GENERATED_POLICY);
+        if(genPolicyDir != null) {
+            File[] applicationDirs = genPolicyDir.listFiles();
+            if(applicationDirs != null) {
+                for(File policyDir:applicationDirs) {
+                    deleteFile(genPolicyDir);
+                }
+            }
+        }
+
     }
 
     private void upgradeJACCProvider(SecurityService securityService) {
@@ -109,6 +130,26 @@ public class SecurityUpgradeService implements ConfigurationUpgrade, PostConstru
             throw new RuntimeException(ex);
         }
 
+    }
+
+
+    private boolean deleteFile(File path) {
+        if (path != null && path.exists()) {
+            if (path.isDirectory()) {
+                File[] files = path.listFiles();
+                for(File file:files) {
+                    if(file.isDirectory()){
+                        deleteFile(file);
+                        file.delete();
+                    }
+                    else {
+                        file.delete();
+                    }
+                }
+            }
+            path.delete();
+        }
+        return true;
     }
 
 }
