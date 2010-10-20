@@ -40,6 +40,8 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import com.sun.enterprise.config.util.InstanceRegisterInstanceCommandParameters;
+import static com.sun.enterprise.config.util.RegisterInstanceCommandParameters.ParameterNames.*;
 import com.sun.enterprise.config.serverbeans.customvalidators.NotTargetKeyword;
 import com.sun.enterprise.config.serverbeans.customvalidators.NotDuplicateTargetName;
 import com.sun.enterprise.config.util.ServerHelper;
@@ -72,6 +74,7 @@ import java.beans.PropertyVetoException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -97,7 +100,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
 
     String lbEnabledSystemProperty = "org.glassfish.lb-enabled-default";
 
-    @Param(name = "name", primary = true)
+    @Param(name = OPERAND_NAME, primary = true)
     @Override
     public void setName(String value) throws PropertyVetoException;
 
@@ -127,7 +130,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *              {@link String }
      * @throws PropertyVetoException if a listener vetoes the change
      */
-    @Param(name = "config", optional = true)
+    @Param(name = PARAM_CONFIG, optional = true)
     void setConfigRef(String value) throws PropertyVetoException;
 
     /**
@@ -159,7 +162,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *              {@link String }
      * @throws PropertyVetoException if a listener vetoes the change
      */
-    @Param(name = "node", optional = true)
+    @Param(name = PARAM_NODE, optional = true)
     void setNode(String value) throws PropertyVetoException;
 
     /**
@@ -221,7 +224,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      */
     @ToDo(priority = ToDo.Priority.IMPORTANT, details = "Provide PropertyDesc for legal system properties")
     @Element
-    @Param(name = "systemproperties", optional = true)
+    @Param(name = PARAM_SYSTEMPROPERTIES, optional = true)
     List<SystemProperty> getSystemProperty();
 
     /**
@@ -446,15 +449,15 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @Scoped(PerLookup.class)
     class CreateDecorator implements CreationDecorator<Server> {
 
-        @Param(name = "cluster", optional = true)
+        @Param(name = PARAM_CLUSTER, optional = true)
         String clusterName;
-        @Param(name = "node", optional = true)
+        @Param(name = PARAM_NODE, optional = true)
         String node = null;
-        @Param(name = "lbenabled", optional = true)
+        @Param(name = PARAM_LBENABLED, optional = true)
         String lbEnabled = null;
-        @Param(name = "checkports", optional = true, defaultValue = "true")
+        @Param(name = PARAM_CHECKPORTS, optional = true, defaultValue = "true")
         boolean checkPorts = true;
-        @Param(name = "portbase", optional = true)
+        @Param(name = PARAM_PORTBASE, optional = true)
         private String portBase;
         @Param(optional=true, defaultValue="false", shortName="t")
         public Boolean terse = false;
@@ -649,11 +652,37 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                 
                 PortManager pm = new PortManager(ourCluster,
                         ourConfig, domain, instance, logger);
-                String message = pm.process();       
+                String message = pm.process();      
 
                 if (message != null && !terse) {
                     ActionReport report = context.getActionReport();
                     report.setMessage(message);
+                }
+            }
+
+            setupSupplemental(context, instance);
+        }
+
+        private void setupSupplemental(AdminCommandContext context, final Server instance) {
+            if (clusterName != null) {
+                InstanceRegisterInstanceCommandParameters cp = new InstanceRegisterInstanceCommandParameters();
+                context.getActionReport().
+                        setResultType(InstanceRegisterInstanceCommandParameters.class, cp);
+
+                Node instNode = domain.getNodeNamed(node);
+
+                cp.config = instance.getConfigRef();
+                cp.nodehost = instNode.getNodeHost();
+                cp.nodedir = instNode.getNodeDir();
+                cp.installdir = instNode.getInstallDir();
+                List<SystemProperty> spList = instance.getSystemProperty();
+
+                if (spList != null) {
+                    Properties p = new Properties();
+                    for (SystemProperty sp : spList) {
+                        p.put(sp.getName(), sp.getValue());
+                    }
+                    cp.systemProperties = p;
                 }
             }
         }
@@ -686,7 +715,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
         @Param(optional=true)
         String target;
         //TODO - add support for node?
-        @Param(name = "node", optional = true)
+        @Param(name = PARAM_NODE, optional = true)
         String node;
         @Inject
         Configs configs;
@@ -703,6 +732,12 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             Transaction t = Transaction.getTransaction(parent);
             Cluster cluster = domain.getClusterForInstance(child.getName());
             boolean isStandAlone = cluster == null ? true : false;
+
+            /* setup supplemental */
+            if (!isStandAlone && env.isDas()) {
+                context.getActionReport().
+                        setResultType(String.class, cluster.getName());
+            }
 
             if (isStandAlone) { // remove config <instance>-config
                 String instanceConfig = child.getConfigRef();

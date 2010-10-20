@@ -74,6 +74,7 @@ public interface Servers extends ConfigBeanProxy, Injectable  {
         i18n=@I18n("_register.instance.command"))
     @Delete(value="_unregister-instance", resolver= TypeAndNameResolver.class,
             decorator=Server.DeleteDecorator.class,
+            cluster=@org.glassfish.api.admin.ExecuteOn(value = {RuntimeType.DAS,RuntimeType.INSTANCE}),
             i18n=@I18n("_unregister.instance.command"))    
     public List<Server> getServer();
 
