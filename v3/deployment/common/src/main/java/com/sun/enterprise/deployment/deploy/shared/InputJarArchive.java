@@ -306,7 +306,11 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
             ZipEntry ze = jarFile.getEntry(name);
             if (ze!=null) {
                 return ze.getSize();
+            } else {
+            logger.severe("Returning 0 because " + name + " cannot be found in the jar " + uri);               
             }
+        } else {
+            logger.severe("Returning 0 because jar file is null");            
         }
         return 0;
     }
