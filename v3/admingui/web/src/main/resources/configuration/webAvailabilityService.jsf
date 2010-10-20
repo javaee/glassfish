@@ -84,7 +84,14 @@
                     <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['availabilityEnabled']}" selectedValue="true" />
                 </sun:property>
                 <sun:property id="PersistenceTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.availability.persistenceType}" helpText="$resource{i18n_web.availability.persistenceTypeHelp}">
-                    <sun:textField id="HttpSessionStore" columns="$int{15}" maxLength="#{sessionScope.fieldLengths['maxLength.availabilty.persistenceType']}" text="#{pageSession.valueMap['persistenceType']}" />
+                    <sun:dropDown id="HttpSessionStore" selected="#{pageSession.valueMap['persistenceType']}" labels="#{pageSession.persistenceType}">
+                        <!beforeCreate
+                            createMap(result="#{pageSession.attrMap}");
+                            mapPut(map="#{pageSession.attrMap}" key="type" value="web");
+                            gf.restRequest(endpoint="#{sessionScope.REST_URL}/list-persistence-types.json" attrs="#{pageSession.attrMap}" method="GET" result="#{pageSession.result}");
+                            setPageSessionAttribute(key="persistenceType" value="#{pageSession.result.data.extraProperties.types}");
+                        />
+                    </sun:dropDown>
                 </sun:property>
                 <sun:property id="PersistenceFrequencyProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.availability.persistenceFreq}" helpText="$resource{i18n_web.availability.persistenceFreqHelp}">
                     <sun:dropDown id="PersistenceFrequency" selected="#{pageSession.valueMap['persistenceFrequency']}" labels={"time-based", "web-method"} />
