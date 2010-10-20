@@ -53,5 +53,7 @@ public interface Server extends ConfigBeanProxy {
     @Attribute(reference = true)
     Config getConfig();
     
-
+    @Attribute(defaultValue = "80")
+    String getPort();
+    void setPort(String name);
 }

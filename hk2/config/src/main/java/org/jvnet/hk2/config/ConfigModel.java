@@ -632,8 +632,8 @@ public final class ConfigModel {
         }
     }
 
-    static final class ReferenceLeaf extends AttributeLeaf {
-        ReferenceLeaf(String xmlName, String dataType) {
+    static final class ReferenceAttributeLeaf extends AttributeLeaf {
+        ReferenceAttributeLeaf(String xmlName, String dataType) {
             super(xmlName, dataType);
         }
 
@@ -650,6 +650,12 @@ public final class ConfigModel {
 
             dom = dom.getSymbolSpaceRoot(id);
             return type.cast(dom.resolveReference(id,type.getName()).get());
+        }
+
+        @Override
+        public void set(Dom dom, Object arg) {
+            Dom target = (Dom) arg;
+            dom.attribute(xmlName, arg==null?null:target.getKey());
         }
     }
     
@@ -677,6 +683,41 @@ public final class ConfigModel {
         }
     }
 
+    static final class ReferenceElementLeaf extends Leaf {
+        public ReferenceElementLeaf(String xmlName) {
+            super(xmlName);
+        }
+
+        @Override
+        public boolean isCollection() {
+            return false;
+        }
+
+        @Override
+        public Object get(Dom dom, Type returnType) {
+            String id = dom.leafElement(xmlName);
+            Class<?> type = Types.erasure(returnType);
+
+            // let's look first the fast way.
+            Object candidate = dom.getHabitat().getComponent(type, id);
+            if (candidate!=null) {
+                return type.cast(candidate);
+            }
+
+            dom = dom.getSymbolSpaceRoot(id);
+            return type.cast(dom.resolveReference(id,type.getName()).get());
+        }
+
+        @Override
+        public void set(Dom dom, Object arg) {
+            if(arg==null) {
+                dom.removeLeafElement(xmlName, dom.leafElement(xmlName));
+            } else {
+                dom.setLeafElements(xmlName,((Dom) arg).getKey());
+            }
+        }
+    }
+
     /**
      * @param description
      *      The description of the model as written in {@link InhabitantsFile the inhabitants file}.
@@ -700,7 +741,7 @@ public final class ConfigModel {
                 AttributeLeaf leaf = null;
                 if (dv == null) {
                     if (e.getValue().contains("reference")) {
-                        leaf = new ReferenceLeaf(attributeName, dt);
+                        leaf = new ReferenceAttributeLeaf(attributeName, dt);
                     } else {
                         leaf = new AttributeLeaf(attributeName, dt);
                     }
@@ -787,9 +828,11 @@ public final class ConfigModel {
             value = value.substring(11);
         }
 
+        boolean reference = values.contains("reference");
         Property prop;
         if(value.equals("leaf")) {
-            prop = collection?new CollectionLeaf(elementName):new SingleLeaf(elementName);
+            prop = collection?new CollectionLeaf(elementName):
+                    reference?new ReferenceElementLeaf(elementName):new SingleLeaf(elementName);
         } else {
             // this element is a reference to another configured inhabitant.
             // figure that out.

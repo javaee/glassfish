@@ -246,6 +246,7 @@ public class Hk2Runner extends Runner {
         } catch (ClassCastException e) {
             Logger.getAnonymousLogger().fine(instance + " is not a populator");
         } catch (Exception e) {
+            e.printStackTrace();
             Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage(), e);
         }
         womb.initialize(instance, womb);
