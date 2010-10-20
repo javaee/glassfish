@@ -137,10 +137,17 @@ public class InhabitantsParser {
                 Class<?> target = replacements.get(typeName);
                 if(target!=null) {
                     inhabitantParser.setImplName(target.getName());
-                    Inhabitant i = Inhabitants.create(target,habitat,inhabitantParser.getMetaData());
-                    add(i, inhabitantParser);
-                    // add index so that the new component can be looked up by the name of the old component.
-                    addIndex(i, typeName, null);
+                    Inhabitant i = null;
+                    try {
+                      i = Inhabitants.create(target,habitat,inhabitantParser.getMetaData());
+                    } catch (Exception e) {
+                      log(typeName, e);
+                    }
+                    if (null != i) {
+                      add(i, inhabitantParser);
+                      // add index so that the new component can be looked up by the name of the old component.
+                      addIndex(i, typeName, null);
+                    }
                 }
             } else {
                 Set<String> indicies = new HashSet<String>();
@@ -148,13 +155,26 @@ public class InhabitantsParser {
                 while (iter.hasNext()) {
                   indicies.add(iter.next());
                 }
-                Inhabitant<?> i = com.sun.hk2.component.Inhabitants.
+                Inhabitant<?> i = null;
+                try {
+                  i = com.sun.hk2.component.Inhabitants.
                     createInhabitant(habitat, classLoader, typeName,
                         inhabitantParser.getMetaData(), null,
                         Collections.unmodifiableSet(indicies));
-                add(i, inhabitantParser);
+                } catch (Exception e) {
+                  log(typeName, e);
+                }
+                if (null != i) {
+                  add(i, inhabitantParser);
+                }
             }
         }
+    }
+
+    private void log(String typeName, Exception e) {
+      logger.log(Level.FINE, "Warning: unable to create inhabitant for {0} - and therefore ignoring it; check classpath; re: {1}", 
+          new Object[] {typeName, e.getMessage()});
+      logger.log(Level.FINER, "", e);
     }
 
     /**

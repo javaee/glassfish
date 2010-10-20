@@ -44,6 +44,9 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -144,7 +147,8 @@ public class InhabitantsGenerator {
     
     inhabitantsClassPath = filterIgnores(inhabitantsClassPath);
     
-    this.ipcGen = InhabitantsParsingContextGenerator.create(null);
+    // TODO: fix multi-threaded issues in class-model
+    this.ipcGen = InhabitantsParsingContextGenerator.create(null, createExecutorService());
     
     if (null != descriptor) {
       this.descriptor = descriptor;
@@ -161,7 +165,20 @@ public class InhabitantsGenerator {
     
     codeSourceFilter = new CodeSourceFilter(inhabitantsSourceFiles);
   }
-  
+
+  // TODO: temporary, until multi-threaded issues are resolved in class-model parsing
+  private ExecutorService createExecutorService() {
+    return Executors.newSingleThreadExecutor(new ThreadFactory() {
+      @Override
+      public Thread newThread(Runnable r) {
+        Thread t = new Thread(r);
+        t.setDaemon(true);
+        t.setName("Hk2-ig-jar-scanner");
+        return t;
+      }
+    });
+  }
+
   private ClassPath filterIgnores(ClassPath inhabitantsClassPath) {
     LinkedHashSet<File> newFiles = new LinkedHashSet<File>();
 
@@ -349,5 +366,6 @@ public class InhabitantsGenerator {
       }
     }
   }
+
 
 }
