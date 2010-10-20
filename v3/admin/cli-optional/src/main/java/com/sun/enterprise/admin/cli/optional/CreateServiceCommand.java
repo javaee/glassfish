@@ -85,7 +85,7 @@ public final class CreateServiceCommand extends CLICommand {
      * ways to tell where the domain.xml file is that should be read for
      * client/instance-side security confir.
      */
-    @Param(name = "server_name", primary = true, optional = true, alias = "domain_name")
+    @Param(name = "domain_or_instance_name", primary = true, optional = true, alias = "domain_name")
     private String userSpecifiedServerName;
     @Param(name = "nodedir", optional = true, alias = "agentdir")
     private String userSpecifiedNodeDir;           // nodeDirRoot
