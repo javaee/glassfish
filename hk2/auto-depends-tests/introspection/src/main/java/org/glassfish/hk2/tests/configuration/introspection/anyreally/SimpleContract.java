@@ -34,43 +34,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package org.glassfish.hk2.tests.configuration.introspection.anyreally;
 
-import com.sun.enterprise.module.bootstrap.ModuleStartup;
-import com.sun.enterprise.module.bootstrap.StartupContext;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
-
-import java.io.IOException;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- * some sanity checks from our generation.
+ * Simple contract definition.
  */
-@Service
-public class SimpleSanityTests implements ModuleStartup  {
-
-    @Inject
-    TopLevel topLevel;
-
-    @Override
-    public void setStartupContext(StartupContext context) {
-
-    }
-
-    @Override
-    public void start() {
-        assert(topLevel!=null);
-        assert(topLevel.getConfigs().getConfig().size()>0);
-        assert(topLevel.getServers().getServer().size()>0);
-        try {
-            (new LocatorTest()).testLocator();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void stop() {
-        
-    }
+@Contract
+public interface SimpleContract {
+    void foo();
 }

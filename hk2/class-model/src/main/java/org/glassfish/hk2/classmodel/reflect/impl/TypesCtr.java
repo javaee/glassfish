@@ -81,6 +81,20 @@ public class TypesCtr implements Types {
         return typeProxy;
     }
 
+    public interface ProxyTask {
+        public void on(TypeProxy<?> proxy);
+    }
+
+    public void onNotVisitedEntries(ProxyTask proxyTask) {
+        for (Map<String, TypeProxy<Type>> map : storage.values()) {
+            Map<String, TypeProxy<Type>> copy = new HashMap<String, TypeProxy<Type>>(map);
+            for (TypeProxy<Type> entry : copy.values()) {
+                if (entry!=null && entry.get()==null)
+                    proxyTask.on(entry);
+            }
+        }
+    }
+
     @Override
     public Collection<Type> getAllTypes() {
         List<Type> allTypes = new ArrayList<Type>();
