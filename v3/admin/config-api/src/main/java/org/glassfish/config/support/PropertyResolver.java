@@ -80,7 +80,11 @@ public class PropertyResolver {
     public PropertyResolver(Domain domain, String instanceName) {
         _domain = domain;
         _server = _domain.getServerNamed(instanceName);
-        _config = _domain.getConfigNamed(_server.getConfigRef());
+        if (_server != null) {
+            _config = _domain.getConfigNamed(_server.getConfigRef());
+        } else {
+            _config = _domain.getConfigNamed(instanceName);
+        }
         _cluster = _domain.getClusterForInstance(instanceName);
     }
     
