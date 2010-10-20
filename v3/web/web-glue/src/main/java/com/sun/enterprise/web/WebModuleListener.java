@@ -41,6 +41,7 @@
 package com.sun.enterprise.web;
 
 import com.sun.appserv.web.cache.CacheManager;
+import com.sun.enterprise.container.common.spi.JCDIService;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
@@ -52,6 +53,7 @@ import org.apache.catalina.*;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.web.TldProvider;
 import org.glassfish.loader.util.ASClassLoaderUtil;
+import org.jvnet.hk2.component.Habitat;
 
 import javax.enterprise.inject.spi.BeanManager;
 import javax.naming.InitialContext;
@@ -162,7 +164,8 @@ final class WebModuleListener
      */
     private void configureJsp(WebModule webModule) {
 
-        webModule.getServletContext().setAttribute(
+        ServletContext servletContext = webModule.getServletContext();
+        servletContext.setAttribute(
             "org.glassfish.jsp.isStandaloneWebapp",
             new Boolean(webModule.isStandalone()));
 
@@ -181,7 +184,7 @@ final class WebModuleListener
                 tldMap.putAll(tmap);
             }
         }
-        webModule.getServletContext().setAttribute(
+        servletContext.setAttribute(
                 "com.sun.appserv.tld.map", tldMap);
 
         /*
@@ -202,13 +205,15 @@ final class WebModuleListener
                 tldListenerMap.putAll(tmap);
             }
         }
-        webModule.getServletContext().setAttribute(
+        servletContext.setAttribute(
             "com.sun.appserv.tldlistener.map", tldListenerMap);
 
+        Habitat defaultHabitat =
+                webContainer.getServerContext().getDefaultHabitat();
+
         // set habitat for jsf injection
-        webModule.getServletContext().setAttribute(
-                Constants.HABITAT_ATTRIBUTE,
-                webContainer.getServerContext().getDefaultHabitat());
+        servletContext.setAttribute(
+                Constants.HABITAT_ATTRIBUTE, defaultHabitat);
 
         SunWebApp bean = webModule.getIasWebAppConfigBean();
 
@@ -241,20 +246,19 @@ final class WebModuleListener
 
         ResourceInjectorImpl resourceInjector = new ResourceInjectorImpl(
             webModule);
-        webModule.getServletContext().setAttribute(
+        servletContext.setAttribute(
                 "com.sun.appserv.jsp.resource.injector",
                 resourceInjector);
 
         // START SJSAS 6311155
         String sysClassPath = ASClassLoaderUtil.getModuleClassPath(
-            webContainer.getServerContext().getDefaultHabitat(),
+            defaultHabitat,
             webModule.getID(), null
         );
         // If the configuration flag usMyFaces is set, remove jsf-api.jar
         // and jsf-impl.jar from the system class path
         Boolean useMyFaces = (Boolean)
-            webModule.getServletContext().getAttribute(
-                "com.sun.faces.useMyFaces");
+            servletContext.getAttribute("com.sun.faces.useMyFaces");
         if (useMyFaces != null && useMyFaces) {
             sysClassPath =
                 sysClassPath.replace("jsf-api.jar", "$disabled$.raj");
@@ -281,7 +285,7 @@ final class WebModuleListener
         // END SJSAS 6311155
 
         // Configure JSP monitoring
-        webModule.getServletContext().setAttribute(
+        servletContext.setAttribute(
             "org.glassfish.jsp.monitor.probeEmitter",
             new JspProbeEmitterImpl(webModule));
 
@@ -292,13 +296,16 @@ final class WebModuleListener
         WebComponentInvocation inv = new WebComponentInvocation(webModule);
         try {
             invocationMgr.preInvoke(inv);
-            InitialContext context = new InitialContext();
-            BeanManager beanManager = (BeanManager)
-                context.lookup("java:comp/BeanManager");
-            if (beanManager != null) {
-                webModule.getServletContext().setAttribute(
-                    "org.glassfish.jsp.beanManagerELResolver",
-                    beanManager.getELResolver());
+            JCDIService jcdiService = defaultHabitat.getByContract(JCDIService.class);
+            if (jcdiService.isCurrentModuleJCDIEnabled()) {
+                InitialContext context = new InitialContext();
+                BeanManager beanManager = (BeanManager)
+                    context.lookup("java:comp/BeanManager");
+                if (beanManager != null) {
+                    servletContext.setAttribute(
+                        "org.glassfish.jsp.beanManagerELResolver",
+                        beanManager.getELResolver());
+                }
             }
         } catch (NamingException e) {
             // Ignore
