@@ -54,19 +54,6 @@ public class SimpleMetadataFactory {
     }
 
     //Full save
-/*
-    public static <E> SimpleMetadata createSimpleMetadata(long version, long lastAccessTime,
-                                                      long maxInactiveInterval, byte[] state,
-                                                      E extraParam) {
-        return new SimpleMetadata(version, lastAccessTime, maxInactiveInterval, state, extraParam);
-    }
-
-    //updateContainerExtraParam
-    public static <E> SimpleMetadata createSimpleMetadata(long version, long lastAccessTime,
-                                                      E extraParam) {
-        return new SimpleMetadata(version, lastAccessTime, extraParam);
-    }
-*/
     //updateTimeStamp
     public static SimpleMetadata createSimpleMetadata(long version, long lastAccessTime) {
         return new SimpleMetadata(version, lastAccessTime);
