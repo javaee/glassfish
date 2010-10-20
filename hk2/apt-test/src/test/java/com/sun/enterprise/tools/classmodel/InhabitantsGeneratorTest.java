@@ -136,7 +136,7 @@ public class InhabitantsGeneratorTest {
       String errTxt = out.toString();
       assertTrue(errTxt + " is unexpected", errTxt.startsWith("WARNING: sysprop " + 
           InhabitantsGenerator.PARAM_INHABITANTS_CLASSPATH + 
-          " is missing; defaulting to classpath="));
+          " is missing; defaulting to system classpath"));
     } finally {
       System.setErr(old);
       System.setProperties(oldSysProps);

@@ -45,8 +45,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,12 +55,12 @@ import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.InhabitantAnnotation;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.SameThreadExecutor;
 import org.jvnet.hk2.component.classmodel.ClassPath;
 import org.jvnet.hk2.component.classmodel.InhabitantsFeed;
 import org.jvnet.hk2.component.classmodel.InhabitantsParsingContextGenerator;
 
 import com.sun.enterprise.tools.InhabitantsDescriptor;
-import com.sun.hk2.component.InhabitantParser;
 import com.sun.hk2.component.InhabitantsParser;
 
 /**
@@ -85,6 +83,8 @@ import com.sun.hk2.component.InhabitantsParser;
  */
 public class InhabitantsGenerator {
 
+  private static final Logger logger = Logger.getLogger(InhabitantsGenerator.class.getName());
+  
   /**
    * TODO: this should probably go directly into {@link InhabitantsParsingContextGenerator}
    */
@@ -168,15 +168,16 @@ public class InhabitantsGenerator {
 
   // TODO: temporary, until multi-threaded issues are resolved in class-model parsing
   private ExecutorService createExecutorService() {
-    return Executors.newSingleThreadExecutor(new ThreadFactory() {
-      @Override
-      public Thread newThread(Runnable r) {
-        Thread t = new Thread(r);
-        t.setDaemon(true);
-        t.setName("Hk2-ig-jar-scanner");
-        return t;
-      }
-    });
+    return new SameThreadExecutor();
+//    return Executors.newSingleThreadExecutor(new ThreadFactory() {
+//      @Override
+//      public Thread newThread(Runnable r) {
+//        Thread t = new Thread(r);
+//        t.setDaemon(true);
+//        t.setName("Hk2-ig-jar-scanner");
+//        return t;
+//      }
+//    });
   }
 
   private ClassPath filterIgnores(ClassPath inhabitantsClassPath) {
@@ -187,7 +188,7 @@ public class InhabitantsGenerator {
       if (!IGNORE.contains(file.getName())) {
         newFiles.add(file);
       } else {
-        Logger.getAnonymousLogger().log(Level.FINE, "ignoring {0}", file);
+        logger.log(Level.FINE, "ignoring {0}", file);
       }
     }
     
@@ -264,8 +265,10 @@ public class InhabitantsGenerator {
     if (null == arg || arg.isEmpty()) {
       inhabitantsClassPath = ClassPath.create(null, false);
       System.err.println("WARNING: sysprop " + PARAM_INHABITANTS_CLASSPATH + 
-          " is missing; defaulting to classpath=" + inhabitantsClassPath.getFileEntries() + 
-          " - this may result in an invalid inhabitants file being created!");
+          " is missing; defaulting to system classpath; this may result in an invalid inhabitants file being created.");
+      if (logger.isLoggable(Level.FINER)) {
+        logger.log(Level.FINER, "classpath={0}", inhabitantsClassPath.getFileEntries());
+      }
     } else {
       inhabitantsClassPath = ClassPath.create(null, arg);
     }
@@ -322,14 +325,12 @@ public class InhabitantsGenerator {
      * Controls the filtering.  This decides whether add(i) or addIndex(...) is ultimately called.
      */
     @Override
-    protected void add(Inhabitant<?> i, InhabitantParser parser) {
-      assert(!i.isInstantiated());
-      String typeName = i.typeName();
+    protected boolean isFilteredInhabitant(String typeName) {
       if (codeSourceFilter.matches(typeName)) {
-        super.add(i, parser);
-        assert(!i.isInstantiated());
+        return false; // true==(ignore it); false==(include it)
       } else {
-        Logger.getAnonymousLogger().log(Level.FINE, "filtering out {0}", i);
+        Logger.getAnonymousLogger().log(Level.FINE, "filtering out {0}", typeName);
+        return true;
       }
     }
 

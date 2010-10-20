@@ -131,8 +131,11 @@ public class InhabitantsParser {
             }
 
             String typeName = inhabitantParser.getImplName();
-
-            if(replacements.containsKey(typeName)) {
+            if (isFilteredInhabitant(typeName)) {
+                continue;
+            }
+            
+            if (replacements.containsKey(typeName)) {
                 // create a replacement instead
                 Class<?> target = replacements.get(typeName);
                 if(target!=null) {
@@ -183,10 +186,20 @@ public class InhabitantsParser {
      * @param inhabitantParser
      * @return
      */
-    boolean isFilteredInhabitant(InhabitantParser inhabitantParser) {
+    protected boolean isFilteredInhabitant(InhabitantParser inhabitantParser) {
         return false;
     }
 
+    /**
+     * Returns true if this inhabitant should be ignored.
+     *  
+     * @param typeName
+     * @return
+     */
+    protected boolean isFilteredInhabitant(String typeName) {
+        return false;
+    }
+    
     /**
      * Adds the given inhabitant to the habitat, with all its indices.
      */
