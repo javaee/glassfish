@@ -52,6 +52,7 @@ import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
+import org.glassfish.api.ActionReport;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.internal.data.ApplicationInfo;
@@ -204,7 +205,7 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
 
         addModuleConfig(dc, application);
 
-        validateKeepStateOption(params, application, dc.getLogger());
+        validateKeepStateOption(dc, params, application);
 
         return application;
 
@@ -361,7 +362,7 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
         }
     }
 
-    private void validateKeepStateOption(DeployCommandParameters params, Application app, Logger logger) {
+    private void validateKeepStateOption(DeploymentContext context, DeployCommandParameters params, Application app) {
         if ((params.keepstate != null && params.keepstate) || 
             app.getKeepState()) {
             if (!DeploymentUtils.isDASTarget(params.target)) {
@@ -369,7 +370,11 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
                 // through deployment option or deployment descriptor
                 // explicitly set the deployment option to false
                 params.keepstate = false;
-                logger.log(Level.WARNING, localStrings.getLocalString("not.support.keepstate.in.cluster", "Ignoring the keepstate setting: the keepstate option is only supported in developer profile and not cluster profile."));
+                String warningMsg = localStrings.getLocalString("not.support.keepstate.in.cluster", "Ignoring the keepstate setting: the keepstate option is only supported in developer profile and not cluster profile.");
+                ActionReport subReport = context.getActionReport().addSubActionsReport();
+                subReport.setActionExitCode(ActionReport.ExitCode.WARNING);
+                subReport.setMessage(warningMsg);
+                context.getLogger().log(Level.WARNING, warningMsg);
             }
         }    
     }
