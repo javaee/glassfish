@@ -47,18 +47,14 @@
 package org.glassfish.web.ha.session.management;
 
 
+import com.sun.appserv.util.cache.BaseCache;
 import com.sun.enterprise.container.common.spi.util.JavaEEIOUtils;
-import com.sun.enterprise.naming.util.ObjectInputOutputStreamFactory;
-import com.sun.enterprise.naming.util.ObjectInputOutputStreamFactoryFactory;
 import com.sun.enterprise.web.ServerConfigLookup;
 import com.sun.logging.LogDomains;
+import org.apache.catalina.Container;
+import org.apache.catalina.Session;
 import org.glassfish.ha.store.api.BackingStore;
 import org.glassfish.ha.store.api.BackingStoreException;
-import org.glassfish.web.ha.session.management.SimpleMetadata;
-import com.sun.appserv.util.cache.BaseCache;
-
-import org.apache.catalina.*;
-import org.apache.catalina.session.*;
 
 import java.io.*;
 import java.util.logging.Level;
@@ -98,8 +94,6 @@ public class ReplicationStore extends HAStoreBase {
         return applicationId;
     }    
 
-    // HAStorePoolElement methods begin
-    
     /**
      * Save the specified Session into this Store.  Any previously saved
      * information for the associated session identifier is replaced.
@@ -151,6 +145,14 @@ public class ReplicationStore extends HAStoreBase {
             ((BaseHASession)session).setUserName(userName);
         }
         byte[] sessionState = this.getByteArray(session, isReplicationCompressionEnabled());
+        _logger.info("ReplicationStore->Byte array to save");
+        StringBuilder sb = new StringBuilder("ReplicationStore{");
+        for (byte b: sessionState) {
+            sb.append(b + "_");
+        }
+        sb.append("}");
+        _logger.info(sb.toString());
+
         ReplicationManagerBase mgr
             = (ReplicationManagerBase)this.getManager();
         BackingStore replicator = mgr.getBackingStore();
@@ -163,15 +165,12 @@ public class ReplicationStore extends HAStoreBase {
                 session.getLastAccessedTime(), //lastaccesstime
                 session.getMaxInactiveInterval(), //maxinactiveinterval
                 sessionState); //state
+        _logger.info("In doValveSave metadata is " + simpleMetadata);
         try {
             HASession haSess = (HASession)session;
             replicator.save(session.getIdInternal(), //id
-                    simpleMetadata, haSess.isPersistent());  //TODO: Revist the last param
+                    simpleMetadata, haSess.isPersistent());  
 
-/*
-            replicator.save(session.getIdInternal(), //id
-                    simpleMetadata,true);
-*/
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.fine("Save succeeded.");
             }
@@ -233,6 +232,15 @@ public class ReplicationStore extends HAStoreBase {
      */    
     public void doSave(Session session) throws IOException {
         byte[] sessionState = this.getByteArray(session, isReplicationCompressionEnabled());
+        if (_logger.isLoggable(Level.FINEST)) {
+            _logger.finest("ReplicationStore->Byte array to save");
+            StringBuilder sb = new StringBuilder("ReplicationStore{");
+            for (byte b: sessionState) {
+                sb.append(b + "_");
+            }
+            sb.append("}");
+            _logger.finest(sb.toString());
+        }
         ReplicationManagerBase mgr
             = (ReplicationManagerBase)this.getManager();
         BackingStore backingStore = mgr.getBackingStore();
@@ -287,7 +295,7 @@ public class ReplicationStore extends HAStoreBase {
         try {
             replicator.remove(id);
         } catch (BackingStoreException ex) {
-            //FIXME
+            _logger.log(Level.WARNING, "Exception during removing synchronized from backing store", ex);
         }
     }     
     
@@ -313,7 +321,7 @@ public class ReplicationStore extends HAStoreBase {
         try {
             replicator.remove(id);
         } catch (BackingStoreException ex) {
-            //FIXME
+            _logger.log(Level.WARNING, "Exception during removing synchronized from backing store", ex);
         }
     }
     
@@ -347,7 +355,7 @@ public class ReplicationStore extends HAStoreBase {
             //XXX Need to get the idle for millis from settings somewhere
             result = backingStore.removeExpired(30000);
         } catch (BackingStoreException ex) {
-            //FIXME
+            _logger.log(Level.WARNING, "Exception during removing expired session from backing store", ex);
         }
         if(_logger.isLoggable(Level.FINE)) {
             _logger.fine("ReplicationStore>>removeExpiredSessions():number of expired sessions = " + result);
@@ -389,8 +397,23 @@ public class ReplicationStore extends HAStoreBase {
             _logger.fine("ReplicationStore>>loadFromBackingStore:id=" +
                     id + ", metaData=" + metaData);
         }
+        if (_logger.isLoggable(Level.FINEST)) {
+            _logger.finest("ReplicationStore->Metadata is "+ metaData);
+            byte[] state = metaData.getState();
+            _logger.finest("ReplicationStore->Bytes read from store");
+            StringBuilder sb = new StringBuilder("ReplicationStore{");
+            for (byte b: state) {
+                sb.append(b + "_");
+            }
+            sb.append("}");
+            _logger.finest(sb.toString());
+        }
+
         Session session = getSession(metaData);
-        //validateAndSave(session);
+        if (_logger.isLoggable(Level.FINEST)) {
+            _logger.finest("ReplicationStore->Session is " + session);
+        }
+
         return session;
     }
 
@@ -422,15 +445,9 @@ public class ReplicationStore extends HAStoreBase {
             _logger.fine("ReplicationStore>>updateLastAccessTime: replicator: " + backingStore);                       
         }         
         try {
-            /* FIXED
-            replicator.updateLastAccessTime(session.getIdInternal(), //id
-                    ((BaseHASession)session).getLastAccessedTimeInternal(), //lastaccesstime
-                    session.getVersion()); //version
-            */
             SimpleMetadata smd = SimpleMetadataFactory.createSimpleMetadata(session.getVersion(),
                     ((BaseHASession)session).getLastAccessedTimeInternal());
             backingStore.save(session.getIdInternal(), smd, !((HASession) session).isPersistent()); //version
-//         replicator.save(session.getIdInternal(), smd, true); //version
         } catch (BackingStoreException ex) {
             //FIXME
         }
@@ -459,7 +476,10 @@ public class ReplicationStore extends HAStoreBase {
         try {
             result = replicator.size();
         } catch (BackingStoreException ex) {
-            //nothing to do - ok to eat exception
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Exception is getSize",ex);    
+            }
+
         }
         return result;
     }    
@@ -470,15 +490,6 @@ public class ReplicationStore extends HAStoreBase {
         if (metaData == null || metaData.getState() == null) {
             return null;
         } else {
-//            HttpSessionExtraParams extraParams
-//                    = (HttpSessionExtraParams) metaData.getExtraParam();
-//            String ssoId = null;
-//            if (extraParams != null) {
-//                //ssoid is the extraParam in extraParams
-//                ssoId = extraParams.getSsoId();
-//            }
-//            return getSession(metaData.getState(),
-//                    ssoId, metaData.getVersion());
             return getSession(metaData.getState(),
                      metaData.getVersion(), metaData.getClass().getClassLoader());
 
@@ -487,13 +498,11 @@ public class ReplicationStore extends HAStoreBase {
     }
 
 
-    //public Session getSession(byte[] state, String ssoId, long version) throws IOException {
     public Session getSession(byte[] state,  long version, ClassLoader classLoader) throws IOException {
         Session _session = null;
-        InputStream is = null;
-        BufferedInputStream bis = null;
-        ByteArrayInputStream bais = null;
-        Loader loader = null;    
+        InputStream is;
+        BufferedInputStream bis;
+        ByteArrayInputStream bais;    
         ObjectInputStream ois = null;
         Container container = manager.getContainer();
         java.security.Principal pal=null; //MERGE chg added
@@ -513,10 +522,10 @@ public class ReplicationStore extends HAStoreBase {
             }
 
                 try {
-                   
-                    //factory.createObjectInputStream(is);
                     ois = ioUtils.createObjectInputStream(is,true,classLoader);
-                } catch (Exception ex) {}
+                } catch (Exception ex) {
+                    _logger.log(Level.WARNING, "Error creating inputstream ", ex);
+                }
             
 
             if (ois == null) {
@@ -542,13 +551,14 @@ public class ReplicationStore extends HAStoreBase {
         {
             IOException ex1 = (IOException) new IOException(
                     "Error during deserialization: " + e.getMessage()).initCause(e);
+            _logger.log(Level.WARNING, "Exception during deserializing the session ", ex1);
             throw ex1;
         }
         catch(IOException e)
         {
-            //if (_logger.isLoggable(Level.FINE)) {
-            //    _logger.fine("Exception occurred in getSession", e);
-            //}
+            if (_logger.isLoggable(Level.WARNING)) {
+                _logger.log(Level.WARNING, "Exception occurred in getSession", e);
+            }
             throw e;
         }
         String username = ((HASession)_session).getUserName();
@@ -576,19 +586,10 @@ public class ReplicationStore extends HAStoreBase {
         //--SRI        
         
         _session.setNew(false);
-/*
-        if(_logger.isLoggable(Level.FINE)) {
-            _logger.fine("ReplicationStore>>getSession:ssoId=" + ssoId);
-        }
-*/
 
         ((HASession)_session).setVersion(version);
         ((HASession)_session).setDirty(false);
         ((HASession)_session).setPersistent(false);        
         return _session;
-    }
-    
-
-
-    
+    }    
 }
