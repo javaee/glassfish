@@ -65,8 +65,7 @@ public class ColumnFormatter {
         if (numCols != -1) {
             if (values.length != numCols) {
                 throw new IllegalArgumentException(
-                        String.format("invalid number of columns (%d), expected (%d)",
-                            values.length, numCols));
+                        Strings.get("column.internal", values.length, numCols));
             }
         }
         numCols = values.length;
