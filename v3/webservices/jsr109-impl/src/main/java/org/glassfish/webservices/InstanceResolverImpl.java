@@ -106,7 +106,9 @@ public final class InstanceResolverImpl<T> extends InstanceResolver<T> {
 
     public void dispose() {
         try {
-            injManager.destroyManagedObject(instance);
+            if(instance != null) {//instance can be null as it is created laziily
+                injManager.destroyManagedObject(instance);
+            }
         } catch (InjectionException e) {
             throw new WebServiceException(e);
         }
