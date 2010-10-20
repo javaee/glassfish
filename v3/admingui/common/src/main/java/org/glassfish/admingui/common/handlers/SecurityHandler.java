@@ -363,10 +363,11 @@ public class SecurityHandler {
                 attrs.put("username", userid);
                 attrs.put("authrealmname", realmName);
                 attrs.put("userpassword", password);
-                List<String> grpList = GuiUtil.parseStringList(grouplist, ",");
-                if (grpList == null) {
-                    grpList = new ArrayList<String>(0);
-                }
+                if (grouplist != null && grouplist.contains(","))
+                    grouplist = grouplist.replace(',', ':');
+                List<String> grpList = new ArrayList();
+                if (grouplist != null && !grouplist.equals(""))
+                    grpList.add(grouplist);
                 attrs.put("groups", grpList);
                 RestResponse response = RestApiHandlers.post(endpoint, attrs);
                 if (!response.isSuccess()) {
