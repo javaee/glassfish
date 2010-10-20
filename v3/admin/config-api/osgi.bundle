@@ -45,4 +45,5 @@ Import-Package: \
 
 -exportcontents: \
     com.sun.enterprise.config.serverbeans; \
+    com.sun.enterprise.config.util; \
     org.glassfish.config.support; version=${project.osgi.version}
