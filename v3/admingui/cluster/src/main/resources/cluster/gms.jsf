@@ -57,6 +57,10 @@
         setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/#{pageSession.childType}");
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
+        setPageSessionAttribute(key="parentUrl2", value="#{pageSession.selfUrl}");
+        setPageSessionAttribute(key="childType2" value="failure-detection");
+        setPageSessionAttribute(key="selfUrl2", value="#{pageSession.parentUrl2}/#{pageSession.childType2}");
+        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl2}.json", valueMap="#{pageSession.valueMap2}");
         gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="GET" result="#{requestScope.propTable}");
         setPageSessionAttribute(key="tableList" value="#{requestScope.propTable.data.extraProperties.properties}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/cluster/cluster/gms.jsf?configName=#{pageSession.configName}");
@@ -66,6 +70,7 @@
         setPageSessionAttribute(key="showCancelButton" value="#{false}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
         setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
+        setPageSessionAttribute(key="has2Objects" value="#{true}" );
     />
     </event>
     <sun:form id="propertyForm">
@@ -76,26 +81,18 @@
         <sun:propertySheet id="propertySheet">
             <sun:propertySheetSection id="propertSectionTextField">
                 <sun:property id="fdMax"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.gms.fdMax}" helpText="$resource{i18ncs.gms.fdMaxHelp}">
-                    <sun:textField id="fdMax" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.gms.protocolMaxTries']}" text="#{pageSession.valueMap['fdProtocolMaxTries']}" />
+                    <sun:textField id="fdMax" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.gms.protocolMaxTries']}" text="#{pageSession.valueMap2['maxMissedHeartbeats']}" />
                 </sun:property>
                 <sun:property id="fdTimeout"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.gms.fdTimeout}" helpText="$resource{i18ncs.gms.fdTimeoutHelp}">
-                    <sun:textField id="fdTimeout" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.gms.protocolTimeoutMillis']}" text="#{pageSession.valueMap['fdProtocolTimeoutInMillis']}" />
-                    <sun:staticText id="secs" style="padding: 8pt" text="$resource{i18ncs.gms.Milliseconds}"/>
-                </sun:property>
-                <sun:property id="mergeMax"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.gms.mergeMax}" helpText="$resource{i18ncs.gms.mergeMaxHelp}">
-                    <sun:textField id="mergeMax" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.gms.maxIntervalMillis']}" text="#{pageSession.valueMap['mergeProtocolMaxIntervalInMillis']}" />
-                    <sun:staticText id="secs" style="padding: 8pt" text="$resource{i18ncs.gms.Milliseconds}"/>
-                </sun:property>
-                <sun:property id="mergeMin"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.gms.mergeMin}" helpText="$resource{i18ncs.gms.mergeMinHelp}">
-                    <sun:textField id="mergeMin" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.gms.minIntervalMillis']}" text="#{pageSession.valueMap['mergeProtocolMinIntervalInMillis']}" />
+                    <sun:textField id="fdTimeout" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.gms.protocolTimeoutMillis']}" text="#{pageSession.valueMap2['heartbeatFrequencyInMillis']}" />
                     <sun:staticText id="secs" style="padding: 8pt" text="$resource{i18ncs.gms.Milliseconds}"/>
                 </sun:property>
                 <sun:property id="pingTimeout"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.gms.pingTimeout}" helpText="$resource{i18ncs.gms.pingTimeoutHelp}">
-                    <sun:textField id="pingTimeout" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.gms.pingTimeoutMillis']}" text="#{pageSession.valueMap['pingProtocolTimeoutInMillis']}" />
+                    <sun:textField id="pingTimeout" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.gms.pingTimeoutMillis']}" text="#{pageSession.valueMap['groupDiscoveryTimeoutInMillis']}" />
                     <sun:staticText id="secs" style="padding: 8pt" text="$resource{i18ncs.gms.Milliseconds}"/>
                 </sun:property>
                 <sun:property id="vsTimeout"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.gms.vsTimeout}" helpText="$resource{i18ncs.gms.vsTimeoutHelp}">
-                    <sun:textField id="vsTimeout" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.gms.vsProtocolTimeoutMillis']}" text="#{pageSession.valueMap['vsProtocolTimeoutInMillis']}" />
+                    <sun:textField id="vsTimeout" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.gms.vsProtocolTimeoutMillis']}" text="#{pageSession.valueMap2['verifyFailureWaittimeInMillis']}" />
                     <sun:staticText id="secs" style="padding: 8pt" text="$resource{i18ncs.gms.Milliseconds}"/>
                 </sun:property>
                 "<br /><br />
