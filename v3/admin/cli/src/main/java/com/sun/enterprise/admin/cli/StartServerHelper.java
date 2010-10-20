@@ -74,6 +74,12 @@ public class StartServerHelper{
         terse = terse0;
         launcher = launcher0;
         info = launcher.getInfo();
+        
+        if(info.isDomain())
+            serverOrDomainName = info.getDomainName();
+        else
+            serverOrDomainName = info.getInstanceName();
+        
         addresses = info.getAdminAddresses();
         serverDirs = serverDirs0;
         pidFile = serverDirs.getPidFile();
@@ -86,7 +92,7 @@ public class StartServerHelper{
         long startWait = System.currentTimeMillis();
         if(!terse) {
             // use stdout because logger always appends a newline
-            System.out.print(strings.get("WaitServer") + " ");
+            System.out.print(strings.get("WaitServer", serverOrDomainName) + " ");
         }
 
         boolean alive = false;
@@ -303,6 +309,7 @@ public class StartServerHelper{
     private final List<HostAndPort> addresses;
     private final ServerDirs serverDirs;
     private final String masterPassword;
+    private final String serverOrDomainName;
     private final boolean debug;
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StartServerHelper.class);
