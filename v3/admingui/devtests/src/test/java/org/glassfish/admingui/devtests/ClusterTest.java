@@ -40,82 +40,65 @@
 package org.glassfish.admingui.devtests;
 
 import java.util.List;
-import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 /**
  *
  * @author anilam
  */
 public class ClusterTest extends BaseSeleniumTestClass {
+    public static final String ID_CLUSTERS_TABLE = "propertyForm:clustersTable";
+    public static final String ID_CLUSTERS_TABLE_DELETE_BUTTON = "propertyForm:clustersTable:topActionsGroup1:button1";
+    public static final String ID_CLUSTERS_TABLE_SELECT_ALL_BUTTON = "propertyForm:clustersTable:_tableActionsTop:_selectMultipleButton";
+    public static final String ID_CLUSTERS_TABLE_STOP_BUTTON = "propertyForm:clustersTable:topActionsGroup1:button3";
+    
     public static final String TRIGGER_CLUSTER_EDIT = "General Information";
-
     public static final String TRIGGER_MIGRATE_EJB_TIMERS = "Migrate EJB timers associated with a server";
     public static final String TRIGGER_CLUSTER_PAGE = "If no node exists, create one before creating or starting a cluster.";
     public static final String TRIGGER_NEW_PAGE = "Server Instances to be Created";
-    public static final String TRIGGER_CLUSTER_GENERAL_PAGE = "Status:";
+    public static final String TRIGGER_CLUSTER_GENERAL_PAGE = "Network interface on the DAS to which the GMS will bind";
     public static final String TRIGGER_CLUSTER_INSTANCE_NEW_PAGE = "Node:";
     public static final String TRIGGER_CLUSTER_INSTANCES_PAGE = "Server Instances (";
     public static final String TRIGGER_CLUSTER_RESOURCES_PAGE = "All instances in a cluster have the same set of resources, resulting in the same JNDI namespace.";
 
-    protected static String clusterName;
-
-    protected String instanceName1;
-
-    protected String instanceName2;
-
-    @Before
-    public void setUpCluster() {
-        deleteAllClusters();
-        if (clusterName == null) {
-            clusterName = "clusterName" + generateRandomString();
-            instanceName1 = "instanceName" + generateRandomString();
-            instanceName2 = "instanceName" + generateRandomString();
-
-            createCluster(clusterName, instanceName1, instanceName2);
-            assertTrue(selenium.isTextPresent(clusterName));
-        }
-
-        reset();
-        gotoClusterPage();
-    }
-
-    @AfterClass
-    public static void cleanup() {
-        (new ClusterTest()).deleteCluster(clusterName);
-    }
-
     @Test
     public void testStartAndStopClusterWithOneInstance() {
+        String clusterName = "clusterName" + generateRandomString();
+        String instanceName1 = "instanceName" + generateRandomString();
+        createCluster(clusterName, instanceName1);
+        
         // Verify cluster information in table
-        String prefix = getTableRowByValue("propertyForm:clustersTable", clusterName, "col1");
+        String prefix = getTableRowByValue(ID_CLUSTERS_TABLE, clusterName, "col1");
         assertEquals(clusterName, selenium.getText(prefix + "col1:link"));
         assertEquals(clusterName + "-config", selenium.getText(prefix + "col2:configlink"));
         assertEquals(instanceName1, selenium.getText(prefix + "col3:iLink"));
 
         // Start the cluster and verify
-        rowActionWithConfirm("propertyForm:clustersTable:topActionsGroup1:button2", "propertyForm:clustersTable", clusterName);
-        waitForCondition("document.getElementById('propertyForm:clustersTable:topActionsGroup1:button2').value != 'Processing...'", 300000);
-        prefix = getTableRowByValue("propertyForm:clustersTable", clusterName, "col1");
+        rowActionWithConfirm("propertyForm:clustersTable:topActionsGroup1:button2", ID_CLUSTERS_TABLE, clusterName);
+        waitForButtonDisabled("propertyForm:clustersTable:topActionsGroup1:button2");
+        prefix = getTableRowByValue(ID_CLUSTERS_TABLE, clusterName, "col1");
         assertTrue((selenium.getText(prefix + "col3").indexOf("Running") != -1));
 
         // Stop the cluster and verify
-        rowActionWithConfirm("propertyForm:clustersTable:topActionsGroup1:button3", "propertyForm:clustersTable", clusterName);
-        waitForCondition("document.getElementById('propertyForm:clustersTable:topActionsGroup1:button3').value != 'Processing...'", 300000);
+        rowActionWithConfirm("propertyForm:clustersTable:topActionsGroup1:button3", ID_CLUSTERS_TABLE, clusterName);
+        waitForButtonDisabled("propertyForm:clustersTable:topActionsGroup1:button3");
         assertTrue((selenium.getText(prefix + "col3").indexOf("Stopped") != -1));
+        
+        deleteCluster(clusterName);
     }
 
     @Test
     public void testMigrateEjbTimers() {
-        clickAndWait(getLinkIdByLinkText("propertyForm:clustersTable", clusterName), TRIGGER_CLUSTER_GENERAL_PAGE);
+        String clusterName = "clusterName" + generateRandomString();
+        String instanceName1 = "instanceName" + generateRandomString();
+        String instanceName2 = "instanceName" + generateRandomString();
+        createCluster(clusterName, instanceName1, instanceName2);
+
+        clickAndWait(getLinkIdByLinkText(ID_CLUSTERS_TABLE, clusterName), TRIGGER_CLUSTER_GENERAL_PAGE);
         clickAndWait("propertyForm:clusterTabs:clusterInst", TRIGGER_CLUSTER_INSTANCES_PAGE);
-        assertTrue(selenium.isTextPresent(instanceName1));
-        assertTrue(selenium.isTextPresent(instanceName2));
 
         startClusterInstance(instanceName1);
 
@@ -128,11 +111,17 @@ public class ClusterTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:clusterTabs:clusterInst", TRIGGER_CLUSTER_INSTANCES_PAGE);
 
         stopClusterInstance(instanceName1);
+        deleteCluster(clusterName);
     }
 
     @Test
     public void verifyClusterGeneralInformationPage() {
-        clickAndWait(getLinkIdByLinkText("propertyForm:clustersTable", clusterName), TRIGGER_CLUSTER_GENERAL_PAGE);
+        String clusterName = "clusterName" + generateRandomString();
+        String instanceName1 = "instanceName" + generateRandomString();
+        String instanceName2 = "instanceName" + generateRandomString();
+        createCluster(clusterName, instanceName1, instanceName2);
+
+        clickAndWait(getLinkIdByLinkText(ID_CLUSTERS_TABLE, clusterName), TRIGGER_CLUSTER_GENERAL_PAGE);
         assertEquals(clusterName, selenium.getText("propertyForm:propertySheet:propertSectionTextField:clusterNameProp:clusterName"));
 
         //ensure config link is fine.
@@ -142,7 +131,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
 
         //Back to the Clusters page,  ensure default value is there.
         clickAndWait("treeForm:tree:clusterTreeNode:clusterTreeNode_link", TRIGGER_CLUSTER_PAGE);
-        clickAndWait(getLinkIdByLinkText("propertyForm:clustersTable", clusterName), TRIGGER_CLUSTER_GENERAL_PAGE);
+        clickAndWait(getLinkIdByLinkText(ID_CLUSTERS_TABLE, clusterName), TRIGGER_CLUSTER_GENERAL_PAGE);
         assertEquals("0 instance(s) running", selenium.getText("propertyForm:propertySheet:propertSectionTextField:instanceStatusProp:instanceStatusRunning"));
         assertEquals("2 instance(s) not running", selenium.getText("propertyForm:propertySheet:propertSectionTextField:instanceStatusProp:instanceStatusStopped"));
 
@@ -158,10 +147,17 @@ public class ClusterTest extends BaseSeleniumTestClass {
         assertEquals("123.234.456.88", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:gmsMulticastAddress:gmsMulticastAddress"));
         assertEquals("${ABCDE}", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:GmsBindInterfaceAddress:GmsBindInterfaceAddress"));
         assertEquals("off", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:gmsEnabledProp:gmscb"));
+        
+        deleteCluster(clusterName);
     }
 
     @Test
     public void testClusterInstancesTab() {
+        String clusterName = "clusterName" + generateRandomString();
+        String instanceName1 = "instanceName" + generateRandomString();
+        String instanceName2 = "instanceName" + generateRandomString();
+        createCluster(clusterName, instanceName1);
+
         gotoClusterInstancesPage(clusterName);
 
         assertTrue(selenium.isTextPresent(instanceName1));
@@ -170,11 +166,17 @@ public class ClusterTest extends BaseSeleniumTestClass {
         selenium.type("propertyForm:propertySheet:propertSectionTextField:NameTextProp:NameText", instanceName2);
         clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_CLUSTER_INSTANCES_PAGE);
         assertTrue(selenium.isTextPresent(instanceName2));
+        
+        deleteCluster(clusterName);
     }
 
     @Test
     public void testProperties() {
-        clickAndWait(getLinkIdByLinkText("propertyForm:clustersTable", clusterName), TRIGGER_CLUSTER_GENERAL_PAGE);
+        String clusterName = "clusterName" + generateRandomString();
+        String instanceName1 = "instanceName" + generateRandomString();
+        createCluster(clusterName, instanceName1);
+
+        clickAndWait(getLinkIdByLinkText(ID_CLUSTERS_TABLE, clusterName), TRIGGER_CLUSTER_GENERAL_PAGE);
         assertEquals(clusterName, selenium.getText("propertyForm:propertySheet:propertSectionTextField:clusterNameProp:clusterName"));
 
         // Go to properties tab
@@ -199,6 +201,8 @@ public class ClusterTest extends BaseSeleniumTestClass {
         selenium.click("propertyForm:clusterTabs:clusterProps:clusterInstanceProps");
         waitForPageLoad("Cluster System Properties", TIMEOUT, true);
         assertTableRowCount("propertyForm:basicTable", clusterPropCount);
+        
+        deleteCluster(clusterName);
     }
 
     @Test
@@ -210,17 +214,18 @@ public class ClusterTest extends BaseSeleniumTestClass {
         createCluster(clusterName2);
         deleteAllClusters();
 
-        assertFalse(selenium.isTextPresent(clusterName1));
-        assertFalse(selenium.isTextPresent(clusterName2));
+        assertEquals(0, getTableRowsByValue(ID_CLUSTERS_TABLE, clusterName1, "col1").size());
+        assertEquals(0, getTableRowsByValue(ID_CLUSTERS_TABLE, clusterName2, "col1").size());
     }
 
     public void gotoClusterPage() {
+        reset();
         clickAndWait("treeForm:tree:clusterTreeNode:clusterTreeNode_link", TRIGGER_CLUSTER_PAGE);
     }
 
     public void gotoClusterInstancesPage(String clusterName) {
         gotoClusterPage();
-        clickAndWait(getLinkIdByLinkText("propertyForm:clustersTable", clusterName), TRIGGER_CLUSTER_GENERAL_PAGE);
+        clickAndWait(getLinkIdByLinkText(ID_CLUSTERS_TABLE, clusterName), TRIGGER_CLUSTER_GENERAL_PAGE);
         clickAndWait("propertyForm:clusterTabs:clusterInst", TRIGGER_CLUSTER_INSTANCES_PAGE);
     }
 
@@ -234,7 +239,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         jdbcTest.createJDBCResource(jndiName, description, target, MonitoringTest.TARGET_CLUSTER_TYPE);
 
         clickAndWait("treeForm:tree:clusterTreeNode:clusterTreeNode_link", TRIGGER_CLUSTER_PAGE);
-        clickAndWait(getLinkIdByLinkText("propertyForm:clustersTable", target), TRIGGER_CLUSTER_GENERAL_PAGE);
+        clickAndWait(getLinkIdByLinkText(ID_CLUSTERS_TABLE, target), TRIGGER_CLUSTER_GENERAL_PAGE);
         clickAndWait("propertyForm:clusterTabs:clusterResources", TRIGGER_CLUSTER_RESOURCES_PAGE);
         assertTrue(selenium.isTextPresent(jndiName));
 
@@ -276,39 +281,47 @@ public class ClusterTest extends BaseSeleniumTestClass {
     }
 
     public void deleteCluster(String clusterName) {
-        stopAllClusterInstances(clusterName);
         gotoClusterPage();
-        deleteRow("propertyForm:clustersTable:topActionsGroup1:button1", "propertyForm:clustersTable", clusterName);
+        rowActionWithConfirm(ID_CLUSTERS_TABLE_STOP_BUTTON, ID_CLUSTERS_TABLE, clusterName);
+        deleteRow(ID_CLUSTERS_TABLE_DELETE_BUTTON, ID_CLUSTERS_TABLE, clusterName);
     }
 
     public void deleteAllClusters() {
         gotoClusterPage();
 
-        if (selenium.isTextPresent("Clusters (0)")) {
+        if (getTableRowCount(ID_CLUSTERS_TABLE) == 0) {
             return;
         }
+        
 
-        List<String> rows = getTableRowsByValue("propertyForm:clustersTable", "config", "col2");
+        List<String> rows = getTableRowsByValue(ID_CLUSTERS_TABLE, "Running", "col3");
         if (!rows.isEmpty()) {
             // Stop all instances
             for (String row : rows) {
-                String cluster = selenium.getText(row + ":col1");
-                stopAllClusterInstances(cluster);
+                String clusterName = selenium.getText(row + ":col1");
+                rowActionWithConfirm(ID_CLUSTERS_TABLE_STOP_BUTTON, ID_CLUSTERS_TABLE, clusterName);
+//                selenium.click(ID_CLUSTERS_TABLE_SELECT_ALL_BUTTON);
+//                waitForButtonEnabled(ID_CLUSTERS_TABLE_STOP_BUTTON);
+//                selenium.chooseOkOnNextConfirmation();
+//                selenium.click(ID_CLUSTERS_TABLE_STOP_BUTTON);
+//                if (selenium.isConfirmationPresent()) {
+//                    selenium.getConfirmation();
+//                }
+//                waitForButtonDisabled(ID_CLUSTERS_TABLE_STOP_BUTTON);
             }
-
-            gotoClusterPage();
-            selenium.click("propertyForm:clustersTable:_tableActionsTop:_selectMultipleButton");
-            waitForButtonEnabled("propertyForm:clustersTable:topActionsGroup1:button3");
-            selenium.chooseOkOnNextConfirmation();
-            selenium.click("propertyForm:clustersTable:topActionsGroup1:button3");
-            if (selenium.isConfirmationPresent()) {
-                selenium.getConfirmation();
-            }
-            this.waitForButtonDisabled("propertyForm:clustersTable:topActionsGroup1:button3");
         }
 
         // Delete all clusters
-        deleteAllTableRows("propertyForm:clustersTable:_tableActionsTop:_selectMultipleButton", "propertyForm:clustersTable:topActionsGroup1:button1");
+        // We're iterating through these one at a time, because we are occasionally getting a
+        // "false" failure, where a cluster was deleted, but the server was unable to delete
+        // some files, so it returns an error, which causes the loop in deleteAllTableRows()
+        // to exit early
+        List<String> clusters = getTableColumnValues(ID_CLUSTERS_TABLE, "col1");
+        for (String clusterName : clusters) {
+//            gotoClusterPage();
+            rowActionWithConfirm(ID_CLUSTERS_TABLE_DELETE_BUTTON, ID_CLUSTERS_TABLE, clusterName);
+        }
+        assertTableRowCount(ID_CLUSTERS_TABLE, 0);
     }
 
     public void startClusterInstance(String instanceName) {

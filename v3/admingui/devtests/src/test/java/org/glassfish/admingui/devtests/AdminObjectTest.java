@@ -175,6 +175,5 @@ public class AdminObjectTest extends BaseSeleniumTestClass {
         //Delete the instance
         clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", instanceTest.TRIGGER_INSTANCES_PAGE);
         deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
-        assertFalse(selenium.isTextPresent(instanceName));
     }
 }

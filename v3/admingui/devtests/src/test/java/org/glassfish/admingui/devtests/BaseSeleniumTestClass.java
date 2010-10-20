@@ -79,11 +79,11 @@ public class BaseSeleniumTestClass {
 
     protected static Selenium selenium;
     protected static final int TIMEOUT = 90;
-    protected static final int BUTTON_TIMEOUT = 30000;
+    protected static final int BUTTON_TIMEOUT = 300;
     private static String currentTestClass = "";
     protected static boolean debug;
     private boolean processingLogin = false;
-
+    
     @BeforeClass
     public static void setUp() throws Exception {
         String browser = getParameter("browser", "firefox");
@@ -93,7 +93,6 @@ public class BaseSeleniumTestClass {
         debug = Boolean.parseBoolean(getParameter("debug", "false"));
 
         if (selenium == null) {
-            //System.out.println("The GlassFish Admin console is at " + baseUrl + ".  The Selenium server is listening on " + seleniumPort + " and will use " + browser + " as the test browser.");
             selenium = new DefaultSelenium("localhost", Integer.parseInt(seleniumPort), "*" + browser, baseUrl);
             selenium.start();
             selenium.setTimeout("90000");
@@ -198,21 +197,19 @@ public class BaseSeleniumTestClass {
         waitForPageLoad(triggerText, seconds);
     }
 
-    protected void clickAndWaitForElement(String clickId, String elementId) {
+    protected void clickAndWaitForElement(String clickId, final String elementId) {
         selenium.click(clickId);
-        for (int second = 0;; second++) {
-            if (second >= 60) {
-                Assert.fail("timeout");
-            }
-            try {
+        waitForLoad(60, new WaitForLoadCallBack() {
+            @Override
+            public boolean executeTest() {
                 if (selenium.isElementPresent(elementId)) {
-                    break;
+                    return true;
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+                
+                return false;
             }
-            sleep(500);
-        }
+            
+        });
     }
 
     protected void clickAndWaitForButtonEnabled(String id) {
@@ -237,39 +234,27 @@ public class BaseSeleniumTestClass {
      * @param timeout     How long to wait (in seconds)
      */
     protected void waitForPageLoad(String triggerText, int timeout) {
-        waitForPageLoad(triggerText, timeout, false);
+        waitForLoad(timeout, new PageLoadCallBack(triggerText, false));
     }
 
-    protected void waitForPageLoad(String triggerText, boolean textShouldBeMissing) {
+    protected void waitForPageLoad(final String triggerText, final boolean textShouldBeMissing) {
         waitForPageLoad(triggerText, TIMEOUT, textShouldBeMissing);
     }
 
-    protected void waitForPageLoad(String triggerText, int timeoutInSeconds, boolean textShouldBeMissing) {
+    protected void waitForPageLoad(final String triggerText, final int timeout, final boolean textShouldBeMissing) {
+        waitForLoad(timeout, new PageLoadCallBack(triggerText, textShouldBeMissing));        
+    }
+
+    protected void waitForLoad(int timeoutInSeconds, WaitForLoadCallBack callback) {
         for (int halfSeconds = 0;; halfSeconds++) {
             if (halfSeconds >= (timeoutInSeconds*2)) {
                 Assert.fail("The operation timed out waiting for the page to load.");
             }
-            try {
-                if (selenium.isElementPresent("j_username") && !processingLogin){
-                    handleLogin();
-                }
-                if (!textShouldBeMissing) {
-                    if (selenium.isTextPresent(triggerText)) {
-                        break;
-                    }
-                } else {
-                    if (!selenium.isTextPresent(triggerText)) {
-                        break;
-                    }
-                }
-            } catch (SeleniumException se) {
-                String message = se.getMessage();
-                if (!"ERROR: Couldn't access document.body.  Is this HTML page fully loaded?".equals(se.getMessage())) {
-                    throw new RuntimeException(se);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            
+            if (callback.executeTest()) {
+                break;
             }
+
             sleep(500);
         }
     }
@@ -283,12 +268,14 @@ public class BaseSeleniumTestClass {
     }
 
     protected void waitForButtonEnabled(String buttonId) {
-        waitForCondition("document.getElementById('" + buttonId + "').disabled == false", BUTTON_TIMEOUT);
+//        waitForCondition("document.getElementById('" + buttonId + "').disabled == false", BUTTON_TIMEOUT);
+        waitForLoad(BUTTON_TIMEOUT, new ButtonDisabledStateCallBack(buttonId, false));
     }
 
     protected void waitForButtonDisabled(String buttonId) {
         String value = selenium.getEval(CURRENT_WINDOW + ".document.getElementById('" + buttonId + "').disabled");
-        waitForCondition("document.getElementById('" + buttonId + "').disabled == true", BUTTON_TIMEOUT);
+//        waitForCondition("document.getElementById('" + buttonId + "').disabled == true", BUTTON_TIMEOUT);
+        waitForLoad(BUTTON_TIMEOUT, new ButtonDisabledStateCallBack(buttonId, true));
     }
 
     protected void waitForCondition(String js, int timeOutInMillis) {
@@ -299,9 +286,10 @@ public class BaseSeleniumTestClass {
         deleteRow(buttonId, tableId, triggerText, "col0", "col1");
     }
 
-    protected void deleteRow(String buttonId, String tableId, String triggerText, String selectColId, String valueColId) {
+    protected void deleteRow(final String buttonId, final String tableId, final String triggerText, final String selectColId, final String valueColId) {
         rowActionWithConfirm(buttonId, tableId, triggerText, selectColId, valueColId);
-        waitForPageLoad(triggerText, true);
+        waitForLoad(TIMEOUT, new DeleteRowCallBack(tableId, triggerText, valueColId));
+//        waitForPageLoad(triggerText, true);
     }
 
     protected void rowActionWithConfirm(String buttonId, String tableId, String triggerText) {
@@ -315,11 +303,14 @@ public class BaseSeleniumTestClass {
         }
         selenium.chooseOkOnNextConfirmation();
         selectTableRowByValue(tableId, triggerText, selectColId, valueColId);
+        sleep(500); // argh!
         waitForButtonEnabled(buttonId);
         selenium.click(buttonId);
         if (selenium.isConfirmationPresent()) {
             selenium.getConfirmation();
         }
+        sleep(500); // argh!
+        waitForButtonDisabled(buttonId);
     }
 
     /**
@@ -353,7 +344,9 @@ public class BaseSeleniumTestClass {
     protected void selectTableRowByValue(String tableId, String value, String selectColId, String valueColId) {
         List<String> rows = getTableRowsByValue(tableId, value, valueColId);
         for (String row : rows) {
-            selenium.click(row + ":" + selectColId + ":select");
+            // It seems this must be click for the JS to fire in the browser
+            final String id = row + ":" + selectColId + ":select";
+            selenium.click(id); 
         }
     }
 
@@ -445,6 +438,22 @@ public class BaseSeleniumTestClass {
             return 0;
         }
         return selectedCount;
+    }
+    
+    protected List<String> getTableColumnValues(String tableId, String columnId) {
+        List<String> values = new ArrayList<String>();
+        int tableCount = getTableRowCount(tableId);
+        try {
+            int row = 0;
+            while (true) { // iterate over any rows
+                // Assume one row group for now and hope it doesn't bite us
+                values.add(selenium.getText(tableId + ":rowGroup1:" + row + ":" + columnId));
+                row++;
+            }
+        } catch (Exception e) {
+        }
+
+        return values;
     }
 
     protected int addTableRow(String tableId, String buttonId) {
@@ -615,5 +624,83 @@ public class BaseSeleniumTestClass {
         String value = System.getProperty(paramName);
 
         return value != null ? value : defaultValue;
+    }
+
+    class PageLoadCallBack implements WaitForLoadCallBack {
+        boolean textShouldBeMissing;
+        String triggerText;
+
+        public PageLoadCallBack(String triggerText, boolean textShouldBeMissing) {
+            this.textShouldBeMissing = textShouldBeMissing;
+            this.triggerText = triggerText;
+        }
+
+        
+        @Override
+        public boolean executeTest() {
+            boolean found = false;
+            try {
+                if (selenium.isElementPresent("j_username") && !processingLogin) {
+                    handleLogin();
+                }
+                if (!textShouldBeMissing) {
+                    if (selenium.isTextPresent(triggerText)) {
+                        found = true;
+                    }
+                } else {
+                    if (!selenium.isTextPresent(triggerText)) {
+                        found = true;
+                    }
+                }
+            } catch (SeleniumException se) {
+                String message = se.getMessage();
+                if (!"ERROR: Couldn't access document.body.  Is this HTML page fully loaded?".equals(se.getMessage())) {
+                    throw new RuntimeException(se);
+                }
+            }
+
+            return found;
+        }
+    };
+    
+    class DeleteRowCallBack implements WaitForLoadCallBack {
+        private String tableId;
+        private String tableRowValue;
+        private String tableColId;
+
+        public DeleteRowCallBack(String tableId, String tableRowValue, String tableColId) {
+            this.tableId = tableId;
+            this.tableRowValue = tableRowValue;
+            this.tableColId = tableColId;
+        }
+
+        @Override
+        public boolean executeTest() {
+            try {
+                List<String> rows = getTableRowsByValue(tableId, tableRowValue, tableColId);
+                return rows.isEmpty();
+            } catch (SeleniumException se) {
+                return false;
+            }
+        }
+        
+    }
+    
+    class ButtonDisabledStateCallBack implements WaitForLoadCallBack {
+        private String buttonId;
+        private boolean desiredState;
+
+        public ButtonDisabledStateCallBack(String buttonId, boolean desiredState) {
+            this.buttonId = buttonId;
+            this.desiredState = desiredState;
+        }
+
+        @Override
+        public boolean executeTest() {
+            String attr = selenium.getEval("this.browserbot.findElement('id=" + buttonId + "').disabled");
+            return (Boolean.parseBoolean(attr) == desiredState);
+        }
+        
+        
     }
 }

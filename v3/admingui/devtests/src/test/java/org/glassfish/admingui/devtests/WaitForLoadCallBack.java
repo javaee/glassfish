@@ -39,39 +39,10 @@
  */
 package org.glassfish.admingui.devtests;
 
-import org.junit.Ignore;
-import org.junit.rules.MethodRule;
-import org.junit.runners.model.FrameworkMethod;
-import org.junit.runners.model.Statement;
-
 /**
  *
  * @author jasonlee
  */
-public class SpecificTestRule implements MethodRule {
-    public SpecificTestRule() {
-        
-    }
-
-    @Override
-    public Statement apply(final Statement statement, final FrameworkMethod frameworkMethod, final Object o) {
-        return new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                boolean runMethod = false;
-                String method = System.getProperty("method");
-                Ignore ignore = frameworkMethod.getAnnotation(Ignore.class);
-
-                if (frameworkMethod.getName().equals(method)) {
-                    runMethod = true;
-                } else if ((method == null) && (ignore == null)) {
-                    runMethod = true;
-                }
-
-                if (runMethod) {
-                    statement.evaluate();
-                }
-            }
-        };
-    }
+public interface WaitForLoadCallBack {
+    boolean executeTest();
 }
