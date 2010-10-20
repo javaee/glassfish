@@ -695,8 +695,8 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
             }
 
             // check if the config is null or still in use by some other
-            // ReferenceContainer -- if so just return...
-            if(config == null || domain.getReferenceContainersOf(config).size() > 1)
+            // ReferenceContainer or is not <cluster-name>-config -- if so just return...
+            if(config == null || domain.getReferenceContainersOf(config).size() > 1 || !instanceConfig.equals(child.getName() + "-config"))
                 return;
 
 
