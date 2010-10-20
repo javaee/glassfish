@@ -57,10 +57,7 @@ public class SimpleMetadata  implements Serializable {
     
     private byte[] state;
 
-    // private HttpSessionExtraParams extraParam;
-
     //Default No arg constructor required for BackingStore
-
     public SimpleMetadata() {
 
     }
@@ -78,8 +75,6 @@ public class SimpleMetadata  implements Serializable {
      *            the maximum time that this state can be idle in the store
      *            before it can be removed.
      */
-//    public SimpleMetadata(long version, long lastAccesstime,
-  //                              long maxInactiveInterval, byte[] state, HttpSessionExtraParams extraParam)
     public SimpleMetadata(long version, long lastAccesstime,
                                 long maxInactiveInterval, byte[] state)
 
@@ -128,5 +123,15 @@ public class SimpleMetadata  implements Serializable {
 
     public byte[] getState() {
         return this.state;
+    }
+
+    @Override
+    public String toString() {
+        return "SimpleMetadata{" +
+                "version=" + version +
+                ", lastAccessTime=" + lastAccessTime +
+                ", maxInactiveInterval=" + maxInactiveInterval +
+                ", state=" + (state == null ? 0 : state.length) +
+                '}';
     }
 }
