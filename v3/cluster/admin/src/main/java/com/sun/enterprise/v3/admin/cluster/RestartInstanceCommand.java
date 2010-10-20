@@ -112,7 +112,7 @@ public class RestartInstanceCommand implements AdminCommand {
             return Strings.get("stop.instance.noPort", instanceName);
 
         try {
-            // TODO username password ????
+            // TODO complicated calls to determine when the remote instance has started??
             RemoteAdminCommand rac = new RemoteAdminCommand("_restart-instance",
                     host, port, false, "admin", null, logger);
 
@@ -145,3 +145,11 @@ public class RestartInstanceCommand implements AdminCommand {
     private ActionReport report;
     private String errorMessage = null;
 }
+/**
+ *
+@Inject
+InstanceStateService stateSvc;
+
+stateSvc.getState(String instanceName) will give you the latest status
+
+ */
