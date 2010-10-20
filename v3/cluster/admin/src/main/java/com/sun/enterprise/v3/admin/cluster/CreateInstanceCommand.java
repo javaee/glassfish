@@ -340,8 +340,12 @@ public class CreateInstanceCommand implements AdminCommand {
         ArrayList<String> command = new ArrayList<String>();
         String humanCommand = null;
 
-        command.add("--host");
-        command.add(dasHost);
+        if (!theNode.isLocal()) {
+            // Only specify the DAS host if the node is remote. See issue 13993
+            command.add("--host");
+            command.add(dasHost);
+        }
+
         command.add("--port");
         command.add(dasPort);
 
