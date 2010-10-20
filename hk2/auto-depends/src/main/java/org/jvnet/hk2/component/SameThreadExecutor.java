@@ -41,11 +41,11 @@ import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Provides a same-thread executor service for use by Hk2 internals.
+ * Provides a same-thread executor service for use by Hk2 internals.  FOR INTERNAL USE ONLY.
  * 
  * @author Jeff Trent
  */
-/*public*/ class SameThreadExecutor extends AbstractExecutorService {
+public class SameThreadExecutor extends AbstractExecutorService {
 
   @Override
   public boolean awaitTermination(long arg0, TimeUnit arg1)
