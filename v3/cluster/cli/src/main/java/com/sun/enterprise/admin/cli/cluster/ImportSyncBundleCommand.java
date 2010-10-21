@@ -100,10 +100,10 @@ import org.glassfish.admin.payload.PayloadFilesManager.Perm;
 @Service(name = "import-sync-bundle")
 @Scoped(PerLookup.class)
 public class ImportSyncBundleCommand extends LocalInstanceCommand {
-    @Param(name = "file")
+    @Param(name = "file_name", primary = true)
     private String syncBundle;
 
-    @Param(name = "instance_name", primary = true)
+    @Param(name = "instance")
     private String instanceName0;
 
     String DASHost;
