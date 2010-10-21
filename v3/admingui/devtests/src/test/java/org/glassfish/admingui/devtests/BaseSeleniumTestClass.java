@@ -131,7 +131,7 @@ public class BaseSeleniumTestClass {
                 in.close();
                 out.close();
             }
-            selenium.stop();
+            //selenium.stop();
         } catch (Exception ex) {
             Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.INFO, null, ex);
         }
