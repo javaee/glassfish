@@ -40,6 +40,7 @@ import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantListener;
 import org.jvnet.hk2.component.RunLevelState;
+import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
 
 /**
  * An inhabitant that prevents activation unless the sufficient RunLevelState
@@ -103,8 +104,9 @@ public class RunLevelInhabitant<T, V> extends EventPublishingInhabitant<T> {
   protected void verifyState() throws ComponentException {
     if (!isInstantiated()) {
       Integer planned = state.getPlannedRunLevel();
+      planned = (null == planned) ? DefaultRunLevelService.KERNEL_RUNLEVEL : planned;
       Integer current = state.getCurrentRunLevel();
-      current = (null == current) ? -1 : current;
+      current = (null == current) ? DefaultRunLevelService.KERNEL_RUNLEVEL : current;
       if (null == planned || runLevel > planned || runLevel > current + 1) {
         throw new ComponentException("minimum expected RunLevel is: " + runLevel +
             "; planned is: " + planned + "; current is: " + current);

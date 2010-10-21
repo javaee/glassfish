@@ -33,6 +33,9 @@ import com.sun.enterprise.tools.InhabitantsDescriptor;
 /**
  * Tests the introspective type of InhabitantsGenerator.
  * 
+ * Note: to run this in eclipse, you may need to regenerate the project (eclipse:clean eclipse:eclipse)
+ * so that the proper jar references are placed in the project.
+ * 
  * @author Jeff Trent
  */
 public class InhabitantsGeneratorTest {
