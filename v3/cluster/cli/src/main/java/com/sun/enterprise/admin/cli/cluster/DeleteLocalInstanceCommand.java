@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.cli.cluster;
 
 import com.sun.enterprise.util.StringUtils;
@@ -55,26 +54,25 @@ import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 
-
-// TODO TODO
-// wipe out the tree if this is the last instance
-// TODO TODO TODO
-
 /**
  * Delete a local server instance.
+ * Wipeout the node dir if it is the last instance under the node
+ * @author Byron Nevins
  */
 @Service(name = "delete-local-instance")
 @Scoped(PerLookup.class)
 public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
+
     @Param(name = "instance_name", primary = true, optional = true)
     private String instanceName0;
+
     @Override
     protected void validate()
             throws CommandException, CommandValidationException {
         instanceName = instanceName0;
         super.validate();
 
-        if(!StringUtils.ok(getServerDirs().getServerName()))
+        if (!StringUtils.ok(getServerDirs().getServerName()))
             throw new CommandException(Strings.get("DeleteInstance.noInstanceName"));
 
         File dasProperties = getServerDirs().getDasPropertiesFile();
@@ -90,7 +88,7 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
     protected int executeCommand()
             throws CommandException, CommandValidationException {
 
-        if(isRunning()) {
+        if (isRunning()) {
             throw new CommandException(Strings.get("DeleteInstance.running"));
         }
 
@@ -110,13 +108,13 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
                     //"--remote_only", "true",
                     getServerDirs().getServerName());
         }
-        catch(CommandException ce) {
+        catch (CommandException ce) {
             // Let's add our $0.02 to this Exception!
             Throwable t = ce.getCause();
             String newString = Strings.get("DeleteInstance.remoteError",
                     ce.getLocalizedMessage());
 
-            if(t != null)
+            if (t != null)
                 throw new CommandException(newString, t);
             else
                 throw new CommandException(newString);

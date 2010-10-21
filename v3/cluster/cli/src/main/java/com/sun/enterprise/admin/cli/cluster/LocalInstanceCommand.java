@@ -37,13 +37,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.cli.cluster;
 
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.io.InstanceDirs;
 import java.io.*;
+import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
@@ -88,11 +88,11 @@ import com.sun.enterprise.universal.io.SmartFile;
 // -----------------------------------------------------------------------
 // ----------------   public methods here   --------------- --------------
 // -----------------------------------------------------------------------
-
 public abstract class LocalInstanceCommand extends LocalServerCommand {
-    @Param(name = "nodedir", optional = true, alias="agentdir")
+
+    @Param(name = "nodedir", optional = true, alias = "agentdir")
     protected String nodeDir;           // nodeDirRoot
-    @Param(name = "node", optional=true, alias="nodeagent")
+    @Param(name = "node", optional = true, alias = "nodeagent")
     protected String node;
     // subclasses decide whether it's optional, required, or not allowed
     //@Param(name = "instance_name", primary = true, optional = true)
@@ -101,16 +101,16 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
     protected File nodeDirChild;        // the specific node dir
     protected File instanceDir;         // the specific instance dir
     private InstanceDirs instanceDirs;
+
     @Override
     protected void validate()
             throws CommandException, CommandValidationException {
         initInstance();
     }
-    
+
 // -----------------------------------------------------------------------
 // -------- protected methods where overriding is allowed here -----------
 // -----------------------------------------------------------------------
-
     /** 
      * Override this method if your class does NOT want to create directories
      * @param f the directory to create
@@ -118,6 +118,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
     protected boolean mkdirs(File f) {
         return f.mkdirs();
     }
+
     /**
      * Override this method if your class does NOT want CommandException thrown
      * if directory does not exist.
@@ -126,17 +127,18 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
     protected boolean isDirectory(File f) {
         return f.isDirectory();
     }
+
     /**
      * Override this method if your class does NOT want to set ServerDirs
      */
     protected boolean setServerDirs() {
         return true;
     }
-    
+
     protected void initInstance() throws CommandException {
         /* node dir - parent directory of all node(s) */
-        String nodeDirRootPath = null;  
-        if(ok(nodeDir))
+        String nodeDirRootPath = null;
+        if (ok(nodeDir))
             nodeDirRootPath = nodeDir;
         else // node dir = <install-root>/nodes
             nodeDirRootPath = getNodeDirRootDefault();
@@ -144,13 +146,13 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         nodeDirRoot = new File(nodeDirRootPath);
         mkdirs(nodeDirRoot);
 
-        if(!isDirectory(nodeDirRoot)) {
+        if (!isDirectory(nodeDirRoot)) {
             throw new CommandException(
                     Strings.get("Instance.badNodeDir", nodeDirRoot));
         }
 
         /* <node_dir>/<node> */
-        if(node != null) {
+        if (node != null) {
             nodeDirChild = new File(nodeDirRoot, node);
         }
         else {
@@ -158,7 +160,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         }
 
         /* <node_dir>/<node>/<instance name> */
-        if(instanceName != null) {
+        if (instanceName != null) {
             instanceDir = new File(nodeDirChild, instanceName);
             mkdirs(instanceDir);
         }
@@ -167,7 +169,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             instanceName = instanceDir.getName();
         }
 
-        if(!isDirectory(instanceDir)) {
+        if (!isDirectory(instanceDir)) {
             throw new CommandException(
                     Strings.get("Instance.badInstanceDir", instanceDir));
         }
@@ -196,7 +198,6 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
 // -----------------------------------------------------------------------
 // -------- protected methods where overriding is NOT allowed here -----------
 // -----------------------------------------------------------------------
-
     /**
      * Set the programOpts based on the das.properties file.
      */
@@ -225,11 +226,12 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             p = dasprops.getProperty("agent.das.protocol");
             if (p != null && p.equals("rmi_jrmp")) {
                 programOpts.setPort(updateDasPort(dasprops, port, propfile));
-            } else if (p == null || p.equals("http"))
+            }
+            else if (p == null || p.equals("http"))
                 programOpts.setPort(port);
             else
                 throw new CommandException(Strings.get("Instance.badProtocol",
-                                                    propfile.toString(), p));
+                        propfile.toString(), p));
             p = dasprops.getProperty("agent.das.isSecure");
             if (p != null)
                 programOpts.setSecure(Boolean.parseBoolean(p));
@@ -237,15 +239,18 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             if (p != null)
                 programOpts.setUser(p);
             // XXX - what about the DAS admin password?
-        } catch (IOException ioex) {
+        }
+        catch (IOException ioex) {
             throw new CommandException(
-                        Strings.get("Instance.cantReadDasProperties",
-                                    propfile.getPath()));
-        } finally {
+                    Strings.get("Instance.cantReadDasProperties",
+                    propfile.getPath()));
+        }
+        finally {
             if (fis != null) {
                 try {
                     fis.close();
-                } catch (IOException cex) {
+                }
+                catch (IOException cex) {
                     // ignore it
                 }
             }
@@ -254,6 +259,10 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
 
     final protected void whackFilesystem() throws CommandException {
         File whackee = getServerDirs().getServerDir();
+
+        // looks weird but this is the BEST way to get it in JDK of vintage <= 6
+        File parent = SmartFile.sanitize(new File(getServerDirs().getServerDir(), ".."));
+        File grandParent = SmartFile.sanitize(new File(parent, ".."));
 
         if (whackee == null || !whackee.isDirectory()) {
             throw new CommandException(Strings.get("DeleteInstance.noWhack",
@@ -264,9 +273,9 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         // make this an error.
         File[] files = whackee.listFiles();
 
-        if(files == null || files.length <= 0) {
+        if (files == null || files.length <= 0) {
             // empty dir
-            if(files != null)
+            if (files != null)
                 FileUtils.whack(whackee);
 
             throw new CommandException(Strings.get("DeleteInstance.noWhack",
@@ -277,11 +286,10 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         // the directory tree can be deleted on Windows.
         // The FileUtils.renameFile method has a retry built in.
         try {
-            File tmpwhackee = File.createTempFile("oldinst", null, whackee.getParentFile());
+            File tmpwhackee = File.createTempFile("oldinst", null, parent);
             tmpwhackee.delete();
             FileUtils.renameFile(whackee, tmpwhackee);
             FileUtils.whack(tmpwhackee);
-
         }
         catch (IOException ioe) {
             throw new CommandException(Strings.get("DeleteInstance.badWhack",
@@ -290,7 +298,35 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         if (whackee.isDirectory())
             throw new CommandException(Strings.get("DeleteInstance.badWhack",
                     whackee));
-   }
+
+        // now see if the parent dir is empty.  If so wipe it out.
+        // Don't be too picky with throwin errors here...
+        try {
+            files = parent.listFiles();
+
+            if (noInstancesRemain(files)) {
+                File tmpwhackee = File.createTempFile("oldnode", null, grandParent);
+                tmpwhackee.delete();
+                FileUtils.renameFile(parent, tmpwhackee);
+                FileUtils.whack(tmpwhackee);
+            }
+        }
+        catch (IOException ioe) {
+            // we tried!!!
+        }
+    }
+
+    private boolean noInstancesRemain(File[] files) {
+        if (files == null || files.length <= 0)
+            return true;
+
+        if (files.length == 1
+                && files[0].isDirectory()
+                && files[0].getName().equals("agent"))
+            return true;
+
+        return false;
+    }
 
     /**
      * Gets the GlassFish installation root (using property com.sun.aas.installRoot),
@@ -303,11 +339,11 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         String installRootPath = getSystemProperty(
                 SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
 
-        if(!StringUtils.ok(installRootPath))
+        if (!StringUtils.ok(installRootPath))
             installRootPath = System.getProperty(
                     SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
 
-        if(!StringUtils.ok(installRootPath))
+        if (!StringUtils.ok(installRootPath))
             throw new CommandException("noInstallDirPath");
         return installRootPath;
     }
@@ -326,11 +362,11 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         String productRootPath = getSystemProperty(
                 SystemPropertyConstants.PRODUCT_ROOT_PROPERTY);
 
-        if(!StringUtils.ok(productRootPath))
+        if (!StringUtils.ok(productRootPath))
             productRootPath = System.getProperty(
                     SystemPropertyConstants.PRODUCT_ROOT_PROPERTY);
 
-        if(!StringUtils.ok(productRootPath)) {
+        if (!StringUtils.ok(productRootPath)) {
             // Product install root is parent of glassfish install root
             File installRoot = new File(getInstallRootPath());
             return installRoot.getParent();
@@ -341,7 +377,6 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
 // -----------------------------------------------------------------------
 // -------- everything below here is private    --------------------------
 // -----------------------------------------------------------------------
-
     /**
      * Update DAS port from an old V2 das.properties file.
      * If the old port is the standard jrmp port, just use the new
@@ -353,13 +388,14 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         Console cons;
         if (port == 8686) {     // the old JRMP port
             logger.info(
-                Strings.get("Instance.oldDasProperties",
+                    Strings.get("Instance.oldDasProperties",
                     propfile.toString(), Integer.toString(port),
                     Integer.toString(programOpts.getPort())));
             port = programOpts.getPort();
-        } else if ((cons = System.console()) != null) {
+        }
+        else if ((cons = System.console()) != null) {
             String line = cons.readLine("%s",
-                Strings.get("Instance.oldDasPropertiesPrompt",
+                    Strings.get("Instance.oldDasPropertiesPrompt",
                     propfile.toString(), Integer.toString(port),
                     Integer.toString(programOpts.getPort())));
             while (line != null && line.length() > 0) {
@@ -367,14 +403,16 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
                     port = Integer.parseInt(line);
                     if (port > 0 && port <= 65535)
                         break;
-                } catch (NumberFormatException nfex) {
+                }
+                catch (NumberFormatException nfex) {
                 }
                 line = cons.readLine(Strings.get("Instance.reenterPort"),
-                    Integer.toString(programOpts.getPort()));
+                        Integer.toString(programOpts.getPort()));
             }
-        } else {
+        }
+        else {
             logger.info(
-                Strings.get("Instance.oldDasPropertiesWrong",
+                    Strings.get("Instance.oldDasPropertiesWrong",
                     propfile.toString(), Integer.toString(port),
                     Integer.toString(programOpts.getPort())));
             port = programOpts.getPort();
@@ -385,17 +423,20 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         try {
             bos = new BufferedOutputStream(new FileOutputStream(propfile));
             dasprops.store(bos,
-                "Domain Administration Server Connection Properties");
+                    "Domain Administration Server Connection Properties");
             bos.close();
             bos = null;
-        } catch (IOException ex2) {
+        }
+        catch (IOException ex2) {
             logger.info(
-                Strings.get("Instance.dasPropertiesUpdateFailed"));
-        } finally {
+                    Strings.get("Instance.dasPropertiesUpdateFailed"));
+        }
+        finally {
             if (bos != null) {
                 try {
                     bos.close();
-                } catch (IOException cex) {
+                }
+                catch (IOException cex) {
                     // ignore it
                 }
             }
@@ -410,19 +451,20 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         // or there can be zero in which case we create one-and-only
 
         File[] files = parent.listFiles(new FileFilter() {
+
             public boolean accept(File f) {
                 return isDirectory(f);
             }
         });
 
         // ERROR:  more than one node dir child
-        if(files != null && files.length > 1) {
+        if (files != null && files.length > 1) {
             throw new CommandException(
                     Strings.get("tooManyNodes", parent));
         }
 
         // the usual case -- one node dir child
-        if(files != null && files.length == 1)
+        if (files != null && files.length == 1)
             return files[0];
 
         /*
@@ -440,7 +482,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             }
             File f = new File(parent, hostname);
 
-            if(!mkdirs(f) || !isDirectory(f)) // for instance there is a regular file with that name
+            if (!mkdirs(f) || !isDirectory(f)) // for instance there is a regular file with that name
                 throw new CommandException(Strings.get("cantCreateNodeDirChild", f));
 
             return f;
@@ -454,24 +496,25 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         // look for subdirs in the parent dir -- there must be one and only one
 
         File[] files = parent.listFiles(new FileFilter() {
+
             public boolean accept(File f) {
                 return isDirectory(f);
             }
         });
 
-        if(files == null || files.length == 0) {
+        if (files == null || files.length == 0) {
             throw new CommandException(
                     Strings.get("Instance.noInstanceDirs", parent));
         }
 
         // expect two - the "agent" directory and the instance directory
-        if(files.length > 2) {
+        if (files.length > 2) {
             throw new CommandException(
                     Strings.get("Instance.tooManyInstanceDirs", parent));
         }
 
-        for(File f : files) {
-            if(!f.getName().equals("agent"))
+        for (File f : files) {
+            if (!f.getName().equals("agent"))
                 return f;
         }
         throw new CommandException(
@@ -491,11 +534,10 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         String nodeDirDefault = getSystemProperty(
                 SystemPropertyConstants.AGENT_ROOT_PROPERTY);
 
-        if(StringUtils.ok(nodeDirDefault))
+        if (StringUtils.ok(nodeDirDefault))
             return nodeDirDefault;
 
         String installRootPath = getInstallRootPath();
         return installRootPath + "/" + "nodes";
     }
-
 }
