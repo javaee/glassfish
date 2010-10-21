@@ -239,13 +239,13 @@ public class Server {
                 props.setProperty(GlassFishConstants.INSTANCE_ROOT_URI_PROP_NAME,
                         new File(instanceRoot).toURI().toString());
             }
-        }
-        try {
-            URL url = (fs != null && fs.configFile != null) ? fs.configFile.toURI().toURL() :
-                    getClass().getClassLoader().getResource("org/glassfish/embed/domain.xml");
-            props.setProperty(GlassFishConstants.CONFIG_FILE_URI_PROP_NAME, url.toURI().toString());
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            if (fs.configFile != null) {
+                props.setProperty(GlassFishConstants.CONFIG_FILE_URI_PROP_NAME,
+                        fs.configFile.toURI().toString());
+            }
+            if (fs.autoDelete) {
+                props.setProperty("org.glassfish.embeddable.autoDelete", "true");
+            }
         }
         // TODO :: Support modification of jmxPort
     }
@@ -268,14 +268,9 @@ public class Server {
 
             glassfish = glassfishRuntime.newGlassFish(new GlassFishOptions(properties));
             glassfish.start();
-            if(fs == null ||  fs.installRoot == null || fs.instanceRoot == null) {
+            if(fs == null) {
                 EmbeddedFileSystem.Builder fsBuilder = new EmbeddedFileSystem.Builder();
-                if(fs != null) {
-                    fs.copy(fsBuilder);
-                }
-                fsBuilder.instanceRoot(new File(properties.getProperty(GlassFishConstants.INSTANCE_ROOT_PROP_NAME)));
-                fsBuilder.installRoot(new File(properties.getProperty(BootstrapConstants.INSTALL_ROOT_PROP_NAME)));
-                fsBuilder.autoDelete(fs == null || fs.instanceRoot ==null);
+                fsBuilder.autoDelete(true);
                 fs = fsBuilder.build();
             }
             // Add the neccessary inhabitants.
