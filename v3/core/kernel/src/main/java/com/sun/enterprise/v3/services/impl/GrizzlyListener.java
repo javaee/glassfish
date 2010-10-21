@@ -43,9 +43,15 @@ package com.sun.enterprise.v3.services.impl;
 import com.sun.enterprise.v3.services.impl.monitor.GrizzlyMonitoring;
 import com.sun.enterprise.v3.services.impl.monitor.MonitorableServiceListener;
 import com.sun.grizzly.Controller;
+import com.sun.grizzly.ProtocolChain;
+import com.sun.grizzly.ProtocolChainInstanceHandler;
+import com.sun.grizzly.arp.AsyncHandler;
+import com.sun.grizzly.arp.DefaultAsyncHandler;
+import com.sun.grizzly.comet.CometAsyncFilter;
 import com.sun.grizzly.config.dom.NetworkListener;
 import org.jvnet.hk2.component.Habitat;
 
+import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 
 /**
@@ -148,5 +154,93 @@ public class GrizzlyListener extends MonitorableServiceListener {
             return getEmbeddedHttp().getPort();
         }
     }
+
+
+    public void processDynamicConfigurationChange(PropertyChangeEvent[] events) {
+        for (PropertyChangeEvent event: events) {
+            if ("comet-support-enabled".equals(event.getPropertyName())) {
+                processDynamicCometConfiguration(event);
+                break;
+            }
+        }
+    }
+
+
+    // --------------------------------------------------------- Private Methods
+
+
+    private void processDynamicCometConfiguration(PropertyChangeEvent event) {
+        final boolean enableComet = Boolean.valueOf(event.getNewValue().toString());
+        if (enableComet) {
+            enableComet();
+        } else {
+            disableComet();
+        }
+    }
+
+    private void enableComet() {
+        if (getEmbeddedHttp().getAsyncHandler() == null) {
+            AsyncHandler asyncHandler = new DefaultAsyncHandler();
+            getEmbeddedHttp().setAsyncHandler(asyncHandler);
+        }
+        getEmbeddedHttp().getAsyncHandler().addAsyncFilter(new CometAsyncFilter());
+        final ProtocolChainInstanceHandler pcih =
+                getEmbeddedHttp().getController().getProtocolChainInstanceHandler();
+        if (!(pcih instanceof NonCachingInstanceHandler)) {
+            ProtocolChainInstanceHandler nonCaching =
+                new NonCachingInstanceHandler(pcih);
+            getEmbeddedHttp().getController().setProtocolChainInstanceHandler(nonCaching);
+        }
+        getEmbeddedHttp().setEnableAsyncExecution(true);
+    }
+
+    private void disableComet() {
+        getEmbeddedHttp().setAsyncHandler(null);
+        final ProtocolChainInstanceHandler pcih =
+                getEmbeddedHttp().getController().getProtocolChainInstanceHandler();
+        if (!(pcih instanceof NonCachingInstanceHandler)) {
+            ProtocolChainInstanceHandler nonCaching =
+                new NonCachingInstanceHandler(pcih);
+            getEmbeddedHttp().getController().setProtocolChainInstanceHandler(nonCaching);
+        }
+        getEmbeddedHttp().setEnableAsyncExecution(false);
+    }
+
+
+    // ---------------------------------------------------------- Nested Classes
+
+
+    /**
+     * This ProtocolChainInstanceHandler will be used to prevent GrizzlyEmbeddedHttp
+     * from caching the default PCIH that isn't based on the async configuration
+     * change (i.e., if comet is enabled, the current PCIH will not handle async
+     * execution properly, so we don't want it cached).
+     */
+    private static final class NonCachingInstanceHandler implements ProtocolChainInstanceHandler {
+
+        private final ProtocolChainInstanceHandler wrapped;
+
+        // -------------------------------------------------------- Constructors
+
+
+        private NonCachingInstanceHandler(ProtocolChainInstanceHandler wrapped) {
+            this.wrapped = wrapped;
+        }
+
+
+        // --------------------------- Methods from ProtocolChainInstanceHandler
+
+
+        @Override
+        public ProtocolChain poll() {
+            return wrapped.poll();
+        }
+
+        @Override
+        public boolean offer(ProtocolChain protocolChain) {
+            return true;
+        }
+
+    } // END NonCachingInstanceHandler
 }
 
