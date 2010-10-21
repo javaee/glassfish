@@ -138,7 +138,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
             fail(context, localStrings.getLocalString("admin.set.invalid.attributename", "Invalid attribute name {0}", target));
             return false;
         }
-        String attrName = target.substring(lastDotIndex + 1);
+        String attrName = target.substring(lastDotIndex + 1).replace("\\.", ".");
         String pattern = target.substring(0, lastDotIndex);
         if (attrName.replace('_', '-').equals("jndi-name")) {
             //fail(context, "Cannot change a primary key\nChange of " + target + " is rejected.");
@@ -146,7 +146,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
             return false;
         }
         boolean isProperty = false;
-        if ("property".equals(pattern.substring(pattern.lastIndexOf('.') + 1))) {
+        if ("property".equals(pattern.substring(trueLastIndexOf(pattern, '.') + 1))) {
             // we are looking for a property, let's look it it exists already...
             pattern = target.replaceAll("\\\\\\.", "\\.");
             isProperty = true;
@@ -171,9 +171,9 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
         if (matchingNodes.isEmpty()) {
             // it's possible they are trying to create a property object.. lets check this.
             // strip out the property name
-            pattern = target.substring(0, target.lastIndexOf('.'));
+            pattern = target.substring(0, trueLastIndexOf(target, '.'));
             if (pattern.endsWith("property")) {
-                pattern = pattern.substring(0, pattern.lastIndexOf('.'));
+                pattern = pattern.substring(0, trueLastIndexOf(pattern, '.'));
                 parentNodes = getAliasedParent(domain, pattern);
                 pattern = parentNodes[0].relativeName;
                 matchingNodes = getMatchingNodes(dottedNames, pattern);
@@ -195,7 +195,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
                     return false;
                 }
 
-                // create and set the attribute.
+                // create and set the property
                 Map<String, String> attributes = new HashMap<String, String>();
                 attributes.put("value", value);
                 attributes.put("name", attrName);
@@ -236,7 +236,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
                 String finalDottedName = node.getValue() + "." + name;
                 if (matches(finalDottedName, pattern)) {
                     if (attrName.equals(name) ||
-                            attrName.replace('_', '-').equals(name.replace('_', '-'))) {
+                            attrName.replace('_', '-').equals(name.replace('_', '-')))  {
 
                         if (!isProperty) {
                             targetName = prefix + finalDottedName;
@@ -253,8 +253,8 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
                         if (delProperty) {
                             // delete property element
                             String str = node.getValue();
-                            if (str.lastIndexOf('.') != -1) {
-                                str = str.substring(str.lastIndexOf('.') + 1);
+                            if (trueLastIndexOf(str, '.') != -1) {
+                                str = str.substring(trueLastIndexOf(str, '.') + 1);
                             }
                             try {
                                 if (str != null) {
@@ -262,17 +262,10 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
                                     delPropertySuccess = true;
                                 }
                             } catch (IllegalArgumentException ie) {
-                                //fail(context,
-                                //    "Could not delete the property: " +
-                                //    ie.getMessage(), ie);
                                 fail(context, localStrings.getLocalString("admin.set.delete.property.failure", "Could not delete the property: {0}",
                                         ie.getMessage()), ie);
                                 return false;
                             } catch (TransactionFailure transactionFailure) {
-                                //fail(context,
-                                //    "Could not change the attributes: " +
-                                //        transactionFailure.getMessage(),
-                                //    transactionFailure);
                                 fail(context, localStrings.getLocalString("admin.set.attribute.change.failure", "Could not change the attributes: {0}",
                                         transactionFailure.getMessage()), transactionFailure);
                                 return false;
@@ -302,7 +295,6 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
             if (delPropertySuccess) {
                 success(context, targetName, value);
             } else {
-                //fail(context, "No configuration found for " + targetName);
                 fail(context, localStrings.getLocalString("admin.set.configuration.notfound", "No configuration found for {0}", targetName));
                 return false;
             }
