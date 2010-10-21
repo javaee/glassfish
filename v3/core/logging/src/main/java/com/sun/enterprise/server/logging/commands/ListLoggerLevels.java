@@ -41,9 +41,7 @@
 package com.sun.enterprise.server.logging.commands;
 
 import com.sun.common.util.logging.LoggingConfigImpl;
-import com.sun.enterprise.config.serverbeans.Cluster;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.ActionReport;
@@ -72,7 +70,7 @@ import java.util.*;
  */
 @ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
 @Service(name = "list-log-levels")
-@TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER, CommandTarget.CLUSTERED_INSTANCE})
+@TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER, CommandTarget.CLUSTERED_INSTANCE, CommandTarget.CONFIG})
 @Scoped(PerLookup.class)
 @I18n("list.log.levels")
 public class ListLoggerLevels implements AdminCommand {
@@ -86,6 +84,12 @@ public class ListLoggerLevels implements AdminCommand {
     @Inject
     Domain domain;
 
+    @Inject
+    Servers servers;
+
+    @Inject
+    Clusters clusters;
+
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListLoggerLevels.class);
 
     public void execute(AdminCommandContext context) {
@@ -94,9 +98,33 @@ public class ListLoggerLevels implements AdminCommand {
         boolean isCluster = false;
         boolean isDas = false;
         boolean isInstance = false;
+        boolean foundConfig = false;
 
         try {
             HashMap<String, String> props = null;
+
+            Config config = domain.getConfigNamed(target);
+            if (config != null) {
+                List<Cluster> clusterList = clusters.getCluster();
+                for (Cluster cluster : clusterList) {
+                    String clusterConfigName = cluster.getConfigRef();
+                    if (clusterConfigName.equals(target)) {
+                        target = cluster.getName();
+                        foundConfig = true;
+                        break;
+                    }
+                }
+                if (!foundConfig) {
+                    List<Server> serverList = servers.getServer();
+                    for (Server server : serverList) {
+                        String serverConfigName = server.getConfigRef();
+                        if (serverConfigName.equals(target)) {
+                            target = server.getName();
+                            break;
+                        }
+                    }
+                }
+            }
 
             Server targetServer = domain.getServerNamed(target);
 
@@ -111,9 +139,9 @@ public class ListLoggerLevels implements AdminCommand {
                 }
             }
 
-            if(isInstance) {
+            if (isInstance) {
                 Cluster clusterForInstance = targetServer.getCluster();
-                if(clusterForInstance!=null) {
+                if (clusterForInstance != null) {
                     target = clusterForInstance.getName();
                 }
             }
