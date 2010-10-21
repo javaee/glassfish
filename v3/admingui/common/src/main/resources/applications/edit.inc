@@ -73,6 +73,21 @@
             <sun:textField id="ctx" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.webApp.ContextRoot']}" text="#{pageSession.valueMap['contextRoot']}" />
         </sun:property>
 
+        <sun:property id="availability" rendered="#{pageSession.showAvailability}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.availability}" helpText="$resource{i18n.deploy.availabilityHelp}">
+            <sun:checkbox id="availability" label="$resource{i18n.common.Enabled}" selected="#{pageSession.availabilityEnabled}" selectedValue="true" >
+            </sun:checkbox>
+            <!beforeCreate
+                setPageSessionAttribute(key="availabilityEnabled" value="false");
+                foreach (var="oneProp" list="#{pageSession.tableList}") {
+                    if (#{requestScope.oneProp.name}=availabilityEnabled){
+                        setPageSessionAttribute(key="availabilityEnabled" value="#{requestScope.oneProp.value}");
+                        //will be nice if we can break here
+                    }
+                }
+            />
+        </sun:property>
+
+
         <sun:property id="jw" rendered="#{pageSession.showJavaWebStart}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.JavaWebStart}" helpText="$resource{i18n.deploy.JavaWebStartHelp}">
             <sun:checkbox id="jwc" label="$resource{i18n.common.Enabled}" selected="#{pageSession.javaWebStartEnabled}" selectedValue="true" >
             </sun:checkbox>

@@ -40,8 +40,6 @@
 
 -->
 
-<!-- uploadCommonFields.jsf -->
-
 <sun:property id="nameProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.ApplicationName}" visible="#{true}">
     <sun:textField id="appName" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.deploy.ApplicationName']}" text="#{pageSession.other['name']}" styleClass="required" required="#{true}"
         onChange="javascript: setAppName('#{appNameId}', this.value, window, '#{sessionScope.appTypeString}')">
@@ -72,6 +70,12 @@
         />
     </sun:checkbox>
 </sun:property>
+
+
+<sun:property id="availability" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.availability}" helpText="$resource{i18n.deploy.availabilityHelp}">
+    <sun:checkbox id="availability" label="$resource{i18n.common.Enabled}" selected="#{pageSession.other['PROPERTY-availabilityEnabled']}" selectedValue="true" />
+</sun:property>
+
 
 <sun:property id="precmplProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.precompile}" helpText="$resource{i18n.deploy.PrecompileHelp}">
 	<sun:checkbox id="precompileJSP" label="$resource{i18n.common.Enabled}" selected="#{pageSession.other['precompilejsp']}" selectedValue="true" />

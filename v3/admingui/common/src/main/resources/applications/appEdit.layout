@@ -146,6 +146,27 @@
                         listAdd(list="#{pageSession.tableList}" value="#{requestScope.jmap}");
                     }
                 }
+
+
+                if (#{pageSession.showAvailability){
+                    if(!#{pageSession.availabilityEnabled}){
+                        //will be null if checkbox is unchecked.
+                        setPageSessionAttribute(key="availabilityEnabled" value="false");
+                    }
+                    foreach (var="oneProp" list="#{pageSession.tableList}") {
+                        if (#{requestScope.oneProp.name}=availabilityEnabled){
+                            setAttribute(key="found" value="true");
+                            mapPut(map="#{requestScope.oneProp}" key="value" value="#{pageSession.availabilityEnabled}")
+                        }
+                    }
+                    if (!#{requestScope.found}){
+                        createMap(result="#{requestScope.jmap}");
+                        mapPut(map="#{requestScope.jmap}" key="name" value="availabilityEnabled")
+                        mapPut(map="#{requestScope.jmap}" key="value" value="#{pageSession.availabilityEnabled}")
+                        listAdd(list="#{pageSession.tableList}" value="#{requestScope.jmap}");
+                    }
+                }
+
                 javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
                 gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json", method="POST", data="#{requestScope.tmpJSON}", result="#{requestScope.restResponse}");
 

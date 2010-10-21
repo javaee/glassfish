@@ -199,13 +199,22 @@ public class DeploymentHandler {
         @HandlerInput(name = "filePath", type = String.class, required = true),
         @HandlerInput(name = "origPath", type = String.class, required = true),
         @HandlerInput(name = "deployMap", type = Map.class, required = true),
-        @HandlerInput(name = "convertToFalse", type = List.class, required = true)
+        @HandlerInput(name = "convertToFalse", type = List.class, required = true),
+        @HandlerInput(name = "appProps", type = List.class, required = true)
     })
     public static void redeploy(HandlerContext handlerCtx) {
         try {
             String filePath = (String) handlerCtx.getInputValue("filePath");
             String origPath = (String) handlerCtx.getInputValue("origPath");
             Map<String,String> deployMap = (Map) handlerCtx.getInputValue("deployMap");
+            //Map<String,String> appProps = (Map) handlerCtx.getInputValue("appProps");
+            List<Map<String, String>> obj =  (List) handlerCtx.getInputValue("appProps");
+            Map<String, String> appProps = new HashMap();
+            if (obj != null){
+                for(Map oneProp: obj){
+                    appProps.put((String)oneProp.get("name"), (String)oneProp.get("value"));
+                }
+            }
             List<String> convertToFalsList = (List<String>) handlerCtx.getInputValue("convertToFalse");
             if (convertToFalsList != null)
             for (String one : convertToFalsList) {
@@ -224,14 +233,29 @@ public class DeploymentHandler {
                  deploymentProps.setContextRoot(ctxRoot);
              }
 
+             Properties props = new Properties();
+             if (appProps != null){
+                 String jws = appProps.get("javaWebStartEnabled");
+                 if (jws != null){
+                     props.setProperty("javaWebStartEnabled", (jws.equals("true"))? "true" : "false");
+                 }
+
+                 String ava = appProps.get("availabilityEnabled");
+                 if (ava != null){
+                     props.setProperty("availabilityEnabled", (ava.equals("true"))? "true" : "false");
+                 }
+             }
+
              deploymentProps.setForce(true);
              deploymentProps.setUpload(false);
              deploymentProps.setName(appName);
              deploymentProps.setVerify(Boolean.parseBoolean(deployMap.get("verify")));
              deploymentProps.setPrecompileJSP(Boolean.parseBoolean(deployMap.get("precompilejsp")));
-             Properties prop = new Properties();
-             prop.setProperty(KEEP_SESSIONS, ""+deployMap.get("keepSessions"));
-             deploymentProps.setProperties(prop);
+             if ("osgi".equals(deployMap.get("type"))){
+                 deploymentProps.setProperty("type", "osgi");
+             }
+             props.setProperty(KEEP_SESSIONS, ""+deployMap.get("keepSessions"));
+             deploymentProps.setProperties(props);
              
              DeployUtil.invokeDeploymentFacility(null, deploymentProps, filePath, handlerCtx);
         } catch (Exception ex) {

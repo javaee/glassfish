@@ -46,6 +46,7 @@
     setPageSessionAttribute(key="showJavaWebStart" value="#{false}")
     setPageSessionAttribute(key="showVS" value="#{true}")
     setPageSessionAttribute(key="showContextRoot" value="#{true}")
+    setPageSessionAttribute(key="showAvailability" value="#{true}")
     setPageSessionAttribute(key="editPage" value="#{request.contextPath}/web/apps/editWar.jsf")
 />
 

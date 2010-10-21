@@ -46,6 +46,7 @@
     setPageSessionAttribute(key="showVS" value="#{false}")
     setPageSessionAttribute(key="showContextRoot" value="#{false}")
     setPageSessionAttribute(key="showJavaWebStart" value="#{false}")
+    setPageSessionAttribute(key="showAvailability" value="#{true}")
     setPageSessionAttribute(key="editPage" value="#{request.contextPath}/full/apps/editEjb.jsf")
 />
 

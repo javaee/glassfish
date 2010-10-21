@@ -46,6 +46,7 @@
     setPageSessionAttribute(key="showContextRoot" value="#{false}")
     setPageSessionAttribute(key="showVS" value="#{false}")
     setPageSessionAttribute(key="showJavaWebStart" value="#{true}")
+    setPageSessionAttribute(key="showAvailability" value="#{false}")
     setPageSessionAttribute(key="editPage" value="#{request.contextPath}/full/apps/editAppClient.jsf")
     setPageSessionAttribute(key="convertToFalseProp" value={"javaWebStartEnabled"})
 />
