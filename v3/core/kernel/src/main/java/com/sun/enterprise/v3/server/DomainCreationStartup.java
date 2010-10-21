@@ -41,7 +41,14 @@
 package com.sun.enterprise.v3.server;
 
 import com.sun.enterprise.module.bootstrap.*;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.event.EventListener;
+import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.Events;
+import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.*;
+
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -50,9 +57,15 @@ import org.jvnet.hk2.annotations.*;
  * Time: 10:46:34 PM
  * To change this template use File | Settings | File Templates.
  */
-@Service(name="DomainCreation")
+@Service(name = "DomainCreation")
 public class DomainCreationStartup implements ModuleStartup {
-    
+
+    @Inject
+    Events events;
+
+    @Inject
+    ServerEnvironmentImpl env;
+
     public void setStartupContext(StartupContext startupContext) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -62,6 +75,11 @@ public class DomainCreationStartup implements ModuleStartup {
     }
 
     public void stop() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        try {
+            env.setStatus(ServerEnvironment.Status.stopped);
+            events.send(new EventListener.Event(EventTypes.SERVER_SHUTDOWN), false);
+        } catch (Exception ex) {
+            Logger.getAnonymousLogger().warning(ex.getMessage());
+        }
     }
 }

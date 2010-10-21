@@ -59,27 +59,10 @@ import java.util.logging.Logger;
 import org.glassfish.embeddable.spi.RuntimeBuilder;
 
 /**
- * This {@link GlassFishRuntime.RuntimeBuilder} is responsible for setting up a
- * {@link GlassFishRuntime} when the user has a regular installation of GlassFish
- * and they want to launch GlassFish in Static Mode pointing to their regular
- * installation of GlassFish. Hence this will be used in the following cases:
- *
- * (1) java -DGlassFish_Platform=Static -jar glassfish.jar
- * (2) Server.Builder().build() pointing to regular installation.
- *
- * It sets up the runtime like this:
- *
- * (1) Creates a URLClassLoader containing all the jar files in installRoot/modules directory.
- * (2) Creates SingleModuleRegistry with the newly created URLClassLoader.
- * (3) Creates a NonOSGIGlassFishRuntime using SingleModuleRegistry
- *
- * @see #build(java.util.Properties)
- * @see #handles(java.util.Properties)
- *
  * @author bhavanishankar@dev.java.net
  */
 
-public class NonOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
+public class StaticGlassFishRuntimeBuilder implements RuntimeBuilder {
 
     private static Logger logger = Util.getLogger();
     private static final String JAR_EXT = ".jar";
@@ -87,7 +70,11 @@ public class NonOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
     public GlassFishRuntime build(BootstrapOptions bsOptions) throws GlassFishException {
         /* Step 1. Build the classloader. */
         // The classloades should contain installRoot/modules/**/*.jar files.
-        String installRoot = bsOptions.getInstallRoot();
+        String installRoot = getInstallRoot(bsOptions);
+        if (installRoot != null) {
+            System.setProperty(BootstrapConstants.INSTALL_ROOT_PROP_NAME, installRoot);
+        }
+        // Required to add moduleJarURLs to support 'java -jar modules/glassfish.jar case'
         List<URL> moduleJarURLs = getModuleJarURLs(installRoot);
         ClassLoader cl = new StaticClassLoader(getClass().getClassLoader(), moduleJarURLs);
 
@@ -98,34 +85,37 @@ public class NonOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
         modulesRegistry.setParentClassLoader(cl);
 
         // Step 3. Create NonOSGIGlassFishRuntime
-        GlassFishRuntime glassFishRuntime = new NonOSGiGlassFishRuntime(main);
-        logger.logp(Level.FINER, getClass().getName(), "build", "Created GlassFishRuntime {0} " +
-                "with Bootstrap Options {1}", new Object[]{glassFishRuntime, bsOptions});
+        GlassFishRuntime glassFishRuntime = new StaticGlassFishRuntime(main);
+        logger.logp(Level.FINER, getClass().getName(), "build",
+                "Created GlassFishRuntime {0} with InstallRoot {1}, Bootstrap Options {2}",
+                new Object[]{glassFishRuntime, installRoot, bsOptions});
         return glassFishRuntime;
     }
 
     public boolean handles(BootstrapOptions bsOptions) {
-        try {
-            if (!BootstrapConstants.Platform.Static.name().equals(
-                    bsOptions.getPlatformProperty())) {
-                return false;
-            }
-            String installRoot = bsOptions.getInstallRoot();
-            // XXX: Commented by Prasad . We need to eliminate this here as only the
-            // Bootstrap options will be passed.
-            //String instanceRoot = properties.getProperty(GlassFishConstants.INSTANCE_ROOT_PROP_NAME);
+        return BootstrapConstants.Platform.Static.name().equals(
+                    bsOptions.getPlatformProperty());
+    }
+
+    private String getInstallRoot(BootstrapOptions options) {
+        String installRootProp = options.getInstallRoot();
+        if(installRootProp == null) {
+            File installRoot = ASMainHelper.findInstallRoot();
             if(isValidInstallRoot(installRoot)) {
-                // XXX : Need to verify if this is correct.
-                File instanceRoot = ASMainHelper.findInstanceRoot(new File(installRoot), ASMainHelper.parseAsEnv(new File(installRoot)));
-                ASMainHelper.verifyDomainRoot(instanceRoot);
-                return true;
+                installRootProp = installRoot.getAbsolutePath();
             }
-        } catch (Exception ex) {
         }
-        return false;
+        return installRootProp;
+    }
+
+    private boolean isValidInstallRoot(File installRoot) {
+        return installRoot == null ? false : isValidInstallRoot(installRoot.getAbsolutePath());
     }
 
     private List<URL> getModuleJarURLs(String installRoot) {
+        if(installRoot == null) {
+            return new ArrayList();
+        }
         File modulesDir = new File(installRoot, "modules/");
         final File autostartModulesDir = new File(modulesDir, "autostart/");
         final List<URL> moduleJarURLs = new ArrayList<URL>();

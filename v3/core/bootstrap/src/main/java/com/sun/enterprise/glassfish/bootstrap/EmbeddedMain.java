@@ -44,6 +44,7 @@ import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.module.common_impl.AbstractFactory;
 import com.sun.hk2.component.InhabitantsParser;
 import com.sun.hk2.component.InhabitantsParserDecorator;
 import org.jvnet.hk2.component.Habitat;

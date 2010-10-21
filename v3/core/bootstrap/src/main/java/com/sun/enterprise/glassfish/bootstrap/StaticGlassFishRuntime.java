@@ -44,49 +44,60 @@ import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
+import org.glassfish.api.event.EventListener;
+import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.Events;
+import org.glassfish.embeddable.BootstrapConstants;
 import org.glassfish.embeddable.GlassFish;
+import org.glassfish.embeddable.GlassFishException;
+import org.glassfish.embeddable.GlassFishOptions;
 import org.glassfish.embeddable.GlassFishRuntime;
 import org.jvnet.hk2.component.Habitat;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Logger;
-import org.glassfish.embeddable.GlassFishException;
-import org.glassfish.embeddable.GlassFishOptions;
 
 /**
  * The GlassFishRuntime implementation for NonOSGi environments.
- * 
+ *
  * @author bhavanishankar@dev.java.net
  */
-public class NonOSGiGlassFishRuntime extends GlassFishRuntime {
+public class StaticGlassFishRuntime extends GlassFishRuntime {
 
     private Main main;
     private HashMap gfMap = new HashMap<String, GlassFish>();
     private static Logger logger = Util.getLogger();
+    private static final String autoDelete = "org.glassfish.embeddable.autoDelete";
 
-    public NonOSGiGlassFishRuntime(Main main) {
+    public StaticGlassFishRuntime(Main main) {
         this.main = main;
     }
-
 
     /**
      * Creates a new GlassFish instance and add it to a Map of instances
      * created by this runtime.
-     * @param gfOptions
+     *
+     * @param options
      * @return
      * @throws Exception
      */
     @Override
-    public synchronized GlassFish newGlassFish(GlassFishOptions gfOptions) throws GlassFishException {
+    public synchronized GlassFish newGlassFish(GlassFishOptions options)
+            throws GlassFishException {
         // set env props before updating config, because configuration update may actually trigger
         // some code to be executed which may be depending on the environment variable values.
-         try {
+        try {
+            // Don't set temporarily created instanceroot in the user supplied
+            // GlassFishOptions, hence clone it.
+            Properties cloned = new Properties();
+            cloned.putAll(options.getAllOptions());
+            final GlassFishOptions gfOptions = new GlassFishOptions(cloned);
             setEnv(gfOptions);
 
             final StartupContext startupContext = new StartupContext(gfOptions.getAllOptions());
@@ -97,19 +108,40 @@ public class NonOSGiGlassFishRuntime extends GlassFishRuntime {
             GlassFishImpl gfImpl = new GlassFishImpl(gfKernel, habitat, gfOptions.getAllOptions());
             // Add this newly created instance to a Map
             gfMap.put(gfOptions.getInstanceRoot(), gfImpl);
+
+            if ("true".equalsIgnoreCase(gfOptions.getAllOptions().getProperty(autoDelete))) {
+                Events events = habitat.getComponent(Events.class);
+                events.register(new EventListener() {
+                    public void event(Event event) {
+                        if (event.is(EventTypes.SERVER_SHUTDOWN)) {
+                            if (gfOptions.getInstanceRoot() != null) {
+                                Util.deleteRecursive(new File(gfOptions.getInstanceRoot()));
+                            }
+                        }
+                    }
+                });
+            }
             return gfImpl;
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new GlassFishException(e);
         }
     }
 
     @Override
     public synchronized void shutdown() throws GlassFishException {
-        for(Object gf : gfMap.values()) {
-            ((GlassFish)gf).dispose();
+        for (Object gf : gfMap.values()) {
+            try {
+                ((GlassFish) gf).dispose();
+            } catch (IllegalStateException ex) {
+                // ignore.
+            }
         }
         gfMap.clear();
-        shutdownInternal();
+        try {
+            shutdownInternal();
+        } catch (GlassFishException ex) {
+            logger.info(ex.getMessage());
+        }
     }
 
     private void setEnv(GlassFishOptions gfOptions) throws Exception {
@@ -126,7 +158,7 @@ public class NonOSGiGlassFishRuntime extends GlassFishRuntime {
         } */
         String instanceRootValue = gfOptions.getInstanceRoot();
         if (instanceRootValue == null) {
-            instanceRootValue = createDefaultInstanceRoot();
+            instanceRootValue = createTempInstanceRoot(gfOptions);
             gfOptions.setInstanceRoot(instanceRootValue);
             gfOptions.setInstanceRootUri(new File(instanceRootValue).toURI().toString());
         }
@@ -134,14 +166,27 @@ public class NonOSGiGlassFishRuntime extends GlassFishRuntime {
         File instanceRoot = new File(instanceRootValue);
         System.setProperty(Constants.INSTANCE_ROOT_PROP_NAME, instanceRoot.getAbsolutePath());
         System.setProperty(Constants.INSTANCE_ROOT_URI_PROP_NAME, instanceRoot.toURI().toString());
-        provisionInstanceRoot(instanceRoot, gfOptions.getAllOptions());
 
-        // Copy the configFile to the instanceRoot/config
-        copyConfigFile(gfOptions.getConfigFileUri(), instanceRootValue);
+        String installRootValue = System.getProperty(BootstrapConstants.INSTALL_ROOT_PROP_NAME);
+        if (installRootValue == null) {
+            installRootValue = instanceRoot.getAbsolutePath();
+        }
+        File installRoot = new File(installRootValue);
+
+        // Some legacy code might depend on setting installRoot as system property.
+        // Ideally everyone should depend only on StartupContext.
+        System.setProperty(Constants.INSTALL_ROOT_PROP_NAME, installRoot.getAbsolutePath());
+        System.setProperty(Constants.INSTALL_ROOT_URI_PROP_NAME, installRoot.toURI().toString());
+
+        // StartupContext requires the INSTALL root to be set in the GlassFishOptions.
+        gfOptions.getAllOptions().setProperty(Constants.INSTALL_ROOT_PROP_NAME,
+                installRoot.getAbsolutePath());
+        gfOptions.getAllOptions().setProperty(Constants.INSTALL_ROOT_URI_PROP_NAME,
+                installRoot.toURI().toString());
     }
 
-
-   private String createDefaultInstanceRoot() throws Exception {
+    private String createTempInstanceRoot(GlassFishOptions gfOptions)
+            throws Exception {
         String tmpDir = System.getProperty("glassfish.embedded.tmpdir");
         if (tmpDir == null) {
             tmpDir = System.getProperty("user.dir");
@@ -149,69 +194,42 @@ public class NonOSGiGlassFishRuntime extends GlassFishRuntime {
         File instanceRoot = File.createTempFile("gfembed", "tmp", new File(tmpDir));
         instanceRoot.delete();
         instanceRoot.mkdir(); // convert the file into a directory.
+        try {
+            String configDir = "config/";
+            String[] resources = new String[]{"keyfile", "server.policy",
+                    "cacerts.jks", "keystore.jks", "login.conf", "admin-keyfile"};
+            new File(instanceRoot, configDir).mkdirs();
+            new File(instanceRoot, "docroot").mkdirs();
+            ClassLoader cl = getClass().getClassLoader();
+            for (String resource : resources) {
+                String resourceName = configDir + resource;
+                copy(cl.getResource(resourceName), new File(
+                        instanceRoot.getAbsolutePath(), resourceName), false);
+            }
+            String configFileURI = gfOptions.getConfigFileUri();
+            URL configFileRL = configFileURI == null ? getClass().getClassLoader().getResource(
+                    "org/glassfish/embed/domain.xml") : URI.create(configFileURI).toURL();
+                copy(configFileRL, new File(instanceRoot, configDir + "domain.xml"), false);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        gfOptions.getAllOptions().setProperty(autoDelete, "true");
         return instanceRoot.getAbsolutePath();
     }
 
-    private void provisionInstanceRoot(File instanceRoot, Properties props) {
-        new File(instanceRoot, "config").mkdirs();
-        new File(instanceRoot, "docroot").mkdirs();
+    public static void copy(URL u, File destFile, boolean overwrite) {
+        if (u == null || destFile == null) return;
         try {
-            // If the regular installation location can be discovered,
-            // discover it and copy the necessary configuration files.
-            File discoveredInstallRoot = ASMainHelper.findInstallRoot();
-            File discoveredInstanceRoot = ASMainHelper.findInstanceRoot(discoveredInstallRoot, props);
-            if (!discoveredInstanceRoot.equals(instanceRoot)) {
-                copy(discoveredInstanceRoot, instanceRoot, "config", "docroot");
+            InputStream stream = u.openStream();
+            if (!destFile.toURI().toURL().equals(u)) {
+                if (!destFile.exists() || overwrite) {
+                    destFile.getParentFile().mkdirs();
+                    Util.copy(stream, new FileOutputStream(destFile), stream.available());
+                    logger.finer("Copied " + u + " to " + destFile.toURI().toURL());
+                }
             }
         } catch (Exception ex) {
-            logger.warning(ex.getMessage());
         }
     }
-
-    // Copy the subDirs under srcDir to dstDir
-
-    private void copy(final File srcDir, final File dstDir, final String... subDirs) {
-        srcDir.listFiles(new FileFilter() {
-            public boolean accept(File path) {
-                if (path.isDirectory()) {
-                    path.listFiles(this);
-                } else {
-                    for (String subDir : subDirs) {
-                        String srcPath = new File(srcDir, subDir).getPath();
-                        if (path.getPath().startsWith(srcPath)) {
-                            File dstFile = new File(dstDir, path.getPath().substring(srcDir.getPath().length()));
-                            if (!dstFile.exists()) {
-                                dstFile.getParentFile().mkdirs();
-                                try {
-                                    Util.copyFile(path, dstFile);
-//                                    logger.info("Copied " + path + " to " + dstFile);
-                                } catch (Exception ex) {
-                                    logger.warning(ex.getMessage());
-                                }
-                            }
-                        }
-                    }
-                }
-                return false;
-            }
-        });
-    }
-
-    private void copyConfigFile(String configFileURI, String instanceRoot) throws Exception {
-        if (configFileURI != null && instanceRoot != null) {
-            URI configFile = URI.create(configFileURI);
-            InputStream stream = configFile.toURL().openConnection().getInputStream();
-            File domainXml = new File(instanceRoot, "config/domain.xml");
-            logger.finer("domainXML uri = " + configFileURI + ", size = " + stream.available());
-            if (!domainXml.toURI().equals(configFile)) {
-                Util.copy(stream, new FileOutputStream(domainXml), stream.available());
-                logger.finer("Created " + domainXml);
-            } else {
-                logger.finer("Skipped creation of " + domainXml);
-            }
-
-        }
-    }
-
 
 }
