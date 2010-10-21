@@ -65,7 +65,7 @@ public class Client {
             e.printStackTrace();
         }
         stat.printSummary(appName + "ID");
-        System.exit(0);
+        //System.exit(0);
 
     }
 
