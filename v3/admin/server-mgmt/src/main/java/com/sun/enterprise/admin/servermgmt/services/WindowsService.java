@@ -86,7 +86,7 @@ public class WindowsService extends NonSMFServiceAdapter {
             trace("**********   Object Dump  **********\n" + this.toString());
 
             if (uninstall() == 0 && !info.dryRun)
-                System.out.println(Strings.get("windows.services.uninstall.good"));
+                trace(Strings.get("windows.services.uninstall.good"));
             else
                 trace("No preexisting Service with that id and/or name was found");
 
