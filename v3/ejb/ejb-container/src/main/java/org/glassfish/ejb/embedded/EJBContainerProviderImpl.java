@@ -84,6 +84,7 @@ import com.sun.enterprise.module.bootstrap.Which;
 public class EJBContainerProviderImpl implements EJBContainerProvider {
 
     static final String KEEP_TEMPORARY_FILES = "org.glassfish.ejb.embedded.keep-temporary-files";
+    private static final String SKIP_CLIENT_MODULES = "org.glassfish.ejb.embedded.skip-client-modules";
 
     private static final String GF_PROVIDER_NAME = EJBContainerProviderImpl.class.getName();
     private static final String GF_INSTALLATION_ROOT = "org.glassfish.ejb.embedded.glassfish.installation.root";
@@ -210,6 +211,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
     private Set<DeploymentElement> addModules(Map<?, ?> properties) {
         Set<DeploymentElement> modules = new HashSet<DeploymentElement>();
         Object obj = (properties == null)? null : properties.get(EJBContainer.MODULES);
+        boolean skip_module_with_main_class = getBooleanProperty(properties, SKIP_CLIENT_MODULES);
         Map<String, Boolean> moduleNames = new HashMap<String, Boolean>();
 
         // Check EJBContainer.MODULES setting first - it can have an explicit set of files
@@ -240,7 +242,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
             }
             String[] entries = path.split(File.pathSeparator);
             for (String s0 : entries) {
-                addModule(modules, moduleNames, new File(s0));
+                addModule(modules, moduleNames, new File(s0), skip_module_with_main_class);
             }
 
             if (!moduleNames.isEmpty()) {
@@ -324,8 +326,18 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
      * Adds an a DeploymentElement to the Set of modules if it represents an EJB module or a library.
      */
     private void addModule(Set<DeploymentElement> modules, Map<String, Boolean> moduleNames, File f) {
+        addModule(modules, moduleNames, f, false);
+    }
+
+    /**
+     * Adds an a DeploymentElement to the Set of modules if it represents an EJB module or a library.
+     * If skip_module_with_main_class is true, ignore the module that contains Main-Class attribute
+     * in its manifest file
+     */
+    private void addModule(Set<DeploymentElement> modules, Map<String, Boolean> moduleNames, File f,
+            boolean skip_module_with_main_class) {
         try {
-            if (f.exists() && !skipJar(f)) {
+            if (f.exists() && !skipJar(f, skip_module_with_main_class)) {
                 
                 DeploymentElement de = getRequestedEJBModuleOrLibrary(f, moduleNames);
                 if (de != null) {
@@ -346,8 +358,12 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
      * @returns true if this jar is either a GlassFish module jar or one
      * of the other known implementation modules.
      */
-    private boolean skipJar(File file) throws Exception {
+    private boolean skipJar(File file, boolean skip_module_with_main_class) throws Exception {
         if (file.isDirectory() ) {
+            if (!skip_module_with_main_class) {
+                // Nothing to check
+                return false;
+            }
             File m_file = new File(file, "META-INF/MANIFEST.MF");
             if (!m_file.exists()) {
                 return false;
@@ -379,7 +395,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
             jf = new JarFile(file);
             Manifest m = jf.getManifest();
             if (m != null) {
-                if (containsMainClass(m)) {
+                if (skip_module_with_main_class && containsMainClass(m)) {
                     // Ignore jars with a Main-Class attribute
                     _logger.info("... skipping... " + file.getName());
                     return true;
@@ -460,16 +476,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
             installed_root_location = (String) properties.get(GF_INSTALLATION_ROOT);
             instance_root_location = (String) properties.get(GF_INSTANCE_ROOT);
             domain_file_location = (String) properties.get(GF_DOMAIN_FILE);
-            Object value = properties.get(GF_INSTANCE_REUSE);
-            if (value != null) {
-                if (value instanceof String) {
-                    reuse_instance_location = Boolean.valueOf((String)value);
-                } else {
-                    try {
-                        reuse_instance_location = (Boolean) value;
-                    } catch (Exception e) {}
-                }
-            }
+            reuse_instance_location = getBooleanProperty(properties, GF_INSTANCE_REUSE);
         }
 
         if (installed_root_location == null) {
@@ -569,6 +576,28 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                 throw new EJBException(e);
             }
         }
+    }
+
+    /**
+     * Returns boolean value whether the original type is String or Boolean
+     */
+
+    private boolean getBooleanProperty(Map<?, ?> properties, String key) {
+        boolean result = false;
+        if (properties != null) {
+            Object value = properties.get(key);
+            if (value != null) {
+                if (value instanceof String) {
+                    result = Boolean.valueOf((String)value);
+                } else {
+                    try {
+                        result = (Boolean) value;
+                    } catch (Exception e) {}
+                }
+            }
+        }
+
+        return result;
     }
 
     private class Result {
