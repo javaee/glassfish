@@ -168,7 +168,7 @@ public class DeploymentElement {
             } else {
                 // EJB molule with libraries - create ScatteredArchive
                 String aName = null;
-                Collection<URL> archives = new ArrayList<URL>();
+                List<URL> archives = new ArrayList<URL>();
                 for (DeploymentElement m : modules) {
                     boolean isEJBModule = m.isEJBModule();
                     File f = m.getElement();
@@ -180,8 +180,15 @@ public class DeploymentElement {
                     if (isEJBModule) {
                         // Need to give archive some meaningful name
                         aName = name;
+
+                        // workaround for bug 6975728: add the ejb module as the first element of
+                        // urls in ScatteredArchive.  In the current ScatteredArchvie.getURI() method,
+                        // if both topDir and resources are null, the first element in urls list is
+                        // returned as this archvie's URI.
+                        archives.add(0, f.toURI().toURL());
+                    } else {
+                        archives.add(f.toURI().toURL());
                     }
-                    archives.add(f.toURI().toURL());
                 }
                 ScatteredArchive.Builder saBuilder = new ScatteredArchive.Builder(aName,
                         Collections.unmodifiableCollection(archives));
