@@ -139,6 +139,7 @@ public final class InstanceInfo {
         return pid;
     }
 
+
     public final String getDisplayState() {
         String display = (isRunning()) ? InstanceState.StateType.RUNNING.getDisplayString()
                 : InstanceState.StateType.NOT_RUNNING.getDisplayString();

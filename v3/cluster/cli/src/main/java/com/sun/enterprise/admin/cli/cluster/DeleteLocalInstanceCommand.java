@@ -57,6 +57,10 @@ import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 /**
  * Delete a local server instance.
  * Wipeout the node dir if it is the last instance under the node
+ *
+ * Performance Note:  getServerDirs().getServerDir() is all inlined by the JVM
+ * because the class instance is immutable.
+ *
  * @author Byron Nevins
  */
 @Service(name = "delete-local-instance")
@@ -65,6 +69,30 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
 
     @Param(name = "instance_name", primary = true, optional = true)
     private String instanceName0;
+
+    /** initInstance goes to great lengths to figure out the correct directory structure.
+     * We don't care about such errors.  If the dir is not there -- then this is a
+     * simple error about trying to delete an instance that doesn't exist...
+     * Thank goodness for overriding methods!!
+     * @throws CommandException
+     */
+    @Override
+    protected void initInstance() throws CommandException {
+        try {
+            super.initInstance();
+        }
+        catch (Exception e) {
+            throw new CommandException(Strings.get("DeleteInstance.noInstance"));
+        }
+    }
+
+    /**
+     * We most definitely do not want to create directories for nodes here!!
+     * @param f the directory to create
+     */
+    protected boolean mkdirs(File f) {
+        return false;
+    }
 
     @Override
     protected void validate()
@@ -80,6 +108,10 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
         if (dasProperties.isFile()) {
             setDasDefaults(dasProperties);
         }
+
+        if (!getServerDirs().getServerDir().isDirectory())
+            throw new CommandException(Strings.get("DeleteInstance.noWhack",
+                    getServerDirs().getServerDir()));
     }
 
     /**

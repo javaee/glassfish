@@ -55,6 +55,7 @@ import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.net.NetUtils;
 import com.sun.enterprise.universal.io.SmartFile;
+import com.sun.enterprise.util.io.ServerDirs;
 
 /**
  * A base class for local commands that manage a local server instance.
@@ -258,11 +259,10 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
     }
 
     final protected void whackFilesystem() throws CommandException {
-        File whackee = getServerDirs().getServerDir();
-
-        // looks weird but this is the BEST way to get it in JDK of vintage <= 6
-        File parent = SmartFile.sanitize(new File(getServerDirs().getServerDir(), ".."));
-        File grandParent = SmartFile.sanitize(new File(parent, ".."));
+        ServerDirs dirs = getServerDirs();
+        File whackee = dirs.getServerDir();
+        File parent = dirs.getServerParentDir();
+        File grandParent = dirs.getServerGrandParentDir();
 
         if (whackee == null || !whackee.isDirectory()) {
             throw new CommandException(Strings.get("DeleteInstance.noWhack",
