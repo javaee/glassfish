@@ -128,6 +128,10 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
     public Application load(DeploymentContext dc) throws IOException {
 
         ReadableArchive sourceArchive = dc.getSource();
+
+        sourceArchive.setExtraData(Types.class, dc.getModuleMetaData(Types.class));
+        sourceArchive.setExtraData(Parser.class, dc.getModuleMetaData(Parser.class));
+
         ClassLoader cl = dc.getClassLoader();
         DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
 
@@ -150,9 +154,6 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
         File deploymentPlan = params.deploymentplan;
         handleDeploymentPlan(deploymentPlan, archivist, sourceArchive, holder);
         
-        archivist.setExtraData(Types.class, dc.getModuleMetaData(Types.class));
-        archivist.setExtraData(Parser.class, dc.getModuleMetaData(Parser.class));
-
         long start = System.currentTimeMillis();
         Application application=null;
         if (holder!=null) {
@@ -189,6 +190,10 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
         }
 
         application.setRegistrationName(name);
+
+        sourceArchive.removeExtraData(Types.class);
+        sourceArchive.removeExtraData(Parser.class);
+
         // write out xml files if needed
         if (Boolean.valueOf(WRITEOUT_XML)) {
             saveAppDescriptor(application, dc);

@@ -45,6 +45,7 @@ import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.osgijavaeebase.OSGiBundleArchive;
 import org.osgi.framework.Bundle;
+import com.sun.enterprise.deploy.shared.AbstractReadableArchive;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -69,7 +70,7 @@ import java.util.jar.Manifest;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class WAB implements ReadableArchive {
+public class WAB extends AbstractReadableArchive implements ReadableArchive {
     // Implementation Notes:
     // We don't create virtual jar from directory type Bundle-ClassPath entry, because rfc #66 says that
     // such entries should be treated like WEB-INF/classes/, which means, they must not be searched for

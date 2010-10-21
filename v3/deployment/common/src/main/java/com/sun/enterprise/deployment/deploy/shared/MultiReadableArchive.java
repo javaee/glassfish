@@ -41,6 +41,7 @@
 package com.sun.enterprise.deployment.deploy.shared;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.enterprise.deploy.shared.AbstractReadableArchive;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -67,7 +68,7 @@ import org.jvnet.hk2.component.PerLookup;
  */
 @Service
 @Scoped(PerLookup.class)
-public class MultiReadableArchive implements ReadableArchive {
+public class MultiReadableArchive extends AbstractReadableArchive implements ReadableArchive {
 
     private ReadableArchive parentArchive = null;
 

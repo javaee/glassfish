@@ -148,12 +148,9 @@ public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler
 
             cloader.addURL(context.getSource().getURI().toURL());
             cloader.addURL(context.getScratchDir("ejb").toURI().toURL());
-            if (context.getArchiveHandler().getClass(
-                ).getAnnotation(Service.class).name().equals("ear")) {
-                // add libarries referenced from manifest 
-                for (URL url : getManifestLibraries(context)) {
-                    cloader.addURL(url);
-                }
+            // add libraries referenced from manifest 
+            for (URL url : getManifestLibraries(context)) {
+                cloader.addURL(url);
             }
         } catch(Exception e) {
             _logger.log(Level.SEVERE, e.getMessage());

@@ -46,6 +46,8 @@ import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.zip.ZipEntry;
 import java.util.jar.JarEntry;
 import java.io.IOException;
@@ -59,6 +61,8 @@ import java.io.IOException;
 public abstract class JarArchive implements Archive {
 
     protected ReadableArchive parentArchive;
+
+    protected Map<Class<?>, Object> extraData=new HashMap<Class<?>, Object>();
 
     /**
      * Returns an enumeration of the module file entries with the
@@ -149,5 +153,25 @@ public abstract class JarArchive implements Archive {
      */
     public ReadableArchive getParentArchive() {
         return parentArchive;
+    }
+
+    /**
+     * Returns any data that could have been calculated as part of
+     * the descriptor loading.
+     *
+     * @param dataType the type of the extra data
+     * @return the extra data or null if there are not an instance of
+     * type dataType registered.
+     */
+    public <U> U getExtraData(Class<U> dataType) {
+        return dataType.cast(extraData.get(dataType));
+    }
+
+    public synchronized <U> void setExtraData(Class<U> dataType, U instance) {
+        extraData.put(dataType, instance);
+    }
+
+    public synchronized <U> void removeExtraData(Class<U> dataType) {
+        extraData.remove(dataType);
     }
 }

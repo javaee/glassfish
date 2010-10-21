@@ -359,6 +359,18 @@ public class ASClassLoaderUtil {
         while (st.hasMoreTokens()) {
             try {
                 String path = st.nextToken();
+                try {
+                    // try to see if the path is absolute
+                    URL url = new URL(path);
+                    URI uri = url.toURI();
+                    if (uri.isAbsolute()) {
+                        urls.add(uri.toURL());
+                        continue;
+                    }
+                } catch (Exception ie) {
+                    // ignore
+                } 
+
                 if (rootPath != null && rootPath.length() != 0) {
                     path = rootPath + File.separator + path;
                 }

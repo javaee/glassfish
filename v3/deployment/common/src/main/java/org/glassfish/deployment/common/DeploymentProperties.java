@@ -561,6 +561,8 @@ public class DeploymentProperties extends Properties {
     public static final String OSGI = "osgi";
     public static final String IS_SNIFFER_USER_VISIBLE = "isSnifferUserVisible";
 
+    public static final String SKIP_SCAN_EXTERNAL_LIB = "skipScanExternalLib";
+
     static Map keyMap;
 
     static {

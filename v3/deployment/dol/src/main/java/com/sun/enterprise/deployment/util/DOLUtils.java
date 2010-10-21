@@ -90,25 +90,17 @@ public class DOLUtils {
     public static List<URL> getLibraryJars(BundleDescriptor bundleDesc, ReadableArchive archive) throws IOException {
         List<URL> libraryURLs = new ArrayList<URL>();
 
-        String appRootPath = null;
-        File appRoot = null;
+        // add libraries referenced through manifest
+        libraryURLs.addAll(DeploymentUtils.getManifestLibraries(archive));
 
         ReadableArchive parentArchive = archive.getParentArchive();
-
-        if (parentArchive != null) {
-            appRoot = new File(parentArchive.getURI());
-            appRootPath = appRoot.getPath();
-        }
-
-        // add libraries referenced through manifest
-        Manifest manifest = ASClassLoaderUtil.getManifest(archive.getURI().getPath());
-        libraryURLs.addAll(ASClassLoaderUtil.getManifestClassPathAsURLs(
-            manifest, appRootPath));
 
         if (parentArchive == null || bundleDesc == null) {
             // ear level or standalone module
             return libraryURLs;
         }
+
+        File appRoot = new File(parentArchive.getURI());
 
         ModuleDescriptor moduleDesc = ((BundleDescriptor)bundleDesc).getModuleDescriptor();
         Application app = ((BundleDescriptor)moduleDesc.getDescriptor()).getApplication();

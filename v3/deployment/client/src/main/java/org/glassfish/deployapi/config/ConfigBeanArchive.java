@@ -48,6 +48,7 @@ import javax.enterprise.deploy.model.DeployableObject;
 import java.net.URI;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import com.sun.enterprise.deploy.shared.AbstractReadableArchive;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 /**
@@ -56,7 +57,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
  *
  * @author  Jerome Dochez
  */
-public class ConfigBeanArchive implements ReadableArchive {
+public class ConfigBeanArchive extends AbstractReadableArchive implements ReadableArchive {
     
     private DeployableObject deployObject;
     
@@ -220,12 +221,4 @@ public class ConfigBeanArchive implements ReadableArchive {
     public java.net.URI getURI() {
         return null;        
     }
-    
-    public void setParentArchive(ReadableArchive parentArchive) {
-    }
-
-    public ReadableArchive getParentArchive() {
-        return null;
-    }
-
 }

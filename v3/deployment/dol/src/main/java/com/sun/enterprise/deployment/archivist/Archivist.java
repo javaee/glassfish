@@ -150,8 +150,6 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
     
     protected T descriptor;
 
-    private Map<Class<?>, Object> extraData=new HashMap<Class<?>, Object>();
-
     @Inject
     Habitat habitat;
 
@@ -183,7 +181,6 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
         validationLevel = other.validationLevel;
         classLoader = other.classLoader;
         annotationErrorHandler = other.annotationErrorHandler;
-        extraData.putAll(other.extraData);
     }
 
     /**
@@ -203,23 +200,6 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
     public T getDescriptor() {
         return descriptor;
     }
-
-    /**
-     * Returns any data that could have been calculated as part of
-     * the descriptor loading.
-     *
-     * @param dataType the type of the extra data
-     * @return the extra data or null if there are not an instance of
-     * type dataType registered.
-     */
-    public <U> U getExtraData(Class<U> dataType) {
-        return dataType.cast(extraData.get(dataType));
-    }
-
-    public synchronized <U> void setExtraData(Class<U> dataType, U instance) {
-        extraData.put(dataType, instance);
-    }
-
 
     /**
      * Open a new archive file, read the XML descriptor and set the  constructed
@@ -563,8 +543,12 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
             return null;
         }
 
-        Parser parser = getExtraData(Parser.class);
-
+        Parser parser = null;
+        if (archive.getParentArchive() != null) {
+            parser = archive.getParentArchive().getExtraData(Parser.class);
+        } else {
+            parser = archive.getExtraData(Parser.class);
+        }
         scanner.process(archive, bundleDesc, classLoader, parser);
 
         if (!scanner.getElements().isEmpty()) {

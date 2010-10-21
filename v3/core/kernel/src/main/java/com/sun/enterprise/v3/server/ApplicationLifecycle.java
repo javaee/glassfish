@@ -110,6 +110,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.concurrent.*;
 import java.net.URI;
+import java.net.URL;
 import java.net.URLClassLoader;
 import java.lang.instrument.ClassFileTransformer;
 
@@ -441,6 +442,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
         } catch (Exception e) {
             report.failure(logger, localStrings.getLocalString("error.deploying.app", "Exception while deploying the app [{0}]", appName), null);
             report.setFailureCause(e);
+            logger.log(Level.SEVERE, e.getMessage(), e);
             tracker.actOn(logger);
             return null;
         } finally {
@@ -471,6 +473,17 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                     Parser parser = new Parser(parsingContext);
                     ReadableArchiveScannerAdapter scannerAdapter = new ReadableArchiveScannerAdapter(parser, context.getSource());
                     parser.parse(scannerAdapter, null);
+                    for (ReadableArchive externalLibArchive : 
+                        getExternalLibraries(context)) {
+                        try {
+                            ReadableArchiveScannerAdapter adapter = new ReadableArchiveScannerAdapter(parser, externalLibArchive);
+                            parser.parse(adapter, null);
+                        } finally {
+                            if (externalLibArchive != null) {
+                                externalLibArchive.close();
+                            }
+                        }
+                    }
                     parser.awaitTermination();
                     context.addModuleMetaData(parsingContext.getTypes());
                     context.addModuleMetaData(parser);
@@ -480,6 +493,38 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 }
             }
         }
+    }
+
+    private List<ReadableArchive> getExternalLibraries(
+        DeploymentContext context) {
+        List<ReadableArchive> externalLibArchives = new ArrayList<ReadableArchive>();
+        
+        String skipScanExternalLibProp = context.getAppProps().getProperty(
+                DeploymentProperties.SKIP_SCAN_EXTERNAL_LIB);
+
+        if (Boolean.valueOf(skipScanExternalLibProp)) {
+            // if we skip scanning external libraries, we should just 
+            // return an empty list here
+            return Collections.EMPTY_LIST;
+        } 
+
+        try {
+            List<URL> manifestURLs = DeploymentUtils.getManifestLibraries(context);
+            ReadableArchive archive = context.getSource();
+            URI archiveURI = archive.getURI();
+            if (archive.getParentArchive() != null) {
+                archiveURI = archive.getParentArchive().getURI(); 
+            }
+            for (URL manifestURL : manifestURLs) { 
+                URI manifestLibURI = archiveURI.relativize(manifestURL.toURI());
+                if (manifestLibURI.isAbsolute()) {
+                    externalLibArchives.add(archiveFactory.openArchive(new File(manifestLibURI.getPath())));
+                }
+            }
+        } catch (Exception e) { 
+            context.getLogger().log(Level.WARNING, e.getMessage(), e);
+        }
+        return externalLibArchives;
     }
     
     /**

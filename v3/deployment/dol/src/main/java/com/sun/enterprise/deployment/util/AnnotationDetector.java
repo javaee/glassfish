@@ -43,7 +43,9 @@ package com.sun.enterprise.deployment.util;
 import com.sun.enterprise.deployment.annotation.introspection.AnnotationScanner;
 import com.sun.enterprise.deployment.annotation.introspection.ClassFile;
 import com.sun.enterprise.deployment.annotation.introspection.ConstantPoolInfo;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.hk2.classmodel.reflect.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,6 +56,14 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.Enumeration;
 import java.util.jar.JarFile;
 import java.util.jar.JarEntry;
+import java.util.Collection;
+import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.net.URI;
+import java.net.URL;
 
 /**
  * Abstract superclass for specific types of annotation detectors.
@@ -63,12 +73,64 @@ import java.util.jar.JarEntry;
 public class AnnotationDetector {
     
     protected final ClassFile classFile;
+    protected final AnnotationScanner scanner;
 
     public AnnotationDetector(AnnotationScanner scanner) {
+        this.scanner = scanner;
         ConstantPoolInfo poolInfo = new ConstantPoolInfo(scanner);
         classFile = new ClassFile(poolInfo);
     }
     
+    public boolean hasAnnotationInArchiveWithNoScanning(ReadableArchive archive) throws IOException {
+        Types types = null;
+        if (archive.getParentArchive() != null) {
+            types = archive.getParentArchive().getExtraData(Types.class);
+        } else {
+            types = archive.getExtraData(Types.class);
+        }
+
+        // we are on the client side so we need to scan annotations
+        if (types == null) {
+            return hasAnnotationInArchive(archive);
+        }
+
+        List<URI> uris = new ArrayList<URI>();
+        uris.add(archive.getURI());
+        try {
+            List<URL> libraryJars = DOLUtils.getLibraryJars(null, archive);
+            for (URL url : libraryJars) {
+                uris.add(url.toURI());
+            }
+        } catch (Exception e) {
+            DOLUtils.getDefaultLogger().log(Level.WARNING, e.getMessage(), e);
+        }
+
+
+        // force populating the annotations field in the scanner
+        scanner.isAnnotation("foo");
+
+        Set<String> annotations = scanner.getAnnotations();
+        if (annotations == null) {
+            return false;
+        }
+
+        for (String annotationType : annotations)  {
+            Type type = types.getBy(annotationType);
+             // we never found anyone using that type
+            if (type==null) continue;
+            if (type instanceof AnnotationType) {
+                Collection<AnnotatedElement> elements = ((AnnotationType) type).allAnnotatedTypes();
+                for (AnnotatedElement element : elements) {
+                    Type t = (element instanceof Member?((Member) element).getDeclaringType():(Type) element);
+                    if (t.wasDefinedIn(uris)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     public boolean hasAnnotationInArchive(ReadableArchive archive) throws IOException {
 
         Enumeration<String> entries = archive.entries();

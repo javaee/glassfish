@@ -42,21 +42,28 @@ package org.glassfish.deployment.common;
 
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import com.sun.enterprise.deployment.deploy.shared.Util;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.loader.util.ASClassLoaderUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.net.URI;
+import java.net.URL;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.zip.Adler32;
+import java.util.jar.Manifest;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 
 
 /** 
@@ -66,6 +73,8 @@ import java.util.zip.Adler32;
 public class DeploymentUtils {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeploymentUtils.class);
+
+    final private static Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
 
     private static final String V2_COMPATIBILITY = "v2";
 
@@ -407,4 +416,33 @@ public class DeploymentUtils {
         return sb.toString();
     }
 
+    public static List<URL> getManifestLibraries(DeploymentContext context) 
+        throws IOException {
+        return getManifestLibraries(context.getSource());
+    }
+
+    public static List<URL> getManifestLibraries(DeploymentContext context, 
+        Manifest manifest) throws IOException {
+        return getManifestLibraries(context.getSource(), manifest);
+    }
+
+    public static List<URL> getManifestLibraries(ReadableArchive archive) throws IOException {
+        return getManifestLibraries(archive, archive.getManifest());
+    }
+
+    private static List<URL> getManifestLibraries(ReadableArchive archive, Manifest manifest) {
+        String appRootPath = null;
+        File appRoot = null;
+
+        ReadableArchive parentArchive = archive.getParentArchive();
+
+        if (parentArchive != null) {
+            appRoot = new File(parentArchive.getURI());
+            appRootPath = appRoot.getPath();
+        }
+
+        // add libraries referenced through manifest
+        return ASClassLoaderUtil.getManifestClassPathAsURLs(
+            manifest, appRootPath);
+    }
 }

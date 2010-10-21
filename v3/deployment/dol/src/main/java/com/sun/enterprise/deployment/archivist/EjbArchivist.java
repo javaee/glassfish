@@ -198,6 +198,6 @@ public class EjbArchivist extends Archivist<EjbBundleDescriptor> {
         AnnotationDetector detector =
                     new AnnotationDetector(new EjbComponentAnnotationScanner());
         return (!DeploymentUtils.isWebArchive(abstractArchive)) &&
-                detector.hasAnnotationInArchive(abstractArchive);
+                detector.hasAnnotationInArchiveWithNoScanning(abstractArchive);
     }
 }

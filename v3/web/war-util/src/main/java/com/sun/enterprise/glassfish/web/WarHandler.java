@@ -130,12 +130,9 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
                 cloader.setWorkDir(context.getScratchDir("jsp"));
             }
 
-            if (context.getArchiveHandler().getClass(
-                ).getAnnotation(Service.class).name().equals("ear")) {
-                // add libarries referenced from manifest
-                for (URL url : getManifestLibraries(context)) {
-                    cloader.addRepository(url.toString());
-                }
+             // add libraries referenced from manifest
+            for (URL url : getManifestLibraries(context)) {
+                cloader.addRepository(url.toString());
             }
 
             WebXmlParser webXmlParser = null;

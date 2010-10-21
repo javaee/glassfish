@@ -44,26 +44,17 @@ package com.sun.enterprise.deploy.shared;
 import java.io.File;
 import java.net.URI;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.deployment.common.DeploymentUtils;
-import org.glassfish.loader.util.ASClassLoaderUtil;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.BufferedInputStream;
-import java.io.OutputStream;
-import java.util.Enumeration;
 import java.util.jar.Manifest;
-import java.util.jar.JarFile;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.net.URL;
 
-import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
-import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.internal.deployment.GenericHandler;
 
 /**
@@ -79,29 +70,11 @@ public abstract class AbstractArchiveHandler extends GenericHandler {
     public List<URL> getManifestLibraries(DeploymentContext context) {
         try {
             Manifest manifest = getManifest(context.getSource());
-            return ASClassLoaderUtil.getManifestClassPathAsURLs(manifest, 
-                computeRootPathForManifestClassPath(context));
+            return DeploymentUtils.getManifestLibraries(context, manifest);
         }catch (IOException ioe) {
             _logger.log(Level.WARNING, 
                 "Exception while getting manifest classpath: ", ioe);
             return new ArrayList<URL>();
         }
-    }
-
-    private String computeRootPathForManifestClassPath(
-        DeploymentContext context) {
-        URI sourceURI = context.getSource().getURI();     
-        // this is for the case where the sub module is in a sub directory
-        String sourceString = sourceURI.toString().replaceAll("__", "/");
-        try {
-            File sourceFile = new File(new URI(sourceString));
-            String rootPath = sourceFile.getParent();
-            if (rootPath != null) {
-                return rootPath;
-            }
-        } catch (Exception e) {
-            _logger.fine(e.getMessage());
-        }
-        return context.getSourceDir().getParent();
     }
 }

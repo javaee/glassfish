@@ -47,6 +47,7 @@ import static org.glassfish.osgijavaeebase.Constants.REFERENCE_PROTOCOL;
 import org.osgi.framework.Bundle;
 import static org.osgi.framework.Constants.BUNDLE_VERSION;
 import org.osgi.service.url.AbstractURLStreamHandlerService;
+import com.sun.enterprise.deploy.shared.AbstractReadableArchive;
 
 import java.io.*;
 import java.net.*;
@@ -79,7 +80,7 @@ interface URIable {
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiBundleArchive implements ReadableArchive, URIable, Iterable<BundleResource> {
+public class OSGiBundleArchive extends AbstractReadableArchive implements ReadableArchive, URIable, Iterable<BundleResource> {
     private Bundle b;
 
     private String name;
@@ -388,7 +389,7 @@ public class OSGiBundleArchive implements ReadableArchive, URIable, Iterable<Bun
     /**
      * A directory (typically a bundle classpath) in the bundle represented as an archive.
      */
-    private class EmbeddedDirectoryArchive implements ReadableArchive, URIable {
+    private class EmbeddedDirectoryArchive extends AbstractReadableArchive implements ReadableArchive, URIable {
 
         /**
          * This is the entry name by which this is identified in the bundle space.
@@ -513,7 +514,7 @@ public class OSGiBundleArchive implements ReadableArchive, URIable, Iterable<Bun
     /**
      * A jar (typically a bundle classpath) in the bundle represented as an archive.
      */
-    private class EmbeddedJarArchive implements ReadableArchive, URIable {
+    private class EmbeddedJarArchive extends AbstractReadableArchive implements ReadableArchive, URIable {
 
         /**
          * This is the entry name by which this is identified in the bundle space.

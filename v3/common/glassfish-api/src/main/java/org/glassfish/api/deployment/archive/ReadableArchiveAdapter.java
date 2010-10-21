@@ -107,4 +107,14 @@ abstract public class ReadableArchiveAdapter implements ReadableArchive{
     public ReadableArchive getParentArchive() {
         return null;
     }
+
+    public <U> U getExtraData(Class<U> dataType) {
+        return null;
+    }
+
+    public <U> void setExtraData(Class<U> dataType, U instance) {
+    }
+
+    public <U> void removeExtraData(Class<U> dataType) {
+    }
 }

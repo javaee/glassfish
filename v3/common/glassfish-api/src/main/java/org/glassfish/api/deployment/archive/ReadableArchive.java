@@ -128,4 +128,18 @@ public interface ReadableArchive extends Archive {
      * @return the parent archive
      */
     public ReadableArchive getParentArchive();
+
+    /**
+     * Returns any data that could have been calculated as part of
+     * the descriptor loading.
+     *
+     * @param dataType the type of the extra data
+     * @return the extra data or null if there are not an instance of
+     * type dataType registered.
+     */
+    public <U> U getExtraData(Class<U> dataType);
+
+    public <U> void setExtraData(Class<U> dataType, U instance);
+
+    public <U> void removeExtraData(Class<U> dataType);
 }

@@ -41,12 +41,15 @@
 package com.sun.enterprise.deploy.shared;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Common methods for ReadableArchive implementations
  */
 public abstract class AbstractReadableArchive implements ReadableArchive {
     protected ReadableArchive parentArchive;
+    protected Map<Class<?>, Object> extraData=new HashMap<Class<?>, Object>();
 
     /**
      * set the parent archive for this archive
@@ -64,5 +67,25 @@ public abstract class AbstractReadableArchive implements ReadableArchive {
      */
     public ReadableArchive getParentArchive() {
         return parentArchive;
+    }
+
+    /**
+     * Returns any data that could have been calculated as part of
+     * the descriptor loading.
+     *
+     * @param dataType the type of the extra data
+     * @return the extra data or null if there are not an instance of
+     * type dataType registered.
+     */
+    public <U> U getExtraData(Class<U> dataType) {
+        return dataType.cast(extraData.get(dataType));
+    }
+
+    public synchronized <U> void setExtraData(Class<U> dataType, U instance) {
+        extraData.put(dataType, instance);
+    }
+
+    public synchronized <U> void removeExtraData(Class<U> dataType) {
+        extraData.remove(dataType);
     }
 }

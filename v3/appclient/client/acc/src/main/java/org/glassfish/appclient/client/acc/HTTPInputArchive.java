@@ -58,6 +58,7 @@ import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import com.sun.enterprise.deploy.shared.AbstractReadableArchive;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
@@ -75,13 +76,11 @@ import org.jvnet.hk2.component.PerLookup;
  */
 @Service(name="http")
 @Scoped(PerLookup.class)
-public class HTTPInputArchive implements ReadableArchive {
+public class HTTPInputArchive extends AbstractReadableArchive implements ReadableArchive {
 
     private URI archiveURI = null;
     private URL archiveURL = null;
     
-    private ReadableArchive parentArchive = null;
-
     /** caches the manifest so we read if from the JAR at most once */
     private Manifest cachedManifest = null;
 
@@ -163,14 +162,6 @@ public class HTTPInputArchive implements ReadableArchive {
 
     public boolean renameTo(String name) {
         throw new UnsupportedOperationException("renameTo supported");
-    }
-
-    public void setParentArchive(ReadableArchive parentArchive) {
-        this.parentArchive = parentArchive;
-    }
-
-    public ReadableArchive getParentArchive() {
-        return parentArchive;
     }
 
     public void close() throws IOException {
