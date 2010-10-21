@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.util.net;
 
 import com.sun.enterprise.util.StringUtils;
@@ -45,12 +44,15 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 import java.net.*;
 import java.util.*;
 import java.io.*;
+import java.util.concurrent.*;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class NetUtils {
 
     private final static boolean asDebug = Boolean.parseBoolean(System.getenv("AS_DEBUG"));
+    private volatile static boolean getCanonicalHostNameIsSuperUltraSlow = false;
 
     private static void printd(String string) {
         if (asDebug) {
@@ -229,24 +231,51 @@ public class NetUtils {
      * the name can't be resolved (on windows if there isn't a domain specified), just
      * host name is returned
      *
+     * If DNS is munged-up - the getCanonical will take a L-O-N-G time (~~~30,000 msec!!!)
+     *
      * @throws UnknownHostException so it can be handled on a case by case basis
      */
     public static String getCanonicalHostName() throws UnknownHostException {
-        String hostname = null;
         String defaultHostname = InetAddress.getLocalHost().getHostName();
-        // look for full name
-        hostname = InetAddress.getLocalHost().getCanonicalHostName();
+
+        if (getCanonicalHostNameIsSuperUltraSlow)
+            return defaultHostname;
+
+        int wait = 3000;
+
+        // the problem only seems to affect me and I'm in a hurry!
+        if ("bnevins".equals(System.getProperty("user.name")))
+            wait = 500;
+
+        FutureTask<String> future = new FutureTask<String>(new Callable<String>() {
+
+            @Override
+            public String call() throws UnknownHostException {
+                return InetAddress.getLocalHost().getCanonicalHostName();
+            }
+        });
+
+        ExecutorService ex = Executors.newFixedThreadPool(1);
+        ex.execute(future);
+        String hostname = null;
+        try {
+            hostname = future.get(wait, TimeUnit.MILLISECONDS);
+        }
+        catch (Exception ex1) {
+            // don't care about synchronization...
+            getCanonicalHostNameIsSuperUltraSlow = true;
+        }
 
         // check to see if ip returned or canonical hostname is different than hostname
         // It is possible for dhcp connected computers to have an erroneous name returned
         // that is created by the dhcp server.  If that happens, return just the default hostname
-        if (hostname.equals(InetAddress.getLocalHost().getHostAddress())
+        if (hostname == null
+                || hostname.equals(InetAddress.getLocalHost().getHostAddress())
                 || !hostname.startsWith(defaultHostname)) {
             // don't want IP or canonical hostname, this will cause a lot of problems for dhcp users
             // get just plan host name instead
             hostname = defaultHostname;
         }
-
         return hostname;
     }
 
