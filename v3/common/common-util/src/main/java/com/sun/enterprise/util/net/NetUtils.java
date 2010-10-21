@@ -52,7 +52,6 @@ import java.util.logging.Logger;
 public class NetUtils {
 
     private final static boolean asDebug = Boolean.parseBoolean(System.getenv("AS_DEBUG"));
-    private volatile static boolean getCanonicalHostNameIsSuperUltraSlow = false;
 
     private static void printd(String string) {
         if (asDebug) {
@@ -237,11 +236,7 @@ public class NetUtils {
      */
     public static String getCanonicalHostName() throws UnknownHostException {
         String defaultHostname = InetAddress.getLocalHost().getHostName();
-
-        if (getCanonicalHostNameIsSuperUltraSlow)
-            return defaultHostname;
-
-        int wait = 3000;
+        int wait = 5000;
 
         // the problem only seems to affect me and I'm in a hurry!
         if ("bnevins".equals(System.getProperty("user.name")))
@@ -262,8 +257,7 @@ public class NetUtils {
             hostname = future.get(wait, TimeUnit.MILLISECONDS);
         }
         catch (Exception ex1) {
-            // don't care about synchronization...
-            getCanonicalHostNameIsSuperUltraSlow = true;
+            hostname = null;
         }
 
         // check to see if ip returned or canonical hostname is different than hostname
