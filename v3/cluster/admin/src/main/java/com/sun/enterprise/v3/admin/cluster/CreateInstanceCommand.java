@@ -143,6 +143,14 @@ public class CreateInstanceCommand implements AdminCommand {
         ctx = context;
         logger = context.logger;
 
+        if(!env.isDas()) {
+            String msg = Strings.get("notAllowed");
+            logger.warning(msg);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);
+            return;
+        }
+
         // Make sure Node is valid
         theNode = nodes.getNode(node);
         if (theNode == null) {
