@@ -13,7 +13,6 @@
     <name>HK2 Extended Testing for RunLevelService [RLS]</name>
 
     <dependencies>
-    <!-- create a runtime dependency on test-inhabitant-generator-ifaces for apt-test to function properly -->
     <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>auto-depends</artifactId>
