@@ -211,7 +211,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
     private void testImport() {
         String i ="iimportnobundle";
         File bundle = new File("nosuchbundle");
-        report("import-sync-bundle-"+i, !asadmin("import-sync-bundle", "--file", bundle.getPath(), i));
+        report("import-sync-bundle-"+i, !asadmin("import-sync-bundle", "--instance", i, bundle.getPath()));
 
         /*import default bundle*/
         i ="iimportdefbun";
@@ -225,7 +225,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
         long dasDomainXmlTS = dasDomainXml.lastModified();
         report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i));
         report("check-bundle-"+i, bundle.isFile());
-        report("import-sync-bundle-"+i, asadmin("import-sync-bundle", "--file", bundle.getPath(), i));
+        report("import-sync-bundle-"+i, asadmin("import-sync-bundle", "--instance", i, bundle.getPath()));
         String s = get("servers.server."+i+".property.rendezvousOccurred");
         report("check-rendezvous-"+i, s != null && s.equals("true"));
         report("check-domainxml-"+i, instDomainXml.exists());
@@ -254,7 +254,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
         /*import bundle with DAS offline */
         stopDomain();
 
-        report("import-sync-bundle-"+i, asadmin("import-sync-bundle", "--file", bundle.getPath(), i));
+        report("import-sync-bundle-"+i, asadmin("import-sync-bundle", "--instance", i, bundle.getPath()));
         
         report("check-domainxml-"+i, instDomainXml.exists());
         long instDomainXmlTS = instDomainXml.lastModified();
@@ -287,7 +287,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
         report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i));
         report("check-bundle-"+i, bundle.isFile());
         
-        report("import-sync-bundle-"+i, asadmin("import-sync-bundle", "--file", bundle.getPath(), "--node", node, i));
+        report("import-sync-bundle-"+i, asadmin("import-sync-bundle", "--instance", i, "--node", node, bundle.getPath()));
 
         report("check-domainxml-"+i, instDomainXml.exists());
         long instDomainXmlTS = instDomainXml.lastModified();
@@ -298,7 +298,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
         String s = get("servers.server."+i+".property.rendezvousOccurred");
         report("check-rendezvous-"+i, s.equals("true"));
 
-        report("import-sync-bundle-specifynode", !asadmin("import-sync-bundle", "--file", bundle.getPath(), i));
+        report("import-sync-bundle-specifynode", !asadmin("import-sync-bundle", "--instance", i, bundle.getPath()));
 
         //cleanup
         report("delete-instance-"+i, asadmin("delete-instance", i));
@@ -325,7 +325,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
         report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i));
         report("check-bundle-"+i, bundle.isFile());
 
-        report("import-sync-bundle-"+i, asadmin("import-sync-bundle", "--file", bundle.getPath(), "--node", node, "--nodedir", nodeDirParent.getPath(), i));
+        report("import-sync-bundle-"+i, asadmin("import-sync-bundle", "--instance", i, "--node", node, "--nodedir", nodeDirParent.getPath(), bundle.getPath()));
 
         report("check-domainxml-"+i, instDomainXml.exists());
         long instDomainXmlTS = instDomainXml.lastModified();
@@ -365,7 +365,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
         stopDomain();
 
         report("check-bundle-"+i, bundle.isFile());
-        report("import-sync-bundle-"+i, asadmin("import-sync-bundle", "--file", bundle.getPath(), i));
+        report("import-sync-bundle-"+i, asadmin("import-sync-bundle", "--instance", i, bundle.getPath()));
         
         long instDomainXmlTS = instDomainXml.lastModified();
         report("check-timestamp-"+i, dasDomainXmlTS == instDomainXmlTS);
