@@ -42,6 +42,7 @@ package com.sun.enterprise.admin.cli.optional;
 
 import com.sun.enterprise.admin.util.ServerDirsSelector;
 import com.sun.enterprise.util.OS;
+import com.sun.enterprise.util.io.FileUtils;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
@@ -178,9 +179,14 @@ public final class CreateServiceCommand extends CLICommand {
         return 0;
     }
 
-    private void validateServiceName() {
+    private void validateServiceName() throws CommandException {
         if (!ok(serviceName))
             serviceName = dirs.getServerDir().getName();
+
+        // On Windows we need a legal filename for the service name.
+        if(OS.isWindowsForSure() && !FileUtils.isFriendlyFilename(serviceName)) {
+            throw new CommandException(strings.get("create.service.badServiceName", serviceName));
+        }
 
         logger.finer("service name = " + serviceName);
     }
