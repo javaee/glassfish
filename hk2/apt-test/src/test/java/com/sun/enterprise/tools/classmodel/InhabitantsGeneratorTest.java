@@ -3,6 +3,7 @@ package com.sun.enterprise.tools.classmodel;
 import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,6 +15,7 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Set;
@@ -21,6 +23,7 @@ import java.util.Set;
 import org.glassfish.hk2.classmodel.reflect.AnnotationType;
 import org.glassfish.hk2.classmodel.reflect.ParsingContext;
 import org.glassfish.hk2.classmodel.reflect.Types;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.InhabitantAnnotation;
@@ -179,7 +182,7 @@ public class InhabitantsGeneratorTest {
     assertNotNull(output);
     System.out.println("Output: \n" + output);
     System.out.println("Expected: \n" + expected(false));
-    assertTrue("output (see javadoc comments): " + output, output.contains(expected(false)));
+    assertTrue("output (see javadoc comments):\n" + output, output.contains(expected(false)));
   }
 
   /**
@@ -213,40 +216,56 @@ public class InhabitantsGeneratorTest {
         output.contains(expected(true)));
   }
 
-  String expected(boolean worldViewClassPath) {
+  String expected(boolean worldViewClassPath) throws IOException {
     return expected(worldViewClassPath, true);
   }
   
-  String expected(boolean worldViewClassPath, boolean fromClassModel) {
+  String expected(boolean worldViewClassPath, boolean fromClassModel) throws IOException {
     StringBuilder sb = new StringBuilder();
-    sb.append("class=com.sun.enterprise.tools.classmodel.test.BService,index=com.sun.enterprise.tools.classmodel.test.BContract\n");
+
     sb.append("class=com.sun.enterprise.tools.classmodel.test.RunLevelCloseableService,index=java.io.Closeable:closeable,index=org.jvnet.hk2.annotations.RunLevel\n");
     sb.append("class=com.sun.enterprise.tools.classmodel.test.AService,index=com.sun.enterprise.tools.classmodel.test.AContract:aservice,a=1,b=2\n");
+    sb.append("class=com.sun.enterprise.tools.classmodel.test.FactoryForCService,index=org.jvnet.hk2.annotations.FactoryFor:com.sun.enterprise.tools.classmodel.test.CService\n");
+    sb.append("class=com.sun.enterprise.tools.classmodel.test.CService\n");
+    sb.append("class=com.sun.enterprise.tools.classmodel.test.BService,index=com.sun.enterprise.tools.classmodel.test.BContract\n");
+
     if (worldViewClassPath) {
       // world view classpath has full visibility so that class-model generates the true habitat
       sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithExternalContract,index=com.sun.enterprise.tools.classmodel.test.external.ExternalContract\n");
+      sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithAbstractBaseHavingExternalContract,index=com.sun.enterprise.tools.classmodel.test.external.ExternalContract\n");
+      
+      if (fromClassModel) {
+        sb.append("class=test1.Start\n");
+      } else {
+//        sb.append("class=test1.Start,index=com.sun.enterprise.module.bootstrap.ModuleStartup\n");
+      }
     } else {
       // without world-view, the external contracts in the inhabitants-gen-ifaces jar are not considered
       sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithExternalContract\n");
-    }
-    if (fromClassModel) {
-      sb.append("class=com.sun.enterprise.tools.classmodel.test.local.LocalServiceInTestDir,index=java.io.Closeable\n");
-    }
-    sb.append("class=com.sun.enterprise.tools.classmodel.test.FactoryForCService,index=org.jvnet.hk2.annotations.FactoryFor:com.sun.enterprise.tools.classmodel.test.CService\n");
-    sb.append("class=com.sun.enterprise.tools.classmodel.test.CService\n");
-    if (worldViewClassPath) {
-      sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithAbstractBaseHavingExternalContract,index=com.sun.enterprise.tools.classmodel.test.external.ExternalContract\n");
-    } else {
       sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithAbstractBaseHavingExternalContract\n");
     }
     
-    sb.append("class=test1.Start");
-    return sb.toString();
+    if (fromClassModel) {
+      sb.append("class=com.sun.enterprise.tools.classmodel.test.local.LocalServiceInTestDir,index=java.io.Closeable\n");
+      sb.append("class=rls.test.RlsTest\n");
+      sb.append("class=rls.test.model.ServiceOtherToY,index=org.jvnet.hk2.annotations.RunLevel\n");
+      sb.append("class=rls.test.model.ServiceDerivedX,index=rls.test.model.ContractX:derived,index=org.jvnet.hk2.annotations.RunLevel,index=org.jvnet.hk2.annotations.RunLevel\n");
+      sb.append("class=rls.test.model.ServiceYSpecial,index=rls.test.model.ContractY\n");
+      sb.append("class=rls.test.infra.MultiThreadedInhabitantActivator,index=org.jvnet.hk2.component.InhabitantActivator\n");
+      sb.append("class=rls.test.model.ServiceBaseX,index=rls.test.model.ContractX:base,index=org.jvnet.hk2.annotations.RunLevel\n");
+      sb.append("class=rls.test.model.ServiceY1,index=rls.test.model.ContractY,index=org.jvnet.hk2.annotations.RunLevel\n");
+      sb.append("class=rls.test.model.ServiceY2,index=rls.test.model.ContractY,index=org.jvnet.hk2.annotations.RunLevel\n");
+      sb.append("class=rls.test.model.ServiceZ\n");
+      sb.append("class=rls.test.infra.RandomInhabitantSorter,index=org.jvnet.hk2.component.InhabitantSorter\n");
+    }
+
+    return sort(sb.toString());
   }
 
   /**
    * If there are no inhabitants then there should be no generated file
    */
+//  @Ignore
   @Test
   public void testMainWithNoInhabitants() throws Exception {
     File testDir = new File(new File("."), "target/test-classes");
@@ -287,7 +306,7 @@ public class InhabitantsGeneratorTest {
     assertTrue("expect to find: " + outputFile, outputFile.exists());
 
     FileInputStream fis = new FileInputStream(outputFile);
-    String val = toString(fis);
+    String val = sort(toString(fis));
     fis.close();
     
     assertTrue(val + " was not found to contain:\n" + 
@@ -307,6 +326,7 @@ public class InhabitantsGeneratorTest {
   /**
    * Compares APT generation to class-model, introspection generation.
    */
+//  @Ignore
   @Test
   public void testAgainstAptGenerator() throws Exception {
     // generate the habitat file
@@ -333,17 +353,21 @@ public class InhabitantsGeneratorTest {
     int count = 0;
     while (en.hasMoreElements()) {
       URL url = en.nextElement();
-      count++;
-      
-      InputStream is = (InputStream)url.getContent();
-      String val = toString(is);
-      is.close();
-
-      boolean fromClassModelIntrospection = url.getPath().toString().contains("apt-test/target/test-classes/META-INF/inhabitants/default");
-      String expected = expected(true, fromClassModelIntrospection);
-      
-      assertTrue("expected " + url + " to contain output:\n" + expected +
-          "\nbut instead was:\n" + val, val.contains(expected));
+      String name = url.getPath().toString();
+      if (!name.contains("test-rls")) {
+        count++;
+        
+        InputStream is = (InputStream)url.getContent();
+        String val = sort(toString(is));
+        is.close();
+  
+        boolean fromClassModelIntrospection = name.contains("apt-test/target/test-classes/META-INF/inhabitants/default");
+        String expected = expected(true, fromClassModelIntrospection);
+        
+        assertTrue(count + ": expected " + url + " to contain output:\n" + expected +
+            "\nbut instead was:\n" + val + "\nfrom introspection: " + fromClassModelIntrospection,
+            val.contains(expected));
+      }
     }
     
     assertEquals("inhabitants files found", 2, count);
@@ -358,8 +382,8 @@ public class InhabitantsGeneratorTest {
     return urls;
   }
 
-  private String clean(String string) {
-    return string.replace("\r", "");
+  private String clean(String string) throws IOException {
+    return sort(string.replace("\r", ""));
   }
 
   private String toString(ArrayList<File> list) {
@@ -425,5 +449,22 @@ public class InhabitantsGeneratorTest {
     System.out.println("auto-depends classpath is " + entries);
     
     return entries;
+  }
+  
+  private String sort(String in) throws IOException {
+    ArrayList<String> lines = new ArrayList<String>();
+    BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(in.getBytes())));
+    String line;
+    while (null != (line = reader.readLine())) {
+      lines.add(line);
+    }
+    
+    Collections.sort(lines);
+    
+    StringBuilder sb = new StringBuilder();
+    for (String oline : lines) {
+      sb.append(oline).append("\n");
+    }
+    return sb.toString();
   }
 }
