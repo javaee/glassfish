@@ -115,8 +115,7 @@ public final class DisableHTTPLBServerCommand extends LBCommandsBase
                     logger.warning(localStrings.getLocalString("InvalidInstance",
                             "Server {0} does not exist in {1}", target, lc.getName()));
                 } else {
-                    int curTout = Integer.parseInt(
-                            sRef.getDisableTimeoutInMinutes());
+                    int curTout = Integer.parseInt(sRef.getDisableTimeoutInMinutes());
 
                     boolean enabled = sRef.getLbEnabled().equals("true");
                     if ((enabled == false) && (curTout == t)) {
@@ -127,7 +126,7 @@ public final class DisableHTTPLBServerCommand extends LBCommandsBase
                         return;
                     }
                     try {
-                        updateLbEnabled(sRef, "false", null);
+                        updateLbEnabled(sRef, "false", timeout);
                     } catch (TransactionFailure ex) {
                         String msg = localStrings.getLocalString("FailedToUpdateAttr",
                             "Failed to update lb-enabled attribute for {0}", target);
@@ -150,8 +149,7 @@ public final class DisableHTTPLBServerCommand extends LBCommandsBase
                     report.setMessage(msg);
                     return;
                 } else {
-                    int curTout = Integer.parseInt(
-                            sRef.getDisableTimeoutInMinutes());
+                    int curTout = Integer.parseInt(sRef.getDisableTimeoutInMinutes());
 
                     boolean enabled = sRef.getLbEnabled().equals("true");
                     if ((enabled == false) && (curTout == t)) {
@@ -162,7 +160,7 @@ public final class DisableHTTPLBServerCommand extends LBCommandsBase
                         return;
                     }
                     try {
-                        updateLbEnabled(sRef, "false", null);
+                        updateLbEnabled(sRef, "false", timeout);
                     } catch (TransactionFailure ex) {
                         String msg = localStrings.getLocalString("FailedToUpdateAttr",
                             "Failed to update lb-enabled attribute for {0}", target);

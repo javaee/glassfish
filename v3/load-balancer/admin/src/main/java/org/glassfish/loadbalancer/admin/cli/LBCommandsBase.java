@@ -131,7 +131,7 @@ public class LBCommandsBase {
                 @Override
                 public Object run(ServerRef param) throws PropertyVetoException, TransactionFailure {
                     param.setLbEnabled(v);
-                    if(tOut != null) {
+                    if(v.equals("false") && tOut != null) {
                         param.setDisableTimeoutInMinutes(tOut);
                     }
                     return Boolean.TRUE;
