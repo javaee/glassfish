@@ -146,14 +146,15 @@ public class ReplicationStore extends HAStoreBase {
             ((BaseHASession)session).setUserName(userName);
         }
         byte[] sessionState = this.getByteArray(session, isReplicationCompressionEnabled());
-        _logger.info("ReplicationStore->Byte array to save");
-        StringBuilder sb = new StringBuilder("ReplicationStore->sessionState is{");
-        for (byte b: sessionState) {
-            sb.append(b + "_");
+        if(_logger.isLoggable(Level.FINEST)) {
+            _logger.finest("ReplicationStore->Byte array to save");
+            StringBuilder sb = new StringBuilder("ReplicationStore->sessionState is{");
+            for (byte b: sessionState) {
+                sb.append(b + "_");
+            }
+            sb.append("}");
+            _logger.finest(sb.toString());
         }
-        sb.append("}");
-        _logger.finest(sb.toString());
-
         ReplicationManagerBase mgr
             = (ReplicationManagerBase)this.getManager();
         BackingStore replicator = mgr.getBackingStore();
@@ -166,7 +167,9 @@ public class ReplicationStore extends HAStoreBase {
                 session.getLastAccessedTime(), //lastaccesstime
                 session.getMaxInactiveInterval(), //maxinactiveinterval
                 sessionState); //state
-        _logger.info("In doValveSave metadata is " + simpleMetadata);
+        if (_logger.isLoggable(Level.FINEST)) {
+            _logger.finest("In doValveSave metadata is " + simpleMetadata);
+        }
         try {
             HASession haSess = (HASession)session;
             replicator.save(session.getIdInternal(), //id
@@ -385,8 +388,8 @@ public class ReplicationStore extends HAStoreBase {
     public Session loadFromBackingStore(String id, String version)
             throws IOException, ClassNotFoundException, BackingStoreException {
         SimpleMetadata metaData = (SimpleMetadata) getBackingStore().load(id, version);
-        if(_logger.isLoggable(Level.INFO)) {
-            _logger.info("ReplicationStore>>loadFromBackingStore:id=" +
+        if(_logger.isLoggable(Level.FINEST)) {
+            _logger.finest("ReplicationStore>>loadFromBackingStore:id=" +
                     id + ", metaData=" + metaData);
         }
         /*
@@ -404,8 +407,8 @@ public class ReplicationStore extends HAStoreBase {
         */
 
         Session session = getSession(metaData);
-        if (_logger.isLoggable(Level.INFO)) {
-            _logger.info("ReplicationStore->Session is " + session);
+        if (_logger.isLoggable(Level.FINEST)) {
+            _logger.finest("ReplicationStore->Session is " + session);
         }
 
         return session;

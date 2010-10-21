@@ -127,11 +127,20 @@ public class SimpleMetadata  implements Serializable {
 
     @Override
     public String toString() {
+        StringBuilder sb = new StringBuilder("SimpleMetadata->state");
+        if (state != null) {
+            for (byte b: state) {
+                sb.append(b + "_");
+            }
+        } else {
+            sb.append("null"); 
+        } 
         return "SimpleMetadata{" +
                 "version=" + version +
                 ", lastAccessTime=" + lastAccessTime +
                 ", maxInactiveInterval=" + maxInactiveInterval +
-                ", state=" + (state == null ? 0 : state.length) +
+                ", state.length=" + (state == null ? 0 : state.length) +
+                ", state=" +  sb.toString() +
                 '}';
     }
 }
