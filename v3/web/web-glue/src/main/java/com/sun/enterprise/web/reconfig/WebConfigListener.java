@@ -132,7 +132,7 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
                     } else if (t instanceof ManagerProperties) {
                         return new NotProcessed("ManagerProperties requires restart");
                     } else if (t instanceof WebContainerAvailability) {
-                        // TODO handle dynamic reconfig for WebContainerAvailability
+                        // container.updateHttpService handles SingleSignOn valve configuration 
                     }
                     container.updateHttpService(httpService);
                 } catch (LifecycleException le) {
