@@ -191,9 +191,9 @@ public class ListLoggerLevels implements AdminCommand {
             report.setExtraProperties(restData);
 
         } catch (IOException ex) {
-            report.setMessage("Unable to get the logger names");
+            report.setMessage(localStrings.getLocalString("get.log.level.failed",
+                    "Could not get logging levels for {0}.", target));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(ex);
             return;
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
