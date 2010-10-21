@@ -48,16 +48,14 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.net.Authenticator;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.security.auth.callback.CallbackHandler;
-import org.glassfish.appclient.client.acc.callbackhandler.DefaultGUICallbackHandler;
-import org.glassfish.appclient.client.acc.callbackhandler.DefaultTextCallbackHandler;
 import org.glassfish.appclient.client.acc.config.ClientCredential;
 import org.glassfish.appclient.client.acc.config.MessageSecurityConfig;
 import org.glassfish.appclient.client.acc.config.TargetServer;
@@ -78,6 +76,7 @@ public class AppClientContainerSecurityHelper {
     private static final String ORB_INITIAL_HOST_PROPERTYNAME = "org.omg.CORBA.ORBInitialHost";
     private static final String ORB_INITIAL_PORT_PROPERTYNAME = "org.omg.CORBA.ORBInitialPort";
     private static final String ORB_SSL_CLIENT_REQUIRED = "com.sun.CSIV2.ssl.client.required";
+    private final static String ENDPOINTS_PROPERTY_NAME = "com.sun.appserv.iiop.endpoints";
 
 
     @Inject
@@ -90,8 +89,6 @@ public class AppClientContainerSecurityHelper {
     private GlassFishORBHelper orbHelper;
 
     private final Logger logger = Logger.getLogger(getClass().getName());
-
-    private Properties iiopProperties;
 
     private ClassLoader classLoader;
 
@@ -109,7 +106,7 @@ public class AppClientContainerSecurityHelper {
 
         this.isTextAuth = isTextAuth;
         this.classLoader = (classLoader == null) ? Thread.currentThread().getContextClassLoader() : classLoader;
-        iiopProperties = prepareIIOP(targetServers,containerProperties);
+        prepareIIOP(targetServers,containerProperties);
 
         initLoginConfig();
         CallbackHandler callbackHandler = 
@@ -210,14 +207,6 @@ public class AppClientContainerSecurityHelper {
         return userHandler;
     }
 
-
-    /**
-     * Returns the already-initialized IIOP properties object.
-     * @return Properties object containing IIOP property settings
-     */
-    Properties getIIOPProperties() {
-        return iiopProperties;
-    }
 
     /**
      * Clears the Client's current Security Context.
@@ -343,22 +332,39 @@ public class AppClientContainerSecurityHelper {
 //    }
 
     /**
-     * Temporarily for early v3, use the FIRST host and port from the
-     * target servers already prepared using the appclient command line and
-     * from the properties and target server elements in the sun-acc.xml file.
+     * Prepares the client ORB to bootstrap into the server ORB(s) specified
+     * by the TargetServer objects.
+     * @param targetServers the TargetServer endpoints to which the client ORB can try to connect
+     * @param containerProperties Properties, if specified, which might indicate that SSL is to be used
      * @return ORB-related properties to define host and port for bootstrapping
      */
-    private Properties prepareIIOP(final TargetServer[] targetServers, Properties containerProperties) {
-        Properties props = new Properties();
+    private void prepareIIOP(final TargetServer[] targetServers, Properties containerProperties) {
+        if (targetServers.length == 0) {
+            throw new IllegalArgumentException();
+        }
 
-        props.setProperty(ORB_INITIAL_HOST_PROPERTYNAME, targetServers[0].getAddress());
-        props.setProperty(ORB_INITIAL_PORT_PROPERTYNAME, Integer.toString(targetServers[0].getPort()));
-        //If sun-acc.xml is configured to require ssl, set this property to true
+        final StringBuilder sb = new StringBuilder();
+        for (TargetServer ts : targetServers) {
+            if (sb.length() > 0) {
+                sb.append(",");
+            }
+            sb.append(ts.getAddress()).append(":").append(ts.getPort());
+        }
+
+        if (targetServers.length == 1) {
+            System.setProperty(ORB_INITIAL_HOST_PROPERTYNAME, targetServers[0].getAddress());
+            System.setProperty(ORB_INITIAL_PORT_PROPERTYNAME, Integer.toString(targetServers[0].getPort()));
+        } else {
+            /*
+             * Currently, set a system property to specify multiple endpoints.
+             */
+            System.setProperty(ENDPOINTS_PROPERTY_NAME, sb.toString());
+        }
+
         if (isSSLRequired(targetServers, containerProperties)) {
             orbHelper.setCSIv2Prop(ORB_SSL_CLIENT_REQUIRED, "true");
         }
-        logger.config("Using endpoint address: " + targetServers[0].getAddress() + ":" + targetServers[0].getPort());
-        return props;
+        logger.log(Level.CONFIG, "Using endpoint address(es): {0}", sb.toString());
 
     }
 
