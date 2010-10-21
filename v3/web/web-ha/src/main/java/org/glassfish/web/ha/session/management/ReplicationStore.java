@@ -53,6 +53,7 @@ import com.sun.enterprise.web.ServerConfigLookup;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.Container;
 import org.apache.catalina.Session;
+import org.apache.catalina.Loader;
 import org.glassfish.ha.store.api.BackingStore;
 import org.glassfish.ha.store.api.BackingStoreException;
 
@@ -146,12 +147,12 @@ public class ReplicationStore extends HAStoreBase {
         }
         byte[] sessionState = this.getByteArray(session, isReplicationCompressionEnabled());
         _logger.info("ReplicationStore->Byte array to save");
-        StringBuilder sb = new StringBuilder("ReplicationStore{");
+        StringBuilder sb = new StringBuilder("ReplicationStore->sessionState is{");
         for (byte b: sessionState) {
             sb.append(b + "_");
         }
         sb.append("}");
-        _logger.info(sb.toString());
+        _logger.finest(sb.toString());
 
         ReplicationManagerBase mgr
             = (ReplicationManagerBase)this.getManager();
@@ -232,15 +233,6 @@ public class ReplicationStore extends HAStoreBase {
      */    
     public void doSave(Session session) throws IOException {
         byte[] sessionState = this.getByteArray(session, isReplicationCompressionEnabled());
-        if (_logger.isLoggable(Level.FINEST)) {
-            _logger.finest("ReplicationStore->Byte array to save");
-            StringBuilder sb = new StringBuilder("ReplicationStore{");
-            for (byte b: sessionState) {
-                sb.append(b + "_");
-            }
-            sb.append("}");
-            _logger.finest(sb.toString());
-        }
         ReplicationManagerBase mgr
             = (ReplicationManagerBase)this.getManager();
         BackingStore backingStore = mgr.getBackingStore();
@@ -393,10 +385,11 @@ public class ReplicationStore extends HAStoreBase {
     public Session loadFromBackingStore(String id, String version)
             throws IOException, ClassNotFoundException, BackingStoreException {
         SimpleMetadata metaData = (SimpleMetadata) getBackingStore().load(id, version);
-        if(_logger.isLoggable(Level.FINE)) {
-            _logger.fine("ReplicationStore>>loadFromBackingStore:id=" +
+        if(_logger.isLoggable(Level.INFO)) {
+            _logger.info("ReplicationStore>>loadFromBackingStore:id=" +
                     id + ", metaData=" + metaData);
         }
+        /*
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest("ReplicationStore->Metadata is "+ metaData);
             byte[] state = metaData.getState();
@@ -408,10 +401,11 @@ public class ReplicationStore extends HAStoreBase {
             sb.append("}");
             _logger.finest(sb.toString());
         }
+        */
 
         Session session = getSession(metaData);
-        if (_logger.isLoggable(Level.FINEST)) {
-            _logger.finest("ReplicationStore->Session is " + session);
+        if (_logger.isLoggable(Level.INFO)) {
+            _logger.info("ReplicationStore->Session is " + session);
         }
 
         return session;
@@ -487,23 +481,23 @@ public class ReplicationStore extends HAStoreBase {
     // Store methods end
 
     private Session getSession(SimpleMetadata metaData) throws IOException {
+        ClassLoader classLoader;
         if (metaData == null || metaData.getState() == null) {
             return null;
         } else {
-            return getSession(metaData.getState(),
-                     metaData.getVersion(), metaData.getClass().getClassLoader());
-
-
+            return getSession(metaData.getState(), metaData.getVersion());
         }
     }
 
 
-    public Session getSession(byte[] state,  long version, ClassLoader classLoader) throws IOException {
+    public Session getSession(byte[] state,  long version) throws IOException {
         Session _session = null;
         InputStream is;
         BufferedInputStream bis;
         ByteArrayInputStream bais;    
         ObjectInputStream ois = null;
+        Loader loader = null;
+        ClassLoader classLoader = null;
         Container container = manager.getContainer();
         java.security.Principal pal=null; //MERGE chg added
         try
@@ -521,41 +515,43 @@ public class ReplicationStore extends HAStoreBase {
                 _logger.finest("loaded session from replicationstore, length = "+state.length);
             }
 
+            loader = container.getLoader();
+            if (loader !=null) {
+                classLoader = loader.getClassLoader(); 
+            }
+
+            if (classLoader != null) {
                 try {
                     ois = ioUtils.createObjectInputStream(is,true,classLoader);
                 } catch (Exception ex) {
                     _logger.log(Level.WARNING, "Error creating inputstream ", ex);
                 }
+            }
             
 
             if (ois == null) {
                 ois = new ObjectInputStream(is);
             }
-            if(ois != null) {
-                try {
-                    _session = readSession(manager, ois);
-                } 
-                finally {
-                    if (ois != null) {
-                        try {
-                            ois.close();
-                            bis = null;
-                        }
-                        catch (IOException e) {
-                        }
+            try {
+                _session = readSession(manager, ois);
+            } 
+            finally {
+                if (ois != null) {
+                    try {
+                        ois.close();
+                        bis = null;
+                    }
+                    catch (IOException e) {
                     }
                 }
             }
-        }
-        catch(ClassNotFoundException e)
-        {
+        } catch(ClassNotFoundException e) {
             IOException ex1 = (IOException) new IOException(
                     "Error during deserialization: " + e.getMessage()).initCause(e);
             _logger.log(Level.WARNING, "Exception during deserializing the session ", ex1);
             throw ex1;
         }
-        catch(IOException e)
-        {
+        catch(IOException e) {
             if (_logger.isLoggable(Level.WARNING)) {
                 _logger.log(Level.WARNING, "Exception occurred in getSession", e);
             }

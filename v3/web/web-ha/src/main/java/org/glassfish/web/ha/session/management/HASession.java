@@ -87,6 +87,5 @@ public interface HASession extends Session {
     public void setVersion(long value); 
     public boolean isPersistent();
     public void setPersistent(boolean value);
-//    public HttpSessionExtraParams getExtraParameters();
     
 }
