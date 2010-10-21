@@ -54,6 +54,7 @@ public class SingletonBean2 {
 	}
 	System.out.println("Bean manager inject = " + beanManagerInject);
 	testIMCreateDestroyMO();
+	testSingletonWithInjectionConstructor();
 
 	System.out.println("Sending some event...");
 	someEvent.fire( new SomeEvent(2) );
@@ -118,5 +119,20 @@ public class SingletonBean2 {
     }
 
 
+    private void testSingletonWithInjectionConstructor() {
+
+	try {
+
+	    SingletonBeanA b= (SingletonBeanA) sesCtx.lookup("java:module/SingletonBeanA");
+            if (b.getBar() == null) {
+                throw new Exception("Bar is null");
+            }
+
+	} catch(Exception e) {
+	    throw new EJBException(e);
+	}
+
+
+    }
 
 }
