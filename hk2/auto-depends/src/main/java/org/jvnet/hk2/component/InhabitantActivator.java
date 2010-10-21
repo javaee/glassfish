@@ -50,7 +50,6 @@ import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
  * @since 3.1
  */
 @Contract
-@SuppressWarnings("unchecked")
 public interface InhabitantActivator {
 
   /**
@@ -62,7 +61,7 @@ public interface InhabitantActivator {
    * 
    * @param inhabitant the inhabitant to activate
    */
-  void activate(Inhabitant inhabitant);
+  void activate(Inhabitant<?> inhabitant);
   
   /**
    * Implementations are generally expected to call {@link Inhabitant#release()} at
@@ -73,6 +72,6 @@ public interface InhabitantActivator {
    * 
    * @param inhabitant the inhabitant to release
    */
-  void deactivate(Inhabitant inhabitant);
+  void deactivate(Inhabitant<?> inhabitant);
 
 }
