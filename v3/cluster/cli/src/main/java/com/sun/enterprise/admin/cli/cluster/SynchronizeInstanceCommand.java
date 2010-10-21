@@ -67,8 +67,8 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
     @Param(name = "instance_name", primary = true, optional = true)
     private String instanceName0;
 
-    @Param(name = "fullsync", optional = true)
-    private boolean fullSync;
+    @Param(name = "sync", optional=true, defaultValue="normal", acceptableValues="none, normal, full")
+    protected String sync="normal";
 
     private RemoteCommand syncCmd;
 
@@ -85,6 +85,7 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
      */
     @Override
     protected int executeCommand() throws CommandException {
+        
         if (synchronizeInstance())
             return SUCCESS;
         else {
@@ -119,12 +120,12 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
         syncCmd.setFileOutputDirectory(instanceDir);
 
         /*
-         * If --syncfull, we remove all local state related to the instance,
+         * If --sync full, we remove all local state related to the instance,
          * then do a sync.  We only remove the local directories that are
          * synchronized from the DAS; any other local directories (logs,
          * instance-private state) are left alone.
          */
-        if (fullSync) {
+        if (sync.equals("full")) {
             logger.fine(
                                 Strings.get("Instance.fullsync", instanceName));
             removeSubdirectory("config");

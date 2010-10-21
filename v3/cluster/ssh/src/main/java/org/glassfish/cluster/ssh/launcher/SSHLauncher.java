@@ -448,7 +448,6 @@ public class SSHLauncher {
         File key = new File(keyFile);
         if(logger.isLoggable(Level.FINER))
             logger.finer("Key = " + keyFile);
-        logger.info("keyfile "+keyFile);
         if (key.exists()) {
             if (checkConnection()) {
                 throw new IOException("SSH public key authentication is already configured for " + userName + "@" + node);
@@ -468,7 +467,6 @@ public class SSHLauncher {
             throw new IOException("SSH password is required for distributing the public key. You can specify the SSH password in a password file and pass it through --passwordfile option.");
         }
         try {
-            logger.info("got password now connect ");
             connection = new Connection(node, port);
             connection.connect();
             connected = connection.authenticateWithPassword(userName, passwd);
@@ -481,7 +479,6 @@ public class SSHLauncher {
             throw new IOException("SSH password authentication failed for user " + userName + " on host " + node);
         }
         //initiate scp client
-         logger.info("Connected");
         SCPClient scp = new SCPClient(connection);
         SFTPClient sftp = new SFTPClient(connection);
 
@@ -493,8 +490,7 @@ public class SSHLauncher {
             if (pubKeyFile == null) {
                 pubKeyFile = keyFile + ".pub";
             }
-            logger.info("pubKeyFile "+ pubKeyFile);
-            
+
             File pubKey = new File(pubKeyFile);
             if(!pubKey.exists()) {
                 throw new IOException("Public key file " + pubKeyFile + " does not exist.");

@@ -91,11 +91,8 @@ public class StartInstanceCommand implements AdminCommand {
     @Param(name = "instance_name", primary = true)
     private String instanceName;
 
-    @Param(optional = true)
-    private boolean fullsync;
-
-    @Param(optional = true, defaultValue = "false")
-    private boolean nosync;
+    @Param(optional = true, defaultValue = "normal", acceptableValues="none, normal, full")
+    private String sync="normal";
 
     @Param(optional = true, defaultValue = "false")
     private boolean debug;
@@ -216,13 +213,8 @@ public class StartInstanceCommand implements AdminCommand {
             command.add(nodedir); //XXX escape space?
         }
 
-        if (fullsync) {
-            command.add("--fullsync");
-        }
-
-        if (nosync) {
-            command.add("--nosync");
-        }
+        command.add("--sync");
+        command.add(sync);
 
         if (debug) {
             command.add("--debug");

@@ -77,9 +77,6 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
     @Param(optional = true, defaultValue = "false")
     private boolean upgrade;
 
-    @Param(optional = true, defaultValue = "false")
-    private boolean nosync;
-
     // handled by superclass
     //@Param(name = "instance_name", primary = true, optional = false)
     //private String instanceName0;
@@ -118,7 +115,7 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
 
         logger.finer(toString());
 
-        if (nosync) {
+        if (sync.equals("none")) {
             logger.info(Strings.get("Instance.nosync"));
         } else {
             if (!synchronizeInstance()) {
