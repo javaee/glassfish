@@ -46,6 +46,7 @@ import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.archivist.Archivist;
 import com.sun.enterprise.deployment.util.WebServerInfo;
 import com.sun.enterprise.deployment.util.XModuleType;
+import com.sun.enterprise.deployment.web.AppListenerDescriptor;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.deploy.shared.FileArchive;
@@ -93,7 +94,7 @@ import org.glassfish.deployment.common.DeploymentUtils;
  * Webservices module deployer. This is loaded from WebservicesContainer
  *
  * @author Bhakti Mehta
- * 
+ * @author Rama Pulavarthi
  */
 @Service
 public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,WebServicesApplication> {
@@ -658,7 +659,6 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
          * in v2
          */
         final WebServiceDeploymentNotifier notifier = getDeploymentNotifier();
-
         Collection<WebServiceEndpoint> endpoints =
             webBunDesc.getWebServices().getEndpoints();
         ClassLoader cl = webBunDesc.getClassLoader();
@@ -666,6 +666,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
 
         for(WebServiceEndpoint nextEndpoint : endpoints) {
             WebComponentDescriptor webComp = nextEndpoint.getWebComponentImpl();
+
             if( !nextEndpoint.hasServletImplClass() ) {
                 throw new DeploymentException( format(rb.getString(
                         "enterprise.deployment.backend.cannot_find_servlet"),
@@ -684,6 +685,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
                 String containerServlet;
                 if(wsutil.isJAXWSbasedService(nextEndpoint.getWebService())) {
                     containerServlet = "org.glassfish.webservices.JAXWSServlet";
+                    addWSServletContextListener(webBunDesc);
                 } else {
                     containerServlet =
                     SingleThreadModel.class.isAssignableFrom(servletImplClazz) ?
@@ -722,6 +724,16 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         }
     }
 
+    private void addWSServletContextListener(WebBundleDescriptor webBunDesc) {
+        for(AppListenerDescriptor appListner: webBunDesc.getAppListenerDescriptors()) {
+            if(appListner.getListener().equals(WSServletContextListener.class.getName())) {
+                //already registered
+                return;
+            }
+        }
+        webBunDesc.addAppListenerDescriptor(new AppListenerDescriptorImpl(WSServletContextListener.class.getName()));
+    }
+    
     private String format(String key, String ... values){
         return MessageFormat.format(key, (Object [])values);
     }
