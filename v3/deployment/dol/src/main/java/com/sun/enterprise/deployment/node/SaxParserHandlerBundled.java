@@ -44,38 +44,47 @@ import com.sun.enterprise.deployment.util.DOLUtils;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.logging.Level;
 
 /**
- *Provides access to schemas and DTDs to Java Web Start-launched app clients 
- *that do not have an app server product installation at hand.
- *<p>
- *The DTDs and schemas are assumed to be in the classpath so that
- *schemas are at /schemas/<schema-name> and DTDs at /dtds/<dtd-name>
+ * Provides access to schemas and DTDs to Java Web Start-launched app clients
+ * that do not have an app server product installation at hand.
+ * <p/>
+ * The DTDs and schemas are assumed to be in the classpath so that
+ * schemas are at /schemas/<schema-name> and DTDs at /dtds/<dtd-name>
  *
+ * This ParserHandler is used by Embedded GlassFish as well.
+ * 
  * @author tjquinn
  */
 public class SaxParserHandlerBundled extends SaxParserHandler {
 
-    /** prefixes for the paths to use for looking up schemas and dtds as resources */
+    /**
+     * prefixes for the paths to use for looking up schemas and dtds as resources
+     */
     private static final String BUNDLED_SCHEMA_ROOT = "/schemas";
     private static final String BUNDLED_DTD_ROOT = "/dtds";
-    
-    /** Creates a new instance of SaxParserHandlerBundled */
+
+    /**
+     * Creates a new instance of SaxParserHandlerBundled
+     */
     public SaxParserHandlerBundled() {
     }
-    
+
     /**
-     *Returns an InputSource for the requested DTD or schema.
-     *<p>
-     *This implementation returns an InputSource that wraps the result 
-     *of getResourceAsStream, having
-     *located the requested schema in the classpath.
-     *@param the public ID of the requested entity
-     *@param the system ID of the requested entity
-     *@return InputSource for the requested entity; null if not available
-     *@throws SAXException in case of errors resolving the entity
+     * Returns an InputSource for the requested DTD or schema.
+     * <p/>
+     * This implementation returns an InputSource that wraps the result
+     * of getResourceAsStream, having
+     * located the requested schema in the classpath.
+     *
+     * @param publicID public ID of the requested entity
+     * @param systemID system ID of the requested entity
+     * @return InputSource for the requested entity; null if not available
+     * @throws SAXException in case of errors resolving the entity
      */
     public InputSource resolveEntity(String publicID, String systemID) throws SAXException {
         InputSource result = null;
@@ -85,25 +94,21 @@ public class SaxParserHandlerBundled extends SaxParserHandler {
          */
         try {
             if(DOLUtils.getDefaultLogger().isLoggable(Level.FINE)) {
-                DOLUtils.getDefaultLogger().fine("Asked to resolve  " + publicID + " system id = " + systemID);
+                DOLUtils.getDefaultLogger().fine("Asked to resolve  " + publicID +
+                        " system id = " + systemID);
             }
             if (publicID==null) {
                 // unspecified schema
                 if (systemID==null || systemID.lastIndexOf('/')==systemID.length()) {
                     return null;
                 }
-                
+
                 /*
-                 *Attempt to open a stream to the requested resource as a schema.
-                 */
-                InputStream is = openSchemaStream(systemID);
-                
-                if (is != null) {
-                    /*
-                     *We found the entity, so wrap an InputSource around the stream.
-                     */
-                    result = new InputSource(is);
-                } else {
+                *Attempt to open a stream to the requested resource as a schema.
+                */
+                result = openSchemaSource(systemID);
+
+                if (result == null) {
                     /*
                      *The entity was not found, so wrap an InputSource around the system ID string instead.
                      */
@@ -115,29 +120,20 @@ public class SaxParserHandlerBundled extends SaxParserHandler {
                  */
                 if ( getMapping().containsKey(publicID)) {
                     this.publicID = publicID;
-                    InputStream is = openDTDStream(publicID);
-                    if (is != null) {
-                        result = new InputSource(is);
-                    } 
+                    result = openDTDSource(publicID);
                 } else if (systemID != null) {
                     /*
                      *The DTD lookup failed but a system ID was also specified.  Try
                      *looking up the DTD in the schemas path, because some reside
                      *there and were not registered in the DTD map by SaxParserHandler.
                      */
-                    InputStream is = openSchemaStream(systemID);
-                    if (is != null) {
-                        result = new InputSource(is);
-                    }
-                    
+                    result = openSchemaSource(systemID);
+
                     /*
-                     * As a last resort, try opening the DTD without going
-                     * through the mapping table.
-                     */
-                    is = openStream(BUNDLED_DTD_ROOT, systemID);
-                    if (is != null) {
-                        result = new InputSource(is);
-                    }
+                    * As a last resort, try opening the DTD without going
+                    * through the mapping table.
+                    */
+                    result = openInputSource(BUNDLED_DTD_ROOT, systemID);
                 }
             }
         } catch (Exception exc) {
@@ -146,28 +142,41 @@ public class SaxParserHandlerBundled extends SaxParserHandler {
         }
         return result;
     }
-    
+
     /**
-     *Returns an InputStream for the schema with the requested system ID.
-     *@param systemID of the schema
-     *@return an InputStream to the selected schema; null if the schema is not available
+     * Returns an InputStream for the schema with the requested system ID.
+     *
+     * @param systemID system ID of the schema
+     * @return an InputStream to the selected schema; null if the schema is not available
      */
-    private InputStream openSchemaStream(String systemID) {
-        return openStream(BUNDLED_SCHEMA_ROOT, systemID);
+    private InputSource openSchemaSource(String systemID) {
+        return openInputSource(BUNDLED_SCHEMA_ROOT, systemID);
     }
-    
+
     /**
-     *Returns an InputStream for the DTD with the requested public ID.
-     *@param the publicID of the DTD requested
-     *@return an InputStream to the selected DTD; null if the DTD is not available
+     * Returns an InputStream for the DTD with the requested public ID.
+     *
+     * @param publicID public ID of the DTD requested
+     * @return an InputStream to the selected DTD; null if the DTD is not available
      */
-    private InputStream openDTDStream(String publicID) {
-        return openStream(BUNDLED_DTD_ROOT, getMapping().get(publicID));
+    private InputSource openDTDSource(String publicID) {
+        return openInputSource(BUNDLED_DTD_ROOT, getMapping().get(publicID));
     }
-    
-    private InputStream openStream(final String localRoot, final String systemID) {
-        String targetID = localRoot + "/" + systemID.substring(systemID.lastIndexOf("/") + 1 );
-        InputStream result = this.getClass().getResourceAsStream(targetID);
-        return result;
+
+    private InputSource openInputSource(final String localRoot, final String systemID) {
+        String targetID = localRoot + "/" + systemID.substring(systemID.lastIndexOf("/") + 1);
+        URL url = this.getClass().getResource(targetID);
+        InputStream stream;
+        try {
+            stream = url != null ? url.openStream() : null;
+        } catch (IOException e) {
+            stream = null;
+        }
+        InputSource source = null;
+        if (stream != null) {
+            source = new InputSource(stream);
+            source.setSystemId(url.toString());
+        }
+        return source;
     }
 }

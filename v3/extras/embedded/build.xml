@@ -98,9 +98,7 @@
     <target name="addDtds" if="includeDtds">
         <echo message="adding dtds"/>
         <jar jarfile="${jardir}/dtds.jar" basedir="${jardir}/glassfish3/glassfish/lib" includes="dtds/**/*"/>
-       <!-- do not include schemas for now because of duplicate issue   
 	<jar jarfile="${jardir}/schemas.jar" basedir="${jardir}/glassfish3/glassfish/lib" includes="schemas/**/*"/>
-	-->
     </target>
     
     <target name="rejar">
