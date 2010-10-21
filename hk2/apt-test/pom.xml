@@ -53,6 +53,12 @@
             <scope>test</scope>
     </dependency>
     <dependency>
+            <groupId>com.sun.enterprise.auto-depends-test</groupId>
+            <artifactId>test-rls</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+    </dependency>
+    <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.3.1</version>
