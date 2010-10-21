@@ -88,6 +88,8 @@ public class SSHLauncher {
     private static final String SSH_DIR = ".ssh" + File.separator;
     private static final String AUTH_KEY_FILE = "authorized_keys";
     private static final int DEFAULT_TIMEOUT_MSEC = 120000; // 2 minutes
+    private static final String SSH_KEYGEN = "ssh-keygen";
+    
   /**
      * Database of known hosts.
      */
@@ -666,26 +668,40 @@ public class SSHLauncher {
     }
 
     /**
-     * Crude method to locate ssh-keygen
+     * Method to locate ssh-keygen. If found in path, return the same or else look
+     * for it in a pre defined list of search paths.
      * @return ssh-keygen command
      */
     private String findSSHKeygen() {
-        List<String> cmds = new ArrayList<String>(Arrays.asList(
-                    "/usr/bin/ssh-keygen",
-                    "/usr/local/bin/ssh-keygen"));
+        List<String> paths = new ArrayList<String>(Arrays.asList(
+                    "/usr/bin/",
+                    "/usr/local/bin/"));
 
-        File exe = ProcessUtils.getExe("ssh-keygen");
+        if (OS.isWindows()) {
+            paths.add("C:/cygwin/bin/");
+            //Windows MKS Toolkit install path
+            String mks = System.getenv("ROOTDIR");
+            if (mks != null) {
+                paths.add(mks + "/bin/");
+            }
+        }
+
+        if (logger.isLoggable(Level.FINER)) {
+            logger.finer("Paths = " + paths);
+        }
+        
+        File exe = ProcessUtils.getExe(SSH_KEYGEN);
         if( exe != null){
             return exe.getPath();
         }
 
-        for (String s :cmds) {
-            File f = new File(s);
+        for (String s :paths) {
+            File f = new File(s + SSH_KEYGEN);
             if (f.canExecute()) {
-                return s;
+                return f.getAbsolutePath();
             }
         }
-        return "ssh-keygen";
+        return SSH_KEYGEN;
     }
 
     /**
