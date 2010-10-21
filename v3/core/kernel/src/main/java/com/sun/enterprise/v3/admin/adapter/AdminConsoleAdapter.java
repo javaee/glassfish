@@ -43,6 +43,7 @@ package com.sun.enterprise.v3.admin.adapter;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.v3.admin.AdminAdapter;
+import com.sun.enterprise.v3.admin.AdminConsoleConfigUpgrade;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import com.sun.grizzly.tcp.Request;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
@@ -136,7 +137,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     @Inject
     AdminService adminService; //need to take care of injecting the right AdminService
 
-
+    
     private String contextRoot;
     private File ipsRoot;    // GF IPS Root
     private File warFile;    // GF Admin Console War File Location
@@ -148,6 +149,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     private boolean errorOccurred   = false;
     private String currentDeployedVersion   = "";     //Version of admin console that is currently deployed
     private String downloadedVersion = null;            //Version of the console IPS package that is downloaded
+    private AdminConsoleConfigUpgrade adminConsoleConfigUpgrade=null;
 
     private final CountDownLatch latch = new CountDownLatch(1);
 
