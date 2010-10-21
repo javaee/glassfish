@@ -49,10 +49,10 @@
         <version>3.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>glassfish-osgi-admin-console</artifactId>
-    <name>Glassfish OSGi HTTP Service package</name>
+    <artifactId>glassfish-osgi-gui</artifactId>
+    <name>Glassfish OSGi Management console package</name>
     <packaging>distribution-base-zip</packaging>
-    <description>This pom describes how to assemble the GlassFish OSGi Admin console package</description>
+    <description>This pom describes how to assemble the GlassFish OSGi Management console package</description>
 
     <build>
         <plugins>

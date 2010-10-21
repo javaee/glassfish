@@ -52,7 +52,7 @@
 		<scope level="compile,runtime">
 			<subtract>
 			    <fullGraph/>
-			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-osgi-admin-console">	
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-osgi-gui">	
 	                                 <scope level="compile,runtime"/>
 			     </subGraph>
 			</subtract>

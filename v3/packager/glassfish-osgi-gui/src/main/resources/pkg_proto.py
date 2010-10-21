@@ -45,7 +45,7 @@ import imp
 conf = imp.load_source("pkg_conf", "../pkg_conf.py")
 
 pkg = {
-    "name"          : "glassfish-osgi-admin-console",
+    "name"          : "glassfish-osgi-gui",
     "version"       : conf.glassfish_version,
     "attributes"    : {
                         "pkg.summary" : "GlassFish OSGi Admin Console",

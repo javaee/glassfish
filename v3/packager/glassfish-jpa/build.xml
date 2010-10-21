@@ -62,6 +62,9 @@
 
        
        <stage-module-jars graphid="all-modules" />
+
+       <move file="target/stage/${install.dir.name}/glassfish/modules/osgi-jpa.jar" todir="target/stage/${install.dir.name}/glassfish/modules/autostart" failonerror="false"/>
+
        <stage-distribution-fragments graphid="all-modules" />
 
 
