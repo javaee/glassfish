@@ -41,8 +41,11 @@
 package com.sun.enterprise.v3.services.impl;
 
 import java.beans.PropertyChangeEvent;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Collection;
 
 import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.Http;
@@ -76,7 +79,6 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Alexey Stashok
  */
 public class DynamicConfigListener implements ConfigListener {
-    private static final String ADMIN_LISTENER = "admin-listener";
     private GrizzlyService grizzlyService;
 
     private Logger logger;
@@ -89,7 +91,7 @@ public class DynamicConfigListener implements ConfigListener {
     }
 
     @Override
-    public UnprocessedChangeEvents changed(final PropertyChangeEvent[] events) {
+    public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
 
         return ConfigSupport.sortAndDispatch(
             events, new Changed() {
@@ -101,27 +103,27 @@ public class DynamicConfigListener implements ConfigListener {
                             + " " + tClass + " " + t);
                     }
                     if (t instanceof NetworkListener) {
-                        return processNetworkListener(type, (NetworkListener) t, events);
+                        return processNetworkListener(type, (NetworkListener) t);
                     } else if (t instanceof Http) {
-                        return processProtocol(type, (Protocol) t.getParent(), events);
+                        return processProtocol(type, (Protocol) t.getParent());
                     } else if (t instanceof FileCache) {
-                        return processProtocol(type, (Protocol) t.getParent().getParent(), null);
+                        return processProtocol(type, (Protocol) t.getParent().getParent());
                     } else if (t instanceof Ssl) {
-                        return processProtocol(type, (Protocol) t.getParent(), null);
+                        return processProtocol(type, (Protocol) t.getParent());
                     } else if (t instanceof Protocol) {
-                        return processProtocol(type, (Protocol) t, null);
+                        return processProtocol(type, (Protocol) t);
                     } else if (t instanceof ThreadPool) {
                         ThreadPool pool = (ThreadPool) t;
                         NotProcessed notProcessed = null;
                         for (NetworkListener listener : pool.findNetworkListeners()) {
-                            notProcessed = processNetworkListener(type, listener, null);
+                            notProcessed = processNetworkListener(type, listener);
                         }
                         return notProcessed;
                     } else if (t instanceof Transport) {
                         Transport transport = (Transport) t;
                         NotProcessed notProcessed = null;
                         for (NetworkListener listener : transport.findNetworkListeners()) {
-                            notProcessed = processNetworkListener(type, listener, null);
+                            notProcessed = processNetworkListener(type, listener);
                         }
                         return notProcessed;
                     } else if (t instanceof VirtualServer && !grizzlyService.hasMapperUpdateListener()){
@@ -133,74 +135,50 @@ public class DynamicConfigListener implements ConfigListener {
     }
 
     private <T extends ConfigBeanProxy> NotProcessed processNetworkListener(Changed.TYPE type,
-        NetworkListener listener, PropertyChangeEvent[] changedProperties) {
-        boolean isAdminListener = ADMIN_LISTENER.equals(listener.getName());
+        NetworkListener listener) {
+        if (!"admin-listener".equals(listener.getName())) {
+            int listenerPort = getPort(listener);
 
-        Lock portLock = null;
-        try {
-            portLock = acquirePortLock(listener);
-
-            if (type == Changed.TYPE.ADD) {
-                final Future future = grizzlyService.createNetworkProxy(listener);
-                future.get(RECONFIG_LOCK_TIMEOUT_SEC, TimeUnit.SECONDS);
-                grizzlyService.registerNetworkProxy();
-            } else if (type == Changed.TYPE.REMOVE) {
-                if (!isAdminListener) {
+            Lock portLock = null;
+            try {
+                portLock = acquirePortLock(listener);
+                
+                if (type == Changed.TYPE.ADD) {
+                    final Future future = grizzlyService.createNetworkProxy(listener);
+                    future.get(RECONFIG_LOCK_TIMEOUT_SEC, TimeUnit.SECONDS);
+                    grizzlyService.registerNetworkProxy();
+                } else if (type == Changed.TYPE.REMOVE) {
                     grizzlyService.removeNetworkProxy(listener);
-                }
-            } else if (type == Changed.TYPE.CHANGE) {
-                if (isAdminListener) {
-                    final boolean dynamic = isAdminDynamic(changedProperties);
-                    if (dynamic) {
-                        GrizzlyProxy proxy = (GrizzlyProxy) grizzlyService.lookupNetworkProxy(listener);
-                        if (proxy != null) {
-                            GrizzlyListener netListener = proxy.getUnderlyingListener();
-                            netListener.processDynamicConfigurationChange(changedProperties);
-                            return null;
-                        }
+                } else if (type == Changed.TYPE.CHANGE) {
+                    // Restart GrizzlyProxy on the address/port
+                    // Address/port/id could have been changed - so try to find
+                    // corresponding proxy both ways
+                    if (!grizzlyService.removeNetworkProxy(listener)) {
+                        grizzlyService.removeNetworkProxy(listener.getName());
+                    }
+                    final Future future = grizzlyService.createNetworkProxy(listener);
+                    if (future != null) {
+                        future.get(30, TimeUnit.SECONDS);
+                        grizzlyService.registerNetworkProxy();
+                    } else {
+                        logger.log(Level.FINE, "Skipping proxy registration for the listener " + listener.getName());
                     }
                 }
-                // Restart GrizzlyProxy on the address/port
-                // Address/port/id could have been changed - so try to find
-                // corresponding proxy both ways
-                if (!grizzlyService.removeNetworkProxy(listener)) {
-                    grizzlyService.removeNetworkProxy(listener.getName());
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Network listener configuration error. Type: " + type, e);
+            } finally {
+                if (portLock != null) {
+                    releaseListenerLock(portLock);
                 }
-                final Future future = grizzlyService.createNetworkProxy(listener);
-                if (future != null) {
-                    future.get(30, TimeUnit.SECONDS);
-                    grizzlyService.registerNetworkProxy();
-                } else {
-                    logger.log(Level.FINE, "Skipping proxy registration for the listener " + listener.getName());
-                }
-            }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Network listener configuration error. Type: " + type, e);
-        } finally {
-            if (portLock != null) {
-                releaseListenerLock(portLock);
             }
         }
         return null;
     }
 
-    private boolean isAdminDynamic(PropertyChangeEvent[] events) {
-        if (events == null || events.length == 0) {
-            return false;
-        }
-        // for now, anything other than comet support will require a restart
-        for (PropertyChangeEvent e: events) {
-            if ("comet-support-enabled".equals(e.getPropertyName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private NotProcessed processProtocol(Changed.TYPE type, Protocol protocol, PropertyChangeEvent[] events) {
+    private NotProcessed processProtocol(Changed.TYPE type, Protocol protocol) {
         NotProcessed notProcessed = null;
         for (NetworkListener listener : protocol.findNetworkListeners()) {
-            notProcessed = processNetworkListener(type, listener, events);
+            notProcessed = processNetworkListener(type, listener);
         }
         return notProcessed;
     }
@@ -211,7 +189,7 @@ public class DynamicConfigListener implements ConfigListener {
         for (String s: GrizzlyProxy.toArray(list,",")){
             for(NetworkListener n: vs.findNetworkListeners()){
                 if (n.getName().equals(s)){
-                    notProcessed = processNetworkListener(type, n, null);
+                    notProcessed = processNetworkListener(type, n);
                 }
             }
         }

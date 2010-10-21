@@ -351,10 +351,6 @@ public class GrizzlyProxy implements NetworkProxy {
         return address;
     }
 
-    public GrizzlyListener getUnderlyingListener() {
-        return grizzlyListener;
-    }
-
     protected void registerMonitoringStatsProviders() {
         final String name = networkListener.getName();
         final GrizzlyMonitoring monitoring = grizzlyService.getMonitoring();
