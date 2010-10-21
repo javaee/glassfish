@@ -85,6 +85,9 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
     private List<ConnectorConnPoolAppStatsProvider> ccPoolAppStatsProviders = null;
     private ConnectorRuntime runtime;
 
+    //keep a static reference to InitialContext so as to avoid performance issues.
+    private static InitialContext ic = null;
+
     /**
      * Constructor.
      *
@@ -102,6 +105,13 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
         this.appStatsMap = new HashMap<PoolInfo, Map<String, ConnectionPoolAppEmitterImpl>>();
         this.resourceAppAssociationMap = new HashMap<Long, String>();
         runtime = ConnectorRuntime.getRuntime();
+        if (ic == null){
+            try{
+                ic = new InitialContext();
+            } catch (NamingException e) {
+                //ignore
+            }
+        }
     }
 
     /**
@@ -289,20 +299,20 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
     }
 
     private String getAppName(long resourceHandleId) {
-        Context ic = null;
         String appName = null;
         try {
-            ic = new InitialContext();
+            if(ic == null){
+                ic = new InitialContext();
+            }
             appName = (String) ic.lookup("java:app/AppName");
         } catch (NamingException ex) {
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE, "Unable to get application name using "
                         + "java:app/AppName method");
             }
-            appName = resourceAppAssociationMap.remove(resourceHandleId);
+            appName = resourceAppAssociationMap.remove(resourceHandleId); 
         }
         resourceAppAssociationMap.put(resourceHandleId, appName);
-        
         return appName;
     }
 
