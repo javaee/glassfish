@@ -50,6 +50,7 @@ import com.sun.enterprise.config.util.PortManager;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.util.net.NetUtils;
 import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.logging.LogDomains;
 import java.io.*;
@@ -660,7 +661,29 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                 }
             }
 
+            checkAdminPort(instance, ourConfig, localStrings);
             setupSupplemental(context, instance);
+        }
+
+        private void checkAdminPort(final Server instance, final Config config, LocalStringManagerImpl localStrings) throws TransactionFailure {
+            if (node != null) {
+                Node n = domain.getNodeNamed(node);
+                if (n != null) {
+                    String nodeHost = n.getNodeHost();
+                    if (nodeHost == null || nodeHost.equals("localhost") || NetUtils.IsThisHostLocal(nodeHost)) { // instance on same host as DAS
+                        int dasAdminPort = domain.getServerNamed("server").getAdminPort();
+                        // Don't use the getAdminPort duck type method directly on the instance being created
+                        int instanceAdminPort = new ServerHelper(instance, config).getAdminPort();
+                        if (instanceAdminPort != -1 && dasAdminPort != -1) {
+                            if (instanceAdminPort == dasAdminPort) {
+                                throw new TransactionFailure(localStrings.getLocalString(
+                                        "Server.cannotHaveSameAdminPortAsDAS",
+                                        "Cannot create an instance on the same host as DAS with the same admin port as DAS: {0}.", instanceAdminPort + ""));
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private void setupSupplemental(AdminCommandContext context, final Server instance) {
