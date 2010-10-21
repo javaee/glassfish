@@ -90,6 +90,8 @@ public final class RestoreDomainCommand extends BackupCommands {
     @Override
     protected void validate()
             throws CommandException, CommandValidationException {
+
+        boolean domainExists = true;
         
         if (backupFilename == null && domainName == null) {
             if (!force) {
@@ -108,14 +110,15 @@ public final class RestoreDomainCommand extends BackupCommands {
         } catch (CommandException e) {
             if (e.getCause() != null &&
                 (e.getCause() instanceof java.io.IOException)) {
-                ; // The domain does not exist which is allowed if the
-                  // force option is used (checked later).
+                // The domain does not exist which is allowed if the
+                // force option is used (checked later).
+                domainExists = false;
             } else {
                 throw e;
             }
         }
 
-        if (isRunning()) {
+        if (domainExists && isRunning()) {
             throw new CommandException(strings.get("DomainIsNotStopped",
                                        domainName));
         }
@@ -123,9 +126,19 @@ public final class RestoreDomainCommand extends BackupCommands {
         if (backupFilename != null) {
             File f = new File(backupFilename);
 
-            if (!f.exists() || !f.canRead()) {
+            if (!f.exists()) {
                 throw new CommandValidationException(
                     strings.get("FileDoesNotExist", backupFilename));
+            }
+
+            if (!f.canRead()) {
+                throw new CommandValidationException(
+                    strings.get("FileCanNotRead", backupFilename));
+            }
+
+            if (f.isDirectory()) {
+                throw new CommandValidationException(
+                    strings.get("FileIsDirectory", backupFilename));
             }
         }
 
