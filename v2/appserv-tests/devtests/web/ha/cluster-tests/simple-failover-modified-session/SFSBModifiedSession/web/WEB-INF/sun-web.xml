@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sun-web-app PUBLIC "-//Sun Microsystems, Inc.//DTD GlassFish Application Server 3.0 Servlet 3.0//EN" "http://www.sun.com/software/appserver/dtds/sun-web-app_3_0-0.dtd">
+<sun-web-app error-url="">
+  <context-root>/SFSBModifiedSession</context-root>
+  <class-loader delegate="true"/>
+  <session-config>
+    <session-manager persistence-type="replicated">
+      <manager-properties>
+        <property name="persistenceFrequency" value="web-method"/>
+      </manager-properties>
+      <store-properties>
+        <property name="persistenceScope" value="modified-session"/>
+      </store-properties>
+    </session-manager>
+    <session-properties/>
+    <cookie-properties/>
+  </session-config>
+  <jsp-config>
+    <property name="keepgenerated" value="true">
+      <description>Keep a copy of the generated servlet class' java code.</description>
+    </property>
+  </jsp-config>
+</sun-web-app>
