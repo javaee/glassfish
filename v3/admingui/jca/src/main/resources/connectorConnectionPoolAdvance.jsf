@@ -46,7 +46,7 @@
     setResourceBundle(key="i18njca" bundle="org.glassfish.jca.admingui.Strings");
     setResourceBundle(key="help_jca" bundle="org.glassfish.jca.admingui.Helplinks")
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njca.connectorConnectionPool.advancePageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njca.connectorConnectionPool.advancePageTitle}" guiOnLoad="enableDisableLazyConnection('#{associateId}');" >
 <!define name="content">
 <event>
     <!beforeCreate
@@ -92,6 +92,21 @@
 
     <sun:hidden id="helpKey" value="$resource{help_jca.connectorConnectionPoolAdvance}" />
 </sun:form>
+<f:verbatim>
+<script type="text/javascript">
+    function enableDisableLazyConnection(la){
+        var c = getTextElement(la);
+        var selected = c.checked;
+        if(selected) {
+            #{themeJavascript.JS_PREFIX}.checkbox.setChecked('#{enlistId}', true);
+            disableComponent('#{enlistId}', 'text');
+        }
+        if(!selected) {
+            enableComponent('#{enlistId}', 'text');
+        }
+    }
+    </script>
+</f:verbatim>
             "<br/>
 #include "/common/shared/changeButtonsJS.inc" 
 </define>
