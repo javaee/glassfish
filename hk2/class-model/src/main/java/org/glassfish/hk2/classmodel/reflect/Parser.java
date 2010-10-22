@@ -239,6 +239,7 @@ public class Parser implements Closeable {
             if (logger.isLoggable(Level.FINE)) {
                 logger.fine("Skipping reparsing..." + source.getURI());
             }
+            doneHook.run();
             return;
         }
         if (logger.isLoggable(Level.FINE)) {
@@ -353,6 +354,7 @@ public class Parser implements Closeable {
             public Thread newThread(Runnable r) {
                 Thread t = new Thread(r);
                 t.setName("Hk2-jar-scanner");
+                t.setDaemon(true);
                 return t;
             }
         });
