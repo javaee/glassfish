@@ -371,7 +371,11 @@ public class ProviderUtil {
                 result = result +
                     "<dd><input name=\"operation\" value=\"__deleteoperation\" type=\"hidden\"></dd>";
             }
-
+            //hack-2 : put a flag to delte the empty value for CLI parameters...
+            //add hidden field
+            result = result +
+                    "<dd><input name=\"__remove_empty_entries__\" value=\"true\" type=\"hidden\"></dd>";
+            
             result = result + "<dt class=\"button\"></dt><dd class=\"button\"><input value=\"" + commandDisplayName + "\" type=\"submit\"></dd>";
             result = result + "</dl></form></div>";
         }

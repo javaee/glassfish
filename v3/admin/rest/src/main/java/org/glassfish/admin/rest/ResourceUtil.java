@@ -505,19 +505,23 @@ public class ResourceUtil {
     //removes entries with empty value from the given Map
 
     public static void purgeEmptyEntries(Map<String, String> data) {
-        return;
-        /*
-        Set<String> keys = data.keySet();
-        Iterator<String> iterator = keys.iterator();
-        String key;
-        while (iterator.hasNext()) {
-            key = iterator.next();
-            if ((data.get(key) == null) || (data.get(key).length() < 1)) {
-                data.remove(key);
-                iterator = keys.iterator();
+
+        //hack-2 : remove empty entries if the form has a hidden param for __remove_empty_entries__
+
+        if ("true".equals(data.get("__remove_empty_entries__"))) {
+            data.remove("__remove_empty_entries__");
+
+            Set<String> keys = data.keySet();
+            Iterator<String> iterator = keys.iterator();
+            String key;
+            while (iterator.hasNext()) {
+                key = iterator.next();
+                if ((data.get(key) == null) || (data.get(key).length() < 1)) {
+                    data.remove(key);
+                    iterator = keys.iterator();
+                }
             }
         }
-        */
     }
 
     /**
@@ -903,13 +907,44 @@ public class ResourceUtil {
         }
         return retlist;
     }
+    /**
+     * @param model
+     * @return name of the key attribute for the given model.
+     */
+    private static String getKey(Dom model) {
+        String key = null;
+        if (model.getKey() == null) {
+            for (String s : model.getAttributeNames()) {//no key, by default use the name attr
+                if (s.equals("name")) {
+                    key = model.attribute(s) ;
+                }
+            }
+            if (key == null)//nothing, so pick the first one
+            {
+                Set<String> attributeNames =  model.getAttributeNames();
+                if(!attributeNames.isEmpty()) {
+                    key = model.attribute(attributeNames.iterator().next());
+                } else {
+                    //TODO carried forward from old generator. Should never reach here. But we do for ConfigExtension and WebModuleConfig
+                    key = "ThisIsAModelBug:NoKeyAttr"; //no attr choice fo a key!!! Error!!!
+                }
 
+            }
+        } else {
+            key = model.getKey();
+        }
+        return key;
+    }
+
+    
     public static Map<String, String> getResourceLinks(List<Dom> proxyList, UriInfo uriInfo) {
         Map<String, String> links = new TreeMap<String, String>();
         Collections.sort(proxyList, new DomConfigurator());
         for (Dom proxy : proxyList) { //for each element
             try {
-                links.put(proxy.getKey(), getElementLink(uriInfo, proxy.getKey()));
+                links.put(
+                        getKey(proxy), 
+                        getElementLink(uriInfo, getKey(proxy)));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
