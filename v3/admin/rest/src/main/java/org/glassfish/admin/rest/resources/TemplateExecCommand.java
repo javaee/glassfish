@@ -41,7 +41,6 @@
 package org.glassfish.admin.rest.resources;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import org.glassfish.admin.rest.CliFailureException;
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.provider.MethodMetaData;
@@ -56,6 +55,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -127,10 +127,13 @@ public class TemplateExecCommand {
         if (exitCode != ActionReport.ExitCode.FAILURE) {
             results.setStatusCode(200); /*200 - ok*/
         } else {
-            Throwable ex = actionReport.getFailureCause();
-            throw (ex == null) ?
-                    new CliFailureException(actionReport.getMessage()) :
-                    new CliFailureException(actionReport.getMessage(), ex);
+            results.setStatusCode(400); /*400 - bad request*/
+
+
+//            Throwable ex = actionReport.getFailureCause();
+//            if (ex!=null){
+//                 throw  new CliFailureException(actionReport.getMessage(), ex);
+//            }
         }
 
         return results;
@@ -191,11 +194,31 @@ public class TemplateExecCommand {
     }
 
     protected void purgeEmptyEntries(ParameterMap data) {
+
+        HashSet<String> keyToRemove = new HashSet<String>();
         Set<Entry<String, List<String>>> entries = data.entrySet();
         for (Entry<String, List<String>> entry : entries) {
             if ((entry.getValue() == null) || (entry.getValue().isEmpty())) {
-                data.remove(entry.getKey());// CME ?
+                keyToRemove.add(entry.getKey());
+
             }
+        }
+        if ("true".equals(data.getOne("__remove_empty_entries__"))) {
+            data.remove("__remove_empty_entries__");
+            //now remove list of 1 element which is "" only
+            Set<Entry<String, List<String>>> entries2 = data.entrySet();
+            //temp list to avoid Concurrent Modification Exception
+            for (Entry<String, List<String>> entry : entries2) {
+                if (entry.getValue().size() == 1) {
+                    if (entry.getValue().get(0).equals("")) {
+                        keyToRemove.add(entry.getKey());
+                    }
+                }
+            }
+        }
+        for (String k : keyToRemove) {
+            data.remove(k);
+
         }
     }
 
