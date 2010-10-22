@@ -37,6 +37,9 @@
 package org.jvnet.hk2.component.classmodel;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -59,7 +62,11 @@ import org.jvnet.hk2.component.Habitat;
  */
 public abstract class ClassPath {
 
-  public LinkedHashSet<String> classpathEntries = new LinkedHashSet<String>();
+  // classpath is the one that was passed in originally
+  public LinkedHashSet<String> classPathEntries = new LinkedHashSet<String>();
+  
+  // classpath is expanded to include manifest jar entries, etc.
+  public LinkedHashSet<String> expandedClassPathEntries = new LinkedHashSet<String>();
 
   /**
    * Creates a ClassPathHelper instance.
@@ -82,8 +89,8 @@ public abstract class ClassPath {
   }
   
   protected ClassPath(boolean allowTestClassPath) {
-    String classPath = (allowTestClassPath) ? System
-        .getProperty("surefire.test.class.path") : null;
+    String classPath = (allowTestClassPath) ? 
+        System .getProperty("surefire.test.class.path") : null;
     if (null == classPath) {
       classPath = System.getProperty("java.class.path");
     }
@@ -109,7 +116,8 @@ public abstract class ClassPath {
       for (String filename : filenames) {
         if (!filename.equals("")) {
           final File classpathEntry = new File(filename);
-          addTransitiveJars(classpathEntries, classpathEntry);
+          classPathEntries.add(classpathEntry.getAbsolutePath());
+          addTransitiveJars(expandedClassPathEntries, classpathEntry);
         }
       }
     }
@@ -117,25 +125,30 @@ public abstract class ClassPath {
 
   @Override
   public String toString() {
-    return getClass().getSimpleName() + "-" + System.identityHashCode(this) + ":" + getEntries();
+    return getClass().getSimpleName() + "-" + System.identityHashCode(this) + "=" + getEntries();
   }
   
   /**
    * Find all jars referenced directly and indirectly via a classpath
    * specification typically drawn from java.class.path or
-   * surefire.test.class.path System properties
+   * surefire.test.class.path System properties.
+   * 
+   * This will attempt to expand all manifest classpath entries.
    *
    * @return the set of entries in the classpath
    */
   public Set<String> getEntries() {
-    return Collections.unmodifiableSet(classpathEntries);
+    return Collections.unmodifiableSet(expandedClassPathEntries);
   }
   
+  /**
+   * @see #getEntries() 
+   */
   public Set<File> getFileEntries() {
     LinkedHashSet<File> fileEntries = new LinkedHashSet<File>();
     
     Logger logger = Logger.getAnonymousLogger();
-    for (String fileName : classpathEntries) {
+    for (String fileName : expandedClassPathEntries) {
       File file = new File(fileName);
       if (!file.exists()) {
         logger.log(Level.FINE, "warning: {0} does not exist.", fileName);
@@ -147,6 +160,26 @@ public abstract class ClassPath {
   }
 
   /**
+   * @return the original classpath as specified (i.e., without transitive manifest dependencies)
+   */
+  @SuppressWarnings("deprecation")
+  public URL[] getRawURLs() throws IOException {
+    ArrayList<URL> urls = new ArrayList<URL>(classPathEntries.size());
+
+    Logger logger = Logger.getAnonymousLogger();
+    for (String fileName : classPathEntries) {
+      File file = new File(fileName);
+      if (file.exists()) {
+        urls.add(file.toURL());
+      } else {
+        logger.log(Level.FINE, "warning: {0} does not exist.", fileName);
+      }
+    }
+    
+    return urls.toArray(new URL[] {});
+  }
+
+  /**
    * Add provided File and all of its transitive manifest classpath entries to
    * the provided set
    * 
@@ -155,8 +188,7 @@ public abstract class ClassPath {
    * @param classpathFile
    *          File to transitively add to set
    */
-  private static void addTransitiveJars(Set<String> cpSet,
-      final File classpathFile) {
+  private static void addTransitiveJars(Set<String> cpSet, final File classpathFile) {
     cpSet.add(classpathFile.getAbsolutePath());
 
     if (classpathFile.exists()) {
@@ -166,7 +198,6 @@ public abstract class ClassPath {
           Manifest mf;
           try {
             jarFile = new JarFile(classpathFile);
-
             mf = jarFile.getManifest();
           } finally {
             if (jarFile != null) {
