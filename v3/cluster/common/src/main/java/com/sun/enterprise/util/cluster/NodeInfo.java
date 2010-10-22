@@ -136,22 +136,6 @@ public final class NodeInfo {
 
         sb.append(String.format(formattedLine, NAME, TYPE, HOST, INSTALLDIR, INSTANCESLIST));
         sb.append('\n');
-        for (int i = 0; i < longestName; i++)
-            sb.append('-');
-        sb.append('|');
-        for (int i = 0; i < longestType; i++)
-            sb.append('-');
-        sb.append('|');
-        for (int i = 0; i < longestHost; i++)
-            sb.append('-');
-        sb.append('|');
-        for (int i = 0; i < longestInstallDir; i++)
-            sb.append('-');
-        sb.append('|');
-        for (int i = 0; i < longestInstancesList; i++)
-            sb.append('-');
-        sb.append('|');
-        sb.append('\n');
 
         // no linefeed at the end!!!
         boolean first = true;
