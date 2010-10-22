@@ -159,6 +159,7 @@ public class DynamicConfigListener implements ConfigListener {
                             return null;
                         }
                     }
+                    return null;
                 }
                 // Restart GrizzlyProxy on the address/port
                 // Address/port/id could have been changed - so try to find
