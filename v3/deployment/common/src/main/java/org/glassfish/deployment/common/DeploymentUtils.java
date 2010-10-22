@@ -445,4 +445,25 @@ public class DeploymentUtils {
         return ASClassLoaderUtil.getManifestClassPathAsURLs(
             manifest, appRootPath);
     }
+
+    public static List<URI> getExternalLibraries(ReadableArchive archive) {
+        List<URI> externalLibURIs = new ArrayList<URI>();
+        try {
+            List<URL> manifestURLs = getManifestLibraries(archive);
+            URI archiveURI = archive.getURI();
+            if (archive.getParentArchive() != null) {
+                archiveURI = archive.getParentArchive().getURI();
+            }
+            for (URL manifestURL : manifestURLs) {
+                URI manifestLibURI = archiveURI.relativize(manifestURL.toURI());
+                if (manifestLibURI.isAbsolute()) {
+                    externalLibURIs.add(manifestLibURI);
+                }
+            }
+        } catch (Exception e) {
+            Logger.getAnonymousLogger().log(Level.WARNING, e.getMessage(), e);
+        }
+        return externalLibURIs;
+    }
+
 }

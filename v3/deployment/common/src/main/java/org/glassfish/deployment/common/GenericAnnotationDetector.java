@@ -52,8 +52,12 @@ import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.net.URI;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import org.glassfish.internal.api.Globals;
 
 import com.sun.logging.LogDomains;
 
@@ -77,6 +81,24 @@ public class GenericAnnotationDetector extends AnnotationScanner {
 
     public boolean hasAnnotationInArchive(ReadableArchive archive) {
         scanArchive(archive);
+        if (found) {
+            return found;
+        }      
+        ArchiveFactory archiveFactory = null;
+        if (Globals.getDefaultHabitat() != null) {
+            archiveFactory = Globals.getDefaultHabitat().getComponent(ArchiveFactory.class);
+        }
+
+        if (archiveFactory != null) {
+            List<URI> externalLibs = DeploymentUtils.getExternalLibraries(archive);
+            for (URI externalLib : externalLibs) {
+                try {
+                    scanArchive(archiveFactory.openArchive(new File(externalLib.getPath())));
+                } catch (Exception e) {
+                    logger.log(Level.WARNING, e.getMessage(), e);
+                }
+            }
+        }
         return found;
     }
 

@@ -496,7 +496,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
     }
 
     private List<ReadableArchive> getExternalLibraries(
-        DeploymentContext context) {
+        DeploymentContext context) throws IOException {
         List<ReadableArchive> externalLibArchives = new ArrayList<ReadableArchive>();
         
         String skipScanExternalLibProp = context.getAppProps().getProperty(
@@ -508,22 +508,11 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
             return Collections.EMPTY_LIST;
         } 
 
-        try {
-            List<URL> manifestURLs = DeploymentUtils.getManifestLibraries(context);
-            ReadableArchive archive = context.getSource();
-            URI archiveURI = archive.getURI();
-            if (archive.getParentArchive() != null) {
-                archiveURI = archive.getParentArchive().getURI(); 
-            }
-            for (URL manifestURL : manifestURLs) { 
-                URI manifestLibURI = archiveURI.relativize(manifestURL.toURI());
-                if (manifestLibURI.isAbsolute()) {
-                    externalLibArchives.add(archiveFactory.openArchive(new File(manifestLibURI.getPath())));
-                }
-            }
-        } catch (Exception e) { 
-            context.getLogger().log(Level.WARNING, e.getMessage(), e);
+        List<URI> externalLibs = DeploymentUtils.getExternalLibraries(context.getSource());
+        for (URI externalLib : externalLibs) {
+            externalLibArchives.add(archiveFactory.openArchive(new File(externalLib.getPath())));
         }
+
         return externalLibArchives;
     }
     
