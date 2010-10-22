@@ -44,6 +44,8 @@ import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -94,6 +96,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
 
     private HashMap<String, Integer> targetLevel = null;
 
+    @Override
     public void postConstruct() {
         targetLevel = new HashMap<String, Integer>();
         targetLevel.put("applications", 0);
@@ -105,6 +108,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
         targetLevel.put("nodes", 3);
     }
 
+    @Override
     public void execute(AdminCommandContext context) {
         for (String value : values) {
 
@@ -237,6 +241,10 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
                 if (matches(finalDottedName, pattern)) {
                     if (attrName.equals(name) ||
                             attrName.replace('_', '-').equals(name.replace('_', '-')))  {
+                        if (isDeprecatedAttr(targetNode, name)) {
+                           warning(context, localStrings.getLocalString("admin.set.deprecated",
+                                   "Warning: The attribute {0} is deprecated.", targetName));
+                        }
 
                         if (!isProperty) {
                             targetName = prefix + finalDottedName;
@@ -304,6 +312,21 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
         return true;
     }
 
+    private boolean isDeprecatedAttr(Dom dom, String name) {
+        Class t = dom.getProxyType();
+        for (Method m : t.getDeclaredMethods()) {
+            if (name.equals(dom.model.toProperty(m).xmlName())) {
+                if (m.isAnnotationPresent(Deprecated.class)) return true;
+            }
+        }
+        for (Field f : t.getDeclaredFields()) {
+            if (name.equals(dom.model.camelCaseToXML(f.getName()))) {
+                if (f.isAnnotationPresent(Deprecated.class)) return true;
+            }
+        }
+        return false;
+    }
+
     private String getElementFromString(String name, int index) {
         StringTokenizer token = new StringTokenizer(name, ".");
         String target = null;
@@ -342,7 +365,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
             }
             replicationInstances = targetService.getInstances(target);
         }
-        if (replicationInstances.size() != 0) {
+        if (!replicationInstances.isEmpty()) {
             ParameterMap params = new ParameterMap();
             params.set("DEFAULT", targetName + "=" + value);
             ActionReport.ExitCode ret = ClusterOperationUtil.replicateCommand("set", FailurePolicy.Error,
@@ -400,6 +423,15 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
         if (ex != null)
             context.getActionReport().setFailureCause(ex);
         context.getActionReport().setMessage(msg);
+    }
+
+    /**
+     * Indicate in the action report a warning message.
+     */
+    private void warning(AdminCommandContext context, String msg) {
+        ActionReport ar = context.getActionReport().addSubActionsReport();
+        ar.setActionExitCode(ActionReport.ExitCode.WARNING);
+        ar.setMessage(msg);
     }
 
     /**
