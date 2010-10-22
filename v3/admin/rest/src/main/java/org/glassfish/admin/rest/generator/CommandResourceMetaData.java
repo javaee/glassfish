@@ -85,6 +85,43 @@ public class CommandResourceMetaData {
         }
         return retVal;
     }
+    /*
+     create-http-lb-ref     under a lb config elemente 
+create-http-redirect   under lb config
+  ///       create-http-lb-config
+
+ //create-http-lb   (load-balancer)
+///delete-http-lb   (load-balancer)
+///delete-http-lb-ref     
+delete-http-redirect
+         delete-http-lb-config
+
+disable-http-lb-application    under application
+enable-http-lb-application      
+
+disable-http-lb-server           server instance? and cluster
+enable-http-lb-server 
+
+      ///  export-http-lb-config
+
+      ///  list-http-lb-configs
+list-http-lbs
+///apply-http-lb-changes
+ //done configure-lb-weight  under server and cluster...
+///create-http-health-checker
+///delete-http-health-checker
+
+
+----------
+
+LoadBalancer
+LoadBalancers
+ListLoadBalancer
+
+LbConfig
+LbConfigs
+ListLbConfig
+     */
 
     private static String configBeansToCommandResourcesMap[][] = {
             //{config-bean, command, method, resource-path, command-action, command-params...}
@@ -92,7 +129,15 @@ public class CommandResourceMetaData {
             {"Application", "enable", "POST", "enable", "Enable", "id=$parent"},
             {"Application", "show-component-status", "GET", "show-component-status", "Show Component Status", "id=$parent"},
             {"Application", "_get-deployment-configurations", "GET", "_get-deployment-configurations", "Get Deployment Configurations", "appname=$parent"},
+            {"Application", "disable-http-lb-application", "POST", "disable-http-lb-application", "disable-http-lb-application", "name=$parent"},
+            {"Application", "enable-http-lb-application", "POST", "application", "disable-http-lb-application", "name=$parent"},
+            {"Application", "list-web-context-param", "GET", "list-web-context-param", "application", "name=$parent"},
+            {"Application", "list-web-env-entry", "GET", "list-web-env-entry", "list-web-env-entry", "id=$parent"},
             {"Application", "get-client-stubs", "GET", "get-client-stubs", "Get Client Stubs", "appname=$parent"},
+            {"Application", "set-web-context-param", "POST", "set-web-context-param", "set-web-context-param", "id=$parent"},
+            {"Application", "set-web-env-entry", "POST", "set-web-env-entry", "set-web-env-entry", "id=$parent"},
+            {"Application", "unset-web-context-param", "POST", "unset-web-context-param", "unset-web-context-param", "id=$parent"},
+            {"Application", "unset-web-env-entry", "POST", "unset-web-env-entry", "unset-web-env-entry", "id=$parent"},
             {"AuthRealm", "__list-group-names", "GET", "list-group-names", "List Group Names", "realmName=$parent"},
             {"AuthRealm", "__supports-user-management", "GET", "supports-user-management", "Check Support", "realmName=$parent"},
             {"AuthRealm", "create-file-user", "POST", "create-user", "Create", "authrealmname=$parent"},
@@ -101,6 +146,11 @@ public class CommandResourceMetaData {
             {"AuthRealm", "update-file-user", "POST", "update-user", "Update User", "authrealmname=$parent"},
             {"Cluster", "__get-jmsdest", "GET", "__get-jmsdest", "Get JMS Destination", "target=$parent"},
             {"Cluster", "__update-jmsdest", "POST", "__update-jmsdest", "Get JMS Destination", "target=$parent"},
+            {"Cluster", "create-http-redirect", "POST", "create-http-redirect", "create-http-redirect"},
+            {"Cluster", "delete-http-redirect", "DELETE", "delete-http-redirect", "delete-http-redirect"},
+            {"Cluster", "configure-lb-weight", "POST", "configure-lb-weight", "Configure LB Weight", "target=$parent"},
+            {"Cluster", "enable-http-lb-server", "POST", "enable-http-lb-server", "enable-http-lb-server", "id=$parent"},
+            {"Cluster", "disable-http-lb-server", "POST", "disable-http-lb-server", "disable-http-lb-server", "id=$parent"},
             {"Cluster", "create-jmsdest", "POST", "create-jmsdest", "Create JMS Destination", "target=$parent"},
             {"Cluster", "create-lifecycle-module", "POST", "create-lifecycle-module", "Create Lifecycle Module", "target=$parent"},
             {"Cluster", "delete-cluster", "POST", "delete-cluster", "Delete Cluster", "id=$parent"},
@@ -123,6 +173,10 @@ public class CommandResourceMetaData {
             {"Domain", "enable-monitoring", "POST", "enable-monitoring", "Enable Monitoring"},
             {"Domain", "disable-monitoring", "POST", "disable-monitoring", "Disable Monitoring"},
             {"Domain", "create-instance", "POST", "create-instance", "Create Instance"},
+            {"Domain", "change-admin-password", "POST", "change-admin-password", "change-admin-password"},
+            {"Domain", "collect-log-files", "POST", "collect-log-files", "collect-log-files"},
+            {"Domain", "disable-secure-admin", "POST", "disable-secure-admin", "disable-secure-admin"},
+            {"Domain", "enable-secure-admin", "POST", "enable-secure-admin", "enable-secure-admin"},
             {"Domain", "get", "POST", "get", "Get"},
             {"Domain", "__anonymous-user-enabled", "GET", "anonymous-user-enabled", "Get"},
             {"Domain", "_get-host-and-port", "GET", "host-port", "HostPort"},
@@ -132,6 +186,11 @@ public class CommandResourceMetaData {
             {"Domain", "list-log-levels", "GET", "list-log-levels", "LogLevels"},
             {"Domain", "list-instances", "GET", "list-instances", "List Instances"},
             {"Domain", "list-persistence-types", "GET", "list-persistence-types", "List Persistence Types"},
+            {"Domain", "list-containers", "GET", "list-containers", "list-containers"},
+            {"Domain", "list-nodes", "GET", "list-nodes", "list-nodes"},
+            {"Domain", "list-nodes-config", "GET", "list-nodes-config", "list-nodes-config"},
+            {"Domain", "list-log-attributes", "GET", "list-log-attributes", "list-log-attributes"},
+            {"Domain", "set-log-attributes", "POST", "set-log-attributes", "set-log-attributes"},
             {"Domain", "restart-domain", "POST", "restart", "Restart"},
             {"Domain", "rotate-log", "POST", "rotate-log", "RotateLog"},
             {"Domain", "set-log-levels", "POST", "set-log-levels", "LogLevel"},
@@ -146,6 +205,9 @@ public class CommandResourceMetaData {
             {"IiopService", "delete-ssl", "DELETE", "delete-ssl", "Delete", "type=iiop-service"},
             {"JavaConfig", "create-profiler", "POST", "create-profiler", "Create Profiler"},
             {"JavaConfig", "generate-jvm-report", "POST", "generate-jvm-report", "Generate Report"},
+             {"LbConfig", "export-http-lb-config", "POST", "export-http-lb-config", "export-http-lb-config", "config=$parent"},
+            {"LoadBalancer", "apply-http-lb-changes", "POST", "apply-http-lb-changes", "apply-http-lb-changes", "id=$parent"},
+            {"LoadBalancer", "export-http-lb-config", "POST", "export-http-lb-config", "export-http-lb-config", "lbname=$parent"},
             {"ListApplication", "_get-context-root", "GET", "get-context-root", "Get Context Root"},
             {"ListApplication", "_get-relative-jws-uri", "GET", "_get-relative-jws-uri", "Get Relative JWS URI" },
             {"ListApplication", "create-lifecycle-module", "POST", "create-lifecycle-module", "Create Lifecycle Module"},
@@ -193,6 +255,12 @@ public class CommandResourceMetaData {
             {"Server", "__get-jmsdest", "GET", "__get-jmsdest", "Get JMS Destination", "target=$parent"},
             {"Server", "__update-jmsdest", "POST", "__update-jmsdest", "Get JMS Destination", "target=$parent"},
             {"Server", "create-jmsdest", "POST", "create-jmsdest", "Create JMS Destination", "target=$parent"},
+            {"Server", "configure-lb-weight", "POST", "configure-lb-weight", "Configure LB Weight", "target=$parent"},
+            {"Server", "create-http-health-checker", "POST", "create-http-health-checker", "create-http-health-checker", "target=$parent"},
+            {"Server", "delete-http-health-checker", "DELETE", "delete-http-health-checker", "delete-http-health-checker", "target=$parent"},
+            {"Server", "create-http-redirect", "POST", "create-http-redirect", "create-http-redirect"},
+            {"Server", "delete-http-redirect", "DELETE", "delete-http-redirect", "delete-http-redirect"},           {"Server", "enable-http-lb-server", "POST", "enable-http-lb-server", "enable-http-lb-server", "id=$parent"},
+            {"Server", "disable-http-lb-server", "POST", "disable-http-lb-server", "disable-http-lb-server", "id=$parent"},
             {"Server", "create-lifecycle-module", "POST", "create-lifecycle-module", "Create Lifecycle Module", "target=$parent"},
             {"Server", "delete-jmsdest", "DELETE", "delete-jmsdest", "Delete JMS Destination", "target=$parent"},
             {"Server", "delete-lifecycle-module", "DELETE", "delete-lifecycle-module", "Delete Lifecycle Module", "target=$parent"},
@@ -206,6 +274,8 @@ public class CommandResourceMetaData {
             {"Server", "stop-instance", "POST", "stop-instance", "Stop Instance", "id=$parent"},
             {"Server", "recover-transactions", "POST", "recover-transactions", "Recover", "id=$parent"},
             {"Server", "__resolve-tokens", "GET", "resolve-tokens", "Resolve Tokens", "target=$parent"},
+            {"TransactionService", "freeze-transaction-service", "POST", "freeze-transaction-service", "freeze-transaction-service"},
+            {"TransactionService", "unfreeze-transaction-service", "POST", "unfreeze-transaction-service", "unfreeze-transaction-service"},
             {"WorkSecurityMap", "update-connector-work-security-map", "POST", "update-connector-work-security-map", "Update", "id=$parent"}
     };
 }
