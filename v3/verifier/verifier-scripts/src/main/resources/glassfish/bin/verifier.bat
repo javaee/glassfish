@@ -39,4 +39,4 @@ REM  only if the new code is made subject to such option by the copyright
 REM  holder.
 REM
 
-java -Dorg.osgi.framework.storage="%TMPDIR\verifier-cache\" -Dorg.jvnet.hk2.osgimain.autostartBundles=osgi-adapter.jar -cp "%~dp0..\modules\glassfish.jar;%~dp0..\modules\verifier.jar" com.sun.enterprise.tools.verifier.VerifierOSGiMain "%*"
+java -Dorg.osgi.framework.storage="%TMPDIR\verifier-cache\" -Dorg.jvnet.hk2.osgimain.autostartBundles=osgi-adapter.jar -cp "%~dp0..\modules\glassfish.jar;%~dp0..\modules\verifier.jar;%~dp0..\lib\javahelp.jar" com.sun.enterprise.tools.verifier.VerifierOSGiMain "%*"
