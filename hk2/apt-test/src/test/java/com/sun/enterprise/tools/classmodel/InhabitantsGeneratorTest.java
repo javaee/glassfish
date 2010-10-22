@@ -161,7 +161,7 @@ public class InhabitantsGeneratorTest {
    * this test looks at the case where the classpath is only partially specified resulting in
    * a reduced view of the inhabitants.
    */
-//  @Ignore
+  @Ignore
   @Test
   public void testReducedScopeHabitatFileGeneration() throws IOException {
     ArrayList<File> testDir = getTestClassPathEntries(false);
@@ -184,7 +184,7 @@ public class InhabitantsGeneratorTest {
     System.out.println("Output: \n" + output);
     System.out.println("Expected: \n" + expected);
     System.out.println("testDir is: " + testDir);
-    assertTrue("output (see javadoc comments):\n" + output, output.contains(expected));
+    assertEquals("output (see javadoc comments):\n" + output, expected, output);
   }
 
   /**
@@ -211,11 +211,11 @@ public class InhabitantsGeneratorTest {
     writer.close();
     
     String output = clean(out.toString());
+    String expected = expected(true);
     assertNotNull(output);
     System.out.println("Output: \n" + output);
-    System.out.println("Expected: \n" + expected(true));
-    assertTrue("output (see javadoc comments):\n" + output + "\nExpected:\n" + expected(true),
-        output.contains(expected(true)));
+    System.out.println("Expected: \n" + expected);
+    assertEquals("output (see javadoc comments):\n" + output, expected, output);
   }
 
   String expected(boolean worldViewClassPath) throws IOException {
@@ -225,6 +225,7 @@ public class InhabitantsGeneratorTest {
   String expected(boolean worldViewClassPath, boolean fromClassModel) throws IOException {
     StringBuilder sb = new StringBuilder();
 
+    sb.append("class=test1.Start\n");
     sb.append("class=com.sun.enterprise.tools.classmodel.test.RunLevelCloseableService,index=java.io.Closeable:closeable,index=org.jvnet.hk2.annotations.RunLevel\n");
     sb.append("class=com.sun.enterprise.tools.classmodel.test.AService,index=com.sun.enterprise.tools.classmodel.test.AContract:aservice,a=1,b=2\n");
     sb.append("class=com.sun.enterprise.tools.classmodel.test.FactoryForCService,index=org.jvnet.hk2.annotations.FactoryFor:com.sun.enterprise.tools.classmodel.test.CService\n");
@@ -235,12 +236,6 @@ public class InhabitantsGeneratorTest {
       // world view classpath has full visibility so that class-model generates the true habitat
       sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithExternalContract,index=com.sun.enterprise.tools.classmodel.test.external.ExternalContract\n");
       sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithAbstractBaseHavingExternalContract,index=com.sun.enterprise.tools.classmodel.test.external.ExternalContract\n");
-      
-      if (fromClassModel) {
-        sb.append("class=test1.Start\n");
-      } else {
-//        sb.append("class=test1.Start,index=com.sun.enterprise.module.bootstrap.ModuleStartup\n");
-      }
     } else {
       // without world-view, the external contracts in the inhabitants-gen-ifaces jar are not considered
       sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithExternalContract\n");
@@ -251,7 +246,7 @@ public class InhabitantsGeneratorTest {
       sb.append("class=com.sun.enterprise.tools.classmodel.test.local.LocalServiceInTestDir,index=java.io.Closeable\n");
       sb.append("class=rls.test.RlsTest\n");
       sb.append("class=rls.test.model.ServiceOtherToY,index=org.jvnet.hk2.annotations.RunLevel\n");
-      sb.append("class=rls.test.model.ServiceDerivedX,index=rls.test.model.ContractX:derived,index=org.jvnet.hk2.annotations.RunLevel,index=org.jvnet.hk2.annotations.RunLevel\n");
+      sb.append("class=rls.test.model.ServiceDerivedX,index=rls.test.model.ContractX:derived,index=org.jvnet.hk2.annotations.RunLevel\n");
       sb.append("class=rls.test.model.ServiceYSpecial,index=rls.test.model.ContractY\n");
       sb.append("class=rls.test.infra.MultiThreadedInhabitantActivator,index=org.jvnet.hk2.component.InhabitantActivator\n");
       sb.append("class=rls.test.model.ServiceBaseX,index=rls.test.model.ContractX:base,index=org.jvnet.hk2.annotations.RunLevel\n");
