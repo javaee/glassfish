@@ -57,23 +57,24 @@ import java.io.*;
  */
 class ZipStorage {
 
-	/**
-	 * @param req
-	 * @throws BackupException
-	 */	
-	ZipStorage(BackupRequest req) throws BackupException {
+    /**
+     * @param req
+     * @throws BackupException
+     */    
+    ZipStorage(BackupRequest req) throws BackupException {
 
-		if(req == null)
-			throw new BackupException("backup-res.NoBackupRequest", getClass().getName() + ".ctor");
-		
-		request = req;
-	}
-	
-	/** 
-	 * Backups the files to a zip file.  
-	 * @throws BackupException if there were any errors writing the file.
-	 */
-	void store() throws BackupException {
+        if(req == null)
+            throw new BackupException("backup-res.NoBackupRequest",
+                getClass().getName() + ".ctor");
+        
+        request = req;
+    }
+    
+    /** 
+     * Backups the files to a zip file.  
+     * @throws BackupException if there were any errors writing the file.
+     */
+    void store() throws BackupException {
 
         File backupFileDir = null;
         if (request.configOnly) {
@@ -82,38 +83,32 @@ class ZipStorage {
             backupFileDir = request.domainDir;
         }
 
-		String zipName			= FileUtils.safeGetCanonicalPath(request.backupFile);
-		String domainDirName	= FileUtils.safeGetCanonicalPath(backupFileDir);
-		
-		FileListerRelative lister = new FileListerRelative(backupFileDir);
-		lister.keepEmptyDirectories();	// we want to restore any empty directories too!
-		String[] files = lister.getFiles();
-		
-		LoggerHelper.fine("Writing " + zipName);
-		
-		try {
+        String zipName = FileUtils.safeGetCanonicalPath(request.backupFile);
+        String domainDirName = FileUtils.safeGetCanonicalPath(backupFileDir);
+        
+        FileListerRelative lister = new FileListerRelative(backupFileDir);
+        lister.keepEmptyDirectories(); // we want to restore any empty directories too!
+        String[] files = lister.getFiles();
+        
+        LoggerHelper.fine("Writing " + zipName);
+        
+        try {
 
-			ZipWriter writer = new ZipWriter(zipName, domainDirName, files);
+            ZipWriter writer = new ZipWriter(zipName, domainDirName, files);
 
-			if(request.excludeDirs != null && request.excludeDirs.length > 0)
-				writer.excludeDirs(request.excludeDirs);
-			
-			writer.safeWrite();
-		}
-		catch(ZipFileException zfe)  {
+            if(request.excludeDirs != null && request.excludeDirs.length > 0)
+                writer.excludeDirs(request.excludeDirs);
+            
+            writer.safeWrite();
+        }
+        catch(ZipFileException zfe)  {
+            throw new BackupException("backup-res.ZipBackupError", zfe, zipName);
+        }
+    }
 
-			throw new BackupException("backup-res.ZipBackupError", zfe, zipName);
-		}
-	}
+    void write() throws BackupException  {
+        
+    }
 
-	///////////////////////////////////////////////////////////////////////////
-
-	void write() throws BackupException  {
-
-		
-	}
-
-	///////////////////////////////////////////////////////////////////////////
-	
-	private	BackupRequest request;
+    private    BackupRequest request;
 }

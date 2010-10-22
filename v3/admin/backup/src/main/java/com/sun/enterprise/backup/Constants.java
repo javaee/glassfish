@@ -52,24 +52,25 @@ package com.sun.enterprise.backup;
  */
 public interface Constants
 {
-	final static String			loggingResourceBundle		= "com.sun.enterprise.backup.LocalStrings";
-	final static String			exceptionResourceBundle		= "/com/sun/enterprise/backup/LocalStrings.properties";
-	final static String			BACKUP_DIR					= "backups";
-	final static String			PROPS_USER_NAME				= "user.name";
-	final static String			PROPS_TIMESTAMP_MSEC		= "timestamp.msec";
-	final static String			PROPS_TIMESTAMP_HUMAN		= "timestamp.human";
-	final static String			PROPS_DOMAINS_DIR			= "domains.dir";
-	final static String			PROPS_DOMAIN_DIR			= "domain.dir";
-	final static String			PROPS_DOMAIN_NAME			= "domain.name";
-	final static String			PROPS_BACKUP_FILE			= "backup.file";
-	final static String			PROPS_DESCRIPTION			= "description";
-	final static String			PROPS_HEADER				= "Backup Status";
-    final static String         PROPS_VERSION                   = "version";
-    final static String         PROPS_TYPE                   = "type";
-    final static String         BACKUP_CONFIG                  = "backupConfig";
-	final static String			PROPS_FILENAME				= "backup.properties";
-    final static String         CONFIG_ONLY ="configOnly";
-    final static String         FULL ="full";
-    final static String         CONFIG_DIR="config";
-    final static String         NO_CONFIG=" ";
+    final static String    loggingResourceBundle = "com.sun.enterprise.backup.LocalStrings";
+    final static String    exceptionResourceBundle = "/com/sun/enterprise/backup/LocalStrings.properties";
+    final static String    BACKUP_DIR = "backups";
+    final static String    OSGI_CACHE = "osgi-cache";
+    final static String    PROPS_USER_NAME = "user.name";
+    final static String    PROPS_TIMESTAMP_MSEC = "timestamp.msec";
+    final static String    PROPS_TIMESTAMP_HUMAN = "timestamp.human";
+    final static String    PROPS_DOMAINS_DIR = "domains.dir";
+    final static String    PROPS_DOMAIN_DIR = "domain.dir";
+    final static String    PROPS_DOMAIN_NAME = "domain.name";
+    final static String    PROPS_BACKUP_FILE = "backup.file";
+    final static String    PROPS_DESCRIPTION = "description";
+    final static String    PROPS_HEADER = "Backup Status";
+    final static String    PROPS_VERSION = "version";
+    final static String    PROPS_TYPE = "type";
+    final static String    BACKUP_CONFIG = "backupConfig";
+    final static String    PROPS_FILENAME = "backup.properties";
+    final static String    CONFIG_ONLY ="configOnly";
+    final static String    FULL ="full";
+    final static String    CONFIG_DIR="config";
+    final static String    NO_CONFIG=" ";
 }
