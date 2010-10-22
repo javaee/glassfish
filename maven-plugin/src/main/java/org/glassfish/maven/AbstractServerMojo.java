@@ -162,10 +162,12 @@ public abstract class AbstractServerMojo extends AbstractMojo {
 
     // HashMap with Key=serverId, Value=Bootstrap ClassLoader
     protected static HashMap<String, URLClassLoader> classLoaders = new HashMap();
+    private static URLClassLoader classLoader;
 
     public abstract void execute() throws MojoExecutionException, MojoFailureException;
 
     protected URLClassLoader getClassLoader() throws MojoExecutionException {
+/*
         URLClassLoader classLoader = classLoaders.get(serverID);
         if (classLoader != null) {
             printClassPaths("Using Existing Bootstrap ClassLoader. ServerId = " + serverID +
@@ -181,11 +183,26 @@ public abstract class AbstractServerMojo extends AbstractMojo {
         } catch (Exception ex) {
             throw new MojoExecutionException(ex.getMessage(), ex);
         }
+*/
+        try {
+            if (classLoader != null) {
+                return classLoader;
+            } else {
+                classLoader = hasGlassFishInstallation() ? getInstalledGFClassLoader() : getUberGFClassLoader();
+                printClassPaths("Created New Bootstrap ClassLoader. ServerId = " + serverID
+                        + ", ClassPaths = ", classLoader);
+            }
+            return classLoader;
+        } catch (Exception ex) {
+            throw new MojoExecutionException(ex.getMessage(), ex);
+        }
     }
 
     protected void cleanupClassLoader(String serverId) {
         URLClassLoader cl = classLoaders.remove(serverID);
-        System.out.println("Cleaned up ClassLoader for ServerID " + serverID);
+        if (cl != null) {
+            System.out.println("Cleaned up ClassLoader for ServerID " + serverID);
+        }
     }
 
     private void printClassPaths(String msg, URLClassLoader classLoader) {

@@ -60,6 +60,7 @@ public class PluginUtil {
         logger.setLevel(Level.FINE);
     }
 
+    static GlassFishRuntime gfr;
     // Map with Key=serverId Value=GlassFish
     private final static Map<String, GlassFish> gfMap =
             new HashMap<String, GlassFish>();
@@ -125,8 +126,12 @@ public class PluginUtil {
             long startTime = System.currentTimeMillis();
             logger.logp(Level.INFO, "PluginUtil", "getGlassFish", "Creating GlassFish ServerId = {0}", serverId);
             BootstrapOptions bootstrapOptions = new BootstrapOptions(bootstrapProperties);
+            gfr = gfr != null ? gfr : GlassFishRuntime.bootstrap(bootstrapOptions,
+                    PluginUtil.class.getClassLoader());
+/*
             GlassFishRuntime gfr = GlassFishRuntime.bootstrap(bootstrapOptions,
                     PluginUtil.class.getClassLoader());
+*/
             logger.logp(Level.INFO, "PluginUtil", "getGlassFish", "Created GlassFishRuntime ServerId = {0}, " +
                     "GlassFishRuntime = {1}, TimeTaken = {2} ms",
                     new Object[]{serverId, gfr, System.currentTimeMillis() - startTime});
