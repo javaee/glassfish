@@ -67,7 +67,7 @@
     }
 
     if (#{requestScope.nameAlreadyExists}){
-        setAttribute(key="errormsg" value="$resource{i18ncs.msg.JS.error.nameExists, #{requestScope.nameToCheck}}")
+        setAttribute(key="errormsg" value="$resource{i18ncs.msg.error.nameExists, #{requestScope.nameToCheck}}")
         gf.handleError(detail="#{requestScope.errormsg}");
     }
 
