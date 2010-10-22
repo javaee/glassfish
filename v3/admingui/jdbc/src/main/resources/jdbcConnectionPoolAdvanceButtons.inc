@@ -48,7 +48,7 @@
                 onClick="if (checkPoolAttr('#{timeoutId}', '#{reqInt}') && guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
             if ("#{pageSession.valueMap['lazyConnectionAssociation']}") {
-                    setValueExpression(expression="#{pageSession.valueMap['lazyConnectionEnlistment']}", value="#{true}");
+                    setValueExpression(expression="#{pageSession.valueMap['lazyConnectionEnlistment']}", value="true");
             }
 
             gf.createEntity(endpoint="#{pageSession.resourceUrl}"
