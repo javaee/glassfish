@@ -59,7 +59,8 @@ import java.util.logging.Level;
 public class LocatorTest {
 
     @Test
-    public void testLocaltor() throws IOException {
+    @Ignore
+    public void testLocator() throws IOException {
         List<URL> files = new ArrayList<URL>();
         long startTime = System.currentTimeMillis();
         File gf = new File("/Users/dochez/glassfish/modules");
@@ -127,7 +128,7 @@ public class LocatorTest {
 
     public static void main(String[] args) {
         try {
-            (new GFInstallationTest()).foo();
+            (new LocatorTest()).testLocator();
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
