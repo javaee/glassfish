@@ -63,7 +63,6 @@ import java.util.logging.Logger;
 import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Represents a connector application, one per resource-adapter.
