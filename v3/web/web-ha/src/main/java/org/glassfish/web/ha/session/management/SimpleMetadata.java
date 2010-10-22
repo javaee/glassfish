@@ -41,10 +41,8 @@
 package org.glassfish.web.ha.session.management;
 
 import org.glassfish.ha.store.api.Storeable;
-import org.glassfish.ha.store.spi.Storable;
 
 import java.io.*;
-import java.util.Set;
 
 
 public class SimpleMetadata  implements Serializable {
@@ -56,6 +54,10 @@ public class SimpleMetadata  implements Serializable {
     private long maxInactiveInterval;
     
     private byte[] state;
+
+    private static final String[] attributeNames = new String[0];
+
+    private static final boolean[] dirtyStatus = new boolean[0]; 
 
     //Default No arg constructor required for BackingStore
     public SimpleMetadata() {
@@ -125,6 +127,25 @@ public class SimpleMetadata  implements Serializable {
         return this.state;
     }
 
+    private void writeObject(ObjectOutputStream oos)
+        throws IOException {
+        oos.writeLong(version);
+        oos.writeLong(maxInactiveInterval);
+        oos.writeLong(lastAccessTime);
+        oos.writeInt(state.length);
+        oos.write(state);
+    }
+
+    private void readObject(ObjectInputStream ois)
+        throws IOException {
+        version = ois.readLong();
+        maxInactiveInterval= ois.readLong();
+        lastAccessTime = ois.readLong();
+        int sz = ois.readInt();
+        state = new byte[sz];
+        ois.readFully(state);
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("SimpleMetadata->state");
@@ -142,5 +163,55 @@ public class SimpleMetadata  implements Serializable {
                 ", state.length=" + (state == null ? 0 : state.length) +
                 ", state=" +  sb.toString() +
                 '}';
+    }
+
+    //@Override
+    public long _storeable_getVersion() {
+        return this.version;
+    }
+
+    //@Override
+    public void _storeable_setVersion(long l) {
+        this.version = l;
+    }
+
+    //@Override
+    public long _storeable_getLastAccessTime() {
+        return this.lastAccessTime;
+    }
+
+    //@Override
+    public void _storeable_setLastAccessTime(long l) {
+        this.lastAccessTime = l;
+    }
+
+    //@Override
+    public long _storeable_getMaxIdleTime() {
+        return this.maxInactiveInterval;
+    }
+
+    //@Override
+    public void _storeable_setMaxIdleTime(long l) {
+        this.maxInactiveInterval = l;
+    }
+
+    //@Override
+    public String[] _storeable_getAttributeNames() {
+        return attributeNames;
+    }
+
+    //@Override
+    public boolean[] _storeable_getDirtyStatus() {
+        return dirtyStatus;
+    }
+
+    //@Override
+    public void _storeable_writeState(OutputStream outputStream) throws IOException {
+        //TODO: Throw UnsupportedOperationException once Mahesh handles it in shoal cache
+    }
+
+    //@Override
+    public void _storeable_readState(InputStream inputStream) throws IOException {
+        //TODO: Throw UnsupportedOperationException once Mahesh handles it in shoal cache
     }
 }
