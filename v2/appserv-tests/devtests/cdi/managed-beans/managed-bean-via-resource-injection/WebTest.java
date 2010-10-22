@@ -49,8 +49,8 @@ public class WebTest {
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
-    private static final String TEST_NAME = "cdi-wab";
-    private static final String EXPECTED_RESPONSE = "Hello from Servlet 3.0";
+    private static final String TEST_NAME = "managed-bean-resource-injection";
+    private static final String EXPECTED_RESPONSE = "Hello from Servlet 3.0. initParams: n1=v1, n2=v2";
 
     private String host;
     private String port;
@@ -81,8 +81,8 @@ public class WebTest {
 
     private void invoke() throws Exception {
         
-        Thread.sleep(2000); //WORKAROUND @XXX
-        String url = "http://" + host + ":" + port + contextRoot;
+        String url = "http://" + host + ":" + port + contextRoot
+                     + "/myurl";
         System.out.println("opening connection to " + url);
         HttpURLConnection conn = (HttpURLConnection)
             (new URL(url)).openConnection();

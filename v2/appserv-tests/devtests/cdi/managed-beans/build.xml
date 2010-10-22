@@ -35,91 +35,82 @@
  holder.
 -->
 
-<project name="smoke-test" default="usage" basedir=".">
+<project name="managedbeans-test" default="usage" basedir=".">
 
-    <property name="smoke-target" value="all"/>
+    <property name="managedbeans-target" value="all"/>
 
     <target name="run-test">
-        <antcall target="smoke">
-        <param name="smoke-target" value="run-test"/>
+        <antcall target="managedbeans">
+        <param name="managedbeans-target" value="run-test"/>
         </antcall>
     </target>
 
     <target name="all">
-        <antcall target="smoke">
-        <param name="smoke-target" value="all"/>
+        <antcall target="managedbeans">
+        <param name="managedbeans-target" value="all"/>
         </antcall>
     </target>
 
     <target name="clean">
-        <antcall target="smoke">
-        <param name="smoke-target" value="clean"/>
+        <antcall target="managedbeans">
+        <param name="managedbeans-target" value="clean"/>
         </antcall>
     </target>
 
     <target name="build">
-        <antcall target="smoke">
-        <param name="smoke-target" value="build"/>
+        <antcall target="managedbeans">
+        <param name="managedbeans-target" value="build"/>
         </antcall>
     </target>
 
     <target name="setup">
-        <antcall target="smoke">
-        <param name="smoke-target" value="setup"/>
+        <antcall target="managedbeans">
+        <param name="managedbeans-target" value="setup"/>
         </antcall>
     </target>
 
     <target name="deploy">
-        <antcall target="smoke">
-        <param name="smoke-target" value="deploy"/>
+        <antcall target="managedbeans">
+        <param name="managedbeans-target" value="deploy"/>
         </antcall>
     </target>
 
     <target name="undeploy">
-        <antcall target="smoke">
-        <param name="smoke-target" value="undeploy"/>
+        <antcall target="managedbeans">
+        <param name="managedbeans-target" value="undeploy"/>
         </antcall>
     </target>
 
     <target name="unsetup">
-        <antcall target="smoke">
-        <param name="smoke-target" value="unsetup"/>
+        <antcall target="managedbeans">
+        <param name="managedbeans-target" value="unsetup"/>
         </antcall>
     </target>
 
     <target name="run">
-        <antcall target="smoke">
-        <param name="smoke-target" value="run"/>
+        <antcall target="managedbeans">
+        <param name="managedbeans-target" value="run"/>
         </antcall>
     </target>
 
-    <target name="smoke">
-        <record name="smoke.output" action="start" />
-            <ant dir="simple-ejb-singleton/hello" target="${smoke-target}"/>
+    <target name="managedbeans">
+        <record name="managedbeans.output" action="start" />
 <!--
-            <ant dir="singleton-startup/hello" target="${smoke-target}"/>
+        <ant dir="managed-bean-via-resource-injection" target="${managedbeans-target}"/>
 -->
-            <ant dir="simple-ejb-cdi" target="${smoke-target}"/>
-            <ant dir="simple-managed-bean" target="${smoke-target}"/>
-            <ant dir="simple-mdb" target="${smoke-target}"/>
-            <ant dir="simple-managed-bean-interceptor-nonnull-package" target="${smoke-target}"/>
-            <ant dir="cdi-servlet-3.0-annotation" target="${smoke-target}"/>
-            <ant dir="cdi-servlet-filter-3.0-annotation" target="${smoke-target}"/>
-            <ant dir="simple-wab-with-cdi" target="${smoke-target}"/>
-            <ant dir="simple-ear" target="${smoke-target}"/>
-        <record name="smoke.output" action="stop" />
+        <record name="managedbeans.output" action="stop" />
     </target>
 
     <target name="usage">
 	<echo> Usage:
-		ant all (Executes all the smoke tests)
-		ant clean (cleans all the smoke tests)
-		ant build (builds all the smoke tests)
-		ant setup (sets up all resources for smoke tests)
-		ant deploy (deploys all the smoke apps)
-		ant run (Executes all the smoke tests)
-		ant undeploy (undeploys all the  smoke apps)
-		ant unsetup (unsets all resources for smoke tests)
+		ant all (Executes all the managedbeans tests)
+		ant clean (cleans all the managedbeans tests)
+		ant build (builds all the managedbeans tests)
+		ant setup (sets up all resources for managedbeans tests)
+		ant deploy (deploys all the managedbeans apps)
+		ant run (Executes all the managedbeans tests)
+		ant undeploy (undeploys all the  managedbeans apps)
+		ant unsetup (unsets all resources for managedbeans tests)
 	</echo>
     </target>
 </project>

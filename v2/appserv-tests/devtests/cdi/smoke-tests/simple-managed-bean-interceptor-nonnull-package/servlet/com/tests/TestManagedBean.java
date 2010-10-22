@@ -1,3 +1,4 @@
+package com.tests;
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -41,9 +42,10 @@
 public class TestManagedBean {
     TestBean tb;
     boolean postConstructCalled = false;
-    
-    public TestManagedBean(){}
 
+
+    //A Managed Bean needs to have a no-arg constructor
+    public TestManagedBean() {}
     @javax.inject.Inject //Constructor based Injection
     public TestManagedBean(TestBean tb){
         this.tb = tb;
@@ -54,6 +56,11 @@ public class TestManagedBean {
     public void init(){
         System.out.println("In ManagedBean:: PostConstruct");
         postConstructCalled = true;
+    }
+
+    @Tester
+    public void foo(){
+        System.out.println("foo called");
     }
 
     public boolean testPostConstructCalled(){

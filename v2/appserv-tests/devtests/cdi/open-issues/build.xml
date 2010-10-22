@@ -35,91 +35,82 @@
  holder.
 -->
 
-<project name="smoke-test" default="usage" basedir=".">
+<project name="openissues-test" default="usage" basedir=".">
 
-    <property name="smoke-target" value="all"/>
+    <property name="openissues-target" value="all"/>
 
     <target name="run-test">
-        <antcall target="smoke">
-        <param name="smoke-target" value="run-test"/>
+        <antcall target="openissues">
+        <param name="openissues-target" value="run-test"/>
         </antcall>
     </target>
 
     <target name="all">
-        <antcall target="smoke">
-        <param name="smoke-target" value="all"/>
+        <antcall target="openissues">
+        <param name="openissues-target" value="all"/>
         </antcall>
     </target>
 
     <target name="clean">
-        <antcall target="smoke">
-        <param name="smoke-target" value="clean"/>
+        <antcall target="openissues">
+        <param name="openissues-target" value="clean"/>
         </antcall>
     </target>
 
     <target name="build">
-        <antcall target="smoke">
-        <param name="smoke-target" value="build"/>
+        <antcall target="openissues">
+        <param name="openissues-target" value="build"/>
         </antcall>
     </target>
 
     <target name="setup">
-        <antcall target="smoke">
-        <param name="smoke-target" value="setup"/>
+        <antcall target="openissues">
+        <param name="openissues-target" value="setup"/>
         </antcall>
     </target>
 
     <target name="deploy">
-        <antcall target="smoke">
-        <param name="smoke-target" value="deploy"/>
+        <antcall target="openissues">
+        <param name="openissues-target" value="deploy"/>
         </antcall>
     </target>
 
     <target name="undeploy">
-        <antcall target="smoke">
-        <param name="smoke-target" value="undeploy"/>
+        <antcall target="openissues">
+        <param name="openissues-target" value="undeploy"/>
         </antcall>
     </target>
 
     <target name="unsetup">
-        <antcall target="smoke">
-        <param name="smoke-target" value="unsetup"/>
+        <antcall target="openissues">
+        <param name="openissues-target" value="unsetup"/>
         </antcall>
     </target>
 
     <target name="run">
-        <antcall target="smoke">
-        <param name="smoke-target" value="run"/>
+        <antcall target="openissues">
+        <param name="openissues-target" value="run"/>
         </antcall>
     </target>
 
-    <target name="smoke">
-        <record name="smoke.output" action="start" />
-            <ant dir="simple-ejb-singleton/hello" target="${smoke-target}"/>
-<!--
-            <ant dir="singleton-startup/hello" target="${smoke-target}"/>
--->
-            <ant dir="simple-ejb-cdi" target="${smoke-target}"/>
-            <ant dir="simple-managed-bean" target="${smoke-target}"/>
-            <ant dir="simple-mdb" target="${smoke-target}"/>
-            <ant dir="simple-managed-bean-interceptor-nonnull-package" target="${smoke-target}"/>
-            <ant dir="cdi-servlet-3.0-annotation" target="${smoke-target}"/>
-            <ant dir="cdi-servlet-filter-3.0-annotation" target="${smoke-target}"/>
-            <ant dir="simple-wab-with-cdi" target="${smoke-target}"/>
-            <ant dir="simple-ear" target="${smoke-target}"/>
-        <record name="smoke.output" action="stop" />
+    <target name="openissues">
+        <record name="openissues.output" action="start" />
+        <ant dir="../smoke-tests/simple-managed-bean-interceptor" target="${openissues-target}"/> <!-- WELD 728 -->
+        <ant dir="../managed-beans/managed-bean-via-resource-injection" target="${openissues-target}"/> <!-- IT 11528 -->
+        <ant dir="../smoke-tests/singleton-startup/hello" target="${openissues-target}"/> <!-- IT 13072 -->
+        <record name="openissues.output" action="stop" />
     </target>
 
     <target name="usage">
 	<echo> Usage:
-		ant all (Executes all the smoke tests)
-		ant clean (cleans all the smoke tests)
-		ant build (builds all the smoke tests)
-		ant setup (sets up all resources for smoke tests)
-		ant deploy (deploys all the smoke apps)
-		ant run (Executes all the smoke tests)
-		ant undeploy (undeploys all the  smoke apps)
-		ant unsetup (unsets all resources for smoke tests)
+		ant all (Executes all the openissues tests)
+		ant clean (cleans all the openissues tests)
+		ant build (builds all the openissues tests)
+		ant setup (sets up all resources for openissues tests)
+		ant deploy (deploys all the openissues apps)
+		ant run (Executes all the openissues tests)
+		ant undeploy (undeploys all the  openissues apps)
+		ant unsetup (unsets all resources for openissues tests)
 	</echo>
     </target>
 </project>

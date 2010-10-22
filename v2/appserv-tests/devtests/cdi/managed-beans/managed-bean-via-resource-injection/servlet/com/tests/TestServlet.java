@@ -1,3 +1,4 @@
+package com.tests;
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -33,37 +34,50 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+import java.io.IOException;
+import java.io.PrintWriter;
 
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebInitParam;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-//Simple TestBean to test CDI. 
-//This bean implements Serializable as it needs to be placed into a Stateful Bean
-@javax.annotation.ManagedBean
-public class TestManagedBean {
-    TestBean tb;
-    boolean postConstructCalled = false;
-    
-    public TestManagedBean(){}
+@SuppressWarnings("serial")
+@WebServlet(name="mytest",
+        urlPatterns={"/myurl"},
+        initParams={ @WebInitParam(name="n1", value="v1"), @WebInitParam(name="n2", value="v2") } )
+public class TestServlet extends HttpServlet {
+    @javax.annotation.Resource TestManagedBean testResource;
 
-    @javax.inject.Inject //Constructor based Injection
-    public TestManagedBean(TestBean tb){
-        this.tb = tb;
+    public void service(HttpServletRequest req, HttpServletResponse res)
+            throws IOException, ServletException {
+
+        PrintWriter writer = res.getWriter();
+        writer.write("Hello from Servlet 3.0. ");
+        String msg = "n1=" + getInitParameter("n1") +
+            ", n2=" + getInitParameter("n2");
+
+        msg += testManagedBean(testResource, " | TestManagedBean injected via @Resource");
+        msg += testOverriddenMethods();
+
+        writer.write("initParams: " + msg + "\n");
     }
 
-
-    @javax.annotation.PostConstruct
-    public void init(){
-        System.out.println("In ManagedBean:: PostConstruct");
-        postConstructCalled = true;
+    private String testOverriddenMethods() {
+        String s = "";
+        System.out.println("toString returned:" +testResource.toString());
+        if (!testResource.toString().equals(TestManagedBean.TOSTRING)) 
+            s += "TestManagedBean obtained via @Resource toString method invocation failed";
+        return s;
     }
 
-    public boolean testPostConstructCalled(){
-        return this.postConstructCalled;
-    }
-
-    public boolean testInjection(){
-        System.out.println("In ManagedBean:: tb=" + tb);
-        postConstructCalled = true;
-        return this.tb != null;
+    private String testManagedBean(TestManagedBean tb, String info) {
+        String msg = "";
+        if (tb == null) msg += info + " is null!";
+        if (tb != null && !tb.testPostConstructCalled()) msg += info + " postConstruct not called";
+        return msg;
     }
 
 }

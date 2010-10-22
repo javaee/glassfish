@@ -34,36 +34,70 @@
  * holder.
  */
 
+package com.acme;
 
-//Simple TestBean to test CDI. 
-//This bean implements Serializable as it needs to be placed into a Stateful Bean
-@javax.annotation.ManagedBean
-public class TestManagedBean {
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
+import javax.ejb.EJBException;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
+import javax.inject.Inject;
+
+import org.omg.CORBA.ORB;
+
+@Singleton
+@Startup
+public class SingletonBean {
+
+    @Resource
+    private ORB orb;
+
+    @Inject
+    Foo foo;
+    @Inject
     TestBean tb;
-    boolean postConstructCalled = false;
     
-    public TestManagedBean(){}
-
-    @javax.inject.Inject //Constructor based Injection
-    public TestManagedBean(TestBean tb){
-        this.tb = tb;
+    Bar b;
+    
+    @Inject
+    public SingletonBean(Bar b){
+        this.b = b;
     }
 
-
-    @javax.annotation.PostConstruct
-    public void init(){
-        System.out.println("In ManagedBean:: PostConstruct");
-        postConstructCalled = true;
+    @PostConstruct
+    public void init() {
+        System.out.println("In SingletonBean::init()");
+        System.out.println("orb = " + orb);
+        if (orb == null) {
+            throw new EJBException("null ORB");
+        }
     }
 
-    public boolean testPostConstructCalled(){
-        return this.postConstructCalled;
+    public String hello() {
+        System.out.println("In SingletonBean::hello()");
+        return "hello, world!\n";
     }
 
-    public boolean testInjection(){
-        System.out.println("In ManagedBean:: tb=" + tb);
-        postConstructCalled = true;
-        return this.tb != null;
+    public void testError() {
+        throw new Error("test java.lang.Error");
+    }
+
+    public String testInjection() {
+        if (foo == null)
+            return "foo is null";
+        if (tb == null)
+            return "tb is null";
+        if (!foo.testInjection())
+            return "testInjection in Foo failed";
+        if (b == null)
+            return "Constructor Injection of bean failed"; 
+        return "";
+    }
+
+    @PreDestroy
+    public void destroy() {
+        System.out.println("In SingletonBean::destroy()");
     }
 
 }
