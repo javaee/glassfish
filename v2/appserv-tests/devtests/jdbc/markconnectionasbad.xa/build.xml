@@ -70,7 +70,7 @@
     <target name="setup" depends="init-common">
 
         <antcall target="deploy-jdbc-common">
-            <param name="jdbc.conpool.name" value="jdbc-unshareable-pool"/>
+            <param name="jdbc.conpool.name" value="jdbc/jdbc-unshareable-pool"/>
             <param name="db.class" value="org.apache.derby.jdbc.ClientXADataSource"/>
             <param name="jdbc.resource.type" value="javax.sql.XADataSource"/>
             <param name="jdbc.resource.name" value="jdbc/unshareable"/>
@@ -118,19 +118,19 @@
         <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>
             <param name="operand.props"
-                   value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-unshareable-pool.steady_pool_size=5"/>
+                   value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc/jdbc-unshareable-pool.steady_pool_size=5"/>
         </antcall>
 
         <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>
             <param name="operand.props"
-                   value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-unshareable-pool.max_pool_size=5"/>
+                   value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc/jdbc-unshareable-pool.max_pool_size=5"/>
         </antcall>
 
         <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>
             <param name="operand.props"
-                   value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-unshareable-pool.idle_timeout_in_seconds=3600"/>
+                   value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc/jdbc-unshareable-pool.idle_timeout_in_seconds=3600"/>
         </antcall>
 
 
@@ -168,7 +168,7 @@
         </antcall>
 
         <antcall target="delete-jdbc-connpool-common">
-            <param name="jdbc.conpool.name" value="jdbc-unshareable-pool"/>
+            <param name="jdbc.conpool.name" value="jdbc/jdbc-unshareable-pool"/>
         </antcall>
 
         <antcall target="delete-jdbc-resource-common">

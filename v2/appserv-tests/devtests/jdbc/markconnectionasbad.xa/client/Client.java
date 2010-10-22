@@ -38,14 +38,14 @@ public class Client {
         SimpleBMP simpleBMP = simpleBMPHome.create();
         stat.addDescription("Mark-Connection-As-Bad  ");
 
-        if (simpleBMP.test1() && getMonitorablePropertyOfConnectionPool("jdbc-unshareable-pool") == 5) {
+        if (simpleBMP.test1() && getMonitorablePropertyOfConnectionPool("jdbc/jdbc-unshareable-pool") == 5) {
             stat.addStatus(" Mark-Connection-As-Bad [XA - NoTx - UnShareable - ReadOnly] : ", stat.PASS);
         } else {
             stat.addStatus(" Mark-Connection-As-Bad [XA - NoTx - UnShareable - ReadOnly] : ", stat.FAIL);
         }
 
 
-        if (simpleBMP.test2() && getMonitorablePropertyOfConnectionPool("jdbc-unshareable-pool") == 10) {
+        if (simpleBMP.test2() && getMonitorablePropertyOfConnectionPool("jdbc/jdbc-unshareable-pool") == 10) {
             stat.addStatus(" Mark-Connection-As-Bad [XA - NoTx - UnShareable - Write] : ", stat.PASS);
         } else {
             stat.addStatus(" Mark-Connection-As-Bad [XA - NoTx - UnShareable - Write] : ", stat.FAIL);
@@ -63,13 +63,13 @@ public class Client {
             stat.addStatus(" Mark-Connection-As-Bad [XA - NoTx - Shareable - Write] : ", stat.FAIL);
         }
 
-        if (simpleBMP.test5() && getMonitorablePropertyOfConnectionPool("jdbc-unshareable-pool") == 15) {
+        if (simpleBMP.test5() && getMonitorablePropertyOfConnectionPool("jdbc/jdbc-unshareable-pool") == 15) {
             stat.addStatus(" Mark-Connection-As-Bad [XA - Tx - UnShareable - ReadOnly] : ", stat.PASS);
         } else {
             stat.addStatus(" Mark-Connection-As-Bad [XA - Tx - UnShareable - ReadOnly] : ", stat.FAIL);
         }
 
-        if (simpleBMP.test6() && getMonitorablePropertyOfConnectionPool("jdbc-unshareable-pool") == 20) {
+        if (simpleBMP.test6() && getMonitorablePropertyOfConnectionPool("jdbc/jdbc-unshareable-pool") == 20) {
             stat.addStatus(" Mark-Connection-As-Bad [XA - Tx - UnShareable - Write] : ", stat.PASS);
         } else {
             stat.addStatus(" Mark-Connection-As-Bad [XA - Tx - UnShareable - Write] : ", stat.FAIL);
