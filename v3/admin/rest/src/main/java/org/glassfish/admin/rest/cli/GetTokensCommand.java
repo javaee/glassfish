@@ -71,6 +71,9 @@ public class GetTokensCommand implements AdminCommand {
     
     @Param(separator=',', primary=true)
     String[] tokens;
+    
+    @Param(name="check-system-properties", defaultValue="false")
+    boolean checkSystemProperties;
 
     @Param(optional=true)
     String target = SystemPropertyConstants.DAS_SERVER_NAME;
@@ -89,6 +92,9 @@ public class GetTokensCommand implements AdminCommand {
         
         for (String token : tokens) {
             String value = resolver.getPropertyValue(token);
+            if ((value == null) && (checkSystemProperties)) {
+                value = System.getProperty(token);
+            }
             output.append(sep).append(token).append(" = ").append(value);
             sep = eol;
             values.put(token, value);

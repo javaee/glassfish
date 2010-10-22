@@ -86,13 +86,13 @@ public class NetworkListenerTest extends RestTestBase {
                 }});
             checkStatusForSuccess(response);
 
-//        asadmin create-protocol-finder --protocol pu-protocol --target-protocol http-listener-2 --classname com.sun.grizzly.config.HttpProtocolFinder http-finder
-//        asadmin create-protocol-finder --protocol pu-protocol --target-protocol http-redirect   --classname com.sun.grizzly.config.HttpProtocolFinder http-redirect
+//        asadmin create-protocol-finder --protocol pu-protocol --targetprotocol http-listener-2 --classname com.sun.grizzly.config.HttpProtocolFinder http-finder
+//        asadmin create-protocol-finder --protocol pu-protocol --targetprotocol http-redirect   --classname com.sun.grizzly.config.HttpProtocolFinder http-redirect
             response = post (URL_PROTOCOL + "/" + portUniProtocolName + "/create-protocol-finder",
                 new HashMap<String, String>() {{
                     put ("id", finderName1);
                     put ("protocol", portUniProtocolName);
-                    put ("target-protocol", "http-listener-2");
+                    put ("targetprotocol", "http-listener-2");
                     put ("classname", "com.sun.grizzly.config.HttpProtocolFinder");
                 }});
             checkStatusForSuccess(response);
@@ -100,7 +100,7 @@ public class NetworkListenerTest extends RestTestBase {
                 new HashMap<String, String>() {{
                     put ("id", finderName2);
                     put ("protocol", portUniProtocolName);
-                    put ("target-protocol", redirectProtocolName);
+                    put ("targetprotocol", redirectProtocolName);
                     put ("classname", "com.sun.grizzly.config.HttpProtocolFinder");
                 }});
             checkStatusForSuccess(response);

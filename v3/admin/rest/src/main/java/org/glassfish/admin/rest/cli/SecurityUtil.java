@@ -44,6 +44,7 @@ import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -58,18 +59,20 @@ import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.realm.User;
 
 import java.util.Enumeration;
+import org.jvnet.hk2.component.Habitat;
 
 import org.jvnet.hk2.config.types.Property;
 
 /**
-AMX Realms implementation.
-Note that realms don't load until {@link #loadRealms} is called.
+ * AMX Realms implementation.
+ * Note that realms don't load until {@link #loadRealms} is called.
  * @author ludovic champenosi
  */
-
 public class SecurityUtil {
+    private static String ADMIN_REALM = "admin-realm";
+    private static String FILE_REALM_CLASSNAME = "com.sun.enterprise.security.auth.realm.file.FileRealm";
 
-    Domain domain;
+    private Domain domain;
 
     public SecurityUtil(Domain domain) {
         this.domain = domain;
@@ -287,68 +290,69 @@ public class SecurityUtil {
             throw new RuntimeException(e);
         }
     }
-//    private static String ADMIN_REALM = "admin-realm";
-//    private static String ANONYMOUS_USER = "anonymous";
-//    private static String FILE_REALM_CLASSNAME = "com.sun.enterprise.security.auth.realm.file.FileRealm";
-//
-//    public String getAnonymousUser() {
-//        DomainRoot domainRoot = getDomainRootProxy();
-//        Domain domainConfig = domainRoot.child(Domain.class);
-//        Map<String, Config> configs = domainConfig.getConfigs().childrenMap(Config.class);
-//
-//        // find the ADMIN_REALM
-//        AuthRealm adminFileAuthRealm = null;
-//        for (Config config : configs.values()) {
-//            if (config.getSecurityService() == null) {
-//                continue;
-//            }
-//
-//            for (AuthRealm auth : config.getSecurityService().childrenMap(AuthRealm.class).values()) {
-//                if (auth.getName().equals(ADMIN_REALM)) {
-//                    adminFileAuthRealm = auth;
-//                    break;
-//                }
-//            }
-//        }
-//        if (adminFileAuthRealm == null) {
-//            // There must always be an admin realm
-//            throw new IllegalStateException("Cannot find admin realm");
-//        }
-//
-//        // Get FileRealm class name
-//        String fileRealmClassName = adminFileAuthRealm.getClassname();
-//        if (fileRealmClassName != null && !fileRealmClassName.equals(FILE_REALM_CLASSNAME)) {
-//            // This condition can arise if admin-realm is not a File realm. Then the API to extract
-//            // the anonymous user should be integrated for the logic below this line of code. for now,
-//            // we treat this as an error and instead of throwing exception return false;
-//            return null;
-//        }
-//
-//        Map<String, Property> props = adminFileAuthRealm.childrenMap(Property.class);
-//        Property keyfileProp = props.get("file");
-//        if (keyfileProp == null) {
-//            throw new IllegalStateException("Cannot find property 'file'");
-//        }
-//        //System.out.println( "############### keyFileProp: " + keyfileProp.getName() + " = " + keyfileProp.getValue() );
-//        String keyFile = keyfileProp.resolveAttribute("Value");
-//        //System.out.println( "############### keyFile: " + keyfileProp.getValue() + " ===> " + keyFile);
-//        if (keyFile == null) {
-//            throw new IllegalStateException("Cannot find key file");
-//        }
-//
-//        //System.out.println( "############### keyFile: " + keyFile);
-//        String user = null;
-//        String[] usernames = getUserNames(adminFileAuthRealm.getName());
-//        if (usernames.length == 1) {
-//            try {
-//                InjectedValues.getInstance().getHabitat().getByType(com.sun.enterprise.security.SecurityLifecycle.class);
-//                LoginContextDriver.login(usernames[0], new char[0], ADMIN_REALM);
-//                user = usernames[0];
-//            } catch (Exception e) {
-//                //e.printStackTrace();
-//            }
-//        }
-//
-//        return user;
-//    }
+
+    public String getAnonymousUser(Habitat habitat) {
+        List<Config> configs = domain.getConfigs().getConfig();
+        String user = null;
+
+        // find the ADMIN_REALM
+        AuthRealm adminFileAuthRealm = null;
+        for (Config config : configs) {
+            if (config.getSecurityService() == null) {
+                continue;
+            }
+
+            for (AuthRealm auth : config.getSecurityService().getAuthRealm()) {
+                if (auth.getName().equals(ADMIN_REALM)) {
+                    adminFileAuthRealm = auth;
+                    break;
+                }
+            }
+        }
+        if (adminFileAuthRealm == null) {
+            // There must always be an admin realm
+            throw new IllegalStateException("Cannot find admin realm");
+        }
+
+        // Get FileRealm class name
+        String fileRealmClassName = adminFileAuthRealm.getClassname();
+        if (fileRealmClassName != null && !fileRealmClassName.equals(FILE_REALM_CLASSNAME)) {
+            // This condition can arise if admin-realm is not a File realm. Then the API to extract
+            // the anonymous user should be integrated for the logic below this line of code. for now,
+            // we treat this as an error and instead of throwing exception return false;
+            return null;
+        }
+
+        List<Property> props = adminFileAuthRealm.getProperty();
+        
+
+        Property keyfileProp = null;
+        
+        for (Property prop : props) {
+            System.out.println(prop.getName() + " = " + prop.getValue());
+            if ("file".equals(prop.getName())) {
+                keyfileProp = prop;
+            }
+        }
+        if (keyfileProp == null) {
+            throw new IllegalStateException("Cannot find property 'file'");
+        }
+        String keyFile = keyfileProp.getValue();
+        if (keyFile == null) {
+            throw new IllegalStateException("Cannot find key file");
+        }
+
+        String[] usernames = getUserNames(adminFileAuthRealm.getName());
+        if (usernames.length == 1) {
+            try {
+                habitat.getByType(com.sun.enterprise.security.SecurityLifecycle.class);
+                LoginContextDriver.login(usernames[0], new char[0], ADMIN_REALM);
+                user = usernames[0];
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return user;
+    }
 }
