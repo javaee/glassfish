@@ -148,8 +148,10 @@ public class Parser implements Closeable {
                     // now visit...
                     ClassReader cr = new ClassReader(bytes, 0, size);
                     try {
-                        URI definingURI = new URI(url.getPath().substring(0,
-                                url.getPath().length() - resourceName.length()));
+                        File file = getFilePath(url.getPath(), resourceName);
+//                        System.out.println("resourceName=" + resourceName + "; url=" + file);
+                        URI definingURI = file.toURI();
+//                        System.out.println("uri=" + definingURI);
                         cr.accept(context.getClassVisitor(definingURI, resourceName), ClassReader.SKIP_DEBUG);
                     } catch (Throwable e) {
                         logger.log(Level.SEVERE, "Exception while visiting " + name
@@ -157,12 +159,22 @@ public class Parser implements Closeable {
                     }
 
                 }
+                
             });
         }
         close();
         return exceptions.toArray(new Exception[exceptions.size()]);
     }
 
+    private File getFilePath(String path, String resourceName) {
+      path = path.substring(0, path.length() - resourceName.length());
+      if (path.endsWith("!/")) {
+        path = path.substring(0, path.length()-2);
+      }
+      File file = new File(path);
+      return file;
+    }
+    
     @Override
     public void close() {
       // if we own the executor service, time to shut it down.

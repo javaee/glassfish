@@ -147,8 +147,8 @@ public class InhabitantsGenerator {
     
     inhabitantsClassPath = filterIgnores(inhabitantsClassPath);
     
-    // TODO: fix multi-threaded issues in class-model
-    this.ipcGen = InhabitantsParsingContextGenerator.create(null, createExecutorService());
+    this.ipcGen = InhabitantsParsingContextGenerator.
+          create(null, createExecutorService(), inhabitantsClassPath);
     
     if (null != descriptor) {
       this.descriptor = descriptor;
@@ -163,12 +163,15 @@ public class InhabitantsGenerator {
       throw new RuntimeException(e);
     }
     
-    codeSourceFilter = new CodeSourceFilter(inhabitantsSourceFiles);
+    // TODO: remove CodeSourceFilter if not longer needed after Jerome's fix
+//    codeSourceFilter = new CodeSourceFilter(inhabitantsSourceFiles);
+    codeSourceFilter = null;
   }
 
-  // TODO: temporary, until multi-threaded issues are resolved in class-model parsing
+  // temporary, until multi-threaded issues are resolved in class-model parsing
   private ExecutorService createExecutorService() {
-    return new SameThreadExecutor();
+    return null;
+//    return new SameThreadExecutor();
 //    return Executors.newSingleThreadExecutor(new ThreadFactory() {
 //      @Override
 //      public Thread newThread(Runnable r) {
@@ -326,7 +329,7 @@ public class InhabitantsGenerator {
      */
     @Override
     protected boolean isFilteredInhabitant(String typeName) {
-      if (codeSourceFilter.matches(typeName)) {
+      if (null == codeSourceFilter || codeSourceFilter.matches(typeName)) {
         return false; // true==(ignore it); false==(include it)
       } else {
         Logger.getAnonymousLogger().log(Level.FINE, "filtering out {0}", typeName);

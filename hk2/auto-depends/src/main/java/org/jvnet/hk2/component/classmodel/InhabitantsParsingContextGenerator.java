@@ -39,6 +39,8 @@ package org.jvnet.hk2.component.classmodel;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -51,6 +53,7 @@ import java.util.logging.Logger;
 import org.glassfish.hk2.classmodel.reflect.Parser;
 import org.glassfish.hk2.classmodel.reflect.ParsingContext;
 import org.glassfish.hk2.classmodel.reflect.util.ParsingConfig;
+import org.glassfish.hk2.classmodel.reflect.util.ResourceLocator;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
@@ -89,7 +92,7 @@ public abstract class InhabitantsParsingContextGenerator implements Closeable {
      * @return an empty context InhabitantsGenerator
      */
     public static InhabitantsParsingContextGenerator create(Habitat h) {
-        return new InhabitantsParsingContextGenerator(null) {};
+        return new InhabitantsParsingContextGenerator(null, null) {};
     }
 
     /**
@@ -97,14 +100,18 @@ public abstract class InhabitantsParsingContextGenerator implements Closeable {
      *
      * @param h habitat not currently used; reserved for future use
      * @param es the executor to use for any async processing (e.g., parsing)
+     * @param inhabitantsClassPath the fully qualified classpath in order to resolve class-model
      * 
      * @return an empty context InhabitantsGenerator
      */
-    public static InhabitantsParsingContextGenerator create(Habitat h, ExecutorService es) {
-        return new InhabitantsParsingContextGenerator(es) {};
+    public static InhabitantsParsingContextGenerator create(Habitat h, 
+            ExecutorService es,
+            ClassPath inhabitantsClassPath) {
+        return new InhabitantsParsingContextGenerator(es, inhabitantsClassPath) {};
     }
     
-    protected InhabitantsParsingContextGenerator(ExecutorService es) {
+    protected InhabitantsParsingContextGenerator(ExecutorService es,
+            final ClassPath inhabitantsClassPath) {
         // setup the parser
         ParsingContext.Builder builder = new ParsingContext.Builder();
         final Set<String> annotations = new HashSet<String>();
@@ -129,7 +136,13 @@ public abstract class InhabitantsParsingContextGenerator implements Closeable {
             }
         });
 
+        // optionally provide an executor
         builder.executorService(es);
+        
+        // optionally provide an inhabitants locator
+        if (null != inhabitantsClassPath) {
+          builder.locator(new Locator(inhabitantsClassPath));
+        }
         
         context = builder.build();
         parser = new Parser(context);
@@ -203,6 +216,30 @@ public abstract class InhabitantsParsingContextGenerator implements Closeable {
     public void close() {
       if (null != parser) {
         parser.close();
+      }
+    }
+
+    
+    private static class Locator implements ResourceLocator {
+      private final ClassLoader resourceLoader;
+      
+      public Locator(ClassPath inhabitantsClassPath) {
+        try {
+          resourceLoader = new URLClassLoader(inhabitantsClassPath.getRawURLs(), null);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+      }
+
+      @Override
+      public URL getResource(String name) {
+        if (name.startsWith("java/")) {
+          return null;  // wasteful to parse these
+        }
+        
+        URL resource = resourceLoader.getResource(name);
+//        System.out.println("RESOURCE: " + name + "=" + resource);
+        return resource;
       }
     }
 

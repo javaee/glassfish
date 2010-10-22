@@ -161,7 +161,7 @@ public class InhabitantsGeneratorTest {
    * this test looks at the case where the classpath is only partially specified resulting in
    * a reduced view of the inhabitants.
    */
-//  @Ignore
+  @Ignore
   @Test
   public void testReducedScopeHabitatFileGeneration() throws IOException {
     ArrayList<File> testDir = getTestClassPathEntries(false);
@@ -182,6 +182,7 @@ public class InhabitantsGeneratorTest {
     assertNotNull(output);
     System.out.println("Output: \n" + output);
     System.out.println("Expected: \n" + expected(false));
+    System.out.println("testDir is: " + testDir);
     assertTrue("output (see javadoc comments):\n" + output, output.contains(expected(false)));
   }
 
@@ -189,7 +190,7 @@ public class InhabitantsGeneratorTest {
    * this test, akin to the above, looks at the case where the classpath is fully specified
    * resulting in all of the correctly modeled inhabitants.
    */
-//  @Ignore
+  @Ignore
   @Test
   public void testFullHabitatFileGeneration() throws IOException {
     ArrayList<File> inhabitantSources = getTestClassPathEntries(false);
@@ -265,7 +266,7 @@ public class InhabitantsGeneratorTest {
   /**
    * If there are no inhabitants then there should be no generated file
    */
-//  @Ignore
+  @Ignore
   @Test
   public void testMainWithNoInhabitants() throws Exception {
     File testDir = new File(new File("."), "target/test-classes");
@@ -291,7 +292,7 @@ public class InhabitantsGeneratorTest {
   /**
    * If {@link #testHabitatFileGeneration()} fails, then this guy will also always fail.
    */
-//  @Ignore
+  @Ignore
   @Test
   public void testMain() throws Exception {
     File testDir = new File(new File("."), "target/test-classes");
@@ -326,7 +327,7 @@ public class InhabitantsGeneratorTest {
   /**
    * Compares APT generation to class-model, introspection generation.
    */
-//  @Ignore
+  @Ignore
   @Test
   public void testAgainstAptGenerator() throws Exception {
     // generate the habitat file
@@ -425,7 +426,7 @@ public class InhabitantsGeneratorTest {
       throw new RuntimeException("can't find test-classes in " + cpSet);
     }
 
-    System.out.println("test classpath for worldview=" + worldView + " is " + entries);
+    System.out.println("test classpath for worldview=" + worldView + " is " + ClassPath.create(null, entries));
     
     return entries;
   }
