@@ -62,14 +62,23 @@
             <plugin>
                 <groupId>org.glassfish</groupId>
                 <artifactId>maven-embedded-glassfish-plugin</artifactId>
+		<version>${project.version}</version>
                 <configuration>
                     <serverID>embedded</serverID>
                 </configuration>
                 <executions>
                     <execution>
+                        <id>start</id>
                         <phase>pre-integration-test</phase>
                         <goals>
                             <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -89,22 +98,6 @@
                         <configuration>
                             <skip>false</skip>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.glassfish</groupId>
-                <artifactId>maven-embedded-glassfish-plugin</artifactId>
-                <configuration>
-                    <goalPrefix>glassfish</goalPrefix>
-                    <serverID>embedded</serverID>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>

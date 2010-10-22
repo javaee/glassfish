@@ -49,7 +49,7 @@
         <version>3.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    
+
     <groupId>org.glassfish</groupId>
     <artifactId>standalonewar</artifactId>
     <packaging>war</packaging>
@@ -79,6 +79,7 @@
             <plugin>
                 <groupId>org.glassfish</groupId>
                 <artifactId>maven-embedded-glassfish-plugin</artifactId>
+		<version>${project.version}</version>
                 <configuration>
                     <goalPrefix>glassfish</goalPrefix>
                     <app>target/standalonewar.war</app>
@@ -88,10 +89,19 @@
                 </configuration>
                 <executions>
                     <execution>
+                        <id>start</id>
                         <phase>pre-integration-test</phase>
                         <goals>
                             <goal>start</goal>
                             <goal>deploy</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>undeploy</goal>
+                            <goal>stop</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -111,24 +121,6 @@
                         <configuration>
                             <skip>false</skip>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.glassfish</groupId>
-                <artifactId>maven-embedded-glassfish-plugin</artifactId>
-                <configuration>
-                    <goalPrefix>glassfish</goalPrefix>
-                    <name>test</name>
-                    <serverID>embedded</serverID>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>undeploy</goal>
-                            <goal>stop</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>
