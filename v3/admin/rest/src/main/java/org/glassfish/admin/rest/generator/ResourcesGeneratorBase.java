@@ -121,6 +121,13 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
 
                     //create resource class
                     generateCollectionLeafResource(childResourceBeanName);
+                } else {
+                     String childResourceBeanName = getBeanName(elementName); 
+                    String childResourceClassName = getClassName(childResourceBeanName);
+                    classWriter.createGetChildResource(elementName, childResourceClassName);
+
+                    //create resource class
+                    generateLeafResource(childResourceBeanName);                   
                 }
             } else {  // => !childElement.isLeaf()
                 processNonLeafChildElement(elementName, childElement, domDocument, classWriter);
@@ -186,7 +193,19 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         classWriter.done();
 
     }
+    
+    private void generateLeafResource(String beanName) {
+        String className = getClassName(beanName);
 
+        if (alreadyGenerated(className)) {
+            return;
+        }
+
+        ClassWriter classWriter = getClassWriter(className, "LeafResource", null);
+
+        classWriter.done();
+
+    }
     private void processNonLeafChildElement(String elementName, ConfigModel.Property childElement, DomDocument domDocument, ClassWriter classWriter) {
         ConfigModel.Node node = (ConfigModel.Node) childElement;
         ConfigModel childModel = node.getModel();

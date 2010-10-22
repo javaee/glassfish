@@ -41,6 +41,8 @@
 package org.glassfish.admin.rest.results;
 
 import com.sun.enterprise.v3.common.ActionReporter;
+import org.glassfish.admin.rest.resources.LeafResource;
+import org.glassfish.admin.rest.resources.LeafResource.LeafContent;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.jvnet.hk2.config.ConfigBean;
 
@@ -56,6 +58,15 @@ public class ActionReportResult extends Result {
     private OptionsResult __metaData;
     private ConfigBean __entity;
     private String commandDisplayName = null;
+    private LeafResource.LeafContent leafContent = null;
+
+    public LeafContent getLeafContent() {
+        return leafContent;
+    }
+
+    public void setLeafContent(LeafContent leafContent) {
+        this.leafContent = leafContent;
+    }
 
 
     /**

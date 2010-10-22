@@ -79,7 +79,6 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
             result.append("<h2>Error:</h2>")
                     .append(proxy.getErrorMessage());
         } else {
-            final ConfigBean entity = proxy.getEntity();
             final Map<String, String> childResources = (Map<String, String>) ar.getExtraProperties().get("childResources");
             final List<Map<String, String>> commands = (List<Map<String, String>>) ar.getExtraProperties().get("commands");
             final MethodMetaData postMetaData = proxy.getMetaData().getMethodMetaData("POST");
@@ -89,6 +88,7 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
                 result.append(processReport(ar));
             }
             
+            final ConfigBean entity = proxy.getEntity();
             if ((postMetaData != null) && (entity == null)) {
                 String postCommand = getHtmlRespresentationsForCommand(postMetaData, "POST", ( proxy.getCommandDisplayName()==null )? "Create" : proxy.getCommandDisplayName(), uriInfo);
                 result.append(getHtmlForComponent(postCommand, "Create " + ar.getActionDescription(), ""));
@@ -101,7 +101,19 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
                 String deleteCommand = ProviderUtil.getHtmlRespresentationsForCommand(proxy.getMetaData().getMethodMetaData("DELETE"), "DELETE", (proxy.getCommandDisplayName() == null) ? "Delete" : proxy.getCommandDisplayName(), uriInfo);
                 result.append(ProviderUtil.getHtmlForComponent(deleteCommand, "Delete " + entity.model.getTagName(), ""));
 
-            } else { //This is a monitoring result!!!
+            } else if (proxy.getLeafContent()!=null){ //it is a single leaf @Element
+                String content =
+                "<form action=\"" + uriInfo.getAbsolutePath().toString() +"\" method=\"post\">"+
+                        "<dl><dt>"+
+                        "<label for=\""+proxy.getLeafContent().name+"\">"+proxy.getLeafContent().name+":&nbsp;</label>"+
+                                "</dt><dd>"+
+                                "<input name=\""+proxy.getLeafContent().name+"\" value =\""+proxy.getLeafContent().value+"\" type=\"text\" >"+
+                                "</dd><dt class=\"button\"></dt><dd class=\"button\"><input value=\"Update\" type=\"submit\"></dd></dl>"+
+                                "</form><br><hr class=\"separator\"/";
+                result.append(content);
+                
+            }
+            else  { //This is a monitoring result!!!
 
                 final Map vals = (Map) ar.getExtraProperties().get("entity");
 
