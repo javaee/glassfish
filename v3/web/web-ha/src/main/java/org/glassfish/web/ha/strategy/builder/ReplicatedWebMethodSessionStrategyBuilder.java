@@ -64,10 +64,10 @@ import java.util.HashMap;
 @Scoped(PerLookup.class)
 public class ReplicatedWebMethodSessionStrategyBuilder extends BasePersistenceStrategyBuilder {
     @Inject
-    ReplicationWebEventPersistentManager rwepMgr;
+    private ReplicationWebEventPersistentManager rwepMgr;
 
     @Inject
-    JavaEEIOUtils ioUtils;
+    private JavaEEIOUtils ioUtils;
 
     public ReplicatedWebMethodSessionStrategyBuilder() {
         super();
@@ -101,15 +101,11 @@ public class ReplicatedWebMethodSessionStrategyBuilder extends BasePersistenceSt
         rwepMgr.setStore(store);
 
 
-
-
-
-//        rwepMgr.createBackingStore(this.getPassedInPersistenceType(), ctx.getServletContext().getContextPath());
-
-
-
-
         ctx.setManager(rwepMgr);
+        if(!((StandardContext)ctx).isSessionTimeoutOveridden()) {
+            rwepMgr.setMaxInactiveInterval(sessionMaxInactiveInterval);
+        }
+
 
         HASessionStoreValve haValve = new HASessionStoreValve();
         StandardContext stdCtx = (StandardContext) ctx;
