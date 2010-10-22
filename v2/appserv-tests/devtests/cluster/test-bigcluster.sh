@@ -125,6 +125,8 @@ create_hosted_clusters() {
   do
     c=`expr $c + 1`
     echo "create-cluster ch$c"
+    # turn off command replication while creating instances
+    echo "set configs.config.ch$c-config.dynamic-reconfiguration-enabled=false"
     n=0
     while [ "$n" -lt "$nnum" ]
     do
@@ -136,6 +138,7 @@ create_hosted_clusters() {
         echo "create-instance --cluster ch$c --node n-ssh-${DOMAIN}-${n} i${c}-${n}-${i}"
       done
     done
+    echo "set configs.config.ch$c-config.dynamic-reconfiguration-enabled=true"
   done | asadmin 
 }
 
