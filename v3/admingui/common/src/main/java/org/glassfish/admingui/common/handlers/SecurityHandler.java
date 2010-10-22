@@ -281,6 +281,7 @@ public class SecurityHandler {
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
         if (edit.booleanValue()) {
             HashMap attrs = new HashMap<String, Object>();
+            attrs.put("target", attrMap.get("target"));
             RestApiHandlers.delete(endpoint, attrs);
             endpoint = endpoint.substring(0, endpoint.indexOf("/auth-realm"));
         }
