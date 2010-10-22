@@ -461,7 +461,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
      * imports will be added
      * @param schemaIncludes output param in which schema includes will be added
      */
-    public void parseRelativeImports(URL wsdlFileUrl,
+    private void parseRelativeImports(URL wsdlFileUrl,
                                       Collection wsdlRelativeImports,
                                       Collection wsdlIncludes,
                                       Collection schemaRelativeImports,
