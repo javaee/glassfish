@@ -108,8 +108,6 @@ public class CommandExecutorImpl implements org.glassfish.embeddable.CommandRunn
         Parser parser = new Parser(args, 0, commandModel.getParameters(), false);
         ParameterMap options = parser.getOptions();
         List<String> operands = parser.getOperands();
-        System.out.println("options = " + options);
-        System.out.println("operands = " + operands);
         options.set("DEFAULT", operands);
         // if command has a "terse" option, set it in options
         if (commandModel.getModelFor("terse") != null)

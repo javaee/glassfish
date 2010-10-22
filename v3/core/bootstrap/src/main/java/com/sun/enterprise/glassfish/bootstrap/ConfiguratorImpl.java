@@ -40,13 +40,9 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
-import com.sun.enterprise.glassfish.bootstrap.Configurator;
 import org.glassfish.embeddable.CommandRunner;
 import org.glassfish.embeddable.GlassFishConstants;
 import org.glassfish.embeddable.GlassFishException;
-import org.jvnet.hk2.annotations.ContractProvided;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 
 import java.text.MessageFormat;
@@ -61,17 +57,17 @@ class ConfiguratorImpl implements Configurator {
 
     Habitat habitat;
 
-    private static final Map<String, String> simpleConfigurators = new HashMap();
+    private static final Map<String, String[]> httpListeners = new HashMap();
 
     static {
-        simpleConfigurators.put(GlassFishConstants.HTTP_PORT,
-                "server.network-config.network-listeners.network-listener.http-listener-1.port={0}");
-        simpleConfigurators.put(GlassFishConstants.HTTPS_PORT,
-                "server.network-config.network-listeners.network-listener.http-listener-2.port={0}");
+        httpListeners.put(GlassFishConstants.HTTP_PORT, new String[]{
+                "--listenerport={0}", "--listeneraddress=0.0.0.0", "--defaultvs=server",
+                "listener_id=embedded-listener-__1__"});
+        httpListeners.put(GlassFishConstants.HTTPS_PORT, new String[]{
+                "--listenerport={0}", "--listeneraddress=0.0.0.0", "--defaultvs=server",
+                "--securityenabled=true", "listener_id=embedded-listener-__2__"});
         // TODO :: support other simple configurations like jmx.port and jms.port
     }
-
-    private static final String COMMA_SEPARATED_VALUE = "{0},{1}";
 
     public ConfiguratorImpl(Habitat habitat) {
         this.habitat = habitat;
@@ -79,21 +75,14 @@ class ConfiguratorImpl implements Configurator {
 
     public void configure(Properties bootstrapProps) throws GlassFishException {
 
-        String setValues = null;
-        for (String key : simpleConfigurators.keySet()) {
+        CommandRunner commandRunner = habitat.getComponent(CommandRunner.class);
+        for (String key : httpListeners.keySet()) {
             String configuredVal = bootstrapProps.getProperty(key);
             if (configuredVal != null) {
-                String formatted = MessageFormat.format(simpleConfigurators.get(key),
-                        configuredVal);
-                setValues = setValues == null ? formatted : MessageFormat.format(
-                        COMMA_SEPARATED_VALUE, setValues, formatted);
+                String[] values = httpListeners.get(key);
+                values[0] = MessageFormat.format(values[0], configuredVal);
+                commandRunner.run("create-http-listener", values);
             }
         }
-
-        if (setValues != null) {
-            CommandRunner commandRunner = habitat.getComponent(CommandRunner.class);
-            commandRunner.run("set", setValues);
-        }
-
     }
 }
