@@ -78,6 +78,8 @@ public class DataSourceDefinitionDescriptor extends Descriptor implements java.i
 
     private MetadataSource metadataSource = MetadataSource.XML;
 
+    private boolean deployed = false;
+
     private static final String JAVA_URL = "java:";
     private static final String JAVA_COMP_URL = "java:comp/";
 
@@ -97,6 +99,14 @@ public class DataSourceDefinitionDescriptor extends Descriptor implements java.i
 
     public void setResourceId(String resourceId){
         this.resourceId = resourceId;
+    }
+
+    public void setDeployed(boolean deployed){
+        this.deployed = deployed;
+    }
+
+    public boolean isDeployed(){
+        return deployed;
     }
 
     public String getName() {

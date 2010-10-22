@@ -41,6 +41,7 @@
 package org.glassfish.persistence.jpa;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+import com.sun.appserv.connectors.internal.api.ResourceNamingService;
 import com.sun.enterprise.deployment.*;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.event.EventListener;
@@ -49,6 +50,8 @@ import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
+import org.glassfish.javaee.services.DataSourceDefinitionProxy;
+import org.glassfish.resource.common.ResourceInfo;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
@@ -61,6 +64,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 
+import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
 import java.util.*;
 
@@ -125,6 +129,7 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
     @Override public boolean prepare(DeploymentContext context) {
         boolean prepared = super.prepare(context);
 
+            boolean hasScopedResource = false;
             if(prepared) {
                Application application = context.getModuleMetaData(Application.class);
                Set<BundleDescriptor> bundles = application.getBundleDescriptors();
@@ -135,7 +140,14 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
                     Collection<? extends PersistenceUnitDescriptor> pusReferencedFromBundle = bundle.findReferencedPUs();
                     for(PersistenceUnitDescriptor pud : pusReferencedFromBundle) {
                         referencedPus.add(pud);
+                        String jtaDataSource = pud.getJtaDataSource();
+                        if(jtaDataSource != null && jtaDataSource.startsWith("java:")){
+                            hasScopedResource = true;
+                        }
                     }
+                }
+                if (hasScopedResource) {
+                    connectorRuntime.registerDataSourceDefinitions(application);
                 }
 
                 //Iterate through all the PUDs for this bundle and if it is referenced, load the corresponding pu

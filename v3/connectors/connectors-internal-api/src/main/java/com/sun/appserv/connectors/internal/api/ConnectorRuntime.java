@@ -596,6 +596,14 @@ public interface ConnectorRuntime extends ConnectorConstants{
      * @return all work security maps of a resource-adapter
      */
     public List<WorkSecurityMap> getWorkSecurityMap(String raName);
+
+    /**
+     * Used to register data-source-definitions at an earlier stage of deployment (prepare phase).
+     * This is used to register "java:global" and "java:app" scoped DataSourceDefinitions
+     * which can be referred by JPA in persistence.xml
+     * @param application Application being deployed.
+     */
+    public void registerDataSourceDefinitions(com.sun.enterprise.deployment.Application application);
     
     /**
      * Flush Connection pool by reinitializing the connections 

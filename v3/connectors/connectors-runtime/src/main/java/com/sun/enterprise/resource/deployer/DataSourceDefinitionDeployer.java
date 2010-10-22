@@ -41,12 +41,15 @@
 package com.sun.enterprise.resource.deployer;
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.ResourceNamingService;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
-import com.sun.enterprise.deployment.DataSourceDefinitionDescriptor;
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.logging.LogDomains;
+import org.glassfish.javaee.services.DataSourceDefinitionProxy;
+import org.glassfish.resource.common.ResourceInfo;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -54,11 +57,9 @@ import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.component.Habitat;
 
+import javax.naming.NamingException;
 import java.beans.PropertyVetoException;
-import java.util.List;
-import java.util.Properties;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -70,7 +71,7 @@ import java.util.logging.Level;
 public class DataSourceDefinitionDeployer implements ResourceDeployer {
 
     @Inject
-    Habitat habitat;
+    private Habitat habitat;
 
     private static Logger _logger = LogDomains.getLogger(DataSourceDefinitionDeployer.class, LogDomains.RSR_LOGGER);
 
@@ -80,7 +81,6 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
     public void deployResource(Object resource) throws Exception {
 
         final DataSourceDefinitionDescriptor desc = (DataSourceDefinitionDescriptor) resource;
-
         String poolName = ConnectorsUtil.deriveDataSourceDefinitionPoolName(desc.getResourceId(), desc.getName());
         String resourceName = ConnectorsUtil.deriveDataSourceDefinitionResourceName(desc.getResourceId(), desc.getName());
 
@@ -113,6 +113,76 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
 
     private DataSourceProperty convertProperty(String name, String value) {
         return new DataSourceProperty(name, value);
+    }
+
+
+    public void registerDataSourceDefinitions(com.sun.enterprise.deployment.Application application) {
+        Set<BundleDescriptor> bundles = application.getBundleDescriptors();
+        for (BundleDescriptor bundle : bundles) {
+            if (bundle instanceof JndiNameEnvironment) {
+                JndiNameEnvironment env = (JndiNameEnvironment) bundle;
+                for (DataSourceDefinitionDescriptor dsd : env.getDataSourceDefinitionDescriptors()) {
+                    deployDataSourceDefinition(application, dsd);
+                }
+            }
+
+            //ejb descriptor
+            if (bundle instanceof EjbBundleDescriptor) {
+                EjbBundleDescriptor ejbDesc = (EjbBundleDescriptor) bundle;
+                Set<EjbDescriptor> ejbDescriptors = ejbDesc.getEjbs();
+                for (EjbDescriptor ejbDescriptor : ejbDescriptors) {
+                    for (DataSourceDefinitionDescriptor dsd : ejbDescriptor.getDataSourceDefinitionDescriptors()) {
+                        deployDataSourceDefinition(application, dsd);
+                    }
+                }
+                //ejb interceptors
+                Set<EjbInterceptor> ejbInterceptors = ejbDesc.getInterceptors();
+                for (EjbInterceptor ejbInterceptor : ejbInterceptors) {
+                    for (DataSourceDefinitionDescriptor dsd : ejbInterceptor.getDataSourceDefinitionDescriptors()) {
+                        deployDataSourceDefinition(application, dsd);
+                    }
+                }
+            }
+
+            // managed bean descriptors
+            Set<ManagedBeanDescriptor> managedBeanDescriptors = bundle.getManagedBeans();
+            for (ManagedBeanDescriptor mbd : managedBeanDescriptors) {
+                for (DataSourceDefinitionDescriptor dsd : mbd.getDataSourceDefinitionDescriptors()) {
+                    deployDataSourceDefinition(application, dsd);
+                }
+            }
+        }
+    }
+
+    private void deployDataSourceDefinition(com.sun.enterprise.deployment.Application application,
+                                            DataSourceDefinitionDescriptor dsd) {
+        // It is possible that JPA might call this method multiple times in a single deployment,
+        // when there are multiple PUs eg: one PU in each of war, ejb-jar. Make sure that
+        // DSD is bound to JNDI only when it is not already deployed.
+        if(!dsd.isDeployed()){
+            DataSourceDefinitionProxy proxy = habitat.getComponent(DataSourceDefinitionProxy.class);
+            ResourceNamingService resourceNamingService = habitat.getComponent(ResourceNamingService.class);
+            proxy.setDescriptor(dsd);
+
+            String appName = application.getAppName();
+            String moduleName = null;
+            if(dsd.getName().startsWith(ConnectorConstants.JAVA_APP_SCOPE_PREFIX)){
+                dsd.setResourceId(appName);
+            }
+
+            if(dsd.getName().startsWith(ConnectorConstants.JAVA_GLOBAL_SCOPE_PREFIX)
+                    /*|| next.getName().startsWith("java:module/")*/
+                    || dsd.getName().startsWith(ConnectorConstants.JAVA_APP_SCOPE_PREFIX)){
+                ResourceInfo resourceInfo = new ResourceInfo(dsd.getName(), appName, moduleName);
+                try {
+                    resourceNamingService.publishObject(resourceInfo, proxy, true);
+                    dsd.setDeployed(true);
+                } catch (NamingException e) {
+                    Object params[] = new Object[]{appName, dsd.getName(), e};
+                    _logger.log(Level.WARNING, "dsd.registration.failed", params);    
+                }
+            }
+        }
     }
 
     public void undeployResource(Object resource, String applicationName, String moduleName) throws Exception {

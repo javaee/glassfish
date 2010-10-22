@@ -41,6 +41,7 @@
 package com.sun.enterprise.connectors;
 
 import com.sun.appserv.connectors.internal.api.ResourceNamingService;
+import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.connectors.util.*;
 
 import java.io.IOException;
@@ -78,6 +79,7 @@ import com.sun.enterprise.deployment.archivist.ArchivistFactory;
 import com.sun.enterprise.deployment.archivist.ConnectorArchivist;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import com.sun.enterprise.deployment.util.XModuleType;
+import com.sun.enterprise.resource.deployer.DataSourceDefinitionDeployer;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.resource.pool.monitor.ConnectionPoolProbeProviderUtil;
 import com.sun.enterprise.security.jmac.callback.ContainerCallbackHandler;
@@ -1313,6 +1315,13 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      */
     public DelegatingClassLoader getConnectorClassLoader() {
         return clh.getConnectorClassLoader(null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void registerDataSourceDefinitions(com.sun.enterprise.deployment.Application application) {
+        habitat.getComponent(DataSourceDefinitionDeployer.class).registerDataSourceDefinitions(application);
     }
 
     /**

@@ -65,10 +65,7 @@ import javax.naming.NamingException;
 import javax.naming.NameNotFoundException;
 import javax.naming.Context;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -272,20 +269,26 @@ public class ComponentEnvManagerImpl
     }
     private void addDataSourceBindings(JndiNameEnvironment env, ScopeType scope, Collection<JNDIBinding> jndiBindings) {
 
-        for(Iterator itr = env.getDataSourceDefinitionDescriptors().iterator(); itr.hasNext();){
-            DataSourceDefinitionDescriptor next = (DataSourceDefinitionDescriptor)itr.next();
+        for (DataSourceDefinitionDescriptor dsd : env.getDataSourceDefinitionDescriptors()) {
 
-            if(!dependencyAppliesToScope(next, scope)){
+            if (!dependencyAppliesToScope(dsd, scope)) {
                 continue;
             }
-            setResourceId(env, next);
+
+            //the DSD would have been deployed already for JPA's requirements.
+            if (dsd.isDeployed()) {
+                continue;
+            }
+
+            setResourceId(env, dsd);
 
             DataSourceDefinitionProxy proxy = habitat.getComponent(DataSourceDefinitionProxy.class);
-            proxy.setDescriptor(next);
+            proxy.setDescriptor(dsd);
 
-            String logicalJndiName = descriptorToLogicalJndiName(next);
+            String logicalJndiName = descriptorToLogicalJndiName(dsd);
             CompEnvBinding envBinding = new CompEnvBinding(logicalJndiName, proxy);
             jndiBindings.add(envBinding);
+            dsd.setDeployed(true);
         }
     }
 
@@ -316,6 +319,13 @@ public class ComponentEnvManagerImpl
         }
 
         Application app = getApplicationFromEnv(env);
+
+        //undeploy data-sources exposed by app-client descriptors.
+        Set<ApplicationClientDescriptor> appClientDescs = app.getBundleDescriptors(ApplicationClientDescriptor.class);
+        for(ApplicationClientDescriptor acd : appClientDescs){
+            undeployDataSourceDefinitions(acd);
+        }
+
         if( !(env instanceof ApplicationClientDescriptor ) &&
             (app.getBundleDescriptors(ApplicationClientDescriptor.class).size() > 0) ) {
             Collection<JNDIBinding> appBindings = new ArrayList<JNDIBinding>();
@@ -343,24 +353,19 @@ public class ComponentEnvManagerImpl
 
     private void undeployDataSourceDefinitions(JndiNameEnvironment env) {
 
-        for(Iterator itr = env.getDataSourceDefinitionDescriptors().iterator(); itr.hasNext();){
-            DataSourceDefinitionDescriptor next = (DataSourceDefinitionDescriptor)itr.next();
-            undeployDataSource(next);
+        for (DataSourceDefinitionDescriptor dsd : env.getDataSourceDefinitionDescriptors()) {
+            Collection<ResourceDeployer> resourceDeployers = habitat.getAllByContract(ResourceDeployer.class);
+            try{
+                if(dsd.isDeployed()){
+                    ResourceDeployer deployer = getResourceDeployer(dsd, resourceDeployers);
+                    deployer.undeployResource(dsd);
+                    dsd.setDeployed(false);
+                }
+            }catch(Exception e){
+                _logger.log(Level.WARNING, "unable to undeploy DataSourceDefinition [ " + dsd.getName() + " ] ", e);
+            }
         }
     }
-
-    private void undeployDataSource(DataSourceDefinitionDescriptor next) {
-
-        Collection<ResourceDeployer> resourceDeployers = habitat.getAllByContract(ResourceDeployer.class);
-
-        try{
-            ResourceDeployer deployer = getResourceDeployer(next, resourceDeployers);
-            deployer.undeployResource(next);
-        }catch(Exception e){
-            _logger.log(Level.WARNING, "unable to undeploy DataSourceDefinition [ " + next.getName() + " ] ", e);
-        }
-    }
-
 
     private void addEnvironmentProperties(ScopeType scope, Iterator envItr, Collection<JNDIBinding> jndiBindings) {
 
