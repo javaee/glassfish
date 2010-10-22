@@ -117,56 +117,58 @@ public class Parser implements Closeable {
         // now we need to visit all the types that got referenced but not visited
         final ResourceLocator locator = context.getLocator();
         if (locator!=null) {
-            final byte[] bytes = new byte[52000];
             context.types.onNotVisitedEntries(new TypesCtr.ProxyTask() {
                 @Override
                 public void on(TypeProxy<?> proxy) {
 
                     String name = proxy.getName();
                     // make this name a resource name...
-                    String resourceName = name.replaceAll("\\.", "/") + ".class";                    
+                    String resourceName = name.replaceAll("\\.", "/") + ".class";
                     URL url = locator.getResource(resourceName);
-                    if (url==null) return;
-                    System.out.println("Parsing through locator " + name);
+                    if (url == null) return;
 
                     // copy URL into bytes
-                    InputStream is=null;
-                    int size=0;
+                    InputStream is = null;
+                    int size = 0;
                     try {
-                        is = url.openStream();
-                        size = is.read(bytes, 0, 5200);
-                    } catch(IOException e) {
+
+                        URLConnection connection = url.openConnection();
+                        size = connection.getContentLength();
+                        is = connection.getInputStream();
+
+                        // now visit...
+                        if (logger.isLoggable(Level.FINE)) {
+                            logger.fine("Going to visit " + resourceName + " from " + url + " of size " + size);
+                        }
+                        ClassReader cr = new ClassReader(is);
+                        try {
+                            File file = getFilePath(url.getPath(), resourceName);
+                            URI definingURI = file.toURI();
+                            cr.accept(context.getClassVisitor(definingURI, resourceName), ClassReader.SKIP_DEBUG);
+                        } catch (Throwable e) {
+                            logger.log(Level.SEVERE, "Exception while visiting " + name
+                                    + " of size " + size, e);
+                        }
+
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     } finally {
-                        if (is!=null)
+                        if (is != null)
                             try {
                                 is.close();
                             } catch (IOException e) {
-
+                                logger.log(Level.SEVERE, "Exception while closing " + resourceName + " stream", e);
                             }
                     }
-
-                    // now visit...
-                    ClassReader cr = new ClassReader(bytes, 0, size);
-                    try {
-                        File file = getFilePath(url.getPath(), resourceName);
-//                        System.out.println("resourceName=" + resourceName + "; url=" + file);
-                        URI definingURI = file.toURI();
-//                        System.out.println("uri=" + definingURI);
-                        cr.accept(context.getClassVisitor(definingURI, resourceName), ClassReader.SKIP_DEBUG);
-                    } catch (Throwable e) {
-                        logger.log(Level.SEVERE, "Exception while visiting " + name
-                                + " of size " + size, e);
-                    }
-
                 }
-                
             });
         }
         close();
         return exceptions.toArray(new Exception[exceptions.size()]);
     }
 
-    private File getFilePath(String path, String resourceName) {
+    private static File getFilePath(String path, String resourceName) {
       path = path.substring(0, path.length() - resourceName.length());
       if (path.endsWith("!/")) {
         path = path.substring(0, path.length()-2);
@@ -241,9 +243,6 @@ public class Parser implements Closeable {
         }
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "at " + System.currentTimeMillis() + "in " + this + " submitting file " + source.getURI().getPath());
-        }
-
-        if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "submitting file " + source.getURI().getPath());
         }
         Future<Result> future = es.submit(new Callable<Result>() {

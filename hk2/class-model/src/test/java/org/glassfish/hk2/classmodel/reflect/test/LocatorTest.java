@@ -59,7 +59,6 @@ import java.util.logging.Level;
 public class LocatorTest {
 
     @Test
-    @Ignore
     public void testLocaltor() throws IOException {
         List<URL> files = new ArrayList<URL>();
         long startTime = System.currentTimeMillis();
