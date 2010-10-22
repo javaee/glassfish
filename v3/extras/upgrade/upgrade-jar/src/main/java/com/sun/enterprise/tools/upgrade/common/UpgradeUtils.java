@@ -208,16 +208,19 @@ public class UpgradeUtils {
         return dir.delete();
     }
 	
-	
+	/*
+	 * We don't need to validate the xml document now as that is the
+	 * job of the upgrade code in the application server. We're only
+	 * interested in the version information here, and if that is
+	 * somehow wrong then the upgrade process will fail downstream
+	 * as the document is parsed into serverbeans objects.
+	 */
     public Document getDomainDocumentElement(String domainFileName) {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         Document resultDoc = null;
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
-            ///builder.setEntityResolver(
-            ///	(org.xml.sax.helpers.DefaultHandler)Class.forName
-            ///	("com.sun.enterprise.config.serverbeans.ServerValidationHandler").newInstance());
             resultDoc = builder.parse(new File(domainFileName));
         } catch (Exception ex) {
             logger.log(Level.WARNING,
