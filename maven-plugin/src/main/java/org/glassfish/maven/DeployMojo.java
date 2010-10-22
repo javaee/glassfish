@@ -59,8 +59,8 @@ public class DeployMojo extends AbstractDeployMojo {
             // call undeploy to prevent:
             // org.jvnet.hk2.config.TransactionFailure: Keys cannot be duplicate.
             // Old value of this key property, nullwill be retained
-            doUndeploy(serverID, getClassLoader(), getBootStrapProperties(),
-                    name, new HashMap());
+//            doUndeploy(serverID, getClassLoader(), getBootStrapProperties(),
+//                    name, new String[0]);
             doDeploy(serverID, getClassLoader(), getBootStrapProperties(),
                     new File(getApp()), getDeploymentParameters());
         } catch (Exception e) {

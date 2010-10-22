@@ -45,7 +45,9 @@ import org.apache.maven.plugin.MojoFailureException;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -98,16 +100,16 @@ public abstract class AbstractDeployMojo extends AbstractServerMojo {
 
     public abstract void execute() throws MojoExecutionException, MojoFailureException;
 
-    protected Map<String,String> getDeploymentParameters() {
-        Map<String, String> deployParams = new HashMap();
-        set(deployParams, "name", name);
-        set(deployParams, "force", "true");
-        set(deployParams, "contextroot", contextRoot);
-        set(deployParams, "precompilejsp", precompileJsp);
-        set(deployParams, "dbvendorname", dbVendorName);
-        set(deployParams, "createtables", createTables);
-        set(deployParams, "libraries", libraries);
-        return deployParams;
+    protected String[] getDeploymentParameters() {
+        List<String> deployParams = new ArrayList();
+        set(deployParams, "--name", name);
+        set(deployParams, "--force", "true");
+        set(deployParams, "--contextroot", contextRoot);
+        set(deployParams, "--precompilejsp", precompileJsp);
+        set(deployParams, "--dbvendorname", dbVendorName);
+        set(deployParams, "--createtables", createTables);
+        set(deployParams, "--libraries", libraries);
+        return deployParams.toArray(new String[0]);
     }
 
     /**
@@ -118,9 +120,9 @@ public abstract class AbstractDeployMojo extends AbstractServerMojo {
      * @param paramName Name of the parameter
      * @param paramValue Value of the parameter.
      */
-    void set(Map<String, String> params, String paramName, Object paramValue) {
+    void set(List<String> params, String paramName, Object paramValue) {
         if(paramValue != null && paramName != null) {
-            params.put(paramName, paramValue.toString());
+            params.add(paramName + "=" + paramValue.toString());
         }
     }
 
@@ -129,18 +131,18 @@ public abstract class AbstractDeployMojo extends AbstractServerMojo {
     }
 
     protected void doDeploy(String serverId, ClassLoader cl, Properties bootstrapProps,
-                         File archive, Map<String, String> deploymentParams) throws Exception {
+                         File archive, String[] deploymentParams) throws Exception {
         Class clazz = cl.loadClass(PluginUtil.class.getName());
         Method m = clazz.getMethod("doDeploy", new Class[]{String.class, Properties.class,
-                File.class, Map.class});
+                File.class, String[].class});
         m.invoke(null, new Object[]{serverId, bootstrapProps, archive, deploymentParams});
     }
 
     protected void doUndeploy(String serverId, ClassLoader cl, Properties bootstrapProps,
-                              String appName, Map<String, String> deploymentParams) throws Exception {
+                              String appName, String[] deploymentParams) throws Exception {
         Class clazz = cl.loadClass(PluginUtil.class.getName());
         Method m = clazz.getMethod("doUndeploy", new Class[]{String.class, Properties.class,
-                String.class, Map.class});
+                String.class, String[].class});
         m.invoke(null, new Object[]{serverId, bootstrapProps, appName, deploymentParams});
     }
     

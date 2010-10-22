@@ -75,7 +75,7 @@ public class RunMojo extends AbstractDeployMojo {
             // User can try redeploying.
             try {
                 doUndeploy(serverID, getClassLoader(), getBootStrapProperties(),
-                        name, new HashMap());
+                        name, new String[0]);
             } catch (Exception ex) {
                 System.err.println(ex.getMessage());
             }

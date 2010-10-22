@@ -64,7 +64,7 @@ public class AdminMojo extends AbstractServerMojo {
     /**
      * @parameter expression="${args}"
      */
-    protected Map<String, String> args;
+    protected String[] args;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -76,10 +76,10 @@ public class AdminMojo extends AbstractServerMojo {
     }
 
     public void runCommand(String serverId, ClassLoader cl,
-                           String command, Map<String, String> args) throws Exception {
+                           String command, String[] args) throws Exception {
         Class clazz = cl.loadClass(PluginUtil.class.getName());
         Method m = clazz.getMethod("runCommand", new Class[]{
-                String.class, Properties.class, Map.class});
+                String.class, Properties.class, String[].class});
         m.invoke(null, new Object[]{serverId, command, args});
     }
 

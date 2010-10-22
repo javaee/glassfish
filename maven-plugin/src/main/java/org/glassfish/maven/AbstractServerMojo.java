@@ -215,7 +215,7 @@ public abstract class AbstractServerMojo extends AbstractMojo {
     private URLClassLoader getUberGFClassLoader() throws Exception {
         // Use the version user has configured in the plugin.
         Artifact gfMvnPlugin = (Artifact) project.getPluginArtifactMap().get(thisArtifactId);
-        Artifact gfUber = factory.createArtifact("org.glassfish.extras", "glassfish-uber",
+        Artifact gfUber = factory.createArtifact("org.glassfish.extras", "glassfish-embedded-all",
                 "3.1-SNAPSHOT", "compile", "jar");
         resolver.resolve(gfUber, remoteRepositories, localRepository);
         try {
@@ -249,19 +249,21 @@ public abstract class AbstractServerMojo extends AbstractMojo {
 
     protected Properties getBootStrapProperties() {
         Properties props = new Properties();
-        props.setProperty("GlassFish_Platform", "Felix");
-        
-        installRoot = installRoot != null ? installRoot : getDefaultInstallRoot();
-        instanceRoot = instanceRoot != null ? instanceRoot : getDefaultInstanceRoot(installRoot);
+        props.setProperty("GlassFish_Platform", "Static");
 
-        props.setProperty(INSTALL_ROOT_PROP_NAME, new File(installRoot).getAbsolutePath());
-        props.setProperty(INSTALL_ROOT_URI_PROP_NAME,
-                new File(installRoot).toURI().toString());
-        
-        props.setProperty(INSTANCE_ROOT_PROP_NAME, new File(instanceRoot).getAbsolutePath());
-        props.setProperty(INSTANCE_ROOT_URI_PROP_NAME,
-                new File(instanceRoot).toURI().toString());
+//        installRoot = installRoot != null ? installRoot : getDefaultInstallRoot();
+//        instanceRoot = instanceRoot != null ? instanceRoot : getDefaultInstanceRoot(installRoot);
 
+        if (installRoot != null) {
+            props.setProperty(INSTALL_ROOT_PROP_NAME, new File(installRoot).getAbsolutePath());
+            props.setProperty(INSTALL_ROOT_URI_PROP_NAME,
+                    new File(installRoot).toURI().toString());
+        }
+        if (instanceRoot != null) {
+            props.setProperty(INSTANCE_ROOT_PROP_NAME, new File(instanceRoot).getAbsolutePath());
+            props.setProperty(INSTANCE_ROOT_URI_PROP_NAME,
+                    new File(instanceRoot).toURI().toString());
+        }
         if (configFile != null) {
             try {
                 // if it is a java.net.URI pointing to file: or jar: or http: then use it as is.
@@ -280,18 +282,18 @@ public abstract class AbstractServerMojo extends AbstractMojo {
         return props;
     }
 
-    private String getDefaultInstallRoot() {
-        Artifact gfMvnPlugin = (Artifact) project.getPluginArtifactMap().get(thisArtifactId);
-        String userDir = System.getProperty("user.home");
-        String fs = File.separator;
-        return new File(userDir, "." + gfMvnPlugin.getArtifactId() + fs +
-                gfMvnPlugin.getVersion()).getAbsolutePath();
-    }
-
-    private String getDefaultInstanceRoot(String installRoot) {
-        String fs = File.separator;
-        return new File(installRoot, "domains" + fs + "domain1").getAbsolutePath();
-    }
+//    private String getDefaultInstallRoot() {
+//        Artifact gfMvnPlugin = (Artifact) project.getPluginArtifactMap().get(thisArtifactId);
+//        String userDir = System.getProperty("user.home");
+//        String fs = File.separator;
+//        return new File(userDir, "." + gfMvnPlugin.getArtifactId() + fs +
+//                gfMvnPlugin.getVersion()).getAbsolutePath();
+//    }
+//
+//    private String getDefaultInstanceRoot(String installRoot) {
+//        String fs = File.separator;
+//        return new File(installRoot, "domains" + fs + "domain1").getAbsolutePath();
+//    }
 
 
 }

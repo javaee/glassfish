@@ -90,18 +90,18 @@ public class PluginUtil {
     }
 
     public static void doDeploy(String serverId, Properties bootstrapProperties,
-                                File archive, Map<String, String> deploymentParameters) throws Exception {
+                                File archive, String[] deploymentParameters) throws Exception {
         GlassFish gf = startGlassFish(serverId, bootstrapProperties);
         // Lookup the deployer.
         Deployer deployer = gf.lookupService(Deployer.class, null);
         logger.logp(Level.INFO, "PluginUtil", "doDeploy", "Deployer = {0}", deployer);
 
-        String name = deployer.deploy(archive, deploymentParameters);
+        String name = deployer.deploy(archive.toURI(), deploymentParameters);
         logger.logp(Level.INFO, "PluginUtil", "doDeploy", "Deployed {0}", name);
     }
 
     public static void doUndeploy(String serverId, Properties bootstrapProperties,
-                                  String appName, Map<String, String> deploymentParameters) {
+                                  String appName, String[] deploymentParameters) {
         try {
             GlassFish gf = startGlassFish(serverId, bootstrapProperties);
             // Lookup the deployer.
@@ -141,15 +141,15 @@ public class PluginUtil {
         return gf;
     }
 
-    public static void runCommand(String serverId, String command, Map<String,String> args)
+    public static void runCommand(String serverId, String command, String[] args)
             throws Exception {
         GlassFish gf = gfMap.remove(serverId);
-        boolean result = false;
+        CommandResult result = null;
         if (gf != null) {
             CommandRunner commandRunner = gf.lookupService(CommandRunner.class, null);
             result = commandRunner.run(command, args);
         }
-        logger.logp(Level.INFO, "PluginUtil", "runCommand", "Ran command {0}, Status {1} ",
+        logger.logp(Level.INFO, "PluginUtil", "runCommand", "Ran command {0}, CommandResult {1} ",
                 new Object[]{command, result});
     }
     
