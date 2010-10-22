@@ -47,7 +47,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Inhabitant scanner based on introspection information rather than statically
@@ -92,7 +93,7 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
         return type.getAnnotation(Contract.class.getName())!=null;
     }
 
-    public void findClassContracts(ClassModel cm, List<String> interfaces, List<String> annotationTypeInterfaces) {
+    public void findClassContracts(ClassModel cm, Set<String> interfaces, Set<String> annotationTypeInterfaces) {
         for (InterfaceModel im : cm.getInterfaces()) {
             if (isContract(im)) {
                 interfaces.add(im.getName());
@@ -101,7 +102,7 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
         findContractsFromAnnotations(cm, interfaces, annotationTypeInterfaces);
     }
 
-    public void findInterfaceContracts(InterfaceModel im, List<String> interfaces, List<String> annInterfaces) {
+    public void findInterfaceContracts(InterfaceModel im, Set<String> interfaces, Set<String> annInterfaces) {
         if (im.getParent()!=null) {
             findInterfaceContracts(im.getParent(), interfaces, annInterfaces);
         }
@@ -118,7 +119,7 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
         findContractsFromAnnotations(im, interfaces, annInterfaces);
     }
 
-    public void findContractsFromAnnotations(AnnotatedElement ae, List<String> interfaces, List<String> annInterfaces) {
+    public void findContractsFromAnnotations(AnnotatedElement ae, Set<String> interfaces, Set<String> annInterfaces) {
         for (AnnotationModel am : ae.getAnnotations()) {
             AnnotationType at = am.getType();
             findInterfaceContracts(at, interfaces, annInterfaces);
@@ -152,7 +153,7 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
         return mangled.replace("/", ".");
     }
 
-    public void findContracts(ClassModel cm, List<String> interfaces, List<String> annotationTypeInterfaces) {
+    public void findContracts(ClassModel cm, Set<String> interfaces, Set<String> annotationTypeInterfaces) {
         for (InterfaceModel im : cm.getInterfaces()) {
             if (isContract(im)) {
                 interfaces.add(im.getName());
@@ -182,8 +183,8 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
                         if (ae instanceof ClassModel) {
                             final ClassModel cm = (ClassModel) ae;
 
-                            final List<String> implInterfaces = new ArrayList<String>();
-                            final List<String> implAnnotationInterfaces = new ArrayList<String>();
+                            final LinkedHashSet<String> implInterfaces = new LinkedHashSet<String>();
+                            final LinkedHashSet<String> implAnnotationInterfaces = new LinkedHashSet<String>();
                             findContracts(cm, implInterfaces, implAnnotationInterfaces);
                             
                             final Iterator<String> interfaces = implInterfaces.iterator();
