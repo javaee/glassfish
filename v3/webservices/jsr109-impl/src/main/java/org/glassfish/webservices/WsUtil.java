@@ -399,7 +399,7 @@ public class WsUtil {
      *@param schemaRelativeImports outupt param in which schema relative 
      * imports will be added
      */
-    public void parseRelativeImports(URL wsdlFileUrl, 
+    private void parseRelativeImports(URL wsdlFileUrl, 
                                       Collection wsdlRelativeImports,
                                       Collection wsdlIncludes,
                                       Collection schemaRelativeImports,
