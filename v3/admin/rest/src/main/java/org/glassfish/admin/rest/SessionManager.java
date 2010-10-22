@@ -152,11 +152,15 @@ public class SessionManager {
             lassAccessedTime = System.currentTimeMillis();
         }
 
-	/**
-	 *
-	 */
+        private static final String DISABLE_REMOTE_ADDRESS_VALIDATION_PROPERTY_NAME = "org.glassfish.admin.rest.disable.remote.address.validation";
+        private static final boolean disableRemoteAddressValidation = Boolean.getBoolean(DISABLE_REMOTE_ADDRESS_VALIDATION_PROPERTY_NAME);
+
+        /**
+         * @return true if session is still active and the request is from same remote address as the one session was
+         * initiated from
+         */
         public boolean authenticate(GrizzlyRequest req) {
-            return isSessionActive() && clientAddress.equals(req.getRemoteAddr());
+            return isSessionActive() && (clientAddress.equals(req.getRemoteAddr()) || disableRemoteAddressValidation );
         }
     }
 

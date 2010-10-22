@@ -259,7 +259,6 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
     private boolean authenticateViaRestToken(GrizzlyRequest req) { 
         boolean authenticated = false;
-//        String restToken = req.getAuthorization(); //TODO investigate using Authorization header for token
         Cookie[] cookies = req.getCookies();
         String restToken = null;
         if (cookies != null) {
