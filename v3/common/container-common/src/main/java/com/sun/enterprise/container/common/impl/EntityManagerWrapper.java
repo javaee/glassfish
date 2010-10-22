@@ -48,6 +48,8 @@ import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.internal.api.Globals;
+import org.jvnet.hk2.component.Habitat;
 
 import javax.persistence.criteria.*;
 import javax.persistence.*;
@@ -55,6 +57,8 @@ import javax.persistence.metamodel.Metamodel;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.logging.Level;
@@ -1069,5 +1073,17 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
             }
         }
     }
+
+    private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+        stream.defaultReadObject();
+
+        //Initialize the transients that were passed at ctor.
+        Habitat defaultHabitat = Globals.getDefaultHabitat();
+        txManager     = defaultHabitat.getByContract(TransactionManager.class);
+        invMgr        = defaultHabitat.getByContract(InvocationManager.class);
+        compEnvMgr    = defaultHabitat.getByContract(ComponentEnvManager.class);
+        callFlowAgent = defaultHabitat.getByContract(CallFlowAgent.class);
+    }
+
 
 }

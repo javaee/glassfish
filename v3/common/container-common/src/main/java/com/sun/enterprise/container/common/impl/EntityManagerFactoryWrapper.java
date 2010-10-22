@@ -46,6 +46,8 @@ import com.sun.logging.LogDomains;
 import org.glassfish.api.invocation.ComponentInvocation;
 import static org.glassfish.api.invocation.ComponentInvocation.ComponentInvocationType;
 import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.internal.api.Globals;
+import org.jvnet.hk2.component.Habitat;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -53,6 +55,8 @@ import javax.persistence.Cache;
 import javax.persistence.PersistenceUnitUtil;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
@@ -234,5 +238,15 @@ public class EntityManagerFactoryWrapper
 
         return emf;
     }
+
+    private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+        stream.defaultReadObject();
+
+        //Initialize the transients that were passed at ctor.
+        Habitat defaultHabitat = Globals.getDefaultHabitat();
+        invMgr        = defaultHabitat.getByContract(InvocationManager.class);
+        compEnvMgr    = defaultHabitat.getByContract(ComponentEnvManager.class);
+    }
+
 
 }
