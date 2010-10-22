@@ -64,8 +64,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
+import java.util.Collection;
 
 import java.util.Set;
+import java.util.HashSet;
 import java.util.TreeSet;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.DeployUtil;
@@ -290,7 +292,6 @@ public class ApplicationHandlers {
             GuiUtil.prepareException(handlerCtx, ex);
         }
     }
-
 
     private static void getLaunchInfo(String appName, String contextRoot, Map oneRow) {
         String endpoint = GuiUtil.getSessionValue("REST_URL") + "/applications/application/" + appName + ".json";
@@ -610,7 +611,7 @@ public class ApplicationHandlers {
         String ctxRoot = calContextRoot(contextRoot);
 
         List<String> targetList = DeployUtil.getApplicationTarget(appID, "application-ref");
-        List URLs = new ArrayList();
+        Set URLs = new HashSet();
         for(String target : targetList) {
             String ep = TargetUtil.getTargetEndpoint(target) + "/application-ref/" + appID;
             boolean enabled = Boolean.parseBoolean((String)RestApiHandlers.getAttributesMap(ep).get("enabled"));
@@ -619,7 +620,8 @@ public class ApplicationHandlers {
 
             String virtualServers = getVirtualServers(target, appID);
             String configName = TargetUtil.getConfigName(target);
-            URLs.addAll(getURLs(GuiUtil.parseStringList(virtualServers, ","), configName));
+            Collection<String> hostNames = TargetUtil.getHostNames(target);
+            URLs.addAll(getURLs(GuiUtil.parseStringList(virtualServers, ","), configName, hostNames));
         }
 
 	Iterator it = URLs.iterator();
@@ -682,8 +684,8 @@ public class ApplicationHandlers {
 /********************/
 
 
-    private static List getURLs(List<String> vsList, String configName) {
-        List URLs = new ArrayList();
+    private static Set getURLs(List<String> vsList, String configName, Collection<String> hostNames) {
+        Set URLs = new HashSet();
         if (vsList == null || vsList.size() == 0) {
             return URLs;
         }
@@ -711,6 +713,7 @@ public class ApplicationHandlers {
                 ep = (String)GuiUtil.getSessionValue("REST_URL") + "/configs/config/" +
                         configName + "/http-service/virtual-server/" + vsName;
                 String listener = (String)RestApiHandlers.getAttributesMap(ep).get("networkListeners");
+
                 if (GuiUtil.isEmpty(listener)) {
                     continue;
                 } else {
@@ -735,10 +738,12 @@ public class ApplicationHandlers {
                                 (String)nlAttributes.get("port"));
  *
  */
-                        // for now specify localhost, hostname is not available.
-                            URLs.add(protocol + "://" + "localhost" + ":" +
-                                (String)nlAttributes.get("port"));
-
+                        String port = (String)nlAttributes.get("port");
+                        String resolvedPort = RestUtil.resolveToken((String)GuiUtil.getSessionValue("REST_URL") +
+                                "/configs/config/" + configName, port);
+                        for (String hostName : hostNames) {
+                            URLs.add(protocol + "://" + hostName + ":" + resolvedPort);
+                        }
                     }
                 }
             }

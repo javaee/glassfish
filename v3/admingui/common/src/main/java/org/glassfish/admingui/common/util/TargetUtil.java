@@ -47,6 +47,9 @@ package org.glassfish.admingui.common.util;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,6 +104,15 @@ public class TargetUtil {
         return clusters;
     }
 
+    public static List getClusteredInstances(String cluster) {
+        List instances = new ArrayList();
+        try {
+            instances.addAll(RestApiHandlers.getChildMap(GuiUtil.getSessionValue("REST_URL") + "/clusters/cluster/" + cluster + "/server-ref").keySet());
+        } catch (Exception ex) {
+            GuiUtil.getLogger().severe(ex.getMessage());
+        }
+        return instances;
+    }
 
     public static String getTargetEndpoint(String target){
         try{
@@ -128,5 +140,30 @@ public class TargetUtil {
         return (String)RestApiHandlers.getAttributesMap(endpoint).get("configRef");
     }
 
+    public static Collection<String> getHostNames(String target) {
+        Set<String> hostNames = new HashSet();
+        hostNames.toArray();
+        List clusters = TargetUtil.getClusters();
+        List<String> instances = new ArrayList();
+        if (clusters.contains(target)){
+             instances = getClusteredInstances(target);
+        } else {
+            instances.add(target);
+        }
 
+        for (String instance : instances) {
+            String hostName = null;
+            String ep = (String)GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instance;
+            String node =
+                    (String)RestApiHandlers.getAttributesMap(ep).get("node");
+            if (node != null) {
+                ep = (String)GuiUtil.getSessionValue("REST_URL") + "/nodes/node/" + node;
+                hostName =  (String)RestApiHandlers.getAttributesMap(ep).get("node-host");
+            }
+            if (hostName == null)
+                hostName = "localhost";
+            hostNames.add(hostName);
+        }
+        return hostNames;
+    }
 }

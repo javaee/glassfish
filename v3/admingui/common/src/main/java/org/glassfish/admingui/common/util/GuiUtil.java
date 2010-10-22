@@ -685,6 +685,23 @@ public class GuiUtil {
     }
 
 
+    /* get the value from a map, traversing a comma separated set of keys
+     * 
+     * @param map    map to travers
+     * $param mapKeys   comma separated set of keys
+     * 
+     * return value corresponding to the last key in mapKeys
+     */
+    public static Object getMapValue(Map map, String mapKeys) {
+        String[] keys = mapKeys.split(",");
+        int i = 0;
+        for (; i < keys.length - 1; i++) {
+            map = (Map)map.get(keys[i]);
+            if (map == null)
+                return null;
+        }
+        return map.get(keys[i]);
+    }
 
     /**
     Get the chain of exceptions via getCause(). The first element is the

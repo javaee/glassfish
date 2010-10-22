@@ -47,6 +47,7 @@ package org.glassfish.admingui.common.util;
 
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
@@ -72,5 +73,22 @@ public class RestUtil {
         return "";
     }
 
+    public static String resolveToken(String endpoint, String token) {
+        String tokenStartMarker = "${", tokenEndMarker = "}";
 
+        if (!token.trim().startsWith(tokenStartMarker))
+            return token;
+        int start = token.indexOf(tokenStartMarker);
+        if (start < 0)
+            return token;
+        int end = token.lastIndexOf(tokenEndMarker);
+        if (end < 0)
+            return token;
+
+        Map attrMap = new HashMap();
+        String str = token.substring(start + tokenStartMarker.length(), end - tokenEndMarker.length() + 1);
+        attrMap.put("tokens", str);
+        Map result = RestApiHandlers.restRequest(endpoint + "/resolve-tokens.json", attrMap, "GET", null, true);
+        return (String)GuiUtil.getMapValue(result, "data,extraProperties,tokens," + str);
+    }
 }
