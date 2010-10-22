@@ -52,7 +52,6 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.types.Property;
 
 import java.util.List;
@@ -68,16 +67,16 @@ public class ServerConfigLookup {
 
 
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    Config configBean;
+    private Config configBean;
 
     @Inject(optional = true)
-    AvailabilityService availabilityService;
+    private AvailabilityService availabilityService;
 
     @Inject(optional = true)
-    WebContainerAvailability webContainerAvailability;
+    private WebContainerAvailability webContainerAvailability;
 
     @Inject
-    ClassLoaderHierarchy clh;
+    private ClassLoaderHierarchy clh;
 
 
     /**
