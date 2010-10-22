@@ -83,7 +83,8 @@ public abstract class InhabitantsParsingContextGenerator implements Closeable {
     private final Parser parser;
     private final ParsingContext context;
 
-    private final LinkedHashMap<String, InhabitantsScanner> metaInfScanners = new LinkedHashMap<String, InhabitantsScanner>();
+    private final LinkedHashMap<String, InhabitantsScanner> metaInfScanners = 
+            new LinkedHashMap<String, InhabitantsScanner>();
 
     /**
      * Factory for the {@link InhabitantsParsingContextGenerator}
