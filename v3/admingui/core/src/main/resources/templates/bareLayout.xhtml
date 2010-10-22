@@ -63,17 +63,15 @@
         if($session{supportCluster}) {
             setSessionAttribute(key="restartRequired" value="$boolean{false}");
         }
-	// FIXME: NEED TO TEST FOR ANON USER... For now, just checking for 1 user
-        //testLoginBypass(byPass="#{requestScope.byPassLogin}");
-	gf.restRequest(
-	    endpoint="#{request.scheme}://#{sessionScope.serverName}:#{sessionScope.serverPort}/management/domain/configs/config/server-config/security-service/auth-realm/admin-realm/list-users"
-	    method="GET", result="#{requestScope.result}", quiet="false");
-	setAttribute(key="byPassLogin" value="true");
-	if ("#{requestScope.result.data.extraProperties.users[1].name}") {
-	    setAttribute(key="byPassLogin" value="false");
-	}
 
-        setSessionAttribute(key="showLogoutButton" value="#{! requestScope.byPassLogin}");
+        gf.restRequest(
+            endpoint="#{request.scheme}://#{sessionScope.serverName}:#{sessionScope.serverPort}/management/domain/anonymous-user-enabled"
+            method="GET", result="#{requestScope.result}", quiet="false");
+        
+        setPageSessionAttribute(key="loginUser" value="#{requestScope.result.data.extraProperties.anonymousUserName}");
+        setPageSessionAttribute(key="anonymousUserEnabled", value="#{requestScope.result.data.extraProperties.anonymousUserEnabled}");
+        setSessionAttribute(key="showLogoutButton" value="#{pageSession.anonymousUserEnabled != 'true'}");
+        
         if ("!(#{sessionScope.restartRequired})") {
             if ("!(#{sessionScope.showLogoutButton})") {
                 setAttribute(key="reloadJS" value="if (document.getElementById('Masthead:statusPanel:restartLink') || document.getElementById('Masthead:logoutLink')) {reloadHeaderFrame();}");

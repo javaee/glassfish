@@ -52,12 +52,12 @@
     // NOTE: So instead, I construct the REST_URL from the pieces
     // NOTE: below. -Ken
     gf.restRequest(
-	endpoint="#{request.scheme}://#{sessionScope.serverName}:#{sessionScope.serverPort}/management/domain/configs/config/server-config/security-service/auth-realm/admin-realm/list-users"
-	method="GET", result="#{requestScope.result}", quiet="false");
-    setPageSessionAttribute(key="loginUser" value="#{requestScope.result.data.extraProperties.users[0].name}");
+        endpoint="#{request.scheme}://#{sessionScope.serverName}:#{sessionScope.serverPort}/management/domain/anonymous-user-enabled"
+        method="GET", result="#{requestScope.result}", quiet="false");
+    setPageSessionAttribute(key="loginUser" value="#{requestScope.result.data.extraProperties.anonymousUserName}");
     setPageSessionAttribute(key="byPassLogin" value="false");
     if ("$pageSession{loginUser}") {
-	setPageSessionAttribute(key="byPassLogin" value="true");
+        setPageSessionAttribute(key="byPassLogin" value="true");
     }
     setSessionAttribute(key="showLogoutButton" value="#{! pageSession.byPassLogin}")
     getThemeFromIntegrationPoints(themeContext=>$application{com.sun.webui.theme.THEME_CONTEXT});
@@ -72,7 +72,7 @@
 <script type="text/javascript">
 <!-- FIXME: add code to ensure we're the top-most frame -->
     if (document.getElementById('layout-doc') != null) {
-	// Just refresh the page... login will take over
+        // Just refresh the page... login will take over
         window.location = window.location;
     }
 </script>
