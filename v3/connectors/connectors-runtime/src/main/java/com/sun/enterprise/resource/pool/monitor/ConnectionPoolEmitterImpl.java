@@ -55,7 +55,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import org.glassfish.api.monitoring.ContainerMonitoring;
@@ -179,7 +178,9 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
      */
     public void connectionDestroyed(long resourceHandleId) {
         poolProbeProvider.connectionDestroyedEvent(poolName, appName, moduleName);
-        //Clearing the resource handle id appName mappings stored
+        // Clearing the resource handle id appName mappings stored
+        // This is useful in cases where connection-leak-reclaim is ON where we destroy
+        // the connection. In this case, connection-release would not have happened.
         resourceAppAssociationMap.remove(resourceHandleId);
     }
 
@@ -193,7 +194,9 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
         poolProbeProvider.connectionReleasedEvent(poolName, appName, moduleName);
         if(appEmitter != null) {
             appEmitter.connectionReleased();
-        }        
+        }
+        // Clearing the resource handle id appName mappings stored
+        resourceAppAssociationMap.remove(resourceHandleId);
     }
 
     /**
@@ -299,20 +302,22 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
     }
 
     private String getAppName(long resourceHandleId) {
-        String appName = null;
-        try {
-            if(ic == null){
-                ic = new InitialContext();
+        String appName = resourceAppAssociationMap.get(resourceHandleId);
+        if(appName == null){
+            try {
+                if(ic == null){
+                    ic = new InitialContext();
+                }
+                appName = (String) ic.lookup("java:app/AppName");
+                resourceAppAssociationMap.put(resourceHandleId, appName);
+            } catch (NamingException ex) {
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "Unable to get application name using "
+                            + "java:app/AppName method");
+                }
+
             }
-            appName = (String) ic.lookup("java:app/AppName");
-        } catch (NamingException ex) {
-            if (_logger.isLoggable(Level.FINE)) {
-                _logger.log(Level.FINE, "Unable to get application name using "
-                        + "java:app/AppName method");
-            }
-            appName = resourceAppAssociationMap.remove(resourceHandleId); 
         }
-        resourceAppAssociationMap.put(resourceHandleId, appName);
         return appName;
     }
 
