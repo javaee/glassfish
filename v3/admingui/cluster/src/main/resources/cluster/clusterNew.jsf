@@ -56,6 +56,7 @@
     />
     </event>
     <sun:form id="propertyForm">
+#include "/cluster/shared/handlers.inc"
 #include "/common/shared/alertMsg.inc"
     <sun:title id="propertyContentPage" title="$resource{i18ncs.clusterNew.PageTitle}" helpText="$resource{i18ncs.clusterNew.PageTitleHelp}">
         <!facet pageButtonsTop>
@@ -65,15 +66,11 @@
             <!command
                 getUIComponent(clientId="#{pageSession.clusterTableRowGroupId}", component="#{requestScope.tableRowGroup}");
                 getAllSingleMapRows(TableRowGroup="#{requestScope.tableRowGroup}",  Rows="#{requestScope.instances}");
-                gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/clusters/cluster/#{pageSession.name}", exists="#{requestScope.clusterExist}");
-                if (#{requestScope.clusterExist}){
-                        gf.handleError(detail="cluster #{pageSession.name} already exist");
-                }
+                setAttribute(key="nameToCheck" value="#{pageSession.name}");
+                gfj.checkNameExist();
                 if ('#{configOptionGrp}=copy'){
-                    gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.name}-config", exists="#{requestScope.configExist}");
-                    if (#{requestScope.configExist}){
-                        gf.handleError(detail="#{pageSession.name}-config already exist");
-                    }
+                    setAttribute(key="nameToCheck" value="#{pageSession.name}-config");
+                    gfj.checkNameExist();
                     createMap(result="#{requestScope.attrs}")
                     mapPut(map="#{requestScope.attrs}" key="id"  value={"$pageSession{config}" , "$pageSession{name}-config" } );
                     gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/copy-config"  attrs="#{requestScope.attrs}" );
@@ -155,6 +152,7 @@
             </sun:tableColumn>
         </sun:tableRowGroup>
     </sun:table>
+
 
 	<sun:hidden id="helpKey" value="$resource{help_cluster.clusterNew}" />
 </sun:form>

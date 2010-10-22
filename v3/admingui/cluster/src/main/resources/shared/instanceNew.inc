@@ -41,6 +41,7 @@
 -->
 
 <sun:form id="propertyForm">
+#include "/cluster/shared/handlers.inc"
 #include "/common/shared/alertMsg.inc"
     <sun:title id="propertyContentPage" title="#{pageSession.pageTitle}" helpText="#{pageSession.pageTitleHelp}">
         <!facet pageButtonsTop>
@@ -48,15 +49,15 @@
             <sun:button id="newButton" text="$resource{i18n.button.OK}"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
+                setAttribute(key="nameToCheck" value="#{pageSession.name}");
+                gfj.checkNameExist();
                 createMap(result="#{requestScope.attrs}")
                 mapPut(map="#{requestScope.attrs}" key="name"  value="#{pageSession.name}" )
                 mapPut(map="#{requestScope.attrs}" key="node"  value="#{pageSession.node}" )
                 if (#{forStandalone}){
                     if ('#{configOptionGrp}=copy'){
-                        gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.name}-config", exists="#{requestScope.configExist}");
-                        if (#{requestScope.configExist}){
-                            gf.handleError(detail="#{pageSession.name}-config already exist");
-                        }
+                        setAttribute(key="nameToCheck" value="#{pageSession.name}-config");
+                        gfj.checkNameExist();
                         createMap(result="#{requestScope.copyAttrs}")
                         mapPut(map="#{requestScope.copyAttrs}" key="id"  value={"$pageSession{config}" , "$pageSession{name}-config" } );
                         gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/copy-config"  attrs="#{requestScope.copyAttrs}" );

@@ -40,6 +40,7 @@
 
 -->
 
+#include "/cluster/shared/handlers.inc"
     <sun:title id="propertyContentPage" title="#{pageSession.title}" helpText="#{pageSession.titleHelp}">
 
 <!facet pageButtonsTop>
@@ -57,6 +58,8 @@
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
+                setAttribute(key="nameToCheck" value="#{pageSession.valueMap['id']}");
+                gfj.checkNameExist();
                 if (!#{pageSession.valueMap['force']}){
                     mapPut(map="#{pageSession.valueMap}"  key="force" value="false");
                 }
