@@ -562,7 +562,7 @@ public class ProviderUtil {
                 }
                 result += "<dd>" + field;
                 if (isList) {
-                    result += field + "<a href=\"#\" onclick=\"try { var newNode = this.previousSibling.cloneNode(false); this.parentNode.insertBefore(newNode, this);} catch (err) { alert (err); } return false; return false;\">Add row<a/>";
+                    result +=  "<a href=\"#\" onclick=\"try { var newNode = this.previousSibling.cloneNode(false); this.parentNode.insertBefore(newNode, this);} catch (err) { alert (err); } return false; return false;\">Add row<a/>";
                 }
                 result += "</dd>";
             }
