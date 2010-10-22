@@ -53,7 +53,6 @@ import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import com.sun.logging.LogDomains;
 import com.sun.pkg.client.Image;
 import com.sun.pkg.client.Version;
-import java.net.MalformedURLException;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.Adapter;
@@ -238,6 +237,12 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      */
     @Override
     public void service(GrizzlyRequest req, GrizzlyResponse res) {
+
+        //This is needed to support the case where user update to 3.1 from previous release, and didn't run the upgrade tool.
+        if (adminConsoleConfigUpgrade == null){
+              adminConsoleConfigUpgrade=habitat.getComponent(AdminConsoleConfigUpgrade.class);
+        }
+
         try {
             if (!latch.await(100L, TimeUnit.SECONDS)) {
                 // todo : better error reporting.
