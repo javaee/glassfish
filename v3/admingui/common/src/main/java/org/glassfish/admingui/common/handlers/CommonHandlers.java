@@ -65,6 +65,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
@@ -422,15 +424,17 @@ public class CommonHandlers {
         @HandlerOutput(name="LongResult", type=Long.class)}
     )    
     public void longAdd(HandlerContext handlerCtx) {
+        Long long1 = (Long)handlerCtx.getInputValue("Long1");
+        Long long2 = (Long)handlerCtx.getInputValue("Long2");
         Long result = new Long(0);
         try{
-            // Get the inputs
-            Long long1 = (Long)handlerCtx.getInputValue("Long1");
-            Long long2 = (Long)handlerCtx.getInputValue("Long2");
             // Add the 2 numbers together
             result = new Long(long1.longValue()+long2.longValue());
         }catch(Exception ex){
-            GuiUtil.getLogger().warning("Exception in longAdd, return 0 ");
+            Logger logger = GuiUtil.getLogger();
+            if (logger.isLoggable(Level.WARNING)) {
+                logger.log(Level.WARNING, GuiUtil.getCommonMessage("LOG_LONGADD_ERROR", new Object[]{""+long1, ""+long2}));
+            }
         }
 	// Set the result
 	handlerCtx.setOutputValue("LongResult", result);

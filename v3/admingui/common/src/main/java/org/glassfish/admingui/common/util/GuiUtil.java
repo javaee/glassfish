@@ -115,6 +115,10 @@ public class GuiUtil {
         return (str == null || "".equals(str)) ? true : false;
     }
 
+    public static String getCommonMessage(String key, Object[] args) {
+        return getMessage(COMMON_RESOURCE_NAME, key, args) ;
+    }
+
     public static String getMessage(String resourceName, String key, Object[] args) {
         return formatMessage( getMessage(resourceName, key), args);
     }
@@ -142,7 +146,10 @@ public class GuiUtil {
     
     public static void initSessionAttributes(){
 
-        getLogger().info("admin console: initSessionAttributes()" );
+        Logger logger = GuiUtil.getLogger();
+        if (logger.isLoggable(Level.INFO)) {
+            logger.log(Level.FINE,  GuiUtil.getCommonMessage("LOG_INIT_SESSION"));
+        }
         ExternalContext externalCtx = FacesContext.getCurrentInstance().getExternalContext();
         Map<String, Object> sessionMap = externalCtx.getSessionMap();
 
@@ -223,7 +230,7 @@ public class GuiUtil {
             Integer serverPort = (Integer)getSessionValue("serverPort");
             int port = 4848;
             if (serverPort == null){
-                getLogger().warning("getDeploymentFacility:  cannot get admin listener port, default to 4848");
+                getLogger().warning(GuiUtil.getMessage(COMMON_RESOURCE_NAME, "WARNING_NO_ADMIN_LISTENER_PORT"));
             }else{
                 port = serverPort.intValue();
             }
@@ -353,6 +360,10 @@ public class GuiUtil {
         }
     }
 
+    public static String getCommonMessage(String key){
+        return getMessage(COMMON_RESOURCE_NAME, key);
+    }
+
     public static String getMessage(String resourceName, String key) {
         ResourceBundle bundle = getBundle(resourceName);
         String ret = bundle.getString(key);
@@ -382,7 +393,8 @@ public class GuiUtil {
     public static void prepareException(HandlerContext handlerCtx, Throwable ex) {
         Throwable rootException = getRootCause(ex);
         prepareAlert("error", GuiUtil.getMessage("msg.Error"), rootException.getMessage());
-	GuiUtil.getLogger().log(Level.SEVERE, "Exception Occurred: ", ex);
+	GuiUtil.getLogger().log(Level.SEVERE,
+                GuiUtil.getMessage(COMMON_RESOURCE_NAME, "LOG_EXCEPTION_OCCURED"), ex);
     }
 
     /* This method sets up the attributes of the <sun:alert> message box so that any
@@ -728,5 +740,7 @@ public class GuiUtil {
 
     public static final String I18N_RESOURCE_BUNDLE = "__i18n_resource_bundle";
     public static final String RESOURCE_NAME = "org.glassfish.admingui.core.Strings";
+    public static final String COMMON_RESOURCE_NAME = "org.glassfish.common.admingui.Strings";
+
     public static final String LOGGER_NAME = "org.glassfish.admingui";
 }

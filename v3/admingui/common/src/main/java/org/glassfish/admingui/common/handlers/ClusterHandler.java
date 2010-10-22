@@ -128,7 +128,8 @@ public class ClusterHandler {
             try{
                 response = RestApiHandlers.restRequest( prefix+instanceName , attrsMap, "post" , null, false);
             }catch (Exception ex){
-                GuiUtil.getLogger().severe("Error in saveInstanceWeight ; \nendpoint = " + prefix + instanceName + "attrsMap=" + attrsMap);
+                GuiUtil.getLogger().severe(
+                        GuiUtil.getCommonMessage("LOG_SAVE_INSTANCE_WEIGHT_ERROR" ,  new Object[]{prefix+instanceName, attrsMap}));
                 response = null;
             }
             if (response ==null){
@@ -198,7 +199,9 @@ public class ClusterHandler {
                 try {
                    RestApiHandlers.restRequest(prefix + instanceName + "/" + action , null, "post" ,null, false);
                 } catch (Exception ex){
-                    GuiUtil.getLogger().severe("Error in instanceAction ; \nendpoint = " + prefix + instanceName + "/" + action  + "attrsMap=" + null);
+                    String endpoint=prefix + instanceName + "/" + action;
+                    GuiUtil.getLogger().severe(
+                        GuiUtil.getCommonMessage("LOG_ERROR_INSTANCE_ACTION", new Object[]{endpoint, "null"}));
                     GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), ex.getMessage());
                     return;
                 }
@@ -248,7 +251,8 @@ public class ClusterHandler {
                 try{
                        response = RestApiHandlers.restRequest(prefix + nodeName + "/" + action + ".json" , null, "post" ,null, false);
                 }catch (Exception ex){
-                    GuiUtil.getLogger().severe("Error in nodeAction ; \nendpoint = " + prefix + nodeName + "/" + action +".json\n" + "attrsMap=" + null);
+                    GuiUtil.getLogger().severe(
+                            GuiUtil.getCommonMessage("LOG_NODE_ACTION_ERROR", new Object[]{prefix + nodeName, action , "null"}));
                     GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), ex.getMessage());
                     return;
                 }
@@ -277,7 +281,8 @@ public class ClusterHandler {
             try{
                 response = RestApiHandlers.restRequest( endpoint , attrsMap, "post" ,null, false);
             }catch (Exception ex){
-                GuiUtil.getLogger().severe("Error in createCluster ; \nendpoint = " + endpoint + "\nattrsMap=" + attrsMap);
+                GuiUtil.getLogger().severe(
+                    GuiUtil.getCommonMessage("LOG_CREATE_CLUSTER" ,  new Object[]{endpoint, attrsMap}));
             }
         }
 
@@ -329,13 +334,12 @@ public class ClusterHandler {
             RestApiHandlers.restRequest( GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instanceName + "/delete-instance", null ,"post", null, false );
             return null;
         }catch(Exception ex){
-            GuiUtil.getLogger().severe("Error in deleteInstance ; \nendpoint = " +
-                    GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instanceName + "/delete-instance\n" +
-                    "attrsMap=" + null);
+            String endpoint = GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instanceName + "/delete-instance\n";
+            GuiUtil.getLogger().severe(
+                    GuiUtil.getCommonMessage("LOG_DELETE_INSTANCE", new Object[]{endpoint, "null"}));
             return ex.getMessage();
         }
     }
-
 
 
     @Handler(id = "gf.listInstances",
@@ -375,7 +379,8 @@ public class ClusterHandler {
                 }
             }
         }catch (Exception ex){
-            GuiUtil.getLogger().severe("Error in listInstances ; \nendpoint = " + endpoint + "\nattrs=" + attrs);
+            GuiUtil.getLogger().severe(
+                 GuiUtil.getCommonMessage("LOG_LIST_INSTANCES", new Object[]{endpoint, attrs}));
             //we don't need to call GuiUtil.handleError() because thats taken care of in restRequest() when we pass in the handler.
         }
         handlerCtx.setOutputValue("instances", instances);
@@ -506,7 +511,7 @@ public class ClusterHandler {
                 }
             }
         }catch(Exception ex){
-            GuiUtil.getLogger().info("Error occurs at getClusterNameForInstance");
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("LOG_GET_CLUSTERNAME_FOR_INSTANCE"));
             ex.printStackTrace();
         }
     }

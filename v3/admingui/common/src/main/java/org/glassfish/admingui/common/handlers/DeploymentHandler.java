@@ -69,6 +69,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.TargetUtil;
@@ -166,7 +168,10 @@ public class DeploymentHandler {
                     continue;
                 }
                 if (propertyNames.contains(name)) {
-                    GuiUtil.getLogger().warning("Ignored Duplicate Property Name : " + name);
+                    Logger logger = GuiUtil.getLogger();
+                    if (logger.isLoggable(Level.WARNING)) {
+                        logger.log(Level.WARNING, GuiUtil.getCommonMessage("LOG_IGNORE_DUP_PROP", new Object[]{name}));
+                    }
                     continue;
                 } else {
                     propertyNames.add(name);
@@ -382,7 +387,6 @@ public class DeploymentHandler {
         List obj = (List) handlerCtx.getInputValue("selectedRows");
         String target = (String) handlerCtx.getInputValue("target");
         boolean enabled = ((Boolean) handlerCtx.getInputValue("enabled")).booleanValue();
-        GuiUtil.getLogger().fine("changeAppStatus:  enabled = " + enabled);
         DeploymentFacility df = GuiUtil.getDeploymentFacility();
         //Hard coding to server, fix me for actual targets in EE.
         List selectedRows = (List) obj;

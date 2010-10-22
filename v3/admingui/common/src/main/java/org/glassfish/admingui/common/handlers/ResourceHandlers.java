@@ -40,7 +40,6 @@
 
 package org.glassfish.admingui.common.handlers;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.List;
 
@@ -51,8 +50,6 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.TargetUtil;

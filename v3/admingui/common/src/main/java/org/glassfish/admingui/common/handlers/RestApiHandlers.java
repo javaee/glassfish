@@ -50,7 +50,6 @@ import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -250,7 +249,8 @@ public class RestApiHandlers {
 
 	Logger logger = GuiUtil.getLogger();
 	if (logger.isLoggable(Level.FINE)) {
-	    logger.log(Level.FINE, "restRequest: endpoint={0}\nattrs={1}\nmethod={2}", new Object[]{endpoint, attrs, method});
+	    logger.log(Level.FINE, 
+                    GuiUtil.getCommonMessage("LOG_REST_REQUEST_INFO", new Object[]{endpoint, attrs, method}));
 	}
 
 	// Execute the request...
@@ -283,8 +283,8 @@ public class RestApiHandlers {
                 if ((status != 200) && (status != 201)) {
 		    if (!quiet) {
 			GuiUtil.getLogger().log(
-                            Level.SEVERE, "RestResponse.getResponse() failed.  endpoint = ''{0}''; attrs = ''{1}''; RestResponse: {2}",
-                            new Object[]{endpoint, attrs, response.getResponseBody()});
+                            Level.SEVERE,
+                            GuiUtil.getCommonMessage( "LOG_REQUEST_FAILED", new Object[]{endpoint, attrs, response.getResponseBody()}));
 		    }
                     message = (String)((Map)responseMap.get("data")).get("message");
                     if (message == null) {
@@ -322,8 +322,8 @@ public class RestApiHandlers {
             } catch (Exception ex) {
 		if (!quiet) {
 		    GuiUtil.getLogger().log(
-                        Level.SEVERE, "RestResponse.getResponse() failed.  endpoint = ''{0}''; attrs = ''{1}''; RestResponse: {2}",
-                        new Object[]{endpoint, attrs, response.getResponseBody()});
+                        Level.SEVERE,
+                        GuiUtil.getCommonMessage("LOG_REQUEST_FAILED", new Object[]{endpoint, attrs, response.getResponseBody()}));
 		}
                 if (handlerCtx != null) {
                     //If this is called from the jsf as handler, we want to stop processing and show error
@@ -351,9 +351,7 @@ public class RestApiHandlers {
 
 
     /**
-     *
-     * REST-based version of createProxy
-     * @param handlerCtx
+     * Create or update
      */
     @Handler(id = "gf.updateEntity",
             input = {
@@ -376,7 +374,9 @@ public class RestApiHandlers {
                 (List) handlerCtx.getInputValue("onlyUseAttrs"), (List) handlerCtx.getInputValue("convertToFalse"));
 
         if (!response.isSuccess()) {
-            GuiUtil.getLogger().severe("CreateProxy failed.  parent=" + endpoint + "; attrs =" + attrs);
+             GuiUtil.getLogger().log(
+                Level.SEVERE,
+                GuiUtil.getCommonMessage("LOG_UPDATE_ENTITY_FAILED", new Object[]{endpoint, attrs}));
             GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.error.checkLog"));
             return;
         }
@@ -540,8 +540,12 @@ public class RestApiHandlers {
 		    try {
 			formData.add(key, obj);
 		    } catch (ClassCastException ex) {
-			// FIXME: Change to fine()
-			GuiUtil.getLogger().info("Unable to add key (" + key + ") w/ value (" + obj + ").");
+                        Logger logger = GuiUtil.getLogger();
+                        if (logger.isLoggable(Level.FINEST)) {
+                            logger.log(Level.FINEST,
+                                    GuiUtil.getCommonMessage("LOG_BUILD_MULTI_VALUE_MAP_ERROR", new Object[]{key, obj}));
+                        }
+
 			// Allow it to continue b/c this property most likely
 			// should have been excluded for this request
 		    }
@@ -551,8 +555,11 @@ public class RestApiHandlers {
 		try {
 		    formData.putSingle(key, value);
 		} catch (ClassCastException ex) {
-		    // FIXME: Change to fine()
-		    GuiUtil.getLogger().info("Unable to add key (" + key + ") w/ value (" + value + ").");
+                    Logger logger = GuiUtil.getLogger();
+                    if (logger.isLoggable(Level.FINEST)) {
+                        logger.log(Level.FINEST,
+                                GuiUtil.getCommonMessage("LOG_BUILD_MULTI_VALUE_MAP_ERROR" , new Object[]{key, value}));
+                    }
 		    // Allow it to continue b/c this property most likely
 		    // should have been excluded for this request
 		}
