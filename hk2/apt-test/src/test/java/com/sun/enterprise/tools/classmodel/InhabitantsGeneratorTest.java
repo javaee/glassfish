@@ -161,7 +161,7 @@ public class InhabitantsGeneratorTest {
    * this test looks at the case where the classpath is only partially specified resulting in
    * a reduced view of the inhabitants.
    */
-  @Ignore
+//  @Ignore
   @Test
   public void testReducedScopeHabitatFileGeneration() throws IOException {
     ArrayList<File> testDir = getTestClassPathEntries(false);
@@ -179,11 +179,12 @@ public class InhabitantsGeneratorTest {
     writer.close();
     
     String output = clean(out.toString());
+    String expected = expected(false);
     assertNotNull(output);
     System.out.println("Output: \n" + output);
-    System.out.println("Expected: \n" + expected(false));
+    System.out.println("Expected: \n" + expected);
     System.out.println("testDir is: " + testDir);
-    assertTrue("output (see javadoc comments):\n" + output, output.contains(expected(false)));
+    assertTrue("output (see javadoc comments):\n" + output, output.contains(expected));
   }
 
   /**
