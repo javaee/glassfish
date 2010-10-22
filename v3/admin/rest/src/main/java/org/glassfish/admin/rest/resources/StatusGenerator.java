@@ -40,6 +40,8 @@
 package org.glassfish.admin.rest.resources;
 
 import com.sun.enterprise.config.serverbeans.Domain;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,6 +53,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
+import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.generator.ClassWriter;
 import org.glassfish.admin.rest.generator.CommandResourceMetaData;
 import org.glassfish.admin.rest.generator.CommandResourceMetaData.ParameterMetaData;
@@ -60,6 +63,8 @@ import org.glassfish.admin.rest.generator.ResourcesGenerator;
 import org.glassfish.admin.rest.generator.ResourcesGeneratorBase;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.CommandModel;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.RestRedirect;
@@ -106,7 +111,7 @@ public class StatusGenerator {
         status.append("\n------------------------");
         status.append("All Commands used in REST Admin:\n");
         for (String ss : commandsUsed) {
-            status.append(ss + "\n");
+            status.append(ss  +"\n");
         }
 
         listOfCommands();
@@ -118,7 +123,11 @@ public class StatusGenerator {
         status.append("Missing Commands not used in REST Admin:\n");
 
         for (String ss : allCommands) {
-            status.append(ss + "\n");
+            if (hasTargetParam(ss)) {
+                status.append(ss + "          has a target param " + "\n");
+            } else {
+                status.append(ss + "\n");
+            }
         }
         status.append("\n------------------------");
         status.append("REST-REDIRECT Commands defined on ConfigBeans:\n");
@@ -126,13 +135,18 @@ public class StatusGenerator {
         for (String ss : restRedirectCommands) {
             status.append(ss + "\n");
         }
-        
-        
-                status.append("\n------------------------");
+
+
+        status.append("\n------------------------");
         status.append("Commands to Resources Mapping Usage in REST Admin:\n");
 
         for (String ss : commandsToResources.keySet()) {
-            status.append(ss + "   :::   "+commandsToResources.get(ss)+"\n");
+            if (hasTargetParam(ss)) {
+                status.append(ss + "   :::target:::   " + commandsToResources.get(ss) + "\n");
+            } else {
+                status.append(ss + "      :::      " + commandsToResources.get(ss) + "\n");
+            }
+
         }
         return status.toString();
     }
@@ -311,5 +325,40 @@ public class StatusGenerator {
                 }
             }
         }
+    }
+
+    public Boolean hasTargetParam(String command) {
+try{
+        if (command != null) {
+            Collection<CommandModel.ParamModel> params;
+            params = getParamMetaData(command);
+
+
+            Iterator<CommandModel.ParamModel> iterator = params.iterator();
+            CommandModel.ParamModel paramModel;
+            while (iterator.hasNext()) {
+                paramModel = iterator.next();
+                Param param = paramModel.getParam();
+                if (paramModel.getName().equals("target")) {
+                    return true;
+                }
+
+
+
+
+            }
+        }
+}catch (Exception e){
+    e.printStackTrace();
+}
+
+        return false;
+    }
+
+    public Collection<CommandModel.ParamModel> getParamMetaData(String commandName) {
+        CommandRunner cr = habitat.getComponent(CommandRunner.class);
+        CommandModel cm = cr.getModel(commandName, RestService.logger);
+        Collection<CommandModel.ParamModel> params = cm.getParameters();
+        return params;
     }
 }
