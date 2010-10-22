@@ -60,9 +60,8 @@
        </graphDef>
 
        
-       <stage-module-jars graphid="all-modules" />
+       <stage-lib-jars graphid="all-modules" />
        <stage-distribution-fragments graphid="all-modules" />
-             
 
        <antcall target="create-zip-artifact"/>		
 

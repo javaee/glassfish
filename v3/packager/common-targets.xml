@@ -106,6 +106,19 @@
         </sequential>
    </macrodef>
 
+   <macrodef name="stage-lib-jars">
+            <attribute name="graphid" />
+            <sequential>
+                <resolveAll todir="target/stage/${install.dir.name}/glassfish/lib" stripVersion="true">
+                    <graphRef refid="@{graphid}"/>
+                </resolveAll>
+
+                <delete dir="target/stage/${install.dir.name}/glassfish/lib" includes="*.zip" />
+                <delete dir="target/stage/${install.dir.name}/glassfish/lib" includes="*.pom" />
+                 <delete dir="target/stage/${install.dir.name}/glassfish/lib" includes="*.war" />
+        </sequential>
+   </macrodef>
+
    <macrodef name="stage-module-autostart-jars">
 	    <attribute name="graphid" />
 	    <sequential>
