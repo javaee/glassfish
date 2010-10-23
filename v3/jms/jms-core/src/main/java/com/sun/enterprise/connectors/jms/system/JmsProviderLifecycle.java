@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.connectors.jms.system;
 
+import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.api.Startup;
 import org.glassfish.internal.api.MQInitializer;
 //import org.glassfish.api.monitoring.MonitoringItem;
@@ -62,10 +63,7 @@ import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.logging.LogDomains;
 import com.sun.hk2.component.Holder;
 import org.glassfish.internal.api.PostStartup;
-import com.sun.enterprise.config.serverbeans.JmsHost;
-import com.sun.enterprise.config.serverbeans.JmsService;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Clusters;
+
 import java.util.List;
 //import com.sun.enterprise.config.serverbeans.MonitoringService;
 
@@ -115,28 +113,36 @@ public class JmsProviderLifecycle implements  PostStartup, PostConstruct{
             connectorRuntime.createActiveResourceAdapter(loc, module, null);
     }
     private boolean eagerStartupRequired(){
-        String integrationMode =getJmsService().getType();
-	
+        JmsService jmsService = getJmsService();
+        if(jmsService == null) return false;
+        String integrationMode =jmsService.getType();
+        List <JmsHost> jmsHostList = jmsService.getJmsHost();
+        String defaultJmsHostName = jmsService.getDefaultJmsHost();
+        JmsHost defaultJmsHost = null;
+        for (JmsHost host : jmsHostList){
+            if(defaultJmsHost != null && defaultJmsHostName.equals(host.getName()))
+                    defaultJmsHost = host;
+        }
+        boolean jmsEagerStartup = false;
+	    boolean lazyInit = false;
+        if (defaultJmsHost != null)
+                lazyInit = Boolean.parseBoolean(defaultJmsHost.getLazyInit());
+
 
         //we don't manage lifecycle of remote brokers
         if(REMOTE.equals(integrationMode))
                 return false;
 
          //Eager startup is currently enabled based on a system property
-        String jmsEagerStartup = System.getProperty(JMS_EAGER_STARTUP);
+        String jmsEagerStartupStr = System.getProperty(JMS_EAGER_STARTUP);
+        if (jmsEagerStartupStr  != null && ! "".equals(jmsEagerStartupStr))
+            jmsEagerStartup = Boolean.parseBoolean(jmsEagerStartupStr);
 
-	if(isClustered() && !"false".equals(jmsEagerStartup))
-		return true;
-
-        //if embedded broker and system property is false or not defined, don't do eager startup
-        if (EMBEDDED.equals(integrationMode) && (jmsEagerStartup == null || "".equals(jmsEagerStartup) || "false".equals(jmsEagerStartup)))
-            return false;
-
-        if (EMBEDDED.equals(integrationMode) && "true".equals(jmsEagerStartup))
+        if (EMBEDDED.equals(integrationMode) && (!lazyInit || jmsEagerStartup))
             return true;
 
         //if local broker and system property is false, don't do eager startup
-        if (LOCAL.equals(integrationMode) &&  "false".equals(jmsEagerStartup))
+        if (LOCAL.equals(integrationMode) &&  "false".equals(jmsEagerStartupStr))
             return false;
 
         //local broker has eager startup by default
@@ -160,8 +166,15 @@ public class JmsProviderLifecycle implements  PostStartup, PostConstruct{
     }
 
         private JmsService getJmsService(){
-            return habitat.getComponent(JmsService.class);
+        //    return habitat.getComponent(JmsService.class);
+            Domain domain = Globals.get(Domain.class);
+            String serverName = System.getProperty(SystemPropertyConstants.SERVER_NAME);
+            Server server = domain.getServerNamed(serverName);
+            Config config = server.getConfig();
+            return config.getJmsService();
+
         }
+
     
     /**
      * Creates jms-service config element for monitoring.
