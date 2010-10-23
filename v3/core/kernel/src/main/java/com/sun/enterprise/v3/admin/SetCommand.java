@@ -65,6 +65,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.types.Property;
 
 import java.util.*;
+import org.jvnet.hk2.config.ConfigModel;
 
 /**
  * User: Jerome Dochez
@@ -312,16 +313,25 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
         return true;
     }
 
+    /*
+     * Determine whether this attribute is deprecated.  This method
+     * stops looking after it finds the first method or field whose name matches
+     * the attribute name. So to make an attribute deprecated, all of the
+     * methods (set, get, etc.) must be marked as deprecated.
+     */
     private boolean isDeprecatedAttr(Dom dom, String name) {
+        if (dom == null || dom.model == null || name == null) return false;
         Class t = dom.getProxyType();
+        if (t == null) return false;
         for (Method m : t.getDeclaredMethods()) {
-            if (name.equals(dom.model.toProperty(m).xmlName())) {
-                if (m.isAnnotationPresent(Deprecated.class)) return true;
+            ConfigModel.Property p = dom.model.toProperty(m);
+            if (p != null && name.equals(p.xmlName())) {
+                return m.isAnnotationPresent(Deprecated.class);
             }
         }
         for (Field f : t.getDeclaredFields()) {
             if (name.equals(dom.model.camelCaseToXML(f.getName()))) {
-                if (f.isAnnotationPresent(Deprecated.class)) return true;
+                return f.isAnnotationPresent(Deprecated.class);
             }
         }
         return false;
