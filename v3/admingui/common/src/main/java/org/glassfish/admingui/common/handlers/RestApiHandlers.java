@@ -91,6 +91,7 @@ public class RestApiHandlers {
     @Handler(id = "gf.getDefaultValues",
             input = {
                     @HandlerInput(name = "endpoint", type = String.class, required = true),
+                    @HandlerInput(name = "command", type = String.class),
                     @HandlerInput(name = "orig", type = Map.class)
             },
             output = {
@@ -99,9 +100,10 @@ public class RestApiHandlers {
     public static void getDefaultValues(HandlerContext handlerCtx) {
         try {
             String endpoint = (String) handlerCtx.getInputValue("endpoint");
+            String command = (String) handlerCtx.getInputValue("command");
             Map<String, String> orig = (Map) handlerCtx.getInputValue("orig");
 
-            Map<String, String> defaultValues = buildDefaultValueMap(endpoint);
+            Map<String, String> defaultValues = buildDefaultValueMap(endpoint, command);
 
             if (orig == null) {
                 handlerCtx.setOutputValue("valueMap", defaultValues);
@@ -506,13 +508,19 @@ public class RestApiHandlers {
 
     //*******************************************************************************************************************
     //*******************************************************************************************************************
-    protected static Map<String, String> buildDefaultValueMap(String endpoint) throws ParserConfigurationException, SAXException, IOException {
+    protected static Map<String, String> buildDefaultValueMap(String endpoint, String command) throws ParserConfigurationException, SAXException, IOException {
         Map<String, String> defaultValues = new HashMap<String, String>();
 
-        RestResponse response = options(endpoint, "application/xml");
+        RestResponse response = options(endpoint, "application/json");
+        //System.out.println("=========== response.getResponse():\n " + response.getResponse());
         Map<String, Object> data = (Map<String, Object>)response.getResponse().get("data");
-        Map<String, Object> extraProperties = (Map<String, Object>) data.get("extraProperties");
-        List<Map<String, Object>> methods = (List<Map<String, Object>>) extraProperties.get("methods");
+        List<Map<String, Object>> methods = null;
+        if (! GuiUtil.isEmpty(command) ){
+            methods = (List<Map<String, Object>>) data.get(command);
+        }else{
+            Map<String, Object> extraProperties = (Map<String, Object>) data.get("extraProperties");
+            methods = (List<Map<String, Object>>) extraProperties.get("methods");
+        }
         for (Map<String, Object> method : methods) {
             if ("POST".equals(method.get("name"))) {
                 Map<String, Object> messageParameters = (Map<String, Object>) method.get("messageParameters");
