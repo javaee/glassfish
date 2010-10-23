@@ -49,6 +49,9 @@
                     onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'))
                     {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
+                    if (!#{pageSession.valueMap['force']}){
+                        mapPut(map="#{pageSession.valueMap}"  key="force" value="false");
+                    }
                     gf.restRequest(endpoint="#{sessionScope.REST_URL}/nodes/node/#{pageSession.encodedNodeName}/_update-node" method="post" attrs="#{pageSession.valueMap}")
                     prepareSuccessfulMsg();
                     gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
@@ -80,11 +83,14 @@
 
     <sun:propertySheet id="propertySheet">
         <sun:propertySheetSection id="propertSectionTextField">
+            <sun:property id="nameProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" helpText="$resource{i18ncs.node.NameHelp}">
+                <sun:textField id="name" text="#{pageSession.valueMap['id']}" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.Name']}" styleClass="required" required="#{true}" />
+            </sun:property>
             <sun:property id="staticnameProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" >
                 <sun:staticText id="IdStatic" text="#{pageSession.nodeName}"/>
             </sun:property>
-            <sun:property id="nameProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" helpText="$resource{i18ncs.node.NameHelp}">
-                <sun:textField id="name" text="#{pageSession.valueMap['id']}" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.Name']}" styleClass="required" required="#{true}" />
+            <sun:property id="nodeType"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.type}" >
+                <sun:staticText id="nodeType" text="#{pageSession.type}"/>
             </sun:property>
             <sun:property id="NodeHost"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.NodeHost}" helpText="$resource{i18ncs.node.NodeHostHelp}">
                 <sun:textField id="NodeHost" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.NodeHost']}" text="#{pageSession.valueMap['nodehost']}" styleClass="required" required="#{true}"/>
@@ -95,7 +101,7 @@
             <sun:property id="installdir"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.InstallDir}" helpText="$resource{i18ncs.node.InstallDirHelp}">
                 <sun:textField id="installDir" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.InstallDir']}" text="#{pageSession.valueMap['installdir']}" />
             </sun:property>
-            <sun:property id="force"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.force}" helpText="$resource{i18ncs.node.forceHelp}">
+            <sun:property id="force"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.force}" helpText="$resource{i18ncs.node.forceHelp}">
                 <sun:checkbox id="force" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['force']}" selectedValue="true" />
             </sun:property>
         </sun:propertySheetSection>

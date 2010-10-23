@@ -244,7 +244,7 @@ public class ClusterHandler {
             List instancesList = (List)nodeInstanceMap.get(nodeName);
             if ( instancesList!= null && (instancesList.size()) != 0){
                 GuiUtil.prepareAlert("error",  GuiUtil.getMessage("msg.Error"),
-                        GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "nodes.instanceExistError", new String[]{ nodeInstanceMap.get(nodeName).toString(), nodeName}));
+                        GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "nodes.instanceExistError", new String[]{ nodeName, nodeInstanceMap.get(nodeName).toString()}));
                 return;
             }
             if(action.equals("delete-node")){
