@@ -57,7 +57,7 @@
     </target>
     
     <target  name="runtest"> 
-        <antcall target="runtest-impl">
+        <antcall target="runtest-embedded-class">
         <param name="contextroot" value="${testng.test.name}"/>
         <param name="testng.test.name" value="${testng.test.name}"/>
         <param name="testng.testclient" value="Client"/>

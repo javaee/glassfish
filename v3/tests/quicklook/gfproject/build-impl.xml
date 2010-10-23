@@ -363,6 +363,32 @@
     </testng>
 </target>
 
+<!-- the following targets are for running the embedded tests -->
+<target name="runtest-embedded-class" depends="setOSConditions,asenv-unix,asenv-windows,checkTestNGXML" unless="testng.xml.present">
+    <echo message="=============Starting TestNG test at ${test.class.output}  ============"/>
+    <mkdir dir="${result.output}"/>
+    <testng outputdir="${result.output}" verbose="2"
+    suitename="${testsuite.name}"
+    testname="${testng.test.name}"
+            classpathref="embedded.testng.classpath">
+        <sysproperty key="glassfish.home" value="${glassfish.home}"/>
+        <sysproperty key="BASEDIR" value="${ws.root}"/>
+        <classfileset dir="${test.class.output}" includes="**/${testng.testclient}.class"/>
+        <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
+        <jvmarg value="-Dhttp.port=${glassfish.http.port}" />
+        <jvmarg value="-Djava.endorsed.dirs=${glassfish.home}/modules/endorsed" />
+        <jvmarg value="-DASADMIN=${ASADMIN}" />
+    </testng>
+</target>
+
+    <path id="embedded.testng.classpath">
+        <fileset dir="${glassfish.home}/lib/embedded">
+            <include name="**/glassfish-embedded-static-shell.jar"/>
+        </fileset>
+        <pathelement location="${class.output}"/>
+        <pathelement location="${test.class.output}"/>
+    </path>
+    
 
 <!-- the following targets are for running the wsit tests -->
     <path id="wsit.classpath">
