@@ -287,6 +287,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
      */
     public ActiveJmsResourceAdapter() {
         super();
+        //if(getJmsService() == null)return;
 
         //Now that the RA has been started, delete the temp passfile
         if (mqPassFile != null) {
@@ -1547,13 +1548,14 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
 
     private boolean isDAS()
     {
-       List serversList =  getServers().getServer();
+        return SystemPropertyConstants.DAS_SERVER_NAME.equals(getServerContext().getInstanceName());
+       /*List serversList =  getServers().getServer();
        for (int i =0; i < serversList.size(); i++){
            Server aserver = (Server) serversList.get(i);
            if (getServerContext().getInstanceName().equals(aserver.getName()))
                 return (aserver.getNode() == null);
-       }
-        return false;
+       } */
+        //return false;
     }
 
     private String getConfiguredRmiRegistryHost() throws Exception {
@@ -2131,7 +2133,12 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
     }
 
     private JmsService getJmsService(){
-        return habitat.getComponent(JmsService.class);
+        //return habitat.getComponent(JmsService.class);
+        Domain domain = Globals.get(Domain.class);
+        String serverName = System.getProperty(SystemPropertyConstants.SERVER_NAME);
+        Server server = domain.getServerNamed(serverName);
+        Config config = server.getConfig();
+        return config.getJmsService();
     }
 
     private ServerContext getServerContext(){
