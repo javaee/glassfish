@@ -59,9 +59,7 @@ import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
-import java.util.Properties;
-import java.util.Hashtable;
-import java.util.Enumeration;
+import java.util.*;
 
 /**
  * Create JMS Resource Command
@@ -97,7 +95,8 @@ public class CreateJMSResource implements AdminCommand {
     CommandRunner commandRunner;
 
     @Inject
-    ConnectorConnectionPool[] connPools;
+    Domain domain;
+    //ConnectorConnectionPool[] connPools;
 
     private static final String QUEUE = "javax.jms.Queue";
     private static final String TOPIC = "javax.jms.Topic";
@@ -123,6 +122,7 @@ public class CreateJMSResource implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
+        Collection connPools = domain.getResources().getResources(ConnectorConnectionPool.class);  
          if (resourceType == null) {
             report.setMessage(localStrings.getLocalString("create.jms.resource.noResourceType",
                             "No Resoruce Type specified for JMS Resource."));
@@ -164,14 +164,11 @@ public class CreateJMSResource implements AdminCommand {
         ActionReport subReport = report.addSubActionsReport();
 
       if (resourceType.equals(TOPIC_CF) || resourceType.equals(QUEUE_CF) || resourceType.equals(UNIFIED_CF)) {
-          ConnectorConnectionPool cpool = null;
-             for (ConnectorConnectionPool cp : connPools) {
-                 if (cp.getName().equals(jndiName))
-                     cpool = cp;
-            }
+          ConnectorConnectionPool cpool = (ConnectorConnectionPool) domain.getResources().getResourceByName(ConnectorConnectionPool.class, jndiName);
+
           boolean createdPool = false;
            // If pool is already existing, do not try to create it again
-          if (cpool == null) {
+          if (cpool == null || ! filterForTarget (jndiName)) {
                 // Add connector-connection-pool.
               ParameterMap parameters = populateConnectionPoolParameters();
 	          commandRunner.getCommandInvocation("create-connector-connection-pool", subReport).parameters(parameters).execute();
@@ -243,6 +240,31 @@ public class CreateJMSResource implements AdminCommand {
         ActionReport.ExitCode ec = ActionReport.ExitCode.SUCCESS;
 
         report.setActionExitCode(ec);
+    }
+
+    private boolean filterForTarget(String jndiName){
+        List<String> resourceList = new ArrayList();
+         if (target != null){
+             List<ResourceRef> resourceRefs = null;
+             Cluster cluster = domain.getClusterNamed(target);
+             if (cluster != null)
+                      resourceRefs=  cluster.getResourceRef();
+
+             else {
+                  Server server = domain.getServerNamed(target);
+                  if (server != null)
+                      resourceRefs = server.getResourceRef();
+
+             }
+             if (resourceRefs != null && resourceRefs.size() != 0){
+
+                  for (ResourceRef resource : resourceRefs)
+                     if(jndiName.equalsIgnoreCase(resource.getRef()))
+                           return true;
+                  }
+
+            }
+        return false;
     }
 
     Hashtable mapping = null;

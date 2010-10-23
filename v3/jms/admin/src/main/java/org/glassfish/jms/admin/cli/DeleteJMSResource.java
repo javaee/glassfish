@@ -40,6 +40,7 @@
 
 package org.glassfish.jms.admin.cli;
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
@@ -87,11 +88,7 @@ public class DeleteJMSResource implements AdminCommand {
     CommandRunner commandRunner;
 
     @Inject
-    ConnectorResource[] connResources;
-
-    @Inject
-    ConnectorConnectionPool[] connPools;
-
+    Domain domain;
     /**
          * Executes the command with the command parameters passed as Properties
          * where the keys are the paramter names and the values the parameter values
@@ -110,11 +107,11 @@ public class DeleteJMSResource implements AdminCommand {
 
             ActionReport subReport = report.addSubActionsReport();
 
-            ConnectorResource cresource = null;
-             for (ConnectorResource cr : connResources) {
+            ConnectorResource cresource = (ConnectorResource) domain.getResources().getResourceByName(ConnectorResource.class, jndiName);
+            /* for (ConnectorResource cr : connResources) {
                  if (cr.getJndiName().equals(jndiName))
                      cresource = cr;
-            }
+            } */
             if(cresource == null)
             {
               ParameterMap params = new ParameterMap();
