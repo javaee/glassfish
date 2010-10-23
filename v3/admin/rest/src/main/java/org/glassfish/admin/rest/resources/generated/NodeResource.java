@@ -59,7 +59,7 @@ return resource;
 
 @Override
 public String[][] getCommandResourcesPaths() {
-return new String[][] {{"delete-node", "DELETE", "delete-node-ssh"} , {"_update-node", "POST", "_update-node"} };
+return new String[][] {{"delete-node", "DELETE", "_delete-node"} , {"_update-node", "POST", "_update-node"} };
 }
 
 	@Path("application-ref/")

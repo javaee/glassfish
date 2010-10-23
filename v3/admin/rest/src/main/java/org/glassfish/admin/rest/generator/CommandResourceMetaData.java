@@ -220,7 +220,7 @@ ListLbConfig
             {"ListAuthRealm", "__list-predefined-authrealm-classnames", "GET", "list-predefined-authrealm-classnames", "List Auth Realms"},
             {"NetworkListener", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=http-listener"},
             {"NetworkListener", "delete-ssl", "DELETE", "delete-ssl", "Delete", "id=$parent", "type=http-listener"},
-            {"Node", "delete-node-ssh", "DELETE", "delete-node", "Delete Node", "id=$parent"},
+            {"Node", "_delete-node", "DELETE", "delete-node", "Delete Node", "id=$parent"},
             {"Node", "ping-node-ssh", "GET", "ping-node-ssh", "Ping Node", "id=$parent"},
             {"Node", "update-node-ssh", "POST", "update-node-ssh", "Update Node", "id=$parent"},
             {"Node", "_update-node", "POST", "_update-node", "Update Node", "name=$parent"},

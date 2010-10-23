@@ -48,7 +48,7 @@ public class NodeDeleteNodeResource extends org.glassfish.admin.rest.resources.T
    public NodeDeleteNodeResource() {
        super(
           "NodeDeleteNodeResource",
-          "delete-node-ssh",
+          "_delete-node",
           "DELETE",
           "Delete Node",
           "delete-node",
