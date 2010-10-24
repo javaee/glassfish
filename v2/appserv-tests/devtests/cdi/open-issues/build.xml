@@ -97,6 +97,7 @@
         <record name="openissues.output" action="start" />
         <ant dir="../smoke-tests/simple-managed-bean-interceptor" target="${openissues-target}"/> <!-- WELD 728 -->
         <ant dir="../managed-beans/managed-bean-via-resource-injection" target="${openissues-target}"/> <!-- IT 11528 -->
+        <ant dir="../javaee-component-resources/em-resource-injection-extended-transaction-context" target="${openissues-targer"/> <!--IT 11805 -->
         <ant dir="../smoke-tests/singleton-startup/hello" target="${openissues-target}"/> <!-- IT 13072 -->
         <record name="openissues.output" action="stop" />
     </target>
