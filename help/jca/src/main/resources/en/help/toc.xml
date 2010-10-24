@@ -56,7 +56,7 @@
             <tocitem target="ref-resourceadapterconfig" text="Resource Adapter Configs" expand="false"></tocitem>
             <tocitem target="ref-resourceadapterconfignew" text="New Resource Adapter Config" expand="false"></tocitem>
             <tocitem target="ref-resourceadapterconfigedit" text="Edit Resource Adapter Config" expand="false"></tocitem></tocitem></tocitem>
-    <tocitem target="ref-group-configuration" text="Configuration" expand="false">
+    <tocitem target="ref-group-configuration" text="Configurations" expand="false">
         <tocitem target="ref-group-connectionservice" text="Connector Service" expand="false">
             <tocitem target="ref-connectionservice" text="Connector Service" expand="false"></tocitem>
 </tocitem>

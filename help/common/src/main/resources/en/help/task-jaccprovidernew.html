@@ -5,21 +5,28 @@ Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 
 
-<a name="task-jaccprovidernew"></a><h4>To Create a JACC Provider</h4><a name="indexterm-103"></a><a name="indexterm-104"></a><a name="indexterm-105"></a><p>JACC (Java Authorization Contract for Containers) is the part of the Java EE
-specification that defines an interface for pluggable authorization providers. This enables the administrator
-to set up third-party <b>plugin</b> modules to perform authorization. By default, the GlassFish
-Server provides a simple, JACC-compliant file-based authorization engine.</p>
+<a name="task-jaccprovidernew"></a><h4>To Create a JACC Provider</h4><a name="indexterm-103"></a><a name="indexterm-104"></a><a name="indexterm-105"></a><p>Use the New JACC Provider page to create a new JSR-115/196compliant Java Authorization Contract
+for Containers (JACC) provider that can be used by third-party authorization modules for
+applications running in GlassFish Server. The JACC provider is created as a <tt>jacc-provider</tt>
+element within the <tt>security-service</tt> element in the domain's <tt>domain.xml</tt> file.</p>
+
+<p>The default GlassFish Server installation includes two JACC providers, named <tt>default</tt> and
+<tt>simple</tt>. Any new JACC providers you create are in addition to these two
+default providers. The default GlassFish Server JACC providers implement a simple, file-based authorization
+engine that complies with the JACC specification.</p>
 
 <p>For information on how to write the implementation classes for a JACC provider,
 see the JACC specification at <a href="http://jcp.org/en/jsr/detail?id=115">http://jcp.org/en/jsr/detail?id=115</a>.</p>
 
 <ol>
-<li><b>In the navigation tree, expand the Configuration node.</b></li>
-<li><b>Under the  Configuration node, expand the Security node.</b></li>
+<li><b>Under the Configurations node In the navigation tree, expand the expand the GlassFish
+Server instance or cluster for which you want to create a JACC provider.</b><p>To create a provider that will be available to all instances and clusters,
+choose the <tt>default-config</tt> node.</p></li>
+<li><b>Under the  expanded instance or cluster configuration node, expand the Security node.</b></li>
 <li><b>Under the Security node, select the JACC Providers node.</b><p>The JACC Providers page opens.</p></li>
 <li><b>On the JACC Providers page, click New.</b><p>The New JACC Provider page opens.</p></li>
 <li><b>On the New JACC Provider page, in the Name field, type the
-name that will identify this provider.</b></li>
+name that will identify this provider.</b><p>This name is used to reference the <tt>jacc-provider</tt> element in <tt>domain.xml</tt>.</p></li>
 <li><b>In the Policy Configuration field, type the name of the class that implements
 the policy configuration factory.</b><p>The <tt>default</tt> provider uses <tt>com.sun.enterprise.security.provider.PolicyConfigurationFactoryImpl</tt>. The <tt>simple</tt> provider uses <tt>com.sun.enterprise.security.jacc.provider.SimplePolicyConfigurationFactory</tt>.</p></li>
 <li><b>In the Policy Provider field, type the name of the class that implements
@@ -32,9 +39,6 @@ property value in the Value field.</p><p>For a description of the additional pro
 
 </li>
 <li><p><a href="task-jaccproviderdelete.html">To Delete a JACC Provider</a></p>
-
-</li>
-<li><p><a href="task-setactivejaccprov.html">To Set the Active JACC Provider</a></p>
 
 </li></ul>
 

@@ -4,7 +4,8 @@ Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-jaccprovideredit"></a><h4>Edit JACC Provider</h4>
-<a name="indexterm-224"></a><p>Use the Edit JACC Provider page to modify a JACC provider.</p>
+<a name="indexterm-226"></a><p>Use the Edit JACC Provider page to modify a JACC provider for
+the selected GlassFish Server instance or cluster.</p>
 
 <p>The Edit JACC Provider page contains the following options.</p>
 
@@ -13,11 +14,11 @@ Use is subject to License Terms  -->
 
 </dd>
 <dt>Policy Configuration</dt>
-<dd><p>The name of the class that implements the policy configuration factory.</p>
+<dd><p>The fully qualified class name for the <tt>javax.security.jacc.PolicyConfigurationFactory.provider</tt> that implements the provider-specific <tt>javax.security.jacc.PolicyConfigurationFactory</tt>.</p>
 
 </dd>
 <dt>Policy Provider</dt>
-<dd><p>The name of the class that implements the policy factory.</p>
+<dd><p>The fully qualified class name for the <tt>javax.security.jacc.policy.provider</tt> that implements the <tt>java.security.Policy</tt>.</p>
 
 </dd>
 <dt>Additional Properties</dt>
@@ -35,13 +36,18 @@ Use is subject to License Terms  -->
 </li>
 <li><p><a href="task-jaccproviderdelete.html">To Delete a JACC Provider</a></p>
 
-</li>
-<li><p><a href="task-setactivejaccprov.html">To Set the Active JACC Provider</a></p>
-
 </li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
-<p>None.</p>
 
+<ul><li><p><a href="http://docs.sun.com/doc/821-2433/create-jacc-provider-1?a=view"><tt>create-jacc-provider</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/delete-jacc-provider-1?a=view"><tt>delete-jacc-provider</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/list-jacc-providers-1?a=view"><tt>list-jacc-providers</tt>(1)</a></p>
+
+</li></ul>
 
 
 <small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

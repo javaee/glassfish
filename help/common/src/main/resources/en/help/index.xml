@@ -25,23 +25,25 @@
     <indexitem target="task-appdeployconn" text="deploying connector modules"></indexitem>
     <indexitem target="task-appdeployejb" text="deploying EJB jars"></indexitem>
     <indexitem target="task-deployentapp" text="deploying enterprise"></indexitem>
-    <indexitem target="task-appdeployruby" text="deploying Ruby"></indexitem>
     <indexitem target="task-appdeployweb" text="deploying web"></indexitem>
     <indexitem target="ref-appedit" text="editing (reference)"></indexitem>
     <indexitem target="task-appedit" text="editing (task)"></indexitem>
     <indexitem target="ref-appclientlaunch" text="launching (reference)"></indexitem>
     <indexitem target="task-applaunch" text="launching (task)"></indexitem>
+    <indexitem target="ref-managetargets" text="managing targets (reference)"></indexitem>
+    <indexitem target="ref-managevirtualservers" text="managing virtual servers (reference)"></indexitem>
     <indexitem target="ref-redeploy" text="redeploying (reference)"></indexitem>
     <indexitem target="task-appredeploy" text="redeploying (task)"></indexitem>
     <indexitem target="ref-serverinstappsconfig" text="reload settings (reference)"></indexitem>
     <indexitem target="task-setadvanceappconfig" text="reload settings (task)"></indexitem>
-    <indexitem target="task-apprestart" text="restarting"></indexitem>
+    <indexitem target="task-apprestart" text="reloading"></indexitem>
     <indexitem target="ref-applications" text="viewing deployed (reference)"></indexitem>
     <indexitem target="task-applistdeployed" text="viewing deployed (task)"></indexitem>
     <indexitem target="ref-webapp-editdd" text="viewing deployment descriptors (reference)"></indexitem>
     <indexitem target="task-appviewdesc" text="viewing deployment descriptors (task)"></indexitem>
     <indexitem target="ref-appmonitoringdata" text="viewing monitoring data (reference)"></indexitem>
     <indexitem target="task-appmonitoringdata" text="viewing monitoring data (task)"></indexitem>
+    <indexitem target="ref-targetlisting" text="viewing targets (reference)"></indexitem>
     <indexitem target="ref-endpoint" text="viewing web service endpoint information (reference)"></indexitem>
     <indexitem target="task-endpoint" text="viewing web service endpoint information (task)"></indexitem></indexitem>
  <indexitem text="audit modules">
@@ -59,6 +61,7 @@
  <indexitem target="ref-serverinstappsconfig" text="autodeploy settings for applications (reference)"></indexitem>
  <indexitem target="task-setadvanceappconfig" text="autodeploy settings for applications (task)"></indexitem>
  <indexitem target="ref-editcertrealm" text="certificate realm, properties"></indexitem>
+ <indexitem target="task-logging-collectlogfiles" text="collect log files"></indexitem>
  <indexitem text="components">
     <indexitem target="ref-uc-addon" text="installing add-on (reference)"></indexitem>
     <indexitem target="task-uc-addon" text="installing add-on (task)"></indexitem>
@@ -82,8 +85,6 @@
     <indexitem target="task-appdeployejb" text="EJB jars (task)"></indexitem>
     <indexitem target="ref-uploaddev" text="enterprise applications (reference)"></indexitem>
     <indexitem target="task-deployentapp" text="enterprise applications (task)"></indexitem>
-    <indexitem target="ref-uploaddev" text="Ruby applications (reference)"></indexitem>
-    <indexitem target="task-appdeployruby" text="Ruby applications (task)"></indexitem>
     <indexitem target="ref-uploaddev" text="web applications (reference)"></indexitem>
     <indexitem target="task-appdeployweb" text="web applications (task)"></indexitem></indexitem>
  <indexitem text="deployment descriptors">
@@ -136,7 +137,6 @@
     <indexitem target="ref-jaccprovideredit" text="editing (reference)"></indexitem>
     <indexitem target="task-jaccprovideredit" text="editing (task)"></indexitem>
     <indexitem target="ref-jaccproviderprop" text="properties"></indexitem>
-    <indexitem target="task-setactivejaccprov" text="setting active"></indexitem>
     <indexitem target="ref-jaccproviders" text="viewing and configuring"></indexitem></indexitem>
  <indexitem text="Java Authorization Contract for Containers, See JACC providers"></indexitem>
  <indexitem text="Java Virtual Machine, See JVM"></indexitem>
@@ -169,6 +169,7 @@
     <indexitem target="ref-lifecyclemoduleedit" text="editing (reference)"></indexitem>
     <indexitem target="task-lifecyclemoduleedit" text="editing (task)"></indexitem>
     <indexitem target="ref-lifecyclemodules" text="viewing and configuring"></indexitem></indexitem>
+ <indexitem target="task-logging-collectlogfiles" text="log files, creating ZIP archive of"></indexitem>
  <indexitem text="log levels">
     <indexitem target="ref-eelogginglevels" text="configuring (reference)"></indexitem>
     <indexitem target="task-eelogginglevels" text="configuring (task)"></indexitem></indexitem>
@@ -178,6 +179,7 @@
     <indexitem target="ref-eelogginglevels" text="configuring levels (reference)"></indexitem>
     <indexitem target="task-eelogginglevels" text="configuring levels (task)"></indexitem>
     <indexitem target="task-logging-max-logfiles" text="configuring maximum number of log files (task)"></indexitem>
+    <indexitem target="task-logging-collectlogfiles" text="creating a ZIP archive of all log files (task)"></indexitem>
     <indexitem target="ref-logviewer" text="viewing the server log (reference)"></indexitem>
     <indexitem target="task-logviewer" text="viewing the server log (task)"></indexitem></indexitem>
  <indexitem text="message security">
@@ -210,6 +212,7 @@
     <indexitem target="ref-servermonitoringdata" text="viewing for virtual servers (reference)"></indexitem>
     <indexitem target="task-servermonitoringdata" text="viewing for virtual servers (task)"></indexitem></indexitem>
  <indexitem target="task-uc-set-proxy" text="network proxy settings, configuring for Update Tool"></indexitem>
+ <indexitem target="ref-pamrealmprop" text="PAM realm, properties"></indexitem>
  <indexitem text="password">
     <indexitem target="ref-setadminpassword" text="changing administrator (reference)"></indexitem>
     <indexitem target="task-setadminpassword" text="changing administrator (task)"></indexitem>
@@ -222,6 +225,7 @@
     <indexitem target="ref-editjdbcrealm" text="JDBC realm"></indexitem>
     <indexitem target="ref-ldaprealmprop" text="LDAP realm"></indexitem>
     <indexitem target="ref-messagesecurityproviderconfigprops" text="message security provider configurations"></indexitem>
+    <indexitem target="ref-pamrealmprop" text="PAM realm"></indexitem>
     <indexitem target="ref-preconfiguredprops" text="predefined system"></indexitem>
     <indexitem target="ref-solarisrealmprop" text="Solaris realm"></indexitem>
     <indexitem target="ref-systemproperties" text="system (reference)"></indexitem>
@@ -236,7 +240,6 @@
     <indexitem target="task-todeleterealm" text="deleting"></indexitem>
     <indexitem target="ref-realmedit" text="editing (reference)"></indexitem>
     <indexitem target="task-realmedit" text="editing (task)"></indexitem>
-    <indexitem target="task-tosetdefault" text="setting default"></indexitem>
     <indexitem target="ref-realms" text="viewing and configuring"></indexitem></indexitem>
  <indexitem target="ref-redeploy" text="redeploying applications (reference)"></indexitem>
  <indexitem target="task-appredeploy" text="redeploying applications (task)"></indexitem>
@@ -244,14 +247,11 @@
  <indexitem target="task-register" text="registering GlassFish Server (task)"></indexitem>
  <indexitem target="ref-serverinstappsconfig" text="reload settings for applications (reference)"></indexitem>
  <indexitem target="task-setadvanceappconfig" text="reload settings for applications (task)"></indexitem>
+ <indexitem target="task-apprestart" text="reloading applications"></indexitem>
  <indexitem text="resources">
     <indexitem target="ref-resourcemonitoringdata" text="viewing monitoring data (reference)"></indexitem>
     <indexitem target="task-resourcemonitoringdata" text="viewing monitoring data (task)"></indexitem></indexitem>
- <indexitem target="task-apprestart" text="restarting applications"></indexitem>
  <indexitem target="task-logging-max-logfiles" text="rotated log files, limiting number of"></indexitem>
- <indexitem text="Ruby applications">
-    <indexitem target="ref-uploaddev" text="deploying (reference)"></indexitem>
-    <indexitem target="task-appdeployruby" text="deploying (task)"></indexitem></indexitem>
  <indexitem text="security">
     <indexitem target="ref-jmxconnectorssledit" text="JMX connector (reference)"></indexitem>
     <indexitem target="task-jmxconnectorssledit" text="JMX connector (task)"></indexitem></indexitem>
@@ -287,6 +287,6 @@
     <indexitem target="task-appdeployweb" text="deploying (task)"></indexitem></indexitem>
  <indexitem text="web services">
     <indexitem target="ref-endpoint" text="viewing endpoint information (reference)"></indexitem>
-    <indexitem target="task-endpoint" text="viewing endpoint information (task)"></indexitem>
-</indexitem>
+    <indexitem target="task-endpoint" text="viewing endpoint information (task)"></indexitem></indexitem>
+ <indexitem target="task-logging-collectlogfiles" text="ZIP archive, collecting log files in"></indexitem>
 </index>

@@ -7,7 +7,7 @@
         <tocitem target="task-subscriptions" text="To View the Subscriptions Page for Oracle GlassFish Server" expand="false"></tocitem></tocitem>
     <tocitem target="task-group-appservsettings" text="Configuring and Managing the GlassFish Server" expand="false">
         <tocitem target="task-generaltab" text="To View General Information for the GlassFish Server" expand="false"></tocitem>
-        <tocitem target="task-logviewer" text="To View the Server Log" expand="false"></tocitem>
+        <tocitem target="task-logviewer" text="To View Server Instance or Cluster Log Files" expand="false"></tocitem>
         <tocitem target="task-setadvanceappconfig" text="To Set the Advanced Applications Configuration" expand="false"></tocitem>
         <tocitem target="task-setadvancedomainattributes" text="To Set the Advanced Domain Attributes" expand="false"></tocitem>
         <tocitem target="task-setadminpassword" text="To Change the Administrator Password" expand="false"></tocitem>
@@ -22,14 +22,14 @@
         <tocitem target="task-appdeployclient" text="To Deploy an Application Client" expand="false"></tocitem>
         <tocitem target="task-appdeployconn" text="To Deploy a Connector Module" expand="false"></tocitem>
         <tocitem target="task-appdeployejb" text="To Deploy an EJB Jar" expand="false"></tocitem>
-        <tocitem target="task-appdeployruby" text="To Deploy a Ruby Application" expand="false"></tocitem>
         <tocitem target="task-appedit" text="To Edit a Deployed Application" expand="false"></tocitem>
         <tocitem target="task-appviewdesc" text="To View Descriptors of an Application" expand="false"></tocitem>
         <tocitem target="task-endpoint" text="To View Endpoint Information for a Web Service" expand="false"></tocitem>
+        <tocitem target="task-appviewtargets" text="To View Application Targets" expand="false"></tocitem>
         <tocitem target="task-applaunch" text="To Launch an Application" expand="false"></tocitem>
         <tocitem target="task-appclientlaunch" text="To Launch an Application Client" expand="false"></tocitem>
         <tocitem target="task-appredeploy" text="To Redeploy a Deployed Application" expand="false"></tocitem>
-        <tocitem target="task-apprestart" text="To Restart a Deployed Application" expand="false"></tocitem></tocitem>
+        <tocitem target="task-apprestart" text="To Reload a Deployed Application" expand="false"></tocitem></tocitem>
     <tocitem target="task-group-lifecyclemodules" text="Configuring Lifecycle Modules" expand="false">
         <tocitem target="task-lifecyclemodulenew" text="To Create a Lifecycle Module" expand="false"></tocitem>
         <tocitem target="task-lifecyclemoduleedit" text="To Edit a Lifecycle Module" expand="false"></tocitem>
@@ -43,7 +43,8 @@
     <tocitem target="task-group-logging" text="Configuring Logging" expand="false">
         <tocitem target="task-eelogging" text="To Configure General Logging Settings" expand="false"></tocitem>
         <tocitem target="task-eelogginglevels" text="To Configure Log Levels" expand="false"></tocitem>
-        <tocitem target="task-logging-max-logfiles" text="To Change the Limit on the Number of Rotated Log Files" expand="false"></tocitem></tocitem>
+        <tocitem target="task-logging-max-logfiles" text="To Change the Limit on the Number of Rotated Log Files" expand="false"></tocitem>
+        <tocitem target="task-logging-collectlogfiles" text="To Create a ZIP Archive of All Log Files" expand="false"></tocitem></tocitem>
     <tocitem target="task-group-serversecurity" text="Configuring Server Security" expand="false">
         <tocitem target="task-securitysettings" text="To Configure Security Settings" expand="false"></tocitem>
         <tocitem target="task-accessadmintools" text="To Grant Access to Administration Tools" expand="false"></tocitem>
@@ -52,7 +53,6 @@
         <tocitem target="task-realmnew" text="To Create a Realm" expand="false"></tocitem>
         <tocitem target="task-realmedit" text="To Edit a Realm" expand="false"></tocitem>
         <tocitem target="task-todeleterealm" text="To Delete a Realm" expand="false"></tocitem>
-        <tocitem target="task-tosetdefault" text="To Set the Default Realm" expand="false"></tocitem>
         <tocitem target="task-createcustomrealm" text="To Create a Custom Realm" expand="false"></tocitem></tocitem>
     <tocitem target="task-group-managefilerealmusers" text="Managing File Realm Users" expand="false">
         <tocitem target="task-fileuserscreate" text="To Add a User to the File Realm" expand="false"></tocitem>
@@ -72,8 +72,7 @@
     <tocitem target="task-group-jaccproviders" text="Configuring JACC Providers" expand="false">
         <tocitem target="task-jaccprovidernew" text="To Create a JACC Provider" expand="false"></tocitem>
         <tocitem target="task-jaccprovideredit" text="To Edit a JACC Provider" expand="false"></tocitem>
-        <tocitem target="task-jaccproviderdelete" text="To Delete a JACC Provider" expand="false"></tocitem>
-        <tocitem target="task-setactivejaccprov" text="To Set the Active JACC Provider" expand="false"></tocitem></tocitem>
+        <tocitem target="task-jaccproviderdelete" text="To Delete a JACC Provider" expand="false"></tocitem></tocitem>
     <tocitem target="task-group-messagesecurity" text="Configuring Message Security" expand="false">
         <tocitem target="task-configmsgsecproviders" text="To Configure GlassFish Server Facilities for Use by Message Security Providers" expand="false"></tocitem>
         <tocitem target="task-messagesecurityconfignew" text="To Create a Message Security Configuration" expand="false"></tocitem>
@@ -118,6 +117,9 @@
         <tocitem target="ref-appedit" text="Edit Application" expand="false"></tocitem>
         <tocitem target="ref-webapp-editdd" text="Module Descriptors" expand="false"></tocitem>
         <tocitem target="ref-displaydd" text="Deployment Descriptor" expand="false"></tocitem>
+        <tocitem target="ref-targetlisting" text="Application Targets" expand="false"></tocitem>
+        <tocitem target="ref-managetargets" text="Manage Targets" expand="false"></tocitem>
+        <tocitem target="ref-managevirtualservers" text="Virtual Server Targets" expand="false"></tocitem>
         <tocitem target="ref-endpoint" text="Web Service Endpoint Information" expand="false"></tocitem>
         <tocitem target="ref-appclientlaunch" text="Launch Application Client" expand="false"></tocitem>
         <tocitem target="ref-uploaddev" text="Deploy Applications or Modules" expand="false"></tocitem>
@@ -128,8 +130,8 @@
         <tocitem target="ref-lifecyclemoduleedit" text="Edit Lifecycle Module" expand="false"></tocitem></tocitem>
     <tocitem target="ref-group-resources" text="Resources" expand="false">
         <tocitem target="ref-resources" text="Resources" expand="false"></tocitem></tocitem>
-    <tocitem target="ref-group-configuration" text="Configuration" expand="false">
-        <tocitem target="ref-configuration" text="Configuration" expand="false"></tocitem>
+    <tocitem target="ref-group-configuration" text="Configurations" expand="false">
+        <tocitem target="ref-configuration" text="Configurations" expand="false"></tocitem>
         <tocitem target="ref-group-jvm" text="JVM Settings" expand="false">
             <tocitem target="ref-serverinstjvmgeneral" text="JVM General Settings" expand="false"></tocitem>
             <tocitem target="ref-serverinstjvmpathsettings" text="JVM Path Settings" expand="false"></tocitem>
@@ -149,6 +151,7 @@
                 <tocitem target="ref-editjdbcrealm" text="Properties Specific to the JDBCRealm Class" expand="false"></tocitem>
                 <tocitem target="ref-ldaprealmprop" text="Properties Specific to the LDAPRealm Class" expand="false"></tocitem>
                 <tocitem target="ref-solarisrealmprop" text="Properties Specific to the SolarisRealm Class" expand="false"></tocitem>
+                <tocitem target="ref-pamrealmprop" text="Properties Specific to the PamRealm Class" expand="false"></tocitem>
                 <tocitem target="ref-managefilerealm" text="File Users" expand="false"></tocitem>
                 <tocitem target="ref-manageadminrealm" text="Admin Users" expand="false"></tocitem>
                 <tocitem target="ref-filerealmusernew" text="New File Realm User" expand="false"></tocitem>

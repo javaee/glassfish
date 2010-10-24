@@ -5,11 +5,13 @@ Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 
 
-<a name="task-securitysettings"></a><h4>To Configure Security Settings</h4><a name="indexterm-78"></a><a name="indexterm-79"></a><p>The Administration Console enables you to set a variety of system-wide security settings.</p>
+<a name="task-securitysettings"></a><h4>To Configure Security Settings</h4><a name="indexterm-79"></a><a name="indexterm-80"></a><p>The Administration Console enables you to set a variety of system-wide security settings.</p>
 
 <ol>
-<li><b>In the navigation tree, expand the Configuration node.</b></li>
-<li><b>Under the Configuration node, select the Security node.</b><p>The Security page opens.</p></li>
+<li><b>In the navigation tree, expand the Configurations node.</b></li>
+<li><b>Under the Configurations node, click the server instance or cluster configuration for which
+you want to configure Security settings.</b><p>The Configuration page opens.</p></li>
+<li><b>On the Configuration page, click Security.</b><p>The Security settings page for the selected configuration target opens.</p></li>
 <li><b>Select the Security Manager Enabled checkbox to turn on the security manager.</b><p>If this option is enabled, a JVM option, <tt>-Djava.security.manager</tt>, will be added
 to the JVM settings of the GlassFish Server. See <a href="task-jvmoptions.html">To Configure the JVM Options</a>. You must restart
 the server to enable this change.</p><p>Ensure that you have granted correct permissions for all applications. You can turn
@@ -25,7 +27,8 @@ configured realms appear in the list. The default value is <tt>file</tt>.</p></l
 <li><b>In the Default Principal field, type the default user name.</b><p>The server uses this user name when no other principal is provided.</p></li>
 <li><b>In the Default Principal Password field, type the password of the default principal
 specified in the Default Principal field.</b></li></ol><p>A default principal is not required for normal server operation.</p></li>
-<li><b>From the JACC drop-down list, select the name of a configured JACC provider.</b><p>The default choices are <tt>default</tt> and <tt>simple</tt>. The default option is <tt>default</tt>.</p></li>
+<li><b>From the JACC drop-down list, select the name of a configured JACC provider.</b><p>The default choices are <tt>default</tt> and <tt>simple</tt>. The default option is <tt>default</tt>.
+For information on creating new JACC providers, see ***.</p></li>
 <li><b>From the Audit Modules drop-down list, select the audit provider modules that will
 be used by the audit subsystem if audit logging is enabled.</b><p>By default, the server uses an audit module named <tt>default</tt>. For information on
 creating new audit modules, see <a href="task-auditmodulenew.html">To Create an Audit Module</a>.</p></li>
@@ -35,20 +38,24 @@ principal-to-role mapping to applications that do not have an application-specif
 the name of a customized <tt>java.security.Principal</tt> implementation class to be used in
 the default principal-to-role mapping.</b></li>
 <li>(Optional) <b>In the Additional Properties section, specify additional properties.</b><p>Valid properties are dependent on the type of realm selected in the Default
-Realm field.</p>
-<ul><li><p>For a description of File Realm properties, see <a href="ref-editfile-adminrealm.html">Properties Specific to the <tt>FileRealm</tt> Class</a>.</p>
+Realm field. Refer to the appropriate entry from the following list for the
+type of realm you want to configure.</p>
+<ul><li><p><a href="ref-editfile-adminrealm.html">Properties Specific to the <tt>FileRealm</tt> Class</a></p>
 
 </li>
-<li><p>For a description of Certificate Realm properties, see <a href="ref-editcertrealm.html">Properties Specific to the <tt>CertificateRealm</tt> Class</a>.</p>
+<li><p><a href="ref-editcertrealm.html">Properties Specific to the <tt>CertificateRealm</tt> Class</a></p>
 
 </li>
-<li><p>For a description of JDBC Realm properties, see <a href="ref-editjdbcrealm.html">Properties Specific to the <tt>JDBCRealm</tt> Class</a>.</p>
+<li><p><a href="ref-editjdbcrealm.html">Properties Specific to the <tt>JDBCRealm</tt> Class</a></p>
 
 </li>
-<li><p>For a description of LDAP Realm properties, see <a href="ref-ldaprealmprop.html">Properties Specific to the <tt>LDAPRealm</tt> Class</a>.</p>
+<li><p><a href="ref-ldaprealmprop.html">Properties Specific to the <tt>LDAPRealm</tt> Class</a></p>
 
 </li>
-<li><p>For a description of Solaris Realm properties, see <a href="ref-solarisrealmprop.html">Properties Specific to the <tt>SolarisRealm</tt> Class</a>.</p>
+<li><p><a href="ref-solarisrealmprop.html">Properties Specific to the <tt>SolarisRealm</tt> Class</a></p>
+
+</li>
+<li><p><a href="ref-pamrealmprop.html">Properties Specific to the <tt>PamRealm</tt> Class</a></p>
 
 </li></ul>
 <ul>

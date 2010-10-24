@@ -4,6 +4,7 @@
     <tocitem target="task-group-javamailresources" text="Configuring JavaMail Sessions" expand="false">
         <tocitem target="task-javamailsessioncreate" text="To Create a JavaMail Session" expand="false"></tocitem>
         <tocitem target="task-javamailsessionsedit" text="To Edit a JavaMail Session" expand="false"></tocitem>
+        <tocitem target="task-javamailtargets" text="To Manage JavaMail Session Targets" expand="false"></tocitem>
         <tocitem target="task-javamailsessionsdelete" text="To Delete a JavaMail Session" expand="false"></tocitem></tocitem>
     <tocitem target="task-group-jndiresources" text="Configuring JNDI Resources" expand="false">
         <tocitem target="task-jndicustomresourcenew" text="To Create a Custom JNDI Resource" expand="false"></tocitem>

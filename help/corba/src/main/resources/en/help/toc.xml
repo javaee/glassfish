@@ -8,7 +8,7 @@
         <tocitem target="task-editiiopssl" text="To Edit SSL Settings for a Secure IIOP Listener" expand="false"></tocitem>
         <tocitem target="task-iioplistenerdelete" text="To Delete an IIOP Listener" expand="false"></tocitem></tocitem></tocitem>
  <tocitem target="ref-topic-group" text="GlassFish Server Administration Console Reference" expand="false">
-    <tocitem target="ref-group-configuration" text="Configuration" expand="false">
+    <tocitem target="ref-group-configuration" text="Configurations" expand="false">
         <tocitem target="ref-group-orb" text="ORB" expand="false">
             <tocitem target="ref-orb" text="ORB" expand="false"></tocitem>
             <tocitem target="ref-iioplisteners" text="IIOP Listeners" expand="false"></tocitem>

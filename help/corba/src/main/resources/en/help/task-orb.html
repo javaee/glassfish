@@ -7,9 +7,14 @@ Use is subject to License Terms  -->
 
 <a name="task-orb"></a><h4>To Configure the ORB</h4><a name="indexterm-1"></a><a name="indexterm-2"></a><ol>
 <li><b>In the tree component, expand the Configuration node.</b></li>
+<li><b>Select the instance to configure:</b><ul>
+<li><b>To configure a particular instance, select the instance&#8217;s config node. For example, for
+the default instance, <tt>server</tt>, select the <tt>server-config</tt> node.</b></li>
+<li><b>To configure the default settings for future instances that use a copy of
+<tt>default-config</tt>, select the <tt>default-config</tt> node.</b></li></ul></li>
 <li><b>Select the ORB node.</b><p>The ORB page opens.</p></li>
-<li><b>Choose the thread pool the ORB uses from the Thread Pool ID
-drop-down list.</b><p>The ORB uses thread pools to respond to requests from remote clients of
+<li><b>Choose the thread pool the ORB uses from the Thread Pool ID drop-down
+list.</b><p>The ORB uses thread pools to respond to requests from remote clients of
 enterprise beans and other clients that communicate by using RMI-IIOP. The default thread
 pool for the ORB is <tt>thread-pool-1</tt>, which uses defaults appropriate for RMI/IIOP requests.</p><p>See <a href="http://docs.sun.com/doc/821-2471/ref-threadpools?a=view">Thread Pools</a> for more information.</p></li>
 <li><b>From the Max Message Fragment Size drop-down list, select the maximum fragment size
@@ -17,17 +22,17 @@ for IIOP messages.</b><p>Messages larger than this size are fragmented. The defa
 <li><b>In the Total Connections field, set the maximum number of incoming connections for
 all IIOP listeners.</b><p>The default value is 1024.</p></li>
 <li><b>Select the IIOP Client Authentication Required checkbox to specify that IIOP client authentication
-is required.</b><p>If IIOP client authentication is enabled, the server rejects unauthenticated requests and inserts
-an authentication-required bit in Interoperable Object References (IORs) sent to clients. This option is
+is required.</b><p>If IIOP client authentication is enabled, the server rejects unauthenticated requests and inserts an
+authentication-required bit in Interoperable Object References (IORs) sent to clients. This option is
 disabled by default.</p></li>
 <li>(Optional) <b>In the Additional Properties area, specify additional properties.</b><p>The GlassFish Serverdoes not define any additional properties for the ORB.</p><ul>
 <li><b>To add a property, click the Add Property button. In the blank row
-that appears, type the property name in the Name field, and type
-the property value in the Value field.</b></li>
+that appears, type the property name in the Name field, and type the
+property value in the Value field.</b></li>
 <li><b>To modify a property, edit that property's Value field.</b></li>
-<li><b>To delete a property, select the checkbox to the left of the
-Name field of the property that you are deleting, then click the Delete
-Properties button.</b></li></ul></li>
+<li><b>To delete a property, select the checkbox to the left of the Name
+field of the property that you are deleting, then click the Delete Properties
+button.</b></li></ul></li>
 <li><b>Click Save.</b>
 <hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
 Save.</p>

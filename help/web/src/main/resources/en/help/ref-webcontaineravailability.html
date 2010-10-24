@@ -1,0 +1,105 @@
+<!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
+ 
+Use is subject to License Terms  -->
+<a name="ref-webcontaineravailability"></a><h4>Web Container Availability</h4>
+<a name="indexterm-53"></a><a name="indexterm-54"></a><p>Use the Web Container Availability page to configure availability settings for the web
+container.</p>
+
+<p>The Web Container Availability page contains the following options.</p>
+
+<dl><dt>Load Defaults</dt>
+<dd><p>Button to restore the default values of all the settings.</p>
+
+</dd>
+<dt>Availability Service</dt>
+<dd><p>If the Enabled checkbox is selected, availability is enabled for the web container.</p>
+
+</dd>
+<dt>Persistence Type</dt>
+<dd><p>The persistence mechanism used.</p>
+
+
+<ul><li><p>If Availability Service Enabled is <b>not</b> checked, type one of the following:</p>
+
+
+<ul><li><p><tt>memory</tt> for no session persistence</p>
+
+</li>
+<li><p><tt>file</tt> for session persistence based on the file system that is not highly available</p>
+
+</li></ul>
+</li>
+<li><p>If Availability Service Enabled is checked, type <tt>replicated</tt> for session persistence based on cluster failover that is highly available.</p>
+
+</li></ul>
+</dd>
+<dt>Persistence Frequency</dt>
+<dd><p>The frequency at which the HTTP session is stored:</p>
+
+
+<ul><li><p><tt>web-method</tt> &#8212; The session state is stored at the end of each web request prior to sending a response back to the client. This mode provides the best guarantee that the session state is fully updated in case of failure. This is the default.</p>
+
+</li>
+<li><p><tt>time-based</tt> &#8212; The session state is stored in the background at the frequency set by the Reap Interval setting. For more information about this setting, see <a href="task-webcontainermanagerprops.html">To Configure Manager Properties for the Web Container</a>.</p>
+
+<p>This mode provides less of a guarantee that the session state is fully updated. However, it can provide a significant performance improvement because the state is not stored after each request.</p>
+
+</li></ul>
+</dd>
+<dt>Persistence Scope</dt>
+<dd><p>The scope of HTTP session changes required for storage to occur:</p>
+
+
+<ul><li><p><tt>session</tt> &#8212; The entire session state is stored every time. This mode provides the best guarantee that your session data is correctly stored for any distributable web application.</p>
+
+</li>
+<li><p><tt>modified-session</tt> &#8212; The entire session state is stored if it has been modified. A session is considered to have been modified if <tt>HttpSession.setAttribute()</tt> or <tt>HttpSession.removeAttribute()</tt> was called. You must guarantee that <tt>setAttribute()</tt> is called every time an attribute is changed. This is not a Java EE specification requirement, but it is required for this mode to work properly.</p>
+
+</li>
+<li><p><tt>modified-attribute</tt> &#8212; Only modified session attributes are stored. For this mode to work properly, you must follow these guidelines:</p>
+
+
+<ul><li><p>Call <tt>setAttribute()</tt> every time the session state is modified.</p>
+
+</li>
+<li><p>Make sure there are no cross-references between attributes. The object graph under each distinct attribute key is serialized and stored separately. If there are any object cross references between the objects under each separate key, they are not serialized and deserialized correctly.</p>
+
+</li>
+<li><p>Distribute the session state across multiple attributes, or at least between a read-only attribute and a modifiable attribute.</p>
+
+</li></ul>
+</li></ul>
+</dd>
+<dt>Single-Sign-On State</dt>
+<dd><p>If the Enabled checkbox is selected, the single sign-on state available for failover.</p>
+
+</dd>
+<dt>Additional Properties</dt>
+<dd><p>Additional properties for Web Container Availability.</p>
+
+<p>The GlassFish Server does not define any additional Web Container Availability properties.</p>
+
+</dd>
+</dl>
+<h5>Related Tasks</h5>
+
+<ul><li><p><a href="task-webcontainergeneral.html">To Configure General Properties for the Web Container</a></p>
+
+</li>
+<li><p><a href="task-webcontainersessiontimeout.html">To Configure Session Properties for the Web Container</a></p>
+
+</li>
+<li><p><a href="task-webcontainermanagerprops.html">To Configure Manager Properties for the Web Container</a></p>
+
+</li>
+<li><p><a href="task-webcontainerstoreprops.html">To Configure Store Properties for the Web Container</a></p>
+
+</li>
+<li><p><a href="task-webcontaineravailability.html">To Configure Availability Settings for the Web Container</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

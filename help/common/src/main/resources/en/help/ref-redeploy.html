@@ -30,13 +30,21 @@ Use is subject to License Terms  -->
 <dt>Application Name</dt>
 <dd><p>Read-only field displaying the name of the application that you are redeploying.</p>
 
+<p>The name can include an optional version identifier, which follows the name and is separated from the name by a colon (<tt>:</tt>). For more information about module and application versions, see the <a href="http://docs.sun.com/doc/821-2417"><i>Oracle GlassFish Server 3.1 Application Deployment Guide</i></a>.</p>
+
 </dd>
 <dt>Preserve Sessions</dt>
-<dd><p>If the Preserve Sessions checkbox is selected, active sessions of the application that you are redeploying are preserved and then restored when the redeployment is complete.</p>
+<dd><p>If the Preserve Sessions checkbox is selected, active web sessions and stateful session bean instances of the application that you are redeploying are preserved and then restored when the redeployment is complete. Persistently created EJB timers are also preserved. This option is not supported and ignored in a clustered environment.</p>
 
-<p>If any active session of the application fails to be preserved or restored, <b>none</b> of the sessions will be available when the redeployment is complete. However, the redeployment continues and a warning is logged.</p>
+<p>Some changes to an application between redeployments prevent this feature from working properly. For example, do not change the set of instance variables in the SFSB bean class.</p>
 
-<p>To preserve active sessions, the GlassFish Server serializes the sessions and saves them in memory. To restore the sessions, the class loader of the newly redeployed application deserializes any sessions that were previously saved.</p>
+<p>For web applications, this feature is applicable only if in the <tt>glassfish-web-app.xml</tt> file the <tt>persistence-type</tt> attribute of the <b>Broken Link (Target ID: BEAXQ)</b> element is <tt>file</tt>.</p>
+
+<p>For stateful session bean instances, the persistence type without high availability is set in the server (the SFSB Persistence Type option under EJB Container Availability) and must be set to <tt>file</tt>, which is the default and recommended value.</p>
+
+<p>If any active web session, SFSB instance, or EJB timer of the application fails to be preserved or restored, <b>none</b> of these will be available when the redeployment is complete. However, the redeployment continues and a warning is logged.</p>
+
+<p>To preserve active state data, the GlassFish Server serializes the data and saves it in memory. To restore the data, the class loader of the newly redeployed application deserializes any data that was previously saved.</p>
 
 </dd>
 <dt>Precompile JSPs</dt>
@@ -71,9 +79,6 @@ Use is subject to License Terms  -->
 <li><p><a href="task-appdeployejb.html">To Deploy an EJB Jar</a></p>
 
 </li>
-<li><p><a href="task-appdeployruby.html">To Deploy a Ruby Application</a></p>
-
-</li>
 <li><p><a href="task-appedit.html">To Edit a Deployed Application</a></p>
 
 </li>
@@ -89,7 +94,10 @@ Use is subject to License Terms  -->
 <li><p><a href="task-appclientlaunch.html">To Launch an Application Client</a></p>
 
 </li>
-<li><p><a href="task-apprestart.html">To Restart a Deployed Application</a></p>
+<li><p><a href="task-apprestart.html">To Reload a Deployed Application</a></p>
+
+</li>
+<li><p><b>Broken Link (Target ID: TASK-EJBCONTAINERAVAILABILITY)</b></p>
 
 </li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>

@@ -7,6 +7,11 @@ Use is subject to License Terms  -->
 
 <a name="task-iioplisteneredit"></a><h4>To Edit an IIOP Listener</h4><a name="indexterm-4"></a><ol>
 <li><b>In the tree component, expand the Configuration node.</b></li>
+<li><b>Select the instance to configure:</b><ul>
+<li><b>To configure a particular instance, select the instance&#8217;s config node. For example, for
+the default instance, <tt>server</tt>, select the <tt>server-config</tt> node.</b></li>
+<li><b>To configure the default settings for future instances that use a copy of
+<tt>default-config</tt>, select the <tt>default-config</tt> node.</b></li></ul></li>
 <li><b>Under the Configuration node, expand the ORB node.</b></li>
 <li><b>Select the IIOP Listeners node.</b><p>The IIOP Listeners page opens.</p></li>
 <li><b>In the table, click the name of the listener to be edited.</b><p>The Edit IIOP Listener page opens.</p></li>
@@ -18,12 +23,12 @@ GlassFish Server.</b><p>This option is enabled by default.</p></li>
 <li><b>Select the Security Enabled checkbox to enable SSL for the IIOP listener.</b><p>This option is disabled by default.</p></li>
 <li>(Optional) <b>In the Additional Properties section, specify additional properties.</b><p>The GlassFish Serverdoes not define any additional properties for IIOP listeners.</p><ul>
 <li><b>To add a property, click the Add Property button. In the blank row
-that appears, type the property name in the Name field, and type
-the property value in the Value field.</b></li>
+that appears, type the property name in the Name field, and type the
+property value in the Value field.</b></li>
 <li><b>To modify a property, edit that property's Value field.</b></li>
-<li><b>To delete a property, select the checkbox to the left of the
-Name field of the property that you are deleting, then click the Delete
-Properties button.</b></li></ul></li>
+<li><b>To delete a property, select the checkbox to the left of the Name
+field of the property that you are deleting, then click the Delete Properties
+button.</b></li></ul></li>
 <li><b>Click Save.</b>
 <hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
 Save.</p>
@@ -33,8 +38,7 @@ Save.</p>
 </li>
 <li><b>If the Security Enabled checkbox is selected, click the SSL tabbed pane to
 modify the Secure Socket Layer settings of this IIOP listener.</b><p>See<a href="task-editiiopssl.html">To Edit SSL Settings for a Secure IIOP Listener</a> for details.</p></li>
-<li><b>If you changed the port number of the listener, restart the GlassFish
-Server.</b></li></ol><h6>See Also</h6>
+<li><b>If you changed the port number of the listener, restart the GlassFish Server.</b></li></ol><h6>See Also</h6>
 <ul><li><p><a href="task-orb.html">To Configure the ORB</a></p>
 
 </li>

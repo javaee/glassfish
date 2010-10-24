@@ -17,22 +17,22 @@ modify the Secure Socket Layer settings of this IIOP listener.</b><p>The SSL pag
 <li><b>Select the Client Authentication Enabled checkbox to require clients to identify themselves to
 the server on every request.</b><p>This option is disabled by default.</p></li>
 <li><b>In the Certificate Nickname field, type the nickname of the server certificate in
-the certificate database or the PKCS#11 token.</b><p>In the certificate, the name format is <tt><i>tokenname</i>:<i>nickname</i></tt>. Including the <tt><i>tokenname</i>:</tt> part of
-the name in this attribute is optional.</p></li>
-<li><b>In the Key Store field, type the name of the keystore file
-(for example, <tt>keystore.jks</tt>).</b></li>
+the certificate database or the PKCS#11 token.</b><p>In the certificate, the name format is <tt><i>tokenname</i>:<i>nickname</i></tt>. Including the <tt><i>tokenname</i>:</tt> part of the
+name in this attribute is optional.</p></li>
+<li><b>In the Key Store field, type the name of the keystore file (for
+example, <tt>keystore.jks</tt>).</b></li>
 <li><b>In the Trust Algorithm field, type the name of the trust management algorithm
 (for example, PKIX) to use for certification path validation.</b></li>
 <li><b>In the Max Certificate Length field, type the maximum number of non-self-issued intermediate
 certificates that can exist in a certification path. </b><p>This field is used only if the Trust Algorithm field is set to
-PKIX. A value of 0 implies that the path can only contain
-a single certificate. A value of -1 implies that the path length is
-unconstrained (there is no maximum). Setting a value less than -1 causes an
-exception to be thrown.</p></li>
+PKIX. A value of 0 implies that the path can only contain a
+single certificate. A value of -1 implies that the path length is unconstrained
+(there is no maximum). Setting a value less than -1 causes an exception
+to be thrown.</p></li>
 <li><b>In the Trust Store field, type the name of the truststore file (for
 example, <tt>cacerts.jks</tt>).</b></li>
-<li><b>In the Cipher Suites area, specify the cipher suites to be used.</b><p>If you do not add any cipher suites, all cipher suites will
-be used.</p></li>
+<li><b>In the Cipher Suites area, specify the cipher suites to be used.</b><p>If you do not add any cipher suites, all cipher suites will be
+used.</p></li>
 <li><b>Click OK.</b></li></ol><h6>See Also</h6>
 <ul><li><p><a href="task-orb.html">To Configure the ORB</a></p>
 

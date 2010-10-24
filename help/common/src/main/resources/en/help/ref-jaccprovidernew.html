@@ -4,20 +4,38 @@ Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-jaccprovidernew"></a><h4>New JACC Provider</h4>
-<a name="indexterm-221"></a><p>Use the New JACC Provider page to define a new JACC provider.</p>
+<a name="indexterm-223"></a><p>Use the New JACC Provider page to create a new JSR-115/196compliant Java Authorization
+Contract for Containers (JACC) provider that can be used by third-party authorization modules
+for applications running in GlassFish Server. The JACC provider is created as a
+<tt>jacc-provider</tt> element within the <tt>security-service</tt> element in the domain's <tt>domain.xml</tt> file.</p>
+
+<p>The default GlassFish Server installation includes two JACC providers, named <tt>default</tt> and <tt>simple</tt>.
+Any new JACC providers you create are in addition to these two default
+providers. The default GlassFish Server JACC providers implement a simple, file-based authorization engine
+that complies with the JACC specification.</p>
+
+<p>All GlassFish Server JACC providers must use the Java Authentication and Authorization Service
+(JAAS) APIs. JAAS enables services to authenticate and enforce access controls upon users.
+JAAS implements a Java technology version of the standard Pluggable Authentication Module (PAM)
+framework.</p>
+
+<p>JSR 196 allows you to develop plugins at different layers. You can
+define plugins that change the way new authentication mechanism are configured, such as <tt>AuthConfigProvider</tt>
+and <tt>AuthConfigFactory</tt>. You can also define new authentication mechanisms, such as <tt>ServerAuthModule</tt> and
+<tt>ClientAuthModule</tt>.</p>
 
 <p>The New JACC Provider page contains the following options.</p>
 
 <dl><dt>Name</dt>
-<dd><p>The name that will identify this provider.</p>
+<dd><p>The name of the JACC provider. This name is used to reference the <tt>jacc-provider</tt> element in <tt>domain.xml</tt>.</p>
 
 </dd>
 <dt>Policy Configuration</dt>
-<dd><p>The name of the class that implements the policy configuration factory.</p>
+<dd><p>The fully qualified class name for the <tt>javax.security.jacc.PolicyConfigurationFactory.provider</tt> that implements the provider-specific <tt>javax.security.jacc.PolicyConfigurationFactory</tt>.</p>
 
 </dd>
 <dt>Policy Provider</dt>
-<dd><p>The name of the class that implements the policy factory.</p>
+<dd><p>The fully qualified class name for the <tt>javax.security.jacc.policy.provider</tt> that implements the <tt>java.security.Policy</tt>.</p>
 
 </dd>
 <dt>Additional Properties</dt>
@@ -35,13 +53,18 @@ Use is subject to License Terms  -->
 </li>
 <li><p><a href="task-jaccproviderdelete.html">To Delete a JACC Provider</a></p>
 
-</li>
-<li><p><a href="task-setactivejaccprov.html">To Set the Active JACC Provider</a></p>
-
 </li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
-<p>None.</p>
 
+<ul><li><p><a href="http://docs.sun.com/doc/821-2433/create-jacc-provider-1?a=view"><tt>create-jacc-provider</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/delete-jacc-provider-1?a=view"><tt>delete-jacc-provider</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/list-jacc-providers-1?a=view"><tt>list-jacc-providers</tt>(1)</a></p>
+
+</li></ul>
 
 
 <small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

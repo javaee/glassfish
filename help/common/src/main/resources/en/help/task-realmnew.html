@@ -5,18 +5,19 @@ Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 
 
-<a name="task-realmnew"></a><h4>To Create a Realm</h4><a name="indexterm-82"></a><a name="indexterm-83"></a><p>The GlassFish Server comes preconfigured with three realms: <tt>file</tt>, <tt>certificate</tt>, and <tt>admin-realm</tt>.
-It is also possible to create <tt>ldap</tt>, <tt>JDBC</tt>, <tt>solaris</tt>, and custom realms. Generally, you
-will have one realm of each type on a server, but on the
-GlassFish Server there are two file realms: <tt>file</tt> and <tt>admin-realm</tt>. These are
-two realms of the same type used for two different purposes. It is
-also possible to have a different certificate database for each virtual server on
-your system.</p>
+<a name="task-realmnew"></a><h4>To Create a Realm</h4><a name="indexterm-83"></a><a name="indexterm-84"></a><p>The GlassFish Server comes preconfigured with three realms: <tt>file</tt>, <tt>certificate</tt>, and <tt>admin-realm</tt>.
+It is also possible to create <tt>ldap</tt>, <tt>JDBC</tt>, <tt>solaris</tt>, <tt>PAM</tt>, and custom realms.
+Generally, you will have one realm of each type on a server, but
+on the GlassFish Server there are two file realms: <tt>file</tt> and <tt>admin-realm</tt>.
+These are two realms of the same type used for two different purposes.
+It is also possible to have a different certificate database for each virtual
+server on your system.</p>
 
 <ol>
-<li><b>In the navigation tree, expand the Configuration node.</b></li>
+<li><b>Under the Configurations node, expand the server instance or cluster configuration for which you
+want to configure realms.</b></li>
 <li><b>Expand the Security node.</b></li>
-<li><b>Select the Realms node.</b><p>The Realms page opens.</p></li>
+<li><b>Expand the Realms node.</b><p>The Realms page opens.</p></li>
 <li><b>On the Realms page, click New.</b><p>The New Realm page opens.</p></li>
 <li><b>In the Name field, type a name for the realm.</b></li>
 <li><b>To specify the class name for the realm, do either of the
@@ -64,25 +65,35 @@ being created.</b><p>Valid choices are shown in the following table.</p><table><
 
 </td>
 </tr>
+<tr><td align="left" valign="top" scope="row"><p><tt>PAM</tt></p>
+
+</td>
+<td align="left" valign="top" scope="row"><p><tt>com.sun.enterprise.security.auth.realm.solaris.PamRealm</tt></p>
+
+</td>
+</tr>
 </table></li>
 <li><b>Select the lower radio button and type the class name for the custom
 realm being created.</b></li></ul></li>
 <li>(Optional) <b>In the Additional Properties section, specify additional properties.</b><p>To add a property, click the Add Property button. In the blank row
 that appears, type the property name in the Name field, and type the
 property value in the Value field.</p><p>Valid properties depend on the type of realm.</p>
-<ul><li><p>For a description of File Realm properties, see <a href="ref-editfile-adminrealm.html">Properties Specific to the <tt>FileRealm</tt> Class</a>.</p>
+<ul><li><p><a href="ref-editfile-adminrealm.html">Properties Specific to the <tt>FileRealm</tt> Class</a></p>
 
 </li>
-<li><p>For a description of Certificate Realm properties, see <a href="ref-editcertrealm.html">Properties Specific to the <tt>CertificateRealm</tt> Class</a>.</p>
+<li><p><a href="ref-editcertrealm.html">Properties Specific to the <tt>CertificateRealm</tt> Class</a></p>
 
 </li>
-<li><p>For a description of JDBC Realm properties, see <a href="ref-editjdbcrealm.html">Properties Specific to the <tt>JDBCRealm</tt> Class</a>.</p>
+<li><p><a href="ref-editjdbcrealm.html">Properties Specific to the <tt>JDBCRealm</tt> Class</a></p>
 
 </li>
-<li><p>For a description of LDAP Realm properties, see <a href="ref-ldaprealmprop.html">Properties Specific to the <tt>LDAPRealm</tt> Class</a>.</p>
+<li><p><a href="ref-ldaprealmprop.html">Properties Specific to the <tt>LDAPRealm</tt> Class</a></p>
 
 </li>
-<li><p>For a description of Solaris Realm properties, see <a href="ref-solarisrealmprop.html">Properties Specific to the <tt>SolarisRealm</tt> Class</a>.</p>
+<li><p><a href="ref-solarisrealmprop.html">Properties Specific to the <tt>SolarisRealm</tt> Class</a></p>
+
+</li>
+<li><p><a href="ref-pamrealmprop.html">Properties Specific to the <tt>PamRealm</tt> Class</a></p>
 
 </li></ul>
 </li>
@@ -91,9 +102,6 @@ property value in the Value field.</p><p>Valid properties depend on the type of 
 
 </li>
 <li><p><a href="task-todeleterealm.html">To Delete a Realm</a></p>
-
-</li>
-<li><p><a href="task-tosetdefault.html">To Set the Default Realm</a></p>
 
 </li>
 <li><p><a href="task-createcustomrealm.html">To Create a Custom Realm</a></p>

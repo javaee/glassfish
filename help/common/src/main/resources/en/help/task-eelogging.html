@@ -5,17 +5,19 @@ Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 
 
-<a name="task-eelogging"></a><h4>To Configure General Logging Settings</h4><a name="indexterm-72"></a><ol>
-<li><b>In the navigation tree, expand the Configuration node.</b></li>
-<li><b>Under the Configuration node, select the Logger Settings node.</b><p>The Logger Settings page opens.</p></li>
+<a name="task-eelogging"></a><h4>To Configure General Logging Settings</h4><a name="indexterm-69"></a><ol>
+<li><b>In the navigation tree, expand the Configurations node.</b></li>
+<li><b>Under the Configurations node, click the server instance or cluster configuration for
+which you want to configure Logger Settings.</b><p>The Configuration page opens.</p></li>
+<li><b>On the Configuration page, click Logger Settings.</b><p>The Logger Settings page for the selected configuration target opens.</p></li>
 <li><b>Select the Write to System Log Enabled checkbox to send logging output to
 the <tt>syslog</tt> facility in addition to the server log.</b><p>This feature is available on Solaris and Linux systems only. This option is
 disabled by default.</p></li>
 <li><b>In the Log File field, type an alternative name or location for the
-server log file.</b><p>The default location is <tt>glassfish/domains/domain1/logs/server.log</tt>.</p></li>
+server log file.</b><p>The default location is <tt>${com.sun.aas.instanceRoot}/logs/server.log</tt>.</p></li>
 <li><b>In the Log Handler field, type the absolute class name of a
 custom log handler.</b><p>A custom log handler enables you to  send logs to a destination
-other than <tt>server.log</tt> or <tt>syslog</tt>. The custom handler must extend the class <tt>java.util.logging.Handler</tt>
+other than <tt>server.log</tt> or <tt>syslog</tt>. The custom handler must extend the class <tt>java.util.logging.ConsoleHandler</tt>
 (a JSR 047 compliant API). Put the handler class in the GlassFish Server
 classpath so that the handler is installed during server startup.</p></li>
 <li><b>In the File Rotation Limit field, type the size in bytes that the
@@ -36,14 +38,28 @@ the size limit specified by the File Rotation Limit field.</p>
 </li>
 <li><b>In the Flush Frequency field, type the maximum number of messages to be
 written from the queue to the server log at a time.</b><p>The default value is 1.</p></li>
-<li><b>Click Save.</b></li></ol><h6>See Also</h6>
+<li><b>Click Save.</b>
+<hr><p><b>Note - </b>Depending on the configuration for which logging was enabled, a server restart may
+be required.</p>
+
+<p>A server restart may also be required if the name of the log
+file is changed from the default setting. A <tt>Restart required</tt> message will be displayed
+in the upper right corner of the Administration Console if it is necessary
+to restart the server.</p>
+
+
+<hr>
+</li></ol><h6>See Also</h6>
 <ul><li><p><a href="task-eelogginglevels.html">To Configure Log Levels</a></p>
 
 </li>
 <li><p><a href="task-logging-max-logfiles.html">To Change the Limit on the Number of Rotated Log Files</a></p>
 
 </li>
-<li><p><a href="task-logviewer.html">To View the Server Log</a></p>
+<li><p><a href="task-logviewer.html">To View Server Instance or Cluster Log Files</a></p>
+
+</li>
+<li><p><a href="task-logging-collectlogfiles.html">To Create a ZIP Archive of All Log Files</a></p>
 
 </li></ul>
 

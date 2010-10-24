@@ -6,8 +6,8 @@ Use is subject to License Terms  -->
 <a name="ref-lifecyclemodules"></a><h4>Lifecycle Modules</h4>
 <a name="indexterm-186"></a><p>Use the Lifecycle Modules page to configure lifecycle modules.</p>
 
-<p>A lifecycle module performs tasks when it is triggered by one or
-more events in the server's lifecycle. Possible trigger server events are: initialization, startup, ready
+<p>A lifecycle module performs tasks when it is triggered by one or more
+events in the server's lifecycle. Possible trigger server events are: initialization, startup, ready
 to service requests, and shutdown. Lifecycle modules are not part of the Java
 EE specification, but are an enhancement to the GlassFish Server.</p>
 
@@ -17,16 +17,14 @@ EE specification, but are an enhancement to the GlassFish Server.</p>
 <dd><p>The name of the lifecycle module.</p>
 
 </dd>
-<dt>Enabled</dt>
-<dd><p>True if the lifecycle module is enabled, or false if it is not enabled.</p>
+<dt>Enabled or Status</dt>
+<dd><p>A check mark if the application is enabled, or an X if the application is disabled, if only the default server instance, <tt>server</tt>, exists.</p>
+
+<p>If clusters or other stand-alone server instances exist, select Enabled on All Targets to view the targets on which the application is deployed.</p>
 
 </dd>
 <dt>Load Order</dt>
 <dd><p>A value specifying the relative order in which the lifecycle module should be loaded.</p>
-
-</dd>
-<dt>Classname</dt>
-<dd><p>The lifecycle module's class file.</p>
 
 </dd>
 </dl>
@@ -41,11 +39,11 @@ EE specification, but are an enhancement to the GlassFish Server.</p>
 
 </dd>
 <dt>Enable</dt>
-<dd><p>Button to enable one or more selected lifecycle modules.</p>
+<dd><p>Button to enable one or more selected lifecycle modules. Present if only the default server instance, <tt>server</tt>, exists.</p>
 
 </dd>
 <dt>Disable</dt>
-<dd><p>Button to disable one or more selected lifecycle modules.</p>
+<dd><p>Button to disable one or more selected lifecycle modules. Present if only the default server instance, <tt>server</tt>, exists.</p>
 
 </dd>
 </dl>

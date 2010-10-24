@@ -7,19 +7,21 @@ Use is subject to License Terms  -->
 
 <a name="task-webcontainerstoreprops"></a><h4>To Configure Store Properties for the Web Container</h4><a name="indexterm-9"></a><a name="indexterm-10"></a><a name="indexterm-11"></a><ol>
 <li><b>In the navigation tree, expand the Configuration node.</b></li>
-<li><b>Under the Configuration node, select the Web Container node.</b><p>The General Properties page opens.</p></li>
+<li><b>Select the configuration that you are changing.</b></li>
+<li><b>Under the configuration's node, select the Web Container node.</b><p>The General Properties page opens.</p></li>
 <li><b>On the General Properties page, click the Store Properties tab.</b><p>The Store Properties page opens.</p></li>
 <li><b>In the Directory field, type the absolute or relative pathname of the directory
 into which individual session files are written.</b><p>The default value is <tt></tt><i>domain-dir</i><tt>/generated/jsp/j2ee-apps/</tt><i>appname</i><tt>/</tt><i>appname</i><tt>_war</tt>.</p><p>A relative path is relative to the temporary work directory for this web
-application.</p></li>
+application.</p><p>This setting is applicable only if the Persistence Type is <tt>file</tt>. To set the
+Persistence Type, see <a href="task-webcontaineravailability.html">To Configure Availability Settings for the Web Container</a>.</p></li>
 <li>(Optional) <b>In the Additional Properties section, specify additional properties.</b><p>The GlassFish Server does not define any additional properties for the store.</p><ul>
 <li><b>To add a property, click the Add Property button. In the blank row
-that appears, type the property name in the Name field, and type
-the property value in the Value field.</b></li>
+that appears, type the property name in the Name field, and type the
+property value in the Value field.</b></li>
 <li><b>To modify a property, edit that property's Value field.</b></li>
-<li><b>To delete a property, select the checkbox to the left of the
-Name field of the property that you are deleting, then click the Delete
-Properties button.</b></li></ul></li>
+<li><b>To delete a property, select the checkbox to the left of the Name
+field of the property that you are deleting, then click the Delete Properties
+button.</b></li></ul></li>
 <li><b>Click Save.</b></li></ol><h6>See Also</h6>
 <ul><li><p><a href="task-webcontainergeneral.html">To Configure General Properties for the Web Container</a></p>
 
@@ -27,7 +29,10 @@ Properties button.</b></li></ul></li>
 <li><p><a href="task-webcontainersessiontimeout.html">To Configure Session Properties for the Web Container</a></p>
 
 </li>
-<li><p><a href="task-webcontainermanagerprops.html">To Configure Manager Properties  for the Web Container</a></p>
+<li><p><a href="task-webcontainermanagerprops.html">To Configure Manager Properties for the Web Container</a></p>
+
+</li>
+<li><p><a href="task-webcontaineravailability.html">To Configure Availability Settings for the Web Container</a></p>
 
 </li></ul>
 

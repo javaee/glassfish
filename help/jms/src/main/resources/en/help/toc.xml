@@ -31,7 +31,7 @@
                 <tocitem target="ref-jmsdestinationresources" text="JMS Destination Resources" expand="false"></tocitem>
                 <tocitem target="ref-jmsdestinationnew" text="New JMS Destination Resource" expand="false"></tocitem>
                 <tocitem target="ref-jmsdestinationedit" text="Edit JMS Destination Resource" expand="false"></tocitem></tocitem></tocitem></tocitem>
-    <tocitem target="ref-group-configuration" text="Configuration" expand="false">
+    <tocitem target="ref-group-configuration" text="Configurations" expand="false">
         <tocitem target="ref-group-jmsservice" text="Java Message Service" expand="false">
             <tocitem target="ref-jmsservice" text="JMS Service" expand="false"></tocitem>
             <tocitem target="ref-mqschemeservice" text="MQ Scheme and MQ Service Address Syntax" expand="false"></tocitem>

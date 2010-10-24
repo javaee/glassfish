@@ -4,16 +4,19 @@ Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-logviewer"></a><h4>Log Viewer</h4>
-<a name="indexterm-135"></a><a name="indexterm-136"></a><a name="indexterm-137"></a><p>Use the Log Viewer page to view the server log and to
-customize the log display.</p>
+<a name="indexterm-134"></a><a name="indexterm-135"></a><a name="indexterm-136"></a><p>Use the Log Viewer page to view the log files for selected
+GlassFish Server instances and clusters and to customize the log display.</p>
 
-<p>The Log Viewer page contains three areas:</p>
+<p>The Log Viewer page contains four areas:</p>
 
 
 <ul><li><p>Search Criteria</p>
 
 </li>
 <li><p>Advanced Search</p>
+
+</li>
+<li><p>Modify Search</p>
 
 </li>
 <li><p>Search Results</p>
@@ -64,12 +67,6 @@ com.mycompany.myapp.module3</pre><p>To view messages from all modules in the app
 <p>When you specify one or more custom loggers, messages from GlassFish Server modules appear only if you specify them explicitly in the Logger area.</p>
 
 </dd>
-<dt>Name-Value Pairs</dt>
-<dd><p>The key name and value for a thread, to view output from a specific thread. The key name is <tt>_ThreadID</tt>. For example:</p>
-
-<pre>_ThreadID=13</pre><p>Suppose that <tt>com.mycompany.myapp.module2</tt> runs in several threads. To refine the log viewer to show only the output from a single thread, specify that module&#8217;s logger in the Custom Logger field, and then specify the thread ID in this field.</p>
-
-</dd>
 <dt>Display</dt>
 <dd><p>The number of messages to view at a time. The default number of messages displayed is 40. Other choices are 100, 250, and 1000.</p>
 
@@ -77,9 +74,23 @@ com.mycompany.myapp.module3</pre><p>To view messages from all modules in the app
 
 </dd>
 </dl>
-<p>The Search Results table displays the server log messages.</p>
+<p>The Modify Search area lets you specify the server instance or cluster and
+the name of an associated log file to view.</p>
 
-<p>For each message, the Search Results table contains the following information.</p>
+<dl><dt>Instance</dt>
+<dd><p>The server instance or cluster for which log records will be displayed. The default is server. Other choices depend on the clusters and instances that may be defined and enabled for the domain.</p>
+
+</dd>
+<dt>Log File</dt>
+<dd><p>The name of the log file you want to display. The default is <tt>server.log</tt>. Other choices depend on the log settings for the selected target.</p>
+
+</dd>
+</dl>
+<p>The Log Viewer Results table displays the server log messages. Use the Records
+before and Records after buttons at the top of the table to choose
+the range of records you want to view.</p>
+
+<p>For each message, the Log Viewer Results table contains the following information.</p>
 
 <dl><dt>Record Number</dt>
 <dd><p>The number of the message in the server log.</p>
@@ -114,7 +125,7 @@ com.mycompany.myapp.module3</pre><p>To view messages from all modules in the app
 <li><p><a href="task-eelogginglevels.html">To Configure Log Levels</a></p>
 
 </li>
-<li><p><a href="task-logviewer.html">To View the Server Log</a></p>
+<li><p><a href="task-logviewer.html">To View Server Instance or Cluster Log Files</a></p>
 
 </li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>

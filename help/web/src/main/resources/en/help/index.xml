@@ -3,6 +3,9 @@
  <indexitem text="access log">
     <indexitem target="ref-accesslog" text="configuring for HTTP service (reference)"></indexitem>
     <indexitem target="task-accesslog" text="configuring for HTTP service (task)"></indexitem></indexitem>
+ <indexitem text="availability">
+    <indexitem target="ref-webcontaineravailability" text="web container (reference)"></indexitem>
+    <indexitem target="task-webcontaineravailability" text="web container (task)"></indexitem></indexitem>
  <indexitem text="containers, See web container"></indexitem>
  <indexitem text="file cache settings">
     <indexitem target="ref-protocolfilecacheedit" text="protocols (reference)"></indexitem>
@@ -81,6 +84,8 @@
     <indexitem target="ref-virtualserverprops" text="properties"></indexitem>
     <indexitem target="ref-virtualservers" text="viewing and configuring"></indexitem></indexitem>
  <indexitem text="web container">
+    <indexitem target="ref-webcontaineravailability" text="configuring availability settings (reference)"></indexitem>
+    <indexitem target="task-webcontaineravailability" text="configuring availability settings (task)"></indexitem>
     <indexitem target="ref-generalproptab" text="configuring general properties (reference)"></indexitem>
     <indexitem target="task-webcontainergeneral" text="configuring general properties (task)"></indexitem>
     <indexitem target="ref-managerproptab" text="configuring manager properties"></indexitem>
@@ -89,6 +94,8 @@
     <indexitem target="task-webcontainersessiontimeout" text="configuring session properties (task)"></indexitem>
     <indexitem target="ref-storeproptab" text="configuring store properties (reference)"></indexitem>
     <indexitem target="task-webcontainerstoreprops" text="configuring store properties (task)"></indexitem>
+    <indexitem target="task-webcontaineravailability" text="disabling availability (task)"></indexitem>
+    <indexitem target="task-webcontaineravailability" text="enabling availability (task)"></indexitem>
     <indexitem target="ref-webcontainerprops" text="properties"></indexitem>
     <indexitem target="ref-websessionproperties" text="session properties (reference)"></indexitem>
 </indexitem>

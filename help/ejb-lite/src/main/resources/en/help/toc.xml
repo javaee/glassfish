@@ -2,11 +2,13 @@
 
  <tocitem target="tasks-topic-group" text="GlassFish Server Administration Console Tasks" expand="false">
     <tocitem target="task-group-configejbcontainer" text="Configuring the EJB Container" expand="false">
-        <tocitem target="task-ejbgeneral" text="To Configure EJB Settings" expand="false"></tocitem></tocitem></tocitem>
+        <tocitem target="task-ejbgeneral" text="To Configure EJB Settings" expand="false"></tocitem>
+        <tocitem target="task-ejbcontaineravailability" text="To Configure Availability Settings for the EJB Container" expand="false"></tocitem></tocitem></tocitem>
  <tocitem target="ref-topic-group" text="GlassFish Server Administration Console Reference" expand="false">
-    <tocitem target="ref-group-configuration" text="Configuration" expand="false">
+    <tocitem target="ref-group-configuration" text="Configurations" expand="false">
         <tocitem target="ref-group-ejbcontainer" text="EJB Container" expand="false">
             <tocitem target="ref-ejbgeneral" text="Enterprise Java Beans (EJB)" expand="false"></tocitem>
+            <tocitem target="ref-ejbcontaineravailability" text="EJB Container Availability" expand="false"></tocitem>
 </tocitem>
 </tocitem>
 </tocitem>

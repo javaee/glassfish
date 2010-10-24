@@ -5,7 +5,7 @@
         <tocitem target="task-ejbmdbpoolsettings" text="To Configure MDB Pool Settings" expand="false"></tocitem>
         <tocitem target="task-ejbtimerservice" text="To Configure the EJB Timer Service" expand="false"></tocitem></tocitem></tocitem>
  <tocitem target="ref-topic-group" text="GlassFish Server Administration Console Reference" expand="false">
-    <tocitem target="ref-group-configuration" text="Configuration" expand="false">
+    <tocitem target="ref-group-configuration" text="Configurations" expand="false">
         <tocitem target="ref-group-ejbcontainer" text="EJB Container" expand="false">
             <tocitem target="ref-ejbmdbpoolsettings" text="MDB Default Pool Settings" expand="false"></tocitem>
             <tocitem target="ref-ejbtimerservice" text="EJB Timer Service" expand="false"></tocitem>
