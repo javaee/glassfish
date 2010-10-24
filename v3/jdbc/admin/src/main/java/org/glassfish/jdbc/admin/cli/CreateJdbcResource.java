@@ -128,10 +128,11 @@ public class CreateJdbcResource implements AdminCommand {
             return;
         }
         ActionReport.ExitCode ec = ActionReport.ExitCode.SUCCESS;
+        if (rs.getMessage() != null){
+             report.setMessage(rs.getMessage());
+        }
         if (rs.getStatus() == ResourceStatus.FAILURE) {
             ec = ActionReport.ExitCode.FAILURE;
-            if (rs.getMessage() != null)
-                 report.setMessage(rs.getMessage());
             if (rs.getException() != null)
                 report.setFailureCause(rs.getException());
         }

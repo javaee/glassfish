@@ -154,6 +154,8 @@ public class CreateResourceRef implements AdminCommand {
             return;
         }
         ActionReport.ExitCode ec = ActionReport.ExitCode.SUCCESS;
+        report.setMessage(localStrings.getLocalString("create.resource.ref.success",
+                "resource-ref {0} created successfully.", refName));
         report.setActionExitCode(ec);
     }
 

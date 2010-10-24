@@ -143,6 +143,9 @@ public class CreateConnectorResource implements AdminCommand {
             return;
         }
         ActionReport.ExitCode ec = ActionReport.ExitCode.SUCCESS;
+        if(rs.getMessage() != null){
+            report.setMessage(rs.getMessage());
+        }
         if (rs.getStatus() == ResourceStatus.FAILURE) {
             ec = ActionReport.ExitCode.FAILURE;
             if (rs.getMessage() == null) {
@@ -151,9 +154,6 @@ public class CreateConnectorResource implements AdminCommand {
             }
             if (rs.getException() != null)
                 report.setFailureCause(rs.getException());
-        }
-        if(rs.getMessage() != null){
-            report.setMessage(rs.getMessage());
         }
         report.setActionExitCode(ec);
     }

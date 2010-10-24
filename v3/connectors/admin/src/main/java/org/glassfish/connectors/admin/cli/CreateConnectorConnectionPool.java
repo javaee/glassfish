@@ -245,6 +245,9 @@ public class CreateConnectorConnectionPool implements AdminCommand {
                 }
             }            
         }
+        if (rs.getMessage() != null) {
+            report.setMessage(rs.getMessage());
+        }
         report.setActionExitCode(ec);
     }
 }

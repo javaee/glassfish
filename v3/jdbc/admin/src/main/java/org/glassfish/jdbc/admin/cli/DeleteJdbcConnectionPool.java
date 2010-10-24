@@ -99,10 +99,10 @@ public class DeleteJdbcConnectionPool implements AdminCommand {
         try {
             JDBCConnectionPoolManager jdbcConnMgr = new JDBCConnectionPoolManager();
             ResourceStatus rs = jdbcConnMgr.delete(servers, domain.getResources(), cascade.toString(), poolName);
+            if (rs.getMessage() != null) report.setMessage(rs.getMessage());
             if (rs.getStatus() == ResourceStatus.SUCCESS) {
                 report.setActionExitCode(ActionReport.ExitCode.SUCCESS);       
             } else {
-                if (rs.getMessage() != null) report.setMessage(rs.getMessage());
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 if (rs.getException()!= null) {
                     report.setFailureCause(rs.getException());

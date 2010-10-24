@@ -98,10 +98,12 @@ public class DeleteJdbcResource implements AdminCommand {
         final ActionReport report = context.getActionReport();
         try {
             ResourceStatus rs = jdbcResMgr.delete(domain.getResources(), jndiName, target);
+            if(rs.getMessage() != null){
+                report.setMessage(rs.getMessage());
+            }
             if (rs.getStatus() == ResourceStatus.SUCCESS) {
                 report.setActionExitCode(ActionReport.ExitCode.SUCCESS);       
             } else {
-                report.setMessage(rs.getMessage());
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 if (rs.getException() != null)
                     report.setFailureCause(rs.getException());

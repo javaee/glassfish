@@ -150,11 +150,12 @@ public class CreateAdminObject implements AdminCommand {
             return;
         }
         ActionReport.ExitCode ec = ActionReport.ExitCode.SUCCESS;
+        if (rs.getMessage() != null) {
+                report.setMessage(rs.getMessage());
+        }
         if (rs.getStatus() == ResourceStatus.FAILURE) {
             ec = ActionReport.ExitCode.FAILURE;
-            if (rs.getMessage() != null) {
-                report.setMessage(rs.getMessage());
-            } else {
+            if(rs.getMessage() == null) {
                  report.setMessage(localStrings.getLocalString("create.admin.object.fail",
                     "Admin object {0} creation failed", jndiName, ""));
             }

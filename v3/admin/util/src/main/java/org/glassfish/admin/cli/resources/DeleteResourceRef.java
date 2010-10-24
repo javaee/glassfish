@@ -132,6 +132,8 @@ public class DeleteResourceRef implements AdminCommand {
             return;
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+        report.setMessage(localStrings.getLocalString("delete.resource.ref.success",
+                "resource-ref {0} deleted successfully.", refName));
     }
 
     private void setResourceRefDoNotExistMessage(ActionReport report) {
