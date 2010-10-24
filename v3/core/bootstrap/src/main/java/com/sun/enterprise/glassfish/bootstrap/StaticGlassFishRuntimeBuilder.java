@@ -92,8 +92,8 @@ public class StaticGlassFishRuntimeBuilder implements RuntimeBuilder {
     }
 
     public boolean handles(BootstrapProperties bsProps) {
-        return BootstrapProperties.Platform.Static.name().equals(
-                    bsProps.getPlatform());
+        return bsProps.getPlatform() == null || BootstrapProperties.Platform.Static
+                .name().equals(bsProps.getPlatform());
     }
 
     private String getInstallRoot(BootstrapProperties props) {
