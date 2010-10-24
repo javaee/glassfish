@@ -108,6 +108,9 @@
 	<ant dir="sqltracemonitoring" target="all"/>
 	<ant dir="statementleakdetection" target="all"/>
 	<ant dir="appbasedMonitoring" target="all"/>
+	<ant dir="jpa-dsd" target="all" />
+	<ant dir="jpa-dsd" target="all-appclient-exposed-dsd"/>
+
 	<!--<antcall target="all-oracle"/>-->
     </target>
 
@@ -153,6 +156,8 @@
 	<ant dir="pooling" target="all"/>
 	<ant dir="transparent-pool-reconfig" target="all"/>
 	<ant dir="transparent-pool-reconfig-resources-xml" target="all"/>
+	<ant dir="jpa-dsd" target="all" />
+	<ant dir="jpa-dsd" target="all-appclient-exposed-dsd"/>
         <record name="jdbc.output" action="stop"/>
     </target>
 
@@ -420,6 +425,18 @@
 	<record name="transparent-pool-reconfig-resources-xml.output" action="start"/>
 	<ant dir="transparent-pool-reconfig-resources-xml" target="all"/>
 	<record name="transparent-pool-reconfig-resources-xml.output" action="stop"/>
+    </target>
+
+    <target name="jpa-dsd">
+	<record name="jpa-dsd.output" action="start"/>
+	<ant dir="jpa-dsd" target="all"/>
+	<record name="jpa-dsd.output" action="stop"/>
+    </target>
+
+    <target name="jpa-dsd.appclient-exposed-dsd">
+	<record name="jpa-dsd.appclient-exposed-dsd.output" action="start"/>
+	<ant dir="jpa-dsd" target="all-appclient-exposed-dsd"/>
+	<record name="jpa-dsd.appclient-exposed-dsd.output" action="stop"/>
     </target>
 
     <target name="usage">
