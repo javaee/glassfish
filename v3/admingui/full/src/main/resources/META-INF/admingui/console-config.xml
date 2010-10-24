@@ -71,7 +71,8 @@
         type="org.glassfish.admingui:appTypeDropdown"
         priority="200"
         parentId="form"
-        content="Enterprise Application ;ear"
+        content="ear|org.glassfish.admingui.core.Strings|deploy.type.ear"
+
     />
     <integration-point
         id="full_edit_ear"
@@ -92,7 +93,8 @@
         type="org.glassfish.admingui:appTypeDropdown"
         priority="300"
         parentId="form"
-        content="Application Client ;appClient"
+        content="appClient|org.glassfish.admingui.core.Strings|deploy.type.appClient"
+
     />
      <integration-point
         id="full_edit_appClient"
@@ -113,7 +115,7 @@
         type="org.glassfish.admingui:appTypeDropdown"
         priority="400"
         parentId="form"
-        content="EJB Jar ;ejb"
+        content="ejb|org.glassfish.admingui.core.Strings|deploy.type.ejb"
     />
      <integration-point
         id="full_edit_ejb"

@@ -102,7 +102,7 @@
         type="org.glassfish.admingui:appTypeDropdown"
         priority="300"
         parentId="form"
-        content="Connector Module ;rar"
+        content="rar|org.glassfish.admingui.core.Strings|deploy.type.rar"
     />
 
 </console-config>

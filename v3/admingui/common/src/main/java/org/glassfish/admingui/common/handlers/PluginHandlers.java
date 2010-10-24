@@ -273,22 +273,9 @@ public class PluginHandlers {
 		    GuiUtil.getLogger().warning("No Content specified for Integration Point: " + type + " id : " + it.getId());
 		    continue;
 		}
-		List labelsAndValues = GuiUtil.parseStringList(content, ";");
-		List<String> ll = GuiUtil.parseStringList((String)labelsAndValues.get(0), ",");
-		for(String one : ll){
-		    labels.add(one);
-		}
-
-		if (labelsAndValues.size() == 2){
-		    List<String> vv = GuiUtil.parseStringList((String)labelsAndValues.get(1), ",");
-		    for(String one : vv){
-			values.add(one);
-		    }
-		}else{
-		    for(String one: ll){
-			values.add(one);
-		    }
-		}
+		List<String> labelsAndValues = GuiUtil.parseStringList(content, "|");
+                values.add(labelsAndValues.get(0));
+                labels.add(GuiUtil.getMessage(labelsAndValues.get(1), labelsAndValues.get(2)));
 	    }
 	}
 	handlerCtx.setOutputValue("labels", labels);

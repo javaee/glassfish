@@ -130,7 +130,7 @@
                 type="org.glassfish.admingui:appTypeDropdown"
                 priority="100"
                 parentId="form"
-                content="Web Application ;war"
+                content="war|org.glassfish.admingui.core.Strings|deploy.type.war"
         />
 
         
