@@ -57,14 +57,14 @@ public interface RuntimeBuilder {
      * @return
      * @throws GlassFishException
      */
-    GlassFishRuntime build(BootstrapOptions options) throws GlassFishException;
+    GlassFishRuntime build(BootstrapProperties options) throws GlassFishException;
 
     /**
      * Returns true if this RuntimeBuilder is capable of creating a GlassFishRuntime
-     * for the supplied BootstrapOptions
+     * for the supplied BootstrapProperties
      * @param options
      * @return
      */
-    boolean handles(BootstrapOptions options);
+    boolean handles(BootstrapProperties options);
 
 }

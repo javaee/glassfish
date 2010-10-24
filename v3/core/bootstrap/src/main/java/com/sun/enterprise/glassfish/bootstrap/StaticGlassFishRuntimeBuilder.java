@@ -43,8 +43,7 @@ package com.sun.enterprise.glassfish.bootstrap;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
-import org.glassfish.embeddable.BootstrapConstants;
-import org.glassfish.embeddable.BootstrapOptions;
+import org.glassfish.embeddable.BootstrapProperties;
 import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.embeddable.GlassFishRuntime;
 
@@ -67,12 +66,12 @@ public class StaticGlassFishRuntimeBuilder implements RuntimeBuilder {
     private static Logger logger = Util.getLogger();
     private static final String JAR_EXT = ".jar";
 
-    public GlassFishRuntime build(BootstrapOptions bsOptions) throws GlassFishException {
+    public GlassFishRuntime build(BootstrapProperties bsProps) throws GlassFishException {
         /* Step 1. Build the classloader. */
         // The classloades should contain installRoot/modules/**/*.jar files.
-        String installRoot = getInstallRoot(bsOptions);
+        String installRoot = getInstallRoot(bsProps);
         if (installRoot != null) {
-            System.setProperty(BootstrapConstants.INSTALL_ROOT_PROP_NAME, installRoot);
+            System.setProperty(BootstrapProperties.INSTALL_ROOT_PROP_NAME, installRoot);
         }
         // Required to add moduleJarURLs to support 'java -jar modules/glassfish.jar case'
         List<URL> moduleJarURLs = getModuleJarURLs(installRoot);
@@ -88,17 +87,17 @@ public class StaticGlassFishRuntimeBuilder implements RuntimeBuilder {
         GlassFishRuntime glassFishRuntime = new StaticGlassFishRuntime(main);
         logger.logp(Level.FINER, getClass().getName(), "build",
                 "Created GlassFishRuntime {0} with InstallRoot {1}, Bootstrap Options {2}",
-                new Object[]{glassFishRuntime, installRoot, bsOptions});
+                new Object[]{glassFishRuntime, installRoot, bsProps});
         return glassFishRuntime;
     }
 
-    public boolean handles(BootstrapOptions bsOptions) {
-        return BootstrapConstants.Platform.Static.name().equals(
-                    bsOptions.getPlatformProperty());
+    public boolean handles(BootstrapProperties bsProps) {
+        return BootstrapProperties.Platform.Static.name().equals(
+                    bsProps.getPlatform());
     }
 
-    private String getInstallRoot(BootstrapOptions options) {
-        String installRootProp = options.getInstallRoot();
+    private String getInstallRoot(BootstrapProperties props) {
+        String installRootProp = props.getInstallRoot();
         if(installRootProp == null) {
             File installRoot = ASMainHelper.findInstallRoot();
             if(isValidInstallRoot(installRoot)) {

@@ -41,8 +41,8 @@
 package com.sun.enterprise.glassfish.bootstrap;
 
 import org.glassfish.embeddable.CommandRunner;
-import org.glassfish.embeddable.GlassFishConstants;
 import org.glassfish.embeddable.GlassFishException;
+import org.glassfish.embeddable.GlassFishProperties;
 import org.jvnet.hk2.component.Habitat;
 
 import java.text.MessageFormat;
@@ -60,10 +60,10 @@ class ConfiguratorImpl implements Configurator {
     private static final Map<String, String[]> httpListeners = new HashMap();
 
     static {
-        httpListeners.put(GlassFishConstants.HTTP_PORT, new String[]{
+        httpListeners.put(GlassFishProperties.HTTP_PORT, new String[]{
                 "--listenerport={0}", "--listeneraddress=0.0.0.0", "--defaultvs=server",
                 "listener_id=embedded-listener-__1__"});
-        httpListeners.put(GlassFishConstants.HTTPS_PORT, new String[]{
+        httpListeners.put(GlassFishProperties.HTTPS_PORT, new String[]{
                 "--listenerport={0}", "--listeneraddress=0.0.0.0", "--defaultvs=server",
                 "--securityenabled=true", "listener_id=embedded-listener-__2__"});
         // TODO :: support other simple configurations like jmx.port and jms.port

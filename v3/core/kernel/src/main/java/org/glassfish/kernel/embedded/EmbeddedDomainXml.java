@@ -42,7 +42,7 @@ package org.glassfish.kernel.embedded;
 
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.v3.server.GFDomainXml;
-import org.glassfish.embeddable.GlassFishConstants;
+import org.glassfish.embeddable.GlassFishProperties;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
 
@@ -69,12 +69,12 @@ public class EmbeddedDomainXml extends GFDomainXml {
 
     static URL getDomainXml(StartupContext startupContext) throws IOException {
         String configFileURI = startupContext.getArguments().getProperty(
-                GlassFishConstants.CONFIG_FILE_URI_PROP_NAME);
+                GlassFishProperties.CONFIG_FILE_URI_PROP_NAME);
         if (configFileURI != null) { // user specified domain.xml
             return URI.create(configFileURI).toURL();
         }
         String instanceRoot = startupContext.getArguments().getProperty(
-                GlassFishConstants.INSTANCE_ROOT_PROP_NAME);
+                GlassFishProperties.INSTANCE_ROOT_PROP_NAME);
         File domainXml = new File(instanceRoot, "config/domain.xml");
         if (domainXml.exists()) { // domain/config/domain.xml, if exists.
             return domainXml.toURI().toURL();

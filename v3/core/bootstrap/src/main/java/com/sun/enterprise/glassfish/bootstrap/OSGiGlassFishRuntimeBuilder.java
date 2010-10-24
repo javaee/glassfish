@@ -42,7 +42,6 @@ package com.sun.enterprise.glassfish.bootstrap;
 
 import org.glassfish.embeddable.spi.RuntimeBuilder;
 import org.glassfish.embeddable.*;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.launch.Framework;
 
 /**
@@ -82,9 +81,9 @@ public final class OSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
      */
     public OSGiGlassFishRuntimeBuilder() {}
 
-    public GlassFishRuntime build(BootstrapOptions bsOptions) throws GlassFishException {
-        ASMainHelper.buildStartupContext(bsOptions.getAllOptions());
-        final OSGiFrameworkLauncher fwLauncher = new OSGiFrameworkLauncher(bsOptions.getAllOptions());
+    public GlassFishRuntime build(BootstrapProperties bsProps) throws GlassFishException {
+        ASMainHelper.buildStartupContext(bsProps.getProperties());
+        final OSGiFrameworkLauncher fwLauncher = new OSGiFrameworkLauncher(bsProps.getProperties());
         try {
             this.framework = fwLauncher.launchOSGiFrameWork();
             debug("Initialized " + framework);
@@ -94,17 +93,17 @@ public final class OSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
         }
     }
 
-    public boolean handles(BootstrapOptions bsOptions) {
+    public boolean handles(BootstrapProperties bsProps) {
         /*
          * This builder can't handle GOSGi platform, because we read framework configuration from a framework
          * specific file in ASMainHelper.buildStartupContext(properties);
          */
-        final String platformStr = bsOptions.getPlatformProperty();
+        final String platformStr = bsProps.getPlatform();
         if (platformStr == null || platformStr.trim().isEmpty()) {
             return false;
         }
-        BootstrapConstants.Platform platform =
-                BootstrapConstants.Platform.valueOf(platformStr);
+        BootstrapProperties.Platform platform =
+                BootstrapProperties.Platform.valueOf(platformStr);
         switch (platform) {
             case Felix:
             case Equinox:

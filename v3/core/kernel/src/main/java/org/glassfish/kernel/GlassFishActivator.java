@@ -50,6 +50,7 @@ import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.embeddable.GlassFish;
+import org.glassfish.embeddable.GlassFishProperties;
 import org.glassfish.embeddable.GlassFishRuntime;
 import org.jvnet.hk2.component.Habitat;
 import org.osgi.framework.*;
@@ -61,7 +62,6 @@ import java.io.File;
 import java.util.*;
 
 import org.glassfish.embeddable.GlassFishException;
-import org.glassfish.embeddable.GlassFishOptions;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -86,12 +86,12 @@ public class GlassFishActivator implements BundleActivator, EventListener {
             List<GlassFish> gfs = new ArrayList<GlassFish>();
 
             @Override
-            public synchronized GlassFish newGlassFish(GlassFishOptions gfOptions) throws GlassFishException {
+            public synchronized GlassFish newGlassFish(GlassFishProperties gfProps) throws GlassFishException {
                 try {
                     // set env props before updating config, because configuration update may actually trigger
                     // some code to be executed which may be depending on the environment variable values.
-                    setEnv(gfOptions.getAllOptions());
-                    final StartupContext startupContext = new StartupContext(gfOptions.getAllOptions());
+                    setEnv(gfProps.getProperties());
+                    final StartupContext startupContext = new StartupContext(gfProps.getProperties());
                     final ServiceTracker hk2Tracker = new ServiceTracker(bundleContext, Main.class.getName(), null);
                     hk2Tracker.open();
                     final Main main = (Main) hk2Tracker.waitForService(0);
@@ -100,12 +100,12 @@ public class GlassFishActivator implements BundleActivator, EventListener {
                     final Habitat habitat = main.createHabitat(mr, startupContext);
                     final ModuleStartup gfKernel = main.findStartupService(mr, habitat, null, startupContext);
                     System.out.println("gfKernel = " + gfKernel);
-                    GlassFish glassFish = new GlassFishImpl(gfKernel, habitat, gfOptions.getAllOptions());
+                    GlassFish glassFish = new GlassFishImpl(gfKernel, habitat, gfProps.getProperties());
                     gfs.add(glassFish);
                     events = habitat.getComponent(Events.class);
                     events.register(GlassFishActivator.this);
                     // register GlassFish in service registry
-                    bundleContext.registerService(GlassFish.class.getName(), glassFish, gfOptions.getAllOptions());
+                    bundleContext.registerService(GlassFish.class.getName(), glassFish, gfProps.getProperties());
                     return glassFish;
                 } catch (BootException ex) {
                     throw new GlassFishException(ex);

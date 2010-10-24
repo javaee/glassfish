@@ -47,10 +47,10 @@ import com.sun.enterprise.module.common_impl.AbstractFactory;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
-import org.glassfish.embeddable.BootstrapConstants;
+import org.glassfish.embeddable.BootstrapProperties;
 import org.glassfish.embeddable.GlassFish;
 import org.glassfish.embeddable.GlassFishException;
-import org.glassfish.embeddable.GlassFishOptions;
+import org.glassfish.embeddable.GlassFishProperties;
 import org.glassfish.embeddable.GlassFishRuntime;
 import org.jvnet.hk2.component.Habitat;
 
@@ -83,39 +83,40 @@ public class StaticGlassFishRuntime extends GlassFishRuntime {
      * Creates a new GlassFish instance and add it to a Map of instances
      * created by this runtime.
      *
-     * @param options
+     * @param glassFishProperties
      * @return
      * @throws Exception
      */
     @Override
-    public synchronized GlassFish newGlassFish(GlassFishOptions options)
+    public synchronized GlassFish newGlassFish(GlassFishProperties glassFishProperties)
             throws GlassFishException {
         // set env props before updating config, because configuration update may actually trigger
         // some code to be executed which may be depending on the environment variable values.
         try {
             // Don't set temporarily created instanceroot in the user supplied
-            // GlassFishOptions, hence clone it.
+            // GlassFishProperties, hence clone it.
             Properties cloned = new Properties();
-            cloned.putAll(options.getAllOptions());
-            final GlassFishOptions gfOptions = new GlassFishOptions(cloned);
-            setEnv(gfOptions);
+            cloned.putAll(glassFishProperties.getProperties());
+            
+            final GlassFishProperties gfProps = new GlassFishProperties(cloned);
+            setEnv(gfProps);
 
-            final StartupContext startupContext = new StartupContext(gfOptions.getAllOptions());
+            final StartupContext startupContext = new StartupContext(gfProps.getProperties());
             ModulesRegistry modulesRegistry = AbstractFactory.getInstance().createModulesRegistry();
             final Habitat habitat = main.createHabitat(modulesRegistry, startupContext);
             final ModuleStartup gfKernel = main.findStartupService(modulesRegistry, habitat, null, startupContext);
             // create a new GlassFish instance
-            GlassFishImpl gfImpl = new GlassFishImpl(gfKernel, habitat, gfOptions.getAllOptions());
+            GlassFishImpl gfImpl = new GlassFishImpl(gfKernel, habitat, gfProps.getProperties());
             // Add this newly created instance to a Map
-            gfMap.put(gfOptions.getInstanceRoot(), gfImpl);
+            gfMap.put(gfProps.getInstanceRoot(), gfImpl);
 
-            if ("true".equalsIgnoreCase(gfOptions.getAllOptions().getProperty(autoDelete))) {
+            if ("true".equalsIgnoreCase(gfProps.getProperties().getProperty(autoDelete))) {
                 Events events = habitat.getComponent(Events.class);
                 events.register(new EventListener() {
                     public void event(Event event) {
                         if (event.is(EventTypes.SERVER_SHUTDOWN)) {
-                            if (gfOptions.getInstanceRoot() != null) {
-                                Util.deleteRecursive(new File(gfOptions.getInstanceRoot()));
+                            if (gfProps.getInstanceRoot() != null) {
+                                Util.deleteRecursive(new File(gfProps.getInstanceRoot()));
                             }
                         }
                     }
@@ -144,7 +145,7 @@ public class StaticGlassFishRuntime extends GlassFishRuntime {
         }
     }
 
-    private void setEnv(GlassFishOptions gfOptions) throws Exception {
+    private void setEnv(GlassFishProperties gfProps) throws Exception {
         /*
         final String installRootValue = properties.getProperty(Constants.INSTALL_ROOT_PROP_NAME);
         if (installRootValue != null && !installRootValue.isEmpty()) {
@@ -156,18 +157,18 @@ public class StaticGlassFishRuntime extends GlassFishRuntime {
         }
         System.setProperty(Constants.INSTALL_ROOT_URI_PROP_NAME, installRoot.toURI().toString());
         } */
-        String instanceRootValue = gfOptions.getInstanceRoot();
+        String instanceRootValue = gfProps.getInstanceRoot();
         if (instanceRootValue == null) {
-            instanceRootValue = createTempInstanceRoot(gfOptions);
-            gfOptions.setInstanceRoot(instanceRootValue);
-            gfOptions.setInstanceRootUri(new File(instanceRootValue).toURI().toString());
+            instanceRootValue = createTempInstanceRoot(gfProps);
+            gfProps.setInstanceRoot(instanceRootValue);
+            gfProps.setInstanceRootURI(new File(instanceRootValue).toURI().toString());
         }
 
         File instanceRoot = new File(instanceRootValue);
         System.setProperty(Constants.INSTANCE_ROOT_PROP_NAME, instanceRoot.getAbsolutePath());
         System.setProperty(Constants.INSTANCE_ROOT_URI_PROP_NAME, instanceRoot.toURI().toString());
 
-        String installRootValue = System.getProperty(BootstrapConstants.INSTALL_ROOT_PROP_NAME);
+        String installRootValue = System.getProperty(BootstrapProperties.INSTALL_ROOT_PROP_NAME);
         if (installRootValue == null) {
             installRootValue = instanceRoot.getAbsolutePath();
         }
@@ -178,14 +179,14 @@ public class StaticGlassFishRuntime extends GlassFishRuntime {
         System.setProperty(Constants.INSTALL_ROOT_PROP_NAME, installRoot.getAbsolutePath());
         System.setProperty(Constants.INSTALL_ROOT_URI_PROP_NAME, installRoot.toURI().toString());
 
-        // StartupContext requires the INSTALL root to be set in the GlassFishOptions.
-        gfOptions.getAllOptions().setProperty(Constants.INSTALL_ROOT_PROP_NAME,
+        // StartupContext requires the INSTALL root to be set in the GlassFishProperties.
+        gfProps.getProperties().setProperty(Constants.INSTALL_ROOT_PROP_NAME,
                 installRoot.getAbsolutePath());
-        gfOptions.getAllOptions().setProperty(Constants.INSTALL_ROOT_URI_PROP_NAME,
+        gfProps.getProperties().setProperty(Constants.INSTALL_ROOT_URI_PROP_NAME,
                 installRoot.toURI().toString());
     }
 
-    private String createTempInstanceRoot(GlassFishOptions gfOptions)
+    private String createTempInstanceRoot(GlassFishProperties gfProps)
             throws Exception {
         String tmpDir = System.getProperty("glassfish.embedded.tmpdir");
         if (tmpDir == null) {
@@ -206,14 +207,14 @@ public class StaticGlassFishRuntime extends GlassFishRuntime {
                 copy(cl.getResource(resourceName), new File(
                         instanceRoot.getAbsolutePath(), resourceName), false);
             }
-            String configFileURI = gfOptions.getConfigFileUri();
+            String configFileURI = gfProps.getConfigFileURI();
             URL configFileRL = configFileURI == null ? getClass().getClassLoader().getResource(
                     "org/glassfish/embed/domain.xml") : URI.create(configFileURI).toURL();
                 copy(configFileRL, new File(instanceRoot, configDir + "domain.xml"), false);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        gfOptions.getAllOptions().setProperty(autoDelete, "true");
+        gfProps.getProperties().setProperty(autoDelete, "true");
         return instanceRoot.getAbsolutePath();
     }
 

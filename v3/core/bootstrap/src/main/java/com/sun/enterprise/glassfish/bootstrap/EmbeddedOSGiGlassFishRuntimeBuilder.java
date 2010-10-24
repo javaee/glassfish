@@ -83,14 +83,14 @@ public class EmbeddedOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
 
     private static final String JAR_EXT = ".jar";
 
-    public boolean handles(BootstrapOptions bsOptions) {
+    public boolean handles(BootstrapProperties bsProps) {
         return EmbeddedOSGiGlassFishRuntimeBuilder.class.getName().
-                equals(bsOptions.getAllOptions().getProperty(BUILDER_NAME_PROPERTY));
+                equals(bsProps.getProperties().getProperty(BUILDER_NAME_PROPERTY));
     }
 
-    public GlassFishRuntime build(BootstrapOptions bsOptions) throws GlassFishException {
+    public GlassFishRuntime build(BootstrapProperties bsProps) throws GlassFishException {
         this.bundleContext = getBundleContext();
-        installRoot = bsOptions.getInstallRoot();
+        installRoot = bsProps.getInstallRoot();
 
         // Install all gf bundles, start the primordial bundle and wait for GlassFishRuntime service to be available
         installBundles();
@@ -109,7 +109,7 @@ public class EmbeddedOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
 
     private void configureBundles() {
         // Set this, because some stupid downstream code may be relying on this property
-        System.setProperty(BootstrapConstants.PLATFORM_PROPERTY_KEY, BootstrapConstants.Platform.GenericOSGi.toString());
+        System.setProperty(BootstrapProperties.PLATFORM_PROPERTY_KEY, BootstrapProperties.Platform.GenericOSGi.toString());
     }
 
     /**

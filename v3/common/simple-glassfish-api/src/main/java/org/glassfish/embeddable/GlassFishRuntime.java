@@ -54,33 +54,44 @@ import java.util.ServiceLoader;
  * has to call {@link GlassFish#start}.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
+ * @author bhavanishankar@dev.java.net
  */
 public abstract class GlassFishRuntime {
 
     /**
-     * Bootstrap GlassFish runtime based on runtime configuration passed in the options object.
-     * This is a convenience method. Calling this method is same as
-     * calling {@link #bootstrap(BootstrapOptions, ClassLoader)} with null as second argument.
+     * Bootstrap a GlassFishRuntime with default {@link BootstrapProperties}.
      *
-     * @param options BootstrapOptions used to setup the runtime
-     * @throws GlassFishException
+     * @return Bootstrapped GlassFishRuntime
+     * @throws GlassFishException if the GlassFishRuntime is already bootstrapped.
      */
-    public static GlassFishRuntime bootstrap(BootstrapOptions options) throws GlassFishException {
-        return bootstrap(options, GlassFishRuntime.class.getClassLoader());
+    public static GlassFishRuntime bootstrap() throws GlassFishException {
+        return bootstrap(new BootstrapProperties(), GlassFishRuntime.class.getClassLoader());
     }
 
     /**
-     * Bootstrap GlassFish runtime based on runtime configuration passed in the options object.
+     * Bootstrap GlassFish runtime based on runtime configuration passed in the bootstrapProperties object.
+     * This is a convenience method. Calling this method is same as
+     * calling {@link #bootstrap(BootstrapProperties , ClassLoader)} with null as second argument.
+     *
+     * @param bootstrapProperties BootstrapProperties used to setup the runtime
+     * @throws GlassFishException
+     */
+    public static GlassFishRuntime bootstrap(BootstrapProperties bootstrapProperties) throws GlassFishException {
+        return bootstrap(bootstrapProperties, GlassFishRuntime.class.getClassLoader());
+    }
+
+    /**
+     * Bootstrap GlassFish runtime based on runtime configuration passed in the bootstrapProperties object.
      * Calling this method twice will throw a GlassFishException
      *
-     * @param options BootstrapOptions used to setup the runtime
+     * @param bootstrapProperties BootstrapProperties used to setup the runtime
      * @param cl      ClassLoader used as parent loader by GlassFish modules. If null is passed, the class loader
      *                of this class is used.
      * @return a bootstrapped runtime that can now be used to create new GlassFish instances
      * @throws GlassFishException
      */
-    public static GlassFishRuntime bootstrap(BootstrapOptions options, ClassLoader cl) throws GlassFishException {
-        return _bootstrap(options, cl);
+    public static GlassFishRuntime bootstrap(BootstrapProperties bootstrapProperties, ClassLoader cl) throws GlassFishException {
+        return _bootstrap(bootstrapProperties, cl);
     }
 
     /**
@@ -92,13 +103,23 @@ public abstract class GlassFishRuntime {
     public abstract void shutdown() throws GlassFishException;
 
     /**
+     * Create a new instance of GlassFish with default {@link org.glassfish.embeddable.GlassFishProperties}
+     *
+     * @return New GlassFish instance.
+     * @throws GlassFishException If at all fails to create a new GlassFish instance.
+     */
+    public GlassFish newGlassFish() throws GlassFishException {
+        return newGlassFish(new GlassFishProperties());
+    }
+
+    /**
      * Creates a new instance of GlassFish.
      *
-     * @param options GlassFishOption used to setup the GlassFish instance
+     * @param glassfishProperties GlassFishProperties used to setup the GlassFish instance
      * @return newly instantiated GlassFish object. It will be in {@link GlassFish.Status#INIT} state.
      * @throws GlassFishException
      */
-    public abstract GlassFish newGlassFish(GlassFishOptions options) throws GlassFishException;
+    public abstract GlassFish newGlassFish(GlassFishProperties glassfishProperties) throws GlassFishException;
 
 
     /*
@@ -112,12 +133,12 @@ public abstract class GlassFishRuntime {
      */
     private static GlassFishRuntime me;
 
-    private synchronized static GlassFishRuntime _bootstrap(BootstrapOptions options, ClassLoader cl) throws GlassFishException {
+    private synchronized static GlassFishRuntime _bootstrap(BootstrapProperties bootstrapProperties, ClassLoader cl) throws GlassFishException {
         if (me != null) {
             throw new GlassFishException("Already bootstrapped", null);
         }
-        RuntimeBuilder runtimeBuilder = getRuntimeBuilder(options, cl != null ? cl : GlassFishRuntime.class.getClassLoader());
-        me = runtimeBuilder.build(options);
+        RuntimeBuilder runtimeBuilder = getRuntimeBuilder(bootstrapProperties, cl != null ? cl : GlassFishRuntime.class.getClassLoader());
+        me = runtimeBuilder.build(bootstrapProperties);
         return me;
     }
 
@@ -128,7 +149,7 @@ public abstract class GlassFishRuntime {
         me = null;
     }
 
-    private static RuntimeBuilder getRuntimeBuilder(BootstrapOptions options, ClassLoader cl) throws GlassFishException {
+    private static RuntimeBuilder getRuntimeBuilder(BootstrapProperties bootstrapProperties, ClassLoader cl) throws GlassFishException {
 //        StringBuilder sb = new StringBuilder("Launcher Class Loader = " + cl);
 //        if (cl instanceof URLClassLoader) {
 //            sb.append("has following Class Path: ");
@@ -141,14 +162,14 @@ public abstract class GlassFishRuntime {
         while (runtimeBuilders.hasNext()) {
             try {
                 RuntimeBuilder builder = runtimeBuilders.next();
-                if (builder.handles(options)) {
+                if (builder.handles(bootstrapProperties)) {
                     return builder;
                 }
             } catch (ServiceConfigurationError sce) {
                 // Ignore the exception and move ahead to the next builder.
             }
         }
-        throw new GlassFishException("No runtime builder available for this configuration: " + options.getAllOptions(), null);
+        throw new GlassFishException("No runtime builder available for this configuration: " + bootstrapProperties.getProperties(), null);
     }
 
 }

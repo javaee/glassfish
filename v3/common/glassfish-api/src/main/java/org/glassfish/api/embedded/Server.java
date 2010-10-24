@@ -50,7 +50,6 @@ import org.jvnet.hk2.component.Inhabitants;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -230,17 +229,17 @@ public class Server {
             String instanceRoot = fs.instanceRoot != null ? fs.instanceRoot.getAbsolutePath() : null;
             String installRoot = fs.installRoot != null ? fs.installRoot.getAbsolutePath() : instanceRoot;
             if (installRoot != null) {
-                props.setProperty(BootstrapConstants.INSTALL_ROOT_PROP_NAME, installRoot);
-                props.setProperty(BootstrapConstants.INSTALL_ROOT_URI_PROP_NAME,
+                props.setProperty(BootstrapProperties.INSTALL_ROOT_PROP_NAME, installRoot);
+                props.setProperty(BootstrapProperties.INSTALL_ROOT_URI_PROP_NAME,
                         new File(installRoot).toURI().toString());
             }
             if (instanceRoot != null) {
-                props.setProperty(GlassFishConstants.INSTANCE_ROOT_PROP_NAME, fs.instanceRoot.getAbsolutePath());
-                props.setProperty(GlassFishConstants.INSTANCE_ROOT_URI_PROP_NAME,
+                props.setProperty(GlassFishProperties.INSTANCE_ROOT_PROP_NAME, fs.instanceRoot.getAbsolutePath());
+                props.setProperty(GlassFishProperties.INSTANCE_ROOT_URI_PROP_NAME,
                         new File(instanceRoot).toURI().toString());
             }
             if (fs.configFile != null) {
-                props.setProperty(GlassFishConstants.CONFIG_FILE_URI_PROP_NAME,
+                props.setProperty(GlassFishProperties.CONFIG_FILE_URI_PROP_NAME,
                         fs.configFile.toURI().toString());
             }
             if (fs.autoDelete) {
@@ -263,10 +262,10 @@ public class Server {
             }
             EmbeddedFileSystem fs = builder.fileSystem;                               
             setProperties(fs, properties);
-            glassfishRuntime = GlassFishRuntime.bootstrap(new BootstrapOptions(properties),
+            glassfishRuntime = GlassFishRuntime.bootstrap(new BootstrapProperties(properties),
                     getClass().getClassLoader());
 
-            glassfish = glassfishRuntime.newGlassFish(new GlassFishOptions(properties));
+            glassfish = glassfishRuntime.newGlassFish(new GlassFishProperties(properties));
             glassfish.start();
             if(fs == null) {
                 EmbeddedFileSystem.Builder fsBuilder = new EmbeddedFileSystem.Builder();

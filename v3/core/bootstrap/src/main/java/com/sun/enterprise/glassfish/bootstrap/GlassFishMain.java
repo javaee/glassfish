@@ -48,8 +48,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Properties;
 
 import static com.sun.enterprise.module.bootstrap.ArgumentManager.argsToMap;
@@ -71,7 +69,7 @@ public class GlassFishMain {
         System.out.println("Launching GlassFish on " + platform + " platform");
 
         // Set the system property if downstream code wants to know about it
-        System.setProperty(BootstrapConstants.PLATFORM_PROPERTY_KEY, platform); // TODO(Sahoo): Why is this a system property?
+        System.setProperty(BootstrapProperties.PLATFORM_PROPERTY_KEY, platform); // TODO(Sahoo): Why is this a system property?
 
         File installRoot = ASMainHelper.findInstallRoot();
 
@@ -113,8 +111,8 @@ public class GlassFishMain {
 
         public void launch(Properties ctx) throws Exception {
             addShutdownHook();
-            gfr = GlassFishRuntime.bootstrap(new BootstrapOptions(ctx), getClass().getClassLoader());
-            gf = gfr.newGlassFish(new GlassFishOptions(ctx));
+            gfr = GlassFishRuntime.bootstrap(new BootstrapProperties(ctx), getClass().getClassLoader());
+            gf = gfr.newGlassFish(new GlassFishProperties(ctx));
             if (Boolean.valueOf(Util.getPropertyOrSystemProperty(ctx, "GlassFish_Interactive", "false"))) {
                 startConsole();
             } else {
