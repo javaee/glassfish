@@ -75,15 +75,15 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
     final static Logger logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
 
     // the file we are currently mapped to 
-    protected JarFile jarFile=null;
+    volatile protected JarFile jarFile=null;
     
     // in case this abstraction is dealing with a jar file
     // within a jar file, the jarFile will be null and this
     // JarInputStream will contain the 
-    protected JarInputStream jarIS=null; 
+    volatile protected JarInputStream jarIS=null;
     
     // the archive Uri
-    private URI uri;
+    volatile private URI uri;
 
     // parent jar file for embedded jar
     private InputJarArchive parentArchive=null;
@@ -306,11 +306,7 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
             ZipEntry ze = jarFile.getEntry(name);
             if (ze!=null) {
                 return ze.getSize();
-            } else {
-            logger.severe("Returning 0 because " + name + " cannot be found in the jar " + uri);               
             }
-        } else {
-            logger.severe("Returning 0 because jar file is null");            
         }
         return 0;
     }
@@ -327,12 +323,9 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
      * @return a JarFile instance for a file path
      */
     protected JarFile getJarFile(URI uri) throws IOException {
-        if (!uri.getScheme().equals("jar")) {
-            throw new IOException("Wrong scheme for InputJarArchive : " + uri.getScheme());
-        }
         jarFile = null;
         try {
-            File file = new File(uri.getSchemeSpecificPart());
+            File file = new File(uri);
             if (file.exists()) {
                 jarFile = new JarFile(file);
             }

@@ -89,12 +89,12 @@ public class ReadableArchiveScannerAdapter extends AbstractAdapter {
     }
 
     @Override
-    public void onSelectedEntries(ArchiveAdapter.Selector selector, EntryTask entryTask, Logger logger ) throws IOException {
+    public void onSelectedEntries(ArchiveAdapter.Selector selector, EntryTask entryTask, final Logger logger ) throws IOException {
 
         Enumeration<String> entries = archive.entries();
         byte[] bytes = new byte[52000];
         while (entries.hasMoreElements()) {
-            String name = entries.nextElement();
+            final String name = entries.nextElement();
             Entry entry = new Entry(name, archive.getEntrySize(name), false);
             if (selector.isSelected(entry)) {
                 InputStream is = null;
@@ -104,12 +104,23 @@ public class ReadableArchiveScannerAdapter extends AbstractAdapter {
                         if (bytes.length<entry.size) {
                             bytes = new byte[(int) entry.size];
                         }
-                        int read = is.read(bytes, 0, (int) entry.size);
-                        if (read!=entry.size) {
+                        int entrySize = entry.size==0?bytes.length:(int) entry.size;
+                        int read = is.read(bytes, 0, entrySize);
+                        if (read==0) {
                             logger.severe("Incorrect file length while reading " + entry.name +
                                     " inside " + archive.getName() +
                                     " of size " + entry.size + " reported is " + read);
-
+                            return;
+                        }
+                        // we read something, let's be sure the size becomes correct in our entry.
+                        if (entry.size==0) {
+                            entry = new Entry(name, read, false);
+                        } else {
+                            if (read!=entry.size) {
+                                logger.severe("Incorrect file length while reading " + entry.name +
+                                        " inside " + archive.getName() +
+                                        " of size " + entry.size + " reported is " + read);
+                            }
                         }
                     } catch (Exception e) {
                         logger.log(Level.SEVERE, "Exception while processing " + entry.name
@@ -128,17 +139,20 @@ public class ReadableArchiveScannerAdapter extends AbstractAdapter {
                 String explodedName = name.replaceAll("[/ ]", "__").replace(".jar", "_jar");
                 if (!archive.exists(explodedName)) {
 
-                    ReadableArchive subArchive = null;
-                    try {
-                        subArchive = archive.getSubArchive(name);
-                        if (subArchive!=null) {
-                            ReadableArchiveScannerAdapter adapter = new ReadableArchiveScannerAdapter(parser, subArchive);
-                            parser.parse(adapter, null);
-                        }
-                    } finally {
-                        if (subArchive!=null) {
-                            subArchive.close();
-                        }
+                    final ReadableArchive subArchive = archive.getSubArchive(name);
+                    if (subArchive!=null) {
+
+                        ReadableArchiveScannerAdapter adapter = new ReadableArchiveScannerAdapter(parser, subArchive);
+                        parser.parse(adapter, new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    subArchive.close();
+                                } catch (IOException e) {
+                                    logger.log(Level.SEVERE, "Cannot close sub archive" + name,e);
+                                }
+                            }
+                        });
                     }
                 }
             }  

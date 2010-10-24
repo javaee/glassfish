@@ -55,6 +55,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Singleton;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -161,18 +162,26 @@ public class ArchiveFactory implements ContractProvider {
      */
     public ReadableArchive openArchive(URI path) throws IOException {
 
-        String protocol = path.getScheme();
+        String provider = path.getScheme();
+        if (provider.equals("file")) {
+            // this could be a jar file or a directory
+            File f = new File(path);
+            if (!f.exists()) throw new FileNotFoundException(f.getPath());
+            if (f.isFile()) {
+                provider = "jar";
+            }
+        }
         try {
-            ReadableArchive archive = habitat.getComponent(ReadableArchive.class, protocol);
+            ReadableArchive archive = habitat.getComponent(ReadableArchive.class, provider);
             if (archive==null) {
-                logger.log(Level.SEVERE, "Cannot find an archive implementation for " + protocol);
-                throw new MalformedURLException("Protocol not supported : " + protocol);                
+                logger.log(Level.SEVERE, "Cannot find an archive implementation for " + provider);
+                throw new MalformedURLException("Protocol not supported : " + provider);
             }
             archive.open(path);
             return archive;
         } catch (ComponentException e) {
-            logger.log(Level.SEVERE, "Cannot find an archive implementation for " + protocol, e);
-            throw new MalformedURLException("Protocol not supported : " + protocol);
+            logger.log(Level.SEVERE, "Cannot find an archive implementation for " + provider, e);
+            throw new MalformedURLException("Protocol not supported : " + provider);
         } 
     }
     
@@ -188,8 +197,7 @@ public class ArchiveFactory implements ContractProvider {
     static java.net.URI prepareArchiveURI(File path) throws java.net.URISyntaxException, java.io.UnsupportedEncodingException, java.io.IOException {
        
         URI archiveURI = path.toURI();
-        String scheme = (path.isDirectory() ? "file" : "jar");
-        URI answer = new URI(scheme, null /* authority */, archiveURI.getPath(), null /* query */, null /* fragment */);
+        URI answer = new URI(archiveURI.getScheme(), null /* authority */, archiveURI.getPath(), null /* query */, null /* fragment */);
         return answer;
     }
 }

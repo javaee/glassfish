@@ -170,19 +170,7 @@ public class ApplicationSignedJARManager {
          */
         Map.Entry<URI,StaticContent> result; // relative URI -> StaticContent
 
-        URI archiveURI = absJARURI;
-        final File f = new File(absJARURI);
-        try {
-            final JarFile jf = new JarFile(f);
-            jf.close();
-            archiveURI = URI.create("jar:" + absJARURI.getRawSchemeSpecificPart());
-        } catch (IOException e) {
-            /*
-             * The URI cannot be opened as a JarFile so we don't convert it to
-             * a jar: URI.
-             */
-        }
-        final ReadableArchive arch = archiveFactory.openArchive(archiveURI);
+        final ReadableArchive arch = archiveFactory.openArchive(absJARURI);
         final Manifest archiveMF = arch.getManifest();
         if (archiveMF == null) {
             return null;

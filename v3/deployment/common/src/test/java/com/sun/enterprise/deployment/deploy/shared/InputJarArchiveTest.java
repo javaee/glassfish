@@ -194,7 +194,7 @@ public class InputJarArchiveTest {
     private ReadableArchive getArchiveForTest() throws IOException {
         File tempJAR = createTestJAR();
         final InputJarArchive arch = new InputJarArchive();
-        arch.open(URI.create(("jar:" + tempJAR.toURI().getPath())));
+        arch.open(tempJAR.toURI());
         return arch;
     }
 

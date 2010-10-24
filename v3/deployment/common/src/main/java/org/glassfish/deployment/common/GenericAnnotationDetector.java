@@ -42,6 +42,7 @@ package org.glassfish.deployment.common;
 
 import org.objectweb.asm.*;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -94,6 +95,10 @@ public class GenericAnnotationDetector extends AnnotationScanner {
             for (URI externalLib : externalLibs) {
                 try {
                     scanArchive(archiveFactory.openArchive(new File(externalLib.getPath())));
+                } catch(FileNotFoundException fnfe) {
+                    logger.log(Level.WARNING, "Cannot find archive " + externalLib.getPath()
+                            + " referenced from archive " + archive.getName()
+                            + ", it will be ignored for annotation scanning"); 
                 } catch (Exception e) {
                     logger.log(Level.WARNING, e.getMessage(), e);
                 }

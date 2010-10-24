@@ -123,12 +123,7 @@ public class Util {
     }
 
     public static URI getURI(final File f) throws URISyntaxException {
-        URI uri = f.toURI();
-        if (f.isFile() && (f.getName().endsWith(".jar") ||
-                           f.getName().endsWith(".ear"))) {
-            uri = new URI("jar:" + uri.getRawSchemeSpecificPart());
-        }
-        return uri;
+        return f.toURI();
     }
     /**
      * Writes the provided text to a temporary file marked for deletion on exit.

@@ -110,12 +110,7 @@ public class ACCPersistenceArchivist extends PersistenceArchivist {
             /*
              * We must scan the app client archive itself.  
              */
-            URI clientURI;
-            try {
-                clientURI = makeFileURI(clientURI(archive, acDescr));
-            } catch (URISyntaxException ex) {
-                throw new RuntimeException(ex);
-            }
+            URI clientURI = clientURI(archive, acDescr);
             candidatePersistenceArchives.put(clientURI.toASCIIString(), archive);
 
             /*
@@ -152,12 +147,6 @@ public class ACCPersistenceArchivist extends PersistenceArchivist {
     }
 
 
-    private URI makeFileURI(final URI uri) throws URISyntaxException {
-        if (uri.getScheme() != null && uri.getScheme().equals("jar")) {
-            return new URI("file", uri.getSchemeSpecificPart(), null);
-        }
-        return uri;
-    }
     private boolean isDeployedClientAlsoStandAlone(final Attributes mainAttrs) {
         final String relativePathToGroupFacade = mainAttrs.getValue(AppClientArchivist.GLASSFISH_GROUP_FACADE);
         return relativePathToGroupFacade == null;
