@@ -34,21 +34,57 @@
  * holder.
  */
 
-package com.acme;
+package com.acme.servlet;
 
-import javax.annotation.*;
 
-@ManagedBean("foobarmanagedbean")
-public class FooBarManagedBean {
+import java.io.IOException;
+import java.io.PrintWriter;
 
-    @PostConstruct
-    private void init() {
-	System.out.println("In FooBarManagedBean::init() " + this);
-    }
+import javax.ejb.EJB;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.acme.ejb.api.Hello;
+import com.acme.util.TestDatabase;
+
+@WebServlet(urlPatterns = "/HelloServlet", loadOnStartup = 1)
+
+@SuppressWarnings("serial")
+public class HelloServlet extends HttpServlet {
+    String msg = "";
     
-    @PreDestroy
-    private void destroy() {
-	System.out.println("In FooBarManagedBean::destroy() ");
+    @EJB(name = "java:module/m1", beanName = "HelloSingleton", beanInterface = Hello.class)
+    Hello h;
+    
+    @PersistenceUnit(unitName = "pu1")
+    @TestDatabase
+    private EntityManagerFactory emf;
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        System.out.println("In HelloServlet::doGet");
+        resp.setContentType("text/html");
+        PrintWriter out = resp.getWriter();
+        
+        checkForNull(emf, "Injection of EMF failed in Servlet");
+        //ensure EMF works!
+        emf.createEntityManager();
+        
+        //call Singleton EJB
+        String response = h.hello();
+        if(!response.equals(Hello.HELLO_TEST_STRING))
+            msg += "Invocation of Hello Singeton EJB failed:msg=" + response;
+        out.println(msg);
     }
 
+    protected void checkForNull(Object o, String errorMessage){
+        System.out.println("o=" + o);
+        if (o == null) msg += " " + errorMessage;
+    }
 }

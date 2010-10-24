@@ -54,33 +54,68 @@
     </target>
  
     <target name="compile" depends="clean">
-        <antcall target="compile-common">
-            <param name="src" value="war"/>
+         <antcall target="compile-common">
+            <param name="src" value="lib"/>
         </antcall>
-        <antcall target="webclient-war-common">
-          <param name="hasWebclient" value="true"/>
-        </antcall>
+
+       
         <antcall target="compile-common">
             <param name="src" value="ejb"/>
         </antcall>
 
-	<javac classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar" srcdir="client" destdir="${build.classes.dir}" debug="on" failonerror="true">
-          <compilerarg line="-endorseddirs ${env.S1AS_HOME}/modules/endorsed"/>
-	 
-        </javac>
-<!--
         <antcall target="compile-common">
-            <param name="src" value="client"/>
+            <param name="src" value="war"/>
         </antcall>
--->
+
+        <antcall target="webclient-war-common">
+          <param name="hasWebclient" value="true"/>
+        </antcall>
+
+	    <javac classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar" srcdir="client" destdir="${build.classes.dir}" debug="on" failonerror="true">
+          <compilerarg line="-endorseddirs ${env.S1AS_HOME}/modules/endorsed"/>
+        </javac>
     </target>
 
     <target name="build" depends="compile">
         <mkdir dir="${assemble.dir}"/>
         <antcall target="ejb-jar-common">
-          <param name="ejbjar.classes" value="**/Foo.class,**/Hello.class,**/HelloRemote.class,**/Singleton*.class,**/HelloStateless.class,**/HelloSingleton.class,**/FooManagedBean.class,**/BarManagedBean.class, **/FooBarManagedBean.class, **/ManagedSuper.class"/>
+          <param name="ejbjar.classes" value="com/acme/ejb/**/*.class"/>
         </antcall>
-        <antcall target="ear-common"/>
+
+<!-- build library jar -->
+  <mkdir dir="${build.classes.dir}/META-INF"/>
+  <copy file="${persistence.xml}" 
+    tofile="${build.classes.dir}/META-INF/persistence.xml"
+    failonerror="false"/>
+  <mkdir dir="${build.classes.dir}/lib-dir"/>
+  <jar jarfile="${build.classes.dir}/lib-dir/lib.jar" basedir="${build.classes.dir}" includes="com/acme/util/*.class">
+    <metainf dir="${build.classes.dir}/META-INF">
+        <include name="persistence.xml"/>
+    </metainf>
+  </jar>
+  <copy file="${env.APS_HOME}/lib/reporter.jar" todir="${build.classes.dir}/lib-dir"/>
+
+  <delete file="${assemble.dir}/${appname}.ear"/>
+  <mkdir dir="${assemble.dir}"/>
+  <mkdir dir="${build.classes.dir}/META-INF"/>    
+  <copy file="${sun-application.xml}" tofile="${build.classes.dir}/META-INF/sun-application.xml"  	failonerror="false"/> 
+  <copy file="${glassfish-resources-ear.xml}" tofile="${build.classes.dir}/META-INF/glassfish-resources.xml" failonerror="false"  filtering="true"/>
+  <ear earfile="${assemble.dir}/${appname}App.ear" 
+    appxml="${application.xml}" >
+    <fileset dir="${assemble.dir}">
+      <include name="*.jar"/>
+      <include name="*.war"/>
+    </fileset>
+    <fileset dir="${build.classes.dir}">
+	<include name="META-INF/sun-application.xml"/>
+        <include name="META-INF/glassfish-resources.xml"/>
+    </fileset>
+<!--
+    <fileset dir="${env.APS_HOME}" includes="lib/reporter.jar"/>
+-->
+    <fileset dir="${build.classes.dir}" includes="lib-dir/*"/>
+  </ear>  
+
     </target> 
     
     <target name="deploy" 

@@ -36,79 +36,73 @@
 
 package com.acme;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
-import java.net.*;
-import java.io.*;
-import java.util.*;
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import javax.naming.InitialContext;
 
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
 public class Client {
 
+    private static final String TEST_NAME = "em-resource-injection-with-resource-declaration-in-another-jar";
+
     private static SimpleReporterAdapter stat = 
-        new SimpleReporterAdapter("appserv-tests");
+                            new SimpleReporterAdapter("appserv-tests");
 
     private static String appName;
     private String host;
     private String port;
 
-    @Resource(lookup="java:app/env/value1")
+    @Resource(lookup = "java:app/env/value1")
     private static Integer appLevelViaLookup;
 
     public static void main(String args[]) {
-	appName = args[0];
-	stat.addDescription(appName);
-	Client client = new Client(args);       
-        client.doTest();	
+        appName = args[0];
+        stat.addDescription(appName);
+        Client client = new Client(args);
+        client.doTest();
         stat.printSummary(appName + "ID");
-	System.out.println("appLevelViaLookup = '" +
-			   appLevelViaLookup + "'");
+        System.out.println("appLevelViaLookup = '" + appLevelViaLookup + "'");
     }
 
     public Client(String[] args) {
-	host = args[1];
+        host = args[1];
         port = args[2];
     }
 
-   
-
     public void doTest() {
-
-	try {
-
-	    String url = "http://" + host + ":" + port + 
-                "/" + appName + "/HelloServlet";
-
+        try {
+            String url = "http://" + host + ":" + port + "/" + appName
+                    + "/HelloServlet";
             System.out.println("invoking webclient servlet at " + url);
-
-	    URL u = new URL(url);
-        
-	    HttpURLConnection c1 = (HttpURLConnection)u.openConnection();
-	    int code = c1.getResponseCode();
-	    InputStream is = c1.getInputStream();
-	    BufferedReader input = new BufferedReader (new InputStreamReader(is));
-	    String line = null;
-	    while((line = input.readLine()) != null){
-            System.out.println("<response>:"+ line);
-            if (line.trim().length() > 0) {
-                stat.addStatus("em-resource-injection-with-resource-declaration-in-another-jar", stat.FAIL);
+            URL u = new URL(url);
+            HttpURLConnection c1 = (HttpURLConnection) u.openConnection();
+            int code = c1.getResponseCode();
+            InputStream is = c1.getInputStream();
+            BufferedReader input = new BufferedReader(new InputStreamReader(
+                    is));
+            String line = null;
+            while ((line = input.readLine()) != null) {
+                System.out.println("<response>:" + line);
+                if (line.trim().length() > 0) {
+                    stat.addStatus(TEST_NAME, stat.FAIL);
+                    return;
+                }
+            }
+            if (code != 200) {
+                stat.addStatus(TEST_NAME, stat.FAIL);
                 return;
             }
+            stat.addStatus(TEST_NAME, stat.PASS);
+
+        } catch (Exception e) {
+            stat.addStatus(TEST_NAME, stat.FAIL);
+            e.printStackTrace();
         }
-	    if(code != 200) {
-            stat.addStatus("em-resource-injection-with-resource-declaration-in-another-jar", stat.FAIL);
-            return;
-	    }
-	    stat.addStatus("em-resource-injection-with-resource-declaration-in-another-jar", stat.PASS);
-
-	} catch(Exception e) {
-	    stat.addStatus("em-resource-injection-with-resource-declaration-in-another-jar", stat.FAIL);
-	    e.printStackTrace();
-	}
     }
-
 
 }

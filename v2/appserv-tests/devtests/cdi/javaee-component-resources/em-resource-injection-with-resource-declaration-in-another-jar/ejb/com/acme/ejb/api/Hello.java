@@ -1,3 +1,5 @@
+package com.acme.ejb.api;
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -34,26 +36,10 @@
  * holder.
  */
 
-package com.acme;
+public interface Hello {
 
-import javax.ejb.*;
-import javax.annotation.*;
-
-
-@Singleton
-@DependsOn("./cdi-full-ear-ejb.jar#Singleton4")
-public class Singleton3 {
-
-    @PostConstruct
-    public void init() {
-        System.out.println("In SingletonBean3::init()");
-    }
-    
-    @PreDestroy
-    public void destroy() {
-        System.out.println("In SingletonBean3::destroy()");
-    }
-
+    public String hello();
+    public static final String HELLO_TEST_STRING = "hello, world!\n";
 
 
 }

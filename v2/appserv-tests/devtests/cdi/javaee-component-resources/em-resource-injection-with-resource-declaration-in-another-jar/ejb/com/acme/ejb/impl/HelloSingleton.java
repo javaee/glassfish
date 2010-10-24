@@ -1,3 +1,5 @@
+package com.acme.ejb.impl;
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -34,12 +36,58 @@
  * holder.
  */
 
-package com.acme;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
+import javax.ejb.DependsOn;
+import javax.ejb.SessionContext;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
 
+import com.acme.ejb.api.Hello;
+import com.acme.util.TestDatabase;
 
+@Singleton
+@Startup
+@DependsOn("Singleton4")
+public class HelloSingleton implements Hello {
 
-public interface Hello {
+    @Resource
+    SessionContext sessionCtx;
 
-    public String hello();
+    @PersistenceUnit(unitName = "pu1")
+    @TestDatabase
+    private EntityManagerFactory emf;
+    
+
+    @PostConstruct
+    private void init() {
+        System.out.println("HelloSingleton::init()");
+
+        String appName;
+        String moduleName;
+        appName = (String) sessionCtx.lookup("java:app/AppName");
+        moduleName = (String) sessionCtx.lookup("java:module/ModuleName");
+        System.out.println("AppName = " + appName);
+        System.out.println("ModuleName = " + moduleName);
+    }
+
+    public String hello() {
+        System.out.println("HelloSingleton::hello()");
+        return testEMF(emf);
+    }
+
+    private String testEMF(EntityManagerFactory emf2) {
+        if (emf == null) return "EMF injection failed, is null in Singleton EJB";
+        if (emf.createEntityManager() == null) return "Usage of EMF failed in Singleton EJB";
+        return Hello.HELLO_TEST_STRING;
+    }
+
+    @PreDestroy
+    private void destroy() {
+        System.out.println("HelloSingleton::destroy()");
+    }
 
 }

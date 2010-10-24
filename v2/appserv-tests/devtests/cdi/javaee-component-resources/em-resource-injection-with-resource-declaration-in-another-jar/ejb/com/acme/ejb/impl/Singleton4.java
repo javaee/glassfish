@@ -1,3 +1,4 @@
+package com.acme.ejb.impl;
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -34,21 +35,25 @@
  * holder.
  */
 
-package com.acme;
 
+
+import javax.ejb.*;
 import javax.annotation.*;
 
-@ManagedBean("foobarmanagedbean")
-public class FooBarManagedBean {
+
+@Singleton
+public class Singleton4 {
 
     @PostConstruct
-    private void init() {
-	System.out.println("In FooBarManagedBean::init() " + this);
+    public void init() {
+        System.out.println("In SingletonBean4::init()");
     }
     
     @PreDestroy
-    private void destroy() {
-	System.out.println("In FooBarManagedBean::destroy() ");
+    public void destroy() {
+        System.out.println("In SingletonBean4::destroy()");
     }
+
+
 
 }
