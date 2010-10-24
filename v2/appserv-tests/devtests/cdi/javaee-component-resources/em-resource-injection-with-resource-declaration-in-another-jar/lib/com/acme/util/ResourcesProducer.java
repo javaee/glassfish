@@ -41,6 +41,7 @@
 package com.acme.util;
 
 import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -51,4 +52,11 @@ public class ResourcesProducer {
     @PersistenceContext(unitName = "pu1")
     @TestDatabase
     EntityManager customerDatabasePersistenceUnit;
+    
+    @Inject
+    TestDependentBeanInLib foo;
+    
+    public boolean isInjectionSuccessful(){
+        return (foo != null);
+    }
 }
