@@ -40,7 +40,9 @@
 
 package org.glassfish.uberjar.activator;
 
+import org.glassfish.embeddable.BootstrapProperties;
 import org.glassfish.embeddable.GlassFish;
+import org.glassfish.embeddable.GlassFishProperties;
 import org.glassfish.embeddable.GlassFishRuntime;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -50,9 +52,6 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Properties;
 import java.util.logging.Logger;
-import org.glassfish.embeddable.BootstrapConstants;
-import org.glassfish.embeddable.BootstrapOptions;
-import org.glassfish.embeddable.GlassFishOptions;
 
 /**
  * This is an activator to allow just dropping the uber jar
@@ -114,7 +113,7 @@ public class UberJarGlassFishActivator implements BundleActivator {
             public Void run() {
                 try {
                     Properties props = new Properties();
-                    props.setProperty(BootstrapConstants.PLATFORM_PROPERTY_KEY, BootstrapConstants.Platform.Felix.toString());
+                    props.setProperty(BootstrapProperties.PLATFORM_PROPERTY_KEY, BootstrapProperties.Platform.Felix.toString());
 
                     logger.info("ThreadContextClassLoader = " + Thread.currentThread().getContextClassLoader() +
                             ", classloader = " + getClass().getClassLoader());
@@ -128,7 +127,7 @@ public class UberJarGlassFishActivator implements BundleActivator {
 
                     long startTime = System.currentTimeMillis();
                     GlassFishRuntime gfr = GlassFishRuntime.bootstrap(
-                            new BootstrapOptions(props), getClass().getClassLoader());  // don't use thread context classloader, otherwise the META-INF/services will not be found.
+                            new BootstrapProperties(props), getClass().getClassLoader());  // don't use thread context classloader, otherwise the META-INF/services will not be found.
                     long timeTaken = System.currentTimeMillis() - startTime;
 
                     logger.info("created gfr = " + gfr + ", timeTaken = " + timeTaken);
@@ -136,7 +135,7 @@ public class UberJarGlassFishActivator implements BundleActivator {
                     startTime = System.currentTimeMillis();
                     // XXX : Why are we passing the same set of properties to
                     // both bootstrap and newGlassFish ?
-                    GlassFish gf = gfr.newGlassFish(new GlassFishOptions(props));
+                    GlassFish gf = gfr.newGlassFish(new GlassFishProperties(props));
                     timeTaken = System.currentTimeMillis() - startTime;
                     System.out.println("created gf = " + gf + ", timeTaken = " + timeTaken);
 

@@ -42,8 +42,9 @@ package org.glassfish.uberjar.bootstrap;
 
 import com.sun.enterprise.glassfish.bootstrap.OSGiFrameworkLauncher;
 import java.net.URISyntaxException;
-import org.glassfish.embeddable.GlassFishConstants;
-import org.glassfish.embeddable.BootstrapConstants;
+
+import org.glassfish.embeddable.BootstrapProperties;
+import org.glassfish.embeddable.GlassFishProperties;
 import org.glassfish.embeddable.GlassFishRuntime;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -59,7 +60,7 @@ import java.net.URI;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.embeddable.BootstrapOptions;
+
 import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.embeddable.spi.RuntimeBuilder;
 
@@ -71,14 +72,14 @@ public class UberJarOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
 
     private Framework framework;
 
-    public boolean handles(BootstrapOptions bsOptions) {
+    public boolean handles(BootstrapProperties bsOptions) {
         // default is Felix
         /* Constants.Platform platform =
                 Constants.Platform.valueOf(props.getProperty(
                         Constants.PLATFORM_PROPERTY_KEY, Constants.Platform.Felix.name())); */
-        BootstrapConstants.Platform platform = BootstrapConstants.Platform.valueOf(bsOptions.getPlatformProperty());
+        BootstrapProperties.Platform platform = BootstrapProperties.Platform.valueOf(bsOptions.getPlatform());
         if(platform == null) {
-            platform = BootstrapConstants.Platform.valueOf(BootstrapConstants.Platform.Felix.name());
+            platform = BootstrapProperties.Platform.valueOf(BootstrapProperties.Platform.Felix.name());
         }
         logger.finer("platform = " + platform);
         // TODO(Sahoo): Add support for generic OSGi platform
@@ -116,11 +117,11 @@ public class UberJarOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
 
     private static final String UBER_JAR_URI = "org.glassfish.embedded.osgimain.jarURI";
 
-    public GlassFishRuntime build(BootstrapOptions bsOptions) throws GlassFishException {
+    public GlassFishRuntime build(BootstrapProperties bsOptions) throws GlassFishException {
         // Get all the properties in the Bootstrap options and then manipulate the Properties object.
-        Properties props = bsOptions.getAllOptions();
+        Properties props = bsOptions.getProperties();
 
-        String uberJarURI = bsOptions.getAllOptions().getProperty(UBER_JAR_URI);
+        String uberJarURI = bsOptions.getProperties().getProperty(UBER_JAR_URI);
         logger.finer("EmbeddedOSGIRuntimeBuilder.build, uberJarUri = " + uberJarURI);
 
         URI jar = null;
@@ -136,31 +137,31 @@ public class UberJarOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
 
         if (installRoot == null) {
             installRoot = getDefaultInstallRoot();
-            props.setProperty(BootstrapConstants.INSTALL_ROOT_PROP_NAME, installRoot);
-            props.setProperty(BootstrapConstants.INSTALL_ROOT_URI_PROP_NAME,
+            props.setProperty(BootstrapProperties.INSTALL_ROOT_PROP_NAME, installRoot);
+            props.setProperty(BootstrapProperties.INSTALL_ROOT_URI_PROP_NAME,
                     new File(installRoot).toURI().toString());
         }
 
         // XXX : Assuming that this property will be set along with Bootstrap options.
         // This is a temporary hack, we need to separate the properties out between bootstrap and newGlassfish methods clearly
         // and not mix them in the code.
-        String instanceRoot = props.getProperty(GlassFishConstants.INSTANCE_ROOT_PROP_NAME);
+        String instanceRoot = props.getProperty(GlassFishProperties.INSTANCE_ROOT_PROP_NAME);
         if (instanceRoot == null) {
             instanceRoot = getDefaultInstanceRoot();
-            props.setProperty(GlassFishConstants.INSTANCE_ROOT_PROP_NAME, instanceRoot);
-            props.setProperty(GlassFishConstants.INSTANCE_ROOT_URI_PROP_NAME,
+            props.setProperty(GlassFishProperties.INSTANCE_ROOT_PROP_NAME, instanceRoot);
+            props.setProperty(GlassFishProperties.INSTANCE_ROOT_URI_PROP_NAME,
                     new File(instanceRoot).toURI().toString());
         }
         try {
-            copyConfigFile(props.getProperty(GlassFishConstants.CONFIG_FILE_URI_PROP_NAME), instanceRoot);
+            copyConfigFile(props.getProperty(GlassFishProperties.CONFIG_FILE_URI_PROP_NAME), instanceRoot);
         } catch (Exception ex) {
             throw new GlassFishException(ex);
         }
 
-        String platform = props.getProperty(BootstrapConstants.PLATFORM_PROPERTY_KEY);
+        String platform = props.getProperty(BootstrapProperties.PLATFORM_PROPERTY_KEY);
         if (platform == null) {
-            platform = BootstrapConstants.Platform.Felix.toString();
-            props.setProperty(BootstrapConstants.PLATFORM_PROPERTY_KEY, platform);
+            platform = BootstrapProperties.Platform.Felix.toString();
+            props.setProperty(BootstrapProperties.PLATFORM_PROPERTY_KEY, platform);
         }
 
        // readConfigProperties(installRoot, props);
@@ -182,8 +183,8 @@ public class UberJarOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
         props.setProperty(AUTO_START_BUNDLES_PROP, autoStartBundleLocation);
         System.setProperty(AUTO_START_BUNDLES_PROP, autoStartBundleLocation);
 
-        System.setProperty(BootstrapConstants.INSTALL_ROOT_PROP_NAME, installRoot);
-        System.setProperty(GlassFishConstants.INSTANCE_ROOT_PROP_NAME, instanceRoot);
+        System.setProperty(BootstrapProperties.INSTALL_ROOT_PROP_NAME, installRoot);
+        System.setProperty(GlassFishProperties.INSTANCE_ROOT_PROP_NAME, instanceRoot);
 
         props.setProperty("org.osgi.framework.system.packages.extra",
                 "org.glassfish.simpleglassfishapi; version=3.1");
