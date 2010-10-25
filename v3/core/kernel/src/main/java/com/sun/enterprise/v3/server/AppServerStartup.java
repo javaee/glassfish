@@ -252,7 +252,7 @@ public class AppServerStartup implements ModuleStartup {
                     logger.log(Level.FINE, e.getMessage(), e);
                     logger.log(Level.SEVERE,
                             localStrings.getLocalString("startupservicefailure",
-                                    "Startup service failed to start : ", i.typeName()), e.getMessage());
+                                    "Startup service failed to start : {0} ", i.typeName()), e.getMessage());
                 }
                 if (logger.isLoggable(level)) {
                     servicesTiming.put(i.type(), (System.currentTimeMillis() - start));
@@ -265,7 +265,7 @@ public class AppServerStartup implements ModuleStartup {
 
         // finally let's calculate our starting times
         logger.info(localStrings.getLocalString("startup_end_message",
-                "$0 ($1) startup time : $2 ($3ms), startup services($4ms), total($5ms)",
+                "{0} ({1}) startup time : {2} ({3}ms), startup services({4}ms), total({5}ms)",
                 version.getVersion(), version.getBuildVersion(), platform,
                 (platformInitTime - context.getCreationTime()),
                 (System.currentTimeMillis() - platformInitTime),
