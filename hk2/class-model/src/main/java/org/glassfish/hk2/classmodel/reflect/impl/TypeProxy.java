@@ -54,10 +54,18 @@ public class TypeProxy<T extends Type> {
     private final Notifier<T> notifier;
     private final Set<Member> fieldRefs;
     private final Set<Type> subTypeRefs;
-    private final Set<ClassModel> implementations = Collections.synchronizedSet(new HashSet<ClassModel>()); 
+    private final Set<ClassModel> implementations = Collections.synchronizedSet(new HashSet<ClassModel>());
 
 
-    public TypeProxy(Notifier<T> notifier, String name) {
+    /**
+     * Creates a new type proxy, this ctor is package private as many
+     * other activities must be performed when a new proxy type is created.
+     *
+     * @param notifier notification handle to notify receiver the proxied
+     * type has been resolved
+     * @param name type name
+     */
+    TypeProxy(Notifier<T> notifier, String name) {
         this.notifier = notifier;
         this.name = name;
         fieldRefs = Collections.synchronizedSet(new HashSet<Member>());

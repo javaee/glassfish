@@ -76,6 +76,7 @@ public class TypesCtr implements Types {
         TypeProxy<Type> typeProxy = typeStorage.get(name);
         if (typeProxy ==null) {
             typeProxy = new TypeProxy<Type>(null, name);
+            nonVisited.push(typeProxy);
             typeStorage.put(name, typeProxy);
         }
         return typeProxy;
@@ -85,12 +86,16 @@ public class TypesCtr implements Types {
         public void on(TypeProxy<?> proxy);
     }
 
+    /**
+     * Runs a task on each non visited types parsing discovered.
+     *
+     * @param proxyTask the task to run on each non visited type.
+     */
     public void onNotVisitedEntries(ProxyTask proxyTask) {
-        for (Map<String, TypeProxy<Type>> map : storage.values()) {
-            Map<String, TypeProxy<Type>> copy = new HashMap<String, TypeProxy<Type>>(map);
-            for (TypeProxy<Type> entry : copy.values()) {
-                if (entry!=null && !entry.isVisited())
-                    proxyTask.on(entry);
+        while(!nonVisited.isEmpty()) {
+            TypeProxy proxy = nonVisited.pop();
+            if (!proxy.isVisited()) {
+                proxyTask.on(proxy);
             }
         }
     }
@@ -110,5 +115,8 @@ public class TypesCtr implements Types {
 
 
     private final Map<Class, Map<String, TypeProxy<Type>>> storage=new HashMap<Class, Map<String, TypeProxy<Type>>>();
-        
+    /**
+     * Stack on type proxy as they have been instantiated in FILO order.
+     */
+    private final Stack<TypeProxy> nonVisited = new Stack<TypeProxy>();
 }
