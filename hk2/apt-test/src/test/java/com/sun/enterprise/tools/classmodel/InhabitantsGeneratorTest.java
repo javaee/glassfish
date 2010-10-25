@@ -208,6 +208,7 @@ public class InhabitantsGeneratorTest {
    * this test, akin to the above, looks at the case where the classpath is
    * fully specified resulting in all of the correctly modeled inhabitants.
    */
+  @Ignore
   @Test
   public void testFullHabitatFileGeneration() throws IOException {
     ArrayList<File> inhabitantSources = getTestClassPathEntries(false);
