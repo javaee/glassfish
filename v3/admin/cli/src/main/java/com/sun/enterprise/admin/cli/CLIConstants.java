@@ -62,7 +62,9 @@ public class CLIConstants {
     public static final boolean debugMode;
     public static final String  CLI_RECORD_ALL_COMMANDS_PROP    = "AS_LOGFILE";
     public static final String  MASTER_PASSWORD                 = "AS_ADMIN_MASTERPASSWORD";
+    public static final int     SUCCESS                         = 0;
     public static final int     ERROR                           = 1;
+    public static final int     WARNING                         = 4;
     public static final int     DEATH_TIMEOUT_MS                = 1 * 60 * 1000;
 
     public static final String K_ADMIN_PORT = "agent.adminPort";

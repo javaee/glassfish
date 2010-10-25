@@ -87,7 +87,8 @@ public abstract class CLICommand implements PostConstruct {
     public static final int ERROR = CLIConstants.ERROR;
     public static final int CONNECTION_ERROR = 2;
     public static final int INVALID_COMMAND_ERROR = 3;
-    public static final int SUCCESS = 0;
+    public static final int SUCCESS = CLIConstants.SUCCESS;
+    public static final int WARNING = CLIConstants.WARNING;
 
     private static final Set<String> unsupported;
     private static final String UNSUPPORTED_CMD_FILE_NAME =

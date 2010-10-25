@@ -813,6 +813,8 @@ public class CommandRunnerImpl implements CommandRunner {
         List<RuntimeType> runtimeTypes = new ArrayList<RuntimeType>();
         FailurePolicy fp = null;
         Set<CommandTarget> targetTypesAllowed = new HashSet<CommandTarget>();
+        ActionReport.ExitCode preSupplementalReturn = ActionReport.ExitCode.SUCCESS;
+        ActionReport.ExitCode postSupplementalReturn = ActionReport.ExitCode.SUCCESS;
 
         // If this glassfish installation does not have stand alone instances / clusters at all, then
         // lets not even look Supplemental command and such. A small optimization
@@ -1041,10 +1043,10 @@ public class CommandRunnerImpl implements CommandRunner {
                     "SupplementalCommandExecutorImpl")) != null) {
                 logger.fine(adminStrings.getLocalString("dynamicreconfiguration.diagnostics.presupplemental",
                         "Command execution stage 2 : Call pre supplemental commands for " + inv.name()));
-                ActionReport.ExitCode supplementalReturn = supplementalExecutor.execute(model.getCommandName(),
+                preSupplementalReturn = supplementalExecutor.execute(model.getCommandName(),
                             Supplemental.Timing.Before, context, parameters, ufm.optionNameToFileMap());
-                if(supplementalReturn.equals(ActionReport.ExitCode.FAILURE)) {
-                    report.setActionExitCode(supplementalReturn);
+                if(preSupplementalReturn.equals(ActionReport.ExitCode.FAILURE)) {
+                    report.setActionExitCode(preSupplementalReturn);
                     report.setMessage(adminStrings.getLocalString("commandrunner.executor.supplementalcmdfailed",
                             "A supplemental command failed; cannot proceed further"));
                     return;
@@ -1064,10 +1066,10 @@ public class CommandRunnerImpl implements CommandRunner {
                     //Run Supplemental commands that have to be run after this command on this instance type
                     logger.fine(adminStrings.getLocalString("dynamicreconfiguration.diagnostics.postsupplemental",
                             "Command execution stage 4 : Call post supplemental commands for " + inv.name()));
-                    supplementalReturn = supplementalExecutor.execute(model.getCommandName(),
+                    postSupplementalReturn = supplementalExecutor.execute(model.getCommandName(),
                             Supplemental.Timing.After, context, parameters, ufm.optionNameToFileMap());
-                    if(supplementalReturn.equals(ActionReport.ExitCode.FAILURE)) {
-                        report.setActionExitCode(supplementalReturn);
+                    if(postSupplementalReturn.equals(ActionReport.ExitCode.FAILURE)) {
+                        report.setActionExitCode(postSupplementalReturn);
                         report.setMessage(adminStrings.getLocalString("commandrunner.executor.supplementalcmdfailed",
                                 "A supplemental command failed; cannot proceed further"));
                         return;
@@ -1148,6 +1150,9 @@ public class CommandRunnerImpl implements CommandRunner {
 
         if(processEnv.getProcessType().isEmbedded())
             return;
+        if(preSupplementalReturn == ActionReport.ExitCode.WARNING ||
+                postSupplementalReturn == ActionReport.ExitCode.WARNING)
+            report.setActionExitCode(ActionReport.ExitCode.WARNING);
         if(doReplication &&
                 (!FailurePolicy.applyFailurePolicy(fp, report.getActionExitCode()).equals(ActionReport.ExitCode.FAILURE)) &&
                     (serverEnv.isDas()) &&

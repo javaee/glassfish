@@ -74,6 +74,7 @@ public class AsadminMain {
     private final static int CONNECTION_ERROR = 2;
     private final static int INVALID_COMMAND_ERROR = 3;
     private final static int SUCCESS = 0;
+    private final static int WARNING = 4;
 
     // XXX - move this to LogDomains?
     private final static String ADMIN_CLI_LOGGER =
@@ -227,6 +228,11 @@ public class AsadminMain {
             if (!po.isTerse())
                 logger.fine(
                     strings.get("CommandSuccessful", command));
+            break;
+
+        case WARNING:
+            logger.fine(
+                strings.get("CommandSuccessfulWithWarnings", command));
             break;
 
         case ERROR:
