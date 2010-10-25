@@ -689,10 +689,10 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
      *    false when it was from a "soft" interrupt involving a new proceedTo(), null when its
      *    unknown altogether
      */
-    public void checkInterrupt(Exception e, Inhabitant<?> i, Boolean isHard) {
-      boolean isHardInterrupt = isHardInterrupt(isHard, e);
+    protected void checkInterrupt(Exception e, Inhabitant<?> i, Boolean isHard) {
       if (null != e) {
         ServiceContext ctx = serviceContext(e, i);
+        boolean isHardInterrupt = isHardInterrupt(isHard, e);
         if (isHardInterrupt) {
           event(this, ListenerEvent.CANCEL, ctx, e, isHardInterrupt);
         } else {
@@ -943,13 +943,14 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     }
     
     @Override
-    public void checkInterrupt(Exception e, Inhabitant<?> i, Boolean isHard) {
+    protected void checkInterrupt(Exception e, Inhabitant<?> i, Boolean isHard) {
       synchronized (lock) {
         boolean cancelled = isCancelled(this);
         if (cancelled || null != nextPlannedAfterInterrupt) {
           if (!cancelled && canUpdateProceedTo(nextPlannedAfterInterrupt)) {
             planned = nextPlannedAfterInterrupt;
             nextPlannedAfterInterrupt = null;
+            e = null;
           } else {
             // send cancel event, but only one time
             if (!cancelIssued) {
@@ -1059,7 +1060,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     }
 
     @Override
-    public void checkInterrupt(Exception e, Inhabitant<?> i, Boolean isHard) {
+    protected void checkInterrupt(Exception e, Inhabitant<?> i, Boolean isHard) {
       if (isCancelled(this)) {
         throw new Interrupt();
       }
