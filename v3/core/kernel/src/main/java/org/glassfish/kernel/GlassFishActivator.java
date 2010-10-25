@@ -194,6 +194,14 @@ public class GlassFishActivator implements BundleActivator, EventListener {
      * non-essential bundles after server is ready gives faster start up time.
      */
     private void startPostStartupBundles() {
+        // a 3.0.x domain won't have the necessary gosh.args property set, so for seamless upgrade,
+        // we need to set this property. See https://glassfish.dev.java.net/issues/show_bug.cgi?id=14173
+        // for more details. It is just simpler to do than registering a UpgradeService to do the needful.
+        final String gosh_args = "gosh.args";
+        if (bundleContext.getProperty(gosh_args) == null) {
+            final String gosh_args_value = "--noshutdown -c noop=true";
+            System.setProperty(gosh_args, gosh_args_value);
+        }
         startBundle("org.apache.felix.shell");
         startBundle("org.apache.felix.gogo.runtime");
         startBundle("org.apache.felix.gogo.shell");
