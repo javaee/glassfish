@@ -190,8 +190,11 @@ public class InhabitantsGenerator {
   }
 
   public void generate(File targetInhabitantFile) throws IOException {
-    targetInhabitantFile.getParentFile().mkdirs();
-
+    File parent = targetInhabitantFile.getParentFile();
+    if (null != parent) {
+      parent.mkdirs();
+    }
+    
     PrintWriter w = new PrintWriter(targetInhabitantFile, "UTF-8");
     try {
       generate(w);
@@ -279,15 +282,15 @@ public class InhabitantsGenerator {
     InhabitantsGenerator generator = new InhabitantsGenerator(descriptor, inhabitantsSourceFiles, inhabitantsClassPath);
 
     // sanity check
-    InhabitantsParsingContextGenerator ipcGen = generator.getContextGenerator();
-    ParsingContext pc = ipcGen.getContext();
-    Types types = pc.getTypes();
-    AnnotationType ia = types.getBy(AnnotationType.class, InhabitantAnnotation.class.getName());
-    AnnotationType c = types.getBy(AnnotationType.class, Contract.class.getName());
-    if (null == ia || null == c) {
-      System.err.println("ERROR: HK2's auto-depends jar is an expected argument in " + PARAM_INHABITANTS_CLASSPATH);
-      return;
-    }
+//    InhabitantsParsingContextGenerator ipcGen = generator.getContextGenerator();
+//    ParsingContext pc = ipcGen.getContext();
+//    Types types = pc.getTypes();
+//    AnnotationType ia = types.getBy(AnnotationType.class, InhabitantAnnotation.class.getName());
+//    AnnotationType c = types.getBy(AnnotationType.class, Contract.class.getName());
+//    if (null == ia || null == c) {
+//      System.err.println("ERROR: HK2's auto-depends jar is an expected argument in " + PARAM_INHABITANTS_SOURCE_FILES);
+//      return;
+//    }
     
     generator.generate(targetInhabitantFile);
   }

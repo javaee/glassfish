@@ -77,7 +77,7 @@ import com.sun.hk2.component.InhabitantsScanner;
  */
 public abstract class InhabitantsParsingContextGenerator implements Closeable {
 
-    private final Logger logger = Logger
+    private static final Logger logger = Logger
             .getLogger(InhabitantsParsingContextGenerator.class.getName());
 
     private final Parser parser;
@@ -235,11 +235,19 @@ public abstract class InhabitantsParsingContextGenerator implements Closeable {
       @Override
       public URL getResource(String name) {
         if (name.startsWith("java/")) {
+          logger.log(Level.FINE, "skipping {0}", name);
           return null;  // wasteful to parse these
         }
         
         URL resource = resourceLoader.getResource(name);
-//        System.out.println("RESOURCE: " + name + "=" + resource);
+        logger.log(Level.FINE, "resource {0} resolved to {1}", new Object[] {name, resource});
+        
+//        // TODO: REMOVE ME!
+//        if (name.contains("External")) {
+//          logger.log(Level.INFO, "resource {0} resolved to {1}", new Object[] {name, resource});
+//          new Exception().printStackTrace();
+//        }
+        
         return resource;
       }
     }

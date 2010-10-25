@@ -47,7 +47,7 @@ public class InhabitantsGeneratorTest {
 
   private static final Logger logger = Logger.getAnonymousLogger();
 
-  // @Ignore
+  @Ignore
   @Test
   public void sanityTest() throws Exception {
     ArrayList<File> testDir = getTestClassPathEntries(false);
@@ -75,7 +75,7 @@ public class InhabitantsGeneratorTest {
   /**
    * Another sanity type test
    */
-  // @Ignore
+  @Ignore // TODO: sanity test disabled because auto-depends is no longer required in the inhabitants file set
   @Test
   public void autoDependsIsRequired() throws Exception {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -119,7 +119,7 @@ public class InhabitantsGeneratorTest {
 
       String errTxt = clean(out.toString());
       assertEquals("ERROR: HK2's auto-depends jar is an expected argument in "
-          + InhabitantsGenerator.PARAM_INHABITANTS_CLASSPATH + "\n", errTxt);
+          + InhabitantsGenerator.PARAM_INHABITANTS_SOURCE_FILES + "\n", errTxt);
     } finally {
       System.setErr(old);
       System.clearProperty(InhabitantsGenerator.PARAM_INHABITANTS_CLASSPATH);
@@ -131,7 +131,7 @@ public class InhabitantsGeneratorTest {
   /**
    * Another sanity type test
    */
-  // @Ignore
+  @Ignore
   @Test
   public void workingClassPathRecommended() throws Exception {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -177,7 +177,7 @@ public class InhabitantsGeneratorTest {
    * this test looks at the case where the classpath is only partially specified
    * resulting in a reduced view of the inhabitants.
    */
-  // @Ignore
+  @Ignore
   @Test
   public void testReducedScopeHabitatFileGeneration() throws IOException {
     ArrayList<File> testDir = getTestClassPathEntries(false);
@@ -208,7 +208,7 @@ public class InhabitantsGeneratorTest {
    * this test, akin to the above, looks at the case where the classpath is
    * fully specified resulting in all of the correctly modeled inhabitants.
    */
-  // @Ignore
+  @Ignore
   @Test
   public void testFullHabitatFileGeneration() throws IOException {
     ArrayList<File> inhabitantSources = getTestClassPathEntries(false);
@@ -257,11 +257,13 @@ public class InhabitantsGeneratorTest {
       // the true habitat
       sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithExternalContract,index=com.sun.enterprise.tools.classmodel.test.external.ExternalContract\n");
       sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithAbstractBaseHavingExternalContract,index=com.sun.enterprise.tools.classmodel.test.external.ExternalContract\n");
+      sb.append("class=com.sun.enterprise.tools.classmodel.test.RunLevelCloseableServiceWithExternalAnnotation,index=org.jvnet.hk2.annotations.RunLevel\n");
     } else {
       // without world-view, the external contracts in the
       // inhabitants-gen-ifaces jar are not considered
       sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithExternalContract\n");
       sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithAbstractBaseHavingExternalContract\n");
+      sb.append("class=com.sun.enterprise.tools.classmodel.test.RunLevelCloseableServiceWithExternalAnnotation\n");
     }
 
     if (fromClassModel) {
@@ -289,7 +291,7 @@ public class InhabitantsGeneratorTest {
   /**
    * If there are no inhabitants then there should be no generated file
    */
-  // @Ignore
+  @Ignore
   @Test
   public void testMainWithNoInhabitants() throws Exception {
     File testDir = new File(new File("."), "target/test-classes");
@@ -320,7 +322,7 @@ public class InhabitantsGeneratorTest {
    * If {@link #testHabitatFileGeneration()} fails, then this guy will also
    * always fail.
    */
-  // @Ignore
+  @Ignore
   @Test
   public void testMain() throws Exception {
     File testDir = new File(new File("."), "target/test-classes");
@@ -360,7 +362,7 @@ public class InhabitantsGeneratorTest {
   /**
    * Compares APT generation to class-model, introspection generation.
    */
-  // @Ignore
+  @Ignore
   @Test
   public void testAgainstAptGenerator() throws Exception {
     // generate the habitat file
