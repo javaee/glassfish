@@ -83,7 +83,7 @@
                 setAttribute(key="tmp" value="#{td.value.name}");
                 gf.listInstances(optionKeys={"id"} optionValues={"$attribute{tmp}"}, statusMap="#{requestScope.statusMap}");
                 setAttribute(key="status" value="#{requestScope.statusMap['$attribute{tmp}']}");
-                setAttribute(key="statusString" value="$resource{i18nc.status.$attribute{status}}  &nbsp; $resource{i18nc.status.image.$attribute{status}}");
+                setAttribute(key="statusString" value="$resource{i18nc.status.image.$attribute{status}}  &nbsp; $resource{i18nc.status.$attribute{status}}");
                 />
         </staticText>
     </sun:tableColumn>
