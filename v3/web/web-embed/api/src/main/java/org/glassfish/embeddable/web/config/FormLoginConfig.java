@@ -38,22 +38,51 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.web;
-        
-import org.glassfish.api.embedded.Port;
+package org.glassfish.embeddable.web.config;
+
+;
 
 /**
- * HTTP Listener listens on a TCP port for incoming HTTP connection
+ * Class that is used for configuring form based login, when
+ * the authentication method is set to <tt>FORM</tt> in <tt>LoginConfig</tt>
+ *
+ * @see LoginConfig
+ * @see AuthMethod
  *
  * @author Rajiv Mordani
- * @author Jan Luehe
- * @author Amy Roh
  */
-public class HttpListener extends WebListenerBase  {
-    
-    public HttpListener() {
-        super();
-        this.setProtocol(Port.HTTP_PROTOCOL);
+public class FormLoginConfig {
+
+    private String loginPage;
+    private String errorPage;
+
+    /**
+     * Creates an instance of the <tt>FormLoginConfig</tt> with the specified <tt>loginPage</tt> and
+     * <tt>errorPage</tt>
+     * 
+     * @param loginPage
+     * @param errorPage
+     */
+    public FormLoginConfig(String loginPage, String errorPage) {
+        this.loginPage = loginPage;
+        this.errorPage = errorPage;
     }
 
+    /**
+     * Gets the login page
+     *
+     * @return the login page for form based authentication as a <tt>String</tt>
+     */
+    public String getFormLoginPage() {
+        return this.loginPage;
+    }
+
+    /**
+     * Get the form error page
+     *
+     * @return the error page for form based authentication as a <tt>String</tt>
+     */
+    public String getFormErrorPage() {
+        return this.errorPage;
+    }
 }

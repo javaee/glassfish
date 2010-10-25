@@ -61,15 +61,16 @@ import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.deploy.ErrorPage;
 import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
-import org.glassfish.api.embedded.web.Context;
-import org.glassfish.api.embedded.web.ConfigException;
-import org.glassfish.api.embedded.web.WebListener;
-import org.glassfish.api.embedded.web.config.VirtualServerConfig;
+import org.glassfish.embeddable.web.Context;
+import org.glassfish.embeddable.web.ConfigException;
+import org.glassfish.embeddable.web.WebListener;
+import org.glassfish.embeddable.web.config.VirtualServerConfig;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.web.loader.WebappClassLoader;
 import org.glassfish.web.valve.GlassFishValve;
 import org.jvnet.hk2.component.Habitat;
@@ -91,7 +92,7 @@ import java.util.logging.Logger;
  */
 
 public class VirtualServer extends StandardHost 
-        implements org.glassfish.api.embedded.web.VirtualServer {
+        implements org.glassfish.embeddable.web.VirtualServer {
 
     private static final String STATE = "state";
     private static final String SSO_MAX_IDLE ="sso-max-inactive-seconds";
@@ -1757,7 +1758,7 @@ public class VirtualServer extends StandardHost
      * given <tt>context</tt> will be started as well.
      */
     public void addContext(Context context, String contextRoot)
-        throws ConfigException, org.glassfish.api.embedded.LifecycleException {
+        throws ConfigException, GlassFishException {
         
         if (findContext(contextRoot)!=null) {
             throw new ConfigException("Context with contextRoot "+
@@ -1843,13 +1844,13 @@ public class VirtualServer extends StandardHost
     /**
      * Enables this component.
      * 
-     * @throws LifecycleException if this component fails to be enabled
+     * @throws GlassFishException if this component fails to be enabled
      */    
-    public void enable() throws org.glassfish.api.embedded.LifecycleException {               
+    public void enable() throws GlassFishException {
        try {
             start();
         } catch (LifecycleException e) {
-            throw new org.glassfish.api.embedded.LifecycleException(e);
+            throw new GlassFishException(e);
         }
     }
     
@@ -1858,11 +1859,11 @@ public class VirtualServer extends StandardHost
      * 
      * @throws LifecycleException if this component fails to be disabled
      */
-    public void disable() throws org.glassfish.api.embedded.LifecycleException {
+    public void disable() throws GlassFishException {
        try {
             stop();
         } catch (LifecycleException e) {
-            throw new org.glassfish.api.embedded.LifecycleException(e);
+            throw new GlassFishException(e);
         }        
     }
     

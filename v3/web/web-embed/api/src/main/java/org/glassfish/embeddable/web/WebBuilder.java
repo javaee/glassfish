@@ -38,45 +38,36 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.web.config;
+package org.glassfish.embeddable.web;
 
-import org.glassfish.api.embedded.Server;
-import org.jvnet.hk2.annotations.Inject;
 
-import java.io.File;
 import java.net.URL;
+import java.io.File;
 
 /**
- * Class that is used for configuring EmbeddedWebContainer instances.
+ * Configuration for the WebContainer instance
  *
- * @see org.glassfish.api.embedded.web.EmbeddedWebContainer
+ * @author Jerome Dochez
  */
-public class WebContainerConfig {
 
-    @Inject
-    Server server;
+//TODO:Remove after we have moved this to WebContainerConfig
+public class WebBuilder  {
 
-    private URL defaultWebXml;
-    private File docRoot;
-    private String[] hostNames = new String[] {"localhost"};
-    private String  listenerName = "embedded-listener";
-    private boolean listings;
-    private int port = 8080;    
-    private String virtualServerId = "server";
 
-    /**
-     * Sets the default web xml
-     *
-     * @param url the url of the default web xml
-     */
-    public void setDefaultWebXml(URL url) {
+    URL     defaultWebXml;
+    File    docRoot;
+    String  listenerName;
+    boolean listings;
+    String virtualServerId = "server";
+    String[] hostNames = new String[] {"localhost"};
+
+    private EmbeddedWebContainer container=null;
+
+    public WebBuilder setDefaultWebXml(URL url) {
         defaultWebXml = url;
+        return this;
     }
 
-    /**
-     * Gets the default web xml
-     * (default: <i>org/glassfish/web/embed/default-web.xml</i>).
-     */
     public URL getDefaultWebXml() {
         if (defaultWebXml == null) {
             defaultWebXml = getClass().getClassLoader().getResource("org/glassfish/web/embed/default-web.xml");
@@ -84,23 +75,43 @@ public class WebContainerConfig {
         return defaultWebXml;
     }
 
-    /**
-     * Sets the docroot directory
-     *
-     * @param f the docroot directory
-     */
-    public void setDocRootDir(File f) {
+    public WebBuilder setHttpListenerName(String name) {
+        listenerName = name;
+        return this;
+    }
+
+    public WebBuilder setDocRootDir(File f) {
         docRoot = f;
+        return this;
+    }
+    
+    public WebBuilder setListings(boolean b) {
+        listings = b;
+        return this;        
+    }
+
+    public boolean getListings() {
+        return listings;      
+    }
+ 
+    /**
+     * Sets the id of the default <tt>VirtualServer</tt>
+     * (default: <i>server</i>).
+     *
+     * @param virtualServerId the id of the default <tt>VirtualServer</tt>
+     */
+    public void setVirtualServerId(String virtualServerId) {
+        this.virtualServerId = virtualServerId;
     }
 
     /**
-     * Gets the docroot directory
+     * Gets the id of the default <tt>VirtualServer</tt>
+     * (default: <i>server</i>).
+     *
+     * @return the id of the default <tt>VirtualServer</tt>
      */
-    public File getDocRootDir() {
-        if (docRoot==null) {
-            return new File(server.getFileSystem().instanceRoot, "docroot");
-        }
-        return docRoot;
+    public String getVirtualServerId() {
+        return virtualServerId;
     }
 
     /**
@@ -123,76 +134,20 @@ public class WebContainerConfig {
         return hostNames;
     }
 
-    /**
-     * Sets the default listener name
-     *
-     * @param name the name of the default listener
-     */
-    public void setListenerName(String name) {
-        listenerName = name;
+    public File getDocRootDir() {
+        //TODO; This is not set yet
+        return docRoot;
     }
-
-    /**
-     * Gets the default listener name
-     */
-    public String getListenerName() {
-        return listenerName;
-    }
-
-    /**
-     * Enables or disables directory listings
-     *
-     * @param directoryListing true if directory listings are to be
-     * enabled, false otherwise
-     */
-    public void setListings(boolean directoryListing) {
-        listings = directoryListing;
-    }
-
-    /**
-     * Return if directory listings is enabled
-     */
-    public boolean getListings() {
-        return listings;
-    }
-
-    /**
-     * Sets the port of the default <tt>WebListener</tt> (default: 8080).
-     *
-     * @param port the port of the default <tt>WebListener</tt>
-     */
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    /**
-     * Gets the port of the default <tt>WebListener</tt> (default: 8080).
-     *
-     * @return the port of the default <tt>WebListener</tt>
-     */
-    public int getPort() {
-        return port;
-    }
-
-    /**
-     * Sets the id of the default <tt>VirtualServer</tt>
-     * (default: <i>server</i>).
-     *
-     * @param virtualServerId the id of the default <tt>VirtualServer</tt>
-     */
-    public void setVirtualServerId(String virtualServerId) {
-        this.virtualServerId = virtualServerId;
-    }
-
-    /**
-     * Gets the id of the default <tt>VirtualServer</tt>
-     * (default: <i>server</i>).
-     *
-     * @return the id of the default <tt>VirtualServer</tt>
-     */
-    public String getVirtualServerId() {
-        return virtualServerId;
-    }
-
     
+
+    /**
+     *
+     * @return
+     */
+    /**
+     * uncomment when this moves into web-glue.
+     * public void setConfig(HttpService config) {
+     * }
+     */
+
 }

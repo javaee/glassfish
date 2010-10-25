@@ -38,14 +38,22 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.web.config;
+package org.glassfish.embeddable.web;
+        
 
 /**
- * 
+ * HTTP Listener listens on a TCP port for incoming HTTP connection
+ *
  * @author Rajiv Mordani
+ * @author Jan Luehe
+ * @author Amy Roh
  */
-public enum SslType {
-    SSLv2,
-    SSLv3,
-    TLS
+public class HttpListener extends WebListenerBase  {
+    
+    public HttpListener() {
+        super();
+        //TODO: Define constatnts somewhere
+        this.setProtocol("http");
+    }
+
 }

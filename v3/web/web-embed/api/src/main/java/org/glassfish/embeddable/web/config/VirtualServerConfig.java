@@ -38,12 +38,12 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.web.config;
+package org.glassfish.embeddable.web.config;
 
 /**
  * Class that is used for configuring VirtualServer instances.
  *
- * @see org.glassfish.api.embedded.web.VirtualServer
+ * @see org.glassfish.embeddable.web.VirtualServer
  */
 public class VirtualServerConfig {
 

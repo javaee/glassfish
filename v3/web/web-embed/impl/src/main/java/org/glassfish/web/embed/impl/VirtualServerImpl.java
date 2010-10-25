@@ -48,15 +48,17 @@ import java.util.logging.*;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Pipeline;
-import org.apache.catalina.connector.Connector;
-import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
 import org.glassfish.api.embedded.LifecycleException;
-import org.glassfish.api.embedded.web.*;
-import org.glassfish.api.embedded.web.config.VirtualServerConfig;
+import org.glassfish.embeddable.web.config.VirtualServerConfig;
+import org.glassfish.embeddable.GlassFishException;
+import org.glassfish.embeddable.web.ConfigException;
+import org.glassfish.embeddable.web.Context;
+import org.glassfish.embeddable.web.VirtualServer;
+import org.glassfish.embeddable.web.WebListener;
 import org.glassfish.web.valve.GlassFishValve;
 import org.apache.catalina.authenticator.SingleSignOn;
 
@@ -180,13 +182,13 @@ public class VirtualServerImpl extends StandardHost implements VirtualServer {
      * @param context the <tt>Context</tt> to register
      * @param contextRoot the context root at which to register
      *
-     * @throws ConfigException if a <tt>Context</tt> already exists
+     * @throws org.glassfish.embeddable.web.ConfigException if a <tt>Context</tt> already exists
      * at the given context root on this <tt>VirtualServer</tt>
-     * @throws LifecycleException if the given <tt>context</tt> fails
+     * @throws GlassFishException if the given <tt>context</tt> fails
      * to be started
      */
-    public void addContext(Context context, String contextRoot) 
-            throws ConfigException, LifecycleException {
+    public void addContext(Context context, String contextRoot)
+            throws ConfigException, GlassFishException {
         if (findContext(contextRoot)!=null) {
             throw new ConfigException("Context with contextRoot "+
                     contextRoot+" is already registered");
@@ -261,26 +263,26 @@ public class VirtualServerImpl extends StandardHost implements VirtualServer {
     /**
      * Enables this component.
      * 
-     * @throws LifecycleException if this component fails to be enabled
+     * @throws GlassFishException if this component fails to be enabled
      */    
-    public void enable() throws LifecycleException {               
+    public void enable() throws GlassFishException {
        try {
             start();
         } catch (org.apache.catalina.LifecycleException e) {
-            throw new LifecycleException(e);
+            throw new GlassFishException(e);
         }
     }
 
     /**
      * Disables this component.
      * 
-     * @throws LifecycleException if this component fails to be disabled
+     * @throws GlassFishException if this component fails to be disabled
      */
-    public void disable() throws LifecycleException {
+    public void disable() throws GlassFishException {
        try {
             stop();
         } catch (org.apache.catalina.LifecycleException e) {
-            throw new LifecycleException(e);
+            throw new GlassFishException(e);
         }        
     }
     

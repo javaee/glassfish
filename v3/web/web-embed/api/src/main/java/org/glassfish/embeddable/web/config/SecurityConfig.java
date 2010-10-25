@@ -38,16 +38,72 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.web.config;
+package org.glassfish.embeddable.web.config;
+
+
+
+import java.util.Set;
 
 /**
- * Enumeration of supported authentication methods.
- * 
+ * Class through which the security related parameters for a context
+ * may be configured.
+ *
  * @author Rajiv Mordani
  */
-public enum AuthMethod {
-    BASIC,
-    FORM,
-    SSL,
-    DIGEST
+public class SecurityConfig {
+
+    private Set<SecurityConstraint> securityConstraints;
+    private LoginConfig lc;
+
+    /**
+     * Create an instance of SecurityConfig
+     */
+    public SecurityConfig() {
+        
+    }
+
+    /**
+     * Set the security constraints for a context.
+     *
+     * @see SecurityConstraint
+     *
+     * @param securityConstraints a set of constraints for the
+     * context on which this security configuration applies.
+     */
+    public void setSecurityConstraints(Set<SecurityConstraint> securityConstraints) {
+        this.securityConstraints = securityConstraints;
+    }
+
+    /**
+     * Configures the login related configuration for the context
+     *
+     * @see LoginConfig
+     *
+     * @param lc the login config for the context
+     */
+    public void setLoginConfig(LoginConfig lc) {
+        this.lc = lc;
+    }
+
+    /**
+     * Gets the security constraints for the context
+     *
+     * @see SecurityConstraint
+     *
+     * @return the security constraints for the context
+     */
+    public Set<SecurityConstraint> getSecurityConstraints() {
+        return this.securityConstraints;
+    }
+
+    /**
+     * Gets the login config for the context
+     *
+     * @see LoginConfig
+     *
+     * @return the login configuration for the context
+     */
+    public LoginConfig getLoginConfig() {
+        return this.lc;
+    }
 }

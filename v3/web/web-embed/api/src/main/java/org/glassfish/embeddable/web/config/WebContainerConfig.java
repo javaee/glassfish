@@ -38,46 +38,41 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.web;
+package org.glassfish.embeddable.web.config;
 
-import org.glassfish.api.embedded.ContainerBuilder;
-import org.glassfish.api.embedded.Port;
-import org.glassfish.api.embedded.Server;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.Habitat;
 
-import java.net.URL;
 import java.io.File;
+import java.net.URL;
 
 /**
- * Configuration for the WebContainer instance
+ * Class that is used for configuring EmbeddedWebContainer instances.
  *
- * @author Jerome Dochez
+ * @see org.glassfish.embeddable.web.EmbeddedWebContainer
  */
-@Service(name="web")
-public class WebBuilder implements ContainerBuilder<EmbeddedWebContainer> {
+public class WebContainerConfig {
 
-    @Inject
-    Habitat habitat;
 
-    @Inject
-    Server  server;
-    
-    URL     defaultWebXml;
-    File    docRoot;
-    String  listenerName;
-    boolean listings;
-    String virtualServerId = "server";
-    String[] hostNames = new String[] {"localhost"};
+    private URL defaultWebXml;
+    private File docRoot;
+    private String[] hostNames = new String[] {"localhost"};
+    private String  listenerName = "embedded-listener";
+    private boolean listings;
+    private int port = 8080;    
+    private String virtualServerId = "";
 
-    private EmbeddedWebContainer container=null;
-
-    public WebBuilder setDefaultWebXml(URL url) {
+    /**
+     * Sets the default web xml
+     *
+     * @param url the url of the default web xml
+     */
+    public void setDefaultWebXml(URL url) {
         defaultWebXml = url;
-        return this;
     }
 
+    /**
+     * Gets the default web xml
+     * (default: <i>org/glassfish/web/embed/default-web.xml</i>).
+     */
     public URL getDefaultWebXml() {
         if (defaultWebXml == null) {
             defaultWebXml = getClass().getClassLoader().getResource("org/glassfish/web/embed/default-web.xml");
@@ -85,50 +80,21 @@ public class WebBuilder implements ContainerBuilder<EmbeddedWebContainer> {
         return defaultWebXml;
     }
 
-    public WebBuilder setHttpListenerName(String name) {
-        listenerName = name;
-        return this;
-    }
-
-    public WebBuilder setDocRootDir(File f) {
+    /**
+     * Sets the docroot directory
+     *
+     * @param f the docroot directory
+     */
+    public void setDocRootDir(File f) {
         docRoot = f;
-        return this;
     }
 
+    /**
+     * Gets the docroot directory
+     */
     public File getDocRootDir() {
-        if (docRoot==null) {
-            return new File(server.getFileSystem().instanceRoot, "docroot");
-        }
+        // TODO: Need to get the docroot from the top level API somehow
         return docRoot;
-    }
-    
-    public WebBuilder setListings(boolean b) {
-        listings = b;
-        return this;        
-    }
-
-    public boolean getListings() {
-        return listings;      
-    }
- 
-    /**
-     * Sets the id of the default <tt>VirtualServer</tt>
-     * (default: <i>server</i>).
-     *
-     * @param virtualServerId the id of the default <tt>VirtualServer</tt>
-     */
-    public void setVirtualServerId(String virtualServerId) {
-        this.virtualServerId = virtualServerId;
-    }
-
-    /**
-     * Gets the id of the default <tt>VirtualServer</tt>
-     * (default: <i>server</i>).
-     *
-     * @return the id of the default <tt>VirtualServer</tt>
-     */
-    public String getVirtualServerId() {
-        return virtualServerId;
     }
 
     /**
@@ -150,23 +116,77 @@ public class WebBuilder implements ContainerBuilder<EmbeddedWebContainer> {
     public String[] getHostNames() {
         return hostNames;
     }
-    
-    public synchronized EmbeddedWebContainer create(Server server) {
-        if (container==null) {
-            container=habitat.getByContract(EmbeddedWebContainer.class);
-            container.setConfiguration(this);
-        }
-        return container;
+
+    /**
+     * Sets the default listener name
+     *
+     * @param name the name of the default listener
+     */
+    public void setListenerName(String name) {
+        listenerName = name;
     }
 
     /**
-     *
-     * @return
+     * Gets the default listener name
      */
-    /**
-     * uncomment when this moves into web-glue.
-     * public void setConfig(HttpService config) {
-     * }
-     */
+    public String getListenerName() {
+        return listenerName;
+    }
 
+    /**
+     * Enables or disables directory listings
+     *
+     * @param directoryListing true if directory listings are to be
+     * enabled, false otherwise
+     */
+    public void setListings(boolean directoryListing) {
+        listings = directoryListing;
+    }
+
+    /**
+     * Return if directory listings is enabled
+     */
+    public boolean getListings() {
+        return listings;
+    }
+
+    /**
+     * Sets the port of the default <tt>WebListener</tt> (default: 8080).
+     *
+     * @param port the port of the default <tt>WebListener</tt>
+     */
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    /**
+     * Gets the port of the default <tt>WebListener</tt> (default: 8080).
+     *
+     * @return the port of the default <tt>WebListener</tt>
+     */
+    public int getPort() {
+        return port;
+    }
+
+    /**
+     * Sets the id of the default <tt>VirtualServer</tt>
+     * (default: <i>server</i>).
+     *
+     * @param virtualServerId the id of the default <tt>VirtualServer</tt>
+     */
+    public void setVirtualServerId(String virtualServerId) {
+        this.virtualServerId = virtualServerId;
+    }
+
+    /**
+     * Gets the id of the default <tt>VirtualServer</tt>
+     * (default: <i>server</i>).
+     *
+     * @return the id of the default <tt>VirtualServer</tt>
+     */
+    public String getVirtualServerId() {
+        return virtualServerId;
+    }
+
+    
 }

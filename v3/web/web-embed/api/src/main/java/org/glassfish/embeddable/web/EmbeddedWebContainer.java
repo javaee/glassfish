@@ -38,15 +38,14 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.web;
+package org.glassfish.embeddable.web;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.logging.Level;
-import org.glassfish.api.embedded.web.config.*;
-import org.glassfish.api.embedded.LifecycleException;
-import org.glassfish.api.embedded.EmbeddedContainer;
-import org.jvnet.hk2.annotations.Contract;
+
+import org.glassfish.embeddable.web.config.WebContainerConfig;
+import org.glassfish.embeddable.GlassFishException;
 
 /**
  * Class representing an embedded web container, which supports the
@@ -54,8 +53,8 @@ import org.jvnet.hk2.annotations.Contract;
  * and virtual servers, and the registration of static and dynamic
  * web resources into the URI namespace.
  */
-@Contract
-public interface EmbeddedWebContainer extends EmbeddedContainer {
+
+public interface EmbeddedWebContainer {
 
     /**
      * Sets the embedded configuration for this embedded instance.
@@ -81,7 +80,7 @@ public interface EmbeddedWebContainer extends EmbeddedContainer {
      * <tt>EmbeddedWebContainer</tt> or any of its registered
      * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances 
      */
-    public void start() throws LifecycleException;
+    public void start() throws GlassFishException;
 
     /**
      * Starts this <tt>EmbeddedWebContainer</tt> and any of the
@@ -100,7 +99,7 @@ public interface EmbeddedWebContainer extends EmbeddedContainer {
      *
      * @param config the embedded instance configuration
      */
-    public void start(WebContainerConfig config) throws LifecycleException;
+    public void start(WebContainerConfig config) throws GlassFishException;
 
     /**
      * Stops this <tt>EmbeddedWebContainer</tt> and any of the
@@ -111,7 +110,7 @@ public interface EmbeddedWebContainer extends EmbeddedContainer {
      * <tt>EmbeddedWebContainer</tt> or any of its registered
      * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances 
      */
-    public void stop() throws LifecycleException;
+    public void stop() throws GlassFishException;
 
     /**
      * Creates a <tt>Context</tt> and configures it with the given
@@ -187,11 +186,11 @@ public interface EmbeddedWebContainer extends EmbeddedContainer {
      *
      * @throws ConfigException if a <tt>Context</tt> already exists
      * at the given context root on <tt>VirtualServer</tt>
-     * @throws org.glassfish.api.embedded.LifecycleException if the given <tt>context</tt> fails
+     * @throws GlassFishException if the given <tt>context</tt> fails
      * to be started
      */
     public void addContext(Context context, String contextRoot)
-        throws ConfigException, LifecycleException;
+        throws ConfigException, GlassFishException;
 
     /**
      * Creates a <tt>WebListener</tt> from the given class type and
@@ -240,11 +239,11 @@ public interface EmbeddedWebContainer extends EmbeddedContainer {
      * @throws ConfigException if a <tt>WebListener</tt> with the
      * same id has already been registered with this
      * <tt>EmbeddedWebContainer</tt>
-     * @throws LifecycleException if the given <tt>webListener</tt> fails
+     * @throws GlassFishException if the given <tt>webListener</tt> fails
      * to be started
      */
     public void addWebListener(WebListener webListener)
-        throws ConfigException, LifecycleException;
+        throws ConfigException, GlassFishException;
 
     /**
      * Finds the <tt>WebListener</tt> with the given id.
@@ -273,11 +272,11 @@ public interface EmbeddedWebContainer extends EmbeddedContainer {
      * @param webListener the <tt>WebListener</tt> to be stopped
      * and removed
      *
-     * @throws LifecycleException if an error occurs during the stopping
+     * @throws GlassFishException if an error occurs during the stopping
      * or removal of the given <tt>webListener</tt>
      */
     public void removeWebListener(WebListener webListener)
-        throws LifecycleException;
+        throws GlassFishException;
 
     /**
      * Creates a <tt>VirtualServer</tt> with the given id and docroot, and
@@ -316,11 +315,11 @@ public interface EmbeddedWebContainer extends EmbeddedContainer {
      * @throws ConfigException if a <tt>VirtualServer</tt> with the
      * same id has already been registered with this
      * <tt>EmbeddedWebContainer</tt>
-     * @throws org.glassfish.api.embedded.LifecycleException if the given <tt>virtualServer</tt> fails
+     * @throws GlassFishException if the given <tt>virtualServer</tt> fails
      * to be started
      */
     public void addVirtualServer(VirtualServer virtualServer)
-        throws ConfigException, LifecycleException;
+        throws ConfigException, GlassFishException;
 
     /**
      * Finds the <tt>VirtualServer</tt> with the given id.
@@ -349,11 +348,11 @@ public interface EmbeddedWebContainer extends EmbeddedContainer {
      * @param virtualServer the <tt>VirtualServer</tt> to be stopped
      * and removed
      *
-     * @throws LifecycleException if an error occurs during the stopping
+     * @throws GlassFishException if an error occurs during the stopping
      * or removal of the given <tt>virtualServer</tt>
      */
     public void removeVirtualServer(VirtualServer virtualServer)
-        throws LifecycleException;
+        throws GlassFishException;
     
     /**
      * Sets log level

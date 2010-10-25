@@ -38,87 +38,106 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.web.config;
+package org.glassfish.embeddable.web.config;
 
+import java.io.File;
 import java.util.Set;
 
 /**
- * This class represents a list of URL patterns and HTTP
- * methods that describe a set of Web resources to be protected.
  * @author Rajiv Mordani
  */
-public class WebResourceCollection {
+public class SslConfig {
 
-    private String name;
-    private Set<String> urlPatterns;
-    private Set<String> httpMethods;
-    private Set<String> httpMethodOmissions;
+    private String keyStore;
+    private File trustStore;
+    private String keyPassword;
+    private long timeoutMilliSeconds;
+    private Set<SslType> algorithms;
 
     /**
-     * Sets the name of this collection
      *
-     * @param name the name of this collection
      */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * Gets the name of this collection
-     *
-     * @return the name of this collection
-     */
-    public String getName() {
-        return this.name;
-    }
-
-    /**
-     * The set of url patterns that correspond to this
-     * web resource
-     * 
-     * @param urlPatterns
-     */
-    public void setUrlPatterns(Set<String> urlPatterns) {
-        this.urlPatterns = urlPatterns;          
+    public SslConfig() {
+        
     }
 
     /**
      *
-     * @return
+     * @param keyStore
      */
-    public Set<String> getUrlPatterns() {
-        return this.urlPatterns;
+    public void setKeyStore(String keyStore) {
+        this.keyStore = keyStore;
     }
 
     /**
      *
-     * @param httpMethods
+     * @param trustStore
      */
-    public void setHttpMethods(Set<String> httpMethods) {
-        this.httpMethods = httpMethods;
+    public void setTrustStore(File trustStore) {
+        this.trustStore = trustStore;
     }
 
     /**
      *
-     * @return
+     * @param keyPassword
      */
-    public Set<String> getHttpMethods() {
-        return this.httpMethods;
+    public void setKeyPassword(String keyPassword) {
+        this.keyPassword = keyPassword;
     }
 
     /**
      *
-     * @param httpMethodOmissions
+     * @param timeoutMilliSeconds
      */
-    public void setHttpMethodOmissions(Set<String> httpMethodOmissions) {
-        this.httpMethodOmissions = httpMethodOmissions;
+    public void setHandshakeTimeout(long timeoutMilliSeconds) {
+        this.timeoutMilliSeconds = timeoutMilliSeconds;
+    }
+
+    /**
+     *
+     * @param algorithms
+     */
+    public void setAlgorithms(Set<SslType> algorithms) {
+        this.algorithms = algorithms;
     }
 
     /**
      *
      * @return
      */
-    public Set<String> getHttpMethodOmissions() {
-        return this.httpMethodOmissions;
+    public String getKeyStore() {
+        return this.keyStore;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public File getTrustStore() {
+        return this.trustStore;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getKeyPassword() {
+        return this.keyPassword;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public long getHandshakeTimeout() {
+        return this.timeoutMilliSeconds;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public Set<SslType> getAlgorithms() {
+        return this.algorithms;
     }
 }

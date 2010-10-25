@@ -38,49 +38,46 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.web.config;;
+package org.glassfish.embeddable.web;
+
+import org.glassfish.embeddable.web.config.SslConfig;
 
 /**
- * Class that is used for configuring form based login, when
- * the authentication method is set to <tt>FORM</tt> in <tt>LoginConfig</tt>
- *
- * @see org.glassfish.api.embedded.web.config.LoginConfig
- * @see org.glassfish.api.embedded.web.config.AuthMethod
- *
  * @author Rajiv Mordani
+ * @author Amy Roh
+ * TODO
  */
-public class FormLoginConfig {
+public class HttpsListener extends WebListenerBase  {
 
-    private String loginPage;
-    private String errorPage;
+    private SslConfig sslConfig;
 
-    /**
-     * Creates an instance of the <tt>FormLoginConfig</tt> with the specified <tt>loginPage</tt> and
-     * <tt>errorPage</tt>
-     * 
-     * @param loginPage
-     * @param errorPage
-     */
-    public FormLoginConfig(String loginPage, String errorPage) {
-        this.loginPage = loginPage;
-        this.errorPage = errorPage;
+    public HttpsListener() {
+        super();
+        //TODO: Define a constant for this
+        this.setProtocol("https");
     }
 
     /**
-     * Gets the login page
-     *
-     * @return the login page for form based authentication as a <tt>String</tt>
+     * Sets the SSL configuration for this web listener
      */
-    public String getFormLoginPage() {
-        return this.loginPage;
+    public void setSslConfig(SslConfig sslConfig) {
+
+        this.sslConfig = sslConfig;
+        /* TODO
+        setKeystoreFile(sslConfig.getKeyStore());
+        setKeystorePass(sslConfig.getKeyPassword());
+        sslConfig.getTrustStore();
+        sslConfig.getHandshakeTimeout();
+        sslConfig.getAlgorithms();
+        */
     }
 
     /**
-     * Get the form error page
-     *
-     * @return the error page for form based authentication as a <tt>String</tt>
+     * Gets the SslConfig for this web listener
      */
-    public String getFormErrorPage() {
-        return this.errorPage;
+    public SslConfig getSslConfig() {
+        return sslConfig;
     }
+    
+    
 }

@@ -38,7 +38,7 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.web;
+package org.glassfish.embeddable.web;
 
 /**
  * Exception thrown when a web container component fails to be

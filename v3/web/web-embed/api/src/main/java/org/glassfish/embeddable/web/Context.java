@@ -38,12 +38,11 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.web;
+package org.glassfish.embeddable.web;
 
 import java.util.*;
 import javax.servlet.*;
-import org.apache.catalina.Valve;
-import org.glassfish.api.embedded.web.config.SecurityConfig;
+import org.glassfish.embeddable.web.config.SecurityConfig;
 
 /**
  * Representation of a web application.
@@ -60,7 +59,7 @@ public interface Context extends ServletContext, Lifecycle {
      *
      * @param valve the <tt>Valve</tt> to be added
      */
-    public void addValve(Valve valve);
+    //public void addValve(Valve valve);
 
     /**
      * Registers the given listener with this <tt>Context</tt>.
@@ -129,7 +128,7 @@ public interface Context extends ServletContext, Lifecycle {
     /**
      * Set the security related configuration for this context
      *
-     * @see org.glassfish.api.embedded.web.config.SecurityConfig
+     * @see org.glassfish.embeddable.web.config.SecurityConfig
      *
      * @param config the security configuration for this context
      */
@@ -138,7 +137,7 @@ public interface Context extends ServletContext, Lifecycle {
     /**
      * Gets the security related configuration for this context
      *
-     * @see org.glassfish.api.embedded.web.config.SecurityConfig
+     * @see org.glassfish.embeddable.web.config.SecurityConfig
      *
      * @return the security configuration for this context
      */

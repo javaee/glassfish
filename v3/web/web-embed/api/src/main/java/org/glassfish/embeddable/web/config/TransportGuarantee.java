@@ -38,17 +38,14 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.web;
+package org.glassfish.embeddable.web.config;
 
 /**
+ *
  * @author Rajiv Mordani
- * @author Amy Roh
  */
-public class AjpListener extends WebListenerBase  {
-
-    public AjpListener() {
-        super();
-        this.setProtocol("AJP/1.3");
-    }
-    
+public enum TransportGuarantee {
+    NONE,
+    INTEGRAL,
+    CONFIDENTIAL
 }

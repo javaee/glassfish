@@ -47,11 +47,10 @@
         <groupId>org.glassfish.web</groupId>
     	<artifactId>web-embed</artifactId>
         <version>3.1-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>web-embed-api</artifactId>
-    <packaging>hk2-jar</packaging>    
+    <artifactId>web-embed-api</artifactId>    
+    <packaging>hk2-jar</packaging>
     <name>GlassFish Web container Embedded APIs</name>
 
     <developers>
@@ -85,8 +84,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>web-core</artifactId>
+            <groupId>org.glassfish</groupId>
+            <artifactId>simple-glassfish-api</artifactId>
             <version>${project.version}</version>
         </dependency>
    </dependencies>

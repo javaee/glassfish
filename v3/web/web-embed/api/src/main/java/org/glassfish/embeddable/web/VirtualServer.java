@@ -38,13 +38,12 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.web;
+package org.glassfish.embeddable.web;
 
 import java.io.File;
 import java.util.Collection;
-import org.apache.catalina.Valve;
-import org.glassfish.api.embedded.web.config.VirtualServerConfig;
-import org.glassfish.api.embedded.LifecycleException;
+import org.glassfish.embeddable.web.config.VirtualServerConfig;
+import org.glassfish.embeddable.GlassFishException;
 
 /**
  * Representation of a virtual server.
@@ -88,7 +87,7 @@ public interface VirtualServer extends Lifecycle {
      * 
      * @param valve the <tt>Valve</tt> to be added
      */
-    public void addValve(Valve valve);
+    //public void addValve(Valve valve);
 
     /**
      * Registers the given <tt>Context</tt> with this <tt>VirtualServer</tt>
@@ -102,11 +101,11 @@ public interface VirtualServer extends Lifecycle {
      *
      * @throws ConfigException if a <tt>Context</tt> already exists
      * at the given context root on this <tt>VirtualServer</tt>
-     * @throws org.glassfish.api.embedded.LifecycleException if the given <tt>context</tt> fails
+     * @throws GlassFishException if the given <tt>context</tt> fails
      * to be started
      */
     public void addContext(Context context, String contextRoot)
-        throws ConfigException, LifecycleException;
+        throws ConfigException, GlassFishException;
 
     /**
      * Stops the given <tt>context</tt> and removes it from this
@@ -114,10 +113,11 @@ public interface VirtualServer extends Lifecycle {
      *
      * @param context the <tt>Context</tt> to be stopped and removed
      *
-     * @throws org.glassfish.api.embedded.LifecycleException if an error occurs during the stopping
+     * @throws GlassFishException if an error occurs during the stopping
      * or removal of the given <tt>context</tt>
      */
-    public void removeContext(Context context);
+    public void removeContext(Context context)
+            throws GlassFishException;
 
     /**
      * Finds the <tt>Context</tt> registered at the given context root.

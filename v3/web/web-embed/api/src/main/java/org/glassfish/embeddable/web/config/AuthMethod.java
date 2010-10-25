@@ -38,34 +38,16 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.web.config;
+package org.glassfish.embeddable.web.config;
 
 /**
- * Class that is used for configuring WebListener instances.
- *
- * @see org.glassfish.api.embedded.web.WebListener
+ * Enumeration of supported authentication methods.
+ * 
+ * @author Rajiv Mordani
  */
-public class WebListenerConfig {
-
-    private boolean traceEnabled;
-
-    /**
-     * Enables or disables support for TRACE requests.
-     *
-     * @param traceEnabled true if support for TRACE requests is to be
-     * enabled, false otherwise
-     */
-    public void setTraceEnabled(boolean traceEnabled) {
-        this.traceEnabled = traceEnabled;
-    }
-
-    /**
-     * Checks if support for TRACE requests is enabled.
-     *
-     * @return true if support for TRACE requests is enabled, false otherwise
-     */
-    public boolean isTraceEnabled() {
-        return traceEnabled;
-    }
-
+public enum AuthMethod {
+    BASIC,
+    FORM,
+    SSL,
+    DIGEST
 }

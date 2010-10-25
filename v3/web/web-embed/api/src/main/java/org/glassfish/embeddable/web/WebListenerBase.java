@@ -38,86 +38,108 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.web;
+package org.glassfish.embeddable.web;
 
-import org.glassfish.api.embedded.web.config.WebListenerConfig;
+import org.glassfish.embeddable.web.config.WebListenerConfig;
+import org.glassfish.embeddable.GlassFishException;
 
 /**
- * Representation of a network listener for web requests.
+ * Base implementation of the <b>WebListener</b> interface
  *
- * <p>Instances of <tt>WebListener</tt> may be in one of two states:
- * <i>stopped</i> or <i>started</i>.
- *
- * @author Rajiv Mordani
  * @author Amy Roh
  */
 
-public interface WebListener extends Lifecycle  {
+public class WebListenerBase implements WebListener  {
+
+    private WebListenerConfig config;
+
+    private String id;
+
+    private int port;
+
+    private String protocol;
 
     /**
      * Sets the id for this <tt>WebListener</tt>.
-     *
-     * @param id for this <tt>WebListener</tt>
      */
-    public void setId(String id);
+    public void setId(String id) {
+        this.id = id;
+    }
 
     /**
      * Gets the id of this <tt>WebListener</tt>.
-     *
-     * @return id of this <tt>WebListener</tt>
      */
-    public String getId();   
-
-    /**
-     * Sets the port number for this <tt>WebListener</tt>.
-     *
-     * @param port the port number for this <tt>WebListener</tt>
-     */
-    public void setPort(int port);
-
-    /**
-     * Gets the port number of this <tt>WebListener</tt>.
-     *
-     * @return the port number of this <tt>WebListener</tt>
-     */
-    public int getPort();
-
-    /**
-     * Sets the protocol for this <tt>WebListener</tt>.
-     *
-     * @param protocol the protocol for this <tt>WebListener</tt>
-     */
-    public void setProtocol(String protocol);
-
-    /**
-     * Gets the protocol of this <tt>WebListener</tt>.
-     *
-     * @return the protocol of this <tt>WebListener</tt>
-     */
-    public String getProtocol();
+    public String getId() {
+        return id;
+    }
 
     /**
      * Reconfigures this <tt>WebListener</tt> with the given
      * configuration.
-     *
-     * <p>In order for the given configuration to take effect, this
-     * <tt>WebListener</tt> may be stopped and restarted.
-     *
-     * @param config the configuration to be applied
-     *
-     * @throws ConfigException if the configuration requires a restart,
-     * and this <tt>WebListener</tt> fails to be restarted
      */
-    public void setConfig(WebListenerConfig config)
-            throws ConfigException;
+    public void setConfig(WebListenerConfig config) throws ConfigException {
+        this.config = config;
+    }
 
     /**
      * Gets the current configuration of this <tt>WebListener</tt>.
-     *
-     * @return the current configuration of this <tt>WebListener</tt>,
-     * or <tt>null</tt> if no special configuration was ever applied to this
-     * <tt>WebListener</tt>
      */
-    public WebListenerConfig getConfig();
+    public WebListenerConfig getConfig() {
+        return config;
+    }
+
+    /**
+     * Sets the port number for this <tt>WebListener</tt>.
+     */
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    /**
+     * Gets the port number of this <tt>WebListener</tt>.
+     */
+    public int getPort() {
+        return port;
+    }
+
+    /**
+     * Sets the protocol which will be used by this <tt>WebListener</tt>.
+     */
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+    /**
+     * Gets the protocol used by this <tt>WebListener</tt>.
+     */
+    public String getProtocol() {
+        return protocol;
+    }
+
+    /**
+     * Enables this component.
+     */
+    public void enable() throws GlassFishException {
+        /*
+        try {
+            start();
+        } catch (org.apache.catalina.LifecycleException e) {
+            throw new LifecycleException(e);
+        }*/
+    }
+
+    /**
+     * Disables this component.
+     */
+    public void disable() throws GlassFishException {
+        /*
+        try {
+            stop();
+        } catch (org.apache.catalina.LifecycleException e) {
+            throw new LifecycleException(e);
+        }*/
+    }
 
 }
+
+

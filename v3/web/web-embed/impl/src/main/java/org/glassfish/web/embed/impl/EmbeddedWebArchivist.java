@@ -41,9 +41,7 @@
 package org.glassfish.web.embed.impl;
 
 import org.glassfish.hk2.classmodel.reflect.Parser;
-import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.embedded.web.WebBuilder;
 import org.glassfish.api.embedded.*;
 import org.glassfish.apf.ProcessingResult;
 import org.glassfish.apf.AnnotationProcessorException;
@@ -65,8 +63,10 @@ import com.sun.enterprise.deployment.RootDeploymentDescriptor;
  */
 public class EmbeddedWebArchivist extends WebArchivist {
 
+/*
     @Inject
     WebBuilder builder;
+*/
 
     private final ModuleScanner scanner = new ModuleScanner() {
 
@@ -108,9 +108,11 @@ public class EmbeddedWebArchivist extends WebArchivist {
 
     @Override
     protected URL getDefaultWebXML() throws IOException {
+/*
         if (builder.getDefaultWebXml()!=null) {
             return builder.getDefaultWebXml();
         }
+*/
         return super.getDefaultWebXML();
     }
 

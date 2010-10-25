@@ -38,50 +38,17 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.web;
-
-import org.glassfish.api.embedded.Port;
-import org.glassfish.api.embedded.web.config.SslConfig;
-import org.glassfish.api.embedded.web.config.SslType;
-
-import java.io.File;
-import java.util.Set;
+package org.glassfish.embeddable.web;
 
 /**
  * @author Rajiv Mordani
  * @author Amy Roh
- * TODO
  */
-public class HttpsListener extends WebListenerBase  {
+public class AjpListener extends WebListenerBase  {
 
-    private SslConfig sslConfig;
-
-    public HttpsListener() {
+    public AjpListener() {
         super();
-        this.setProtocol(Port.HTTPS_PROTOCOL);
+        this.setProtocol("AJP/1.3");
     }
-
-    /**
-     * Sets the SSL configuration for this web listener
-     */
-    public void setSslConfig(SslConfig sslConfig) {
-
-        this.sslConfig = sslConfig;
-        /* TODO
-        setKeystoreFile(sslConfig.getKeyStore());
-        setKeystorePass(sslConfig.getKeyPassword());
-        sslConfig.getTrustStore();
-        sslConfig.getHandshakeTimeout();
-        sslConfig.getAlgorithms();
-        */
-    }
-
-    /**
-     * Gets the SslConfig for this web listener
-     */
-    public SslConfig getSslConfig() {
-        return sslConfig;
-    }
-    
     
 }

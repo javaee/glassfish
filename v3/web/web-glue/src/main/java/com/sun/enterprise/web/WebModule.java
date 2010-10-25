@@ -67,16 +67,16 @@ import org.apache.catalina.servlets.DefaultServlet;
 import org.apache.catalina.session.StandardManager;
 import org.apache.jasper.servlet.JspServlet;
 import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.api.embedded.web.Context;
-import org.glassfish.api.embedded.web.config.SecurityConfig;
+import org.glassfish.embeddable.web.Context;
+import org.glassfish.embeddable.web.config.SecurityConfig;
 import org.glassfish.hk2.classmodel.reflect.Types;
 import org.glassfish.internal.api.ServerContext;
+import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.web.admin.monitor.ServletProbeProvider;
 import org.glassfish.web.admin.monitor.SessionProbeProvider;
 import org.glassfish.web.admin.monitor.WebModuleProbeProvider;
 import org.glassfish.web.loader.ServletContainerInitializerUtil;
 import org.glassfish.web.valve.GlassFishValve;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.types.Property;
 
@@ -229,7 +229,7 @@ public class WebModule extends PwcWebModule implements Context {
         this.webModuleProbeProvider =
             webContainer.getWebModuleProbeProvider();
         this.javaEEIOUtils =
-            webContainer.getJavaEEIOUtils();    
+            webContainer.getJavaEEIOUtils();
     }
 
     public void setWebModuleConfig(WebModuleConfig wmInfo) {
@@ -2162,24 +2162,24 @@ public class WebModule extends PwcWebModule implements Context {
      * 
      * @throws LifecycleException if this component fails to be enabled
      */    
-    public void enable() throws org.glassfish.api.embedded.LifecycleException {               
+    public void enable() throws GlassFishException {
        try {
             start();
         } catch (LifecycleException e) {
-            throw new org.glassfish.api.embedded.LifecycleException(e);
+            throw new GlassFishException(e);
         }
     }
 
     /**
      * Disables this component.
      * 
-     * @throws LifecycleException if this component fails to be disabled
+     * @throws GlassFishException if this component fails to be disabled
      */
-    public void disable() throws org.glassfish.api.embedded.LifecycleException {
+    public void disable() throws GlassFishException {
        try {
             stop();
         } catch (LifecycleException e) {
-            throw new org.glassfish.api.embedded.LifecycleException(e);
+            throw new GlassFishException(e);
         }        
     }
     

@@ -38,14 +38,16 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.web.config;
+package org.glassfish.embeddable.web.config;
 
 /**
- *
+ * An Enumeration of supported realm types
  * @author Rajiv Mordani
  */
-public enum TransportGuarantee {
-    NONE,
-    INTEGRAL,
-    CONFIDENTIAL
+public enum RealmType {
+    certificate,
+    file,
+    jdbc,
+    ldap,
+    solaris
 }

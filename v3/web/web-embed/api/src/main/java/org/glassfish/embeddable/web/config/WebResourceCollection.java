@@ -38,27 +38,87 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.web;
+package org.glassfish.embeddable.web.config;
 
-import org.glassfish.api.embedded.LifecycleException;
+import java.util.Set;
 
 /**
- * Interface for lifecycle events
+ * This class represents a list of URL patterns and HTTP
+ * methods that describe a set of Web resources to be protected.
+ * @author Rajiv Mordani
  */
-public interface Lifecycle {
+public class WebResourceCollection {
+
+    private String name;
+    private Set<String> urlPatterns;
+    private Set<String> httpMethods;
+    private Set<String> httpMethodOmissions;
 
     /**
-     * Enables this component.
-     * 
-     * @throws LifecycleException if this component fails to be enabled
+     * Sets the name of this collection
+     *
+     * @param name the name of this collection
      */
-    public void enable() throws LifecycleException;
+    public void setName(String name) {
+        this.name = name;
+    }
 
     /**
-     * Disables this component.
-     * 
-     * @throws org.glassfish.api.embedded.LifecycleException if this component fails to be disabled
+     * Gets the name of this collection
+     *
+     * @return the name of this collection
      */
-    public void disable() throws LifecycleException;
+    public String getName() {
+        return this.name;
+    }
 
+    /**
+     * The set of url patterns that correspond to this
+     * web resource
+     * 
+     * @param urlPatterns
+     */
+    public void setUrlPatterns(Set<String> urlPatterns) {
+        this.urlPatterns = urlPatterns;          
+    }
+
+    /**
+     *
+     * @return
+     */
+    public Set<String> getUrlPatterns() {
+        return this.urlPatterns;
+    }
+
+    /**
+     *
+     * @param httpMethods
+     */
+    public void setHttpMethods(Set<String> httpMethods) {
+        this.httpMethods = httpMethods;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public Set<String> getHttpMethods() {
+        return this.httpMethods;
+    }
+
+    /**
+     *
+     * @param httpMethodOmissions
+     */
+    public void setHttpMethodOmissions(Set<String> httpMethodOmissions) {
+        this.httpMethodOmissions = httpMethodOmissions;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public Set<String> getHttpMethodOmissions() {
+        return this.httpMethodOmissions;
+    }
 }

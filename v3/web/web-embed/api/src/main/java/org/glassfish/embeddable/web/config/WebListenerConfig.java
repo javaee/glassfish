@@ -38,16 +38,34 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.web.config;
+package org.glassfish.embeddable.web.config;
 
 /**
- * An Enumeration of supported realm types
- * @author Rajiv Mordani
+ * Class that is used for configuring WebListener instances.
+ *
+ * @see org.glassfish.embeddable.web.WebListener
  */
-public enum RealmType {
-    certificate,
-    file,
-    jdbc,
-    ldap,
-    solaris
+public class WebListenerConfig {
+
+    private boolean traceEnabled;
+
+    /**
+     * Enables or disables support for TRACE requests.
+     *
+     * @param traceEnabled true if support for TRACE requests is to be
+     * enabled, false otherwise
+     */
+    public void setTraceEnabled(boolean traceEnabled) {
+        this.traceEnabled = traceEnabled;
+    }
+
+    /**
+     * Checks if support for TRACE requests is enabled.
+     *
+     * @return true if support for TRACE requests is enabled, false otherwise
+     */
+    public boolean isTraceEnabled() {
+        return traceEnabled;
+    }
+
 }

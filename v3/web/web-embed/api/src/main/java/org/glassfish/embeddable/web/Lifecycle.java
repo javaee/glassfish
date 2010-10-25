@@ -38,72 +38,27 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.web.config;
+package org.glassfish.embeddable.web;
 
-
-
-import java.util.Set;
+import org.glassfish.embeddable.GlassFishException;
 
 /**
- * Class through which the security related parameters for a context
- * may be configured.
- *
- * @author Rajiv Mordani
+ * Interface for lifecycle events
  */
-public class SecurityConfig {
-
-    private Set<SecurityConstraint> securityConstraints;
-    private LoginConfig lc;
+public interface Lifecycle {
 
     /**
-     * Create an instance of SecurityConfig
+     * Enables this component.
+     * 
+     * @throws GlassFishException if this component fails to be enabled
      */
-    public SecurityConfig() {
-        
-    }
+    public void enable() throws GlassFishException;
 
     /**
-     * Set the security constraints for a context.
-     *
-     * @see org.glassfish.api.embedded.web.config.SecurityConstraint
-     *
-     * @param securityConstraints a set of constraints for the
-     * context on which this security configuration applies.
+     * Disables this component.
+     * 
+     * @throws GlassFishException if this component fails to be disabled
      */
-    public void setSecurityConstraints(Set<SecurityConstraint> securityConstraints) {
-        this.securityConstraints = securityConstraints;
-    }
+    public void disable() throws GlassFishException;
 
-    /**
-     * Configures the login related configuration for the context
-     *
-     * @see org.glassfish.api.embedded.web.config.LoginConfig
-     *
-     * @param lc the login config for the context
-     */
-    public void setLoginConfig(LoginConfig lc) {
-        this.lc = lc;
-    }
-
-    /**
-     * Gets the security constraints for the context
-     *
-     * @see org.glassfish.api.embedded.web.config.SecurityConstraint
-     *
-     * @return the security constraints for the context
-     */
-    public Set<SecurityConstraint> getSecurityConstraints() {
-        return this.securityConstraints;
-    }
-
-    /**
-     * Gets the login config for the context
-     *
-     * @see org.glassfish.api.embedded.web.config.LoginConfig
-     *
-     * @return the login configuration for the context
-     */
-    public LoginConfig getLoginConfig() {
-        return this.lc;
-    }
 }

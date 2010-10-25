@@ -40,21 +40,16 @@
 
 package org.glassfish.web.embed.impl;
 
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.*;
 import javax.servlet.*;
-import javax.servlet.http.*;
 
-import org.glassfish.api.embedded.LifecycleException;
-import org.glassfish.api.embedded.web.Context;
-import org.glassfish.api.embedded.web.config.SecurityConfig;
+import org.glassfish.embeddable.web.Context;
+import org.glassfish.embeddable.web.config.SecurityConfig;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.Constants;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.servlets.DefaultServlet;
+import org.glassfish.embeddable.GlassFishException;
 
 
 /**
@@ -109,7 +104,7 @@ public class ContextImpl extends StandardContext implements Context {
     /**
      * Set the security related configuration for this context
      *
-     * @see org.glassfish.api.embedded.web.config.SecurityConfig
+     * @see org.glassfish.embeddable.web.config.SecurityConfig
      *
      * @param config the security configuration for this context
      */
@@ -121,7 +116,7 @@ public class ContextImpl extends StandardContext implements Context {
     /**
      * Gets the security related configuration for this context
      *
-     * @see org.glassfish.api.embedded.web.config.SecurityConfig
+     * @see org.glassfish.embeddable.web.config.SecurityConfig
      *
      * @return the security configuration for this context
      */
@@ -134,26 +129,26 @@ public class ContextImpl extends StandardContext implements Context {
     /**
      * Enables this component.
      * 
-     * @throws LifecycleException if this component fails to be enabled
+     * @throws GlassFishException if this component fails to be enabled
      */    
-    public void enable() throws LifecycleException {               
+    public void enable() throws GlassFishException {               
        try {
             start();
         } catch (org.apache.catalina.LifecycleException e) {
-            throw new LifecycleException(e);
+            throw new GlassFishException(e);
         }
     }
 
     /**
      * Disables this component.
      * 
-     * @throws LifecycleException if this component fails to be disabled
+     * @throws GlassFishException if this component fails to be disabled
      */
-    public void disable() throws LifecycleException {
+    public void disable() throws GlassFishException {
        try {
             stop();
         } catch (org.apache.catalina.LifecycleException e) {
-            throw new LifecycleException(e);
+            throw new GlassFishException(e);
         }        
     }
     

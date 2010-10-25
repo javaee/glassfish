@@ -38,17 +38,14 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.web.config;
-
-import org.glassfish.api.embedded.web.config.FormLoginConfig;
-import org.glassfish.api.embedded.web.config.AuthMethod;
+package org.glassfish.embeddable.web.config;
 
 /**
  * The class configures the authentication related parameters like,
  * authentication method, form login configuration, if authentication method
  * is form based authentication, the realm name and the realm type.
  *
- * @see org.glassfish.api.embedded.web.config.SecurityConfig
+ * @see SecurityConfig
  *
  * @author Rajiv Mordani
  */
@@ -108,7 +105,7 @@ public class LoginConfig {
      * must be one of the supported realm types as defined in the
      * <tt>RealmType</tt> enumeration
      *
-     * @see org.glassfish.api.embedded.web.config.RealmType
+     * @see RealmType
      *
      * @param realmType the realm type for the context
      */
@@ -119,7 +116,7 @@ public class LoginConfig {
     /**
      * Gets the realm type for the context
      *
-     * @see org.glassfish.api.embedded.web.config.RealmType
+     * @see RealmType
      * 
      * @return the realm type for the context
      */
@@ -131,7 +128,7 @@ public class LoginConfig {
      * Set the form login configuration, if the authentication
      * method is form based authentication
      *
-     * @see org.glassfish.api.embedded.web.config.FormLoginConfig
+     * @see FormLoginConfig
      * 
      * @param flc form login configuration
      */
@@ -143,7 +140,7 @@ public class LoginConfig {
      * Gets the form login config, or <tt>null</tt> if
      * the authentication scheme is not form based login.
      *
-     * @see org.glassfish.api.embedded.web.config.FormLoginConfig
+     * @see FormLoginConfig
      * 
      * @return form login configuration
      */

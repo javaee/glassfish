@@ -47,7 +47,6 @@
         <groupId>org.glassfish.web</groupId>
     	<artifactId>web-embed</artifactId>
         <version>3.1-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>web-embed-impl</artifactId>
@@ -55,6 +54,16 @@
     <name>GlassFish Web container Embedded Implementation</name>
 
     <developers>
+        <developer>
+            <id>mode</id>
+            <name>Rajiv Mordani</name>
+            <url>http://weblogs.java.net/blog/mode</url>
+            <organization>Oracle Corporation.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+
         <developer>
             <id>amyroh</id>
             <name>Amy Roh</name>
@@ -73,6 +82,11 @@
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>web-embed-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>web-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
