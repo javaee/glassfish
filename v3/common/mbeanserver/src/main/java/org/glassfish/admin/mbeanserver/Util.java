@@ -49,7 +49,7 @@ import org.glassfish.server.ServerEnvironmentImpl;
 /**
 Can't use things in amx-api, so a few methods are place here.
  */
-final class Util
+public final class Util
 {
     public static String localhost()
     {

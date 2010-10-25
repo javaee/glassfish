@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.mbeanserver;
 
 import javax.management.MBeanServer;
@@ -50,67 +49,58 @@ import java.io.IOException;
 import org.glassfish.internal.api.AdminAccessController;
 import org.jvnet.hk2.component.*;
 
+import com.sun.grizzly.config.dom.Ssl;
+
 /**
 Start and stop JMX connectors, base class.
  */
-abstract class ConnectorStarter
-{
-    protected static void debug(final String s)
-    {
+abstract class ConnectorStarter {
+
+    protected static void debug(final String s) {
         System.out.println(s);
     }
     protected final MBeanServer mMBeanServer;
-    protected final String mAddress;
+    protected final String mHostName;
     protected final int mPort;
     protected final String mAuthRealmName;
     protected final boolean mSecurityEnabled;
-    private   final Habitat mHabitat;
+    private final Habitat mHabitat;
     protected final BootAMXListener mBootListener;
+    protected final Ssl ssl;
     protected volatile JMXServiceURL mJMXServiceURL = null;
     protected volatile JMXConnectorServer mConnectorServer = null;
 
-
-    public JMXServiceURL getJMXServiceURL()
-    {
+    public JMXServiceURL getJMXServiceURL() {
         return mJMXServiceURL;
     }
-    
-    public String hostname()
-    {
-        if ( mAddress.equals("") || mAddress.equals("0.0.0.0") )
-        {
+
+    public String hostname() {
+        if (mHostName.equals("") || mHostName.equals("0.0.0.0")) {
             return Util.localhost();
         }
-        
-        return mAddress;
+
+        return mHostName;
     }
 
-
     ConnectorStarter(
-        final MBeanServer mbeanServer,
-        final String address,
-        final int port,
-        final String authRealmName,
-        final boolean securityEnabled,
-        final Habitat habitat,
-        final BootAMXListener bootListener)
-    {
+            final MBeanServer mbeanServer,
+            final String host,
+            final int port,
+            final String authRealmName,
+            final boolean securityEnabled,
+            final Habitat habitat,
+            final BootAMXListener bootListener,
+            final Ssl sslConfig) {
         mMBeanServer = mbeanServer;
-        mAddress = address;
+        mHostName = host;
         mPort = port;
         mAuthRealmName = authRealmName;
         mSecurityEnabled = securityEnabled;
         mHabitat = habitat;
         mBootListener = bootListener;
-
-
-        if (securityEnabled)
-        {
-            throw new IllegalArgumentException("JMXConnectorServer not yet supporting security");
-        }
+        ssl = sslConfig;
 
     }
-
 
     abstract JMXConnectorServer start() throws Exception;
 
@@ -135,24 +125,20 @@ abstract class ConnectorStarter
         };
     }
 
-
-
-    public synchronized void stop()
-    {
-        try
-        {
+    public synchronized void stop() {
+        try {
             mConnectorServer.stop();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-
-    static protected void ignore(Throwable t)
-    {
+    static protected void ignore(Throwable t) {
         // ignore
+    }
+
+    protected boolean isSecurityEnabled() {
+        return mSecurityEnabled;
     }
 }
 

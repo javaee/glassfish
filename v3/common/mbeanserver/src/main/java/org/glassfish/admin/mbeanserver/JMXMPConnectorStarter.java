@@ -40,6 +40,7 @@
 
 package org.glassfish.admin.mbeanserver;
 
+import com.sun.grizzly.config.dom.Ssl;
 import javax.management.MBeanServer;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
@@ -67,9 +68,10 @@ final class JMXMPConnectorStarter extends ConnectorStarter
         final String authRealmName,
         final boolean securityEnabled,
         final Habitat habitat,
-        final BootAMXListener bootListener)
+        final BootAMXListener bootListener,
+        final Ssl sslConfig)
     {
-        super(mbeanServer, address, port, authRealmName, securityEnabled, habitat, bootListener);
+        super(mbeanServer, address, port, authRealmName, securityEnabled, habitat, bootListener, sslConfig);
     }
 
 
