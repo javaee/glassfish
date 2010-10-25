@@ -43,6 +43,8 @@ package com.sun.enterprise.admin.util;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.admin.remote.RemoteAdminCommand;
+
 import java.io.File;
 
 import com.sun.logging.LogDomains;
@@ -66,7 +68,6 @@ public class ClusterOperationUtil {
                                         LogDomains.ADMIN_LOGGER);
     private static final LocalStringManagerImpl strings =
                         new LocalStringManagerImpl(ClusterOperationUtil.class);
-    private static final int MAX_WAIT_TIME = 5;
 
     //TODO : Begin temp fix for undoable commands
     private static List<Server> completedInstances = new ArrayList<Server>();
@@ -162,13 +163,26 @@ public class ClusterOperationUtil {
                 returnValue = finalResult;
         }
 
+        boolean gotFirstResponse = false;
+        long maxWaitTime = RemoteAdminCommand.getReadTimeout();
+        long timeBeforeAsadminTimeout = maxWaitTime;
+        long waitStart = System.currentTimeMillis();
         for(String s : futures.keySet()) {
             ActionReport.ExitCode finalResult;
             try {
                 logger.fine(strings.getLocalString("dynamicreconfiguration.diagnostics.waitingonjob",
                         "Waiting for command {0} to be completed at instance {1}", commandName, s));
                 Future<InstanceCommandResult> aFuture = futures.get(s);
-                InstanceCommandResult aResult = aFuture.get(MAX_WAIT_TIME, TimeUnit.MINUTES);
+                InstanceCommandResult aResult = aFuture.get(maxWaitTime, TimeUnit.MILLISECONDS);
+                long elapsedTime = System.currentTimeMillis() - waitStart;
+                timeBeforeAsadminTimeout -= elapsedTime;
+                if(!gotFirstResponse) {
+                    maxWaitTime = elapsedTime * 4;
+                    gotFirstResponse = true;
+                }
+                if( (maxWaitTime > timeBeforeAsadminTimeout) ||
+                    (maxWaitTime < 60000) )
+                    maxWaitTime = timeBeforeAsadminTimeout;
                 InstanceCommandExecutor ice = (InstanceCommandExecutor) aResult.getInstanceCommand();
                 if(ice.getReport().getActionExitCode() != ActionReport.ExitCode.FAILURE)
                     completedInstances.add(ice.getServer());

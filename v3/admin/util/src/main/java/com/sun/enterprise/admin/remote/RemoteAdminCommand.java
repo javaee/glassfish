@@ -247,6 +247,10 @@ public class RemoteAdminCommand {
     public void setReadTimeout(int readTimeout) {
         this.readTimeout = readTimeout;
     }
+    
+    public static int getReadTimeout() {
+        return defaultReadTimeout;
+    }
 
     /**
      * Set the connect timeout for the URLConnection.
