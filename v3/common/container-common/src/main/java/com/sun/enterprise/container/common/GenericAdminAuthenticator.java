@@ -108,10 +108,9 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
     ServerContext sc;
 
     @Inject
-    SSLUtils sslUtils;
-
-    @Inject
     Domain domain;
+
+    SSLUtils sslUtils;
 
     private static LocalStringManagerImpl lsm = new LocalStringManagerImpl(GenericAdminAuthenticator.class);
     
@@ -207,6 +206,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
             return false;
         }
         try {
+            if (sslUtils == null) sslUtils = habitat.getByContract(SSLUtils.class);
             final KeyStore trustStore = sslUtils.getTrustStore();
             final Certificate cert = trustStore.getCertificate(instanceAlias);
             if (cert == null || ! (cert instanceof X509Certificate)) {
