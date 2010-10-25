@@ -51,7 +51,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ArrayBlockingQueue;
 
-
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -85,6 +84,7 @@ public class AdminCommandLock {
     private boolean suspendCommandsTimedOut = false;
 
     private String lockOwner = null;
+    private String lockMessage = null;
     private Date   lockTimeOfAcquisition = null;
 
     /**
@@ -135,16 +135,16 @@ public class AdminCommandLock {
      * no lock, null is returned.
      *
      * @param   command the AdminCommand object
-     * @param   timeout the timeout in seconds
      * @param   owner   the authority who requested the lock
      * @return          the Lock object to use, or null if no lock needed
      */
-    public Lock getLock(AdminCommand command, int timeout, 
-                                     String owner) throws
-            AdminCommandLockTimeoutException {
+    public Lock getLock(AdminCommand command, String owner) throws
+            AdminCommandLockTimeoutException,
+            AdminCommandLockException {
 
         Lock lock = null;
         boolean exclusive = false;
+        int timeout = 30; 
 
         CommandLock alock = command.getClass().getAnnotation(CommandLock.class);
 
@@ -158,16 +158,60 @@ public class AdminCommandLock {
         if (lock == null) 
             return null; // no lock
 
+        /*
+         * If the suspendCommandsLockThread is alive then we were
+         * suspended manually (via suspendCommands()) otherwise we
+         * may have been locked by a command requiring the EXCLUSIVE
+         * lock.
+         * If we were suspended via suspendCommands() we don't block
+         * waiting for the lock (but we try to acquire the lock just to be
+         * safe) - otherwise we set the timeout and try to get the lock.
+         */
+        if (suspendCommandsLockThread != null &&
+            suspendCommandsLockThread.isAlive()) {
+            timeout = -1;
+        } else {
+            boolean badTimeOutValue = false;
+            String timeout_s = System.getProperty(
+                "com.sun.aas.commandLockTimeOut", "30");
+
+            try {
+                timeout = Integer.parseInt(timeout_s);
+                if (timeout < 0)
+                    badTimeOutValue = true;
+            } catch (NumberFormatException e) {
+                badTimeOutValue = true;
+            }
+            if (badTimeOutValue) {
+                //XXX: Deal with logger injection attack.
+                logger.log(Level.INFO, 
+                           "Bad value com.sun.aas.commandLockTimeOut: "
+                           + timeout_s + ". Using 30 seconds.");
+                timeout = 30;
+            }
+        }
+        
         boolean lockAcquired = false;
         while (!lockAcquired) {
             try {
                 if (lock.tryLock(timeout, TimeUnit.SECONDS)) {
                     lockAcquired = true;
                 } else {
-                    throw new AdminCommandLockTimeoutException(
-                        "timeout acquiring lock",
-                        getLockTimeOfAcquisition(),
-                        getLockOwner());
+                    /*
+                     * A timeout < 0 indicates the domain was likely already
+                     * locked manually but we tried to acquire the lock 
+                     * anyway - just in case.
+                     */
+                    if (timeout >= 0)
+                        throw new AdminCommandLockTimeoutException(
+                            "timeout acquiring lock",
+                            getLockTimeOfAcquisition(),
+                            getLockOwner());
+                    else
+                        throw new AdminCommandLockException(
+                            getLockMessage(),
+                            getLockTimeOfAcquisition(),
+                            getLockOwner());
                 }
             } catch (java.lang.InterruptedException e) {
                 logger.log(Level.FINE, "Interrupted acquiring command lock. ",
@@ -203,6 +247,26 @@ public class AdminCommandLock {
     }
 
     /**
+     * Sets a message to be returned if the lock could not be acquired.
+     * This message can be displayed to the user to indicate why the
+     * domain is locked.
+     *
+     * @param message The message to return.
+     */
+    private void setLockMessage(String message) {
+        lockMessage = message;
+    }
+
+    /**
+     * Get the message to be returned if the lock could not be acquired.
+     *
+     * @return  the message indicating why the domain is locked.
+     */
+    public synchronized String getLockMessage() {
+        return lockMessage;
+    }
+
+    /**
      * Sets the time the exclusive lock was acquired.
      *
      * @param time the time the lock was acquired
@@ -234,6 +298,24 @@ public class AdminCommandLock {
     public synchronized SuspendStatus suspendCommands(
                   long timeout,
                   String lockOwner) {
+        return suspendCommands(timeout, lockOwner, "");
+    }
+
+    /**
+     * Lock the DAS from accepting any commands annotated with a SHARED
+     * or EXCLUSIVE CommandLock.  This method will result in the acquisition
+     * of an EXCLUSIVE lock.  This method will not return until the lock
+     * is acquired, it times out or an error occurs. 
+     * 
+     * @param   timeout         lock timeout in seconds
+     * @param   lockOwner       the user who acquired the lock
+     * @param   message         message to return when a command is blocked
+     * @return                  status regarding acquisition of the lock
+     */
+    public synchronized SuspendStatus suspendCommands(
+                  long timeout,
+                  String lockOwner,
+                  String message) {
 
         BlockingQueue<AdminCommandLock.SuspendStatus> suspendStatusQ =
                     new ArrayBlockingQueue<AdminCommandLock.SuspendStatus>(1);
@@ -257,7 +339,8 @@ public class AdminCommandLock {
          * Start a thread to manage the RWLock.
          */
         suspendCommandsLockThread =
-            new SuspendCommandsLockThread(timeout, suspendStatusQ, lockOwner);
+            new SuspendCommandsLockThread(timeout, suspendStatusQ, lockOwner,
+                                          message);
         try {
             suspendCommandsLockThread.setName(
                 "DAS Suspended Command Lock Thread");
@@ -283,7 +366,7 @@ public class AdminCommandLock {
     }
 
     /**
-     * Relesae the lock allowing the DAS to accept commands.  This method
+     * Release the lock allowing the DAS to accept commands.  This method
      * may return before the lock is released.  When the thread exits the
      * lock will have been released.  
      *
@@ -369,14 +452,17 @@ public class AdminCommandLock {
         private boolean suspendCommandsTimedOut;
         private long timeout;
         private String lockOwner;
+        private String message;
  
         public SuspendCommandsLockThread(long timeout,
                                    BlockingQueue<SuspendStatus> suspendStatusQ,
-                                   String lockOwner) {
+                                   String lockOwner,
+                                   String message) {
 
             this.suspendStatusQ = suspendStatusQ;
             this.timeout = timeout;
             this.lockOwner = lockOwner;
+            this.message = message;
             resumeCommandsSemaphore = null;
             suspendCommandsTimedOut = false;
         }
@@ -407,6 +493,7 @@ public class AdminCommandLock {
 
             if (lockAcquired) {
                 setLockOwner(lockOwner);
+                setLockMessage(message);
                 setLockTimeOfAcquisition(new Date());
 
                 /*

@@ -1013,12 +1013,12 @@ public class CommandRunnerImpl implements CommandRunner {
              * We're finally ready to actually execute the command instance.
              * Acquire the appropriate lock.
              */
-
             Lock lock = null;
             boolean lockTimedOut = false;
             try {
-                // XXX: Should not hardcode the timeout.
-                lock = adminLock.getLock(command, 30, "asadmin");
+                // XXX: The owner of the lock should not be hardcoded.  The
+                //      value is not used yet. 
+                lock = adminLock.getLock(command, "asadmin");
 
             // If command is undoable, then invoke prepare method
             if(command instanceof UndoableCommand) {
@@ -1084,11 +1084,36 @@ public class CommandRunnerImpl implements CommandRunner {
                     "(current lock acquired on " + lockTime + ")";
                 logger.warning(logMsg);
                 String msg = adminStrings.getLocalString("lock.timeout",
-                    "The command was blocked from executing.  The domain is " +
-                    "either suspended or another command required exclusive " +
-                    "access to the domain.\n\n" +
-                    "The domain was suspend or locked on {0}.", 
-                    lockTime);
+                    "Command timed out.  Unable to acquire a lock to access " +
+                    "the domain.  Another command acquired exclusive access " +
+                    "to the domain on {0}.  Retry the command at a later " +
+                    "time.", lockTime);
+                report.setMessage(msg);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            } catch (AdminCommandLockException ex) {
+                lockTimedOut = true;
+                String lockTime = formatSuspendDate(ex.getTimeOfAcquisition());
+                String lockMsg = ex.getMessage();
+                String logMsg;
+            
+                logMsg = "Command: " + model.getCommandName() +
+                    " was blocked.  The domain was suspended by a " +
+                    "user on:" + lockTime;
+
+                if (lockMsg != null && lockMsg != "") 
+                    logMsg += " Reason: " + lockMsg;
+
+                logger.warning(logMsg);
+                String msg = adminStrings.getLocalString("lock.notacquired",
+                    "The command was blocked.  The domain was suspended by " +
+                    "a user on {0}.", lockTime);
+
+                if (lockMsg != null && lockMsg != "") {
+                    msg += " "
+                        + adminStrings.getLocalString("lock.reason", "Reason:")
+                        + " " + lockMsg;
+                }
+
                 report.setMessage(msg);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             } finally {
