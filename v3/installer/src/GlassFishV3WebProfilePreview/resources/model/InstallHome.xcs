@@ -246,7 +246,18 @@
                throw new EnhancedException("CANNOT_SET_SIMS_DOMAIN", theResponse.getException(), new String[] {"dir=" + theInstallHome});
              }
 
-            
+            /**
+             * Now re-initialize SIMS with the new domain
+             */
+             SIMSControl theSIMSCntrl = new SIMSControl(SIMSCommand.INITIALIZE, null);
+             theResponse = ControlBus.getInstance().publishRequest(new BusRequest("SIMSRequest",
+                theSIMSCntrl), "svc://general/sims");
+		/*
+             if (theResponse.getException() != null) {
+               throw new EnhancedException("CANNOT_SET_SIMS_DOMAIN", theResponse.getException(), new String[] {"dir=" + theInstallHome});
+             }
+            */
+  
             validateInstallHome(theInstallHomeDir);
             
 	     /*
