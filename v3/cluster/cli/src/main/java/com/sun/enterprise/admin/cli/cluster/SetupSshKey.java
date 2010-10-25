@@ -52,7 +52,6 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import org.glassfish.internal.api.Globals;
 import com.sun.enterprise.admin.cli.CLICommand;
-import com.sun.enterprise.admin.cli.CLIUtil;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.util.SSHUtil;
 
@@ -246,17 +245,8 @@ public final class SetupSshKey extends CLICommand {
         return passphrase;
     }
 
-    private String getFromPasswordFile(String name) throws CommandException {
-        String pass = null;
-        String pwfile = programOpts.getPasswordFile();
-        if (ok(pwfile)) {
-            passwords = CLIUtil.readPasswordFileOptions(pwfile, true);
-            if(logger.isLoggable(Level.FINER)) {
-                logger.finer("Passwords from password file " + passwords);
-            }
-            pass = passwords.get(name);
-        }
-        return pass;
+    private String getFromPasswordFile(String name) {
+        return passwords.get(name);
     }
 
     /**
