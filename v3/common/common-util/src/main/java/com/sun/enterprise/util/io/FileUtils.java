@@ -928,20 +928,20 @@ public class FileUtils {
                      */
                     if (retries == 0) {
                         if (_utillogger.isLoggable(Level.FINE)) {
-                            _utillogger.log(Level.FINE, "enterprise_util.rename_initial_success", new Object [] {
-                                fromFilePath, toFilePath } );
+                            _utillogger.log(Level.FINE, Strings.get("enterprise_util.rename_initial_success", new Object [] {
+                                fromFilePath, toFilePath } ));
                         }
                     } else {        
-                        _utillogger.log(FILE_OPERATION_LOG_LEVEL, "enterprise_util.retry_rename_success", new Object []
-                            { fromFilePath, toFilePath, Integer.valueOf(retries) } );
+                        _utillogger.log(FILE_OPERATION_LOG_LEVEL, Strings.get("enterprise_util.retry_rename_success", new Object []
+                            { fromFilePath, toFilePath, Integer.valueOf(retries) } ));
                     }
                 }
             } else {
                 /*
                  *The rename has failed.  Write a warning message.
                  */
-                _utillogger.log(Level.WARNING, "enterprise_util.retry_rename_failure", new Object []
-                    { fromFilePath, toFilePath, Integer.valueOf(retries) } );
+                _utillogger.log(Level.WARNING, Strings.get("enterprise_util.retry_rename_failure", new Object []
+                    { fromFilePath, toFilePath, Integer.valueOf(retries) } ));
             }
             return result;
         }    
