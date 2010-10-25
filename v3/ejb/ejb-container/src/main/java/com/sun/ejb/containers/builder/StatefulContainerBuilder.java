@@ -240,7 +240,7 @@ public class StatefulContainerBuilder
         
         String subDirName = "";
 
-        if (ejbDescriptor.getApplication().isVirtual()) {
+/*        if (ejbDescriptor.getApplication().isVirtual()) {
             String archURI = ejbDescriptor.getEjbBundleDescriptor().
                     getModuleDescriptor().getArchiveUri();
             subDirName += FileUtils.makeFriendlyFilename(archURI);
@@ -249,8 +249,10 @@ public class StatefulContainerBuilder
             subDirName += FileUtils.makeFriendlyFilename(ejbDescriptor.getApplication().getRegistrationName());
             subDirName += "_" + FileUtils.makeFriendlyFilename(ejbDescriptor.getEjbBundleDescriptor().getName());
             subDirName += "_" + FileUtils.makeFriendlyFilename(ejbDescriptor.getName());
-        }
+        }*/
 
+        subDirName += ejbDescriptor.getName() + "-" + ejbDescriptor.getUniqueId();
+        
         conf.setShortUniqueName(""+ejbDescriptor.getUniqueId()).setStoreName(storeName)
                 .setStoreType(persistenceStoreType)
                 .setBaseDirectory(new File(ejbContainerConfig.getSessionStore(), subDirName))
