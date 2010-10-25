@@ -60,7 +60,7 @@
        </graphDef>
 
        
-       <stage-module-jars graphid="all-modules" />
+       <stage-lib-jars graphid="all-modules" />
        <stage-distribution-fragments graphid="all-modules" />
        
        <chmod file="target/stage/${install.dir.name}/glassfish/bin/*" perm="ugo+rx"/>
