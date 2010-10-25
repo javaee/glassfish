@@ -89,7 +89,7 @@ public class TypesCtr implements Types {
         for (Map<String, TypeProxy<Type>> map : storage.values()) {
             Map<String, TypeProxy<Type>> copy = new HashMap<String, TypeProxy<Type>>(map);
             for (TypeProxy<Type> entry : copy.values()) {
-                if (entry!=null && entry.get()==null)
+                if (entry!=null && !entry.isVisited())
                     proxyTask.on(entry);
             }
         }
