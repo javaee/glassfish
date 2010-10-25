@@ -185,7 +185,7 @@ public class AppServerStartup implements ModuleStartup {
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("Startup class : " + this.getClass().getName());
         }
-        final Level level = Level.FINE;
+        final Level level = Level.INFO;
 
         // prepare the global variables
         habitat.addComponent(null, this);
@@ -363,8 +363,7 @@ public class AppServerStartup implements ModuleStartup {
             if (env.isDas()) {
                 runner.getCommandInvocation("stop-domain", new PlainTextActionReporter()).parameters(params).execute();
             } else {
-                params.set("DEFAULT", env.getInstanceName());
-                runner.getCommandInvocation("stop-instance", new PlainTextActionReporter()).parameters(params).execute();
+                runner.getCommandInvocation("_stop-instance", new PlainTextActionReporter()).parameters(params).execute();
             }
         }
     }
