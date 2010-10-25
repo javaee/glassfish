@@ -75,10 +75,10 @@ public interface ArchiveAdapter extends Closeable {
          * callback to do some processing on an archive entry.
          *
          * @param e the archive entry information such as its name, size...
-         * @param bytes the archive entry content.
+         * @param is the archive entry content.
          * @throws IOException if the input stream reading generates a failure
          */
-        public void on(final Entry e, byte[] bytes) throws IOException;
+        public void on(final Entry e, InputStream is) throws IOException;
     }
 
     public interface Selector {
