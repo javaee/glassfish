@@ -137,7 +137,7 @@
             <optional>true</optional>
         </dependency>        
         <dependency>
-            <groupId>javax.xml</groupId>
+            <groupId>org.glassfish.metro</groupId>
             <artifactId>webservices-api-osgi</artifactId>
             <scope>provided</scope>
         </dependency>

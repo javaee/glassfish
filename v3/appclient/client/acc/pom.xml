@@ -386,7 +386,7 @@
 
      <!-- endorsed: webservices-api-osgi.jar -->
      <dependency>
-        <groupId>javax.xml</groupId>
+        <groupId>org.glassfish.metro</groupId>
         <artifactId>webservices-api-osgi</artifactId>
      </dependency>
 
