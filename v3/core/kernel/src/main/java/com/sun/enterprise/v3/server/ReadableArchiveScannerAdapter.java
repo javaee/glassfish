@@ -48,6 +48,7 @@ import org.glassfish.hk2.classmodel.reflect.util.AbstractAdapter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.util.Enumeration;
 import java.util.jar.Manifest;
 import java.net.URI;
@@ -62,25 +63,23 @@ import java.util.logging.Logger;
 public class ReadableArchiveScannerAdapter extends AbstractAdapter {
     final ReadableArchive archive;
     final Parser parser;
+    final URI uri;
 
     public ReadableArchiveScannerAdapter(Parser parser, ReadableArchive archive) {
         this.archive = archive;
         this.parser = parser;
+        this.uri = archive.getURI();
+    }
+
+    private ReadableArchiveScannerAdapter(Parser parser, ReadableArchive archive, URI uri) {
+        this.archive = archive;
+        this.parser = parser;
+        this.uri = uri==null?archive.getURI():uri;
     }
 
     @Override
     public URI getURI() {
-       URI archiveURI =  archive.getURI();
-       if (archiveURI.getScheme().equals("jar")) {
-           try {
-               // let's use the file scheme for jar files as the J2SE
-               // File.toURI always returns the file scheme.
-               archiveURI = new URI("file", null /* authority */, archiveURI.getPath(), null /* query */, null /* fragment */);
-           } catch (Exception e) {
-               Logger.getAnonymousLogger().log(Level.WARNING, "failed to convert URI to use file scheme: ", e);
-           }
-       }
-       return archiveURI;
+       return uri;
     }
 
     @Override
@@ -92,7 +91,6 @@ public class ReadableArchiveScannerAdapter extends AbstractAdapter {
     public void onSelectedEntries(ArchiveAdapter.Selector selector, EntryTask entryTask, final Logger logger ) throws IOException {
 
         Enumeration<String> entries = archive.entries();
-        byte[] bytes = new byte[52000];
         while (entries.hasMoreElements()) {
             final String name = entries.nextElement();
             Entry entry = new Entry(name, archive.getEntrySize(name), false);
@@ -101,32 +99,11 @@ public class ReadableArchiveScannerAdapter extends AbstractAdapter {
                 try {
                     try {
                         is = archive.getEntry(name);
-                        if (bytes.length<entry.size) {
-                            bytes = new byte[(int) entry.size];
-                        }
-                        int entrySize = entry.size==0?bytes.length:(int) entry.size;
-                        int read = is.read(bytes, 0, entrySize);
-                        if (read==0) {
-                            logger.severe("Incorrect file length while reading " + entry.name +
-                                    " inside " + archive.getName() +
-                                    " of size " + entry.size + " reported is " + read);
-                            return;
-                        }
-                        // we read something, let's be sure the size becomes correct in our entry.
-                        if (entry.size==0) {
-                            entry = new Entry(name, read, false);
-                        } else {
-                            if (read!=entry.size) {
-                                logger.severe("Incorrect file length while reading " + entry.name +
-                                        " inside " + archive.getName() +
-                                        " of size " + entry.size + " reported is " + read);
-                            }
-                        }
+                         entryTask.on(entry, is);
                     } catch (Exception e) {
                         logger.log(Level.SEVERE, "Exception while processing " + entry.name
                                 + " inside " + archive.getName() + " of size " + entry.size, e);
                     }
-                    entryTask.on(entry, bytes);
                 } finally {
                     if (is!=null)
                         is.close();
@@ -140,9 +117,23 @@ public class ReadableArchiveScannerAdapter extends AbstractAdapter {
                 if (!archive.exists(explodedName)) {
 
                     final ReadableArchive subArchive = archive.getSubArchive(name);
+
+                    // this is non sense, the subArchive should do this job for me but it does not.
+                    // see the long comment from Tim on entries().
+                    URI subURI=null;
+                    try {
+                        subURI = new URI(
+                        "jar",
+                        "file:" + uri.getSchemeSpecificPart() +
+                            "!/" +
+                            name,
+                        null);
+                    } catch(URISyntaxException e) {
+                        logger.log(Level.FINE, e.getMessage(),e);
+                    }
                     if (subArchive!=null) {
 
-                        ReadableArchiveScannerAdapter adapter = new ReadableArchiveScannerAdapter(parser, subArchive);
+                        ReadableArchiveScannerAdapter adapter = new ReadableArchiveScannerAdapter(parser, subArchive, subURI);
                         parser.parse(adapter, new Runnable() {
                             @Override
                             public void run() {
