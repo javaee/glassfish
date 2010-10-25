@@ -15,7 +15,7 @@ wget -q -O revision-under-test.html http://gf-hudson.sfbay.sun.com/hudson/job/gf
 grep 'Build #' revision-under-test.html
 time wget -q -O glassfish.zip http://gf-hudson.sfbay.sun.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip
 unzip -q glassfish.zip
-export S1AS_HOME="$ROOT/glassfishv3/glassfish"
+export S1AS_HOME="$ROOT/glassfish3/glassfish"
 export APS_HOME="$ROOT/appserv-tests"
 cd "$APS_HOME"
 (jps |grep Main |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
