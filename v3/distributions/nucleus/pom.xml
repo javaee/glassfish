@@ -189,22 +189,12 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>com.sun.enterprise</groupId>
-            <artifactId>config-types</artifactId>
-            <type>jar</type>
-        </dependency>        
-        <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>server-mgmt</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
             <type>jar</type>
         </dependency>
-        <!--dependency>
-            <groupId>org.glassfish.security</groupId>
-            <artifactId>security</artifactId>
-            <version>${project.version}</version>
-            <type>jar</type>
-        </dependency-->
         <!-- additional servicetag registry dependency -->
         <dependency>
             <groupId>org.glassfish.registration</groupId>
