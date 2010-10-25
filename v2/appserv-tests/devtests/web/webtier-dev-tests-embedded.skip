@@ -84,12 +84,6 @@ webappDeployDashDashLibraries
 servlet-3.0/servletContainerInitializer/sharedLibWithWars
 servlet-3.0/servletContainerInitializer/sharedLibWithEAR
 servlet-3.0/servletContainerInitializer/sharedLibWithInterfaceImplementation
-#issue 11516
-jspCustomTaglibBundledAsJar
-jspCustomTaglibJarInsideEarWithManifestClassPath
-jspCustomTaglibJarInsideEarWithoutManifestClassPath
-jspInWebappWithBundledXercesImpl
-virtualServerEarWrappedDefaultWebModuleRestart
 # not applicable to embedded
 index
 # monitoring is not supported in embedded
