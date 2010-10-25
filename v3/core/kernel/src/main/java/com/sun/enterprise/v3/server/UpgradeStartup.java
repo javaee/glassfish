@@ -387,7 +387,7 @@ public class UpgradeStartup implements ModuleStartup {
             tempEar.delete();
         }
 
-        WritableArchive target = archiveFactory.createArchive(tempEar);
+        WritableArchive target = archiveFactory.createArchive("jar", tempEar);
 
         Collection<String> directoryEntries = source.getDirectories();
         List<String> subModuleEntries = new ArrayList<String>();
@@ -494,7 +494,7 @@ public class UpgradeStartup implements ModuleStartup {
             tempJar.delete();
         }
 
-        WritableArchive target = archiveFactory.createArchive(tempJar);
+        WritableArchive target = archiveFactory.createArchive("jar", tempJar);
 
         Enumeration<String> e = source.entries();
         while (e.hasMoreElements()) {

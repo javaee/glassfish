@@ -90,6 +90,18 @@ public class ArchiveFactory implements ContractProvider {
             return null;
         }
     }
+
+    public WritableArchive createArchive(String protocol, File path) throws java.io.IOException {
+        try {
+            /*
+             *Use the expanded constructor so illegal characters (such as embedded blanks) in the path
+             *will be encoded.
+             */
+            return createArchive(protocol, prepareArchiveURI(path));
+        } catch(java.net.URISyntaxException e) {
+            return null;
+        }
+    }
     
     public ReadableArchive openArchive(File path) throws java.io.IOException {
         try {
@@ -108,6 +120,10 @@ public class ArchiveFactory implements ContractProvider {
     public WritableArchive createArchive(URI path) throws IOException {
         
         String protocol = path.getScheme();
+        return createArchive(protocol, path);
+    }
+    
+    public WritableArchive createArchive(String protocol, URI path) throws IOException {
         try {
             WritableArchive archive = habitat.getComponent(WritableArchive.class, protocol);
             if (archive==null) {
