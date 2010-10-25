@@ -40,4 +40,4 @@ REM  only if the new code is made subject to such option by the copyright
 REM  holder.
 REM
 
-java -Dcom.sun.aas.domainRoot="%~dp0..\domains" -jar "%~dp0..\modules\upgrade-tool.jar" %*
+java -Dcom.sun.aas.domainRoot="%~dp0..\domains" -jar "%~dp0..\lib\upgrade-tool.jar" %*

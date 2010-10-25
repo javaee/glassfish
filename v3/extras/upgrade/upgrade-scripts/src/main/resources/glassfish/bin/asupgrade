@@ -41,4 +41,4 @@
 
 AS_INSTALL=`dirname $0`/..
 
-java -Dcom.sun.aas.domainRoot="$AS_INSTALL/domains" -jar "$AS_INSTALL/modules/upgrade-tool.jar" "$@"
+java -Dcom.sun.aas.domainRoot="$AS_INSTALL/domains" -jar "$AS_INSTALL/lib/upgrade-tool.jar" "$@"
