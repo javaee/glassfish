@@ -40,8 +40,7 @@
 
 package com.sun.enterprise.v3.admin;
 
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.SystemPropertyBag;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.ActionReport;
@@ -136,9 +135,64 @@ public class DeleteSystemProperty implements AdminCommand {
         }
         if (definitions(propName) == 1) { //implying user is deleting the "last" definition of this property
             List<String> refs = new ArrayList<String>();
-            Dom root = Dom.unwrap(domain);
+            List<Dom> doms = new ArrayList<Dom>();
+            if ("domain".equals(target) || target.equals(domainName)) {
+                for (Server s : domain.getServers().getServer()) {
+                    Config config = s.getConfig();
+                    Cluster cluster = s.getCluster();
+                    if (!s.containsProperty(propName) && !config.containsProperty(propName)) {
+                        if (cluster != null) {
+                            if (!cluster.containsProperty(propName)) {
+                                doms.add(Dom.unwrap(s));
+                            }
+                        } else {
+                            doms.add(Dom.unwrap(s));
+                        }
+                    }
+                }
+            } else {
+                Config config = domain.getConfigNamed(target);
+                if (config != null) {
+                    doms.add(Dom.unwrap(config));
+                    String configName = config.getName();
+                    for (Server s : domain.getServers().getServer()) {
+                        String configRef = s.getConfigRef();
+                        if (configRef.equals(configName)) {
+                            if (!s.containsProperty(propName)) {
+                                doms.add(Dom.unwrap(s));
+                            }
+                        }
+                    }
+                    for (Cluster c : domain.getClusters().getCluster()) {
+                        String configRef = c.getConfigRef();
+                        if (configRef.equals(configName)) {
+                            if (!c.containsProperty(propName)) {
+                                doms.add(Dom.unwrap(c));
+                            }
+                        }
+                    }
+                } else {
+                    Cluster cluster = domain.getClusterNamed(target);
+                    if (cluster != null) {
+                        doms.add(Dom.unwrap(cluster));
+                        Config clusterConfig = domain.getConfigNamed(cluster.getConfigRef());
+                        doms.add(Dom.unwrap(clusterConfig));
+                        for (Server s : cluster.getInstances()) {
+                            if (!s.containsProperty(propName)) {
+                                doms.add(Dom.unwrap(s));
+                            }
+                        }
+                    } else {
+                        Server server = domain.getServerNamed(target);
+                        doms.add(Dom.unwrap(server));
+                        doms.add(Dom.unwrap(domain.getConfigNamed(server.getConfigRef())));
+                    }
+                }
+            }
             String sysPropName = SystemPropertyConstants.getPropertyAsValue(propName);
-            listRefs(root, sysPropName, refs);
+            for (Dom d : doms) {
+                listRefs(d, sysPropName, refs);
+            }
             if (!refs.isEmpty()) {
                 //there are some references
                 String msg = localStrings.getLocalString("cant.delete.referenced.property",
@@ -172,15 +226,31 @@ public class DeleteSystemProperty implements AdminCommand {
         SystemPropertyBag bag = domain;
         if (bag.containsProperty(propName))
             defs++;
+        
         bag = domain.getServerNamed(target);
-        if (bag != null && bag.containsProperty(propName))
+        if (bag != null && bag.containsProperty(propName)) {
             defs++;
+            Server server = (Server)bag;
+            Cluster cluster = server.getCluster();
+            if (cluster != null && cluster.containsProperty(propName))
+                defs++;
+            if (server.getConfig().containsProperty(propName))
+                defs++;
+        }
+        
+        bag = domain.getClusterNamed(target);
+        if (bag != null && bag.containsProperty(propName)) {
+            defs++;
+            Cluster c = (Cluster)bag;
+            Config clusterConfig = domain.getConfigNamed(c.getConfigRef());
+            if (clusterConfig.containsProperty(propName))
+                defs++;
+        }
+
         bag = domain.getConfigNamed(target);
         if (bag != null && bag.containsProperty(propName))
             defs++;
-        bag = domain.getClusterNamed(target);
-        if (bag != null && bag.containsProperty(propName))
-            defs++;
+
         return defs;
     }
 
