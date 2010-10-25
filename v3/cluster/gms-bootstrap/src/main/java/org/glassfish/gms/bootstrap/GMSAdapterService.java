@@ -44,6 +44,7 @@ import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Clusters;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.ee.cms.core.GMSConstants;
+import com.sun.enterprise.ee.cms.core.GroupManagementService;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
@@ -215,6 +216,9 @@ public class GMSAdapterService implements Startup, PostConstruct, ConfigListener
                     return null;
                 }
                 boolean initResult = result.initialize(cluster.getName());
+                if (initResult == false) {
+                    return null;
+                }
                 habitat.addIndex(new ExistingSingletonInhabitant<GMSAdapter>(result), GMSAdapter.class.getName(), cluster.getName());
                 if (logger.isLoggable(TRACE_LEVEL)) {
                     logger.log(TRACE_LEVEL, "loadModule: registered created gmsadapter for cluster " + cluster.getName() + " initialized result=" + initResult);
@@ -243,7 +247,10 @@ public class GMSAdapterService implements Startup, PostConstruct, ConfigListener
                         }
                         GMSAdapter localGmsAdapter = checkCluster(cluster);
                         if (localGmsAdapter != null) {
-                            localGmsAdapter.getModule().reportJoinedAndReadyState(cluster.getName());
+                            GroupManagementService gms = localGmsAdapter.getModule();
+                            if (gms != null) {
+                                gms.reportJoinedAndReadyState();
+                            }
                         }
 
                         // todo:  when supporting multiple clusters, ensure that newly added cluster has a different gms-multicast-address than all existing clusters.
