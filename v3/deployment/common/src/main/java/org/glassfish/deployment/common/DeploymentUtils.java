@@ -432,13 +432,16 @@ public class DeploymentUtils {
 
     private static List<URL> getManifestLibraries(ReadableArchive archive, Manifest manifest) {
         String appRootPath = null;
-        File appRoot = null;
-
         ReadableArchive parentArchive = archive.getParentArchive();
 
         if (parentArchive != null) {
-            appRoot = new File(parentArchive.getURI());
-            appRootPath = appRoot.getPath();
+            appRootPath = (new File(parentArchive.getURI())).getPath();
+        } else {
+            try {
+                appRootPath = (new File(archive.getURI().getPath())).getParent();
+            } catch (Exception e) {
+                // ignore, this is the jar inside jar case 
+            }
         }
 
         // add libraries referenced through manifest
