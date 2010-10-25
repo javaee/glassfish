@@ -59,15 +59,15 @@
         mapPut(map="#{requestScope.attrsMap}" key="target" value="#{pageSession.configName}");
         
         gf.restRequest(
-                endpoint="http://localhost:4848/management/domain/list-log-levels.json"
+                endpoint="#{sessionScope.REST_URL}/list-log-levels.json"
                 attrs="#{requestScope.attrsMap}"
                 method="GET"
                 result="#{requestScope.loggerLevels}");
-       
-        println("LOG LEVELS = #{requestScope.loggerLevels.data.extraProperties.logLevels}");
 
-        getLoggerLevels(loggerLevels="#{requestScope.loggerLevels.data.extraProperties.logLevels}"
+        getLoggerLevels(
+            loggerLevels="#{requestScope.loggerLevels.data.extraProperties.logLevels}"
             loggerList="#{requestScope.tableList}");
+
         getValidLogLevels(loggerList="#{pageSession.levelList}")
     />
 </event>

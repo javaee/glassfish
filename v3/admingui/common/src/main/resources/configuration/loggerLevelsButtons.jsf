@@ -45,9 +45,10 @@
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton"  text="$resource{i18n.button.Save}" >
                 <!command
+                    getRequestValue(key="configName" value=>$page{configName} default="server-config");
                     getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="${tableRowGroup}" Rows=>$attribute{allRows});
-                    updateLoggerLevels(allRows="#{requestScope.allRows}")
+                    updateLoggerLevels(allRows="#{requestScope.allRows}" config="#{pageSession.configName}");
                     prepareSuccessfulMsg();
                     gf.redirect(page="#{request.contextPath}/common/configuration/loggerLevels.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
