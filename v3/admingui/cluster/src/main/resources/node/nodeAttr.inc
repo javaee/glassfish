@@ -86,11 +86,13 @@
             <sun:property id="nameProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" helpText="$resource{i18ncs.node.NameHelp}">
                 <sun:textField id="name" text="#{pageSession.valueMap['id']}" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.Name']}" styleClass="required" required="#{true}" />
             </sun:property>
+            
             <sun:property id="staticnameProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" >
                 <sun:staticText id="IdStatic" text="#{pageSession.nodeName}"/>
             </sun:property>
-            <sun:property id="nodeType"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.type}" >
-                <sun:staticText id="nodeType" text="#{pageSession.type}"/>
+            <sun:property id="typeProp" rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.type}" helpText="$resource{i18ncs.node.typeHelp}">
+                <sun:dropDown id="type" labels={"CONFIG" "SSH"}  selected="#{pageSession.valueMap['type']}" >
+                </sun:dropDown>
             </sun:property>
             <sun:property id="NodeHost"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.NodeHost}" helpText="$resource{i18ncs.node.NodeHostHelp}">
                 <sun:textField id="NodeHost" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.NodeHost']}" text="#{pageSession.valueMap['nodehost']}" styleClass="required" required="#{true}"/>

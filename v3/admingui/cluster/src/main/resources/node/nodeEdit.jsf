@@ -62,7 +62,7 @@
         mapPut(map="#{pageSession.valueMap}"  key="nodehost"  value="#{pageSession.attrMap['nodeHost']}");
         mapPut(map="#{pageSession.valueMap}"  key="nodedir"  value="#{pageSession.attrMap['nodeDir']}");
         mapPut(map="#{pageSession.valueMap}"  key="installdir",  value="#{pageSession.attrMap['installDir']}");
-        setPageSessionAttribute(key="type",  value="#{pageSession.attrMap['type']}");
+        mapPut(map="#{pageSession.valueMap}"  key="type",  value="#{pageSession.attrMap['type']}");
         //mapPut(map="#{pageSession.valueMap}"  key="name",  value="#{pageSession.attrMap['name']}");
         
         gf.checkIfEndPointExist(endpoint="#{pageSession.selfUrl}/ssh-connector" exists="#{requestScope.sshConnectorExist}");
@@ -77,6 +77,7 @@
                 mapPut(map="#{pageSession.valueMap}"  key="sshkeyfile",  value="#{pageSession.attrMap['keyfile']}");
             }
         }
+        println("================ #{pageSession.valueMap}");
 
         setPageSessionAttribute(key="edit" value="#{true}");
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
