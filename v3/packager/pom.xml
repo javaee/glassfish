@@ -110,6 +110,8 @@
 	<module>glassfish-full-incorporation</module>
 	<module>glassfish-web-profile</module>
 	<module>glassfish-full-profile</module>
+        <module>glassfish-osgi-incorporation</module>
+        <module>glassfish-osgi-feature-pack</module>
 	<module>glassfish-ant-tasks</module>
     </modules>
 
