@@ -26,13 +26,14 @@ public class TestRunLevelListener implements RunLevelListener {
   public Integer progress_proceedToWaitFor;
   public Integer progress_proceedToGoTo;
   public RunLevelService<?> progress_proceedToRls;
+  private Runnable progress_runnable;
   
   public Integer error_proceedToGoTo;
   public RunLevelService<?> error_proceedToRls;
   
   public Integer cancel_proceedToGoTo;
   public RunLevelService<?> cancel_proceedToRls;
-  
+
   @Override
   public void onCancelled(RunLevelState<?> state,
       ServiceContext context,
@@ -67,9 +68,16 @@ public class TestRunLevelListener implements RunLevelListener {
     calls.add(Call.onProgress(state));
     if (null != progress_proceedToWaitFor && 
         state.getCurrentRunLevel() == progress_proceedToWaitFor) {
-      int pto = progress_proceedToGoTo;
-      progress_proceedToGoTo = null;
-      progress_proceedToRls.proceedTo(pto);
+      if (null != progress_proceedToGoTo) {
+        int pto = progress_proceedToGoTo;
+        progress_proceedToGoTo = null;
+        progress_proceedToRls.proceedTo(pto);
+      }
+      if (null != progress_runnable) {
+        Runnable runnable = progress_runnable;
+        progress_runnable = null;
+        runnable.run();
+      }
     }
   }
 
@@ -79,6 +87,11 @@ public class TestRunLevelListener implements RunLevelListener {
     progress_proceedToRls = rls;
   }
 
+  public void setProgressRunnable(int i, Runnable run) {
+    progress_proceedToWaitFor = i;
+    progress_runnable = run;
+  }
+  
   public void setErrorProceedTo(int j, RunLevelService<?> rls) {
     error_proceedToGoTo = j;
     error_proceedToRls = rls;

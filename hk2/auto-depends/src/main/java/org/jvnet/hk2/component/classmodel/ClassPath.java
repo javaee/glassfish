@@ -125,7 +125,7 @@ public abstract class ClassPath {
 
   @Override
   public String toString() {
-    return getClass().getSimpleName() + "-" + System.identityHashCode(this) + "=" + getEntries();
+    return "ClassPath-" + System.identityHashCode(this) + "=" + getEntries();
   }
   
   /**
