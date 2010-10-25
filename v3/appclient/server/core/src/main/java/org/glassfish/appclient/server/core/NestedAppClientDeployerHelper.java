@@ -441,7 +441,8 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
             final StringBuilder puScanTargets,
             final URI jarURI,
             final Set<URI> dependencyURIsProcessed) throws IOException {
-        final URI jarURIForFacade = earURI.relativize(jarURI);
+        final URI jarURIForFacade = relativeToFacade(jarURI);
+        final URI jarURIForAnchor = earURI.relativize(jarURI);
         final URI fileURIForJAR = URI.create("file:" + jarURI.getRawSchemeSpecificPart());
         if (dependencyURIsProcessed.contains(fileURIForJAR)) {
             return;
@@ -467,7 +468,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
          * Process this library JAR to record the need to download it
          * and any JARs or directories it depends on.
          */
-        final Artifact jarArtifact = newArtifact(earURI, jarURIForFacade);
+        final Artifact jarArtifact = newArtifact(earURI, jarURIForAnchor);
         if (jarArtifact != null) {
             jarArtifact.processArtifact(dependencyURIsProcessed,
                 earLevelDownloads(), earLevelDownloads());
@@ -481,6 +482,17 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
             }
         }
         return false;
+    }
+
+    private URI relativeToFacade(final URI absJARURI) {
+        final URI jarRelOnServer = earURI.relativize(absJARURI);
+        final StringBuilder dotsFromFacadeToAnchor = new StringBuilder();
+        final String jarRelOnServerString = jarRelOnServer.toASCIIString();
+        int slot = -1;
+        while ( (slot = jarRelOnServerString.indexOf('/', slot+1)) != -1) {
+            dotsFromFacadeToAnchor.append("../");
+        }
+        return URI.create(dotsFromFacadeToAnchor.toString() + jarRelOnServer.toASCIIString());
     }
 
     @Override
