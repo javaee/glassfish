@@ -49,6 +49,7 @@ import java.util.*;
 public class TypeProxy<T extends Type> {
 
     private T value = null;
+    private volatile boolean visited = false;
     private final String name;
     private final Notifier<T> notifier;
     private final Set<Member> fieldRefs;
@@ -130,5 +131,13 @@ public class TypeProxy<T extends Type> {
                 return source.size();
             }
         };
+    }
+
+    public void visited() {
+        visited=true;
+    }
+
+    public boolean isVisited() {
+        return visited;
     }
 }
