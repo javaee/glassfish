@@ -54,20 +54,7 @@
                 getClientId(component="$this{component}" clientId=>$attribute{bodyId})
                 getUIComponent(clientId="#{bodyId}"  component=>$attribute{component})
                 includeFirstIntegrationPoint(type="org.glassfish.admingui:versioninfo" root="#{component}");
-
             />
-<!--
-            <sun:form id="propertyForm">
-            <sun:versionPage id="version" 
-                productImageURL="/resource/images/LoginProductName.png"
-                productImageDescription="$resource{i18n.versionImage.description}" 
-                productImageHeight="42"
-                productImageWidth="318"
-                versionString="#{sessionScope.appServerVersion}"
-                copyrightString="$resource{i18n.copyright.shortMessage}"
-            />
-            </sun:form>
--->
         </sun:body>
     </sun:html>
 </sun:page>
