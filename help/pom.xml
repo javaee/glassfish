@@ -55,7 +55,6 @@
    </distributionManagement>
    <version>3.1-SNAPSHOT</version>
    <modules>
-       <module>cluster</module>
        <module>common</module>
        <module>corba</module>
        <module>ejb</module>
