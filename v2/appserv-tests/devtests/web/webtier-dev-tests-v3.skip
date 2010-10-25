@@ -1,3 +1,2 @@
-servlet-3.0/servletContainerInitializer/sharedLibWithWars # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=12091 is fixed
 singleengine # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=14014 is fixed
 weldJsfFormLoginHttpSessionListener # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=7548 is fixed
