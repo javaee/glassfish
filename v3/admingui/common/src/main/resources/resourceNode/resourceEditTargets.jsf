@@ -48,7 +48,7 @@
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks")
 />
 <!composition template="/templates/default.layout"
-    guiTitle="$resource{i18n.resources.targetListing.PageTitle}"
+    guiTitle="$resource{i18n.resourceTargetListing.PageTitle}"
 >
 <!define name="content">
     <event>
@@ -66,7 +66,7 @@
 #include "/common/resourceNode/resourceEditTabs.inc"
 
 #include "/common/shared/alertMsg.inc"
- <sun:title id="propertyContentPage" title="$resource{i18n.resources.targetListing.PageTitle}" helpText="$resource{i18n.targetListing.PageTitleHelp}"/>
+ <sun:title id="propertyContentPage" title="$resource{i18n.resourceTargetListing.PageTitle}" helpText="$resource{i18n.resourceTargetListing.PageTitleHelp}"/>
  "<br />
 
 <sun:table id="targetTable" title="$resource{i18n.common.TargetTableTitle}" sortPanelToggleButton="#{false}"
@@ -178,7 +178,7 @@
     </sun:tableRowGroup>
  </sun:table>
 
-	<sun:hidden id="helpKey" value="$resource{help_common.resources.targetListing}" />
+	<sun:hidden id="helpKey" value="$resource{help_common.resourceTargetListing}" />
             </sun:form>
 
 #include "/common/shared/changeButtonsJS.inc"

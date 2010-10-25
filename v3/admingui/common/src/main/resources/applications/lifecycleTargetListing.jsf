@@ -42,10 +42,10 @@
 
 <!initPage
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks")
 />
 <!composition template="/templates/default.layout"
-    guiTitle="$resource{i18n.targetListing.PageTitle}"
+    guiTitle="$resource{i18n.lifecycleTargetListing.PageTitle}"
 >
 <!define name="content">
     <event>
@@ -63,7 +63,7 @@
 #include "/common/applications/lifecycleTabs.inc"
 
 #include "/common/shared/alertMsg.inc"
- <sun:title id="propertyContentPage" title="$resource{i18n.targetListing.PageTitle}" helpText="$resource{i18n.targetListing.PageTitleHelp}"/>
+ <sun:title id="propertyContentPage" title="$resource{i18n.lifecycleTargetListing.PageTitle}" helpText="$resource{i18n.lifecycleTargetListing.PageTitleHelp}"/>
  "<br />
 
 <sun:table id="targetTable" title="$resource{i18n.common.TargetTableTitle}" sortPanelToggleButton="#{false}"
@@ -85,7 +85,7 @@
                         setAttribute(key="name" value="#{name}");
                         setAttribute(key="targetPage" value="#{targetPage}");
                         setAttribute(key="targetPageHelp" value="#{targetPageHelp}");
-                        gf.redirect(page="#{request.contextPath}/common/applications/manageTargets.jsf?appName=#{pageSession.encodedName}&listPageLink=#{pageSession.listPageLink}&targetPageLink=#{pageSession.targetPageLink}&highLight=lifecycle");
+                        gf.redirect(page="#{request.contextPath}/common/applications/manageTargets.jsf?forApp=false&appName=#{pageSession.encodedName}&listPageLink=#{pageSession.listPageLink}&targetPageLink=#{pageSession.targetPageLink}&highLight=lifecycle");
                 />
             </sun:button>
 
@@ -147,7 +147,7 @@
     </sun:tableRowGroup>
  </sun:table>
 
-	<sun:hidden id="helpKey" value="$resource{help.targetListing}" />
+	<sun:hidden id="helpKey" value="$resource{help_common.lifecycleTargetListing}" />
             </sun:form>
 
 #include "/common/shared/changeButtonsJS.inc"
