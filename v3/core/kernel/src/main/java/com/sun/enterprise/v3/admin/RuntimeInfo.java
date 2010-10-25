@@ -39,6 +39,8 @@
  */
 package com.sun.enterprise.v3.admin;
 
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.JavaConfig;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import java.util.logging.Level;
@@ -52,6 +54,7 @@ import com.sun.enterprise.module.bootstrap.StartupContext;
 import java.util.logging.Logger;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -77,7 +80,10 @@ public class RuntimeInfo implements AdminCommand {
         top = report.getTopMessagePart();
         logger = context.getLogger();
         jpdaEnabled = Boolean.parseBoolean(ctx.getArguments().getProperty("-debug"));
+        javaConfig = config.getJavaConfig();
+        int debugPort = parsePort(javaConfig.getDebugOptions());
         top.addProperty("debug", Boolean.toString(jpdaEnabled));
+        top.addProperty("debugPort", Integer.toString(debugPort));
         final OperatingSystemMXBean osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 
         top.addProperty("os.arch", osBean.getArch());
@@ -91,6 +97,7 @@ public class RuntimeInfo implements AdminCommand {
             final Method jm = osBean.getClass().getMethod("getTotalPhysicalMemorySize");
             AccessController.doPrivileged(
                     new PrivilegedExceptionAction() {
+
                         public Object run() throws Exception {
                             if (!jm.isAccessible()) {
                                 jm.setAccessible(true);
@@ -101,7 +108,8 @@ public class RuntimeInfo implements AdminCommand {
 
             top.addProperty("totalPhysicalMemorySize", "" + jm.invoke(osBean));
 
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             logger.log(Level.SEVERE, null, ex);
         }
 
@@ -113,11 +121,33 @@ public class RuntimeInfo implements AdminCommand {
         reportMessage.append(Strings.get("runtime.info.debug", jpdaEnabled ? "enabled" : "not enabled"));
         report.setMessage(reportMessage.toString());
     }
+
+    private int parsePort(String s) {
+        //"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9009"
+        int port = -1;
+        String[] ss = s.split(",");
+
+        for (String sub : ss) {
+            if (sub.startsWith("address=")) {
+                try {
+                    port = Integer.parseInt(sub.substring(8));
+                }
+                catch (Exception e) {
+                    port = -1;
+                }
+                break;
+            }
+        }
+        return port;
+    }
     @Inject
-    StartupContext ctx;
+    private StartupContext ctx;
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Config config;
     @Param(optional = true)
-    String target;
+    private String target;
     private boolean jpdaEnabled;
+    private JavaConfig javaConfig;
     private ActionReport report;
     private ActionReport.MessagePart top;
     private Logger logger;

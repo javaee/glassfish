@@ -90,7 +90,6 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
     @Inject
     Habitat habitat;
 
-    //How to define short option name?
     @Param(optional = true, defaultValue = "false", shortName = "m")
     Boolean monitor;
 
