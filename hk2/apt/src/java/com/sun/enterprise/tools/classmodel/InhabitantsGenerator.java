@@ -80,7 +80,7 @@ import com.sun.hk2.component.InhabitantsParser;
  * @author Jeff Trent
  * @since 3.1
  */
-public class InhabitantsGenerator {
+public class InhabitantsGenerator extends Constants {
 
   private static final Logger logger = Logger.getLogger(InhabitantsGenerator.class.getName());
   
@@ -94,30 +94,6 @@ public class InhabitantsGenerator {
     IGNORE.add("tools.jar");
   };
   
-  /**
-   * This is the inhabitants file built.
-   * <p>
-   * Passed as a system property.
-   */
-  public static final String PARAM_INHABITANT_FILE = "inhabitants.target.file";
-  
-  /**
-   * This is the source files (jars | directories) to introspect and build a habitat for. 
-   * <p>
-   * Passed as a system property.
-   */
-  public static final String PARAM_INHABITANTS_SOURCE_FILES = "inhabitants.source.files";
-  
-  /**
-   * This is the working classpath the introspection machinery will use to resolve
-   * referenced contracts and annotations.  <b>Without this you may see a bogus
-   * inhabitants file being generated.</b>  The indicator for this is a habitat with
-   * only class names and missing indicies.
-   * <p>
-   * Passed as a system property.
-   */
-  public static final String PARAM_INHABITANTS_CLASSPATH = "inhabitants.classpath";
-
   /**
    * The filter to control scope of inhabitants being created
    */
