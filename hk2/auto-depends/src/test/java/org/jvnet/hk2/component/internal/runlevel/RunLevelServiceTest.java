@@ -496,6 +496,8 @@ public class RunLevelServiceTest {
 
   @Test
   public void exceptionTypeEnvRunLevelService() throws Exception {
+    installTestRunLevelService(false);
+    
     this.defRLlistener = (TestRunLevelListener) listener;
     defRLlistener.calls.clear();
 
