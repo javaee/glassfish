@@ -86,8 +86,12 @@ public class ModelClassVisitor implements ClassVisitor {
         URI classDefURI=null;
         try {
             int index = entryName.length() - name.length() - 6;
-            String newPath=(index>0?definingURI.getPath() + entryName.substring(0, index):definingURI.getPath());
-            classDefURI = new URI(definingURI.getScheme(), newPath, definingURI.getFragment());
+            if (index==0) {
+                classDefURI=definingURI;
+            } else {
+                String newPath=(index>0?definingURI.getPath() + entryName.substring(0, index):definingURI.getPath());
+                classDefURI = new URI(definingURI.getScheme(), newPath, definingURI.getFragment());
+            }
 
         } catch (URISyntaxException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
