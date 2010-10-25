@@ -125,7 +125,7 @@ public class PluginUtil {
         if (gf == null) {
             long startTime = System.currentTimeMillis();
             logger.logp(Level.INFO, "PluginUtil", "getGlassFish", "Creating GlassFish ServerId = {0}", serverId);
-            BootstrapOptions bootstrapOptions = new BootstrapOptions(bootstrapProperties);
+            BootstrapProperties bootstrapOptions = new BootstrapProperties(bootstrapProperties);
             gfr = gfr != null ? gfr : GlassFishRuntime.bootstrap(bootstrapOptions,
                     PluginUtil.class.getClassLoader());
 /*
@@ -136,7 +136,7 @@ public class PluginUtil {
                     "GlassFishRuntime = {1}, TimeTaken = {2} ms",
                     new Object[]{serverId, gfr, System.currentTimeMillis() - startTime});
             startTime = System.currentTimeMillis();
-            GlassFishOptions gfOptions = new GlassFishOptions(bootstrapProperties);
+            GlassFishProperties gfOptions = new GlassFishProperties(bootstrapProperties);
             gf = gfr.newGlassFish(gfOptions);
             logger.logp(Level.INFO, "PluginUtil", "getGlassFish", "Created GlassFish ServerId = {0}, " +
                     "GlassFish = {1}, GlassFish Status = {2}, TimeTaken = {3} ms",
