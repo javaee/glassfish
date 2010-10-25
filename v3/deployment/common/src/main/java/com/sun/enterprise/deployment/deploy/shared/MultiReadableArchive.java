@@ -248,6 +248,13 @@ public class MultiReadableArchive extends AbstractReadableArchive implements Rea
 
     @Override
     public String getName() {
-        throw new UnsupportedOperationException();
+        final StringBuilder name = new StringBuilder();
+        for (ReadableArchive a : archives) {
+            if (name.length() > 0) {
+                name.append(",");
+            }
+            name.append(a.getName());
+        }
+        return name.toString();
     }
 }
