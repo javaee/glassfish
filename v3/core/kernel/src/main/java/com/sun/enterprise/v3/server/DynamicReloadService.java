@@ -185,7 +185,9 @@ public class DynamicReloadService implements ConfigListener, PostStartup, PostCo
          */
         logger.fine("[Reloader] Stopping");
         reloader.cancel();
-        timerTask.cancel();
+        if(timerTask != null) {
+            timerTask.cancel();
+        }
     }
     
     /**
