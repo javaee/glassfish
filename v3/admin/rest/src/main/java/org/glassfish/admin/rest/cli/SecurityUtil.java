@@ -329,7 +329,6 @@ public class SecurityUtil {
         Property keyfileProp = null;
         
         for (Property prop : props) {
-            System.out.println(prop.getName() + " = " + prop.getValue());
             if ("file".equals(prop.getName())) {
                 keyfileProp = prop;
             }
@@ -349,7 +348,6 @@ public class SecurityUtil {
                 LoginContextDriver.login(usernames[0], new char[0], ADMIN_REALM);
                 user = usernames[0];
             } catch (Exception e) {
-                e.printStackTrace();
             }
         }
 
