@@ -424,7 +424,7 @@ public class AppServerStartup implements ModuleStartup {
             env.setStatus(ServerEnvironment.Status.stopped);
             events.send(new Event(EventTypes.SERVER_SHUTDOWN), false);
 
-            logger.info(localStrings.getLocalString("shutdownfinished","Shutdown procedure finished");            
+            logger.info(localStrings.getLocalString("shutdownfinished","Shutdown procedure finished"));            
 
             // we send the shutdown events before the Init services are released since
             // evens handler can still rely on services like logging during their processing
