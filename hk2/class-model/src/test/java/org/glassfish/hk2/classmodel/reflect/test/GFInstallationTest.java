@@ -52,12 +52,9 @@ import java.util.jar.Manifest;
 import java.util.logging.Level;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: Jan 6, 2010
- * Time: 9:32:58 PM
- * To change this template use File | Settings | File Templates.
+ * scans all glassfish jar, glassfish must be installed in ~/glassfish
  */
+@Ignore
 public class GFInstallationTest {
 
     @Test
