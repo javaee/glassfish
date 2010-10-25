@@ -78,8 +78,8 @@ public class ListLoggerLevels implements AdminCommand {
     @Inject
     LoggingConfigImpl loggingConfig;
 
-    @Param(optional = true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    @Param(primary = true, optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME, alias = "target", obsolete = true)
+    String target;
 
     @Inject
     Domain domain;
@@ -178,10 +178,9 @@ public class ListLoggerLevels implements AdminCommand {
                     final ActionReport.MessagePart part = report.getTopMessagePart()
                             .addChild();
                     String n = name.substring(0, name.lastIndexOf(".level"));
-                    part.setMessage(n + ": " + (String) props.get(name));
+                    part.setMessage(n + "\t" + "<" +(String) props.get(name)+ ">");
                     logLevelMap.put(n, props.get(name)); //Needed for REST xml and JSON output
-                    loggerList.add(n); //Needed for REST xml and JSON output
-                    //report.getTopMessagePart().addProperty(n, (String) props.get(name));
+                    loggerList.add(n); //Needed for REST xml and JSON output                    
                 }
             }
             // Populate the extraProperties data structure for REST...

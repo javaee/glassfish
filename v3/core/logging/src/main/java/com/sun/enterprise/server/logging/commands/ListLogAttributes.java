@@ -78,8 +78,8 @@ public class ListLogAttributes implements AdminCommand {
     @Inject
     LoggingConfigImpl loggingConfig;
 
-    @Param(optional = true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    @Param(primary = true, optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME, alias = "target", obsolete = true)
+    String target;
 
     @Inject
     Domain domain;
@@ -168,7 +168,7 @@ public class ListLogAttributes implements AdminCommand {
                 if (!name.endsWith(".level") && !name.equals(".level")) {
                     final ActionReport.MessagePart part = report.getTopMessagePart()
                             .addChild();
-                    part.setMessage(name + ": " + props.get(name));
+                    part.setMessage(name + "\t" + "<"+props.get(name)+">");
                 }
             }
 
