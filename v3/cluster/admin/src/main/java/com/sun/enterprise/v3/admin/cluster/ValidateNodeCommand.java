@@ -47,6 +47,7 @@ import com.sun.enterprise.config.serverbeans.SshAuth;
 
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.net.NetUtils;
+import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.admin.CommandRunner.CommandInvocation;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
@@ -216,16 +217,22 @@ public class ValidateNodeCommand implements AdminCommand {
             return;
         }
 
-        File valueFile = new File(value);
-        File configValueFile = new File(configValue);
+        String canonicalValueFile = FileUtils.safeGetCanonicalPath(new File(value));
+        String canonicalConfigValueFile = FileUtils.safeGetCanonicalPath(new File(configValue));
+        if (canonicalConfigValueFile == null || canonicalValueFile== null) {
+            throw new CommandValidationException(
+                Strings.get("attribute.null",
+                           propname, canonicalValueFile, canonicalConfigValueFile));
+        }
 
-        if ( !valueFile.equals(configValueFile) ) {
+        if ( !canonicalValueFile.equals(canonicalConfigValueFile) ) {
             throw new CommandValidationException(
                 Strings.get("attribute.mismatch",
-                               propname, value, configValue));
+                           propname, canonicalValueFile, canonicalConfigValueFile));
         }
         // Don't update an attribute that is considered a match
         excludeFromUpdate.add(propname);
+        
     }
 
     private void validateHostname(String propname,
