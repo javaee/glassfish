@@ -20,12 +20,6 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         The name of the target  upon  which  the  subcommand  is
-         operating.
-
-OPERANDS
-     target
-
          The server instance or cluster for which the error  dis-
          tribution will be displayed. Valid values are:
 
@@ -34,7 +28,9 @@ OPERANDS
              o    instance_name- The  name  of  a  target  server
                   instance.
 
+OPERANDS
      timestamp
+
          The time at which the  error  logs  are  generated.  The
          error  logs  are  maintained  in  the  memory. Timestamp
          should be a long value that  represents  the  number  of
@@ -48,14 +44,15 @@ EXAMPLES
      error-distribution subcommand, the  display-error-statistics
      subcommand is first used to get the timestamp.
 
-Java EE 6           Last change: 30 Aug 2010                    1
-
-asadmin Utility Subcommands         display-error-distribution(1)
-
        asadmin> display-error-statistics
        Timestamp                               Severity  Warning
        ---------------------------------------------------------
        1185340505312(Jul 25, 2010 10:45:05 AM)     0        0
+
+Java EE 6           Last change: 30 Aug 2010                    1
+
+asadmin Utility Subcommands         display-error-distribution(1)
+
        1185336905312(Jul 25, 2010 9:45:05 AM)      0        0
        1185333305312(Jul 25, 2010 8:45:05 AM)      0        0
        1185329705312(Jul 25, 2010 7:45:05 AM)      0        0
@@ -80,9 +77,9 @@ EXIT STATUS
                                  mand
 
 SEE ALSO
-     display-error-statistics(1)
-
-     , display-log-records(1)
+     collect-log-files(1), display-error-statistics(1),  display-
+     log-records(1),  list-log-levels(1), rotate-log(1), set-log-
+     levels(1)
 
      asadmin(1M)
 

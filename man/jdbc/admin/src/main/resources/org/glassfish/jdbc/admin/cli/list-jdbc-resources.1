@@ -21,14 +21,31 @@ OPTIONS
 
 OPERANDS
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         This operand specifies  which  JDBC  resources  you  can
+         list.  Usage  of  this operand is optional. Valid values
+         are:
+
+         server
+
+             Lists the JDBC resources in the current  server  and
+             is the default.
+
+         domain
+             Lists the JDBC resources in the current domain.
+
+         cluster_name
+
+             Lists the JDBC resources in a cluster.
+
+         instance_name
+             Lists the JDBC resources for a particular instance.
 
 EXAMPLES
      Example 1 Listing the JDBC Resources
+
+Java EE 6           Last change: 17 Sep 2010                    1
+
+asadmin Utility Subcommands                list-jdbc-resources(1)
 
      This example lists the current JDBC resources.
 
@@ -42,14 +59,10 @@ EXIT STATUS
      1                           error in executing  the  subcom-
                                  mand
 
-Java EE 6           Last change: 30 Oct 2009                    1
-
-asadmin Utility Subcommands                list-jdbc-resources(1)
-
 SEE ALSO
      create-jdbc-resource(1), delete-jdbc-resource(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 30 Oct 2009                    2
+Java EE 6           Last change: 17 Sep 2010                    2
 

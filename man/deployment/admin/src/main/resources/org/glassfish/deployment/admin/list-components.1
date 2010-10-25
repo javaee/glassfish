@@ -6,10 +6,15 @@ NAME
 
 SYNOPSIS
      list-components [--help]
-     [--verbose={false|true}] [--resources] [--subcomponents]
+     [--long={false|true}] [--resources] [--subcomponents]
      [--type type] [target]
 
 DESCRIPTION
+     Note -
+
+       The list-components  subcommand  is  deprecated.  Use  the
+       list-applications subcommand instead.
+
      The list-components subcommand lists all  deployed  Java  EE
      components.
 
@@ -20,10 +25,9 @@ DESCRIPTION
 
      If  multiple  versions  of  a  module  or  application   are
      deployed,  this subcommand lists all versions. To list which
-     version is enabled, set the --verbose option  to  true.  For
-     more  information about module and application versions, see
-     the  Oracle  GlassFish  Server  3.1  Application  Deployment
-     Guide.
+     version is enabled, set the --long option to true. For  more
+     information  about  module and application versions, see the
+     Oracle GlassFish Server 3.1 Application Deployment Guide.
 
      This subcommand is supported in remote mode only.
 
@@ -33,7 +37,7 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-     --verbose
+     --long
          If true, displays whether  each  module  or  application
          listed is enabled. The default is false.
 
@@ -44,21 +48,20 @@ OPTIONS
          lists the application-scoped  resources  for  each  com-
          ponent within an application.
 
-     --subcomponents
-         Lists  the  subcomponents   of   each   component.   The
-
-Java EE 6            Last change: 2 Sep 2010                    1
+Java EE 6           Last change: 29 Sep 2010                    1
 
 asadmin Utility Subcommands                    list-components(1)
 
-         subcomponents  listed  depend on the component type. For
-         example, for a Java EE application (EAR  file),  modules
-         are  listed.  For  a  web  application, servlets and JSP
-         pages are listed. For an EJB module,  EJB  subcomponents
-         are listed.
+     --subcomponents
+
+         Lists the subcomponents of each component.  The  subcom-
+         ponents  listed  depend on the component type. For exam-
+         ple, for a Java EE application (EAR file),  modules  are
+         listed.  For  a  web application, servlets and JSP pages
+         are listed. For an EJB  module,  EJB  subcomponents  are
+         listed.
 
      --type
-
          Specifies the type of the  components  that  are  to  be
          listed. The options are as follows:
 
@@ -70,8 +73,6 @@ asadmin Utility Subcommands                    list-components(1)
 
              o    ejb
 
-             o    jruby
-
              o    web
 
              o    webservice
@@ -79,27 +80,28 @@ asadmin Utility Subcommands                    list-components(1)
 
 OPERANDS
      target
+
          This is the name of the target upon which the subcommand
          operates. The valid values are:
 
          server
-
              Lists the components for the default server instance
              server and is the default value.
 
          domain_name
+
              Lists the components for the named domain.
 
          cluster_name
-
              Lists the components for every  server  instance  in
              the cluster.
 
          instance_name
+
              Lists  the  components  for  a   particular   server
              instance.
 
-Java EE 6            Last change: 2 Sep 2010                    2
+Java EE 6           Last change: 29 Sep 2010                    2
 
 asadmin Utility Subcommands                    list-components(1)
 
@@ -125,5 +127,5 @@ SEE ALSO
 
      Oracle GlassFish Server 3.1 Application Deployment Guide
 
-Java EE 6            Last change: 2 Sep 2010                    3
+Java EE 6           Last change: 29 Sep 2010                    3
 

@@ -6,7 +6,7 @@ NAME
      tions
 
 SYNOPSIS
-     recover-transactions  [--help] [--txlogdir transaction_log_dir ]
+     recover-transactions  [--help] [--transactionlogdir transaction_log_dir ]
      [--target target_server_name ] server_name
 
 DESCRIPTION
@@ -49,7 +49,7 @@ OPTIONS
          some  other  location to make it available to the surro-
          gate recovery server, use this option to specify the new
 
-Java EE 6            Last change: 8 Sep 2010                    1
+Java EE 6           Last change: 14 Sep 2010                    1
 
 asadmin Utility Subcommands               recover-transactions(1)
 
@@ -80,9 +80,10 @@ OPERANDS
          which the recovery is required. The  in-flight  transac-
          tions  on  this server will be recovered. If this server
          is running, recovery is performed by the same server. In
-         this  situation,  the  --txlogdir  and  --target options
-         should be omitted. If the server is not running, the  --
-         txlogdir and --target options are required.
+         this  situation,  the  --transactionlogdir  and --target
+         options should be omitted. If the server is not running,
+         the   --transactionlogdir   and   --target  options  are
+         required.
 
 EXAMPLES
      Example 1 Using recover-transactions
@@ -95,21 +96,17 @@ EXIT STATUS
 
      1    error in executing the command
 
-SEE ALSO
-
-Java EE 6            Last change: 8 Sep 2010                    2
+Java EE 6           Last change: 14 Sep 2010                    2
 
 asadmin Utility Subcommands               recover-transactions(1)
 
+SEE ALSO
      freeze-transaction-service(1),         unfreeze-transaction-
      service(1), rollback-transaction(1)
 
      asadmin(1M)
 
-     Chapter 15, Using the Transaction Service, in Oracle GlassF-
-     ish Server 3.1 Application Development Guide
-
      Chapter 28, Transactions, in The Java EE 6 Tutorial
 
-Java EE 6            Last change: 8 Sep 2010                    3
+Java EE 6           Last change: 14 Sep 2010                    3
 

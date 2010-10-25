@@ -13,7 +13,9 @@ DESCRIPTION
      The delete-jms-resource  subcommand  removes  the  specified
      Java  Message Service (JMS) resource. Ensure that you remove
      all references to this resource before executing  this  sub-
-     command. This subcommand is supported in remote mode only.
+     command.
+
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
@@ -22,11 +24,30 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         Deletes the JMS resource only from the specified target.
+         Valid values are as follows:
+
+         server
+
+             Deletes the JMS resource  from  the  default  server
+             instance. This is the default value.
+
+         configuration-name
+             Deletes the JMS resource from the  specified  confi-
+             guration.
+
+         cluster-name
+
+             Deletes the JMS resource from every server  instance
+             in the specified cluster.
+
+         instance-name
+             Deletes the JMS resource from the  specified  server
+             instance.
+
+Java EE 6           Last change: 22 Oct 2010                    1
+
+asadmin Utility Subcommands                delete-jms-resource(1)
 
 OPERANDS
      jndi_name
@@ -43,19 +64,14 @@ EXAMPLES
        Command delete-jms-resource executed successfully.
 
 EXIT STATUS
-     0                           subcommand executed successfully
+     0            subcommand executed successfully
 
-Java EE 6           Last change: 16 Sep 2009                    1
-
-asadmin Utility Subcommands                delete-jms-resource(1)
-
-     1                           error in executing  the  subcom-
-                                 mand
+     1            error in executing the subcommand
 
 SEE ALSO
      create-jms-resource(1), list-jms-resources(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 16 Sep 2009                    2
+Java EE 6           Last change: 22 Oct 2010                    2
 

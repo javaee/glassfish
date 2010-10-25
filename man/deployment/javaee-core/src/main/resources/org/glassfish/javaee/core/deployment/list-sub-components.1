@@ -7,7 +7,8 @@ NAME
 
 SYNOPSIS
      list-sub-components [--help] [--type type]
-     [--appname appname] modulename
+     [--appname appname]  [--resources]
+     modulename
 
 DESCRIPTION
      The list-sub-components subcommand lists EJB or servlet com-
@@ -46,14 +47,17 @@ OPTIONS
          versions, see the Oracle GlassFish Server  3.1  Applica-
          tion Deployment Guide.
 
-OPERANDS
-
-Java EE 6            Last change: 2 Sep 2009                    1
+Java EE 6           Last change: 12 Oct 2009                    1
 
 asadmin Utility Subcommands                list-sub-components(1)
 
-     modulename
+     --resources
 
+         Lists the application-scoped resources for each  subcom-
+         ponent.
+
+OPERANDS
+     modulename
          Specifies the name of the module containing the  subcom-
          ponent.
 
@@ -88,5 +92,5 @@ SEE ALSO
 
      Oracle GlassFish Server 3.1 Application Deployment Guide
 
-Java EE 6            Last change: 2 Sep 2009                    2
+Java EE 6           Last change: 12 Oct 2009                    2
 

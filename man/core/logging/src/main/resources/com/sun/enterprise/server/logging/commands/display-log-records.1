@@ -6,7 +6,7 @@ NAME
      given module at a given timestamp
 
 SYNOPSIS
-     display-log-records [--help] --errorlevel {SEVERE|WARNING} --timestamp timestamp [--target instance] {module-id  [ module-id]*}
+     display-log-records [--help] --errorlevel {SEVERE|WARNING} --timestamp timestamp [--target target] [module-id  [ module-id]*]
 
 DESCRIPTION
      The display-log-records subcommand displays  all  the  error
@@ -20,13 +20,17 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         The name of the target  upon  which  the  subcommand  is
-         operating.  The  valid  targets  for this subcommand are
-         instance and cluster.
+         The server instance or cluster  for  which  log  records
+         will be displayed. Valid values are:
+
+             o    cluster_name- The name of a target cluster.
+
+             o    instance_name- The  name  of  a  target  server
+                  instance.
 
      --errorlevel
 
-         Allowed values are SEVERE and WARNING.
+         Valid values are SEVERE and WARNING.
 
      --timestamp
          The time specified at which  the  error  logs  are  gen-
@@ -43,13 +47,14 @@ EXAMPLES
      This   example   displays   the   log   records   for    the
      javax.enterprise.system.container.web   module.   Because  a
      timestamp and module ID are required  for  the  display-log-
-     records   subcommand,   the   display-error-statistics   and
-     display-error-distribution subcommands are  used  to  gather
-     the required values.
 
 Java EE 6           Last change: 30 Aug 2010                    1
 
 asadmin Utility Subcommands                display-log-records(1)
+
+     records   subcommand,   the   display-error-statistics   and
+     display-error-distribution subcommands are  used  to  gather
+     the required values.
 
        asadmin> display-error-statistics
        Timestamp                               Severity  Warning
@@ -95,21 +100,20 @@ asadmin Utility Subcommands                display-log-records(1)
        ----------------------------------------------------------------------
        Command display-log-records executed successfully.
 
-EXIT STATUS
-
 Java EE 6           Last change: 30 Aug 2010                    2
 
 asadmin Utility Subcommands                display-log-records(1)
 
+EXIT STATUS
      0                           subcommand executed successfully
 
      1                           error in executing  the  subcom-
                                  mand
 
 SEE ALSO
-     display-error-distribution(1)
-
-     , display-error-statistics(1)
+     collect-log-files(1),         display-error-distribution(1),
+     display-error-statistics(1),   list-log-levels(1),   rotate-
+     log(1), set-log-levels(1)
 
      asadmin(1M)
 

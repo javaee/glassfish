@@ -22,35 +22,20 @@ OPTIONS
 
      --target
          The server instance or cluster for which log levels will
-         be listed.
+         be listed. Valid values are:
+
+             o    cluster_name- The name of a target cluster.
+
+             o    instance_name- The  name  of  a  target  server
+                  instance.
 
      --outputfilepath
 
          The name of the directory in which the ZIP archive  will
-         be saved.
+         be  saved.  The ZIP file is name is constructed from the
+         target and timestamp, as follows:
 
-OPERANDS
-     target      The server instance or  cluster  for  which  log
-                 files  will  be  gathered. The default target is
-                 all server  instances  in  all  clusters.  Valid
-                 values are:
-
-                     o    cluster_name-  The  name  of  a  target
-                          cluster.
-
-                     o    instance_name- The  name  of  a  target
-                          server instance.
-
-     pathname    The name of  the  directory  in  which  the  ZIP
-                 archive  will  be saved. The ZIP file is name is
-                 constructed from the target  and  timestamp,  as
-                 follows:
-
-                   target_yyyy-mm-dd_hh-min-sec.zip
-
-Java EE 6           Last change: 31 Aug 2010                    1
-
-asadmin Utility Subcommands                  collect-log-files(1)
+           target_yyyy-mm-dd_hh-min-sec.zip
 
 EXAMPLES
      Example 1 Collecting Log Files into a ZIP  Archive  for  All
@@ -60,6 +45,10 @@ EXAMPLES
      a  cluster named c1. The ZIP archive is saved in a directory
      named /space/output. In this example, the  cluster  c1  con-
      tains three server instances, named in1, in2, and in3.
+
+Java EE 6           Last change: 31 Aug 2010                    1
+
+asadmin Utility Subcommands                  collect-log-files(1)
 
        asadmin> collect-log-files --target c1 --outputfilepath /space/output
 
@@ -76,7 +65,9 @@ EXIT STATUS
                                  mand
 
 SEE ALSO
-     rotate-log(1), set-log-levels(1)
+     display-error-distribution(1),  display-error-statistics(1),
+     display-log-records(1),  list-log-levels(1),  rotate-log(1),
+     set-log-levels(1)
 
      asadmin(1M)
 

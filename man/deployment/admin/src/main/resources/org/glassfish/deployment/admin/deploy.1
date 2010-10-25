@@ -51,7 +51,7 @@ DESCRIPTION
      create tables fails, the deployment does not fail; a warning
      message is provided in the log file.
 
-Java EE 6            Last change: 9 Sep 2010                    1
+Java EE 6           Last change: 20 Oct 2010                    1
 
 asadmin Utility Subcommands                             deploy(1)
 
@@ -103,7 +103,7 @@ OPTIONS
          versions, see the Oracle GlassFish Server  3.1  Applica-
          tion Deployment Guide.
 
-Java EE 6            Last change: 9 Sep 2010                    2
+Java EE 6           Last change: 20 Oct 2010                    2
 
 asadmin Utility Subcommands                             deploy(1)
 
@@ -157,7 +157,7 @@ asadmin Utility Subcommands                             deploy(1)
          neither  dropped  nor  created.   If  not specified, the
          tables are dropped if the drop-tables-at-undeploy  entry
 
-Java EE 6            Last change: 9 Sep 2010                    3
+Java EE 6           Last change: 20 Oct 2010                    3
 
 asadmin Utility Subcommands                             deploy(1)
 
@@ -209,7 +209,7 @@ asadmin Utility Subcommands                             deploy(1)
          lability is configured and  enabled  at  higher  levels,
          such as the server and container levels.
 
-Java EE 6            Last change: 9 Sep 2010                    4
+Java EE 6           Last change: 20 Oct 2010                    4
 
 asadmin Utility Subcommands                             deploy(1)
 
@@ -234,10 +234,23 @@ asadmin Utility Subcommands                             deploy(1)
 
          This  option  controls  whether   web   sessions,   SFSB
          instances,  and  persistently  created  EJB  timers  are
-         retained between redeployments. For this option to  work
-         for  SFSB instances, there must be no changes to the set
-         of instance  variables  in  the  SFSB  bean  class.  The
-         default is false.
+         retained between redeployments. The  default  is  false.
+         This  option is not supported and ignored in a clustered
+         environment.
+
+         Some changes to  an  application  between  redeployments
+         prevent this feature from working properly. For example,
+         do not change the set of instance variables in the  SFSB
+         bean class.
+
+         For web applications, this feature is applicable only if
+         in  the  glassfish-web-app.xml file the persistence-type
+         attribute of the session-manager element is file.
+
+         For stateful session  bean  instances,  the  persistence
+         type without high availability is set in the server (the
+         sfsb-persistence-type attribute)  and  must  be  set  to
+         file, which is the default and recommended value.
 
          If any active web session, SFSB instance, or  EJB  timer
          fails to be preserved or restored, none of these will be
@@ -249,7 +262,12 @@ asadmin Utility Subcommands                             deploy(1)
          data, the class loader of the newly redeployed  applica-
          tion deserializes the data that was previously saved.
 
+Java EE 6           Last change: 20 Oct 2010                    5
+
+asadmin Utility Subcommands                             deploy(1)
+
      --libraries
+
          A comma-separated list of library JAR files. Specify the
          library  JAR  files by their relative or absolute paths.
          Specify   relative    paths    relative    to    domain-
@@ -257,13 +275,8 @@ asadmin Utility Subcommands                             deploy(1)
          application in the order specified.
 
      --target
-
          Specifies the target to which you are  deploying.  Valid
          values are:
-
-Java EE 6            Last change: 9 Sep 2010                    5
-
-asadmin Utility Subcommands                             deploy(1)
 
          server
 
@@ -300,7 +313,12 @@ asadmin Utility Subcommands                             deploy(1)
          The packaging archive type  of  the  component  that  is
          being deployed. Possible values are as follows:
 
+Java EE 6           Last change: 20 Oct 2010                    6
+
+asadmin Utility Subcommands                             deploy(1)
+
          osgi
+
              The component is packaged as an OSGi  Alliance  bun-
              dle.
 
@@ -308,15 +326,9 @@ asadmin Utility Subcommands                             deploy(1)
          aged as a regular archive, omit this option.
 
      --properties or --property
-
          Optional keyword-value  pairs  that  specify  additional
          properties  for the deployment. The available properties
          are determined by the implementation  of  the  component
-
-Java EE 6            Last change: 9 Sep 2010                    6
-
-asadmin Utility Subcommands                             deploy(1)
-
          that  is  being deployed or redeployed. The --properties
          option and the --property option are equivalent. You can
          use either option regardless of the number of properties
@@ -355,89 +367,14 @@ asadmin Utility Subcommands                             deploy(1)
              trust. Default is s1as,  the  alias  for  the  self-
              signed certificate created for every domain.
 
+Java EE 6           Last change: 20 Oct 2010                    7
+
+asadmin Utility Subcommands                             deploy(1)
+
          java-web-start-enabled
+
              Specifies whether Java Web Start access is permitted
              for an application client module. Default is true.
-
-         jruby.home
-
-             Specifies the directory where JRuby itself (not  the
-             GlassFish  Server  JRuby  container)  is  installed.
-             Default is as-install/jruby.
-
-Java EE 6            Last change: 9 Sep 2010                    7
-
-asadmin Utility Subcommands                             deploy(1)
-
-         jruby.runtime
-
-             Specifies the initial number of  JRuby  runtimes  to
-             start.  Must  be  greater than zero, greater than or
-             equal to jruby.runtime.min, and less than  or  equal
-             to  jruby.runtime.max. Default is 1. Overrides JRuby
-             container runtime pool settings. For  more  informa-
-             tion,   see  the  configure-jruby-container(1)  help
-             page.
-
-         jruby.runtime.min
-             Specifies the minimum number of  JRuby  runtimes  in
-             the  pool.  Must  be greater than zero, less than or
-             equal  to   jruby.runtime   and   jruby.runtime.max.
-             Default is 1. Overrides JRuby container runtime pool
-             settings. For more information, see  the  configure-
-             jruby-container(1) help page.
-
-         jruby.runtime.max
-
-             Specifies the maximum number of  JRuby  runtimes  in
-             the pool. Must be greater than zero, greater than or
-             equal to jruby.runtime and jruby.runtime.min.  Over-
-             rides JRuby container runtime pool settings. Default
-             is 1.  For  more  information,  see  the  configure-
-             jruby-container(1) help page.
-
-         jruby.rackEnv
-             Specifies the environment in which a JRuby  applica-
-             tion  such as Rails or Merb runs. Allowed values are
-             development,  production,  or   test.   Default   is
-             development.
-
-         jruby.applicationType
-
-             Specifies the name of a supported framework  or  the
-             path  to a script that initializes the user's frame-
-             work.  Allowed  values  corresponding  to  supported
-             frameworks are Rails, Merb, or Sinatra. Setting this
-             property  bypasses  the  normal,   and   potentially
-             lengthy,  auto-detection  process and forces deploy-
-             ment on the specified  framework.  If  the  deployed
-             application  is not written for the specified frame-
-             work, errors result.  Default  is  computed  through
-             auto-detection.
-
-Java EE 6            Last change: 9 Sep 2010                    8
-
-asadmin Utility Subcommands                             deploy(1)
-
-         jruby.MTSafe
-
-             If true, specifies that a  framework  being  started
-             using   jruby.applicationType   is  thread-safe  and
-             therefore does not need a pool created for it.  This
-             property   affects  applications  started  using  an
-             auto-detected  user-provided  startup   script.   If
-             jruby.applicationType is set and jruby.MTsafe is not
-             set or is set to false, the application starts  with
-             a  pool  of application instances, and each instance
-             of the application is accessed by one  thread  at  a
-             time.  This  property  only affects frameworks being
-             launched where the thread safety cannot be automati-
-             cally  determined. Setting jruby.MTsafe to true does
-             not cause an auto-detected Rails  2.1.x  application
-             to  be  launched  in thread-safe mode, nor can it be
-             used to force a thread-safe framework  to  start  in
-             pooled  mode.  Default  is  computed  through  auto-
-             detection.
 
          compatibility
              Specifies the GlassFish Server release with which to
@@ -469,11 +406,6 @@ asadmin Utility Subcommands                             deploy(1)
 
              false
                  Active  sessions  of  the  application  are  not
-
-Java EE 6            Last change: 9 Sep 2010                    9
-
-asadmin Utility Subcommands                             deploy(1)
-
                  preserved and restored (default).
 
              true
@@ -489,12 +421,18 @@ asadmin Utility Subcommands                             deploy(1)
 
                  To preserve active  sessions,  GlassFish  Server
                  serializes   the  sessions  and  saves  them  in
+
+Java EE 6           Last change: 20 Oct 2010                    8
+
+asadmin Utility Subcommands                             deploy(1)
+
                  memory.  To  restore  the  sessions,  the  class
                  loader   of  the  newly  redeployed  application
                  deserializes any sessions that  were  previously
                  saved.
 
              preserveAppScopedResources
+
                  If set to true, preserves any application-scoped
                  resources and restores them during redeployment.
                  Default is false.
@@ -505,7 +443,6 @@ asadmin Utility Subcommands                             deploy(1)
 
 OPERANDS
      filepath
-
          if the --upload option is set to true, this is the  path
          to the deployable file on the local client machine. Oth-
          erwise, this is the absolute path to  the  file  on  the
@@ -520,11 +457,6 @@ EXAMPLES
      instance or to a cluster.
 
        asadmin> deploy Cart.ear
-
-Java EE 6            Last change: 9 Sep 2010                   10
-
-asadmin Utility Subcommands                             deploy(1)
-
        Application deployed successfully with name Cart.
        Command deploy executed successfully
 
@@ -535,6 +467,10 @@ asadmin Utility Subcommands                             deploy(1)
      file  to the default server instance server. You can use the
      --target option to deploy to a different server instance  or
      to a cluster.
+
+Java EE 6           Last change: 20 Oct 2010                    9
+
+asadmin Utility Subcommands                             deploy(1)
 
        asadmin> deploy hello.war
        Application deployed successfully with name hello.
@@ -563,11 +499,6 @@ asadmin Utility Subcommands                             deploy(1)
 
        asadmin> deploy --createtables=true EmployeeEJB.jar
        Application deployed successfully with name EmployeeEJB.
-
-Java EE 6            Last change: 9 Sep 2010                   11
-
-asadmin Utility Subcommands                             deploy(1)
-
        Command deploy executed successfully
 
      Example 5 Deploying a Connector Module
@@ -578,6 +509,10 @@ asadmin Utility Subcommands                             deploy(1)
      This example uses the --target option. The  target  in  this
      example  is an existing standalone server instance that does
      not belong to a cluster.
+
+Java EE 6           Last change: 20 Oct 2010                   10
+
+asadmin Utility Subcommands                             deploy(1)
 
        asadmin> deploy jdbcra.rar
        Application deployed successfully with name jdbcra.
@@ -590,12 +525,11 @@ EXIT STATUS
                                  mand
 
 SEE ALSO
-     redeploy(1),  list-components(1),  undeploy(1),   configure-
-     jruby-container(1)
+     redeploy(1), list-components(1), undeploy(1)
 
      asadmin(1M)
 
      Oracle GlassFish Server 3.1 Application Deployment Guide
 
-Java EE 6            Last change: 9 Sep 2010                   12
+Java EE 6           Last change: 20 Oct 2010                   11
 

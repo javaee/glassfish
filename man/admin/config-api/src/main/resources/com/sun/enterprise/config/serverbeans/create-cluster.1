@@ -2,85 +2,77 @@
 asadmin Utility Subcommands                     create-cluster(1)
 
 NAME
-     create-cluster - creates a cluster
+     create-cluster - creates a GlassFish Server cluster
 
 SYNOPSIS
-     create-cluster
-     [--help]
-     [ --config  config_name]
+     create-cluster [--help] [--config config-name]
      [--systemproperties (name=value)[:name=value]*]
+     [--properties (name=value)[:name=value]*]
+     [--gmsenabled={true|false}]
+     [--multicastport multicast-port]
+     [--multicastaddress multicast-address]
+     [--bindaddress bind-address]
      [--hosts hadb-host-list]
-     [--haagentport port_number]
+     [--haagentport port-number]
      [--haadminpassword password]
-     [--haadminpasswordfile file_name] [--devicesize devicesize ]
+     [--haadminpasswordfile file-name] [--devicesize devicesize ]
      [--haproperty (name=value)[:name=value]*]
-     [--autohadb=false] [--portbase port_number]
-     cluster_name
+     [--autohadb=false] [--portbase port-number]
+     cluster-name
 
 DESCRIPTION
-     Note -
-
-       This command is available only in domains that are config-
-       ured to support clusters, such as domains that are created
-       with the cluster profile or the  enterprise  profile.  For
-       information about profiles, see Usage Profiles in Sun Java
-       System Application Server 9.1 Administration Guide.
-
-     The create-cluster  command  creates  a  new  cluster.  When
-     created,  a  cluster  must reference a configuration (or, as
-     with an unclustered server instance, a configuration can  be
-     implicitly  created).  Initially  the  cluster has no server
+     The create-cluster subcommand  creates  a  GlassFish  Server
+     cluster.  Initially the cluster contains no GlassFish Server
      instances, applications, or resources.
 
-     If you do not use the --config option, the command creates a
-     standalone  cluster with a configuration named cluster_name-
-     config.
+     A cluster requires a reference to  the  named  configuration
+     that  defines  the  configuration  of all instances that are
+     added to the cluster. The configuration can be specified  in
+     the  command  to create the cluster, but is not required. If
+     no configuration is specified, the subcommand creates a con-
+     figuration  that  is named cluster-name-config for the clus-
+     ter. The cluster that is created  is  a  standalone  cluster
+     because  the  cluster's configuration is not shared with any
+     other clusters or standalone instances.
 
-     If the HADB software is installed, you can create  the  HADB
-     database  associated with the cluster. To create it, specify
-     the HADB hosts option. In addition, optionally  specify  any
-     other  HADB  options such as haagentport and devicesize. The
-     created database has the  same  name  as  the  cluster,  and
-     includes all the correct tables.
+     To add instances to the cluster, set the --cluster option to
+     the  name  of the cluster when using either of the following
+     subcommands:
 
-     The cluster must be a standalone cluster in  order  to  suc-
-     cessfully  associate  an  HADB  database with it. standalone
-     cluster does not share its configuration with another  clus-
-     ter  or  another  standalone  instance. A standalone cluster
-     does not share its configuration  with  another  cluster  or
+         o    create-instance(1)
 
-Java EE 6           Last change: 27 Jul 2007                    1
+         o    create-local-instance(1)
+
+     To delete server instances from the cluster at any time, use
+     one of the following subcommands:
+
+         o    delete-instance(1)
+
+         o    delete-local-instance(1)
+
+Java EE 6           Last change: 21 Oct 2010                    1
 
 asadmin Utility Subcommands                     create-cluster(1)
 
-     another standalone instance.
+     To associate applications and resources with  all  instances
+     in  the  cluster, set the --target option to the name of the
+     cluster when performing the following operations:
 
-     If you prefer to associate the HADB database to the  cluster
-     later, use configure-ha-cluster.
+         o    Deploying applications by using the deploy(1)  sub-
+              command
 
-     To add new instances to the cluster, use the create-instance
-     command with the --cluster option. Use the stop-instance and
-     delete-instance commands to delete server instances from the
-     cluster at any time.
+         o    Creating resources by  using  subcommands  such  as
+              create-jdbc-resource(1)
 
-     To associate new applications and resources with the cluster
-     regardless  of  the number of instances in the cluster, per-
-     form any of the following operations:
+         o    Creating  references  to  applications   that   are
+              already  deployed  in  other  targets  by using the
+              create-application-ref(1) subcommand
 
-         o    Use the deploy command  with  the  option  --target
-              cluster_name.
+         o    Creating references to resources that  are  already
+              created  in  other  targets  by  using  the create-
+              resource-ref(1) subcommand
 
-         o    Use  resource-creation   commands   (for   example,
-              create-jdbc-resource)   with  the  option  --target
-              cluster_name.
-
-         o    Use reference  management  commands  (for  example,
-              create-application-ref  or  create-resource-ref) if
-              the application is already deployed in  other  tar-
-              gets  or  the  resource is already created in other
-              targets.
-
-     This command is supported in remote mode only.
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
@@ -89,167 +81,253 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --config
-         Creates a shared cluster.  The  specified  configuration
-         name  must  exist  and  must  not be default-config (the
-         standalone cluster configuration template)  or  a  stan-
-         dalone configuration (including server-config).  If this
-         option is omitted, a standalone cluster is created.
+         Specifies  the  named  configuration  that  the  cluster
+         references. The configuration must exist and must not be
+         named default-config or server-config. If the configura-
+         tion name specifies a standalone configuration, an error
+         occurs. Specifying the --config option creates a  shared
+         cluster.   If this option is omitted, a standalone clus-
+         ter is created.
 
      --systemproperties
 
-         Defines system properties for the configuration  created
-         for  by  the cluster. These properties override the pro-
-         perty values in the  default-config  configuration.  The
-
-Java EE 6           Last change: 27 Jul 2007                    2
-
-asadmin Utility Subcommands                     create-cluster(1)
-
+         Defines system properties for the configuration that  is
+         created  for  the cluster. These properties override the
+         property values in the default-config configuration. The
          following properties are available:
 
          HTTP_LISTENER_PORT
+             This property specifies the port number of the  port
+             that  is  used  to  listen  for HTTP requests. Valid
+             values are 1-65535. On UNIX, creating  sockets  that
+             listen    on   ports   1-1024   requires   superuser
+             privileges.
 
-             This property specifies the port  number  for  http-
-             listener-1.  Valid  values  are  1-65535.  On  UNIX,
-             creating  sockets  that  listen  on   ports   1-1024
-             requires superuser privileges.
+Java EE 6           Last change: 21 Oct 2010                    2
+
+asadmin Utility Subcommands                     create-cluster(1)
 
          HTTP_SSL_LISTENER_PORT
-             This property specifies the port  number  for  http-
-             listener-2.  Valid  values  are  1-65535.  On  UNIX,
-             creating  sockets  that  listen  on   ports   1-1024
-             requires superuser privileges.
+
+             This property specifies the port number of the  port
+             that  is  used  to listen for HTTPS requests.  Valid
+             values are 1-65535. On UNIX, creating  sockets  that
+             listen    on   ports   1-1024   requires   superuser
+             privileges.
 
          IIOP_LISTENER_PORT
-
-             This property specifies which ORB listener port  for
-             IIOP connections orb-listener-1 listens on.
+             This property specifies the port number of the  port
+             that  is used for IIOP connections. Valid values are
+             1-65535. On UNIX, creating sockets  that  listen  on
+             ports 1-1024 requires superuser privileges.
 
          IIOP_SSL_LISTENER_PORT
-             This property specifies which ORB listener port  for
-             IIOP   connections  the  IIOP  listener  called  SSL
-             listens on.
+
+             This property specifies the port number of the  port
+             that  is  used  for  secure  IIOP connections. Valid
+             values are 1-65535. On UNIX, creating  sockets  that
+             listen    on   ports   1-1024   requires   superuser
+             privileges.
 
          IIOP_SSL_MUTUALAUTH_PORT
-
-             This property specifies which ORB listener port  for
-             IIOP    connections   the   IIOP   listener   called
-             SSL_MUTUALAUTH listens on.
+             This property specifies the port number of the  port
+             that is used for secure IIOP connections with client
+             authentication.
 
          JMX_SYSTEM_CONNECTOR_PORT
+
              This property specifies the port number on which the
              JMX  connector listens. Valid values are 1-65535. On
              UNIX, creating sockets that listen on  ports  1-1024
              requires superuser privileges.
 
+     --properties
+         Defines properties for the cluster. The  following  pro-
+         perties are available:
+
+         gms-member-type
+
+             Specifies to the Group Management Service (GMS)  the
+             member type of each instance in the cluster.
+
+             Possible values are as follows:
+
+Java EE 6           Last change: 21 Oct 2010                    3
+
+asadmin Utility Subcommands                     create-cluster(1)
+
+             CORE
+
+                 The instance is available to provide high  avai-
+                 lability services to the cluster, such as repli-
+                 cation of session state data, failover, and load
+                 balancing (default).
+
+             SPECTATOR
+                 The instance can be  administered  through  cen-
+                 tralized  administration of the cluster but does
+                 not assist computation for the cluster.
+
+             These values are case insensitive.
+
+             For the  domain  administration  server  (DAS),  the
+             value  of this property is set to SPECTATOR and can-
+             not be changed.
+
+             If this property is set directly  to  SPECTATOR,  no
+             instance  can  provide high availability services to
+             the cluster. If you require some  instances  in  the
+             cluster  to  be of type SPECTATOR, use a system pro-
+             perty  to  set  the  type  individually   for   each
+             instance.
+
+             For  example,  use  the  create-system-properties(1)
+             subcommand   to  create  the  system  property  GMS-
+             MEMBER-TYPE-cluster-name. Then set  the  gms-member-
+             type  property  of the cluster to ${GMS-MEMBER-TYPE-
+             cluster-name}  to  specify  the   system   property.
+             Finally,  for  each instance in the cluster, set the
+             GMS-MEMBER-TYPE-cluster-name system property to  the
+             required type.
+
+     --gmsenabled
+
+         Specifies whether GMS is enabled for the cluster.
+
+         Possible values are as follows:
+
+         true
+             GMS is enabled for the cluster (default).
+
+             When GMS is enabled for a cluster, GMS is started in
+             each  server instance in the cluster and in the DAS.
+             The DAS participates in each cluster for which  this
+             option is set to true.
+
+Java EE 6           Last change: 21 Oct 2010                    4
+
+asadmin Utility Subcommands                     create-cluster(1)
+
+         false
+
+             GMS is disabled for the cluster.
+
+     --multicastaddress
+         The address on which GMS listens for group events.  This
+         option  must  specify  a  multicast address in the range
+         224.0.0.0  through  239.255.255.255.  The   default   is
+         228.9.XX.YY, where XX and YY are automatically generated
+         independent values between 0 and 255.
+
+     --multicastport
+
+         The port number  of  communication  port  on  which  GMS
+         listens  for  group  events.  This option must specify a
+         valid port number in the range 2048-32000.  The  default
+         is an automatically generated value in this range.
+
+     --bindaddress
+         The Internet Protocol (IP) address of the network inter-
+         face to which GMS binds. This option must specify the IP
+         address of a local network interface. The default is all
+         public network interface addresses.
+
+         On a multihome machine, this option configures the  net-
+         work  interface  that  used  for  the  GMS.  A multihome
+         machine possesses two or more network interfaces.
+
+         To specify an address that is valid  for  all  GlassFish
+         Server  instances  in the cluster, use a system property
+         to set the address individually for each instance.
+
+         For example, use the create-system-properties subcommand
+         to   create   the  system  property  GMS-BIND-INTERFACE-
+         ADDRESS-cluster-name. Then set the --bindaddress  option
+         of   this  subcommand  to  ${GMS-BIND-INTERFACE-ADDRESS-
+         cluster-name} to specify the system  property.  Finally,
+         for  each  instance  in  the  cluster, set the GMS-BIND-
+         INTERFACE-ADDRESS-cluster-name system  property  to  the
+         required  network  interface  address  on the instance's
+         machine.
+
      --hosts
 
-         This option is  valid  only  if  the  HADB  software  is
-         installed.  A  list  of comma-separated host names where
-         the HADB instance is configured.  The  number  of  hosts
-         must  be  greater than 1 and must be an even number. The
-         same host names can  be  repeated.  Use  fully-qualified
-         hostnames when specifying the hostlist interfaces expli-
-         citly for hosts with multiple network interfaces.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command runs successfully and the option is ignored.
 
-Java EE 6           Last change: 27 Jul 2007                    3
+Java EE 6           Last change: 21 Oct 2010                    5
 
 asadmin Utility Subcommands                     create-cluster(1)
 
      --haagentport
 
-         This option is  valid  only  if  the  HADB  software  is
-         installed.  The number of the HA agent port. The default
-         is 1862.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command runs successfully and the option is ignored.
 
      --haadminpassword
-         This option is  valid  only  if  the  HADB  software  is
-         installed.  The  HA  administrator's  password.  If  not
-         specified, the Domain Administration Server password  is
-         used.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command runs successfully and the option is ignored.
 
      --haadminpasswordfile
 
-         This option is  valid  only  if  the  HADB  software  is
-         installed.  The  file  containing  the high-availability
-         password associated with  the  administrative  instance.
-         The password is defined in the following form:
-
-           HADBM_ADMINPASSWORD=password
-           HADBM_DBPASSWORD=password
-           HADBM_SYSTEMPASSWORD=password
-
-         Where password is the actual HA  administrator  password
-         for  the domain. If the HA administrator password is not
-         specified, the Domain Administration Server password  is
-         used.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command runs successfully and the option is ignored.
 
      --devicesize
-         This option is  valid  only  if  the  HADB  software  is
-         installed.  Configure the device size for use with HADB.
-         The value is in megabytes (Mbytes). The valid  range  is
-         between 64 Mbytes and 8,000+ gigabytes (GBytes).
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command runs successfully and the option is ignored.
 
      --haproperty
 
-         This option is  valid  only  if  the  HADB  software  is
-         installed.  The  high-availability  property  name/value
-         pairs separated by a colon.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command runs successfully and the option is ignored.
 
      --autohadb
-         This option is  valid  only  if  the  HADB  software  is
-         installed.  If set to true, the HADB database associated
-         with the cluster is automatically started,  stopped,  or
-         deleted  if  you start, stop, or delete the cluster. The
-         default is false. To override this setting, use the had-
-         boverride  option  in  start-cluster,  stop-cluster,  or
-
-Java EE 6           Last change: 27 Jul 2007                    4
-
-asadmin Utility Subcommands                     create-cluster(1)
-
-         delete-cluster.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command runs successfully and the option is ignored.
 
      --portbase
 
-         This option is  valid  only  if  the  HADB  software  is
-         installed. The starting port number for the HADB server.
-         Default is 15200. Valid values  are  between  10000  and
-         63000.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command runs successfully and the option is ignored.
+
+Java EE 6           Last change: 21 Oct 2010                    6
+
+asadmin Utility Subcommands                     create-cluster(1)
 
 OPERANDS
-     cluster_name                A  unique  identifier  for   the
+     cluster-name                A  unique  identifier  for   the
                                  cluster to be created.
 
 EXAMPLES
-     Example 1 Using the create-cluster command
+     Example 1 Creating a Cluster
 
-     The following command creates  a  cluster  named  MyCluster,
-     overriding  the  default  configuration's  SSL  port  value.
-     Because the --config option is not  specified,  the  command
-     makes  a  copy of the default-config and names it MyCluster-
-     config.
+     This example creates a cluster that is named ltscluster  for
+     which   port 1169 is to be used for secure IIOP connections.
+     Because the --config option is not  specified,  the  cluster
+     references  a copy of the named configuration default-config
+     that is named ltscluster-config.
 
-       asadmin> create-cluster --user admin1
-       --passwordfile passwords.txt --systemproperties
-       IIOP_SSL_LISTENER_PORT=1169 MyCluster
+       asadmin> create-cluster
+       --systemproperties IIOP_SSL_LISTENER_PORT=1169
+       ltscluster
        Command create-cluster executed successfully.
-
-     Example 2 Creating HADB when creating cluster
-
-     This example requires the HADB software and a domain that is
-     created with theenterprise profile.
-
-     The following command creates  an  HADB  database  on  hosts
-     host1 and host2 while creating the cluster cluster1:
-
-       asadmin> create-cluster --user admin1
-       --passwordfile passwords.txt --hosts hos1,host2 cluster1
-       Command create-cluster executed successfully.
-
-Java EE 6           Last change: 27 Jul 2007                    5
-
-asadmin Utility Subcommands                     create-cluster(1)
 
 EXIT STATUS
      0                           command executed successfully
@@ -257,8 +335,13 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     delete-cluster(1),    list-clusters(1),    start-cluster(1),
-     stop-cluster(1), create-instance(1)
+     create-application-ref(1), create-instance(1),  create-jdbc-
+     resource(1),    create-local-instance(1),   create-resource-
+     ref(1),   delete-cluster(1),   delete-instance(1),   delete-
+     local-instance(1),   deploy(1),   list-clusters(1),   start-
+     cluster(1), stop-cluster(1)
 
-Java EE 6           Last change: 27 Jul 2007                    6
+     asadmin(1M)
+
+Java EE 6           Last change: 21 Oct 2010                    7
 

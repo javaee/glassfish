@@ -2,17 +2,18 @@
 asadmin Utility Subcommands                       start-domain(1)
 
 NAME
-     start-domain - starts a domain
+     start-domain - starts the DAS of the specified domain
 
 SYNOPSIS
-     start-domain [--help] [--debug ={true|false}] [--domaindir domaindir]
-      [--upgrade={true|false}] [--verbose={true|false}] [domain_name]
+     start-domain [--help] [--debug={true|false}] [--domaindir domain-dir]
+     [--upgrade={true|false}] [--verbose={true|false}] [domain-name]
 
 DESCRIPTION
-     The start-domain subcommand starts the specified domain.  If
-     the  domain  directory  is  not specified, the domain in the
-     default domains directory is started. If there  are  two  or
-     more domains, the domain_name operand must be specified.
+     The start-domain subcommand starts the domain administration
+     server  (DAS)  of the specified domain. If the domain direc-
+     tory is not specified, the domain  in  the  default  domains
+     directory  is started. If the domains directory contains two
+     or more domains, the domain-name operand must be specified.
 
      Note -
 
@@ -29,49 +30,95 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --debug
-         If set to true, the server is started in debug mode  and
-         prints the JPDA port on the console. Default is false.
+         Specifies whether the domain is started with Java  Plat-
+         form Debugger Architecture (JPDA) debugging enabled.
+
+         Possible values are as follows:
+
+         true
+
+             The instance is started with JPDA debugging  enabled
+             and the port number for JPDA debugging is displayed.
+
+         false
+             The instance is started with JPDA debugging disabled
+             (default).
 
      --domaindir
 
          Specifies the directory where the domain to  be  started
          is located. If specified, the path must be accessible in
-         the file system. If not specified,  the  domain  in  the
-         default   install-dir/glassfish/domains   directory   is
-         started.
 
-     --verbose
-     -v
-         If set to true, a console  window  is  opened  in  which
-         detailed  server  startup  messages and log messages are
-         displayed until the server is started.  If the domain is
-         later  restarted by using the restart-domain subcommand,
-         issued from a different console  window,  messages  con-
-         tinue  to  be  displayed in the original console window.
-
-Java EE 6           Last change: 20 Oct 2009                    1
+Java EE 6           Last change: 22 Oct 2010                    1
 
 asadmin Utility Subcommands                       start-domain(1)
 
-         You can kill the server by  typing CTRL-C, or by getting
-         a  thread  dump  for  the  server by typing CTRL-\fR  on
-         UNIXTM  systems,  or  CTRL-Break  on  Windows   systems.
-         Default is false.
+         the file system. If not specified,  the  domain  in  the
+         default    as-install/glassfish/domains   directory   is
+         started.
 
      --upgrade
 
-         If set to true, the server is upgraded from  a  previous
-         release.  The  server  is  started, the configuration is
-         modified to be compatible with this release of GlassFish
-         Server,  and the server process stops.  Normally, if the
-         start-domain subcommand detects that  the  configuration
-         is  from  an  older  release  of   GlassFish Server, the
-         domain is upgraded automatically before  being  started.
-         You  should  not  need  to  use  this option explicitly.
-         Default is false.
+         Specifies  whether  the  configuration  of  the   domain
+         administration  server  (DAS) is upgraded to the current
+         release.  Normally, if the subcommand detects  that  the
+         configuration  is  from  an  older  release of GlassFish
+         Server,  the  configuration  is  upgraded  automatically
+         before  being  started.  You should not need to use this
+         option explicitly.
+
+         Possible values are as follows:
+
+         true
+             When the domain is  started,  the  configuration  is
+             modified  to  be  compatible  with  this  release of
+             GlassFish Server, and the GlassFish  Server  process
+             stops.
+
+         false
+
+             The  configuration  of  the  DAS  is   not   updated
+             (default).
+
+     --verbose
+     -v
+         Specifies  whether  detailed  information  is  displayed
+         while the domain is being started.
+
+         Possible values are as follows:
+
+         true
+
+             A console window is opened in which detailed startup
+             messages  and  log  messages are displayed until the
+             domain is started.  If the domain is later restarted
+             by  running  the  restart-domain(1) subcommandfrom a
+             different console window, messages  continue  to  be
+             displayed in the original console window.
+
+             You can kill the GlassFish Server process by  typing
+             CTRL-C in the console window that is opened.
+
+             You can kill the GlassFish Server process and obtain
+             a  thread  dump  for the server by typing one of the
+             following key combinations  in  the  console  window
+
+Java EE 6           Last change: 22 Oct 2010                    2
+
+asadmin Utility Subcommands                       start-domain(1)
+
+             that is opened:
+
+                 o    CTRL-\  on UNIXTM systems
+
+                 o    CTRL-Break on Windows systems
+
+         false
+
+             Detailed information is not displayed (default).
 
 OPERANDS
-     domain_name         The unique name of the domain  you  want
+     domain-name         The unique name of the domain  you  want
                          to  start. Default is the name specified
                          during installation, usually domain1.
 
@@ -95,15 +142,18 @@ EXIT STATUS
      1                           error in executing  the  subcom-
                                  mand
 
-Java EE 6           Last change: 20 Oct 2009                    2
-
-asadmin Utility Subcommands                       start-domain(1)
-
 SEE ALSO
      create-domain(1),     delete-domain(1),     list-domains(1),
      restart-domain(1), stop-domain(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 20 Oct 2009                    3
+Java EE 6           Last change: 22 Oct 2010                    3
+
+asadmin Utility Subcommands                       start-domain(1)
+
+     Java     Platform     Debugger      Architecture      (JPDA)
+     (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
+
+Java EE 6           Last change: 22 Oct 2010                    4
 

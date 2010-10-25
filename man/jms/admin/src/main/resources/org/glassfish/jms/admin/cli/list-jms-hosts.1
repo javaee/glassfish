@@ -6,7 +6,7 @@ NAME
 
 SYNOPSIS
      list-jms-hosts [--help]
-     [target]
+     [--target target]
 
 DESCRIPTION
      The list-jms-hosts subcommand lists the existing  Java  Mes-
@@ -19,13 +19,26 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-OPERANDS
-     target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+     --target
+         Restricts the listing to JMS hosts for a specified  tar-
+         get. Valid values are as follows:
+
+         server
+
+             Lists the JMS hosts for the default server instance.
+             This is the default value.
+
+         configuration-name
+             Lists the JMS hosts for the specified configuration.
+
+         cluster-name
+
+             Lists the JMS hosts for all server instances in  the
+             specified cluster.
+
+         instance-name
+             Lists  the  JMS  hosts  for  the  specified   server
+             instance.
 
 EXAMPLES
      Example 1 Listing all JMS hosts
@@ -33,24 +46,24 @@ EXAMPLES
      The following subcommand lists the JMS  hosts  for  the  JMS
      service.
 
+Java EE 6           Last change: 22 Oct 2010                    1
+
+asadmin Utility Subcommands                     list-jms-hosts(1)
+
        asadmin> list-jms-hosts
        default_JMS_host
        MyNewHost
        Command list-jms-hosts executed successfully.
 
 EXIT STATUS
-     0    subcommand executed successfully
+     0            subcommand executed successfully
 
-     1    error in executing the subcommand
-
-Java EE 6           Last change: 16 Sep 2009                    1
-
-asadmin Utility Subcommands                     list-jms-hosts(1)
+     1            error in executing the subcommand
 
 SEE ALSO
      create-jms-host(1), delete-jms-host(1), jms-ping(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 16 Sep 2009                    2
+Java EE 6           Last change: 22 Oct 2010                    2
 

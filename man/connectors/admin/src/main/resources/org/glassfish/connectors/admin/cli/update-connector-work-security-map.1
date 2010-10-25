@@ -20,6 +20,27 @@ DESCRIPTION
 
      This subcommand is supported in remote mode only.
 
+  Application Scoped Resources
+     The update-connector-work-security-map subcommand can target
+     security  maps  that are scoped to a specific application or
+     module, as defined in the  glassfish-resources.xml  for  the
+     GlassFish domain.
+
+         o    To reference  the  jndi-name  for  an  application-
+              scoped  resource,  perform  the  lookup  using  the
+              java:app prefix.
+
+         o    To reference  the  jndi-name  for  a  module-scoped
+              resource,  perform the lookup using the java:module
+              prefix.
+
+     The jndi-name for  application-scoped-resources  or  module-
+     scoped-resources    are    specified    using   the   format
+     java:app/jdbc/myDataSource                                or
+     java:module/jdbc/myModuleLevelDataSource.  This naming scope
+     is   defined   in    the    Java    EE    6    Specification
+     (http://download.oracle.com/javaee/6/api/).
+
 OPTIONS
      --help
      -?
@@ -28,6 +49,12 @@ OPTIONS
 
      --addgroups
          Specifies a comma-separated list of  EIS  groups  to  be
+
+Java EE 6           Last change: 15 Sep 2010                    1
+
+asadmin Utility Subcommands
+                            update-connector-work-security-map(1)
+
          added.  Use  either the --addprincipals option or the --
          addgroups option, but not both.
 
@@ -46,18 +73,13 @@ OPTIONS
          Specifies a comma-separated list of EIS-specific princi-
          pals to be removed.
 
-Java EE 6           Last change: 02 Nov 2009                    1
-
-asadmin Utility Subcommands
-                            update-connector-work-security-map(1)
-
      --raname
-
          Indicates the connector module name with which the  work
          security map is associated.
 
 OPERANDS
      mapname
+
          The name of the work security map to be updated.
 
 EXAMPLES
@@ -73,6 +95,11 @@ EXAMPLES
 EXIT STATUS
      0                           subcommand executed successfully
 
+Java EE 6           Last change: 15 Sep 2010                    2
+
+asadmin Utility Subcommands
+                            update-connector-work-security-map(1)
+
      1                           error in executing  the  subcom-
                                  mand
 
@@ -82,10 +109,10 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 02 Nov 2009                    2
+Java EE 6           Last change: 15 Sep 2010                    3
 
 asadmin Utility Subcommands
                             update-connector-work-security-map(1)
 
-Java EE 6           Last change: 02 Nov 2009                    3
+Java EE 6           Last change: 15 Sep 2010                    4
 

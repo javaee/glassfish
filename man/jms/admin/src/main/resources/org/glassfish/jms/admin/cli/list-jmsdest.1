@@ -28,11 +28,30 @@ OPTIONS
 OPERANDS
      target
 
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         Restricts the listing to  physical  destinations  for  a
+         specified target. Valid values are as follows:
+
+         server
+             Lists the  physical  destinations  for  the  default
+             server instance. This is the default value.
+
+         configuration-name
+
+             Lists the physical  destinations  in  the  specified
+             configuration.
+
+         cluster-name
+             Lists the physical  destinations  for  every  server
+             instance in the specified cluster.
+
+         instance-name
+
+             Lists the physical destinations  for  the  specified
+             server instance.
+
+Java EE 6           Last change: 22 Oct 2010                    1
+
+asadmin Utility Subcommands                       list-jmsdest(1)
 
 EXAMPLES
      Example 1 Listing all physical destinations
@@ -45,10 +64,6 @@ EXAMPLES
        PhysicalTopic
        Command list-jmsdest executed successfully.
 
-Java EE 6           Last change: 16 Sep 2009                    1
-
-asadmin Utility Subcommands                       list-jmsdest(1)
-
      Example 2 Listing all physical destinations of  a  specified
      type
 
@@ -59,15 +74,14 @@ asadmin Utility Subcommands                       list-jmsdest(1)
        Command list-jmsdest executed successfully.
 
 EXIT STATUS
-     0                           subcommand executed successfully
+     0            subcommand executed successfully
 
-     1                           error in executing  the  subcom-
-                                 mand
+     1            error in executing the subcommand
 
 SEE ALSO
      create-jmsdest(1), delete-jmsdest(1), flush-jmsdest(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 16 Sep 2009                    2
+Java EE 6           Last change: 22 Oct 2010                    2
 

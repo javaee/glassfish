@@ -5,15 +5,16 @@ NAME
      create-network-listener - adds a new network listener socket
 
 SYNOPSIS
-     create-network-listener
-     [--help]
-     [ --address  address]
+     create-network-listener [--help]
+     [--address address]
      --listenerport listener-port
      [--threadpool thread-pool]
      --protocol protocol
      [--transport transport]
      [--enabled={true|false}]
-     [ --jkenabled ={false|true}] listener-name
+     [--jkenabled={false|true}]
+     [--target target]
+     listener-name
 
 DESCRIPTION
      The create-network-listener  subcommand  creates  a  network
@@ -51,7 +52,7 @@ OPTIONS
          Configuring  an  SSL listen socket to listen on port 443
          is standard.
 
-Java EE 6            Last change: 9 Oct 2009                    1
+Java EE 6           Last change: 08 Oct 2010                    1
 
 asadmin Utility Subcommands            create-network-listener(1)
 
@@ -78,12 +79,39 @@ asadmin Utility Subcommands            create-network-listener(1)
          If set to true, mod_jk is enabled for this listener. The
          default is false.
 
+     --target
+         Creates the network listener only on the specified  tar-
+         get. Valid values are as follows:
+
+         server
+
+             Creates the network listener on the  default  server
+             instance. This is the default value.
+
+         configuration-name
+             Creates the network listener in the specified confi-
+             guration.
+
+         cluster-name
+
+             Creates the network listener on all server instances
+             in the specified cluster.
+
+         standalone-instance-name
+             Creates the network listener on the specified  stan-
+             dalone server instance.
+
+Java EE 6           Last change: 08 Oct 2010                    2
+
+asadmin Utility Subcommands            create-network-listener(1)
+
 OPERANDS
-     listener-name               The   name   of   the    network
-                                 listener.
+     listener-name
+
+         The name of the network listener.
 
 EXAMPLES
-     Example 1 Using the create-network-listener subcommand
+     Example 1 Creating a Network Listener
 
      The following command creates a network listener named  sam-
      pleListener that is not enabled at runtime:
@@ -93,13 +121,9 @@ EXAMPLES
        Command create-network-listener executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0            command executed successfully
 
-Java EE 6            Last change: 9 Oct 2009                    2
-
-asadmin Utility Subcommands            create-network-listener(1)
-
-     1                           error in executing the command
+     1            error in executing the command
 
 SEE ALSO
      delete-network-listener(1),       list-network-listeners(1),
@@ -108,5 +132,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6            Last change: 9 Oct 2009                    3
+Java EE 6           Last change: 08 Oct 2010                    3
 

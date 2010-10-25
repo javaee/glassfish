@@ -6,7 +6,7 @@ NAME
      server instance(s)
 
 SYNOPSIS
-     list-timers [--help] target
+     list-timers [--help] [target]
 
 DESCRIPTION
      The list-timers subcommand lists the persistent timers owned
@@ -25,7 +25,8 @@ OPERANDS
          cluster. If the target is the stand-alone instance, then
          the number of timers owned by the instance is listed. If
          the target is a cluster, then the number of timers owned
-         by each instance in the cluster is listed.
+         by each instance in the cluster is listed.  The  default
+         target is server, the default server instance.
 
 EXAMPLES
      Example 1 Listing Current Timers in a Server Instance
@@ -44,7 +45,7 @@ EXIT STATUS
 
      1                           error in executing the command
 
-Java EE 6           Last change: 10 Aug 2010                    1
+Java EE 6           Last change: 12 Oct 2010                    1
 
 asadmin Utility Subcommands                        list-timers(1)
 
@@ -58,5 +59,5 @@ SEE ALSO
      EJB Timer Service in Oracle GlassFish Server 3.1 Application
      Development Guide
 
-Java EE 6           Last change: 10 Aug 2010                    2
+Java EE 6           Last change: 12 Oct 2010                    2
 

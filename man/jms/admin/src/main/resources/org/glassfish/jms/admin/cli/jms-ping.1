@@ -6,7 +6,7 @@ NAME
 
 SYNOPSIS
      jms-ping [--help]
-     [target]
+     [-- target target]
 
 DESCRIPTION
      The jms-ping subcommand checks if the Java  Message  Service
@@ -26,38 +26,50 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-OPERANDS
-     target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+     --target
+         Specifies the target for which the operation  is  to  be
+         performed. Valid values are as follows:
+
+         server
+
+             Pings  the  JMS  service  for  the  default   server
+             instance. This is the default value
+
+         configuration-name
+             Pings the JMS service for  all  clusters  using  the
+             specified configuration.
+
+         cluster-name
+
+             Pings the JMS service for the specified cluster.
+
+         instance-name
+             Pings the  JMS  service  for  the  specified  server
+             instance.
+
+Java EE 6           Last change: 22 Oct 2010                    1
+
+asadmin Utility Subcommands                           jms-ping(1)
 
 EXAMPLES
      Example 1 Verifying that the JMS service is running
 
      The following subcommand checks to see if the JMS service is
-     running.
+     running on the server instance server1.
 
-       asadmin> jms-ping
+       asadmin> jms-ping --target server1
        JMS-ping command executed successfully
        Command jms-ping executed successfully.
 
-Java EE 6           Last change: 16 Sep 2009                    1
-
-asadmin Utility Subcommands                           jms-ping(1)
-
 EXIT STATUS
-     0                           subcommand executed successfully
+     0            subcommand executed successfully
 
-     1                           error in executing  the  subcom-
-                                 mand
+     1            error in executing the subcommand
 
 SEE ALSO
      create-jms-host(1), list-jms-hosts(1), delete-jms-host(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 16 Sep 2009                    2
+Java EE 6           Last change: 22 Oct 2010                    2
 

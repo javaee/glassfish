@@ -1,0 +1,76 @@
+
+asadmin Utility Subcommands                      ping-node-ssh(1)
+
+NAME
+     ping-node-ssh - tests if a node that is enabled for communi-
+     cation over SSH is usable
+
+SYNOPSIS
+     ping-node-ssh [--help]
+     [--validate={false|true}] node-name
+
+DESCRIPTION
+     The ping-node-ssh subcommand tests if a node that is enabled
+     for  communication  over  secure shell (SSH) is usable. This
+     subcommand requires secure shell (SSH) to be  configured  on
+     the  machine where the domain administration server (DAS) is
+     running and on the machine where the node resides.  You  may
+     run this command from any machine that can contact the DAS.
+
+     The node that is specified as the operand of this subcommand
+     must  be  enabled for communication over SSH. If the node is
+     not enabled for communication over SSH, an error occurs.  To
+     determine  whether  a node is enabled for communication over
+     SSH, use the list-nodes(1) subcommand.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --validate
+         Specifies whether validation of the node is performed.
+
+         Possible values are as follows:
+
+         true
+
+             Validation is performed.
+
+         false
+             No validation is performed (default).
+
+OPERANDS
+     node-name
+
+         The name of the node to test. The node must  be  enabled
+
+Java EE 6           Last change: 23 Oct 2010                    1
+
+asadmin Utility Subcommands                      ping-node-ssh(1)
+
+         for communication over SSH. Otherwise, an error occurs.
+
+EXAMPLES
+     Example 1 Testing if an SSH-Enabled Node Is Usable
+
+     This example tests if the SSH-enabled node is sj03 usable.
+
+       asadmin> ping-node-ssh sj03
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     create-node-ssh(1),    delete-node-ssh(1),    list-nodes(1),
+     setup-ssh(1), update-node-ssh(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 23 Oct 2010                    2
+

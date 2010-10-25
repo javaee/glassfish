@@ -5,7 +5,8 @@ NAME
      stop-database - stops the Java DB
 
 SYNOPSIS
-     stop-database [--help] [--dbhost host] [--dbport port-no]
+     stop-database [--help] [--dbuser db-user]
+     [--dbhost host] [--dbport port-no]
 
 DESCRIPTION
      The stop-database subcommand stops a process of the Java  DB
@@ -24,14 +25,18 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
+     --dbuser
+         The user name of the database user, who owns the Java DB
+         server process.
+
      --dbhost
+
          The host name or IP address of the Java DB  server  pro-
          cess.  The  default  is  the  IP  address 0.0.0.0, which
          denotes all network interfaces on the host where you run
          the stop-database subcommand.
 
      --dbport
-
          The port number where the Java  DB  server  listens  for
          client connections. The default is 1527.
 
@@ -40,14 +45,14 @@ EXAMPLES
 
      This example stops Java DB on host host1 and port 5001.
 
+Java EE 6           Last change: 23 Oct 2010                    1
+
+asadmin Utility Subcommands                      stop-database(1)
+
        asadmin> stop-database --dbhost host1 --dbport 5001
        Connection obtained for host: host1, port number 5001.
        Shutdown successful.
        Command stop-database executed successfully.
-
-Java EE 6           Last change: 18 Sep 2009                    1
-
-asadmin Utility Subcommands                      stop-database(1)
 
 EXIT STATUS
      The exit status applies to errors in executing  the  asadmin
@@ -69,5 +74,5 @@ SEE ALSO
      Chapter 14, Administering Database Connectivity , in  Oracle
      GlassFish Server 3.1 Administration Guide
 
-Java EE 6           Last change: 18 Sep 2009                    2
+Java EE 6           Last change: 23 Oct 2010                    2
 

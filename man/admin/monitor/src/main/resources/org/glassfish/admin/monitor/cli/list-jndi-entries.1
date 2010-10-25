@@ -29,36 +29,57 @@ OPTIONS
 OPERANDS
      target
 
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         This operand specifies the JNDI tree to browse.
 
-EXAMPLES
-     Example 1 Using the list-jndi-entries subcommand
+         Possible values are as follows:
 
-       asadmin> list-jndi-entries
-       jndi_entry03
-       jndi_entry72
-       jndi_entry76
-       Command list-jndi-resources executed successfully
+         server
+             Browses the JNDI tree for  the  default  GlassFishTM
+             Server instance (default).
 
-EXIT STATUS
+         domain
 
-Java EE 6           Last change: 09 Oct 2009                    1
+             Browses the JNDI tree for the current domain.
+
+         cluster-name
+             Browses the JNDI tree for the specified cluster.
+
+         instance-name
+
+             Browses the JNDI tree for  the  specified  GlassFish
+
+Java EE 6           Last change: 21 Oct 2010                    1
 
 asadmin Utility Subcommands                  list-jndi-entries(1)
 
+             Server instance.
+
+EXAMPLES
+     Example 1 Browsing the JNDI Tree
+
+     This example browses the JNDI tree for the default GlassFish
+     Server instance.
+
+       asadmin> list-jndi-entries
+       java:global: com.sun.enterprise.naming.impl.TransientContext
+       jdbc: com.sun.enterprise.naming.impl.TransientContext
+       ejb: com.sun.enterprise.naming.impl.TransientContext
+       com.sun.enterprise.container.common.spi.util.InjectionManager:
+       com.sun.enterprise.container.common.impl.util.InjectionManagerImpl
+
+       Command list-jndi-entries executed successfully.
+
+EXIT STATUS
      0                           subcommand executed successfully
 
      1                           error in executing  the  subcom-
                                  mand
 
 SEE ALSO
-     create-jndi-resource(1), delete-jndi-resource(1)
+     create-jndi-resource(1),   delete-jndi-resource(1),    list-
+     jndi-resources(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 09 Oct 2009                    2
+Java EE 6           Last change: 21 Oct 2010                    2
 

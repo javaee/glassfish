@@ -5,7 +5,7 @@ NAME
      undeploy - removes a deployed component
 
 SYNOPSIS
-     undeploy [--help] [--target target] [--keepreposdir={false|true}] [--droptables={true|false}]
+     undeploy [--help] [--target target] [--droptables={true|false}]
      [--cascade={false|true}] name
 
 DESCRIPTION
@@ -47,7 +47,7 @@ OPTIONS
          Specifies the target from  which  you  are  undeploying.
          Valid values are:
 
-Java EE 6            Last change: 2 Sep 2010                    1
+Java EE 6           Last change: 12 Oct 2010                    1
 
 asadmin Utility Subcommands                           undeploy(1)
 
@@ -68,15 +68,9 @@ asadmin Utility Subcommands                           undeploy(1)
              Undeploys the  component  from  a  particular  sever
              instance.
 
-     --keepreposdir
-
-         When this option is set to true,  the  application  bits
-         are  kept in the repository for debugging purposes (usu-
-         ally the bits are deleted as part of the  undeployment).
-         Default value is false.
-
 OPERANDS
      name
+
          Name of the deployed component.
 
          The name can include  an  optional  version  identifier,
@@ -95,12 +89,12 @@ EXAMPLES
      This  example  undeploys  an  enterprise  application  named
      Cart.ear.
 
-Java EE 6            Last change: 2 Sep 2010                    2
-
-asadmin Utility Subcommands                           undeploy(1)
-
        asadmin> undeploy Cart
        Command undeploy executed successfully.
+
+Java EE 6           Last change: 12 Oct 2010                    2
+
+asadmin Utility Subcommands                           undeploy(1)
 
      Example 2 Undeploying an  Enterprise  Bean  With  Container-
      Managed Persistence (CMP)
@@ -133,5 +127,5 @@ SEE ALSO
 
      Oracle GlassFish Server 3.1 Application Deployment Guide
 
-Java EE 6            Last change: 2 Sep 2010                    3
+Java EE 6           Last change: 12 Oct 2010                    3
 

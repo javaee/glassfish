@@ -21,12 +21,6 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         The name of the target  upon  which  the  subcommand  is
-         operating.
-
-OPERANDS
-     target
-
          The server instance  or  cluster  for  which  the  error
          statistics will be displayed. Valid values are:
 
@@ -48,14 +42,13 @@ EXAMPLES
        1185336905312(Jul 25, 2010 9:45:05 AM)      0        0
        1185333305312(Jul 25, 2010 8:45:05 AM)      0        0
        1185329705312(Jul 25, 2010 7:45:05 AM)      0        0
+       1185326105312(Jul 25, 2010 6:45:05 AM)      0        0
+       ---------------------------------------------------------
+       Command display-error-statistics executed successfully.
 
 Java EE 6           Last change: 30 Aug 2010                    1
 
 asadmin Utility Subcommands           display-error-statistics(1)
-
-       1185326105312(Jul 25, 2010 6:45:05 AM)      0        0
-       ---------------------------------------------------------
-       Command display-error-statistics executed successfully.
 
 EXIT STATUS
      0                           subcommand executed successfully
@@ -64,9 +57,9 @@ EXIT STATUS
                                  mand
 
 SEE ALSO
-     display-error-distribution(1)
-
-     , display-log-records(1)
+     collect-log-files(1),         display-error-distribution(1),
+     display-log-records(1),  list-log-levels(1),  rotate-log(1),
+     set-log-levels(1)
 
      asadmin(1M)
 

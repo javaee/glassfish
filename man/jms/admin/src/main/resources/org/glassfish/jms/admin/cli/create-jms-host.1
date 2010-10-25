@@ -22,37 +22,51 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         Creates the JMS host  only  for  the  specified  target.
+         Valid values are as follows:
+
+         server
+
+             Creates  the  JMS  host  for  the   default   server
+             instance. This is the default value.
+
+         configuration-name
+             Creates the JMS host in the specified configuration.
+
+         cluster-name
+
+             Creates the JMS host for every  server  instance  in
+             the specified cluster.
+
+         instance-name
+             Creates  the  JMS  host  for  the  specified  server
+             instance.
 
      --mqhost
 
          The host name for the JMS service. The default value  is
          localhost.
 
+Java EE 6           Last change: 22 Oct 2010                    1
+
+asadmin Utility Subcommands                    create-jms-host(1)
+
      --mqport
+
          The port number used by the  JMS  service.  The  default
          value is 7676.
 
      --mquser
-
          The user name for the JMS service. The default value  is
          admin.
 
      --mqpassword
+
          The password for the JMS service. The default  value  is
          admin.
 
-Java EE 6           Last change: 16 Sep 2009                    1
-
-asadmin Utility Subcommands                    create-jms-host(1)
-
 OPERANDS
      jms_host_name
-
          A unique identifier for the JMS host to be created.
 
 EXAMPLES
@@ -65,14 +79,14 @@ EXAMPLES
        Command create-jms-host executed successfully.
 
 EXIT STATUS
-     0    subcommand executed successfully
+     0            subcommand executed successfully
 
-     1    error in executing the subcommand
+     1            error in executing the subcommand
 
 SEE ALSO
      list-jms-hosts(1), delete-jms-host(1), jms-ping(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 16 Sep 2009                    2
+Java EE 6           Last change: 22 Oct 2010                    2
 

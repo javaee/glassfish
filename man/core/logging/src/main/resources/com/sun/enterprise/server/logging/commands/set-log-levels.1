@@ -6,11 +6,12 @@ NAME
 
 SYNOPSIS
      set-log-levels [--help] logger-name=logger-level[:logger-name=logger-level]*
+     [--target=target]
 
 DESCRIPTION
      The set-log-levels subcommand sets the log level for one  or
-     more  loggers.  Changes  take  effect  dynamically, that is,
-     server restart is not required.
+     more loggers. Changes take effect dynamically. A server res-
+     tart is not required.
 
      This subcommand is supported in remote mode only.
 
@@ -20,14 +21,22 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
+     target
+         The server instance or cluster for which log levels will
+         be set. Valid values are:
+
+             o    cluster_name- The name of a target cluster.
+
+             o    instance_name- The  name  of  a  target  server
+                  instance.
+
 OPERANDS
      logger-name
-         The name of the logger. The  list-logger-levels  subcom-
-         mand  can  be  used  to  list  the  names of the current
-         loggers.
+
+         The name of the logger. The  list-log-levels  subcommand
+         can be used to list the names of the current loggers.
 
      logger-level
-
          The level to set for the logger.  Log level  values  are
          SEVERE,  WARNING, INFO, CONFIG, FINE, FINER, and FINEST.
          The default setting is INFO.
@@ -38,14 +47,14 @@ EXAMPLES
       This example sets the log level of the web container logger
      to WARNING.
 
+Java EE 6           Last change: 31 Aug 2010                    1
+
+asadmin Utility Subcommands                     set-log-levels(1)
+
        asadmin> set-log-levels javax.enterprise.system.container.web=WARNING
        Command set-log-level executed successfully.
 
      Example 2 Setting the Log Level for Multiple Loggers
-
-Java EE 6           Last change: 31 Aug 2010                    1
-
-asadmin Utility Subcommands                     set-log-levels(1)
 
      This example sets the log level of the web container  logger
      to  FINE  and  the  log level of the EJB container logger to
@@ -62,7 +71,9 @@ EXIT STATUS
                                  mand
 
 SEE ALSO
-     list-log-levels(1), rotate-log(1)
+     collect-log-files(1),         display-error-distribution(1),
+     display-error-statistics(1),  display-log-records(1),  list-
+     log-levels(1), rotate-log(1)
 
      asadmin(1M)
 

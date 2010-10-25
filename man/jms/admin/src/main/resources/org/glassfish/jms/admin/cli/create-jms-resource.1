@@ -6,9 +6,11 @@ NAME
 
 SYNOPSIS
      create-jms-resource [--help]
+     --restype type
      [--target target]
-     --restype type [--enabled={true|false}]
-     [--description text] [--property (name=value)[:name=value]*]
+     [--enabled={true|false}]
+     [--description text]
+     [--property (name=value)[:name=value]*]
      jndi_name
 
 DESCRIPTION
@@ -23,19 +25,38 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-     --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
-
      --restype
-
          The JMS resource type,  which  can  be  javax.jms.Topic,
          javax.jms.Queue,            javax.jms.ConnectionFactory,
          javax.jms.TopicConnectionFactory,                     or
          javax.jms.QueueConnectionFactory.
+
+     --target
+
+         Creates the JMS resource only for the specified  target.
+         Valid values are as follows:
+
+         server
+             Creates the JMS  resource  for  the  default  server
+             instance. This is the default value.
+
+         configuration-name
+
+             Creates the JMS resource in the specified configura-
+             tion.
+
+         cluster-name
+             Creates the JMS resource for every  server  instance
+             in the specified cluster.
+
+Java EE 6           Last change: 22 Oct 2010                    1
+
+asadmin Utility Subcommands                create-jms-resource(1)
+
+         instance-name
+
+             Creates the JMS resource for  the  specified  server
+             instance.
 
      --enabled
          If set to true (the default), the resource is enabled at
@@ -47,11 +68,6 @@ OPTIONS
 
      --property
          Optional attribute name/value pairs for configuring  the
-
-Java EE 6           Last change: 16 Sep 2009                    1
-
-asadmin Utility Subcommands                create-jms-resource(1)
-
          JMS resource.
 
          You can specify the following properties for  a  connec-
@@ -82,33 +98,32 @@ asadmin Utility Subcommands                create-jms-resource(1)
              The  user  name  for  the  connection  factory.  The
              default value is guest.
 
+Java EE 6           Last change: 22 Oct 2010                    2
+
+asadmin Utility Subcommands                create-jms-resource(1)
+
          Password
+
              The password for the connection factory. The default
              value is guest.
 
          ReconnectEnabled
-
              A value of true indicates that  the  client  runtime
              attempts  to  reconnect  to a message server (or the
              list of addresses in the AddressList) when a connec-
              tion is lost. The default value is false.
 
          ReconnectAttempts
+
              The number of attempts to connect (or reconnect) for
              each  address  in  the AddressList before the client
              runtime tries the next address in the list. A  value
              of   -1  indicates  that  the  number  of  reconnect
              attempts is unlimited (the client  runtime  attempts
-
-Java EE 6           Last change: 16 Sep 2009                    2
-
-asadmin Utility Subcommands                create-jms-resource(1)
-
              to  connect to the first address until it succeeds).
              The default value is 6.
 
          ReconnectInterval
-
              The  interval  in  milliseconds  between   reconnect
              attempts.  This  applies to attempts on each address
              in the AddressList and for successive  addresses  in
@@ -118,6 +133,7 @@ asadmin Utility Subcommands                create-jms-resource(1)
              The default value is 30,000 milliseconds.
 
          AddressListBehavior
+
              Specifies whether connection  attempts  are  in  the
              order  of addresses in the AddressList (PRIORITY) or
              in a random order (RANDOM). PRIORITY means that  the
@@ -132,8 +148,12 @@ asadmin Utility Subcommands                create-jms-resource(1)
              guration.
 
          AddressListIterations
-
              The number of  times  the  client  runtime  iterates
+
+Java EE 6           Last change: 22 Oct 2010                    3
+
+asadmin Utility Subcommands                create-jms-resource(1)
+
              through  the  AddressList  in an effort to establish
              (or re-establish) a connection). A value of -1 indi-
              cates  that the number of attempts is unlimited. The
@@ -143,6 +163,7 @@ asadmin Utility Subcommands                create-jms-resource(1)
          tion resource:
 
          Name
+
              The name of the physical destination  to  which  the
              resource  will  refer.  The  physical destination is
              created automatically when you  run  an  application
@@ -154,16 +175,12 @@ asadmin Utility Subcommands                create-jms-resource(1)
              (replacing any forward slash in the JNDI  name  with
              an underscore).
 
-Java EE 6           Last change: 16 Sep 2009                    3
-
-asadmin Utility Subcommands                create-jms-resource(1)
-
          Description
-
              A description of the physical destination.
 
 OPERANDS
      jndi_name
+
          The JNDI name of the JMS resource to be created.
 
 EXAMPLES
@@ -182,6 +199,10 @@ EXAMPLES
        --property ClientId=MyID jms/DurableConnectionFactory
        Command create-jms-resource executed successfully.
 
+Java EE 6           Last change: 22 Oct 2010                    4
+
+asadmin Utility Subcommands                create-jms-resource(1)
+
      Example 2 Creating a JMS destination resource
 
      The following  subcommand  creates  a  destination  resource
@@ -193,19 +214,14 @@ EXAMPLES
        Command create-jms-resource executed successfully.
 
 EXIT STATUS
-     0                           subcommand executed successfully
+     0            subcommand executed successfully
 
-     1                           error in executing  the  subcom-
-                                 mand
-
-Java EE 6           Last change: 16 Sep 2009                    4
-
-asadmin Utility Subcommands                create-jms-resource(1)
+     1            error in executing the subcommand
 
 SEE ALSO
      delete-jms-resource(1), list-jms-resources(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 16 Sep 2009                    5
+Java EE 6           Last change: 22 Oct 2010                    5
 

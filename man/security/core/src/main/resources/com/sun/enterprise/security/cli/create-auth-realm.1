@@ -21,11 +21,24 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         Specifies the target  on  which  you  are  creating  the
+         realm. Valid values are
+
+         server
+
+             Creates the realm on the  default  server  instance.
+             This is the default value.
+
+         configuration_name
+             Creates the realm in the specified configuration.
+
+         cluster_name
+
+             Creates the realm on all  server  instances  in  the
+             specified cluster.
+
+         instance_name
+             Creates the realm on a specified server instance.
 
      --classname
 
@@ -33,12 +46,19 @@ OPTIONS
          com.sun.enterprise.security.auth.realm.file.FileRealm,
          com.sun.enterprise.security.auth.realm.certificate.CertificateRealm,
          com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm,
+
+Java EE 6           Last change: 20 Sep 2010                    1
+
+asadmin Utility Subcommands                  create-auth-realm(1)
+
          com.sun.enterprise.security.auth.realm.ldap.LDAPRealm,
+         com.sun.enterprise.security.auth.realm.ldap.PamRealm,
          and
          com.sun.enterprise.security.auth.realm.solaris.SolarisRealm,
          or a custom realm.
 
      --property
+
          Optional attribute name-value pairs for configuring  the
          authentication   realm.  Authentication  realms  require
          provider-specific properties, which vary based on imple-
@@ -46,18 +66,15 @@ OPTIONS
 
          The following properties are common to all of  the  sup-
          ported   realms,   which   include  FileRealm,  Certifi-
-         cateRealm, JDBCRealm, LDAPRealm, and SolarisRealm.
-
-Java EE 6          Last change: 28 August 2009                  1
-
-asadmin Utility Subcommands                  create-auth-realm(1)
+         cateRealm, JDBCRealm, LDAPRealm,  PamRealm,  and  Solar-
+         isRealm.
 
          jaas-context
-
              Specifies the Java Authentication and  Authorization
              Service (JAAS) context.
 
          assign-groups
+
              (Optional) If this property is  set,  its  value  is
              taken  to  be a comma-separated list of group names.
              All  clients  who  present  valid  certificates  are
@@ -72,7 +89,6 @@ asadmin Utility Subcommands                  create-auth-realm(1)
                   FileRealm:
 
          file
-
              Specifies the file that  stores  user  names,  pass-
              words,  and  group  names.  The  default  is domain-
              dir/config/keyfile.
@@ -80,14 +96,21 @@ asadmin Utility Subcommands                  create-auth-realm(1)
              o    You can specify the  following  properties  for
                   CertificateRealm:
 
-         clientAuth
-             If true, specifies  that  client  authentication  is
-             required  for all applications that use the certifi-
-             cate realm. The default is false.
+         LoginModule
 
-             To require client authentication for a specific  web
-             application, set the method of authentication in the
-             web.xml file to CLIENT-CERT.
+             Specifies the name of a JAAS LoginModule to use  for
+
+Java EE 6           Last change: 20 Sep 2010                    2
+
+asadmin Utility Subcommands                  create-auth-realm(1)
+
+             performing  authentication.  To  use a JAAS LoginMo-
+             dule, you must first create an implementation of the
+             javax.security.auth.spi.LoginModule  interface,  and
+             then plug the module into a jaas-context.  For  more
+             information, see Extend CertificateRealm with Login-
+             Module
+             (http://blogs.sun.com/nasradu8/entry/extend_certificaterealm_with_loginmodule_glassfish).
 
              o    You can specify the  following  properties  for
                   JDBCRealm:
@@ -97,36 +120,36 @@ asadmin Utility Subcommands                  create-auth-realm(1)
              Specifies the jndi-name of the jdbc-resource for the
              database.
 
-Java EE 6          Last change: 28 August 2009                  2
-
-asadmin Utility Subcommands                  create-auth-realm(1)
-
          user-table
-
              Specifies the name of the user table  in  the  data-
              base.
 
          user-name-column
+
              Specifies the name of the user name  column  in  the
              database's user table.
 
          password-column
-
              Specifies the name of the  password  column  in  the
              database's user table.
 
          group-table
+
              Specifies the name of the group table in  the  data-
              base.
 
          group-table
-
              Specify the group table for an authentication  realm
              of class JDBCRealm.
 
          group-name-column
+
              Specifies the name of the group name column  in  the
              database's group table.
+
+Java EE 6           Last change: 20 Sep 2010                    3
+
+asadmin Utility Subcommands                  create-auth-realm(1)
 
          db-user
 
@@ -144,10 +167,6 @@ asadmin Utility Subcommands                  create-auth-realm(1)
              up  the database, getting a connection, and browsing
              the user table. By default, the jdbc-connection-pool
              configuration is used.
-
-Java EE 6          Last change: 28 August 2009                  3
-
-asadmin Utility Subcommands                  create-auth-realm(1)
 
          group-table
 
@@ -177,7 +196,12 @@ asadmin Utility Subcommands                  create-auth-realm(1)
 
              Specifies the LDAP URL to your server.
 
+Java EE 6           Last change: 20 Sep 2010                    4
+
+asadmin Utility Subcommands                  create-auth-realm(1)
+
          base-dn
+
              Specifies the LDAP base DN for the location of  user
              data.  This  base  DN  can be at any level above the
              user data, since a tree scope search  is  performed.
@@ -185,49 +209,50 @@ asadmin Utility Subcommands                  create-auth-realm(1)
              mance.
 
          search-filter
-
              (Optional) Specifies the search  filter  to  use  to
              find  the user. The default is uid=%s (%s expands to
              the subject name).
 
          group-base-dn
+
              (Optional) Specifies the base DN for the location of
              groups  data. By default, it is same as the base-dn,
              but it can be tuned, if necessary.
 
-Java EE 6          Last change: 28 August 2009                  4
-
-asadmin Utility Subcommands                  create-auth-realm(1)
-
          group-search-filter
-
              (Optional) Specifies the search filter to find group
              memberships   for   the   user.   The   default   is
              uniquemember=%d (%d expands to the user elementDN).
 
          group-target
+
              (Optional) Specifies the LDAP  attribute  name  that
              contains group name entries. The default is CN.
 
          search-bind-dn
-
              (Optional) Specifies an optional DN used to  authen-
              ticate  to  the directory for performing the search-
              filter lookup. Only required for directories that do
              not allow anonymous search.
 
          search-bind-password
+
              (Optional) Specifies the LDAP password  for  the  DN
              given in search-bind-dn.
 
 OPERANDS
-     auth_realm_name             A short name for the realm. This
-                                 name  is  used  to  refer to the
-                                 realm   from,    for    example,
-                                 web.xml.
+     auth_realm_name
+         A short name for the realm. This name is used  to  refer
+         to the realm from, for example, web.xml.
+
+Java EE 6           Last change: 20 Sep 2010                    5
+
+asadmin Utility Subcommands                  create-auth-realm(1)
 
 EXAMPLES
      Example 1 Creating a New Authentication Realm
+
+     This example creates a new file realm.
 
        asadmin> create-auth-realm
        --classname com.sun.enterprise.security.auth.realm.file.FileRealm
@@ -238,18 +263,15 @@ EXAMPLES
      Where file is the authentication realm created.
 
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-Java EE 6          Last change: 28 August 2009                  5
-
-asadmin Utility Subcommands                  create-auth-realm(1)
-
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      delete-auth-realm(1), list-auth-realms(1)
 
      asadmin(1M)
 
-Java EE 6          Last change: 28 August 2009                  6
+Java EE 6           Last change: 20 Sep 2010                    6
 

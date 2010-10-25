@@ -115,8 +115,7 @@ asadmin Utility Subcommands                 create-jvm-options(1)
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         command runs successfully and the option is ignored.
 
      --profiler
 
@@ -152,12 +151,11 @@ EXAMPLES
        asadmin> create-jvm-options -Dunixlocation=/root/example:
        -Dvariable=OME:-Dwindowslocation=d:\sun\appserver:-Doption1=-value1
        created 4 option(s)
+       Command create-jvm-options executed successfully.
 
 Java EE 6           Last change: 15 Oct 2009                    3
 
 asadmin Utility Subcommands                 create-jvm-options(1)
-
-       Command create-jvm-options executed successfully.
 
      Example 2 Setting a Startup Parameter for the Java  Applica-
      tion Launcher
@@ -192,12 +190,12 @@ asadmin Utility Subcommands                 create-jvm-options(1)
 EXIT STATUS
      0                           subcommand executed successfully
 
+     1                           error in executing  the  subcom-
+                                 mand
+
 Java EE 6           Last change: 15 Oct 2009                    4
 
 asadmin Utility Subcommands                 create-jvm-options(1)
-
-     1                           error in executing  the  subcom-
-                                 mand
 
 SEE ALSO
      delete-jvm-options(1),     list-jvm-options(1),      create-

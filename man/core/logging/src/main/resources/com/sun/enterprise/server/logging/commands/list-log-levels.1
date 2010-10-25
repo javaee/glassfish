@@ -24,17 +24,12 @@ OPTIONS
 
      --target
          The server instance or cluster for which log levels will
-         be listed.
+         be listed. Valid values are:
 
-OPERANDS
-     target    The server instance or cluster for which log  lev-
-               els will be listed. Valid values are:
+             o    cluster_name- The name of a target cluster.
 
-                   o    cluster_name- The name of a target  clus-
-                        ter.
-
-                   o    instance_name-  The  name  of  a   target
-                        server instance.
+             o    instance_name- The  name  of  a  target  server
+                  instance.
 
 EXAMPLES
      Example 1 Listing the Log Levels
@@ -46,17 +41,17 @@ EXAMPLES
        javax.enterprise.system.container.cmp: INFO
        javax.enterprise.system.tools.admin: INFO
        java.util.logging.ConsoleHandler: FINEST
-
-Java EE 6           Last change: 30 Aug 2010                    1
-
-asadmin Utility Subcommands                    list-log-levels(1)
-
        javax.enterprise.system.container.web: INFO
        javax.enterprise.system.util: INFO
        javax.enterprise.resource.webcontainer.jsf.timing: INFO
        javax: INFO
        javax.enterprise.resource.corba: INFO
        javax.enterprise.system.core.naming: INFO
+
+Java EE 6           Last change: 30 Aug 2010                    1
+
+asadmin Utility Subcommands                    list-log-levels(1)
+
        javax.enterprise.system.core.selfmanagement: INFO
        javax.enterprise.system.container.ejb: INFO
        javax.enterprise.resource.webcontainer.jsf.config: INFO
@@ -96,13 +91,15 @@ EXIT STATUS
                                  mand
 
 SEE ALSO
+     collect-log-files(1),         display-error-distribution(1),
+     display-error-statistics(1),         display-log-records(1),
      rotate-log(1), set-log-levels(1)
+
+     asadmin(1M)
 
 Java EE 6           Last change: 30 Aug 2010                    2
 
 asadmin Utility Subcommands                    list-log-levels(1)
-
-     asadmin(1M)
 
      Chapter 7, Administering  the  Logging  Service,  in  Oracle
      GlassFish Server 3.1 Administration Guide

@@ -6,8 +6,7 @@ NAME
      listeners
 
 SYNOPSIS
-     list-http-listeners
-     [--help]
+     list-http-listeners [--help]
      [target]
 
 DESCRIPTION
@@ -23,14 +22,33 @@ OPTIONS
 
 OPERANDS
      target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         Restricts the listing to HTTP listeners for a  specified
+         target. Valid values are as follows:
+
+         server
+
+             Lists the HTTP  listeners  for  the  default  server
+             instance. This is the default value.
+
+         configuration-name
+             Lists the HTTP listeners for  the  specified  confi-
+             guration.
+
+         cluster-name
+
+             Lists the HTTP listeners for all server instances in
+             the specified cluster.
+
+         instance-name
+             Lists the HTTP listeners for  the  specified  server
+             instance.
 
 EXAMPLES
-     Example 1 Using the list-http-listeners subcommand
+     Example 1 Listing HTTP Listeners
+
+Java EE 6           Last change: 08 Oct 2010                    1
+
+asadmin Utility Subcommands                list-http-listeners(1)
 
      The following command lists all the HTTP  network  listeners
      for the server instance:
@@ -42,18 +60,14 @@ EXAMPLES
        Command list-http-listeners executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0            command executed successfully
 
-Java EE 6           Last change: 30 Jan 2007                    1
-
-asadmin Utility Subcommands                list-http-listeners(1)
-
-     1                           error in executing the command
+     1            error in executing the command
 
 SEE ALSO
      create-http-listener(1), delete-http-listener(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 30 Jan 2007                    2
+Java EE 6           Last change: 08 Oct 2010                    2
 

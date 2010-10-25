@@ -29,28 +29,42 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         Specifies the target for  which  you  are  creating  the
+         resources. Valid values are
+
+         server
+
+             Creates  the  resources  for  the   default   server
+             instance server and is the default value.
+
+         domain
+             Creates the resources for the domain.
+
+         cluster_name
+
+             Creates the resources for every server  instance  in
+             the cluster.
+
+Java EE 6           Last change: 21 Oct 2010                    1
+
+asadmin Utility Subcommands                      add-resources(1)
+
+         instance_name
+
+             Creates  the  resources  for  a  particular   server
+             instance.
 
 OPERANDS
      xml_file_name
-
          The path to the XML file that contains  the  resource(s)
          to  be created. If you specify an absolute path, the XML
          file can be anywhere. If you specify only the file, then
-         the    XML    file   must   reside   in   the   install-
-         dir/domains/domain1/config directory.  If you specify  a
-         relative path, then the XML file must be in the relative
-         directory.
+         the    XML    file    must    reside    in    the    as-
+         install/domains/domain1/config   directory.    If    you
+         specify  a  relative  path, then the XML file must be in
+         the relative directory.
 
          An example XML file follows.
-
-Java EE 6           Last change: 30 Oct 2009                    1
-
-asadmin Utility Subcommands                      add-resources(1)
 
        <?xml version="1.0" encoding="UTF-8"?>
        <!DOCTYPE resources PUBLIC
@@ -82,6 +96,10 @@ EXAMPLES
      This example creates resources using the contents of the XML
      file resource.xml.
 
+Java EE 6           Last change: 21 Oct 2010                    2
+
+asadmin Utility Subcommands                      add-resources(1)
+
        asadmin> add-resources resource.xml
        Command : Connector connection pool jms/testQFactoryPool created.
        Command : Administered object jms/testQ created.
@@ -97,10 +115,6 @@ EXIT STATUS
      1                           error in executing  the  subcom-
                                  mand
 
-Java EE 6           Last change: 30 Oct 2009                    2
-
-asadmin Utility Subcommands                      add-resources(1)
-
 SEE ALSO
      create-jdbc-connection-pool(1),     create-jdbc-resource(1),
      create-jms-resource(1),   create-jndi-resource(1),   create-
@@ -111,5 +125,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 30 Oct 2009                    3
+Java EE 6           Last change: 21 Oct 2010                    3
 

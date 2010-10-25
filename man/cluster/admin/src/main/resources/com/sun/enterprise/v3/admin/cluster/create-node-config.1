@@ -40,15 +40,15 @@ OPTIONS
 
      --installdir
 
-         The full path to the base installation directory of  the
-         GlassFish  Server  software  on  the  host, for example,
-         /export/glassfishv3/glassfish.  The   default   is   the
-         default  base  installation  directory  of the GlassFish
-         Server software. This default is useful only if  GlassF-
-         ish  Server  is  installed  in  the same location on all
-         hosts.
+         The full path to the parent  of  the  base  installation
+         directory  of the GlassFish Server software on the host,
+         for example, /export/glassfish3/.  The  default  is  the
+         parent of the default base installation directory of the
+         GlassFish Server software. This default is  useful  only
+         if GlassFish Server is installed in the same location on
+         all hosts.
 
-Java EE 6           Last change: 13 Sep 2010                    1
+Java EE 6           Last change: 15 Oct 2010                    1
 
 asadmin Utility Subcommands                 create-node-config(1)
 
@@ -83,9 +83,10 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     delete-node-config(1), list-nodes(1), update-node-config(1)
+     delete-node-config(1),    install-node(1),    list-nodes(1),
+     uninstall-node(1), update-node-config(1), update-node-ssh(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 13 Sep 2010                    2
+Java EE 6           Last change: 15 Oct 2010                    2
 

@@ -6,8 +6,9 @@ NAME
 
 SYNOPSIS
      create-jmsdest [--help]
+     --desttype dest_type
+     [--property (name=value)[:name=value]*]
      [--target target]
-     --desttype dest_type [--property (name=value)[:name=value]*]
      dest_name
 
 DESCRIPTION
@@ -29,30 +30,18 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-     --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
-
      --desttype
      -T
-
          The type of the JMS destination. Valid values are  topic
          and queue.
 
      --property
+
          Optional attribute name/value pairs for configuring  the
          physical destination. You can specify the following pro-
          perties for a physical destination.
 
-Java EE 6           Last change: 22 Sep 2009                    1
-
-asadmin Utility Subcommands                     create-jmsdest(1)
-
          maxNumMsgs
-
              The maximum number of unconsumed messages  permitted
              for the destination. A value of -1 denotes an unlim-
              ited number of messages. The default  value  is  -1.
@@ -60,6 +49,11 @@ asadmin Utility Subcommands                     create-jmsdest(1)
              1000.
 
              If   the   limitBehavior   property   is   set    to
+
+Java EE 6           Last change: 22 Oct 2010                    1
+
+asadmin Utility Subcommands                     create-jmsdest(1)
+
              FLOW_CONTROL,  it is possible for the specified mes-
              sage limit to be exceeded because the broker  cannot
              react  quickly  enough  to stop the flow of incoming
@@ -68,6 +62,7 @@ asadmin Utility Subcommands                     create-jmsdest(1)
              rather than a strictly enforced limit.
 
          maxBytesPerMsg
+
              The maximum size, in bytes, of any  single  message.
              Rejection of a persistent message is reported to the
              producing client with an exception; no  notification
@@ -87,29 +82,30 @@ asadmin Utility Subcommands                     create-jmsdest(1)
              default value is -1.
 
          maxTotalMsgBytes
-
              The maximum total memory, in bytes,  for  unconsumed
              messages. The default value is -1. The syntax is the
              same as for maxBytesPerMsg.  For  the  dead  message
              queue, the default value is 10m.
 
          limitBehavior
+
              The behavior of the message queue  broker  when  the
              memory-limit  threshold is reached. Valid values are
              as follows.
 
-Java EE 6           Last change: 22 Sep 2009                    2
-
-asadmin Utility Subcommands                     create-jmsdest(1)
-
              REJECT_NEWEST
-
                  Reject newest messages and notify the  producing
                  client  with an exception only if the message is
                  persistent. This is the default value.
 
              FLOW_CONTROL
+
                  Slow the rate at which  message  producers  send
+
+Java EE 6           Last change: 22 Oct 2010                    2
+
+asadmin Utility Subcommands                     create-jmsdest(1)
+
                  messages.
 
              REMOVE_OLDEST
@@ -149,17 +145,18 @@ asadmin Utility Subcommands                     create-jmsdest(1)
              number of queued messages routed to active consumers
              before load balancing begins.
 
-Java EE 6           Last change: 22 Sep 2009                    3
-
-asadmin Utility Subcommands                     create-jmsdest(1)
-
          useDMQ
 
              If set to true, dead messages go to the dead message
              queue. If set to false, dead messages are discarded.
              The default value is true.
 
+Java EE 6           Last change: 22 Oct 2010                    3
+
+asadmin Utility Subcommands                     create-jmsdest(1)
+
          validateXMLSchemaEnabled
+
              If set to true, XML schema validation is enabled for
              the destination. The default value is false.
 
@@ -177,7 +174,6 @@ asadmin Utility Subcommands                     create-jmsdest(1)
              nation. Otherwise the producer must reconnect.
 
          XMLSchemaURIList
-
              A space-separated list of XML schema document  (XSD)
              URI  strings.  The URIs point to the location of one
              or more XSDs to use for XML  schema  validation,  if
@@ -203,9 +199,37 @@ asadmin Utility Subcommands                     create-jmsdest(1)
          Message Queue 4.5 Administration Guide for more informa-
          tion.
 
-Java EE 6           Last change: 22 Sep 2009                    4
+     --target
+
+         Creates the physical destination only for the  specified
+         target.   Although   the  create-jmsdest  subcommand  is
+         related to resources, a physical destination is  created
+         using the JMS Service (JMS Broker), which is part of the
+         configuration. A JMS Broker is configured in the  config
+
+Java EE 6           Last change: 22 Oct 2010                    4
 
 asadmin Utility Subcommands                     create-jmsdest(1)
+
+         section of domain.xml. Valid values are as follows:
+
+         server
+
+             Creates the physical  destination  for  the  default
+             server instance. This is the default value.
+
+         configuration-name
+             Creates the physical destination  in  the  specified
+             configuration.
+
+         cluster-name
+
+             Creates the physical destination  for  every  server
+             instance in the specified cluster.
+
+         instance-name
+             Creates the physical destination for  the  specified
+             server instance.
 
 OPERANDS
      dest_name
@@ -224,10 +248,13 @@ EXAMPLES
        Command create-jmsdest executed successfully.
 
 EXIT STATUS
-     0                           subcommand executed successfully
+     0            subcommand executed successfully
 
-     1                           error in executing  the  subcom-
-                                 mand
+     1            error in executing the subcommand
+
+Java EE 6           Last change: 22 Oct 2010                    5
+
+asadmin Utility Subcommands                     create-jmsdest(1)
 
 SEE ALSO
      create-jms-resource(1), delete-jmsdest(1),  list-jmsdest(1),
@@ -235,5 +262,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 22 Sep 2009                    5
+Java EE 6           Last change: 22 Oct 2010                    6
 

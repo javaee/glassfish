@@ -6,13 +6,13 @@ NAME
      listeners
 
 SYNOPSIS
-     list-network-listeners
-     [--help]
+     list-network-listeners [--help]
+     [target]
 
 DESCRIPTION
-     The list-network-listeners command lists the  existing  net-
-     work  listeners.  This  command  is supported in remote mode
-     only.
+     The list-network-listeners  subcommand  lists  the  existing
+     network  listeners.  This  subcommand is supported in remote
+     mode only.
 
 OPTIONS
      --help
@@ -20,8 +20,35 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
+OPERANDS
+     target
+         Restricts the listing to network listeners for a  speci-
+         fied target. Valid values are as follows:
+
+         server
+
+             Lists the network listeners for the  default  server
+             instance. This is the default value.
+
+         configuration-name
+             Lists the network listeners for the specified confi-
+             guration.
+
+         cluster-name
+
+             Lists the network listeners for all server instances
+             in the specified cluster.
+
+         instance-name
+             Lists the network listeners for the specified server
+             instance.
+
 EXAMPLES
-     Example 1 Using the list-network-listeners command
+     Example 1 Listing Network Listeners
+
+Java EE 6           Last change: 08 Oct 2010                    1
+
+asadmin Utility Subcommands             list-network-listeners(1)
 
      The following command lists all the  network  listeners  for
      the server instance:
@@ -33,14 +60,14 @@ EXAMPLES
        Command list-network-listeners executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0            command executed successfully
 
-     1                           error in executing the command
+     1            error in executing the command
 
 SEE ALSO
      create-network-listener(1), delete-network-listener(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 10 Sep 2009                    1
+Java EE 6           Last change: 08 Oct 2010                    2
 

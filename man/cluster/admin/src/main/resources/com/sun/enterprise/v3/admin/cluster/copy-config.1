@@ -2,25 +2,26 @@
 asadmin Utility Subcommands                        copy-config(1)
 
 NAME
-     copy-config  - copies an existing configuration to create  a
-     new configuration
+     copy-config - copies  an  existing  named  configuration  to
+     create another configuration
 
 SYNOPSIS
-     copy-config
-     [--help]
-      [ --systemproperties  (name=value)[:name=value]*]
-      source_configuration_name destination_configuration_name
+     copy-config [--help]
+     [--systemproperties (name=value)[:name=value]*]
+     source-configuration-name destination-configuration-name
 
 DESCRIPTION
-     Use the copy-config command to create a new configuration in
-     the  domain.xml  file  by copying an existing configuration.
-     The new configuration is identical to the copied  configura-
-     tion,  except  for  any  properties  you  specify  in the --
-     systemproperties option.
+     The copy-config subcommand creates a named configuration  in
+     the  configuration of the domain administration server (DAS)
+     by copying an existing configuration. The new  configuration
+     is  identical  to  the  copied configuration, except for any
+     properties  that  you  specify  in  the   --systemproperties
+     option.
 
-     The configuration default-config is the  configuration  that
-     is  copied  when  a  standalone sever instance or standalone
-     cluster is created.
+     The default-config configuration is copied when a standalone
+     sever instance or standalone cluster is created.
+
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
@@ -29,88 +30,95 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --systemproperties
-         Optional attribute name/value pairs for configuring  the
-         resource. The following properties are available:
+         Optional attribute name-value pairs for  the  configura-
+         tion.  These  properties  override  port settings in the
+         configuration.
+
+         The following properties are available:
 
          HTTP_LISTENER_PORT
 
-             This property specifies the port  number  for  http-
-             listener-1.  Valid  values  are  1-65535.  On  UNIX,
-             creating  sockets  that  listen  on   ports   1-1024
-             requires superuser privileges.
+             This property specifies the port number of the  port
+             that  is  used  to  listen  for HTTP requests. Valid
+             values are 1-65535. On UNIX, creating  sockets  that
+             listen    on   ports   1-1024   requires   superuser
+             privileges.
 
          HTTP_SSL_LISTENER_PORT
-             This property specifies the port  number  for  http-
-             listener-2.  Valid  values  are  1-65535.  On  UNIX,
-             creating  sockets  that  listen  on   ports   1-1024
-             requires superuser privileges.
+             This property specifies the port number of the  port
+             that  is  used  to  listen for HTTPS requests. Valid
+             values are 1-65535. On UNIX, creating  sockets  that
 
-         IIOP_LISTENER_PORT
-
-             This property specifies which ORB listener port  for
-             IIOP connections orb-listener-1 listens on.
-
-Java EE 6           Last change: 30 Jan 2007                    1
+Java EE 6           Last change: 21 Sep 2010                    1
 
 asadmin Utility Subcommands                        copy-config(1)
 
-         IIOP_SSL_LISTENER_PORT
+             listen    on   ports   1-1024   requires   superuser
+             privileges.
 
-             This property specifies which ORB listener port  for
-             IIOP   connections  the  IIOP  listener  called  SSL
-             listens on.
+         IIOP_LISTENER_PORT
+
+             This property specifies the port number of the  port
+             that is used for IIOP connections.
+
+         IIOP_SSL_LISTENER_PORT
+             This property specifies the port number of the  port
+             that is used for secure IIOP connections.
 
          IIOP_SSL_MUTUALAUTH_PORT
-             This property specifies which ORB listener port  for
-             IIOP    connections   the   IIOP   listener   called
-             SSL_MUTUALAUTH listens on.
+
+             This property specifies the port number of the  port
+             that is used for secure IIOP connections with client
+             authentication.
 
          JMX_SYSTEM_CONNECTOR_PORT
-
              This property specifies the port number on which the
              JMX  connector listens. Valid values are 1-65535. On
              UNIX, creating sockets that listen on  ports  1-1024
              requires superuser privileges.
 
 OPERANDS
-     source_configuration_name           The name of  the  confi-
-                                         guration  you  are copy-
-                                         ing.
+     source-configuration-name
 
-     destination_configuration_name      The name of the new con-
-                                         figuration    you    are
-                                         creating by copying  the
-                                         source    configuration.
-                                         This  name   should   be
-                                         unique      within     a
-                                         domain.xml.  It   should
-                                         not  be  the same as the
-                                         cluster name,  serverin-
-                                         stance   name,   another
-                                         config  name,  or   node
-                                         agent name.
+         The name of the configuration that you are copying.
+
+     destination-configuration-name
+         The name of the configuration that you are  creating  by
+         copying  the  source  configuration.  This  name must be
+         unique within a domain and must not be  the  name  of  a
+         cluster,   a GlassFishTM Server instance, another confi-
+         guration, or a node.
 
 EXAMPLES
-     Example 1 Using the copy-config command
+     Example 1 Copying a Configuration
 
-       asadmin> copy-config --user admin --passwordfile passwords.txt
-       --systemproperties HTTP_LISTENER_PORT=2000:HTTP_SSL_LISTENER_PORT=3000
-       default-config new-config
-       Command copy-config executed successfully.
+     This example copies the default-config configuration to  the
+     pmdsaconfig  configuration,  overriding the settings for the
+     following ports:
 
-Java EE 6           Last change: 30 Jan 2007                    2
+Java EE 6           Last change: 21 Sep 2010                    2
 
 asadmin Utility Subcommands                        copy-config(1)
 
-EXIT STATUS
-     0                                   command  executed   suc-
-                                         cessfully
+         o    HTTP listener port
 
-     1                                   error in  executing  the
-                                         command
+         o    HTTPS listener port
+
+       asadmin> copy-config
+       --systemproperties HTTP_LISTENER_PORT=2000:HTTP_SSL_LISTENER_PORT=3000
+       default-config pmdsaconfig
+
+       Command copy-config executed successfully.
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
 
 SEE ALSO
-     list-configs(1), delete-config(1)
+     delete-config(1), list-configs(1)
 
-Java EE 6           Last change: 30 Jan 2007                    3
+     asadmin(1M)
+
+Java EE 6           Last change: 21 Sep 2010                    3
 

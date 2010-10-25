@@ -52,7 +52,7 @@ DESCRIPTION
               subcommand. If asadmin utility options  are  speci-
               fied both before and after the subcommand, an error
 
-Java EE 6            Last change: 6 Nov 2009                    1
+Java EE 6           Last change: 17 Oct 2010                    1
 
 Utility Commands                                      asadmin(1M)
 
@@ -105,7 +105,7 @@ Utility Commands                                      asadmin(1M)
               Meta  characters  in  the  UNIX  operating   system
               include: \/,.!$%^&*|{}[]"'`~;.
 
-Java EE 6            Last change: 6 Nov 2009                    2
+Java EE 6           Last change: 17 Oct 2010                    2
 
 Utility Commands                                      asadmin(1M)
 
@@ -155,7 +155,7 @@ Utility Commands                                      asadmin(1M)
              Virtual Machine for the Java platform.
          For example, the operand of the  subcommand  create-jvm-
 
-Java EE 6            Last change: 6 Nov 2009                    3
+Java EE 6           Last change: 17 Oct 2010                    3
 
 Utility Commands                                      asadmin(1M)
 
@@ -205,7 +205,7 @@ Utility Commands                                      asadmin(1M)
 
                 Test\Escape\Character
 
-Java EE 6            Last change: 6 Nov 2009                    4
+Java EE 6           Last change: 17 Oct 2010                    4
 
 Utility Commands                                      asadmin(1M)
 
@@ -257,7 +257,7 @@ OPTIONS
          port is the port in the URL that you specify in your web
          browser to  manage  the  domain.  For  example,  in  the
 
-Java EE 6            Last change: 6 Nov 2009                    5
+Java EE 6           Last change: 17 Oct 2010                    5
 
 Utility Commands                                      asadmin(1M)
 
@@ -302,18 +302,25 @@ Utility Commands                                      asadmin(1M)
              o    AS_ADMIN_MAPPEDPASSWORD=mapped-password   (read
                   by the create-connector-security-map(1) subcom-
                   mand)
+
+             o    AS_ADMIN_SSHPASSWORD=sshd-password (read by the
+                  install-node(1) subcommand)
+
+             o    AS_ADMIN_PASSPHRASEsshd-passphrase (read by the
+                  install-node(1) subcommand)
          In domains that do not allow unauthenticated login,  all
          remote subcommands must specify the administration pass-
          word to authenticate to the DAS.  The  password  can  be
+
+Java EE 6           Last change: 17 Oct 2010                    6
+
+Utility Commands                                      asadmin(1M)
+
          specified by one of the following means:
 
              o    Through the --passwordfile option
 
              o    Through the login(1) subcommand
-
-Java EE 6            Last change: 6 Nov 2009                    6
-
-Utility Commands                                      asadmin(1M)
 
              o    Interactively at the command prompt
          The login subcommand can be used  to  specify  only  the
@@ -359,12 +366,12 @@ Utility Commands                                      asadmin(1M)
      --echo
      -e
 
-         If set to true, the command-line statement is echoed  on
-         the standard output. Default is false.
-
-Java EE 6            Last change: 6 Nov 2009                    7
+Java EE 6           Last change: 17 Oct 2010                    7
 
 Utility Commands                                      asadmin(1M)
+
+         If set to true, the command-line statement is echoed  on
+         the standard output. Default is false.
 
      --interactive
      -I
@@ -405,12 +412,13 @@ EXAMPLES
 
      This example specifies the  --host  asadmin  utility  option
      with  the  list-applications  subcommand  in single mode. In
-     this   example,   the   DAS   is   running   on   the   host
-     srvr1.example.com.
 
-Java EE 6            Last change: 6 Nov 2009                    8
+Java EE 6           Last change: 17 Oct 2010                    8
 
 Utility Commands                                      asadmin(1M)
+
+     this   example,   the   DAS   is   running   on   the   host
+     srvr1.example.com.
 
      The example shows that the applications basic-ezcomp, scrum-
      toys, ejb31-war, and automatic-timer-ejb are deployed on the
@@ -449,15 +457,15 @@ Utility Commands                                      asadmin(1M)
 
      For the UNIX operating system in single mode and  multimode,
      and  for  all operating systems in multimode,  the backslash
+
+Java EE 6           Last change: 17 Oct 2010                    9
+
+Utility Commands                                      asadmin(1M)
+
      (\) is required to escape the  backslash (\) meta  character
      and the colon (:) option delimiter:
 
        asadmin deploy --property jruby.home='c\:\\tools\\jruby' bookstore
-
-Java EE 6            Last change: 6 Nov 2009                    9
-
-Utility Commands                                      asadmin(1M)
-
        Application deployed successfully with name hello.
 
        Command deploy executed successfully.
@@ -490,14 +498,14 @@ Utility Commands                                      asadmin(1M)
      For the Windows operating system in single mode,  no  escape
      character is required:
 
+Java EE 6           Last change: 17 Oct 2010                   10
+
+Utility Commands                                      asadmin(1M)
+
        asadmin --user admin --passwordfile gfpass create-jdbc-connection-pool
        --datasourceclassname sampleClassName
        --description Test\Escape\Character
        sampleJDBCConnectionPool
-
-Java EE 6            Last change: 6 Nov 2009                   10
-
-Utility Commands                                      asadmin(1M)
 
      Example 6 Specifying a Meta Character and an  Option  Delim-
      iter Character in a Property
@@ -532,13 +540,13 @@ Utility Commands                                      asadmin(1M)
        --property 'user=dbnuser:passwordfile=dbpasswordfile:
        DatabaseName="jdbc:derby":server="http://locahost:9092"'
 
+Java EE 6           Last change: 17 Oct 2010                   11
+
+Utility Commands                                      asadmin(1M)
+
      For the Windows operating system in single mode, a backslash
      (\)  is  required  to escape only the colon (:), but not the
      backslash (\):
-
-Java EE 6            Last change: 6 Nov 2009                   11
-
-Utility Commands                                      asadmin(1M)
 
        asadmin --user admin --passwordfile gfpass create-jdbc-connection-pool
        --datasourceclassname com.derby.jdbc.jdbcDataSource
@@ -577,13 +585,14 @@ Utility Commands                                      asadmin(1M)
               must  be  escaped.  As  a   result,   two   literal
               backslashes  (\\) must be passed to the subcommand.
               To  prevent  the  shell  from  interpreting   these
+
+Java EE 6           Last change: 17 Oct 2010                   12
+
+Utility Commands                                      asadmin(1M)
+
               backslashes  as  special characters, each backslash
               must be escaped. Therefore, the backslash  must  be
               specified by a total of four backslashes (\\\\).
-
-Java EE 6            Last change: 6 Nov 2009                   12
-
-Utility Commands                                      asadmin(1M)
 
      The resulting command is as follows:
 
@@ -617,11 +626,12 @@ Utility Commands                                      asadmin(1M)
      the backslash (\):
 
        asadmin set-web-env-entry --name="Hello User" --type=java.lang.String
-       --value=techscribe --description=\"Hello\App\"\authentication hello
 
-Java EE 6            Last change: 6 Nov 2009                   13
+Java EE 6           Last change: 17 Oct 2010                   13
 
 Utility Commands                                      asadmin(1M)
+
+       --value=techscribe --description=\"Hello\App\"\authentication hello
 
 ENVIRONMENT VARIABLES
      Environment variables modify the default values  of  asadmin
@@ -660,5 +670,5 @@ SEE ALSO
      http-listener in Oracle GlassFish  Server  3.1  Domain  File
      Format Reference
 
-Java EE 6            Last change: 6 Nov 2009                   14
+Java EE 6           Last change: 17 Oct 2010                   14
 

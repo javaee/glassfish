@@ -8,10 +8,9 @@ NAME
 SYNOPSIS
      create-connector-security-map [--help]
      --poolname connector_connection_pool_name
-     --principals principal-name1[, principal-name2]* |
-     --usergroups user-group1[, user-group2*]
-     --mappedusername  user-name
-     mapname
+     [--principals principal-name1[,principal-name2]*]
+     [--usergroups user-group1[,user-group2]*]
+     [--mappedusername  user-name mapname]
 
 DESCRIPTION
      The create-connector-security-map subcommand creates a secu-
@@ -81,7 +80,7 @@ EXAMPLES
      tion pool named connector-pool1.
 
        asadmin> create-connector-security-map --poolname connector-pool1
-       --principals principal1, principal2 --mappedusername backend-username securityMap1
+       --principals principal1,principal2 --mappedusername backend-username securityMap1
        Command create-connector-security-map executed successfully
 
 EXIT STATUS

@@ -5,7 +5,7 @@ NAME
      list-admin-objects - gets all the administered objects
 
 SYNOPSIS
-     list-admin-objects [--help]
+     list-admin-objects [--help] [--target target]
 
 DESCRIPTION
      The list-admin-objects subcommand lists all the administered
@@ -19,7 +19,36 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
+     --target
+         This is the name of the  target  for  which  the  admin-
+         istered  objects are to be listed. The valid targets for
+         this command are instance, cluster, domain, and  server.
+         Server is the default option. Valid values are:
+
+         server
+
+             Lists the administered objects on the default server
+             instance. This is the default value.
+
+         configuration_name
+             Lists the administered objects in the specified con-
+             figuration.
+
+         cluster_name
+
+             Lists  the  administered  objects  on   all   server
+             instances in the specified cluster.
+
+         instance_name
+             Lists the administered objects on a specified server
+             instance.
+
 EXAMPLES
+
+Java EE 6           Last change: 15 Sep 2010                    1
+
+asadmin Utility Subcommands                 list-admin-objects(1)
+
      Example 1 Listing Administered Objects
 
      This example lists all the administered objects.
@@ -40,5 +69,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 22 Oct 2009                    1
+Java EE 6           Last change: 15 Sep 2010                    2
 

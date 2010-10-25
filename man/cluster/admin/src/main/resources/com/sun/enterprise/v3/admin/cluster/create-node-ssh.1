@@ -8,9 +8,10 @@ NAME
 SYNOPSIS
      create-node-ssh [--help]
      --nodehost node-host
-     [--installdir install-dir] [--nodedir node-dir] [--sshport ssh-port]
-     [--sshuser ssh-user] [--sshkeyfile ssh-keyfile]
-     [--force{false|true}]
+     [--installdir install-dir] [--nodedir node-dir]
+     [--sshport ssh-port] [--sshuser ssh-user]
+     [--sshkeyfile ssh-keyfile]
+     [--force={false|true}]
      node-name
 
 DESCRIPTION
@@ -28,10 +29,10 @@ DESCRIPTION
      the DAS is running because the DAS can run all asadmin  sub-
      commands locally.
 
-     If the DAS cannot contact the node's host through  SSH,  the
-     subcommand  fails  and the node is not created. To force the
-     node to be created even if  the  host  cannot  be  contacted
-     through SSH, set the --force option to true.
+     By default, the subcommand fails and the node is not created
+     if  the  DAS  cannot contact the node's host through SSH. To
+     force the node to be created even if the host cannot be con-
+     tacted through SSH, set the --force option to true.
 
      This subcommand is supported in remote mode only.
 
@@ -46,19 +47,19 @@ OPTIONS
          of  the  host  must  be  specified.  Otherwise, an error
          occurs.
 
-Java EE 6           Last change: 13 Sep 2010                    1
+Java EE 6           Last change: 11 Oct 2010                    1
 
 asadmin Utility Subcommands                    create-node-ssh(1)
 
      --installdir
 
-         The full path to the base installation directory of  the
-         GlassFish  Server  software  on  the  host, for example,
-         /export/glassfishv3/glassfish.  The   default   is   the
-         default  base  installation  directory  of the GlassFish
-         Server software. This default is useful only if  GlassF-
-         ish  Server  is  installed  in  the same location on all
-         hosts.
+         The full path to the parent  of  the  base  installation
+         directory  of the GlassFish Server software on the host,
+         for example, /export/glassfish3/.  The  default  is  the
+         parent of the default base installation directory of the
+         GlassFish Server software. This default is  useful  only
+         if GlassFish Server is installed in the same location on
+         all hosts.
 
      --nodedir
          The full path  to  the  directory  that  is  to  contain
@@ -78,8 +79,8 @@ asadmin Utility Subcommands                    create-node-ssh(1)
          to  this  node.  The default is the user that is running
          the DAS process. To ensure that the DAS  can  read  this
          user's  SSH  private  key file, specify the user that is
-         running the DAS process. If the  --nodehost  is  set  to
-         localhost, the --sshuser option is ignored.
+         running the DAS process. If the --nodehost option is set
+         to localhost, the --sshuser option is ignored.
 
      --sshkeyfile
 
@@ -100,7 +101,7 @@ asadmin Utility Subcommands                    create-node-ssh(1)
 
              o    identitylocation
 
-Java EE 6           Last change: 13 Sep 2010                    2
+Java EE 6           Last change: 11 Oct 2010                    2
 
 asadmin Utility Subcommands                    create-node-ssh(1)
 
@@ -128,15 +129,15 @@ OPERANDS
          or another node.
 
 EXAMPLES
-     This   example   creates   the   node   n1   on   the   host
-     adc.example.com.  The  base  installation  directory  of the
-     GlassFish Server software is /export/glassfishv3/glassfish.
+     This  example   creates   the   node   adc   on   the   host
+     adc.example.com.  The parent of the base installation direc-
+     tory of the GlassFish Server software is /export/glassfish3.
 
      Example 1 Creating a Node
 
        asadmin> create-node-ssh
        --nodehost adc.example.com
-       --installdir /export/glassfishv3/glassfish  n1
+       --installdir /export/glassfish3  adc
 
        Command create-node-ssh executed successfully.
 
@@ -149,7 +150,7 @@ EXAMPLES
 
        asadmin> create-node-ssh --force --nodehost eghost.example.com eg1
 
-Java EE 6           Last change: 13 Sep 2010                    3
+Java EE 6           Last change: 11 Oct 2010                    3
 
 asadmin Utility Subcommands                    create-node-ssh(1)
 
@@ -167,9 +168,11 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     delete-node(1), list-nodes(1), update-node-ssh(1)
+     delete-node-ssh(1),  install-node(1),  list-nodes(1),  ping-
+     node-ssh(1),  setup-ssh(1),  uninstall-node(1), update-node-
+     ssh(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 13 Sep 2010                    4
+Java EE 6           Last change: 11 Oct 2010                    4
 

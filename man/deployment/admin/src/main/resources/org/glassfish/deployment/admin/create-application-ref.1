@@ -7,8 +7,8 @@ NAME
 
 SYNOPSIS
      create-application-ref [--help] [--target target]
-      [--enabled=true] [--virtualservers virtual_servers]
-      reference_name
+     [--virtualservers virtual_servers] [--enabled=true]
+     [--lbenabled=true] reference_name
 
 DESCRIPTION
      The create-application-ref subcommand  creates  a  reference
@@ -50,20 +50,14 @@ OPTIONS
              o    instance_name- Specifies  a  particular  server
                   instance   as   the  target  for  creating  the
 
-Java EE 6            Last change: 2 Sep 2010                    1
+Java EE 6           Last change: 12 Oct 2010                    1
 
 asadmin Utility Subcommands             create-application-ref(1)
 
                   application reference.
 
-     --enabled
-
-         Indicates whether  the  application  should  be  enabled
-         (that  is,  loaded). This value will take effect only if
-         the application is enabled  at  the  global  level.  The
-         default is true.
-
      --virtualservers
+
          Specifies a comma-separated list of virtual  server  IDs
          on  which  to  deploy.  This  option applies only to Web
          modules (either standalone or in a Java EE application).
@@ -71,9 +65,19 @@ asadmin Utility Subcommands             create-application-ref(1)
          deployed to all virtual servers except  the  administra-
          tive server, __asadmin.
 
+     --enabled
+         Indicates whether  the  application  should  be  enabled
+         (that  is,  loaded). This value will take effect only if
+         the application is enabled  at  the  global  level.  The
+         default is true.
+
+     --lbenabled
+
+         Controls whether the deployed application  is  available
+         for load balancing. The default is true.
+
 OPERANDS
      reference_name
-
          The name of the application or module, which  can  be  a
          Java  EE  application, Web module, EJB module, connector
          module, application client module, or lifecycle module.
@@ -96,13 +100,13 @@ EXAMPLES
      The following example creates a reference to the Web  module
      MyWebApp on the unclustered server instance NewServer.
 
+Java EE 6           Last change: 12 Oct 2010                    2
+
+asadmin Utility Subcommands             create-application-ref(1)
+
        asadmin> create-application-ref --user admin2
        --passwordfile passwords.txt --target NewServer MyWebApp
        Command create-application-ref executed successfully.
-
-Java EE 6            Last change: 2 Sep 2010                    2
-
-asadmin Utility Subcommands             create-application-ref(1)
 
 EXIT STATUS
      0                           command executed successfully
@@ -116,5 +120,5 @@ SEE ALSO
 
      Oracle GlassFish Server 3.1 Application Deployment Guide
 
-Java EE 6            Last change: 2 Sep 2010                    3
+Java EE 6           Last change: 12 Oct 2010                    3
 

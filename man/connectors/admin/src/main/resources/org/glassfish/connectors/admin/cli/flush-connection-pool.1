@@ -7,6 +7,7 @@ NAME
 
 SYNOPSIS
      flush-connection-pool [--help] pool_name
+     [--appname application [--modulename module]
 
 DESCRIPTION
      The flush-connection-pool subcommand resets a  JDBC  connec-
@@ -19,15 +20,54 @@ DESCRIPTION
 
      This subcommand is supported in remote mode only.
 
+  Application Scoped Resources
+     The flush-connection-pool subcommand  can  target  resources
+     that  are  scoped  to  a  specific application or module, as
+     defined in the  glassfish-resources.xml  for  the  GlassFish
+     domain.
+
+         o    To reference  the  jndi-name  for  an  application-
+              scoped  resource,  perform  the  lookup  using  the
+              java:app prefix.
+
+         o    To reference  the  jndi-name  for  a  module-scoped
+              resource,  perform the lookup using the java:module
+              prefix.
+
+     The jndi-name for  application-scoped-resources  or  module-
+     scoped-resources    are    specified    using   the   format
+     java:app/jdbc/myDataSource                                or
+     java:module/jdbc/myModuleLevelDataSource.  This naming scope
+     is   defined   in    the    Java    EE    6    Specification
+     (http://download.oracle.com/javaee/6/api/).
+
 OPTIONS
      --help
      -?
 
          Displays the help text for the subcommand.
 
+     --appname
+         An application-scoped resource.
+
+Java EE 6           Last change: 14 Sep 2010                    1
+
+asadmin Utility Subcommands              flush-connection-pool(1)
+
+     --modulename
+
+         A module-scoped resource.
+
 OPERANDS
      pool_name
          Name of the connection pool to be reinitialized.
+
+     application
+
+         JNDI name for an application-scoped resource.
+
+     module
+         JNDI name for a module-scoped resource.
 
 EXAMPLES
      This example reinitializes the JDBC  connection  pool  named
@@ -46,11 +86,7 @@ SEE ALSO
      list-connector-connection-pools(1),    list-jdbc-connection-
      pools(1)
 
-Java EE 6            Last change: 2 Nov 2009                    1
-
-asadmin Utility Subcommands              flush-connection-pool(1)
-
      asadmin(1M)
 
-Java EE 6            Last change: 2 Nov 2009                    2
+Java EE 6           Last change: 14 Sep 2010                    2
 

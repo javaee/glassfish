@@ -5,8 +5,7 @@ NAME
      get-client-stubs - retrieves the client stub JAR file.
 
 SYNOPSIS
-     get-client-stubs [--help] --appname application_name [--target target]
-     [local_directory_path]
+     get-client-stubs [--help] --appname application_name local_directory_path
 
 DESCRIPTION
      The get-client-stubs  subcommand  copies  the  required  JAR
@@ -39,43 +38,21 @@ OPTIONS
          versions, see the Oracle GlassFish Server  3.1  Applica-
          tion Deployment Guide.
 
-     --target
-
-          Specifies the target for which  you  are  creating  the
-         HTTP listener. Valid values are
-
-         server
-             Creates the listener for the default server instance
-             server and is the default value.
-
-Java EE 6            Last change: 2 Sep 2010                    1
-
-asadmin Utility Subcommands                   get-client-stubs(1)
-
-         configuration_name
-
-             Creates the listener for the named configuration.
-
-         cluster_name
-             Creates the listener for every  server  instance  in
-             the cluster.
-
-         stand-alone_instance_name
-
-             Creates the listener  for  a  particular  standalone
-             server instance.
-
 OPERANDS
      local_directory_path
+
          The path to the local directory where  the  client  stub
-         JAR  file  should  be stored. The default is the current
-         directory.
+         JAR file should be stored.
 
 EXAMPLES
      Example 1 Using get-client-stubs
 
        asadmin> get-client-stubs --appname myapplication /sample/example
        Command get-client-stubs executed successfully
+
+Java EE 6           Last change: 20 Oct 2010                    1
+
+asadmin Utility Subcommands                   get-client-stubs(1)
 
 EXIT STATUS
      0                   command executed successfully
@@ -89,5 +66,5 @@ SEE ALSO
 
      Oracle GlassFish Server 3.1 Application Deployment Guide
 
-Java EE 6            Last change: 2 Sep 2010                    2
+Java EE 6           Last change: 20 Oct 2010                    2
 

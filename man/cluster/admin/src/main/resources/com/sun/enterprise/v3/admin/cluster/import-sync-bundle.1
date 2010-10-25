@@ -1,0 +1,117 @@
+
+asadmin Utility Subcommands                 import-sync-bundle(1)
+
+NAME
+     import-sync-bundle - imports the  configuration  data  of  a
+     clustered instance or standalone instance from a ZIP archive
+
+SYNOPSIS
+     import-sync-bundle [--help]
+     --instance instance-name
+     [--nodedir node-dir] [--node node-name]
+     file-name
+
+DESCRIPTION
+     The import-sync-bundle subcommand imports the  configuration
+     data  of  a clustered instance or standalone instance from a
+     ZIP archive that was created  by  the  export-sync-bundle(1)
+     subcommand. The subcommand must be run on the host where the
+     instance resides.
+
+     Importing an instance's configuration data is  required  for
+     the following reasons:
+
+         o    To reestablish the instance after an upgrade
+
+         o    To  synchronize  the  instance  manually  with  the
+              domain   administration   server   (DAS)  when  the
+              instance cannot contact the DAS
+
+     The subcommand imports an instance's configuration  data  by
+     performing the following operations:
+
+         o    Creating  or  updating  the  instance's  files  and
+              directories
+
+         o    Attempting to register the instance with the DAS
+
+     If the attempt to register the instance with the DAS  fails,
+     the  subcommand  does  not  fail.  Instead,  the  subcommand
+     displays a warning that the attempt failed. The warning con-
+     tains  the  command to run to register the instance with the
+     DAS.
+
+     The import-sync-bundle subcommand does not contact  the  DAS
+     to  determine  the  node  on  which the instance resides. To
+     determine the node on which the instance resides,  the  sub-
+     command searches the directory that contains the node direc-
+     tories. If multiple node directories exist, the node must be
+     specified as an option of the subcommand.
+
+Java EE 6           Last change: 22 Oct 2010                    1
+
+asadmin Utility Subcommands                 import-sync-bundle(1)
+
+     This subcommand is supported in local mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --instance
+         The instance  for  which  configuration  data  is  being
+         imported.  The  instance  must  already  exist.  The ZIP
+         archive from which the data is being imported must  con-
+         tain data for the specified instance.
+
+     --nodedir
+
+         The directory that contains the instance's  node  direc-
+         tory.  The instance's files are stored in the instance's
+         node directory. The default is as-install/nodes.
+
+     --node
+         The node on which the instance resides. This option  may
+         be  omitted  only  if  the  directory that the --nodedir
+         option specifies contains only one node directory.  Oth-
+         erwise, this option is required.
+
+OPERANDS
+     file-name
+
+         The name of the file, including the path, that  contains
+         the ZIP archive to import. This operand is required.
+
+EXAMPLES
+     Example 1  Importing  Configuration  Data  for  a  Clustered
+     Instance
+
+     This example imports the  configuration  for  the  clustered
+     instance pmd-i-sj01 on the node sj01 from the ZIP archive in
+     the                                                     file
+     /export/glassfish3/glassfish/domains/domain1/sync/pmdcluster-
+     sync-bundle.zip.
+
+       asadmin> import-sync-bundle --instance pmd-i-sj01 --node sj01
+       /export/glassfish3/glassfish/domains/domain1/sync/pmdcluster-sync-bundle.zip
+
+       Command import-sync-bundle executed successfully.
+
+Java EE 6           Last change: 22 Oct 2010                    2
+
+asadmin Utility Subcommands                 import-sync-bundle(1)
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     export-sync-bundle(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 22 Oct 2010                    3
+

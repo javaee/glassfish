@@ -5,14 +5,14 @@ NAME
      delete-network-listener - removes a network listener
 
 SYNOPSIS
-     delete-network-listener
-     [--help]
+     delete-network-listener [--help]
+     [--target target]
      listener-name
 
 DESCRIPTION
-     The delete-network-listener command  removes  the  specified
-     network  listener.  This command is supported in remote mode
-     only.
+     The delete-network-listener subcommand removes the specified
+     network  listener.  This  subcommand  is supported in remote
+     mode only.
 
 OPTIONS
      --help
@@ -20,12 +20,39 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
+     --target
+         Deletes the network listener  only  from  the  specified
+         target. Valid values are as follows:
+
+         server
+
+             Deletes the network listener from the default server
+             instance. This is the default value.
+
+         configuration-name
+             Deletes the network listener from the specified con-
+             figuration.
+
+         cluster-name
+
+             Deletes  the  network  listener  from   all   server
+             instances in the specified cluster.
+
+         standalone-instance-name
+             Deletes the  network  listener  from  the  specified
+             standalone server instance.
+
 OPERANDS
-     listener-name               The name of the network listener
-                                 to be deleted.
+     listener-name
+
+         The name of the network listener to be deleted.
+
+Java EE 6           Last change: 08 Oct 2010                    1
+
+asadmin Utility Subcommands            delete-network-listener(1)
 
 EXAMPLES
-     Example 1 Using the delete-network-listener command
+     Example 1 Deleting a Network Listener
 
      The following command deletes  the  network  listener  named
      sampleListener:
@@ -34,14 +61,14 @@ EXAMPLES
        Command delete-network-listener executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0            command executed successfully
 
-     1                           error in executing the command
+     1            error in executing the command
 
 SEE ALSO
      create-network-listener(1), list-network-listeners(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 10 Sep 2009                    1
+Java EE 6           Last change: 08 Oct 2010                    2
 

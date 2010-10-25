@@ -5,17 +5,16 @@ NAME
      create-virtual-server - creates the named virtual server
 
 SYNOPSIS
-     create-virtual-server
-     [--help]
-     [ --target  target]
+     create-virtual-server [--help]
      --hosts hosts
-     [--httplisteners http_listeners]
-     [--networklisteners network_listeners]
-     [--defaultwebmodule default_web_module]
+     [--httplisteners http-listeners]
+     [--networklisteners network-listeners]
+     [--defaultwebmodule default-web-module]
      [--state={on|off}]
-     [ --logfile  log_file]
+     [--logfile log-file]
      [--property (name=value)[:name=value]*]
-     virtual_server_id
+     [--target target]
+     virtual-server-id
 
 DESCRIPTION
      The create-virtual-server subcommand creates the named  vir-
@@ -33,23 +32,11 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-     --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
-
      --hosts
-
          A comma-separated (,) list of values allowed in the host
          request  header  to  select  the current virtual server.
          Each virtual server that is configured to the same  con-
          nection group must have a unique host for that group.
-
-Java EE 6           Last change: 19 May 2010                    1
-
-asadmin Utility Subcommands;             create-virtual-server(1)
 
      --httplisteners
 
@@ -60,23 +47,27 @@ asadmin Utility Subcommands;             create-virtual-server(1)
          tained    for    backward    compatibility.    Use    --
          networklisteners instead.
 
+Java EE 6           Last change: 08 Oct 2010                    1
+
+asadmin Utility Subcommands;             create-virtual-server(1)
+
      --networklisteners
+
          A comma-separated (,)  list  of  network  listener  IDs.
          Required  only  for  a  virtual  server  that is not the
          default virtual server.
 
      --defaultwebmodule
-
          The standalone web module associated with  this  virtual
          server by default.
 
      --state
+
          Determines whether a virtual server is  active  (on)  or
          inactive  (off  or  disabled). Default is on. When inac-
          tive, the virtual server does not service requests.
 
      --logfile
-
          Name of the file where  log  entries  for  this  virtual
          server are to be written. By default, this is the server
          log. The file and directory in which the access  log  is
@@ -84,11 +75,11 @@ asadmin Utility Subcommands;             create-virtual-server(1)
          the server runs.
 
      --property
+
          Optional property name/value pairs for  configuring  the
          virtual server. The following properties are available:
 
          sso-max-inactive-seconds
-
              Specifies the number of seconds after which a user's
              single  sign-on  record becomes eligible for purging
              if no client  activity  is  received.  Since  single
@@ -100,24 +91,24 @@ asadmin Utility Subcommands;             create-virtual-server(1)
              users, but at the expense of more memory use on  the
              server.
 
-Java EE 6           Last change: 19 May 2010                    2
-
-asadmin Utility Subcommands;             create-virtual-server(1)
-
          sso-reap-interval-seconds
 
              Specifies the number of seconds  between  purges  of
              expired  single  sign-on records.  The default value
              is 60.
 
+Java EE 6           Last change: 08 Oct 2010                    2
+
+asadmin Utility Subcommands;             create-virtual-server(1)
+
          setCacheControl
+
              Specifies a comma-separated  list  of  Cache-Control
              response directives. For a list of valid directives,
              see   section    14.9    of    the    document    at
              http://www.ietf.org/rfc/rfc2616.txt.
 
          allowLinking
-
              If the value of this  property  is  true,  resources
              that  are  symbolic links will be served for all web
              applications deployed on this virtual server.  Indi-
@@ -132,6 +123,7 @@ asadmin Utility Subcommands;             create-virtual-server(1)
              The default value is true.
 
          accessLogWriteInterval
+
              Indicates the number of seconds before the log  will
              be  written  to  the disk. The access log is written
              when  the  buffer  is  full  or  when  the  interval
@@ -141,24 +133,23 @@ asadmin Utility Subcommands;             create-virtual-server(1)
              sage is stored directly to the file.
 
          accessLogBufferSize
-
              Specifies the size, in bytes, of  the  buffer  where
              access log calls are stored.
 
          allowRemoteAddress
+
              This is a comma-separated list of regular expression
              patterns  to which the remote client's IP address is
              compared. If this property is specified, the  remote
              address  must match for this request to be accepted.
              If this property is not specified, all requests will
-
-Java EE 6           Last change: 19 May 2010                    3
-
-asadmin Utility Subcommands;             create-virtual-server(1)
-
              be  accepted  unless  the  remote  address matches a
              denyRemoteAddress pattern.  The  default  value  for
              this property is null.
+
+Java EE 6           Last change: 08 Oct 2010                    3
+
+asadmin Utility Subcommands;             create-virtual-server(1)
 
          denyRemoteAddress
 
@@ -199,14 +190,10 @@ asadmin Utility Subcommands;             create-virtual-server(1)
          authRealm
              Specifies the name attribute of an auth-realm, which
              overrides  the  server  instance's default realm for
-             stand-alone web applications deployed to  this  vir-
-             tual  server.  A  realm defined in a stand-alone web
+             standalone web applications deployed to this virtual
+             server.   A   realm  defined  in  a  standalone  web
              application's web.xml  file  overrides  the  virtual
              server's realm.
-
-Java EE 6           Last change: 19 May 2010                    4
-
-asadmin Utility Subcommands;             create-virtual-server(1)
 
          securePagesWithPragma
 
@@ -214,11 +201,16 @@ asadmin Utility Subcommands;             create-virtual-server(1)
              web  applications  on this virtual server file down-
              loads using SSL work properly in Internet Explorer.
 
+Java EE 6           Last change: 08 Oct 2010                    4
+
+asadmin Utility Subcommands;             create-virtual-server(1)
+
              You can set this property for a specific web  appli-
              cation. For details, see glassfish-web-app in Oracle
              GlassFish Server 3.1 Application Deployment Guide.
 
          contextXmlDefault
+
              Specifies the location, relative to  domain-dir,  of
              the context.xml file for this virtual server, if one
              is used. For more information about the  context.xml
@@ -230,7 +222,6 @@ asadmin Utility Subcommands;             create-virtual-server(1)
              context.xml are supported in the GlassFish Server.
 
          alternatedocroot_n
-
              Specifies  an  alternate  document  root  (docroot),
              where n is a positive integer that allows specifica-
              tion of more than one. Alternate docroots allow  web
@@ -260,14 +251,15 @@ asadmin Utility Subcommands;             create-virtual-server(1)
              docroots  use  extension  and  longest  path  prefix
              matches, respectively.
 
-Java EE 6           Last change: 19 May 2010                    5
-
-asadmin Utility Subcommands;             create-virtual-server(1)
-
                <property name="alternatedocroot_1"
                   value="from=/my.jpg dir=/srv/images/jpg"/>
                <property name="alternatedocroot_2"
                   value="from=*.jpg dir=/srv/images/jpg"/>
+
+Java EE 6           Last change: 08 Oct 2010                    5
+
+asadmin Utility Subcommands;             create-virtual-server(1)
+
                <property name="alternatedocroot_3"
                   value="from=/jpg/* dir=/src/images"/>
 
@@ -316,7 +308,7 @@ asadmin Utility Subcommands;             create-virtual-server(1)
 
                HTTP/1.1 401 MY-401-REASON
 
-Java EE 6           Last change: 19 May 2010                    6
+Java EE 6           Last change: 08 Oct 2010                    6
 
 asadmin Utility Subcommands;             create-virtual-server(1)
 
@@ -371,7 +363,7 @@ asadmin Utility Subcommands;             create-virtual-server(1)
                <property name="listener_1"
                   value="org.glassfish.extension.MyLifecycleListener"/>
 
-Java EE 6           Last change: 19 May 2010                    7
+Java EE 6           Last change: 08 Oct 2010                    7
 
 asadmin Utility Subcommands;             create-virtual-server(1)
 
@@ -421,18 +413,40 @@ asadmin Utility Subcommands;             create-virtual-server(1)
              string  to  disable the default error page mechanism
              for this virtual server.
 
-Java EE 6           Last change: 19 May 2010                    8
+Java EE 6           Last change: 08 Oct 2010                    8
 
 asadmin Utility Subcommands;             create-virtual-server(1)
 
-OPERANDS
-     virtual_server_id
+     --target
 
+         Creates the virtual server only on the specified target.
+         Valid values are as follows:
+
+         server
+             Creates the virtual server  on  the  default  server
+             instance. This is the default value.
+
+         configuration-name
+
+             Creates the virtual server in the  specified  confi-
+             guration.
+
+         cluster-name
+             Creates the virtual server on all  server  instances
+             in the specified cluster.
+
+         standalone-instance-name
+
+             Creates the virtual server on  the  specified  stan-
+             dalone server instance.
+
+OPERANDS
+     virtual-server-id
          Identifies the unique ID for the virtual  server  to  be
          created. This ID cannot begin with a number.
 
 EXAMPLES
-     Example 1 Using the create-virtual-server subcommand
+     Example 1 Creating a Virtual Server
 
      The following command creates a virtual  server  named  sam-
      pleServer:
@@ -442,9 +456,13 @@ EXAMPLES
        Command create-virtual-server executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0            command executed successfully
 
-     1                           error in executing the command
+Java EE 6           Last change: 08 Oct 2010                    9
+
+asadmin Utility Subcommands;             create-virtual-server(1)
+
+     1            error in executing the command
 
 SEE ALSO
      delete-virtual-server(1),  list-virtual-servers(1),  create-
@@ -454,5 +472,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 19 May 2010                    9
+Java EE 6           Last change: 08 Oct 2010                   10
 

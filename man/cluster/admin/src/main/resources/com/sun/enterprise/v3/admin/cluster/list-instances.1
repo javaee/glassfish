@@ -2,20 +2,30 @@
 asadmin Utility Subcommands                     list-instances(1)
 
 NAME
-     list-instances - lists all the server instances while  indi-
-     cating if they are running or not.
+     list-instances -  lists  GlassFish  Server  instances  in  a
+     domain
 
 SYNOPSIS
-     list-instances
-     [--help]
-      [target]
+     list-instances [--help] [--timeoutmsec timeout]
+     [--long={false|true} | --nostatus={false|true}]
+     [--standaloneonly={false|true} | target]
 
 DESCRIPTION
-     Use the list-instances  to  list  all  the  instances  in  a
-     server.  To  list remote instances, the named administration
-     server must be running  on  the  hostname  and  port  number
-     specified. The user authenticates using the password identi-
-     fied for the administration server.
+     The  list-instances  subcommand   lists   GlassFish   Server
+     instances  in a domain. The list can be filtered by cluster,
+     instance, node, or configuration.
+
+     The subcommand displays every GlassFish Server  instance  in
+     the  specified  target,  regardless of how each instance was
+     created. For example, this subcommand lists  instances  that
+     were  created by using the create-instance(1) subcommand and
+     by using the create-local-instance(1) subcommand.
+
+     By default, the subcommand indicates whether  each  instance
+     that  is  listed is running. Options of this subcommand con-
+     trol the information that is displayed for each instance.
+
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
@@ -23,37 +33,194 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-OPERANDS
-     target
-         This is the name of the target  domain  associated  with
-         the instances you want listed. Valid values are:
+     --timeoutmsec
+         The time  limit  in  milliseconds  for  determining  the
+         status  of  instances.  The  default  is 2,000, which is
+         equivalent to 2 seconds.
 
-             o    server- Specifies the default  server  instance
-                  as  the  target.   server  is  the  name of the
-                  default server  instance  and  is  the  default
-                  value.
+     --long
+     -l
 
-             o    nodeagent_name- Specifies a  certain  nodeagent
-                  as the target.
+         Specifies whether detailed information is displayed  for
+         each instance that is listed.
 
-             o    cluster_name- Specifies a  certain  cluster  as
-                  the target.
+         The --long option and  --nostatus  option  are  mutually
+         exclusive.  If  both  options  are specified in the same
+         command, an error occurs.
 
-             o    instance_name-  Specifies  a   certain   server
-                  instance as the target.
-
-EXAMPLES
-     Example 1 Using list-instances:
-
-       asadmin> list-instances --user admin --passwordfile passwords.txt
-       --host pigeon --port 4848
-       i1 not running
-       i2 not running
-       Command list-instances executed successfully.
-
-Java EE 6           Last change: 13 Jul 2007                    1
+Java EE 6           Last change: 20 Oct 2010                    1
 
 asadmin Utility Subcommands                     list-instances(1)
+
+         Valid values are as follows:
+
+         true
+
+             The  following  details  are  displayed   for   each
+             instance that is listed:
+
+                 o    The name of the instance
+
+                 o    The name of the host where  the  instance's
+                      node resides
+
+                 o    The HTTP port on which the instance listens
+                      for administration requests
+
+                 o    The  process  identifier   (PID)   of   the
+                      instance  process  or -1 if the instance is
+                      not running
+
+                 o    The  name  of  the  cluster  of  which  the
+                      instance is a member, if any
+
+                 o    The length of time that  the  instance  has
+                      been   running  or  a  statement  that  the
+                      instance is not running
+
+         false
+             Only the name of the instance and an  indication  of
+             whether   the  instance  is  running  are  displayed
+             (default). The length of time that the instance  has
+             been running is not displayed.
+
+     --nostatus
+
+         Specifies whether information  about  whether  instances
+         are running is suppressed.
+
+         The --long option and  --nostatus  option  are  mutually
+         exclusive.  If  both  options  are specified in the same
+         command, an error occurs.
+
+         Valid values are as follows:
+
+         true
+             Information about whether instances are  running  is
+             suppressed.  Only  the  name  of  each  instance  is
+             displayed.
+
+Java EE 6           Last change: 20 Oct 2010                    2
+
+asadmin Utility Subcommands                     list-instances(1)
+
+         false
+
+             Information about whether instances are  running  is
+             displayed (default).
+
+     --standaloneonly
+         Specifies whether only standalone instances are listed.
+
+         The --standaloneonly option and the target  operand  and
+         are  mutually  exclusive.  If  both the --standaloneonly
+         option and the target operand  are specified in the same
+         command, an error occurs.
+
+         Valid values are as follows:
+
+         true
+
+             Only standalone instances are listed.
+
+         false
+             All instances in the  specified  target  are  listed
+             (default).
+
+OPERANDS
+     target
+
+         Filters the list of GlassFish Server instances by speci-
+         fying the target for which instances are listed.
+
+         The target operand and the --standaloneonly  option  are
+         mutually  exclusive.  If both the target operand and the
+         --standaloneonly option are specified in the  same  com-
+         mand, an error occurs.
+
+         Valid values are as follows:
+
+         domain
+              Lists all instances in the domain (default).
+
+         cluster-name
+
+             Lists the instances that are members of  the  speci-
+             fied cluster.
+
+Java EE 6           Last change: 20 Oct 2010                    3
+
+asadmin Utility Subcommands                     list-instances(1)
+
+         instance-name
+
+             Lists only the specified instance.
+
+         node-name
+             Lists the instances that  reside  on  the  specified
+             node.
+
+         configuration-name
+
+             Lists all instances whose configuration  is  defined
+             by the specified named configuration.
+
+EXAMPLES
+     Example 1 Listing  Basic  Information  About  All  GlassFish
+     Server Instances in a Domain
+
+     This example lists the name  and  status  of  all  GlassFish
+     Server instances in the current domain.
+
+       asadmin> list-instances
+       pmd-i-sj02 running
+       yml-i-sj02 running
+       pmd-i-sj01 running
+       yml-i-sj01 running
+       pmdsa1 not running
+
+       Command list-instances executed successfully.
+
+     Example 2 Listing Detailed Information About  All  GlassFish
+     Server Instances in a Domain
+
+     This example lists detailed information about all  GlassFish
+     Server instances in the current domain.
+
+       asadmin> list-instances --long=true
+       NAME        HOST       PORT   PID    CLUSTER     STATE
+       pmd-i-sj01  sj01       24848  31310  pmdcluster   running
+       yml-i-sj01  sj01       24849  25355  ymlcluster   running
+       pmdsa1      localhost  24848  -1     ---          not running
+       pmd-i-sj02  sj02       24848  22498  pmdcluster   running
+       yml-i-sj02  sj02       24849  20476  ymlcluster   running
+       ymlsa1      localhost  24849  -1     ---          not running
+
+Java EE 6           Last change: 20 Oct 2010                    4
+
+asadmin Utility Subcommands                     list-instances(1)
+
+       Command list-instances executed successfully.
+
+     Example 3 Displaying the Status of an Instance
+
+     This example displays status  of  the  instance  pmd-i-sj01,
+     which is running.
+
+       asadmin> list-instances pmd-i-sj01
+       pmd-i-sj01 running
+
+       Command list-instances executed successfully.
+
+     Example 4 Listing Only Standalone Instances in a Domain
+
+     This example lists only  the  standalone  instances  in  the
+     current domain.
+
+       asadmin> list-instances --standaloneonly=true
+       pmdsa1 not running
+
+       Command list-instances executed successfully.
 
 EXIT STATUS
      0                           command executed successfully
@@ -61,7 +228,9 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     create-instance(1)
+     create-instance(1),  create-local-instance(1)
 
-Java EE 6           Last change: 13 Jul 2007                    2
+     asadmin(1M)
+
+Java EE 6           Last change: 20 Oct 2010                    5
 

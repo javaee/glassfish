@@ -1,0 +1,64 @@
+
+asadmin Utility Subcommands               disable-secure-admin(1)
+
+NAME
+     disable-secure-admin - Sets the secure-admin enabled  attri-
+     bute  to  false in domain.xml and adjusts all configurations
+     in the domain
+
+SYNOPSIS
+     disable-secure-admin [--help]
+
+DESCRIPTION
+     The disable-secure-admin subcommand  sets  the  secure-admin
+     enabled  attribute to false in the domain.xml for the domain
+     and adjusts all configurations in  the  domain  accordingly.
+     Disabling  secure admin affects the entire domain, including
+     the DAS and all instances.
+
+     As part of this action, the  enable-secure-admin  subcommand
+     performs the following functions:
+
+         o    Turns off Grizzly's use of SSL/TLS in  the  Grizzly
+              configuration.
+
+         o    Turns off Grizzly redirection from HTTP to HTTPS.
+
+         o    Turns off Grizzly port unification  for  the  admin
+              listener port.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+EXAMPLES
+     Example 1 Disabling secure admin for a domain
+
+     The following example shows how to disable secure admin  for
+     a domain.
+
+       asadmin> disable-secure-admin
+       server-config
+       default-config
+
+       Command disable-secure-admin executed successfully.
+
+Java EE 6           Last change: 01 Oct 2010                    1
+
+asadmin Utility Subcommands               disable-secure-admin(1)
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     enable-secure-admin(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 01 Oct 2010                    2
+

@@ -6,8 +6,8 @@ NAME
 
 SYNOPSIS
      flush-jmsdest [--help]
-     --desttype {topic|queue}
      [--target target]
+     --desttype {topic|queue}
      destname
 
 DESCRIPTION
@@ -22,14 +22,34 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         Purges messages from the physical destination  only  for
+         the specified target. Valid values are as follows:
+
+         server
+
+             Purges messages from the  physical  destination  for
+             the  default  server  instance.  This is the default
+             value.
+
+         configuration-name
+             Purges messages from the physical destination in the
+             specified configuration.
+
+         cluster-name
+
+             Purges messages from the  physical  destination  for
+             every server instance in the specified cluster.
+
+         instance-name
+             Purges messages from the  physical  destination  for
+             the specified server instance.
 
      --desttype
      -T
+
+Java EE 6           Last change: 22 Oct 2010                    1
+
+asadmin Utility Subcommands                      flush-jmsdest(1)
 
          This option indicates the type of  physical  destination
          from  which  you  want  to purge messages. The supported
@@ -37,6 +57,7 @@ OPTIONS
 
 OPERANDS
      dest_name
+
          The unique identifier  of  the  JMS  destination  to  be
          purged.
 
@@ -46,23 +67,18 @@ EXAMPLES
      The following subcommand  purges  messages  from  the  queue
      named PhysicalQueue.
 
-Java EE 6           Last change: 16 Sep 2009                    1
-
-asadmin Utility Subcommands                      flush-jmsdest(1)
-
        asadmin> flush-jmsdest --desttype queue PhysicalQueue
        Command flush-jmsdest executed successfully.
 
 EXIT STATUS
-     0                           subcommand executed successfully
+     0            subcommand executed successfully
 
-     1                           error in executing  the  subcom-
-                                 mand
+     1            error in executing the subcommand
 
 SEE ALSO
      create-jmsdest(1), list-jmsdest(1), create-jmsdest(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 16 Sep 2009                    2
+Java EE 6           Last change: 22 Oct 2010                    2
 

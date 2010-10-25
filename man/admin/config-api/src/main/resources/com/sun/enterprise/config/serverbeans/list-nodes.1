@@ -1,0 +1,129 @@
+
+asadmin Utility Subcommands                         list-nodes(1)
+
+NAME
+     list-nodes - lists all GlassFish Server nodes in a domain
+
+SYNOPSIS
+     list-nodes [--help] [--long={false|true}]
+
+DESCRIPTION
+     The list-nodes subcommand lists all GlassFish  Server  nodes
+     in a domain.
+
+     By default, the subcommand displays the  following  informa-
+     tion for each node that is listed:
+
+         o    The name of the node
+
+         o    The type of the node, which is one of the following
+              types:
+
+              CONFIG
+
+                  The node does not  support  communication  over
+                  secure shell (SSH).
+
+              SSH
+                  The node  supports  communication  over  secure
+                  shell (SSH).
+
+         o    The name of the host that the node represents
+
+     The --long option of the subcommand  specifies  whether  the
+     nodes are listed in long format. In long format, the follow-
+     ing additional information about each node is displayed:
+
+         o    The path to  the  base  installation  directory  of
+              GlassFish   Server   on  the  host  that  the  node
+              represents
+
+         o    A comma-separated list of the names of the  GlassF-
+              ish Server instances that reside on the node
+
+     If the --terse option of the asadmin(1M) utility is true and
+     the --long option of the subcommand is false, the subcommand
+     lists only the name of each node.
+
+Java EE 6           Last change: 14 Oct 2010                    1
+
+asadmin Utility Subcommands                         list-nodes(1)
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --long
+     -l
+         Specifies whether the nodes are listed in long format.
+
+         Possible values are as follows:
+
+         true
+
+             The nodes are listed in long format.
+
+         false
+             The nodes are listed in short format (default).
+
+EXAMPLES
+     Example 1 Listing GlassFish Server Nodes
+
+     This example displays the  name,  type,  and  host  for  all
+     GlassFish Server nodes in a domain.
+
+       asadmin> list-nodes
+       localhost  CONFIG  localhost
+       sj01  CONFIG  sj01
+       sj02  CONFIG  sj02
+       sj03  SSH  sj03
+
+       Command list-nodes executed successfully.
+
+     Example 2 Listing Only the Names of GlassFish Server Nodes
+
+     This example uses the --terse option of the asadmin  utility
+     to  list  only  the names of the GlassFish Server nodes in a
+     domain.
+
+       asadmin> list-nodes --terse=true
+
+Java EE 6           Last change: 14 Oct 2010                    2
+
+asadmin Utility Subcommands                         list-nodes(1)
+
+       localhost
+       sj01
+       sj02
+       sj03
+
+     Example 3 Listing GlassFish Server Nodes in Long Format
+
+     This example lists the GlassFish Server nodes in a domain in
+     long format.
+
+       asadmin> list-nodes --long=true
+       NODE NAME   TYPE     NODE HOST   INSTALL DIRECTORY              REFERENCED BYy
+       localhost   CONFIG   localhost   /export/glassfish3/glassfish   pmdsa1,
+       sj01        CONFIG   sj01        /export/glassfish3/glassfish   pmd-i-sj01, yml-i-sj01,
+       sj02        CONFIG   sj02        /export/glassfish3/glassfish   pmd-i-sj02, yml-i-sj02,
+       sj03        SSH      sj03        /export/glassfish3/glassfish
+       Command list-nodes executed successfully.
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     create-node-config(1),   create-node-ssh(1),    delete-node-
+     config(1), delete-node-ssh(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 14 Oct 2010                    3
+

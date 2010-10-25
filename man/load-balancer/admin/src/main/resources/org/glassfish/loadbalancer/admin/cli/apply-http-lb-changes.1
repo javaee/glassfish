@@ -1,0 +1,61 @@
+
+asadmin Utility Subcommands;             apply-http-lb-changes(1)
+
+NAME
+     apply-http-lb-changes -  applies load balancer configuration
+     changes to the load balancer
+
+SYNOPSIS
+     apply-http-lb-changes
+     [--help]
+      lb-name
+
+DESCRIPTION
+     Use  the  apply-http-lb-changes  subcommand  to  apply   the
+     changes  in  the load balancer configuration to the physical
+     load balancer. The load  balancer  must  already  exist.  To
+     create a physical load balancer, use the create-http-lb sub-
+     command.
+
+     This subcommand is only  applicable  to  Oracle  GlassFishTM
+     Server.  This  subcommand  is  not  applicable  to GlassFish
+     Server Open Source Edition.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+OPERANDS
+     lb-name
+         The name of the  load  balancer  to  which  changes  are
+         applied.  The  load balancer must already exist. You can
+         create it with the create-http-lb subcommand.
+
+EXAMPLES
+     Example 1 Using the apply-http-lb-changes subcommand
+
+     This  example  applies  configuration  changes  to  a   load
+     balancer named mylb.
+
+       asadmin> apply-http-lb-changes mylb
+       Command apply-http-lb-changes executed successfully.
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+Java EE 6           Last change: 23 Sep 2010                    1
+
+asadmin Utility Subcommands;             apply-http-lb-changes(1)
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     create-http-lb(1), create-http-lb-config(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 23 Sep 2010                    2
+

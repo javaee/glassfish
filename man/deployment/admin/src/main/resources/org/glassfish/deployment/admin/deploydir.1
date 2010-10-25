@@ -6,15 +6,20 @@ NAME
      archive
 
 SYNOPSIS
-     deploydir [--help] [--force={false|true}]
+     deploydir [--help]
+     [--force={false|true}]
      [--virtualservers virtual_servers]
      [--contextroot context_root]
      [--verify={false|true}]
      [--precompilejsp={false|true}]
      [--name component-name]
+     [--upload={true|false}]
+     [--retrieve local_dirpath]
      [--uniquetablenames={true|false}]
      [--dbvendorname dbvendorname]
      [--createtables={false|true}|--dropandcreatetables={false|true}]
+     [--deploymentplan deployment_plan]
+     [--enabled={true|false}]
      [--generatermistubs={false|true}]
      [--availabilityenabled={false|true}]
      [--asyncreplication={true|false}]
@@ -45,15 +50,15 @@ DESCRIPTION
      same machine. For this reason, the only values  for  the  --
      host option are:
 
+Java EE 6           Last change: 20 Oct 2010                    1
+
+asadmin Utility Subcommands                          deploydir(1)
+
          o    localhost
 
          o    The value of the $HOSTNAME environment variable
 
          o    The IP address of the machine
-
-Java EE 6            Last change: 9 Sep 2010                    1
-
-asadmin Utility Subcommands                          deploydir(1)
 
      If   the   --uniquetablenames,   --createtables,   and    --
      dropandcreatetables  options  are not specified, the entries
@@ -95,18 +100,18 @@ OPTIONS
          precompiled  during  deployment.  Instead, JSPs are com-
          piled during runtime. Default is false.
 
+Java EE 6           Last change: 20 Oct 2010                    2
+
+asadmin Utility Subcommands                          deploydir(1)
+
      --verify
+
          If set to true and the required  verifier  packages  are
          installed  from the Update Center, the syntax and seman-
          tics of the deployment descriptor is  verified.  Default
          is false.
 
-Java EE 6            Last change: 9 Sep 2010                    2
-
-asadmin Utility Subcommands                          deploydir(1)
-
      --name
-
          Name of the deployable component.
 
          The name can include  an  optional  version  identifier,
@@ -119,6 +124,7 @@ asadmin Utility Subcommands                          deploydir(1)
          tion Deployment Guide.
 
      --upload
+
          Uploads  the  deployable  file  to  the   administration
          server.  The deployable file must be accessible from the
          client. If the file is accessible  to  both  server  and
@@ -130,11 +136,11 @@ asadmin Utility Subcommands                          deploydir(1)
          overrides the default.
 
      --retrieve
-
          Retrieves the client  stub  JAR  file  from  the  server
          machine to the local directory.
 
      --dbvendorname
+
          Specifies the name of  the  database  vendor  for  which
          tables are created. Supported values include db2, mssql,
          mysql, oracle, derby, javadb,  postgresql,  and  sybase.
@@ -147,6 +153,10 @@ asadmin Utility Subcommands                          deploydir(1)
          the   connection  cannot be established, or if the value
          is not recognized, SQL-92 compliance is presumed.
 
+Java EE 6           Last change: 20 Oct 2010                    3
+
+asadmin Utility Subcommands                          deploydir(1)
+
      --createtables
 
           If specified as true, creates tables at  deployment  of
@@ -154,15 +164,9 @@ asadmin Utility Subcommands                          deploydir(1)
          false, tables are not created.  If  not  specified,  the
          value  of  the create-tables-at-deploy entry in the cmp-
          resource element of the sun-ejb-jar.xml file  determines
-
-Java EE 6            Last change: 9 Sep 2010                    3
-
-asadmin Utility Subcommands                          deploydir(1)
-
          whether or not tables are created.
 
      --dropandcreatetables
-
          If specified as true when the component  is  redeployed,
          the  tables  created  by  the  previous  deployment  are
          dropped before creating  the  new  tables.   Applies  to
@@ -178,6 +182,7 @@ asadmin Utility Subcommands                          deploydir(1)
          ment of the sun-ejb-jar.xml file is set to true.
 
      --uniquetablenames
+
          Guarantees unique table names  for  all  the  beans  and
          results in a hash code added to the table names. This is
          useful if you have an  application  with  case-sensitive
@@ -185,13 +190,13 @@ asadmin Utility Subcommands                          deploydir(1)
          beans.
 
      --deploymentplan
-
          Deploys the deployment plan, which is a  JAR  file  that
          contains  GlassFish  Server  descriptors.  Specify  this
          option when deploying a pure EAR file. A pure  EAR  file
          is an EAR without GlassFish Server descriptors.
 
      --enabled
+
          Allows users to access the application. If set to false,
          users  will  not be able to access the application. This
          option enables the application on the  specified  target
@@ -201,18 +206,17 @@ asadmin Utility Subcommands                          deploydir(1)
          default is true except for deployment to a  cluster,  in
          which case the default is false.
 
+Java EE 6           Last change: 20 Oct 2010                    4
+
+asadmin Utility Subcommands                          deploydir(1)
+
      --generatermistubs
 
          If set to true, static RMI-IIOP stubs are generated  and
          put  into the client.jar. If set to false, the stubs are
          not generated. Default is false.
 
-Java EE 6            Last change: 9 Sep 2010                    4
-
-asadmin Utility Subcommands                          deploydir(1)
-
      --availabilityenabled
-
          This  option  controls  whether   high-availability   is
          enabled  for  web sessions and for stateful session bean
          (SFSB) checkpointing and potentially passivation. If set
@@ -225,6 +229,7 @@ asadmin Utility Subcommands                          deploydir(1)
          such as the server and container levels.
 
      --asyncreplication
+
          This option controls whether web session and SFSB states
          for  which  high  availability is enabled are first buf-
          fered and then replicated using a separate  asynchronous
@@ -237,17 +242,35 @@ asadmin Utility Subcommands                          deploydir(1)
          in the cluster.
 
      --lbenabled
-
          This option controls whether the deployed application is
          available for load balancing. The default is true.
 
      --keepstate
+
          This  option  controls  whether   web   sessions,   SFSB
          instances,  and  persistently  created  EJB  timers  are
-         retained between redeployments. For this option to  work
-         for  SFSB instances, there must be no changes to the set
-         of instance  variables  in  the  SFSB  bean  class.  The
-         default is false.
+         retained between redeployments. The  default  is  false.
+         This  option is not supported and ignored in a clustered
+         environment.
+
+         Some changes to  an  application  between  redeployments
+         prevent this feature from working properly. For example,
+         do not change the set of instance variables in the  SFSB
+         bean class.
+
+         For web applications, this feature is applicable only if
+
+Java EE 6           Last change: 20 Oct 2010                    5
+
+asadmin Utility Subcommands                          deploydir(1)
+
+         in  the  glassfish-web-app.xml file the persistence-type
+         attribute of the session-manager element is file.
+
+         For stateful session  bean  instances,  the  persistence
+         type without high availability is set in the server (the
+         sfsb-persistence-type attribute)  and  must  be  set  to
+         file, which is the default and recommended value.
 
          If any active web session, SFSB instance, or  EJB  timer
          fails to be preserved or restored, none of these will be
@@ -258,10 +281,6 @@ asadmin Utility Subcommands                          deploydir(1)
          izes  the  data  and  saves it in memory. To restore the
          data, the class loader of the newly redeployed  applica-
          tion deserializes the data that was previously saved.
-
-Java EE 6            Last change: 9 Sep 2010                    5
-
-asadmin Utility Subcommands                          deploydir(1)
 
      --libraries
 
@@ -294,6 +313,11 @@ asadmin Utility Subcommands                          deploydir(1)
              configuration is disabled, the referencing  clusters
              or  server  instances  do not get the new version of
              the application until the  clustered  or  standalone
+
+Java EE 6           Last change: 20 Oct 2010                    6
+
+asadmin Utility Subcommands                          deploydir(1)
+
              server instances are restarted.
 
          cluster_name
@@ -310,12 +334,7 @@ asadmin Utility Subcommands                          deploydir(1)
          The packaging archive type  of  the  component  that  is
          being deployed. Possible values are as follows:
 
-Java EE 6            Last change: 9 Sep 2010                    6
-
-asadmin Utility Subcommands                          deploydir(1)
-
          osgi
-
              The component is packaged as an OSGi  Alliance  bun-
              dle.
 
@@ -323,6 +342,7 @@ asadmin Utility Subcommands                          deploydir(1)
          aged as a regular archive, omit this option.
 
      --properties or --property
+
          Optional keyword-value  pairs  that  specify  additional
          properties  for the deployment. The available properties
          are determined by the implementation  of  the  component
@@ -344,8 +364,12 @@ asadmin Utility Subcommands                          deploydir(1)
          ment:
 
          jar-signing-alias
-
              Specifies the alias  for  the  security  certificate
+
+Java EE 6           Last change: 20 Oct 2010                    7
+
+asadmin Utility Subcommands                          deploydir(1)
+
              with which the application client container JAR file
              is signed. Java Web Start will  not  run  code  that
              requires elevated permissions unless it resides in a
@@ -364,90 +388,10 @@ asadmin Utility Subcommands                          deploydir(1)
              trust. Default is s1as,  the  alias  for  the  self-
              signed certificate created for every domain.
 
-Java EE 6            Last change: 9 Sep 2010                    7
-
-asadmin Utility Subcommands                          deploydir(1)
-
          java-web-start-enabled
 
              Specifies whether Java Web Start access is permitted
              for an application client module. Default is true.
-
-         jruby.home
-             Specifies the directory where JRuby itself (not  the
-             GlassFish  Server  JRuby  container)  is  installed.
-             Default is as-install/jruby.
-
-         jruby.runtime
-
-             Specifies the initial number of  JRuby  runtimes  to
-             start.  Must  be  greater than zero, greater than or
-             equal to jruby.runtime.min, and less than  or  equal
-             to  jruby.runtime.max. Default is 1. Overrides JRuby
-             container runtime pool settings. For  more  informa-
-             tion,   see  the  configure-jruby-container(1)  help
-             page.
-
-         jruby.runtime.min
-             Specifies the minimum number of  JRuby  runtimes  in
-             the  pool.  Must  be greater than zero, less than or
-             equal  to   jruby.runtime   and   jruby.runtime.max.
-             Default is 1. Overrides JRuby container runtime pool
-             settings. For more information, see  the  configure-
-             jruby-container(1) help page.
-
-         jruby.runtime.max
-
-             Specifies the maximum number of  JRuby  runtimes  in
-             the pool. Must be greater than zero, greater than or
-             equal to jruby.runtime and jruby.runtime.min.  Over-
-             rides JRuby container runtime pool settings. Default
-             is 1.  For  more  information,  see  the  configure-
-             jruby-container(1) help page.
-
-         jruby.rackEnv
-             Specifies the environment in which a JRuby  applica-
-             tion  such as Rails or Merb runs. Allowed values are
-             development,  production,  or   test.   Default   is
-             development.
-
-         jruby.applicationType
-
-             Specifies the name of a supported framework  or  the
-             path   to  a  script  that  initializes  the  user's
-
-Java EE 6            Last change: 9 Sep 2010                    8
-
-asadmin Utility Subcommands                          deploydir(1)
-
-             framework. Allowed values corresponding to supported
-             frameworks are Rails, Merb, or Sinatra. Setting this
-             property  bypasses  the  normal,   and   potentially
-             lengthy,  auto-detection  process and forces deploy-
-             ment on the specified  framework.  If  the  deployed
-             application  is not written for the specified frame-
-             work, errors result.  Default  is  computed  through
-             auto-detection.
-
-         jruby.MTSafe
-
-             If true, specifies that a  framework  being  started
-             using   jruby.applicationType   is  thread-safe  and
-             therefore does not need a pool created for it.  This
-             property   affects  applications  started  using  an
-             auto-detected  user-provided  startup   script.   If
-             jruby.applicationType is set and jruby.MTsafe is not
-             set or is set to false, the application starts  with
-             a  pool  of application instances, and each instance
-             of the application is accessed by one  thread  at  a
-             time.  This  property  only affects frameworks being
-             launched where the thread safety cannot be automati-
-             cally  determined. Setting jruby.MTsafe to true does
-             not cause an auto-detected Rails  2.1.x  application
-             to  be  launched  in thread-safe mode, nor can it be
-             used to force a thread-safe framework  to  start  in
-             pooled  mode.  Default  is  computed  through  auto-
-             detection.
 
          compatibility
              Specifies the GlassFish Server release with which to
@@ -470,16 +414,16 @@ asadmin Utility Subcommands                          deploydir(1)
 
              Superseded by the --keepstate option.
 
-Java EE 6            Last change: 9 Sep 2010                    9
-
-asadmin Utility Subcommands                          deploydir(1)
-
              If the --force option is set to true, this  property
              can  by  used  to specify whether active sessions of
              the  application  that  is  being   redeployed   are
              preserved and then restored when the redeployment is
              complete. Applies to HTTP sessions  in  a  web  con-
              tainer. Default is false.
+
+Java EE 6           Last change: 20 Oct 2010                    8
+
+asadmin Utility Subcommands                          deploydir(1)
 
              false
 
@@ -521,14 +465,14 @@ OPERANDS
 EXAMPLES
      Example 1 Deploying an Application From a Directory
 
-Java EE 6            Last change: 9 Sep 2010                   10
-
-asadmin Utility Subcommands                          deploydir(1)
-
      In this example, the exploded application to be deployed  is
      in  the  /home/temp/sampleApp directory. Because the --force
      option is set to  true,  if  an  application  of  that  name
      already exists, the application is redeployed.
+
+Java EE 6           Last change: 20 Oct 2010                    9
+
+asadmin Utility Subcommands                          deploydir(1)
 
        asadmin> deploydir --force=true --precompilejsp=true /home/temp/sampleApp
        Application deployed successfully with name sampleApp.
@@ -542,12 +486,11 @@ EXIT STATUS
                                  mand
 
 SEE ALSO
-     deploy(1),  ,  redeploy(1),  undeploy(1),   configure-jruby-
-     container(1)
+     deploy(1), , redeploy(1), undeploy(1)
 
      asadmin(1M)
 
      Oracle GlassFish Server 3.1 Application Deployment Guide
 
-Java EE 6            Last change: 9 Sep 2010                   11
+Java EE 6           Last change: 20 Oct 2010                   10
 

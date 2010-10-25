@@ -21,15 +21,24 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-     --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+     server
+         Deletes the connection  pool  from  the  default  server
+         instance. This is the default value.
+
+     domain
+
+         Deletes the connection pool from the domain.
+
+     cluster_name
+         Deletes the connection pool from every  server  instance
+         in the cluster.
+
+     instance_name
+
+         Deletes the connection  pool  from  a  specified  server
+         instance.
 
      --cascade
-
          When set to true,  all  connector  resources  associated
          with  the  pool,  and the pool itself, are deleted. When
          set  to  false,  the  deletion  of  pool  fails  if  any
@@ -37,8 +46,13 @@ OPTIONS
          must be deleted explicitly or the option must be set  to
          true. Default is false.
 
+Java EE 6           Last change: 14 Sep 2010                    1
+
+asadmin Utility Subcommands   delete-connector-connection-pool(1)
+
 OPERANDS
      poolname
+
          The name of the connection pool to be removed.
 
 EXAMPLES
@@ -46,10 +60,6 @@ EXAMPLES
 
      This example deletes the  connector  connection  pool  named
      jms/qConnPool.
-
-Java EE 6           Last change: 29 Oct 2009                    1
-
-asadmin Utility Subcommands   delete-connector-connection-pool(1)
 
        asadmin> delete-connector-connection-pool
        --cascade=false jms/qConnPool
@@ -67,5 +77,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 29 Oct 2009                    2
+Java EE 6           Last change: 14 Sep 2010                    2
 

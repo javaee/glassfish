@@ -1,0 +1,219 @@
+
+asadmin Utility Subcommands               start-local-instance(1)
+
+NAME
+     start-local-instance - starts a GlassFish Server instance on
+     the machine where the subcommand is run
+
+SYNOPSIS
+     start-local-instance [--help]
+     [--nodedir node-dir] [--node node]
+     [--debug={false|true}] [--sync={normal|full|none}]
+     [--upgrade={false|true}] [--verbose={false|true}]
+     [instance-name]
+
+DESCRIPTION
+     The  start-local-instance  subcommand  starts  a   GlassFish
+     Server  instance on the machine where the subcommand is run.
+     This subcommand does not require secure shell  (SSH)  to  be
+     configured. You must run this command from the machine where
+     the instance resides.
+
+     The subcommand can  start  any  GlassFish  Server  instance,
+     regardless  of  how  the  instance was created. For example,
+     this subcommand can start an instance that  was  created  by
+     using the create-instance(1) subcommand.
+
+     The start-local-instance subcommand  does  not  contact  the
+     domain  administration server (DAS) to determine the node on
+     which the instance resides. To determine the node  on  which
+     the  instance resides, the subcommand searches the directory
+     that contains the node directories. If multiple node  direc-
+     tories exist, the node must be specified as an option of the
+     subcommand.
+
+     This command is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --nodedir
+         Specifies the directory  that  contains  the  instance's
+         node  directory.  The instance's files are stored in the
+         instance's  node   directory.   The   default   is   as-
+         install/nodes.
+
+Java EE 6           Last change: 20 Oct 2010                    1
+
+asadmin Utility Subcommands               start-local-instance(1)
+
+     --node
+
+         Specifies the node on which the instance  resides.  This
+         option  may be omitted only if the directory that the --
+         nodedir option specifies contains only one  node  direc-
+         tory. Otherwise, this option is required.
+
+     --debug
+         Specifies whether the  instance  is  started  with  Java
+         Platform Debugger Architecture (JPDA) debugging enabled.
+
+         Possible values are as follows:
+
+         true
+
+             The instance is started with JPDA debugging  enabled
+             and the port number for JPDA debugging is displayed.
+
+         false
+             The instance is started with JPDA debugging disabled
+             (default).
+
+     --sync
+
+         The type of synchronization  between  the  DAS  and  the
+         instance's files when the instance is started.
+
+         Possible values are as follows:
+
+         none
+             The DAS does not synchronize  the  instance's  files
+             with  any  changes.  This  type  of  synchronization
+             minimizes the time that is  required  to  start  the
+             instance.
+
+         normal
+
+             The DAS synchronizes the instance only with  changes
+             since  the  last  synchronization  to  the following
+             files:
+
+                 o    All changes in the config directory
+
+                 o    Changes to files only in the top  level  of
+                      the  applications directory and the docroot
+                      directory
+
+                      If a file below this level is changed, full
+
+Java EE 6           Last change: 20 Oct 2010                    2
+
+asadmin Utility Subcommands               start-local-instance(1)
+
+                      synchronization   is  required.  In  normal
+                      operation, files below  the  top  level  of
+                      these  directories  are  not changed. If an
+                      application  is  deployed  and  undeployed,
+                      full  synchronization  is  not necessary to
+                      update the instance with the change.
+             This value is the default.
+
+         full
+
+             The DAS synchronizes the instance with  all  changes
+             since  the  last  synchronization. This type of syn-
+             chronization might delay the startup of the instance
+             while  the  DAS  updates all files in the instance's
+             directories.
+
+     --upgrade
+         Specifies whether the configuration of the  instance  is
+         upgraded  to the current release.  Normally, if the sub-
+         command detects that the configuration is from an  older
+         release   of  GlassFish  Server,  the  configuration  is
+         upgraded automatically before being started. You  should
+         not need to use this option explicitly.
+
+         Possible values are as follows:
+
+         true
+
+             When the instance is started, the  configuration  is
+             modified  to  be  compatible  with  this  release of
+             GlassFish Server, and the GlassFish  Server  process
+             stops.
+
+         false
+             The configuration of the  instance  is  not  updated
+             (default).
+
+      --verbose
+     -v
+
+         Specifies  whether  detailed  information  is  displayed
+         while the instance is being started.
+
+         Possible values are as follows:
+
+Java EE 6           Last change: 20 Oct 2010                    3
+
+asadmin Utility Subcommands               start-local-instance(1)
+
+         true
+
+             A console window is opened in which detailed startup
+             messages  and  log  messages are displayed until the
+             instance is started.  If the instance is later  res-
+             tarted  by  running  the restart-instance subcommand
+             from a different console window,  messages  continue
+             to be displayed in the original console window.
+
+             You can kill the GlassFish Server process by  typing
+             CTRL-C in the console window that is opened.
+
+             You can kill the GlassFish Server process and obtain
+             a  thread  dump  for the server by typing one of the
+             following key combinations  in  the  console  window
+             that is opened:
+                                     TM
+                 o    CTRL-\  on UNIX   systems
+
+                 o    CTRL-Break on Windows systems
+
+          false
+             Detailed information is not displayed (default).
+
+OPERANDS
+     instance-name
+
+         The name of the instance to stop.
+
+EXAMPLES
+     Example 1 Starting an Instance Locally
+
+     This example starts the instance yml-i-sj01 on  the  machine
+     where the subcommand is run.
+
+       asadmin> start-local-instance --node sj01 yml-i-sj01
+       Waiting for the server to start .................................
+       Successfully started the instance: yml-i-sj01
+       instance Location: /export/glassfish3/glassfish/nodes/sj01/yml-i-sj01
+       Log File: /export/glassfish3/glassfish/nodes/sj01/yml-i-sj01/logs/server.log
+       Admin Port: 24849
+       Command start-local-instance executed successfully.
+
+Java EE 6           Last change: 20 Oct 2010                    4
+
+asadmin Utility Subcommands               start-local-instance(1)
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     create-instance(1),    create-local-instance(1),     delete-
+     instance(1),    delete-local-instance(1),   start-domain(1),
+     start-instance(1), stop-domain(1),  stop-instance(1),  stop-
+     local-instance(1)
+
+     asadmin(1M)
+
+     Java     Platform     Debugger      Architecture      (JPDA)
+     (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
+
+Java EE 6           Last change: 20 Oct 2010                    5
+

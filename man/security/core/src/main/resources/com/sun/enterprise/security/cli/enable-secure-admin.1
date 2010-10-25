@@ -1,0 +1,254 @@
+
+asadmin Utility Subcommands                enable-secure-admin(1)
+
+NAME
+     enable-secure-admin -  adds  or  modifies  secure-admin  and
+     secure-admin-principal  elements  to  domain.xml,  creates a
+     truststore if necessary, and adjusts all  configurations  in
+     the domain
+
+SYNOPSIS
+     enable-secure-admin [--help]
+     [--adminalias=alias]
+     [--instancealias=alias]
+
+DESCRIPTION
+     The  enable-secure-admin  subcommand  creates  or   modifies
+     secure-admin  and  secure-admin-principal elements under the
+     domain element in the domain.xml for  the  domain.  Enabling
+     secure  admin  affects  the entire domain, including the DAS
+     and all instances.
+
+     As part of this action, the  enable-secure-admin  subcommand
+     performs the following functions:
+
+         o    Sets the secure-admin enabled attribute to true  in
+              domain.xml
+
+         o    Adjusts all configurations in the domain, including
+              default-config, and creates or updates secure-admin
+
+             o    If the secure-admin fragment already exists  in
+                  domain.xml,   then  the  alias  values  in  the
+                  secure-admin-principal  elements  are   changed
+                  only  if  the  --adminalias  or --instancealias
+                  options is specified  with  the  enable-secure-
+                  admin subcommand.
+
+             o    The hidden  _instance-enable-secure-admin  sub-
+                  command  is  sent to all non-DAS targets in the
+                  domain. This hidden command performs  the  same
+                  configuration   changes  on  the  instances  as
+                  enable-secure-admin does on the DAS.
+
+         o    Creates the necessary truststore if it is missing
+
+             o    If the keystore and truststore do not contain a
+                  certificate  for  the  instance alias, then the
+                  instance self-signed key pair is generated  and
+                  the  private  key  is added to the keystore and
+                  the public certificate is added to  the  trust-
+                  store.
+
+             o    If  the   truststore   does   not   contain   a
+
+Java EE 6           Last change: 01 Oct 2010                    1
+
+asadmin Utility Subcommands                enable-secure-admin(1)
+
+                  certificate for the DAS alias, the DAS certifi-
+                  cate from the keystore is added to  the  trust-
+                  store.
+
+         o    Adjusts Grizzly settings
+
+             o    SSL/TLS  is  enabled  using  the  specified  --
+                  adminalias  value  in  the DAS's admin listener
+                  and the --instancealias value in the instances'
+                  admin listeners.
+
+             o    Port  unification,  redirection,  and   client-
+                  auth=want are enabled.
+         A server restart  is  required  to  change  the  Grizzly
+         adapter  behavior.  This also synchronizes the restarted
+         instances that will deliver  any  updated  keystore  and
+         truststore files.
+
+EXTENDED DESCRIPTION
+  Running GlassFish Server with Default Security
+     By default, the GlassFish Server DAS admin realm contains  a
+     single  user,  the default admin user. Admin clients provide
+     empty credentials or none at all, so all  are  authenticated
+     and authorized as that default admin user.  None of the par-
+     ticipants (clients, DAS, or instances) encrypts network mes-
+     sages.
+
+  Running GlassFish Server with secure admin
+     When running GlassFish Server with secure admin enabled, the
+     DAS and one or more remote instances are installed, initial-
+     ized, and running, and  admin  clients  are  installed.  The
+     administrator  specifies two aliases corresponding to certi-
+     ficates in the keystore and truststore: one  which  the  DAS
+     will use for authenticating itself in admin traffic, and one
+     which the instances will use for authenticating.
+
+     The DAS  and  instances  always  identify  themselves  using
+     SSL/TLS  certificate  authentication,  whether as senders or
+     receivers of admin requests. Remote admin clients  (asadmin,
+     admin console, browsers, and IDEs) send a username and pass-
+     word in the HTTP Authorization header. The receiving DAS  or
+     instance  makes  sure  those credentials appear in its admin
+     realm, authenticating and authorizing at the same time.
+
+         o    A locally-running asadmin (that is,  connecting  to
+              an  instance  on  the  same host) authenticates and
+              authorizes  to  the  co-located  instance  using  a
+              locally-provisioned password.
+
+         o    A server (DAS or instance) sending a  request  will
+              authenticate  itself  at  the SSL/TLS level using a
+
+Java EE 6           Last change: 01 Oct 2010                    2
+
+asadmin Utility Subcommands                enable-secure-admin(1)
+
+              certificate.
+
+  Identifying Request Senders
+     The AdminAdapter tries to identify the sender of the request
+     in the following order:
+
+         o    Check for the locally-provisioned password  in  the
+              HTTP  Authorization  header.  If it matches, accept
+              and execute the request.
+
+         o    Check for the SSL/TLS  certificate  Principal  from
+              the  Grizzly request. If the DAS receives a request
+              authenticated with the instance certificate, or  if
+              an  instance  receives a request authenticated with
+              the DAS certificate, then the receiver accepts  and
+              executes the request.
+
+         o    DAS only:
+
+             o    If the credentials from the HTTP  Authorization
+                  header  appear  in  the admin realm, accept and
+                  execute the request.
+
+             o    If the HTTP request contains  no  Authorization
+                  header  but  one is required, or if the request
+                  contains  such  a  header  but  there   is   no
+                  corresponding  entry  in  the  admin realm, the
+                  AdminAdapter rejects the  request  with  401  -
+                  NotAuthorized  and  returns  a WWW-Authenticate
+                  challenge header with the response.
+
+     For this to work, the receiving process  must  have  certain
+     data available:
+
+      Receiver           Keystore                 Truststore             Admin Realm    Configuration
+     ________________________________________________________________________________________________
+     DAS           DAS private key        Instance public certificate   user            The alias the
+                                                                        name/password   instances
+                                                                        pairs   for     will use  for
+                                                                        valid admin     SSL/TLS  cer-
+                                                                        users           tificate
+                                                                                        authentica-
+                                                                                        tion
+     Instance      Instance private key   DAS public certificate        N/A             The alias the
+                                                                                        DAS  will use
+                                                                                        for   SSL/TLS
+                                                                                        certificate
+                                                                                        authentica-
+                                                                                        tion
+
+Java EE 6           Last change: 01 Oct 2010                    3
+
+asadmin Utility Subcommands                enable-secure-admin(1)
+
+     Both private keys are stored in the DAS keystore. Both  cer-
+     tificates  are stored in the DAS truststore. The aliases for
+     the keystores and truststores are stored in  the  domain.xml
+     file.  Because  of  this  design,  normal  instance creation
+     operations  (create-instance  over  SSH  and   create-local-
+     instance)  apply  the up-to-date keystores, truststores, and
+     configurations to each instance.
+
+  secure-admin and secure-admin-principal Elements
+     The secure-admin and  secure-admin-principal  elements  that
+     are created or updated by the enable-secure-admin subcommand
+     in the domain.xml file take the following form:
+
+       <domain>
+         <secure-admin enabled="[true|false]">
+           <secure-admin-principal type="[admin|instance]" alias="alias"/>
+         </secure-admin>
+       ...
+
+     In most cases, with  secure  admin  enabled,  there  is  one
+     secure-admin-principal  subelement  for the admin type (DAS)
+     and one for the instance type. This configuration exists  on
+     the DAS and all instances. The DAS uses the alias associated
+     with the <secure-admin-principal type="instance"> element to
+     check incoming requests that use SSL/TLS certificate authen-
+     tication. The instances will use the alias  associated  with
+     the  <secure-admin-principal  type="admin"> element to check
+     incoming requests with certificate authentication.
+
+     Note -
+
+       It is possible to configure multiple aliases for  a  given
+       secure-admin-principal,  however  such  a configuration is
+       not directly supported by the enable-secure-admin  subcom-
+       mand.  To  configure  multiple aliases for a given secure-
+       admin-principal, it is necessary to  edit  the  domain.xml
+       file manually.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --adminalias
+         The alias that refers to the SSL/TLS certificate on  the
+         DAS. This alias is used by the instances to authenticate
+         against the DAS. The default value is s1as.
+
+Java EE 6           Last change: 01 Oct 2010                    4
+
+asadmin Utility Subcommands                enable-secure-admin(1)
+
+     --instancealias
+
+         The alias that refers to the SSL/TLS certificate on  the
+         instances. This alias is used by the DAS to authenticate
+         against the instances. The default value  is  glassfish-
+         instance.
+
+EXAMPLES
+     Example 1 Enabling secure admin for a domain
+
+     The following example shows how to enable secure admin for a
+     domain  using  an  admin  alias adtest and an instance alias
+     intest
+
+       asadmin> enable-secure-admin --adminalias adtest --instancealias intest
+       server-config
+       default-config
+
+       Command enable-secure-admin executed successfully.
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     disable-secure-admin(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 01 Oct 2010                    5
+

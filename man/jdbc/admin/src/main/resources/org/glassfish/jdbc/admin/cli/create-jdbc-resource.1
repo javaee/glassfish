@@ -45,17 +45,31 @@ OPTIONS
          Optional attribute name/value pairs for configuring  the
          resource.
 
-Java EE 6           Last change: 30 Oct 2009                    1
+Java EE 6           Last change: 17 Sep 2010                    1
 
 asadmin Utility Subcommands               create-jdbc-resource(1)
 
      --target
 
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         This option helps specify the target to  which  you  are
+         deploying. Valid values are:
+
+         server
+             Deploys  the  component  to   the   default   server
+             instance. This is the default value.
+
+         domain
+
+             Deploys the component to the domain.
+
+         cluster_name
+             Deploys the component to every  server  instance  in
+             the cluster.
+
+         instance_name
+
+             Deploys  the  component  to   a   particular   sever
+             instance.
 
 OPERANDS
      jndi_name
@@ -76,10 +90,14 @@ EXIT STATUS
      1                           error in executing  the  subcom-
                                  mand
 
+Java EE 6           Last change: 17 Sep 2010                    2
+
+asadmin Utility Subcommands               create-jdbc-resource(1)
+
 SEE ALSO
      delete-jdbc-resource(1), list-jdbc-resources(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 30 Oct 2009                    2
+Java EE 6           Last change: 17 Sep 2010                    3
 

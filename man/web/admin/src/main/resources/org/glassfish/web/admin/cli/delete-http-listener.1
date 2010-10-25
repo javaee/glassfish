@@ -5,10 +5,9 @@ NAME
      delete-http-listener - removes an HTTP network listener
 
 SYNOPSIS
-     delete-http-listener
-     [--help]
-     [ --target  target]
-     listener_id
+     delete-http-listener [--help]
+     [--target target]
+     listener-id
 
 DESCRIPTION
      The delete-http-listener subcommand  removes  the  specified
@@ -22,16 +21,36 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         Deletes the HTTP listener only from the  specified  tar-
+         get. Valid values are as follows:
+
+         server
+
+             Deletes the HTTP listener from  the  default  server
+             instance. This is the default value.
+
+         configuration-name
+             Deletes the HTTP listener from the specified  confi-
+             guration.
+
+         cluster-name
+
+             Deletes the HTTP listener from all server  instances
+             in the specified cluster.
+
+         standalone-instance-name
+             Deletes the HTTP listener from the  specified  stan-
+             dalone server instance.
 
 OPERANDS
-     listener_id                 The unique  identifier  for  the
-                                 HTTP   network  listener  to  be
-                                 deleted.
+     listener-id
+
+         The unique identifier for the HTTP network  listener  to
+         be deleted.
+
+Java EE 6           Last change: 08 Oct 2010                    1
+
+asadmin Utility Subcommands               delete-http-listener(1)
 
 EXAMPLES
      Example 1 Using the delete-http-listener subcommand
@@ -43,18 +62,14 @@ EXAMPLES
        Command delete-http-listener executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0            command executed successfully
 
-Java EE 6            Last change: 2 Sep 2008                    1
-
-asadmin Utility Subcommands               delete-http-listener(1)
-
-     1                           error in executing the command
+     1            error in executing the command
 
 SEE ALSO
      create-http-listener(1), list-http-listeners(1)
 
      asadmin(1M)
 
-Java EE 6            Last change: 2 Sep 2008                    2
+Java EE 6           Last change: 08 Oct 2010                    2
 

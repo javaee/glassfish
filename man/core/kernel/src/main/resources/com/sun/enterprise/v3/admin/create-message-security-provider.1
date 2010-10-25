@@ -40,8 +40,7 @@ OPTIONS
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         command runs successfully and the option is ignored.
 
      --classname
 
@@ -50,12 +49,12 @@ OPTIONS
          com.sun.enterprise.      security.jauth.ClientAuthModule
          interface.  Server-side  providers  must  implement  the
          com.sun.enterprise.security       jauth.ServerAuthModule
+         interface. A provider may implement both interfaces, but
 
 Java EE 6           Last change: 28 Aug 2009                    1
 
 asadmin Utility Subcommands   create-message-security-provider(1)
 
-         interface. A provider may implement both interfaces, but
          it must implement the  interface  corresponding  to  its
          provider type.
 
@@ -101,12 +100,12 @@ asadmin Utility Subcommands   create-message-security-provider(1)
          The auth-recipient attribute defines a  requirement  for
          message-layer  authentication  of  the  receiver  of the
          response message to its sender (e.g. by XML encryption).
+         Possible values are before-content or after-content. The
 
 Java EE 6           Last change: 28 Aug 2009                    2
 
 asadmin Utility Subcommands   create-message-security-provider(1)
 
-         Possible values are before-content or after-content. The
          default value is after-content.
 
      --isdefaultprovider

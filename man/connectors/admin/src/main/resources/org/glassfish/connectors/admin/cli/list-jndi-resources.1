@@ -20,13 +20,35 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         This is the name  of  the  target  for  which  the  JNDI
+         resources  are  to be listed. The valid targets for this
+         command  are  instance,  cluster,  domain,  and  server.
+         Server is the default option. Valid values are:
+
+         server
+
+             Lists the  JNDI  resources  on  the  default  server
+             instance. This is the default value.
+
+         configuration_name
+             Lists the JNDI resources in the specified configura-
+             tion.
+
+         cluster_name
+
+             Lists the JNDI resources on all server instances  in
+             the specified cluster.
+
+         instance_name
+             Lists the  JNDI  resources  on  a  specified  server
+             instance.
 
 EXAMPLES
+
+Java EE 6           Last change: 27 Oct 2009                    1
+
+asadmin Utility Subcommands                list-jndi-resources(1)
+
      Example 1 Listing JNDI Resources
 
      This example lists the JNDI in the default domain.
@@ -42,10 +64,6 @@ EXIT STATUS
 
      1                           error in executing  the  subcom-
                                  mand
-
-Java EE 6           Last change: 27 Oct 2009                    1
-
-asadmin Utility Subcommands                list-jndi-resources(1)
 
 SEE ALSO
      create-jndi-resource(1), delete-jndi-resource(1)

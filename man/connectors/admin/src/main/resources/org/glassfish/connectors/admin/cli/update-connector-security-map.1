@@ -8,10 +8,10 @@ NAME
 SYNOPSIS
      update-connector-security-map [--help]
      --poolname connector_connection_pool_name
-     [--addprincipals principal_name1[, principal_name1]*
-     |--addusergroups user_group1[,user_group2] ]
+     [--addprincipals principal_name1[,principal_name2]*]
+     [--addusergroups user_group1[,user_group2]*]
      [--removeprincipals principal_name1[,principal_name2]*]
-     [--removeusergroups user_group1[, user_group2]* ]
+     [--removeusergroups user_group1[,user_group2]*]
      [--mappedusername  username]
      mapname
 
@@ -46,7 +46,7 @@ OPTIONS
          be   added.   Use   either  the  --addprincipals  or  --
          addusergroups options, but not both in the same command.
 
-Java EE 6           Last change: 05 Nov 2009                    1
+Java EE 6           Last change: 15 Sep 2010                    1
 
 asadmin Utility Subcommands      update-connector-security-map(1)
 
@@ -74,7 +74,7 @@ EXAMPLES
      named securityMap1.
 
        asadmin> update-connector-security-map --poolname connector-pool1
-       --addprincipals principal1, principal2 securityMap1
+       --addprincipals principal1,principal2 securityMap1
        Command update-connector-security-map executed successfully
 
 EXIT STATUS
@@ -89,5 +89,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 05 Nov 2009                    2
+Java EE 6           Last change: 15 Sep 2010                    2
 

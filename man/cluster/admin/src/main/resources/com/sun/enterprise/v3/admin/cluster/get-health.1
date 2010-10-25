@@ -5,15 +5,16 @@ NAME
      get-health - provides information on the cluster health
 
 SYNOPSIS
-     get-health
-     [--help]
-      [--target cluster_name]
+     get-health [--help] cluster_name
 
 DESCRIPTION
      The get-health subcommand gets information about the  health
-     of  the  cluster. Note that if GMS is not enabled, the basic
-     information about whether the server instances in this clus-
-     ter are running or not running is not returned.
+     of  the  cluster.  Note that if the group management service
+     (GMS) is not enabled, the basic  information  about  whether
+     the server instances in this cluster are running or not run-
+     ning is not returned. For each server instance, one  of  the
+     following states is reported: not started, started, stopped,
+     rejoined, or failed.
 
 OPTIONS
      --help
@@ -21,18 +22,20 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-     --target
+OPERANDS
+     cluster_name
          The name of the cluster for which you  want  the  health
-         information.
+         information. This subcommand prompts you for the cluster
+         name if you don't specify it.
 
 EXAMPLES
      Example 1 Checking the health of server instances in a clus-
      ter
 
-       asadmin> get-health --target cluster1
-       instance1 started since 09/09/10 09:53 am
-       instance2 failed since 09/09/10 10:22 am
-       Command get-health executed successfully
+       asadmin> get-health cluster1
+       instance1 started since Wed Sep 29 16:32:46 EDT 2010
+       instance2 started since Wed Sep 29 16:32:45 EDT 2010
+       Command get-health executed successfully.
 
 EXIT STATUS
      0                   command executed successfully
@@ -42,7 +45,11 @@ EXIT STATUS
 SEE ALSO
      validate-multicast(1)
 
+Java EE 6           Last change: 29 Sep 2010                    1
+
+asadmin Utility Subcommands                         get-health(1)
+
      asadmin(1M)
 
-Java EE 6            Last change: 9 Sep 2010                    1
+Java EE 6           Last change: 29 Sep 2010                    2
 

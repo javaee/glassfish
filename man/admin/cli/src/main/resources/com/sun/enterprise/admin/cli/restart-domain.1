@@ -5,15 +5,16 @@ NAME
      restart-domain - restarts the DAS of the specified domain
 
 SYNOPSIS
-     restart-domain [--help] [--domaindir domaindir] [domain_name]
+     restart-domain [--help] [--debug ={true|false}]
+     [--domaindir domaindir] [domain-name]
 
 DESCRIPTION
      The restart-domain subcommand stops and  then  restarts  the
-     Domain  Administration Server (DAS) of the specified domain.
+     domain  administration server (DAS) of the specified domain.
      If a domain is not specified, the default domain is assumed.
-     If  there  are  two or more domains, the domain_name operand
-     must be specified. If the server is not already running, the
-     subcommand attempts to restart it.
+     If  the  domains directory contains two or more domains, the
+     domain-name operand must be specified. If  the  DAS  is  not
+     already running, the subcommand attempts to start it.
 
      The restart-domain subcommand does not exit until  the  sub-
      command  has  verified  that the domain has been stopped and
@@ -33,23 +34,42 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
+     --debug
+         Specifies whether the  domain  is  restarted  with  Java
+         Platform Debugger Architecture (JPDA) debugging enabled.
+
+         Possible values are as follows:
+
+         true
+
+             The domain is restarted with JPDA debugging  enabled
+             and the port number for JPDA debugging is displayed.
+
+         false
+             The domain is restarted with JPDA debugging disabled
+             (default).
+
+Java EE 6           Last change: 21 Oct 2010                    1
+
+asadmin Utility Subcommands                     restart-domain(1)
+
+         The default is the current setting of  this  option  for
+         the domain that is being restarted.
+
      --domaindir
+
          The directory of the domain that is to be restarted.  If
          specified,  the path must be accessible in the file sys-
          tem. If not specified, the domain  in  the  default  as-
          install/glassfish/domains directory is restarted.
 
 OPERANDS
-     domain_name         The name of the domain you want to  res-
-                         tart. Default is the name specified dur-
-                         ing installation, usually domain1.
+     domain-name
+         The name of the domain you want to restart.  Default  is
+         the name specified during installation, usually domain1.
 
 EXAMPLES
      Example 1 Restarting a Domain
-
-Java EE 6           Last change: 19 Oct 2009                    1
-
-asadmin Utility Subcommands                     restart-domain(1)
 
      This example  restarts  mydomain4  in  the  default  domains
      directory.
@@ -69,5 +89,8 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 19 Oct 2009                    2
+     Java     Platform     Debugger      Architecture      (JPDA)
+     (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
+
+Java EE 6           Last change: 21 Oct 2010                    2
 

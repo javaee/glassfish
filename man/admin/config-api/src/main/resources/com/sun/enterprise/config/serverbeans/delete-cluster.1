@@ -2,37 +2,22 @@
 asadmin Utility Subcommands                     delete-cluster(1)
 
 NAME
-     delete-cluster - deletes a cluster
+     delete-cluster - deletes a GlassFish Server cluster
 
 SYNOPSIS
-     delete-cluster
-     [--help]
-      [ --autohadboverride ={true|false}]
-      cluster_name
+     delete-cluster [--help] [--autohadboverride={true|false}]
+     cluster-name
 
 DESCRIPTION
-     Note -
+     The delete-cluster subcommand  deletes  a  GlassFish  Server
+     cluster.  A  cluster can be deleted only if the cluster con-
+     tains no GlassFish Server instances. If a cluster  that  you
+     are  deleting  contains  any  instances, stop and delete the
+     instances before deleting the cluster.
 
-       This command is available only in domains that are config-
-       ured to support clusters, such as domains that are created
-       with the cluster profile or the  enterprise  profile.  For
-       information about profiles, see Usage Profiles in Sun Java
-       System Application Server 9.1 Administration Guide.
-
-     The delete-cluster command deletes a cluster. A cluster  can
-     be deleted only if it contains no server instances. Stop and
-     delete all server instances in the cluster  before  deleting
-     the cluster.
-
-     If a standalone cluster is deleted (that is,  the  cluster's
-     configuration name is cluster_name-config and no other clus-
-     ters or unclustered instances refer to this  configuration),
-     then  its standalone configuration is automatically deleted.
-     If HADB is installed and is being used,, the  HADB  database
-     associated with a cluster can also be deleted when the clus-
-     ter is deleted, depending upon the cluster's  autohadb  set-
-     ting  and  whether  you  override  it  using  this command's
-     autohadboverride option.
+     If no other clusters or unclustered instances refer  to  the
+     cluster's  named configuration, the configuration is deleted
+     when the cluster is deleted.
 
      This command is supported in remote mode only.
 
@@ -43,40 +28,28 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --autohadboverride
-         This option is  valid  only  if  the  HADB  software  is
-         installed.   The   autohadboverride   option  determines
-         whether  to  override  the  cluster's  setting  for  the
-         autohadb  option.  When  the  cluster  was  created, the
-         autohadb option was  set  to  signal  whether  the  HADB
-
-Java EE 6           Last change: 27 Jul 2007                    1
-
-asadmin Utility Subcommands                     delete-cluster(1)
-
-         database  associated  with the cluster would be started,
-         stopped,  or  deleted  when  the  cluster  was  started,
-         stopped,  or  deleted.  You  can  override this value by
-         using the autohadboverride option.  If  autohadboverride
-         is  set  to  true, the HADB database is deleted when the
-         cluster is deleted. If set to false, the  HADB  database
-         is  not  deleted  when  the  cluster  is deleted. If the
-         autohadboverride option is not set, the  default  is  to
-         use the cluster's autohadb setting.
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command runs successfully and the option is ignored.
 
 OPERANDS
-     cluster_name                The name of the  cluster  to  be
-                                 deleted.
+     cluster-name
+
+         The name of the cluster to delete.
 
 EXAMPLES
-     Example 1 Using the delete-cluster command
+     Example 1 Deleting a GlassFish Server Cluster
 
-     The following command deletes the cluster  named  MyCluster.
-     The  same  command also automatically deletes the configura-
-     tion named MyCluster-config.
+     This example deletes the GlassFish Server  cluster  adcclus-
+     ter.
 
-       asadmin> delete-cluster --user admin1
-       --passwordfile passwords.txt MyCluster
+       asadmin> delete-cluster adccluster
        Command delete-cluster executed successfully.
+
+Java EE 6           Last change: 11 Oct 2010                    1
+
+asadmin Utility Subcommands                     delete-cluster(1)
 
 EXIT STATUS
      0                           command executed successfully
@@ -84,8 +57,11 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     create-cluster(1),    list-clusters(1),    start-cluster(1),
-     stop-cluster(1), stop-instance(1)
+     create-cluster(1),     delete-instance(1),     delete-local-
+     instance(1),   list-clusters(1),   start-cluster(1),   stop-
+     instance(1), stop-local-instance(1), stop-cluster(1)
 
-Java EE 6           Last change: 27 Jul 2007                    2
+     asadmin(1M)
+
+Java EE 6           Last change: 11 Oct 2010                    2
 

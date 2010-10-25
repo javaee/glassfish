@@ -5,9 +5,10 @@ NAME
      create-protocol - adds a new protocol
 
 SYNOPSIS
-     create-protocol
-     [--help]
-     [ --securityenabled ={false|true}] protocol_name
+     create-protocol [--help]
+     [--securityenabled={false|true}]
+     [--target target]
+     protocol-name
 
 DESCRIPTION
      The create-protocol subcommand creates a protocol for a net-
@@ -27,11 +28,40 @@ OPTIONS
          making  certificates  available  to the server instance.
          The default value is false.
 
+     --target
+
+         Creates the protocol only on the specified target. Valid
+         values are as follows:
+
+         server
+             Creates the protocol on the default server instance.
+             This is the default value.
+
+         configuration-name
+
+             Creates the protocol in the specified configuration.
+
+         cluster-name
+             Creates the protocol on all server instances in  the
+             specified cluster.
+
+         standalone-instance-name
+
+             Creates the protocol  on  the  specified  standalone
+
+Java EE 6           Last change: 08 Oct 2010                    1
+
+asadmin Utility Subcommands                    create-protocol(1)
+
+             server instance.
+
 OPERANDS
-     protocol-name               The name of the protocol.
+     protocol-name
+
+         The name of the protocol.
 
 EXAMPLES
-     Example 1 Using the create-protocol subcommand
+     Example 1 Creating a Protocol
 
      The following command creates a protocol named  http-1  with
      security enabled:
@@ -40,13 +70,9 @@ EXAMPLES
        Command create-protocol executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0            command executed successfully
 
-     1                           error in executing the command
-
-Java EE 6           Last change: 10 Sep 2009                    1
-
-asadmin Utility Subcommands                    create-protocol(1)
+     1            error in executing the command
 
 SEE ALSO
      delete-protocol(1),    list-protocols(1),    create-network-
@@ -54,5 +80,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 10 Sep 2009                    2
+Java EE 6           Last change: 08 Oct 2010                    2
 

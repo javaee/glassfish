@@ -2,32 +2,19 @@
 asadmin Utility Subcommands                       stop-cluster(1)
 
 NAME
-     stop-cluster - stops a cluster
+     stop-cluster - stops a GlassFish Server cluster
 
 SYNOPSIS
-     stop-cluster
-     [--help]
-     [ --autohadboverride={true|false} ] cluster_name
+     stop-cluster [--help]
+     [--verbose={false|true}]
+     [--autohadboverride={true|false}] cluster-name
 
 DESCRIPTION
-     Note -
+     The stop-cluster subcommand stops a GlassFish Server cluster
+     by  stopping  all  running GlassFish Server instances in the
+     cluster.
 
-       This command is available only in domains that are config-
-       ured to support clusters, such as domains that are created
-       with the cluster profile or the  enterprise  profile.  For
-       information about profiles, see Usage Profiles in Sun Java
-       System Application Server 9.1 Administration Guide.
-
-     The  stop-cluster  command  attempts  to  stop  all  running
-     instances  in  the  cluster that are reachable through their
-     node agent. In  other  words,  some  instances  may  not  be
-     stopped  if  their  node  agent  is  not running. If HADB is
-     installed, this command can  also  stop  the  HADB  database
-     associated  with  a  cluster,  depending  upon the cluster's
-     autohadb setting and whether  you  override  it  using  this
-     command's autohadboverride option.
-
-     This command is supported in remote mode only.
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
@@ -35,38 +22,51 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-     --autohadboverride
-         This option is  valid  only  if  the  HADB  software  is
-         installed.   The   autohadboverride   option  determines
-         whether  to  override  the  cluster's  setting  for  the
-         autohadb  option.  When  the  cluster  was  created, the
-         autohadb option was set to signal whether the HADB data-
-         base  associated  with  the  cluster  would  be started,
-         stopped,  or  deleted  when  the  cluster  was  started,
-         stopped,  or  deleted. You can override this value using
-         the autohadboverride option. If autohadboverride is  set
-         to  true,  the HADB database is stopped when the cluster
-         is stopped. If set to false, the HADB  database  is  not
-         stopped  when  the  cluster  is stopped. If the autohad-
-         boverride option is not set, the default is to  use  the
+     --verbose
+         Specifies whether additional progress messages about the
+         status  of  instances in the cluster are displayed while
+         the cluster is being stopped.
 
-Java EE 6           Last change: 24 Jul 2007                    1
+         Possible values are as follows:
+
+         true
+
+             Additional progress messages  about  the  status  of
+             instances in the cluster are displayed.
+
+         false
+             No messages about the status  of  instances  in  the
+             cluster are displayed.
+
+     --autohadboverride
+
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command runs successfully and the option is ignored.
+
+Java EE 6            Last change: 8 Oct 2010                    1
 
 asadmin Utility Subcommands                       stop-cluster(1)
 
-         cluster's autohadb setting.
-
 OPERANDS
-     cluster_name                The name of the  cluster  to  be
-                                 started.
+     cluster-name
+
+         The name of the cluster to stop.
 
 EXAMPLES
-     Example 1 Using the stop-cluster command
+     Example 1 Stopping a Cluster
 
-     The following command stops the cluster named MyCluster.
+     This example stops the cluster pmdcluster.  Additional  pro-
+     gress  messages about the status of instances in the cluster
+     are displayed while the cluster is being stopped.
 
-       asadmin> stop-cluster --user admin1
-       --passwordfile passwords.txt MyCluster
+       asadmin> stop-cluster --verbose pmdcluster
+       stop-instance pmd-i-sj01
+       stop-instance pmd-i-sj02
+
+       The command stop-instance executed successfully for: pmd-i-sj01 pmd-i-sj02
+
        Command stop-cluster executed successfully.
 
 EXIT STATUS
@@ -75,8 +75,10 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     start-cluster(1),    create-cluster(1),    list-clusters(1),
-     delete-cluster(1)
+     create-cluster(1),   delete-cluster(1),    list-clusters(1),
+     start-cluster(1)
 
-Java EE 6           Last change: 24 Jul 2007                    2
+     asadmin(1M)
+
+Java EE 6            Last change: 8 Oct 2010                    2
 

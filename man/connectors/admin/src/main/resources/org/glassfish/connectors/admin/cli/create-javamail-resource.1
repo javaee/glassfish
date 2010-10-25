@@ -28,8 +28,7 @@ OPTIONS
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
+         command runs successfully and the option is ignored.
 
      --mailhost
 
@@ -48,12 +47,11 @@ OPTIONS
      --fromaddress
 
          The email address of  the  default  user,  in  the  form
+         username@host.domain.
 
 Java EE 6           Last change: 10 Sep 2010                    1
 
 asadmin Utility Subcommands           create-javamail-resource(1)
-
-         username@host.domain.
 
      --storeprotocol
 
@@ -98,13 +96,13 @@ asadmin Utility Subcommands           create-javamail-resource(1)
 
           Text providing some details of the JavaMail resource.
 
+     --property
+         Optional attribute name/value pairs for configuring  the
+
 Java EE 6           Last change: 10 Sep 2010                    2
 
 asadmin Utility Subcommands           create-javamail-resource(1)
 
-     --property
-
-         Optional attribute name/value pairs for configuring  the
          JavaMail  resource.  The GlassFish Server-specific mail-
          prefix is converted to the  standard  mail  prefix.  The
          JavaMail  API  documentation  lists  the  properties you
@@ -112,6 +110,7 @@ asadmin Utility Subcommands           create-javamail-resource(1)
 
 OPERANDS
      jndi-name
+
          The JNDI name of the JavaMail resource to be created. It
          is  a  recommended practice to use the naming subcontext
          prefix mail/ for JavaMail resources.

@@ -6,7 +6,7 @@ NAME
      references
 
 SYNOPSIS
-     list-application-refs [--help] [--verbose={false|true}] [target]
+     list-application-refs [--help] [--long={false|true}] [target]
 
 DESCRIPTION
      The list-application-refs subcommand lists  all  application
@@ -17,10 +17,9 @@ DESCRIPTION
 
      If  multiple  versions  of  a  module  or  application   are
      deployed,  this subcommand lists all versions. To list which
-     version is enabled, set the --verbose option  to  true.  For
-     more  information about module and application versions, see
-     the  Oracle  GlassFish  Server  3.1  Application  Deployment
-     Guide.
+     version is enabled, set the --long option to true. For  more
+     information  about  module and application versions, see the
+     Oracle GlassFish Server 3.1 Application Deployment Guide.
 
      The target instance or instances making up the cluster  need
      not be running or available for this subcommand to succeed.
@@ -33,7 +32,7 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-     --verbose
+     --long
          If true, displays whether  each  module  or  application
          listed is enabled. The default is false.
 
@@ -48,11 +47,12 @@ OPERANDS
                   default server  instance  and  is  the  default
                   value.
 
-Java EE 6            Last change: 2 Sep 2010                    1
+             o    cluster_name- Specifies a  certain  cluster  as
+
+Java EE 6           Last change: 22 Sep 2010                    1
 
 asadmin Utility Subcommands;             list-application-refs(1)
 
-             o    cluster_name- Specifies a  certain  cluster  as
                   the target.
 
              o    instance_name-  Specifies  a   certain   server
@@ -83,5 +83,5 @@ SEE ALSO
 
      Oracle GlassFish Server 3.1 Application Deployment Guide
 
-Java EE 6            Last change: 2 Sep 2010                    2
+Java EE 6           Last change: 22 Sep 2010                    2
 

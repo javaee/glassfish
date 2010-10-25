@@ -5,30 +5,25 @@ NAME
      start-cluster - starts a cluster
 
 SYNOPSIS
-     start-cluster
-     [--help]
-      [ --autohadboverride={true|false} ]
-      cluster_name
+     start-cluster [--help] [--autohadboverride={true|false}]
+     [--verbose={false|true}] cluster-name
 
 DESCRIPTION
+     The start-cluster subcommand starts a  cluster  by  starting
+     all  GlassFish  Server instances in the cluster that are not
+     already running. This subcommand requires secure shell (SSH)
+     to be configured on the machine where the domain administra-
+     tion server (DAS) is  running  and  on  all  machines  where
+     instances in the cluster reside. You may run this subcommand
+     from any machine that can contact the DAS.
+
      Note -
 
-       This command is available only in domains that are config-
-       ured to support clusters, such as domains that are created
-       with the cluster profile or the  enterprise  profile.  For
-       information about profiles, see Usage Profiles in Sun Java
-       System Application Server 9.1 Administration Guide.
+       To start a cluster on machines where SSH  is  not  config-
+       ured,  run the start-local-instance(1) subcommand for each
+       instance from the machine where the instance resides.
 
-     The start-cluster command attempts to start all  non-running
-     instances  in  the  cluster that are reachable through their
-     node agent. In  other  words,  some  instances  may  not  be
-     started  if  their  node  agent  is  not running. If HADB is
-     installed, this command can also  start  the  HADB  database
-     associated  with  a  cluster,  depending  upon the cluster's
-     autohadb setting and whether  you  override  it  using  this
-     command's autohadboverride option.
-
-     This command is supported in remote mode only.
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
@@ -37,37 +32,48 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --autohadboverride
-         This option is  valid  only  if  the  HADB  software  is
-         installed.   The   autohadboverride   option  determines
-         whether  to  override  the  cluster's  setting  for  the
-         autohadb  option.  When  the  cluster  was  created, the
-         autohadb option was set to signal whether the HADB data-
-         base  associated  with  the  cluster  would  be started,
-         stopped,  or  deleted  when  the  cluster  was  started,
-         stopped,  or  deleted. You can override this value using
-         the autohadboverride option. If autohadboverride is  set
-         to  true,  the HADB database is started when the cluster
-         is started. If set to false, the HADB  database  is  not
-         started   when   the   cluster   is   started.   If  the
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command runs successfully and the option is ignored.
 
-Java EE 6           Last change: 27 Jul 2007                    1
+     --verbose
+
+         Specifies  whether  additional  status  information   is
+         displayed when the cluster is started.
+
+         Valid values are as follows:
+
+         true
+             Displays the command to start each instance  in  the
+             cluster  and  whether  the  attempt  to  start  each
+             instance succeeded.
+
+Java EE 6           Last change: 24 Sep 2010                    1
 
 asadmin Utility Subcommands                      start-cluster(1)
 
-         autohadboverride option is not set, the  default  is  to
-         use the cluster's autohadb setting.
+         false
+
+             Displays no additional status information (default).
 
 OPERANDS
-     cluster_name                The name of the  cluster  to  be
-                                 started.
+     cluster-name
+         The name of the cluster to start.
 
 EXAMPLES
-     Example 1 Using the start-cluster command
+     Example 1 Staring a Cluster
 
-     The following command starts the cluster named MyCluster.
+     This  example  starts  the  cluster  ymlcluster.  Additional
+     status information is displayed when the cluster is started.
 
-       asadmin> start-cluster --user admin1
-       --passwordfile passwords.txt MyCluster
+       asadmin> start-cluster --verbose ymlcluster
+       start-instance yml-i-sr1-usca-02
+       start-instance yml-i-sr1-usca-01
+
+       The command start-instance executed successfully for:
+       yml-i-sr1-usca-02 yml-i-sr1-usca-01
+
        Command start-cluster executed successfully.
 
 EXIT STATUS
@@ -76,8 +82,10 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     stop-cluster(1),    create-cluster(1),     list-clusters(1),
-     delete-cluster(1)
+     create-cluster(1),   delete-cluster(1),    list-clusters(1),
+     setup-ssh(1), start-local-instance(1), stop-cluster(1)
 
-Java EE 6           Last change: 27 Jul 2007                    2
+     asadmin(1M)
+
+Java EE 6           Last change: 24 Sep 2010                    2
 

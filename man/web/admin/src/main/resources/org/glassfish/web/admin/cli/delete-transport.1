@@ -5,8 +5,8 @@ NAME
      delete-transport - removes a transport
 
 SYNOPSIS
-     delete-transport
-     [--help]
+     delete-transport [--help]
+     [--target target]
      transport-name
 
 DESCRIPTION
@@ -19,12 +19,39 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
+     --target
+         Deletes the transport only from  the  specified  target.
+         Valid values are as follows:
+
+         server
+
+             Deletes  the  transport  from  the  default   server
+             instance. This is the default value.
+
+         configuration-name
+             Deletes the transport from the specified  configura-
+             tion.
+
+         cluster-name
+
+             Deletes the transport from all server  instances  in
+             the specified cluster.
+
+         standalone-instance-name
+             Deletes the transport from the specified  standalone
+             server instance.
+
 OPERANDS
-     transport-name              The name of the transport to  be
-                                 deleted.
+     transport-name
+
+         The name of the transport to be deleted.
+
+Java EE 6           Last change: 08 Oct 2010                    1
+
+asadmin Utility Subcommands                   delete-transport(1)
 
 EXAMPLES
-     Example 1 Using the delete-transport subcommand
+     Example 1 Deleting a Transport
 
      The following command deletes  the  transport  named  http1-
      trans:
@@ -33,14 +60,14 @@ EXAMPLES
        Command delete-transport executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0            command executed successfully
 
-     1                           error in executing the command
+     1            error in executing the command
 
 SEE ALSO
      create-transport(1), list-transports(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 10 Sep 2009                    1
+Java EE 6           Last change: 08 Oct 2010                    2
 

@@ -1,0 +1,181 @@
+
+asadmin Utility Subcommands                       install-node(1)
+
+NAME
+     install-node - installs GlassFish Server software on  speci-
+     fied hosts
+
+SYNOPSIS
+     install-node [--help]
+     [--archivedir archive-dir]
+     [--installdir install-dir]
+     [--sshport ssh-port] [--sshuser ssh-user]
+     [--sshkeyfile ssh-keyfile]
+     host-list
+
+DESCRIPTION
+     The  install-node  subcommand  installs   GlassFish   Server
+     software  on  the hosts that are specified as the operand of
+     the subcommand. This subcommand requires secure shell  (SSH)
+     to be configured on the machine where the domain administra-
+     tion server (DAS) is running and  on  each  host  where  the
+     GlassFish Server software is being installed.
+
+     If necessary, the subcommand creates a ZIP  archive  of  the
+     GlassFish  Server  software   from the DAS installation. The
+     archive does not contain the domains directory or the  nodes
+     directory.  These  directories are synchronized from the DAS
+     when instances on nodes that represent the hosts are created
+     and  started.  The  subcommand  does  not delete the archive
+     after installing the  GlassFish  Server  software  from  the
+     archive on the specified hosts.
+
+     If multiple hosts are specified, the  configuration  of  the
+     following items is the same on all hosts:
+
+         o    Base installation directory
+
+         o    SSH port
+
+         o    SSH user
+
+         o    SSH key file
+
+     If the SSH key file does not  exist  on  a  host  where  the
+     GlassFish Server software is to be installed, the subcommand
+     runs interactively and prompts for a password. To enable the
+     subcommand to run noninteractively, the following conditions
+     must be met:
+
+         o    The --interactive option of the asadmin(1M) utility
+              must be false.
+
+Java EE 6           Last change: 17 Oct 2010                    1
+
+asadmin Utility Subcommands                       install-node(1)
+
+         o    The --password option of the asadmin  utility  must
+              specify a password file.
+
+         o    The    password    file    must     contain     the
+              AS_ADMIN_SSHPASSWORD entry.
+
+     The subcommand does not modify the configuration of the DAS.
+
+     This subcommand is supported in local mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --archivedir
+         The absolute path to the  directory  that  contains  the
+         archive  of  the GlassFish Server software that is to be
+         installed. If no archive file that is named glassfsh.zip
+         exists  in  the  directory,  the  subcommand  creates an
+         archive from the DAS installation.
+
+         The user that is running the DAS must have write  access
+         to the specified directory. Otherwise, an error occurs.
+
+         The default depends on whether parent of the  base  ins-
+         tallation  directory of the GlassFish Server software on
+         the DAS is writable:
+
+             o    If the parent of the base  installation  direc-
+                  tory  is writable, the default is the parent of
+                  the base installation directory.
+
+             o    If the parent of the base  installation  direc-
+                  tory is not writable, the default is the direc-
+                  tory that the  java.io.tmpdir  system  property
+                  specifies.
+
+     --installdir
+
+         The absolute path to the parent of the base installation
+         directory  where  the GlassFish Server software is to be
+         installed     on     each     host,     for     example,
+         /export/glassfish3/.  If  the  directory does not exist,
+         the subcommand creates the directory.
+
+         The user that is running the DAS must have write  access
+         to the specified directory. Otherwise, an error occurs.
+
+Java EE 6           Last change: 17 Oct 2010                    2
+
+asadmin Utility Subcommands                       install-node(1)
+
+         The specified directory must not already contain an ins-
+         tallation  of  the GlassFish Server software. Otherwise,
+         an error occurs.
+
+         The default is  the  parent  of  the  base  installation
+         directory  of  the  GlassFish Server software on the DAS
+         host.
+
+     --sshport
+
+         The port to use for SSH connections to  the  host  where
+         the  GlassFish  Server  software is to be installed. The
+         default is 22.
+
+     --sshuser
+         The SSH user that is to run the process  for  connecting
+         to the host where the GlassFish Server software is to be
+         installed. The default is the user that is  running  the
+         DAS process. To ensure that the DAS can read this user's
+         SSH private key file, specify the user that  is  running
+         the DAS process.
+
+     --sshkeyfile
+
+         The absolute path to the SSH private key file  for  user
+         that  the  --sshuser option specifies. This file is used
+         for authentication to the sshd daemon on the host.
+
+         The path to the key file must be reachable  by  the  DAS
+         and  the  key file must be readable by the DAS. The path
+         may contain Java properties of the form ${prop.name}.
+
+         The default is the a platform-dependent key file in  the
+         user's .ssh directory, for example:
+
+             o    id_rsa
+
+             o    id_dsa
+
+             o    identitylocation
+
+OPERANDS
+     host-list
+         A space-separated list of the names of the  hosts  where
+         the GlassFish Server software is to be installed.
+
+Java EE 6           Last change: 17 Oct 2010                    3
+
+asadmin Utility Subcommands                       install-node(1)
+
+EXAMPLES
+     Example  1  Installing  GlassFish  Server  Software  at  the
+     Default Location
+
+     This example installs GlassFish Server software on the hosts
+     sj03 and sj04 at the default location.
+
+       asadmin> install-node sj03 sj04
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     uninstall-node(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 17 Oct 2010                    4
+

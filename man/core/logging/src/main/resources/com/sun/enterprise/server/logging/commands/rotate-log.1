@@ -32,12 +32,6 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-EXIT STATUS
-     0                           subcommand executed successfully
-
-     1                           error in executing  the  subcom-
-                                 mand
-
 EXAMPLES
      Example 1 Rotating the Server Log
 
@@ -46,12 +40,20 @@ EXAMPLES
        asadmin> rotate-log
        Command rotate-log executed successfully.
 
+EXIT STATUS
+     0                           subcommand executed successfully
+
 Java EE 6           Last change: 30 Aug 2010                    1
 
 asadmin Utility Subcommands                         rotate-log(1)
 
+     1                           error in executing  the  subcom-
+                                 mand
+
 SEE ALSO
-     list-log-levels(1), set-log-levels(1)
+     collect-log-files(1),         display-error-distribution(1),
+     display-error-statistics(1),  display-log-records(1),  list-
+     log-levels(1), set-log-levels(1)
 
      asadmin(1M)
 
