@@ -60,6 +60,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import org.glassfish.admin.rest.CliFailureException;
 import org.jvnet.hk2.component.Habitat;
 
 /**
@@ -127,13 +128,13 @@ public class TemplateExecCommand {
         if (exitCode != ActionReport.ExitCode.FAILURE) {
             results.setStatusCode(200); /*200 - ok*/
         } else {
-            results.setStatusCode(400); /*400 - bad request*/
-
-
-//            Throwable ex = actionReport.getFailureCause();
-//            if (ex!=null){
-//                 throw  new CliFailureException(actionReport.getMessage(), ex);
-//            }
+            Throwable ex = actionReport.getFailureCause();
+            if (ex!=null){
+                 throw  new CliFailureException(actionReport.getMessage(), ex);
+            } else {
+                throw new CliFailureException(actionReport.getMessage());
+            }
+            
         }
 
         return results;
