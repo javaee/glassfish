@@ -241,7 +241,8 @@ public class ListInstancesCommand implements AdminCommand {
             List<String> failedCmds = stateService.getFailedCommands(name);
             if (state == InstanceState.StateType.RESTART_REQUIRED) {
                 if (ii.isRunning()) {
-                    value += (";" + InstanceState.StateType.RESTART_REQUIRED.getDescription());
+                    //value += (";" + InstanceState.StateType.RESTART_REQUIRED.getDescription());
+                    value = InstanceState.StateType.RESTART_REQUIRED.getDescription();
                 }
             }
 
