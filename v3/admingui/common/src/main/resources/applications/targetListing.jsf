@@ -155,7 +155,7 @@
     </sun:tableRowGroup>
  </sun:table>
 
-	<sun:hidden id="helpKey" value="$resource{help_common.applicaitonTargetListing}" />
+	<sun:hidden id="helpKey" value="$resource{help_common.applicationTargetListing}" />
             </sun:form>
 
 #include "/common/shared/changeButtonsJS.inc"
