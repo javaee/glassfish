@@ -41,8 +41,7 @@
 package com.sun.enterprise.server.logging.commands;
 
 import com.sun.common.util.logging.LoggingConfigImpl;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.ActionReport;
@@ -59,6 +58,7 @@ import org.jvnet.hk2.component.PerLookup;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -98,6 +98,13 @@ public class SetLogLevel implements AdminCommand {
     @Inject
     Domain domain;
 
+    @Inject
+    Servers servers;
+
+    @Inject
+    Clusters clusters;
+
+
     String[] validLevels = {"SEVERE", "WARNING", "INFO", "FINE", "FINER", "FINEST"};
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(SetLogLevel.class);
@@ -113,6 +120,7 @@ public class SetLogLevel implements AdminCommand {
         String successMsg = "";
         boolean success = false;
         boolean invalidLogLevels = false;
+        boolean foundConfig = false;
 
         Map<String, String> m = new HashMap<String, String>();
         try {
@@ -140,6 +148,29 @@ public class SetLogLevel implements AdminCommand {
             if (invalidLogLevels) {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             } else {
+
+                Config config = domain.getConfigNamed(target);
+                if (config != null) {
+                    List<Cluster> clusterList = clusters.getCluster();
+                    for (Cluster cluster : clusterList) {
+                        String clusterConfigName = cluster.getConfigRef();
+                        if (clusterConfigName.equals(target)) {
+                            target = cluster.getName();
+                            foundConfig = true;
+                            break;
+                        }
+                    }
+                    if (!foundConfig) {
+                        List<Server> serverList = servers.getServer();
+                        for (Server server : serverList) {
+                            String serverConfigName = server.getConfigRef();
+                            if (serverConfigName.equals(target)) {
+                                target = server.getName();
+                                break;
+                            }
+                        }
+                    }
+                }
 
                 Server targetServer = domain.getServerNamed(target);
 
@@ -169,7 +200,7 @@ public class SetLogLevel implements AdminCommand {
                     if (targetServer != null && targetServer.isInstance()) {
                         clusterName = targetServer.getCluster().getName();
                         msg = localStrings.getLocalString("invalid.target.sys.props1",
-                                "Instance {0} is part of the Cluster so valid target value is {1}.", target,clusterName);
+                                "Instance {0} is part of the Cluster so valid target value is {1}.", target, clusterName);
                     }
 
                     report.setMessage(msg);
@@ -178,7 +209,7 @@ public class SetLogLevel implements AdminCommand {
 
                 if (success) {
                     successMsg += localStrings.getLocalString(
-                            "set.log.level.success", "These logging levels are set for {0}.",target);
+                            "set.log.level.success", "These logging levels are set for {0}.", target);
                     report.setMessage(successMsg);
                     report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
                 }
@@ -186,7 +217,7 @@ public class SetLogLevel implements AdminCommand {
 
         } catch (IOException e) {
             report.setMessage(localStrings.getLocalString("set.log.level.failed",
-                    "Could not set logger levels for {0}.",target));
+                    "Could not set logger levels for {0}.", target));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
         }
     }

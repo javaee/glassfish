@@ -41,8 +41,7 @@
 package com.sun.enterprise.server.logging.commands;
 
 import com.sun.common.util.logging.LoggingConfigImpl;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.ActionReport;
@@ -59,6 +58,7 @@ import org.jvnet.hk2.component.PerLookup;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -96,6 +96,13 @@ public class SetLogAttributes implements AdminCommand {
     @Inject
     Domain domain;
 
+    @Inject
+    Servers servers;
+
+    @Inject
+    Clusters clusters;
+
+
     String[] validAttributes = {"handlers",
             "java.util.logging.ConsoleHandler.formatter",
             "com.sun.enterprise.server.logging.GFFileHandler.file",
@@ -127,6 +134,7 @@ public class SetLogAttributes implements AdminCommand {
         String successMsg = "";
         boolean success = false;
         boolean invalidAttribute = false;
+        boolean foundConfig = false;
 
         Map<String, String> m = new HashMap<String, String>();
         try {
@@ -154,6 +162,29 @@ public class SetLogAttributes implements AdminCommand {
             if (invalidAttribute) {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             } else {
+
+                Config config = domain.getConfigNamed(target);
+                if (config != null) {
+                    List<Cluster> clusterList = clusters.getCluster();
+                    for (Cluster cluster : clusterList) {
+                        String clusterConfigName = cluster.getConfigRef();
+                        if (clusterConfigName.equals(target)) {
+                            target = cluster.getName();
+                            foundConfig = true;
+                            break;
+                        }
+                    }
+                    if (!foundConfig) {
+                        List<Server> serverList = servers.getServer();
+                        for (Server server : serverList) {
+                            String serverConfigName = server.getConfigRef();
+                            if (serverConfigName.equals(target)) {
+                                target = server.getName();
+                                break;
+                            }
+                        }
+                    }
+                }
 
                 Server targetServer = domain.getServerNamed(target);
 
