@@ -56,7 +56,9 @@
     </sun:button>
 
     <sun:button id="finishButton" text="$resource{i18n.button.Finish}"
-        onClick="document.getElementById('form2:validate').value='true'; if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
+        onClick="document.getElementById('form2:validate').value='true';
+            if (isClassNamePresent('#{wizardPoolExtra.datasourceClassname}', '#{wizardPoolExtra.driverClassname}', '#{wizardPoolExtra.datasourceClassname}', '#{wizardPoolExtra.DriverClassnameField}', '$resource{i18njdbc.msg.Error.classNameCannotBeEmpty}')
+            && guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
        <!command
             updateJdbcConnectionPoolWizardStep2();
             gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}",

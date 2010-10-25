@@ -110,6 +110,26 @@
             enableComponent('$pageSession{tableTextField}', 'select');
         }
     }
+
+    function isEmpty(value) {
+        if (value == null || value == '') {
+            return true;
+        }
+        return false;
+    }
+    function isClassNamePresent(dsName, driverName, dsNameField, driverNameField, reqMsg) {
+        var datasource = dsNameField;
+        var driver = driverNameField;
+        if (!isEmpty(dsName) || !isEmpty(driverName)) {
+            datasource = dsName;
+            driver = driverName;
+        }
+         if (isEmpty(datasource) && isEmpty(driver)) {
+            showAlert(reqMsg);
+            return false;
+        }
+        return true;
+    }
     </script>
 </f:verbatim>
 
