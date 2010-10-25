@@ -55,7 +55,6 @@ import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.InhabitantAnnotation;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.SameThreadExecutor;
 import org.jvnet.hk2.component.classmodel.ClassPath;
 import org.jvnet.hk2.component.classmodel.InhabitantsFeed;
 import org.jvnet.hk2.component.classmodel.InhabitantsParsingContextGenerator;
@@ -147,6 +146,7 @@ public class InhabitantsGenerator {
     
     inhabitantsClassPath = filterIgnores(inhabitantsClassPath);
     
+    logger.log(Level.FINE, "working classpath: {0}", inhabitantsClassPath);
     this.ipcGen = InhabitantsParsingContextGenerator.
           create(null, createExecutorService(), inhabitantsClassPath);
     
@@ -158,12 +158,12 @@ public class InhabitantsGenerator {
     }
   
     try {
-      ipcGen.parse(inhabitantsClassPath.getFileEntries());
+      logger.log(Level.FINE, "Parsing: {0}", inhabitantsSourceFiles);
+      ipcGen.parse(inhabitantsSourceFiles.getFileEntries());
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
     
-    // TODO: remove CodeSourceFilter if not longer needed after Jerome's fix
 //    codeSourceFilter = new CodeSourceFilter(inhabitantsSourceFiles);
     codeSourceFilter = null;
   }
@@ -171,16 +171,6 @@ public class InhabitantsGenerator {
   // temporary, until multi-threaded issues are resolved in class-model parsing
   private ExecutorService createExecutorService() {
     return null;
-//    return new SameThreadExecutor();
-//    return Executors.newSingleThreadExecutor(new ThreadFactory() {
-//      @Override
-//      public Thread newThread(Runnable r) {
-//        Thread t = new Thread(r);
-//        t.setDaemon(true);
-//        t.setName("Hk2-ig-jar-scanner");
-//        return t;
-//      }
-//    });
   }
 
   private ClassPath filterIgnores(ClassPath inhabitantsClassPath) {
@@ -281,9 +271,10 @@ public class InhabitantsGenerator {
       return;
     }
 
-    // TODO: for now, disable date (we can make this an option later)
-    InhabitantsDescriptor descriptor = new InhabitantsDescriptor();
-    descriptor.enableDateOutput(false);
+    // can disable date here
+    InhabitantsDescriptor descriptor = null;
+//    InhabitantsDescriptor descriptor = new InhabitantsDescriptor();
+//    descriptor.enableDateOutput(false);
     
     InhabitantsGenerator generator = new InhabitantsGenerator(descriptor, inhabitantsSourceFiles, inhabitantsClassPath);
 
