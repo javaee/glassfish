@@ -78,7 +78,7 @@ public class ListLogAttributes implements AdminCommand {
     @Inject
     LoggingConfigImpl loggingConfig;
 
-    @Param(primary = true, optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME, alias = "target", obsolete = true)
+    @Param(primary = true, optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
     String target;
 
     @Inject
