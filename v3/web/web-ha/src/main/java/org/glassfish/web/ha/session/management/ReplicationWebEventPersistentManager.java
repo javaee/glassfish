@@ -154,8 +154,6 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
 
             try {
                 ReplicationStore replicationStore = (ReplicationStore) this.getStore();
-                // update this one's cache
-                //replicationStore.getSessions().put(session.getIdInternal(), session);
                 replicationStore.doValveSave(session);
                 if (_logger.isLoggable(Level.FINE)) {
                     _logger.fine("FINISHED repStore.valveSave");
@@ -207,43 +205,6 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
     private static int _messageIDCounter = 0;
     private AtomicBoolean  timeToChange = new AtomicBoolean(false);
     
-//    private DispatchThread dispatchThread = new DispatchThread();
-    
-//    private class DispatchThread implements Runnable {
-//
-//        private volatile boolean done = false;
-//
-//        private Thread thread;
-//
-//        private LinkedBlockingQueue<Object> queue;
-//
-//        public DispatchThread() {
-//            this.queue = new LinkedBlockingQueue<Object>();
-//            this.thread = new Thread(this);
-//            this.thread.setDaemon(true);
-//            thread.start();
-//        }
-//
-//        public void wakeup() {
-//            queue.add(new Object());
-//        }
-//
-//        public void run() {
-//            while (! done) {
-//                try {
-//                    Object ignorableToken = queue.take();
-//                    flushAllIdsFromCurrentMap(false);
-//                } catch (InterruptedException inEx) {
-//                    this.done = true;
-//                }
-//            }
-//        }
-//
-//    }
-    
-    //new code end
-
-
 
     // ------------------------------------------------------------- Properties
 
@@ -328,12 +289,14 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
             _logger.info("About to create backing store " + conf);
             this.backingStore = factory.createBackingStore(conf);
         } catch (BackingStoreException e) {
-            e.printStackTrace();  
+            _logger.log(Level.WARNING, "Could not create backing store", e);  
         }
         Object obj = conf.getVendorSpecificSettings().get("key.mapper");
         if (obj != null && obj instanceof GlassFishHAReplicaPredictor) {
             predictor = (GlassFishHAReplicaPredictor)obj;
-            System.out.println("ReplicatedManager.keymapper is " + predictor);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("ReplicatedManager.keymapper is " + predictor);
+            }
         } else {
             predictor = new NoopHAReplicaPredictor();
         }
