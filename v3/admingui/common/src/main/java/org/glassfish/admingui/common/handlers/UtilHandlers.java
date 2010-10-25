@@ -355,6 +355,30 @@ public class UtilHandlers {
         handlerCtx.setOutputValue("result", list);
     }
 
+     /**
+     * <p> Remove the given value from a <code>List</code></p> if it is present
+     * <p> Input list: "list" -- Type: <code>java.util.List</code>
+     * <p> Input value: "value" -- Type: <code>java.lang.Object</code>
+     *
+     * @param handlerCtx The HandlerContext
+     */
+    @Handler(id="listRemove",
+    	input={
+            @HandlerInput(name="list", type=List.class),
+            @HandlerInput(name="value", type=Object.class, required=true)
+        },
+        output={
+            @HandlerOutput(name="result", type=List.class)}
+    )
+    public static void listRemove(HandlerContext handlerCtx) {
+        List list = (List)handlerCtx.getInputValue("list");
+        if(list == null) {
+            list = new ArrayList();
+        }
+        list.remove(handlerCtx.getInputValue("value"));
+        handlerCtx.setOutputValue("result", list);
+    }
+
 
     /**
      * <p> Combine 2 lists <code>List</code> by adding the object in the 2nd list to the first list</p>

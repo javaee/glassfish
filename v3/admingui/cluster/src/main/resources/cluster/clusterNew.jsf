@@ -51,7 +51,8 @@
     <!beforeCreate
         setPageSessionAttribute(key="configOption", value="copy");
         setPageSessionAttribute(key="config", value="default-config");
-        gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config", result="#{pageSession.configsList}");
+        gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config", result="#{requestScope.tmpList}");
+        listRemove(list="#{requestScope.tmpList}" value="server-config" result="#{pageSession.configsList}");
         gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/nodes/node", result="#{pageSession.nodesList}");
     />
     </event>

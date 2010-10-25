@@ -56,7 +56,8 @@
         setPageSessionAttribute(key="forStandalone" value="#{true}");
         setPageSessionAttribute(key="helpId", value="standaloneInstanceNew");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/cluster/standalone/standaloneInstances.jsf?");
-        gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config", result="#{pageSession.configsList}");
+        gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config", result="#{requestScope.tmpList}");
+        listRemove(list="#{requestScope.tmpList}" value="server-config" result="#{pageSession.configsList}");
         gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/nodes/node", result="#{pageSession.nodesList}");
 
     />
