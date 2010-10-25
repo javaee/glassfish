@@ -120,8 +120,10 @@ public class JmsProviderLifecycle implements  PostStartup, PostConstruct{
         String defaultJmsHostName = jmsService.getDefaultJmsHost();
         JmsHost defaultJmsHost = null;
         for (JmsHost host : jmsHostList){
-            if(defaultJmsHost != null && defaultJmsHostName.equals(host.getName()))
+            if(defaultJmsHostName != null && defaultJmsHostName.equals(host.getName())) {
                     defaultJmsHost = host;
+                break;
+            }
         }
         boolean jmsEagerStartup = false;
 	    boolean lazyInit = false;
