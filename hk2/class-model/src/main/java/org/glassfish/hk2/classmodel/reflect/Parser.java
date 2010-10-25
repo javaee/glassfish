@@ -303,12 +303,12 @@ public class Parser implements Closeable {
                     },
                     new ArchiveAdapter.EntryTask() {
                         @Override
-                        public void on(ArchiveAdapter.Entry entry, byte[] bytes) throws IOException {
+                        public void on(ArchiveAdapter.Entry entry, InputStream is) throws IOException {
                             if (logger.isLoggable(Level.FINER)) {
                                 logger.log(Level.FINER, "Parsing class " + entry.name);
                             }
 
-                            ClassReader cr = new ClassReader(bytes, 0, (int) entry.size);
+                            ClassReader cr = new ClassReader(is);
                             try {
                                 cr.accept(context.getClassVisitor(uri, entry.name), ClassReader.SKIP_DEBUG);
                             } catch (Throwable e) {

@@ -58,14 +58,14 @@ import java.util.logging.Level;
  * Time: 9:32:58 PM
  * To change this template use File | Settings | File Templates.
  */
-@Ignore
 public class GFInstallationTest {
 
     @Test
     public void foo() throws IOException {
         List<File> files = new ArrayList<File>();
         long startTime = System.currentTimeMillis();
-        File gf = new File("/Users/dochez/glassfish/modules");
+        File home = new File(System.getProperty("user.home"));
+        File gf = new File(home,"glassfish/modules");
         Assert.assertTrue(gf.exists());
         long start = System.currentTimeMillis();
         for (File f : gf.listFiles(new FilenameFilter() {

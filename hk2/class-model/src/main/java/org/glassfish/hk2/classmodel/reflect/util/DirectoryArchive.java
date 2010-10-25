@@ -108,29 +108,19 @@ public class DirectoryArchive extends AbstractAdapter {
                 }
                 if (!selector.isSelected(ae))
                     continue;
-                FileChannel fc = null;
+                InputStream is = null;
                 try {
                     try {
-                        if (buffer.capacity()<f.length()) {
-                            buffer = ByteBuffer.allocate((int) f.length());
-                        }
-                        fc = (new FileInputStream(f)).getChannel();
-
-                        int read = fc.read(buffer);
-                        if (read!=f.length()) {
-                             logger.severe("Incorrect file length while reading " + f.getName() +
-                                     " of size " + f.length() + " reported is " + read);
-                        }
-                        buffer.rewind();
-                        task.on(ae, buffer.array());
+                        is = new FileInputStream(f);
+                        task.on(ae, is);
                     } catch(Exception e) {
                         logger.log(Level.SEVERE, "Exception while processing " + f.getName() +
                                 " of size " + f.length(), e);
                     }
 
                 } finally {
-                    if (fc!=null) {
-                        fc.close();
+                    if (is!=null) {
+                        is.close();
                     }
                 }
             } else {

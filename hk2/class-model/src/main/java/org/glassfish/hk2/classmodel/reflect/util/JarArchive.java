@@ -104,20 +104,9 @@ public class JarArchive extends AbstractAdapter {
                  Entry entry = new Entry(ja.getName(), ja.getSize(), ja.isDirectory());
                  if (!selector.isSelected(entry))
                     continue;
-                 is = new BufferedInputStream(jar.getInputStream(ja));
+                 is = jar.getInputStream(ja);
                  try {
-                     if (ja.getSize()>0) {
-                         if (bytes.length<ja.getSize()) {
-                             bytes = new byte[(int) ja.getSize()];
-                         }
-                         int read = is.read(bytes, 0, (int) ja.getSize());
-                         if (read!=ja.getSize()) {
-                             logger.severe("Incorrect file length while reading " + ja.getName() +
-                                     " inside " + jar.getName() +
-                                     " of size " + ja.getSize() + " reported is " + read);
-                         }
-                     }
-                     task.on(entry, bytes);
+                     task.on(entry, is);
                  } catch (Exception e) {
                      logger.log(Level.SEVERE, "Exception while processing " + ja.getName()
                              + " inside " + jar.getName() + " of size " + ja.getSize(), e);

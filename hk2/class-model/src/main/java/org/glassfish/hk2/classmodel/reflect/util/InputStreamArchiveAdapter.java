@@ -39,6 +39,7 @@ package org.glassfish.hk2.classmodel.reflect.util;
 import org.glassfish.hk2.classmodel.reflect.ArchiveAdapter;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -112,7 +113,12 @@ public class InputStreamArchiveAdapter extends AbstractAdapter {
                             je = new Entry(ja.getName(), allRead+1, ja.isDirectory());
                         }
                     }
-                    task.on(je, bytes);
+                    ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+                    try {
+                        task.on(je, bais);
+                    } finally {
+                        bais.close();
+                    }
 
                 } catch (Exception e) {
                     logger.log(Level.SEVERE, "Exception while processing " + ja.getName()
