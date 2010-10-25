@@ -43,6 +43,7 @@ package com.sun.enterprise.v3.admin.cluster;
 import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import com.sun.enterprise.config.util.InstanceRegisterInstanceCommandParameters;
 import com.sun.enterprise.config.util.RegisterInstanceCommandParameters;
+import com.sun.enterprise.config.serverbeans.Server;
 import static com.sun.enterprise.config.util.RegisterInstanceCommandParameters.ParameterNames.*;
 import static com.sun.enterprise.config.util.InstanceRegisterInstanceCommandParameters.ParameterNames.*;
 import java.util.logging.Logger;
@@ -56,6 +57,7 @@ import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.Supplemental;
 import org.glassfish.api.admin.FailurePolicy;
+import org.glassfish.internal.api.Target;
 import org.glassfish.common.util.admin.ParameterMapExtractor;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -78,6 +80,9 @@ public class PostRegisterInstanceCommand extends RegisterInstanceCommandParamete
     @Inject
     private Habitat habitat;
 
+    @Inject
+    private Target target;
+
     @Override
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
@@ -92,7 +97,10 @@ public class PostRegisterInstanceCommand extends RegisterInstanceCommandParamete
                 final ParameterMap paramMap = pme.extract();
 
                 List<String> targets = new ArrayList<String>();
-                targets.add(this.clusterName);
+                List<Server> instances = target.getInstances(this.clusterName);
+                for (Server s : instances) {
+                    targets.add(s.getName());
+                }
 
                 ClusterOperationUtil.replicateCommand(
                         "_register-instance-at-instance",
