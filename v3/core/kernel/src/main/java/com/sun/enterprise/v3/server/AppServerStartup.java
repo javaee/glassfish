@@ -48,6 +48,7 @@ import java.util.logging.Logger;
 import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.Result;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
@@ -117,6 +118,9 @@ public class AppServerStartup implements ModuleStartup {
     @Inject
     SystemTasks pidWriter;
 
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ApplicationLifecycle.class);
+    
+
     /**
      * A keep alive thread that keeps the server JVM from going down
      * as long as GlassFish kernel is up.
@@ -185,7 +189,7 @@ public class AppServerStartup implements ModuleStartup {
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("Startup class : " + this.getClass().getName());
         }
-        final Level level = Level.INFO;
+        final Level level = Level.FINE;
 
         // prepare the global variables
         habitat.addComponent(null, this);
@@ -245,8 +249,10 @@ public class AppServerStartup implements ModuleStartup {
                         futures.addAll(((FutureProvider) startup).getFutures());
                     }
                 } catch(RuntimeException e) {
-                        e.printStackTrace();
-                        logger.info("Startup service failed to start : " + e.getMessage());
+                    logger.log(Level.FINE, e.getMessage(), e);
+                    logger.log(Level.SEVERE,
+                            localStrings.getLocalString("startupservicefailure",
+                                    "Startup service failed to start : ", i.typeName()), e.getMessage());
                 }
                 if (logger.isLoggable(level)) {
                     servicesTiming.put(i.type(), (System.currentTimeMillis() - start));
@@ -258,12 +264,12 @@ public class AppServerStartup implements ModuleStartup {
         events.send(new Event(EventTypes.SERVER_STARTUP), false);
 
         // finally let's calculate our starting times
-
-
-        logger.info(version.getVersion() + " (" + version.getBuildVersion() + ")"
-                + " startup time : " + platform + "(" + (platformInitTime - context.getCreationTime()) + "ms)" +
-                " startup services(" + (System.currentTimeMillis() - platformInitTime)  + "ms)" +
-                " total(" + (System.currentTimeMillis() - context.getCreationTime()) + "ms)");
+        logger.info(localStrings.getLocalString("startup_end_message",
+                "$0 ($1) startup time : $2 ($3ms), startup services($4ms), total($5ms)",
+                version.getVersion(), version.getBuildVersion(), platform,
+                (platformInitTime - context.getCreationTime()),
+                (System.currentTimeMillis() - platformInitTime),
+                System.currentTimeMillis() - context.getCreationTime()));
 
         printModuleStatus(level);
 
@@ -292,14 +298,18 @@ public class AppServerStartup implements ModuleStartup {
                         // wait for 3 seconds for an eventual status, otherwise ignore
                         if (future.get(3, TimeUnit.SECONDS).isFailure()) {
                             final Throwable t = future.get().exception();
-                            logger.log(Level.SEVERE, "Shutting down v3 due to startup exception : " + t.getMessage());
+                            logger.log(Level.SEVERE,
+                                    localStrings.getLocalString("startupfatalstartup",
+                                            "Shutting down v3 due to startup exception : ",
+                                            t.getMessage()));
                             logger.log(Level.FINE, future.get().exception().getMessage(), t);
                             events.send(new Event(EventTypes.SERVER_SHUTDOWN));
                             shutdown();
                             return;
                         }
                     } catch(TimeoutException e) {
-                        logger.warning("Timed out, ignoring some startup service status");
+                        logger.warning(localStrings.getLocalString("startupwaittimeout",
+                                "Timed out, ignoring some startup service status"));
                     }
                 } catch(Throwable t) {
                     logger.log(Level.SEVERE, t.getMessage(), t);    
@@ -414,7 +424,7 @@ public class AppServerStartup implements ModuleStartup {
             env.setStatus(ServerEnvironment.Status.stopped);
             events.send(new Event(EventTypes.SERVER_SHUTDOWN), false);
 
-            logger.info("Shutdown procedure finished");            
+            logger.info(localStrings.getLocalString("shutdownfinished","Shutdown procedure finished");            
 
             // we send the shutdown events before the Init services are released since
             // evens handler can still rely on services like logging during their processing
