@@ -40,21 +40,22 @@
 
 package org.glassfish.ant.embedded.tasks;
 
-import java.io.*;
-
-import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.EmbeddedFileSystem;
-import org.glassfish.api.embedded.ContainerBuilder;
-import org.glassfish.api.embedded.web.EmbeddedWebContainer;
 import org.glassfish.api.embedded.Port;
+import org.glassfish.api.embedded.Server;
+import org.glassfish.embeddable.web.ConfigException;
+import org.glassfish.embeddable.web.EmbeddedWebContainer;
+import org.glassfish.embeddable.web.HttpListener;
+import org.glassfish.embeddable.GlassFishException;
 
 import java.io.File;
+import java.io.IOException;
 
 
-public  class Util {
+public class Util {
 
-    public static Server getServer(String serverID, String installRoot, String instanceRoot, String configFile, 
-            Boolean autoDelete) throws IOException {
+    public static Server getServer(String serverID, String installRoot, String instanceRoot, String configFile,
+                                   Boolean autoDelete) throws IOException {
 
         Server server = Server.getServer(serverID);
         if (server != null)
@@ -77,7 +78,7 @@ public  class Util {
             System.setProperty("com.sun.aas.instanceRootURI", "file:" + instanceRoot);
             efsb.instanceRoot(new File(instanceRoot));
         }
-        
+
         if (configFile != null)
             efsb.configurationFile(new File(configFile));
         if (autoDelete != null)
@@ -87,20 +88,28 @@ public  class Util {
     }
 
     public static void createPort(Server server, String configFile, int port)
-        throws java.io.IOException {
+            throws java.io.IOException {
         Port http = null;
 
         if (configFile == null && port == -1) {
             http = server.createPort(Constants.DEFAULT_HTTP_PORT);
-        }
-        else if (port != -1) {
+        } else if (port != -1) {
             http = server.createPort(port);
         }
         if (http != null) {
-            ContainerBuilder b = server.createConfig(ContainerBuilder.Type.web);
-            server.addContainer(b);
-            EmbeddedWebContainer embedded = (EmbeddedWebContainer) b.create(server);
-            embedded.bind(http, "http");
+            // TODO :: change this to use org.glassfish.embeddable.GlassFish.lookupService
+            EmbeddedWebContainer embedded = server.getHabitat().
+                    getComponent(EmbeddedWebContainer.class);
+            HttpListener listener = new HttpListener();
+            listener.setId("embedded-listener-1");
+            listener.setPort(port);
+            try {
+                embedded.addWebListener(listener);
+            } catch (GlassFishException ex) {
+                throw new IOException(ex);
+            } catch(ConfigException ex) {
+                throw new IOException(ex);
+            }
         }
     }
 
