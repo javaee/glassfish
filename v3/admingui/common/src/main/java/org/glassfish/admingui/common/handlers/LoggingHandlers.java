@@ -71,31 +71,29 @@ public class LoggingHandlers {
     public LoggingHandlers() {
     }
 
-    /*
 
     @Handler(id = "getLoggerLevels",
+    input = {
+        @HandlerInput(name = "loggerLevels", type = Map.class, required = true)},
     output = {
         @HandlerOutput(name = "loggerList", type = List.class)
     })
     public static void getLoggerLevels(HandlerContext handlerCtx) {
 
+        Map<String, String> loggerLevels = (Map) handlerCtx.getInputValue("loggerLevels");
         List result = new ArrayList();
-        Logging logging = V3AMX.getInstance().getDomainRoot().getLogging();
-        Map<String, String> loggerLevels = logging.getLoggingProperties();
         if (loggerLevels != null)    {
             for(String oneLogger:  loggerLevels.keySet()){
-                if (oneLogger.endsWith(".level")&& !oneLogger.equals(".level") ){
                     Map oneRow = new HashMap();
-                    oneRow.put("loggerName", oneLogger.substring(0,oneLogger.lastIndexOf(".level")));
+                    oneRow.put("loggerName", oneLogger);
                     oneRow.put("level", loggerLevels.get(oneLogger));
                     oneRow.put("selected", false);
                     result.add(oneRow);
-                }
             }
         }
         handlerCtx.setOutputValue("loggerList",  result);
      }
-*/
+
 
     @Handler(id = "changeLoggerLevels",
     input = {
@@ -120,22 +118,26 @@ public class LoggingHandlers {
         }
         handlerCtx.setOutputValue("newList",  allRows);
      }
-/*
+
+
 
     @Handler(id = "updateLoggerLevels",
     input = {
-        @HandlerInput(name = "allRows", type = List.class, required = true)})
+        @HandlerInput(name = "allRows", type = List.class, required = true),
+        @HandlerInput(name = "config", type = String.class, required = true)})
     public static void updateLoggerLevels(HandlerContext handlerCtx) {
-        List<Map<String,String>> allRows = (List<Map<String,String>>) handlerCtx.getInputValue("allRows");
-        Map<String,String> props = new HashMap();
-        for(Map<String,String> oneRow : allRows){
-            props.put(oneRow.get("loggerName")+".level", oneRow.get("level"));
+        List<Map<String,Object>> allRows = (List<Map<String,Object>>) handlerCtx.getInputValue("allRows");
+        String config = (String)handlerCtx.getInputValue("config");
+        Map<String, Object> props = new HashMap();
+        for(Map<String, Object> oneRow : allRows){
+            props.put("id", oneRow.get("loggerName") + "=" + oneRow.get("level"));
+            props.put("target", config);
+            RestApiHandlers.restRequest((String)GuiUtil.getSessionValue("REST_URL") + "/set-log-levels.json",
+                    props, "POST", null, true);
         }
-        Logging logging = V3AMX.getInstance().getDomainRoot().getLogging();
-        logging.updateLoggingProperties(props);
+
      }
-
-
+/*
     @Handler(id = "getLoggingAttributes",
     output = {
         @HandlerOutput(name = "attrs", type = Map.class)
