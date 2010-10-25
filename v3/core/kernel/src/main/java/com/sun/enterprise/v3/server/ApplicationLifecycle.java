@@ -910,8 +910,10 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
             return null;
 
         }
-        info.stop(context, context.getLogger());
-        info.unload(context);
+        if (info.isLoaded()) {
+            info.stop(context, context.getLogger());
+            info.unload(context);
+        }
         return info;
 
     }
@@ -919,6 +921,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
     public void undeploy(String appName, ExtendedDeploymentContext context) {
 
         ActionReport report = context.getActionReport();
+        UndeployCommandParameters params = context.getCommandParameters(UndeployCommandParameters.class);
 
         ApplicationInfo info = appRegistry.get(appName);
         if (info==null) {
@@ -937,6 +940,12 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
         }
 
         events.send(new Event(Deployment.UNDEPLOYMENT_START, info));
+
+        // for DAS target, the undeploy should unload the application
+        // as well
+        if (DeploymentUtils.isDASTarget(params.target)) {
+            unload(appName, context);
+        }
 
         try {
             info.clean(context);
