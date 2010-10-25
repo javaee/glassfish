@@ -42,7 +42,6 @@ package org.glassfish.distributions.test;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
@@ -69,8 +68,10 @@ import org.glassfish.api.embedded.admin.AdminInfo;
 import org.glassfish.api.embedded.admin.CommandExecution;
 import org.glassfish.api.embedded.admin.CommandParameters;
 import org.glassfish.api.embedded.admin.EmbeddedAdminContainer;
-import org.glassfish.api.embedded.web.EmbeddedWebContainer;
+import org.glassfish.embeddable.web.EmbeddedWebContainer;
+import org.glassfish.embeddable.web.HttpListener;
 import org.glassfish.distributions.test.ejb.SampleEjb;
+import org.glassfish.embeddable.GlassFishException;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -83,7 +84,7 @@ public class EmbeddedTest {
     static EmbeddedAdminContainer ctr =null;
 
     @BeforeClass
-    public static void setup() throws org.glassfish.api.embedded.LifecycleException {
+    public static void setup() throws org.glassfish.api.embedded.LifecycleException, GlassFishException {
 
         Server.Builder builder = new Server.Builder("build");
 
@@ -96,16 +97,22 @@ public class EmbeddedTest {
         }
 
         server.addContainer(server.createConfig(ContainerBuilder.Type.ejb));
-        ContainerBuilder b = server.createConfig(ContainerBuilder.Type.web);
-        System.out.println("builder is " + b);
-        server.addContainer(b);
-        EmbeddedWebContainer embedded = (EmbeddedWebContainer) b.create(server);
+//        ContainerBuilder b = server.createConfig(ContainerBuilder.Type.web);
+//        System.out.println("builder is " + b);
+//        server.addContainer(b);
+
+        // TODO :: change this to use org.glassfish.embeddable.GlassFish.lookupService
+        EmbeddedWebContainer embedded = server.getHabitat().
+                getComponent(EmbeddedWebContainer.class);
         try {
-            http = server.createPort(8080);
-        } catch(IOException e) {
+            HttpListener listener = new HttpListener();
+            listener.setPort(8080);
+            listener.setId("embedded-listener-1");
+            embedded.addWebListener(listener);
+        } catch(Exception e) {
             throw new RuntimeException(e);
         }
-        embedded.bind(http, "http");
+
         embedded.start();
         server.addContainer(ContainerBuilder.Type.all);
         ctr = server.addContainer(server.createConfig(AdminInfo.class));
