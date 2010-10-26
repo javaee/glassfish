@@ -36,7 +36,9 @@
  */
 package com.sun.enterprise.tools.classmodel;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -60,15 +62,6 @@ import com.sun.hk2.component.InhabitantsParser;
 /**
  * Generates <tt>/META-INF/inhabitants/*</tt> based on comma-delimited list
  * of jars and directories passed in as arguments.
- * <p/>
- * The implementation strategy is to use the full {@link #PARAM_INHABITANTS_CLASSPATH}
- * to resolve classes using the {@link InhabitantsParsingContextGenerator}, checking
- * each inhabitant being added against a {@link CodeSourceFilter} built from the
- * {@link #PARAM_INHABITANTS_SOURCE_FILES} passed in as arguments.
- * <p/>
- * Upon matching filter matching (i.e., the inhabitants type name must reside in one of
- * the codesources specified) then the inhabitant is written to the {@link InhabitantsDescriptor}
- * and written out.
  * 
  * @see InhabitantFileBasedParser
  * 
@@ -160,13 +153,20 @@ public class InhabitantsGenerator extends Constants {
     return newClassPath;
   }
 
-  public void generate(File targetInhabitantFile) throws IOException {
+  public void generate(File targetInhabitantFile, boolean sort) throws IOException {
     File parent = targetInhabitantFile.getParentFile();
     if (null != parent) {
       parent.mkdirs();
     }
     
-    PrintWriter w = new PrintWriter(targetInhabitantFile, "UTF-8");
+    ByteArrayOutputStream out = null;
+    PrintWriter w;
+    if (sort) {
+      out = new ByteArrayOutputStream();
+      w = new PrintWriter(out);
+    } else {
+      w = new PrintWriter(targetInhabitantFile, "UTF-8");
+    }
     try {
       generate(w);
     } finally {
@@ -175,6 +175,14 @@ public class InhabitantsGenerator extends Constants {
     
     if (descriptor.isEmpty()) {
       targetInhabitantFile.delete();
+      return;
+    }
+
+    if (sort) {
+      String sorterdInhabitants = Utilities.sortInhabitantsDescriptor(out.toString(), sort);
+      FileOutputStream fos = new FileOutputStream(targetInhabitantFile);
+      fos.write(sorterdInhabitants.getBytes());
+      fos.close();
     }
   }
   
@@ -197,12 +205,13 @@ public class InhabitantsGenerator extends Constants {
    */
   InhabitantsParsingContextGenerator getContextGenerator() {
     return ipcGen;
- }
+  }
   
   public static void main(String [] args) throws Exception {
     File targetInhabitantFile = getInhabitantFile(PARAM_INHABITANT_TARGET_FILE, false);
     ClassPath inhabitantsSourceFiles = getScopedInhabitantCodeSources();
     ClassPath inhabitantsClassPath = getFullInhabitantsClassPath();
+    boolean sort = Boolean.getBoolean(PARAM_INHABITANTS_SORTED);
     
     if (inhabitantsSourceFiles.getEntries().isEmpty()) {
       System.err.println("WARNING: nothing to do!");
@@ -227,7 +236,7 @@ public class InhabitantsGenerator extends Constants {
 //      return;
 //    }
     
-    generator.generate(targetInhabitantFile);
+    generator.generate(targetInhabitantFile, sort);
   }
 
   static ClassPath getFullInhabitantsClassPath() {
