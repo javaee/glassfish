@@ -84,6 +84,10 @@
                             	    <ant dir="." antfile="build.xml" target="all_wd"/>
                                     <property name="glassfish.home" value="${glassfish.home}"/>
                         	</if>
+                                <if test="${test.em}">
+                            	    <ant dir="." antfile="build.xml" target="all_embedded"/>
+                                    <property name="glassfish.home" value="${glassfish.home}"/>
+                        	</if>
                          	<if test="${test.ri}">
                             	    <ant dir="." antfile="build.xml" target="all_ri"/>
                                     <property name="glassfish.home" value="${glassfish.home}"/>
@@ -199,6 +203,12 @@
             <id>test_wd</id>
             <properties>
                 <test.wd>true</test.wd>
+            </properties>
+        </profile>
+        <profile>
+            <id>test_em</id>
+            <properties>
+                <test.em>true</test.em>
             </properties>
         </profile>
         <profile>

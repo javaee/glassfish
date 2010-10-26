@@ -63,6 +63,12 @@
         <record name="allrun.output" action="stop"/>
     </target>
 
+    <target name="all_embedded">
+        <record name="embeddedrun.output" action="start"/>
+        <ant dir="ejb/embedded" target="all"/>
+        <record name="embeddedrun.output" action="stop"/>
+    </target>
+
     <target name="build-cluster">
         <ant dir="cluster/clustersetup" target="build"/>
         <ant dir="cluster/helloworld" target="build"/>
