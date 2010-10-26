@@ -699,19 +699,18 @@ public class MQAddressList {
 
     public JmsHost getDefaultJmsHost(JmsService jmsService){
         String defaultJmsHost=   jmsService.getDefaultJmsHost();
-        List jmsHosts = jmsService.getJmsHost();
+        List <JmsHost> jmsHosts = jmsService.getJmsHost();
         JmsHost jmsHost = null;
-        if (defaultJmsHost == null || defaultJmsHost.equals("")) {
-                 try {
-                         jmsHost = jmsService.getJmsHost().get(0);
-                 }catch (Exception e) {
-                     ;
-                 }
-            } else {
-        for (int i=0; i <jmsHosts.size(); i++)
-               if (defaultJmsHost.equals(((JmsHost)jmsHosts.get(i)).getName()))
-                      return (JmsHost)jmsHosts.get(i);
-        }
+        if (defaultJmsHost != null && ! defaultJmsHost.equals("") && jmsHosts != null && jmsHosts.size()> 0){
+            for (int i=0; i <jmsHosts.size(); i++)
+                   if (defaultJmsHost.equals((jmsHosts.get(i)).getName()))
+                          return (JmsHost)jmsHosts.get(i);
+            }
+
+             if(jmsHosts != null && jmsHosts.size() >0 )
+                     jmsHost = jmsHosts.get(0);
+             else
+                jmsHost = Globals.get(JmsHost.class);
 
         return jmsHost;
     }
