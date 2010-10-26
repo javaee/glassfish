@@ -144,14 +144,12 @@
                 priority="100"
                 parentId="#{configNameId}"
                 content="pluginTreeNodeJVM.jsf" />
-        <!--  Siraj need to uncomment this to see the Logger tree node
         <integration-point
                 id="common_logger"
                 type="org.glassfish.admingui:navNode"
                 priority="150"
                 parentId="#{configNameId}"
                 content="pluginTreeNodeLogger.jsf" />
-        -->
         <integration-point
                 id="common_security"
                 type="org.glassfish.admingui:navNode"

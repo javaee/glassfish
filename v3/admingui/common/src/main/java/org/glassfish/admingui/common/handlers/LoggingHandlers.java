@@ -137,47 +137,25 @@ public class LoggingHandlers {
         }
 
      }
-/*
-    @Handler(id = "getLoggingAttributes",
-    output = {
-        @HandlerOutput(name = "attrs", type = Map.class)
-    })
-    public static void getLoggingAttributes(HandlerContext handlerCtx) {
-
-        Map<String, String>attrs = new HashMap();
-        Logging logging = V3AMX.getInstance().getDomainRoot().getLogging();
-        Map<String, String>longAttrs = logging.getLoggingAttributes();
-        for(String oneAttr:  longAttrs.keySet()){
-            attrs.put(oneAttr.substring(oneAttr.lastIndexOf(".")+1), longAttrs.get(oneAttr));
-        }
-        handlerCtx.setOutputValue("attrs",  attrs);
-     }
 
     @Handler(id = "saveLoggingAttributes",
     input = {
-        @HandlerInput(name = "attrs", type = Map.class)
+        @HandlerInput(name = "attrs", type = Map.class, required=true),
+        @HandlerInput(name = "config", type = String.class, required=true)
     })
+
     public static void saveLoggingAttributes(HandlerContext handlerCtx) {
+        Map<String,Object> attrs = (Map<String,Object>) handlerCtx.getInputValue("attrs");
 
-        Map<String, String>attrs = (Map)handlerCtx.getInputValue("attrs");
-        if (attrs.get("logtoConsole") == null){
-            attrs.put("logtoConsole", "false");
+        String config = (String)handlerCtx.getInputValue("config");
+        Map<String, Object> props = new HashMap();
+        for(String key : attrs.keySet()){
+            props.put("id", key + "=" + attrs.get(key));
+            props.put("target", config);
+            RestApiHandlers.restRequest((String)GuiUtil.getSessionValue("REST_URL") + "/set-log-attributes.json",
+                    props, "POST", null, true);
         }
-        if (attrs.get("useSystemLogging") == null){
-            attrs.put("useSystemLogging", "false");
-        }
-
-        Logging logging = V3AMX.getInstance().getDomainRoot().getLogging();
-        Map<String, String>longAttrs = logging.getLoggingAttributes();
-
-        for(String oneAttr:  longAttrs.keySet()){
-            String shortAttr = oneAttr.substring(oneAttr.lastIndexOf(".")+1);
-            String newValue = attrs.get(shortAttr);
-            longAttrs.put(oneAttr, (newValue == null)? "" : newValue);
-        }
-        logging.updateLoggingAttributes(longAttrs);
      }
-*/
 
     @Handler(id = "getValidLogLevels",
     output = {

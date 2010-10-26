@@ -48,10 +48,31 @@
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.log.LoggingSettings}" >
 <!define name="content">
+
 <event>
     <!beforeCreate
         setSessionAttribute(key="loggingTabs" value="loggerGeneral");
-        getLoggingAttributes(attrs="#{pageSession.valueMap}");
+        getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        setPageSessionAttribute(key="rest-api" value="true");
+
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/configuration/loggerGeneral.jsf?configName=#{pageSession.configName}");
+        //set the following for including buttons.inc
+        setPageSessionAttribute(key="edit" value="#{true}" );
+        setPageSessionAttribute(key="showDefaultButton" value="true" );
+        setPageSessionAttribute(key="showCancelButton" value="false" );
+        setPageSessionAttribute(key="hasPropertySheet" value="false" );
+        setPageSessionAttribute(key="hasPropertyTable" value="false" );
+
+        getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        createMap(result="#{requestScope.attrsMap}");
+        mapPut(map="#{requestScope.attrsMap}" key="target" value="#{pageSession.configName}");
+        gf.restRequest(
+                endpoint="#{sessionScope.REST_URL}/list-log-attributes.json"
+                attrs="#{requestScope.attrsMap}"
+                method="GET"
+                result="#{pageSession.valueMap}");
+        setPageSessionAttribute(key="logAttributes", value="#{pageSession.valueMap.data.extraProperties.logAttributes}");
+
     />
 </event>
 
@@ -64,7 +85,7 @@
             <sun:button id="saveButton"  text="$resource{i18n.button.Save}"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
-                    saveLoggingAttributes(attrs="#{pageSession.valueMap}");
+                    saveLoggingAttributes(attrs="#{pageSession.logAttributes}" config="#{pageSession.configName}");
                     prepareSuccessfulMsg();
                     gf.redirect(page="#{request.contextPath}/common/configuration/loggerGeneral.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
@@ -75,35 +96,34 @@
 
 <sun:propertySheet id="general">
     <sun:propertySheetSection id="sheetSection">
-            
           <sun:property id="writeSystemLogEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.log.WriteSystemLog}" helpText="$resource{i18nc.log.WriteSystemlogHelp}">
-                <sun:checkbox id="writeSystemLogEnabled" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['useSystemLogging']}" selectedValue="true" />
+                <sun:checkbox id="writeSystemLogEnabled" label="$resource{i18n.common.Enabled}" selected="#{pageSession.logAttributes['com.sun.enterprise.server.logging.SyslogHandler.useSystemLogging']}" selectedValue="true" />
            </sun:property> 
 
-        <!-- commented out for now.
            <sun:property id="logtoConsole"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.log.LogtoConsole}" helpText="$resource{i18nc.log.LogtoConsoleHelp}">
-                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['logtoConsole']}"  selectedValue="true" />
+                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.logAttributes['com.sun.enterprise.server.logging.GFFileHandler.logtoConsole']}"  selectedValue="true" />
            </sun:property>
-        -->
 
            <sun:property id="logFileProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.log.LogFile}" helpText="$resource{i18nc.log.LogFileHelp}">
-                <sun:textField id="LogFile" columns="$int{70}" maxLength="#{sessionScope.fieldLengths['maxLength.log.LogFile']}" text="#{pageSession.valueMap['file']}"/>
+                <sun:textField id="LogFile" columns="$int{70}" maxLength="#{sessionScope.fieldLengths['maxLength.log.LogFile']}" text="#{pageSession.logAttributes['com.sun.enterprise.server.logging.GFFileHandler.file']}"/>
             </sun:property>
 
             <sun:property id="logHandlerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.log.Handler}" helpText="$resource{i18nc.log.HandlerHelp}">
-                <sun:textField id="LogHandler" columns="$int{70}" maxLength="#{sessionScope.fieldLengths['maxLength.log.Handler']}" text="#{pageSession.valueMap['handlers']}" />
+                <sun:textField id="LogHandler" columns="$int{70}" maxLength="#{sessionScope.fieldLengths['maxLength.log.Handler']}" text="#{pageSession.logAttributes['handlers']}" />
             </sun:property>
 
             <sun:property id="FileRotationLimitProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.log.FileRotationLimit}" helpText="$resource{i18nc.log.FileRotationLimitHelp}">
-                <sun:textField id="FileRotationLimit" styleClass="integer" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.log.FileRotationLimit']}" text="#{pageSession.valueMap['rotationLimitInBytes']}" />
+                <sun:textField id="FileRotationLimit" styleClass="integer" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.log.FileRotationLimit']}" text="#{pageSession.logAttributes['com.sun.enterprise.server.logging.GFFileHandler.rotationLimitInBytes']}" />
                 <sun:staticText id="byte" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
             </sun:property>
+
             <sun:property id="FileRotationTimeLimitProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.log.FileRotationTimeLimit}" helpText="$resource{i18nc.log.FileRotationTimeLimitHelp}">
-                <sun:textField id="FileRotationTimeLimit" styleClass="integer" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.log.FileRotationTimeLimit']}" text="#{pageSession.valueMap['rotationTimelimitInMinutes']}"/>
+                <sun:textField id="FileRotationTimeLimit" styleClass="integer" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.log.FileRotationTimeLimit']}" text="#{pageSession.logAttributes['com.sun.enterprise.server.logging.GFFileHandler.rotationTimelimitInMinutes']}"/>
                 <sun:staticText id="min" style="padding: 8pt" text="$resource{i18n.common.Minutes}"/>
             </sun:property>
+
             <sun:property id="FlushFrequencyProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.log.FlushFrequency}" helpText="$resource{i18nc.log.FlushFrequencyHelp}">
-                <sun:textField id="FlushFrequency" styleClass="integer" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.log.FlushFrequency']}" text="#{pageSession.valueMap['flushFrequency']}"/>
+                <sun:textField id="FlushFrequency" styleClass="integer" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.log.FlushFrequency']}" text="#{pageSession.logAttributes['com.sun.enterprise.server.logging.GFFileHandler.flushFrequency']}"/>
             </sun:property>
 
     </sun:propertySheetSection>
