@@ -73,83 +73,102 @@ import com.sun.hk2.component.RunLevelInhabitant;
  * {@link RunLevelService} javadoc for general details regarding this service.
  * 
  * Here is a brief example of the behavior of this service:<br>
- * Assume ServiceA, ServiceB, and ServiceC are all in the same RunLevel X and the
- * dependencies are:
- * <p>
- * ServiceA -> ServiceB -> ServiceC
- * <p>
+ * 
+ * Imagine services ServiceA, ServiceB, and ServiceC are all in the same RunLevel X and the
+ * dependencies are ServiceA -> ServiceB -> ServiceC:
+ * <p/>
+ * <code>
+ * &nbsp;@RunLevel(X)<br/>
+ * &nbsp;@Service<br/>
+ * public class ServiceA {<br/>
+ *   &nbsp;@Inject ServiceB b;<br/>
+ * }<br/>
+ * <br/>
+ * &nbsp;@RunLevel(X)<br/>
+ * &nbsp;@Service<br/>
+ * public class ServiceB {<br/>
+ *   &nbsp;@Inject ServiceC c;<br/>
+ * }<br/>
+ * <br/>
+ * &nbsp;@RunLevel(X)<br/>
+ * &nbsp;@Service<br/>
+ * public class ServiceC {<br/>
+ * }<br/>
+ * </code>
+ * <p/>
  * When the DefaultRunLevelService is asked to proceedTo(X), the
- * expected start order is : ServiceC, ServiceB, ServiceA, and thee xpected shutdown /
- * PreDestroy order: ServiceA, ServiceB, ServiceC
- * <p>
+ * expected start order is: ServiceC, ServiceB, ServiceA, and the expected shutdown 
+ * order is: ServiceA, ServiceB, ServiceC
+ * <p/>
  * RunLevel-annotated services correspond to {@link RunLevelInhabitant}'s and they  
- * hook into the PostConstruct activation sequence to record the activation order
+ * hook into the {@link PostConstruct} activation sequence to record the activation order
  * of inhabitants within each RunLevel.
- * <p>
+ * <p/>
  * Note that no model of dependencies between services are kept in the habitat to
  * make the implementation work.  Any inhabitant in RunLevel X is arbitrarily picked
- * to start with upon activation, and {@link Inhabitant#get()}() is issued.
- * <p>
- * Consider the cases of activation ordering:
- * <p>
+ * to start with upon activation, and {@link Inhabitant#get()} is issued.
+ * <p/>
+ * Consider the cases of possible activation orderings:
+ * <p/>
  * Case 1: A, B, then C by RLS. get ServiceA (called by RLS) Start ServiceA: get
  * ServiceB Start ServiceB: get ServiceC Start ServiceC wire ServiceC
  * PostConstruct ServiceC wire ServiceB PostConstruct ServiceB wire ServiceA
  * PostConstruct ServiceA get ServiceB (called by RLS) get ServiceC (called by
  * RLS)
- * <p>
+ * <p/>
  * Case 2: B, C, then A by RLS. get ServiceB (called by RLS) Start ServiceB: get
  * ServiceC Start ServiceC wire ServiceC PostConstruct ServiceC wire ServiceB
  * PostConstruct ServiceB get ServiceC (called by RLS) get ServiceA (called by
  * RLS) Start ServiceA: get ServiceB wire ServiceA PostConstruct ServiceA
- * <p>
+ * <p/>
  * Case 3: B, A, then C by RLS. get ServiceB (called by RLS) Start ServiceB: get
  * ServiceC Start ServiceC wire ServiceC PostConstruct ServiceC wire ServiceB
  * PostConstruct ServiceB get ServiceA (called by RLS) Start ServiceA: get
  * ServiceB wire ServiceA PostConstruct ServiceA get ServiceC (called by RLS)
- * <p>
+ * <p/>
  * Case 4: C, B, then A by RLS. get ServiceC (called by RLS) Start ServiceC:
  * wire ServiceC PostConstruct ServiceC get ServiceB (called by RLS) Start
  * ServiceB: get ServiceC wire ServiceB PostConstruct ServiceB get ServiceA
  * (called by RLS) Start ServiceA: get ServiceB wire ServiceA PostConstruct
  * ServiceA get ServiceA (called by RLS)
- * <p>
- * You can see that the order is always correct.
- * <p>
+ * <p/>
+ * You can see that the order is always correct without needing to keep the model
+ * of dependencies.
+ * <p/>
  * ~~~
- * <p>
+ * <p/>
  * Note that the implementation performs some level of constraint checking
  * during injection. For example,
- * <p>
+ * <p/>
  * - It is an error to have a RunLevel-annotated service at RunLevel X to depend
  * on (i.e., be injected with) a RunLevel-annotated service at RunLevel Y when Y
  * > X.
- * <p>
+ * <p/>
  * - It is an error to have a non-RunLevel-annotated service to depend on a
  * RunLevel-annotated service at any RunLevel.
- * <p>
+ * <p/>
  * Note that the implementation does not handle Holder and Collection injection
  * constraint validations.
- * <p>
+ * <p/>
  * ~~~
- * <p>
+ * <p/>
  * The implementation will automatically proceedTo(-1) after the habitat has
- * been initialized.
- * <p>
+ * been initialized.  The value of "-1" is symbolic of the kernel run level.
+ * <p/>
  * Note that all RunLevel values less than -1 will be ignored.
- * <p>
+ * <p/>
  * ~~~
- * <p>
+ * <p/>
  * The implementation is written to support two modes of operation, asynchronous
  * / threaded, and synchronous / single threaded.  The DefaultRunLevelService
  * implementation mode is pre-configured to be synchronous.  The
  * DefaultRunLevelService is thread safe.
- * <p>
+ * <p/>
  * In the synchronous mode, calls can be made to proceedTo() to interrupt
  * processing of any currently executing proceedTo() operation.  This might occur:
  * in another thread, in the {@link RunLevelListener} handlers, or in a
  * {@link RunLevel} annotated service's {@link PostConstruct} method call.
- * <p>
+ * <p/>
  * Note, however, that even in synchronous mode the proceedTo() operation may exhibit
  * asynchronous behavior.  This is the case when the caller has two threads calling
  * proceedTo(), where the second thread is canceling the operation of the first (perhaps
@@ -159,34 +178,36 @@ import com.sun.hk2.component.RunLevelInhabitant;
  * is capable of being interrupted.  In such a situation, the second proceedTo() call
  * returns immediately and the first proceedTo() is interrupted to continue to the 
  * new runLevel requested from the second thread's interrupt.
- * <p>
+ * <p/>
  * For this reason, it is strongly advised that {@link InterruptedException} is not
  * swallowed by services that can be driven by the DefaultRunLevelService in
  * synchronous mode.
- * <p>
+ * <p/>
  * proceedTo invocations from a {@link PostConstruct} callback are discouraged.  Consider
  * using {@link RunLevelListener} instead.
- * <p>
+ * <p/>
  * <b>Important Note:</b><br>
  * The proceedTo() method will throw unchecked exceptions of type 
  * {@link DefaultRunLevelService$Interrupt} if it detects that it is being called
  * reentrantly in synchronous mode.  Callers should be careful NOT to swallow exceptions
  * of this type as shown in the following example:
- * <p>
- * try {<br>
+ * <p/>
+ * <code>
+ * try {<br/>
  * &nbsp;rls.proceedTo(x);<br>
  * } catch (Exception e) {<br>
  * &nbsp;// swallow exception<br>
  * }
+ * </code>
  * <p>
  * ~~~
- * <p>
+ * <p/>
  * All calls to the {@Link RunLevelListener} happens synchronously on the
  * same thread that caused the Inhabitant to be activated.  Therefore, implementors
  * of this interface should be careful and avoid calling long operations.
- * <p>
+ * <p/>
  * ~~~
- * <p>
+ * <p/>
  * This service implements contracts {@link InhabitantSorter} as well as
  * {@link InhabitantActivator}.  The implementation will first attempt to find a
  * habitat resident singleton for each of these contracts respectively, and failing to find an
