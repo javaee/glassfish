@@ -98,11 +98,15 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ChangeMasterBrokerCommand.class);
     // [usemasterbroker] [availability-enabled] [dbvendor] [dbuser] [dbpassword admin] [jdbcurl] [properties props] clusterName
 
-    @Param(name="newmasterbroker", alias="nmb", optional=false)
+    @Param (primary=true)//(name="newmasterbroker", alias="nmb", optional=false)
     String newMasterBroker;
 
-    @Param(primary=true)
-    String clusterName;
+    //@Param(primary=true)
+    //String clusterName;
+
+    @Inject
+    CommandRunner commandRunner;
+
 
     @Inject
     Domain domain;
@@ -123,23 +127,30 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
         final String newMB = newMasterBroker;
-        Cluster cluster =domain.getClusterNamed(clusterName);
+        Server newMBServer = domain.getServerNamed(newMasterBroker);
+        if (newMBServer == null) {
+            report.setMessage(localStrings.getLocalString("configure.jms.cluster.invalidServerName",
+                            "Invalid server name specified. There is no server by this name"));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+        Cluster cluster = newMBServer.getCluster();//domain.getClusterNamed(clusterName);
 
         if (cluster == null) {
             report.setMessage(localStrings.getLocalString("configure.jms.cluster.invalidClusterName",
-                            "No Cluster by this name has been configured"));
+                            "The server specified is not associated with a cluster. The server assocaited with the master broker has to be a part of the cluster"));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
 
-        Server newMBServer = domain.getServerNamed(newMasterBroker);
-        if(!cluster.getName().equals(newMBServer.getCluster().getName()))
+
+        /*if(!cluster.getName().equals(newMBServer.getCluster().getName()))
         {
             report.setMessage(localStrings.getLocalString("configure.jms.cluster.invalidClusterName",
                             "{0} does not belong to the specified cluster", newMasterBroker));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
-        }
+        } */
 
        Nodes nodes = domain.getNodes();
        config = domain.getConfigNamed(cluster.getConfigRef());
@@ -152,12 +163,12 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
        }else
        {
            List<Server> serverList = cluster.getInstances();
-           if(serverList == null || serverList.size() == 0){
-             report.setMessage(localStrings.getLocalString("change.master.broker.invalidCluster",
-                            "No servers configured in cluster {0}", clusterName));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-           }
+           //if(serverList == null || serverList.size() == 0){
+             //report.setMessage(localStrings.getLocalString("change.master.broker.invalidCluster",
+               //             "No servers configured in cluster {0}", clusterName));
+            //report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            //return;
+           //}
            oldMBServer = serverList.get(0);
        }
 
@@ -187,6 +198,20 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
                  }
 
         try {
+            /*String setCommandStr = cluster.getConfigRef() + "." + "jms-service" + "." +"master-Broker";
+            ParameterMap parameters = new ParameterMap();
+            parameters.set(setCommandStr, newMB );
+
+            ActionReport subReport = report.addSubActionsReport();
+	        commandRunner.getCommandInvocation("set", subReport).parameters(parameters).execute();
+
+              if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())){
+                    report.setMessage(localStrings.getLocalString("create.jms.resource.cannotCreateConnectionPool",
+                            "Unable to create connection pool."));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+              }*/
+
             ConfigSupport.apply(new SingleConfigCode<JmsService>() {
                 public Object run(JmsService param) throws PropertyVetoException, TransactionFailure {
 
@@ -194,7 +219,7 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
                     return param;
                   }
                }, jmsservice);
-        } catch(TransactionFailure tfe) {
+        } catch(Exception tfe) {
             report.setMessage(localStrings.getLocalString("change.master.broker.fail",
                             "Unable to update the domain.xml with the new master broker") +
                             " " + tfe.getLocalizedMessage());
@@ -202,7 +227,7 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
             report.setFailureCause(tfe);
         }
         report.setMessage(localStrings.getLocalString("change.master.broker.success",
-                "Master broker change has executed successfully for Cluster {0}.", clusterName));
+                "Master broker change has executed successfully for Cluster {0}.", cluster.getName()));
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 
