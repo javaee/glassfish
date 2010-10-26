@@ -89,27 +89,18 @@ public class Util {
 
     public static void createPort(Server server, String configFile, int port)
             throws java.io.IOException {
-        Port http = null;
-
-        if (configFile == null && port == -1) {
-            http = server.createPort(Constants.DEFAULT_HTTP_PORT);
-        } else if (port != -1) {
-            http = server.createPort(port);
-        }
-        if (http != null) {
-            // TODO :: change this to use org.glassfish.embeddable.GlassFish.getService
-            EmbeddedWebContainer embedded = server.getHabitat().
-                    getComponent(EmbeddedWebContainer.class);
-            HttpListener listener = new HttpListener();
-            listener.setId("embedded-listener-1");
-            listener.setPort(port);
-            try {
-                embedded.addWebListener(listener);
-            } catch (GlassFishException ex) {
-                throw new IOException(ex);
-            } catch(ConfigException ex) {
-                throw new IOException(ex);
-            }
+        // TODO :: change this to use org.glassfish.embeddable.GlassFish.getService
+        EmbeddedWebContainer embedded = server.getHabitat().
+                getComponent(EmbeddedWebContainer.class);
+        HttpListener listener = new HttpListener();
+        listener.setId("http-listener-1");
+        listener.setPort(port != -1 ? port : Constants.DEFAULT_HTTP_PORT);
+        try {
+            embedded.addWebListener(listener);
+        } catch (GlassFishException ex) {
+            throw new IOException(ex);
+        } catch (ConfigException ex) {
+            throw new IOException(ex);
         }
     }
 
