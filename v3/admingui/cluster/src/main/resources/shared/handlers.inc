@@ -71,7 +71,30 @@
         gf.handleError(detail="#{requestScope.errormsg}");
     }
 
+</handler>
 
+
+
+<!--
+ This handler calls list-instances and return a map that has the instance name as the key and the status as value.
+ Input : #{requestScope.listInstanceAttrMap}     - required
+ Output: #{pageSession.instanceStatusMap}
+-->
+<handler id="gfr.getInstancesStatus">
+    gf.restRequest( endpoint="#{sessionScope.REST_URL}/list-instances"
+        attrs="#{requestScope.listInstanceAttrMap}"
+        method="GET"
+        result="#{pageSession.props}");
+    setAttribute(key="insList" value="#{pageSession.props.data.extraProperties.instanceList}" );
+    createMap(result="#{pageSession.instanceStatusMap}");
+    if( "(#{requestScope.insList} = #{null})" ){
+        println("============= no instances found");
+    }
+    if( "!(#{requestScope.insList} = #{null})" ){
+        foreach(var="oneIns" list="#{requestScope.insList}"){
+            mapPut(map="#{pageSession.instanceStatusMap}"  key="#{requestScope.oneIns.name}" value="#{requestScope.oneIns.status}");
+        }
+    }
 </handler>
 
 

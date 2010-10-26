@@ -52,6 +52,8 @@
     guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:standaloneTreeNode');admingui.nav.refreshTree('treeForm:tree:configurations');">
 
 #include "/cluster/shared/instancesExtraButtons.inc"
+#include "/cluster/shared/handlers.inc"
+
 
 <!define name="content">
     <event>
@@ -64,9 +66,12 @@
         setPageSessionAttribute(key="clusterList" value="#{false}" )
         setPageSessionAttribute(key="parentUrl" value="#{sessionScope.REST_URL}/servers");
         setPageSessionAttribute(key="childType" value="server");
-        gf.listInstances(optionKeys={"standaloneonly"} optionValues={"true"}, instances="#{pageSession.standalone}");
+        createMap(result="#{requestScope.listInstanceAttrMap}");
+        mapPut(map="#{requestScope.listInstanceAttrMap}" key="standaloneonly" value="true")
+        gfr.getInstancesStatus();
+        gf.getMapKeys(Map="#{pageSession.instanceStatusMap}" Keys="#{pageSession.standalone}");
         gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}",
-                includeList="#{pageSession.standalone}" 
+                includeList="#{pageSession.standalone}"
                 result="#{requestScope.listOfRows}");
     />
     

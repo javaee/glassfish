@@ -65,26 +65,24 @@
             onClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"
         />
     </sun:tableColumn>
-    <sun:tableColumn headerText="$resource{i18n.common.name.header}" rowHeader="$boolean{true}" id="col1">
+    <sun:tableColumn headerText="$resource{i18n.common.name.header}" sort="name" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="link" text="#{td.value.name}" url="#{pageSession.editLink}&instanceName=#{td.value.name}" />
     </sun:tableColumn>
-    <sun:tableColumn headerText="$resource{i18ncs.standalone.ColWeight}" rowHeader="$boolean{true}" id="col2">
+    <sun:tableColumn headerText="$resource{i18ncs.standalone.ColWeight}" sort="lbWeight" rowHeader="$boolean{true}" id="col2">
         <sun:textField id="weight" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.standalone.lbWeight']}" text="#{td.value.lbWeight}" />
     </sun:tableColumn>
-    <sun:tableColumn headerText="$resource{i18ncs.common.ConfigurationCol}" rowHeader="$boolean{true}" id="col3">
+    <sun:tableColumn headerText="$resource{i18ncs.common.ConfigurationCol}" sort="configRef" rowHeader="$boolean{true}" id="col3">
         <sun:hyperlink id="configlink" text="#{td.value.configRef}" url="/configuration/configuration.jsf?configName=#{td.value.configRef}" />
     </sun:tableColumn>
-    <sun:tableColumn headerText="$resource{i18ncs.common.NodeCol}" rowHeader="$boolean{true}" id="col5">
+    <sun:tableColumn headerText="$resource{i18ncs.common.NodeCol}" sort="node" rowHeader="$boolean{true}" id="col5">
         <sun:hyperlink id="nodeAgentlink" text="#{td.value.node}"  url="#{request.contextPath}/cluster/node/nodeEdit.jsf?nodeName=#{td.value.node}" />
     </sun:tableColumn>
-    <sun:tableColumn headerText="$resource{i18n.common.Status}" rowHeader="$boolean{true}" id="col6">
+    <sun:tableColumn headerText="$resource{i18n.common.Status}"  rowHeader="$boolean{true}" id="col6">
         <staticText id="statusCol" value="#{requestScope.statusString}" >
             <!beforeEncode
-                setAttribute(key="tmp" value="#{td.value.name}");
-                gf.listInstances(optionKeys={"id"} optionValues={"$attribute{tmp}"}, statusMap="#{requestScope.statusMap}");
-                setAttribute(key="status" value="#{requestScope.statusMap['$attribute{tmp}']}");
+                mapGet(Map="#{pageSession.instanceStatusMap}" Key="#{td.value.name}" Value="#{requestScope.status}")
                 setAttribute(key="statusString" value="$resource{i18nc.status.image.$attribute{status}}  &nbsp; $resource{i18nc.status.$attribute{status}}");
-                />
+            />
         </staticText>
     </sun:tableColumn>
 </sun:tableRowGroup>
