@@ -58,19 +58,6 @@ public class MultiMap<K,V> implements Serializable {
     private final Map<K,List<V>> store;
     private final boolean concurrencyControls;
 
-    public final String toString() {
-        final StringBuilder builder = new StringBuilder();
-        final String newline = System.getProperty( "line.separator" );
-        builder.append("{");
-        for ( final K key : store.keySet() ) {
-            builder.append(key).append(": ");
-            builder.append(store.get(key));
-            builder.append(newline);
-        }
-        builder.append("}");
-        return builder.toString();
-    }
-    
     /**
      * Creates an empty multi-map with default concurrency controls
      */
@@ -115,6 +102,20 @@ public class MultiMap<K,V> implements Serializable {
             store.put(e.getKey(), newList(e.getValue()));
     }
 
+    @Override
+    public final String toString() {
+        final StringBuilder builder = new StringBuilder();
+        final String newline = System.getProperty( "line.separator" );
+        builder.append("{");
+        for ( final K key : store.keySet() ) {
+            builder.append(key).append(": ");
+            builder.append(store.get(key));
+            builder.append(newline);
+        }
+        builder.append("}");
+        return builder.toString();
+    }
+    
     /**
      * Creates an optionally populated list to be used as an entry in the map.
      * @param initialVal
@@ -134,6 +135,10 @@ public class MultiMap<K,V> implements Serializable {
           return new ArrayList<V>(initialVals);
         }
       }
+    }
+
+    public Set<K> keySet() {
+      return store.keySet();
     }
     
     /**
