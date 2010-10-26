@@ -167,6 +167,7 @@ public class InhabitantsGenerator extends Constants {
     } else {
       w = new PrintWriter(targetInhabitantFile, "UTF-8");
     }
+    
     try {
       generate(w);
     } finally {

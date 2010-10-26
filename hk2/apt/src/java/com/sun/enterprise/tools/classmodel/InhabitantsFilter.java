@@ -72,7 +72,7 @@ public class InhabitantsFilter extends Constants {
   public static void main(String[] args) throws Exception {
     File sourceInhabitantFile = InhabitantsGenerator.getInhabitantFile(PARAM_INHABITANT_SOURCE_FILE, false);
     if (!sourceInhabitantFile.exists()) {
-      logger.log(Level.FINE, "Nothing to do.");
+      logger.log(Level.INFO, "Nothing to do.");
       return;
     }
     File targetInhabitantFile = InhabitantsGenerator.getInhabitantFile(PARAM_INHABITANT_TARGET_FILE, false);
@@ -92,7 +92,7 @@ public class InhabitantsFilter extends Constants {
     process(inDescriptor, outDescriptor, filter);
 
     if (!outDescriptor.isEmpty()) {
-      logger.log(Level.FINE, "writing file {0}", targetInhabitantFile);
+      logger.log(Level.INFO, "writing file {0}", targetInhabitantFile);
       
       if (!sorted) {
         outDescriptor.write(targetInhabitantFile);
