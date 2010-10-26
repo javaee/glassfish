@@ -3,10 +3,10 @@ package com.sun.enterprise.tools.classmodel;
 import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,7 +15,6 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Set;
@@ -109,7 +108,7 @@ public class InhabitantsGeneratorTest {
       File testDir = new File(new File("."), "target/test-classes");
       File outputFile = new File(testDir, "META-INF/inhabitants/default");
 
-      System.setProperty(InhabitantsGenerator.PARAM_INHABITANT_FILE, outputFile
+      System.setProperty(InhabitantsGenerator.PARAM_INHABITANT_TARGET_FILE, outputFile
           .getAbsolutePath());
       System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_SOURCE_FILES,
           testDir.getAbsolutePath());
@@ -122,6 +121,8 @@ public class InhabitantsGeneratorTest {
           + InhabitantsGenerator.PARAM_INHABITANTS_SOURCE_FILES + "\n", errTxt);
     } finally {
       System.setErr(old);
+      System.clearProperty(InhabitantsGenerator.PARAM_INHABITANT_TARGET_FILE);
+      System.clearProperty(InhabitantsGenerator.PARAM_INHABITANTS_SOURCE_FILES);
       System.clearProperty(InhabitantsGenerator.PARAM_INHABITANTS_CLASSPATH);
       System.setProperties(oldSysProps);
       ps.close();
@@ -145,11 +146,13 @@ public class InhabitantsGeneratorTest {
       File testDir = new File(new File("."), "target/test-classes");
       File outputFile = new File(testDir, "META-INF/inhabitants/default");
 
-      System.setProperty(InhabitantsGenerator.PARAM_INHABITANT_FILE, 
+      System.setProperty(InhabitantsGenerator.PARAM_INHABITANT_TARGET_FILE, 
           outputFile.getAbsolutePath());
       System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_SOURCE_FILES,
           toString(getTestClassPathEntries(false)));
       // System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_CLASSPATH,
+      System.clearProperty(InhabitantsGenerator.PARAM_INHABITANTS_CLASSPATH);
+      
       // testDir.getAbsolutePath());
       InhabitantsGenerator.main(null);
 
@@ -160,6 +163,9 @@ public class InhabitantsGeneratorTest {
               + " is missing; defaulting to system classpath"));
     } finally {
       System.setErr(old);
+      System.clearProperty(InhabitantsGenerator.PARAM_INHABITANT_TARGET_FILE);
+      System.clearProperty(InhabitantsGenerator.PARAM_INHABITANTS_SOURCE_FILES);
+      System.clearProperty(InhabitantsGenerator.PARAM_INHABITANTS_CLASSPATH);
       System.setProperties(oldSysProps);
       ps.close();
     }
@@ -238,12 +244,11 @@ public class InhabitantsGeneratorTest {
         expected, output);
   }
 
-  String expected(boolean worldViewClassPath) throws IOException {
+  static String expected(boolean worldViewClassPath) throws IOException {
     return expected(worldViewClassPath, true);
   }
 
-  String expected(boolean worldViewClassPath, boolean fromClassModel)
-      throws IOException {
+  static String expected(boolean worldViewClassPath, boolean fromClassModel) throws IOException {
     StringBuilder sb = new StringBuilder();
 
     sb.append("class=com.sun.enterprise.tools.classmodel.test.RunLevelCloseableService,index=java.io.Closeable:closeable,index=org.jvnet.hk2.annotations.RunLevel\n");
@@ -285,7 +290,7 @@ public class InhabitantsGeneratorTest {
       sb.append("class=test1.Start,index=com.sun.enterprise.module.bootstrap.ModuleStartup\n");
     }
 
-    return sort(sb.toString());
+    return Utilities.sortInhabitantsDescriptor(sb.toString(), false);
   }
 
   /**
@@ -301,7 +306,7 @@ public class InhabitantsGeneratorTest {
     String inhabitantSources = toString(getAutoDependsClassPathEntries());
     String workingClassPath = toString(getTestClassPathEntries(true));
     
-    System.setProperty(InhabitantsGenerator.PARAM_INHABITANT_FILE, outputFile.getAbsolutePath());
+    System.setProperty(InhabitantsGenerator.PARAM_INHABITANT_TARGET_FILE, outputFile.getAbsolutePath());
     System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_SOURCE_FILES, inhabitantSources);
     System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_CLASSPATH, workingClassPath);
     InhabitantsGenerator.main(null);
@@ -329,7 +334,17 @@ public class InhabitantsGeneratorTest {
     File outputFile = new File(testDir, "META-INF/inhabitants/default");
     outputFile.delete();
 
-    System.setProperty(InhabitantsGenerator.PARAM_INHABITANT_FILE, 
+    String output = callMain(outputFile);
+
+    String expected = expected(true);
+
+    assertTrue(output + " was not found to contain:\n" + expected, 
+        output.contains(expected));
+  }
+
+  static String callMain(File outputFile) throws Exception, FileNotFoundException,
+      IOException {
+    System.setProperty(InhabitantsGenerator.PARAM_INHABITANT_TARGET_FILE, 
         outputFile.getAbsolutePath());
     System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_SOURCE_FILES,
         toString(getTestClassPathEntries(false)));
@@ -340,16 +355,12 @@ public class InhabitantsGeneratorTest {
     assertTrue("expect to find: " + outputFile, outputFile.exists());
 
     FileInputStream fis = new FileInputStream(outputFile);
-    String output = sort(toString(fis));
+    String output = Utilities.sortInhabitantsDescriptor(toString(fis), false);
     fis.close();
-
-    String expected = expected(true);
-
-    assertTrue(output + " was not found to contain:\n" + expected, 
-        output.contains(expected));
+    return output;
   }
 
-  private String toString(InputStream is) throws IOException {
+  static String toString(InputStream is) throws IOException {
     StringBuilder sb = new StringBuilder();
     BufferedReader reader = new BufferedReader(new InputStreamReader(is));
     String line;
@@ -371,7 +382,7 @@ public class InhabitantsGeneratorTest {
       File outputFile = new File(testDir, "META-INF/inhabitants/default");
       outputFile.delete();
 
-      System.setProperty(InhabitantsGenerator.PARAM_INHABITANT_FILE, 
+      System.setProperty(InhabitantsGenerator.PARAM_INHABITANT_TARGET_FILE, 
           outputFile.getAbsolutePath());
       System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_SOURCE_FILES,
           toString(getTestClassPathEntries(false)));
@@ -398,7 +409,7 @@ public class InhabitantsGeneratorTest {
         count++;
 
         InputStream is = (InputStream) url.getContent();
-        String output = sort(toString(is));
+        String output = Utilities.sortInhabitantsDescriptor(toString(is), false);
         is.close();
 
         boolean fromClassModelIntrospection = 
@@ -426,10 +437,10 @@ public class InhabitantsGeneratorTest {
   }
 
   private String clean(String string) throws IOException {
-    return sort(string.replace("\r", ""));
+    return Utilities.sortInhabitantsDescriptor(string.replace("\r", ""), false);
   }
 
-  private String toString(ArrayList<File> list) {
+  static String toString(ArrayList<File> list) {
     StringBuilder sb = new StringBuilder();
     for (File file : list) {
       if (sb.length() > 0) {
@@ -440,7 +451,7 @@ public class InhabitantsGeneratorTest {
     return sb.toString();
   }
 
-  public ArrayList<File> getTestClassPathEntries(boolean worldView) {
+  static ArrayList<File> getTestClassPathEntries(boolean worldView) {
     ArrayList<File> entries = new ArrayList<File>();
 
     ClassPath classpath = ClassPath.create(null, false);
@@ -474,7 +485,7 @@ public class InhabitantsGeneratorTest {
     return entries;
   }
 
-  public ArrayList<File> getAutoDependsClassPathEntries() {
+  static ArrayList<File> getAutoDependsClassPathEntries() {
     ArrayList<File> entries = new ArrayList<File>();
 
     ClassPath classpath = ClassPath.create(null, false);
@@ -495,23 +506,24 @@ public class InhabitantsGeneratorTest {
     return entries;
   }
 
-  private String sort(String in) throws IOException {
-    ArrayList<String> lines = new ArrayList<String>();
-    BufferedReader reader = new BufferedReader(new InputStreamReader(
-        new ByteArrayInputStream(in.getBytes())));
-    String line;
-    while (null != (line = reader.readLine())) {
-      if (!line.startsWith("#")) {
-        lines.add(line);
+  static ArrayList<File> getLocalModuleClassPathEntry() {
+    ArrayList<File> entries = new ArrayList<File>();
+
+    ClassPath classpath = ClassPath.create(null, false);
+    Set<String> cpSet = classpath.getEntries();
+    for (String entry : cpSet) {
+      if (entry.contains("apt-test")) {
+        entries.add(new File(entry));
       }
     }
 
-    Collections.sort(lines);
-
-    StringBuilder sb = new StringBuilder();
-    for (String oline : lines) {
-      sb.append(oline).append("\n");
+    if (entries.isEmpty()) {
+      throw new RuntimeException("can't find test-classes in " + cpSet);
     }
-    return sb.toString();
+
+    logger.info("this module's classpath is " + entries);
+
+    return entries;
   }
+  
 }

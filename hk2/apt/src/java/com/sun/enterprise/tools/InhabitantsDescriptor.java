@@ -43,6 +43,7 @@ import com.sun.hk2.component.InhabitantParser;
 import com.sun.hk2.component.InhabitantsFile;
 import com.sun.hk2.component.InhabitantsScanner;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -52,6 +53,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.jvnet.hk2.component.MultiMap;
 
@@ -86,17 +88,36 @@ public class InhabitantsDescriptor extends HashMap<String, String> {
   }
   
   public void setComment(String comment) {
-    this.comment = comment;
+    if (null == comment) {
+      this.comment = comment;
+    } else {
+      this.comment = "#" + comment;
+    }
   }
 
+  public void appendComment(String comment) {
+    if (null == this.comment) {
+      setComment(comment);
+    } else {
+      this.comment += "\n#" + comment;
+    }
+  }
+  
   /**
    * Loads an existing file.
    */
   public void load(File f) throws IOException {
-    InhabitantsScanner scanner = new InhabitantsScanner(new FileInputStream(f),
-        f.getPath());
-    for (InhabitantParser kvpp : scanner)
-      put(kvpp.getImplName(), kvpp.getLine());
+    FileInputStream in = new FileInputStream(f);
+    try {
+      InhabitantsScanner scanner = new InhabitantsScanner(in, f.getPath());
+      for (InhabitantParser kvpp : scanner) {
+        put(kvpp.getImplName(), kvpp.getLine());
+      }
+    } finally {
+      if (null != in) {
+        in.close();
+      }
+    }
   }
 
   @Override
@@ -158,22 +179,38 @@ public class InhabitantsDescriptor extends HashMap<String, String> {
    * Writes the descriptor to a file.
    */
   public void write(File outputDir, Messager messager, String habitatName) {
-    if (!dirty)
-      return; // no need to write.
-
-    PrintWriter w = null;
-    try {
-      File out = new File(new File(outputDir, InhabitantsFile.PATH), habitatName);
-      out.getParentFile().mkdirs();
-      w = new PrintWriter(out, "UTF-8");
-
-      write(w);
-    } catch (IOException e) {
-      messager.printError("Failed to write inhabitants file " + habitatName, e);
-    } finally {
-      if (null != w) {
-        w.close();
+    File out = new File(new File(outputDir, InhabitantsFile.PATH), habitatName);
+    
+    if (!dirty) {
+      if (out.exists()) {
+        out.delete();
       }
+      
+      return; // no need to write.
+    }
+
+    try {
+      write(out);
+    } catch (IOException e) {
+      if (null == messager) {
+        Logger.getAnonymousLogger().warning("Failed to write inhabitants file " + habitatName);
+      } else {
+        messager.printError("Failed to write inhabitants file " + habitatName, e);
+      }
+    }
+  }
+
+  public void write(File out) throws IOException {
+    File parent = out.getParentFile();
+    if (null != parent) {
+      parent.mkdirs();
+    }
+    
+    PrintWriter w = new PrintWriter(out, "UTF-8");
+    try {
+      write(w);
+    } finally {
+      w.close();
     }
   }
 
@@ -184,7 +221,7 @@ public class InhabitantsDescriptor extends HashMap<String, String> {
     }
     
     if (commentEnabled && null != comment) {
-      w.println("# " + comment);
+      w.println(comment);
     }
     
     for (String line : values()) {
@@ -192,4 +229,13 @@ public class InhabitantsDescriptor extends HashMap<String, String> {
     }
   }
 
+  @Override
+  public String toString() {
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
+    PrintWriter w = new PrintWriter(os);
+    write(w);
+    w.close();
+    return os.toString();
+  }
+  
 }

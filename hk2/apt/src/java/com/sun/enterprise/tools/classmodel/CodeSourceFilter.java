@@ -61,7 +61,9 @@ public class CodeSourceFilter {
   public CodeSourceFilter(ClassPath filter) {
     this.filter = filter;
     try {
-      initialize();
+      if (null != filter) {
+        initialize();
+      }
     } catch (IOException e) {
       Logger.getAnonymousLogger().log(Level.FINE, "error occurred", e);
     }
