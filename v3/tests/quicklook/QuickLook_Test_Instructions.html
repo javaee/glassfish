@@ -6,7 +6,7 @@
 	<META NAME="GENERATOR" CONTENT="OpenOffice.org 3.2  (Linux)">
 	<META NAME="AUTHOR" CONTENT="d s">
 	<META NAME="CREATED" CONTENT="20080319;10465100">
-	<META NAME="CHANGED" CONTENT="20101026;20305800">
+	<META NAME="CHANGED" CONTENT="20101026;23422600">
 	<!-- DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
     Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
@@ -95,8 +95,7 @@ support for QL glassfish.
 	and do: <I>ant -Dglassfish.home={V3 Installation Dir} all_cluster</I></P>
 </UL>
 <P STYLE="margin-bottom: 0in">The test results will be in test-output
-directory.<BR><BR>
-</P>
+directory.</P>
 <P STYLE="margin-bottom: 0in"><A NAME="__DdeLink__0_178707749"></A><B>2.
 To Run QL in Web Profile:</B><BR>The web profile (-P test_wd) should
 be used for testing the v3 web distribution.</P>
@@ -108,10 +107,10 @@ be used for testing the v3 web distribution.</P>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
 <P STYLE="margin-bottom: 0in"><B>3. To Run QL in Embedded
-Profile:</B><BR>The web profile (-P test_wd) should be used for
-testing the v3 web distribution.</P>
+Profile:</B><BR>The web profile (-P test_em) should be used for
+testing the v3 embedded mode.</P>
 <UL>
-	<LI><P><I>mvn -Dglassfish.home={V3 Installation Dir} <B>-P test_wd
+	<LI><P><I>mvn -Dglassfish.home={V3 Installation Dir} <B>-P test_em
 	test</B> | tee run.log </I>
 	</P>
 </UL>
@@ -141,13 +140,13 @@ The dev_debug profile can be used (-P dev_debug) in this scenario.
 <UL>
 	<LI><P STYLE="margin-bottom: 0in">Start v3 in debug mode. For
 	example: <I>java -jar modules/glassfish.jar</I></P>
-	<LI><P><I>mvn -Dglassfish.home={V3 Installation Dir} </I><I><B>-Pdev_debug</B></I><I>
-	test | tee run.log</I></P>
+	<LI><P><I>mvn -Dglassfish.home={V3 Installation Dir} </I><I><B>-Pdev_debug</B></I>
+	<I>test | tee run.log</I></P>
 </UL>
 <P>Note: The tests require restart domain (admincli) will be skipped
-in this scenario.<BR><BR><B>7</B><B>. To Run Individual Test Suite
-from Directory Level:</B><BR><BR>After the first run with maven from
-top level, the dependency jars will be downloaded to local maven
+in this scenario.<BR><BR><B>7. To Run Individual Test Suite from
+Directory Level:</B><BR><BR>After the first run with maven from top
+level, the dependency jars will be downloaded to local maven
 repository. Now it's possible to run individual test suite from
 directory level. Change directory to the test directory. For example,
 to run quicklook/ejb/slsbnicmt test suite against <B>glassfish</B>
