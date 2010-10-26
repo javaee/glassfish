@@ -60,6 +60,46 @@ public class InhabitantsFilterTest {
   }
 
   /**
+   * Verifies filtering when there is "real" filtering
+   */
+  @Test
+  public void testMainWithRealFiltering() throws Exception {
+    // setup test
+    File testDir = new File(new File("."), "target/test-classes");
+    File inputFile = new File(testDir, "META-INF/inhabitants/default");
+    InhabitantsGeneratorTest.callMain(inputFile, true, null, null, null);
+    
+    File outputFile = new File(testDir, "META-INF/inhabitants/filtered");
+    outputFile.delete();
+    
+    // execute main test logic
+    try {
+      // "real" filter
+      String inhabitantSources = InhabitantsGeneratorTest.toString(InhabitantsGeneratorTest.getLocalModuleClassPathEntry());
+
+      System.setProperty(Constants.PARAM_INHABITANT_SOURCE_FILE, inputFile.getAbsolutePath());
+      System.setProperty(Constants.PARAM_INHABITANT_TARGET_FILE, outputFile.getAbsolutePath());
+      System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_SOURCE_FILES, inhabitantSources);
+      InhabitantsFilter.main(null);
+      assertTrue(outputFile.exists());
+      
+      FileInputStream fis = new FileInputStream(outputFile);
+      String output = InhabitantsGeneratorTest.toString(fis);
+      fis.close();
+      
+      String expected = "class=com.sun.enterprise.tools.classmodel.test.local.LocalServiceInTestDir,index=java.io.Closeable\n";
+      
+      logger.log(Level.INFO, "expected=\n{0}and processed=\n{1}\n", new Object[] {expected, output});
+      
+      assertEquals(expected, output);
+    } finally {
+      System.clearProperty(InhabitantsGenerator.PARAM_INHABITANT_SOURCE_FILE);
+      System.clearProperty(InhabitantsGenerator.PARAM_INHABITANT_TARGET_FILE);
+      System.clearProperty(InhabitantsGenerator.PARAM_INHABITANTS_SOURCE_FILES);
+    }
+  }
+
+  /**
    * Verifies sorting behavior
    */
   @Test
@@ -103,43 +143,32 @@ public class InhabitantsFilterTest {
   }
   
   /**
-   * Verifies filtering when there is "real" filtering
+   * Verifies behavior when no source file to process
    */
   @Test
-  public void testMainWithRealFiltering() throws Exception {
+  public void testNothingToProcess() throws Exception {
     // setup test
     File testDir = new File(new File("."), "target/test-classes");
-    File inputFile = new File(testDir, "META-INF/inhabitants/default");
-    InhabitantsGeneratorTest.callMain(inputFile, true, null, null, null);
-    
+    File inputFile = new File(testDir, "META-INF/inhabitants/bogus");
     File outputFile = new File(testDir, "META-INF/inhabitants/filtered");
     outputFile.delete();
     
-    // execute main test logic
     try {
-      // "real" filter
-      String inhabitantSources = InhabitantsGeneratorTest.toString(InhabitantsGeneratorTest.getLocalModuleClassPathEntry());
-
+      // execute main test logic
       System.setProperty(Constants.PARAM_INHABITANT_SOURCE_FILE, inputFile.getAbsolutePath());
       System.setProperty(Constants.PARAM_INHABITANT_TARGET_FILE, outputFile.getAbsolutePath());
-      System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_SOURCE_FILES, inhabitantSources);
+      System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_SOURCE_FILES, "target/bogus");
+      System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_SORTED, "true");
+      
       InhabitantsFilter.main(null);
-      assertTrue(outputFile.exists());
-      
-      FileInputStream fis = new FileInputStream(outputFile);
-      String output = InhabitantsGeneratorTest.toString(fis);
-      fis.close();
-      
-      String expected = "class=com.sun.enterprise.tools.classmodel.test.local.LocalServiceInTestDir,index=java.io.Closeable\n";
-      
-      logger.log(Level.INFO, "expected=\n{0}and processed=\n{1}\n", new Object[] {expected, output});
-      
-      assertEquals(expected, output);
+  
+      assertFalse(outputFile.exists());
     } finally {
       System.clearProperty(InhabitantsGenerator.PARAM_INHABITANT_SOURCE_FILE);
       System.clearProperty(InhabitantsGenerator.PARAM_INHABITANT_TARGET_FILE);
       System.clearProperty(InhabitantsGenerator.PARAM_INHABITANTS_SOURCE_FILES);
+      System.clearProperty(InhabitantsGenerator.PARAM_INHABITANTS_SORTED);
     }
   }
-
+  
 }
