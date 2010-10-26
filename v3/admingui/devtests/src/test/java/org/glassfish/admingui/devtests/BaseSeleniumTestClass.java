@@ -40,7 +40,6 @@
 
 package org.glassfish.admingui.devtests;
 
-import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.SeleniumException;
 import java.io.BufferedReader;
@@ -65,6 +64,12 @@ import java.util.List;
 import java.util.Random;
 import org.junit.AfterClass;
 import org.junit.Rule;
+import org.openqa.selenium.By;
+import org.openqa.selenium.RenderedWebElement;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverBackedSelenium;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxDriver;
 
 public class BaseSeleniumTestClass {
 
@@ -78,6 +83,7 @@ public class BaseSeleniumTestClass {
     public SpecificTestRule specificTestRule = new SpecificTestRule();
 
     protected static Selenium selenium;
+    protected static WebDriver driver;
     protected static final int TIMEOUT = 90;
     protected static final int BUTTON_TIMEOUT = 300;
     private static String currentTestClass = "";
@@ -90,28 +96,32 @@ public class BaseSeleniumTestClass {
         String port = getParameter("admin.port", "4848");
         String seleniumPort = getParameter("selenium.port", "4444");
         String baseUrl = "http://localhost:" + port;
-        debug = Boolean.parseBoolean(getParameter("debug", "false"));
+        debug = Boolean.parseBoolean(getParameter("debug", "true"));
+        driver = new FirefoxDriver();
 
-        if (selenium == null) {
-            selenium = new DefaultSelenium("localhost", Integer.parseInt(seleniumPort), "*" + browser, baseUrl);
-            selenium.start();
-            selenium.setTimeout("90000");
-            (new BaseSeleniumTestClass()).openAndWait("/", TRIGGER_COMMON_TASKS, 480); // Make sure the server has started and the user logged in
-        }
+//        if (selenium == null) {
+        selenium = new WebDriverBackedSelenium(driver, baseUrl);
+//                    DefaultSelenium("localhost", Integer.parseInt(seleniumPort), "*" + browser, baseUrl);
+//            selenium.start();
+        selenium.setTimeout("90000");
+        (new BaseSeleniumTestClass()).openAndWait("/", TRIGGER_COMMON_TASKS, 480); // Make sure the server has started and the user logged in
+//        }
 
-        URL rotateLogUrl = new URL(baseUrl + "/management/domain/rotate-log");
-        URLConnection conn = rotateLogUrl.openConnection();
-        conn.setDoOutput(true);
-        OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-        wr.write("");
-        wr.flush();
-        BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        String line = rd.readLine();
-        while (line  != null) {
-            line = rd.readLine();
+        if (!debug) {
+            URL rotateLogUrl = new URL(baseUrl + "/management/domain/rotate-log");
+            URLConnection conn = rotateLogUrl.openConnection();
+            conn.setDoOutput(true);
+            OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+            wr.write("");
+            wr.flush();
+            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line = rd.readLine();
+            while (line  != null) {
+                line = rd.readLine();
+            }
+            wr.close();
+            rd.close();
         }
-        wr.close();
-        rd.close();
     }
 
     @AfterClass
@@ -131,7 +141,7 @@ public class BaseSeleniumTestClass {
                 in.close();
                 out.close();
             }
-            //selenium.stop();
+            selenium.stop();
         } catch (Exception ex) {
             Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.INFO, null, ex);
         }
@@ -193,6 +203,7 @@ public class BaseSeleniumTestClass {
     }
 
     protected void clickAndWait(String id, String triggerText, int seconds) {
+        insureElementIsVisible(id);
         selenium.click(id);
         waitForPageLoad(triggerText, seconds);
     }
@@ -323,6 +334,9 @@ public class BaseSeleniumTestClass {
      * @return
      */
     protected String getLinkIdByLinkText(String baseId, String value) {
+        WebElement link = driver.findElement(By.linkText(value));
+        return (link == null) ?  null : (String)link.getAttribute("id");
+        /*
         String[] links = selenium.getAllLinks();
 
         for (String link : links) {
@@ -335,6 +349,7 @@ public class BaseSeleniumTestClass {
         }
 
         return null;
+        */
     }
 
     protected void selectTableRowByValue(String tableId, String value) {
@@ -375,8 +390,9 @@ public class BaseSeleniumTestClass {
         return rows.size();
     }
 
-    protected void deleteAllTableRows(String selectAllButtonId, String deleteButtonId) {
-        selenium.click(selectAllButtonId);
+    protected void deleteAllTableRows(String tableId) {
+        String deleteButtonId = tableId + ":topActionsGroup1:button1";
+        selectAllTableRows(tableId);
         waitForButtonEnabled(deleteButtonId);
         selenium.chooseOkOnNextConfirmation();
         selenium.click(deleteButtonId);
@@ -384,6 +400,14 @@ public class BaseSeleniumTestClass {
             selenium.getConfirmation();
         }
         this.waitForButtonDisabled(deleteButtonId);
+    }
+    
+    protected void selectAllTableRows(String tableId) {
+        int count = getTableRowCount(tableId);
+        for (int i = 0 ; i < count; i++) {
+            selenium.click(tableId+":rowGroup1:" + i +":col0:select");
+            selenium.check(tableId+":rowGroup1:" + i +":col0:select");
+        }
     }
 
     // TODO: write javadocs for this
@@ -516,10 +540,15 @@ public class BaseSeleniumTestClass {
         waitForButtonDisabled(enableButtonId);
 
         clickAndWait(getLinkIdByLinkText(tableId, resourceName), editTriggerText);
+        // TODO: this is an ugly, ugly hack and needs to be cleaned up
         if(state.contains("Target")) {
             Assert.assertEquals(state, selenium.getText(statusId));
         } else {
-            Assert.assertEquals(state, selenium.getValue(statusId));
+            if ("on".equals(state) || "off".equals(state)) {
+                Assert.assertEquals("on".equals(state), selenium.isChecked(statusId));
+            } else {
+                Assert.assertEquals(state, selenium.getValue(statusId));
+            }
         }
         clickAndWait(backToTableButtonId, tableTriggerText);
     }
@@ -557,7 +586,7 @@ public class BaseSeleniumTestClass {
         final String TRIGGER_EDIT_RESOURCE_TARGETS = "Resource Targets";
         final String enableStatus = "Enabled on 2 of 2 Target(s)";
         final String disableStatus = "Enabled on 0 of 2 Target(s)";
-        final String TRIGGER_MANAGE_TARGETS = "Manage Targets";
+        final String TRIGGER_MANAGE_TARGETS = "Manage Resource Targets";
         final String TRIGGGER_VALUES_SAVED = "New values successfully saved.";
         final String DEFAULT_SERVER = "server";
 
@@ -624,6 +653,26 @@ public class BaseSeleniumTestClass {
         String value = System.getProperty(paramName);
 
         return value != null ? value : defaultValue;
+    }
+    
+    private void insureElementIsVisible (final String id) {
+        if (!id.contains("treeForm:tree")) {
+            return;
+        }
+        
+        RenderedWebElement element = (RenderedWebElement)driver.findElement(By.id(id));
+        if (element.isDisplayed()) {
+            return;
+        }
+        
+        final String parentId = id.substring(0, id.lastIndexOf(":"));
+        final RenderedWebElement parentElement = (RenderedWebElement)driver.findElement(By.id(parentId));
+        if (!parentElement.isDisplayed()) {
+            insureElementIsVisible(parentId);
+            String grandParentId = parentId.substring(0, parentId.lastIndexOf(":"));
+            String nodeId = grandParentId.substring(grandParentId.lastIndexOf(":")+1);
+            selenium.click(grandParentId + ":" + nodeId+"_turner");
+        }
     }
 
     class PageLoadCallBack implements WaitForLoadCallBack {
@@ -697,7 +746,8 @@ public class BaseSeleniumTestClass {
 
         @Override
         public boolean executeTest() {
-            String attr = selenium.getEval("this.browserbot.findElement('id=" + buttonId + "').disabled");
+//            String attr = selenium.getEval("this.browserbot.findElement('id=" + buttonId + "').disabled"); // "Classic" Selenium
+            String attr = driver.findElement(By.id(buttonId)).getAttribute("disabled"); // WebDriver-backed Selenium
             return (Boolean.parseBoolean(attr) == desiredState);
         }
         

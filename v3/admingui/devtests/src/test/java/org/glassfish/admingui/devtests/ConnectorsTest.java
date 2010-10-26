@@ -44,7 +44,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 public class ConnectorsTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_CONNECTOR_CONNECTION_POOLS = "Click New to create a new connector connection pool.";
@@ -222,7 +221,6 @@ public class ConnectorsTest extends BaseSeleniumTestClass {
         //Delete the instance
         clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", instanceTest.TRIGGER_INSTANCES_PAGE);
         deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
-        assertFalse(selenium.isTextPresent(instanceName));
     }
 
     @Test

@@ -53,7 +53,7 @@ import static org.junit.Assert.assertTrue;
  * @author anilam
  */
 public class StandaloneTest  extends BaseSeleniumTestClass {
-    public static final String TRIGGER_INSTANCES_PAGE = "Server Instances (";
+    public static final String TRIGGER_INSTANCES_PAGE = "Create and manage standalone instances.";
     public static final String TRIGGER_NEW_PAGE = "Configuration:";
     public static final String TRIGGER_GENERAL_INFO_PAGE = "General Information";
     public static final String TRIGGER_SYS_PROPS = "Configuration System Properties";
@@ -188,7 +188,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         }
 
         // Delete all instances
-        deleteAllTableRows("propertyForm:instancesTable:_tableActionsTop:_selectMultipleButton", "propertyForm:instancesTable:topActionsGroup1:button1");
+        deleteAllTableRows("propertyForm:instancesTable");
     }
 
     public void startInstance(String instanceName) {

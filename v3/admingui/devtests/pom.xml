@@ -110,6 +110,7 @@
                     <forkMode>never</forkMode>
                 </configuration>
             </plugin>
+            <!--
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>selenium-maven-plugin</artifactId>
@@ -127,6 +128,7 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
                 <executions>
