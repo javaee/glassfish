@@ -90,6 +90,7 @@ public class NodeUtils {
     static final String PARAM_SSHPASSWORD = "sshpassword";
     static final String PARAM_SSHKEYPASSPHRASE = "sshkeypassphrase";
     static final String PARAM_TYPE = "type";
+    static final String LANDMARK_FILE = "glassfish/modules/admin-cli.jar";    
 
     private static final String NL = System.getProperty("line.separator");
 
@@ -284,8 +285,6 @@ public class NodeUtils {
     private void validateSSHConnection(ParameterMap map) throws
             CommandValidationException {
 
-
-        final String LANDMARK_FILE = "glassfish/modules/admin-cli.jar";
         String nodehost = map.getOne(PARAM_NODEHOST);
         String installdir = map.getOne(PARAM_INSTALLDIR);
         String nodedir = map.getOne(PARAM_NODEDIR);

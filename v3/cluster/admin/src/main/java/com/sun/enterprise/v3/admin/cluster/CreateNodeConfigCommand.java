@@ -43,6 +43,8 @@ package com.sun.enterprise.v3.admin.cluster;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.Nodes;
 import org.glassfish.api.ActionReport;
+import com.sun.enterprise.universal.glassfish.TokenResolver;
+import com.sun.enterprise.util.StringUtils;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
@@ -50,6 +52,10 @@ import org.glassfish.api.admin.CommandRunner.CommandInvocation;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import java.util.logging.Logger;
+import java.util.Map;
+import java.util.HashMap;
+import com.sun.enterprise.util.net.NetUtils;
+import java.io.File;
 
 /**
  * Remote AdminCommand to create a config node.  This command is run only on DAS.
@@ -83,6 +89,26 @@ public class CreateNodeConfigCommand implements AdminCommand {
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
 
+        //validate installdir if passed and running on localhost
+        if (nodehost != null){
+            if (NetUtils.IsThisHostLocal(nodehost) && installdir != null){
+                TokenResolver resolver = null;
+
+                // Create a resolver that can replace system properties in strings
+                Map<String, String> systemPropsMap =
+                        new HashMap<String, String>((Map)(System.getProperties()));
+                resolver = new TokenResolver(systemPropsMap);
+                String resolvedInstallDir = resolver.resolve(installdir);
+                File actualInstallDir = new File( resolvedInstallDir+"/" + NodeUtils.LANDMARK_FILE);
+
+
+                if (!actualInstallDir.exists()){
+                    report.setMessage(Strings.get("invalid.installdir",installdir));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
+            }
+        }
         CommandInvocation ci = cr.getCommandInvocation("_create-node", report);
         ParameterMap map = new ParameterMap();
         map.add("DEFAULT", name);
