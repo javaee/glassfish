@@ -41,6 +41,7 @@
 package org.glassfish.orb.admin.cli;
 
 
+import com.sun.enterprise.config.serverbeans.Config;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 
@@ -55,8 +56,16 @@ import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.IiopListener;
 import com.sun.enterprise.config.serverbeans.IiopService;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.SystemPropertyConstants;
 
 import java.util.List;
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.ExecuteOn;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.internal.api.Target;
+import org.jvnet.hk2.component.Habitat;
 
 
 /**
@@ -67,30 +76,43 @@ import java.util.List;
 @Service(name="list-iiop-listeners")
 @Scoped(PerLookup.class)
 @I18n("list.iiop.listeners")
+@ExecuteOn(value={RuntimeType.DAS})
+@TargetType(value={CommandTarget.CLUSTER,CommandTarget.CONFIG,
+    CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE }
+)
 public class ListIiopListeners implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(ListIiopListeners.class);
 
+    @Param( primary=true, name="target", optional=true,
+        defaultValue=SystemPropertyConstants.DAS_SERVER_NAME)
+    String target ;
+
     @Inject
-    IiopService iiopService;
+    Habitat habitat ;
+
 
     /**
      * Executes the command
      *
      * @param context information
      */
+    @Override
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
+        final Target targetUtil = habitat.getComponent(Target.class ) ;
+        final Config config = targetUtil.getConfig(target) ;
+        final IiopService iiopService = config.getIiopService();
 
         try {
-        List<IiopListener> listenerList = iiopService.getIiopListener();
-        for (IiopListener listener : listenerList) {
-            final ActionReport.MessagePart part = report.getTopMessagePart()
-                    .addChild();
-            part.setMessage(listener.getId());
-        }
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+            List<IiopListener> listenerList = iiopService.getIiopListener();
+            for (IiopListener listener : listenerList) {
+                final ActionReport.MessagePart part = report.getTopMessagePart()
+                        .addChild();
+                part.setMessage(listener.getId());
+            }
+            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } catch (Exception e) {
             report.setMessage(localStrings.getLocalString("list.iiop.listener" +
                     ".fail", "List IIOP listeners failed."));

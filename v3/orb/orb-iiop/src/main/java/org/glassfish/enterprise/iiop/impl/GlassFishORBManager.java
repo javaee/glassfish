@@ -263,12 +263,6 @@ public final class GlassFishORBManager {
                 initORB(props);
             }
 
-            if (processType == ProcessType.Server) {
-                 new InitialGroupInfoService( orb );
-            }
-
-            iiopUtils.setORB(orb);
-
             return orb;
         } finally {
             finestLog( "GlassFishORBManager.getORB<-: {0}", orb);
@@ -594,7 +588,6 @@ public final class GlassFishORBManager {
                 logger.log(Level.SEVERE, "enterprise.orb_reference_exception", in);
             }
 
-
             if( processType.isServer() ) {
                 // This MUST happen before new InitialGroupInfoService,
                 // or the ServerGroupManager will get initialized before the
@@ -615,13 +608,14 @@ public final class GlassFishORBManager {
                         ORBConstants.REFERENCE_FACTORY_MANAGER);
 
                 new InitialGroupInfoService( orb ) ;
+
+                iiopUtils.setORB(orb);
             }
 
             // SeeBeyond fix for 6325988: needs testing.
             // Still do not know why this might make any difference.
             // Invoke this for its side-effects: ignore returned IOR.
             orb.getFVDCodeBaseIOR();
-
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "enterprise_util.excep_in_createorb", ex);
             throw new RuntimeException(ex);

@@ -68,7 +68,7 @@ import com.sun.corba.ee.spi.costransactions.TransactionService;
 import com.sun.corba.ee.spi.orbutil.ORBConstants;
 import com.sun.corba.ee.spi.orbutil.closure.ClosureFactory;
 import com.sun.corba.ee.spi.legacy.interceptor.ORBInitInfoExt;
-import com.sun.corba.ee.impl.logging.POASystemException;
+import com.sun.corba.ee.spi.logging.POASystemException;
 import com.sun.corba.ee.impl.txpoa.TSIdentificationImpl;
 
 /**

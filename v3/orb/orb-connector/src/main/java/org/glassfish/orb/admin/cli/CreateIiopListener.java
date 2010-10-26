@@ -66,8 +66,12 @@ import com.sun.enterprise.config.serverbeans.IiopService;
 import com.sun.enterprise.config.serverbeans.Servers;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import java.util.List;
-
+import org.glassfish.api.admin.ExecuteOn;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
+import org.glassfish.internal.api.Target;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Create IioP Listener Command
@@ -76,11 +80,18 @@ import java.util.List;
 @Service(name="create-iiop-listener")
 @Scoped(PerLookup.class)
 @I18n("create.iiop.listener")
-
+@ExecuteOn(value={RuntimeType.DAS,RuntimeType.INSTANCE})
+@TargetType(value={CommandTarget.CLUSTER,CommandTarget.CONFIG,
+    CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE }
+)
 public class CreateIiopListener implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new
             LocalStringManagerImpl(CreateIiopListener.class);
+
+    @Param( name="target", optional=true,
+        defaultValue=SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    String target ;
 
     @Param(name="listeneraddress", alias="address")
     String listeneraddress;
@@ -97,9 +108,6 @@ public class CreateIiopListener implements AdminCommand {
     @Param(name="property", optional=true, separator=':')
     Properties properties;
 
-    @Param(optional=true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
-
     @Param(name="listener_id", primary=true, alias="id")
     String listener_id;
 
@@ -109,76 +117,88 @@ public class CreateIiopListener implements AdminCommand {
     @Inject
     Servers servers;
 
+    @Inject
+    Habitat habitat ;
+
     /**
      * Executes the command with the command parameters passed as Properties
-     * where the keys are the paramter names and the values the parameter values
+     * where the keys are the parameter names and the values the parameter values
      *
      * @param context information
      */
 
+    @Override
     public void execute(AdminCommandContext context) {
+        final Target targetUtil = habitat.getComponent(Target.class ) ;
+        final Config config = targetUtil.getConfig(target ) ;
         final ActionReport report = context.getActionReport();
 
-        List<Config> configList = configs.getConfig();
-        Config config = configList.get(0);
         IiopService iiopService = config.getIiopService();
 
         // ensure we don't already have one of this name
         // check port uniqueness, only for same address
         for (IiopListener listener : iiopService.getIiopListener()) {
             if (listener.getId().equals(listener_id)) {
-                String ls = localStrings.getLocalString("create.iiop.listener.duplicate",
-                        "IIOP Listener named {0} already exists.", listener_id);
-                report.setMessage(ls);
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
-            }
-            if (listener.getAddress().trim().equals(listeneraddress) &&
-                    listener.getPort().trim().equals((iiopport))) {
-                String def = "Port [{0}] is already taken by another listener: [{1}] for address [{2}], " +
-                        "choose another port.";
-                String ls = localStrings.getLocalString("create.iiop.listener.port.occupied",
-                        def, iiopport, listener.getId(), listeneraddress);
+                String ls = localStrings.getLocalString(
+                    "create.iiop.listener.duplicate",
+                    "IIOP Listener named {0} already exists.", listener_id);
                 report.setMessage(ls);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
 
+            if (listener.getAddress().trim().equals(listeneraddress) &&
+                    listener.getPort().trim().equals((iiopport))) {
+                String def = "Port [{0}] is already taken by another listener: "
+                    + "[{1}] for address [{2}], choose another port.";
+                String ls = localStrings.getLocalString(
+                    "create.iiop.listener.port.occupied",
+                    def, iiopport, listener.getId(), listeneraddress);
+                report.setMessage(ls);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }
         }
 
         try {
-            ConfigSupport.apply(new SingleConfigCode<IiopService>() {
+            ConfigSupport.apply(
+                new SingleConfigCode<IiopService>() {
+                    @Override
+                    public Object run(IiopService param)
+                        throws PropertyVetoException, TransactionFailure {
 
-                public Object run(IiopService param) throws PropertyVetoException, TransactionFailure {
-                    IiopListener newListener = param.createChild(IiopListener.class);
-                    newListener.setId(listener_id);
-                    newListener.setAddress(listeneraddress);
-                    newListener.setPort(iiopport);
-                    newListener.setSecurityEnabled(securityenabled.toString());
-                    newListener.setEnabled(enabled.toString());
+                        IiopListener newListener = param.createChild(
+                            IiopListener.class);
 
-                    //add properties
-                    if (properties != null) {
-                        for ( java.util.Map.Entry entry : properties.entrySet()) {
-                            Property property = newListener.createChild(Property.class);
-                            property.setName((String)entry.getKey());
-                            property.setValue((String)entry.getValue());
-                            newListener.getProperty().add(property);
+                        newListener.setId(listener_id);
+                        newListener.setAddress(listeneraddress);
+                        newListener.setPort(iiopport);
+                        newListener.setSecurityEnabled(securityenabled.toString());
+                        newListener.setEnabled(enabled.toString());
+
+                        //add properties
+                        if (properties != null) {
+                            for ( java.util.Map.Entry entry : properties.entrySet()) {
+                                Property property =
+                                    newListener.createChild(Property.class);
+                                property.setName((String)entry.getKey());
+                                property.setValue((String)entry.getValue());
+                                newListener.getProperty().add(property);
+                            }
                         }
-                    }
 
-                    param.getIiopListener().add(newListener);
-                    return newListener;
-                }
-            }, iiopService);
-            report.setMessage(localStrings.getLocalString(
-                    "create.iiop.listener.success",
-                    "IIOP Listener {0} created.", listener_id));
+                        param.getIiopListener().add(newListener);
+                        return newListener;
+                    }
+                }, iiopService);
+
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-            } catch(TransactionFailure e) {
+        } catch(TransactionFailure e) {
             String actual = e.getMessage();
-            String def = "Creation of: " + listener_id + "failed because of: " + actual;
-            String msg = localStrings.getLocalString("create.iiop.listener.fail", def, listener_id, actual);
+            String def = "Creation of: " + listener_id + "failed because of: "
+                + actual;
+            String msg = localStrings.getLocalString(
+                "create.iiop.listener.fail", def, listener_id, actual);
             report.setMessage(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
