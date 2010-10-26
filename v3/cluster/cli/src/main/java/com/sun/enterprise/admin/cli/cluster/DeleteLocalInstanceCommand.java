@@ -81,6 +81,9 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
         try {
             super.initInstance();
         }
+        catch (CommandException e) {
+            throw e;
+        }
         catch (Exception e) {
             throw new CommandException(Strings.get("DeleteInstance.noInstance"));
         }
