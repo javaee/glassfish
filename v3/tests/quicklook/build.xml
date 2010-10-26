@@ -63,9 +63,12 @@
         <record name="allrun.output" action="stop"/>
     </target>
 
-    <target name="all_embedded">
+    <target name="all_embedded" depends="clean">
         <record name="embeddedrun.output" action="start"/>
-        <ant dir="ejb/embedded" target="all"/>
+	<ant dir="ejb/embedded" target="build"/>
+        <antcall target="runtest-embedded">
+            <param name="testng.xml" value="testng/testng_em.xml"/>
+        </antcall>
         <record name="embeddedrun.output" action="stop"/>
     </target>
 
@@ -311,12 +314,6 @@
 	</delete>
     </target>
         
-    
-    <target name="-post-test-run">
-        <loadfile property="startserver.log" srcFile="${glassfish.home}/domains/domain1/logs/server.log"/>
-        <echo message="${startserver.log}"/>
-    </target>
-    
     <taskdef name="testng" classname="org.testng.TestNGAntTask">
         <classpath>
 	    <pathelement path="${plugin_classpath}"/>
@@ -346,6 +343,19 @@
         <record name="runtestng.output" action="stop"/>
     </target>  
     
+    <target  name="runtest-embedded" depends="initprops">
+        <record name="runtestng.output" action="start"/>
+        <mkdir dir="${test.report}"/>    
+        <testng outputdir="${test.report}"
+                classpathref="embedded.testng.classpath">
+            <jvmarg value="-Djava.compiler=NONE"/>
+            <sysproperty key="glassfish.home" value="${glassfish.home}"/>
+            <sysproperty key="BASEDIR" value="${basedir}"/>
+            <xmlfileset dir="." includes="${testng.xml}"/>
+        </testng>
+        <record name="runtestng.output" action="stop"/>
+    </target>
+
     <!-- Generate the TestNG report -->
     <target name="report" depends="initprops">
         <echo message="Generating report at ${test.report}"/>
@@ -395,6 +405,13 @@
 	    <pathelement path="${plugin_classpath}"/>
 	    <pathelement location="${Java_SE}"/>
             <pathelement location="${build.class.dir}"/>
+        </path>
+        <path id="embedded.testng.classpath">
+            <fileset dir="${glassfish.home}/lib/embedded">
+                <include name="**/glassfish-embedded-static-shell.jar"/>
+            </fileset>
+            <pathelement location="${build.class.dir}"/>
+            <pathelement location="${build.class.dir}/../EJB_Embedded/app"/>
         </path>
     </target>
     
