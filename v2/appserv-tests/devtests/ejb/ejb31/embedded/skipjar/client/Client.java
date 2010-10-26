@@ -69,7 +69,7 @@ public class Client {
     private void test() {
 
         Map<String, Object> p = new HashMap<String, Object>();
-        p.put(EJBContainer.MODULES, "sample");
+        p.put("org.glassfish.ejb.embedded.skip-client-modules", "true");
 
         EJBContainer c = EJBContainer.createEJBContainer(p);
         // ok now let's look up the EJB...
