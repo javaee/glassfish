@@ -44,20 +44,10 @@
  */
 package org.glassfish.flashlight.datatree.impl;
 
-import java.util.*;
+import static com.sun.enterprise.util.SystemPropertyConstants.SLASH;
 import org.glassfish.flashlight.datatree.TreeNode;
-import org.glassfish.flashlight.datatree.TreeElement;
-import org.glassfish.flashlight.annotations.Monitorable;
-import org.glassfish.j2ee.statistics.Statistic;
-
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.lang.reflect.*;
-import java.util.AbstractList;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -290,7 +280,20 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
 
     @Override
     public List<TreeNode> getNodes(String pattern, boolean ignoreDisabled, boolean gfv2Compatible) {
-        pattern = pattern.replace("\\.","\\\\\\."); 
+        pattern = pattern.replace("\\.","\\\\\\.");
+
+        // bnevins October 2010
+        // design gotcha -- It used to be IMPOSSIBLE to tell the difference between
+        // a literal slash in a name and a slash used as a delimiter.  Deep down
+        // under dozens of calls in the stack -- Strings are concatanated together
+        // Simple solution is to replace literal slashes with a token.  The probe
+        // provider code needs to do that.  jndi names are an example of this.
+        // Here we replace slash in the given pattern with th token to pull out
+        // the right stuff.
+        // This is a ARCHITECTURE flaw.  This hack can be replaced with an
+        // ARCHITECTURAL fix later if desired.
+        pattern = pattern.replace("/", SLASH);
+
         List<TreeNode> regexMatchedTree = new ArrayList<TreeNode>();
 
 

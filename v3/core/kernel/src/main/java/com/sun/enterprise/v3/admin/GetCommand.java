@@ -67,6 +67,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Proxy;
 import java.net.URLEncoder;
 import java.util.*;
+import static com.sun.enterprise.util.SystemPropertyConstants.SLASH;
 
 /**
  * User: Jerome Dochez
@@ -274,8 +275,9 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         Object obj;
         while (it.hasNext()) {
             obj = it.next();
+            String s = obj.toString();
             ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-            part.setMessage(obj + " = " + map.get(obj));
+            part.setMessage(s.replace(SLASH, "/") + " = " + map.get(obj));
         }
         report.setActionExitCode(ExitCode.SUCCESS);
     }

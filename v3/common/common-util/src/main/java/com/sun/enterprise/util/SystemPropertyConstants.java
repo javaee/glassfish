@@ -46,7 +46,12 @@ public class SystemPropertyConstants
 {
 
     /**
-     * Field 
+     * Field used by Monitoring to encode a forward slash
+     */
+    public static final String SLASH = "___SLASH___";
+
+    /**
+     * Field
      */
     public static final String UNIX_ASENV_FILENAME = "asenv.conf";
 
