@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.v3.admin.commands;
 
+import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.i18n.StringManager;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
@@ -100,7 +101,7 @@ class SummaryReporter {
         final TreeMap<String, String> props = new TreeMap<String, String>(unsorted);
         sb.append(sm.getString("rt.sysprops"));
         for (final String n : props.keySet()) {
-            sb.append(n + " = " + props.get(n));
+            sb.append(n + " = " + filterForbidden(n, props.get(n)));
         }
         return ( sb.toString() );
     }
@@ -119,5 +120,12 @@ class SummaryReporter {
             
         }
         return ( info );
+    }
+
+    private String filterForbidden(String key, String value) {
+        if(StringUtils.ok(key) && key.startsWith("javax.net.ssl.") && key.indexOf("password") >= 0)
+            return "********";
+        else
+            return value;
     }
 }
