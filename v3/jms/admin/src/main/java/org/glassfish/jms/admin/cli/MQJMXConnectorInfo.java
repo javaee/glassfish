@@ -66,7 +66,7 @@ public class MQJMXConnectorInfo {
     private String asInstanceName = null;
     private String brokerInstanceName = null;
     private String brokerType = null;
-    static Logger _logger = LogDomains.getLogger(MQJMXConnectorInfo.class, LogDomains.RSR_LOGGER);
+    static Logger _logger = LogDomains.getLogger(MQJMXConnectorInfo.class, LogDomains.JMS_LOGGER);
     private JMXConnector connector = null;
 
     public MQJMXConnectorInfo(String asInstanceName, String brokerInstanceName,
@@ -77,12 +77,12 @@ public class MQJMXConnectorInfo {
         this.jmxServiceURL = jmxServiceURL;
         this.brokerType = brokerType;
         this.jmxConnectorEnv = jmxConnectorEnv;
-        if (_logger.isLoggable(Level.FINE)) {
+       // if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "MQJMXConnectorInfo : brokerInstanceName " +
                             brokerInstanceName + " ASInstanceName " + asInstanceName +
                             " jmxServiceURL "  + jmxServiceURL +  " BrokerType " + brokerType
                             + " jmxConnectorEnv " + jmxConnectorEnv);
-        }
+        //}
     }
 
     public String getBrokerInstanceName(){
