@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -490,7 +491,9 @@ public class RestApiHandlers {
     })
     public static void getChildrenNamesList(HandlerContext handlerCtx) {
         try {
-            handlerCtx.setOutputValue("result", new ArrayList(getChildMap((String)handlerCtx.getInputValue("endpoint")).keySet()));
+            List list = new ArrayList(getChildMap((String)handlerCtx.getInputValue("endpoint")).keySet());
+            Collections.sort(list);
+            handlerCtx.setOutputValue("result", list);
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
@@ -778,6 +781,7 @@ public class RestApiHandlers {
         if (childResources != null) {
             childElements.addAll(childResources.values());
         }
+        Collections.sort(childElements);
         return childElements;
     }
 
