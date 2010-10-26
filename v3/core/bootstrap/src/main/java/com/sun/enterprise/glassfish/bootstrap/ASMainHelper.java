@@ -483,9 +483,8 @@ public class ASMainHelper {
     /**
      * This method is responsible for setting up the launcher class loader and
      * setting the context class loader as well.
-     * Launcher class loader is used to load jdk tools.jar (why?), and
+     * Launcher class loader is used to load
      * OSGi framework classes) and glassfish.jar, which contains glassfish bootstrap API classes.
-     * Our hierarchy looks like this:
      *
      * @param delegate: Parent class loader for the launcher
      */
@@ -494,7 +493,6 @@ public class ASMainHelper {
             ClassLoaderBuilder clb = new ClassLoaderBuilder(ctx, delegate);
             clb.addLauncherJar();
             clb.addFrameworkJars();
-            clb.addJDKToolsJar();
             return clb.build();
         } catch (IOException e) {
             throw new Error(e);
@@ -551,19 +549,6 @@ public class ASMainHelper {
 
         void addFrameworkJars() throws IOException {
             PlatformHelper.getPlatformHelper(ctx).addFrameworkJars(cpb);
-        }
-
-        /**
-         * Adds JDK tools.jar to classpath.
-         */
-        void addJDKToolsJar() {
-            File jdkToolsJar = Util.getJDKToolsJar();
-            try {
-                cpb.addJar(jdkToolsJar);
-            } catch (IOException ioe) {
-                // on the mac, it happens all the time
-                logger.fine("JDK tools.jar does not exist at " + jdkToolsJar);
-            }
         }
 
         public ClassLoader build() {

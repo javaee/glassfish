@@ -40,12 +40,12 @@
 
 package com.sun.enterprise.v3.server;
 
-import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.logging.LogDomains;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
-import org.glassfish.api.admin.ServerEnvironment;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -67,14 +67,20 @@ import java.util.logging.Logger;
  * name suggests, Common Class Loader is common to all deployed applications.
  * Common Class Loader is responsible for loading classes from
  * following URLs (the order is strictly maintained):
- * lib/*.jar:domain_dir/lib/classes:domain_dir/lib/*.jar:DERBY_DRIVERS.
+ * lib/*.jar:domain_dir/lib/classes:domain_dir/lib/*.jar:DERBY_DRIVERS:tools.jar from jdk.
+ *
  * Please note that domain_dir/lib/classes comes before domain_dir/lib/*.jar,
  * just like WEB-INF/classes is searched first before WEB-INF/lib/*.jar.
+ *
  * DERBY_DRIVERS are added to this class loader, because GlassFish ships with Derby database by default
  * and it makes them available to users by default. Earlier, they used to be available to applications via
- * launcher classloader, but now they are available via this class loader (see issue 13612 for more details on this). 
+ * launcher classloader, but now they are available via this class loader (see issue 13612 for more details on this).
  *
- * It applies a special rule while handling jars in install_root/lib.
+ * tools.jar from JDK is added to this class loader, because in some configuration, our JSPC needs it.
+ * Earlier tools.jar was made available via launcher class loader, but made it visible to many more classloaders than
+ * needed.
+ *
+ * This class loader applies a special rule while handling jars in install_root/lib.
  * In order to maintain file layout compatibility (see  issue #9526),
  * we add jars like javaee.jar and appserv-rt.jar which need to be excluded
  * from runtime classloaders in the server side, as they are already available via
@@ -144,6 +150,14 @@ public class CommonClassLoaderServiceImpl implements PostConstruct {
         // See issue https://glassfish.dev.java.net/issues/show_bug.cgi?id=13612
         // We no longer add derby jars to launcher class loader, we add them to common class loader instead.
         cpElements.addAll(findDerbyClient());
+
+        // See issue https://glassfish.dev.java.net/issues/show_bug.cgi?id=14007
+        // We no longer add tools.jar to launcher class loader, we add them to common class loader instead.
+        final File jdkToolsJar = getJDKToolsJar();
+        if (jdkToolsJar != null) {
+            cpElements.add(jdkToolsJar);
+        }
+        
         List<URL> urls = new ArrayList<URL>();
         StringBuilder cp = new StringBuilder();
         for (File f : cpElements) {
@@ -208,6 +222,23 @@ public class CommonClassLoaderServiceImpl implements PostConstruct {
             }
         }));
     }
+
+    private static File getJDKToolsJar() {
+        File javaHome = new File(System.getProperty("java.home"));
+        File jdktools = null;
+        if (javaHome.getParent() != null) {
+            jdktools = new File(javaHome.getParent(),
+                    "lib" + File.separator + "tools.jar");
+        }
+        if (jdktools.exists()) {
+            return jdktools;
+        } else {
+            logger.warning("JDK tools.jar does not exist at " + jdktools.getAbsolutePath());
+            return null;
+        }
+    }
+
+
 
     private static class JarFileFilter implements FilenameFilter {
         private final String JAR_EXT = ".jar"; // NOI18N
