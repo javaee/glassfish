@@ -110,7 +110,7 @@ public class GlassFishImpl implements GlassFish {
     }
 
     public <T> T getService(Class<T> serviceType) throws GlassFishException {
-        return getService(serviceType, null);
+        return getService(serviceType);
     }
 
     public synchronized <T> T getService(Class<T> serviceType, String serviceName) throws GlassFishException {
@@ -125,11 +125,11 @@ public class GlassFishImpl implements GlassFish {
     }
 
     public Deployer getDeployer() throws GlassFishException {
-        return getService(Deployer.class, null);
+        return getService(Deployer.class);
     }
 
     public CommandRunner getCommandRunner() throws GlassFishException {
-        return getService(CommandRunner.class, null);
+        return getService(CommandRunner.class);
     }
 
 }

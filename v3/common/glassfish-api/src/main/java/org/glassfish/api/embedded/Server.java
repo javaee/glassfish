@@ -273,7 +273,7 @@ public class Server {
                 fs = fsBuilder.build();
             }
             // Add the neccessary inhabitants.
-            habitat = glassfish.getService(Habitat.class, null);
+            habitat = glassfish.getService(Habitat.class);
             habitat.add(Inhabitants.create(this));
             fileSystem = new ExistingSingletonInhabitant<EmbeddedFileSystem>(fs);
             habitat.addIndex(fileSystem, EmbeddedFileSystem.class.getName(), null);
