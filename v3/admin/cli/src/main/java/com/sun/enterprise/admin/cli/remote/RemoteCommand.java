@@ -365,7 +365,8 @@ public class RemoteCommand extends CLICommand {
             }
             throw ex;
         }
-        String returnVal = rac.getAttributes().get("exit-code");
+        final Map<String,String> racAttrs = rac.getAttributes();
+        String returnVal = racAttrs != null ? racAttrs.get("exit-code") : null;
         if(returnVal != null && "WARNING".equals(returnVal))
             return WARNING;
         return SUCCESS;

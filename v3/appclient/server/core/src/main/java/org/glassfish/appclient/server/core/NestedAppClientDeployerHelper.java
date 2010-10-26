@@ -484,15 +484,22 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
         return false;
     }
 
+    /**
+     * Computes a relative URI within the downloaded file directory
+     * structure for the specified JAR URI.
+     *
+     * @param absJARURI absolute URI on the server for the JAR
+     * @return URI to the JAR (in its downloaded position) relative to the downloaded facade
+     */
     private URI relativeToFacade(final URI absJARURI) {
         final URI jarRelOnServer = earURI.relativize(absJARURI);
         final StringBuilder dotsFromFacadeToAnchor = new StringBuilder();
-        final String jarRelOnServerString = jarRelOnServer.toASCIIString();
+        final String clientWithinApp = pathToAppclientWithinApp(dc());
         int slot = -1;
-        while ( (slot = jarRelOnServerString.indexOf('/', slot+1)) != -1) {
+        while ( (slot = clientWithinApp.indexOf('/', slot+1)) != -1) {
             dotsFromFacadeToAnchor.append("../");
         }
-        return URI.create(dotsFromFacadeToAnchor.toString() + jarRelOnServer.toASCIIString());
+        return URI.create(dotsFromFacadeToAnchor.append(jarRelOnServer.toASCIIString()).toString());
     }
 
     @Override
