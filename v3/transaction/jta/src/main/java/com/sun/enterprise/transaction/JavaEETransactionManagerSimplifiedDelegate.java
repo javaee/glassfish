@@ -40,7 +40,6 @@
 
 package com.sun.enterprise.transaction;
 
-import java.util.ArrayList;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.concurrent.Semaphore;
@@ -263,5 +262,17 @@ public class JavaEETransactionManagerSimplifiedDelegate
     public TransactionAdminBean getTransactionAdminBean(Transaction tran) 
             throws javax.transaction.SystemException {
         return ((JavaEETransactionManagerSimplified)tm).getTransactionAdminBean(tran);
+    }
+
+    /** {@inheritDoc}
+    */
+    public String getTxLogLocation() {
+        throw new UnsupportedOperationException("getTxLogLocation");
+    }
+
+    /** {@inheritDoc}
+    */
+    public void registerRecoveryResourceHandler(XAResource xaResource) {
+        throw new UnsupportedOperationException("registerRecoveryResourceHandler");
     }
 }

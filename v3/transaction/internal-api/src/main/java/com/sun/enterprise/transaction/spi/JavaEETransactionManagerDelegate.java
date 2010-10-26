@@ -298,4 +298,18 @@ public interface JavaEETransactionManagerDelegate {
      */
     public TransactionAdminBean getTransactionAdminBean(Transaction t) 
             throws javax.transaction.SystemException;
+
+    /**
+     * Return location of transaction logs
+     *
+     * @return String location of transaction logs
+     */
+    public String getTxLogLocation();
+
+    /**
+     * Allows an arbitrary XAResource to register for recovery
+     *
+     * @param xaResource XAResource to register for recovery
+     */
+    public void registerRecoveryResourceHandler(XAResource xaResource);
 }

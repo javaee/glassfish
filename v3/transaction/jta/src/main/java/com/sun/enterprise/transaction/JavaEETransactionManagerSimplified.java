@@ -251,6 +251,18 @@ public class JavaEETransactionManagerSimplified
         delegates.set(null);
     }
 
+    /** {@inheritDoc}
+    */
+    public String getTxLogLocation() {
+        return getDelegate().getTxLogLocation();
+    }
+
+    /** {@inheritDoc}
+    */
+    public void registerRecoveryResourceHandler(XAResource xaResource) {
+        getDelegate().registerRecoveryResourceHandler(xaResource);
+    }
+
 /****************************************************************************/
 /** Implementations of JavaEETransactionManager APIs **************************/
 /****************************************************************************/

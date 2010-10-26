@@ -588,6 +588,18 @@ public class JavaEETransactionManagerJTSDelegate
         return tBean;
     }
 
+    /** {@inheritDoc}
+    */
+    public String getTxLogLocation() {
+            return RecoveryManager.getLogDirectory();
+    }
+
+    /** {@inheritDoc}
+    */
+    public void registerRecoveryResourceHandler(XAResource xaResource) {
+            ResourceRecoveryManagerImpl.registerRecoveryResourceHandler(xaResource);
+    }
+
     public Lock getReadLock() {
         return lock;
     }

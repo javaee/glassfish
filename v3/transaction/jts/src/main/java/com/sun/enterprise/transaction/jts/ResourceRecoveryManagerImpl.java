@@ -93,6 +93,8 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
 
     private volatile boolean lazyRecovery = false;
     private volatile boolean configured = false;
+    // Externally registered (ie not via habitat.getAllByContract) ResourceHandlers
+    private static List externallyRegisteredRecoveryResourceHandlers = new ArrayList();
 
 
     public void postConstruct() {
@@ -330,12 +332,28 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
             return;
         }
 
-        recoveryResourceHandlers = habitat.getAllByContract(RecoveryResourceHandler.class);
+        recoveryResourceHandlers = new ArrayList(habitat.getAllByContract(RecoveryResourceHandler.class));
+        recoveryResourceHandlers.addAll(externallyRegisteredRecoveryResourceHandlers);
         txMgr = habitat.getByContract(JavaEETransactionManager.class);
         recoveryListenersRegistry = habitat.getComponent(RecoveryResourceRegistry.class);
         if (recoveryListenersRegistry == null) throw new IllegalStateException();
         RecoveryManager.startTransactionRecoveryFence();
 
         configured = true;
+    }
+
+
+    public static void registerRecoveryResourceHandler(final XAResource xaResource) {
+        RecoveryResourceHandler recoveryResourceHandler =
+                new RecoveryResourceHandler() {
+                    public void loadXAResourcesAndItsConnections(List xaresList, List connList) {
+                        xaresList.add(xaResource);
+                    }
+
+                    public void closeConnections(List connList) {
+                        ;
+                    }
+                };
+        externallyRegisteredRecoveryResourceHandlers.add(recoveryResourceHandler);
     }
 }

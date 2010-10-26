@@ -41,6 +41,7 @@
 package com.sun.enterprise.transaction.api;
 
 import javax.transaction.SystemException;
+import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 import javax.resource.spi.XATerminator;
 
@@ -94,4 +95,18 @@ public interface TransactionImport {
      *    encounters an unexpected error condition.
      */
     public int getTransactionRemainingTimeout() throws SystemException;
+
+    /**
+     * Return location of transaction logs
+     *
+     * @return String location of transaction logs
+     */
+    public String getTxLogLocation();
+
+    /**
+     * Allows an arbitrary XAResource to register for recovery
+     *
+     * @param xaResource XAResource to register for recovery
+     */
+    public void registerRecoveryResourceHandler(XAResource xaResource);
 }

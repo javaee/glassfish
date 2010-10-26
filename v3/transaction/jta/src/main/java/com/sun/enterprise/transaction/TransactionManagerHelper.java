@@ -42,6 +42,7 @@ package com.sun.enterprise.transaction;
 
 import javax.transaction.*;
 import javax.resource.spi.XATerminator;
+import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
 import org.jvnet.hk2.annotations.Inject;
@@ -227,5 +228,17 @@ public class TransactionManagerHelper implements TransactionManager, Transaction
             timeout = ((JavaEETransactionImpl)txn).getRemainingTimeout();
         }
         return timeout;
+    }
+
+    /** {@inheritDoc}
+    */
+    public String getTxLogLocation() {
+        return transactionManager.getTxLogLocation();
+    }
+
+    /** {@inheritDoc}
+    */
+    public void registerRecoveryResourceHandler(XAResource xaResource) {
+        transactionManager.registerRecoveryResourceHandler(xaResource);
     }
 }
