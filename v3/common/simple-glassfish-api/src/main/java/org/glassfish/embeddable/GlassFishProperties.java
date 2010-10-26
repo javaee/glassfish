@@ -40,6 +40,8 @@
 
 package org.glassfish.embeddable;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -82,12 +84,22 @@ public class GlassFishProperties {
     /**
      * Key for specifying the http port GlassFish should listen on.
      */
-    public static final String HTTP_PORT = "http.port";
+    public static final String HTTP_PORT = "org.glassfish.embeddable.httpPort";
 
     /**
      * Key for specifying the https port GlassFish should listen on.
      */
-    public static final String HTTPS_PORT = "https.port";
+    public static final String HTTPS_PORT = "org.glassfish.embeddable.httpsPort";
+
+    /**
+     * Maps the simple user specified names to the internal fully qualified names.
+     */
+    private static final Map<String, String> nameMap = new HashMap();
+
+    static {
+        nameMap.put("http", HTTP_PORT);
+        nameMap.put("https", HTTPS_PORT);
+    }
 
     /**
      * Create GlassFishProperties with default properties.
@@ -140,18 +152,18 @@ public class GlassFishProperties {
     /**
      * Optionally set the instance root (aka domain dir) using which the
      * GlassFish should run.
-     *
+     * <p/>
      * <p/> Make sure to specify a valid GlassFish instance directory
      * (eg., GF_INSTALL_DIR/domains/domain1).
-     *
+     * <p/>
      * <p/> By default, the config/domain.xml at the specified instance root is operated in
      * read only mode. To writeback changes to it, call
      * {@link #setConfigFileReadOnly(boolean)} by passing 'false'
-     *
+     * <p/>
      * <p/>If the instance root is not specified, then a small sized temporary
      * instance directory is created in the current directory. The temporary
-     * instance directory will get deleted when the glassfish.stop() is called. 
-     *  
+     * instance directory will get deleted when the glassfish.stop() is called.
+     *
      * @param instanceRoot Location of the instance root.
      * @return This object after setting the instance root.
      */
@@ -172,9 +184,9 @@ public class GlassFishProperties {
     /**
      * Optionally set the instance root (aka domain dir) in java.net.URI format using
      * which the GlassFish should run.
-     *
+     * <p/>
      * <p/> Refer {@link #setInstanceRoot(String)} for more details.
-     * 
+     *
      * @param instanceRootUri Location of the instance root in java.net.URI format.
      * @return This object after setting the instance root URI.
      */
@@ -196,7 +208,7 @@ public class GlassFishProperties {
     /**
      * Optionally set the location of configuration file (i.e., domain.xml) using
      * which the GlassFish should run.
-     *
+     * <p/>
      * Unless specified, the configuration file is operated on read only mode.
      * To writeback any changes, call {@link #setConfigFileReadOnly(boolean)} with 'false'.
      *
@@ -223,7 +235,7 @@ public class GlassFishProperties {
      * the specified instance root is operated read only or not.
      *
      * @return true if the specified configurator file or config/domain.xml at the
-     * specified instance root remains unchanged when the glassfish runs, false otherwise.
+     *         specified instance root remains unchanged when the glassfish runs, false otherwise.
      */
     public boolean isConfigFileReadOnly() {
         return Boolean.valueOf(gfProperties.getProperty(
@@ -233,13 +245,65 @@ public class GlassFishProperties {
     /**
      * Mention whether or not the GlassFish should writeback any changes to specified
      * configuration file or config/domain.xml at the specified instance root.
-     *
+     * <p/>
      * <p/> By default readOnly is true.
-     * 
+     *
      * @param readOnly false to writeback any changes.
+     * @return This object after setting configFileReadOnly
      */
-    public void setConfigFileReadOnly(boolean readOnly) {
+    public GlassFishProperties setConfigFileReadOnly(boolean readOnly) {
         gfProperties.setProperty(CONFIG_FILE_READ_ONLY,
                 Boolean.toString(readOnly));
+        return this;
+    }
+
+    /**
+     * Optionally specify the protocol and port GlassFish should listen on.
+     * <p/>
+     * Currently supported values for protocol are 'http' or 'https'.
+     * <p/>
+     * Eg., To make GlassFish listen on 8080 http port:
+     * <pre>
+     *      setPort("http", 8080);
+     * </pre>
+     * <p/>
+     * If the specified port is invalid, then setPort returns with no-op.
+     *
+     * @param protocol Name of the protocol. http or https
+     * @param port Port number
+     * 
+     * @return This object after setting the port.
+     */
+    public GlassFishProperties setPort(String protocol, int port) {
+        if (protocol != null) {
+            String key = nameMap.get(protocol);
+            if (key != null) {
+                gfProperties.setProperty(key, Integer.toString(port));
+            }
+        }
+        return this;
+    }
+
+    /**
+     * Get the port number set using {@link #setPort(String, int)}
+     *
+     * @param protocol Name of the protocol
+     * @return Port number which was set using {@link #setPort(String, int)}.
+     *         -1 if it was not set previously.
+     */
+    public int getPort(String protocol) {
+        int port = -1;
+        if (protocol != null) {
+            String key = nameMap.get(protocol);
+            if (key != null) {
+                String portStr = gfProperties.getProperty(key);
+                try {
+                    port = Integer.parseInt(portStr);
+                } catch (NumberFormatException nfe) {
+                    // ignore and return -1;
+                }
+            }
+        }
+        return port;
     }
 }

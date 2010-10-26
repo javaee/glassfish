@@ -73,11 +73,10 @@ class ConfiguratorImpl implements Configurator {
         this.habitat = habitat;
     }
 
-    public void configure(Properties bootstrapProps) throws GlassFishException {
-
+    public void configure(Properties props) throws GlassFishException {
         CommandRunner commandRunner = habitat.getComponent(CommandRunner.class);
         for (String key : httpListeners.keySet()) {
-            String configuredVal = bootstrapProps.getProperty(key);
+            String configuredVal = props.getProperty(key);
             if (configuredVal != null) {
                 String[] values = httpListeners.get(key);
                 values[0] = MessageFormat.format(values[0], configuredVal);
