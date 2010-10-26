@@ -48,11 +48,13 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import org.jvnet.hk2.component.PerLookup;
 
 /**
  * Dumps the currently configured HK2 modules and their contents.
@@ -62,7 +64,8 @@ import java.io.PrintStream;
  *
  * @author Kohsuke Kawaguchi
  */
-@Service(name="dump-hk2", metadata="mode=debug")
+@Scoped(PerLookup.class)
+@Service(name="_dump-hk2")
 public class DumpHK2Command implements AdminCommand {
 
     @Inject

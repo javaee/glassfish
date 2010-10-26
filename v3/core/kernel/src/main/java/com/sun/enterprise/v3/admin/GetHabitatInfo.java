@@ -37,9 +37,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.admin;
 
+import java.io.*;
 import java.util.*;
 import java.util.Iterator;
 
@@ -59,41 +59,43 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 
-
 /**
  * Dumps a sorted list of all registered Contract's in the Habitat
  *
  * <p>
  * Useful for debugging and developing new Contract's
- * The command will not show up in list-commands because of the debug mode annotation.
  * @author Byron Nevins
  */
-
-@Service(name="list-contracts", metadata="mode=debug")
+@Service(name = "_get-habitat-info")
 @Scoped(PerLookup.class)
-public class ListContracts implements AdminCommand {
+public class GetHabitatInfo implements AdminCommand {
 
     @Inject
     Habitat habitat;
-
+    @Inject
+    ModulesRegistry modulesRegistry;
     @Param(primary = true, optional = true)
-    String contract=null;
-
-    @Param(optional=true)
+    String contract = null;
+    @Param(optional = true)
     String started = "false";
 
     public void execute(AdminCommandContext context) {
         StringBuilder sb = new StringBuilder();
-        if (contract==null) {
+        if (contract == null) {
             dumpContracts(sb);
-        } else {
+        }
+        else {
             dumpInhabitantsImplementingContractPattern(contract, sb);
         }
+
+        dumpModules(sb);
+        dumpTypes(sb);
+
         String msg = sb.toString();
         ActionReport report = context.getActionReport();
         report.setActionExitCode(ExitCode.SUCCESS);
 
-        if(report instanceof PropsFileActionReporter) {
+        if (report instanceof PropsFileActionReporter) {
             msg = ManifestUtils.encode(msg);
         }
         report.setMessage(msg);
@@ -106,19 +108,20 @@ public class ListContracts implements AdminCommand {
         sb.append("\n*********** Sorted List of all Registered Contracts in the Habitat **************\n");
         Iterator<String> it = habitat.getAllContracts();
 
-        if(it == null)  //PP (paranoid programmer)
-            return; 
+        if (it == null)  //PP (paranoid programmer)
+            return;
 
         SortedSet<String> contracts = new TreeSet<String>();
 
-        while(it.hasNext())
+        while (it.hasNext()) {
             contracts.add(it.next());
+        }
 
         // now the contracts are sorted...
 
         it = contracts.iterator();
 
-        for(int i = 1 ; it.hasNext(); i++) {
+        for (int i = 1; it.hasNext(); i++) {
             sb.append("Contract-" + i + ": " + it.next() + "\n");
         }
     }
@@ -129,16 +132,45 @@ public class ListContracts implements AdminCommand {
         while (it.hasNext()) {
             String cn = it.next();
             if (cn.toLowerCase(Locale.ENGLISH).indexOf(pattern.toLowerCase(Locale.ENGLISH)) < 0)
-                    continue;
-             sb.append("\n-----------------------------\n");
-             for (Inhabitant i : habitat.getInhabitantsByContract(cn)) {
-             sb.append("Inhabitant-Metadata: "+i.metadata().toCommaSeparatedString());
-             sb.append("\n");
-             boolean isStarted = Boolean.parseBoolean(started);
-             if (isStarted) {
-                 sb.append((i.isInstantiated()?" started": " not started"));
-             }
+                continue;
+            sb.append("\n-----------------------------\n");
+            for (Inhabitant i : habitat.getInhabitantsByContract(cn)) {
+                sb.append("Inhabitant-Metadata: " + i.metadata().toCommaSeparatedString());
+                sb.append("\n");
+                boolean isStarted = Boolean.parseBoolean(started);
+                if (isStarted) {
+                    sb.append((i.isInstantiated() ? " started" : " not started"));
+                }
             }
         }
+    }
+
+    private void dumpTypes(StringBuilder sb) {
+        sb.append("\n\n*********** Sorted List of all Types in the Habitat **************\n\n");
+        Iterator<String> it = habitat.getAllTypes();
+
+        if (it == null)  //PP (paranoid programmer)
+            return;
+
+        SortedSet<String> types = new TreeSet<String>();
+
+        while (it.hasNext()) {
+            types.add(it.next());
+        }
+
+        // now the types are sorted...
+
+        it = types.iterator();
+
+        for (int i = 1; it.hasNext(); i++) {
+            sb.append("Type-" + i + ": " + it.next() + "\n");
+        }
+    }
+
+    private void dumpModules(StringBuilder sb) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        modulesRegistry.dumpState(new PrintStream(baos));
+        sb.append("\n\n*********** List of all Registered Modules **************\n\n");
+        sb.append(baos.toString());
     }
 }
