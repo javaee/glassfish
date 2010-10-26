@@ -41,8 +41,6 @@
 package com.sun.enterprise.connectors.jms.system;
 
 import com.sun.enterprise.config.serverbeans.*;
-import org.glassfish.api.Startup;
-import org.glassfish.internal.api.MQInitializer;
 //import org.glassfish.api.monitoring.MonitoringItem;
 import org.glassfish.internal.api.Globals;
 //import org.glassfish.jms.admin.monitor.config.JmsServiceMI;
@@ -60,7 +58,6 @@ import com.sun.enterprise.util.*;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
-import com.sun.logging.LogDomains;
 import com.sun.hk2.component.Holder;
 import org.glassfish.internal.api.PostStartup;
 
@@ -80,7 +77,7 @@ public class JmsProviderLifecycle implements  PostStartup, PostConstruct{
     public static final String LOCAL="LOCAL";
     public static final String REMOTE="REMOTE";
     public static final String JMS_SERVICE = "jms-service";
-    //static Logger logger = LogDomains.getLogger(JmsProviderLifecycle.class, LogDomains.RSR_LOGGER);
+    //static Logger _logger = LogDomains.getLogger(JmsProviderLifecycle.class, LogDomains.RSR_LOGGER);
 
     @Inject
     Habitat habitat;
@@ -96,7 +93,7 @@ public class JmsProviderLifecycle implements  PostStartup, PostConstruct{
                 initializeBroker();
                } catch (ConnectorRuntimeException e) {
                    e.printStackTrace();
-                   //logger.log(Level.WARNING, "Failed to start JMS RA");
+                   //_logger.log(Level.WARNING, "Failed to start JMS RA");
                    e.printStackTrace();
                }
        }
@@ -124,6 +121,9 @@ public class JmsProviderLifecycle implements  PostStartup, PostConstruct{
                     defaultJmsHost = host;
                 break;
             }
+        }
+        if(defaultJmsHost == null && jmsHostList != null && jmsHostList.size() >0)  {
+            defaultJmsHost = jmsHostList.get(0);
         }
         boolean jmsEagerStartup = false;
 	    boolean lazyInit = false;
@@ -186,7 +186,7 @@ public class JmsProviderLifecycle implements  PostStartup, PostConstruct{
      */
     /*private void createMonitoringConfig() {
         if (monitoringService == null) {
-            logger.log(Level.SEVERE, "monitoringService is null. jms-service monitoring config not created");
+            _logger.log(Level.SEVERE, "monitoringService is null. jms-service monitoring config not created");
             return;
         }
         List<MonitoringItem> itemList = monitoringService.getMonitoringItems();
@@ -212,7 +212,7 @@ public class JmsProviderLifecycle implements  PostStartup, PostConstruct{
                 }, monitoringService);
             }
         } catch (TransactionFailure tfe) {
-            logger.log(Level.SEVERE, "Exception adding jms-service MonitoringItem", tfe);
+            _logger.log(Level.SEVERE, "Exception adding jms-service MonitoringItem", tfe);
         }
     }*/
 }
