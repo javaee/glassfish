@@ -50,7 +50,7 @@ import java.net.*;
 import org.apache.catalina.Deployer;
 import org.apache.catalina.logger.SystemOutLogger;
 import org.glassfish.api.embedded.*;
-import org.glassfish.api.embedded.web.*;
+import org.glassfish.embeddable.web.*;
 import javax.servlet.Servlet;
 import javax.servlet.ServletRegistration;
 import org.glassfish.tests.webapi.HelloWeb;
@@ -64,35 +64,17 @@ public class EmbeddedCreateContextTest {
 
     static Server server;
     static EmbeddedWebContainer embedded;
-    static File root;
 
     @BeforeClass
     public static void setupServer() throws Exception {
         try {
-            EmbeddedFileSystem.Builder fsBuilder = new EmbeddedFileSystem.Builder();
-            String p = System.getProperty("buildDir");
-            root = new File(p).getParentFile();
-            root =new File(root, "glassfish");
-            EmbeddedFileSystem fs = fsBuilder.instanceRoot(root).build();
-
-            Server.Builder builder = new Server.Builder("dirserve");
-            builder.embeddedFileSystem(fs);
+            Server.Builder builder = new Server.Builder("web-api");
             server = builder.build();
 
-            WebBuilder webBuilder = server.createConfig(WebBuilder.class);
-            webBuilder.setDocRootDir(root);
-            webBuilder.setListings(true);
-            System.out.println("builder is " + webBuilder);
-            server.addContainer(webBuilder);
-            embedded = (EmbeddedWebContainer) webBuilder.create(server);
-            embedded.setLogLevel(Level.INFO);
-            embedded.setConfiguration(webBuilder);
-
-            System.out.println("Added Web with base directory "+root.getAbsolutePath());
-
-            Port http = server.createPort(8080);
-            embedded.bind(http, "http");
-            embedded.start();
+            // TODO :: change this to use
+            // org.glassfish.embeddable.GlassFish.lookupService
+            embedded = server.getHabitat().
+                    getComponent(EmbeddedWebContainer.class);
         } catch(Exception e) {
             e.printStackTrace();
             throw e;

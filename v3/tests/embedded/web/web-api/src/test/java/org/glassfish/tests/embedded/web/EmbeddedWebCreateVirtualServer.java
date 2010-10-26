@@ -55,7 +55,7 @@ import org.apache.catalina.Deployer;
 import org.apache.catalina.logger.SystemOutLogger;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.embedded.*;
-import org.glassfish.api.embedded.web.*;
+import org.glassfish.embeddable.web.*;
 
 /**
  * Test for EmbeddedWebContainer#CreateVirtualServer & EmbeddedWebContainer#deleteWebListener

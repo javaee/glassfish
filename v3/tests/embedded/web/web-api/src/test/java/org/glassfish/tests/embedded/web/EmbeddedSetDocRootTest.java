@@ -50,7 +50,8 @@ import java.net.*;
 import org.apache.catalina.Deployer;
 import org.apache.catalina.logger.SystemOutLogger;
 import org.glassfish.api.embedded.*;
-import org.glassfish.api.embedded.web.*;
+import org.glassfish.embeddable.web.*;
+import org.glassfish.embeddable.web.config.*;
 import javax.servlet.Servlet;
 import javax.servlet.ServletRegistration;
 import org.glassfish.tests.webapi.HelloWeb;
@@ -69,30 +70,28 @@ public class EmbeddedSetDocRootTest {
     @BeforeClass
     public static void setupServer() throws Exception {
         try {
+            Server.Builder builder = new Server.Builder("dirserve");
+            server = builder.build();
+            File f = new File(System.getProperty("basedir"));
+
             EmbeddedFileSystem.Builder fsBuilder = new EmbeddedFileSystem.Builder();
             String p = System.getProperty("buildDir");
             root = new File(p).getParentFile();
             root =new File(root, "glassfish");
             EmbeddedFileSystem fs = fsBuilder.instanceRoot(root).build();
+            //builder.embeddedFileSystem(fs);
+            //server = builder.build();
 
-            Server.Builder builder = new Server.Builder("dirserve");
-            builder.embeddedFileSystem(fs);
-            server = builder.build();
-
-            WebBuilder webBuilder = server.createConfig(WebBuilder.class);
-            webBuilder.setDocRootDir(root);
-            webBuilder.setListings(true);
-            System.out.println("builder is " + webBuilder);
-            server.addContainer(webBuilder);
-            embedded = (EmbeddedWebContainer) webBuilder.create(server);
-            embedded.setLogLevel(Level.INFO);
-            embedded.setConfiguration(webBuilder);
-
+            // TODO :: change this to use
+            // org.glassfish.embeddable.GlassFish.lookupService
+            embedded = server.getHabitat().
+                    getComponent(EmbeddedWebContainer.class);
+            WebContainerConfig config = new WebContainerConfig();
+            config.setListings(true);
+            config.setDocRootDir(root);
+            config.setPort(8080);
             System.out.println("Added Web with base directory "+root.getAbsolutePath());
-
-            Port http = server.createPort(8080);
-            embedded.bind(http, "http");
-            embedded.start();
+            embedded.start(config);
         } catch(Exception e) {
             e.printStackTrace();
             throw e;
@@ -126,7 +125,7 @@ public class EmbeddedSetDocRootTest {
             sb.append(inputLine);
         }
         in.close();
-        
+
         Thread.sleep(100);
         
      }
@@ -138,7 +137,6 @@ public class EmbeddedSetDocRootTest {
             try {
                 server.stop();
             } catch (LifecycleException e) {
-                e.printStackTrace();
                 throw e;
             }
         }

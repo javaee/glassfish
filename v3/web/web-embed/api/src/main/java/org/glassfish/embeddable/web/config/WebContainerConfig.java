@@ -58,7 +58,7 @@ public class WebContainerConfig {
     private String  listenerName = "embedded-listener";
     private boolean listings;
     private int port = 8080;    
-    private String virtualServerId = "";
+    private String virtualServerId = "server";
 
     /**
      * Sets the default web xml

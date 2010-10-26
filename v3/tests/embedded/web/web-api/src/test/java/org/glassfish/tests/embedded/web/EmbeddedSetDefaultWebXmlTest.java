@@ -49,8 +49,9 @@ import java.util.logging.Level;
 import java.net.*;
 import org.apache.catalina.Deployer;
 import org.apache.catalina.logger.SystemOutLogger;
-import org.glassfish.api.embedded.*;
-import org.glassfish.api.embedded.web.*;
+import org.glassfish.api.embedded.*; 
+import org.glassfish.embeddable.web.*;
+import org.glassfish.embeddable.web.config.*;
 import javax.servlet.Servlet;
 import javax.servlet.ServletRegistration;
 import org.glassfish.tests.webapi.HelloWeb;
@@ -70,36 +71,36 @@ public class EmbeddedSetDefaultWebXmlTest {
     @BeforeClass
     public static void setupServer() throws Exception {
         try {
-            EmbeddedFileSystem.Builder fsBuilder = new EmbeddedFileSystem.Builder();
-
+            Server.Builder builder = new Server.Builder("web-api");
+            server = builder.build();
+            //f = new File(System.getProperty("basedir"));
             String p = System.getProperty("buildDir");
-            /*root = new File(p).getParentFile();
+            
+            /*EmbeddedFileSystem.Builder fsBuilder = new EmbeddedFileSystem.Builder();
+            root = new File(p).getParentFile();
             root =new File(root, "glassfish");
-            EmbeddedFileSystem fs = fsBuilder.instanceRoot(root).build();*/
-
+            EmbeddedFileSystem fs = fsBuilder.instanceRoot(root).build();
             File domainXml = new File(p+"/org/glassfish/tests/webapi/domain.xml");
             // specify the domain.xml location
             fsBuilder.configurationFile(domainXml);
             EmbeddedFileSystem efs = fsBuilder.build();
-
             Server.Builder builder = new Server.Builder("dirserve");
             builder.embeddedFileSystem(efs);
             server = builder.build();
+            */
 
-            WebBuilder webBuilder = server.createConfig(WebBuilder.class);
-            //webBuilder.setDocRootDir(root);
+            WebContainerConfig config = new WebContainerConfig();
             File defaultWebXml = new File(p+"/org/glassfish/tests/webapi/my-default-web.xml");
-            webBuilder.setDefaultWebXml(defaultWebXml.toURL());
-            System.out.println("builder is " + webBuilder+" using default-web.xml "+defaultWebXml.getAbsolutePath()+
-                    " domain.xml "+domainXml.getAbsolutePath());
-            server.addContainer(webBuilder);
-            embedded = (EmbeddedWebContainer) webBuilder.create(server);
-            embedded.setLogLevel(Level.INFO);
-            embedded.setConfiguration(webBuilder);
+            config.setDefaultWebXml(defaultWebXml.toURL());
+            System.out.println("Using default-web.xml "+defaultWebXml.getAbsolutePath());
+            //        " domain.xml "+domainXml.getAbsolutePath());
 
-            Port http = server.createPort(8080);
-            embedded.bind(http, "http");
-            embedded.start();
+            // TODO :: change this to use
+            // org.glassfish.embeddable.GlassFish.lookupService
+            embedded = server.getHabitat().
+                    getComponent(EmbeddedWebContainer.class);
+            embedded.start(config);
+            embedded.setLogLevel(Level.INFO);
         } catch(Exception e) {
             e.printStackTrace();
             throw e;

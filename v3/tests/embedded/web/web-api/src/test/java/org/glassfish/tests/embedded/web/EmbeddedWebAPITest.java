@@ -55,7 +55,7 @@ import org.apache.catalina.Deployer;
 import org.apache.catalina.logger.SystemOutLogger;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.embedded.*;
-import org.glassfish.api.embedded.web.*;
+import org.glassfish.embeddable.web.*;
 
 /**
  * Tests creating a port using EmbeddedWebContainer#createWeblistener & WebListener#setPort.
@@ -69,35 +69,38 @@ public class EmbeddedWebAPITest {
     static EmbeddedWebContainer embedded;
     static Port http;
     static File root;
+    static File f;
 
 
     @BeforeClass
     public static void setupServer() throws Exception {
         try {
-            EmbeddedFileSystem.Builder fsBuilder = new EmbeddedFileSystem.Builder();
+
             String p = System.getProperty("buildDir");
             root = new File(p).getParentFile();
             root =new File(root, "glassfish");
+            // TODO :: EmbeddedFileSystem with new glassfish api
+            /*EmbeddedFileSystem.Builder fsBuilder = new EmbeddedFileSystem.Builder();
             EmbeddedFileSystem fs = fsBuilder.instanceRoot(root).build();
+            builder.embeddedFileSystem(fs);*/
 
             Server.Builder builder = new Server.Builder("web-api");
-            builder.embeddedFileSystem(fs);
             server = builder.build();
-            
+            f = new File(System.getProperty("basedir"));
+
+            // TODO :: change this to use org.glassfish.embeddable.GlassFish.lookupService
+            embedded = server.getHabitat().getComponent(EmbeddedWebContainer.class);
+
+            System.out.println("================ Test Embedded Web API");
+            System.out.println("Starting Web " + server+" "+embedded);
+            embedded.setLogLevel(Level.INFO);
+
             NetworkConfig nc = server.getHabitat().getComponent(NetworkConfig.class);
             List<NetworkListener> listeners = nc.getNetworkListeners().getNetworkListener();
             System.out.println("Network listener size before creation " + listeners.size());
             for (NetworkListener nl : listeners) {
                 System.out.println("Network listener " + nl.getPort());
             }
-
-            System.out.println("Starting Web " + server);
-            ContainerBuilder b = server.createConfig(ContainerBuilder.Type.web);
-            System.out.println("builder is " + b);
-            server.addContainer(b);
-            embedded = (EmbeddedWebContainer) b.create(server);
-            embedded.setLogLevel(Level.INFO);
-            embedded.setConfiguration((WebBuilder)b);
 
             WebListener listener = embedded.createWebListener("test-listener", HttpListener.class);
             listener.setPort(9090);
@@ -125,13 +128,11 @@ public class EmbeddedWebAPITest {
     }
     
     @Test
-    public void testEmbeddedWebAPI() throws Exception {   
-        
-        System.out.println("================ Test Embedded Web API");
+    public void testEmbeddedWebAPI() throws Exception { 
 
         String virtualServerId = "embedded-server";
         VirtualServer defaultVirtualServer = (VirtualServer)
-                embedded.createVirtualServer(virtualServerId, root);
+                embedded.createVirtualServer(virtualServerId, f);
         embedded.addVirtualServer(defaultVirtualServer);
 
         VirtualServer vs = embedded.findVirtualServer(virtualServerId);

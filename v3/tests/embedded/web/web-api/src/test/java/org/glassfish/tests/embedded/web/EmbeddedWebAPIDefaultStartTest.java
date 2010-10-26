@@ -58,7 +58,7 @@ import org.apache.catalina.Deployer;
 import org.apache.catalina.logger.SystemOutLogger;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.embedded.*;
-import org.glassfish.api.embedded.web.*;
+import org.glassfish.embeddable.web.*;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
 
@@ -81,14 +81,11 @@ public class EmbeddedWebAPIDefaultStartTest {
             Server.Builder builder = new Server.Builder("web-api");
             server = builder.build();
             f = new File(System.getProperty("basedir"));
-            System.out.println("Starting Web " + server);
-            ContainerBuilder b = server.createConfig(ContainerBuilder.Type.web);
-            System.out.println("builder is " + b);
-            server.addContainer(b);
-            System.out.println("Added Web with base directory "+f.getAbsolutePath());
-            embedded = (EmbeddedWebContainer) b.create(server);
-            embedded.setLogLevel(Level.INFO);
-            embedded.setConfiguration((WebBuilder)b);
+
+            // TODO :: change this to use
+            // org.glassfish.embeddable.GlassFish.lookupService
+            embedded = server.getHabitat().
+                    getComponent(EmbeddedWebContainer.class);
         } catch(Exception e) {
             e.printStackTrace();
             throw e;
@@ -96,8 +93,10 @@ public class EmbeddedWebAPIDefaultStartTest {
     }
     
     @Test
-    public void testDefaultStart() throws Exception {   
-        System.out.println("================ Test Embedded Web API Default Start");
+    public void testDefaultStart() throws Exception {
+        System.out.println("================ Test Embedded Web API Default Start ");
+        System.out.println("Starting Web " + server+" "+embedded);
+        embedded.setLogLevel(Level.INFO);
         embedded.start();
 
         NetworkConfig nc = server.getHabitat().getComponent(NetworkConfig.class);
@@ -110,18 +109,18 @@ public class EmbeddedWebAPIDefaultStartTest {
         List<WebListener> listenerList = new ArrayList(embedded.getWebListeners());
         Assert.assertTrue(listenerList.size()==1);
         for (WebListener listener : embedded.getWebListeners())
-            System.out.println("Web listener "+listener.getId()+listener.getPort());
+            System.out.println("Web listener "+listener.getId()+" "+listener.getPort());
 
         EmbeddedDeployer deployer = server.getDeployer();
         String p = System.getProperty("buildDir");
         System.out.println("Root is " + p);
-        ScatteredArchive.Builder builder = new ScatteredArchive.Builder("sampleweb", new File(p));
-        builder.resources(new File(p));
-        builder.addClassPath((new File(p)).toURL());
+        ScatteredArchive.Builder sa = new ScatteredArchive.Builder("sampleweb", new File(p));
+        sa.resources(new File(p));
+        sa.addClassPath((new File(p)).toURL());
         DeployCommandParameters dp = new DeployCommandParameters(new File(p));
 
         System.out.println("Deploying " + p);
-        String appName = deployer.deploy(builder.buildWar(), dp);
+        String appName = deployer.deploy(sa.buildWar(), dp);
         Assert.assertNotNull("Deployment failed!", appName);
 
         URL servlet = new URL("http://localhost:8080/classes/hello");
