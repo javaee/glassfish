@@ -254,15 +254,22 @@ public class V2DottedNameSupport {
                 }
             }
             return false;
+        } else {
+            // patter is exhausted, only elements one level down should be returned
+            return dottedName.indexOf(".")==-1;
         }
-        return true;
     }
 
     protected boolean matchName(String a, String b) {
-        if (a.startsWith(b)) {
+        String nextTokenName = a;
+        if (a.indexOf('.')!=-1) {
+            nextTokenName = a.substring(0, a.indexOf('.'));
+        }
+                
+        if (nextTokenName.equals(b)) {
             return true;
         }
-        if (a.replace('_', '-').startsWith(b.replace('_', '-'))) {
+        if (nextTokenName.replace('_', '-').equals(b.replace('_', '-'))) {
             return true;
         }
         return false;
@@ -270,10 +277,12 @@ public class V2DottedNameSupport {
     
     final static class TreeNode {
         final Dom node;
+        final String name;
         final String relativeName;
-        public TreeNode(Dom node, String name) {
+        public TreeNode(Dom node, String name, String relativeName) {
             this.node = node;
-            this.relativeName = name;
+            this.name = name;
+            this.relativeName = relativeName;
         }
     }
 
@@ -298,7 +307,7 @@ public class V2DottedNameSupport {
                 relativeName = newPrefix.substring(str.length() + 1);
             }
             TreeNode [] result = new TreeNode[1];
-            result[0] = new TreeNode(Dom.unwrap(domain.getResources()), relativeName);
+            result[0] = new TreeNode(Dom.unwrap(domain.getResources()), name, relativeName);
             return result;
         }
 
@@ -306,7 +315,7 @@ public class V2DottedNameSupport {
          for (Config config : domain.getConfigs().getConfig()) {
              if (config.getName().equals(name)) {
                  return new TreeNode[] {
-                        new  TreeNode(Dom.unwrap(config), newPrefix)
+                        new  TreeNode(Dom.unwrap(config), name, newPrefix)
                  };
              }
          }
@@ -326,13 +335,13 @@ public class V2DottedNameSupport {
         if (nodes!=null) {
             TreeNode[] result = new TreeNode[nodes.length];
             for (int i=0;i<nodes.length;i++) {
-                result[i] = new TreeNode(Dom.unwrap((ConfigBeanProxy) nodes[i]), newPrefix);
+                result[i] = new TreeNode(Dom.unwrap((ConfigBeanProxy) nodes[i]), name, newPrefix);
             }
             return result;
         }
 
         return new TreeNode[] {
-            new TreeNode(Dom.unwrap(domain), prefix)
+            new TreeNode(Dom.unwrap(domain),"", prefix)
         };
     }
 

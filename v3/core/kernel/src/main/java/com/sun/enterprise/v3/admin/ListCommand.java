@@ -135,7 +135,11 @@ public class ListCommand extends V2DottedNameSupport implements AdminCommand {
         for (Map.Entry<Dom, String> node : matchingNodesSorted) {
             ActionReport.MessagePart part = report.getTopMessagePart().addChild();
             part.setChildrenType("DottedName");
-            part.setMessage(prefix + (String)node.getValue());
+            if (parentNodes[0].name.isEmpty()) {
+                part.setMessage(node.getValue());
+            } else {
+                part.setMessage(parentNodes[0].name + "." + node.getValue());
+            }
         }
     }
     
