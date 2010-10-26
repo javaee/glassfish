@@ -6,7 +6,6 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -301,16 +300,13 @@ public class InhabitantsGeneratorTest {
   public void testMainWithNoInhabitants() throws Exception {
     File testDir = new File(new File("."), "target/test-classes");
     File outputFile = new File(testDir, "META-INF/inhabitants/default");
-    outputFile.delete();
 
     String inhabitantSources = toString(getAutoDependsClassPathEntries());
     String workingClassPath = toString(getTestClassPathEntries(true));
-    
-    System.setProperty(InhabitantsGenerator.PARAM_INHABITANT_TARGET_FILE, outputFile.getAbsolutePath());
-    System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_SOURCE_FILES, inhabitantSources);
-    System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_CLASSPATH, workingClassPath);
-    InhabitantsGenerator.main(null);
 
+    String output = callMain(outputFile, false, inhabitantSources, workingClassPath, null);
+    assertNull(output);
+    
     if (outputFile.exists()) {
       FileInputStream fis = new FileInputStream(outputFile);
       try {
@@ -332,32 +328,58 @@ public class InhabitantsGeneratorTest {
   public void testMain() throws Exception {
     File testDir = new File(new File("."), "target/test-classes");
     File outputFile = new File(testDir, "META-INF/inhabitants/default");
-    outputFile.delete();
 
-    String output = callMain(outputFile);
-
+    String output = callMain(outputFile, true, null, null, null);
     String expected = expected(true);
-
-    assertTrue(output + " was not found to contain:\n" + expected, 
-        output.contains(expected));
+    assertTrue(output + " was not found to contain:\n" + expected, output.contains(expected));
   }
 
-  static String callMain(File outputFile) throws Exception, FileNotFoundException,
-      IOException {
-    System.setProperty(InhabitantsGenerator.PARAM_INHABITANT_TARGET_FILE, 
-        outputFile.getAbsolutePath());
-    System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_SOURCE_FILES,
-        toString(getTestClassPathEntries(false)));
-    System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_CLASSPATH,
-        toString(getTestClassPathEntries(true)));
+  /**
+   * strictly for sort testing
+   */
+//  @Ignore
+  @Test
+  public void testMainWithSorting() throws Exception {
+    File testDir = new File(new File("."), "target/test-classes");
+    File outputFile = new File(testDir, "META-INF/inhabitants/default");
+
+    String output = callMain(outputFile, true, null, null, true);
+    String expected = Utilities.sortInhabitantsDescriptor(expected(true), true);
+    assertTrue(output + " was not found to contain:\n" + expected, output.contains(expected));
+  }
+
+  static String callMain(File outputFile, boolean expectOutput, String inhabitantSources, String workingClassPath, Boolean sort) throws Exception {
+    outputFile.delete();
+    
+    inhabitantSources = (null == inhabitantSources) ? toString(getTestClassPathEntries(false)) : inhabitantSources;
+    workingClassPath = (null == workingClassPath) ? toString(getTestClassPathEntries(true)) : workingClassPath;
+    
+    System.setProperty(InhabitantsGenerator.PARAM_INHABITANT_TARGET_FILE, outputFile.getAbsolutePath());
+    System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_SOURCE_FILES, inhabitantSources);
+    System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_CLASSPATH, workingClassPath);
+    if (null != sort) {
+      System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_SORTED, sort.toString());
+    }
     InhabitantsGenerator.main(null);
 
-    assertTrue("expect to find: " + outputFile, outputFile.exists());
+    assertEquals("expect output:" + outputFile, expectOutput, outputFile.exists());
 
+    if (!outputFile.exists()) {
+      return null;
+    }
+    
     FileInputStream fis = new FileInputStream(outputFile);
-    String output = Utilities.sortInhabitantsDescriptor(toString(fis), false);
-    fis.close();
-    return output;
+    try {
+      String output = Utilities.sortInhabitantsDescriptor(toString(fis), false);
+      return output;
+    } finally {
+      fis.close();
+  
+      System.clearProperty(InhabitantsGenerator.PARAM_INHABITANT_TARGET_FILE);
+      System.clearProperty(InhabitantsGenerator.PARAM_INHABITANTS_SOURCE_FILES);
+      System.clearProperty(InhabitantsGenerator.PARAM_INHABITANTS_CLASSPATH);
+      System.clearProperty(InhabitantsGenerator.PARAM_INHABITANTS_SORTED);
+    }
   }
 
   static String toString(InputStream is) throws IOException {

@@ -27,7 +27,7 @@ public class InhabitantsFilterTest {
     // setup test
     File testDir = new File(new File("."), "target/test-classes");
     File inputFile = new File(testDir, "META-INF/inhabitants/default");
-    String original = InhabitantsGeneratorTest.callMain(inputFile);
+    String original = InhabitantsGeneratorTest.callMain(inputFile, true, null, null, null);
     
     File outputFile = new File(testDir, "META-INF/inhabitants/filtered");
     outputFile.delete();
@@ -67,7 +67,7 @@ public class InhabitantsFilterTest {
     // setup test
     File testDir = new File(new File("."), "target/test-classes");
     File inputFile = new File(testDir, "META-INF/inhabitants/default");
-    String original = InhabitantsGeneratorTest.callMain(inputFile);
+    String original = InhabitantsGeneratorTest.callMain(inputFile, true, null, null, null);
     original = Utilities.sortInhabitantsDescriptor(original, true);
     
     File outputFile = new File(testDir, "META-INF/inhabitants/filtered");
@@ -110,7 +110,7 @@ public class InhabitantsFilterTest {
     // setup test
     File testDir = new File(new File("."), "target/test-classes");
     File inputFile = new File(testDir, "META-INF/inhabitants/default");
-    InhabitantsGeneratorTest.callMain(inputFile);
+    InhabitantsGeneratorTest.callMain(inputFile, true, null, null, null);
     
     File outputFile = new File(testDir, "META-INF/inhabitants/filtered");
     outputFile.delete();
