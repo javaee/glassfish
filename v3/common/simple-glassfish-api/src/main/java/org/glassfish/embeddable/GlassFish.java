@@ -80,16 +80,25 @@ public interface GlassFish {
      * A service has a service interface and optionally a name. For a service which is just a class with no interface,
      * then the service class is the service interface. This method is used to look up a service.
      * @param serviceType type of component required.
-     * @param servicetName name of the component. Pass null if any component will fit the bill.
      * @param <T>
      * @return Return a service matching the requirement, null if no service found.
      */
-    <T> T lookupService(Class<T> serviceType, String servicetName) throws GlassFishException;
+    <T> T getService(Class<T> serviceType) throws GlassFishException;
+
+    /**
+     * A service has a service interface and optionally a name. For a service which is just a class with no interface,
+     * then the service class is the service interface. This method is used to look up a service.
+     * @param serviceType type of component required.
+     * @param serviceName name of the component.
+     * @param <T>
+     * @return Return a service matching the requirement, null if no service found.
+     */
+    <T> T getService(Class<T> serviceType, String serviceName) throws GlassFishException;
 
     /**
      * Gets a Deployer instance to deploy an application.
      * Each invocation of this method returns a new Deployer object.
-     * Calling this method is equivalent to calling <code>lookupService(Deployer.class, null)</code>
+     * Calling this method is equivalent to calling <code>getService(Deployer.class, null)</code>
      *
      * @return A new Deployer instance
      */
@@ -97,7 +106,7 @@ public interface GlassFish {
 
     /**
      * Gets a CommandRunner instance, using which the user can run asadmin commands.
-     * Calling this method is equivalent to calling <code>lookupService(CommandRunner.class, null)</code>
+     * Calling this method is equivalent to calling <code>getService(CommandRunner.class, null)</code>
      * Each invocation of this method returns a new CommandRunner object.
      *
      * @return a new CommandRunner instance

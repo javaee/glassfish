@@ -141,7 +141,7 @@ public class GlassFishMain {
                             System.out.println("GlassFish is not started yet. Please execute start first.");
                             continue;
                         }
-                        Deployer deployer = gf.lookupService(Deployer.class, null);
+                        Deployer deployer = gf.getService(Deployer.class, null);
                         String[] tokens = command.split("\\s");
                         if (tokens.length < 2) {
                             System.out.println("Syntax: deploy <options> file");
@@ -156,7 +156,7 @@ public class GlassFishMain {
                             System.out.println("GlassFish is not started yet. Please execute start first.");
                             continue;
                         }
-                        Deployer deployer = gf.lookupService(Deployer.class, null);
+                        Deployer deployer = gf.getService(Deployer.class, null);
                         String name = command.substring(command.indexOf(" ")).trim();
                         deployer.undeploy(name);
                         System.out.println("Undeployed = " + name);

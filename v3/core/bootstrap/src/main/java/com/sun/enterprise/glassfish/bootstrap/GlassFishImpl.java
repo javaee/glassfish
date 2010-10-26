@@ -109,7 +109,11 @@ public class GlassFishImpl implements GlassFish {
         return status;
     }
 
-    public synchronized <T> T lookupService(Class<T> serviceType, String serviceName) throws GlassFishException {
+    public <T> T getService(Class<T> serviceType) throws GlassFishException {
+        return getService(serviceType, null);
+    }
+
+    public synchronized <T> T getService(Class<T> serviceType, String serviceName) throws GlassFishException {
         if (status != Status.STARTED) {
             throw new IllegalArgumentException("Server is not started yet. It is in " + status + "state");
         }
@@ -121,11 +125,11 @@ public class GlassFishImpl implements GlassFish {
     }
 
     public Deployer getDeployer() throws GlassFishException {
-        return lookupService(Deployer.class, null);
+        return getService(Deployer.class, null);
     }
 
     public CommandRunner getCommandRunner() throws GlassFishException {
-        return lookupService(CommandRunner.class, null);
+        return getService(CommandRunner.class, null);
     }
 
 }

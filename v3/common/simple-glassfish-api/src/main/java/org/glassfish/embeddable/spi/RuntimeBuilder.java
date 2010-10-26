@@ -1,4 +1,3 @@
-package org.glassfish.embeddable.spi;
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -39,20 +38,24 @@ package org.glassfish.embeddable.spi;
  * holder.
  */
 
+package org.glassfish.embeddable.spi;
 
-
-import org.glassfish.embeddable.*;
+import org.glassfish.embeddable.BootstrapProperties;
+import org.glassfish.embeddable.GlassFishException;
+import org.glassfish.embeddable.GlassFishRuntime;
 
 
 /**
- * Internal interface. Not for public use.
- * This is an SPI for GlassFishRuntime. Different implementations exist to provide different runtime
+ * This is an SPI for plugging in a GlassFishRuntime.
+ * <p/>
+ * By default different implementations exist to provide different runtime
  * enviornment such as Felix/Equinox based or non-OSGi based runtime.
  */
 public interface RuntimeBuilder {
 
     /**
      * Builds a custom GlassFishRuntime with the supplied bootstrap options
+     *
      * @param options
      * @return
      * @throws GlassFishException
@@ -62,6 +65,7 @@ public interface RuntimeBuilder {
     /**
      * Returns true if this RuntimeBuilder is capable of creating a GlassFishRuntime
      * for the supplied BootstrapProperties
+     *
      * @param options
      * @return
      */

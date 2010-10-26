@@ -47,17 +47,29 @@ import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 
 /**
- * This is the entry point API to bootstrap GlassFish. We don't call it a ServerRuntime or Server,
- * because, we this can be used to boostrap just an App Client Container environment.
- * A GlassFishRuntime represents just the runtime environment, i.e., no active services yet. e.g.,
- * there won't be any web container started just by creating a GlassFishRuntime object. For that, one
- * has to call {@link GlassFish#start}.
+ * This is the entry point API to bootstrap GlassFish.
  *
+ * <p/>A GlassFishRuntime represents just the runtime environment,
+ * i.e., no active services yet. e.g., there won't be any web container
+ * started just by creating a GlassFishRuntime object.
+ *
+ * <p/> The services will be activated when GlassFish instance is
+ * started by doing omething like:
+ *
+ * <pre>
+ *      GlassFishRuntime runtime = GlassFishRuntime.bootstrap(); // no active services
+ *      GlassFish glassfish = runtime.newGlassFish();
+ *      glassfish.start(); // active services.
+ * </pre>
  * @author Sanjeeb.Sahoo@Sun.COM
  * @author bhavanishankar@dev.java.net
  */
 public abstract class GlassFishRuntime {
 
+    protected GlassFishRuntime() {
+        // Empty protected constructor so that it does not show up in the javadoc.
+    }
+    
     /**
      * Bootstrap a GlassFishRuntime with default {@link BootstrapProperties}.
      *

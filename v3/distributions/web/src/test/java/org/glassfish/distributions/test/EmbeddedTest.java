@@ -101,7 +101,7 @@ public class EmbeddedTest {
 //        System.out.println("builder is " + b);
 //        server.addContainer(b);
 
-        // TODO :: change this to use org.glassfish.embeddable.GlassFish.lookupService
+        // TODO :: change this to use org.glassfish.embeddable.GlassFish.getService
         EmbeddedWebContainer embedded = server.getHabitat().
                 getComponent(EmbeddedWebContainer.class);
         try {
