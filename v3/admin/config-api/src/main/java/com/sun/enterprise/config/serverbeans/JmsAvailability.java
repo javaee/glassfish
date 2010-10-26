@@ -52,6 +52,7 @@ import java.util.List;
 
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.jvnet.hk2.config.types.PropertyBag;
+import javax.validation.constraints.Pattern;
 
 import org.glassfish.quality.ToDo;
 
@@ -72,10 +73,10 @@ public interface JmsAvailability extends ConfigBeanProxy, Injectable, PropertyBa
      * This boolean flag controls whether the MQ cluster associated with the
      * application server cluster is HA enabled or not. If this attribute is
      * "false", then the MQ cluster pointed to by the jms-service element is
-     * considered non-HA. JMS Messages are not persisted to a highly available
-     * store. If this attribute is "true" the MQ cluster pointed to by the
-     * jms-service element is a HA cluster and the MQ cluster uses the database
-     * pointed to by jdbcurl to save persistent JMS messages and
+     * considered non-HA (Conventional MQ cluster). JMS Messages are not
+     * persisted to a highly availablestore. If this attribute is "true" the
+     * MQ cluster pointed to by the jms-service element is a HA (enhanced)
+     * cluster and the MQ cluster uses the database pointed to by jdbcurl to save persistent JMS messages and
      * other broker cluster configuration information. Individual applications
      * will not be able to control or override MQ cluster availability levels.
      * They inherit the availability attribute defined in this element.
@@ -96,6 +97,59 @@ public interface JmsAvailability extends ConfigBeanProxy, Injectable, PropertyBa
      *              {@link String }
      */
     void setAvailabilityEnabled(String value) throws PropertyVetoException;
+
+    /**
+      * Gets the value of the Config Store type property
+      *
+      * This attribute specifies whether to use a master broker or a Shared Database
+      * for conventional MQ clusters
+      * This is a no-op for Enhanced clusters
+      *
+      * @return possible object is
+      *         {@link String }
+      */
+
+    @Attribute (defaultValue="masterbroker")
+    @Pattern(regexp="(masterbroker|shareddb)")
+    String getConfigStoreType();
+
+
+    /**
+     * Sets the value of the Config Store type property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+
+    void setConfigStoreType(String value);
+
+    /**
+      * Gets the value of the Message Store type property
+      *
+      * This attribute specifies where messages need to be stored by MQ.
+      * The options are file based or Database based storage
+      * This is only relevent for conventional MQ clusters
+      * This is a no-op for enhanced clusters
+      *
+      * @return possible object is
+      *         {@link String }
+      */
+
+    @Attribute (defaultValue="file")
+    @Pattern(regexp="(file|jdbc)")
+    String getMessageStoreType();
+
+
+    /**
+     * Sets the value of the Message store type property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    void setMessageStoreType(String value);
+
+
+
     /**
      * Gets the value of the DB Vendor property.
      *
@@ -127,8 +181,8 @@ public interface JmsAvailability extends ConfigBeanProxy, Injectable, PropertyBa
          * @return possible object is
          *         {@link String }
       */
-      @Attribute
-      String getDbUsername();
+    @Attribute
+    String getDbUsername();
 
       /**
          * Sets the value of the DB UserName property.
@@ -136,28 +190,28 @@ public interface JmsAvailability extends ConfigBeanProxy, Injectable, PropertyBa
          * @param value allowed object is
          *              {@link String }
        */
-      void setDbUsername(String value) throws PropertyVetoException;
+    void setDbUsername(String value) throws PropertyVetoException;
 
     /**
-             * Gets the value of the DB Password property.
-             *
-             * This is the DB Password for the DB used by the MQ broker cluster
-             * for use in saving persistent JMS messages and other broker
-             * cluster configuration information.
-             *
-             * @return possible object is
-             *         {@link String }
-             */
-            @Attribute
-            String getDbPassword();
+     * Gets the value of the DB Password property.
+     *
+     * This is the DB Password for the DB used by the MQ broker cluster
+     * for use in saving persistent JMS messages and other broker
+     * cluster configuration information.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute
+    String getDbPassword();
 
-            /**
-             * Sets the value of the DB password property.
-             *
-             * @param value allowed object is
-             *              {@link String }
-             */
-            void setDbPassword(String value) throws PropertyVetoException;
+    /**
+     * Sets the value of the DB password property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    void setDbPassword(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the JDBC URL property.
@@ -170,7 +224,7 @@ public interface JmsAvailability extends ConfigBeanProxy, Injectable, PropertyBa
      *         {@link String }
      */
     @Attribute
-    String getJdbcUrl();
+    String getDbUrl();
 
     /**
      * Sets the value of the JDBC URL property.
@@ -178,7 +232,7 @@ public interface JmsAvailability extends ConfigBeanProxy, Injectable, PropertyBa
      * @param value allowed object is
      *              {@link String }
      */
-    void setJdbcUrl(String value) throws PropertyVetoException;
+    void setDbUrl(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the MQ Store pool name property.
@@ -204,3 +258,4 @@ public interface JmsAvailability extends ConfigBeanProxy, Injectable, PropertyBa
     @Element
     List<Property> getProperty();
 }
+
