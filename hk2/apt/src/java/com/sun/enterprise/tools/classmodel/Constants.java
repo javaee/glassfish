@@ -39,11 +39,18 @@ package com.sun.enterprise.tools.classmodel;
 public class Constants {
 
   /**
-   * This is the inhabitants file built.
+   * This is the target inhabitants file built.
    * <p>
    * Passed as a system property.
    */
-  public static final String PARAM_INHABITANT_FILE = "inhabitants.target.file";
+  public static final String PARAM_INHABITANT_TARGET_FILE = "inhabitants.target.file";
+  
+  /**
+   * This is the source inhabitants file read.
+   * <p>
+   * Passed as a system property.
+   */
+  public static final String PARAM_INHABITANT_SOURCE_FILE = "inhabitants.source.file";
   
   /**
    * This is the source files (jars | directories) to introspect and build a habitat for. 
@@ -62,4 +69,11 @@ public class Constants {
    */
   public static final String PARAM_INHABITANTS_CLASSPATH = "inhabitants.classpath";
 
+  /**
+   * Set to true if the inhabitants should be sorted
+   * <p>
+   * Passed as a system property.
+   */
+  public static final String PARAM_INHABITANTS_SORTED = "inhabitants.sorted";
+  
 }

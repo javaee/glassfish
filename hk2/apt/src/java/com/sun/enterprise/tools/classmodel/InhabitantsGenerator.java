@@ -48,11 +48,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.glassfish.hk2.classmodel.reflect.AnnotationType;
-import org.glassfish.hk2.classmodel.reflect.ParsingContext;
-import org.glassfish.hk2.classmodel.reflect.Types;
-import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.annotations.InhabitantAnnotation;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.classmodel.ClassPath;
@@ -205,16 +200,55 @@ public class InhabitantsGenerator extends Constants {
  }
   
   public static void main(String [] args) throws Exception {
-//    String classpath = System.getProperty("java.class.path");
-//    System.out.println(InhabitantsGenerator.class.getSimpleName() + " classpath is " + classpath);
-
-    String arg = System.getProperty(PARAM_INHABITANT_FILE);
-    if (null == arg || arg.isEmpty()) {
-      System.err.println("ERROR: sysprop " + PARAM_INHABITANT_FILE + " is expected");
-      System.exit(-1);
-    }
-    File targetInhabitantFile = new File(arg);
+    File targetInhabitantFile = getInhabitantFile(PARAM_INHABITANT_TARGET_FILE, false);
+    ClassPath inhabitantsSourceFiles = getScopedInhabitantCodeSources();
+    ClassPath inhabitantsClassPath = getFullInhabitantsClassPath();
     
+    if (inhabitantsSourceFiles.getEntries().isEmpty()) {
+      System.err.println("WARNING: nothing to do!");
+      return;
+    }
+
+    // can disable date here
+    InhabitantsDescriptor descriptor = null;
+//    InhabitantsDescriptor descriptor = new InhabitantsDescriptor();
+//    descriptor.enableDateOutput(false);
+    
+    InhabitantsGenerator generator = new InhabitantsGenerator(descriptor, inhabitantsSourceFiles, inhabitantsClassPath);
+
+    // sanity check --- can't sanity check any more since target classpath is reduced
+//    InhabitantsParsingContextGenerator ipcGen = generator.getContextGenerator();
+//    ParsingContext pc = ipcGen.getContext();
+//    Types types = pc.getTypes();
+//    AnnotationType ia = types.getBy(AnnotationType.class, InhabitantAnnotation.class.getName());
+//    AnnotationType c = types.getBy(AnnotationType.class, Contract.class.getName());
+//    if (null == ia || null == c) {
+//      System.err.println("ERROR: HK2's auto-depends jar is an expected argument in " + PARAM_INHABITANTS_SOURCE_FILES);
+//      return;
+//    }
+    
+    generator.generate(targetInhabitantFile);
+  }
+
+  static ClassPath getFullInhabitantsClassPath() {
+    String arg;
+    ClassPath inhabitantsClassPath = null;
+    arg = System.getProperty(PARAM_INHABITANTS_CLASSPATH);
+    if (null == arg || arg.isEmpty()) {
+      inhabitantsClassPath = ClassPath.create(null, false);
+      System.err.println("WARNING: sysprop " + PARAM_INHABITANTS_CLASSPATH + 
+          " is missing; defaulting to system classpath; this may result in an invalid inhabitants file being created.");
+      if (logger.isLoggable(Level.FINER)) {
+        logger.log(Level.FINER, "classpath={0}", inhabitantsClassPath.getFileEntries());
+      }
+    } else {
+      inhabitantsClassPath = ClassPath.create(null, arg);
+    }
+    return inhabitantsClassPath;
+  }
+
+  static ClassPath getScopedInhabitantCodeSources() {
+    String arg;
     arg = System.getProperty(PARAM_INHABITANTS_SOURCE_FILES);
     if (null == arg || arg.isEmpty()) {
       System.err.println("ERROR: sysprop " + PARAM_INHABITANTS_SOURCE_FILES + " is expected");
@@ -231,46 +265,25 @@ public class InhabitantsGenerator extends Constants {
       }
     }
     ClassPath inhabitantsSourceFiles = ClassPath.create(null, sourceFiles);
-
-    ClassPath inhabitantsClassPath = null;
-    arg = System.getProperty(PARAM_INHABITANTS_CLASSPATH);
-    if (null == arg || arg.isEmpty()) {
-      inhabitantsClassPath = ClassPath.create(null, false);
-      System.err.println("WARNING: sysprop " + PARAM_INHABITANTS_CLASSPATH + 
-          " is missing; defaulting to system classpath; this may result in an invalid inhabitants file being created.");
-      if (logger.isLoggable(Level.FINER)) {
-        logger.log(Level.FINER, "classpath={0}", inhabitantsClassPath.getFileEntries());
-      }
-    } else {
-      inhabitantsClassPath = ClassPath.create(null, arg);
-    }
-    
-    if (sourceFiles.isEmpty()) {
-      System.err.println("WARNING: nothing to do!");
-      return;
-    }
-
-    // can disable date here
-    InhabitantsDescriptor descriptor = null;
-//    InhabitantsDescriptor descriptor = new InhabitantsDescriptor();
-//    descriptor.enableDateOutput(false);
-    
-    InhabitantsGenerator generator = new InhabitantsGenerator(descriptor, inhabitantsSourceFiles, inhabitantsClassPath);
-
-    // sanity check
-//    InhabitantsParsingContextGenerator ipcGen = generator.getContextGenerator();
-//    ParsingContext pc = ipcGen.getContext();
-//    Types types = pc.getTypes();
-//    AnnotationType ia = types.getBy(AnnotationType.class, InhabitantAnnotation.class.getName());
-//    AnnotationType c = types.getBy(AnnotationType.class, Contract.class.getName());
-//    if (null == ia || null == c) {
-//      System.err.println("ERROR: HK2's auto-depends jar is an expected argument in " + PARAM_INHABITANTS_SOURCE_FILES);
-//      return;
-//    }
-    
-    generator.generate(targetInhabitantFile);
+    return inhabitantsSourceFiles;
   }
 
+  
+  static File getInhabitantFile(String key, boolean mustExist) {
+    String arg = System.getProperty(key);
+    if (null == arg || arg.isEmpty()) {
+      System.err.println("ERROR: sysprop " + key + " is expected");
+      System.exit(-1);
+    }
+    File targetInhabitantFile = new File(arg);
+    if (mustExist && !targetInhabitantFile.exists()) {
+      System.err.println("ERROR: " + targetInhabitantFile + " does not exist");
+      System.exit(-1);
+    }
+    return targetInhabitantFile;
+  }
+
+  
   /**
    * Marshals descriptor lines from parsed inhabitants.
    */
