@@ -64,11 +64,8 @@ import com.sun.enterprise.util.i18n.StringManager;
 
 import java.rmi.Naming;
 import java.util.*;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.StringWriter;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -630,16 +627,16 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                 */
         if(dbProps == null) dbProps = new Properties();
 	dbProps.setProperty("imq.cluster.clusterid", getMQClusterName());
+    dbProps.setProperty("imq.persist.store", jmsAvailability.getMessageStoreType());
 	if(Boolean.valueOf(jmsAvailability.getAvailabilityEnabled()) == false)
 		dbProps.setProperty("imq.cluster.nomasterbroker", "true");
 	else{
 		dbProps.setProperty("imq.brokerid", getBrokerInstanceName(getJmsService()));
-		dbProps.setProperty("imq.persist.store", "jdbc");
 	}
         String dbVendor = jmsAvailability.getDbVendor();
         String dbuser = jmsAvailability.getDbUsername();
         String dbPassword = jmsAvailability.getDbPassword();
-        String dbJdbcUrl = jmsAvailability.getJdbcUrl();
+        String dbJdbcUrl = jmsAvailability.getDbUrl();
 
         dbProps.setProperty(prefix + "dbVendor", dbVendor);
 
@@ -661,7 +658,11 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
 	    Property prop = (Property) obj;	
             String key = prop.getName();
             String value = prop.getValue();
-            dbProps.setProperty(propertyPrefix + key, value);
+            //don't set a prefix if the property name is already prefixed with "imq."
+            if(key.startsWith("imq."))
+                dbProps.setProperty(key, value);
+            else
+                dbProps.setProperty(propertyPrefix + key, value);
         }
     }
 
@@ -831,24 +832,31 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
 
 
             //XX: Extract the information from the optional properties.
-           List jmsProperties =    getJmsService().getProperty();
+       List jmsProperties =    getJmsService().getProperty();
 	   List jmsHostProperties = jmsHost.getProperty();
 	   Properties jmsServiceProp = listToProperties(jmsProperties);
 	   Properties jmsHostProp = listToProperties (jmsHostProperties);
+
 	   jmsServiceProp.putAll(jmsHostProp);
-	   
+	   if(jmsServiceProp.size() > 0) {
+           if(dbProps == null)
+                dbProps = new Properties();
+
+           dbProps.putAll(jmsServiceProp);
+       }
+        /*
 	   String jmsPropertiesStr =  null ;
 	   if(jmsServiceProp.size() > 0)
 	   {
-	     try{
+	   try{
 	   	StringWriter writer = new StringWriter();
 	   	jmsServiceProp.store(writer, "Properties defined in JMSService and JMSHost");
 	   	jmsPropertiesStr =  writer.toString();
-	     }catch(Exception e){}//todo: log error;
-	   } 
-        String brokerHomeDir = getBrokerHomeDir();
-        String brokerLibDir = getBrokerLibDir();
-        if (brokerInstanceName == null) {
+	   }catch(Exception e){}//todo: log error;
+	   } */
+         String brokerHomeDir = getBrokerHomeDir();
+         String brokerLibDir = getBrokerLibDir();
+         if (brokerInstanceName == null) {
             brokerInstanceName = getBrokerInstanceName(getJmsService());
         }
 
@@ -859,11 +867,11 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
         //BrokerArgs, BrokerHomeDir, BrokerVarDir, BrokerStartTimeout
         //adminUserName, adminPassword
         ConnectorDescriptor cd = getDescriptor();
-	    if(jmsPropertiesStr != null){
+	    /*if(jmsPropertiesStr != null){
             	ConnectorConfigProperty  envProp = new ConnectorConfigProperty  (
                     "BrokerProps", jmsPropertiesStr, "Broker Props", "java.lang.String");
             	setProperty(cd, envProp);
-	    }
+	    }  */
             ConnectorConfigProperty  envProp1 = new ConnectorConfigProperty  (
                     BROKERTYPE, brokerType, "Broker Type", "java.lang.String");
             setProperty(cd, envProp1);
