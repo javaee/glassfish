@@ -70,7 +70,11 @@ public class InhabitantsFilter extends Constants {
    * @throws Exception
    */
   public static void main(String[] args) throws Exception {
-    File sourceInhabitantFile = InhabitantsGenerator.getInhabitantFile(PARAM_INHABITANT_SOURCE_FILE, true);
+    File sourceInhabitantFile = InhabitantsGenerator.getInhabitantFile(PARAM_INHABITANT_SOURCE_FILE, false);
+    if (!sourceInhabitantFile.exists()) {
+      logger.log(Level.FINE, "Nothing to do.");
+      return;
+    }
     File targetInhabitantFile = InhabitantsGenerator.getInhabitantFile(PARAM_INHABITANT_TARGET_FILE, false);
     ClassPath targetClassPath = InhabitantsGenerator.getScopedInhabitantCodeSources();
     CodeSourceFilter filter = new CodeSourceFilter(targetClassPath);
