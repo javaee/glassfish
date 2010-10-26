@@ -163,14 +163,22 @@ public class ListLogAttributes implements AdminCommand {
             keys.addAll(props.keySet());
             Collections.sort(keys);
             Iterator<String> it2 = keys.iterator();
+
+            // The following Map is used to hold the REST data
+            Map<String, String> logAttributes = new HashMap<String, String>();
+            
             while (it2.hasNext()) {
                 String name = it2.next();
                 if (!name.endsWith(".level") && !name.equals(".level")) {
                     final ActionReport.MessagePart part = report.getTopMessagePart()
                             .addChild();
                     part.setMessage(name + "\t" + "<"+props.get(name)+">");
+                    logAttributes.put(name, props.get(name));
                 }
             }
+            Properties restData = new Properties();
+            restData.put("logAttributes", logAttributes);
+            report.setExtraProperties(restData);
 
         } catch (IOException ex) {
             report.setMessage(localStrings.getLocalString("get.log.attribute.failed",
