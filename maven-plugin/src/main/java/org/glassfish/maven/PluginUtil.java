@@ -80,7 +80,7 @@ public class PluginUtil {
     public static void stopGlassFish(String serverId) throws Exception {
         GlassFish gf = gfMap.remove(serverId);
         if (gf != null && gf.getStatus().equals(GlassFish.Status.STARTED)) {
-            GlassFishRuntime gfr = gf.getService(GlassFishRuntime.class, null);
+            GlassFishRuntime gfr = gf.getService(GlassFishRuntime.class);
             gf.stop();
             if(gfr != null) {
                 gfr.shutdown();
@@ -94,7 +94,7 @@ public class PluginUtil {
                                 File archive, String[] deploymentParameters) throws Exception {
         GlassFish gf = startGlassFish(serverId, bootstrapProperties);
         // Lookup the deployer.
-        Deployer deployer = gf.getService(Deployer.class, null);
+        Deployer deployer = gf.getService(Deployer.class);
         logger.logp(Level.INFO, "PluginUtil", "doDeploy", "Deployer = {0}", deployer);
 
         String name = deployer.deploy(archive.toURI(), deploymentParameters);
@@ -106,7 +106,7 @@ public class PluginUtil {
         try {
             GlassFish gf = startGlassFish(serverId, bootstrapProperties);
             // Lookup the deployer.
-            Deployer deployer = gf.getService(Deployer.class, null);
+            Deployer deployer = gf.getService(Deployer.class);
             logger.logp(Level.INFO, "PluginUtil", "doUndeploy", "Deployer = {0}", deployer);
 
             deployer.undeploy(appName, deploymentParameters);
@@ -151,7 +151,7 @@ public class PluginUtil {
         GlassFish gf = gfMap.remove(serverId);
         CommandResult result = null;
         if (gf != null) {
-            CommandRunner commandRunner = gf.getService(CommandRunner.class, null);
+            CommandRunner commandRunner = gf.getService(CommandRunner.class);
             result = commandRunner.run(command, args);
         }
         logger.logp(Level.INFO, "PluginUtil", "runCommand", "Ran command {0}, CommandResult {1} ",
