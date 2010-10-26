@@ -91,7 +91,7 @@ public class InhabitantsDescriptor extends HashMap<String, String> {
     if (null == comment) {
       this.comment = comment;
     } else {
-      this.comment = "#" + comment;
+      this.comment = "# " + comment;
     }
   }
 
@@ -99,7 +99,7 @@ public class InhabitantsDescriptor extends HashMap<String, String> {
     if (null == this.comment) {
       setComment(comment);
     } else {
-      this.comment += "\n#" + comment;
+      this.comment += "\n# " + comment;
     }
   }
   
