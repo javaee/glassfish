@@ -256,18 +256,21 @@ public class InhabitantsGeneratorTest {
     sb.append("class=com.sun.enterprise.tools.classmodel.test.CService\n");
     sb.append("class=com.sun.enterprise.tools.classmodel.test.BService,index=com.sun.enterprise.tools.classmodel.test.BContract\n");
 
+    // this demonstrates how invalid habitat files can be formed if the working classpath is not correct
     if (worldViewClassPath) {
-      // world view classpath has full visibility so that class-model generates
+      // world view (or working) classpath has full visibility so that class-model generates
       // the true habitat
       sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithExternalContract,index=com.sun.enterprise.tools.classmodel.test.external.ExternalContract\n");
       sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithAbstractBaseHavingExternalContract,index=com.sun.enterprise.tools.classmodel.test.external.ExternalContract\n");
       sb.append("class=com.sun.enterprise.tools.classmodel.test.RunLevelCloseableServiceWithExternalAnnotation,index=org.jvnet.hk2.annotations.RunLevel\n");
+      sb.append("class=com.sun.enterprise.tools.classmodel.test.JDBCService,index=com.sun.enterprise.tools.classmodel.test.external.ServerService:jdbc,index=org.jvnet.hk2.annotations.RunLevel\n");
     } else {
       // without world-view, the external contracts in the
       // inhabitants-gen-ifaces jar are not considered
       sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithExternalContract\n");
       sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithAbstractBaseHavingExternalContract\n");
       sb.append("class=com.sun.enterprise.tools.classmodel.test.RunLevelCloseableServiceWithExternalAnnotation\n");
+      sb.append("class=com.sun.enterprise.tools.classmodel.test.JDBCService\n");
     }
 
     if (fromClassModel) {
@@ -293,33 +296,6 @@ public class InhabitantsGeneratorTest {
   }
 
   /**
-   * If there are no inhabitants then there should be no generated file
-   */
-//  @Ignore
-  @Test
-  public void testMainWithNoInhabitants() throws Exception {
-    File testDir = new File(new File("."), "target/test-classes");
-    File outputFile = new File(testDir, "META-INF/inhabitants/default");
-
-    String inhabitantSources = toString(getAutoDependsClassPathEntries());
-    String workingClassPath = toString(getTestClassPathEntries(true));
-
-    String output = callMain(outputFile, false, inhabitantSources, workingClassPath, null);
-    assertNull(output);
-    
-    if (outputFile.exists()) {
-      FileInputStream fis = new FileInputStream(outputFile);
-      try {
-        assertFalse("expect NOT to find: " + outputFile
-            + "; but did containing:\n[" + toString(fis) + "]\nthis is surprising because\ninhabitant sources=" + inhabitantSources
-            + "\n and working classpath=" + workingClassPath + "\n", outputFile.exists());
-      } finally {
-        fis.close();
-      }
-    }
-  }
-
-  /**
    * If {@link #testHabitatFileGeneration()} fails, then this guy will also
    * always fail.
    */
@@ -332,6 +308,33 @@ public class InhabitantsGeneratorTest {
     String output = callMain(outputFile, true, null, null, null);
     String expected = expected(true);
     assertTrue(output + " was not found to contain:\n" + expected, output.contains(expected));
+  }
+
+  /**
+   * If there are no inhabitants then there should be no generated file
+   */
+//  @Ignore
+  @Test
+  public void testMainWithNoInhabitants() throws Exception {
+    File testDir = new File(new File("."), "target/test-classes");
+    File outputFile = new File(testDir, "META-INF/inhabitants/default");
+
+    String inhabitantSources = toString(getAutoDependsClassPathEntries());
+    String workingClassPath = toString(getTestClassPathEntries(true));
+
+    String output = callMain(outputFile, false, inhabitantSources, workingClassPath, true);
+    assertNull(output);
+    
+    if (outputFile.exists()) {
+      FileInputStream fis = new FileInputStream(outputFile);
+      try {
+        assertFalse("expect NOT to find: " + outputFile
+            + "; but did containing:\n[" + toString(fis) + "]\nthis is surprising because\ninhabitant sources=" + inhabitantSources
+            + "\n and working classpath=" + workingClassPath + "\n", outputFile.exists());
+      } finally {
+        fis.close();
+      }
+    }
   }
 
   /**
