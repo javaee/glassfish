@@ -1,5 +1,7 @@
 package org.jvnet.hk2.component;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -76,4 +78,14 @@ public class MultiMapTest {
     assertFalse(mm.contains("b", "a"));
   }
 
+  @Test
+  public void testKeySet() {
+    MultiMap<String, String> mm = new MultiMap<String, String>();
+    mm.add("key", "val");
+    mm.add("key", "val2");
+    mm.add("key2", "val");
+    mm.add("key3", "val2");
+    
+    assertEquals("keySet", new HashSet(Arrays.asList(new String[] {"key", "key2", "key3"})), mm.keySet());
+  }
 }
