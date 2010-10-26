@@ -72,7 +72,9 @@ public class GlassfishSSLSupport implements SSLSupport {
     public GlassfishSSLSupport(SSLEngine engine) {
         this.socket = null;
         this.engine = engine;
-        session = engine.getSession();
+        if(engine != null) {
+            session = engine.getSession();
+        }
     }
 
     public String getCipherSuite() throws IOException {
