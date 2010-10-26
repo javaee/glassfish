@@ -839,9 +839,10 @@ public class DynamicInterceptor implements MBeanServer
     }
 
     private boolean isJSR77(String oName, ObjectName o) {
-        if(o.getKeyProperty("j2eeType").equals("J2EEDomain")) {
+        if((o.getKeyProperty("j2eeType") !=null) &&
+                (o.getKeyProperty("j2eeType").equals("J2EEDomain"))) {
             return true;
-        } else if (oName.startsWith(JSR77_PREFIX)) {
+        } else if(oName.startsWith(JSR77_PREFIX)) {
             return true;
         } else {
             return false;
