@@ -159,7 +159,8 @@ public class DeleteInstanceCommand implements AdminCommand {
         ci.parameters(map);
         ci.execute();
 
-        if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
+        if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS &&
+            report.getActionExitCode() != ActionReport.ExitCode.WARNING) {
             // Failed to delete from domain.xml
             configfailure = true;
             if (fsfailure) {

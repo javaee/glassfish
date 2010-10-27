@@ -213,7 +213,8 @@ public class CreateInstanceCommand implements AdminCommand {
         ci.execute();
 
 
-        if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
+        if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS &&
+            report.getActionExitCode() != ActionReport.ExitCode.WARNING) {
             // If we couldn't update domain.xml then stop!
             return;
         }

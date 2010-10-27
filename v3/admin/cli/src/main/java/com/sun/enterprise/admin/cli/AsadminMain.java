@@ -233,6 +233,7 @@ public class AsadminMain {
         case WARNING:
             logger.fine(
                 strings.get("CommandSuccessfulWithWarnings", command));
+            exitCode = SUCCESS;
             break;
 
         case ERROR:
