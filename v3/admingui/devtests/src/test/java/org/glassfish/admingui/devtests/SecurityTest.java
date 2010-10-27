@@ -148,7 +148,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "description");
 
         clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_JACC_PROVIDERS);
-        assertTrue(selenium.isTextPresent(providerName));
+        assertTrue(tableContainsRow("propertyForm:configs", "col1", providerName));
 
         clickAndWait(getLinkIdByLinkText("propertyForm:configs", providerName), TRIGGER_EDIT_JACC_PROVIDER);
         assertEquals(policyConfig, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:policyConfigProp:PolicyConfig"));
@@ -170,7 +170,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:configurations:server-config:security:messageSecurity:messageSecurity_link", TRIGGER_MESSAGE_SECURITY_CONFIGURATIONS);
 
         // Clean up, just in case...
-        if (selenium.isTextPresent(LAYER_NAME)) {
+        if (tableContainsRow("propertyForm:configs", "col1", LAYER_NAME)) {
             deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", LAYER_NAME);            
         }
 
