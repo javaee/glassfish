@@ -39,14 +39,13 @@ package org.glassfish.hk2.classmodel.reflect.impl;
 import org.glassfish.hk2.classmodel.reflect.*;
 
 import java.util.*;
-import java.net.URI;
 
 /**
  * Implementation of an extensible type (Class or Interface)
  */
 public abstract class ExtensibleTypeImpl<T extends ExtensibleType> extends TypeImpl implements ExtensibleType<T> {
 
-    final TypeProxy parent;
+    private TypeProxy<?> parent;
     final Set<TypeProxy<InterfaceModel>> implementedIntf = Collections.synchronizedSet(new HashSet<TypeProxy<InterfaceModel>>());
     
     public ExtensibleTypeImpl(String name, TypeProxy<Type> sink, TypeProxy parent) {
@@ -60,6 +59,14 @@ public abstract class ExtensibleTypeImpl<T extends ExtensibleType> extends TypeI
         } else {
             return null;
         }
+    }
+    
+    public synchronized TypeProxy<?> setParent(final TypeProxy<?> parent) {
+        if (null == this.parent) { 
+          this.parent = parent;
+        }
+        
+        return this.parent;
     }
 
     void isImplementing(TypeProxy<InterfaceModel> intf) {

@@ -36,9 +36,6 @@
 
 package org.glassfish.hk2.classmodel.reflect.util;
 
-import org.glassfish.hk2.classmodel.reflect.ArchiveAdapter;
-
-import java.io.BufferedInputStream;
 import java.net.URI;
 import java.io.File;
 import java.io.IOException;
@@ -73,7 +70,6 @@ public class JarArchive extends AbstractAdapter {
 
     @Override
      public void onSelectedEntries(Selector selector, EntryTask task, Logger logger) throws IOException {
-         byte[] bytes = new byte[52000];
          Enumeration<JarEntry> enumEntries = jar.entries();
          while(enumEntries.hasMoreElements()) {
              JarEntry ja = enumEntries.nextElement();
@@ -87,7 +83,7 @@ public class JarArchive extends AbstractAdapter {
                          try {
                              subURI = new URI(ja.getName());
                          } catch (URISyntaxException e1) {
-                             // ignore...
+                             logger.log(Level.FINE, "ignoring exception", e1);
                          }
                      }
                      subArchive = new InputStreamArchiveAdapter(subURI,

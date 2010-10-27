@@ -61,12 +61,17 @@ import java.util.logging.Logger;
  */
 public class Parser implements Closeable {
 
+    public static final String DEFAULT_WAIT_SYSPROP = "hk2.parser.timeout";
+      
     private final ParsingContext context;
     private final Map<String, Types> processedURI = Collections.synchronizedMap(new HashMap<String, Types>());
 
     private final Stack<Future<Result>> futures = new Stack<Future<Result>>();
     private final ExecutorService executorService;
     private final boolean ownES;
+
+    private final int DEFAULT_TIMEOUT = Integer.getInteger(DEFAULT_WAIT_SYSPROP, 10);
+    
     
     public Parser(ParsingContext context) {
         this.context = context;
@@ -75,7 +80,7 @@ public class Parser implements Closeable {
     }
     
     public Exception[] awaitTermination() throws InterruptedException {
-        return awaitTermination(10, TimeUnit.SECONDS);
+        return awaitTermination(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
     }
 
     public Exception[] awaitTermination(int timeOut, TimeUnit unit) throws InterruptedException {
@@ -143,7 +148,7 @@ public class Parser implements Closeable {
                         ClassReader cr = new ClassReader(is);
                         try {
                             File file = getFilePath(url.getPath(), resourceName);
-                            URI definingURI = file.toURI();
+                            URI definingURI = getDefiningURI(file);
                             if (logger.isLoggable(Level.FINE)) {
                                 logger.fine("file=" + file + "; definingURI=" + definingURI);
                             }
@@ -171,6 +176,10 @@ public class Parser implements Closeable {
         return exceptions.toArray(new Exception[exceptions.size()]);
     }
 
+    private static URI getDefiningURI(File file) {
+      return file.toURI();
+    }
+    
     private static File getFilePath(String path, String resourceName) {
       path = path.substring(0, path.length() - resourceName.length());
       if (path.endsWith("!/")) {

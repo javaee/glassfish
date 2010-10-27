@@ -39,7 +39,6 @@ package org.glassfish.hk2.classmodel.reflect.impl;
 import org.glassfish.hk2.classmodel.reflect.*;
 import org.objectweb.asm.Opcodes;
 
-import java.util.*;
 import java.net.URI;
 
 /**
@@ -74,7 +73,8 @@ public class TypesImpl implements TypeBuilder {
         Class<? extends Type> requestedType = getType(access);
 
         TypeProxy<Type> typeProxy = types.getHolder(name, requestedType);
-        if (typeProxy.get()==null) {
+        final Type type = typeProxy.get();
+        if (null == type) {
             if ((access & Opcodes.ACC_ANNOTATION)==Opcodes.ACC_ANNOTATION) {
                return new AnnotationTypeImpl(name, typeProxy);
             } else
@@ -84,7 +84,12 @@ public class TypesImpl implements TypeBuilder {
                 return new ClassModelImpl(name, typeProxy, parent);
             }
         } else {
-            return (TypeImpl) typeProxy.get();
+            TypeImpl impl = (TypeImpl)type;
+            if (ExtensibleTypeImpl.class.isInstance(impl)) {
+                // ensure we have the parent right
+                ((ExtensibleTypeImpl<?>)impl).setParent(parent);
+            }
+            return impl;
         }
     }
 
