@@ -153,7 +153,7 @@ public final class ListClustersCommand implements AdminCommand, PostConstruct {
                 if (name != null) {
                     ActionReport tReport = habitat.getComponent(ActionReport.class, "html");
                     InstanceInfo ii = new InstanceInfo(
-                            server, helper.getAdminPort(server), server.getAdminHost(),
+                            habitat, server, helper.getAdminPort(server), server.getAdminHost(),
                             clusterName, logger, timeoutInMsec, tReport, stateService);
                     infos.add(ii);
                 }

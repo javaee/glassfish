@@ -56,6 +56,7 @@ import com.sun.enterprise.util.StringUtils;
 
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import java.io.ByteArrayOutputStream;
+import org.glassfish.common.util.admin.AuthTokenManager;
 
 public class NodeRunner  {
 
@@ -70,9 +71,12 @@ public class NodeRunner  {
 
     private SSHLauncher sshL = null;
 
+    private final AuthTokenManager authTokenManager;
+
     public NodeRunner(Habitat habitat, Logger logger) {
         this.logger = logger;
         this.habitat = habitat;
+        authTokenManager = habitat.getComponent(AuthTokenManager.class);
     }
 
     public String getLastCommandRun() {
@@ -136,6 +140,9 @@ public class NodeRunner  {
         UnsupportedOperationException,
         IllegalArgumentException {
 
+        args.add(0, AuthTokenManager.AUTH_TOKEN_OPTION);
+        args.add(1, authTokenManager.createToken());
+        
         if (node.isLocal()) {
             return runAdminCommandOnLocalNode(node, output, waitForReaderThreads,
                     args);

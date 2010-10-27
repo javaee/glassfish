@@ -40,13 +40,11 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import java.util.List;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.DuckTyped;
-import org.jvnet.hk2.config.Element;
 
 
 
@@ -78,13 +76,15 @@ public interface SecureAdmin extends ConfigBeanProxy, Injectable {
 
     void setSpecialAdminIndicator(String value);
 
-    /**
-     * Gets the list of principals to be used for SSL/TLS authentication
-     * among servers in this domain.
-     * @return list of SecureAdminPrincipal objects
-     */
-    @Element
-    List<SecureAdminPrincipal> getSecureAdminPrincipals();
+    @Attribute(defaultValue=Duck.DEFAULT_ADMIN_ALIAS)
+    String dasAlias();
+
+    void setDasAlias(String alias);
+
+    @Attribute(defaultValue=Duck.DEFAULT_INSTANCE_ALIAS)
+    String instanceAlias();
+
+    void setInstanceAlias(String alias);
 
     /**
      * Returns the SecureAdminPrincipal corresponding to the Principal the
@@ -94,25 +94,23 @@ public interface SecureAdmin extends ConfigBeanProxy, Injectable {
     @DuckTyped
     String getInstanceAlias();
 
+    @DuckTyped
+    String getDasAlias();
+
+    @DuckTyped
+    boolean isEnabled();
+
     class Duck {
 
-        private final static String ADMIN_TYPE = "admin";
-        private final static String INSTANCE_TYPE = "instance";
         private final static String DEFAULT_INSTANCE_ALIAS = "glassfish-instance";
         private final static String DEFAULT_ADMIN_ALIAS = "s1as";
 
         public static String getInstanceAlias(final SecureAdmin secureAdmin) {
-            final SecureAdminPrincipal instancePrincipal = getPrincipalByType(secureAdmin, INSTANCE_TYPE);
-            return (instancePrincipal != null ? instancePrincipal.getName() : DEFAULT_INSTANCE_ALIAS);
+            return secureAdmin.instanceAlias();
         }
 
-        private static SecureAdminPrincipal getPrincipalByType(final SecureAdmin secureAdmin, final String targetType) {
-            for (SecureAdminPrincipal p : secureAdmin.getSecureAdminPrincipals()) {
-                if (p.getType().equals(targetType)) {
-                    return p;
-                }
-            }
-            return null;
+        public static String getDasAlias(final SecureAdmin secureAdmin) {
+            return secureAdmin.dasAlias();
         }
     }
     
@@ -120,6 +118,8 @@ public interface SecureAdmin extends ConfigBeanProxy, Injectable {
         
         public static final String ADMIN_INDICATOR_HEADER_NAME = "X-GlassFish-admin";
         private static final String ADMIN_INDICATOR_DEFAULT_VALUE = "true";
+        public static final String ADMIN_ONE_TIME_AUTH_TOKEN_HEADER_NAME = "X-GlassFish-authToken";
+        
 
         
         /**
@@ -139,6 +139,16 @@ public interface SecureAdmin extends ConfigBeanProxy, Injectable {
          */
         public static String configuredAdminIndicator(final SecureAdmin secureAdmin) {
             return (secureAdmin == null ? ADMIN_INDICATOR_DEFAULT_VALUE : secureAdmin.getSpecialAdminIndicator());
+        }
+
+        public static String DASAlias(final SecureAdmin secureAdmin) {
+            return (secureAdmin == null) ? Duck.DEFAULT_ADMIN_ALIAS :
+                secureAdmin.getDasAlias();
+        }
+
+        public static String instanceAlias(final SecureAdmin secureAdmin) {
+            return (secureAdmin == null) ? Duck.DEFAULT_INSTANCE_ALIAS :
+                secureAdmin.getInstanceAlias();
         }
     }
 }

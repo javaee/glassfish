@@ -40,8 +40,8 @@
 
 package com.sun.enterprise.v3.admin.cluster;
 
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.Configs;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import java.beans.PropertyVetoException;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
@@ -56,6 +56,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.RetryableException;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.Transaction;
 import org.jvnet.hk2.config.TransactionFailure;
@@ -77,28 +78,57 @@ public class EnableSecureAdminCommand implements AdminCommand {
     @Param(optional = true, defaultValue="glassfish-instance")
     public String instancealias;
 
+//    @Inject
+//    private Configs configs;
+
     @Inject
-    private Configs configs;
+    private Domain domain;
 
     @Override
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
         try {
-            ConfigSupport.apply(new SingleConfigCode() {
+            ConfigSupport.apply(new SingleConfigCode<Domain>() {
                 @Override
-                public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
+                public Object run(Domain d) throws PropertyVetoException, TransactionFailure {
+
                     // get the transaction
-                    Transaction t = Transaction.getTransaction(param);
+                    Transaction t = Transaction.getTransaction(d);
                     if (t!=null) {
 
-                        for (Config c : configs.getConfig()) {
-                            report.getTopMessagePart().addChild().setMessage(c.getName());
+                        try {
+                            // TODO - adjust the Grizzly config in all configs
+    //                        for (Config c : configs.getConfig()) {
+    //                            report.getTopMessagePart().addChild().setMessage(c.getName());
+    //                        }
+                            /*
+                             * Create the secure admin node if it is not already there.
+                             */
+                            SecureAdmin secureAdmin_w;
+                            SecureAdmin secureAdmin = d.getSecureAdmin();
+                            if (secureAdmin == null) {
+                                secureAdmin_w = d.createChild(SecureAdmin.class);
+                                d.setSecureAdmin(secureAdmin_w);
+                            } else {
+                                secureAdmin_w = t.enroll(secureAdmin);
+                            }
+                            secureAdmin_w.setEnabled("true");
+                            if (adminalias != null) {
+                                secureAdmin_w.setDasAlias(adminalias);
+                            }
+                            if (instancealias != null) {
+                                secureAdmin_w.setInstanceAlias(instancealias);
+                            }
+
+                            t.commit();
+                        } catch (RetryableException ex) {
+                            throw new RuntimeException(ex);
                         }
                     }
+
                     return Boolean.TRUE;
                 }
-            }, configs);
-            report.setMessage("Not yet functional");
+            }, domain);
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } catch (TransactionFailure ex) {
             report.failure(context.getLogger(), Strings.get("enable.secure.admin.errenable"), ex);

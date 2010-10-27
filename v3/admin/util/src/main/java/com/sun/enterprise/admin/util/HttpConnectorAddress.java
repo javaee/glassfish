@@ -64,6 +64,8 @@ public final class HttpConnectorAddress {
     private boolean secure;
     private AuthenticationInfo  authInfo;
 
+    private SSLSocketFactory sslSocketFactory;
+
     
     public HttpConnectorAddress() {
     }
@@ -85,10 +87,20 @@ public final class HttpConnectorAddress {
     }
 
     public HttpConnectorAddress(String host, int port, boolean secure, String path) {
+        this(host, port, secure, path, null);
+    }
+
+    public HttpConnectorAddress(String host, int port, SSLSocketFactory sslSocketFactory) {
+        this(host, port, true /* secure */, null /* path */, sslSocketFactory);
+    }
+
+    public HttpConnectorAddress(String host, int port, boolean secure, String path,
+            SSLSocketFactory sslSocketFactory) {
         this.host = host;
         this.port = port;
         this.secure = secure;
         this.path = path;
+        this.sslSocketFactory = sslSocketFactory;
     }
 
 
@@ -110,28 +122,48 @@ public final class HttpConnectorAddress {
      * resource
      */
     public URLConnection openConnection(String path) throws IOException {
-        configureSSL();
         if (path == null || path.trim().length() == 0)
             path = this.path;
-        return this.openConnection(this.toURL(path));
+        final URLConnection cnx = this.openConnection(this.toURL(path));
+        if (! (cnx instanceof HttpsURLConnection)) {
+            return cnx;
+        }
+
+        configureSSL((HttpsURLConnection) cnx);
+        
+        return cnx;
     }
 
-    private void configureSSL() throws IOException {
-        if (secure) {
+    private void configureSSL(final HttpsURLConnection httpsCnx) throws IOException {
+        httpsCnx.setHostnameVerifier(new BasicHostnameVerifier(this.host));
+        httpsCnx.setSSLSocketFactory(getSSLSocketFactory());
+    }
+
+    private synchronized SSLSocketFactory getSSLSocketFactory() throws IOException {
+        /*
+         * The SSL socket factory will have been assigned a value if this
+         * connection was made from the DAS or an instance...that code would have
+         * used the constructor which accepts an SSLSocketFactory as an argument.
+         * (That socket factory should provide client authentication.)
+         *
+         * If that value is null then this connection is originating from
+         * somewhere else - such as asadmin - and the socket factory should be
+         * the one which uses SSL but does not provide client auth.
+         */
+        if (sslSocketFactory == null) {
             try {
-                SSLContext sc = SSLContext.getInstance("TLS");
+                final SSLContext sc = SSLContext.getInstance("TLS");
                 TrustManager[] tms = {new AsadminTrustManager()};
                 sc.init(SecureAdminClientManager.getKeyManagers(), tms, new SecureRandom());
-                HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-                HttpsURLConnection.setDefaultHostnameVerifier(new BasicHostnameVerifier(this.host));
-            } catch (NoSuchAlgorithmException e) {
-                throw new IOException(e);
-            } catch (KeyManagementException ee) {
-                throw new IOException(ee);
+                sslSocketFactory = sc.getSocketFactory();
+            } catch (KeyManagementException ex) {
+                throw new IOException(ex);
+            } catch (NoSuchAlgorithmException ex) {
+                throw new IOException(ex);
             }
         }
+        return sslSocketFactory;
     }
-
 
     /**
      * get the protocol prefix to be used for a connection for the

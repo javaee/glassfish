@@ -107,5 +107,18 @@
             <artifactId>internal-api</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <!--
+                We compile against the security module but we don't want to
+                create a hard dependency because that would drag it into
+                the nucleus distribution which we'd like to avoid.  The actual
+                uses of SSLUtils from the security module are instantiated
+                just-in-time only when needed, rather than being injected.
+            -->
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>security</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

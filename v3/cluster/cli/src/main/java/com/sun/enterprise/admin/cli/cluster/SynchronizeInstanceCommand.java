@@ -116,6 +116,18 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
         /*
          * Create the remote command object that we'll reuse for each request.
          */
+
+        /*
+         * Because we reuse the command, we also need to reuse the auth token
+         * (if one is present).
+         */
+        final String origAuthToken = programOpts.getAuthToken();
+        if (origAuthToken != null) {
+            if ( ! origAuthToken.endsWith("+")) {
+                programOpts.setAuthToken(origAuthToken + "+");
+            }
+        }
+
         syncCmd = new RemoteCommand("_synchronize-files", programOpts, env);
         syncCmd.setFileOutputDirectory(instanceDir);
 
@@ -222,6 +234,18 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
         } catch (ConnectException cex) {
             logger.finer("Couldn't connect to DAS: " + cex);
             return false;
+        } finally {
+            /*
+             * If authToken was present, we asked to reuse it when we first
+             * constructed the command.  Because we won't reuse the token
+             * further we need to tell the DAS to discard it which we do by
+             * running any command.
+             */
+            if (origAuthToken != null) {
+                programOpts.setAuthToken(origAuthToken);
+                RemoteCommand discardCommand = new RemoteCommand("uptime", programOpts, env);
+                discardCommand.executeAndReturnOutput();
+            }
         }
 
         return true;

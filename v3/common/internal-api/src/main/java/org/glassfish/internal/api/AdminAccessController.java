@@ -42,6 +42,7 @@ package org.glassfish.internal.api;
 
 import com.sun.grizzly.tcp.Request;
 import java.security.Principal;
+import java.util.Map;
 import org.jvnet.hk2.annotations.Contract;
 import javax.security.auth.login.LoginException;
 
@@ -71,9 +72,7 @@ public interface AdminAccessController {
      *  <p>
      *  This variant also logs the requester in as an admin if the specified Principal
      *  matches the Principal from the certificate in the truststore associated with
-     *  the alias configured in the domain configuration.  Or, if secure admin
-     *  is off then this variant also accepts the request if the request contains
-     *  a special (but insecure) header, passed as the specialAdminIndicator.
+     *  the alias configured in the domain configuration.  
      *
      *  Typically, methods invoking
      *  this variant should pass the Principal associated with the request as
@@ -82,11 +81,11 @@ public interface AdminAccessController {
      * @param user String representing the user name of the user doing an admin opearation
      * @param password String representing clear-text password of the user doing an admin operation
      * @param realm String representing the name of the admin realm for given server
-     * @param adminIndicator String containing the admin indicator value (null if none)
+     * @param authRelatedHeaders authentication-related headers from the incoming admin request
      * @param requestPrincipal Principal associated with the incoming admin request (can be null)
      * @throws LoginException if there is any error in underlying implementation
      * @return true if authentication succeeds, false otherwise
      */
     boolean loginAsAdmin(String user, String password, String realm,
-            String adminIndicator, Principal requestPrincipal) throws LoginException;
+            Map<String,String> authRelatedHeaders, Principal requestPrincipal) throws LoginException;
 }

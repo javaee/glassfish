@@ -43,12 +43,14 @@ package com.sun.enterprise.v3.admin;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.grizzly.tcp.Request;
 import com.sun.logging.LogDomains;
+import java.security.Principal;
 import org.glassfish.admin.payload.PayloadImpl;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
@@ -78,6 +80,7 @@ import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 
 import java.io.*;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
@@ -106,6 +109,10 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
 
     private static final String QUERY_STRING_SEPARATOR = "&";
     private static final String ASADMIN_CMD_PREFIX = "AS_ADMIN_";
+
+    private static final String[] authRelatedHeaderNames = {
+        SecureAdmin.Util.ADMIN_INDICATOR_HEADER_NAME,
+        SecureAdmin.Util.ADMIN_ONE_TIME_AUTH_TOKEN_HEADER_NAME};
 
     @Inject
     ModulesRegistry modulesRegistry;
@@ -244,16 +251,30 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         }
     }
 
-    public boolean authenticate(Request req)
+    public boolean authenticate(GrizzlyRequest req)
             throws Exception {
-        String[] up = getUserPassword(req);
+        final Request r = req.getRequest();
+        String[] up = getUserPassword(r);
         String user = up[0];
         String password = up.length > 1 ? up[1] : "";
         AdminAccessController authenticator = habitat.getByContract(AdminAccessController.class);
         if (authenticator != null) {
-            return authenticator.loginAsAdmin(user, password, as.getAuthRealmName());
+            final Principal sslPrincipal = req.getUserPrincipal();
+            return authenticator.loginAsAdmin(user, password, as.getAuthRealmName(),
+                    authRelatedHeaders(req), sslPrincipal);
         }
         return true;   //if the authenticator is not available, allow all access - per Jerome
+    }
+    
+    private Map<String,String> authRelatedHeaders(final GrizzlyRequest gr) {
+        final Map<String,String> result = new HashMap<String,String>();
+        for (String authRelatedHeaderName : authRelatedHeaderNames) {
+            final String value = gr.getHeader(authRelatedHeaderName);
+            if (value != null) {
+                result.put(authRelatedHeaderName, value);
+            }
+        }
+        return result;
     }
 
     /** A convenience method to extract user name from a request. It assumes the HTTP Basic Auth.
@@ -280,7 +301,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
 
     private boolean authenticate(GrizzlyRequest req, ActionReport report, GrizzlyResponse res)
             throws Exception {
-        boolean authenticated = authenticate(req.getRequest());
+        boolean authenticated = authenticate(req);
         if (!authenticated) {
             String msg = adminStrings.getLocalString("adapter.auth.userpassword",
                     "Invalid user name or password");

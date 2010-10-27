@@ -40,6 +40,7 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.admin.remote.RemoteAdminCommand;
+import com.sun.enterprise.admin.remote.ServerRemoteAdminCommand;
 import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.StringUtils;
@@ -113,7 +114,7 @@ public class RestartInstanceCommand implements AdminCommand {
 
         try {
             // TODO complicated calls to determine when the remote instance has started??
-            RemoteAdminCommand rac = new RemoteAdminCommand("_restart-instance",
+            RemoteAdminCommand rac = new ServerRemoteAdminCommand(habitat, "_restart-instance",
                     host, port, false, "admin", null, logger);
 
             // notice how we do NOT send in the instance's name as an operand!!

@@ -40,12 +40,14 @@
 
 package com.sun.enterprise.admin.remote;
 
+import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.net.ssl.SSLException;
+import org.glassfish.common.util.admin.AuthTokenManager;
 
 import org.jvnet.hk2.component.*;
 import com.sun.enterprise.module.*;
@@ -67,7 +69,6 @@ import com.sun.enterprise.admin.util.CommandModelData.ParamModelData;
 import com.sun.enterprise.admin.util.CommandModelData.ParamData;
 import com.sun.enterprise.admin.util.AuthenticationInfo;
 import com.sun.enterprise.admin.util.HttpConnectorAddress;
-import com.sun.enterprise.admin.util.SecureAdminClientManager;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.net.NetUtils;
 import org.glassfish.admin.payload.PayloadFilesManager;
@@ -137,6 +138,7 @@ public class RemoteAdminCommand {
     protected String            user;
     protected String            password;
     protected Logger            logger;
+    protected String            authToken = null;
 
     // executeCommand parameters
     protected ParameterMap      options;
@@ -186,12 +188,20 @@ public class RemoteAdminCommand {
 
         this(name, host, port, false, "admin", null, Logger.getAnonymousLogger());
     }
+
+    public RemoteAdminCommand(String name, String host, int port,
+            boolean secure, String user, String password, Logger logger)
+            throws CommandException {
+        this(name, host, port, secure, user, password, logger, null);
+    }
+
     /**
      * Construct a new remote command object.  The command and arguments
      * are supplied later using the execute method in the superclass.
      */
     public RemoteAdminCommand(String name, String host, int port,
-            boolean secure, String user, String password, Logger logger)
+            boolean secure, String user, String password, Logger logger,
+            final String authToken)
             throws CommandException {
         this.name = name;
         this.host = host;
@@ -200,6 +210,7 @@ public class RemoteAdminCommand {
         this.user = user;
         this.password = password;
         this.logger = logger;
+        this.authToken = authToken;
         checkName();
     }
 
@@ -540,7 +551,7 @@ public class RemoteAdminCommand {
                  * Note: HttpConnectorAddress will set up SSL/TLS client cert
                  * handling if the current configuration calls for it.
                  */
-                HttpConnectorAddress url = new HttpConnectorAddress(
+                HttpConnectorAddress url = getHttpConnectorAddress(
                                 host, port, shouldUseSecure);
                 logger.finer("URI: " + uriString);
                 logger.finer("URL: " + url.toString());
@@ -561,11 +572,16 @@ public class RemoteAdminCommand {
                             HttpConnectorAddress.AUTHORIZATION_KEY,
                             url.getBasicAuthString());
                 }
+                if (authToken != null) {
+                    urlConnection.setRequestProperty(
+                            SecureAdmin.Util.ADMIN_ONE_TIME_AUTH_TOKEN_HEADER_NAME,
+                            authToken);
+                }
                 urlConnection.setRequestMethod(httpMethod);
                 urlConnection.setReadTimeout(readTimeout);
                 if (connectTimeout >= 0)
                     urlConnection.setConnectTimeout(connectTimeout);
-                addAdminIndicatorHeaderIfReqd(urlConnection);
+                addAdditionalHeaders(urlConnection);
                 cmd.doCommand(urlConnection);
                 logger.finer("doHttpCommand succeeds");
             } catch (AuthenticationException authEx) {
@@ -685,21 +701,15 @@ public class RemoteAdminCommand {
         } while (shouldTryCommandAgain);
     }
 
-    /**
-     * Adds the admin indicator header to the request if this admin client
-     * (which could be a real client or a server) has initialized
-     * admin client security.
-     * @param urlConnection
-     */
-    private void addAdminIndicatorHeaderIfReqd(final URLConnection urlConnection) {
-        final String indicatorValue = SecureAdminClientManager.getConfiguredAdminIndicatorValue();
-        if (indicatorValue != null) {
-            urlConnection.setRequestProperty(
-                    SecureAdminClientManager.getConfigureAdminIndicatorHeaderName(),
-                    indicatorValue);
-        }
+    protected HttpConnectorAddress getHttpConnectorAddress(
+            final String host, final int port, final boolean shouldUseSecure) {
+        return new HttpConnectorAddress(
+                                host, port, shouldUseSecure);
     }
-    
+
+    protected void addAdditionalHeaders(final URLConnection urlConnection) {
+    }
+
     /**
      * Check that the connection was successful and handle any error responses,
      * turning them into exceptions.

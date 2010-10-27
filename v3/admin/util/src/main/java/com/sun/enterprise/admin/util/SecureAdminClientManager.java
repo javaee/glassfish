@@ -130,25 +130,6 @@ public class SecureAdminClientManager {
     }
 
     /**
-     * Returne the currently-configured admin indicator value, suitable for
-     * an HTTP header value to identify the sender as a trusted admin
-     * requester (only in the non-secure case).
-     * @return the admin indicator value
-     */
-    public static String getConfiguredAdminIndicatorValue() {
-        return (instance == null ? SecureAdmin.Util.configuredAdminIndicator(null) : instance.configuredAdminIndicatorValue());
-    }
-
-    /**
-     * Returns the name of the HTTP header in which the admin indicator
-     * value should be set.
-     * @return HTTP header name in which the admin indicator value should be set
-     */
-    public static String getConfigureAdminIndicatorHeaderName() {
-        return SecureAdmin.Util.ADMIN_INDICATOR_HEADER_NAME;
-    }
-
-    /**
      * Prepares the manager so SSL/TLS will provide the correct client cert
      * when connecting to a remote admin port.  The main result of invoking this method is to
      * build an array of KeyManagers which can be passed to SSLContext.initClientAuthentication
@@ -207,6 +188,7 @@ public class SecureAdminClientManager {
         }
         secureAdmin = domain.getSecureAdmin();
         isEnabled = SecureAdmin.Util.isEnabled(secureAdmin);
+        configuredAdminIndicator = secureAdmin.getSpecialAdminIndicator();
         if (isEnabled) {
             instanceAlias = secureAdmin.getInstanceAlias();
             logger.fine("SecureAdminClientManager: secure admin is enabled");

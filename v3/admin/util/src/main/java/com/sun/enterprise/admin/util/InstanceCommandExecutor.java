@@ -40,29 +40,24 @@
 
 package com.sun.enterprise.admin.util;
 
+import com.sun.enterprise.admin.remote.ServerRemoteAdminCommand;
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.StringUtils;
+import java.util.Map;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jvnet.hk2.component.Habitat;
 
 /**
+ *
+ * Causes execution of an administrative command on one or more remote instances to be
+ * triggered from code running inside the DAS.
+ * 
  * @author Vijay Ramachandran
  */
-public class InstanceCommandExecutor extends RemoteAdminCommand implements Runnable, InstanceCommand {
-
-    @Inject
-    Domain domain;
+public class InstanceCommandExecutor extends ServerRemoteAdminCommand implements Runnable, InstanceCommand {
 
     private Server server;
     private ParameterMap params;
@@ -75,11 +70,11 @@ public class InstanceCommandExecutor extends RemoteAdminCommand implements Runna
     private static final LocalStringManagerImpl strings =
                         new LocalStringManagerImpl(InstanceCommandExecutor.class);
 
-    public InstanceCommandExecutor(String name, FailurePolicy fail, FailurePolicy offline, Server server,
+    public InstanceCommandExecutor(Habitat habitat,
+                                   String name, FailurePolicy fail, FailurePolicy offline, Server server,
                                    String host, int port, Logger logger,
                                    ParameterMap p, ActionReport r, InstanceCommandResult res) throws CommandException {
-        //TODO : Should this change for secured DAS-INSTANCE ?
-        super(name, host, port, false, "admin", "", logger);
+        super(habitat, name, host, port, false, "admin", "", logger);
         this.server = server;
         this.params = p;
         this.aReport = r;

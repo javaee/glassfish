@@ -132,7 +132,7 @@ public class ClusterOperationUtil {
                 ActionReport aReport = context.getActionReport().addSubActionsReport();
                 InstanceCommandResult aResult = new InstanceCommandResult();
                 InstanceCommandExecutor ice =
-                        new InstanceCommandExecutor(commandName, failPolicy, offlinePolicy,
+                        new InstanceCommandExecutor(habitat, commandName, failPolicy, offlinePolicy,
                                 svr, host, port, logger, parameters, aReport, aResult);
                 if(CommandTarget.DAS.isValid(habitat, ice.getServer().getName()))
                     continue;

@@ -54,6 +54,9 @@ import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.security.ssl.SSLUtils;
+import java.util.Map;
+import java.util.logging.Level;
+import org.glassfish.common.util.admin.AuthTokenManager;
 import org.glassfish.internal.api.*;
 import org.glassfish.security.common.Group;
 import org.jvnet.hk2.annotations.*;
@@ -71,6 +74,8 @@ import java.security.KeyStore;
 import java.security.Principal;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.jvnet.hk2.component.PostConstruct;
 
 /** Implementation of {@link AdminAccessController} that delegates to LoginContextDriver.
  *  @author Kedar Mhaswade (km@dev.java.net)
@@ -88,7 +93,7 @@ import java.security.cert.X509Certificate;
  */
 @Service
 @ContractProvided(JMXAuthenticator.class)
-public class GenericAdminAuthenticator implements AdminAccessController, JMXAuthenticator {
+public class GenericAdminAuthenticator implements AdminAccessController, JMXAuthenticator, PostConstruct {
     @Inject
     Habitat habitat;
     
@@ -110,11 +115,26 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
     @Inject
     Domain domain;
 
-    SSLUtils sslUtils;
+    @Inject
+    private AuthTokenManager authTokenManager;
+
+    // filled in just-in-time only if needed for secure admin traffic
+    private SSLUtils sslUtils = null;
+
+    private SecureAdmin secureAdmin;
+
+    @Inject
+    ServerEnvironment serverEnv;
 
     private static LocalStringManagerImpl lsm = new LocalStringManagerImpl(GenericAdminAuthenticator.class);
     
     private final Logger logger = Logger.getAnonymousLogger();
+
+    @Override
+    public void postConstruct() {
+        secureAdmin = domain.getSecureAdmin();
+    }
+
 
     /** Ensures that authentication and authorization works as specified in class documentation.
      *
@@ -139,14 +159,18 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
      * @throws LoginException
      */
     public boolean loginAsAdmin(String user, String password, String realm,
-            final String candidateAdminIndicator, final Principal requestPrincipal) throws LoginException {
+            final Map<String,String> authRelatedHeaders, final Principal requestPrincipal) throws LoginException {
         boolean isLocal = isLocalPassword(user, password); //local password gets preference
-        if (isLocal)
+        if (isLocal) {
+            logger.fine("Accepted locally-provisioned password authentication");
             return true;
+        }
         if (as.usesFileRealm()) {
             boolean result = handleFileRealm(user, password);
             if ( ! result) {
-                result = authenticateAsTrustedSender(candidateAdminIndicator, requestPrincipal);
+                result = authenticateAsTrustedSender(authRelatedHeaders, requestPrincipal);
+            } else {
+                logger.log(Level.FINE, "File realm user authentication passed for admin user {0}", user);
             }
             return result;
         } else {
@@ -173,7 +197,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
 //              LoginException le = new LoginException("login failed!");
 //              le.initCause(e);
 //              thorw le //TODO need to work on this, this is rather too ugly
-                return authenticateAsTrustedSender(candidateAdminIndicator, requestPrincipal);
+                return authenticateAsTrustedSender(authRelatedHeaders, requestPrincipal);
            } finally {
                 if (hack)
                     Thread.currentThread().setContextClassLoader(pc);
@@ -182,23 +206,45 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
     }
 
     /**
-     * Try to authenticate using a Principal, typically from the incoming admin request.
+     * Try to authenticate using a Principal, typically from the incoming admin request,
+     * or using the special admin indicator (which flags requests as from another
+     * server in the unsecured use case).
+     *
+     * @param authRelatedHeaders headers related to authentication from the incoming admin request
      * @param reqPrincipal Principal, typically as returned by the secure transport which delivered the incoming admin request
      * @return true if the Principal is non-null and is the expected one and is therefore authorized for admin tasks; false otherwise
      * @throws Exception
      */
     private boolean authenticateAsTrustedSender(
-            final String candidateSpecialAdminIndicator, final Principal reqPrincipal) throws LoginException  {
-        final SecureAdmin secureAdmin = domain.getSecureAdmin();
-
+            final Map<String,String> authRelatedHeaders, final Principal reqPrincipal) throws LoginException  {
         /*
          * If secure admin is enabled, use only the cert check.  If it's not
          * enabled, use only the special indicator check.
          */
-        return (SecureAdmin.Util.isEnabled(secureAdmin) ?
-            authenticateUsingCert(reqPrincipal, secureAdmin.getInstanceAlias()) :
-            authenticateUsingSpecialIndicator(candidateSpecialAdminIndicator,
-                SecureAdmin.Util.configuredAdminIndicator(secureAdmin)));
+        boolean result;
+        if (SecureAdmin.Util.isEnabled(secureAdmin)) {
+            result = authenticateUsingCert(reqPrincipal, 
+                    serverEnv.isDas() ? SecureAdmin.Util.instanceAlias(secureAdmin) :
+                        SecureAdmin.Util.DASAlias(secureAdmin));
+            if (result) {
+                logger.log(Level.FINE, "Authenticated SSL client auth principal {0}", reqPrincipal.getName());
+                return result;
+            }
+        } else {
+            result = authenticateUsingSpecialIndicator(
+                    authRelatedHeaders.get(SecureAdmin.Util.ADMIN_INDICATOR_HEADER_NAME));
+            if (result) {
+                logger.log(Level.FINE, "Authenticated server using server admin header indicator");
+                return result;
+            }
+        }
+        
+        result = authenticateUsingOneTimeToken(
+                authRelatedHeaders.get(SecureAdmin.Util.ADMIN_ONE_TIME_AUTH_TOKEN_HEADER_NAME));
+        if (result) {
+            logger.log(Level.FINE, "Authenticated using one-time auth token");
+        }
+        return result;
     }
 
     private boolean authenticateUsingCert(final Principal reqPrincipal, final String instanceAlias) throws LoginException {
@@ -206,8 +252,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
             return false;
         }
         try {
-            if (sslUtils == null) sslUtils = habitat.getByContract(SSLUtils.class);
-            final KeyStore trustStore = sslUtils.getTrustStore();
+            final KeyStore trustStore = sslUtils().getTrustStore();
             final Certificate cert = trustStore.getCertificate(instanceAlias);
             if (cert == null || ! (cert instanceof X509Certificate)) {
                 return false;
@@ -221,9 +266,29 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
         }
     }
 
-    private boolean authenticateUsingSpecialIndicator(final String candidateSpecialAdminIndicator,
-            final String configuredSpecialAdminIndicator) {
-        return (configuredSpecialAdminIndicator.equals(candidateSpecialAdminIndicator));
+    private synchronized SSLUtils sslUtils() {
+        if (sslUtils == null) {
+            sslUtils = habitat.getComponent(SSLUtils.class);
+        }
+        return sslUtils;
+    }
+
+    /*
+     * Returns whether the admin indicator value tells that the sender is
+     * a server (DAS or instance).
+     */
+    private boolean authenticateUsingSpecialIndicator(
+            final String candidateSpecialAdminIndicator) {
+        if (candidateSpecialAdminIndicator == null) {
+            return false;
+        }
+        return candidateSpecialAdminIndicator.equals(
+                SecureAdmin.Util.configuredAdminIndicator(secureAdmin));
+    }
+
+    private boolean authenticateUsingOneTimeToken(
+            final String oneTimeAuthToken) {
+        return oneTimeAuthToken == null ? false : authTokenManager.consumeToken(oneTimeAuthToken);
     }
 
 

@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.v3.admin.cluster;
 
+import com.sun.enterprise.admin.remote.ServerRemoteAdminCommand;
 import java.util.Iterator;
 import java.util.Collection;
 import java.util.logging.Level;
@@ -230,9 +231,8 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
             return null;
 
         try {
-            // TODO username password ????
             logger.info(Strings.get("stop.instance.init", instanceName));
-            RemoteAdminCommand rac = new RemoteAdminCommand("_stop-instance",
+            RemoteAdminCommand rac = new ServerRemoteAdminCommand(habitat, "_stop-instance",
                     host, port, false, "admin", null, logger);
 
             // notice how we do NOT send in the instance's name as an operand!!

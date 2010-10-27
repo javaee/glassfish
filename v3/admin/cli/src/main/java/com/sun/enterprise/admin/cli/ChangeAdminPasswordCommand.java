@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.admin.cli;
 
+import com.sun.enterprise.admin.remote.ServerRemoteAdminCommand;
 import java.io.Console;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
@@ -69,6 +70,8 @@ public class ChangeAdminPasswordCommand extends CLICommand {
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ChangeAdminPasswordCommand.class);
 
+    @Inject
+    private Habitat habitat;
 
     /**
      * Require the user to actually type the passwords.
@@ -126,7 +129,7 @@ public class ChangeAdminPasswordCommand extends CLICommand {
      */
     @Override
     protected int executeCommand() throws CommandException {
-        RemoteAdminCommand rac = new RemoteAdminCommand(name,
+        RemoteAdminCommand rac = new ServerRemoteAdminCommand(habitat, name,
             programOpts.getHost(), programOpts.getPort(),
             programOpts.isSecure(), programOpts.getUser(),
             programOpts.getPassword(), logger);

@@ -84,6 +84,7 @@ public class ProgramOptions {
     public static final String INTERACTIVE      = "interactive";
     public static final String SECURE           = "secure";
     public static final String HELP             = "help";
+    public static final String AUTHTOKEN        = "authtoken";
 
     private static final Logger logger =
         Logger.getLogger(ProgramOptions.class.getPackage().getName());
@@ -121,6 +122,7 @@ public class ProgramOptions {
         addMetaOption(opts, ECHO, 'e', Boolean.class, false, "false");
         addMetaOption(opts, INTERACTIVE, 'I', Boolean.class, false, "false");
         addMetaOption(opts, HELP, '?', Boolean.class, false, "false");
+        addMetaOption(opts, AUTHTOKEN, 'A', String.class, false, null);
         programOptions = Collections.unmodifiableSet(opts);
     }
 
@@ -228,6 +230,7 @@ public class ProgramOptions {
         putEnv(env, SECURE);
         putEnv(env, USER);
         putEnv(env, PASSWORDFILE);
+        putEnv(env, AUTHTOKEN);
         // XXX - HELP?
     }
 
@@ -382,6 +385,21 @@ public class ProgramOptions {
         options.set(SECURE, Boolean.toString(secure));
     }
 
+    public void setAuthToken(final String token) {
+        options.set(AUTHTOKEN, token);
+    }
+    
+    public String getAuthToken() {
+        String result;
+        result = options.getOne(AUTHTOKEN);
+        if ( ! ok(result)) {
+            result = env.getStringOption(AUTHTOKEN);
+            if ( ! ok(result)) {
+                result = null;
+            }
+        }
+        return result;
+    }
     /**
      * @return the terse
      */
@@ -511,6 +529,10 @@ public class ProgramOptions {
         if (ok(getPasswordFile())) {
             args.add("--passwordfile");
             args.add(getPasswordFile());
+        }
+        if (ok(getAuthToken())) {
+            args.add("--" + AUTHTOKEN);
+            args.add(getAuthToken());
         }
         args.add("--secure=" + String.valueOf(isSecure()));
         args.add("--terse=" + String.valueOf(isTerse()));

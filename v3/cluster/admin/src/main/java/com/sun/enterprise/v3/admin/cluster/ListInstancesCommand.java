@@ -212,6 +212,7 @@ public class ListInstancesCommand implements AdminCommand {
             if (notDas(name)) {
                 ActionReport tReport = habitat.getComponent(ActionReport.class, "html");
                 InstanceInfo ii = new InstanceInfo(
+                        habitat,
                         server,
                         port,
                         host,

@@ -57,6 +57,7 @@ import org.glassfish.api.admin.ParameterMap;
 import com.sun.enterprise.admin.util.ColumnFormatter;
 import com.sun.enterprise.universal.Duration;
 import org.glassfish.api.admin.InstanceState;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Used to format instance state info in a standard way.
@@ -65,11 +66,12 @@ import org.glassfish.api.admin.InstanceState;
  */
 public final class InstanceInfo {
 
-    public InstanceInfo(Server svr, int port0, String host0, String cluster0,
+    public InstanceInfo(Habitat habitat, Server svr, int port0, String host0, String cluster0,
             Logger logger0, int timeout0, ActionReport report, InstanceStateService stateService) {
         if (svr == null || host0 == null)
             throw new NullPointerException("null arguments");
 
+        this.habitat = habitat;
         this.svr = svr;
         name = svr.getName();
         port = port0;
@@ -251,7 +253,7 @@ public final class InstanceInfo {
             ParameterMap map = new ParameterMap();
             map.set("type", "terse");
             InstanceCommandExecutor ice =
-                    new InstanceCommandExecutor("__locations", FailurePolicy.Error, FailurePolicy.Error,
+                    new InstanceCommandExecutor(habitat, "__locations", FailurePolicy.Error, FailurePolicy.Error,
                     svr, host, port, logger, map, aReport, aResult);
             return stateService.submitJob(svr, ice, aResult);
             /*
@@ -273,6 +275,7 @@ public final class InstanceInfo {
     private String formatTime(long uptime) {
         return Strings.get("instanceinfo.uptime", new Duration(uptime));
     }
+    private final Habitat habitat;
     private final String host;
     private final int port;
     private final String name;
