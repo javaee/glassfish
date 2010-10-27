@@ -1265,12 +1265,15 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         return spec.getDetail(DataSourceSpec.DRIVERPROPERTIES);
     }
 
+    protected PoolInfo getPoolInfo(){
+        return new PoolInfo(getPoolName(), getApplicationName(), getModuleName());    
+    }
+
     protected ManagedConnection constructManagedConnection(PooledConnection pc,
                                                            Connection sqlCon, PasswordCredential passCred,
                                                            ManagedConnectionFactory mcf) throws ResourceException {
-        PoolInfo poolInfo = new PoolInfo(getPoolName(), getApplicationName(), getModuleName());
         return new com.sun.gjc.spi.ManagedConnection(pc, sqlCon, passCred, mcf, 
-                poolInfo, statementCacheSize, statementCacheType, sqlTraceDelegator,
+                getPoolInfo(), statementCacheSize, statementCacheType, sqlTraceDelegator,
                 statementLeakTimeout, statementLeakReclaim);
     }
 
@@ -1443,7 +1446,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE, "StatementLeakTimeout in seconds: "
                         + statementLeakTimeout + " & StatementLeakReclaim: "
-                        + statementLeakReclaim + " for pool : " + getPoolMonitoringSubTreeRoot());
+                        + statementLeakReclaim + " for pool : " + getPoolInfo());
             }
         }
     }
