@@ -113,7 +113,33 @@ public class ConnectionPoolValidator
                 }
             }
         }
-        
+
+        if(poolFaults == ConnectionPoolErrorMessages.TABLE_NAME_MANDATORY){
+            if(pool instanceof JdbcConnectionPool){
+                JdbcConnectionPool jdbcPool = (JdbcConnectionPool) pool;
+                if (Boolean.valueOf(jdbcPool.getIsConnectionValidationRequired())) {
+                    if ("table".equals(jdbcPool.getConnectionValidationMethod())) {
+                        if(jdbcPool.getValidationTableName() == null || jdbcPool.getValidationTableName().equals("")){
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+
+        if(poolFaults == ConnectionPoolErrorMessages.CUSTOM_VALIDATION_CLASS_NAME_MANDATORY){
+            if(pool instanceof JdbcConnectionPool){
+                JdbcConnectionPool jdbcPool = (JdbcConnectionPool) pool;
+                if (Boolean.valueOf(jdbcPool.getIsConnectionValidationRequired())) {
+                    if ("custom-validation".equals(jdbcPool.getConnectionValidationMethod())) {
+                        if(jdbcPool.getValidationClassname() == null || jdbcPool.getValidationClassname().equals("")){
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+
         if (poolFaults == ConnectionPoolErrorMessages.RES_TYPE_MANDATORY) {
             if (pool instanceof JdbcConnectionPool) {
                 JdbcConnectionPool jdbcPool = (JdbcConnectionPool) pool;

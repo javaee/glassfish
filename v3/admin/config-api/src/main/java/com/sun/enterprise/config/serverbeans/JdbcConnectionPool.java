@@ -84,7 +84,9 @@ import javax.validation.constraints.Pattern;
 @ConnectionPoolConstraints ({
     @ConnectionPoolConstraint(value = ConnectionPoolErrorMessages.MAX_STEADY_INVALID), 
     @ConnectionPoolConstraint(value = ConnectionPoolErrorMessages.STMT_WRAPPING_DISABLED),
-    @ConnectionPoolConstraint(value = ConnectionPoolErrorMessages.RES_TYPE_MANDATORY)
+    @ConnectionPoolConstraint(value = ConnectionPoolErrorMessages.RES_TYPE_MANDATORY),
+    @ConnectionPoolConstraint(value = ConnectionPoolErrorMessages.TABLE_NAME_MANDATORY),
+    @ConnectionPoolConstraint(value = ConnectionPoolErrorMessages.CUSTOM_VALIDATION_CLASS_NAME_MANDATORY)
 })
 @RestRedirects({
  @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-jdbc-connection-pool"),

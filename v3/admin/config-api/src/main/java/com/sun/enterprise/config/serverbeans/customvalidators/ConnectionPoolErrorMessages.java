@@ -58,7 +58,12 @@ public enum ConnectionPoolErrorMessages {
             "datasource-classname is mandatory when res-type is " +
                     "javax.sql.DataSource or javax.sql.ConnectionPoolDataSource or " +
                             "javax.sql.XADataSource. driver-classname is mandatory " +
-                                    "when res-type is java.sql.Driver.");
+                                    "when res-type is java.sql.Driver."),
+
+    TABLE_NAME_MANDATORY ("Must specify a valid table name when 'connection-validation' " +
+            "is enabled and 'validation-method' is 'table'"),
+    CUSTOM_VALIDATION_CLASS_NAME_MANDATORY("Must specify a valid 'class-name' when 'connection-validation' " +
+            "is enabled and 'validation-method' is 'custom-validation'");
     
     private ConnectionPoolErrorMessages(String message) {
         this.message = message;
