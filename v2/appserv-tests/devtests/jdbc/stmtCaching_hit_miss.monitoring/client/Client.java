@@ -37,7 +37,7 @@ public class Client {
         SimpleBMP simpleBMP = simpleBMPHome.create();
         stat.addDescription("Statement Caching Hit miss tests");
 
-        if (simpleBMP.testHit() && getMonitorablePropertyOfConnectionPool("jdbc-stmtcaching_hit_miss-pool",NUM_HITS) == 1 && getMonitorablePropertyOfConnectionPool("jdbc-stmtcaching_hit_miss-pool",NUM_MISSES) == 5) {
+        if (simpleBMP.testHit() && getMonitorablePropertyOfConnectionPool("jdbc/jdbc-stmtcaching_hit_miss-pool",NUM_HITS) == 1 && getMonitorablePropertyOfConnectionPool("jdbc/jdbc-stmtcaching_hit_miss-pool",NUM_MISSES) == 5) {
 	    System.out.println("HIT pass");
             stat.addStatus(" Statement Caching  -  (Hit): ", stat.PASS);
         } else {
@@ -45,7 +45,7 @@ public class Client {
             stat.addStatus(" Statement Caching  -  (Hit): ", stat.FAIL);
         }
 
-        if (simpleBMP.testMiss() && getMonitorablePropertyOfConnectionPool("jdbc-stmtcaching_hit_miss-pool",NUM_HITS) == 6 && getMonitorablePropertyOfConnectionPool("jdbc-stmtcaching_hit_miss-pool",NUM_MISSES) == 7) {
+        if (simpleBMP.testMiss() && getMonitorablePropertyOfConnectionPool("jdbc/jdbc-stmtcaching_hit_miss-pool",NUM_HITS) == 6 && getMonitorablePropertyOfConnectionPool("jdbc/jdbc-stmtcaching_hit_miss-pool",NUM_MISSES) == 7) {
 	    System.out.println("MISS pass");
             stat.addStatus(" Statement Caching  -  (Miss): ", stat.PASS);
         } else {
@@ -53,7 +53,7 @@ public class Client {
             stat.addStatus(" Statement Caching  -  (Miss): ", stat.FAIL);
         }
 
-        if (simpleBMP.testHitColumnIndexes() && getMonitorablePropertyOfConnectionPool("jdbc-stmtcaching_hit_miss-pool",NUM_HITS) == 7 && getMonitorablePropertyOfConnectionPool("jdbc-stmtcaching_hit_miss-pool",NUM_MISSES) == 12) {
+        if (simpleBMP.testHitColumnIndexes() && getMonitorablePropertyOfConnectionPool("jdbc/jdbc-stmtcaching_hit_miss-pool",NUM_HITS) == 7 && getMonitorablePropertyOfConnectionPool("jdbc/jdbc-stmtcaching_hit_miss-pool",NUM_MISSES) == 12) {
 	    System.out.println("columnIndexes pass");
             stat.addStatus(" Statement Caching  -  (hit columnIndexes) : ", stat.PASS);
         } else {
@@ -61,7 +61,7 @@ public class Client {
             stat.addStatus(" Statement Caching  -  (hit columnIndexes) : ", stat.FAIL);
         }
 
-        if (simpleBMP.testHitColumnNames() && getMonitorablePropertyOfConnectionPool("jdbc-stmtcaching_hit_miss-pool",NUM_HITS) == 8 && getMonitorablePropertyOfConnectionPool("jdbc-stmtcaching_hit_miss-pool",NUM_MISSES) == 17) {
+        if (simpleBMP.testHitColumnNames() && getMonitorablePropertyOfConnectionPool("jdbc/jdbc-stmtcaching_hit_miss-pool",NUM_HITS) == 8 && getMonitorablePropertyOfConnectionPool("jdbc/jdbc-stmtcaching_hit_miss-pool",NUM_MISSES) == 17) {
 	    System.out.println("columnNames pass");
             stat.addStatus(" Statement Caching  -  (hit columnNames) : ", stat.PASS);
         } else {
