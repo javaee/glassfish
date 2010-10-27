@@ -128,8 +128,7 @@ public class InhabitantsGenerator extends Constants {
       throw new RuntimeException(e);
     }
     
-//    codeSourceFilter = new CodeSourceFilter(inhabitantsSourceFiles);
-    codeSourceFilter = null;
+    codeSourceFilter = new CodeSourceFilter(inhabitantsSourceFiles);
   }
 
   // temporary, until multi-threaded issues are resolved in class-model parsing
