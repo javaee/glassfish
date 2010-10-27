@@ -87,6 +87,11 @@
             <artifactId>auto-depends</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.jvnet</groupId>
+            <artifactId>tiger-types</artifactId>
+            <version>1.2</version>
+        </dependency>
 	<dependency>
             <!-- 
                  This can't be a provided scope or optional dependency, 
