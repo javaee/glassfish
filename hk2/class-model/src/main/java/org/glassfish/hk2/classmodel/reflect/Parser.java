@@ -144,6 +144,9 @@ public class Parser implements Closeable {
                         try {
                             File file = getFilePath(url.getPath(), resourceName);
                             URI definingURI = file.toURI();
+                            if (logger.isLoggable(Level.FINE)) {
+                                logger.fine("file=" + file + "; definingURI=" + definingURI);
+                            }
                             cr.accept(context.getClassVisitor(definingURI, resourceName), ClassReader.SKIP_DEBUG);
                         } catch (Throwable e) {
                             logger.log(Level.SEVERE, "Exception while visiting " + name

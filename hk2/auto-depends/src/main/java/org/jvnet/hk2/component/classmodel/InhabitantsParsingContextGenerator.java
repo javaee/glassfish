@@ -41,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -227,6 +228,10 @@ public abstract class InhabitantsParsingContextGenerator implements Closeable {
       public Locator(ClassPath inhabitantsClassPath) {
         try {
           resourceLoader = new URLClassLoader(inhabitantsClassPath.getRawURLs(), null);
+          
+          if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINER, "resourceLoader is {0}", Arrays.asList(inhabitantsClassPath.getRawURLs()).toString());
+          }
         } catch (IOException e) {
           throw new RuntimeException(e);
         }
@@ -241,12 +246,6 @@ public abstract class InhabitantsParsingContextGenerator implements Closeable {
         
         URL resource = resourceLoader.getResource(name);
         logger.log(Level.FINE, "resource {0} resolved to {1}", new Object[] {name, resource});
-        
-//        // TODO: REMOVE ME!
-//        if (name.contains("External")) {
-//          logger.log(Level.INFO, "resource {0} resolved to {1}", new Object[] {name, resource});
-//          new Exception().printStackTrace();
-//        }
         
         return resource;
       }
