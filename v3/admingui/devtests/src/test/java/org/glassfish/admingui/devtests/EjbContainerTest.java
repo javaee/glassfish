@@ -70,7 +70,7 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
         clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
         clickAndWait("form1:ejbContainerTabs:mdbSettingsTab", TAB_MDB_SETTINGS);
         clickAndWait("form1:ejbContainerTabs:ejbSettingsTab", TAB_EJB_SETTINGS);
-        assertEquals("on", selenium.getValue("form1:propertySheet:generalPropertySection:commitOptionProp:optC"));
+        assertEquals(true, selenium.isChecked("form1:propertySheet:generalPropertySection:commitOptionProp:optC"));
         assertEquals(minSize, selenium.getValue("form1:propertySheet:poolSettingSection:MinSizeProp:MinSize"));
         assertEquals(maxSize, selenium.getValue("form1:propertySheet:poolSettingSection:MaxSizeProp:MaxSize"));
         assertEquals(poolResize, selenium.getValue("form1:propertySheet:poolSettingSection:PoolResizeProp:PoolResize"));
@@ -176,7 +176,7 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
 
         assertEquals(location, selenium.getValue("form1:propertySheet:generalPropertySection:SessionStoreProp:SessionStore"));
         
-        assertEquals("on", selenium.getValue("form1:propertySheet:generalPropertySection:commitOptionProp:optB"));
+        assertEquals(true, selenium.isChecked("form1:propertySheet:generalPropertySection:commitOptionProp:optB"));
         assertEquals("0", selenium.getValue("form1:propertySheet:poolSettingSection:MinSizeProp:MinSize"));
         assertEquals("32", selenium.getValue("form1:propertySheet:poolSettingSection:MaxSizeProp:MaxSize"));
         assertEquals("8", selenium.getValue("form1:propertySheet:poolSettingSection:PoolResizeProp:PoolResize"));
