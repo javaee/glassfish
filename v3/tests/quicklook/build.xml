@@ -63,7 +63,7 @@
         <record name="allrun.output" action="stop"/>
     </target>
 
-    <target name="all_embedded" depends="clean">
+    <target name="all_embedded">
         <record name="embeddedrun.output" action="start"/>
 	<ant dir="ejb/embedded" target="build"/>
         <antcall target="runtest-embedded">
