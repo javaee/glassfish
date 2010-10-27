@@ -68,7 +68,7 @@ import java.util.*;
  * Time: 5:32:17 PM
  * To change this template use File | Settings | File Templates.
  */
-@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
+@ExecuteOn({RuntimeType.DAS})
 @Service(name = "list-log-attributes")
 @TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER, CommandTarget.CLUSTERED_INSTANCE, CommandTarget.CONFIG})
 @Scoped(PerLookup.class)
