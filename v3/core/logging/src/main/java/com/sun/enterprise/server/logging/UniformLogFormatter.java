@@ -333,8 +333,11 @@ public class UniformLogFormatter extends Formatter {
         }
         ResourceBundle rb = (ResourceBundle) loggerResourceBundleTable.get(
                 loggerName);
-
-        if (rb == null) {
+        /*
+                * Note that logManager.getLogger(loggerName) untrusted code may create loggers with
+                * any arbitrary names this method should not be relied on so added code for checking null.
+                */
+        if (rb == null && logManager.getLogger(loggerName)!=null) {
             rb = logManager.getLogger(loggerName).getResourceBundle();
             loggerResourceBundleTable.put(loggerName, rb);
         }
