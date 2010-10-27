@@ -52,7 +52,7 @@
     
     <artifactId>cli-optional</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Optional Admin CLI commands</name>
+    <name>Admin Optional CLI</name>
     
     <developers>
         <developer>
