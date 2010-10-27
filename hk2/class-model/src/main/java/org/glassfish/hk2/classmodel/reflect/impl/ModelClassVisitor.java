@@ -53,6 +53,7 @@ import java.util.logging.Logger;
  *
  * @author Jerome Dochez
  */
+@SuppressWarnings("unchecked")
 public class ModelClassVisitor implements ClassVisitor {
 
     private static Logger logger = Logger.getLogger(ModelClassVisitor.class.getName());
@@ -80,15 +81,16 @@ public class ModelClassVisitor implements ClassVisitor {
 
         String parentName = (superName!=null?org.objectweb.asm.Type.getObjectType(superName).getClassName():null);
         TypeProxy parent = (parentName!=null?typeBuilder.getHolder(parentName, typeBuilder.getType(access)):null);
-        if (parent!=null) {
+        if (parent!=null && !parentName.equals(Object.class.getName())) {
             // put a temporary parent until we eventually visit it. 
-            parent.set(typeBuilder.getType(access, parentName, null));
+            TypeImpl parentType = typeBuilder.getType(access, parentName, null);
+            parent.set(parentType);
         }
         String className = org.objectweb.asm.Type.getObjectType(name).getClassName();
         URI classDefURI=null;
         try {
             int index = entryName.length() - name.length() - 6;
-            if (index==0) {
+            if (null == definingURI || index==0) {
                 classDefURI=definingURI;
             } else {
                 String newPath=(index>0?definingURI.getPath() + entryName.substring(0, index):definingURI.getPath());
@@ -146,7 +148,7 @@ public class ModelClassVisitor implements ClassVisitor {
         desc = unwrap(desc);
 
 
-        final AnnotationTypeImpl at = (AnnotationTypeImpl) typeBuilder.getType(Opcodes.ACC_ANNOTATION, desc, null );
+        final AnnotationTypeImpl at = (AnnotationTypeImpl) typeBuilder.getType(Opcodes.ACC_ANNOTATION, desc, null);
         final AnnotationModelImpl am = new AnnotationModelImpl(type, at);
 
         // reverse index
