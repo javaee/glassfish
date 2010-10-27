@@ -135,8 +135,12 @@ public interface Resources extends ConfigBeanProxy, Injectable  {
             Collection<T> typedResources ;
             boolean bindableResource = BindableResource.class.isAssignableFrom(type);
             boolean poolResource = ResourcePool.class.isAssignableFrom(type);
+
             boolean workSecurityMap = WorkSecurityMap.class.isAssignableFrom(type);
             boolean rac = ResourceAdapterConfig.class.isAssignableFrom(type);
+
+
+
             Class c;
             if(bindableResource){
                 c = BindableResource.class;
@@ -170,7 +174,15 @@ public interface Resources extends ConfigBeanProxy, Injectable  {
                     break;
                 }
             }
-            return foundRes;
+            // make sure that the "type" provided and the matched resource are compatible.
+            // eg: its possible that the requested resource is "ConnectorResource",
+            // and matching resource is "JdbcResource" as we filter based on
+            // the generic type (in this case BindableResource) and not on exact type.
+            if(type != null && foundRes != null && type.isAssignableFrom(foundRes.getClass())){
+                return foundRes;
+            }else{
+                return null;
+            }
         }
     }
 }
