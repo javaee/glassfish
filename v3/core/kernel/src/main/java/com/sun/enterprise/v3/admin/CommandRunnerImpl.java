@@ -1160,23 +1160,24 @@ public class CommandRunnerImpl implements CommandRunner {
             logger.fine(adminStrings.getLocalString("dynamicreconfiguration.diagnostics.startreplication",
                     "Command execution stages completed on DAS; Starting replication on remote instances"));
             ClusterExecutor executor = null;
-            if(model.getClusteringAttributes() != null && model.getClusteringAttributes().executor() != null) {
-                executor = habitat.getComponent(model.getClusteringAttributes().executor());
-            } else {
-                executor = habitat.getComponent(ClusterExecutor.class, "GlassFishClusterExecutor");
-            }
-            if(executor == null) {
+            // This try-catch block is a fix for 13838
+            try {
+                if(model.getClusteringAttributes() != null && model.getClusteringAttributes().executor() != null) {
+                    executor = habitat.getComponent(model.getClusteringAttributes().executor());
+                } else {
+                    executor = habitat.getComponent(ClusterExecutor.class, "GlassFishClusterExecutor");
+                }
+            } catch(UnsatisfiedDependencyException usdepex) {
                 String err = adminStrings.getLocalString("commandrunner.clusterexecutor.notinitialized",
                         "Unable to get an instance of ClusterExecutor; Cannot dynamically reconfigure instances");
-                logger.severe(err);
-                report.setActionExitCode(ActionReport.ExitCode.WARNING);
-                report.setMessage(err);
-                return;
+                logger.warning(err);
             }
-            report.setActionExitCode(executor.execute(model.getCommandName(), command, context, parameters));
-            if(report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
-                report.setMessage(adminStrings.getLocalString("commandrunner.executor.errorwhilereplication",
-                        "An error occurred during replication"));
+            if(executor != null) {
+                report.setActionExitCode(executor.execute(model.getCommandName(), command, context, parameters));
+                if(report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
+                    report.setMessage(adminStrings.getLocalString("commandrunner.executor.errorwhilereplication",
+                            "An error occurred during replication"));
+                }
             }
         }
         if(report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
