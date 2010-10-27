@@ -55,6 +55,8 @@ import java.util.logging.Logger;
  */
 public class ModelClassVisitor implements ClassVisitor {
 
+    private static Logger logger = Logger.getLogger(ModelClassVisitor.class.getName());
+  
     private final ParsingContext ctx;
     private final TypeBuilder typeBuilder;
     private final URI definingURI;
@@ -96,6 +98,11 @@ public class ModelClassVisitor implements ClassVisitor {
         } catch (URISyntaxException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
+        
+        if (logger.isLoggable(Level.FINER)) {
+          logger.log(Level.FINER, "visiting {0} with classDefURI={1}", new Object[] {entryName, classDefURI});
+        }
+            
         type = ctx.getTypeBuilder(classDefURI).getType(access, className, parent);
         type.getProxy().visited();
         type.addDefiningURI(classDefURI);
@@ -149,8 +156,7 @@ public class ModelClassVisitor implements ClassVisitor {
         type.addAnnotation(am);
 
         if (ctx.getConfig().getInjectionTargetAnnotations().contains(desc)) {
-            Logger.getAnonymousLogger().log(Level.FINER, 
-                "Inspecting fields of {0}", type.getName());
+            logger.log(Level.FINER, "Inspecting fields of {0}", type.getName());
             deepVisit =true;
         }
         visitingContext.annotation=am;
