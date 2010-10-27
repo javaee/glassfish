@@ -91,6 +91,8 @@ public class ListComponentsCommand implements AdminCommand {
     @Param(optional=true, defaultValue="false")
     private Boolean resources = false;
 
+    private static String[] validTypes = new String[] {"application",  "appclient", "connector", "ejb", "web", "webservice"};
+
     @Inject
     protected Domain domain;
 
@@ -108,6 +110,16 @@ public class ListComponentsCommand implements AdminCommand {
 
         ActionReport.MessagePart part = report.getTopMessagePart();        
         int numOfApplications = 0;
+
+        if (type != null) {
+             List<String> validTypeList = Arrays.asList(validTypes);
+             if (!validTypeList.contains(type)) {
+                 report.setMessage(localStrings.getLocalString("list.components.invalid.type", "Invalid type option value."));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }
+        }
+        
         for (Application app : domain.getApplicationsInTarget(target)) {
                 if (!app.isLifecycleModule()) {
                     if (type==null || isApplicationOfThisType(app, type)) {
@@ -292,4 +304,5 @@ public class ListComponentsCommand implements AdminCommand {
             }
         }
     }
+
 }
