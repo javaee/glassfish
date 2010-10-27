@@ -153,7 +153,7 @@ public class BaseSeleniumTestClass {
     @Before
     public void reset() {
         currentTestClass = this.getClass().getName();
-//        clickAndWait("treeForm:tree:registration:registration_link", TRIGGER_REGISTRATION_PAGE);
+        clickAndWait("treeForm:tree:registration:registration_link", TRIGGER_REGISTRATION_PAGE);
     }
 
     protected String generateRandomString() {
