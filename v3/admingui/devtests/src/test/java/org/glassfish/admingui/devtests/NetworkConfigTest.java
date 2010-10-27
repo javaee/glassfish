@@ -48,7 +48,7 @@ import static org.junit.Assert.assertTrue;
 public class NetworkConfigTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_NETWORK_LISTENERS = "Click New to define a new network listener. Click the name of an existing listener to modify its settings.";
     private static final String TRIGGER_NEW_NETWORK_LISTENER = "New Network Listener";
-    private static final String TRIGGER_PROTOCOLS = "Click New to define a new protocol. Click the name of an existing protocol to modify its settings. Select one or more protocols and click Delete to delete the protocols and any network listeners using them.";
+    private static final String TRIGGER_PROTOCOLS = "Click New to define a new protocol.";
     private static final String TRIGGER_NEW_PROTOCOL = "Create a new protocol.";
     private static final String TRIGGER_TRANSPORTS = "Click New to define a new transport. Click the name of an existing transport to modify its settings.";
     private static final String TRIGGER_NEW_TRANSPORT = "Create a new transport.";

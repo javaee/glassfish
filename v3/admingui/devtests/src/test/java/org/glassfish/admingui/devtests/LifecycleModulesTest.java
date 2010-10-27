@@ -52,7 +52,7 @@ import static org.junit.Assert.assertTrue;
  * To change this template use File | Settings | File Templates.
  */
 public class LifecycleModulesTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_LIFECYCLE_MODULES = "A lifecycle module performs tasks when it is triggered by one or more events in the server's lifecycle. Possible trigger server events are: initialization, startup, ready to service requests, and shutdown. Lifecycle modules are not part of the Java specification, but are an enhancement to the Enterprise Server.";
+    private static final String TRIGGER_LIFECYCLE_MODULES = "A lifecycle module performs tasks when it is triggered by one or more events in the server's lifecycle. Possible trigger server events are: initialization, startup, ready to service requests, and shutdown.";
     private static final String TRIGGER_EDIT_LIFECYCLE_MODULE = "Edit Lifecycle Module";
     private static final String TRIGGER_NEW_LIFECYCLE_MODULE = "New Lifecycle Module";
 

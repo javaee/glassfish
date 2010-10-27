@@ -70,7 +70,7 @@ public class HttpServiceTest extends BaseSeleniumTestClass {
         
         clickAndWait("treeForm:tree:ct", "Please Register");
         clickAndWait("treeForm:tree:configurations:server-config:httpService:httpService_link", TRIGGER_HTTP_SERVICE);
-        assertEquals("on", selenium.getValue("form1:propertySheet:http:acLog:ssoEnabled"));
+        assertEquals(true, selenium.isChecked("form1:propertySheet:http:acLog:ssoEnabled"));
         assertTrue(selenium.isTextPresent(TRIGGER_HTTP_SERVICE));
         assertEquals(interval, selenium.getValue("form1:propertySheet:accessLog:intervalProp:Interval"));
         assertEquals(maxFiles, selenium.getValue("form1:propertySheet:accessLog:MaxHistoryFiles:MaxHistoryFiles"));
