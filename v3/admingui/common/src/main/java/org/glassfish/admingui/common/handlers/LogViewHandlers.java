@@ -211,16 +211,6 @@ public class LogViewHandlers {
                 after = direction;
             }
 
-            /*
-            TODO:  THIS LogQuery is from AMX package.  comment out right now.
-                   see issue# 12509
-            import org.glassfish.admin.amx.logging.LogQuery;
-
-            if (fromRecord == null) {
-                fromRecord = LogQuery.LAST_RECORD;
-            }
-             *
-             */
 
 	    notNullStringPut(attMap, "logFileName", logFileName);
 	    notNullStringPut(attMap, "startIndex", fromRecord);
