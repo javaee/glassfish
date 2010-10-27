@@ -42,7 +42,7 @@
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
  
-<suite name="GF QuickLook Embedded Tests" verbose="2" >
+<suite name="GF_QL_Embedded_Tests" verbose="2" >
   <test name="embedded_tests">
         <classes>
                 <class name="com.acme.Client"/>
