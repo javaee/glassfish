@@ -269,9 +269,13 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
 
     private List<URL> getModuleLibraryJars(DeploymentContext context, 
         ReadableArchive archive) throws Exception {
-        ArchiveHandler handler = context.getArchiveHandler();
-        String handlerName = handler.getClass().getAnnotation(Service.class).name();
         List<URL> moduleLibraryURLs = new ArrayList<URL>();
+        ArchiveHandler handler = context.getArchiveHandler();
+        if (handler.getClass() == null || 
+            handler.getClass().getAnnotation(Service.class) == null) {
+            return moduleLibraryURLs;
+        }
+        String handlerName = handler.getClass().getAnnotation(Service.class).name();
         File archiveFile = new File(archive.getURI());
         if (handlerName.equals("war")) {
             // we should add all the WEB-INF/lib jars for web module
