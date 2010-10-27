@@ -47,13 +47,11 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport.ExitCode;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
-import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import java.util.Iterator;
 
 /**
  * Return the version and build number
@@ -91,8 +89,24 @@ public class Monitor implements AdminCommand {
             mContract.process(report, filter);
             return;
         }
-        report.setMessage(localStrings.getLocalString("monitor.type.error", 
-                "No type exists in habitat for the given monitor type {0}", type));
+        if (habitat.getAllByContract(MonitorContract.class).size() != 0) {
+            String validTypes = "";
+            Iterator<MonitorContract> contractsIterator = habitat.
+                    getAllByContract(MonitorContract.class).iterator();
+            while (contractsIterator.hasNext()) {
+                validTypes += contractsIterator.next().getName();
+                if (contractsIterator.hasNext()) {
+                    validTypes += ", ";
+                }
+            }
+            report.setMessage(localStrings.getLocalString("monitor.type.error",
+                "No type exists in habitat for the given monitor type {0}. " +
+                "Valid types are: {1}", type, validTypes));
+        } else {
+            report.setMessage(localStrings.getLocalString("monitor.type.invalid",
+                 "No type exists in habitat for the given monitor type {0}", type));
+        }
+
         report.setActionExitCode(ActionReport.ExitCode.FAILURE);
     }
 }
