@@ -158,7 +158,17 @@ public class MonitorTask extends TimerTask {
     }
  
     public void displayDetails(){
-        logger.info("These are the details");
+        String details = "";
+        if ("servlet".equals(type)) {
+            details = strings.get("commands.monitor.servlet_detail");
+        } else if ("httplistener".equals(type)) {
+            details = strings.get("commands.monitor.httplistener_detail");
+        } else if ("jvm".equals(type)) {
+            //no details
+        } else if ("webmodule".equals(type)) {
+            details = strings.get("commands.monitor.webmodule_virtual_server_detail");
+        }
+        logger.info(details);
     }
  
 /*    
