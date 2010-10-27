@@ -40,6 +40,7 @@
 
 package org.glassfish.config.support;
 
+import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.JaccProvider;
@@ -59,6 +60,7 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.types.Property;
 
 
 /**
@@ -81,6 +83,9 @@ public class SecurityUpgradeService implements ConfigurationUpgrade, PostConstru
     ServerEnvironment env;
 
     private static final String DIR_GENERATED_POLICY = "generated" + File.separator + "policy";
+    private static final String JDBC_REALM_CLASSNAME = "com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm";
+        public static final String PARAM_DIGEST_ALGORITHM = "digest-algorithm";
+
 
     public void postConstruct() {
         for (Config config : configs.getConfig()) {
@@ -102,6 +107,44 @@ public class SecurityUpgradeService implements ConfigurationUpgrade, PostConstru
             }
         }
 
+        //Update an existing JDBC realm-Change the digest algorithm to MD5 if none exists
+        //Since the default algorithm is SHA-256 in v3.1, but was MD5 prior to 3.1
+
+        for (Config config : configs.getConfig()) {
+            SecurityService service = config.getSecurityService();
+            List<AuthRealm> authRealms = service.getAuthRealm();
+
+            try {
+                for (AuthRealm authRealm : authRealms) {
+                    if (JDBC_REALM_CLASSNAME.equals(authRealm.getClassname())) {
+                        Property digestAlgoProp = authRealm.getProperty(PARAM_DIGEST_ALGORITHM);
+                        if (digestAlgoProp != null) {
+                            String digestAlgo = digestAlgoProp.getValue();
+                            if (digestAlgo == null || digestAlgo.isEmpty()) {
+                                digestAlgoProp.setValue("MD5");
+                            }
+                        } else {
+                            ConfigSupport.apply(new SingleConfigCode<AuthRealm>() {
+                                public Object run(AuthRealm updatedAuthRealm) throws PropertyVetoException, TransactionFailure {
+                                    Property prop1 = updatedAuthRealm.createChild(Property.class);
+                                    prop1.setName(PARAM_DIGEST_ALGORITHM);
+                                    prop1.setValue("MD5");
+                                    updatedAuthRealm.getProperty().add(prop1);
+                                    return null;
+                                }
+                            }, authRealm);
+                        }
+                    }
+                }
+            } catch (PropertyVetoException pve) {
+                Logger.getAnonymousLogger().log(Level.SEVERE, null, pve);
+                throw new RuntimeException(pve);
+            } catch (TransactionFailure tf) {
+                Logger.getAnonymousLogger().log(Level.SEVERE, null, tf);
+                throw new RuntimeException(tf);
+
+            }
+        }
     }
 
     private void upgradeJACCProvider(SecurityService securityService) {

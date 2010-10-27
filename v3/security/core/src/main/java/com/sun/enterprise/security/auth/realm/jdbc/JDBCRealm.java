@@ -111,7 +111,7 @@ public final class JDBCRealm extends DigestRealmBase {
     public static final String PARAM_DB_PASSWORD = "db-password";
 
     public static final String PARAM_DIGEST_ALGORITHM = "digest-algorithm";
-    public static final String DEFAULT_DIGEST_ALGORITHM = "MD5";
+    public static final String DEFAULT_DIGEST_ALGORITHM = "SHA-256";
     public static final String NONE = "none";
 
     public static final String PARAM_ENCODING = "encoding";
