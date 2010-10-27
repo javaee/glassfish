@@ -75,7 +75,7 @@ public class TransactionServiceTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:ct", "Please Register");
 
         clickAndWait("treeForm:tree:configurations:server-config:transactionService:transactionService_link", TRIGGER_TRANSACTION_SERVICE);
-        assertEquals("on", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:onRestartProp:enabled"));
+        assertEquals(true, selenium.isChecked("propertyForm:propertySheet:propertSectionTextField:onRestartProp:enabled"));
         assertEquals(timeout, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:timeoutProp:Timeout"));
         assertEquals(retry, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:retryProp:Retry"));
         assertEquals("commit", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:heuristicProp:HeuristicDecision"));
