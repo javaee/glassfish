@@ -51,11 +51,11 @@ import static org.junit.Assert.assertTrue;
  * @author anilam
  */
 public class NodeTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_NODES_PAGE = "Nodes (";
+    private static final String TRIGGER_NODES_PAGE = "Nodes \\(";
     private static final String TRIGGER_NEW_NODE_PAGE = "KeyFile:";
     private static final String TRIGGER_EDIT_NODE = "KeyFile:";
     private static final String TRIGGER_SAVE_SUCCESS = "New values successfully saved";
-    private final String TRIGGER_INSTANCES_PAGE = "Server Instances (";
+    private final String TRIGGER_INSTANCES_PAGE = "Server Instances \\(";
     private final String TRIGGER_NEW_INSTANCE_PAGE = "Configuration:";
 
     @Test
@@ -82,7 +82,6 @@ public class NodeTest extends BaseSeleniumTestClass {
 
         //Test Delete Node
         deleteRow("propertyForm:nodesTable:topActionsGroup1:button1", "propertyForm:nodesTable", nodeName);
-        assertFalse(selenium.isTextPresent(nodeName));
     }
 
     @Test
@@ -126,10 +125,9 @@ public class NodeTest extends BaseSeleniumTestClass {
         //cleanup
         clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", TRIGGER_INSTANCES_PAGE);
         deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
-        assertFalse(selenium.isTextPresent(instanceName));
+
         clickAndWait("treeForm:tree:nodeTreeNode:nodeTreeNode_link", TRIGGER_NODES_PAGE);
         deleteRow("propertyForm:nodesTable:topActionsGroup1:button1", "propertyForm:nodesTable", nodeName);
-        assertFalse(selenium.isTextPresent(nodeName));
     }
 
     private void createNode(String nodeName){

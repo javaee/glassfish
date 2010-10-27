@@ -39,6 +39,8 @@
  */
 package org.glassfish.admingui.devtests;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Ignore;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
@@ -70,6 +72,8 @@ public class SpecificTestRule implements MethodRule {
 
                 if (runMethod) {
                     statement.evaluate();
+                } else {
+                    Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.INFO, "Skipping test:  {0}", frameworkMethod.getName());
                 }
             }
         };

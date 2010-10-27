@@ -493,6 +493,10 @@ public class BaseSeleniumTestClass {
 
         return values;
     }
+    
+    protected boolean tableContainsRow(String tableId, String columnId, String value) {
+        return getTableRowCountByValue(tableId, value, columnId) > 0;
+    }
 
     protected int addTableRow(String tableId, String buttonId) {
         return addTableRow(tableId, buttonId, "Additional Properties");
