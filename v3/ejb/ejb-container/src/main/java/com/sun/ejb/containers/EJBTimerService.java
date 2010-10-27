@@ -854,16 +854,9 @@ public class EJBTimerService
             return;
         }
 
-        TransactionManager tm = ejbContainerUtil.getTransactionManager();
-
         try {
             
-            // create a tx in which to do database access for all timers 
-            // that need to be deleted.  This gives us better performance that 
-            // doing individual transactions per timer.            
-            tm.begin();
-            
-            // Remove *all* timers for this ejb. Since the app is being undeployed
+            // Remove *all* timers for this ejb or this app. When an app is being undeployed
             // it will be called only once for all server instances.
             int deleted = ((all)? timerLocal_.deleteTimersByApplication(id) : 
                     timerLocal_.deleteTimersByContainer(id));
@@ -874,14 +867,6 @@ public class EJBTimerService
             logger.log(Level.WARNING, "ejb.destroy_timers_error",
                        new Object[] { String.valueOf(id) });
             logger.log(Level.WARNING, "", ex);
-        } finally {
-            try {
-                tm.commit();
-            } catch(Exception e) {
-                logger.log(Level.WARNING, "ejb.destroy_timers_error",
-                           new Object[] { String.valueOf(id) });
-                logger.log(Level.WARNING, "", e);
-            }
         }
 
         return;
