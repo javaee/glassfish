@@ -39,6 +39,8 @@
  */
 package org.glassfish.admingui.devtests;
 
+import org.junit.Assert;
+import org.junit.Ignore;
 import java.util.List;
 import org.junit.Test;
 
@@ -56,15 +58,16 @@ public class ClusterTest extends BaseSeleniumTestClass {
     public static final String ID_CLUSTERS_TABLE_STOP_BUTTON = "propertyForm:clustersTable:topActionsGroup1:button3";
     
     public static final String TRIGGER_CLUSTER_EDIT = "General Information";
+    public static final String TRIGGER_CLUSTER_NO_RUNNING_INSTANCES = "There is no running server in the cluster to migrate the EJB Timers.";
     public static final String TRIGGER_MIGRATE_EJB_TIMERS = "Migrate EJB timers associated with a server";
     public static final String TRIGGER_CLUSTER_PAGE = "If no node exists, create one before creating or starting a cluster.";
     public static final String TRIGGER_NEW_PAGE = "Server Instances to be Created";
     public static final String TRIGGER_CLUSTER_GENERAL_PAGE = "Network interface on the DAS to which the GMS will bind";
     public static final String TRIGGER_CLUSTER_INSTANCE_NEW_PAGE = "Node:";
-    public static final String TRIGGER_CLUSTER_INSTANCES_PAGE = "Server Instances (";
+    public static final String TRIGGER_CLUSTER_INSTANCES_PAGE = "Create and manage standalone server instances for the current cluster.";
     public static final String TRIGGER_CLUSTER_RESOURCES_PAGE = "All instances in a cluster have the same set of resources, resulting in the same JNDI namespace.";
 
-    @Test
+    @Test @Ignore
     public void testStartAndStopClusterWithOneInstance() {
         String clusterName = "clusterName" + generateRandomString();
         String instanceName1 = "instanceName" + generateRandomString();
@@ -90,7 +93,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         deleteCluster(clusterName);
     }
 
-    @Test
+    @Test @Ignore
     public void testMigrateEjbTimers() {
         String clusterName = "clusterName" + generateRandomString();
         String instanceName1 = "instanceName" + generateRandomString();
@@ -104,6 +107,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
 
         clickAndWait("propertyForm:clusterTabs:general", TRIGGER_CLUSTER_EDIT);
         clickAndWait("propertyForm:migrateTimesButton", TRIGGER_MIGRATE_EJB_TIMERS);
+        Assert.assertFalse(selenium.isTextPresent(TRIGGER_CLUSTER_NO_RUNNING_INSTANCES));
         selenium.select("propertyForm:propertySheet:propertSectionTextField:clusterSourceProp:source", "label=" + instanceName2);
         selenium.select("propertyForm:propertySheet:propertSectionTextField:clusterDestProp:dest", "label=" + instanceName1);
 
@@ -114,7 +118,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         deleteCluster(clusterName);
     }
 
-    @Test
+    @Test @Ignore
     public void verifyClusterGeneralInformationPage() {
         String clusterName = "clusterName" + generateRandomString();
         String instanceName1 = "instanceName" + generateRandomString();
@@ -146,7 +150,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         assertEquals("12345", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:gmsMulticastPort:gmsMulticastPort"));
         assertEquals("123.234.456.88", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:gmsMulticastAddress:gmsMulticastAddress"));
         assertEquals("${ABCDE}", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:GmsBindInterfaceAddress:GmsBindInterfaceAddress"));
-        assertEquals("off", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:gmsEnabledProp:gmscb"));
+        assertEquals(false, selenium.isChecked("propertyForm:propertySheet:propertSectionTextField:gmsEnabledProp:gmscb"));
         
         deleteCluster(clusterName);
     }
@@ -170,7 +174,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         deleteCluster(clusterName);
     }
 
-    @Test
+    @Test @Ignore
     public void testProperties() {
         String clusterName = "clusterName" + generateRandomString();
         String instanceName1 = "instanceName" + generateRandomString();
@@ -269,15 +273,25 @@ public class ClusterTest extends BaseSeleniumTestClass {
         gotoClusterPage();
         clickAndWait("propertyForm:clustersTable:topActionsGroup1:newButton", TRIGGER_NEW_PAGE);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:NameTextProp:NameText", clusterName);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_CLUSTER_PAGE);
+
         if (instanceNames != null) {
             for (String instanceName : instanceNames) {
                 if (instanceName != null && !instanceName.equals("")) {
-                    addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton", "Server Instances to be Created");
-                    selenium.type("propertyForm:basicTable:rowGroup1:0:col2:name", instanceName);
+//                    addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton", "Server Instances to be Created");
+//                    selenium.type("propertyForm:basicTable:rowGroup1:0:col2:name", instanceName);
+                    createClusterInstance(clusterName, instanceName);
                 }
             }
         }
-        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_CLUSTER_PAGE);
+    }
+    
+    public void createClusterInstance(String clusterName, String instanceName) {
+        gotoClusterInstancesPage(clusterName);
+        clickAndWait("propertyForm:instancesTable:topActionsGroup1:newButton", "Name of the node machine on which the server instance will reside");
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:NameTextProp:NameText", instanceName);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_CLUSTER_INSTANCES_PAGE);
+        Assert.assertNotNull(this.getTableRowByValue("propertyForm:instancesTable", instanceName, "col1"));
     }
 
     public void deleteCluster(String clusterName) {
@@ -312,7 +326,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         }
 
         // Delete all clusters
-        // We're iterating through these one at a time, because we are occasionally getting a
+        // FIXME: We're iterating through these one at a time, because we are occasionally getting a
         // "false" failure, where a cluster was deleted, but the server was unable to delete
         // some files, so it returns an error, which causes the loop in deleteAllTableRows()
         // to exit early

@@ -91,9 +91,9 @@ public class AdminServiceTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:configurations:server-config:adminService:adminService_link", TRIGGER_EDIT_JMX_CONNECTOR);
         clickAndWait("form1:jmxConnectorTab:jmxSSLEdit", TRIGGER_SSL);
 
-        assertEquals("off", selenium.getValue("propertyForm:propertySheet:propertySheetSection:SSL3Prop:SSL3"));
-        assertEquals("off", selenium.getValue("propertyForm:propertySheet:propertySheetSection:TLSProp:TLS"));
-        assertEquals("on", selenium.getValue("propertyForm:propertySheet:propertySheetSection:ClientAuthProp:ClientAuth"));
+        assertEquals(false, selenium.isChecked("propertyForm:propertySheet:propertySheetSection:SSL3Prop:SSL3"));
+        assertEquals(false, selenium.isChecked("propertyForm:propertySheet:propertySheetSection:TLSProp:TLS"));
+        assertEquals(true, selenium.isChecked("propertyForm:propertySheet:propertySheetSection:ClientAuthProp:ClientAuth"));
         assertEquals(nickname, selenium.getValue("propertyForm:propertySheet:propertySheetSection:CertNicknameProp:CertNickname"));
         assertEquals(keystore, selenium.getValue("propertyForm:propertySheet:propertySheetSection:keystore:keystore"));
         assertEquals(maxCertLength, selenium.getValue("propertyForm:propertySheet:propertySheetSection:maxCertLength:maxCertLength"));

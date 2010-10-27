@@ -65,7 +65,9 @@ import java.util.Random;
 import org.junit.AfterClass;
 import org.junit.Rule;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.RenderedWebElement;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverBackedSelenium;
 import org.openqa.selenium.WebElement;
@@ -85,7 +87,7 @@ public class BaseSeleniumTestClass {
     protected static Selenium selenium;
     protected static WebDriver driver;
     protected static final int TIMEOUT = 90;
-    protected static final int BUTTON_TIMEOUT = 300;
+    protected static final int BUTTON_TIMEOUT = 750;
     private static String currentTestClass = "";
     protected static boolean debug;
     private boolean processingLogin = false;
@@ -99,13 +101,13 @@ public class BaseSeleniumTestClass {
         debug = Boolean.parseBoolean(getParameter("debug", "true"));
         driver = new FirefoxDriver();
 
-//        if (selenium == null) {
-        selenium = new WebDriverBackedSelenium(driver, baseUrl);
+        if (selenium == null) {
+            selenium = new WebDriverBackedSelenium(driver, baseUrl);
 //                    DefaultSelenium("localhost", Integer.parseInt(seleniumPort), "*" + browser, baseUrl);
 //            selenium.start();
-        selenium.setTimeout("90000");
-        (new BaseSeleniumTestClass()).openAndWait("/", TRIGGER_COMMON_TASKS, 480); // Make sure the server has started and the user logged in
-//        }
+            selenium.setTimeout("90000");
+            (new BaseSeleniumTestClass()).openAndWait("/", TRIGGER_COMMON_TASKS, 480); // Make sure the server has started and the user logged in
+        }
 
         if (!debug) {
             URL rotateLogUrl = new URL(baseUrl + "/management/domain/rotate-log");
@@ -142,6 +144,7 @@ public class BaseSeleniumTestClass {
                 out.close();
             }
             selenium.stop();
+            selenium = null;
         } catch (Exception ex) {
             Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.INFO, null, ex);
         }
@@ -150,7 +153,7 @@ public class BaseSeleniumTestClass {
     @Before
     public void reset() {
         currentTestClass = this.getClass().getName();
-        clickAndWait("treeForm:tree:registration:registration_link", TRIGGER_REGISTRATION_PAGE);
+//        clickAndWait("treeForm:tree:registration:registration_link", TRIGGER_REGISTRATION_PAGE);
     }
 
     protected String generateRandomString() {
@@ -233,7 +236,7 @@ public class BaseSeleniumTestClass {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
     }
 
@@ -255,15 +258,26 @@ public class BaseSeleniumTestClass {
     protected void waitForPageLoad(final String triggerText, final int timeout, final boolean textShouldBeMissing) {
         waitForLoad(timeout, new PageLoadCallBack(triggerText, textShouldBeMissing));        
     }
-
+    
     protected void waitForLoad(int timeoutInSeconds, WaitForLoadCallBack callback) {
         for (int halfSeconds = 0;; halfSeconds++) {
             if (halfSeconds >= (timeoutInSeconds*2)) {
                 Assert.fail("The operation timed out waiting for the page to load.");
             }
-            
+
+            /*
             if (callback.executeTest()) {
                 break;
+            }
+            */
+            try {
+                RenderedWebElement ajaxPanel = (RenderedWebElement) driver.findElement(By.id("ajaxPanel"));
+                if (!ajaxPanel.isDisplayed()) {
+                    if (callback.executeTest()) {
+                        break;
+                    }
+                }
+            } catch (NoSuchElementException nse) {
             }
 
             sleep(500);
@@ -648,6 +662,13 @@ public class BaseSeleniumTestClass {
         //Go Back to Resources Page
         clickAndWait(resourcesLinkId, resourcesTriggerText);
     }
+    
+    protected void logDebugMessage(String message) {
+        if (debug) {
+            Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
+            logger.info(message);
+        }
+    }
 
     private static String getParameter(String paramName, String defaultValue) {
         String value = System.getProperty(paramName);
@@ -660,9 +681,13 @@ public class BaseSeleniumTestClass {
             return;
         }
         
-        RenderedWebElement element = (RenderedWebElement)driver.findElement(By.id(id));
-        if (element.isDisplayed()) {
-            return;
+        try {
+            RenderedWebElement element = (RenderedWebElement) driver.findElement(By.id(id));
+            if (element.isDisplayed()) {
+                return;
+            }
+        } catch (StaleElementReferenceException sere) {
+            
         }
         
         final String parentId = id.substring(0, id.lastIndexOf(":"));
