@@ -189,8 +189,13 @@ public class JdbcAdminServiceImpl extends ConnectorService {
                 DatabaseMetaData dmd = con.getMetaData();
                 rs = dmd.getTables(catalog, null, null, null);
                 while(rs.next()) {
+                    String schemaName = rs.getString(2);
                     String tableName = rs.getString(3);
-                    tableNames.add(tableName);
+                    String actualTableName = tableName;
+                    if(schemaName != null && !schemaName.equals("")){
+                        actualTableName = schemaName + "." + tableName;
+                    }
+                    tableNames.add(actualTableName);
                 }
             } catch (Exception sqle) {
                 _logger.log(Level.INFO, "pool.get_validation_table_names");
