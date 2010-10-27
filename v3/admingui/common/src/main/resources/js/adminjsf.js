@@ -2252,8 +2252,19 @@ admingui.ajax = {
 	    req.send("");
 	}
     },
+    
+    ajaxStart : function() {
+        var ajaxPanel = document.getElementById('ajaxPanel');
+        ajaxPanel.style.visibility = "visible";
+    },
+    
+    ajaxComplete : function() {
+        var ajaxPanel = document.getElementById('ajaxPanel');
+        ajaxPanel.style.visibility = "hidden";
+    },
 
     loadPage : function (args) {
+        admingui.ajax.ajaxStart();
         var url = admingui.ajax.modifyUrl(args.url);
         //args.lastPage = document.getElementById(admingui.nav.TREE_ID).getSelectedTreeNode;
 	//admingui.util.log("Loading " + url + " via ajax.");
@@ -2296,6 +2307,7 @@ admingui.ajax = {
     },
 
     postAjaxRequest : function (component, args, respTarget) {
+        admingui.ajax.ajaxStart();
 	if ((respTarget === null) || (typeof(respTarget) === 'undefined')) {
 	    respTarget = 'content';
 	}
@@ -2352,6 +2364,7 @@ admingui.ajax = {
         document.body.style.cursor = 'auto';
 
         admingui.nav.selectTreeNodeWithURL(url);
+        admingui.ajax.ajaxComplete();
     },
 
     /**
@@ -2435,6 +2448,7 @@ admingui.ajax = {
             admingui.nav.selectTreeNodeById(node.parentNode.parentNode.id);
         }
 	*/
+        admingui.ajax.ajaxComplete();
     },
 
     fixQue: function(que) {
