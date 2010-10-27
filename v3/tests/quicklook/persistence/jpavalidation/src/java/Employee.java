@@ -105,7 +105,7 @@ public class Employee {
     // ===========================================================
     @PrePersist
     void m1() {
-        System.out.println("Prepersit m1() called for Employee" + this);
+        System.out.println("PrePersist m1() called for Employee" + this);
     }
 
     @PreUpdate
