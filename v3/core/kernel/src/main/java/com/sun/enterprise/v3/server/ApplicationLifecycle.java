@@ -292,6 +292,15 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                         // ignore
                     }
                 }
+                try {
+                    ApplicationInfo appInfo = appRegistry.get(appName);
+                    if (appInfo != null) {
+                        // send the event to close necessary resources
+                        events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_DISABLED, appInfo));
+                    }
+                } catch (Exception e) {
+                    // ignore
+                }
                 for (EngineRef module : get("prepared", EngineRef.class)) {
                     try {
                         module.clean(context);
