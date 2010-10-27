@@ -164,7 +164,7 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
 
         // walk parent chain too
         ClassModel parent = cm.getParent();
-        if (null != parent) {
+        if (null != parent && !parent.getName().equals(Object.class.getName())) {
           findContracts(parent, interfaces, annotationTypeInterfaces);
         }
     }
