@@ -41,6 +41,7 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.admin.util.ClusterOperationUtil;
+import com.sun.enterprise.config.serverbeans.Server;
 import java.util.logging.Logger;
 import java.util.List;
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.Supplemental;
 import org.glassfish.api.admin.FailurePolicy;
+import org.glassfish.internal.api.Target;
 import org.glassfish.common.util.admin.ParameterMapExtractor;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -79,6 +81,9 @@ public class PostUnregisterInstanceCommand implements AdminCommand {
     @Inject
     private Habitat habitat;
 
+    @Inject
+    private Target target;
+
     @Override
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
@@ -89,7 +94,10 @@ public class PostUnregisterInstanceCommand implements AdminCommand {
                 ParameterMapExtractor pme = new ParameterMapExtractor(this);
                 final ParameterMap paramMap = pme.extract();
                 List<String> targets = new ArrayList<String>();
-                targets.add(clusterName);
+                List<Server> instances = target.getInstances(clusterName);
+                for (Server s : instances) {
+                    targets.add(s.getName());
+                }
 
                 ClusterOperationUtil.replicateCommand(
                         "_unregister-instance",
