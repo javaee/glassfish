@@ -47,7 +47,7 @@ import static org.junit.Assert.assertTrue;
 
 public class WorkSecurityMapTest extends BaseSeleniumTestClass {
 
-    private static final String TRIGGER_WORK_SECURITY_MAPS = "A work security map maps the caller identity of the work submitted by a resource adapter EIS principal or EIS user group to a suitable principal or user group in the Enterprise Server security domain.";
+    private static final String TRIGGER_WORK_SECURITY_MAPS = "A work security map maps the caller identity of the work submitted by a resource adapter EIS principal or EIS user group to a suitable principal or user group in the GlassFish Server security domain.";
     private static final String TRIGGER_NEW_WORK_SECURITY_MAP = "New Work Security Map";
     private static final String TRIGGER_EDIT_WORK_SECURITY_MAP = "Edit Work Security Map";
 
