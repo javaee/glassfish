@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Set;
@@ -51,8 +52,7 @@ public class InhabitantsGeneratorTest {
     ArrayList<File> testDir = getTestClassPathEntries(false);
 
     ClassPath classPath = ClassPath.create(null, testDir);
-    InhabitantsGenerator generator = new InhabitantsGenerator(null, classPath,
-        classPath);
+    InhabitantsGenerator generator = new InhabitantsGenerator(null, classPath, classPath);
 
     InhabitantsParsingContextGenerator ipcGen = generator.getContextGenerator();
     ParsingContext pc = ipcGen.getContext();
@@ -244,10 +244,10 @@ public class InhabitantsGeneratorTest {
   }
 
   static String expected(boolean worldViewClassPath) throws IOException {
-    return expected(worldViewClassPath, true);
+    return expected(worldViewClassPath, true, false);
   }
 
-  static String expected(boolean worldViewClassPath, boolean fromClassModel) throws IOException {
+  static String expected(boolean worldViewClassPath, boolean fromClassModel, boolean sort) throws IOException {
     StringBuilder sb = new StringBuilder();
 
     sb.append("class=com.sun.enterprise.tools.classmodel.test.RunLevelCloseableService,index=java.io.Closeable:closeable,index=org.jvnet.hk2.annotations.RunLevel\n");
@@ -292,7 +292,7 @@ public class InhabitantsGeneratorTest {
       sb.append("class=test1.Start,index=com.sun.enterprise.module.bootstrap.ModuleStartup\n");
     }
 
-    return Utilities.sortInhabitantsDescriptor(sb.toString(), false);
+    return Utilities.sortInhabitantsDescriptor(sb.toString(), sort);
   }
 
   /**
@@ -307,7 +307,7 @@ public class InhabitantsGeneratorTest {
 
     String output = callMain(outputFile, true, null, null, null);
     String expected = expected(true);
-    assertTrue(output + " was not found to contain:\n" + expected, output.contains(expected));
+    assertEquals(output + " was not found to contain:\n" + expected, expected, output);
   }
 
   /**
@@ -349,6 +349,23 @@ public class InhabitantsGeneratorTest {
     String output = callMain(outputFile, true, null, null, true);
     String expected = Utilities.sortInhabitantsDescriptor(expected(true), true);
     assertTrue(output + " was not found to contain:\n" + expected, output.contains(expected));
+  }
+  
+  /**
+   * same test as {@link #testMain()} with a reversed classpath
+   */
+  @Test
+  public void testMainWithReversedClassPath() throws Exception {
+    File testDir = new File(new File("."), "target/test-classes");
+    File outputFile = new File(testDir, "META-INF/inhabitants/default");
+
+    ArrayList<File> testClassPathEntries = getTestClassPathEntries(true);
+    Collections.reverse(testClassPathEntries);
+    String workingClassPath = toString(testClassPathEntries);
+
+    String output = callMain(outputFile, true, null, workingClassPath, true);
+    String expected = expected(true, true, true);
+    assertEquals(output + " was not found to contain:\n" + expected, expected, output);
   }
 
   static String callMain(File outputFile, boolean expectOutput, String inhabitantSources, String workingClassPath, Boolean sort) throws Exception {
@@ -439,7 +456,7 @@ public class InhabitantsGeneratorTest {
 
         boolean fromClassModelIntrospection = 
           name.contains("apt-test/target/test-classes/META-INF/inhabitants/default");
-        String expected = expected(true, fromClassModelIntrospection);
+        String expected = expected(true, fromClassModelIntrospection, false);
 
         assertEquals(count + ": expected " + url + " to contain output:\n"
             + expected + "\nbut instead was:\n" + output
