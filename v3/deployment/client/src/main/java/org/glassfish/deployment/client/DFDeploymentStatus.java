@@ -463,6 +463,7 @@ public class DFDeploymentStatus implements java.io.Serializable {
         public static void parseDeploymentStatus(DFDeploymentStatus status, 
             PrintWriter pw) {
             if (status != null) {
+                status = status.getMainStatus();
                 
                 // if it's falure case, print all exceptions
                 if (status.getStatus() == DFDeploymentStatus.Status.FAILURE) {
