@@ -68,7 +68,7 @@ class PlainTextManager implements ResponseManager{
             throw new RemoteSuccessException(response.substring(bad.length()));
         } else {
             throw new RemoteFailureException(
-		    strings.get("unknownFormat", response));
+		    strings.get("unknownFormat", good, bad, response));
         }
     }
 

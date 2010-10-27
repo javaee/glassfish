@@ -54,7 +54,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * Note that an unusul paradigm is used here.  Success is signaled by throwing
  * a "success" exception.  This breaks the overarching rule about Exceptions but
  * is very useful in CLI.  CLI has the pattern of:
- * Error:  THrow an Exception
+ * Error:  Throw an Exception
  * Success: Don't throw an Exception
  * The logic becomes difficult.  The command itself has to know how to print a 
  * success message properly instead of just putting such a message inside an Exception
