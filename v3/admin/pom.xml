@@ -53,7 +53,7 @@
     <groupId>org.glassfish.admin</groupId>
     <artifactId>admin</artifactId>
     <packaging>pom</packaging>
-    <name>GlassFish Administration related modules</name>  
+    <name>Admin Modules</name>
     <modules>
         <module>config-api</module>
         <module>util</module>
