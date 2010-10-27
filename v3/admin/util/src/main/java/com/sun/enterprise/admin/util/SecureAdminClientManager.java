@@ -188,9 +188,9 @@ public class SecureAdminClientManager {
         }
         secureAdmin = domain.getSecureAdmin();
         isEnabled = SecureAdmin.Util.isEnabled(secureAdmin);
-        configuredAdminIndicator = secureAdmin.getSpecialAdminIndicator();
+        configuredAdminIndicator = SecureAdmin.Util.configuredAdminIndicator(secureAdmin);
         if (isEnabled) {
-            instanceAlias = secureAdmin.getInstanceAlias();
+            instanceAlias = SecureAdmin.Util.instanceAlias(secureAdmin);
             logger.fine("SecureAdminClientManager: secure admin is enabled");
         } else {
             logger.fine("SecureAdminClientManager: secure admin is disabled");
