@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.transaction;
 
+import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.api.naming.NamedNamingObjectProxy;
 import org.glassfish.api.naming.NamingObjectProxy;
 import org.glassfish.api.naming.NamingObjectsProvider;
@@ -60,6 +61,7 @@ import org.jvnet.hk2.component.PostConstruct;
 import javax.naming.Context;
 import javax.naming.NamingException;
 
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 
 /**
@@ -76,16 +78,16 @@ public class TransactionNamingProxy
     @Inject
     private Habitat habitat;
 
-//    @Inject
-//    private GlassfishNamingManager namingManager;
-
-//    @Inject
-//    private ProcessEnvironment processEnv;
+    @Inject
+    private ExecutorService es;
+    
+    @Inject
+    private org.glassfish.api.admin.ProcessEnvironment processEnv;
 
     private static Logger logger = LogDomains.getLogger(TransactionNamingProxy.class, LogDomains.JTA_LOGGER);
 
     private static final String USER_TX = "java:comp/UserTransaction";
-//    private static final String USER_TX_NO_JAVA_COMP = "UserTransaction";
+    private static final String USER_TX_NO_JAVA_COMP = "UserTransaction";
 
     private static final String TRANSACTION_SYNC_REGISTRY 
             = "java:comp/TransactionSynchronizationRegistry";
@@ -103,17 +105,28 @@ public class TransactionNamingProxy
 //        Issue 13108 (Cycle in our component chain involving GlassFishNamingManager
 //        and TransactionNamingProxy).  Comment out the publishing of "UserTransaction"
 //        and related field injections to break the circular dependency.
-        /*
+
         if( processEnv.getProcessType().isServer()) {
-            try {
-               // TODO: true or false?
-               namingManager.publishObject(USER_TX_NO_JAVA_COMP, 
-                       new UserTransactionProxy(), true);
-            } catch (NamingException e) {
-               logger.warning("Can't bind \"UserTransaction\" in JNDI");
-            }
+            final Habitat h = habitat;
+            // made the lookup of the naming manager asynchronous to avoid getting
+            // in an infinite cyclic dependency (see IT 13108). By making the lookup
+            // asynchronous, we ensure the NamingManager implementation has finished
+            // initializing in *this* thread before getting returned by the
+            // getComponent() call below.
+            es.submit(new Runnable() {
+                @Override
+                public void run() {
+                    GlassfishNamingManager namingMgr = h.getComponent(GlassfishNamingManager.class);
+                    try {
+                        namingMgr.publishObject(USER_TX_NO_JAVA_COMP,
+                            new UserTransactionProxy(), true);
+                    } catch (NamingException e) {
+                       logger.warning("Can't bind \"UserTransaction\" in JNDI");
+                    }
+                }
+            });
         }
-         */
+
     }
 
     public Object handle(String name) throws NamingException {
