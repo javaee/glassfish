@@ -27,6 +27,11 @@
 
     <dependencies>
     <dependency>
+       	    <groupId>org.glassfish.hk2</groupId>
+            <artifactId>class-model</artifactId>
+            <version>${project.version}</version>
+    </dependency>        
+    <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2-core</artifactId>
             <version>${project.version}</version>
@@ -41,11 +46,6 @@
             <artifactId>auto-depends-plugin</artifactId>
             <version>${project.version}</version>
     </dependency>
-    <dependency>
-       	    <groupId>org.glassfish.hk2</groupId>
-            <artifactId>class-model</artifactId>
-            <version>${project.version}</version>
-    </dependency>        
     <dependency>
             <groupId>com.sun.enterprise.auto-depends-test</groupId>
             <artifactId>test-inhabitant-generator</artifactId>
