@@ -68,7 +68,7 @@ public class RestResponseTest {
     @Test
     public void testGetCommand() {
         RestResponse response = RestApiHandlers.get(URL_UPTIME);
-        assertTrue(response.getResponseBody().contains("Uptime:"));
+        assertTrue(response.getResponseBody().contains("\"uptime AdminCommand\""));
     }
 
     @Test
