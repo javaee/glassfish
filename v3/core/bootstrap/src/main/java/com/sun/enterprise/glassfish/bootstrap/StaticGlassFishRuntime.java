@@ -44,9 +44,6 @@ import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
-import org.glassfish.api.event.EventListener;
-import org.glassfish.api.event.EventTypes;
-import org.glassfish.api.event.Events;
 import org.glassfish.embeddable.BootstrapProperties;
 import org.glassfish.embeddable.GlassFish;
 import org.glassfish.embeddable.GlassFishException;
@@ -97,7 +94,7 @@ public class StaticGlassFishRuntime extends GlassFishRuntime {
             // GlassFishProperties, hence clone it.
             Properties cloned = new Properties();
             cloned.putAll(glassFishProperties.getProperties());
-            
+
             final GlassFishProperties gfProps = new GlassFishProperties(cloned);
             setEnv(gfProps);
 
@@ -106,22 +103,21 @@ public class StaticGlassFishRuntime extends GlassFishRuntime {
             final Habitat habitat = main.createHabitat(modulesRegistry, startupContext);
             final ModuleStartup gfKernel = main.findStartupService(modulesRegistry, habitat, null, startupContext);
             // create a new GlassFish instance
-            GlassFishImpl gfImpl = new GlassFishImpl(gfKernel, habitat, gfProps.getProperties());
-            // Add this newly created instance to a Map
-            gfMap.put(gfProps.getInstanceRoot(), gfImpl);
-
-            if ("true".equalsIgnoreCase(gfProps.getProperties().getProperty(autoDelete))) {
-                Events events = habitat.getComponent(Events.class);
-                events.register(new EventListener() {
-                    public void event(Event event) {
-                        if (event.is(EventTypes.SERVER_SHUTDOWN)) {
-                            if (gfProps.getInstanceRoot() != null) {
-                                Util.deleteRecursive(new File(gfProps.getInstanceRoot()));
-                            }
+            GlassFishImpl gfImpl = new GlassFishImpl(gfKernel, habitat, gfProps.getProperties()) {
+                @Override
+                public void dispose() throws GlassFishException {
+                    try {
+                        super.dispose();
+                    } finally {
+                        if ("true".equalsIgnoreCase(gfProps.getProperties().
+                                getProperty(autoDelete)) && gfProps.getInstanceRoot() != null) {
+                            Util.deleteRecursive(new File(gfProps.getInstanceRoot()));
                         }
                     }
-                });
-            }
+                }
+            };
+            // Add this newly created instance to a Map
+            gfMap.put(gfProps.getInstanceRoot(), gfImpl);
             return gfImpl;
         } catch (Exception e) {
             throw new GlassFishException(e);
