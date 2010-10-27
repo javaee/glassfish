@@ -45,8 +45,9 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 public class VirtualServerTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_VIRTUAL_SERVERS = "A virtual server, sometimes called a virtual host, is an object that allows";
-    private static final String TRIGGER_NEW_VIRTUAL_SERVER = "New Virtual Server";
+    public static final String TRIGGER_VIRTUAL_SERVERS = "A virtual server, sometimes called a virtual host, is an object that allows";
+    public static final String TRIGGER_NEW_VIRTUAL_SERVER = "New Virtual Server";
+    public static final String TRIGGER_EDIT_VIRTUAL_SERVER = "Edit Virtual Server";
 
     @Test
     public void testAddVirtualServer() {
@@ -56,6 +57,12 @@ public class VirtualServerTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_VIRTUAL_SERVER);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:IdTextProp:IdText", serverName);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:hostsProp:Hosts", "localhost");
+        selenium.check("propertyForm:propertySheet:propertSectionTextField:stateProp:disabled");
+        selenium.check("propertyForm:propertySheet:propertSectionTextField:enableLog:dis");
+        selenium.check("propertyForm:propertySheet:al:enableLog:dis");
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:logFileProp:LogFile", "logfile.txt");
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:docroot:docroot", "/tmp");
+        selenium.addSelection("propertyForm:propertySheet:propertSectionTextField:nwProps:nw", "label=http-listener-1");
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
 
         selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property");
@@ -64,9 +71,9 @@ public class VirtualServerTest extends BaseSeleniumTestClass {
 
         clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_VIRTUAL_SERVERS);
 
-        assertTrue(selenium.isTextPresent(serverName));
+        assertTrue(tableContainsRow("propertyForm:configs", "col1", serverName));
 
-        clickAndWait(getLinkIdByLinkText("propertyForm:configs", serverName), "Edit Virtual Server");
+        clickAndWait(getLinkIdByLinkText("propertyForm:configs", serverName), TRIGGER_EDIT_VIRTUAL_SERVER);
 
         assertTableRowCount("propertyForm:basicTable", count);
 

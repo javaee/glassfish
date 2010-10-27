@@ -183,7 +183,7 @@ public class MonitoringTest extends BaseSeleniumTestClass {
         verifyMonitoringStat("runtimeStats", jvmRuntimeData, jvmRuntimeHeader);
         verifyMonitoringStat("jvmThreadStats", jvmThreadData, jvmThreadHeader);
 
-        selenium.select(dropDownId, "label=Copy");
+        selenium.select(dropDownId, "Copy");
         waitForPageLoad(gcCopyHeader, 10000);
         verifyMonitoringStat("gcStats", gcCopyData, gcCopyHeader);
         selenium.select(dropDownId, "label=MarkSweepCompact");
