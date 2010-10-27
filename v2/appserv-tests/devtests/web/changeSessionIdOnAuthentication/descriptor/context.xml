@@ -42,7 +42,9 @@
 -->
 
 <Context>
+<!--
   <Valve className="org.apache.catalina.authenticator.BasicAuthenticator"
 changeSessionIdOnAuthentication="true"/>
+-->
 </Context>
 

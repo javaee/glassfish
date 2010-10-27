@@ -207,6 +207,7 @@ public class WebTest {
         InputStream is = null;
         BufferedReader br = null;
         String response = null;
+        String cookie = null;
 
         try {
             sock = new Socket(host, new Integer(port).intValue());
@@ -227,6 +228,8 @@ public class WebTest {
                 System.out.println(line);
                 if (line.startsWith("JSESSIONID")) {
                     response = line;
+                } else if (line.startsWith("Set-Cookie")) {
+                    cookie = line;
                 }
             }
         } finally {
@@ -234,6 +237,14 @@ public class WebTest {
             close(os);
             close(is);
             close(br);
+        }
+
+        // if jsessionId is reset in authentication
+        if (cookie != null) {
+            String newJsessionId = getSessionIdFromCookie(cookie, JSESSIONID);
+            if (newJsessionId != null) {
+                jsessionId = newJsessionId;
+            }
         }
 
         if (!jsessionId.equals(response)) {
