@@ -40,7 +40,6 @@
 package org.glassfish.admingui.devtests;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import java.util.List;
 import org.junit.Test;
 
@@ -67,7 +66,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
     public static final String TRIGGER_CLUSTER_INSTANCES_PAGE = "Create and manage standalone server instances for the current cluster.";
     public static final String TRIGGER_CLUSTER_RESOURCES_PAGE = "All instances in a cluster have the same set of resources, resulting in the same JNDI namespace.";
 
-    @Test @Ignore
+    @Test
     public void testStartAndStopClusterWithOneInstance() {
         String clusterName = "clusterName" + generateRandomString();
         String instanceName1 = "instanceName" + generateRandomString();
@@ -93,7 +92,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         deleteCluster(clusterName);
     }
 
-    @Test @Ignore
+    @Test
     public void testMigrateEjbTimers() {
         String clusterName = "clusterName" + generateRandomString();
         String instanceName1 = "instanceName" + generateRandomString();
@@ -118,7 +117,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         deleteCluster(clusterName);
     }
 
-    @Test @Ignore
+    @Test
     public void verifyClusterGeneralInformationPage() {
         String clusterName = "clusterName" + generateRandomString();
         String instanceName1 = "instanceName" + generateRandomString();
@@ -174,7 +173,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         deleteCluster(clusterName);
     }
 
-    @Test @Ignore
+    @Test
     public void testProperties() {
         String clusterName = "clusterName" + generateRandomString();
         String instanceName1 = "instanceName" + generateRandomString();

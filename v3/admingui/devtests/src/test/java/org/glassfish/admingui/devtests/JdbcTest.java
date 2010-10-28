@@ -197,7 +197,7 @@ public class JdbcTest extends BaseSeleniumTestClass {
         //Delete the instance
         clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", instanceTest.TRIGGER_INSTANCES_PAGE);
         deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
-        assertFalse(selenium.isTextPresent(instanceName));
+        assertFalse(tableContainsRow("propertyForm:instancesTable", "col0", instanceName));
     }
 
     public void createJDBCResource(String jndiName, String description, String target, String targetType) {
@@ -235,11 +235,11 @@ public class JdbcTest extends BaseSeleniumTestClass {
             //Delete the instance
             clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", StandaloneTest.TRIGGER_INSTANCES_PAGE);
             deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", target);
-            assertFalse(selenium.isTextPresent(target));
+            assertFalse(tableContainsRow("propertyForm:instancesTable", "col1", target));
         } else if (targetType.equals(MonitoringTest.TARGET_CLUSTER_TYPE)) {
             clickAndWait("treeForm:tree:clusterTreeNode:clusterTreeNode_link", ClusterTest.TRIGGER_CLUSTER_PAGE);
             deleteRow("propertyForm:clustersTable:topActionsGroup1:button1", "propertyForm:clustersTable", target);
-            assertFalse(selenium.isTextPresent(target));
+            assertFalse(tableContainsRow("propertyForm:clustersTable", "col1", target));
         }
     }
 }

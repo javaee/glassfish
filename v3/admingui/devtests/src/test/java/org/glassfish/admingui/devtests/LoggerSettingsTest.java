@@ -45,7 +45,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class LoggerSettingsTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_LOGGER_SETTINGS = "Enterprise Server logging messages";
+    private static final String TRIGGER_LOGGER_SETTINGS = "GlassFish Server logging messages are recorded in the server log";
     private static final String TRIGGER_LOG_LEVELS = "Specify log levels for individual loggers.";
 
     @Test
@@ -56,7 +56,7 @@ public class LoggerSettingsTest extends BaseSeleniumTestClass {
 
         clickAndWait("treeForm:tree:configurations:server-config:loggerSetting:loggerSetting_link", TRIGGER_LOGGER_SETTINGS);
         selenium.click("form1:general:sheetSection:writeSystemLogEnabledProp:writeSystemLogEnabled");
-        String enabled = selenium.getValue("form1:general:sheetSection:writeSystemLogEnabledProp:writeSystemLogEnabled");
+        boolean enabled = selenium.isChecked("form1:general:sheetSection:writeSystemLogEnabledProp:writeSystemLogEnabled");
         selenium.type("form1:general:sheetSection:FileRotationLimitProp:FileRotationLimit", rotationLimit);
         selenium.type("form1:general:sheetSection:FileRotationTimeLimitProp:FileRotationTimeLimit", rotationTimeLimit);
         selenium.type("form1:general:sheetSection:FlushFrequencyProp:FlushFrequency", flushFrequency);
@@ -65,7 +65,7 @@ public class LoggerSettingsTest extends BaseSeleniumTestClass {
         clickAndWait("form1:loggingTabs:loggerLevels", TRIGGER_LOG_LEVELS);
 
         clickAndWait("treeForm:tree:configurations:server-config:loggerSetting:loggerSetting_link", TRIGGER_LOGGER_SETTINGS);
-        assertEquals(enabled, selenium.getValue("form1:general:sheetSection:writeSystemLogEnabledProp:writeSystemLogEnabled"));
+        assertEquals(enabled, selenium.isChecked("form1:general:sheetSection:writeSystemLogEnabledProp:writeSystemLogEnabled"));
         assertEquals(rotationLimit, selenium.getValue("form1:general:sheetSection:FileRotationLimitProp:FileRotationLimit"));
         assertEquals(rotationTimeLimit, selenium.getValue("form1:general:sheetSection:FileRotationTimeLimitProp:FileRotationTimeLimit"));
         assertEquals(flushFrequency, selenium.getValue("form1:general:sheetSection:FlushFrequencyProp:FlushFrequency"));

@@ -53,10 +53,8 @@ public class ResourceAdapterConfigsTest extends BaseSeleniumTestClass {
     public void testResourceAdapterConfigs() throws Exception {
         clickAndWait("treeForm:tree:resources:resourceAdapterConfigs:resourceAdapterConfigs_link", TRIGGER_RESOURCE_ADAPTER_CONFIGS);
 
-        try {
-            // If this exists, delete it so the test below won't explode.  If it doesn't, just move along silently
+        if (tableContainsRow("propertyForm:poolTable", "col1", "jmsra")) {
             deleteRow("propertyForm:poolTable:topActionsGroup1:button1", "propertyForm:poolTable", "jmsra");
-        } catch (AssertionError e) { 
 
         }
 

@@ -55,8 +55,8 @@ public class NodeTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_NEW_NODE_PAGE = "KeyFile:";
     private static final String TRIGGER_EDIT_NODE = "KeyFile:";
     private static final String TRIGGER_SAVE_SUCCESS = "New values successfully saved";
-    private final String TRIGGER_INSTANCES_PAGE = "Server Instances \\(";
-    private final String TRIGGER_NEW_INSTANCE_PAGE = "Configuration:";
+    private static final String TRIGGER_INSTANCES_PAGE = "Server Instances \\(";
+    private static final String TRIGGER_NEW_INSTANCE_PAGE = "Configuration:";
 
     @Test
     public void testCreateAndDeleteNode() {
