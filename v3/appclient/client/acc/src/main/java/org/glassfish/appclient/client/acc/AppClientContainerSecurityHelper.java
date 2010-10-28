@@ -73,20 +73,11 @@ import org.jvnet.hk2.component.PerLookup;
 @Scoped(PerLookup.class)
 public class AppClientContainerSecurityHelper {
 
-    private static final String ORB_INITIAL_HOST_PROPERTYNAME = "org.omg.CORBA.ORBInitialHost";
-    private static final String ORB_INITIAL_PORT_PROPERTYNAME = "org.omg.CORBA.ORBInitialPort";
-    private static final String ORB_SSL_CLIENT_REQUIRED = "com.sun.CSIV2.ssl.client.required";
-    private final static String ENDPOINTS_PROPERTY_NAME = "com.sun.appserv.iiop.endpoints";
-
-
     @Inject
     private InjectionManager injectionManager;
 
     @Inject
     private AppClientSecurityInfo secInfo;
-
-    @Inject
-    private GlassFishORBHelper orbHelper;
 
     private final Logger logger = Logger.getLogger(getClass().getName());
 
@@ -106,7 +97,6 @@ public class AppClientContainerSecurityHelper {
 
         this.isTextAuth = isTextAuth;
         this.classLoader = (classLoader == null) ? Thread.currentThread().getContextClassLoader() : classLoader;
-        prepareIIOP(targetServers,containerProperties);
 
         initLoginConfig();
         CallbackHandler callbackHandler = 
@@ -330,72 +320,6 @@ public class AppClientContainerSecurityHelper {
 //    private String formatEndpoint(final String host, final int port) {
 //        return host + ":" + port;
 //    }
-
-    /**
-     * Prepares the client ORB to bootstrap into the server ORB(s) specified
-     * by the TargetServer objects.
-     * @param targetServers the TargetServer endpoints to which the client ORB can try to connect
-     * @param containerProperties Properties, if specified, which might indicate that SSL is to be used
-     * @return ORB-related properties to define host and port for bootstrapping
-     */
-    private void prepareIIOP(final TargetServer[] targetServers, Properties containerProperties) {
-        if (targetServers.length == 0) {
-            throw new IllegalArgumentException();
-        }
-
-        final StringBuilder sb = new StringBuilder();
-        for (TargetServer ts : targetServers) {
-            if (sb.length() > 0) {
-                sb.append(",");
-            }
-            sb.append(ts.getAddress()).append(":").append(ts.getPort());
-        }
-
-        if (targetServers.length == 1) {
-            System.setProperty(ORB_INITIAL_HOST_PROPERTYNAME, targetServers[0].getAddress());
-            System.setProperty(ORB_INITIAL_PORT_PROPERTYNAME, Integer.toString(targetServers[0].getPort()));
-        } else {
-            /*
-             * Currently, set a system property to specify multiple endpoints.
-             */
-            System.setProperty(ENDPOINTS_PROPERTY_NAME, sb.toString());
-        }
-
-        if (isSSLRequired(targetServers, containerProperties)) {
-            orbHelper.setCSIv2Prop(ORB_SSL_CLIENT_REQUIRED, "true");
-        }
-        logger.log(Level.CONFIG, "Using endpoint address(es): {0}", sb.toString());
-
-    }
-
-    /**
-     * Reports whether the ORB should be requested to use SSL.
-     * <p>
-     * If any TargetServer specifies SSL or the container-level properties
-     * specify SSL then report "true."
-     * @param targetServers configured TargetServer(s)
-     * @param containerProperties configured container-level properties
-     * @return whether the target servers or the properties implies the use of SSL
-     */
-    private boolean isSSLRequired(final TargetServer[] targetServers, final Properties containerProperties) {
-        if (containerProperties != null) {
-            String sslPropertyValue = containerProperties.getProperty("ssl");
-            if ("required".equals(sslPropertyValue)) {
-                return true;
-            }
-        }
-        for (TargetServer ts : targetServers) {
-            /*
-             * If this target server has the optional security sub-item then
-             * the security sub-item must have an ssl sub-item.  So we can just
-             * look for the security sub-item.
-             */
-            if (ts.getSecurity() != null) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     /**
      * Proxy either for our default callback handler (used if needed during callbacks
