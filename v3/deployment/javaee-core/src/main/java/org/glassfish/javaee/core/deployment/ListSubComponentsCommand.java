@@ -158,8 +158,14 @@ public class ListSubComponentsCommand implements AdminCommand {
         if (appname == null) {
             subComponents = getAppLevelComponents(app, type, subComponentsMap);
         } else {
-           subComponents = getModuleLevelComponents(
-               app.getModuleByUri(modulename), type, subComponentsMap);
+            BundleDescriptor bundleDesc = app.getModuleByUri(modulename);
+            if (bundleDesc == null) {
+                report.setMessage(localStrings.getLocalString("listsubcomponents.invalidmodulename", "Invalid module name", appname, modulename));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }
+            subComponents = getModuleLevelComponents(
+                bundleDesc, type, subComponentsMap);
         }
         
         // the type param can only have values "ejbs" and "servlets"
