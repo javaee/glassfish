@@ -155,9 +155,7 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
 
     public void findContracts(ClassModel cm, Set<String> interfaces, Set<String> annotationTypeInterfaces) {
         for (InterfaceModel im : cm.getInterfaces()) {
-            if (isContract(im)) {
-                interfaces.add(im.getName());
-            }
+            getAllContractInterfaces(im, interfaces);
         }
 
         findContractsFromAnnotations(cm, interfaces, annotationTypeInterfaces);
@@ -166,6 +164,22 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
         ClassModel parent = cm.getParent();
         if (null != parent && !parent.getName().equals(Object.class.getName())) {
           findContracts(parent, interfaces, annotationTypeInterfaces);
+        }
+    }
+
+    /**
+     * add all @Contract annotated interfaces extended by the passed interface model
+     * to the provided list.
+     *
+     * @param im interface model to get all @Contract annotated extended interfaces from
+     * @param interfaces list of interfaces im is extending
+     */
+    private void getAllContractInterfaces(InterfaceModel im, Collection<String> interfaces) {
+        if (isContract(im)) {
+            interfaces.add(im.getName());
+        }
+        for (InterfaceModel implementedIntf : im.getInterfaces()) {
+            getAllContractInterfaces(implementedIntf, interfaces);
         }
     }
 
