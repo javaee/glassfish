@@ -73,6 +73,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.util.RestUtil;
 import org.glassfish.admingui.common.util.TargetUtil;
 
 
@@ -231,7 +232,7 @@ public class DeploymentHandler {
             DFDeploymentProperties deploymentProps = new DFDeploymentProperties();
 
              //If we are redeploying a web app, we want to preserve context root.
-             String ctxRoot = (String) RestApiHandlers.getEntityAttrs(
+             String ctxRoot = (String) RestUtil.getEntityAttrs(
                      GuiUtil.getSessionValue("REST_URL")+"/applications/application/" +appName ,"entity").get("contextRoot");
 
              if (ctxRoot != null){
@@ -338,19 +339,19 @@ public class DeploymentHandler {
             try{
                 //find the config ref. by this target
                 String endpoint = TargetUtil.getTargetEndpoint(oneTarget);
-                String configName = (String) RestApiHandlers.getEntityAttrs(endpoint, "entity").get("configRef");
+                String configName = (String) RestUtil.getEntityAttrs(endpoint, "entity").get("configRef");
                 String encodedConfigName = URLEncoder.encode(configName, "UTF-8");
 
                 //get all the VS of this config
                 String vsEndpoint =  prefix + encodedConfigName + "/http-service/virtual-server";
-                Map vsMap = RestApiHandlers.getChildMap( vsEndpoint );
+                Map vsMap = RestUtil.getChildMap( vsEndpoint );
 
                 //for each VS, look at the defaultWebModule
                 if (vsMap != null && vsMap.size()>0){
                     List<String> vsList = new ArrayList(vsMap.keySet());
                     for(String oneVs : vsList){
                         String oneEndpoint = vsEndpoint+"/" + oneVs ;
-                        String defWebModule = (String) RestApiHandlers.getEntityAttrs( oneEndpoint , "entity").get("defaultWebModule");
+                        String defWebModule = (String) RestUtil.getEntityAttrs( oneEndpoint , "entity").get("defaultWebModule");
                         if (GuiUtil.isEmpty(defWebModule)){
                             continue;
                         }
@@ -359,7 +360,7 @@ public class DeploymentHandler {
                             defWebModule = defWebModule.substring(0, index);
                         }
                         if (undeployedAppName.equals(defWebModule)){
-                            RestApiHandlers.restRequest(oneEndpoint, attrsMap, "POST", null, false);
+                            RestUtil.restRequest(oneEndpoint, attrsMap, "POST", null, false);
                         }
                     }
                 }

@@ -65,6 +65,7 @@ import java.util.StringTokenizer;
 
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.RestResponse;
+import org.glassfish.admingui.common.util.RestUtil;
 
 public class InstanceHandler {
 
@@ -130,7 +131,7 @@ public class InstanceHandler {
         if (!endpoint.endsWith(".json"))
             endpoint = endpoint + ".json";
         Map<String, Object> attrs = (Map<String, Object>) handlerCtx.getInputValue("attrs");
-        Map result = (HashMap) RestApiHandlers.restRequest(endpoint, attrs, "get", handlerCtx, false).get("data");
+        Map result = (HashMap) RestUtil.restRequest(endpoint, attrs, "get", handlerCtx, false).get("data");
         list = (ArrayList<String>) ((Map<String, Object>) result.get("extraProperties")).get("leafList");
         if (list == null)
             list = new ArrayList<String>();
@@ -167,7 +168,7 @@ public class InstanceHandler {
         if (endpoint.contains("profiler")) {
             payload.put("profiler", "true");
         }
-        RestResponse response = RestApiHandlers.post(endpoint, payload);
+        RestResponse response = RestUtil.post(endpoint, payload);
         if (!response.isSuccess()) {
             throw new Exception (response.getResponseBody());
         }
@@ -187,7 +188,7 @@ public class InstanceHandler {
                 endpoint = endpoint.substring(0, endpoint.indexOf("/profiler")) + "/jvm-options";
                 payload.put("profiler", "true");
             }
-            RestResponse response = RestApiHandlers.delete(endpoint, payload);
+            RestResponse response = RestUtil.delete(endpoint, payload);
             if (!response.isSuccess()) {
                 throw new Exception (response.getResponseBody());
             }

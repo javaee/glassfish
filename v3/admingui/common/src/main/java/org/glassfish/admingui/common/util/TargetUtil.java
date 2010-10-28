@@ -53,7 +53,6 @@ import java.util.HashSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.glassfish.admingui.common.handlers.RestApiHandlers;
 import org.glassfish.admingui.common.handlers.RestUtilHandlers;
 
 /**
@@ -75,7 +74,7 @@ public class TargetUtil {
         Map attrsMap = new HashMap();
         attrsMap.put("standaloneonly", "true");
         try{
-            Map responseMap = RestApiHandlers.restRequest( endpoint , attrsMap, "get" , null, false);
+            Map responseMap = RestUtil.restRequest( endpoint , attrsMap, "get" , null, false);
             Map  dataMap = (Map) responseMap.get("data");
             Map<String, Object>  extraProps = (Map<String, Object>) dataMap.get("extraProperties");
             if (extraProps == null){
@@ -96,7 +95,7 @@ public class TargetUtil {
     public static List getClusters(){
         List clusters = new ArrayList();
         try{
-            clusters.addAll(RestApiHandlers.getChildMap(GuiUtil.getSessionValue("REST_URL") + "/clusters/cluster").keySet());
+            clusters.addAll(RestUtil.getChildMap(GuiUtil.getSessionValue("REST_URL") + "/clusters/cluster").keySet());
         }catch (Exception ex){
             GuiUtil.getLogger().severe("Error in getClusters;");
             ex.printStackTrace();
@@ -107,7 +106,7 @@ public class TargetUtil {
     public static List getClusteredInstances(String cluster) {
         List instances = new ArrayList();
         try {
-            instances.addAll(RestApiHandlers.getChildMap(GuiUtil.getSessionValue("REST_URL") + "/clusters/cluster/" + cluster + "/server-ref").keySet());
+            instances.addAll(RestUtil.getChildMap(GuiUtil.getSessionValue("REST_URL") + "/clusters/cluster/" + cluster + "/server-ref").keySet());
         } catch (Exception ex) {
             GuiUtil.getLogger().severe(ex.getMessage());
         }
@@ -137,7 +136,7 @@ public class TargetUtil {
 
     public static String getConfigName(String target) {
         String endpoint = getTargetEndpoint(target);
-        return (String)RestApiHandlers.getAttributesMap(endpoint).get("configRef");
+        return (String)RestUtil.getAttributesMap(endpoint).get("configRef");
     }
 
     public static Collection<String> getHostNames(String target) {
@@ -155,10 +154,10 @@ public class TargetUtil {
             String hostName = null;
             String ep = (String)GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instance;
             String node =
-                    (String)RestApiHandlers.getAttributesMap(ep).get("node");
+                    (String)RestUtil.getAttributesMap(ep).get("node");
             if (node != null) {
                 ep = (String)GuiUtil.getSessionValue("REST_URL") + "/nodes/node/" + node;
-                hostName =  (String)RestApiHandlers.getAttributesMap(ep).get("node-host");
+                hostName =  (String)RestUtil.getAttributesMap(ep).get("node-host");
             }
             if (hostName == null)
                 hostName = "localhost";

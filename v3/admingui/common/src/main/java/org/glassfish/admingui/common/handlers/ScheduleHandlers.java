@@ -49,9 +49,9 @@ import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
-import org.glassfish.admingui.common.handlers.RestApiHandlers;
 import org.glassfish.admingui.common.util.GuiUtil;
 import java.text.*;
+import org.glassfish.admingui.common.util.RestUtil;
 /**
  *
  * @author Siraj
@@ -94,7 +94,7 @@ public class ScheduleHandlers {
             String endPoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/server-config/schedules/schedule/" +
                     scheduleName;
 
-            Map attribs = RestApiHandlers.getAttributesMap(endPoint);
+            Map attribs = RestUtil.getAttributesMap(endPoint);
 
             dayOfWeek = (String)attribs.get(DAY_OF_WEEK);
             dayOfMonth = (String)attribs.get(DAY_OF_MONTH);

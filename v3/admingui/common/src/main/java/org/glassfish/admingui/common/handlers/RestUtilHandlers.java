@@ -63,6 +63,7 @@ import java.util.Map;
 import java.util.List;
 
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.util.RestUtil;
 
 public class RestUtilHandlers {
 
@@ -87,7 +88,7 @@ public class RestUtilHandlers {
         String method = ((String) handlerCtx.getInputValue("method")).toLowerCase();
         int index = (Integer) handlerCtx.getInputValue("index");
         try{
-            Map responseMap = RestApiHandlers.restRequest( endpoint , attrs, method , handlerCtx, false);
+            Map responseMap = RestUtil.restRequest( endpoint , attrs, method , handlerCtx, false);
             ArrayList  messages = (ArrayList) responseMap.get("messages");
             if (messages != null) {
                 Map message = (Map) messages.get(index);

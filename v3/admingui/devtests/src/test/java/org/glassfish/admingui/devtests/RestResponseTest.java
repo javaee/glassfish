@@ -40,8 +40,8 @@
 
 package org.glassfish.admingui.devtests;
 
+import org.glassfish.admingui.common.util.RestUtil;
 import java.util.HashMap;
-import org.glassfish.admingui.common.handlers.RestApiHandlers;
 import org.glassfish.admingui.common.util.RestResponse;
 import org.junit.Test;
 
@@ -59,7 +59,7 @@ public class RestResponseTest {
 
     @Test
     public void testPostCommand() {
-        RestResponse response = RestApiHandlers.post(URL_GENERATE_JVM_REPORT, new HashMap<String, Object>(){{
+        RestResponse response = RestUtil.post(URL_GENERATE_JVM_REPORT, new HashMap<String, Object>(){{
             put ("type", "summary");
         }});
         assertTrue(response.getResponseBody().contains("Operating System Information"));
@@ -67,16 +67,16 @@ public class RestResponseTest {
 
     @Test
     public void testGetCommand() {
-        RestResponse response = RestApiHandlers.get(URL_UPTIME);
+        RestResponse response = RestUtil.get(URL_UPTIME);
         assertTrue(response.getResponseBody().contains("\"uptime AdminCommand\""));
     }
 
     @Test
     public void testEndpointExists() {
-        RestResponse response = RestApiHandlers.get(URL_UPTIME);
+        RestResponse response = RestUtil.get(URL_UPTIME);
         assertTrue(response.isSuccess());
 
-        response = RestApiHandlers.get(URL_UPTIME + "/forceFailure");
+        response = RestUtil.get(URL_UPTIME + "/forceFailure");
         assertFalse(response.isSuccess());
     }
 }

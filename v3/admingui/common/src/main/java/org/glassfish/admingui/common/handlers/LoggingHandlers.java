@@ -63,6 +63,7 @@ import java.util.List;
 import java.util.HashMap;
 
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.util.RestUtil;
 
 
 public class LoggingHandlers {
@@ -132,7 +133,7 @@ public class LoggingHandlers {
         for(Map<String, Object> oneRow : allRows){
             props.put("id", oneRow.get("loggerName") + "=" + oneRow.get("level"));
             props.put("target", config);
-            RestApiHandlers.restRequest((String)GuiUtil.getSessionValue("REST_URL") + "/set-log-levels.json",
+            RestUtil.restRequest((String)GuiUtil.getSessionValue("REST_URL") + "/set-log-levels.json",
                     props, "POST", null, true);
         }
 
@@ -154,7 +155,7 @@ public class LoggingHandlers {
         for(String key : attrNames){
             props.put("id", key + "=" + attrs.get(key));
             props.put("target", config);
-            RestApiHandlers.restRequest((String)GuiUtil.getSessionValue("REST_URL") + "/set-log-attributes.json",
+            RestUtil.restRequest((String)GuiUtil.getSessionValue("REST_URL") + "/set-log-attributes.json",
                     props, "POST", null, true);
         }
      }

@@ -51,7 +51,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.glassfish.admingui.common.handlers.RestApiHandlers;
 
 
 /**
@@ -61,7 +60,7 @@ import org.glassfish.admingui.common.handlers.RestApiHandlers;
 public class AppUtil {
 
     public static List<String> getSnifferListOfModule(String appName, String moduleName){
-        Map subMap = RestApiHandlers.restRequest(
+        Map subMap = RestUtil.restRequest(
             GuiUtil.getSessionValue("REST_URL")+"/applications/application/" + appName + "/module/" + moduleName + "/engine", null, "GET", null, false);
         final Map dataMap = (Map) subMap.get("data");
         List sniffersList = new ArrayList();
@@ -93,10 +92,10 @@ public class AppUtil {
         String endpoint="";
         if (clusters.contains(target)){
             endpoint = prefix + "/clusters/cluster/" + target + "/application-ref/" + appName;
-            attrs = RestApiHandlers.getAttributesMap(prefix + endpoint);
+            attrs = RestUtil.getAttributesMap(prefix + endpoint);
         }else{
             endpoint = prefix+"/servers/server/" + target + "/application-ref/" + appName;
-            attrs = RestApiHandlers.getAttributesMap(endpoint);
+            attrs = RestUtil.getAttributesMap(endpoint);
         }
         return Boolean.parseBoolean((String) attrs.get("enabled"));
     }
@@ -111,7 +110,7 @@ public class AppUtil {
                 Map wsAttrMap = new HashMap();
                 wsAttrMap.put("applicationname", encodedAppName);
                 wsAttrMap.put("modulename", encodedModuleName);
-                Map wsMap = RestApiHandlers.restRequest(prefix+"list-webservices", wsAttrMap, "GET", null, false);
+                Map wsMap = RestUtil.restRequest(prefix+"list-webservices", wsAttrMap, "GET", null, false);
                 Map extraProps = (Map)((Map)wsMap.get("data")).get("extraProperties");
                 if (extraProps != null){
                     wsAppMap = (Map) extraProps.get(appName);

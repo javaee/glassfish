@@ -80,7 +80,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.handlers.MonitoringHandlers;
-import org.glassfish.admingui.common.handlers.RestApiHandlers;
+import org.glassfish.admingui.common.util.RestUtil;
 import org.glassfish.admingui.util.SunOptionUtil;
 
 public class WoodstockHandler {
@@ -421,7 +421,7 @@ public class WoodstockHandler {
                 String appName = (String) al.next();
                 Set<String> modules = new HashSet<String>();
                 try {
-                    modules = RestApiHandlers.getChildMap(GuiUtil.getSessionValue("REST_URL") + "/applications/application/" + appName + "/module").keySet();
+                    modules = RestUtil.getChildMap(GuiUtil.getSessionValue("REST_URL") + "/applications/application/" + appName + "/module").keySet();
                 } catch (Exception ex) {
                     GuiUtil.handleException(handlerCtx, ex);
                 }
@@ -501,14 +501,14 @@ public class WoodstockHandler {
             if (appname.equals(modulename)) {
                 endpoint = monitorURL + "/applications/" + appname + "/" + compName;
             }
-            compChildSet = RestApiHandlers.getChildMap(endpoint).keySet();
+            compChildSet = RestUtil.getChildMap(endpoint).keySet();
         } catch (Exception ex) {
             GuiUtil.getLogger().severe("Error in getEJBComponentMenuOptions ; \nendpoint = " + endpoint + "method=GET");
         }
         for (String child : compChildSet) {
             Set<String> subCompChildSet = null;
             try {
-                subCompChildSet = RestApiHandlers.getChildMap(endpoint + "/" + child).keySet();
+                subCompChildSet = RestUtil.getChildMap(endpoint + "/" + child).keySet();
             } catch (Exception ex) {
                 GuiUtil.getLogger().severe("Error in getEJBComponentMenuOptions ; \nendpoint = " + endpoint + "/" + child + "method=GET");
             }
@@ -536,7 +536,7 @@ public class WoodstockHandler {
             while (vl.hasNext()) {
                 String name = (String) vl.next();
                 try {
-                    List servlets = new ArrayList(RestApiHandlers.getChildMap(endpoint + "/" + name).keySet());
+                    List servlets = new ArrayList(RestUtil.getChildMap(endpoint + "/" + name).keySet());
                     if (!servlets.isEmpty()) {
                         OptionGroup menuOptions = getMenuOptions(servlets, name, "", true);
                         menuList.add(menuOptions);

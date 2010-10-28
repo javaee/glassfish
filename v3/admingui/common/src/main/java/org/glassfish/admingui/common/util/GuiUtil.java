@@ -80,7 +80,6 @@ import org.glassfish.deployment.client.DeploymentFacility;
 import org.glassfish.deployment.client.ServerConnectionIdentifier;
 
 import org.jvnet.hk2.component.Habitat;
-import org.glassfish.admingui.common.handlers.RestApiHandlers;
 
 /**
  *
@@ -171,9 +170,9 @@ public class GuiUtil {
         sessionMap.put("domainName", RestUtil.getPropValue((String)(sessionMap.get("REST_URL")), "administrative.domain.name", null));
         sessionMap.put("_noNetwork", (System.getProperty("com.sun.enterprise.tools.admingui.NO_NETWORK", "false").equals("true"))? Boolean.TRUE: Boolean.FALSE);
         sessionMap.put("supportCluster", Boolean.FALSE);
-        Map version = RestApiHandlers.restRequest(sessionMap.get("REST_URL")+"/version", null, "GET" ,null, false);
+        Map version = RestUtil.restRequest(sessionMap.get("REST_URL")+"/version", null, "GET" ,null, false);
         sessionMap.put("appServerVersion", ((Map)version.get("data")).get("message"));
-        Map locations = RestApiHandlers.restRequest(sessionMap.get("REST_URL")+"/location", null, "GET" ,null, false);
+        Map locations = RestUtil.restRequest(sessionMap.get("REST_URL")+"/location", null, "GET" ,null, false);
         sessionMap.put("installationDir", ((Map)((Map)locations.get("data")).get("properties")).get("Base-Root"));
         sessionMap.put("reqMsg", GuiUtil.getMessage("msg.JS.enterValue"));
         sessionMap.put("reqMsgSelect", GuiUtil.getMessage("msg.JS.selectValue"));
@@ -189,7 +188,7 @@ public class GuiUtil {
          * Otherwise GUI's main page can't come up.
          */
         try {
-            Map result = RestApiHandlers.restRequest(GuiUtil.getSessionValue("REST_URL")+"/configs/config/server-config/admin-service/das-config", null, "GET", null, false);
+            Map result = RestUtil.restRequest(GuiUtil.getSessionValue("REST_URL")+"/configs/config/server-config/admin-service/das-config", null, "GET", null, false);
             String timeOut = (String)((Map)((Map)((Map)result.get("data")).get("extraProperties")).get("entity")).get("adminSessionTimeoutInMinutes");
             if ((timeOut != null) && (!timeOut.equals(""))) {
                 int time = new Integer(timeOut).intValue();

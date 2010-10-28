@@ -66,6 +66,7 @@ import java.util.logging.Logger;
 
 
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.util.RestUtil;
 
 public class JdbcTempHandler {
 
@@ -257,7 +258,7 @@ public class JdbcTempHandler {
         attrs.put("introspect", ((Boolean) introspect).toString());
         List<String> jdbcClassNames = new ArrayList<String>();
         try {
-            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, attrs, "GET", null, false);
+            Map<String, Object> responseMap = RestUtil.restRequest(endpoint, attrs, "GET", null, false);
             Map<String, Object> extraPropsMap = (Map<String, Object>) ((Map<String, Object>) responseMap.get("data")).get("extraProperties");
             if ( extraPropsMap != null) {
                 jdbcClassNames = (List<String>) extraPropsMap.get("driverClassNames");
@@ -274,7 +275,7 @@ public class JdbcTempHandler {
         endpoint = endpoint + "/resources/get-database-vendor-names";
         List<String> vendorList = new ArrayList<String>();
         try {
-            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "GET", null, false);
+            Map<String, Object> responseMap = RestUtil.restRequest(endpoint, null, "GET", null, false);
             Map<String, Object> extraPropsMap = (Map<String, Object>) ((Map<String, Object>) responseMap.get("data")).get("extraProperties");
             if ( extraPropsMap != null) {
                 vendorList = (List<String>) extraPropsMap.get("vendorNames");
@@ -294,7 +295,7 @@ public class JdbcTempHandler {
         attrs.put("restype", resType);
         Map<String, String> connDefProps = new HashMap<String, String>();
         try {
-            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, attrs, "GET", null, false);
+            Map<String, Object> responseMap = RestUtil.restRequest(endpoint, attrs, "GET", null, false);
             Map<String, Object> extraPropsMap = (Map<String, Object>) ((Map<String, Object>) responseMap.get("data")).get("extraProperties");
             if ( extraPropsMap != null) {
                 connDefProps = (Map<String, String>) extraPropsMap.get("connectionDefinitionPropertiesAndDefaults");
