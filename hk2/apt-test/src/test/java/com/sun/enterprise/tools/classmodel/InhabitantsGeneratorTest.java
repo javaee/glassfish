@@ -364,7 +364,7 @@ public class InhabitantsGeneratorTest {
   /**
    * Compares APT generation to class-model, introspection generation.
    */
-  @Ignore // TODO:
+//  @Ignore
   @Test
   public void testAgainstAptGenerator() throws Exception {
     // generate the habitat file
@@ -571,9 +571,9 @@ public class InhabitantsGeneratorTest {
       }
     } else {
       // TODO: core is not part of the classpath so the habitat is correct when
-      // the classpath is not right - expected (?)
+      // the classpath is not right - expected unfortunately
       sb.append("class=test1.Start,index=com.sun.enterprise.module.bootstrap.ModuleStartup\n");
-      sb.append("class=com.sun.enterprise.tools.classmodel.test.MyModuleStartup,index=com.sun.enterprise.tools.classmodel.test.MyBaseModuleStartupContract:startup\n");
+      sb.append("class=com.sun.enterprise.tools.classmodel.test.MyModuleStartup,index=com.sun.enterprise.module.bootstrap.ModuleStartup:startup,index=com.sun.enterprise.tools.classmodel.test.MyBaseModuleStartupContract:startup\n");
     }
 
     return Utilities.sortInhabitantsDescriptor(sb.toString(), sort);
