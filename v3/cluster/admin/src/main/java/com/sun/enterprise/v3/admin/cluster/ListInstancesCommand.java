@@ -69,6 +69,7 @@ import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
  */
 @org.glassfish.api.admin.ExecuteOn(RuntimeType.DAS)
 @Service(name = "list-instances")
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("list.instances.command")
 @Scoped(PerLookup.class)
 public class ListInstancesCommand implements AdminCommand {

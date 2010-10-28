@@ -54,6 +54,7 @@ import com.sun.enterprise.module.bootstrap.StartupContext;
 import java.util.logging.Logger;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
@@ -68,6 +69,7 @@ import static org.glassfish.api.ActionReport.ExitCode.SUCCESS;
  */
 @Service(name = "_get-runtime-info")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 public class RuntimeInfo implements AdminCommand {
 
     public RuntimeInfo() {

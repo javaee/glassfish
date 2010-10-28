@@ -49,6 +49,7 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 import java.util.List;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
@@ -69,6 +70,7 @@ import org.jvnet.hk2.component.PerLookup;
 @ExecuteOn(value={RuntimeType.DAS})
 @Service(name="list-resource-refs")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("list.resource.refs")
 public class ListResourceRefs implements AdminCommand {
     

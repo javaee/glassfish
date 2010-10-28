@@ -71,6 +71,7 @@ import com.sun.enterprise.config.serverbeans.Domain;
  */
 @Service(name="list")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 public class ListCommand extends V2DottedNameSupport implements AdminCommand {
 
     @Inject

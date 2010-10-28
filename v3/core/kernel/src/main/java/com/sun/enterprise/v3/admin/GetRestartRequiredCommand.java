@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.Properties;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -64,6 +65,7 @@ import org.glassfish.internal.config.UnprocessedConfigListener;
  */
 @Service(name = "_get-restart-required")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("get.restart.required.command")
 public class GetRestartRequiredCommand implements AdminCommand {
     @Param(optional = true)

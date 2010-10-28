@@ -76,6 +76,7 @@ import static com.sun.enterprise.util.SystemPropertyConstants.SLASH;
  */
 @Service(name = "get")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
 public class GetCommand extends V2DottedNameSupport implements AdminCommand {
 

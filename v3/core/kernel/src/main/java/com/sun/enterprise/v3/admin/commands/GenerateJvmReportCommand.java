@@ -46,6 +46,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
@@ -60,6 +61,7 @@ import java.lang.management.ManagementFactory;
  */
 @Service(name="generate-jvm-report")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("generate.jvm.report")
 public class GenerateJvmReportCommand implements AdminCommand {
     

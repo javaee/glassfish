@@ -64,6 +64,7 @@ import org.glassfish.admin.rest.RestConfig;
  */
 @Service(name = "_get-rest-config")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 public class GetRestConfig implements AdminCommand {
 
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)

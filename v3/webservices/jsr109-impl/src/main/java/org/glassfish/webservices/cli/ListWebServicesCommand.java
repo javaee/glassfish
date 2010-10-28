@@ -44,6 +44,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.webservices.WebServicesContainer;
 import org.glassfish.webservices.deployment.DeployedEndpointData;
 import org.glassfish.webservices.deployment.WebServicesDeploymentMBean;
@@ -61,6 +62,7 @@ import java.util.Properties;
  */
 @Service(name = "__list-webservices")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 public class ListWebServicesCommand implements AdminCommand {
     @Inject
     private Habitat habitat;

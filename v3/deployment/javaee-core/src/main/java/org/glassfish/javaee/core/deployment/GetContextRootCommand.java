@@ -42,6 +42,7 @@ package org.glassfish.javaee.core.deployment;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
@@ -69,6 +70,7 @@ import java.util.logging.Logger;
 @Service(name="_get-context-root")
 @ExecuteOn(value={RuntimeType.DAS})
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 public class GetContextRootCommand implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(GetContextRootCommand.class);

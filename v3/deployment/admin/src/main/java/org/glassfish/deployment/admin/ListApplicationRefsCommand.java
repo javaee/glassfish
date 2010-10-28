@@ -42,6 +42,7 @@ package org.glassfish.deployment.admin;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.ExecuteOn;
@@ -70,6 +71,7 @@ import org.glassfish.deployment.common.DeploymentUtils;
 @I18n("list.application.refs")
 @ExecuteOn(value={RuntimeType.DAS})
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @TargetType(value={CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
 public class ListApplicationRefsCommand implements AdminCommand {
 

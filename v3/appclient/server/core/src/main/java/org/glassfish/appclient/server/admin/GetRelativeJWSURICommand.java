@@ -46,6 +46,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.appclient.server.core.AppClientDeployer;
@@ -62,6 +63,7 @@ import org.jvnet.hk2.component.PerLookup;
  */
 @Service(name="_get-relative-jws-uri")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @ExecuteOn(value={RuntimeType.DAS})
 public class GetRelativeJWSURICommand implements AdminCommand {
 

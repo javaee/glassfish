@@ -50,6 +50,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.CommandTarget;
@@ -70,6 +71,7 @@ import java.util.List;
 @ExecuteOn(value={RuntimeType.DAS})
 @Service(name = "list-jndi-resources")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("list.jndi.resources")
 public class ListJndiResources implements AdminCommand {
 

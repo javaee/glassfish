@@ -43,6 +43,7 @@ package org.glassfish.jms.admin.cli;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
@@ -70,6 +71,7 @@ import org.glassfish.api.admin.RuntimeType;
  */
 @Service(name="list-jms-resources")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("list.jms.resources")
 @ExecuteOn({RuntimeType.DAS})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.DOMAIN})

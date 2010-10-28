@@ -43,6 +43,7 @@ package org.glassfish.deployment.admin;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
@@ -68,6 +69,7 @@ import org.jvnet.hk2.annotations.Inject;
 
 @Service(name="show-component-status")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @ExecuteOn(value={RuntimeType.DAS})
 @TargetType(value={CommandTarget.DOMAIN, CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
 public class ShowComponentStatusCommand implements AdminCommand {

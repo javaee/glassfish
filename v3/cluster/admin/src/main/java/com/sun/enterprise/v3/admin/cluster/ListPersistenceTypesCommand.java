@@ -46,6 +46,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
@@ -61,6 +62,7 @@ import org.glassfish.ha.store.spi.BackingStoreFactoryRegistry;
  * when high availability is enabled for an application deployed to a cluster.
  */
 @Service(name="list-persistence-types")
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("list.persistence.types.command")
 @Scoped(PerLookup.class)
 public class ListPersistenceTypesCommand implements AdminCommand {

@@ -68,6 +68,7 @@ import java.util.logging.Logger;
 @ExecuteOn({RuntimeType.INSTANCE})
 @Service(name = "_get-log-file")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("get.log.file")
 public class InstanceGetLogFileCommand implements AdminCommand {
 

@@ -43,6 +43,7 @@ package org.glassfish.deployment.admin;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.Param;
 import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.config.serverbeans.Domain;
@@ -64,6 +65,7 @@ import java.util.List;
 @Service(name="_list-app-refs")
 @ExecuteOn(value={RuntimeType.DAS})
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 public class ListAppRefsCommand implements AdminCommand {
 
     @Param(optional=true)

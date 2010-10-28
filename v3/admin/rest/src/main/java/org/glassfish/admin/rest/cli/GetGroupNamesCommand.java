@@ -46,6 +46,7 @@ import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -58,6 +59,7 @@ import org.jvnet.hk2.component.PerLookup;
  */
 @Service(name = "__list-group-names")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 public class GetGroupNamesCommand implements AdminCommand {
     @Inject
     com.sun.enterprise.config.serverbeans.Domain domain;

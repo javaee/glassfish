@@ -46,6 +46,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Singleton;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import com.sun.enterprise.module.ModulesRegistry;
@@ -59,6 +60,7 @@ import java.net.URI;
  */
 @Service(name="list-modules")
 @Scoped(Singleton.class)        // no per-execution state
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("list.modules.command")
 public class ListModulesCommand implements AdminCommand {
 

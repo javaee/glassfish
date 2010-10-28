@@ -76,6 +76,7 @@ import org.glassfish.deployment.versioning.VersioningSyntaxException;
 @Service(name="list-sub-components")
 @I18n("list.sub.components")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @ExecuteOn(value={RuntimeType.DAS})
 public class ListSubComponentsCommand implements AdminCommand {
 
