@@ -56,12 +56,14 @@ import java.util.Set;
  */
 public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser> {
 
+    final Types types;
+  
     final Iterator<AnnotatedElement> inhabitantAnnotations;
     Iterator<AnnotatedElement> current;
 
     @SuppressWarnings("unchecked")
     public InhabitantIntrospectionScanner(ParsingContext context) {
-        Types types = context.getTypes();
+        types = context.getTypes();
         AnnotationType am = types.getBy(AnnotationType.class, InhabitantAnnotation.class.getName());
         if (am==null) {                                  
             inhabitantAnnotations = Collections.EMPTY_LIST.iterator();
@@ -162,7 +164,15 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
 
         // walk parent chain too
         ClassModel parent = cm.getParent();
-        if (null != parent && !parent.getName().equals(Object.class.getName())) {
+        if (null == parent) {
+          // at this point, we check all interfaces to see if they have super interfaces
+          Set<String> newIfaces = new LinkedHashSet<String>();
+          for (String ifaceName : interfaces) {
+            InterfaceModel iface = types.getBy(InterfaceModel.class, ifaceName);
+            getAllContractInterfaces(iface, newIfaces);
+          }
+          interfaces.addAll(newIfaces);
+        } else if (!parent.getName().equals(Object.class.getName())) {
           findContracts(parent, interfaces, annotationTypeInterfaces);
         }
     }

@@ -177,7 +177,8 @@ public class Parser implements Closeable {
     }
 
     private static URI getDefiningURI(File file) {
-      return file.toURI();
+        return file.toURI();
+//        return null;
     }
     
     private static File getFilePath(String path, String resourceName) {

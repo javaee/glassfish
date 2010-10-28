@@ -5,5 +5,5 @@ import org.jvnet.hk2.annotations.Contract;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 
 @Contract
-public interface MyBaseModuleStartupContract extends ModuleStartup {
+public interface MyBaseModuleStartupContract extends ModuleStartup, SomeRandomInterface {
 }
