@@ -74,6 +74,8 @@ public class EjbOptionalIntfGenerator
 
     private static final String DELEGATE_FIELD_NAME = "__ejb31_delegate";
 
+    private static final Class[] emptyClassArray = new Class[] {};
+
     private Map<String, byte[]> classMap = new HashMap<String, byte[]>();
 
     private Map<String, Class> loadedClasses = new HashMap<String, Class>()
@@ -265,6 +267,12 @@ public class EjbOptionalIntfGenerator
                     allMethods.add(mth);
                 }
             }
+        }
+
+        // add toString() method if it was not overridden
+        java.lang.reflect.Method mth = Object.class.getDeclaredMethod("toString", emptyClassArray);
+        if( !hasSameSignatureAsExisting(mth, allMethods)) {
+            generateBeanMethod(tv, subClassName, mth, delegateClass);
         }
 
         tv.visitEnd();
