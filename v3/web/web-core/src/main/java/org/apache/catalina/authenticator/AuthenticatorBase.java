@@ -160,13 +160,6 @@ public abstract class AuthenticatorBase
     
     
     /**
-     * Return the MessageDigest implementation to be used when
-     * creating session identifiers.
-     */
-    protected MessageDigest digest = null;
-    
-    
-    /**
      * A String initialization parameter used to increase the entropy of
      * the initialization of our random number generator.
      */
