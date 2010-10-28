@@ -53,6 +53,7 @@
         setPageSessionAttribute(key="instanceName" value="server");
         setSessionAttribute(key="serverInstTabs" value="general");
         setPageSessionAttribute(key="pageName" value="common/appServer/serverInstGeneralPe.jsf");
+        setPageSessionAttribute(key="selfPage" value="/common/appServer/serverInstGeneralPe.jsf");
 
         gf.getInstanceInfo(instanceName="#{pageSession.instanceName}", info="#{pageSession.info}");
 
@@ -89,10 +90,22 @@
                 <sun:button id="logViewer" text="$resource{i18n.button.logViewer}"  primary="#{true}"
                     onClick="javascript:var win=window.open('#{facesContext.externalContext.requestContextPath}/common/logViewer/logViewer.jsf?instanceName=#{instanceName}&loglevel=INFO&viewResults=true','LogViewerWindow','width='+(screen.width-300)+',height='+(screen.height-75)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');win.focus(); return false;"
                 />
-                <!-- TODO V3 final
-                <sun:button id="rotateLog" text="$resource{i18n.button.rotateLog}" primary="#{false}">
-                    <!command rotateLogFile(instanceName="#{instanceName}") />
+                <sun:button id="rotateLog" text="$resource{i18n.button.rotateLog}" primary="#{false}"
+                    onClick="if ( getConfirm(this, '$resource{i18nc.msg.JS.confirmRotateLog}') )
+                    { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');}
+                        else {return false;} " >
+                <!command
+                    createMap(result="#{requestScope.map}");
+                    mapPut(map="#{requestScope.map}", key="target", value="server");
+                    gf.restRequest(
+                        endpoint="http://localhost:4848/management/domain/rotate-log"
+                        attrs="#{requestScope.map}"
+                        method="POST"
+                        result="#{pageSession.props}"); 
+                gf.redirect("#{pageSession.selfPage}");/>
+
                 </sun:button>
+                <!-- TODO V3 final
                 <sun:button id="jndiBrowsing" text="$resource{i18n.button.jndiBrowsing}"
                     onClick="javascript:var win=window.open('../jndiTree/jndiNavFrame.jsf?instanceName=#{instanceName}','JndiBrowsingWindow','width='+(screen.width/2)+',height='+(screen.height/2)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');win.focus();return false; var f=document.form;if (f != null) {f.submit(); return true}"
                 />
