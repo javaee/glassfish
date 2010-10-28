@@ -57,20 +57,6 @@ import java.util.jar.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-interface URIable {
-    /**
-     * @param name the entry name relative to the root of the archive
-     * @return the URI corresponding to the entry, null if no such entry found
-     */
-    URI getEntryURI(String name);
-
-    /**
-     * When this archive is embedded in another archive, this method returns the distance from top.
-     * @return
-     */
-    String getDistanceFromTop();
-}
-
 /**
  * Adapts a {@link Bundle} to {@link Archive}.
  * It uses JAR File space of the bundle (via getEntry and getEntryPaths APIs),

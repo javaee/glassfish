@@ -38,47 +38,24 @@
  * holder.
  */
 
-package org.glassfish.osgiejb;
 
-import org.glassfish.osgijavaeebase.OSGiDeploymentRequest;
-import org.glassfish.osgijavaeebase.OSGiDeploymentContext;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.OpsParams;
-import org.glassfish.server.ServerEnvironmentImpl;
-import org.glassfish.internal.deployment.Deployment;
-import org.osgi.framework.Bundle;
+package org.glassfish.osgijavaeebase;
 
-import java.util.logging.Logger;
-
-import com.sun.enterprise.deploy.shared.ArchiveFactory;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleReference;
-import org.osgi.service.packageadmin.PackageAdmin;
+import java.net.URI;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiEJBDeploymentRequest extends OSGiDeploymentRequest {
+public interface URIable {
+    /**
+     * @param name the entry name relative to the root of the archive
+     * @return the URI corresponding to the entry, null if no such entry found
+     */
+    URI getEntryURI(String name);
 
-    public OSGiEJBDeploymentRequest(Deployment deployer, ArchiveFactory archiveFactory, ServerEnvironmentImpl env, ActionReport reporter, Bundle b) {
-        super(deployer, archiveFactory, env, reporter, b);
-    }
-
-    protected OSGiDeploymentContext getDeploymentContextImpl(ActionReport reporter, Logger logger, ReadableArchive archive, OpsParams opsParams, ServerEnvironmentImpl env, Bundle b) throws Exception {
-        return new OSGiEJBDeploymentContext(reporter, logger, archive, opsParams, env, b);
-    }
-
-    @Override
-    protected EJBBundle makeArchive() {
-        Bundle host = getBundle();
-        Bundle[] fragments = getPackageAdmin().getFragments(host);
-        return new EJBBundle(fragments, host);
-    }
-
-    private PackageAdmin getPackageAdmin() {
-        BundleContext ctx = BundleReference.class.cast(getClass().getClassLoader()).getBundle().getBundleContext();
-        return PackageAdmin.class.cast(ctx.getService(ctx.getServiceReference(PackageAdmin.class.getName())));
-    }
-
+    /**
+     * When this archive is embedded in another archive, this method returns the distance from top.
+     * @return
+     */
+    String getDistanceFromTop();
 }
