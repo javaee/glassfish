@@ -46,7 +46,7 @@ public class InhabitantsGeneratorTest {
 
   private static final Logger logger = Logger.getAnonymousLogger();
 
-//  @Ignore
+  @Ignore
   @Test
   public void sanityTest() throws Exception {
     ArrayList<File> testDir = getTestClassPathEntries(false);
@@ -131,7 +131,7 @@ public class InhabitantsGeneratorTest {
   /**
    * Another sanity type test
    */
-//  @Ignore
+  @Ignore
   @Test
   public void workingClassPathRecommended() throws Exception {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -182,7 +182,7 @@ public class InhabitantsGeneratorTest {
    * this test looks at the case where the classpath is only partially specified
    * resulting in a reduced view of the inhabitants.
    */
-//  @Ignore
+  @Ignore
   @Test
   public void testReducedScopeHabitatFileGeneration() throws IOException {
     ArrayList<File> testDir = getTestClassPathEntries(false);
@@ -213,7 +213,7 @@ public class InhabitantsGeneratorTest {
    * this test, akin to the above, looks at the case where the classpath is
    * fully specified resulting in all of the correctly modeled inhabitants.
    */
-//  @Ignore
+  @Ignore
   @Test
   public void testFullHabitatFileGeneration() throws IOException {
     ArrayList<File> inhabitantSources = getTestClassPathEntries(false);
@@ -255,7 +255,8 @@ public class InhabitantsGeneratorTest {
     sb.append("class=com.sun.enterprise.tools.classmodel.test.FactoryForCService,index=org.jvnet.hk2.annotations.FactoryFor:com.sun.enterprise.tools.classmodel.test.CService\n");
     sb.append("class=com.sun.enterprise.tools.classmodel.test.CService\n");
     sb.append("class=com.sun.enterprise.tools.classmodel.test.BService,index=com.sun.enterprise.tools.classmodel.test.BContract\n");
-
+    sb.append("class=com.sun.enterprise.tools.classmodel.test.MyModuleStartup,index=com.sun.enterprise.tools.classmodel.test.MyBaseModuleStartupContract:startup,index=com.sun.enterprise.module.bootstrap:startup\n");
+    
     // this demonstrates how invalid habitat files can be formed if the working classpath is not correct
     if (worldViewClassPath) {
       // world view (or working) classpath has full visibility so that class-model generates
@@ -299,7 +300,7 @@ public class InhabitantsGeneratorTest {
    * If {@link #testHabitatFileGeneration()} fails, then this guy will also
    * always fail.
    */
-//  @Ignore
+  @Ignore
   @Test
   public void testMain() throws Exception {
     File testDir = new File(new File("."), "target/test-classes");
@@ -313,7 +314,7 @@ public class InhabitantsGeneratorTest {
   /**
    * If there are no inhabitants then there should be no generated file
    */
-//  @Ignore
+  @Ignore
   @Test
   public void testMainWithNoInhabitants() throws Exception {
     File testDir = new File(new File("."), "target/test-classes");
@@ -340,7 +341,7 @@ public class InhabitantsGeneratorTest {
   /**
    * strictly for sort testing
    */
-//  @Ignore
+  @Ignore
   @Test
   public void testMainWithSorting() throws Exception {
     File testDir = new File(new File("."), "target/test-classes");
@@ -354,6 +355,7 @@ public class InhabitantsGeneratorTest {
   /**
    * same test as {@link #testMain()} with a reversed classpath
    */
+  @Ignore
   @Test
   public void testMainWithReversedClassPath() throws Exception {
     File testDir = new File(new File("."), "target/test-classes");
@@ -415,7 +417,7 @@ public class InhabitantsGeneratorTest {
   /**
    * Compares APT generation to class-model, introspection generation.
    */
-//  @Ignore
+  @Ignore
   @Test
   public void testAgainstAptGenerator() throws Exception {
     // generate the habitat file
