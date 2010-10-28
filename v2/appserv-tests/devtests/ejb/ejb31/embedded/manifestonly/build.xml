@@ -3,11 +3,13 @@
 <!DOCTYPE project [
 <!ENTITY commonSetup SYSTEM "file:./../../../../../config/properties.xml">
 <!ENTITY commonBuild SYSTEM "file:./../../../../../config/common.xml">
+<!ENTITY embeddedCommon SYSTEM "file:./../embedded.xml">
 <!ENTITY testproperties SYSTEM "file:./build.properties">
 ]>
 
 <project name="ejb-ejb31-embedded-manifestonly-App" default="usage" basedir=".">
 
+    &embeddedCommon;
     &commonSetup;
     &commonBuild;
     &testproperties;
@@ -63,9 +65,10 @@
     </target>
  
     <target name="run_se" depends="init-common">
+       <echo message="Running with ${embedded.classpath} in classpath"/>
        <java  fork="on" 
               failonerror="true"
-              classpath="${assemble.dir}/${appname}-all.jar:${assemble.dir}/${appname}-pu.jar:${env.S1AS_HOME}/lib/embedded/glassfish-embedded-static-shell.jar"
+              classpath="${assemble.dir}/${appname}-all.jar:${assemble.dir}/${appname}-pu.jar:${embedded.classpath}"
               classname="${se.client}">
            <arg line="${appname}-all"/>
         </java>

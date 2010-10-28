@@ -3,11 +3,13 @@
 <!DOCTYPE project [
 <!ENTITY commonSetup SYSTEM "file:./../../../../../config/properties.xml">
 <!ENTITY commonBuild SYSTEM "file:./../../../../../config/common.xml">
+<!ENTITY embeddedCommon SYSTEM "file:./../embedded.xml">
 <!ENTITY testproperties SYSTEM "file:./build.properties">
 ]>
 
 <project name="ejb-ejb31-embedded-modulewithlibs-App" default="usage" basedir=".">
 
+    &embeddedCommon;
     &commonSetup;
     &commonBuild;
     &testproperties;
@@ -66,7 +68,7 @@
     <target name="run_war" depends="init-common">
        <java  fork="on" 
               failonerror="true"
-              classpath="${assemble.dir}/${appname}-web.war:${assemble.dir}/${appname}-pu.jar:${env.S1AS_HOME}/lib/embedded/glassfish-embedded-static-shell.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classpath="${assemble.dir}/${appname}-web.war:${assemble.dir}/${appname}-pu.jar:${embedded.classpath}:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
               classname="${se.client}">
            <arg line="${jndiroot}"/>
         </java>
@@ -75,7 +77,7 @@
     <target name="run_dir" depends="init-common">
        <java  fork="on" 
               failonerror="true"
-              classpath="${assemble.dir}/tmp:${assemble.dir}/${appname}-pu.jar:${env.S1AS_HOME}/lib/embedded/glassfish-embedded-static-shell.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classpath="${assemble.dir}/tmp:${assemble.dir}/${appname}-pu.jar:${embedded.classpath}:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
               classname="${se.client}">
            <arg line="${jndiroot}"/>
         </java>
