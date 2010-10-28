@@ -64,7 +64,7 @@ public interface Types {
     /**
      * Returns a Model instance given a name
      *
-     * @param type type of the requested model
+     * @param type type of the requested model (see {@link ExtensibleType} derivatives)
      * @param name the requested type name
      * @return the type instance or null if not found
      */

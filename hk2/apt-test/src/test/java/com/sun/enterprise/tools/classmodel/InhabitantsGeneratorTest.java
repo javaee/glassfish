@@ -46,7 +46,7 @@ public class InhabitantsGeneratorTest {
 
   private static final Logger logger = Logger.getAnonymousLogger();
 
-  @Ignore
+//  @Ignore
   @Test
   public void sanityTest() throws Exception {
     ArrayList<File> testDir = getTestClassPathEntries(false);
@@ -131,7 +131,7 @@ public class InhabitantsGeneratorTest {
   /**
    * Another sanity type test
    */
-  @Ignore
+//  @Ignore
   @Test
   public void workingClassPathRecommended() throws Exception {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -182,7 +182,7 @@ public class InhabitantsGeneratorTest {
    * this test looks at the case where the classpath is only partially specified
    * resulting in a reduced view of the inhabitants.
    */
-  @Ignore
+//  @Ignore
   @Test
   public void testReducedScopeHabitatFileGeneration() throws IOException {
     ArrayList<File> testDir = getTestClassPathEntries(false);
@@ -213,7 +213,7 @@ public class InhabitantsGeneratorTest {
    * this test, akin to the above, looks at the case where the classpath is
    * fully specified resulting in all of the correctly modeled inhabitants.
    */
-  @Ignore
+//  @Ignore
   @Test
   public void testFullHabitatFileGeneration() throws IOException {
     ArrayList<File> inhabitantSources = getTestClassPathEntries(false);
@@ -243,64 +243,11 @@ public class InhabitantsGeneratorTest {
         expected, output);
   }
 
-  static String expected(boolean worldViewClassPath) throws IOException {
-    return expected(worldViewClassPath, true, false);
-  }
-
-  static String expected(boolean worldViewClassPath, boolean fromClassModel, boolean sort) throws IOException {
-    StringBuilder sb = new StringBuilder();
-
-    sb.append("class=com.sun.enterprise.tools.classmodel.test.RunLevelCloseableService,index=java.io.Closeable:closeable,index=org.jvnet.hk2.annotations.RunLevel\n");
-    sb.append("class=com.sun.enterprise.tools.classmodel.test.AService,index=com.sun.enterprise.tools.classmodel.test.AContract:aservice,a=1,b=2\n");
-    sb.append("class=com.sun.enterprise.tools.classmodel.test.FactoryForCService,index=org.jvnet.hk2.annotations.FactoryFor:com.sun.enterprise.tools.classmodel.test.CService\n");
-    sb.append("class=com.sun.enterprise.tools.classmodel.test.CService\n");
-    sb.append("class=com.sun.enterprise.tools.classmodel.test.BService,index=com.sun.enterprise.tools.classmodel.test.BContract\n");
-    sb.append("class=com.sun.enterprise.tools.classmodel.test.MyModuleStartup,index=com.sun.enterprise.tools.classmodel.test.MyBaseModuleStartupContract:startup,index=com.sun.enterprise.module.bootstrap:startup\n");
-    
-    // this demonstrates how invalid habitat files can be formed if the working classpath is not correct
-    if (worldViewClassPath) {
-      // world view (or working) classpath has full visibility so that class-model generates
-      // the true habitat
-      sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithExternalContract,index=com.sun.enterprise.tools.classmodel.test.external.ExternalContract\n");
-      sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithAbstractBaseHavingExternalContract,index=com.sun.enterprise.tools.classmodel.test.external.ExternalContract\n");
-      sb.append("class=com.sun.enterprise.tools.classmodel.test.RunLevelCloseableServiceWithExternalAnnotation,index=org.jvnet.hk2.annotations.RunLevel\n");
-      sb.append("class=com.sun.enterprise.tools.classmodel.test.JDBCService,index=com.sun.enterprise.tools.classmodel.test.external.ServerService:jdbc,index=org.jvnet.hk2.annotations.RunLevel\n");
-    } else {
-      // without world-view, the external contracts in the
-      // inhabitants-gen-ifaces jar are not considered
-      sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithExternalContract\n");
-      sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithAbstractBaseHavingExternalContract\n");
-      sb.append("class=com.sun.enterprise.tools.classmodel.test.RunLevelCloseableServiceWithExternalAnnotation\n");
-      sb.append("class=com.sun.enterprise.tools.classmodel.test.JDBCService\n");
-    }
-
-    if (fromClassModel) {
-      sb.append("class=com.sun.enterprise.tools.classmodel.test.local.LocalServiceInTestDir,index=java.io.Closeable\n");
-      sb.append("class=rls.test.RlsTest\n");
-      sb.append("class=rls.test.model.ServiceOtherToY,index=org.jvnet.hk2.annotations.RunLevel\n");
-      sb.append("class=rls.test.model.ServiceDerivedX,index=rls.test.model.ContractX:derived,index=org.jvnet.hk2.annotations.RunLevel\n");
-      sb.append("class=rls.test.model.ServiceYSpecial,index=rls.test.model.ContractY\n");
-      sb.append("class=rls.test.infra.MultiThreadedInhabitantActivator,index=org.jvnet.hk2.component.InhabitantActivator\n");
-      sb.append("class=rls.test.model.ServiceBaseX,index=rls.test.model.ContractX:base,index=org.jvnet.hk2.annotations.RunLevel\n");
-      sb.append("class=rls.test.model.ServiceY1,index=rls.test.model.ContractY,index=org.jvnet.hk2.annotations.RunLevel\n");
-      sb.append("class=rls.test.model.ServiceY2,index=rls.test.model.ContractY,index=org.jvnet.hk2.annotations.RunLevel\n");
-      sb.append("class=rls.test.model.ServiceZ\n");
-      sb.append("class=rls.test.infra.RandomInhabitantSorter,index=org.jvnet.hk2.component.InhabitantSorter\n");
-      sb.append("class=test1.Start\n");
-    } else {
-      // TODO: core is not part of the classpath so the habitat is correct when
-      // the classpath is not right - expected (?)
-      sb.append("class=test1.Start,index=com.sun.enterprise.module.bootstrap.ModuleStartup\n");
-    }
-
-    return Utilities.sortInhabitantsDescriptor(sb.toString(), sort);
-  }
-
   /**
    * If {@link #testHabitatFileGeneration()} fails, then this guy will also
    * always fail.
    */
-  @Ignore
+//  @Ignore
   @Test
   public void testMain() throws Exception {
     File testDir = new File(new File("."), "target/test-classes");
@@ -314,7 +261,7 @@ public class InhabitantsGeneratorTest {
   /**
    * If there are no inhabitants then there should be no generated file
    */
-  @Ignore
+//  @Ignore
   @Test
   public void testMainWithNoInhabitants() throws Exception {
     File testDir = new File(new File("."), "target/test-classes");
@@ -341,7 +288,7 @@ public class InhabitantsGeneratorTest {
   /**
    * strictly for sort testing
    */
-  @Ignore
+//  @Ignore
   @Test
   public void testMainWithSorting() throws Exception {
     File testDir = new File(new File("."), "target/test-classes");
@@ -355,7 +302,7 @@ public class InhabitantsGeneratorTest {
   /**
    * same test as {@link #testMain()} with a reversed classpath
    */
-  @Ignore
+//  @Ignore
   @Test
   public void testMainWithReversedClassPath() throws Exception {
     File testDir = new File(new File("."), "target/test-classes");
@@ -417,7 +364,7 @@ public class InhabitantsGeneratorTest {
   /**
    * Compares APT generation to class-model, introspection generation.
    */
-  @Ignore
+  @Ignore // TODO:
   @Test
   public void testAgainstAptGenerator() throws Exception {
     // generate the habitat file
@@ -515,6 +462,8 @@ public class InhabitantsGeneratorTest {
           }
         } else if (entry.contains("test-classes")) {
           entries.add(new File(entry));
+        } else if (entry.contains("hk2-core") && worldView) {
+          entries.add(new File(entry));
         }
       }
     }
@@ -570,4 +519,64 @@ public class InhabitantsGeneratorTest {
     return entries;
   }
   
+  static String expected(boolean worldViewClassPath) throws IOException {
+    return expected(worldViewClassPath, true, false);
+  }
+
+  static String expected(boolean worldViewClassPath, boolean fromClassModel, boolean sort) throws IOException {
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("class=com.sun.enterprise.tools.classmodel.test.RunLevelCloseableService,index=java.io.Closeable:closeable,index=org.jvnet.hk2.annotations.RunLevel\n");
+    sb.append("class=com.sun.enterprise.tools.classmodel.test.AService,index=com.sun.enterprise.tools.classmodel.test.AContract:aservice,a=1,b=2\n");
+    sb.append("class=com.sun.enterprise.tools.classmodel.test.FactoryForCService,index=org.jvnet.hk2.annotations.FactoryFor:com.sun.enterprise.tools.classmodel.test.CService\n");
+    sb.append("class=com.sun.enterprise.tools.classmodel.test.CService\n");
+    sb.append("class=com.sun.enterprise.tools.classmodel.test.BService,index=com.sun.enterprise.tools.classmodel.test.BContract\n");
+    
+    // this demonstrates how invalid habitat files can be formed if the working classpath is not correct
+    if (worldViewClassPath) {
+      // world view (or working) classpath has full visibility so that class-model generates
+      // the true habitat
+      sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithExternalContract,index=com.sun.enterprise.tools.classmodel.test.external.ExternalContract\n");
+      sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithAbstractBaseHavingExternalContract,index=com.sun.enterprise.tools.classmodel.test.external.ExternalContract\n");
+      sb.append("class=com.sun.enterprise.tools.classmodel.test.RunLevelCloseableServiceWithExternalAnnotation,index=org.jvnet.hk2.annotations.RunLevel\n");
+      sb.append("class=com.sun.enterprise.tools.classmodel.test.JDBCService,index=com.sun.enterprise.tools.classmodel.test.external.ServerService:jdbc,index=org.jvnet.hk2.annotations.RunLevel\n");
+    } else {
+      // without world-view, the external contracts in the
+      // inhabitants-gen-ifaces jar are not considered
+      sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithExternalContract\n");
+      sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithAbstractBaseHavingExternalContract\n");
+      sb.append("class=com.sun.enterprise.tools.classmodel.test.RunLevelCloseableServiceWithExternalAnnotation\n");
+      sb.append("class=com.sun.enterprise.tools.classmodel.test.JDBCService\n");
+    }
+
+    if (fromClassModel) {
+      sb.append("class=com.sun.enterprise.tools.classmodel.test.local.LocalServiceInTestDir,index=java.io.Closeable\n");
+      sb.append("class=rls.test.model.ServiceOtherToY,index=org.jvnet.hk2.annotations.RunLevel\n");
+      sb.append("class=rls.test.model.ServiceDerivedX,index=rls.test.model.ContractX:derived,index=org.jvnet.hk2.annotations.RunLevel\n");
+      sb.append("class=rls.test.model.ServiceYSpecial,index=rls.test.model.ContractY\n");
+      sb.append("class=rls.test.infra.MultiThreadedInhabitantActivator,index=org.jvnet.hk2.component.InhabitantActivator\n");
+      sb.append("class=rls.test.model.ServiceBaseX,index=rls.test.model.ContractX:base,index=org.jvnet.hk2.annotations.RunLevel\n");
+      sb.append("class=rls.test.model.ServiceY1,index=rls.test.model.ContractY,index=org.jvnet.hk2.annotations.RunLevel\n");
+      sb.append("class=rls.test.model.ServiceY2,index=rls.test.model.ContractY,index=org.jvnet.hk2.annotations.RunLevel\n");
+      sb.append("class=rls.test.model.ServiceZ\n");
+      sb.append("class=rls.test.infra.RandomInhabitantSorter,index=org.jvnet.hk2.component.InhabitantSorter\n");
+      if (worldViewClassPath) {
+        sb.append("class=rls.test.RlsTest,index=com.sun.enterprise.module.bootstrap.ModuleStartup\n");
+        sb.append("class=test1.Start,index=com.sun.enterprise.module.bootstrap.ModuleStartup\n");
+        sb.append("class=com.sun.enterprise.tools.classmodel.test.MyModuleStartup,index=com.sun.enterprise.tools.classmodel.test.MyBaseModuleStartupContract:startup,index=com.sun.enterprise.module.bootstrap.ModuleStartup:startup\n");
+      } else {
+        sb.append("class=rls.test.RlsTest\n");
+        sb.append("class=test1.Start\n");
+        sb.append("class=com.sun.enterprise.tools.classmodel.test.MyModuleStartup,index=com.sun.enterprise.tools.classmodel.test.MyBaseModuleStartupContract:startup\n");
+      }
+    } else {
+      // TODO: core is not part of the classpath so the habitat is correct when
+      // the classpath is not right - expected (?)
+      sb.append("class=test1.Start,index=com.sun.enterprise.module.bootstrap.ModuleStartup\n");
+      sb.append("class=com.sun.enterprise.tools.classmodel.test.MyModuleStartup,index=com.sun.enterprise.tools.classmodel.test.MyBaseModuleStartupContract:startup\n");
+    }
+
+    return Utilities.sortInhabitantsDescriptor(sb.toString(), sort);
+  }
+
 }

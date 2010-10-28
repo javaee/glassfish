@@ -46,6 +46,12 @@
             <artifactId>auto-depends-plugin</artifactId>
             <version>${project.version}</version>
     </dependency>
+	<dependency>
+    	  	<groupId>com.sun.enterprise</groupId>
+            <artifactId>hk2-core</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+    </dependency>
     <dependency>
             <groupId>com.sun.enterprise.auto-depends-test</groupId>
             <artifactId>test-inhabitant-generator</artifactId>
