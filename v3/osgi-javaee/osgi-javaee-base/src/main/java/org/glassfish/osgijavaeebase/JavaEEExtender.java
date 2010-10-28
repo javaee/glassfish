@@ -52,15 +52,15 @@ import java.util.logging.Logger;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class JavaEEExtender implements Extender, BundleListener {
+public class JavaEEExtender implements Extender, SynchronousBundleListener {
     /*
      * Implementation Note: All methods are synchronized, because we don't allow the extender to stop while it
      * is deploying or undeploying something. Similarly, while it is being stopped, we don't want it to deploy
      * or undeploy something.
-     * Because this is an asynchronous bundle listener, it is possible that this listener is scheduled
-     * to receive a bundleChanged event and before the event is delivered, some other thread stopped the
-     * listener.
+     * This is a synchronous bundle listener because it listens to LAZY_ACTIVATION event.
      */
+
+    // TODO(Sahoo): We should consider using a BundleTracker instead of event listener.
 
     private OSGiContainer c;
     private static final Logger logger =
@@ -92,7 +92,14 @@ public class JavaEEExtender implements Extender, BundleListener {
         Bundle bundle = event.getBundle();
         switch (event.getType()) {
             case BundleEvent.STARTED:
-                if (!OSGiContainer.isLazy(bundle)) {
+                // A bundle with LAZY_ACTIVATION policy can be started with eager activation policy unless
+                // START_ACTIVATION_POLICY is set in the options while calling bundle.start(int options).
+                // So, we can't rely on LAZY_ACTIVATION event alone to deploy a bundle with lazy activation policy.
+                // At the same time, if a bundle with lazy activation policy is indeed started lazily, then
+                // we would have deployed the bundle upon receiving the LAZY_ACTIVATION event in which case we must
+                // avoid duplicate deployment upon receiving STARTED event. Hopefully this explains why we check
+                // c.isDeployed(bundle).
+                if (!c.isDeployed(bundle)) {
                     deploy(bundle);
                 }
                 break;
