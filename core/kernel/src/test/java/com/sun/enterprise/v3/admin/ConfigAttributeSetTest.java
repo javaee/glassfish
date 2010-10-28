@@ -41,8 +41,8 @@
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.v3.common.HTMLActionReporter;
-import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.NetworkListeners;
+import org.glassfish.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkListeners;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
 import org.glassfish.tests.utils.ConfigApiTest;

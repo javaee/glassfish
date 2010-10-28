@@ -52,15 +52,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.net.URL;
 import java.net.URLConnection;
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkConfig;
+import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.apache.catalina.Deployer;
 import org.apache.catalina.logger.SystemOutLogger;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.embedded.*;
 import org.glassfish.embeddable.web.*;
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkConfig;
+import org.glassfish.grizzly.config.dom.NetworkListener;
 
 
 /**

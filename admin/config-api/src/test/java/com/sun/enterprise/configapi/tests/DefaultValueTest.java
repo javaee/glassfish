@@ -40,7 +40,7 @@
 
 package com.sun.enterprise.configapi.tests;
 
-import com.sun.grizzly.config.dom.*;
+import org.glassfish.grizzly.config.dom.*;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;

@@ -51,7 +51,7 @@ import com.sun.corba.ee.spi.orbutil.ORBConstants;
 import com.sun.corba.ee.spi.transport.ORBSocketFactory;
 import com.sun.enterprise.config.serverbeans.IiopListener;
 import com.sun.enterprise.config.serverbeans.IiopService;
-import com.sun.grizzly.config.dom.Ssl;
+import org.glassfish.grizzly.config.dom.Ssl;
 import com.sun.logging.LogDomains;
 import java.io.IOException;
 import java.net.InetSocketAddress;

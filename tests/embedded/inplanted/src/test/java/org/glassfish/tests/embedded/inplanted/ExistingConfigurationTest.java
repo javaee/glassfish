@@ -86,7 +86,7 @@ public class ExistingConfigurationTest {
                 System.out.println("Virtual Server " + id);
                 Assert.assertNotNull("Got a null virtual server ID", id);
             }
-            Collection<Inhabitant<?>> nls = habitat.getInhabitantsByContract("com.sun.grizzly.config.dom.NetworkListener");
+            Collection<Inhabitant<?>> nls = habitat.getInhabitantsByContract("org.glassfish.grizzly.config.dom.NetworkListener");
             Assert.assertTrue(nls.size()>1);
             for (Inhabitant<?> nl : nls) {
                 Object networkListener = nl.get();

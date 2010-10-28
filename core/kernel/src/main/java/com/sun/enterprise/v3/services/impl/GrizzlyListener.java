@@ -48,7 +48,7 @@ import com.sun.grizzly.ProtocolChainInstanceHandler;
 import com.sun.grizzly.arp.AsyncFilter;
 import com.sun.grizzly.arp.AsyncHandler;
 import com.sun.grizzly.arp.DefaultAsyncHandler;
-import com.sun.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.jvnet.hk2.component.Habitat;
 
 import java.beans.PropertyChangeEvent;

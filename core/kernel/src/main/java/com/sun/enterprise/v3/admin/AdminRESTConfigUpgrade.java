@@ -41,9 +41,9 @@ package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.EarlyLogger;
-import com.sun.grizzly.config.dom.Http;
-import com.sun.grizzly.config.dom.Protocol;
-import com.sun.grizzly.config.dom.Protocols;
+import org.glassfish.grizzly.config.dom.Http;
+import org.glassfish.grizzly.config.dom.Protocol;
+import org.glassfish.grizzly.config.dom.Protocols;
 import org.glassfish.api.admin.config.ConfigurationUpgrade;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;

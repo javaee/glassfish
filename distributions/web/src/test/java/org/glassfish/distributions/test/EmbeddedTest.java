@@ -52,8 +52,8 @@ import java.util.Set;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkConfig;
+import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.glassfish.api.ActionReport.MessagePart;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.DeployCommandParameters;

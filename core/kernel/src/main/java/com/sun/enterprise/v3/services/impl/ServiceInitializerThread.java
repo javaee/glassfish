@@ -43,7 +43,7 @@ package com.sun.enterprise.v3.services.impl;
 import com.sun.grizzly.DefaultProtocolChainInstanceHandler;
 import com.sun.grizzly.ProtocolChain;
 import com.sun.grizzly.TCPSelectorHandler;
-import com.sun.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.http.HttpProtocolChain;
 import com.sun.grizzly.http.SelectorThread;
 import org.jvnet.hk2.component.Habitat;

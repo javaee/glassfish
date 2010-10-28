@@ -41,9 +41,9 @@
 package com.sun.enterprise.configapi.tests;
 
 import com.sun.grizzly.config.GrizzlyConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.NetworkListeners;
-import com.sun.grizzly.config.dom.Transport;
+import org.glassfish.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkListeners;
+import org.glassfish.grizzly.config.dom.Transport;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;

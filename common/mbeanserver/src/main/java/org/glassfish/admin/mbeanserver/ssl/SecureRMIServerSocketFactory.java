@@ -41,7 +41,7 @@
 package org.glassfish.admin.mbeanserver.ssl;
 
 import com.sun.grizzly.config.SSLConfigHolder;
-import com.sun.grizzly.config.dom.Ssl;
+import org.glassfish.grizzly.config.dom.Ssl;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;

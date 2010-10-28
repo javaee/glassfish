@@ -41,7 +41,7 @@
 package com.sun.enterprise.v3.services.impl;
 
 import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.util.http.mapper.Mapper;
 
 /**

@@ -51,7 +51,7 @@ import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.net.NetUtils;
-import com.sun.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkListener;
 import com.sun.logging.LogDomains;
 import java.io.*;
 import org.glassfish.api.Param;

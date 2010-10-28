@@ -52,11 +52,11 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Node;
 
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.NetworkListeners;
-import com.sun.grizzly.config.dom.Protocol;
-import com.sun.grizzly.config.dom.Protocols;
+import org.glassfish.grizzly.config.dom.NetworkConfig;
+import org.glassfish.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkListeners;
+import org.glassfish.grizzly.config.dom.Protocol;
+import org.glassfish.grizzly.config.dom.Protocols;
 import java.net.InetAddress;
 import java.util.Iterator;
 import org.glassfish.config.support.GlassFishConfigBean;

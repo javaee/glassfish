@@ -54,7 +54,7 @@ import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.api.admin.RestRedirects;
 import org.glassfish.api.admin.RestRedirect;
-import com.sun.grizzly.config.dom.Ssl;
+import org.glassfish.grizzly.config.dom.Ssl;
 import org.glassfish.quality.ToDo;
 
 import javax.validation.constraints.Max;

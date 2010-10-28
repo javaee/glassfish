@@ -47,16 +47,16 @@ import java.util.*;
 import java.util.logging.*;
 
 import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.grizzly.config.dom.FileCache;
-import com.sun.grizzly.config.dom.Http;
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.NetworkListeners;
-import com.sun.grizzly.config.dom.Protocol;
-import com.sun.grizzly.config.dom.Protocols;
-import com.sun.grizzly.config.dom.ThreadPool;
-import com.sun.grizzly.config.dom.Transport;
-import com.sun.grizzly.config.dom.Transports;
+import org.glassfish.grizzly.config.dom.FileCache;
+import org.glassfish.grizzly.config.dom.Http;
+import org.glassfish.grizzly.config.dom.NetworkConfig;
+import org.glassfish.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkListeners;
+import org.glassfish.grizzly.config.dom.Protocol;
+import org.glassfish.grizzly.config.dom.Protocols;
+import org.glassfish.grizzly.config.dom.ThreadPool;
+import org.glassfish.grizzly.config.dom.Transport;
+import org.glassfish.grizzly.config.dom.Transports;
 
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.embedded.*;

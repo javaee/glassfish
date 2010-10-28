@@ -50,7 +50,7 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.J2eeApplication;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.grizzly.config.dom.ThreadPool;
+import org.glassfish.grizzly.config.dom.ThreadPool;
 import org.glassfish.api.admin.config.ConfigurationUpgrade;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;

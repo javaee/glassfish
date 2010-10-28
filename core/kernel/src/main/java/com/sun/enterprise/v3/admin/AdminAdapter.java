@@ -57,6 +57,7 @@ import org.glassfish.api.admin.*;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.container.Adapter;
+import org.glassfish.grizzly.http.server.Request;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
 

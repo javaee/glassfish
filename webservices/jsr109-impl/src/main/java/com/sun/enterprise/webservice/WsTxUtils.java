@@ -42,7 +42,7 @@ package com.sun.enterprise.webservice;
 
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkListener;
 import com.sun.logging.LogDomains;
 import java.util.logging.Level;
 import java.util.logging.Logger;

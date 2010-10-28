@@ -187,7 +187,7 @@ public class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
      * @return the dafault virtual server
      */
     private String getDefaultVirtualServer() {
-        com.sun.grizzly.config.dom.NetworkListener nl = Globals.get(com.sun.grizzly.config.dom.NetworkListener.class);
+        org.glassfish.grizzly.config.dom.NetworkListener nl = Globals.get(org.glassfish.grizzly.config.dom.NetworkListener.class);
         return nl.findHttpProtocol().getHttp().getDefaultVirtualServer();
     }
 

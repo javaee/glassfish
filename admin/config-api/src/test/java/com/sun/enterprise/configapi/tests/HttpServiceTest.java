@@ -40,11 +40,11 @@
 
 package com.sun.enterprise.configapi.tests;
 
-import com.sun.grizzly.config.dom.FileCache;
-import com.sun.grizzly.config.dom.Http;
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.Protocol;
+import org.glassfish.grizzly.config.dom.FileCache;
+import org.glassfish.grizzly.config.dom.Http;
+import org.glassfish.grizzly.config.dom.NetworkConfig;
+import org.glassfish.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.Protocol;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;

@@ -42,7 +42,7 @@ package com.sun.enterprise.admin.util;
 
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkListener;
 import java.util.*;
 import org.glassfish.config.support.GlassFishConfigBean;
 import org.glassfish.config.support.PropertyResolver;

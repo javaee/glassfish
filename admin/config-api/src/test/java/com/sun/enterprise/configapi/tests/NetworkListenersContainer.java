@@ -43,7 +43,7 @@ package com.sun.enterprise.configapi.tests;
 import java.beans.PropertyChangeEvent;
 import java.util.logging.Logger;
 
-import com.sun.grizzly.config.dom.NetworkListeners;
+import org.glassfish.grizzly.config.dom.NetworkListeners;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.config.Changed;
 import org.jvnet.hk2.config.ConfigBeanProxy;

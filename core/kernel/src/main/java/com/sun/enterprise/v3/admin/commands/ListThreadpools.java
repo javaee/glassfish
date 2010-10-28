@@ -58,7 +58,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
-import com.sun.grizzly.config.dom.ThreadPool;
+import org.glassfish.grizzly.config.dom.ThreadPool;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.util.List;

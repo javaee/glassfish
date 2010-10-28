@@ -50,7 +50,7 @@ import javax.validation.constraints.Pattern;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.api.admin.config.Named;
-import com.sun.grizzly.config.dom.Ssl;
+import org.glassfish.grizzly.config.dom.Ssl;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.quality.ToDo;
 import org.jvnet.hk2.component.Injectable;

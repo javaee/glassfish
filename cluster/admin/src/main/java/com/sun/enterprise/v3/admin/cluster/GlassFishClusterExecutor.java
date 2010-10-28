@@ -48,7 +48,7 @@ import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.StringUtils;
-import com.sun.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
 import org.glassfish.config.support.CommandTarget;

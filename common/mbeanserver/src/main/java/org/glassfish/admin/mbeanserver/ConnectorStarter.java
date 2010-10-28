@@ -49,7 +49,7 @@ import java.io.IOException;
 import org.glassfish.internal.api.AdminAccessController;
 import org.jvnet.hk2.component.*;
 
-import com.sun.grizzly.config.dom.Ssl;
+import org.glassfish.grizzly.config.dom.Ssl;
 
 /**
 Start and stop JMX connectors, base class.

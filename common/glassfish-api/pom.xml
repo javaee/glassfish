@@ -82,7 +82,7 @@
             <artifactId>config-types</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.grizzly</groupId>
+            <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-utils</artifactId>
         </dependency>
         

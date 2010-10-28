@@ -40,7 +40,7 @@
 
 package org.glassfish.admin.mbeanserver;
 
-import com.sun.grizzly.config.dom.Ssl;
+import org.glassfish.grizzly.config.dom.Ssl;
 import javax.management.MBeanServer;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;

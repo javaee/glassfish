@@ -42,7 +42,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import java.util.List;
 
-import com.sun.grizzly.config.dom.ThreadPool;
+import org.glassfish.grizzly.config.dom.ThreadPool;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;

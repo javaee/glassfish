@@ -43,8 +43,8 @@ package com.sun.enterprise.configapi.tests;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkConfig;
+import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.glassfish.tests.utils.Utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

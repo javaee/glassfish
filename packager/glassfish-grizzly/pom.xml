@@ -81,23 +81,23 @@
           modules to be included in this bundle
         -->
         <dependency>
-            <groupId>com.sun.grizzly</groupId>
+            <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-utils</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.grizzly</groupId>
+            <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-framework</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.grizzly</groupId>
+            <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-portunif</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.grizzly</groupId>
+            <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-http</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.grizzly</groupId>
+            <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-rcm</artifactId>
         </dependency>
         <!-- previous package - required for dependency graph calculation -->

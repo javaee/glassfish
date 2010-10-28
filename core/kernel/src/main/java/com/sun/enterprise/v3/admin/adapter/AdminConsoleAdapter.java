@@ -40,45 +40,7 @@
 
 package com.sun.enterprise.v3.admin.adapter;
 
-import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.deploy.shared.ArchiveFactory;
-import com.sun.enterprise.v3.admin.AdminAdapter;
-import com.sun.enterprise.v3.admin.AdminConsoleConfigUpgrade;
-import com.sun.enterprise.v3.common.PlainTextActionReporter;
-import com.sun.grizzly.tcp.Request;
-import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
-import com.sun.grizzly.tcp.http11.GrizzlyOutputBuffer;
-import com.sun.grizzly.tcp.http11.GrizzlyRequest;
-import com.sun.grizzly.tcp.http11.GrizzlyResponse;
-import com.sun.logging.LogDomains;
-import com.sun.pkg.client.Image;
-import com.sun.pkg.client.Version;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.api.container.Adapter;
-import org.glassfish.api.deployment.UndeployCommandParameters;
-import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.event.EventListener;
-import org.glassfish.api.event.EventTypes;
-import org.glassfish.api.event.Events;
-import org.glassfish.api.event.RestrictTo;
-import org.glassfish.internal.api.AdminAccessController;
-import org.glassfish.internal.data.ApplicationInfo;
-import org.glassfish.internal.data.ApplicationRegistry;
-import org.glassfish.internal.deployment.Deployment;
-import org.glassfish.internal.deployment.ExtendedDeploymentContext;
-import org.glassfish.server.ServerEnvironmentImpl;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
-import org.jvnet.hk2.config.types.Property;
-
 import java.beans.PropertyVetoException;
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -98,6 +60,47 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sun.enterprise.config.serverbeans.AdminService;
+import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.ServerTags;
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.enterprise.v3.admin.AdminAdapter;
+import com.sun.enterprise.v3.admin.AdminConsoleConfigUpgrade;
+import com.sun.enterprise.v3.common.PlainTextActionReporter;
+import com.sun.logging.LogDomains;
+import com.sun.pkg.client.Image;
+import com.sun.pkg.client.Version;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.container.Adapter;
+import org.glassfish.api.deployment.UndeployCommandParameters;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.event.EventListener;
+import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.Events;
+import org.glassfish.api.event.RestrictTo;
+import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.http.server.HttpService;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
+import org.glassfish.grizzly.http.server.io.OutputBuffer;
+import org.glassfish.internal.api.AdminAccessController;
+import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
+import org.glassfish.server.ServerEnvironmentImpl;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.types.Property;
 
 /**
  * An HK-2 Service that provides the functionality so that admin console access is handled properly.
@@ -128,7 +131,8 @@ import java.util.logging.Logger;
  * @since GlassFish V3 (March 2008)
  */
 @Service
-public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter, PostConstruct, EventListener {
+public final class AdminConsoleAdapter extends HttpService implements Adapter, PostConstruct, EventListener {
+    private final static Logger logger = Grizzly.logger(AdminConsoleAdapter.class);
 
     @Inject
     ServerEnvironmentImpl env;
@@ -223,20 +227,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      *
      */
     @Override
-    public void afterService(GrizzlyRequest req, GrizzlyResponse res) throws Exception {
-    }
-
-    /**
-     *
-     */
-    public void fireAdapterEvent(String type, Object data) {
-    }
-
-    /**
-     *
-     */
-    @Override
-    public void service(GrizzlyRequest req, GrizzlyResponse res) {
+    public void service(Request req, Response res) {
 
         //This is needed to support the case where user update to 3.1 from previous release, and didn't run the upgrade tool.
         if (adminConsoleConfigUpgrade == null){
@@ -342,11 +333,11 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     }
 
     /**
-     * @param req the GrizzlyRequest
+     * @param req the Request
      * @return <code>true</code> if the request is for a resource with a known content
      *  type otherwise <code>false</code>.
      */
-    private boolean isResourceRequest(GrizzlyRequest req) {
+    private boolean isResourceRequest(Request req) {
         return (getContentType(req.getRequestURI()) != null);
     }
 
@@ -355,7 +346,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      * of some sort.  Here, we don't care about the response, so we make the request
      * then close the stream and move on.
      */
-    private void forceRestModuleLoad(final GrizzlyRequest req) {
+    private void forceRestModuleLoad(final Request req) {
         Thread thread = new Thread() {
             @Override
             public void run() {
@@ -401,7 +392,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 
     }
 
-    private void handleResourceRequest(GrizzlyRequest req, GrizzlyResponse res)
+    private void handleResourceRequest(Request req, Response res)
     throws IOException {
 
         String resourcePath = RESOURCE_PACKAGE + req.getRequestURI();
@@ -571,19 +562,19 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     /**
      *
      */
-    private void handleAuth(GrizzlyRequest greq, GrizzlyResponse gres) {
+    private void handleAuth(Request greq, Response gres) {
         try {
             AdminAccessController authenticator = habitat.getByContract(AdminAccessController.class);
 
             if (authenticator != null) {
-                Request req = greq.getRequest();
-                String[] userPass = AdminAdapter.getUserPassword(req);
-                String pswd = (userPass.length >= 2) ? userPass[1] : "";
+//                Request req = greq.getRequest();
+                String[] userPass = AdminAdapter.getUserPassword(greq);
+                String pswd = userPass.length >= 2 ? userPass[1] : "";
                 if (!authenticator.loginAsAdmin(userPass[0], pswd, as.getAuthRealmName())) {
                     setStateMsg(AdapterState.AUTHENTICATING);
                     gres.setStatus(HttpURLConnection.HTTP_UNAUTHORIZED);
                     gres.addHeader("WWW-Authenticate", "BASIC");
-                    gres.finishResponse();
+                    gres.finish();
                 }
             }
         } catch (Exception ex) {
@@ -682,7 +673,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     /**
      *
      */
-    private void logRequest(GrizzlyRequest req) {
+    private void logRequest(Request req) {
         if (log.isLoggable(Level.FINE)) {
             log.fine("AdminConsoleAdapter's STATE IS: " + getStateMsg());
             log.log(Level.FINE, "Current Thread: " + Thread.currentThread().getName());
@@ -727,7 +718,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     /**
      *
      */
-    private synchronized InteractionResult getUserInteractionResult(GrizzlyRequest req) {
+    private synchronized InteractionResult getUserInteractionResult(Request req) {
         if (req.getParameter(OK_PARAM) != null) {
             proxyHost = req.getParameter(PROXY_HOST_PARAM);
             if ((proxyHost != null) && !proxyHost.equals("")) {
@@ -756,28 +747,27 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         return InteractionResult.FIRST_TIMER;
     }
 
-    private GrizzlyOutputBuffer getOutputBuffer(GrizzlyResponse res) {
-        GrizzlyOutputBuffer ob = res.getOutputBuffer();
+    private OutputBuffer getOutputBuffer(Response res) {
         res.setStatus(202);
         res.setContentType("text/html");
-        ob.setEncoding("UTF-8");
-        return ob;
+        res.setCharacterEncoding("UTF-8");
+        return res.getOutputBuffer();
     }
 
     /**
      *
      */
-    private synchronized void sendConsentPage(GrizzlyRequest req, GrizzlyResponse res) { //should have only one caller
+    private synchronized void sendConsentPage(Request req, Response res) { //should have only one caller
         setStateMsg(AdapterState.PERMISSION_NEEDED);
         byte[] bytes;
         try {
-            GrizzlyOutputBuffer ob = getOutputBuffer(res);
+            OutputBuffer ob = getOutputBuffer(res);
             try {
                 // Replace locale specific Strings
                 String localHtml = replaceTokens(initHtml, bundle);
 
                 // Replace path token
-                String hp = (contextRoot.endsWith("/")) ? contextRoot : contextRoot + "/";
+                String hp = contextRoot.endsWith("/") ? contextRoot : contextRoot + "/";
                 bytes = localHtml.replace(MYURL_TOKEN, hp).getBytes("UTF-8");
             } catch (Exception ex) {
                 bytes = ("Catastrophe:" + ex.getMessage()).getBytes("UTF-8");
@@ -793,10 +783,10 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     /**
      *
      */
-    private void sendStatusPage(GrizzlyRequest req, GrizzlyResponse res) {
+    private void sendStatusPage(Request req, Response res) {
         byte[] bytes;
         try {
-            GrizzlyOutputBuffer ob = getOutputBuffer(res);
+            OutputBuffer ob = getOutputBuffer(res);
             // Replace locale specific Strings
             String localHtml = replaceTokens(statusHtml, bundle);
 
@@ -847,10 +837,8 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      */
     private String replaceTokens(String text, ResourceBundle bundle) {
         int start = 0, end = 0;
-        String key = null;
         String newString = null;
-        StringBuffer buf = new StringBuffer("");
-        Enumeration<String> keys = bundle.getKeys();
+        StringBuilder buf = new StringBuilder("");
 
         while (start != -1) {
             // Find start of token
@@ -908,7 +896,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             Image image = new Image(ipsRoot);
             if (image != null) {
                 List<Image.FmriState> fList = image.getInventory(new String[]{ADMIN_CONSOLE_IPS_PKGNAME}, false);
-                if (fList.size() > 0) {
+                if (!fList.isEmpty()) {
                     downloadedVersion = fList.get(0).fmri.getVersion().toString();
                 }
             } else {
@@ -938,12 +926,12 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 	}
         //for first access after installation, deployedVersion will be "",  we don't want to do redeployment.
         //it will just go through install and loading.
-        if (currentDeployedVersion == null || currentDeployedVersion.equals("")) {
+        if (currentDeployedVersion == null || currentDeployedVersion.length() == 0) {
             return false;
         }
         //if we don't know the downloaded version, we don't want to do redeployment either.
         //this maybe the case during development where web.zip doesn't include UC info.
-        if (downloadedVersion.equals ("")) {
+        if (downloadedVersion.length() == 0) {
             return false;
         }
 
@@ -952,7 +940,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         int compare = deployed.compareTo(downloaded);
 
         //-1 if this version is less than downloaded, 0 if they are equal, 1 if this version is greater than downloaded
-	return (compare == -1);
+	return compare == -1;
     }
 
     private void writeAdminServiceProp(final String propName, final String propValue){

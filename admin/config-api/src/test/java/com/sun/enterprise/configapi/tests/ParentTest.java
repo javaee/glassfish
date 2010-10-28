@@ -40,8 +40,8 @@
 
 package com.sun.enterprise.configapi.tests;
 
-import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.NetworkListeners;
+import org.glassfish.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.NetworkListeners;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.jvnet.hk2.config.ConfigBeanProxy;
