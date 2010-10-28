@@ -60,7 +60,7 @@
                 <!command gf.redirect(page="#{createLink}?configName=#{configName}"); />
             </sun:button>
               
-            <sun:button id="deleteButton" text="$resource{i18n.button.Delete}" disabled="#{false}" primary="#{false}"
+            <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
                 onClick="if (getConfirm(this,'$pageSession{confirmDeleteMsg}') ) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command 
                 getUIComponent(clientId="$pageSession{configsTableRowGroupId}", component=>$attribute{tableRowGroup});      
