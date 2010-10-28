@@ -44,7 +44,7 @@
 
 <!initPage
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.resourcesPageTitle}" >
 <!define name="content">
@@ -68,7 +68,7 @@
                     </event>
                 </sun:propertySheet>
 
-                <sun:hidden id="helpKey" value="$resource{help.resources}" />
+                <sun:hidden id="helpKey" value="$resource{help_common.resources}" />
             </sun:form>           
 </define>
 </composition>

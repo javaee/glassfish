@@ -43,7 +43,7 @@
 <!initPage
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
-    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+    setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="" >
 <!define name="content">
@@ -58,7 +58,112 @@
     </event>
     <sun:form id="propertyForm">
 #include "/cluster/standalone/standaloneInstanceTabs.inc"
-#include "/cluster/standalone/instanceProperties.jsf"
+<sun:title id="propertyContentPage" title="$resource{i18n.instance.GeneralTitle}" >
+        <sun:button id="startInstance" text="$resource{i18n.button.Start}" disabled="#{pageSession.info.status != 'NOT_RUNNING'}" primary="#{false}"
+            onClick="if ( getConfirm(this, '$resource{i18n.msg.JS.confirmStartInstance}') )
+                  { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');}
+                    else {return false;} " >
+            <!command
+                createMap(result="#{requestScope.map}");
+                mapPut(map="#{requestScope.map}", key="name", value="#{pageSession.encodedInstanceName}");
+                createList(result="#{requestScope.list}", size="0");
+                listAdd(list="#{requestScope.list}", value="#{requestScope.map}");
+                gf.instanceAction(rows="#{requestScope.list}", action="start-instance");
+                gf.redirect("#{pageSession.selfPage}");
+            />
+        </sun:button>
+        <sun:button id="stopInstance" text="$resource{i18n.button.Stop}" disabled="#{pageSession.info.status == 'NOT_RUNNING'}" primary="#{false}"
+            onClick="if ( getConfirm(this, '$resource{i18n.msg.JS.confirmStopInstance}') )
+                  { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');}
+                    else {return false;} " >
+             <!command
+                createMap(result="#{requestScope.map}");
+                mapPut(map="#{requestScope.map}", key="name", value="#{pageSession.encodedInstanceName}");
+                createList(result="#{requestScope.list}", size="0");
+                listAdd(list="#{requestScope.list}", value="#{requestScope.map}");
+                gf.instanceAction(rows="#{requestScope.list}", action="stop-instance");
+                gf.redirect("#{pageSession.selfPage}");
+         />
+        </sun:button>
+        <sun:button id="restartInstance" text="$resource{i18n.button.Restart}" disabled="#{pageSession.info.status == 'NOT_RUNNING'}" primary="#{false}"
+            onClick="if ( getConfirm(this, '$resource{i18n.msg.JS.confirmRestartInstance}') )
+                  { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');}
+                    else {return false;} " >
+             <!command
+                createMap(result="#{requestScope.map}");
+                mapPut(map="#{requestScope.map}", key="name", value="#{pageSession.encodedInstanceName}");
+                createList(result="#{requestScope.list}", size="0");
+                listAdd(list="#{requestScope.list}", value="#{requestScope.map}");
+                gf.instanceAction(rows="#{requestScope.list}", action="stop-instance");
+                gf.instanceAction(rows="#{requestScope.list}", action="start-instance");
+                gf.redirect("#{pageSession.selfPage}");
+         />
+        </sun:button>
+        <sun:button id="logViewer" text="$resource{i18n.button.logViewer}"  primary="#{true}"
+            onClick="javascript:var win=window.open('#{facesContext.externalContext.requestContextPath}/common/logViewer/logViewer.jsf?instanceName=#{instanceName}&loglevel=INFO&viewResults=true','LogViewerWindow','width='+(screen.width-300)+',height='+(screen.height-75)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');win.focus(); return false;"
+        />
+        <!-- TODO V3 final
+        <sun:button id="recoverTrans" text="$resource{i18n.button.recoverTrans}" primary="#{false}">
+            <!command
+                gf.redirect(page="recoverTransactions.jsf?instanceName=$pageSession{instanceName}&pageName=$pageSession{pageName}");
+            />
+        </sun:button>
+        -->
+</sun:title>
+
+                <!-- PropertySheet .... -->
+<sun:propertySheet id="propertySheet" >
+
+    <!-- Text Field section -->
+    <sun:propertySheetSection id="serverGeneralPropSheet">
+        <!afterCreate
+            getClientId(component="$this{component}" clientId=>$attribute{sheetId});
+        />
+        <sun:property id="hostName" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.hostHomeLabel}" >
+            <sun:staticText id="hostName" text="#{pageSession.instanceName}" />
+        </sun:property>
+        <sun:property id="status" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Status}:" >
+            <sun:staticText id="status" text="#{requestScope.statusString}">
+                <!beforeCreate
+                    setAttribute(key="status" value="#{pageSession.info.status}");
+                    setAttribute(key="statusString" value="$resource{i18nc.status.$attribute{status}}  &nbsp; $resource{i18nc.status.image.$attribute{status}}");
+                />
+            </sun:staticText>
+        </sun:property>
+<!--
+        <sun:property id="loadBalancer" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.lbTableColumn}:" >
+            <sun:staticText id="loadBalancer" text="#{pageSession.loadBalancer}" />
+        </sun:property>
+-->
+        <sun:property id="httpPorts" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.httpPortsLabel}" >
+            "<h1>#{pageSession.info.httpPorts.toString().substring(1).substring(0, pageSession.info.httpPorts.toString().length()-2)}</h1>
+        </sun:property>
+        <sun:property id="iiopPorts" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.iiopPortsLabel}" >
+            "<h1>#{pageSession.info.iiopPorts.toString().substring(1).substring(0, pageSession.info.iiopPorts.toString().length()-2)}</h1>
+        </sun:property>
+        <sun:property id="jvmProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.JVMLabel}">
+            <sun:hyperlink id="jvmlink" text="$resource{i18nc.inst.jvmReport}"
+                onClick="javascript:
+                var jvmWin = window.open('#{request.contextPath}/common/appServer/jvmReport.jsf?reportType=summary&instanceName=#{instanceName}','JVMReport','width='+(screen.width-300)+',height='+(screen.height-100)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');
+                jvmWin.focus(); return false;" />
+        </sun:property>
+        <sun:property id="configuration" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Configuration}:">
+            <sun:staticText id="configuration" text="#{pageSession.info.config}"/>
+        </sun:property>
+        <sun:property id="confiDir" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.configDirLabel}">
+            <sun:staticText id="configDir" text="#{pageSession.info.configRoot}"/>
+        </sun:property>
+        <sun:property id="version" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.versionLabel}">
+            <sun:staticText id="version" text="#{pageSession.info.version}"/>
+        </sun:property>
+        <sun:property id="debugEnabled" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.debugLabel}">
+            <sun:staticText id="debugEnabled" text="#{pageSession.info.debugEnabled}"/>
+        </sun:property>
+    </sun:propertySheetSection>
+</sun:propertySheet>
+
+    <sun:hidden id="helpKey" value="$resource{help_cluster.standaloneInstanceGeneral}" />
+
     </sun:form>
 </define>
 </composition>

@@ -148,7 +148,7 @@
         </event>
     </sun:propertySheet>
 
-	<sun:hidden id="helpKey" value="$resource{help.clusterInstanceEdit}" />
+	<sun:hidden id="helpKey" value="$resource{help_cluster.clusterInstanceEdit}" />
             </sun:form>
 </define>
 </composition>

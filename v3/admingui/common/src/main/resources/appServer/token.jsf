@@ -44,7 +44,7 @@
 <!initPage 
     setResourceBundle(key="i18n" bundle="org.glassfish.web.admingui.Strings");
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
-    setResourceBundle(key="help" bundle="org.glassfish.web.admingui.Helplinks");
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
 
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.appServer.tokenTitle}" >
@@ -79,7 +79,7 @@
 </sun:title>
 "<br/><br/>
 #include "/common/shared/propertyDescTable.inc"
-            <sun:hidden id="helpKey" value="$resource{help.appServerToken}" />
+            <sun:hidden id="helpKey" value="$resource{help_common.appServerToken}" />
 </sun:form>
             "<br/>
 #include "/common/shared/changeButtonsJS.inc" 

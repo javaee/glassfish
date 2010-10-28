@@ -43,7 +43,7 @@
 <!initPage
     setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
-    setResourceBundle(key="help_cs" bundle="org.glassfish.cluster.admingui.Helplinks");
+    setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.cluster.GeneralTitle}">
 <!define name="content">
@@ -145,7 +145,7 @@
 
     </sun:propertySheet>
 
-	<sun:hidden id="helpKey" value="$resource{help_cs.clusterGeneral}" />
+	<sun:hidden id="helpKey" value="$resource{help_cluster.clusterGeneral}" />
 </sun:form>
 </define>
 </composition>

@@ -40,6 +40,10 @@
 
 -->
 
+<!initPage
+    setResourceBundle(key="i18nc" bundle="org.glassfish.web.admingui.Strings");
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+/>
 <!-- applications/webDDEdit.jsf -->
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.enterpriseApplications.descriptorPageTitle}" >
 <!define name="content">
@@ -66,7 +70,7 @@
         "<br />
         "<br />
 #include "/common/applications/descriptorsTable.inc"
-        <sun:hidden id="helpKey" value="$resource{help.webApp.editDD}" />
+        <sun:hidden id="helpKey" value="$resource{help_common.editDD}" />
         </sun:form>
 //
 //            "<div id="panels"/>

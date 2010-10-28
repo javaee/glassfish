@@ -45,7 +45,7 @@
 
 <!initPage
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
+    setResourceBundle(key="help" bundle="org.glassfish.common.admingui.Helplinks")
 />
 <!composition template="/templates/default.layout" 
     guiTitle="$resource{i18n.enterpriseApplications.title}"
@@ -93,7 +93,7 @@
                  <sun:title id="propertyContentPage" title="$resource{i18n.enterpriseApplications.title}" helpText="$resource{i18n.enterpriseApplications.titleHelp}"/>
                  "<br />
 #include "/common/applications/deployTable.inc"
-	<sun:hidden id="helpKey" value="$resource{help.applications}" />
+	<sun:hidden id="helpKey" value="$resource{help_common.applications}" />
             </sun:form>
 <f:verbatim>
     <script type="text/javascript">

@@ -46,7 +46,7 @@
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
-    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+    setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.SystemPropertiesTitle} - #{pageSession.configName}" >
 <!define name="content">
@@ -148,6 +148,8 @@
                 "<br/>
             </sun:tableRowGroup>
         </sun:table>
+
+    <sun:hidden id="helpKey" value="$resource{help_cluster.sysInstanceValues}" />
     </sun:form>
 #include "/common/shared/changeButtonsJS.inc"
 </define>

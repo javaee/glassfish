@@ -108,6 +108,6 @@
              </sun:propertySheetSection>
          </sun:propertySheet>
 
-         <sun:hidden id="helpKey" value="$resource{help.configurationsNew}" />
+         <sun:hidden id="helpKey" value="$resource{help_common.configurationsNew}" />
 </sun:form>
 </define>

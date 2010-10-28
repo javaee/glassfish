@@ -87,9 +87,9 @@
         result="#{pageSession.props}");
     setAttribute(key="insList" value="#{pageSession.props.data.extraProperties.instanceList}" );
     createMap(result="#{pageSession.instanceStatusMap}");
-    if( "(#{requestScope.insList} = #{null})" ){
-        println("============= no instances found");
-    }
+    // if( "(#{requestScope.insList} = #{null})" ){
+        //println("============= no instances found");
+    //}
     if( "!(#{requestScope.insList} = #{null})" ){
         foreach(var="oneIns" list="#{requestScope.insList}"){
             mapPut(map="#{pageSession.instanceStatusMap}"  key="#{requestScope.oneIns.name}" value="#{requestScope.oneIns.status}");

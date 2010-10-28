@@ -73,7 +73,7 @@
         includeIntegrations(type="org.glassfish.admingui:uploadPropertySheetTargetSection" );
     />
 </event>
-	<sun:hidden id="helpKey" value="$resource{help.lifecycleNew}" />
+	<sun:hidden id="helpKey" value="$resource{help_common.lifecycleNew}" />
         </sun:form>
 </define>
 </composition>

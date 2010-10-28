@@ -42,8 +42,8 @@
 
 <!-- upload.jsf -->
 <!initPage
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
     setResourceBundle(key="i18nc" bundle="org.glassfish.web.admingui.Strings");
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout" guiTitle="$resource{i18n.enterpriseApplications.deployPageTitle}"  
     guiTemplateOnLoad="admingui.deploy.uploadInit('#{dirPathId}','#{dirPathId}','#{dirSelectBtnId}','#{filSelectBtnId}','#{fileuploadId}');"  >
@@ -56,7 +56,7 @@
     </iframe>
 </f:verbatim>
     <sun:form>
-	<sun:hidden id="helpKey" value="$resource{help.uploadDev}" />
+	<sun:hidden id="helpKey" value="$resource{help_common.uploadDev}" />
     </sun:form>
 //#include "/common/applications/uploadJS.inc"
 </define>

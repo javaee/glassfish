@@ -40,6 +40,10 @@
 
 -->
 
+<!initPage
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+/>
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.enterpriseApplications.editPageTitle}" guiTemplateOnLoad="admingui.help.pluginId = 'common';">
 <!define name="content">
     <event>
@@ -187,7 +191,7 @@
 
 #include "/common/applications/subComponentTable.inc"
 
-	<sun:hidden id="helpKey" value="$resource{help.applicationEdit}" />
+	<sun:hidden id="helpKey" value="$resource{help_common.applicationEdit}" />
         </sun:form>
 </define>
 </composition>

@@ -91,7 +91,7 @@
     <sun:title id="propertyContentPage2">
 #include "/common/shared/editPageButtons_2.inc"
     </sun:title>
-        <sun:hidden id="helpKey" value="$resource{help_cluster.availsvc}" />
+        <sun:hidden id="helpKey" value="$resource{help_cluster.availabilityService}" />
     </sun:form>
 #include "/common/shared/changeButtonsJS.inc"
 </define>

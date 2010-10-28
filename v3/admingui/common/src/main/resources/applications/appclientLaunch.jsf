@@ -127,7 +127,7 @@
             </sun:propertySheetSection>
         </sun:propertySheet>
         <sun:hidden id="option"  value="#{myOption}" />
-        <sun:hidden id="helpKey" value="$resource{help.appclientLaunch}" />
+        <sun:hidden id="helpKey" value="$resource{help_common.appclientLaunch}" />
 
 </sun:form>
 

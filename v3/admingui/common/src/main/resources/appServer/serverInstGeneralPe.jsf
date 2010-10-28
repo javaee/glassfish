@@ -149,7 +149,7 @@
             </event>
         </sun:propertySheet>
 
-        <sun:hidden id="helpKey" value="$resource{help.serverInstGeneralPe}" />
+        <sun:hidden id="helpKey" value="$resource{help_common.serverInstGeneralPe}" />
     </sun:form>
 </define>
 </composition>

@@ -43,7 +43,7 @@
 <!initPage
     setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
-    setResourceBundle(key="help_cs" bundle="org.glassfish.cluster.admingui.Helplinks");
+    setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.cluster.migrateEjbTimers}"
         guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:clusterTreeNode');" >
@@ -121,7 +121,7 @@
         "<em>$resource{i18ncs.cluster.migrateEjbTimersNoRunningInstance}</em>
     </h:panelGroup>
 
-    <sun:hidden id="helpKey" value="$resource{help_cs.clusterMigrateEjbTimers}" />
+    <sun:hidden id="helpKey" value="$resource{help_cluster.clusterMigrateEjbTimers}" />
 </sun:form>
 </define>
 </composition>

@@ -75,7 +75,7 @@
                  "<br />
 #include "/common/applications/lifecyclesTable.inc"
 
-	<sun:hidden id="helpKey" value="$resource{help.lifecycles}" />
+	<sun:hidden id="helpKey" value="$resource{help_common.lifecycles}" />
     </sun:form>
 </define>
 </composition>

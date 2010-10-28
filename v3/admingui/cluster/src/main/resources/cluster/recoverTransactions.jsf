@@ -43,7 +43,7 @@
 <!initPage
     setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
-    setResourceBundle(key="help_cs" bundle="org.glassfish.cluster.admingui.Helplinks");
+    setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.cluster.instance.recoverTransactions}"
         guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:clusterTreeNode');" >
@@ -116,7 +116,7 @@ println("***** requestScope.results = #{requestScope.results}");
         </sun:propertySheetSection>
     </sun:propertySheet>
 
-    <sun:hidden id="helpKey" value="$resource{help_cs.clusterrecoverTransactions}" />
+    <sun:hidden id="helpKey" value="$resource{help_cluster.clusterrecoverTransactions}" />
 </sun:form>
 </define>
 </composition>

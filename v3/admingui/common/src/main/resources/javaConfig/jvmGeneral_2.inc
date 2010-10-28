@@ -75,7 +75,7 @@
 
                     </sun:propertySheet>    
 #include "/common/shared/propertyDescTable.inc"
-                    <sun:hidden id="helpKey" value="$resource{help.serverInstJvmGeneral}" />
+                    <sun:hidden id="helpKey" value="$resource{help_common.serverInstJvmGeneral}" />
             </sun:form>
 </define>
 </composition>

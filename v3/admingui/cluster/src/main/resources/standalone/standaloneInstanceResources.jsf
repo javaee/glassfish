@@ -44,7 +44,7 @@
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
-    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+    setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="" >
 <!define name="content">
@@ -71,6 +71,9 @@
                  helpText="$resource{i18nc.resourcesTarget.pageTitleHelp}" />
 "<br/>
 #include "/common/resourceNode/targetResourceTable.inc"
+
+<sun:hidden id="helpKey" value="$resource{help_cluster.standaloneInstanceResources}" />
+
 </sun:form>
 </define>
 </composition>

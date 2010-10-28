@@ -124,7 +124,7 @@
         </sun:propertySheet>
 #include "/common/javaConfig/jvmOptionsTable.inc"
                 
-	<sun:hidden id="helpKey" value="$resource{help.serverInstProfiler}" />
+	<sun:hidden id="helpKey" value="$resource{help_common.serverInstProfiler}" />
             </sun:form>
 #include "/common/shared/changeButtonsJS.inc"
 </define>

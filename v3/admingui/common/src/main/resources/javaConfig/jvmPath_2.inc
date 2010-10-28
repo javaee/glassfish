@@ -131,7 +131,7 @@
         </sun:propertySheetSection>
     </sun:propertySheet>
 "<br/><br/>
-	<sun:hidden id="helpKey" value="$resource{help.serverInstJvmPathSettings}" />
+	<sun:hidden id="helpKey" value="$resource{help_common.serverInstJvmPathSettings}" />
             </sun:form>
 </define>
 </composition>

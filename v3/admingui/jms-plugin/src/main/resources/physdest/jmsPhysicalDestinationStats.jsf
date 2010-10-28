@@ -109,6 +109,9 @@
                 </sun:panelGroup>
             </facet>
         </sun:title>
+
+   <sun:hidden id="helpKey" value="$resource{helpjms.jmsPhysicalDestinationStats}" />
+
     </sun:form>
     "<br/><br/>
 </define>

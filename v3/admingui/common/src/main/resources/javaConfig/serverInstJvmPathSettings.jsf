@@ -42,10 +42,6 @@
 
 <!-- javaConfig/serverInstJvmPathSettings.jsf -->
 
-<!initPage
-        setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
-	setAttribute(key="helpKey" value="$resource{help.serverInstJvmGeneral}" );
-/>
 #include "/common/javaConfig/jvmPath_1.inc"
 #include "/common/javaConfig/javaConfigTabs.inc"
 #include "/common/javaConfig/jvmPath_2.inc"

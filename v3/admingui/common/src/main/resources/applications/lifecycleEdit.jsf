@@ -105,7 +105,7 @@
         "<br><br>
 #include "/common/applications/lifecycleAttr.inc"
 #include "/common/shared/propertyDescTable.inc"
-	<sun:hidden id="helpKey" value="$resource{help.lifecycleEdit}" />
+	<sun:hidden id="helpKey" value="$resource{help_common.lifecycleEdit}" />
         </sun:form>
 </define>
 </composition>

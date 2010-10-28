@@ -62,7 +62,7 @@
                 </sun:title>
 #include "/common/javaConfig/jvmOptionsTable.inc"
 
-	<sun:hidden id="helpKey" value="$resource{help.serverJvmOptions}" />
+	<sun:hidden id="helpKey" value="$resource{help_common.serverJvmOptions}" />
          </sun:form>
 //#include "/common/shared/changeButtonsJS.inc"
 </define>

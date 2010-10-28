@@ -43,7 +43,7 @@
 <!initPage
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
-    setResourceBundle(key="help_cs" bundle="org.glassfish.cluster.admingui.Helplinks");
+    setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18ncs.clusters.PageTitle}"
@@ -184,7 +184,7 @@
 
 </sun:table>
 
-<sun:hidden id="helpKey" value="$resource{help_cs.clusters}" />
+<sun:hidden id="helpKey" value="$resource{help_cluster.clusters}" />
     </sun:form>
 #include "/common/shared/changeButtonsJS.inc"
 

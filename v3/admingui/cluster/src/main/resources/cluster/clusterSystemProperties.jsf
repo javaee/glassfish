@@ -46,7 +46,7 @@
 <!initPage
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
-    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+    setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="Cluster #{pageSession.clusterName} System Properties" >
 <!define name="content">
@@ -98,6 +98,9 @@
     </sun:title>
 #include "/common/shared/alertMsg.inc"
 #include "/common/shared/propertyTable.inc"
+
+<sun:hidden id="helpKey" value="$resource{help_cluster.clusterSystemProperties}" />
+
     </sun:form>
 #include "/common/shared/changeButtonsJS.inc"
 </define>

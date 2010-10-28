@@ -44,7 +44,8 @@
 <!-- when including this page, should followed by including jvmPath_2.inc to make a complete page -->
 <!initPage
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
-	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks")
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+/>
 />
 
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.jvm.PathSettingsTitle}" >
