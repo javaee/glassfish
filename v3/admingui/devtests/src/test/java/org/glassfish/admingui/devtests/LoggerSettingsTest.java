@@ -79,8 +79,10 @@ public class LoggerSettingsTest extends BaseSeleniumTestClass {
         if ("WARNING".equals(selenium.getValue("form1:basicTable:rowGroup1:0:col3:level"))) {
             newLevel = "INFO";
         }
+
         selenium.select("form1:basicTable:topActionsGroup1:change_list", "label=" + newLevel);
-        selenium.click("form1:basicTable:_tableActionsTop:_selectMultipleButton");
+        selenium.click("form1:basicTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image");
+
         waitForButtonEnabled("form1:basicTable:topActionsGroup1:button1");
 
         selenium.click("form1:basicTable:topActionsGroup1:button1");
@@ -90,6 +92,6 @@ public class LoggerSettingsTest extends BaseSeleniumTestClass {
 
         clickAndWait("form1:loggingTabs:loggerGeneral", TRIGGER_LOGGER_SETTINGS);
         clickAndWait("form1:loggingTabs:loggerLevels", TRIGGER_LOG_LEVELS);
-        assertEquals(newLevel, selenium.getValue("form1:basicTable:rowGroup1:0:col3:level"));
-    }
+        assertEquals(newLevel, selenium.getValue("form1:basicTable:rowGroup1:0:col3:level")); 
+    } 
 }
