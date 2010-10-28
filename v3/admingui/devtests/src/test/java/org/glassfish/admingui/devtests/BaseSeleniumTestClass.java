@@ -71,7 +71,9 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverBackedSelenium;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
 
 public class BaseSeleniumTestClass {
 
@@ -89,7 +91,7 @@ public class BaseSeleniumTestClass {
     protected static final int TIMEOUT = 90;
     protected static final int BUTTON_TIMEOUT = 750;
     private static String currentTestClass = "";
-    protected static boolean debug;
+    protected static boolean debug = Boolean.parseBoolean(getParameter("debug", "false"));
     private boolean processingLogin = false;
     
     @BeforeClass
@@ -98,8 +100,14 @@ public class BaseSeleniumTestClass {
         String port = getParameter("admin.port", "4848");
         String seleniumPort = getParameter("selenium.port", "4444");
         String baseUrl = "http://localhost:" + port;
-        debug = Boolean.parseBoolean(getParameter("debug", "true"));
-        driver = new FirefoxDriver();
+        
+        if ("firefox".equals(browser)) {
+            driver = new FirefoxDriver();
+        } else if ("chrome".equals(browser)) {
+            driver = new ChromeDriver();
+        } else if ("ie".contains(browser)) {
+            driver = new InternetExplorerDriver();
+        }
 
         if (selenium == null) {
             selenium = new WebDriverBackedSelenium(driver, baseUrl);
@@ -674,7 +682,7 @@ public class BaseSeleniumTestClass {
         }
     }
 
-    private static String getParameter(String paramName, String defaultValue) {
+    protected static String getParameter(String paramName, String defaultValue) {
         String value = System.getProperty(paramName);
 
         return value != null ? value : defaultValue;

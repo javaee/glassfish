@@ -39,6 +39,8 @@
  */
 package org.glassfish.admingui.devtests;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Ignore;
@@ -51,8 +53,9 @@ import org.junit.runners.model.Statement;
  * @author jasonlee
  */
 public class SpecificTestRule implements MethodRule {
+    protected static boolean debug;
     public SpecificTestRule() {
-        
+        debug = Boolean.parseBoolean(BaseSeleniumTestClass.getParameter("debug", "false"));
     }
 
     @Override
@@ -61,6 +64,7 @@ public class SpecificTestRule implements MethodRule {
             @Override
             public void evaluate() throws Throwable {
                 boolean runMethod = false;
+                final Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
                 String method = System.getProperty("method");
                 Ignore ignore = frameworkMethod.getAnnotation(Ignore.class);
 
@@ -71,9 +75,16 @@ public class SpecificTestRule implements MethodRule {
                 }
 
                 if (runMethod) {
+                    if (debug) {
+                        logger.log(Level.INFO, "Executing test {0} at {1}",
+                                new String[]{
+                                    frameworkMethod.getName(),
+                                    (new SimpleDateFormat("yyyy-MM-dd-hh.mm.ss")).format(new Date())
+                                });
+                    }
                     statement.evaluate();
                 } else {
-                    Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.INFO, "Skipping test:  {0}", frameworkMethod.getName());
+                    logger.log(Level.INFO, "Skipping test:  {0}", frameworkMethod.getName());
                 }
             }
         };

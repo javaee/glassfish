@@ -43,7 +43,6 @@ package org.glassfish.admingui.devtests;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -73,8 +72,8 @@ public class NodeTest extends BaseSeleniumTestClass {
         clickAndWait( getLinkIdByLinkText("propertyForm:nodesTable", nodeName), TRIGGER_EDIT_NODE) ;
         assertTrue(selenium.isTextPresent(nodeName));
         assertEquals("localhost", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:NodeHost:NodeHost"));
-        assertEquals("/NodeDir", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:NodeHome:NodeHome"));
-        assertEquals("/InstallDir", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:installdir:installDir"));
+//        assertEquals("/NodeDir", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:NodeHome:NodeHome"));
+//        assertEquals("/InstallDir", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:installdir:installDir"));
         assertEquals("24", selenium.getValue("propertyForm:propertySheet:sshConnector:sshNodeHome:sshport"));
         assertEquals("sshUserName", selenium.getValue("propertyForm:propertySheet:sshAuth:UserName:UserName"));
         assertEquals("sshKeyFile", selenium.getValue("propertyForm:propertySheet:sshAuth:Keyfile:Keyfile"));
@@ -90,16 +89,16 @@ public class NodeTest extends BaseSeleniumTestClass {
         createNode(nodeName);
         clickAndWait( getLinkIdByLinkText("propertyForm:nodesTable", nodeName), TRIGGER_EDIT_NODE);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:NodeHost:NodeHost", "localhosttest");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:NodeHome:NodeHome", "/tmp/test");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:installdir:installDir", "/tmp/installTest");
+//        selenium.type("propertyForm:propertySheet:propertSectionTextField:NodeHome:NodeHome", "/tmp/test");
+//        selenium.type("propertyForm:propertySheet:propertSectionTextField:installdir:installDir", "/tmp/installTest");
         selenium.type("propertyForm:propertySheet:sshConnector:sshNodeHome:sshport", "44");
         selenium.type("propertyForm:propertySheet:sshAuth:UserName:UserName", "sUserName");
         selenium.type("propertyForm:propertySheet:sshAuth:Keyfile:Keyfile", "sKeyFile");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_SAVE_SUCCESS );
 
         assertEquals("localhosttest", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:NodeHost:NodeHost" ));
-        assertEquals("/tmp/test", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:NodeHome:NodeHome" ));
-        assertEquals("/tmp/installTest", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:installdir:installDir" ));
+//        assertEquals("/tmp/test", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:NodeHome:NodeHome" ));
+//        assertEquals("/tmp/installTest", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:installdir:installDir" ));
         assertEquals("44", selenium.getValue("propertyForm:propertySheet:sshConnector:sshNodeHome:sshport" ));
         assertEquals("sUserName", selenium.getValue("propertyForm:propertySheet:sshAuth:UserName:UserName" ));
         assertEquals("sKeyFile", selenium.getValue("propertyForm:propertySheet:sshAuth:Keyfile:Keyfile" ));
@@ -114,13 +113,12 @@ public class NodeTest extends BaseSeleniumTestClass {
         final String instanceName = "testInstance" + generateRandomString();
 
         createNode(nodeName);
-        assertTrue(selenium.isTextPresent(nodeName));
         createInstance(instanceName, nodeName);
-        assertTrue(selenium.isTextPresent(instanceName));
         clickAndWait("treeForm:tree:nodeTreeNode:nodeTreeNode_link", TRIGGER_NODES_PAGE);
+        // This part shoudl fail?
         rowActionWithConfirm("propertyForm:nodesTable:topActionsGroup1:button1", "propertyForm:nodesTable", nodeName);
         waitForCondition("document.getElementById('propertyForm:nodesTable:topActionsGroup1:button1').value != 'Processing...'", 50000);
-        assertTrue(selenium.isTextPresent(nodeName));
+        assertTrue(selenium.isTextPresent("Remove instances before deleting node."));
 
         //cleanup
         clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", TRIGGER_INSTANCES_PAGE);
@@ -135,13 +133,14 @@ public class NodeTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:nodesTable:topActionsGroup1:newButton", TRIGGER_NEW_NODE_PAGE);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:nameProp:name", nodeName);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:NodeHost:NodeHost", "localhost");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:NodeHome:NodeHome", "/NodeDir");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:installdir:installDir", "/InstallDir");
-        selenium.click("propertyForm:propertySheet:propertSectionTextField:force:force");
+//        selenium.type("propertyForm:propertySheet:propertSectionTextField:NodeHome:NodeHome", "/NodeDir");
+//        selenium.type("propertyForm:propertySheet:propertSectionTextField:installdir:installDir", "/InstallDir");
+        selenium.check("propertyForm:propertySheet:propertSectionTextField:force:force");
         selenium.type("propertyForm:propertySheet:sshConnector:sshNodeHome:sshport", "24");
         selenium.type("propertyForm:propertySheet:sshAuth:UserName:UserName", "sshUserName");
         selenium.type("propertyForm:propertySheet:sshAuth:Keyfile:Keyfile", "sshKeyFile");
         clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_NODES_PAGE);
+        assertTrue(tableContainsRow("propertyForm:nodesTable", "col1", nodeName));
     }
 
     private void createInstance(String instanceName, String nodeName){
@@ -152,5 +151,6 @@ public class NodeTest extends BaseSeleniumTestClass {
         selenium.select("propertyForm:propertySheet:propertSectionTextField:configProp:Config", "label=default-config");
         selenium.click("propertyForm:propertySheet:propertSectionTextField:configOptionProp:optC");
         clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_INSTANCES_PAGE);
+        assertTrue(tableContainsRow("propertyForm:instancesTable", "col1", instanceName));
     }
 }
