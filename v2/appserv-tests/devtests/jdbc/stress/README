@@ -1,5 +1,0 @@
-This stress tests the JDBC pool by running 10 clients for 
-1 hour.
-
-Please change the ora.* values in the build.properties to 
-use your current config

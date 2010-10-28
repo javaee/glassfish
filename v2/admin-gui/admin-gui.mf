@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Created-By: 1.5.0_03 (Sun Microsystems Inc.)
-Ant-Version: Apache Ant 1.6.5
-Implementation-Vendor-Id: com.sun
-Implementation-Vendor: Sun Microsystems, Inc.
-Implementation-Version: 9.1 
-Implementation-Title: Sun Java System Application Server

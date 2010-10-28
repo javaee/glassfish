@@ -1,4 +1,0 @@
-This test is to check the functionality of sql tracing mechanism. 
-
-The test case builds a SQLTraceListener object called TraceLogger that would write the SQLTraceRecord object information into a database. The expected data from the test is already fed into a table. The test compares the result and the expected outcome to see if sql trace listeners work fine.
-

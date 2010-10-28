@@ -1,6 +1,0 @@
-lib/install/templates/asadmin.template
-sbin/asadmin
-lib/appserv-admin.jar
-lib/appserv-deployment-client.jar
-lib/admin-cli.jar
-lib/libcliutil.jnilib

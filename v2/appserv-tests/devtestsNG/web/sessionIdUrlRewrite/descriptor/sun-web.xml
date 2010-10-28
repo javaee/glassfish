@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sun-web-app>
-  <session-config>
-    <session-properties>
-      <property name="enableCookies" value="false" />
-    </session-properties>
-  </session-config>
-</sun-web-app>

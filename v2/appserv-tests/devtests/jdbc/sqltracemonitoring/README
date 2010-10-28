@@ -1,5 +1,0 @@
-Sql trace monitoring tests. 
-
-Test 1 can be ignored if there are no exceptions seen. The test is just to make sure that all the threads executed successfully. 
-
-Test 2 checks the actual monitoring of sql queries that were traced. Only some queries out of the 5 queries become eligible to be listed as top queries that are frequently used. 

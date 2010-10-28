@@ -1,5 +1,0 @@
-Test
-- Use of Java EE component environment resources 
-    - type safe injection of JPA resources (EntityManagerFactory, EntityManager) 
-    by declaring a resource by annotating a producer field wuth a 
-    component environment injection annotation

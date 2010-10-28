@@ -1,5 +1,0 @@
-Test case for Statement leak detection and reclaim. 
-
-Test sets the statement caching, statement leak detection and reclaim before executing the test case. A prepared statement test that gets a connection, statement and executes a query using the statement is invoked twice from the appclient. As and when a statement is requested, the hashcode of the statement object is written to a database. 
-
-When statement caching is on, for subsequent requests for statements, different statement object hash codes are got. 

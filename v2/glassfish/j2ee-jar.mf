@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-Specification-Title: Java 2 Platform, Enterprise Edition Specification
-Specification-Vendor: Sun Microsystems, Inc.
-Specification-Version: 1.4
-Created-By: 1.4.0 (Sun Microsystems Inc.)
-Implementation-Vendor: Sun Microsystems, Inc.
-Implementation-Version: 1.4
-

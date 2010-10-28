@@ -1,9 +1,0 @@
-
-this directory contains some unit tests that are meant to touch
-some wsi compliant areas wrt faultcode.
-
-we now have rpc/literal style only.
-
-since CTS does not have any tests on faultcode handling using
-an ejb endpoint, we will exclusive test out just web services
-with ejb endpoints
