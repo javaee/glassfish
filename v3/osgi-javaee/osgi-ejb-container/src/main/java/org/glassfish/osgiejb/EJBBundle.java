@@ -51,7 +51,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -64,11 +66,27 @@ public class EJBBundle extends OSGiJavaEEArchive {
 
     @Override
     protected void init() {
+        // Very important implementation note:
+        //
+        // Now we need to merge individual namespaces represented in each of the the subarchives
+        // corresponding to entries in the effetcive bundle classpath.
+        // During merging of namespaces, collision can be expected. e.g.:
+        // a bundle with BCP: bin, . and having a content tree like this:
+        // p/A.class, bin/p/A.class.
+        // Actually, there is only name here which is p/A.class, but it appears in both the namespaces.
+        // Our collision avoidance strategy is based on how Bundle.getResource() behaves. Since bin
+        // appears ahead of . in BCP, bundle.getResource(p/A.class) will return bin/p/A.class.
+        // So,our merged namespace must also contain bin/p/A.class.
+        // The simplest way to achieve this is to collect entries from the subarchives in the reverse
+        // order of bundle classpath and put them into a hasmap with entry name being the key.
+        // See https://glassfish.dev.java.net/issues/show_bug.cgi?id=14268
         final EffectiveBCP bcp = getEffectiveBCP();
-        bcp.accept(new BCPEntry.BCPEntryVisitor() {
-            private int i = 0;
+        List<BCPEntry> bcpEntries = new ArrayList(bcp.getBCPEntries());
+        Collections.reverse(bcpEntries);
+        for (BCPEntry bcpEntry : bcpEntries) {
+            bcpEntry.accept(new BCPEntry.BCPEntryVisitor() {
 
-            public void visitDir(final DirBCPEntry bcpEntry) {
+                public void visitDir(final DirBCPEntry bcpEntry) {
                 visitBCPEntry(bcpEntry);
             }
 
@@ -116,5 +134,6 @@ public class EJBBundle extends OSGiJavaEEArchive {
             }
 
         });
+        }
     }
 }
