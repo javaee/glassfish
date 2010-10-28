@@ -206,7 +206,8 @@ public abstract class ActionReporter extends ActionReport {
     /** Returns combined messages. Meant mainly for long running
      *  operations where some of the intermediate steps can go wrong, although
      *  overall operation succeeds. Does nothing if either of the arguments are null.
-     *  The traversal visits the message of current reporter first.
+     *  The traversal visits the message of current reporter first. The various
+     *  parts of the message are separated by EOL_MARKERs. 
      * <p>
      * Note: This method is a recursive implementation.
      * @param aReport a given (usually top-level) ActionReporter instance
@@ -230,12 +231,13 @@ public abstract class ActionReporter extends ActionReport {
                 LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ActionReporter.class);
                 format = localStrings.getLocalString("flag.message.as.failure", "Failure: {0}");
             }
+            if (sb.length() > 0) sb.append(EOL_MARKER);
             sb.append(MessageFormat.format(format,mainMsg));
-            sb.append(EOL_MARKER);
         }
         if (aReport.getFailureCause() != null && aReport.getFailureCause().getMessage() != null && aReport.getFailureCause().getMessage().length() != 0) {
             failMsg = aReport.getFailureCause().getMessage();
             if (!failMsg.equals(mainMsg))
+                if (sb.length() > 0) sb.append(EOL_MARKER);
                 sb.append(failMsg);
         }
         for (ActionReporter sub : aReport.subActions) {
