@@ -63,6 +63,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 import java.io.File;
+import org.jvnet.hk2.component.ComponentException;
 
 /**
  *  This is a remote command that copies a config to a destination config.
@@ -79,18 +80,14 @@ public final class CopyConfigCommand extends CopyConfig {
     final private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(CopyConfigCommand.class);
 
+    @Override
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
        
         if (configs.size() != 2) {
             report.setMessage(localStrings.getLocalString("Config.badConfigNames",
-                    "You must specify a source and destination config") + "\n" +
-                    localStrings.getLocalString("Config.copyConfigUsage",
-                     "Usage copy-config \\n[--systemproperties (name=value)[:name=value]*]\\nsource_configuration_name destination_configuration_name"
-       
-            ));
-
+                    "You must specify a source and destination config."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
