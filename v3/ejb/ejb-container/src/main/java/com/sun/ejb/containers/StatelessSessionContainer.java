@@ -270,10 +270,11 @@ public class StatelessSessionContainer
         }
 
         poolProp = new PoolProperties();
+        String val = ejbDescriptor.getEjbBundleDescriptor().getEnterpriseBeansProperty(SINGLETON_BEAN_POOL_PROP);
         pool= new NonBlockingPool(getContainerId(), ejbDescriptor.getName(),
            sessionCtxFactory, poolProp.steadyPoolSize,
            poolProp.poolResizeQuantity, poolProp.maxPoolSize,
-           poolProp.poolIdleTimeoutInSeconds, loader);
+           poolProp.poolIdleTimeoutInSeconds, loader, Boolean.parseBoolean(val));
     }
 
     protected void registerMonitorableComponents() {

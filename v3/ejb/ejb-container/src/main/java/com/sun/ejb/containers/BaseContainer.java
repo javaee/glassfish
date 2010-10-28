@@ -166,6 +166,8 @@ public abstract class BaseContainer
     private static final byte HOME_KEY = (byte)0xff;
     private static final byte[] homeInstanceKey = {HOME_KEY};
 
+    protected static final String SINGLETON_BEAN_POOL_PROP = "singleton-bean-pool";
+
     protected ClassLoader loader = null;
     protected Class ejbClass = null;
     protected Class sfsbSerializedClass = null;

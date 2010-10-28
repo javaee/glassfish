@@ -100,6 +100,9 @@ public class EjbBundleDescriptor extends BundleDescriptor implements WritableJnd
     private LinkedList<InterceptorBindingDescriptor> interceptorBindings =
         new LinkedList<InterceptorBindingDescriptor>();
 
+    private List<NameValuePairDescriptor> enterpriseBeansProperties =
+            new ArrayList<NameValuePairDescriptor>();
+
     // EJB module level dependencies 
     private Set<EnvironmentProperty> environmentProperties =
               new HashSet<EnvironmentProperty>();
@@ -1233,4 +1236,20 @@ public class EjbBundleDescriptor extends BundleDescriptor implements WritableJnd
     //
     //  end no-op PostConstruct/PreDestroy methods
     //
+    public String getEnterpriseBeansProperty(String key) {
+        for(NameValuePairDescriptor p : enterpriseBeansProperties) {
+            if(p.getName().equals(key)) {
+                return p.getValue();
+            }
+        }
+        return null;
+    }
+
+    public void addEnterpriseBeansProperty(NameValuePairDescriptor newProp) {
+        enterpriseBeansProperties.add(newProp);
+    }
+
+    public List<NameValuePairDescriptor> getEnterpriseBeansProperties() {
+        return enterpriseBeansProperties;
+    }
 }

@@ -42,8 +42,10 @@ package com.sun.enterprise.deployment.node.runtime;
 
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.NameValuePairDescriptor;
 import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
 import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.node.runtime.common.RuntimeNameValuePairNode;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import com.sun.enterprise.deployment.xml.WebServicesTagNames;
@@ -79,6 +81,9 @@ public class EntrepriseBeansRuntimeNode extends RuntimeDescriptorNode {
         registerElementHandler
             (new XMLElement(WebServicesTagNames.WEB_SERVICE),
              WebServiceRuntimeNode.class);
+
+        registerElementHandler(new XMLElement(RuntimeTagNames.PROPERTY),
+				RuntimeNameValuePairNode.class, "addEnterpriseBeansProperty");
     }
     
    /**
@@ -110,7 +115,7 @@ public class EntrepriseBeansRuntimeNode extends RuntimeDescriptorNode {
             DOLUtils.getDefaultLogger().finer("Ignoring unique id");
             return;
         }
-	    super.setElementValue(element, value);
+	super.setElementValue(element, value);
     }
     
     /**
@@ -151,6 +156,11 @@ public class EntrepriseBeansRuntimeNode extends RuntimeDescriptorNode {
 		// webservice-description*
         WebServiceRuntimeNode webServiceNode = new WebServiceRuntimeNode();
         webServiceNode.writeWebServiceRuntimeInfo(ejbs, bundleDescriptor);
+
+        for(NameValuePairDescriptor p : bundleDescriptor.getEnterpriseBeansProperties()) {
+            RuntimeNameValuePairNode nameValNode = new RuntimeNameValuePairNode();
+            nameValNode.writeDescriptor(ejbs, RuntimeTagNames.PROPERTY, p);
+        }
 
         return ejbs;
     }

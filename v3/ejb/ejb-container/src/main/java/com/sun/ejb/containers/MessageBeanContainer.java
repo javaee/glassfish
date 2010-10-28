@@ -305,12 +305,13 @@ public final class MessageBeanContainer extends BaseContainer implements
 		// The protocol manager implementation enforces a limit
 		// on message bean resources independent of the pool.
 		ObjectFactory objFactory = new MessageBeanContextFactory();
+                String val = descriptor.getEjbBundleDescriptor().getEnterpriseBeansProperty(SINGLETON_BEAN_POOL_PROP);
 		messageBeanPool_ = new NonBlockingPool(getContainerId(), appEJBName_, objFactory,
 				beanPoolDesc_.getSteadyPoolSize(), beanPoolDesc_
 						.getPoolResizeQuantity(), beanPoolDesc_
 						.getMaxPoolSize(), beanPoolDesc_
-						.getPoolIdleTimeoutInSeconds(), loader);
-
+						.getPoolIdleTimeoutInSeconds(), loader,
+                                                Boolean.parseBoolean(val));
 	}
 
 	protected static int stringToInt(String val, String appName, Logger logger) {
