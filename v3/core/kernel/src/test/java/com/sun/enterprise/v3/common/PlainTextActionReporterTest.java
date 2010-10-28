@@ -167,14 +167,14 @@ public class PlainTextActionReporterTest {
         StringBuilder sb = new StringBuilder();
         successfulRoot.setMessage("sr");
         successfulRoot.getCombinedMessages(successfulRoot, sb);
-        assertEquals("sr%%%EOL%%%", sb.toString());
+        assertEquals("sr", sb.toString());
         warningChild.setMessage("wc");
         sb = new StringBuilder();
         successfulRoot.getCombinedMessages(successfulRoot, sb);
-        assertEquals("sr%%%EOL%%%wc%%%EOL%%%", sb.toString());
+        assertEquals("sr%%%EOL%%%wc", sb.toString());
         failedChild.setMessage("fc");
         sb = new StringBuilder();
         successfulRoot.getCombinedMessages(successfulRoot, sb);
-        assertEquals("sr%%%EOL%%%fc%%%EOL%%%wc%%%EOL%%%", sb.toString());
+        assertEquals("sr%%%EOL%%%fc%%%EOL%%%wc", sb.toString());
     }
 }

@@ -100,8 +100,6 @@ class ManifestManager implements ResponseManager {
         String msg = response.getMainMessage();
         if(ok(msg)) {
             sb.append(msg);
-            if (!msg.endsWith(EOL))
-                sb.append(EOL);
         }
 
         boolean useMainChildrenAttr = Boolean.valueOf(response.getMainAtts().get("use-main-children-attribute"));
@@ -112,11 +110,13 @@ class ManifestManager implements ResponseManager {
             processOneLevel("", null, response.getMainAtts(), sb);
         }
 
-        if(response.wasFailure()) {
+        if (response.wasFailure()) {
             final String cause = response.getCause();
             if(ok(cause)){
-                if (logger.isLoggable(Level.FINER))
+                if (logger.isLoggable(Level.FINER)) {
+                    if (sb.length() > 0) sb.append(EOL);
                     sb.append(cause);
+                }
                 throw new RemoteFailureException(sb.toString(), cause);                    
             }
             throw new RemoteFailureException(sb.toString());
@@ -151,6 +151,7 @@ class ManifestManager implements ResponseManager {
         if(props == null || props.isEmpty()) 
             return;
         
+        if (sb.length() > 0) sb.append(EOL);
         sb.append(prefix).append("properties=(");
         boolean first = true;
 
@@ -165,7 +166,7 @@ class ManifestManager implements ResponseManager {
 
             sb.append(name + "=" + value);
         }
-        sb.append(")").append(EOL);
+        sb.append(")");
     }
 
     private void processChildren(String prefix, String parent, Map<String, String> atts, StringBuilder sb) {
@@ -181,13 +182,14 @@ class ManifestManager implements ResponseManager {
         for(Map.Entry<String, Map<String,String>> entry : kids.entrySet()) {
             String container = entry.getKey();
             
-            if(ok(childrenType))
+            if(ok(childrenType)) {
+                if (sb.length() > 0) sb.append(EOL);
                 sb.append(prefix).append(childrenType).append(" : ");
-
+            }
             try {
-                sb.append(java.net.URLDecoder.decode(container.substring(index), "UTF-8")).append(EOL);
+                sb.append(java.net.URLDecoder.decode(container.substring(index), "UTF-8"));
             } catch (Exception e) {
-                sb.append(container.substring(index)).append(EOL);
+                sb.append(container.substring(index));
             }
             processOneLevel(prefix + TAB, container, entry.getValue(), sb);
         }
@@ -201,7 +203,8 @@ class ManifestManager implements ResponseManager {
         if (ok(allChildren)) {
             String[] children = allChildren.split(";");
             for (String child : children) {
-                sb.append(decode(child)).append(EOL);
+                if (sb.length() > 0) sb.append(EOL);
+                sb.append(decode(child));
             }
         }
         return sb;
