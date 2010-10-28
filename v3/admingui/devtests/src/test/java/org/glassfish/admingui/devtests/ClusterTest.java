@@ -272,17 +272,17 @@ public class ClusterTest extends BaseSeleniumTestClass {
         gotoClusterPage();
         clickAndWait("propertyForm:clustersTable:topActionsGroup1:newButton", TRIGGER_NEW_PAGE);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:NameTextProp:NameText", clusterName);
-        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_CLUSTER_PAGE);
 
         if (instanceNames != null) {
             for (String instanceName : instanceNames) {
                 if (instanceName != null && !instanceName.equals("")) {
-//                    addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton", "Server Instances to be Created");
-//                    selenium.type("propertyForm:basicTable:rowGroup1:0:col2:name", instanceName);
-                    createClusterInstance(clusterName, instanceName);
+                    addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton", "Server Instances to be Created");
+                    selenium.type("propertyForm:basicTable:rowGroup1:0:col2:name", instanceName);
+//                    createClusterInstance(clusterName, instanceName);
                 }
             }
         }
+        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_CLUSTER_PAGE);
     }
     
     public void createClusterInstance(String clusterName, String instanceName) {
