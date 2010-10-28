@@ -126,28 +126,28 @@
         <welcome-file>/index.jsf</welcome-file>
     </welcome-file-list>
     <error-page>
-	<exception-type>javax.faces.application.ViewExpiredException</exception-type>
+        <exception-type>javax.faces.application.ViewExpiredException</exception-type>
         <location>/</location>
     </error-page>
     <!--
     <error-page>
-	<error-code>403</error-code>
-	<location>/</location>
+        <error-code>403</error-code>
+        <location>/</location>
     </error-page>
     -->
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>noaccess</web-resource-name>
-	    <url-pattern>/*</url-pattern>
+            <url-pattern>/*</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <role-name>noaccess</role-name>
-	</auth-constraint>
+        </auth-constraint>
     </security-constraint>
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>protected</web-resource-name>
-	    <url-pattern>/*</url-pattern>
+            <url-pattern>/*</url-pattern>
             <http-method>GET</http-method>
             <http-method>POST</http-method>
         </web-resource-collection>
