@@ -147,7 +147,6 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
          * fails to serve any static content from META-INF/resources/ of WEB-INF/lib/*.jar, if the classloader is not
          * an instanceof WebappClassLoader.
          * b) DefaultServlet also expects WebappClassLoader's resourceEntries to be properly populated.
-         * c)   
          */
         public WABClassLoader(ClassLoader parent) {
             super(parent);
@@ -213,7 +212,12 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
         }
 
         @Override
-        public URL getResource(String name) {
+        public URL getResourceFromJars(String name) {
+            // We override this method, because both DefaultServlet and StandardContext call this API to find
+            // static resources in WEB-INF/lib/*.jar. If we don't override, the default implementation in
+            // WebappClassLoader will find the resource via bundle class loader and that won't be acceptable to
+            // DefaultServlet or StandardContext.
+            assert(name.startsWith("META-INF/resources/"));
             // META-INF/resources punch-in
             if (name.startsWith("META-INF/resources/")) {
                 URL url = super.findResource(name);
@@ -236,7 +240,7 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
                     return url;
                 }
             } else {
-                return super.getResource(name);
+                return super.getResourceFromJars(name);
             }
             return null;
         }
