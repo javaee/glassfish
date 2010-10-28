@@ -137,9 +137,12 @@ public class InstanceHandler {
         return list;
     }
  
+   // FIXME: There's no reason to call each endpoint once for each option.  They can
+   // be passed several JVM Options, and they'll do the right thing.
    @Handler(id="saveJvmOptionValues",
         input={
             @HandlerInput(name="endpoint",   type=String.class, required=true),
+            @HandlerInput(name="target",   type=String.class, required=true),
             @HandlerInput(name="attrs", type=Map.class, required=false),
             @HandlerInput(name="options",   type=List.class)} )
    public static void saveJvmOptionValues(HandlerContext handlerCtx) {
@@ -147,6 +150,7 @@ public class InstanceHandler {
             String endpoint = (String) handlerCtx.getInputValue("endpoint");
             List<Map<String, String>> options = (List) handlerCtx.getInputValue("options");
             Map<String, Object> payload = new HashMap<String, Object>();
+            payload.put("target", (String) handlerCtx.getInputValue("target"));
             deleteJvmOptions(handlerCtx);
             for (Map<String, String> oneRow : options) {
                 String str = oneRow.get(PROPERTY_VALUE);
@@ -172,6 +176,8 @@ public class InstanceHandler {
     public static void deleteJvmOptions(HandlerContext handlerCtx) throws Exception{
         Map<String, Object> payload = new HashMap<String, Object>();
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
+        String target = (String) handlerCtx.getInputValue("target");
+        payload.put("target", target);
         ArrayList list = getJvmOptions(handlerCtx);
         for (Object s: list) {
             String str = (String)s;

@@ -61,7 +61,7 @@
                             result => $attribute{objStr});
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    saveJvmOptionValues(endpoint="#{pageSession.profilerUrl}/jvm-options" options="$attribute{newList}");
+                    saveJvmOptionValues(endpoint="#{pageSession.profilerUrl}/jvm-options", target="#{pageSession.configName}", options="$attribute{newList}");
                     prepareSuccessfulMsg();
                     gf.redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
                 />
@@ -78,7 +78,7 @@
                             onlyUseAttrs="#{pageSession.onlyUseAttrs}");
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    saveJvmOptionValues(endpoint="#{pageSession.profilerUrl}/jvm-options" options="$attribute{newList}");
+                    saveJvmOptionValues(endpoint="#{pageSession.profilerUrl}/jvm-options", target="#{pageSession.configName}", options="$attribute{newList}");
                 prepareSuccessfulMsg();
                 gf.redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
                 />
