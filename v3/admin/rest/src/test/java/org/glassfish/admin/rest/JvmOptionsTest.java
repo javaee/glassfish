@@ -59,6 +59,14 @@ import static org.junit.Assert.*;
 public class JvmOptionsTest extends RestTestBase {
     protected static final String URL_SERVER_JVM_OPTIONS = "/domain/configs/config/server-config/java-config/jvm-options";
     protected static final String URL_DEFAULT_JVM_OPTIONS = "/domain/configs/config/default-config/java-config/jvm-options";
+    
+    protected static final String URL_SERVER_CONFIG_CREATE_PROFILER = "/domain/configs/config/server-config/java-config/create-profiler";
+    protected static final String URL_SERVER_CONFIG_DELETE_PROFILER = "/domain/configs/config/server-config/java-config/profiler/delete-profiler";
+    protected static final String URL_SERVER_CONFIG_PROFILER_JVM_OPTIONS = "/domain/configs/config/server-config/java-config/profiler/jvm-options";
+    
+    protected static final String URL_DEFAULT_CONFIG_CREATE_PROFILER = "/domain/configs/config/default-config/java-config/create-profiler";
+    protected static final String URL_DEFAULT_CONFIG_DELETE_PROFILER = "/domain/configs/config/default-config/java-config/profiler/delete-profiler";
+    protected static final String URL_DEFAULT_CONFIG_PROFILER_JVM_OPTIONS = "/domain/configs/config/default-config/java-config/profiler/jvm-options";
 
     @Test
     public void getJvmOptions() {
@@ -125,6 +133,7 @@ public class JvmOptionsTest extends RestTestBase {
 
         Map<String, String> newOptions = new HashMap<String, String>() {{
             put(optionName, "");
+            put("target", configName);
         }};
         MultivaluedMap formData = new MultivaluedMapImpl() {{
             add("id", "default-config");
@@ -146,6 +155,42 @@ public class JvmOptionsTest extends RestTestBase {
         assertFalse(jvmOptions.contains(optionName));
 
         configTest.deleteAndVerifyConfig(configName);
+    }
+    
+    @Test
+    public void testProfilerJvmOptions() {
+        final String profilerName = "profiler" + generateRandomString();
+        final String optionName = "-Doption" + generateRandomString();
+        Map<String, String> attrs = new HashMap<String, String>() {{
+            put("name", profilerName);
+            put("target", "server-config");
+        }};
+        Map<String, String> newOptions = new HashMap<String, String>() {{
+            put("target", "server-config");
+            put("profiler", "true");
+            put(optionName, "");
+        }};
+        
+        deleteProfiler(URL_SERVER_CONFIG_DELETE_PROFILER, "server-config", false);
+
+        ClientResponse response = post(URL_SERVER_CONFIG_CREATE_PROFILER, attrs);
+        assertTrue(isSuccess(response));
+        
+        response = post(URL_SERVER_CONFIG_PROFILER_JVM_OPTIONS, newOptions);
+        assertTrue(isSuccess(response));
+        
+        response = get(URL_SERVER_CONFIG_PROFILER_JVM_OPTIONS);
+        List<String> jvmOptions = getJvmOptions(response);
+        assertTrue(jvmOptions.contains(optionName));
+        
+        deleteProfiler(URL_SERVER_CONFIG_DELETE_PROFILER, "server-config", true);
+    }
+    
+    protected void deleteProfiler(final String url, final String target, final boolean failOnError) {
+        ClientResponse response = delete (url, new HashMap() {{ put ("target", target); }});
+        if (failOnError) {
+            assertTrue(isSuccess(response));
+        }
     }
 
     protected List<String> getJvmOptions(ClientResponse response) {

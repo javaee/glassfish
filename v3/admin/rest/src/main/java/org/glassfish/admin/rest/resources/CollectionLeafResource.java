@@ -287,26 +287,29 @@ public abstract class CollectionLeafResource {
             StringBuilder options = new StringBuilder();
             String sep = "";
             for (Map.Entry<String, String> entry : data.entrySet()) {
-                options.append(sep)
-                        .append(entry.getKey());
+                String key = entry.getKey();
+                if ("target".equals(key) || "profiler".equals(key)) {
+                    results.put(key, entry.getValue());
+                } else {
+                    options.append(sep).append(entry.getKey());
 
-                String value = entry.getValue();
-                if ((value != null) && (!value.isEmpty())) {
-                        options.append("=")
-                                .append(entry.getValue());
+                    String value = entry.getValue();
+                    if ((value != null) && (!value.isEmpty())) {
+                        options.append("=").append(entry.getValue());
+                    }
+                    sep = ":";
                 }
-                sep = ":";
             }
 
             results.put("id", options.toString());
         }
 
-        List<PathSegment> segments = uriInfo.getPathSegments();
-
-        // TODO: Ugly hack.  This needs to be done differently
-        if (segments.get(segments.size()-1).getPath().equals("jvm-options")) {
-            results.put("target", segments.get(segments.size()-3).getPath());
-        }
+//        List<PathSegment> segments = uriInfo.getPathSegments();
+//
+//        // TODO: Ugly hack.  This needs to be done differently
+//        if (segments.get(segments.size()-1).getPath().equals("jvm-options")) {
+//            results.put("target", segments.get(segments.size()-3).getPath());
+//        }
 
         return results;
     }
