@@ -100,7 +100,7 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
         assertTrue(selenium.isTextPresent(hostText));
         assertEquals(host, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:HostProp:Host"));
         clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_JMS_HOSTS);
-        deleteRow("propertyForm:configs:topActionsGroup1:deleteButton", "propertyForm:configs", hostText, "col0", "colName");
+        deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", hostText, "col0", "colName");
     }
 
     @Test
@@ -147,6 +147,6 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
 
         clickAndWait("propertyForm:configs:topActionsGroup1:flushButton", TRIGGER_FLUSH);
 
-        deleteRow("propertyForm:configs:topActionsGroup1:deleteButton", "propertyForm:configs", name);
+        deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", name);
     }
 }
