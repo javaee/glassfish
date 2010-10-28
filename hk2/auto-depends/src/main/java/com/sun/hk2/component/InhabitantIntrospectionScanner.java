@@ -175,6 +175,9 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
      * @param interfaces list of interfaces im is extending
      */
     private void getAllContractInterfaces(InterfaceModel im, Collection<String> interfaces) {
+        
+        if (im==null) return;
+        
         if (isContract(im)) {
             interfaces.add(im.getName());
         }
