@@ -141,15 +141,17 @@ public class LoggingHandlers {
     @Handler(id = "saveLoggingAttributes",
     input = {
         @HandlerInput(name = "attrs", type = Map.class, required=true),
+        @HandlerInput(name = "attrsInUI", type = String.class, required=true), // added because of Logging backend bug
         @HandlerInput(name = "config", type = String.class, required=true)
     })
 
     public static void saveLoggingAttributes(HandlerContext handlerCtx) {
         Map<String,Object> attrs = (Map<String,Object>) handlerCtx.getInputValue("attrs");
-
+        String attrsInUI = (String)handlerCtx.getInputValue("attrsInUI");
+        String[] attrNames = attrsInUI.split(",");
         String config = (String)handlerCtx.getInputValue("config");
         Map<String, Object> props = new HashMap();
-        for(String key : attrs.keySet()){
+        for(String key : attrNames){
             props.put("id", key + "=" + attrs.get(key));
             props.put("target", config);
             RestApiHandlers.restRequest((String)GuiUtil.getSessionValue("REST_URL") + "/set-log-attributes.json",

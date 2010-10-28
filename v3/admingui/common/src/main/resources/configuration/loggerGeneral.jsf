@@ -54,7 +54,7 @@
         setSessionAttribute(key="loggingTabs" value="loggerGeneral");
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="rest-api" value="true");
-
+        setPageSessionAttribute(key="attrsInUI",value="com.sun.enterprise.server.logging.SyslogHandler.useSystemLogging,com.sun.enterprise.server.logging.GFFileHandler.logtoConsole,com.sun.enterprise.server.logging.GFFileHandler.file,handlers,com.sun.enterprise.server.logging.GFFileHandler.rotationLimitInBytes,com.sun.enterprise.server.logging.GFFileHandler.rotationTimelimitInMinutes,com.sun.enterprise.server.logging.GFFileHandler.flushFrequency");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/configuration/loggerGeneral.jsf?configName=#{pageSession.configName}");
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
@@ -85,7 +85,7 @@
             <sun:button id="saveButton"  text="$resource{i18n.button.Save}"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
-                    saveLoggingAttributes(attrs="#{pageSession.logAttributes}" config="#{pageSession.configName}");
+                    saveLoggingAttributes(attrs="#{pageSession.logAttributes}" attrsInUI="#{pageSession.attrsInUI}" config="#{pageSession.configName}");
                     prepareSuccessfulMsg();
                     gf.redirect(page="#{request.contextPath}/common/configuration/loggerGeneral.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
