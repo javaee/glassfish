@@ -56,104 +56,13 @@ import javax.naming.NamingException;
  */
 public class EmbeddedProviderContainerContractInfo extends ServerProviderContainerContractInfo {
 
-    private static final String DEFAULT_EMBEDDED_DS_NAME = "jdbc/__embedded_default";  // NOI18N
-
-    private Habitat habitat;
-
-    public EmbeddedProviderContainerContractInfo(DeploymentContext deploymentContext, ConnectorRuntime connectorRuntime, Habitat habitat, boolean isDas) {
+    public EmbeddedProviderContainerContractInfo(DeploymentContext deploymentContext, ConnectorRuntime connectorRuntime, boolean isDas) {
         super(deploymentContext, connectorRuntime, isDas);
-        this.habitat = habitat;
     }
-
-    /**
-     * get name of default data source. If running in embedded mode, create default data source if one does not exist
-     *
-     * @return
-     */
-/*
-    @Override
-    public String getDefaultDataSourceName() {
-        //User is running without defining a data source. Create one if required and return its name
-        checkAndCreateDefaultDSResource();
-        return DEFAULT_EMBEDDED_DS_NAME;
-    }
-*/
 
     @Override
     public boolean isWeavingEnabled() {
         return false; //Weaving is not enabled while running in embedded environment
-    }
-
-    /**
-     * Check if DEFAULT_EMBEDDED_DS_NAME exists if not create it
-     */
-    private void checkAndCreateDefaultDSResource() {
-        boolean dataSourceExist = true;
-        try {
-            lookupDataSource(DEFAULT_EMBEDDED_DS_NAME);
-        } catch (NamingException e) {
-            dataSourceExist = false;
-        }
-
-        if (!dataSourceExist) {
-            createDefaultDSResource();
-        }
-    }
-
-
-    private static final String CONNECTION_POOL_ID = "__embedded_default_pool";
-    private static final String CONNECTION_POOL_DB_NAME = "${com.sun.aas.instanceRoot}/lib/databases/embedded_default";
-    private static final String EMBEDDED_DERBY_DS_NAME = "org.apache.derby.jdbc.EmbeddedDataSource";
-
-    /**
-     * Create JDBC resource and corresponding DataSource resource  
-     */
-    private void createDefaultDSResource() {
-        // Create JDBC  connection pool
-        ParameterMap params = new ParameterMap();
-        params.add("datasourceclassname", EMBEDDED_DERBY_DS_NAME);
-        params.add("property", "databaseName=" + CONNECTION_POOL_DB_NAME + ":connectionAttributes=\\;create\\=true");
-        params.add("jdbc_connection_pool_id", CONNECTION_POOL_ID);
-        runCommand("create-jdbc-connection-pool", params);
-
-        // Create JDBC resource
-        params = new ParameterMap();
-        params.add("connectionpoolid", CONNECTION_POOL_ID);
-        params.add("jndi_name", DEFAULT_EMBEDDED_DS_NAME);
-        runCommand("create-jdbc-resource", params);
-
-        // The actual publishing of the resource into JNDI tree happens in response to asynchronous event
-        // To make sure that the event actually got dispatched and the resource did get published, try to look up
-        // the resource before returning
-        final int NO_OF_RETRIES = 5;
-        final int MILIS_TO_SLEEP = 200;
-        boolean lookupSucceeded = false;
-        for (int i = 0 ; i < NO_OF_RETRIES && !lookupSucceeded; i++) {
-            try {
-                lookupDataSource(DEFAULT_EMBEDDED_DS_NAME);
-                lookupSucceeded = true;
-            } catch (NamingException e) {
-                try {
-                    //Sleep to give the asynchronous notification a chance to go through
-                    Thread.sleep(MILIS_TO_SLEEP);
-                } catch (InterruptedException e1) {
-                    //ignore
-                }
-            } 
-        }
-    }
-
-    /**
-     * Executes the specified __asadmin command.
-     * @param commandName the command to execute
-     * @param parameters  the command parameters
-     * @return ActionReport object with command execute status details.
-     */
-    private ActionReport runCommand(String commandName, ParameterMap parameters) {
-        CommandRunner cr = habitat.getComponent(CommandRunner.class);
-        ActionReport ar = habitat.getComponent(ActionReport.class);
-        cr.getCommandInvocation(commandName, ar).parameters(parameters).execute();
-        return ar;
     }
 
 }

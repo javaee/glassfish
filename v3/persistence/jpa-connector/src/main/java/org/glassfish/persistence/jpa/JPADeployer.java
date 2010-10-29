@@ -156,7 +156,7 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
                         if(referencedPus.contains(pud)) {
                             boolean isDas = isDas();
                             ProviderContainerContractInfo providerContainerContractInfo = serverEnvironment.isEmbedded() ?
-                                    new EmbeddedProviderContainerContractInfo(context, connectorRuntime, habitat, isDas) :
+                                    new EmbeddedProviderContainerContractInfo(context, connectorRuntime, isDas) :
                                     new ServerProviderContainerContractInfo(context, connectorRuntime, isDas);
                             PersistenceUnitLoader puLoader = new PersistenceUnitLoader(pud, providerContainerContractInfo);
                             // Store the puLoader in context. It is retrieved to execute java2db and to
