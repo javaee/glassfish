@@ -136,6 +136,26 @@
  
 
       </Realization>
+      
+        <Realization>
+        <OS>
+          <Type>unix</Type>
+          <Name>HPUX</Name>
+          <Arch>IA64N</Arch>
+          <OtherArch>IA64W</OtherArch>
+          <OtherArch>PA-RISC</OtherArch>
+          <VersionCertified>
+            <VersionBaseline>B.11.31</VersionBaseline>
+          </VersionCertified>
+          <RequirementsRealization>
+            <Item type="disk">30Mb</Item>
+             <Item type="ram">1Gb</Item>
+             <Item type="speed">800MHz</Item>
+          </RequirementsRealization>
+      </OS> 
+ 
+
+      </Realization>
 
       <Realization version="0.5.0.0">
         <OS>

@@ -79,6 +79,10 @@ if [ "`uname -s`" = Darwin ] ; then
   GETTEXT=echo
 fi
 
+if [ "`uname -s`" = HP-UX ] ; then
+  GETTEXT=echo
+fi
+
 # global settings
 JAVAHOME=""				# java home path
 JAVA_OPTIONS=""			# java options

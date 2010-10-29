@@ -123,6 +123,27 @@
         <InstallableUnit>Resources.zip</InstallableUnit>
 	<InstallableUnit>metadata.zip</InstallableUnit>
       </Realization>
+      
+       <Realization>
+        <OS>
+          <Type>unix</Type>
+          <Name>HPUX</Name>
+          <Arch>IA64N</Arch>
+          <OtherArch>IA64W</OtherArch>
+          <OtherArch>PA-RISC</OtherArch>
+          <VersionCertified>
+            <VersionBaseline>B.11.31</VersionBaseline>
+          </VersionCertified>
+          <RequirementsRealization>
+            <Item type="disk">3Mb</Item>
+          </RequirementsRealization>
+      </OS>
+         
+        <InstallableUnit>Engine.zip</InstallableUnit>
+        <InstallableUnit>Resources.zip</InstallableUnit>
+	<InstallableUnit>metadata.zip</InstallableUnit>
+      </Realization>
+
 
       <Realization>
         <OS>
