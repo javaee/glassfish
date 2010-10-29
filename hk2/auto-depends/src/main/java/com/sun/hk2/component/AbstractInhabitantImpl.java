@@ -125,10 +125,15 @@ public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T>  {
     }
     
     public <V extends Annotation> V getAnnotation(Class<V> annotation) {
-        return getAnnotation(type(), annotation);
+        return getAnnotation(type(), annotation, false);
     }
     
-    protected static <V extends Annotation> V getAnnotation(Class<?> annotated, Class<V> annotation) {
+    /**
+     * FOR INTERNAL USE TO HK2
+     */
+    public static <V extends Annotation> V getAnnotation(Class<?> annotated,
+        Class<V> annotation,
+        boolean walkParentChain) {
       V v = annotated.getAnnotation(annotation);
       if (null != v) {
           return v;
@@ -139,6 +144,13 @@ public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T>  {
           if (null != v) {
               return v;
           }
+      }
+      
+      if (walkParentChain) {
+        annotated = annotated.getSuperclass();
+        if (null != annotated) {
+          return getAnnotation(annotated, annotation, true);
+        }
       }
       
       return null;
