@@ -82,7 +82,6 @@ public class InstallNodeCommand extends CLICommand {
     @Param(optional = true)
     private String sshkeyfile;
 
-
     @Param(name="archivedir", optional = true)
     private String archiveDir;
 
@@ -107,8 +106,9 @@ public class InstallNodeCommand extends CLICommand {
     @Inject
     SSHLauncher sshLauncher;
 
+    @Override
     protected void validate() throws CommandException {
-
+        
     }
 
     @Override
@@ -148,19 +148,27 @@ public class InstallNodeCommand extends CLICommand {
                 sftpClient.mkdirs(installDir, 0755);
             }
             
-
+            String zip = zipFile.getCanonicalPath();
+            logger.info("Copying " + zip + " (" + zipFile.length() +" bytes)" + " to " + host + ":" + installDir);
             scpClient.put(zipFile.getAbsolutePath(), installDir);
+            logger.finer("Copied " + zip + " to " + host + ":" + installDir);
+            
+            logger.info("Installing " + zip + " into " + host + ":" + installDir);
             String unzipCommand = "cd " + installDir + "; jar -xvf glassfish.zip";
             sshLauncher.runCommand(unzipCommand, outStream);
+            logger.finer("Installed " + zip + " into " + host + ":" + installDir);
+            
+            logger.info("Removing " + host + ":" + installDir + "/glassfish.zip");
             sftpClient.rm(installDir + "/glassfish.zip");
+            logger.finer("Removed " + host + ":" + installDir + "/glassfish.zip");
+            
+            logger.info("Fixing file permissions of all files under " + host + ":" + installDir + "/bin");
             for (String binDirFile: binDirFiles) {
                 sftpClient.chmod((installDir + "/" + binDirFile), 0755);
             }
-            
-
+            logger.finer("Fixed file permissions of all files under " + host + ":" + installDir + "/bin");
         }
     }
-
 
     private File createZipFile(String baseRootValue, ArrayList<String> binDirFiles) throws IOException, ZipFileException {
 
@@ -173,6 +181,7 @@ public class InstallNodeCommand extends CLICommand {
             zipFileLocation = new File(archiveDir);
             glassFishZipFile = new File(zipFileLocation, "glassfish.zip");
             if (glassFishZipFile.exists() && !recreate) {
+                logger.finer("Found " + glassFishZipFile.getCanonicalPath());
                 return glassFishZipFile;
             } else if (!zipFileLocation.canWrite()) {
                 throw new IOException ("Cannot write to " + archiveDir);
@@ -185,6 +194,7 @@ public class InstallNodeCommand extends CLICommand {
 
         glassFishZipFile = new File(zipFileLocation, "glassfish.zip");
         if (glassFishZipFile.exists() && !recreate) {
+            logger.finer("Found " + glassFishZipFile.getCanonicalPath());
             return glassFishZipFile;
         }
 
@@ -206,13 +216,13 @@ public class InstallNodeCommand extends CLICommand {
             }
         }
 
-       String [] filesToZip = new String[resultFiles.size()];
+        String [] filesToZip = new String[resultFiles.size()];
         filesToZip = resultFiles.toArray(filesToZip);
 
         ZipWriter writer = new ZipWriter(glassFishZipFile.getCanonicalPath(), installRoot.toString(), filesToZip);
         writer.safeWrite();
+        logger.info("Created installation zip " + glassFishZipFile.getCanonicalPath());
 
         return glassFishZipFile;
-
     }
 }
