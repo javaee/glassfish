@@ -38,10 +38,12 @@ package org.jvnet.hk2.junit;
 
 import com.sun.hk2.component.*;
 import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.Enableable;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.HabitatFactory;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantsParserFactory;
+import org.jvnet.hk2.component.RunLevelService;
 import org.jvnet.hk2.component.classmodel.ClassPath;
 import org.jvnet.hk2.component.classmodel.InhabitantsFeed;
 import org.jvnet.hk2.component.classmodel.InhabitantsParsingContextGenerator;
@@ -65,13 +67,15 @@ public class Hk2TestServices {
     
     private final HabitatFactory habitatFactory;
     private final InhabitantsParserFactory ipFactory;
+    private final boolean defaultRLSEnabled;
     
     public Hk2TestServices() {
-        this(null, null);
+        this(null, null, true);
     }
 
     protected Hk2TestServices(Class<? extends HabitatFactory> habitatFactoryClass,
-        Class<? extends InhabitantsParserFactory> ipFactoryClass) {
+        Class<? extends InhabitantsParserFactory> ipFactoryClass,
+        boolean defaultRLSEnabled) {
       if (null == habitatFactoryClass || habitatFactoryClass.isInterface()) {
           this.habitatFactory = null;
       } else {
@@ -92,11 +96,14 @@ public class Hk2TestServices {
           }
       }
       
+      this.defaultRLSEnabled = defaultRLSEnabled;
+      
       logger.log(Level.FINER, "Singleton created");
 
       habitat = createHabitat();
       InhabitantsParser ip = createInhabitantsParser(habitat);
       populateHabitat(habitat, ip);
+      preInitialized();
       habitat.initialized();
     }
 
@@ -130,6 +137,13 @@ public class Hk2TestServices {
       }
     }
 
+    protected void preInitialized() {
+      RunLevelService<?> rls = habitat.getComponent(RunLevelService.class, "default");
+      if (Enableable.class.isInstance(rls)) {
+        ((Enableable)rls).enable(defaultRLSEnabled);
+      }
+    }
+    
     public Habitat getHabitat() {
         return habitat;
     }

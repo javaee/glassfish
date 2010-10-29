@@ -53,6 +53,7 @@ import javax.annotation.PostConstruct;
 
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.Enableable;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.HabitatListener;
 import org.jvnet.hk2.component.Inhabitant;
@@ -222,7 +223,7 @@ import com.sun.hk2.component.RunLevelInhabitant;
  * 
  * @since 3.1
  */
-public class DefaultRunLevelService implements RunLevelService<Void>,
+public class DefaultRunLevelService implements RunLevelService<Void>, Enableable,
     RunLevelState<Void>, InhabitantListener, HabitatListener, InhabitantSorter, InhabitantActivator {
   // the initial run level
   public static final int INITIAL_RUNLEVEL = -2;
@@ -275,6 +276,9 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
 
   // the "active" proceedTo worker
   private Worker worker;
+  
+  // @see Enableable
+  private boolean enabled = true;
   
   // used for eventing an {@link RunLevelListener}s
   private enum ListenerEvent {
@@ -378,6 +382,16 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
     }
   }
   
+  @Override
+  public void enable(boolean enabled) throws IllegalStateException {
+    this.enabled = enabled;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return enabled;
+  }
+
   /**
    * Returns true if the RunLevel for the given inhabitant in question
    * should be processed by this RunLevelService instance.
@@ -559,7 +573,9 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
   public boolean inhabitantChanged(HabitatListener.EventType eventType,
       Habitat habitat, Inhabitant<?> inhabitant) {
     if (org.jvnet.hk2.component.HabitatListener.EventType.HABITAT_INITIALIZED == eventType) {
-      proceedTo(KERNEL_RUNLEVEL);
+      if (isEnabled()) {
+        proceedTo(KERNEL_RUNLEVEL);
+      }
     }
     return !habitat.isInitialized();
   }
@@ -587,6 +603,10 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
   }
   
   protected void proceedTo(Integer runLevel, boolean isHardInterrupt) {
+    if (!isEnabled()) {
+      throw new IllegalStateException("disabled state");
+    }
+    
     if (null != runLevel && runLevel < KERNEL_RUNLEVEL) {
       throw new IllegalArgumentException();
     }
@@ -1148,5 +1168,6 @@ public class DefaultRunLevelService implements RunLevelService<Void>,
   public static class Interrupt extends RuntimeException {
     private Interrupt() {}
   }
+
 
 }
