@@ -388,4 +388,14 @@ public interface JavaEETransactionManager extends TransactionManager {
      * @param xaResource XAResource to register for recovery
      */
     public void registerRecoveryResourceHandler(XAResource xaResource);
+
+    /**
+     * Returns the value to be used to purge transaction tasks after the specified number of cancelled tasks
+     */
+    public int getPurgeCancelledTtransactionsAfter();
+
+    /**
+     * Allows to purge transaction tasks after the specified value of cancelled tasks
+     */
+    public void setPurgeCancelledTtransactionsAfter(int value);
 }

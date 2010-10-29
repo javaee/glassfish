@@ -124,6 +124,8 @@ public class JavaEETransactionManagerSimplified
     private int transactionTimeout;
     private ThreadLocal<Integer> txnTmout = new ThreadLocal();
 
+    private int purgeCancelledTtransactions = 0;
+
     // admin and monitoring related parameters
     private  static final Hashtable statusMap = new Hashtable();
     private Vector activeTransactions = new Vector();
@@ -1031,6 +1033,22 @@ public class JavaEETransactionManagerSimplified
 
         txnTmout.set(seconds);
         // transactionTimeout = seconds;
+    }
+
+    /**
+     * Modify the value to be used to purge transaction tasks after the 
+     * specified number of cancelled tasks.
+     */
+    public void setPurgeCancelledTtransactionsAfter(int num) {
+        purgeCancelledTtransactions = num;
+    }
+
+    /**
+     * Returns the value to be used to purge transaction tasks after the 
+     * specified number of cancelled tasks.
+     */
+    public int getPurgeCancelledTtransactionsAfter() {
+        return purgeCancelledTtransactions;
     }
 
     public JavaEETransaction getCurrentTransaction() { 

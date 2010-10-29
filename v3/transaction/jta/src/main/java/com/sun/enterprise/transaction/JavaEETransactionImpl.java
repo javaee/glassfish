@@ -126,6 +126,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
 
     static private boolean isTimerInitialized = false;
     static private Timer timer = null;
+    static private long timerTasksScheduled = 0; // Global counter
 
     static synchronized private void initializeTimer() {
         if (isTimerInitialized)
@@ -151,6 +152,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
         if (!isTimerInitialized)
             initializeTimer();
         timer.schedule(this,timeout * 1000L);
+        timerTasksScheduled++;
         isTimerTask = true;
         this.timeout = timeout;
     }
@@ -187,6 +189,13 @@ public final class JavaEETransactionImpl extends TimerTask implements
     // Cancels the timertask and returns the timeout
     public int cancelTimerTask() {
         cancel();
+        int mod = javaEETM.getPurgeCancelledTtransactionsAfter();
+        if (mod > 0 && timerTasksScheduled % mod == 0) {
+            int purged = timer.purge();
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Purged " + purged + " timer tasks from canceled queue");
+            } 
+        }
         return timeout;
     }
 
@@ -377,7 +386,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
         // START local transaction timeout
         // If this transaction is set for timeout, cancel it as it is in the commit state
         if (isTimerTask)
-            cancel();
+            cancelTimerTask();
 
         // END local transaction timeout
         if (_logger.isLoggable(Level.FINE)) {
@@ -541,7 +550,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
         // START local transaction timeout
         // If this transaction is set for timeout, cancel it as it is in the rollback state
         if (isTimerTask)
-            cancel();
+            cancelTimerTask();
         // END local transaction timeout
 
         if (_logger.isLoggable(Level.FINE)) {
