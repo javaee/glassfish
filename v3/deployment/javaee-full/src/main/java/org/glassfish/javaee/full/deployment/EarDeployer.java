@@ -495,10 +495,12 @@ public class EarDeployer implements Deployer {
         }
 
         String [] incompatibleTypes = mainSniffer.getIncompatibleSnifferTypes();
+
+        List<String> allIncompatTypes = addAdditionalIncompatTypes(mainSniffer, incompatibleTypes);
         
         List<Sniffer> sniffersToRemove = new ArrayList<Sniffer>();
         for (Sniffer sniffer : sniffers) {
-            for (String incompatType : incompatibleTypes) {
+            for (String incompatType : allIncompatTypes) {
                 if (sniffer.getModuleType().equals(incompatType)) {
                     logger.warning(type + " module [" + 
                         md.getArchiveUri() + 
@@ -513,5 +515,20 @@ public class EarDeployer implements Deployer {
         sniffers.removeAll(sniffersToRemove);
 
         return sniffers;
+    }
+
+    // this is to add additional incompatible sniffers at ear level where 
+    // we have information to determine what is the main sniffer
+    private List<String> addAdditionalIncompatTypes(Sniffer mainSniffer, String[] incompatTypes) {
+        List<String> allIncompatTypes = new ArrayList<String>();
+        for (String incompatType : incompatTypes) {
+            allIncompatTypes.add(incompatType);
+        }
+        if (mainSniffer.getModuleType().equals("appclient")) {
+            allIncompatTypes.add("ejb");
+        } else if (mainSniffer.getModuleType().equals("ejb")) {
+            allIncompatTypes.add("appclient");
+        }
+        return allIncompatTypes;
     }
 }
