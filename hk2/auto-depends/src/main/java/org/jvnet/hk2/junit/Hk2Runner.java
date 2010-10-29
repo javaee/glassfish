@@ -48,6 +48,8 @@ import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 import org.jvnet.hk2.component.*;
 
+import com.sun.hk2.component.AbstractInhabitantImpl;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -83,7 +85,7 @@ public class Hk2Runner extends Runner {
     
     public Hk2Runner(Class<?> testClass) {
         this.testClass = testClass;
-        this.options = testClass.getAnnotation(Hk2RunnerOptions.class);
+        this.options = AbstractInhabitantImpl.getAnnotation(testClass, Hk2RunnerOptions.class, true);
         this.description = Description.createSuiteDescription(testClass);
         
         for (Method m : testClass.getDeclaredMethods()) {
