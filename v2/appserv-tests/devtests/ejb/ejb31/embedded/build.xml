@@ -3,15 +3,21 @@
 <!DOCTYPE project [
 <!ENTITY commonSetup SYSTEM "file:./../../../../config/properties.xml">
 <!ENTITY commonBuild SYSTEM "file:./../../../../config/common.xml">
+<!ENTITY embeddedCommon SYSTEM "file:./embedded.xml">
 <!ENTITY reporting   SYSTEM "file:./../../report.xml">
 ]>
 
 <project name="embedded" default="usage" basedir=".">
+    &embeddedCommon;
     &commonSetup;
     &commonBuild;
     &reporting;
 
     <target name="all">
+        <!-- disallow individual tests from starting and stopping database -->
+        <property name="skip.start.database" value="true"/>
+        <property name="skip.stop.database" value="true"/>
+        <antcall target="start-derby"/>
         <antcall target="basic"/>
         <antcall target="testclose"/>
         <antcall target="twomodules"/>
@@ -22,6 +28,7 @@
         <antcall target="ejbinwar"/>
         <antcall target="ejbandwar"/>
         <antcall target="skipjar"/>
+        <antcall target="stop-derby"/>
     </target>
 
     <target name="basic">

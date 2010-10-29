@@ -20,3 +20,19 @@
   <isset property="uber.mode"/>
 </condition>
 
+
+<target name="start-database" unless="skip.start.database">
+    <antcall target="start-derby"/>
+</target>
+
+<target name="start-derby" unless="uber.mode">
+    <antcall target="startDerby"/>
+</target>
+
+<target name="stop-database" unless="skip.stop.database">
+    <antcall target="stop-derby"/>
+</target>
+
+<target name="stop-derby" unless="uber.mode">
+    <antcall target="stopDerby"/>
+</target>
