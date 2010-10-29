@@ -1,0 +1,8 @@
+-exportcontents: \
+                            org.glassfish.hk2.classmodel.reflect; \
+                            org.glassfish.hk2.classmodel.reflect.util
+
+
+Import-Package: \
+                        org.objectweb.asm;password=GlassFish;resolution:=optional, \
+                        org.objectweb.asm.commons;password=GlassFish;resolution:=optional
