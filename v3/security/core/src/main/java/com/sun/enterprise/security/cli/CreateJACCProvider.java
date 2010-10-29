@@ -94,10 +94,10 @@ public class CreateJACCProvider implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(CreateJACCProvider.class);
 
-    @Param(name="policyconfigfactoryclass")
+    @Param(name="policyconfigfactoryclass", alias="policyConfigurationFactoryProvider")
     private String polConfFactoryClass;
 
-    @Param(name="policyproviderclass")
+    @Param(name="policyproviderclass", alias="policyProvider")
     private String polProviderClass;
 
     @Param(name="jaccprovidername", primary=true)
