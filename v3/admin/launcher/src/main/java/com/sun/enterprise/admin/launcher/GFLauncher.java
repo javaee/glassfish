@@ -358,7 +358,17 @@ public abstract class GFLauncher {
             return;
         }
 
-        List<String> cmds = getCommandLine();
+        List<String> cmds = null;
+        if (OS.isDarwin()) {
+            // On MacOS we need to start long running process with
+            // StartupItemContext. See IT 12942
+            cmds = new ArrayList<String>();
+            cmds.add("/usr/libexec/StartupItemContext");
+            cmds.addAll(getCommandLine());
+        } else {
+            cmds = getCommandLine();
+        }
+
         ProcessBuilder pb = new ProcessBuilder(cmds);
 
         //pb.directory(getInfo().getConfigDir());
