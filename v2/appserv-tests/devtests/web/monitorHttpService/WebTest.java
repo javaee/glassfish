@@ -53,8 +53,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import org.glassfish.admingui.common.handlers.RestApiHandlers;
 import org.glassfish.admingui.common.util.RestResponse;
+import org.glassfish.admingui.common.util.RestUtil;
 
 /*
  * Unit test for Issue 9549: incorrect range stats
@@ -176,7 +176,7 @@ public class WebTest {
                 "/request/" + monitorPath;
         String resultStr = invokeURL(url);
         System.out.println("getCount: "+resultStr);
-        RestResponse response = RestApiHandlers.get(url);
+        RestResponse response = RestUtil.get(url);
         Map<String, Object> map = response.getResponse();
         
         return ((Long)((Map)((Map)((Map)((Map)map.get("data")).get("extraProperties")).get(
