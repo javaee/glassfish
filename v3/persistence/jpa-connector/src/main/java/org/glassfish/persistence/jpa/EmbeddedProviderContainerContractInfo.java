@@ -70,12 +70,14 @@ public class EmbeddedProviderContainerContractInfo extends ServerProviderContain
      *
      * @return
      */
+/*
     @Override
     public String getDefaultDataSourceName() {
         //User is running without defining a data source. Create one if required and return its name
         checkAndCreateDefaultDSResource();
         return DEFAULT_EMBEDDED_DS_NAME;
     }
+*/
 
     @Override
     public boolean isWeavingEnabled() {
