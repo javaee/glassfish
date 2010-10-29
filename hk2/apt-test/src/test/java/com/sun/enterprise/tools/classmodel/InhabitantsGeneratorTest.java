@@ -371,15 +371,9 @@ public class InhabitantsGeneratorTest {
     {
       File testDir = new File(new File("."), "target/test-classes");
       File outputFile = new File(testDir, "META-INF/inhabitants/default");
-      outputFile.delete();
 
-      System.setProperty(InhabitantsGenerator.PARAM_INHABITANT_TARGET_FILE, 
-          outputFile.getAbsolutePath());
-      System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_SOURCE_FILES,
-          toString(getTestClassPathEntries(false)));
-      System.setProperty(InhabitantsGenerator.PARAM_INHABITANTS_CLASSPATH,
-          toString(getTestClassPathEntries(true)));
-      InhabitantsGenerator.main(null);
+      String output = callMain(outputFile, true, null, null, true);
+      assertNotNull(output);
     }
 
     // test it
@@ -400,12 +394,12 @@ public class InhabitantsGeneratorTest {
         count++;
 
         InputStream is = (InputStream) url.getContent();
-        String output = Utilities.sortInhabitantsDescriptor(toString(is), false);
+        String output = Utilities.sortInhabitantsDescriptor(toString(is), true);
         is.close();
 
         boolean fromClassModelIntrospection = 
           name.contains("apt-test/target/test-classes/META-INF/inhabitants/default");
-        String expected = expected(true, fromClassModelIntrospection, false);
+        String expected = expected(true, fromClassModelIntrospection, true);
 
         assertEquals(count + ": expected " + url + " to contain output:\n"
             + expected + "\nbut instead was:\n" + output
