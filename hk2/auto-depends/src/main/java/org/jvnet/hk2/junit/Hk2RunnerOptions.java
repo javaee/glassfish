@@ -62,6 +62,11 @@ public @interface Hk2RunnerOptions {
   boolean reinitializePerTest() default false;
   
   /**
+   * Flag indicating whether the default RunLevelService is enabled by default
+   */
+  boolean enableDefaultRunLevelService() default true;
+  
+  /**
    * Alternative Habitat Factory from the default 
    */
   Class<? extends HabitatFactory> habitatFactory() default HabitatFactory.class; 

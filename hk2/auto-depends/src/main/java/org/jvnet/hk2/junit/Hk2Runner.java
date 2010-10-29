@@ -231,10 +231,12 @@ public class Hk2Runner extends Runner {
         return singleton.getHabitat();
     }
 
+    @SuppressWarnings("unchecked")
     private void wombInit() {
         singleton = new Hk2TestServices(
                 null == options ? null : options.habitatFactory(),
-                null == options ? null : options.inhabitantsParserFactory());
+                null == options ? null : options.inhabitantsParserFactory(),
+                null == options ? true : options.enableDefaultRunLevelService());
 
         Habitat habitat = singleton.getHabitat();
         // so far we don't support extra meta-data on our tests.
