@@ -77,7 +77,7 @@ public class StopDomainCommand extends StopServer implements AdminCommand {
     @Inject
     ServerEnvironment env;
 
-    @Param(optional=true, defaultValue="true")
+    @Param(optional=true, defaultValue="false")
     Boolean force;
     
 

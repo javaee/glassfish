@@ -41,7 +41,12 @@ package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
+import com.sun.enterprise.universal.process.ProcessManager;
+import com.sun.enterprise.universal.process.ProcessManagerException;
+import com.sun.enterprise.universal.process.ProcessUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.OS;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import java.util.Collection;
@@ -60,7 +65,6 @@ public class StopServer {
      */
     protected final void doExecute(ModulesRegistry registry, Logger logger, boolean force) {
         logger.info(localStrings.getLocalString("stop.domain.init", "Server shutdown initiated"));
-        boolean noSysExit = Boolean.parseBoolean(System.getenv("AS_NO_SYSTEM_EXIT"));
 
         Collection<Module> modules = registry.getModules(
                 "org.glassfish.core.glassfish");
@@ -72,9 +76,32 @@ public class StopServer {
             logger.warning(modules.size() + " no of primordial modules found");
         }
 
-        if (!noSysExit && force) {
+        if(force)
+            kill();
+        else
             System.exit(0);
+    }
+
+    private final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(StopServer.class);
+
+    /*
+     * No more Mr. Nice Guy!!
+     * we should NOT return from here!
+     *
+     */
+    private void kill() {
+        int pid = ProcessUtils.getPid();
+        ProcessManager pm = null;
+        try {
+            if (OS.isWindowsForSure())
+                pm = new ProcessManager("taskkill", "/pid", "" + pid);
+            else
+                pm = new ProcessManager("kill", "-9", "" + pid);
+
+            pm.execute();
+        }
+        catch (ProcessManagerException ex) {
+            // ignore
         }
     }
-    private final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(StopServer.class);
 }
