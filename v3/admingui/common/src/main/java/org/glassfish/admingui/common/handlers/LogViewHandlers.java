@@ -292,7 +292,7 @@ public class LogViewHandlers {
 	}
 
 	// Set the first / last record numbers as attributes
-	if ((records != null) && (records.size() > 1)) {
+	if ((records != null) && (records.size() > 0)) {
 	    handlerCtx.setOutputValue("firstRecord", records.get(0).get("recordNumber"));
 	    handlerCtx.setOutputValue("lastRecord", records.get(records.size()-1).get("recordNumber"));
 	    //hasResults = true;
