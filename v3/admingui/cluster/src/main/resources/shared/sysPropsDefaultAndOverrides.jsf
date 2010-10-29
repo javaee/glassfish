@@ -40,7 +40,7 @@
 
 -->
 
-<sun:title id="propertyContentPage" title="$resource{i18ncs.common.ConfigurationCol} $resource{i18ncs.SystemPropertiesTitle}" >
+<sun:title id="propertyContentPage" title="$resource{i18ncs.cluster.InstanceSystemProperties}" >
     <!beforeCreate
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/servers/server/#{pageSession.encodedInstanceName}");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/system-properties");
@@ -63,7 +63,6 @@
         }
 
         foreach(var="prop", list="#{pageSession.sysProps}") {
-            println("**** prop = #{prop}");
             setAttribute(key="tmp" value="#{prop.name}");
             setAttribute(key="overrideValue" value="#{prop.value}");
             if (!"#{overrideValue}") {

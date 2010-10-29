@@ -56,7 +56,7 @@
             setSessionAttribute(key="clusterInstanceTabs" value="configProps");
             gf.redirect(page="#{request.contextPath}/cluster/cluster/clusterInstanceConfigProperties.jsf?clusterName=#{pageSession.encodedClusterName}&instanceName=#{pageSession.encodedInstanceName}");
         />
-        <sun:tab id="configProps" immediate="$boolean{true}" text="$resource{i18n.inst.tab.ConfigProperties}" >
+        <sun:tab id="configProps" immediate="$boolean{true}" text="$resource{i18ncs.cluster.SystemPropertiesTab}" >
             <!command
                 setSessionAttribute(key="clusterInstanceTabs" value="configProps");
                 gf.redirect(page="#{request.contextPath}/cluster/cluster/clusterInstanceConfigProperties.jsf?clusterName=#{pageSession.encodedClusterName}&instanceName=#{pageSession.encodedInstanceName}");

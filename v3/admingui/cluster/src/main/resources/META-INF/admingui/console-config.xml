@@ -43,69 +43,58 @@
 
 <console-config id="cluster">
     <integration-point
-                id="clustersNode"
-                type="org.glassfish.admingui:navNode"
-                priority="300"
-                parentId="tree"
-                content="/cluster/clusterTreeNode.jsf"
-        />
+            id="clustersNode"
+            type="org.glassfish.admingui:navNode"
+            priority="300"
+            parentId="tree"
+            content="/cluster/clusterTreeNode.jsf"/>
     <integration-point
-                id="standalonesNode"
-                type="org.glassfish.admingui:navNode"
-                priority="350"
-                parentId="tree"
-                content="/standalone/standaloneTreeNode.jsf"
-        />
+            id="standalonesNode"
+            type="org.glassfish.admingui:navNode"
+            priority="350"
+            parentId="tree"
+            content="/standalone/standaloneTreeNode.jsf"/>
     <integration-point
-                id="nodesNode"
-                type="org.glassfish.admingui:navNode"
-                priority="400"
-                parentId="tree"
-                content="/node/nodeTreeNode.jsf"
-        />
-
+            id="nodesNode"
+            type="org.glassfish.admingui:navNode"
+            priority="400"
+            parentId="tree"
+            content="/node/nodeTreeNode.jsf"/>
     <integration-point
             id="availabilityServiceLink"
             type="org.glassfish.admingui:configuration"
             priority="375"
             parentId="propSheetSection"
-            content="/availability/availabilityLink.jsf"
-    />
-
-    <!-- Add a link under the Configuration Page  -->
+            content="/availability/availabilityLink.jsf"/>
+<!-- Add a link under the Configuration Page  -->
     <integration-point
-                id="availability_service"
-                type="org.glassfish.admingui:navNode"
-                priority="375"
-                parentId="#{configNameId}"
-                content="/availability/pluginTreeNodeAvailSvc.jsf"
-        />
-        <integration-point
-                id="gms_node"
-                type="org.glassfish.admingui:navNode"
-                priority="900"
-                parentId="#{configNameId}"
-                content="/cluster/pluginTreeNodeGms.jsf"
-        />
+            id="availability_service"
+            type="org.glassfish.admingui:navNode"
+            priority="375"
+            parentId="#{configNameId}"
+            content="/availability/pluginTreeNodeAvailSvc.jsf"/>
     <integration-point
-                id="sysprops_node"
-                type="org.glassfish.admingui:navNode"
-                priority="900"
-                parentId="#{configNameId}"
-                content="/configuration/pluginTreeNodeConfigSysProps.jsf"/>
-
+            id="gms_node"
+            type="org.glassfish.admingui:navNode"
+            priority="900"
+            parentId="#{configNameId}"
+            content="/cluster/pluginTreeNodeGms.jsf"/>
+    <integration-point
+            id="sysprops_node"
+            type="org.glassfish.admingui:navNode"
+            priority="900"
+            parentId="#{configNameId}"
+            content="/configuration/pluginTreeNodeConfigSysProps.jsf"/>
     <integration-point
             id="deployTargetSection"
             type="org.glassfish.admingui:uploadPropertySheetTargetSection"
             priority="800"
             parentId="form"
-            content="/shared/targetSectionForCreate.inc"
-        />
+            content="/shared/targetSectionForCreate.inc"/>
     <integration-point
             id="TargetSectionForResource"
             type="org.glassfish.admingui:TargetSectionForResource"
             priority="800"
             parentId="form"
-            content="/shared/targetSectionForCreate.inc"
-        />
+            content="/shared/targetSectionForCreate.inc"/>
 </console-config>
