@@ -115,7 +115,7 @@ public class InstallNodeCommand extends CLICommand {
     protected int executeCommand() throws CommandException {
         try {
 
-            String baseRootValue = getSystemProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) + "/../"; 
+            String baseRootValue = getSystemProperty(SystemPropertyConstants.PRODUCT_ROOT_PROPERTY) ; 
             ArrayList<String>  binDirFiles = new ArrayList<String>();
             File zipFile = createZipFile(baseRootValue, binDirFiles);
             copyToHosts(zipFile, baseRootValue, binDirFiles);
@@ -134,7 +134,7 @@ public class InstallNodeCommand extends CLICommand {
 
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         if (installDir == null) {
-            installDir = baseRootValue;
+            installDir = baseRootValue.replaceAll("\\\\","/");
         }
         
         for (String host: hosts) {
@@ -143,30 +143,55 @@ public class InstallNodeCommand extends CLICommand {
 
             SFTPClient sftpClient = sshLauncher.getSFTPClient();
             SCPClient scpClient = sshLauncher.getSCPClient();
-            
-            if (!sftpClient.exists(installDir)) {
-                sftpClient.mkdirs(installDir, 0755);
+            try {
+                if (!sftpClient.exists(installDir)) {
+                    sftpClient.mkdirs(installDir, 0755);
+                }
+            } catch (IOException ioe){
+                logger.info(Strings.get("mkdir.failed",installDir, host));
+                throw new IOException(ioe);
             }
-            
+
             String zip = zipFile.getCanonicalPath();
-            logger.info("Copying " + zip + " (" + zipFile.length() +" bytes)" + " to " + host + ":" + installDir);
-            scpClient.put(zipFile.getAbsolutePath(), installDir);
-            logger.finer("Copied " + zip + " to " + host + ":" + installDir);
-            
-            logger.info("Installing " + zip + " into " + host + ":" + installDir);
-            String unzipCommand = "cd " + installDir + "; jar -xvf glassfish.zip";
-            sshLauncher.runCommand(unzipCommand, outStream);
-            logger.finer("Installed " + zip + " into " + host + ":" + installDir);
-            
+            try {
+                logger.info("Copying " + zip + " (" + zipFile.length() +" bytes)" + " to " + host + ":" + installDir);
+                scpClient.put(zipFile.getAbsolutePath(), installDir);
+                logger.finer("Copied " + zip + " to " + host + ":" + installDir);
+            } catch (IOException ex){
+                logger.info (Strings.get("cannot.copy.zip.file", zip, host));
+                throw new IOException (ex);
+            }
+
+            try {
+                logger.info("Installing " + zip + " into " + host + ":" + installDir);
+                String unzipCommand = "cd " + installDir + "; jar -xvf glassfish.zip";
+                sshLauncher.runCommand(unzipCommand, outStream);
+                logger.finer("Installed " + zip + " into " + host + ":" + installDir);
+            } catch (IOException ioe){
+                logger.info (Strings.get("jar.failed", host));
+                throw new IOException (ioe);
+            }
+
+            try {
             logger.info("Removing " + host + ":" + installDir + "/glassfish.zip");
             sftpClient.rm(installDir + "/glassfish.zip");
             logger.finer("Removed " + host + ":" + installDir + "/glassfish.zip");
-            
-            logger.info("Fixing file permissions of all files under " + host + ":" + installDir + "/bin");
-            for (String binDirFile: binDirFiles) {
-                sftpClient.chmod((installDir + "/" + binDirFile), 0755);
+            } catch (IOException ioe){
+                logger.info(Strings.get("remove.glassfish.failed",host, installDir));
+                throw new IOException(ioe);
             }
-            logger.finer("Fixed file permissions of all files under " + host + ":" + installDir + "/bin");
+
+
+            logger.info("Fixing file permissions of all files under " + host + ":" + installDir + "/bin");
+            try {
+                for (String binDirFile: binDirFiles) {
+                    sftpClient.chmod((installDir + "/" + binDirFile), 0755);
+                }
+                logger.finer("Fixed file permissions of all files under " + host + ":" + installDir + "/bin");
+            } catch (IOException ioe){
+                logger.info(Strings.get("fix.permissions.failed", host, installDir));
+                throw new IOException(ioe);
+            }
         }
     }
 
