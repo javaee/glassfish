@@ -182,8 +182,8 @@ class ManifestManager implements ResponseManager {
         for(Map.Entry<String, Map<String,String>> entry : kids.entrySet()) {
             String container = entry.getKey();
             
-            if(ok(childrenType)) {
-                if (sb.length() > 0) sb.append(EOL);
+            if (sb.length() > 0) sb.append(EOL);
+            if(ok(childrenType)) {  
                 sb.append(prefix).append(childrenType).append(" : ");
             }
             try {
