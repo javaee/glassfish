@@ -1,0 +1,10 @@
+Options to run embedded tests:
+
+a) Run against S1AS_HOME/lib/embedded/glassfish-embedded-static-shell.jar
+ant all
+
+b) Run against <mvn-repo>/repository/org/glassfish/extras/glassfish-embedded-all/3.1-SNAPSHOT/glassfish-embedded-all-3.1-SNAPSHOT.jar
+ant -Duber.jar.repo=<mvn-repo>
+
+c) Run against specified uber jar location.
+ant -Duber.jar=/tmp/glassfish-embedded-all.jar 
