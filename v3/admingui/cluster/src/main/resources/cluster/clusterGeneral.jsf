@@ -52,7 +52,7 @@
         setSessionAttribute(key="clusterTabs" value="general");
         getRequestValue(key="clusterName" value="#{pageSession.clusterName}");
         urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/cluster/clusterGeneral.jsf?clusterName=#{pageSession.encodedClusterName}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/cluster/cluster/clusterGeneral.jsf?clusterName=#{pageSession.encodedClusterName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/cluster/cluster/clusters.jsf");
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/clusters");
         setPageSessionAttribute(key="childType" value="cluster");
@@ -96,10 +96,25 @@
             </sun:panelGroup>
         </facet>
     </sun:title>
-    <sun:button id="migrateTimesButton" text="$resource{i18ncs.button.migrateEjbTimer}">
+    <sun:button id="migrateTimesButton" text="$resource{i18ncs.button.migrateEjbTimer}" primary="false">
         <!command
             gf.redirect(page="#{request.contextPath}/cluster/migrateEjbTimers.jsf?clusterName=#{pageSession.encodedClusterName}");
         />
+    </sun:button>
+
+    <sun:button id="rotateLog" text="$resource{i18n.button.rotateLog}" primary="#{false}"
+        onClick="if ( getConfirm(this, '$resource{i18nc.msg.JS.confirmRotateLog}') )
+        { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');}
+            else {return false;} " >
+            <!command
+                createMap(result="#{requestScope.map}");
+                mapPut(map="#{requestScope.map}", key="target", value="#{pageSession.encodedClusterName}");
+                gf.restRequest(
+                    endpoint="#{sessionScope.REST_URL}/rotate-log"
+                    attrs="#{requestScope.map}"
+                    method="POST"
+                    result="#{pageSession.props}");
+            gf.redirect("#{pageSession.selfPage}");/>
     </sun:button>
 
     <sun:propertySheet id="propertySheet">

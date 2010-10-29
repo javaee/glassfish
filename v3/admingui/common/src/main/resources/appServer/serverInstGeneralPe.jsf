@@ -98,7 +98,7 @@
                     createMap(result="#{requestScope.map}");
                     mapPut(map="#{requestScope.map}", key="target", value="server");
                     gf.restRequest(
-                        endpoint="#{sessionScope.REST_URL}/management/domain/rotate-log"
+                        endpoint="#{sessionScope.REST_URL}/rotate-log"
                         attrs="#{requestScope.map}"
                         method="POST"
                         result="#{pageSession.props}"); 
