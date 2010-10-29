@@ -207,6 +207,11 @@ public class JavaEETransactionManagerSimplified
                 transactionTimeout = Integer.parseInt(txnService.getTimeoutInSeconds());
                 // the delegates will do the rest if they support it
 
+                String v = txnService.getPropertyValue("purge-cancelled-transactions-after");
+                if (v != null && v.length() > 0) {
+                    purgeCancelledTtransactions = Integer.parseInt(v);
+                }
+
                 TransactionServiceConfigListener listener = 
                         habitat.getComponent(TransactionServiceConfigListener.class);
                 listener.setTM(this);
