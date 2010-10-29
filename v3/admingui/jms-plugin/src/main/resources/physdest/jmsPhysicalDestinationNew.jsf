@@ -41,6 +41,7 @@
 -->
 
 <!initPage
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
     setResourceBundle(key="i18njms" bundle="org.glassfish.jms.admingui.Strings");
     setResourceBundle(key="helpjms" bundle="org.glassfish.jms.admingui.Helplinks")
     setAttribute(key="edit" value="#{false}" )
