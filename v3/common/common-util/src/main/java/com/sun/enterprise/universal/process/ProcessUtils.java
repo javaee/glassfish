@@ -84,7 +84,7 @@ public final class ProcessUtils {
 
     static {
         // variables named with 'temp' are here so that we can legally set the
-        // 2 final variables above legally.
+        // 2 final variables above.
 
         int tempPid = -1;
 
