@@ -34,23 +34,16 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.test.impl;
+package org.jvnet.hk2.test.multiple.contracts;
 
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.test.contracts.ChildContract;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- * a named child contract implementation
+ * a simple parent @Contract interface
+ * @author Jerome Dochez
  */
-@Service(name="somechild")
-public class NamedChildContractImpl implements ChildContract {
-    @Override
-    public String childMethod() {
-        return "somechild_child";
-    }
+@Contract
+public interface ParentContract  {
 
-    @Override
-    public String parentMethod() {
-        return "somechild_parent";
-    }
+    public String parentMethod();
 }

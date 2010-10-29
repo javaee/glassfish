@@ -34,24 +34,35 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.test.impl;
+package org.jvnet.hk2.test.multiple.noindex;
 
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.test.contracts.ChildContract;
+import org.junit.Test;
+import static org.junit.Assert.*;
+import org.junit.runner.RunWith;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.junit.Hk2Runner;
 
 /**
- * Implementation of the not so simple service
+ * Test the presence/absence of @Contract in multiple interfaces in the
+ * class hierarchy.
+ *
+ * @author Jerome Dochez
  */
+@RunWith(Hk2Runner.class)
+public class NoIndexTest {
 
-@Service
-public class ChildContractImpl implements ChildContract {
-    @Override
-    public String childMethod() {
-        return "child";
-    }
+    @Inject
+    ParentContract parent;
 
-    @Override
-    public String parentMethod() {
-        return "parent";
+    @Inject(optional=true)
+    ChildIntf child=null;
+
+    @Test
+    public void noIndexTest() {
+        assertNotNull(parent);
+        assertEquals(parent.parent(), "parent");
+        ChildIntf castedParent = (ChildIntf) parent;
+        assertEquals(castedParent.child(), "child");
+        assertNull(child);
     }
 }

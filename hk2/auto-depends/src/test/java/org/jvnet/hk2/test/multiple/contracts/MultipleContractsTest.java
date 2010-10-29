@@ -34,16 +34,46 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.test.contracts;
+package org.jvnet.hk2.test.multiple.contracts;
 
-import org.jvnet.hk2.annotations.Contract;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+import org.junit.runner.RunWith;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.junit.Hk2Runner;
 
 /**
- * a simple parent @Contract interface
- * @author Jerome Dochez
+ * Test multiple contracts implementation services
  */
-@Contract
-public interface ParentContract  {
+@RunWith(Hk2Runner.class)
+public class MultipleContractsTest {
 
-    public String parentMethod();
+    @Inject
+    ChildContract child;
+
+    @Inject
+    ParentContract parent;
+
+    @Inject(name="somechild")
+    ChildContract namedChild;
+
+    @Inject(name="somechild")
+    ParentContract namedParent;
+
+    @Test
+    public void testUnnamed() {
+        assertEquals(child, parent);
+        assertEquals(child.childMethod(),"child");
+        assertEquals(child.parentMethod(), "parent");
+    }
+
+    @Test
+    public void testNamed() {
+        assertEquals(namedChild, namedParent);
+        assertEquals(namedChild.childMethod(),"somechild_child");
+        assertEquals(namedParent.parentMethod(), "somechild_parent");
+
+    }
 }
+

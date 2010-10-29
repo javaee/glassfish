@@ -63,13 +63,14 @@ public class LocatorTest {
     public void testLocator() throws IOException {
         List<URL> files = new ArrayList<URL>();
         long startTime = System.currentTimeMillis();
-        File gf = new File("/Users/dochez/glassfish/modules");
+        File home = new File(System.getProperty("user.home"));
+        File gf = new File(home, "glassfish/modules");
         Assert.assertTrue(gf.exists());
         long start = System.currentTimeMillis();
         for (File f : gf.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                // I am parsing kernel.
+                // I am parsing kernel, so don't add it to the cp
                 if (name.endsWith("kernel.jar")) return false;
                 
                 return name.endsWith(".jar");

@@ -70,6 +70,12 @@ public abstract class ExtensibleTypeImpl<T extends ExtensibleType> extends TypeI
     }
 
     void isImplementing(TypeProxy<InterfaceModel> intf) {
+        if (implementedIntf==null) {
+            System.out.println("WAIT my interfaces are null");
+        }
+        if (intf==null) {
+           System.out.println("WAIT my parameter is null"); 
+        }
         implementedIntf.add(intf);
     }
 
