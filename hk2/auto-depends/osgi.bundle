@@ -13,5 +13,5 @@ Import-Package: \
                         org.junit.runner;resolution:=optional, \
                         org.junit.runner.notification;resolution:=optional, \
                         org.objectweb.asm;password=GlassFish;resolution:=optional, \
-			org.objectweb.asm.commons;password=GlassFish;resolution:=optional,
+                        org.objectweb.asm.commons;password=GlassFish;resolution:=optional,
                         *
