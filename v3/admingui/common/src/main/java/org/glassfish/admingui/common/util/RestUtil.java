@@ -49,12 +49,14 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -312,8 +314,17 @@ public class RestUtil {
         return null;
     }
     
-    public static String encodeUrl(String url) {
-        return ((HttpServletResponse)FacesContext.getCurrentInstance().getExternalContext().getResponse()).encodeURL(url);
+    /**
+     * This method will encode append segment to base, encoding it so that a correct URL is returned.
+     * @param base
+     * @param segment
+     * @return
+     */
+    public static String appendEncodedSegment(String base, String segment) {
+        String encodedUrl = JERSEY_CLIENT.resource(base).getUriBuilder().segment(segment).build().toASCIIString();
+            //segment(elementName)
+        
+        return encodedUrl;
     }
 
     //*******************************************************************************************************************

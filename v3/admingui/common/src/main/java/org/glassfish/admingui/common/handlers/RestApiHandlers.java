@@ -347,15 +347,17 @@ public class RestApiHandlers {
     }
 
     
-    @Handler(id = "gf.encodeUrl",
+    @Handler(id = "gf.buildResourceUrl",
         input = {
-            @HandlerInput(name = "url", type = String.class, required = true)
+            @HandlerInput(name = "base", type = String.class, required = true),
+            @HandlerInput(name = "resourceName", type = String.class, required = true)
         },
         output = {
-            @HandlerOutput(name = "result", type = String.class)
+            @HandlerOutput(name = "url", type = String.class)
         }
     )
     public static void encodeUrl(HandlerContext handlerCtx) {
-        handlerCtx.setOutputValue("result", RestUtil.encodeUrl((String)handlerCtx.getInputValue("url")));
+        handlerCtx.setOutputValue("url", 
+            appendEncodedSegment((String)handlerCtx.getInputValue("base"), (String)handlerCtx.getInputValue("resourceName")));
     }
 }
