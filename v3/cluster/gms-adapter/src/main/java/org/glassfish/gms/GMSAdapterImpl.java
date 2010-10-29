@@ -202,11 +202,14 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             try {
                 initializeGMS();
             } catch (GMSException e) {
-                logger.log(Level.WARNING, "gmsexception.occurred",
-                    e.getLocalizedMessage());
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.log(Level.FINE, "stack trace:", e);
-                }
+                logger.log(Level.SEVERE, "gmsservice.failed.to.start", e);
+                // prevent access to a malformed gms object.
+                return false;
+
+            // also ensure for any unchecked exceptions (such as NPE during initialization) during initialization
+            // that the malformed gms object is not allowed to be accesssed through the gms adapter.
+            } catch (Throwable t) {
+                logger.log(Level.SEVERE, "gmsservice.failed.to.start.unexpected", t);
                 // prevent access to a malformed gms object.
                 return false;
             }
@@ -574,8 +577,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             } catch (GMSException e) {
                 // failed to start so unregister event listener that calls GMS.
                 events.unregister(glassfishEventListener);
-                logger.log(Level.WARNING, "gmsexception.occurred",
-                    e.getLocalizedMessage());
+                throw e;
             }
 
             logger.log(Level.INFO, "gmsservice.started",
