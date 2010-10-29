@@ -155,18 +155,20 @@ public class GuiUtil {
         Object request = externalCtx.getRequest();
         if (request instanceof javax.servlet.ServletRequest){
             ServletRequest srequest = (ServletRequest) request;
-            String serverName = (String) sessionMap.get(AdminConsoleAuthModule.REST_SERVER_NAME);
-	    if (serverName == null) {
+            sessionMap.put("hostName", srequest.getServerName());
+            String restServerName = (String) sessionMap.get(AdminConsoleAuthModule.REST_SERVER_NAME);
+	    if (restServerName == null) {
 		throw new IllegalStateException("REST Server Name not set!");
 	    }
             int port = (Integer) sessionMap.get(AdminConsoleAuthModule.REST_SERVER_PORT);
 	    sessionMap.put("requestIsSecured", srequest.isSecure());
-	    sessionMap.put("REST_URL", "http" + (srequest.isSecure() ? "s" : "") + "://" + serverName + ":" + port + "/management/domain");
-	    sessionMap.put("MONITOR_URL", "http" + (srequest.isSecure() ? "s" : "") + "://" + serverName + ":" + port + "/monitoring/domain");
+	    sessionMap.put("REST_URL", "http" + (srequest.isSecure() ? "s" : "") + "://" + restServerName + ":" + port + "/management/domain");
+	    sessionMap.put("MONITOR_URL", "http" + (srequest.isSecure() ? "s" : "") + "://" + restServerName + ":" + port + "/monitoring/domain");
         } else {
             //should never get here.
-            sessionMap.put("serverName", "");
+            sessionMap.put("hostName", "");
         }
+        
         sessionMap.put("domainName", RestUtil.getPropValue((String)(sessionMap.get("REST_URL")), "administrative.domain.name", null));
         sessionMap.put("_noNetwork", (System.getProperty("com.sun.enterprise.tools.admingui.NO_NETWORK", "false").equals("true"))? Boolean.TRUE: Boolean.FALSE);
         sessionMap.put("supportCluster", Boolean.FALSE);
