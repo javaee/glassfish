@@ -1557,7 +1557,7 @@ public class WebappClassLoader
      * @return the search path of URLs for loading classes and resources.
      */
     @Override
-    public URL[] getURLs() {
+    public synchronized URL[] getURLs() {
 
         if (repositoryURLs != null) {
             return repositoryURLs;
