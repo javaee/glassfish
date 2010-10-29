@@ -59,7 +59,8 @@
         
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
         setPageSessionAttribute(key="childType" value="jdbc-connection-pool");
-        setPageSessionAttribute(key="resourceUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
+        gf.buildResourceUrl(base="#{pageSession.parentUrl}/#{pageSession.childType}", resourceName="#{pageSession.Name}", url="#{pageSession.resourceUrl}");
+
         setPageSessionAttribute(key="rest-api" value="true");
 
         gf.getEntityAttrs(endpoint="#{pageSession.resourceUrl}.json", valueMap="#{pageSession.valueMap}");
