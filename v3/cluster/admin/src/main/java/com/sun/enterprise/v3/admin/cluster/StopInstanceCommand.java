@@ -109,7 +109,7 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
     Node[] nodeList;
     @Inject
     private ModulesRegistry registry;
-    @Param(optional = true, defaultValue = "true")
+    @Param(optional = true, defaultValue = "false")
     private Boolean force;
     @Param(optional = false, primary = true)
     private String instanceName;
