@@ -533,14 +533,21 @@ private class ProtectedList extends AbstractList {
                     // the proxied object can be a read-only or a writeable view, we need
                     // to be careful
                     // ToDo : we need to encasulate this test.
-                    String value;
+                    String value = null;
                     if (Proxy.getInvocationHandler(o) instanceof WriteableView) {
-                        value = ((WriteableView) Proxy.getInvocationHandler(o)).getPropertyValue(key);
+                        ConfigBean masterView = ((WriteableView) handler).getMasterView();
+                        String masterViewKey = masterView.model.key;
+                        if(masterViewKey != null && key.equals(masterViewKey.substring(1))){
+                            value = ((WriteableView) Proxy.getInvocationHandler(o)).getPropertyValue(key);
+                        }
                     }  else {
                         Dom cbo = Dom.unwrap((ConfigBeanProxy) o);
-                        value = cbo.attribute(key);
+                        String cboKey = cbo.model.key;
+                        if(cboKey != null && key.equals(cboKey.substring(1))){
+                            value = cbo.attribute(key);
+                        }
                     }
-                    if (keyValue!=null && keyValue.equals(value)) {
+                    if (keyValue!=null && value != null && keyValue.equals(value)) {
                         Dom parent = Dom.unwrap(readView);
                         throw new IllegalArgumentException("A " + master.getProxyType().getSimpleName() +
                                 " with the same key \"" + keyValue + "\" already exists in " +
