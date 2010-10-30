@@ -290,6 +290,9 @@
             if (theProdMap == null) {
               throw new EnhancedException("CANNOT_CREATE_PRODUCT_MAP", new String [] {});
             }
+ 	   /* Find out what kind of an operation it is */
+            gOpType = theProdMap.getOperation();
+            if (gOpType == Operation.OPTYPE.INSTALL) {
             String installMode = ConfigHelper.getStringValue("InstallType.Option.CONFIGURATION_MODE");
 	    /* Validations in case of INSTALL_ONLY or INSTALL_AND_CONFIG Operations. */
 	     if (!installMode.equals("CONFIG_ONLY")) {
@@ -345,6 +348,7 @@
                   new String[]{"dir=" + theInstallHomeDir.getAbsolutePath()});
             }
             } // end for Config only install validation.
+	  }
             
 	      // Add all the defaults.
               List theActiveModesList = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");
