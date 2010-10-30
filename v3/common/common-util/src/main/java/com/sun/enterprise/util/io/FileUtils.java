@@ -1052,6 +1052,36 @@ public class FileUtils {
     }
 
     /**
+     * Write the String to a file.  Then make the file readable and writable.
+     * If the file already exists it will be truncated and the contents replaced
+     * with the String argument.
+     * @param s The String to write to the file
+     * @param f The file to write the String to
+     * @throws IOException if any errors
+     */
+    public static void writeStringToFile(String s, File f) throws IOException {
+        Writer writer = null;
+
+        try {
+            writer = new PrintWriter(f);
+            writer.write(s);
+        }
+        finally {
+            if(writer != null) {
+                try {
+                    writer.flush();
+                    writer.close();
+                }
+                catch(Exception e) {
+                    //ignore
+                }
+                f.setReadable(true);
+                f.setWritable(true);
+            }
+        }
+    }
+
+    /**
      * Represents a unit of work that should be retried, if needed, until it
      * succeeds or the configured retry limit is reached.
      * <p/>
