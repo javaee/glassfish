@@ -54,23 +54,24 @@ import org.glassfish.api.deployment.OpsParams;
 import org.osgi.framework.*;
 
 import java.io.FileFilter;
+import java.io.InputStream;
 import java.net.URL;
-import java.net.MalformedURLException;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.jar.JarFile;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.IOException;
 import java.io.File;
 
 import com.sun.enterprise.module.common_impl.CompositeEnumeration;
 
-import javax.naming.directory.DirContext;
-
 /**
+ * This is at the heart of WAB support. It is responsible for setting up
+ * a class loader for the WAB. In theory, a WAB's class loader should just be a simple wrapper around
+ * the Bundle object, but in truth we need to take care of all the special requirements mostly
+ * around resource finding logic to ensure a WAB behaves like a WAR in our web container. So,
+ * we create a special class loader called {@link org.glassfish.osgiweb.OSGiWebDeploymentContext.WABClassLoader}
+ * and set that in the deployment context.
+ *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 class OSGiWebDeploymentContext extends OSGiDeploymentContext {
@@ -88,54 +89,7 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
     }
 
     protected void setupClassLoader() throws Exception     {
-        final BundleClassLoader delegate1 = new BundleClassLoader(bundle);
-        final ClassLoader delegate2 =
-                Globals.get(ClassLoaderHierarchy.class).getAPIClassLoader();
-
-//        This does not work because of lack of pernmission to call
-//        protected methods.
-//        DelegatingClassLoader parent =
-//                new DelegatingClassLoader(delegate1.getParent());
-//        parent.addDelegate(new ReflectiveClassFinder(delegate1));
-//        parent.addDelegate(new ReflectiveClassFinder(delegate2));
-
-        ClassLoader parent = new ClassLoader() {
-            @Override
-            protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException
-            {
-                try {
-                    return delegate1.loadClass(name, resolve);
-                } catch (ClassNotFoundException cnfe) {
-                    return delegate2.loadClass(name);
-                }
-            }
-
-            @Override
-            public URL getResource(String name)
-            {
-                URL url = delegate1.getResource(name);
-                if (url == null) {
-                    url = delegate2.getResource(name);
-                }
-                return url;
-            }
-
-            @Override
-            public Enumeration<URL> getResources(String name) throws IOException
-            {
-                List<Enumeration<URL>> enumerators = new ArrayList<Enumeration<URL>>();
-                enumerators.add(delegate1.getResources(name));
-                enumerators.add(delegate2.getResources(name));
-                return new CompositeEnumeration(enumerators);
-            }
-        };
-
-        finalClassLoader = new WABClassLoader(parent);
-        // This does not work. Find out why TempBundleClassLoader loads a
-        // separate copy of Globals.class.
-//        shareableTempClassLoader = new WebappClassLoader(
-// new TempBundleClassLoader(parent));
-//        shareableTempClassLoader.start();
+        finalClassLoader = new WABClassLoader(null);
         shareableTempClassLoader = finalClassLoader;
         WebappClassLoader.class.cast(finalClassLoader).start();
     }
@@ -147,7 +101,65 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
          * fails to serve any static content from META-INF/resources/ of WEB-INF/lib/*.jar, if the classloader is not
          * an instanceof WebappClassLoader.
          * b) DefaultServlet also expects WebappClassLoader's resourceEntries to be properly populated.
+         * c) JSPC relies on getURLs() methods so that it can discover TLDs in the web app. Setting up
+         * repositories and jar files ensures that WebappClassLoader's getURLs() method will
+         * return appropriate URLs for JSPC to work.
+         *
+         * It overrides loadClass(), getResource() and getResources() as opposed to
+         * their findXYZ() equivalents so that the OSGi export control mechanism
+         * is enforced even for classes and resources available in the system/boot class loader.
          */
+
+        final BundleClassLoader delegate1 = new BundleClassLoader(bundle);
+        final ClassLoader delegate2 =
+                Globals.get(ClassLoaderHierarchy.class).getAPIClassLoader();
+
+        @Override
+        public Class<?> loadClass(String name) throws ClassNotFoundException {
+            return loadClass(name, false);
+        }
+
+        @Override
+        protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException
+        {
+            try {
+                return delegate1.loadClass(name, resolve);
+            } catch (ClassNotFoundException cnfe) {
+                return delegate2.loadClass(name);
+            }
+        }
+
+        @Override
+        public URL getResource(String name)
+        {
+            URL url = delegate1.getResource(name);
+            if (url == null) {
+                url = delegate2.getResource(name);
+            }
+            return url;
+        }
+
+        @Override
+        public Enumeration<URL> getResources(String name) throws IOException
+        {
+            List<Enumeration<URL>> enumerators = new ArrayList<Enumeration<URL>>();
+            enumerators.add(delegate1.getResources(name));
+            enumerators.add(delegate2.getResources(name));
+            return new CompositeEnumeration(enumerators);
+        }
+
+        @Override
+        public InputStream getResourceAsStream(String name) {
+            // We need to override this method because of the stupid WebappClassLoader that for some reason
+            // not only overrides getResourceAsStream, it also does not delegate to getResource method.
+            URL url = getResource(name);
+            try {
+                return url != null ? url.openStream() : null;
+            } catch (IOException e) {
+                return null;
+            }
+        }
+
         public WABClassLoader(ClassLoader parent) {
             super(parent);
             setDelegate(true); // we always delegate. The default is false in WebappClassLoader!!!
@@ -156,6 +168,10 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
             r.setDocBase(base.getAbsolutePath());
 
             setResources(r);
+
+            // add WEB-INF/classes/ and WEB-INF/lib/*.jar to repository list, because many legacy code
+            // path like DefaultServlet, JSPC, StandardContext rely on them.
+            // See WebappLoader.setClassPath() for example.
             addRepository("WEB-INF/classes/", new File(base, "WEB-INF/classes/"));
             File libDir = new File(base, "WEB-INF/lib");
             if (libDir.exists()) {
@@ -180,37 +196,6 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
             setWorkDir(getScratchDir("jsp")); // We set the same working dir as set in WarHandler
         }
 
-        // Since we don't set URLs, we need to return appropriate URLs
-        // for JSPC to work. See WebappLoader.setClassPath().
-        @Override
-        public URL[] getURLs()
-        {
-            return convert((String)bundle.getHeaders().
-                    get(org.osgi.framework.Constants.BUNDLE_CLASSPATH));
-        }
-
-        private URL[] convert(String bcp) {
-            if (bcp == null || bcp.isEmpty()) bcp=".";
-            List<URL> urls = new ArrayList<URL>();
-            //Bundle-ClassPath entries are separated by ; or ,
-            StringTokenizer entries = new StringTokenizer(bcp, ",;");
-            String entry;
-            while (entries.hasMoreTokens()) {
-                entry = entries.nextToken().trim();
-                if (entry.startsWith("/")) entry = entry.substring(1);
-                try
-                {
-                    URL url = new File(getSourceDir(), entry).toURI().toURL();
-                    urls.add(url);
-                }
-                catch (MalformedURLException e)
-                {
-                    logger.logp(Level.WARNING, "OSGiDeploymentContext", "convert", "Failed to add {0} as classpath because of", new Object[]{entry, e.getMessage()});
-                }
-            }
-            return urls.toArray(new URL[0]);
-        }
-
         @Override
         public URL getResourceFromJars(String name) {
             // We override this method, because both DefaultServlet and StandardContext call this API to find
@@ -232,7 +217,7 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
                                 && !(name.endsWith(".jar"))) {
                             // Copy binary content to the work directory if not present
                             File resourceFile = new File(loaderDir, name);
-                            url = resourceFile.toURL();
+                            url = resourceFile.toURI().toURL();
                         }
                     } catch (Exception e) {
                         // Ignore
