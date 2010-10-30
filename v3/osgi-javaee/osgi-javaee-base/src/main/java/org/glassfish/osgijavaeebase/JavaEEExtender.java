@@ -43,6 +43,7 @@ package org.glassfish.osgijavaeebase;
 
 import org.osgi.framework.*;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -58,6 +59,9 @@ public class JavaEEExtender implements Extender, SynchronousBundleListener {
      * is deploying or undeploying something. Similarly, while it is being stopped, we don't want it to deploy
      * or undeploy something.
      * This is a synchronous bundle listener because it listens to LAZY_ACTIVATION event.
+     * After receiving the event, it spwans a separate thread to carry out the task so that we don't
+     * spend long time in the synchronous event listener. More over, that can lead to deadlocks as observed
+     * in https://glassfish.dev.java.net/issues/show_bug.cgi?id=14313.
      */
 
     // TODO(Sahoo): We should consider using a BundleTracker instead of event listener.
@@ -88,7 +92,17 @@ public class JavaEEExtender implements Extender, SynchronousBundleListener {
         reg = null;
     }
 
-    public void bundleChanged(BundleEvent event) {
+    public void bundleChanged(final BundleEvent event) {
+        // handle the event in a new thread to avoid deadlocks
+        new Thread("Java EE Extender Thread") {
+            @Override
+            public void run() {
+                handleEvent(event);
+            }
+        }.start();
+    }
+
+    private void handleEvent(BundleEvent event) {
         Bundle bundle = event.getBundle();
         switch (event.getType()) {
             case BundleEvent.STARTED:
