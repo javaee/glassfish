@@ -49,7 +49,7 @@ OPTIONS
          some  other  location to make it available to the surro-
          gate recovery server, use this option to specify the new
 
-Java EE 6           Last change: 14 Sep 2010                    1
+Java EE 6           Last change: 27 Oct 2010                    1
 
 asadmin Utility Subcommands               recover-transactions(1)
 
@@ -86,19 +86,25 @@ OPERANDS
          required.
 
 EXAMPLES
-     Example 1 Using recover-transactions
+     Example 1 Recovering transactions from a running server
 
-       % asadmin recover-transactions server
+       % asadmin recover-transactions server1
        Transaction recovered.
+
+     Example 2 Recovering transactions from a server that is  not
+     running
+
+       % asadmin recover-transactions --transactionlogdir /logs/tx --target server1 server2
+       Transaction recovered.
+
+Java EE 6           Last change: 27 Oct 2010                    2
+
+asadmin Utility Subcommands               recover-transactions(1)
 
 EXIT STATUS
      0    command executed successfully
 
      1    error in executing the command
-
-Java EE 6           Last change: 14 Sep 2010                    2
-
-asadmin Utility Subcommands               recover-transactions(1)
 
 SEE ALSO
      freeze-transaction-service(1),         unfreeze-transaction-
@@ -108,5 +114,5 @@ SEE ALSO
 
      Chapter 28, Transactions, in The Java EE 6 Tutorial
 
-Java EE 6           Last change: 14 Sep 2010                    3
+Java EE 6           Last change: 27 Oct 2010                    3
 

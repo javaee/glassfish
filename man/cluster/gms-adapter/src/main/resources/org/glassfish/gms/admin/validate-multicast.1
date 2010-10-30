@@ -25,38 +25,46 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --multicastport
-         The port for the multicast socket.  Specify  a  standard
-         UDP port number. The default is 2048.
+         The port for the multicast socket  on  which  the  Group
+         Management  Service  (GMS)  listens  for  group  events.
+         Specify a standard UDP port number in  the  range  2048-
+         32000. The default is 2048.
 
      --multicastaddress
 
-         The address for the multicast socket. Specify a class  D
-         IP  address.  Class  D  IP  addresses  are  in the range
-         224.0.0.0 to  239.255.255.255,  inclusive.  The  address
-         224.0.0.0  is  reserved  and  should  not  be  used. The
-         default is 228.9.3.1.
+         The address for the multicast socket on  which  the  GMS
+         listens  for group events. Specify a class D IP address.
+         Class D IP addresses  are  in  the  range  224.0.0.0  to
+         239.255.255.255,  inclusive.  The  address  224.0.0.0 is
+         reserved  and  should  not  be  used.  The  default   is
+         228.9.3.1.
 
      --bindinterface
          The local interface to receive multicast datagram  pack-
-         ets. The default is null, which uses all available bind-
-         ing interfaces.
+         ets  for  the  GMS.  The default is null, which uses all
+         available binding interfaces.
+
+         On a multi-home machine (possessing two or more  network
+         interfaces),  this  attribute  enables  you  to indicate
+         which network interface is used for the GMS. This  value
+         must be a local network interface IP address.
+
+Java EE 6           Last change: 26 Oct 2010                    1
+
+asadmin Utility Subcommands                 validate-multicast(1)
 
      --sendperiod
 
          The number of milliseconds between  test  messages  sent
          between nodes. The default is 2000.
 
-Java EE 6            Last change: 5 Oct 2010                    1
-
-asadmin Utility Subcommands                 validate-multicast(1)
-
      --timeout
-
          The number of seconds before the  subcommand  times  out
          and  exits.  The  default  is 20. You can also exit this
          subcommand using Ctrl-C.
 
      --timetolive
+
          The default time-to-live for multicast packets sent  out
          on the multicast socket in order to control the scope of
          the multicasts. The time-to-live value must  be  between
@@ -66,7 +74,6 @@ asadmin Utility Subcommands                 validate-multicast(1)
          used, use the --verbose option.
 
      --verbose
-
          If used without a value or set to true,  provides  addi-
          tional debugging information. The default is false.
 
@@ -90,16 +97,16 @@ EXAMPLES
 EXIT STATUS
      0                   command executed successfully
 
+Java EE 6           Last change: 26 Oct 2010                    2
+
+asadmin Utility Subcommands                 validate-multicast(1)
+
      1                   error in executing the command
 
 SEE ALSO
      get-health(1)
 
-Java EE 6            Last change: 5 Oct 2010                    2
-
-asadmin Utility Subcommands                 validate-multicast(1)
-
      asadmin(1M)
 
-Java EE 6            Last change: 5 Oct 2010                    3
+Java EE 6           Last change: 26 Oct 2010                    3
 
