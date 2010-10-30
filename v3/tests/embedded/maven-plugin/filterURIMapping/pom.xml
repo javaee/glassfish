@@ -41,20 +41,15 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.glassfish.tests</groupId>
-        <artifactId>maven-plugin</artifactId>
-        <version>3.1-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
-    
-    <groupId>org.glassfish</groupId>
+
+    <groupId>org.glassfish.tests.embedded.maven-plugin</groupId>
     <artifactId>filterURIMapping</artifactId>
     <packaging>war</packaging>
     <version>3.1-SNAPSHOT</version>
-    
+
     <build>
         <defaultGoal>install</defaultGoal>
         <testSourceDirectory>src/test/java</testSourceDirectory>
@@ -69,17 +64,25 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <copy file="target/filterURIMapping.war"
-                                tofile="${basedir}/../target/filterURIMapping.war"/>
+                                <copy file="target/filterURIMapping-3.1-SNAPSHOT.war"
+                                      tofile="target/filterURIMapping.war"/>
                             </tasks>
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>  
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.glassfish</groupId>
                 <artifactId>maven-embedded-glassfish-plugin</artifactId>
-		<version>${project.version}</version>
+                <version>${project.version}</version>
                 <configuration>
                     <goalPrefix>glassfish</goalPrefix>
                     <app>target/filterURIMapping.war</app>
@@ -125,7 +128,7 @@
                 </executions>
             </plugin>
         </plugins>
-        
+
         <extensions>
             <extension>
                 <groupId>org.jvnet.wagon-svn</groupId>
@@ -151,6 +154,11 @@
             <artifactId>javax.servlet</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.3.1</version>
         </dependency>
     </dependencies>
 
