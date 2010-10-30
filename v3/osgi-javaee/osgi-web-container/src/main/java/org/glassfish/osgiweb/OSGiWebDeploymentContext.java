@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -122,6 +122,12 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
         @Override
         protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException
         {
+            // mojarra uses Thread's context class loader (which is us) to look up custom annotation provider.
+            // since we don't export our package and in fact hide our provider, we need to load them using
+            // current loader.
+            if (hiddenServices.contains(name)) {
+                return Class.forName(name);
+            }
             try {
                 return delegate1.loadClass(name, resolve);
             } catch (ClassNotFoundException cnfe) {
@@ -143,6 +149,10 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
         public Enumeration<URL> getResources(String name) throws IOException
         {
             List<Enumeration<URL>> enumerators = new ArrayList<Enumeration<URL>>();
+            final String mappedResourcePath = hiddenServicesMap.get(name);
+            if (mappedResourcePath != null) {
+                return getClass().getClassLoader().getResources(mappedResourcePath);
+            }
             enumerators.add(delegate1.getResources(name));
             enumerators.add(delegate2.getResources(name));
             return new CompositeEnumeration(enumerators);
@@ -230,4 +240,47 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
             return null;
         }
     }
+
+    /**
+     * We don't package our custom providers as a META-INF/services/, for doing so will make them
+     * visible to non hybrid applications as well. So, we package it at a different location and
+     * punch in our classloader appropriately. This map holds the key name that client is looking for
+     * and the value is where we have placed it in our bundle.
+     */
+    private static Map<String, String> hiddenServicesMap;
+
+    /**
+     * Since mojarra uses thread's context class loader to look up custom providers and our custom providers
+     * are not available via APIClassLoader's META-INF/service punch-in mechanism, we need to make them visible
+     * specially. This field maintains a list of such service class names.
+     * As much as we would like to hide {@link org.glassfish.osgiweb.OSGiWebModuleDecorator}, we can't, because
+     * that's looked up via habitat, which means it has to be either present as META-INF/services in the bundle itself
+     * or added as an existing inhabitant. We have gone for the latter approach for the decorator. The other providers
+     * that are looked up by mojarra are hidden using the technique implemented here.
+     */
+    private static Collection<String> hiddenServices;
+    static {
+        Map<String, String> map = new HashMap<String, String>();
+
+        // This is for the custom AnnotationProvider. Note that Mojarra surprising uses different nomenclature than
+        // what is used by JDK SPI. The service type is AnnotationProvider, yet it looks for annotationprovider.
+        map.put("META-INF/services/com.sun.faces.spi.annotationprovider",
+                "META-INF/hiddenservices/com.sun.faces.spi.annotationprovider");
+
+        // This is for our custom faces-config.xml discoverer
+        map.put("META-INF/services/com.sun.faces.spi.FacesConfigResourceProvider",
+                "META-INF/hiddenservices/com.sun.faces.spi.FacesConfigResourceProvider");
+
+        // This is for our custom taglib.xml discoverer
+        map.put("META-INF/services/com.sun.faces.spi.FaceletConfigResourceProvider",
+                "META-INF/hiddenservices/com.sun.faces.spi.FaceletConfigResourceProvider");
+        hiddenServicesMap = Collections.unmodifiableMap(map);
+
+        hiddenServices = Collections.unmodifiableList(Arrays.asList(
+                OSGiFacesAnnotationScanner.class.getName(),
+                OSGiFaceletConfigResourceProvider.class.getName(),
+                OSGiFacesConfigResourceProvider.class.getName()
+        ));
+    }
+
 }

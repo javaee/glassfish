@@ -40,19 +40,25 @@
 
 package org.glassfish.osgiweb;
 
-import com.sun.enterprise.web.WebModule;
 import com.sun.enterprise.web.WebModuleDecorator;
+import com.sun.enterprise.web.WebModule;
 import com.sun.faces.spi.ConfigurationResourceProvider;
-import org.glassfish.osgijavaeebase.BundleResource;
-import org.glassfish.osgijavaeebase.OSGiBundleArchive;
-import org.osgi.framework.Bundle;
+import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.hk2.classmodel.reflect.Types;
+import org.glassfish.web.loader.WebappClassLoader;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Bundle;
+import org.glassfish.osgijavaeebase.OSGiBundleArchive;
+import org.glassfish.osgijavaeebase.BundleResource;
 
 import javax.servlet.ServletContext;
-import java.net.MalformedURLException;
+import java.lang.annotation.Annotation;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.net.MalformedURLException;
+import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -63,11 +69,14 @@ import java.util.logging.Logger;
  * {@link Constants#FACES_CONFIG_ATTR}.
  * c) discovering JSF facelet config resources and setting them in an attribute called
  * {@link Constants#FACELET_CONFIG_ATTR}.
+ * d) discovering faces annotations in a WAB and setting them in an attribute called
+ * {@@link Constants#FACES_ANNOTATED_CLASSES}
  *
  * This class is looked up by mojarra using JDK SPI mechanism.
  *
  * @see org.glassfish.osgiweb.OSGiFacesConfigResourceProvider
  * @see org.glassfish.osgiweb.OSGiFaceletConfigResourceProvider
+ * @see org.glassfish.osgiweb.OSGiWebDeploymentContext.WABClassLoader#getResources(String) 
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
@@ -107,6 +116,9 @@ public class OSGiWebModuleDecorator implements WebModuleDecorator
         discoverJSFConfigs(bctx.getBundle(), facesConfigs, faceletConfigs);
         sc.setAttribute(Constants.FACES_CONFIG_ATTR, facesConfigs);
         sc.setAttribute(Constants.FACELET_CONFIG_ATTR, faceletConfigs);
+        Map<Class<? extends Annotation>, Set<Class<? extends Object>>> facesAnnotatedClasses =
+                scanFacesAnnotations(module);
+        sc.setAttribute(Constants.FACES_ANNOTATED_CLASSES, facesAnnotatedClasses);
     }
 
     private synchronized boolean isActive() {
@@ -159,6 +171,38 @@ public class OSGiWebModuleDecorator implements WebModuleDecorator
                 }
             }
         }
+    }
+
+    private Map<Class<? extends Annotation>, Set<Class<? extends Object>>> scanFacesAnnotations(WebModule wm) {
+        final DeploymentContext dc = wm.getWebModuleConfig().getDeploymentContext();
+        if (dc == null) {
+            // We are likely to be here when there are no web apps deployed and the first webapp that gets deployed
+            // is a WAB. In that case, the default_web_app gets loaded in the same thread that's trying to load
+            // the WAB and we end up getting here, because our thread local object contains the WAB's bundle context
+            // at this point of time. That's one of the many ugly side effects of using thread locals.
+            logger.fine("Can't process annotations as deployment context is not set.");
+            return Collections.emptyMap();
+        }
+        final Types types = dc.getModuleMetaData(Types.class);
+        return OSGiFacesAnnotationScanner.scan(getURIs(wm), types, getClassLoader(wm));
+    }
+
+    private Collection<URI> getURIs(WebModule wm) {
+        WebappClassLoader cl = getClassLoader(wm);
+        Collection<URI> uris = new ArrayList<URI>();
+        for (URL url : cl.getURLs()) {
+            try {
+                uris.add(url.toURI());
+            } catch (URISyntaxException e) {
+                logger.log(Level.WARNING, "Unable to process " + url, e);
+            }
+        }
+        return uris;
+    }
+
+    private WebappClassLoader getClassLoader(WebModule wm) {
+        WebappClassLoader cl = WebappClassLoader.class.cast(wm.getWebModuleConfig().getDeploymentContext().getClassLoader());
+        return cl;
     }
 
 }

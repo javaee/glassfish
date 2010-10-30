@@ -79,5 +79,6 @@ public class Constants
     // Below are GlassFish specific constants
     public static final String FACES_CONFIG_ATTR = "glassfish.osgi.web.facesconfigs";
     public static final String FACELET_CONFIG_ATTR = "glassfish.osgi.web.faceletconfigs";
+    public static final String FACES_ANNOTATED_CLASSES = "glassfish.osgi.web.facesannotatedclasses";
     public static final String VIRTUAL_SERVERS = "Virtual-Servers";
 }

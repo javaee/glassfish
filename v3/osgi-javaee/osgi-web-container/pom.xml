@@ -76,6 +76,11 @@
             <version>${project.version}</version>
         </dependency>        
         <dependency>
+            <!-- This is to provide a custom AnnotationProvider. See issue #11636. -->
+            <groupId>com.sun.faces</groupId>
+            <artifactId>jsf-api</artifactId>
+        </dependency>
+        <dependency>
             <!-- This is to provide a custom ConfigResourceProvider. See issue #11606. -->
             <groupId>com.sun.faces</groupId>
             <artifactId>jsf-impl</artifactId>
