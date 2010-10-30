@@ -89,6 +89,11 @@ public abstract class AbstractDeployMojo extends AbstractServerMojo {
     String buildDirectory;
 
     /**
+     * @parameter expression="${basedir}"
+     */
+    String baseDirectory;
+
+    /**
      * @parameter expression="${project.build.finalName}"
      */
     String fileName;
@@ -127,7 +132,11 @@ public abstract class AbstractDeployMojo extends AbstractServerMojo {
     }
 
     protected String getApp() {
-        return app != null ? app : buildDirectory + File.separator + fileName + ".war";
+        if(app != null) {
+            return new File(app).isAbsolute() ? app : baseDirectory + File.separator + app;
+        } else {
+             return   buildDirectory + File.separator + fileName + ".war";
+        }
     }
 
     protected void doDeploy(String serverId, ClassLoader cl, Properties bootstrapProps,

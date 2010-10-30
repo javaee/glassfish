@@ -80,7 +80,6 @@ public class PluginUtil {
     public static void stopGlassFish(String serverId) throws Exception {
         GlassFish gf = gfMap.remove(serverId);
         if (gf != null && gf.getStatus().equals(GlassFish.Status.STARTED)) {
-            GlassFishRuntime gfr = gf.getService(GlassFishRuntime.class);
             gf.stop();
             if(gfr != null) {
                 gfr.shutdown();
