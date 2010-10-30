@@ -950,7 +950,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 
 <target name="deploy-dir" depends="init-common">
     <echo message="Deploying files: ${assemble.dir}" level="verbose"/>
-    <glassfish-embedded-deploy app="${assemble.dir}" name="${appname}-web" libraries="${libraries}"/>
+    <glassfish-embedded-deploy app="${assemble.dir}" name="${appname}-web" contextroot="${contextroot}" libraries="${libraries}"/>
 </target>
 
 <!-- deploy the applications in AppServ  -->
