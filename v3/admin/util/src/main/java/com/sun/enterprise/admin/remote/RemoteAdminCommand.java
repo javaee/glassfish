@@ -47,26 +47,17 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.net.ssl.SSLException;
-import org.glassfish.common.util.admin.AuthTokenManager;
 
-import org.jvnet.hk2.component.*;
-import com.sun.enterprise.module.*;
-import com.sun.enterprise.module.single.StaticModulesRegistry;
 
 import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.CommandModel.ParamModel;
 
-import com.sun.appserv.management.client.prefs.LoginInfo;
-import com.sun.appserv.management.client.prefs.LoginInfoStore;
-import com.sun.appserv.management.client.prefs.LoginInfoStoreFactory;
-import com.sun.appserv.management.client.prefs.StoreException;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.FileUtils;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.GFBase64Encoder;
 import com.sun.enterprise.admin.util.CommandModelData;
 import com.sun.enterprise.admin.util.CommandModelData.ParamModelData;
-import com.sun.enterprise.admin.util.CommandModelData.ParamData;
 import com.sun.enterprise.admin.util.AuthenticationInfo;
 import com.sun.enterprise.admin.util.HttpConnectorAddress;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -173,9 +164,51 @@ public class RemoteAdminCommand {
 
     /**
      * Interface to enable factoring out common HTTP connection management code.
+     * <p>
+     * The implementation of this interface must implement
+     * <ul>
+     * <li>{@link #prepareConnection} - to perform all pre-connection configuration - set headers, chunking, etc.
+     * as well as writing any payload to the outbound connection.  In short
+     * anything needed prior to the URLConnection#connect invocation.
+     * <p>
+     * The caller will invoke this method after it has invoked {@link URL#openConnection}
+     * but before it invokes {@link URL#connect}.
+     * <li>{@link #useConnection} - to read from the
+     * input stream, etc.  The caller will invoke this method after it has
+     * successfully invoked {@link URL#connect}. 
+     * </ul>
+     * Because the caller might have to work with multiple URLConnection objects
+     * (as it follows redirection, for example) this contract allows the caller
+     * to delegate to the HttpCommand implementation multiple times to configure
+     * each of the URLConnections objects, then to invoke useConnection only
+     * once after it has the "final" URLConnection object.  For this reason
+     * be sure to implement prepareConnection so that it can be invoked
+     * multiple times.
+     * 
      */
     interface HttpCommand {
-        public void doCommand(HttpURLConnection urlConnection)
+
+        /**
+         * Configures the HttpURLConnection (headers, chuncking, etc.) according
+         * to the needs of this use of the connection and then writes any
+         * required outbound payload to the connection.
+         * <p>
+         * This method might be invoked multiple times before the connection is
+         * actually connected, so it should be serially reentrant.  Note that the
+         * caller will
+         * @param urlConnection the connection to be configured
+         */
+        public void prepareConnection(HttpURLConnection urlConnection) throws IOException;
+
+        /**
+         * Uses the configured and connected connection to read
+         * data, process it, etc.
+         * 
+         * @param urlConnection the connection to be used
+         * @throws CommandException
+         * @throws IOException
+         */
+        public void useConnection(HttpURLConnection urlConnection)
                 throws CommandException, IOException;
     }
 
@@ -431,67 +464,71 @@ public class RemoteAdminCommand {
      */
     private void executeRemoteCommand(String uri) throws CommandException {
         doHttpCommand(uri, chooseRequestMethod(), new HttpCommand() {
-            public void doCommand(final HttpURLConnection urlConnection)
+            
+            @Override
+            public void prepareConnection(final HttpURLConnection urlConnection) throws IOException {
+                if (doUpload) {
+                    /*
+                     * If we are uploading anything then set the content-type
+                     * and add the uploaded part(s) to the payload.
+                     */
+                    urlConnection.setChunkedStreamingMode(0); // use default value
+                    urlConnection.setRequestProperty("Content-Type",
+                            outboundPayload.getContentType());
+                }
+
+                // add any user-specified headers
+                for (Header h : requestHeaders)
+                    urlConnection.addRequestProperty(h.getName(), h.getValue());
+
+                if (doUpload) {
+                    outboundPayload.writeTo(urlConnection.getOutputStream());
+                    outboundPayload = null; // no longer needed
+                }
+
+            }
+            
+            @Override
+            public void useConnection(final HttpURLConnection urlConnection)
                     throws CommandException, IOException {
 
-            if (doUpload) {
-                /*
-                 * If we are uploading anything then set the content-type
-                 * and add the uploaded part(s) to the payload.
-                 */
-                urlConnection.setChunkedStreamingMode(0); // use default value
-                urlConnection.setRequestProperty("Content-Type",
-                        outboundPayload.getContentType());
-            }
+                InputStream in = urlConnection.getInputStream();
 
-            // add any user-specified headers
-            for (Header h : requestHeaders)
-                urlConnection.addRequestProperty(h.getName(), h.getValue());
+                String responseContentType = urlConnection.getContentType();
 
-            urlConnection.connect();
-            if (doUpload) {
-                outboundPayload.writeTo(urlConnection.getOutputStream());
-                outboundPayload = null; // no longer needed
-            }
-            checkConnect(urlConnection);
-            InputStream in = urlConnection.getInputStream();
+                Payload.Inbound inboundPayload =
+                    PayloadImpl.Inbound.newInstance(responseContentType, in);
 
-            String responseContentType = urlConnection.getContentType();
-
-            Payload.Inbound inboundPayload =
-                PayloadImpl.Inbound.newInstance(responseContentType, in);
-
-            if (inboundPayload == null)
-                throw new IOException(
-                    strings.get("NoPayloadSupport", responseContentType));
-            PayloadFilesManager downloadedFilesMgr =
-                new PayloadFilesManager.Perm(fileOutputDir, null, logger,
-                    new PayloadFilesManager.ActionReportHandler() {
-                        @Override
-                        public void handleReport(InputStream reportStream)
-                                                throws Exception {
-                            handleResponse(options, reportStream,
-                                urlConnection.getResponseCode(), userOut);
-                        }
-                    });
-            try {
-                downloadedFilesMgr.processParts(inboundPayload);
-            } catch (CommandException cex) {
-                throw cex;
-            } catch (Exception ex) {
-                throw new CommandException(ex);
-            }
-            }
-        });
+                if (inboundPayload == null)
+                    throw new IOException(
+                        strings.get("NoPayloadSupport", responseContentType));
+                PayloadFilesManager downloadedFilesMgr =
+                    new PayloadFilesManager.Perm(fileOutputDir, null, logger,
+                        new PayloadFilesManager.ActionReportHandler() {
+                            @Override
+                            public void handleReport(InputStream reportStream)
+                                                    throws Exception {
+                                handleResponse(options, reportStream,
+                                    urlConnection.getResponseCode(), userOut);
+                            }
+                        });
+                try {
+                    downloadedFilesMgr.processParts(inboundPayload);
+                } catch (Exception ex) {
+                    throw new CommandException(ex);
+                }
+                }
+            });
     }
 
     /**
-     * Set up an HTTP connection, call cmd.doCommand to do all the work,
-     * and handle common exceptions.
+     * Set up an HTTP connection, call cmd.prepareConnection so the consumer of
+     * the connection can further configure it, then open the connection (following
+     * redirects if needed), then call cmd.useConnection so the consumer of the
+     * connection can use it.
      * <P>
-     * This method will try to execute the command repeatedly, for example
-     * retrying with a secure connection if redirected, retrying with updated
-     * credentials (typically from the interactive user), etc., until the
+     * This method will try to execute the command repeatedly, for example,
+     * retrying with updated credentials (typically from the interactive user), etc., until the
      * command succeeds or there are no more ways to retry that might succeed.
      *
      * @param uriString     the URI to connect to
@@ -540,19 +577,21 @@ public class RemoteAdminCommand {
          * be secure.
          */
         boolean usedCallerProvidedCredentials = secure;
-
+        
+        /*
+         * Note: HttpConnectorAddress will set up SSL/TLS client cert
+         * handling if the current configuration calls for it.
+         */
+        HttpConnectorAddress url = getHttpConnectorAddress(
+                                host, port, shouldUseSecure);
+        
         do {
             /*
              * Any code that wants to trigger a retry will say so explicitly.
              */
             shouldTryCommandAgain = false;
             try {
-                /*
-                 * Note: HttpConnectorAddress will set up SSL/TLS client cert
-                 * handling if the current configuration calls for it.
-                 */
-                HttpConnectorAddress url = getHttpConnectorAddress(
-                                host, port, shouldUseSecure);
+
                 logger.finer("URI: " + uriString);
                 logger.finer("URL: " + url.toString());
                 logger.finer("URL: " +
@@ -562,7 +601,6 @@ public class RemoteAdminCommand {
                 if (user != null || password != null)
                     url.setAuthenticationInfo(
                         new AuthenticationInfo(user, password));
-
                 urlConnection = (HttpURLConnection)
                         url.openConnection(uriString.toString());
                 urlConnection.setRequestProperty("User-Agent", responseFormatType);
@@ -582,7 +620,39 @@ public class RemoteAdminCommand {
                 if (connectTimeout >= 0)
                     urlConnection.setConnectTimeout(connectTimeout);
                 addAdditionalHeaders(urlConnection);
-                cmd.doCommand(urlConnection);
+                
+                cmd.prepareConnection(urlConnection);
+                urlConnection.connect();
+                /*
+                 * We must handle redirection from http to https explicitly
+                 * because, even if the HttpURLConnection's followRedirect is
+                 * set to true the Java SE implementation does not do so if the
+                 * procotols are different.
+                 */
+                String redirection = checkConnect(urlConnection);
+                if (redirection != null) {
+                    logger.log(Level.FINE, "Following redirection to " + redirection);
+                    url = followRedirection(url, redirection);
+                    shouldTryCommandAgain = true;
+                    shouldUseSecure = url.isSecure();
+                    /*
+                     * If we have been redirected to https then we can send
+                     * the credentials - if we have them - on the next 
+                     * request we send because the request and therefore the
+                     * credentials will be encrypted.
+                     */
+                    shouldSendCredentials = shouldUseSecure;
+                    urlConnection.disconnect();
+
+                    continue;
+                }
+
+                /*
+                 * No redirection, so we have established the connection.
+                 * Now delegate again to the command processing to use the
+                 * now-created connection.
+                 */
+                cmd.useConnection(urlConnection);
                 logger.finer("doHttpCommand succeeds");
             } catch (AuthenticationException authEx) {
                 
@@ -652,7 +722,7 @@ public class RemoteAdminCommand {
                 logger.finer("doHttpCommand: socket exception " + se);
                 try {
                     boolean serverAppearsSecure = NetUtils.isSecurePort(host, port);
-                    if (serverAppearsSecure && !secure) {
+                    if (serverAppearsSecure && !shouldUseSecure) {
                         if (retryUsingSecureConnection(host, port)) {
                             // retry using secure connection
                             shouldUseSecure = true;
@@ -701,20 +771,72 @@ public class RemoteAdminCommand {
         } while (shouldTryCommandAgain);
     }
 
+    /**
+     * Creates a new HttpConnectorAddress corresponding to the location to which
+     * an earlier request was redirected.
+     * <p>
+     * If the new protocol is https then the HttpConnectorAddress secure setting
+     * is turned on.
+     * @param originalAddr the address which has been redirected elsewhere
+     * @param redirection the location to which the attempted connection was redirected
+     * @return connector address for the new location
+     * @throws MalformedURLException
+     */
+    private HttpConnectorAddress followRedirection(
+            final HttpConnectorAddress originalAddr,
+            final String redirection) throws MalformedURLException {
+        final URL url = new URL(redirection);
+        final boolean useSecure = (url.getProtocol().equalsIgnoreCase("https"));
+        return new HttpConnectorAddress(
+                url.getHost(),
+                url.getPort(),
+                useSecure,
+                originalAddr.getPath(),
+                originalAddr.getSSLSocketFactory());
+    }
+
+    /**
+     * Provides an HttpConnectorAddress for use in connecting to the desired
+     * admin listener.
+     * <p>
+     * This implementation works for true admin clients and will not work
+     * correctly for commands submitted to instances from inside the DAS.  (That
+     * is done from the implementation in ServerRemoteAdminCommand which extends
+     * this class.)
+     * <p>
+     * This code constructs the HttpConnectorAddress in a way that uses either
+     * no SSLSocketFactory (if security is off) or uses an SSLSocketFactory
+     * linked to the asadmin truststore.
+     *
+     * @param host the host name to which the connection should be made
+     * @param port the admin port on that host
+     * @param shouldUseSecure whether SSL should be used to connect or not
+     * @return
+     */
     protected HttpConnectorAddress getHttpConnectorAddress(
             final String host, final int port, final boolean shouldUseSecure) {
         return new HttpConnectorAddress(
                                 host, port, shouldUseSecure);
     }
 
+    /**
+     * Adds any headers needed for the current environment to the admin
+     * request.
+     *
+     * @param urlConnection
+     */
     protected void addAdditionalHeaders(final URLConnection urlConnection) {
+        /*
+         * No additional headers are needed for connections originating from
+         * true admin clients.
+         */
     }
 
     /**
      * Check that the connection was successful and handle any error responses,
      * turning them into exceptions.
      */
-    private void checkConnect(HttpURLConnection urlConnection)
+    private String checkConnect(HttpURLConnection urlConnection)
                                 throws IOException, CommandException {
         int code = urlConnection.getResponseCode();
         if (code == -1) {
@@ -725,9 +847,29 @@ public class RemoteAdminCommand {
         if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
             throw new AuthenticationException(reportAuthenticationException());
         }
+        /*
+         * The DAS might be redirecting to a secure port.  If so, follow
+         * the redirection.
+         */
+        if (isStatusRedirection(code)) {
+            return urlConnection.getHeaderField("Location");
+        }
         if (code != HttpURLConnection.HTTP_OK)
             throw new CommandException(strings.get("BadResponse", "" + code,
                                         urlConnection.getResponseMessage()));
+        /*
+         * If the connection worked then return null, indicating no
+         * redirection is needed.
+         */
+        return null;
+    }
+    
+    private boolean isStatusRedirection(final int returnCode) {
+        /*
+         * Currently, Grizzly redirects using 302.  For admin requests the
+         * other varieties of redirection do not apply.
+         */
+        return (returnCode == HttpURLConnection.HTTP_MOVED_TEMP);
     }
 
     /**
@@ -874,13 +1016,16 @@ public class RemoteAdminCommand {
         uriString.setLength(uriString.length() - 1);
 
         doHttpCommand(uriString.toString(), "GET", new HttpCommand() {
-            public void doCommand(HttpURLConnection urlConnection)
-                    throws CommandException, IOException {
 
+            @Override
+            public void prepareConnection(HttpURLConnection urlConnection) {
                 //urlConnection.setRequestProperty("Accept: ", "text/xml");
                 urlConnection.setRequestProperty("User-Agent", "metadata");
-                urlConnection.connect();
-                checkConnect(urlConnection);
+            }
+
+            public void useConnection(HttpURLConnection urlConnection)
+                    throws CommandException, IOException {
+
                 InputStream in = urlConnection.getInputStream();
 
                 String responseContentType = urlConnection.getContentType();

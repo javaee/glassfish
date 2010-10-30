@@ -157,8 +157,19 @@ public class AsadminSecurityUtil {
             throws IOException, KeyStoreException, NoSuchAlgorithmException, CertificateException {
         char[] passwordToUse = chooseMasterPassword(commandLineMasterPassword);
         try {
+            /*
+             * Open the keystore if the user has specified one using
+             * the standard system property.  That would allow users to add a
+             * key to a client-side keystore and use SSL client auth from
+             * asadmin to the DAS (if they have added the corresponding cert to
+             * the DAS truststore). 
+             */
             asadminKeystore = openKeystore(passwordToUse);
-            logger.finer("Loaded keystore using command or default master password");
+            if (asadminKeystore == null) {
+                logger.finer("Skipped loading keystore - location null");
+            } else {
+                logger.finer("Loaded keystore using command or default master password");
+            }
         } catch (IOException ex) {
             if (ex.getCause() instanceof UnrecoverableKeyException) {
                 /*
@@ -187,7 +198,7 @@ public class AsadminSecurityUtil {
 
     private AsadminTruststore openTruststore(final char[] password)
             throws CertificateException, KeyStoreException, NoSuchAlgorithmException, IOException {
-        return AsadminTruststore.newInstance(password);
+        return new AsadminTruststore(password);
     }
 
     /**
@@ -204,8 +215,12 @@ public class AsadminSecurityUtil {
         final KeyStore permanentKS = KeyStore.getInstance("JKS");
         InputStream keyStoreStream = null;
         try {
+            keyStoreStream = asadminKeyStoreStream();
+            if (keyStoreStream == null) {
+                return null;
+            }
             permanentKS.load(
-                    keyStoreStream = asadminKeyStoreStream(),
+                    keyStoreStream,
                     candidateMasterPassword);
             return permanentKS;
         } finally {
@@ -232,6 +247,9 @@ public class AsadminSecurityUtil {
      */
     private InputStream asadminKeyStoreStream() throws FileNotFoundException {
         String location = System.getProperty(SystemPropertyConstants.KEYSTORE_PROPERTY);
+        if (location == null) {
+            return null;
+        }
         return new BufferedInputStream(new FileInputStream(location));
     }
 

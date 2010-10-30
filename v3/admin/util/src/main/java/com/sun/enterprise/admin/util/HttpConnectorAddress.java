@@ -40,6 +40,8 @@
 
 package com.sun.enterprise.admin.util;
 
+import com.sun.enterprise.security.ssl.SSLUtils;
+import com.sun.enterprise.security.store.AsadminSecurityUtil;
 import java.io.IOException;
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -51,6 +53,7 @@ import java.security.KeyManagementException;
 import com.sun.enterprise.universal.GFBase64Encoder;
 
 import javax.net.ssl.*;
+import org.jvnet.hk2.component.Habitat;
 
 public final class HttpConnectorAddress {
     static final String HTTP_CONNECTOR = "http";
@@ -136,10 +139,10 @@ public final class HttpConnectorAddress {
 
     private void configureSSL(final HttpsURLConnection httpsCnx) throws IOException {
         httpsCnx.setHostnameVerifier(new BasicHostnameVerifier(this.host));
-        httpsCnx.setSSLSocketFactory(getSSLSocketFactory());
+        httpsCnx.setSSLSocketFactory(getOrCreateSSLSocketFactory());
     }
 
-    private synchronized SSLSocketFactory getSSLSocketFactory() throws IOException {
+    private synchronized SSLSocketFactory getOrCreateSSLSocketFactory() throws IOException {
         /*
          * The SSL socket factory will have been assigned a value if this
          * connection was made from the DAS or an instance...that code would have
@@ -151,18 +154,29 @@ public final class HttpConnectorAddress {
          * the one which uses SSL but does not provide client auth.
          */
         if (sslSocketFactory == null) {
-            try {
-                final SSLContext sc = SSLContext.getInstance("TLS");
-                TrustManager[] tms = {new AsadminTrustManager()};
-                sc.init(SecureAdminClientManager.getKeyManagers(), tms, new SecureRandom());
-                sslSocketFactory = sc.getSocketFactory();
-            } catch (KeyManagementException ex) {
-                throw new IOException(ex);
-            } catch (NoSuchAlgorithmException ex) {
-                throw new IOException(ex);
-            }
+            sslSocketFactory = createAdminSSLSocketFactory(null, null);
         }
         return sslSocketFactory;
+    }
+
+    private SSLSocketFactory createAdminSSLSocketFactory(String alias, String protocol) {
+
+        try {
+            if (protocol == null) {
+                protocol = "TLSv1";
+            }
+            SSLContext cntxt = SSLContext.getInstance(protocol);
+            /*
+             * Pass null for the array of KeyManagers.  That uses the default
+             * ones, so if the user has loaded client keys into the standard
+             * Java SE keystore they will be found.
+             */
+            cntxt.init(null, new TrustManager[] {new AsadminTrustManager()}, null);
+
+            return cntxt.getSocketFactory();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -224,6 +238,10 @@ public final class HttpConnectorAddress {
 
     public URL toURL(String path) throws MalformedURLException{
         return new URL(this.asURLSpec(path));
+    }
+
+    public SSLSocketFactory getSSLSocketFactory() {
+        return sslSocketFactory;
     }
   
     private final String getUser() {
