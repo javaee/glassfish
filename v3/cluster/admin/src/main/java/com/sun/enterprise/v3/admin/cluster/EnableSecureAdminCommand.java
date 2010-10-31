@@ -40,29 +40,23 @@
 
 package com.sun.enterprise.v3.admin.cluster;
 
-import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.SecureAdmin;
-import java.beans.PropertyVetoException;
-import org.glassfish.api.ActionReport;
+import com.sun.enterprise.v3.admin.InserverCommandRunnerHelper;
+import org.glassfish.api.ActionReport.MessagePart;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.RetryableException;
-import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.Transaction;
-import org.jvnet.hk2.config.TransactionFailure;
 
 /**
- * Adjusts each configuration in the domain to use secure admin.
+ * Records that secure admin is to be used and adjusts each admin listener
+ * configuration in the domain to use secure admin.
  *
  * @author Tim Quinn
  */
@@ -70,69 +64,35 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Scoped(PerLookup.class)
 @I18n("enable.secure.admin.command")
 @ExecuteOn(RuntimeType.ALL)
-public class EnableSecureAdminCommand implements AdminCommand {
+public class EnableSecureAdminCommand extends SecureAdminCommand {
 
-    @Param(optional = true, defaultValue="s1as")
+    @Param(optional = true)
     public String adminalias;
 
-    @Param(optional = true, defaultValue="glassfish-instance")
+    @Param(optional = true)
     public String instancealias;
 
-//    @Inject
-//    private Configs configs;
-
     @Inject
-    private Domain domain;
+    private InserverCommandRunnerHelper inserverCommandRunnerHelper;
 
     @Override
-    public void execute(AdminCommandContext context) {
-        final ActionReport report = context.getActionReport();
-        try {
-            ConfigSupport.apply(new SingleConfigCode<Domain>() {
-                @Override
-                public Object run(Domain d) throws PropertyVetoException, TransactionFailure {
-
-                    // get the transaction
-                    Transaction t = Transaction.getTransaction(d);
-                    if (t!=null) {
-
-                        try {
-                            // TODO - adjust the Grizzly config in all configs
-    //                        for (Config c : configs.getConfig()) {
-    //                            report.getTopMessagePart().addChild().setMessage(c.getName());
-    //                        }
-                            /*
-                             * Create the secure admin node if it is not already there.
-                             */
-                            SecureAdmin secureAdmin_w;
-                            SecureAdmin secureAdmin = d.getSecureAdmin();
-                            if (secureAdmin == null) {
-                                secureAdmin_w = d.createChild(SecureAdmin.class);
-                                d.setSecureAdmin(secureAdmin_w);
-                            } else {
-                                secureAdmin_w = t.enroll(secureAdmin);
-                            }
-                            secureAdmin_w.setEnabled("true");
-                            if (adminalias != null) {
-                                secureAdmin_w.setDasAlias(adminalias);
-                            }
-                            if (instancealias != null) {
-                                secureAdmin_w.setInstanceAlias(instancealias);
-                            }
-
-                            t.commit();
-                        } catch (RetryableException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    }
-
-                    return Boolean.TRUE;
-                }
-            }, domain);
-            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        } catch (TransactionFailure ex) {
-            report.failure(context.getLogger(), Strings.get("enable.secure.admin.errenable"), ex);
+    protected void updateSecureAdminSettings(SecureAdmin secureAdmin_w) {
+        super.updateSecureAdminSettings(secureAdmin_w, true);
+        if (adminalias != null) {
+            secureAdmin_w.setDasAlias(adminalias);
+        }
+        if (instancealias != null) {
+            secureAdmin_w.setInstanceAlias(instancealias);
         }
     }
 
+    @Override
+    protected String transactionErrorMessageKey() {
+        return "enable.secure.admin.errenable";
+    }
+
+    @Override
+    protected void updateAdminListenerConfig(Transaction transaction, Config config, MessagePart partForThisConfig) {
+
+    }
 }
