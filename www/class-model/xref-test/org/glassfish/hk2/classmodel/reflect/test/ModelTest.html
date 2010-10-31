@@ -1,44 +1,45 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" /><title>ModelTest xref</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>ModelTest xref</title>
 <link type="text/css" rel="stylesheet" href="../../../../../../stylesheet.css" />
 </head>
 <body>
-<div id="overview"><a href="../../../../../../../../../../../../../../apidocs/org/glassfish/hk2/classmodel/reflect/test/ModelTest.html">View Javadoc</a></div><pre>
+<div id="overview"><a href="../../../../../../../testapidocs/org/glassfish/hk2/classmodel/reflect/test/ModelTest.html">View Javadoc</a></div><pre>
 
-<a name="1" href="#1">1</a>   <strong>package</strong> org.glassfish.hk2.classmodel.reflect.test;
-<a name="2" href="#2">2</a>   
-<a name="3" href="#3">3</a>   <strong>import</strong> org.glassfish.hk2.classmodel.reflect.*;
-<a name="4" href="#4">4</a>   
-<a name="5" href="#5">5</a>   <strong>import</strong> org.glassfish.hk2.classmodel.reflect.test.ordering.MethodDeclarationOrderTest;
-<a name="6" href="#6">6</a>   <strong>import</strong> org.junit.Test;
-<a name="7" href="#7">7</a>   <strong>import</strong> org.junit.Assert;
-<a name="8" href="#8">8</a>   <strong>import</strong> java.io.IOException;
-<a name="9" href="#9">9</a>   
-<a name="10" href="#10">10</a>  
-<a name="11" href="#11">11</a>  <em>/**<em>*</em></em>
-<a name="12" href="#12">12</a>  <em> * Model related tests</em>
-<a name="13" href="#13">13</a>  <em> */</em>
-<a name="14" href="#14">14</a>  <strong>public</strong> <strong>class</strong> <a href="../../../../../../org/glassfish/hk2/classmodel/reflect/test/ModelTest.html">ModelTest</a> {
-<a name="15" href="#15">15</a>  
-<a name="16" href="#16">16</a>      @Test
-<a name="17" href="#17">17</a>      <strong>public</strong> <strong>void</strong> orderTest() throws IOException, InterruptedException {
-<a name="18" href="#18">18</a>  
-<a name="19" href="#19">19</a>          Types types = ClassModelTestsUtils.getTypes();
-<a name="20" href="#20">20</a>          Type order = types.getBy(MethodDeclarationOrderTest.<strong>class</strong>.getName());
-<a name="21" href="#21">21</a>          Assert.assertNotNull(order);
-<a name="22" href="#22">22</a>          Assert.assertTrue(order.getMethods().size()==4);
-<a name="23" href="#23">23</a>          <strong>int</strong> i=1;
-<a name="24" href="#24">24</a>          <strong>for</strong> (MethodModel mm : order.getMethods()) {
-<a name="25" href="#25">25</a>              <strong>if</strong> (mm.getName().equals(<span class="string">"&lt;init>"</span>))
-<a name="26" href="#26">26</a>                  <strong>continue</strong>;
-<a name="27" href="#27">27</a>  
-<a name="28" href="#28">28</a>              Assert.assertEquals(<span class="string">"method"</span>+i, mm.getName());
-<a name="29" href="#29">29</a>              i++;
-<a name="30" href="#30">30</a>          }
-<a name="31" href="#31">31</a>      }
-<a name="32" href="#32">32</a>  }
+<a class="jxr_linenumber" name="1" href="#1">1</a>   <strong class="jxr_keyword">package</strong> org.glassfish.hk2.classmodel.reflect.test;
+<a class="jxr_linenumber" name="2" href="#2">2</a>   
+<a class="jxr_linenumber" name="3" href="#3">3</a>   <strong class="jxr_keyword">import</strong> org.glassfish.hk2.classmodel.reflect.*;
+<a class="jxr_linenumber" name="4" href="#4">4</a>   
+<a class="jxr_linenumber" name="5" href="#5">5</a>   <strong class="jxr_keyword">import</strong> org.glassfish.hk2.classmodel.reflect.test.ordering.MethodDeclarationOrderTest;
+<a class="jxr_linenumber" name="6" href="#6">6</a>   <strong class="jxr_keyword">import</strong> org.junit.Test;
+<a class="jxr_linenumber" name="7" href="#7">7</a>   <strong class="jxr_keyword">import</strong> org.junit.Assert;
+<a class="jxr_linenumber" name="8" href="#8">8</a>   <strong class="jxr_keyword">import</strong> java.io.IOException;
+<a class="jxr_linenumber" name="9" href="#9">9</a>   
+<a class="jxr_linenumber" name="10" href="#10">10</a>  
+<a class="jxr_linenumber" name="11" href="#11">11</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="12" href="#12">12</a>  <em class="jxr_javadoccomment"> * Model related tests</em>
+<a class="jxr_linenumber" name="13" href="#13">13</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="14" href="#14">14</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../org/glassfish/hk2/classmodel/reflect/test/ModelTest.html">ModelTest</a> {
+<a class="jxr_linenumber" name="15" href="#15">15</a>  
+<a class="jxr_linenumber" name="16" href="#16">16</a>      @Test
+<a class="jxr_linenumber" name="17" href="#17">17</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> orderTest() <strong class="jxr_keyword">throws</strong> IOException, InterruptedException {
+<a class="jxr_linenumber" name="18" href="#18">18</a>  
+<a class="jxr_linenumber" name="19" href="#19">19</a>          Types types = ClassModelTestsUtils.getTypes();
+<a class="jxr_linenumber" name="20" href="#20">20</a>          Type order = types.getBy(MethodDeclarationOrderTest.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="21" href="#21">21</a>          Assert.assertNotNull(order);
+<a class="jxr_linenumber" name="22" href="#22">22</a>          Assert.assertTrue(order.getMethods().size()==4);
+<a class="jxr_linenumber" name="23" href="#23">23</a>          <strong class="jxr_keyword">int</strong> i=1;
+<a class="jxr_linenumber" name="24" href="#24">24</a>          <strong class="jxr_keyword">for</strong> (MethodModel mm : order.getMethods()) {
+<a class="jxr_linenumber" name="25" href="#25">25</a>              <strong class="jxr_keyword">if</strong> (mm.getName().equals(<span class="jxr_string">"&lt;init&gt;"</span>))
+<a class="jxr_linenumber" name="26" href="#26">26</a>                  <strong class="jxr_keyword">continue</strong>;
+<a class="jxr_linenumber" name="27" href="#27">27</a>  
+<a class="jxr_linenumber" name="28" href="#28">28</a>              Assert.assertEquals(<span class="jxr_string">"method"</span>+i, mm.getName());
+<a class="jxr_linenumber" name="29" href="#29">29</a>              i++;
+<a class="jxr_linenumber" name="30" href="#30">30</a>          }
+<a class="jxr_linenumber" name="31" href="#31">31</a>      }
+<a class="jxr_linenumber" name="32" href="#32">32</a>  }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
