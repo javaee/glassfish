@@ -1,24 +1,24 @@
 -classpath
-'/home/dochez/java/svn/hk2/trunk/hk2/dependency-verifier/target/classes:/home/dochez/.m2/repository/org/glassfish/hk2/external/asm-all-repackaged/1.0.48-SNAPSHOT/asm-all-repackaged-1.0.48-SNAPSHOT.jar:/home/dochez/.m2/repository/com/sun/enterprise/osgi-adapter/1.0.48-SNAPSHOT/osgi-adapter-1.0.48-SNAPSHOT.jar:/home/dochez/.m2/repository/org/apache/felix/org.osgi.core/1.2.0/org.osgi.core-1.2.0.jar:/home/dochez/.m2/repository/org/glassfish/hk2/external/bean-validator/1.0.48-SNAPSHOT/bean-validator-1.0.48-SNAPSHOT.jar:/home/dochez/.m2/repository/com/sun/enterprise/hk2-core/1.0.48-SNAPSHOT/hk2-core-1.0.48-SNAPSHOT.jar:/home/dochez/.m2/repository/org/apache/bcel/bcel/5.2/bcel-5.2.jar:/home/dochez/.m2/repository/com/googlecode/jtype/jtype/0.1.0/jtype-0.1.0.jar:/home/dochez/.m2/repository/com/sun/enterprise/auto-depends/1.0.48-SNAPSHOT/auto-depends-1.0.48-SNAPSHOT.jar:/home/dochez/.m2/repository/com/sun/enterprise/config/1.0.48-SNAPSHOT/config-1.0.48-SNAPSHOT.jar'
+'/Users/dochez/java/svn/full-hk2/hk2/dependency-verifier/target/classes:/Users/dochez/.m2/repository/org/glassfish/hk2/external/asm-all-repackaged/1.0.59-SNAPSHOT/asm-all-repackaged-1.0.59-SNAPSHOT.jar:/Users/dochez/.m2/repository/com/sun/enterprise/osgi-adapter/1.0.59-SNAPSHOT/osgi-adapter-1.0.59-SNAPSHOT.jar:/Users/dochez/.m2/repository/org/apache/felix/org.osgi.core/1.2.0/org.osgi.core-1.2.0.jar:/Users/dochez/.m2/repository/org/glassfish/hk2/external/bean-validator/1.0.59-SNAPSHOT/bean-validator-1.0.59-SNAPSHOT.jar:/Users/dochez/.m2/repository/org/glassfish/hk2/class-model/1.0.59-SNAPSHOT/class-model-1.0.59-SNAPSHOT.jar:/Users/dochez/.m2/repository/com/sun/enterprise/hk2-core/1.0.59-SNAPSHOT/hk2-core-1.0.59-SNAPSHOT.jar:/Users/dochez/.m2/repository/org/apache/bcel/bcel/5.2/bcel-5.2.jar:/Users/dochez/.m2/repository/jakarta-regexp/jakarta-regexp/1.4/jakarta-regexp-1.4.jar:/Users/dochez/.m2/repository/com/googlecode/jtype/jtype/0.1.0/jtype-0.1.0.jar:/Users/dochez/.m2/repository/org/jvnet/tiger-types/1.2/tiger-types-1.2.jar:/Users/dochez/.m2/repository/com/sun/enterprise/auto-depends/1.0.59-SNAPSHOT/auto-depends-1.0.59-SNAPSHOT.jar:/Users/dochez/.m2/repository/com/sun/enterprise/config/1.0.59-SNAPSHOT/config-1.0.59-SNAPSHOT.jar'
 -encoding
-'UTF-8'
+'MacRoman'
 -protected
 -sourcepath
-'/home/dochez/java/svn/hk2/trunk/hk2/dependency-verifier/src/main/java'
+'/Users/dochez/java/svn/full-hk2/hk2/dependency-verifier/src/main/java'
 -author
 -bottom
-'Copyright &#169; 2010 <a href="http://www.sun.com">Sun Microsystems, Inc.</a>. All Rights Reserved.'
+'Copyright &#169; 2010 <a href="http://www.oracle.com">Oracle Corporation</a>. All Rights Reserved.'
 -charset
 'UTF-8'
 -d
-'/home/dochez/java/svn/hk2/trunk/hk2/dependency-verifier/target/site/apidocs'
+'/Users/dochez/java/svn/full-hk2/hk2/dependency-verifier/target/site/apidocs'
 -docencoding
 'UTF-8'
 -doctitle
-'Static Analyser for verifying module dependency 1.0.48-SNAPSHOT API'
+'Static Analyser for verifying module dependency 1.0.59-SNAPSHOT API'
 -link
-'http://java.sun.com/j2se/1.5.0/docs/api'
+'http://java.sun.com/javase/6/docs/api'
 -use
 -version
 -windowtitle
-'Static Analyser for verifying module dependency 1.0.48-SNAPSHOT API'
+'Static Analyser for verifying module dependency 1.0.59-SNAPSHOT API'

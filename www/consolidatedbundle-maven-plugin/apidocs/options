@@ -1,24 +1,24 @@
 -classpath
-'/home/dochez/java/svn/hk2/trunk/hk2/consolidatedbundle-maven-plugin/target/classes:/home/dochez/.m2/repository/org/apache/maven/maven-profile/2.0.6/maven-profile-2.0.6.jar:/home/dochez/.m2/repository/org/codehaus/plexus/plexus-container-default/1.0-alpha-8/plexus-container-default-1.0-alpha-8.jar:/home/dochez/.m2/repository/org/codehaus/plexus/plexus-compiler-manager/1.5.3/plexus-compiler-manager-1.5.3.jar:/home/dochez/.m2/repository/biz/aQute/bndlib/0.0.203/bndlib-0.0.203.jar:/home/dochez/.m2/repository/org/apache/maven/maven-repository-metadata/2.0.6/maven-repository-metadata-2.0.6.jar:/home/dochez/.m2/repository/org/apache/maven/maven-artifact-manager/2.0.6/maven-artifact-manager-2.0.6.jar:/home/dochez/.m2/repository/org/apache/maven/maven-plugin-registry/2.0.6/maven-plugin-registry-2.0.6.jar:/home/dochez/.m2/repository/org/apache/maven/shared/maven-osgi/0.2.0/maven-osgi-0.2.0.jar:/home/dochez/.m2/repository/org/codehaus/plexus/plexus-compiler-api/1.5.3/plexus-compiler-api-1.5.3.jar:/home/dochez/.m2/repository/org/apache/maven/maven-project/2.0.6/maven-project-2.0.6.jar:/home/dochez/.m2/repository/com/sun/enterprise/config/1.0.48-SNAPSHOT/config-1.0.48-SNAPSHOT.jar:/home/dochez/.m2/repository/org/apache/maven/plugins/maven-compiler-plugin/2.0.2/maven-compiler-plugin-2.0.2.jar:/home/dochez/.m2/repository/org/apache/maven/maven-settings/2.0.6/maven-settings-2.0.6.jar:/home/dochez/.m2/repository/org/apache/maven/maven-artifact/2.0/maven-artifact-2.0.jar:/home/dochez/.m2/repository/org/apache/maven/maven-plugin-api/2.0.4/maven-plugin-api-2.0.4.jar:/home/dochez/.m2/repository/org/glassfish/hk2/external/asm-all-repackaged/1.0.48-SNAPSHOT/asm-all-repackaged-1.0.48-SNAPSHOT.jar:/home/dochez/.m2/repository/org/apache/maven/wagon/wagon-provider-api/1.0-beta-2/wagon-provider-api-1.0-beta-2.jar:/home/dochez/.m2/repository/classworlds/classworlds/1.1-alpha-2/classworlds-1.1-alpha-2.jar:/home/dochez/.m2/repository/org/glassfish/hk2/external/bean-validator/1.0.48-SNAPSHOT/bean-validator-1.0.48-SNAPSHOT.jar:/home/dochez/.m2/repository/org/codehaus/plexus/plexus-utils/1.0.4/plexus-utils-1.0.4.jar:/home/dochez/.m2/repository/org/apache/maven/maven-model/2.0.6/maven-model-2.0.6.jar:/home/dochez/.m2/repository/com/sun/enterprise/hk2-core/1.0.48-SNAPSHOT/hk2-core-1.0.48-SNAPSHOT.jar:/home/dochez/.m2/repository/com/sun/enterprise/auto-depends/1.0.48-SNAPSHOT/auto-depends-1.0.48-SNAPSHOT.jar:/home/dochez/.m2/repository/com/googlecode/jtype/jtype/0.1.0/jtype-0.1.0.jar'
+'/Users/dochez/java/svn/full-hk2/hk2/consolidatedbundle-maven-plugin/target/classes:/Users/dochez/.m2/repository/org/codehaus/plexus/plexus-container-default/1.0-alpha-8/plexus-container-default-1.0-alpha-8.jar:/Users/dochez/.m2/repository/org/codehaus/plexus/plexus-compiler-manager/1.5.3/plexus-compiler-manager-1.5.3.jar:/Users/dochez/.m2/repository/org/apache/maven/shared/maven-osgi/0.2.0/maven-osgi-0.2.0.jar:/Users/dochez/.m2/repository/org/codehaus/plexus/plexus-compiler-api/1.5.3/plexus-compiler-api-1.5.3.jar:/Users/dochez/.m2/repository/org/apache/maven/maven-project/2.0.6/maven-project-2.0.6.jar:/Users/dochez/.m2/repository/org/apache/maven/plugins/maven-compiler-plugin/2.0.2/maven-compiler-plugin-2.0.2.jar:/Users/dochez/.m2/repository/org/apache/maven/maven-settings/2.0.6/maven-settings-2.0.6.jar:/Users/dochez/.m2/repository/org/apache/maven/maven-artifact/2.0/maven-artifact-2.0.jar:/Users/dochez/.m2/repository/org/apache/maven/wagon/wagon-provider-api/1.0-beta-2/wagon-provider-api-1.0-beta-2.jar:/Users/dochez/.m2/repository/classworlds/classworlds/1.1-alpha-2/classworlds-1.1-alpha-2.jar:/Users/dochez/.m2/repository/org/glassfish/hk2/external/bean-validator/1.0.59-SNAPSHOT/bean-validator-1.0.59-SNAPSHOT.jar:/Users/dochez/.m2/repository/org/glassfish/hk2/class-model/1.0.59-SNAPSHOT/class-model-1.0.59-SNAPSHOT.jar:/Users/dochez/.m2/repository/org/codehaus/plexus/plexus-utils/1.0.4/plexus-utils-1.0.4.jar:/Users/dochez/.m2/repository/org/apache/maven/maven-model/2.0.6/maven-model-2.0.6.jar:/Users/dochez/.m2/repository/org/jvnet/tiger-types/1.2/tiger-types-1.2.jar:/Users/dochez/.m2/repository/com/sun/enterprise/auto-depends/1.0.59-SNAPSHOT/auto-depends-1.0.59-SNAPSHOT.jar:/Users/dochez/.m2/repository/org/apache/maven/maven-profile/2.0.6/maven-profile-2.0.6.jar:/Users/dochez/.m2/repository/biz/aQute/bndlib/0.0.203/bndlib-0.0.203.jar:/Users/dochez/.m2/repository/org/apache/maven/maven-repository-metadata/2.0.6/maven-repository-metadata-2.0.6.jar:/Users/dochez/.m2/repository/org/apache/maven/maven-artifact-manager/2.0.6/maven-artifact-manager-2.0.6.jar:/Users/dochez/.m2/repository/org/apache/maven/maven-plugin-registry/2.0.6/maven-plugin-registry-2.0.6.jar:/Users/dochez/.m2/repository/com/sun/enterprise/config/1.0.59-SNAPSHOT/config-1.0.59-SNAPSHOT.jar:/Users/dochez/.m2/repository/org/glassfish/hk2/external/asm-all-repackaged/1.0.59-SNAPSHOT/asm-all-repackaged-1.0.59-SNAPSHOT.jar:/Users/dochez/.m2/repository/org/apache/maven/maven-plugin-api/2.0.4/maven-plugin-api-2.0.4.jar:/Users/dochez/.m2/repository/com/sun/enterprise/hk2-core/1.0.59-SNAPSHOT/hk2-core-1.0.59-SNAPSHOT.jar:/Users/dochez/.m2/repository/com/googlecode/jtype/jtype/0.1.0/jtype-0.1.0.jar'
 -encoding
-'UTF-8'
+'MacRoman'
 -protected
 -sourcepath
-'/home/dochez/java/svn/hk2/trunk/hk2/consolidatedbundle-maven-plugin/src/main/java'
+'/Users/dochez/java/svn/full-hk2/hk2/consolidatedbundle-maven-plugin/src/main/java'
 -author
 -bottom
-'Copyright &#169; 2010 <a href="http://www.sun.com">Sun Microsystems, Inc.</a>. All Rights Reserved.'
+'Copyright &#169; 2010 <a href="http://www.oracle.com">Oracle Corporation</a>. All Rights Reserved.'
 -charset
 'UTF-8'
 -d
-'/home/dochez/java/svn/hk2/trunk/hk2/consolidatedbundle-maven-plugin/target/site/apidocs'
+'/Users/dochez/java/svn/full-hk2/hk2/consolidatedbundle-maven-plugin/target/site/apidocs'
 -docencoding
 'UTF-8'
 -doctitle
-'consolidated bundle Maven plugin 1.0.48-SNAPSHOT API'
+'consolidated bundle Maven plugin 1.0.59-SNAPSHOT API'
 -link
 'http://java.sun.com/j2se/1.5.0/docs/api'
 -use
 -version
 -windowtitle
-'consolidated bundle Maven plugin 1.0.48-SNAPSHOT API'
+'consolidated bundle Maven plugin 1.0.59-SNAPSHOT API'

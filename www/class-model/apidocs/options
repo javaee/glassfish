@@ -1,24 +1,24 @@
 -classpath
-'/home/dochez/java/svn/hk2/trunk/hk2/class-model/target/classes:/home/dochez/.m2/repository/org/glassfish/hk2/external/asm-all-repackaged/1.0.48-SNAPSHOT/asm-all-repackaged-1.0.48-SNAPSHOT.jar:/home/dochez/.m2/repository/junit/junit/4.3.1/junit-4.3.1.jar'
+'/Users/dochez/java/svn/full-hk2/hk2/class-model/target/classes:/Users/dochez/.m2/repository/asm/asm-commons/3.2/asm-commons-3.2.jar:/Users/dochez/.m2/repository/asm/asm/3.2/asm-3.2.jar:/Users/dochez/.m2/repository/asm/asm-tree/3.2/asm-tree-3.2.jar:/Users/dochez/.m2/repository/junit/junit/4.3.1/junit-4.3.1.jar'
 -encoding
-'UTF-8'
+'MacRoman'
 -protected
 -sourcepath
-'/home/dochez/java/svn/hk2/trunk/hk2/class-model/src/main/java'
+'/Users/dochez/java/svn/full-hk2/hk2/class-model/src/main/java'
 -author
 -bottom
-'Copyright &#169; 2010 <a href="http://www.sun.com">Sun Microsystems, Inc.</a>. All Rights Reserved.'
+'Copyright &#169; 2010 <a href="http://www.oracle.com">Oracle Corporation</a>. All Rights Reserved.'
 -charset
 'UTF-8'
 -d
-'/home/dochez/java/svn/hk2/trunk/hk2/class-model/target/site/apidocs'
+'/Users/dochez/java/svn/full-hk2/hk2/class-model/target/site/apidocs'
 -docencoding
 'UTF-8'
 -doctitle
-'Class Model for Hk2 1.0.48-SNAPSHOT API'
+'Class Model for Hk2 1.0.59-SNAPSHOT API'
 -link
 'http://java.sun.com/javase/6/docs/api'
 -use
 -version
 -windowtitle
-'Class Model for Hk2 1.0.48-SNAPSHOT API'
+'Class Model for Hk2 1.0.59-SNAPSHOT API'

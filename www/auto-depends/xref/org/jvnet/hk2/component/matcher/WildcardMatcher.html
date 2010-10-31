@@ -1,52 +1,53 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" /><title>WildcardMatcher xref</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>WildcardMatcher xref</title>
 <link type="text/css" rel="stylesheet" href="../../../../../stylesheet.css" />
 </head>
 <body>
-<div id="overview"><a href="../../../../../../../../../../../../apidocs/org/jvnet/hk2/component/matcher/WildcardMatcher.html">View Javadoc</a></div><pre>
+<div id="overview"><a href="../../../../../../apidocs/org/jvnet/hk2/component/matcher/WildcardMatcher.html">View Javadoc</a></div><pre>
 
-<a name="1" href="#1">1</a>   <strong>package</strong> org.jvnet.hk2.component.matcher;
-<a name="2" href="#2">2</a>   
-<a name="3" href="#3">3</a>   <em>/**<em>*</em></em>
-<a name="4" href="#4">4</a>   <em> * Simple wildcard matcher used as part of RFC 2254 type LDAP searches.</em>
-<a name="5" href="#5">5</a>   <em> *</em>
-<a name="6" href="#6">6</a>   <em> * @author Jeff Trent</em>
-<a name="7" href="#7">7</a>   <em> * </em>
-<a name="8" href="#8">8</a>   <em> * @since 3.1</em>
-<a name="9" href="#9">9</a>   <em> */</em>
-<a name="10" href="#10">10</a>  <strong>public</strong> <strong>class</strong> <a href="../../../../../org/jvnet/hk2/component/matcher/WildcardMatcher.html">WildcardMatcher</a> {
-<a name="11" href="#11">11</a>  
-<a name="12" href="#12">12</a>    <strong>private</strong> <strong>final</strong> String pattern;
-<a name="13" href="#13">13</a>    <strong>private</strong> <strong>final</strong> String[] parts;
-<a name="14" href="#14">14</a>  
-<a name="15" href="#15">15</a>    <strong>public</strong> <a href="../../../../../org/jvnet/hk2/component/matcher/WildcardMatcher.html">WildcardMatcher</a>(String pattern) {
-<a name="16" href="#16">16</a>      <strong>this</strong>.pattern = pattern;
-<a name="17" href="#17">17</a>      <strong>this</strong>.parts = pattern.split(<span class="string">"&#47;&#47;*"</span>);
-<a name="18" href="#18">18</a>    }
-<a name="19" href="#19">19</a>  
-<a name="20" href="#20">20</a>    <strong>public</strong> <strong>boolean</strong> matches(String text) {
-<a name="21" href="#21">21</a>      <strong>if</strong> (0 == parts.length) {
-<a name="22" href="#22">22</a>        <strong>return</strong> <strong>true</strong>;
-<a name="23" href="#23">23</a>      }
-<a name="24" href="#24">24</a>      
-<a name="25" href="#25">25</a>      <strong>if</strong> (!pattern.startsWith(<span class="string">"*"</span>) &amp;&amp; !text.startsWith(parts[0])) {
-<a name="26" href="#26">26</a>        <strong>return</strong> false;
-<a name="27" href="#27">27</a>      }
-<a name="28" href="#28">28</a>      
-<a name="29" href="#29">29</a>      <strong>for</strong> (String part : parts) {
-<a name="30" href="#30">30</a>        <strong>int</strong> pos = text.indexOf(part);
-<a name="31" href="#31">31</a>        <strong>if</strong> (pos == -1) {
-<a name="32" href="#32">32</a>          <strong>return</strong> false;
-<a name="33" href="#33">33</a>        }
-<a name="34" href="#34">34</a>        text = text.substring(pos + part.length());
-<a name="35" href="#35">35</a>      }
-<a name="36" href="#36">36</a>  
-<a name="37" href="#37">37</a>      <strong>return</strong> (text.length() == 0 || pattern.endsWith(<span class="string">"*"</span>));
-<a name="38" href="#38">38</a>    }
-<a name="39" href="#39">39</a>  
-<a name="40" href="#40">40</a>  }
+<a class="jxr_linenumber" name="1" href="#1">1</a>   <strong class="jxr_keyword">package</strong> org.jvnet.hk2.component.matcher;
+<a class="jxr_linenumber" name="2" href="#2">2</a>   
+<a class="jxr_linenumber" name="3" href="#3">3</a>   <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="4" href="#4">4</a>   <em class="jxr_javadoccomment"> * Simple wildcard matcher used as part of RFC 2254 type LDAP searches.</em>
+<a class="jxr_linenumber" name="5" href="#5">5</a>   <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="6" href="#6">6</a>   <em class="jxr_javadoccomment"> * @author Jeff Trent</em>
+<a class="jxr_linenumber" name="7" href="#7">7</a>   <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="8" href="#8">8</a>   <em class="jxr_javadoccomment"> * @since 3.1</em>
+<a class="jxr_linenumber" name="9" href="#9">9</a>   <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="10" href="#10">10</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/jvnet/hk2/component/matcher/WildcardMatcher.html">WildcardMatcher</a> {
+<a class="jxr_linenumber" name="11" href="#11">11</a>  
+<a class="jxr_linenumber" name="12" href="#12">12</a>    <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> String pattern;
+<a class="jxr_linenumber" name="13" href="#13">13</a>    <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> String[] parts;
+<a class="jxr_linenumber" name="14" href="#14">14</a>  
+<a class="jxr_linenumber" name="15" href="#15">15</a>    <strong class="jxr_keyword">public</strong> <a href="../../../../../org/jvnet/hk2/component/matcher/WildcardMatcher.html">WildcardMatcher</a>(String pattern) {
+<a class="jxr_linenumber" name="16" href="#16">16</a>      <strong class="jxr_keyword">this</strong>.pattern = pattern;
+<a class="jxr_linenumber" name="17" href="#17">17</a>      <strong class="jxr_keyword">this</strong>.parts = pattern.split(<span class="jxr_string">"&#92;&#92;*"</span>);
+<a class="jxr_linenumber" name="18" href="#18">18</a>    }
+<a class="jxr_linenumber" name="19" href="#19">19</a>  
+<a class="jxr_linenumber" name="20" href="#20">20</a>    <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> matches(String text) {
+<a class="jxr_linenumber" name="21" href="#21">21</a>      <strong class="jxr_keyword">if</strong> (0 == parts.length) {
+<a class="jxr_linenumber" name="22" href="#22">22</a>        <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="23" href="#23">23</a>      }
+<a class="jxr_linenumber" name="24" href="#24">24</a>      
+<a class="jxr_linenumber" name="25" href="#25">25</a>      <strong class="jxr_keyword">if</strong> (!pattern.startsWith(<span class="jxr_string">"*"</span>) &amp;&amp; !text.startsWith(parts[0])) {
+<a class="jxr_linenumber" name="26" href="#26">26</a>        <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="27" href="#27">27</a>      }
+<a class="jxr_linenumber" name="28" href="#28">28</a>      
+<a class="jxr_linenumber" name="29" href="#29">29</a>      <strong class="jxr_keyword">for</strong> (String part : parts) {
+<a class="jxr_linenumber" name="30" href="#30">30</a>        <strong class="jxr_keyword">int</strong> pos = text.indexOf(part);
+<a class="jxr_linenumber" name="31" href="#31">31</a>        <strong class="jxr_keyword">if</strong> (pos == -1) {
+<a class="jxr_linenumber" name="32" href="#32">32</a>          <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="33" href="#33">33</a>        }
+<a class="jxr_linenumber" name="34" href="#34">34</a>        text = text.substring(pos + part.length());
+<a class="jxr_linenumber" name="35" href="#35">35</a>      }
+<a class="jxr_linenumber" name="36" href="#36">36</a>  
+<a class="jxr_linenumber" name="37" href="#37">37</a>      <strong class="jxr_keyword">return</strong> (text.length() == 0 || pattern.endsWith(<span class="jxr_string">"*"</span>));
+<a class="jxr_linenumber" name="38" href="#38">38</a>    }
+<a class="jxr_linenumber" name="39" href="#39">39</a>  
+<a class="jxr_linenumber" name="40" href="#40">40</a>  }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
