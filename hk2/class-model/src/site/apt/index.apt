@@ -1,0 +1,30 @@
+														------
+														Introduction to Class-Model
+														------
+														Jerome Dochez
+														------
+														---
+
+	A lot of managed environment need extensive meta-data about the application/components it's managing. Such
+information can range from looking for annotations usages or class hierarchies. Although it is possible to use
+Java SE reflection APIs, such technique relies on classes being loaded by a class loader. Such assumption is both
+performance penalizing but also represents challenges as most of these managed environment perform code weaving
+that forces a reload using a different classloader adding to the performances issues.
+
+    Class Model is a set of reflection APIs on Java classes that is aimed to provide this reflective meta-data
+without requiring the presence of a classloader, it operates at the archive or directory level, loading .class
+files and processing them with the ASM library (http://asm.ow2.org/).
+
+* Scanning Process
+
+    In order to obtain the class-model reflection for a particular set of classes, it is necessary to parse such
+classes. Parsing will build an in memory model (level of details of such model can be adapted to needs) while
+parsing the input classes.
+
+** Parsing Context
+
+    The entry point to the parsing is the {{{.\apidocs/org/glassfish/hk2/classmodel/reflect/ParsingContext.html}ParsingContext}}
+which can be used to provided environmental settings like the logger, or the executor service instance to run the
+parsing context.
+
+    A notable setting of the Parsing Context is the {{{apidocs/org/glassfish/hk2/classmodel/reflect/ParsingConfig.html}ParsingConfig}}
