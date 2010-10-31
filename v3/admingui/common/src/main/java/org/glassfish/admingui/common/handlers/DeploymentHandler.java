@@ -289,8 +289,8 @@ public class DeploymentHandler {
 //                dProps.put(DFDeploymentProperties.CASCADE, "true");
 //        }
 
-        List errorList = new ArrayList();
-        List undeployedAppList = new ArrayList();
+        //List errorList = new ArrayList();
+        //List undeployedAppList = new ArrayList();
         List selectedRows = (List) obj;
         DFProgressObject progressObject = null;
         DeploymentFacility df = GuiUtil.getDeploymentFacility();
