@@ -37,11 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.cli.cluster;
 
 import com.sun.enterprise.admin.cli.remote.DASUtils;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
+import com.sun.enterprise.universal.process.ProcessUtils;
+import com.sun.enterprise.util.io.FileUtils;
 import java.io.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
@@ -60,6 +61,8 @@ import com.sun.enterprise.util.HostAndPort;
 @Scoped(PerLookup.class)
 public class StopLocalInstanceCommand extends LocalInstanceCommand {
 
+    @Param(optional = true, defaultValue = "false")
+    private Boolean force;
     @Param(name = "instance_name", primary = true, optional = true)
     private String userArgInstanceName;
 
@@ -127,6 +130,9 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
      * we detect that the DAS is not running.
      */
     protected int instanceNotRunning() throws CommandException {
+        if (force)
+            return kill();
+
         // by definition this is not an error
         // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
 
@@ -150,10 +156,17 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
      */
     protected int doRemoteCommand()
             throws CommandException, CommandValidationException {
+        // don't call the remote command with force=true.  Let it try to die
+        // normally.  We will kill it here if necessary...
+
         // run the remote stop-domain command and throw away the output
         RemoteCommand cmd = new RemoteCommand("_stop-instance", programOpts, env);
-        cmd.executeAndReturnOutput("_stop-instance");
+        cmd.executeAndReturnOutput("_stop-instance", "--force", "false");
         waitForDeath();
+
+        if(force)
+            kill();
+        
         return 0;
     }
 
@@ -195,5 +208,31 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
 
     private boolean timedOut(long startTime) {
         return (System.currentTimeMillis() - startTime) > CLIConstants.DEATH_TIMEOUT_MS;
+    }
+
+    private int kill() throws CommandException {
+        File prevPid = null;
+        String pids = null;
+
+        try {
+            prevPid = new File(getServerDirs().getPidFile().getPath() + ".prev");
+
+            if (!prevPid.canRead())
+                throw new CommandException(Strings.get("StopInstance.nopidprev", prevPid));
+
+            pids = FileUtils.readSmallFile(prevPid).trim();
+            String s = ProcessUtils.kill(Integer.parseInt(pids));
+
+            if(s != null)
+                logger.finer(s);
+        }
+        catch (CommandException ce) {
+            throw ce;
+        }
+        catch (Exception ex) {
+            throw new CommandException(Strings.get("StopInstance.pidprevreaderror",
+                    prevPid, ex.getMessage()));
+        }
+        return 0;
     }
 }

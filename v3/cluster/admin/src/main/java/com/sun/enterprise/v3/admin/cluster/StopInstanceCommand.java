@@ -41,9 +41,6 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.admin.remote.ServerRemoteAdminCommand;
-import java.util.Iterator;
-import java.util.Collection;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.File;
 import java.io.IOException;
@@ -52,11 +49,9 @@ import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.Module;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.v3.admin.StopServer;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.Async;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
@@ -67,7 +62,6 @@ import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.cluster.ssh.connect.RemoteConnectHelper;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -236,7 +230,9 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
                     host, port, false, "admin", null, logger);
 
             // notice how we do NOT send in the instance's name as an operand!!
-            rac.executeCommand(new ParameterMap());
+            ParameterMap map = new ParameterMap();
+            map.add("force", Boolean.toString(force));
+            rac.executeCommand(map);
         }
         catch (CommandException ex) {
             return Strings.get("stop.instance.racError", instanceName,

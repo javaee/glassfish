@@ -37,39 +37,45 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.cli;
 
-import java.io.*;
-import java.util.*;
+import com.sun.enterprise.universal.process.ProcessManager;
+import com.sun.enterprise.universal.process.ProcessManagerException;
+import com.sun.enterprise.universal.process.ProcessUtils;
+import com.sun.enterprise.util.OS;
+import com.sun.enterprise.util.io.FileUtils;
+import java.io.File;
+import java.io.IOException;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.admin.cli.remote.DASUtils;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
  * The stop-domain command.
  *
- * @author bnevins
+ * @author Byron Nevins
  * @author Bill Shannon
  */
 @Service(name = "stop-domain")
 @Scoped(PerLookup.class)
 public class StopDomainCommand extends LocalDomainCommand {
+
     @Param(name = "domain_name", primary = true, optional = true)
     private String userArgDomainName;
+    @Param(name = "force", optional = true, defaultValue = "false")
+    Boolean force;
+    private boolean local;
     private static final long WAIT_FOR_DAS_TIME_MS = 60000; // 1 minute
-    private static final LocalStringsImpl strings =
-            new LocalStringsImpl(StopDomainCommand.class);
 
     @Override
     protected void validate()
-            throws CommandException, CommandValidationException {
+            throws CommandException {
         setDomainName(userArgDomainName);
-        super.validate(); // which calls initDomain()
+        super.validate(); // which calls initDomain() !!
+        local = getServerDirs().getServerName() != null;
     }
 
     /**
@@ -80,23 +86,21 @@ public class StopDomainCommand extends LocalDomainCommand {
     @Override
     protected void initDomain() throws CommandException {
         // only initialize local domain information if it's a local operation
-        if(programOpts.getHost().equals(CLIConstants.DEFAULT_HOSTNAME))
+        if (programOpts.getHost().equals(CLIConstants.DEFAULT_HOSTNAME))
             super.initDomain();
-        else if(userArgDomainName != null)   // remote case
+        else if (userArgDomainName != null)   // remote case
             throw new CommandException(
-                    strings.get("StopDomain.noDomainNameAllowed"));
+                    Strings.get("StopDomain.noDomainNameAllowed"));
     }
 
     @Override
     protected int executeCommand()
-            throws CommandException, CommandValidationException {
+            throws CommandException {
 
-        boolean isLocal = getServerDirs().getServerName() != null;
-
-        if(isLocal) {
+        if (local) {
             // if the local password isn't available, the domain isn't running
             // (localPassword is set by initDomain)
-            if(getServerDirs().getLocalPassword() == null)
+            if (getServerDirs().getLocalPassword() == null)
                 return dasNotRunning();
 
             programOpts.setHostAndPort(getAdminAddress());
@@ -109,15 +113,16 @@ public class StopDomainCommand extends LocalDomainCommand {
              * most likely means we're talking to the wrong server.
              */
             programOpts.setInteractive(false);
-            // in the local case, make sure we're talking to the correct DAS
 
-            if(!isThisDAS(getDomainRootDir()))
+            // in the local case, make sure we're talking to the correct DAS
+            if (!isThisDAS(getDomainRootDir()))
                 return dasNotRunning();
+
             logger.finer("It's the correct DAS");
         }
         else { // remote
             // Verify that the DAS is running and reachable
-            if(!DASUtils.pingDASQuietly(programOpts, env))
+            if (!DASUtils.pingDASQuietly(programOpts, env))
                 return dasNotRunning();
 
             logger.finer("DAS is running");
@@ -139,45 +144,65 @@ public class StopDomainCommand extends LocalDomainCommand {
      * Print message and return exit code when
      * we detect that the DAS is not running.
      */
-    protected int dasNotRunning()
-            throws CommandException, CommandValidationException {
+    protected int dasNotRunning() throws CommandException {
+        if (force) {
+            if (local)
+                return kill();
+            else // remote.  We can NOT kill and we can't ask it to kill itself.
+                throw new CommandException(Strings.get("StopDomain.dasNotRunningRemotely"));
+        }
+
         // by definition this is not an error
         // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
-        logger.warning(strings.get("StopDomain.dasNotRunning"));
+        logger.warning(Strings.get("StopDomain.dasNotRunning"));
         return 0;
     }
 
     /**
      * Execute the actual stop-domain command.
      */
-    protected void doCommand()
-            throws CommandException, CommandValidationException {
+    protected void doCommand() throws CommandException {
+        Boolean shouldForce = force;
+
+        if (force && local) {
+            // do NOT call the remote command with force=true!
+            // Since it is local and we are capable of killing it we call with
+            // force=false which allows all the shutdown hooks to run normally.
+            // if it becomes a Zombie we wipe it out below anyways.
+            // bnevins Halloween 2010
+            shouldForce = false;
+        }
+
         // run the remote stop-domain command and throw away the output
         RemoteCommand cmd = new RemoteCommand(getName(), programOpts, env);
-        cmd.executeAndReturnOutput("stop-domain");
+        cmd.executeAndReturnOutput("stop-domain", "--force", shouldForce.toString());
         waitForDeath();
+
+        if (force && local) {
+            kill();
+        }
     }
 
     /**
      * Wait for the server to die.
      */
     protected void waitForDeath() throws CommandException {
-        if(!programOpts.isTerse()) {
+        if (!programOpts.isTerse()) {
             // use stdout because logger always appends a newline
-            System.out.print(strings.get("StopDomain.WaitDASDeath") + " ");
+            System.out.print(Strings.get("StopDomain.WaitDASDeath") + " ");
         }
         long startWait = System.currentTimeMillis();
         boolean alive = true;
         int count = 0;
 
-        while(!timedOut(startWait)) {
-            if(!isRunning()) {
+        while (!timedOut(startWait)) {
+            if (!isRunning()) {
                 alive = false;
                 break;
             }
             try {
                 Thread.sleep(100);
-                if(!programOpts.isTerse() && count++ % 10 == 0)
+                if (!programOpts.isTerse() && count++ % 10 == 0)
                     System.out.print(".");
             }
             catch (InterruptedException ex) {
@@ -185,16 +210,42 @@ public class StopDomainCommand extends LocalDomainCommand {
             }
         }
 
-        if(!programOpts.isTerse())
+        if (!programOpts.isTerse())
             System.out.println();
 
-        if(alive) {
-            throw new CommandException(strings.get("StopDomain.DASNotDead",
+        if (alive) {
+            throw new CommandException(Strings.get("StopDomain.DASNotDead",
                     (WAIT_FOR_DAS_TIME_MS / 1000)));
         }
     }
 
     private boolean timedOut(long startTime) {
         return (System.currentTimeMillis() - startTime) > WAIT_FOR_DAS_TIME_MS;
+    }
+
+    private int kill() throws CommandException {
+        File prevPid = null;
+        String pids = null;
+
+        try {
+            prevPid = new File(getServerDirs().getPidFile().getPath() + ".prev");
+
+            if (!prevPid.canRead())
+                throw new CommandException(Strings.get("StopDomain.nopidprev", prevPid));
+
+            pids = FileUtils.readSmallFile(prevPid).trim();
+            String s = ProcessUtils.kill(Integer.parseInt(pids));
+            
+            if(s != null)
+                logger.finer(s);
+        }
+        catch (CommandException ce) {
+            throw ce;
+        }
+        catch (Exception ex) {
+            throw new CommandException(Strings.get("StopDomain.pidprevreaderror",
+                    prevPid, ex.getMessage()));
+        }
+        return 0;
     }
 }

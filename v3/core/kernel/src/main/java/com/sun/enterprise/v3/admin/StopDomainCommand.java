@@ -37,11 +37,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.Module;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.Async;
 import org.glassfish.api.I18n;
@@ -52,16 +50,13 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 
-import java.util.Iterator;
-import java.util.Collection;
-
 /**
  * AdminCommand to stop the domain execution which mean shuting down the application
  * server.
  *
  * @author Jerome Dochez
  */
-@Service(name="stop-domain")
+@Service(name = "stop-domain")
 @Scoped(PerLookup.class)
 @CommandLock(CommandLock.LockType.NONE)
 @Async
@@ -70,16 +65,12 @@ import java.util.Collection;
 public class StopDomainCommand extends StopServer implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(StopDomainCommand.class);
-    
     @Inject
     ModulesRegistry registry;
-
     @Inject
     ServerEnvironment env;
-
-    @Param(optional=true, defaultValue="false")
+    @Param(optional = true, defaultValue = "false")
     Boolean force;
-    
 
     /**
      * Shutdown of the application server : 
@@ -89,17 +80,17 @@ public class StopDomainCommand extends StopServer implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
 
-        if(!env.isDas()) {
+        if (!env.isDas()) {
             // This command is asynchronous.  We can't return anything so we just
             // log the error and return
             String msg = localStrings.getLocalString("stop.domain.notDas",
-                           "stop-domain only works with domains, this is a {0}",
-                           env.getRuntimeType().toString());
+                    "stop-domain only works with domains, this is a {0}",
+                    env.getRuntimeType().toString());
 
             context.getLogger().warning(msg);
             return;
         }
-        
-        doExecute(registry, context.getLogger(), force);
+
+        doExecute(registry, env, context.getLogger(), force);
     }
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,59 +38,30 @@
  * holder.
  */
 
-package com.sun.enterprise.v3.admin.cluster;
+package com.sun.enterprise.universal.process;
 
-
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.v3.admin.StopServer;
-import org.glassfish.api.Async;
-import org.glassfish.api.Param;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.ExecuteOn;
-import org.glassfish.api.admin.CommandLock;
-import org.glassfish.api.admin.RuntimeType;
-import org.glassfish.api.admin.ServerEnvironment;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PerLookup;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
- * AdminCommand to stop the instance
- * server.
- * Shutdown of an instance.
- * This is the Async command running on the instance.
- *
- * note: This command is asynchronous.  We can't return anything so we just
- * log errors and return
-
+ * Strings -- Get your Strings here.
+ * One file with Strings
+ * So one class for messing with them!
+ * Nothing in here is public protected.  Only for use by this one java package.
  * @author Byron Nevins
  */
-@Service(name = "_stop-instance")
-@Async
-@Scoped(PerLookup.class)
-@CommandLock(CommandLock.LockType.NONE) // allow stop-instance always
-@ExecuteOn(RuntimeType.INSTANCE)
-public class StopInstanceInstanceCommand extends StopServer implements AdminCommand {
 
-    @Inject
-    private ServerEnvironment env;
-    @Inject
-    private ModulesRegistry registry;
-    @Param(optional = true, defaultValue = "false")
-    private Boolean force;
-
-    public void execute(AdminCommandContext context) {
-
-        if (!env.isInstance()) {
-            String msg = Strings.get("stop.instance.notInstance",
-                    env.getRuntimeType().toString());
-
-            context.getLogger().warning(msg);
-            return;
-        }
-
-        doExecute(registry, env, context.getLogger(), force);
+final class Strings {
+    private Strings() {
+        // no instances allowed!
     }
+
+    final static String get(String indexString) {
+        return strings.get(indexString);
+    }
+
+    final static String get(String indexString, Object... objects) {
+        return strings.get(indexString, objects);
+    }
+
+    final private static LocalStringsImpl strings = new LocalStringsImpl(Strings.class);
 }

@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.universal.process;
 
 import com.sun.enterprise.universal.StringUtils;
@@ -45,6 +44,8 @@ import com.sun.enterprise.universal.io.*;
 import com.sun.enterprise.util.*;
 import java.io.*;
 import java.lang.management.ManagementFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Includes a somewhat kludgy way to get the pid for "me".
@@ -78,9 +79,8 @@ public final class ProcessUtils {
     public static final int getPid() {
         return pid;
     }
-
-    private static final int        pid;
-    private static final String[]   paths;
+    private static final int pid;
+    private static final String[] paths;
 
     static {
         // variables named with 'temp' are here so that we can legally set the
@@ -95,7 +95,8 @@ public final class ProcessUtils {
             if (StringUtils.ok(pids) && (index = pids.indexOf('@')) >= 0) {
                 tempPid = Integer.parseInt(pids.substring(0, index));
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             tempPid = -1;
         }
         // final assignment
@@ -103,19 +104,55 @@ public final class ProcessUtils {
 
         String tempPaths = null;
 
-        if(OS.isWindows()) {
+        if (OS.isWindows()) {
             tempPaths = System.getenv("Path");
-            
-            if(!StringUtils.ok(tempPaths))
+
+            if (!StringUtils.ok(tempPaths))
                 tempPaths = System.getenv("PATH"); // give it a try
         }
-        else  {
+        else {
             tempPaths = System.getenv("PATH");
         }
-        
-        if(StringUtils.ok(tempPaths))
+
+        if (StringUtils.ok(tempPaths))
             paths = tempPaths.split(File.pathSeparator);
         else
             paths = new String[0];
+    }
+
+    /**
+     * Kill the process with the given Process ID.
+     * @param pid
+     * @return a String if the process was not killed for any reason including if it does not exist.
+     *  Return null if it was killed.
+     */
+    public static  String kill(int pid) {
+        try {
+            String pidString = Integer.toString(pid);
+            ProcessManager pm = null;
+            String cmdline;
+
+            if (OS.isWindowsForSure()) {
+                pm = new ProcessManager("taskkill", "/F", "/T", "/pid", pidString);
+                cmdline = "taskkill /F /T /pid " + pidString;
+            }
+            else {
+                pm = new ProcessManager("kill", "-9", "" + pidString);
+                cmdline = "kill -9 " + pidString;
+            }
+            
+            pm.setEcho(false);
+            pm.execute();
+            String result = pm.getStderr() + pm.getStdout();
+            int exitValue = pm.getExitValue();
+
+            if (exitValue == 0)
+                return null;
+            else
+                return Strings.get("ProcessUtils.killerror", cmdline, result, "" + exitValue);
+        }
+        catch (ProcessManagerException ex) {
+            return ex.getMessage();
+        }
     }
 }

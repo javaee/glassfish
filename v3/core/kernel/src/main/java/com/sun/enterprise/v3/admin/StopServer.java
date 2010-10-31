@@ -46,10 +46,12 @@ import com.sun.enterprise.universal.process.ProcessManagerException;
 import com.sun.enterprise.universal.process.ProcessUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.OS;
+import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import java.util.Collection;
+import org.glassfish.api.admin.ServerEnvironment;
 
 /**
  * A class to house identical code for stopping instances and DAS
@@ -63,45 +65,44 @@ public class StopServer {
      * All running services are stopped. 
      * LookupManager is flushed.
      */
-    protected final void doExecute(ModulesRegistry registry, Logger logger, boolean force) {
-        logger.info(localStrings.getLocalString("stop.domain.init", "Server shutdown initiated"));
-
-        Collection<Module> modules = registry.getModules(
-                "org.glassfish.core.glassfish");
-        if (modules.size() == 1) {
-            final Module mgmtAgentModule = modules.iterator().next();
-            mgmtAgentModule.stop();
-        }
-        else {
-            logger.warning(modules.size() + " no of primordial modules found");
-        }
-
-        if(force)
-            kill();
-        else
-            System.exit(0);
-    }
-
-    private final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(StopServer.class);
-
-    /*
-     * No more Mr. Nice Guy!!
-     * we should NOT return from here!
-     *
-     */
-    private void kill() {
-        int pid = ProcessUtils.getPid();
-        ProcessManager pm = null;
+    protected final void doExecute(ModulesRegistry registry, ServerEnvironment env, Logger logger, boolean force) {
         try {
-            if (OS.isWindowsForSure())
-                pm = new ProcessManager("taskkill", "/pid", "" + pid);
-            else
-                pm = new ProcessManager("kill", "-9", "" + pid);
-
-            pm.execute();
+            logger.info(localStrings.getLocalString("stop.domain.init", "Server shutdown initiated"));
+            Collection<Module> modules = registry.getModules(
+                    "org.glassfish.core.glassfish");
+            if (modules.size() == 1) {
+                final Module mgmtAgentModule = modules.iterator().next();
+                mgmtAgentModule.stop();
+            }
+            else {
+                logger.warning(modules.size() + " no of primordial modules found");
+            }
         }
-        catch (ProcessManagerException ex) {
+        catch (Throwable t) {
             // ignore
         }
+
+        deletePidFile(env);
+        Runtime runtime = Runtime.getRuntime();
+
+        if (force)
+            runtime.halt(1);
+        else
+            runtime.exit(0);
+    }
+    private final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(StopServer.class);
+
+    /**
+     * It is **Essential** to delete this file!  Other code will assume the server
+     * is running if it exists.
+     * Any old App is currently (10/10/10) allowed to add a shutdownhook with a System.exit()
+     * which is GUARANTEED to prevent the shutdown hook for deleting the pidfile to run.
+     * So -- we always do it BEFORE trying to exit.
+     */
+    private void deletePidFile(ServerEnvironment env) {
+        File pidFile = new File(env.getConfigDirPath(), "pid");
+        
+        if(pidFile.isFile())
+            pidFile.delete();
     }
 }
