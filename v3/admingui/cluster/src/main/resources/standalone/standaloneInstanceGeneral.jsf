@@ -46,58 +46,65 @@
     setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="" >
+#include "/cluster/shared/handlers.inc"
 <!define name="content">
     <event>
         <!beforeCreate
             getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
             urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
             setSessionAttribute(key="standaloneInstanceTabs" value="general");
-            setPageSessionAttribute(key="selfPage" value="/cluster/standalone/standaloneInstanceGeneral.jsf?instanceName=#{pageSession.encodedInstanceName}");
-            gf.getInstanceInfo(instanceName="#{pageSession.encodedInstanceName}", info="#{pageSession.info}");
-        />
+            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/cluster/standalone/standaloneInstanceGeneral.jsf?instanceName=#{pageSession.encodedInstanceName}");
+            gfr.getStatusString();
+            gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/servers/server/#{pageSession.encodedInstanceName}", valueMap="#{pageSession.vMap}");
+            if ("#{pageSession.status}=RUNNING"){
+                setAttribute(key="showStop" value="#{true}");
+            }
+            if ("#{pageSession.status}=NOT_RUNNING"){
+                setAttribute(key="showStart" value="#{true}");
+            }
+            if ("#{pageSession.status}=REQUIRES_RESTART"){
+                setAttribute(key="showRestart" value="#{true}");
+            }
+       />
     </event>
     <sun:form id="propertyForm">
 #include "/cluster/standalone/standaloneInstanceTabs.inc"
 <sun:title id="propertyContentPage" title="$resource{i18n.instance.GeneralTitle}" >
-        <sun:button id="startInstance" text="$resource{i18n.button.Start}" disabled="#{pageSession.info.status != 'NOT_RUNNING'}" primary="#{false}"
-            onClick="if ( getConfirm(this, '$resource{i18n.msg.JS.confirmStartInstance}') )
-                  { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');}
-                    else {return false;} " >
+    <!facet pageButtonsTop>
+        <sun:panelGroup id="topButtons">
+            <sun:button id="backButton" immediate="#{true}" text="$resource{i18n.button.Back}" primary="#{false}" >
+                <!command
+                    gf.redirect(page="#{request.contextPath}/cluster/standalone/standaloneInstances.jsf");
+                />
+            </sun:button>
+        </sun:panelGroup>
+        </facet>
+
+        <sun:button id="startInstance" visible="#{requestScope.showStart}" text="$resource{i18n.button.Start}"  primary="#{false}"
+            onClick="if ( getConfirm(this,'$resource{i18n.msg.JS.confirmStartInstance}') )
+                { return submitAndDisable(this, '$resource{i18n.button.Processing}');}  else {return false;} " >
+             <!command
+                gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server/#{pageSession.instanceName}/start-instance" );
+                gf.redirect("#{pageSession.selfPage}");
+         />
+        </sun:button>
+
+        <sun:button id="stopInstance" visible="#{requestScope.showStop}" text="$resource{i18n.button.Stop}" primary="#{false}"
+            onClick="if ( getConfirm(this,'$resource{i18n.msg.JS.confirmStopInstance}') )
+                { return submitAndDisable(this, '$resource{i18n.button.Processing}');}  else {return false;} " >
             <!command
-                createMap(result="#{requestScope.map}");
-                mapPut(map="#{requestScope.map}", key="name", value="#{pageSession.encodedInstanceName}");
-                createList(result="#{requestScope.list}", size="0");
-                listAdd(list="#{requestScope.list}", value="#{requestScope.map}");
-                gf.instanceAction(rows="#{requestScope.list}", action="start-instance");
+                gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server/#{pageSession.instanceName}/stop-instance" );
                 gf.redirect("#{pageSession.selfPage}");
             />
         </sun:button>
-        <sun:button id="stopInstance" text="$resource{i18n.button.Stop}" disabled="#{pageSession.info.status == 'NOT_RUNNING'}" primary="#{false}"
-            onClick="if ( getConfirm(this, '$resource{i18n.msg.JS.confirmStopInstance}') )
-                  { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');}
-                    else {return false;} " >
+
+        <sun:button id="restartInstance" visible="#{requestScope.showRestart}" text="$resource{i18n.button.Restart}" primary="#{false}"
+            onClick="if ( getConfirm(this,'$resource{i18n.msg.JS.confirmRestartInstance}') )
+                { return submitAndDisable(this, '$resource{i18n.button.Processing}');}  else {return false;} " >
              <!command
-                createMap(result="#{requestScope.map}");
-                mapPut(map="#{requestScope.map}", key="name", value="#{pageSession.encodedInstanceName}");
-                createList(result="#{requestScope.list}", size="0");
-                listAdd(list="#{requestScope.list}", value="#{requestScope.map}");
-                gf.instanceAction(rows="#{requestScope.list}", action="stop-instance");
+                gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server/#{pageSession.instanceName}/restart-instance" );
                 gf.redirect("#{pageSession.selfPage}");
-         />
-        </sun:button>
-        <sun:button id="restartInstance" text="$resource{i18n.button.Restart}" disabled="#{pageSession.info.status == 'NOT_RUNNING'}" primary="#{false}"
-            onClick="if ( getConfirm(this, '$resource{i18n.msg.JS.confirmRestartInstance}') )
-                  { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');}
-                    else {return false;} " >
-             <!command
-                createMap(result="#{requestScope.map}");
-                mapPut(map="#{requestScope.map}", key="name", value="#{pageSession.encodedInstanceName}");
-                createList(result="#{requestScope.list}", size="0");
-                listAdd(list="#{requestScope.list}", value="#{requestScope.map}");
-                gf.instanceAction(rows="#{requestScope.list}", action="stop-instance");
-                gf.instanceAction(rows="#{requestScope.list}", action="start-instance");
-                gf.redirect("#{pageSession.selfPage}");
-         />
+            />
         </sun:button>
         <sun:button id="logViewer" text="$resource{i18n.button.logViewer}"  primary="#{false}"
             onClick="javascript:var win=window.open('#{facesContext.externalContext.requestContextPath}/common/logViewer/logViewer.jsf?instanceName=#{instanceName}&loglevel=INFO&viewResults=true','LogViewerWindow','width='+(screen.width-300)+',height='+(screen.height-75)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');win.focus(); return false;"
@@ -128,10 +135,8 @@
         -->
 </sun:title>
 
-                <!-- PropertySheet .... -->
 <sun:propertySheet id="propertySheet" >
 
-    <!-- Text Field section -->
     <sun:propertySheetSection id="serverGeneralPropSheet">
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$attribute{sheetId});
@@ -140,23 +145,7 @@
             <sun:staticText id="hostName" text="#{pageSession.instanceName}" />
         </sun:property>
         <sun:property id="status" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Status}:" >
-            <sun:staticText id="status" text="#{requestScope.statusString}">
-                <!beforeCreate
-                    setAttribute(key="status" value="#{pageSession.info.status}");
-                    setAttribute(key="statusString" value="$resource{i18nc.status.$attribute{status}}  &nbsp; $resource{i18nc.status.image.$attribute{status}}");
-                />
-            </sun:staticText>
-        </sun:property>
-<!--
-        <sun:property id="loadBalancer" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.lbTableColumn}:" >
-            <sun:staticText id="loadBalancer" text="#{pageSession.loadBalancer}" />
-        </sun:property>
--->
-        <sun:property id="httpPorts" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.httpPortsLabel}" >
-            "<h1>#{pageSession.info.httpPorts.toString().substring(1).substring(0, pageSession.info.httpPorts.toString().length()-2)}</h1>
-        </sun:property>
-        <sun:property id="iiopPorts" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.iiopPortsLabel}" >
-            "<h1>#{pageSession.info.iiopPorts.toString().substring(1).substring(0, pageSession.info.iiopPorts.toString().length()-2)}</h1>
+            <sun:staticText id="status" text="#{pageSession.statusString}" />
         </sun:property>
         <sun:property id="jvmProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.JVMLabel}">
             <sun:hyperlink id="jvmlink" text="$resource{i18nc.inst.jvmReport}"
@@ -164,19 +153,22 @@
                 var jvmWin = window.open('#{request.contextPath}/common/appServer/jvmReport.jsf?reportType=summary&instanceName=#{instanceName}','JVMReport','width='+(screen.width-300)+',height='+(screen.height-100)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');
                 jvmWin.focus(); return false;" />
         </sun:property>
-        <sun:property id="configuration" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Configuration}:">
-            <sun:staticText id="configuration" text="#{pageSession.info.config}"/>
+
+         <sun:property id="nodeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.nodeLabel}">
+            <sun:hyperlink id="nodeLink" text="#{pageSession.vMap['node']}"  url="#{request.contextPath}/cluster/node/nodeEdit.jsf?nodeName=#{pageSession.vMap['node']}" />
         </sun:property>
-        <sun:property id="confiDir" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.configDirLabel}">
-            <sun:staticText id="configDir" text="#{pageSession.info.configRoot}"/>
+
+        <sun:property id="configProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.ConfigurationLabel}">
+            <sun:hyperlink id="configlink" text="#{pageSession.vMap['configRef']}"  url="#{request.contextPath}/common/configuration/configuration.jsf?configName=#{pageSession.vMap['config-ref']}" />
         </sun:property>
-        <sun:property id="version" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.versionLabel}">
-            <sun:staticText id="version" text="#{pageSession.info.version}"/>
-        </sun:property>
-        <sun:property id="debugEnabled" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.debugLabel}">
-            <sun:staticText id="debugEnabled" text="#{pageSession.info.debugEnabled}"/>
-        </sun:property>
+
     </sun:propertySheetSection>
+    <event>
+        <!afterCreate
+            getUIComponent(clientId="#{sheetId}"  component=>$attribute{component})
+            includeIntegrations(type="org.glassfish.admingui:serverInstGeneralPe" root="#{component}");
+        />
+    </event>
 </sun:propertySheet>
 
     <sun:hidden id="helpKey" value="$resource{help_cluster.standaloneInstanceGeneral}" />

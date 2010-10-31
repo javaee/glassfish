@@ -57,6 +57,7 @@
     <!beforeCreate
         setSessionAttribute(key="clusterTabs" value="clusterResources");
         getRequestValue(key="clusterName" value="#{pageSession.target}");
+        setPageSessionAttribute(key="clusterName" value="#{pageSession.target}");
         urlencode(value="#{pageSession.target}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18ncs.msg.JS.confirmDeleteResources}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/cluster/cluster/clusterResources.jsf?clusterName=#{encodedClusterName}");
@@ -75,6 +76,7 @@
                  helpText="$resource{i18ncs.cluster.ResourcesTitleHelp}" >
 </sun:title>
 "<br/>
+#include "/cluster/cluster/clusterNameSection.inc"
 #include "/common/resourceNode/targetResourceTable.inc"
 <!--#include "/cluster/cluster/clusterNameSection.inc"
 <sun:table id="table1" title="$resource{i18n.resourcesTable.resources}"  >

@@ -46,6 +46,7 @@
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.instance.GeneralTitle}" >
+#include "/cluster/shared/handlers.inc"
 <!define name="content">
     <event>
     <!beforeCreate
@@ -54,15 +55,14 @@
         setSessionAttribute(key="serverInstTabs" value="general");
         setPageSessionAttribute(key="pageName" value="common/appServer/serverInstGeneralPe.jsf");
         setPageSessionAttribute(key="selfPage" value="/common/appServer/serverInstGeneralPe.jsf");
-
-        gf.getInstanceInfo(instanceName="#{pageSession.instanceName}", info="#{pageSession.info}");
-
-        <!-- TODO: Need to get the
-            configRoot Directory
-            Debug Info
-            through REST
-        -->
-        />
+        if ("#{sessionScope.restartRequired}"){
+                setPageSessionAttribute(key="statusString" value="$resource{i18nc.status.REQUIRES_RESTART} $resource{i18nc.status.image.REQUIRES_RESTART} ");
+        }
+        if ("!(#{sessionScope.restartRequired})"){
+                setPageSessionAttribute(key="statusString" value="$resource{i18nc.status.RUNNING} $resource{i18nc.status.image.RUNNING} ");
+        }
+        gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/servers/server/#{pageSession.instanceName}", valueMap="#{pageSession.vMap}");
+    />
     </event>
     <sun:form id="propertyForm">
 #include "/common/appServer/serverInstTabs.inc"
@@ -134,6 +134,10 @@
                     <sun:staticText id="hostName" text="#{sessionScope.serverName}" />
                 </sun:property>
 
+                <sun:property id="statusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
+                    <sun:staticText id="status" text="#{pageSession.statusString}" />
+                </sun:property>
+
                 <sun:property id="jvmProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.JVMLabel}">
                     <sun:hyperlink id="jvmlink" text="$resource{i18nc.inst.jvmReport}"
                         onClick="javascript:
@@ -141,8 +145,13 @@
                         jvmWin.focus(); return false;" />
                 </sun:property>
 
-                <sun:property id="confiDirProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.configDirLabel}">
-                    <sun:staticText id="configuration" text="#{pageSession.info.config}"/>
+                <sun:property id="configProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.ConfigurationLabel}">
+                    <sun:hyperlink id="configuration" text="#{pageSession.vMap['configRef']}"  url="#{request.contextPath}/common/configuration/configuration.jsf?configName=#{pageSession.vMap['configRef']}" />
+
+                </sun:property>
+
+                <sun:property id="installProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.installDirLabel}">
+                    <sun:staticText id="installationDir" text="#{sessionScope.installationDir}"/>
                 </sun:property>
 
 
@@ -151,7 +160,7 @@
                 </sun:property>
 
                 <sun:property id="debugProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.debugLabel}">
-                    <sun:staticText id="debugEnabled" text="#{pageSession.info.debugEnabled}"/>
+                    <sun:staticText id="debugEnabled" text="#{sessionScope.debugInfo}"/>
                 </sun:property>
             </sun:propertySheetSection>
             <event>

@@ -176,6 +176,16 @@ public class GuiUtil {
         sessionMap.put("appServerVersion", ((Map)version.get("data")).get("message"));
         Map locations = RestUtil.restRequest(sessionMap.get("REST_URL")+"/location", null, "GET" ,null, false);
         sessionMap.put("installationDir", ((Map)((Map)locations.get("data")).get("properties")).get("Base-Root"));
+
+        Map runtimeInfoMap = RestUtil.restRequest(sessionMap.get("REST_URL")+"/get-runtime-info", null, "GET" ,null, false);
+        String debugFlag = (String) ((Map)((Map)runtimeInfoMap.get("data")).get("properties")).get("debug");
+        if("true".equals(debugFlag)){
+            String debugPort = (String) ((Map)((Map)runtimeInfoMap.get("data")).get("properties")).get("debugPort");
+            sessionMap.put("debugInfo", GuiUtil.getMessage("inst.debugEnabled") + debugPort );
+        }else{
+            sessionMap.put("debugInfo", GuiUtil.getMessage("inst.notEnabled"));
+        }
+        
         sessionMap.put("reqMsg", GuiUtil.getMessage("msg.JS.enterValue"));
         sessionMap.put("reqMsgSelect", GuiUtil.getMessage("msg.JS.selectValue"));
         sessionMap.put("reqInt", GuiUtil.getMessage("msg.JS.enterIntegerValue"));

@@ -76,6 +76,7 @@
 #include "/common/shared/editPageButtons.inc"
     </sun:title>
 #include "/common/shared/alertMsg.inc"
+#include "/cluster/cluster/clusterNameSection.inc"
 #include "/common/shared/propertyDescTable.inc"
 #include "/common/shared/editPageBottomButtons.inc"
 

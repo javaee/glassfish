@@ -86,7 +86,9 @@ public class ClusterHandler {
         output = {
             @HandlerOutput(name = "numRunning", type = String.class),
             @HandlerOutput(name = "numNotRunning", type = String.class),
-            @HandlerOutput(name = "status", type = String.class)
+            @HandlerOutput(name = "disableStart", type = Boolean.class),
+            @HandlerOutput(name = "disableStop", type = Boolean.class),
+            @HandlerOutput(name = "disableEjb", type = Boolean.class)
         })
     public static void getClusterStatusSummary(HandlerContext handlerCtx) {
         Map statusMap = (Map) handlerCtx.getInputValue("statusMap");
@@ -103,11 +105,14 @@ public class ClusterHandler {
                 }
             }
 
+            handlerCtx.setOutputValue("disableEjb", (notRunning > 0) ? false :true);  //refer to bug#6342445
+            handlerCtx.setOutputValue("disableStart", (notRunning > 0) ? false :true);
+            handlerCtx.setOutputValue("disableStop", (running > 0) ? false :true);
             handlerCtx.setOutputValue( "numRunning" , GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.number.instance.running", new String[]{""+running}));
             handlerCtx.setOutputValue( "numNotRunning" , GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.number.instance.notRunning", new String[]{""+notRunning}));
         }catch(Exception ex){
-            //Log exception ?
-             handlerCtx.setOutputValue("status", GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.status.unknown"));
+             ex.printStackTrace();
+             handlerCtx.setOutputValue("numRunning", GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.status.unknown"));
          }
      }
 
@@ -230,12 +235,10 @@ public class ClusterHandler {
             nodeInstanceMap=new HashMap();
         }
         List<Map> rows =  (List<Map>) handlerCtx.getInputValue("rows");
-        List errorInstances = new ArrayList();
         Map response = null;
         String prefix = GuiUtil.getSessionValue("REST_URL") + "/nodes/node/";
 
         for (Map oneRow : rows) {
-            int code = 500;
             String nodeName = (String) oneRow.get("name");
             if (nodeName.equals("localhost")){
                 GuiUtil.prepareAlert("error",  GuiUtil.getMessage("msg.Error"),
@@ -388,108 +391,6 @@ public class ClusterHandler {
         handlerCtx.setOutputValue("statusMap", statusMap);
         handlerCtx.setOutputValue("uptimeMap", uptimeMap);
         handlerCtx.setOutputValue("listEmpty", instances.isEmpty());
-    }
-
-    @Handler(id = "gf.getInstanceInfo",
-        input = {
-            @HandlerInput(name="instanceName", type=String.class, required=true)
-        },
-        output = {
-            @HandlerOutput(name = "info", type = Map.class)
-        })
-    public static void getInstanceInfoHandler(HandlerContext handlerCtx) {
-        String instanceName = (String)handlerCtx.getInputValue("instanceName");
-
-        handlerCtx.setOutputValue("info", getInstanceInfo(instanceName));
-    }
-
-    public static Map<String, Object> getInstanceInfo(final String instanceName) {
-        Map<String, Object> info = new HashMap<String, Object>();
-        final String REST_URL = (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("REST_URL");
-        final String instanceUrl = REST_URL + "/servers/server/" + instanceName;
-        Map<String, Object> result = RestUtil.restRequest(instanceUrl, null, "get", null, false);
-        String instanceConfig = (String)((Map)getExtraPropertiesEntry(result, "entity")).get("configRef");
-
-        // Server status
-        String serverStatus = "RUNNING";
-        if (!"server".equals(instanceName)) {
-            result = RestUtil.restRequest(REST_URL+"/list-instances", new HashMap<String, Object>() {{ put ("id", instanceName); }}, "get", null, false);
-            List instanceList = (List)getExtraPropertiesEntry(result, "instanceList");
-            serverStatus = (String) ((Map)instanceList.get(0)).get("status");
-        }
-
-        // Config object
-        String configUrl = REST_URL+ "/configs/config/" + instanceConfig;
-        result = RestUtil.restRequest(configUrl, null, "get", null, false);
-        Map<String, Object> config = (Map<String, Object>)((Map<String, Object>)result.get("data")).get("extraProperties");
-
-        // Server version
-        result = RestUtil.restRequest(configUrl + "/java-config/generate-jvm-report", null, "post", null, false);
-        Map<String, String> jvmReport = buildExtraProperties((String)((Map<String, Object>)result.get("data")).get("message"));
-        String version = (String)jvmReport.get("glassfish.version");
-        String configRoot = (String)jvmReport.get("com.sun.aas.configRoot");
-
-        // Debug
-        result = RestUtil.restRequest(configUrl + "/java-config", null, "get", null, false);
-        Map<String, String> entity = (Map)getExtraPropertiesEntry(result, "entity");
-
-        // http ports
-        result = RestUtil.restRequest(configUrl + "/network-config/network-listeners/network-listener", null, "get", null, false);
-        Map<String, String> children = (Map<String, String>)getExtraPropertiesEntry(result, "childResources");
-        if ((children != null) && (!children.isEmpty())) {
-            List<String> httpPorts = new ArrayList<String>();
-            for (String child : children.values()) {
-                result = RestUtil.restRequest(child, null, "get", null, false);
-                Map<String, String> iiopListener = (Map<String, String>)getExtraPropertiesEntry(result, "entity");
-                httpPorts.add(iiopListener.get("port"));
-            }
-            info.put("httpPorts", httpPorts);
-        }
-
-        //iiop ports
-        result = RestUtil.restRequest(configUrl + "/iiop-service/iiop-listener", null, "get", null, false);
-        children = (Map<String, String>)getExtraPropertiesEntry(result, "childResources");
-        if ((children != null) && (!children.isEmpty())) {
-            List<String> iiopPorts = new ArrayList<String>();
-            for (String child : children.values()) {
-                result = RestUtil.restRequest(child, null, "get", null, false);
-                Map<String, String> iiopListener = (Map<String, String>)getExtraPropertiesEntry(result, "entity");
-                iiopPorts.add(iiopListener.get("port"));
-            }
-            info.put("iiopPorts", iiopPorts);
-        }
-
-        info.put("config", instanceConfig);
-        info.put("status", serverStatus);
-        info.put("version", version);
-        info.put("configRoot", configRoot);
-        info.put("debugEnabled", (String)entity.get("debugEnabled"));
-        return info;
-    }
-
-    protected static Object getExtraPropertiesEntry(Map<String, Object> responseMap, String epKey) {
-        Map<String, Object> data = (Map<String, Object>)responseMap.get("data");
-        Map<String, Object> ep =  (Map<String, Object>)data.get("extraProperties");
-        return ep.get(epKey);
-    }
-
-    private static Map<String, String> buildExtraProperties(String jvmReport) {
-        final String SEP = System.getProperty("line.separator");
-        Map<String, String> report = new HashMap<String, String>();
-        String lines[] = jvmReport.split(SEP);
-        for (String line : lines) {
-            int valueSepIdx = line.indexOf("=");
-            if (valueSepIdx == -1) {
-                valueSepIdx = line.indexOf(":");
-            }
-            if (valueSepIdx > -1) {
-                String key = line.substring(0, valueSepIdx).trim();
-                String value = line.substring(valueSepIdx+1).trim();
-                report.put(key, value);
-            }
-        }
-
-        return report;
     }
 
     @Handler(id = "gf.getClusterNameForInstance",

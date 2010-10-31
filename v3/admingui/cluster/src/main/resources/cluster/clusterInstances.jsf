@@ -62,6 +62,7 @@
         getRequestValue(key="clusterName" value="#{pageSession.clusterName}");
         urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18ncs.msg.JS.confirmDeleteInstances}");
+        setSessionAttribute(key="backPage" value="clusterInstances");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/cluster/cluster/clusterInstances.jsf?clusterName=#{pageSession.encodedClusterName}");
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/cluster/cluster/clusterInstanceEdit.jsf?clusterName=#{pageSession.encodedClusterName}");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18ncs.cluster.instancesTableTitle}");

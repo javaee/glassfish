@@ -50,8 +50,8 @@
     <sun:staticText id="ports" text="#{pageSession.httpPorts}"/>
     <!beforeCreate
         setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings")
-        getRequestValue(key="configName" value="#{requestScope.tmp}" default="server-config")
-        setPageSessionAttribute(key="httpListenerUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/network-listeners/network-listener");
+        gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/servers/server/#{pageSession.instanceName}", valueMap="#{pageSession.vMap}");
+        setPageSessionAttribute(key="httpListenerUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.vMap['configRef']}/network-config/network-listeners/network-listener");
         gf.getChildrenNamesList(endpoint="#{pageSession.httpListenerUrl}" result="#{pageSession.httpList}");
         createList(size="0" result="#{pageSession.httpPortsList}");
         foreach (var="row" list="#{pageSession.httpList}") {

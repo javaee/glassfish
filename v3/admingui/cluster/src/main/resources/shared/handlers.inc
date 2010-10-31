@@ -86,6 +86,7 @@
         method="GET"
         result="#{pageSession.props}");
     setAttribute(key="insList" value="#{pageSession.props.data.extraProperties.instanceList}" );
+    //println("======= insList = #{requestScope.insList}");
     createMap(result="#{pageSession.instanceStatusMap}");
     // if( "(#{requestScope.insList} = #{null})" ){
         //println("============= no instances found");
@@ -97,4 +98,19 @@
     }
 </handler>
 
+
+<!--
+ This handler gets the running status of an instance.  The String returned is the running status in word followed by icon.
+ Input : #{pageSession.instanceName}     - required
+ Output: #{pageSession.statusString}
+-->
+<handler id="gfr.getStatusString" >
+    createMap(result="#{requestScope.listInstanceAttrMap}");
+    mapPut(map="#{requestScope.listInstanceAttrMap}" key="whichtarget" value="#{pageSession.instanceName}")
+    gfr.getInstancesStatus();
+    //println("-------- instanceStatusMap = #{pageSession.instanceStatusMap}");
+    mapGet(Map="#{pageSession.instanceStatusMap}" Key="#{pageSession.instanceName}" Value="#{pageSession.status}")
+    setPageSessionAttribute(key="statusString" value="$resource{i18nc.status.$pageSession{status}} $resource{i18nc.status.image.$pageSession{status}} ");
+
+</handler>
 

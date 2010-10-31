@@ -97,6 +97,7 @@
         </facet>
     </sun:title>
 #include "/common/shared/alertMsg.inc"
+#include "/cluster/cluster/clusterNameSection.inc"
 #include "/common/shared/propertyTable.inc"
 
 <sun:hidden id="helpKey" value="$resource{help_cluster.clusterSystemProperties}" />
