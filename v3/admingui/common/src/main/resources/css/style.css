@@ -1,0 +1,55 @@
+#ajaxPanel
+{
+    /*display: none;*/
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0px; 
+    left: 0px;
+}
+.modalBackground
+{
+    filter: Alpha(Opacity=40); -moz-opacity:0.4; opacity: 0.4;
+    width: 100%; 
+    height: 100%; 
+    background-color: #999999;
+    position: absolute;
+    z-index: 500;
+    top: 0px; left: 0px;
+}
+.modalContainer
+{
+    position: absolute;
+    width: 300px;
+    left: 50%;
+    top: 50%;
+    z-index: 750;
+}
+.modal
+{
+    background-color: white;
+    border: solid 1px black; 
+    position: relative;
+    top: -17px;
+    left: -150px;
+    z-index: 1000;
+    width: 300px;
+    height: 35px;
+    padding: 0px;
+}
+.modalTop
+{
+    width: 292px;
+    background-color: #000099;
+    padding: 4px;
+    color: #ffffff;
+    text-align: right;
+}
+.modalTop a, .modalTop a:visited
+{
+    color: #ffffff;
+}
+.modalBody
+{
+    padding: 10px;
+}

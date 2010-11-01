@@ -62,7 +62,8 @@ function submitAndDisable(button, msg, target) {
     disableBtnComponent(button.id);
     button.value=msg;
     if (target) {
-	// In this case we want the non-ajax behavior
+	// In this case we want the non-ajax behavior, but we still need the indicator
+        admingui.ajax.ajaxStart();
 	var oldaction = button.form.action;
 	var oldtarget = button.form.target;
 	button.form.target = target;
@@ -2259,6 +2260,11 @@ admingui.ajax = {
     ajaxStart : function() {
         var ajaxPanel = document.getElementById('ajaxPanel');
         if (ajaxPanel != null) {
+            window.onscroll = function () { 
+                ajaxPanel.style.top = document.body.scrollTop; 
+            };
+            ajaxPanel.style.display = "block";
+            ajaxPanel.style.top = document.body.scrollTop;            
             ajaxPanel.style.visibility = "visible";
         }
     },
@@ -2266,6 +2272,7 @@ admingui.ajax = {
     ajaxComplete : function() {
         var ajaxPanel = document.getElementById('ajaxPanel');
         if (ajaxPanel != null) {
+            ajaxPanel.style.display = "none";
             ajaxPanel.style.visibility = "hidden";
         }
     },
