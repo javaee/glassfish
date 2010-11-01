@@ -2258,12 +2258,16 @@ admingui.ajax = {
     
     ajaxStart : function() {
         var ajaxPanel = document.getElementById('ajaxPanel');
-        ajaxPanel.style.visibility = "visible";
+        if (ajaxPanel != null) {
+            ajaxPanel.style.visibility = "visible";
+        }
     },
     
     ajaxComplete : function() {
         var ajaxPanel = document.getElementById('ajaxPanel');
-        ajaxPanel.style.visibility = "hidden";
+        if (ajaxPanel != null) {
+            ajaxPanel.style.visibility = "hidden";
+        }
     },
 
     loadPage : function (args) {
