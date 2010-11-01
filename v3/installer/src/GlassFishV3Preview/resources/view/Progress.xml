@@ -167,6 +167,7 @@ run() {
   // Get the Progress Bar instance
   theProgressBar = getComponentByName(content, "PROGRESS");
   theTopMsg = getComponentByName(content, "TOP_MESSAGE");
+  theTopMsg.requestFocus();
   
 
   ProgressReporter theReporter = null;
