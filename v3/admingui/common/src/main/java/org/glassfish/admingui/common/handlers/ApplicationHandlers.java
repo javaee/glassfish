@@ -104,37 +104,39 @@ public class ApplicationHandlers {
             filterValue = null;
         }
         List result = new ArrayList();
+        if (appPropsMap == null){
+            handlerCtx.setOutputValue("result", result);
+            return;
+        }
         List<String> keys = new ArrayList(appPropsMap.keySet());
         Collections.sort(keys);
 
-	if (appPropsMap != null) {
-	    for(String oneAppName : keys){
-              try{
-		String engines = appPropsMap.get(oneAppName);
-		HashMap oneRow = new HashMap();
-		oneRow.put("name", oneAppName);
-                oneRow.put("encodedName", URLEncoder.encode(oneAppName, "UTF-8"));
-		oneRow.put("selected", false);
-		oneRow.put("enableURL", DeployUtil.getTargetEnableInfo(oneAppName, true, true));
-		oneRow.put("sniffers", engines);
+        for(String oneAppName : keys){
+          try{
+            String engines = appPropsMap.get(oneAppName);
+            HashMap oneRow = new HashMap();
+            oneRow.put("name", oneAppName);
+            oneRow.put("encodedName", URLEncoder.encode(oneAppName, "UTF-8"));
+            oneRow.put("selected", false);
+            oneRow.put("enableURL", DeployUtil.getTargetEnableInfo(oneAppName, true, true));
+            oneRow.put("sniffers", engines);
 
-		List sniffersList = GuiUtil.parseStringList(engines, ",");
-		oneRow.put("sniffersList", sniffersList);
-		for(int ix=0; ix< sniffersList.size(); ix++)
-		    filters.add(sniffersList.get(ix));
-		if (filterValue != null){
-		    if (! sniffersList.contains(filterValue))
-			continue;
-		}
+            List sniffersList = GuiUtil.parseStringList(engines, ",");
+            oneRow.put("sniffersList", sniffersList);
+            for(int ix=0; ix< sniffersList.size(); ix++)
+                filters.add(sniffersList.get(ix));
+            if (filterValue != null){
+                if (! sniffersList.contains(filterValue))
+                    continue;
+            }
 
-                getLaunchInfo(oneAppName, null, oneRow);
+            getLaunchInfo(oneAppName, null, oneRow);
 
-		result.add(oneRow);
-              }catch(Exception ex){
-                ex.printStackTrace();
-              }
-	    }
-	}
+            result.add(oneRow);
+          }catch(Exception ex){
+            ex.printStackTrace();
+          }
+        }
         handlerCtx.setOutputValue("result", result);
         handlerCtx.setOutputValue("filters", new ArrayList(filters));
     }
