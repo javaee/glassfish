@@ -2122,10 +2122,13 @@ admingui.deploy = {
                 sfex2 = '';
             }
         }
-        //obj.getSelectElement(typeId).value = sfex2;
-        document.getElementById(typeId).value = sfex2;
-        document.getElementById(dropDownProp).style.display = 'block';
-        admingui.deploy.showPropertySheet(sfex2, obj, appNameId, contextRootId, appTypeString, appName);
+        
+        //for redeploy, there is no dropdown type to choose from.
+        if (typeId != ""){
+            document.getElementById(typeId).value = sfex2;
+            document.getElementById(dropDownProp).style.display = 'block';
+            admingui.deploy.showPropertySheet(sfex2, obj, appNameId, contextRootId, appTypeString, appName);
+        }
     },
 
     populateDirAndAppName : function(fileChooserId, dirPathId, appNameId, typeId, dropDownProp, contextRootId, extensionId){

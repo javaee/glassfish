@@ -73,7 +73,7 @@
 
 
 <sun:property id="availability" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.availability}" helpText="$resource{i18n.deploy.availabilityHelp}">
-    <sun:checkbox id="availability" label="$resource{i18n.common.Enabled}" selected="#{pageSession.other['PROPERTY-availabilityEnabled']}" selectedValue="true" />
+    <sun:checkbox id="availability" label="$resource{i18n.common.Enabled}" selected="#{pageSession.other['availabilityEnabled']}" selectedValue="true" />
 </sun:property>
 
 

@@ -206,13 +206,16 @@ public class DeploymentHandler {
         @HandlerInput(name = "origPath", type = String.class, required = true),
         @HandlerInput(name = "deployMap", type = Map.class, required = true),
         @HandlerInput(name = "convertToFalse", type = List.class, required = true),
-        @HandlerInput(name = "appProps", type = List.class, required = true)
+        @HandlerInput(name = "appProps", type = List.class, required = true),
+        @HandlerInput(name = "valueMap", type = Map.class, required = true)
     })
     public static void redeploy(HandlerContext handlerCtx) {
         try {
             String filePath = (String) handlerCtx.getInputValue("filePath");
             String origPath = (String) handlerCtx.getInputValue("origPath");
             Map<String,String> deployMap = (Map) handlerCtx.getInputValue("deployMap");
+            Map<String,String> valueMap = (Map) handlerCtx.getInputValue("valueMap");
+
             //Map<String,String> appProps = (Map) handlerCtx.getInputValue("appProps");
             List<Map<String, String>> obj =  (List) handlerCtx.getInputValue("appProps");
             Map<String, String> appProps = new HashMap();
@@ -232,11 +235,14 @@ public class DeploymentHandler {
             DFDeploymentProperties deploymentProps = new DFDeploymentProperties();
 
              //If we are redeploying a web app, we want to preserve context root.
-             String ctxRoot = (String) RestUtil.getEntityAttrs(
-                     GuiUtil.getSessionValue("REST_URL")+"/applications/application/" +appName ,"entity").get("contextRoot");
-
+             String ctxRoot = valueMap.get("contextRoot");
              if (ctxRoot != null){
                  deploymentProps.setContextRoot(ctxRoot);
+             }
+
+             String availabilityEnabled = valueMap.get("availabilityEnabled");
+             if (availabilityEnabled != null){
+                 deploymentProps.setProperty("availabilityEnabled", availabilityEnabled);
              }
 
              Properties props = new Properties();
@@ -244,11 +250,6 @@ public class DeploymentHandler {
                  String jws = appProps.get("javaWebStartEnabled");
                  if (jws != null){
                      props.setProperty("javaWebStartEnabled", (jws.equals("true"))? "true" : "false");
-                 }
-
-                 String ava = appProps.get("availabilityEnabled");
-                 if (ava != null){
-                     props.setProperty("availabilityEnabled", (ava.equals("true"))? "true" : "false");
                  }
              }
 

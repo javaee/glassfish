@@ -76,7 +76,7 @@
 </sun:property>
 
 <sun:property id="availability" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.availability}" helpText="$resource{i18n.deploy.availabilityHelp}">
-    <sun:checkbox id="availability" label="$resource{i18n.common.Enabled}" selected="#{pageSession.war['PROPERTY-availabilityEnabled']}" selectedValue="true" />
+    <sun:checkbox id="availability" label="$resource{i18n.common.Enabled}" selected="#{pageSession.war['availabilityEnabled']}" selectedValue="true" />
 </sun:property>
 
 <sun:property id="precmplProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.precompile}" helpText="$resource{i18n.deploy.PrecompileHelp}">

@@ -55,25 +55,7 @@ function uploadInit() {
             disableComponent('#{fileuploadId}', 'file'); 
         }
   }
-  
-function uploadRdBtnAction() {
-    //disableDOMComponent('#{dirPathId}');
-    window.setTimeout("disableComponent('#{dirPathId}', 'text')", 1);
-    disableBtnComponent('#{dirSelectBtnId}');
-    disableBtnComponent('#{filSelectBtnId}');
-    enableComponent('#{fileuploadId}', 'file');
-    comp = getTextElement('#{pageSession.radioChoosenId}');
-    comp.value='client';
-}
 
-function fileChooseAction() {
-    enableDOMComponent('#{dirPathId}');
-    enableBtnComponent('#{dirSelectBtnId}');
-    enableBtnComponent('#{filSelectBtnId}');
-    disableComponent('#{fileuploadId}', 'file');
-    comp = getTextElement('#{pageSession.radioChoosenId}');
-    comp.value='local';
-}
 
 function showPropertySheet(propSheetId, obj, appNameId, contextRootId, appName){
     var cc = null;
@@ -167,21 +149,6 @@ function populateDirAndAppName(fileChooserId, dirPathId, appNameId, typeId, drop
     }
 }
 
-function checkFileInputRequired(componentId, reqMsg){
-    var component = getFileInputElement(componentId);
-    var value = component.value;
-    var result = (value != '') && (isWhitespace(value) == false);
-    if (result == false) {
-        if (reqMsg == '') {
-            showAlert(getLabel(component) + ' is a required field.');
-        } else {
-            showAlert(reqMsg + ' ' + getLabel(component));
-        }
-        component.select();
-        component.focus();
-    }
-    return result;
-}
 
 
 </script>

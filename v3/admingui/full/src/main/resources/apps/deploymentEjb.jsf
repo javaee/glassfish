@@ -48,7 +48,7 @@
         setAttribute(key="fieldMap" value="ejb");
         createMap(result="#{pageSession.ejb}")
         mapPut(map="#{pageSession.deployMap}", key="ejb", value="#{pageSession.ejb}");
-        mapPut(map="#{pageSession.ejb}", key="convertToFalseList", value={ "enabled", "PROPERTY-availabilityEnabled", "verify" ,"force" } );
+        mapPut(map="#{pageSession.ejb}", key="convertToFalseList", value={ "enabled", "availabilityEnabled", "verify" ,"force" } );
      />
     <!afterCreate
         getClientId(component="$this{component}" clientId=>$page{ejbId});
@@ -73,7 +73,7 @@
 </sun:property>
         
 <sun:property id="availability" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.availability}" helpText="$resource{i18n.deploy.availabilityHelp}">
-    <sun:checkbox id="availability" label="$resource{i18n.common.Enabled}" selected="#{pageSession.ejb['PROPERTY-availabilityEnabled']}" selectedValue="true" />
+    <sun:checkbox id="availability" label="$resource{i18n.common.Enabled}" selected="#{pageSession.ejb['availabilityEnabled']}" selectedValue="true" />
 </sun:property>
 
 

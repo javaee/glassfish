@@ -47,7 +47,7 @@
         setAttribute(key="fieldMap" value="ear");
         createMap(result="#{pageSession.ear}")
         mapPut(map="#{pageSession.deployMap}", key="ear", value="#{pageSession.ear}");
-        mapPut(map="#{pageSession.ear}", key="convertToFalseList", value={"enabled", "precompilejsp" , "PROPERTY-availabilityEnabled", "verify", ,"force", "PROPERTY-javaWebStartEnabled"} );
+        mapPut(map="#{pageSession.ear}", key="convertToFalseList", value={"enabled", "precompilejsp" , "availabilityEnabled", "verify", ,"force", "PROPERTY-javaWebStartEnabled"} );
      />
     <!afterCreate
         getClientId(component="$this{component}" clientId=>$page{earId});
