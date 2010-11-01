@@ -676,6 +676,10 @@ public class ResourcesUtil {
         if (resource == null){
             return false;
         }else if (resource instanceof BindableResource) {
+            BindableResource bindableResource = (BindableResource)resource;
+            if(bindableResource.getJndiName().contains(ConnectorConstants.DATASOURCE_DEFINITION_JNDINAME_PREFIX)){
+                return Boolean.valueOf(bindableResource.getEnabled());
+            }
             ResourceRef resRef = getServer().getResourceRef(
                     ((BindableResource) resource).getJndiName());
             return isEnabled((BindableResource) resource) &&
@@ -706,14 +710,19 @@ public class ResourcesUtil {
         return enabled;
     }
 
-    public boolean isEnabled(BindableResource br) {
-        ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(br);
+    public boolean isEnabled(BindableResource br, ResourceInfo resourceInfo){
         boolean enabled = false;
         //this cannot happen? need to remove later?
         if (br == null) {
             return false;
         }
         boolean resourceEnabled = ConnectorsUtil.parseBoolean(br.getEnabled());
+
+        //TODO can we also check whether the application in which it is defined is enabled (app and app-ref) ?
+        if(resourceInfo.getName().contains(ConnectorConstants.DATASOURCE_DEFINITION_JNDINAME_PREFIX)){
+            return resourceEnabled;
+        }
+
         boolean refEnabled = isResourceReferenceEnabled(resourceInfo);
 
         if((br instanceof JdbcResource) ||
@@ -740,8 +749,16 @@ public class ResourcesUtil {
             if(/* TODO isRarEnabled &&*/ resourceEnabled && refEnabled){
                 enabled = true;
             }
+        } else if(refEnabled && resourceEnabled){
+            //other bindable resources need to be checked for "resource.enabled" and "resource-ref.enabled"
+            enabled = true;
         }
         return enabled;
+    }
+
+    public boolean isEnabled(BindableResource br) {
+        ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(br);
+        return isEnabled(br, resourceInfo);
     }
 
     private boolean isRarEnabled(String raName) {
@@ -865,6 +882,10 @@ public class ResourcesUtil {
             if (appRef != null) {
                 enabled = appRef.getEnabled();
             } else {
+                // for an application-scoped-resource, if the application is being deployed,
+                // <application> element and <application-ref> will be null until deployment
+                // is complete. Hence this workaround.
+                enabled = "true";
                 if(_logger.isLoggable(Level.FINE)) {
                     _logger.fine("ResourcesUtil :: isResourceReferenceEnabled null app-ref");
                 }

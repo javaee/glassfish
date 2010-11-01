@@ -41,6 +41,7 @@
 package com.sun.enterprise.resource.deployer;
 
 import com.sun.appserv.connectors.internal.api.*;
+import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.resource.beans.CustomResource;
 
 import java.util.logging.Logger;
@@ -120,7 +121,7 @@ public class CustomResourceDeployer implements ResourceDeployer {
         com.sun.enterprise.config.serverbeans.CustomResource customRes =
             (com.sun.enterprise.config.serverbeans.CustomResource) resource;
 
-        if (ConnectorsUtil.parseBoolean(customRes.getEnabled())) {
+        if (ResourcesUtil.createInstance().isEnabled(customRes, resourceInfo)){
             // converts the config data to j2ee resource
             JavaEEResource j2eeResource = toCustomJavaEEResource(customRes, resourceInfo);
 

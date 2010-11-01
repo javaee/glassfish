@@ -41,6 +41,7 @@
 package com.sun.enterprise.resource.deployer;
 
 import com.sun.appserv.connectors.internal.api.*;
+import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.resource.beans.MailResource;
 import com.sun.enterprise.resource.naming.SerializableObjectRefAddr;
 
@@ -99,16 +100,18 @@ public class MailResourceDeployer extends GlobalResourceDeployer
         com.sun.enterprise.config.serverbeans.MailResource mailRes =
                 (com.sun.enterprise.config.serverbeans.MailResource) resource;
 
+
         if (mailRes == null) {
             _logger.log(Level.INFO, "core.resourcedeploy_error");
         } else {
-            if (ConnectorsUtil.parseBoolean(mailRes.getEnabled())) {
+            ResourceInfo resourceInfo = new ResourceInfo(mailRes.getJndiName(), applicationName, moduleName);
+            if (ResourcesUtil.createInstance().isEnabled(mailRes, resourceInfo)){
             //registers the jsr77 object for the mail resource deployed
             /* TODO Not needed any more ?
             /*ManagementObjectManager mgr =
                 getAppServerSwitchObject().getManagementObjectManager();
             mgr.registerJavaMailResource(mailRes.getJndiName());*/
-            ResourceInfo resourceInfo = new ResourceInfo(mailRes.getJndiName(), applicationName, moduleName);
+
             installResource(mailRes, resourceInfo);
             } else {
                 _logger.log(Level.INFO, "core.resource_disabled",

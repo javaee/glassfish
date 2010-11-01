@@ -40,8 +40,10 @@
 
 package com.sun.enterprise.resource.deployer;
 
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import com.sun.enterprise.connectors.util.ResourcesUtil;
 import org.glassfish.resource.common.ResourceInfo;
 import com.sun.enterprise.config.serverbeans.AdminObjectResource;
 import com.sun.enterprise.connectors.ConnectorRuntime;
@@ -111,14 +113,18 @@ public class AdminObjectResourceDeployer extends GlobalResourceDeployer
                         }
                 */
 
-
-        if(_logger.isLoggable(Level.FINE)) {
-            _logger.log(Level.FINE, "Calling backend to add adminObject", resourceInfo);
-        }
-        runtime.addAdminObject(null, aor.getResAdapter(), resourceInfo,
-                aor.getResType(), aor.getClassName(),  transformProps(aor.getProperty()));
-        if(_logger.isLoggable(Level.FINE)) {
-            _logger.log(Level.FINE,"Added adminObject in backend", resourceInfo);
+        if (ResourcesUtil.createInstance().isEnabled(aor, resourceInfo)){
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Calling backend to add adminObject", resourceInfo);
+            }
+            runtime.addAdminObject(null, aor.getResAdapter(), resourceInfo,
+                    aor.getResType(), aor.getClassName(),  transformProps(aor.getProperty()));
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE,"Added adminObject in backend", resourceInfo);
+            }
+        } else {
+            _logger.log(Level.INFO, "core.resource_disabled",
+                    new Object[]{aor.getJndiName(), ConnectorConstants.RES_TYPE_AOR});
         }
     }
 
@@ -183,6 +189,8 @@ public class AdminObjectResourceDeployer extends GlobalResourceDeployer
      */
     public synchronized void redeployResource(Object resource)
             throws Exception {
+        undeployResource(resource);
+        deployResource(resource);
     }
 
     /**
@@ -190,6 +198,7 @@ public class AdminObjectResourceDeployer extends GlobalResourceDeployer
      */
     public synchronized void disableResource(Object resource)
             throws Exception {
+        undeployResource(resource);
     }
 
     /**
@@ -197,6 +206,7 @@ public class AdminObjectResourceDeployer extends GlobalResourceDeployer
      */
     public synchronized void enableResource(Object resource)
             throws Exception {
+        deployResource(resource);
     }
 
     private Properties transformProps(List<Property> domainProps) {

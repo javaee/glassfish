@@ -41,6 +41,7 @@
 package com.sun.enterprise.resource.deployer;
 
 import com.sun.appserv.connectors.internal.api.*;
+import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.resource.beans.ExternalJndiResource;
 import com.sun.enterprise.resource.naming.JndiProxyObjectFactory;
 
@@ -117,7 +118,7 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
 
     private void createExternalJndiResource(com.sun.enterprise.config.serverbeans.ExternalJndiResource jndiRes,
                                             ResourceInfo resourceInfo) {
-        if (ConnectorsUtil.parseBoolean(jndiRes.getEnabled())) {
+        if (ResourcesUtil.createInstance().isEnabled(jndiRes, resourceInfo)){
             // converts the config data to j2ee resource
             JavaEEResource j2eeRes = toExternalJndiJavaEEResource(jndiRes, resourceInfo);
 

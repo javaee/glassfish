@@ -340,7 +340,33 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
             //TODO V3 handle enabled / disabled / resource-ref / redeploy ?
             try {
                 if (ConnectorsUtil.isValidEventType(instance)) {
-                    getResourceDeployer(instance).redeployResource(instance);
+                    boolean enabledAttributeChange = false;
+                    if (instance instanceof BindableResource) {
+                        for (PropertyChangeEvent event : events) {
+                            String propertyName = event.getPropertyName();
+                            //Depending on the type of event (disable/enable, invoke the
+                            //method on deployer.
+                            if ("enabled".equalsIgnoreCase(propertyName)) {
+                                enabledAttributeChange = true;
+                                BindableResource bindableResource = (BindableResource) instance;
+                                ResourceDeployer deployer = getResourceDeployer(bindableResource);
+                                if (deployer != null) {
+                                    boolean newValue = ConnectorsUtil.parseBoolean(event.getNewValue().toString());
+                                    boolean oldValue = ConnectorsUtil.parseBoolean(event.getOldValue().toString());
+                                    if (!(newValue && oldValue)) {
+                                        if (newValue) {
+                                            deployer.enableResource(bindableResource);
+                                        } else {
+                                            deployer.disableResource(bindableResource);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (!enabledAttributeChange) {
+                        getResourceDeployer(instance).redeployResource(instance);
+                    }
                 } else if (ConnectorsUtil.isValidEventType(instance.getParent())) {
                     //Added in case of a property change
                     //check for validity of the property's parent and redeploy
@@ -356,21 +382,13 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
                         //Depending on the type of event (disable/enable, invoke the 
                         //method on deployer.
                         if ("enabled".equalsIgnoreCase(propertyName)) {
-                            boolean newValue = ConnectorsUtil.parseBoolean(event.getNewValue().toString());
-                            boolean oldValue = ConnectorsUtil.parseBoolean(event.getOldValue().toString());
-                            for (Resource resource : domain.getResources().getResources()) {
-                                if (resource instanceof BindableResource) {
-                                    bindableResource = (BindableResource) resource;
-                                    if (refName != null) {
-                                        if (refName.equals(bindableResource.getJndiName())) {
-                                            deployer = getResourceDeployer(bindableResource);
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
+                            bindableResource = (BindableResource)
+                                    domain.getResources().getResourceByName(BindableResource.class, refName);
+                            deployer = getResourceDeployer(bindableResource);
                             if (deployer != null) {
                                 //both cannot be true or false
+                                boolean newValue = ConnectorsUtil.parseBoolean(event.getNewValue().toString());
+                                boolean oldValue = ConnectorsUtil.parseBoolean(event.getOldValue().toString());
                                 if (!(newValue && oldValue)) {
                                     if (newValue) {
                                         deployer.enableResource(bindableResource);
@@ -383,7 +401,7 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
                     }
                 }
             } catch (Exception ex) {
-                logger.log(Level.SEVERE, "resources.resource-manager.change-event-failed");
+                logger.log(Level.SEVERE, "resources.resource-manager.change-event-failed", ex);
                 np = new NotProcessed(
                         localStrings.getLocalString(
                         "resources.resource-manager.change-event-failed",
@@ -438,7 +456,7 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
                 } else if (ConnectorsUtil.isValidEventType(instance.getParent())) {
                     //Added in case of a property remove
                     //check for validity of the property's parent and redeploy
-                    getResourceDeployer(instance).redeployResource(instance.getParent());
+                    getResourceDeployer(instance.getParent()).redeployResource(instance.getParent());
                 } else if (instance instanceof ResourceRef) {
                     //delete-resource-ref
                     ResourceRef ref = (ResourceRef)instance;
