@@ -42,15 +42,15 @@ import com.sun.enterprise.module.ModuleDependency;
 import com.sun.enterprise.module.common_impl.ByteArrayInhabitantsDescriptor;
 import com.sun.hk2.component.InhabitantsFile;
 
+import java.net.*;
 import java.util.*;
 import java.util.jar.Manifest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.DataInputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URI;
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Creates a ModuleDefinition backed up by a a single classloader
@@ -97,6 +97,16 @@ public class ProxyModuleDefinition implements ModuleDefinition {
                     );
                 }
             }
+            if (classLoader instanceof URLClassLoader) {
+                URLClassLoader urlCL = (URLClassLoader) classLoader;
+                for (URL url : urlCL.getURLs()) {
+                    try {
+                        uris.add(url.toURI());
+                    } catch (URISyntaxException e) {
+                        Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage(), e);
+                    }
+                }
+            }
         }
 
         private static byte[] readFully(URL url) throws IOException {
@@ -132,7 +142,7 @@ public class ProxyModuleDefinition implements ModuleDefinition {
         }
 
         public URI[] getLocations() {
-            return uris;
+            return uris.toArray(new URI[uris.size()]);
         }
 
         public String getVersion() {
@@ -163,7 +173,7 @@ public class ProxyModuleDefinition implements ModuleDefinition {
             return ss != null && ss.length > 0;
         }
         private static final ModuleDependency[] EMPTY_MODULE_DEFINITIONS_ARRAY = new ModuleDependency[0];
-        private static URI[] uris = new URI[0];
+        private static final List<URI> uris = new ArrayList<URI>();
 
     static {
         // It is impossible to change java.class.path after the JVM starts --
@@ -174,10 +184,9 @@ public class ProxyModuleDefinition implements ModuleDefinition {
             String[] paths = cp.split(System.getProperty("path.separator"));
 
             if(ok(paths)) {
-                uris = new URI[paths.length];
 
                 for(int i = 0; i < paths.length; i++) {
-                    uris[i] = new File(paths[i]).toURI();
+                    uris.add(new File(paths[i]).toURI());
                 }
             }
         }

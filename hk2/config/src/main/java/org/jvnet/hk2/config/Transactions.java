@@ -263,7 +263,7 @@ public final class Transactions implements PostConstruct, PreDestroy {
                     for (Future<UnprocessedChangeEvents> future : futures.keySet()) {
                         try {
                             UnprocessedChangeEvents result = future.get(200, TimeUnit.SECONDS);
-                            if (result.getUnprocessed()!=null && result.getUnprocessed().size()>0) {
+                            if (result!=null && result.getUnprocessed()!=null && result.getUnprocessed().size()>0) {
                                 for (UnprocessedChangeEvent event : result.getUnprocessed()) {
                                     Logger.getAnonymousLogger().log(Level.WARNING, "Unprocessed event : " + event);
                                 }
