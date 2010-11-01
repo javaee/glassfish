@@ -159,6 +159,10 @@ public abstract class GFLauncher {
         setupMonitoring(parser);
         sysPropsFromXml = parser.getSystemProperties();
         asenvProps.put(INSTANCE_ROOT_PROPERTY, getInfo().getInstanceRootDir().getPath());
+        String jhome = javaConfig.getJavaHome();
+        if (GFLauncherUtils.ok(jhome)) {
+            asenvProps.put(JAVA_ROOT_PROPERTY, jhome);
+        }
         debugOptions = getDebug();
         parser.setupConfigDir(getInfo().getConfigDir(), getInfo().getInstallDir());
         setLogFilename(parser);
