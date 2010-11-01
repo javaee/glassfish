@@ -58,6 +58,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -217,12 +218,14 @@ public class StaticGlassFishRuntime extends GlassFishRuntime {
     public static void copy(URL u, File destFile, boolean overwrite) {
         if (u == null || destFile == null) return;
         try {
-            InputStream stream = u.openStream();
-            if (!destFile.toURI().toURL().equals(u)) {
-                if (!destFile.exists() || overwrite) {
+            if (!destFile.exists() || overwrite) {
+                if (!destFile.toURI().equals(u.toURI())) {
+                    InputStream stream = u.openStream();
                     destFile.getParentFile().mkdirs();
                     Util.copy(stream, new FileOutputStream(destFile), stream.available());
-                    logger.finer("Copied " + u + " to " + destFile.toURI().toURL());
+                    if (logger.isLoggable(Level.FINER)) {
+                        logger.finer("Copied " + u.toURI() + " to " + destFile.toURI());
+                    }
                 }
             }
         } catch (Exception ex) {
