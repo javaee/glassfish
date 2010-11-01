@@ -46,6 +46,7 @@ import com.sun.jsftemplating.component.factory.tree.TreeAdaptorBase;
 import com.sun.jsftemplating.layout.descriptors.LayoutComponent;
 import com.sun.jsftemplating.layout.event.CommandActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -165,6 +166,9 @@ public class ListTreeAdaptor extends TreeAdaptorBase {
 		_childMap = (Map<String, Object>) val;
 		val = new ArrayList<Object>(_childMap.keySet());
 	    }
+            if (val != null){
+                Collections.sort((List)val);
+            }
 	    _children =	(List<Object>) val;
 		
 	    // Ok, we got the result, provide an event in case we want to

@@ -65,6 +65,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.Collection;
+import java.util.Collections;
 
 import java.util.Set;
 import java.util.HashSet;
@@ -103,9 +104,11 @@ public class ApplicationHandlers {
             filterValue = null;
         }
         List result = new ArrayList();
+        List<String> keys = new ArrayList(appPropsMap.keySet());
+        Collections.sort(keys);
 
 	if (appPropsMap != null) {
-	    for(String oneAppName : appPropsMap.keySet()){
+	    for(String oneAppName : keys){
               try{
 		String engines = appPropsMap.get(oneAppName);
 		HashMap oneRow = new HashMap();
