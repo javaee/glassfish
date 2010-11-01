@@ -165,10 +165,8 @@ public class ListTreeAdaptor extends TreeAdaptorBase {
 	    if ((val != null) && (val instanceof Map)) {
 		_childMap = (Map<String, Object>) val;
 		val = new ArrayList<Object>(_childMap.keySet());
-	    }
-            if (val != null){
                 Collections.sort((List)val);
-            }
+	    }
 	    _children =	(List<Object>) val;
 		
 	    // Ok, we got the result, provide an event in case we want to
