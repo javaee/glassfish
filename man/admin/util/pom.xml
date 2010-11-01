@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
@@ -41,45 +41,33 @@
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-   <modelVersion>4.0.0</modelVersion>
-   <groupId>org.glassfish.docs.man</groupId>
-   <artifactId>manpages</artifactId>
-   <name>Man Pages for asadmin Utility Subcommnads</name>
-   <packaging>pom</packaging>
-   <distributionManagement>
-       <repository>            
-           <uniqueVersion>false</uniqueVersion>
-           <id>rator.sfbay</id>
-           <url>dav:http://glassfish-maven-repository.sfbay/maven/repositories/glassfish/</url>
-       </repository>
-   </distributionManagement>
-   <version>3.1-SNAPSHOT</version>
-   <modules>
-       <module>admin/cli</module>
-       <module>admin/cli-optional</module>
-       <module>admin/config-api</module>
-       <module>admin/monitor</module>
-       <module>admin/util</module>
-       <module>appclient/client/acc</module>
-       <module>appclient/server/core</module>
-       <module>cluster/admin</module>
-       <module>cluster/cli</module>
-       <module>cluster/gms-adapter</module>
-       <module>connectors/admin</module>
-       <module>core/kernel</module>
-       <module>core/logging</module>
-       <module>deployment/admin</module>
-       <module>deployment/javaee-core</module>
-       <module>ejb/ejb-container</module>
-       <module>flashlight/framework</module>
-       <module>jdbc/admin</module>
-       <module>jms/admin</module>
-       <module>load-balancer/admin</module>
-       <module>orb/orb-connector</module>
-       <module>security/core</module>
-       <module>transaction/jta</module>
-       <module>transaction/jts</module>
-       <module>web/admin</module>
-       <module>web/gui-plugin-common</module>
-   </modules>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.glassfish.docs.man</groupId>
+        <artifactId>manpages</artifactId>
+        <version>3.1-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>    
+    <artifactId>admin-util-manpage</artifactId>
+    <packaging>jar</packaging>
+    <name>Man Pages for Util Subcommands of the asadmin Utility</name>
+
+    <developers>
+        <developer>
+            <id>pauldavies</id>
+            <name>Paul Davies</name>
+            <url>http://blogs.sun.com/techscribe</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+    <build>
+	<resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+          </resources>
+    </build>
 </project>
