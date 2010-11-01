@@ -45,7 +45,7 @@
     <parent>
         <groupId>org.glassfish.docs</groupId>
 	<artifactId>v3-docs</artifactId>
-        <version>3.1-b04</version>
+        <version>3.1-SNAPSHOT</version>
     </parent>
     <groupId>org.glassfish.admingui</groupId>
     <artifactId>console-jca-plugin-help</artifactId>
