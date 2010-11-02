@@ -314,6 +314,8 @@ public class StandardWrapper
     private long multipartMaxRequestSize = -1L;
     private int multipartFileSizeThreshold = 10240;  // 10K
 
+    private boolean osgi = false;
+
 
     // ------------------------------------------------------------- Properties
 
@@ -823,6 +825,16 @@ public class StandardWrapper
      */
     public int getMultipartFileSizeThreshold() {
         return multipartFileSizeThreshold;
+    }
+
+
+    protected boolean isOSGi() {
+        return osgi;
+    }
+
+
+    protected void setOSGi(boolean osgi) {
+        this.osgi = osgi;
     }
 
 
@@ -2085,6 +2097,9 @@ public class StandardWrapper
                           ",WebModule=" + webMod + ",J2EEApplication=" +
                           ctx.getJ2EEApplication() + ",J2EEServer=" +
                           ctx.getJ2EEServer();
+        if (isOSGi()) {
+            onameStr += ",osgi=true";
+        }
 
         try {
             oname=new ObjectName(onameStr);

@@ -396,6 +396,15 @@ public class MapperListener
                                     "Error unregistering webapp " + objectName,
                                     t);
                         }
+                    } else if (Boolean.parseBoolean(objectName.getKeyProperty("osgi")) &&
+                            j2eeType.equals("Servlet")) {
+                        try {
+                            unregisterOSGiWrapper(objectName);
+                        } catch (Throwable t) {
+                            log.log(Level.WARNING,
+                                    "Error unregistering osgi wrapper " + objectName,
+                                    t);
+                        }
                     }
                 }
             }
@@ -710,5 +719,45 @@ public class MapperListener
 
     }
 
+    /**
+     * Unregister wrapper.
+     */
+    private void unregisterOSGiWrapper(ObjectName objectName)
+        throws Exception {
 
+        // If the domain is the same with ours or the engine 
+        // name attribute is the same... - then it's ours
+        String targetDomain=objectName.getDomain();
+        if( ! domain.equals( targetDomain )) {
+            return;
+        }
+
+        String name = objectName.getKeyProperty("WebModule");
+
+        String hostName = null;
+        String contextName = null;
+        if (name.startsWith("//")) {
+            name = name.substring(2);
+        }
+        int slash = name.indexOf("/");
+        if (slash != -1) {
+            hostName = name.substring(0, slash);
+            contextName = name.substring(slash);
+            contextName = RequestUtil.urlDecode(contextName , "UTF-8");
+        } else {
+            return;
+        }
+        // Special case for the root context
+        if (contextName.equals("/")) {
+            contextName = "";
+        }
+
+        String mapping = objectName.getKeyProperty("name");
+        if ("/".equals(mapping)) {
+            mapping = "/*";
+        } else {
+            mapping += "/*";
+        }
+        mapper.removeWrapper(hostName, contextName, mapping);
+    }
 }
