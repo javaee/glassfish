@@ -65,8 +65,10 @@ public class StopDomainCommand extends LocalDomainCommand {
 
     @Param(name = "domain_name", primary = true, optional = true)
     private String userArgDomainName;
-    @Param(name = "force", optional = true, defaultValue = "false")
+    @Param(name = "force", optional = true, defaultValue = "true")
     Boolean force;
+    @Param(optional = true, defaultValue = "false")
+    Boolean kill;
     private boolean local;
     private static final long WAIT_FOR_DAS_TIME_MS = 60000; // 1 minute
 
@@ -145,7 +147,7 @@ public class StopDomainCommand extends LocalDomainCommand {
      * we detect that the DAS is not running.
      */
     protected int dasNotRunning() throws CommandException {
-        if (force) {
+        if (kill) {
             if (local)
                 return kill();
             else // remote.  We can NOT kill and we can't ask it to kill itself.
@@ -162,23 +164,12 @@ public class StopDomainCommand extends LocalDomainCommand {
      * Execute the actual stop-domain command.
      */
     protected void doCommand() throws CommandException {
-        Boolean shouldForce = force;
-
-        if (force && local) {
-            // do NOT call the remote command with force=true!
-            // Since it is local and we are capable of killing it we call with
-            // force=false which allows all the shutdown hooks to run normally.
-            // if it becomes a Zombie we wipe it out below anyways.
-            // bnevins Halloween 2010
-            shouldForce = false;
-        }
-
         // run the remote stop-domain command and throw away the output
         RemoteCommand cmd = new RemoteCommand(getName(), programOpts, env);
-        cmd.executeAndReturnOutput("stop-domain", "--force", shouldForce.toString());
+        cmd.executeAndReturnOutput("stop-domain", "--force", force.toString());
         waitForDeath();
 
-        if (force && local) {
+        if (kill && local) {
             kill();
         }
     }

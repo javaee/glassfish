@@ -61,10 +61,12 @@ import com.sun.enterprise.util.HostAndPort;
 @Scoped(PerLookup.class)
 public class StopLocalInstanceCommand extends LocalInstanceCommand {
 
-    @Param(optional = true, defaultValue = "false")
+    @Param(optional = true, defaultValue = "true")
     private Boolean force;
     @Param(name = "instance_name", primary = true, optional = true)
     private String userArgInstanceName;
+    @Param(optional = true, defaultValue = "false")
+    Boolean kill;
 
     @Override
     protected void validate()
@@ -130,7 +132,7 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
      * we detect that the DAS is not running.
      */
     protected int instanceNotRunning() throws CommandException {
-        if (force)
+        if (kill)
             return kill();
 
         // by definition this is not an error
@@ -156,15 +158,13 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
      */
     protected int doRemoteCommand()
             throws CommandException, CommandValidationException {
-        // don't call the remote command with force=true.  Let it try to die
-        // normally.  We will kill it here if necessary...
 
         // run the remote stop-domain command and throw away the output
         RemoteCommand cmd = new RemoteCommand("_stop-instance", programOpts, env);
-        cmd.executeAndReturnOutput("_stop-instance", "--force", "false");
+        cmd.executeAndReturnOutput("_stop-instance", "--force", force.toString());
         waitForDeath();
 
-        if(force)
+        if(kill)
             kill();
         
         return 0;

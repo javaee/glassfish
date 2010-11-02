@@ -83,12 +83,9 @@ public class StopServer {
         }
 
         deletePidFile(env);
-        Runtime runtime = Runtime.getRuntime();
 
         if (force)
-            runtime.halt(1);
-        else
-            runtime.exit(0);
+            System.exit(0);
     }
     private final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(StopServer.class);
 
