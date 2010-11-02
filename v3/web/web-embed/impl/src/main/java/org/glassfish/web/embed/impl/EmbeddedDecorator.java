@@ -40,12 +40,9 @@
 
 package org.glassfish.web.embed.impl;
 
-import com.sun.hk2.component.InhabitantsParserDecorator;
-import com.sun.hk2.component.InhabitantsParser;
 import com.sun.enterprise.deployment.archivist.WebArchivist;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.glassfish.api.embedded.Server;
+import com.sun.hk2.component.InhabitantsParser;
+import com.sun.hk2.component.InhabitantsParserDecorator;
 import org.kohsuke.MetaInfServices;
 
 /**
@@ -54,9 +51,6 @@ import org.kohsuke.MetaInfServices;
 @MetaInfServices
 public class EmbeddedDecorator implements InhabitantsParserDecorator {
 
-    @Inject
-    Server server;
-    
     public String getName() {
         return "Embedded";
     }
@@ -64,5 +58,8 @@ public class EmbeddedDecorator implements InhabitantsParserDecorator {
     public void decorate(InhabitantsParser inhabitantsParser) {
         inhabitantsParser.replace(WebArchivist.class, EmbeddedWebArchivist.class);
 
+        // use the fully qualified string class name for WebEntityResolver to avoid dependency on web-glue.
+        inhabitantsParser.replace("org.glassfish.web.WebEntityResolver", EmbeddedWebEntityResolver.class);
+        // inhabitantsParser.replace(WebEntityResolver.class, EmbeddedWebEntityResolver.class);
     }
 }

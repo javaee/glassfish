@@ -108,12 +108,9 @@ public class EmbeddedWebArchivist extends WebArchivist {
 
     @Override
     protected URL getDefaultWebXML() throws IOException {
-/*
-        if (builder.getDefaultWebXml()!=null) {
-            return builder.getDefaultWebXml();
-        }
-*/
-        return super.getDefaultWebXML();
+        URL defaultWebXml = super.getDefaultWebXML();
+        return defaultWebXml == null ? getClass().getClassLoader().getResource(
+                "org/glassfish/web/embed/default-web.xml") : defaultWebXml;
     }
 
     @Override
