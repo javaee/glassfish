@@ -41,6 +41,7 @@ package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.JavaConfig;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import java.util.logging.Level;
@@ -72,10 +73,9 @@ import static org.glassfish.api.ActionReport.ExitCode.SUCCESS;
 @Service(name = "_get-runtime-info")
 @Scoped(PerLookup.class)
 @CommandLock(CommandLock.LockType.NONE)
-@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
+@ExecuteOn({RuntimeType.INSTANCE})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTERED_INSTANCE})
 public class RuntimeInfo implements AdminCommand {
-
     public RuntimeInfo() {
     }
 
@@ -150,8 +150,8 @@ public class RuntimeInfo implements AdminCommand {
     private StartupContext ctx;
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private Config config;
-    @Param(optional = true)
-    private String target;
+    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.SERVER_NAME)
+    String target;
     private boolean jpdaEnabled;
     private JavaConfig javaConfig;
     private ActionReport report;
