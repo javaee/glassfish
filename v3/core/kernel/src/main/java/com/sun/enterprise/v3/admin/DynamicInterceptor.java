@@ -176,13 +176,14 @@ public class DynamicInterceptor implements MBeanServer
             instances.addAll(MbeanService.getInstance().getAllInstances());
         }
 
-        if ((objectName.getKeyProperty("type")!=null) &
-                (objectName.getKeyProperty("type").equals("domain-root") ||
-                        objectName.getKeyProperty("type").equals("domain") ||
-                        objectName.getKeyProperty("type").equals("resources") ||
-                        objectName.getKeyProperty("type").equals("system-applications") ||
-                        objectName.getKeyProperty("type").equals("applications") )) {
-            instances.add("server");
+        if (objectName.getKeyProperty("type")!=null) {
+            if (objectName.getKeyProperty("type").equals("domain-root") ||
+                    objectName.getKeyProperty("type").equals("domain") ||
+                    objectName.getKeyProperty("type").equals("resources") ||
+                    objectName.getKeyProperty("type").equals("system-applications") ||
+                    objectName.getKeyProperty("type").equals("applications") ) {
+                instances.add("server");
+            }
         }
         // What abouut JVM
         System.out.println(" instance = "+oName+" :: "+instances.toString());
