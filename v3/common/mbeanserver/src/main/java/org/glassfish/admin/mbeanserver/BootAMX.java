@@ -186,7 +186,7 @@ final class BootAMX implements BootAMXMBean
     {
         try
         {
-           mMBeanServer.unregisterMBean(getBootAMXMBeanObjectName());
+            mMBeanServer.unregisterMBean(getBootAMXMBeanObjectName());
         }
         catch( final Exception e )
         {

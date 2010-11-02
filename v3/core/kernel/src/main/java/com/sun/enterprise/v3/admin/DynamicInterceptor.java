@@ -184,10 +184,6 @@ public class DynamicInterceptor implements MBeanServer
                         objectName.getKeyProperty("type").equals("applications") )) {
             instances.add("server");
         }
-
-        if(oName.startsWith("amx-support") || oName.startsWith("jmxremote")) {
-            instances.add("server");
-        }
         // What abouut JVM
         System.out.println(" instance = "+oName+" :: "+instances.toString());
         return result;
@@ -403,19 +399,17 @@ public class DynamicInterceptor implements MBeanServer
             throw new InstanceNotFoundException();
         ReplicationInfo result = getInstance(objectName);
         try {
-            if(result.isTargetAnInstance()) {                
+            if(result.isTargetAnInstance()) {
                 getInstanceConnection(result.getInstances().get(0)).unregisterMBean(objectName);
                 return;
             }
             for(String svr : result.getInstances()) {
-                if("server".equals(svr)) {                     
+                if("server".equals(svr))
                     getDelegateMBeanServer().unregisterMBean( objectName );
-                } else {                    
+                else
                     getInstanceConnection(svr).unregisterMBean(objectName);
-                }
             }
         } catch(IOException io) {
-            io.printStackTrace();
             throw new MBeanRegistrationException(io);
         }
     }
