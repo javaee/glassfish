@@ -117,9 +117,9 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
             if (targetServer.isDas()) {
                 props = loggingConfig.getLoggingProperties();
             } else if (targetServer.getCluster() != null) {
-                props = loggingConfig.getLoggingProperties(targetServer.getCluster().getName());
+                props = loggingConfig.getLoggingProperties(targetServer.getCluster().getConfigRef());
             } else if (targetServer.isInstance()) {
-                props = loggingConfig.getLoggingProperties(env.getInstanceName());
+                props = loggingConfig.getLoggingProperties(targetServer.getConfigRef());
             } else {
                 props = loggingConfig.getLoggingProperties();
             }

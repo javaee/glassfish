@@ -149,7 +149,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
     private boolean openPropFile(String target) throws IOException {
         try {
             props = new Properties();
-            String pathForLoggingFile = loggingConfigDir.getAbsolutePath() + File.separator + target + "-config";
+            String pathForLoggingFile = loggingConfigDir.getAbsolutePath() + File.separator + target;
             File dirForLogging = new File(pathForLoggingFile);
 
             file = new File(dirForLogging, loggingPropertiesName);
@@ -236,9 +236,9 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
      * @param propertyValue Value to set
      * @throws IOException
      */
-    public String setLoggingProperty(String propertyName, String propertyValue, String target) throws IOException {
+    public String setLoggingProperty(String propertyName, String propertyValue, String targetConfigName) throws IOException {
         try {
-            if (!openPropFile(target))
+            if (!openPropFile(targetConfigName))
                 return null;
             // update the property
             if (propertyValue == null) return null;
@@ -310,10 +310,10 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
       * @throws  IOException
       */
 
-    public Map<String, String> updateLoggingProperties(Map<String, String> properties, String target) throws IOException {
+    public Map<String, String> updateLoggingProperties(Map<String, String> properties, String targetConfigName) throws IOException {
         Map<String, String> m = new HashMap<String, String>();
         try {
-            if (!openPropFile(target))
+            if (!openPropFile(targetConfigName))
                 return null;
 
             // need to map the name given to the new name in logging.properties file
@@ -347,10 +347,10 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
       * @throws  IOException
       */
 
-    public Map<String, String> getLoggingProperties(String targetServer) throws IOException {
+    public Map<String, String> getLoggingProperties(String targetConfigName) throws IOException {
         Map<String, String> m = new HashMap<String, String>();
         try {
-            if (!openPropFile(targetServer))
+            if (!openPropFile(targetConfigName))
                 return null;
             Enumeration e = props.propertyNames();
 
@@ -561,6 +561,4 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
         }
         return zipDone;
     }
-
-
 }

@@ -58,7 +58,6 @@ import org.jvnet.hk2.component.PerLookup;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -120,7 +119,8 @@ public class SetLogLevel implements AdminCommand {
         String successMsg = "";
         boolean success = false;
         boolean invalidLogLevels = false;
-        boolean foundConfig = false;
+        boolean isConfig = false;
+        String targetConfigName = "";
 
         Map<String, String> m = new HashMap<String, String>();
         try {
@@ -151,58 +151,51 @@ public class SetLogLevel implements AdminCommand {
 
                 Config config = domain.getConfigNamed(target);
                 if (config != null) {
-                    List<Cluster> clusterList = clusters.getCluster();
-                    for (Cluster cluster : clusterList) {
-                        String clusterConfigName = cluster.getConfigRef();
-                        if (clusterConfigName.equals(target)) {
-                            target = cluster.getName();
-                            foundConfig = true;
-                            break;
-                        }
-                    }
-                    if (!foundConfig) {
-                        List<Server> serverList = servers.getServer();
-                        for (Server server : serverList) {
-                            String serverConfigName = server.getConfigRef();
-                            if (serverConfigName.equals(target)) {
-                                target = server.getName();
-                                break;
-                            }
-                        }
-                    }
-                }
+                    targetConfigName = target;
+                    isConfig = true;
 
-                Server targetServer = domain.getServerNamed(target);
-
-                if (targetServer != null && targetServer.isDas()) {
-                    isDas = true;
+                    Server targetServer = domain.getServerNamed(SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME);
+                    if (targetServer.getConfigRef().equals(target)) {
+                        isDas = true;
+                    }
                 } else {
-                    com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
-                    if (cluster != null) {
-                        isCluster = true;
+                    Server targetServer = domain.getServerNamed(target);
+
+                    if (targetServer != null && targetServer.isDas()) {
+                        isDas = true;
                     } else {
-                        isInstance = true;
+                        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+                        if (cluster != null) {
+                            isCluster = true;
+                            targetConfigName = cluster.getConfigRef();
+                        } else if (targetServer != null) {
+                            isInstance = true;
+                            targetConfigName = targetServer.getConfigRef();
+                        }
+                    }
+
+                    if (isInstance) {
+                        Cluster clusterForInstance = targetServer.getCluster();
+                        if (clusterForInstance != null) {
+                            targetConfigName = clusterForInstance.getConfigRef();
+                        }
                     }
                 }
 
                 if (isCluster || isInstance) {
-                    loggingConfig.updateLoggingProperties(m, target);
+                    loggingConfig.updateLoggingProperties(m, targetConfigName);
                     success = true;
                 } else if (isDas) {
                     loggingConfig.updateLoggingProperties(m);
                     success = true;
+                } else if (isConfig) {
+                    // This loop is for the config which is not part of any target
+                    loggingConfig.updateLoggingProperties(m, targetConfigName);
+                    success = true;
                 } else {
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    String clusterName = "";
                     String msg = localStrings.getLocalString("invalid.target.sys.props",
                             "Invalid target: {0}. Valid default target is a server named ''server'' (default) or cluster name.", target);
-
-                    if (targetServer != null && targetServer.isInstance()) {
-                        clusterName = targetServer.getCluster().getName();
-                        msg = localStrings.getLocalString("invalid.target.sys.props1",
-                                "Instance {0} is part of the Cluster so valid target value is {1}.", target, clusterName);
-                    }
-
                     report.setMessage(msg);
                     return;
                 }
