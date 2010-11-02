@@ -129,7 +129,7 @@ public class Transaction {
     }
 
     /**
-     * Retuns the transaction associated with a writable view
+     * Returns the transaction associated with a writable view
      * @param source the proxy to the writable view
      * @return the transaction object for that view or null if not transaction is in progress
      */
