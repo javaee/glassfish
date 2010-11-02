@@ -150,7 +150,8 @@ public class InhabitantsFilterTest {
     // setup test
     File testDir = new File(new File("."), "target/test-classes");
     File inputFile = new File(testDir, "META-INF/inhabitants/bogus");
-    File outputFile = new File(testDir, "META-INF/inhabitants/filtered");
+    File outputDir = new File(testDir, "META-INF/inhabitants/subdir/");
+    File outputFile = new File(outputDir, "filtered");
     outputFile.delete();
     
     try {
@@ -162,7 +163,8 @@ public class InhabitantsFilterTest {
       
       InhabitantsFilter.main(null);
   
-      assertFalse(outputFile.exists());
+      assertFalse("output file should not exist", outputFile.exists());
+      assertFalse("output directory should not exist", outputDir.exists());
     } finally {
       System.clearProperty(InhabitantsGenerator.PARAM_INHABITANT_SOURCE_FILE);
       System.clearProperty(InhabitantsGenerator.PARAM_INHABITANT_TARGET_FILE);
