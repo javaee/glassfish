@@ -38,38 +38,31 @@ package org.glassfish.hk2.classmodel.reflect.util;
 import java.util.Set;
 
 /**
- * Configuration for the parser.
+ * Filters the parsing activity to only deeply parse classes that are either
+ * annotated with an annotation returned by {@link #getAnnotationsOfInterest}
+ * or implements/subclass a type returned by {@link #getTypesOfInterest}.
+ *
+ * A class identified to be deeply parsed will contain all the metadata about
+ * its members like fields, methods as well as annotations on those.
  *
  * @author Jerome Dochez
  */
 public interface ParsingConfig {
 
     /**
-     * Returns a list of annotations that denotes dependency injection enabled
-     * classes (classes that use dependency injection). A class annotated with
-     * one the returned annotation getName will potentially define one or more
-     * injection point.
+     * Returns a list of annotations that should trigger an exhaustive visit
+     * of the annotated type.
      *
-     * @return list of annotations that denote a dependency injection enabled type.
+     * @return list of annotations that triggers an exhaustive scanning of the
+     * annotated type
      */
-    public Set<String> getInjectionTargetAnnotations();
+    public Set<String> getAnnotationsOfInterest();
 
     /**
-     * Returns a list of interfaces that denotes a dependency injection enabled
-     * classes. A class implementing one of the interface returned will
-     * potentially define one or more injection point.
+     * Returns a list of types (classes or interfaces) that a type must either
+     * subclass or implement to trigger an exhaustive scanning
      *
-     * @return list of interfaces that a class can implement that will denote possible
-     * use of dependency injection
+     * @return list of types that will trigger an exhaustive scanning.
      */
-    public Set<String> getInjectionTargetInterfaces();
-
-    /**
-     * Returns a list of annotations that denote an injection point within an
-     * dependency injection enabled type. This injection point (representing
-     * a dependency) is either a constructor parameter, a field or a method.
-     *
-     * @return list of annotations denoting injection points (like @Inject).
-     */
-    public Set<String> getInjectionPointsAnnotations();
+    public Set<String> getTypesOfInterest();
 }

@@ -106,17 +106,12 @@ public class GFInstallationTest {
             final Set<String> empty = Collections.emptySet();
 
             @Override
-            public Set<String> getInjectionPointsAnnotations() {
-                return empty;
-            }
-
-            @Override
-            public Set<String> getInjectionTargetAnnotations() {
+            public Set<String> getAnnotationsOfInterest() {
                 return annotations;
             }
 
             @Override
-            public Set<String> getInjectionTargetInterfaces() {
+            public Set<String> getTypesOfInterest() {
                 return empty;
             }
         });

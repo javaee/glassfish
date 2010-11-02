@@ -68,35 +68,91 @@ public class ParsingContext {
         ParsingConfig config=null;
         ResourceLocator locator=null;
 
+        /**
+         * Returns the configured or default logger for the class-model library.
+         *
+         * @return the current logger associated with this builder, either
+         * set using {@link #logger(java.util.logging.Logger)} method, either
+         * using the default logger for this library.
+         */
         public Logger logger() {
             return logger;
         }
-        
+
+        /**
+         * Sets the logger to be used during the parsing activity.
+         *
+         * @param logger a logger instance
+         * @return itself
+         */
         public Builder logger(Logger logger) {
             this.logger = logger;
             return this;
         }
 
+        /**
+         * Sets the executor service to be used to spawn threads during the
+         * parsing activity. The parsing activity is an asynchronous process
+         * that can choose to spawn threads to handle sub part of the handling
+         * process.
+         *
+         * @param service the executor service to be used during the parsing
+         * activity
+         * @return itself
+         */
         public Builder executorService(ExecutorService service) {
             this.executorService = service;
             return this;
         }
 
+        /**
+         * Sets the archive selector that can selects which jar should be parsed
+         * during the parsing activity. This is particularly useful when the
+         * parser is configured to parse an entire directory of jars but only
+         * needs to actually parse those jars depending on some environmental
+         * condition or if the jar shows a particular stigma (like a jar entry
+         * existence).
+         *
+         * @param selector the archive selector.
+         * @return itself
+         */
         public Builder archiveSelector(ArchiveSelector selector) {
             this.archiveSelector =  selector;
             return this;
         }
 
+        /**
+         * Sets the resource locator that can be used to load and parse extra
+         * types that were referenced during the parsing but could not be parsed
+         * due to their absence from the input archive set. The parser will call
+         * the {@link ResourceLocator} to give a chance to the caller to selectively
+         * add such unvisited types to the parsing activity
+         *
+         * @param locator a resource locator instance
+         * @return itself
+         */
         public Builder locator(ResourceLocator locator) {
             this.locator = locator;
             return null;
         }
 
+        /**
+         * Sets the parsing config that can be used to select which types should
+         * be exhaustively visited (fields + methods visits) or not.
+         *
+         * @param config the config instance
+         * @return itself
+         */
         public Builder config(ParsingConfig config) {
             this.config = config;
             return this;
         }
-        
+
+        /**
+         * Build the final ParsingContext with the provided configuration.
+         *
+         * @return the @{link ParsingContext} instance
+         */
         public ParsingContext build() {
             return new ParsingContext(this);
         }
@@ -113,7 +169,6 @@ public class ParsingContext {
 
     private ParsingContext(Builder builder) {
         Runtime runtime = Runtime.getRuntime();
-        int nrOfProcessors = runtime.availableProcessors();        
         this.executorService = builder.executorService;
         this.archiveSelector = builder.archiveSelector;
         this.logger = builder.logger;
@@ -121,17 +176,12 @@ public class ParsingContext {
         this.config = builder.config!=null?builder.config:new ParsingConfig() {
             final Set<String> emptyList = Collections.emptySet();
             @Override
-            public Set<String> getInjectionTargetAnnotations() {
+            public Set<String> getAnnotationsOfInterest() {
                 return emptyList;
             }
 
             @Override
-            public Set<String> getInjectionTargetInterfaces() {
-                return emptyList;
-            }
-
-            @Override
-            public Set<String> getInjectionPointsAnnotations() {
+            public Set<String> getTypesOfInterest() {
                 return emptyList;
             }
         };
@@ -151,6 +201,13 @@ public class ParsingContext {
         return builder;
     }
 
+    /**
+     * Return the holder instance of all the visited types. This should only
+     * be called once the {@link org.glassfish.hk2.classmodel.reflect.Parser#awaitTermination()}
+     * has returned.
+     *
+     * @return the visited types.
+     */
     public Types getTypes() {
         return types;
     }
