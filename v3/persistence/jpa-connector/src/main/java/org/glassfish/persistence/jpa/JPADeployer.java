@@ -248,9 +248,11 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
                 // when the bundle is an application which can have multiple persitence.xml under jars in root of ear and lib.
                 PersistenceUnitLoader puLoader = context.getTransientAppMetaData(getUniquePuIdentifier(pud), PersistenceUnitLoader.class);
                 if (puLoader != null) { // We have initialized PU
-                    if(isDas()) {
-                        //We execute Java2DB only on DAS
-                        puLoader.doJava2DB();
+                    if(isDas()) { //We execute Java2DB only on DAS
+                        OpsParams params = context.getCommandParameters(OpsParams.class);
+                        if(params.origin.isDeploy()) { //APPLICATION_PREPARE will be called for create-application-ref also. We should perform java2db only on first deploy
+                            puLoader.doJava2DB();
+                        }
                     }
 
                     // Save emf in ApplicationInfo so that it can be retrieved and closed for cleanup

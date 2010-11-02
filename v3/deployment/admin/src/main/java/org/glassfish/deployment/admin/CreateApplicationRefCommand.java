@@ -47,6 +47,10 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.Events;
+import org.glassfish.api.event.EventListener.Event;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.OpsParams.Origin;
@@ -146,6 +150,8 @@ public class CreateApplicationRefCommand implements AdminCommand {
     @Inject
     private Habitat habitat;
 
+    @Inject
+    Events events;
 
     /**
      * Entry point from the framework into the command execution
@@ -238,7 +244,7 @@ public class CreateApplicationRefCommand implements AdminCommand {
                 ApplicationConfigInfo savedAppConfig = null;
                 try {
                     commandParams = app.getDeployParameters(null);
-                    commandParams.origin = Origin.load;
+                    commandParams.origin = Origin.create_application_ref;
                     commandParams.target = target;
                     commandParams.virtualservers = virtualservers;
                     commandParams.enabled = enabled;
@@ -303,6 +309,9 @@ public class CreateApplicationRefCommand implements AdminCommand {
 
                     if (domain.isCurrentInstanceMatchingTarget(target, appName, server.getName(), null)) {
                         deployment.deploy(deployment.getSniffersFromApp(app), deploymentContext);
+                    } else {
+                        // send the APPLICATION_PREPARED event for DAS
+                        events.send(new Event<DeploymentContext>(Deployment.APPLICATION_PREPARED, deploymentContext), false);
                     }
 
                     if (report.getActionExitCode().equals(
