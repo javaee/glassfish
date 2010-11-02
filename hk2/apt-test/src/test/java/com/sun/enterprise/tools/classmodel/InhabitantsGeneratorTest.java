@@ -265,7 +265,8 @@ public class InhabitantsGeneratorTest {
   @Test
   public void testMainWithNoInhabitants() throws Exception {
     File testDir = new File(new File("."), "target/test-classes");
-    File outputFile = new File(testDir, "META-INF/inhabitants/default");
+    File outputDir = new File(testDir, "META-INF/inhabitants/");
+    File outputFile = new File(outputDir, "default");
 
     String inhabitantSources = toString(getAutoDependsClassPathEntries());
     String workingClassPath = toString(getTestClassPathEntries(true));
@@ -279,6 +280,7 @@ public class InhabitantsGeneratorTest {
         assertFalse("expect NOT to find: " + outputFile
             + "; but did containing:\n[" + toString(fis) + "]\nthis is surprising because\ninhabitant sources=" + inhabitantSources
             + "\n and working classpath=" + workingClassPath + "\n", outputFile.exists());
+        assertFalse("output directory should not exist", outputDir.exists());
       } finally {
         fis.close();
       }
