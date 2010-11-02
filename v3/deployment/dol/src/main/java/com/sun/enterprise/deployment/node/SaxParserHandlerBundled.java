@@ -129,11 +129,13 @@ public class SaxParserHandlerBundled extends SaxParserHandler {
                      */
                     result = openSchemaSource(systemID);
 
-                    /*
-                    * As a last resort, try opening the DTD without going
-                    * through the mapping table.
-                    */
-                    result = openInputSource(BUNDLED_DTD_ROOT, systemID);
+                    if (result == null) {
+                        /*
+                        * As a last resort, try opening the DTD without going
+                        * through the mapping table.
+                        */
+                        result = openInputSource(BUNDLED_DTD_ROOT, systemID);
+                    }
                 }
             }
         } catch (Exception exc) {
