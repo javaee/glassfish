@@ -1803,8 +1803,12 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
         boolean isRedeploy) {
         List<String> referencedTargets = domain.getAllReferencedTargetsForApplication(name);
         if (referencedTargets.isEmpty()) {
-            if (isRegistered(name) && !isRedeploy && target.equals("domain")) {
-                throw new IllegalArgumentException(localStrings.getLocalString("application.alreadyreg.redeploy", "Application with name {0} is already registered. Either specify that redeployment must be forced, or redeploy the application. Or if this is a new deployment, pick a different name.", name));
+            if (isRegistered(name)) {
+                if (!isRedeploy && target.equals("domain")) {
+                    throw new IllegalArgumentException(localStrings.getLocalString("application.alreadyreg.redeploy", "Application with name {0} is already registered. Either specify that redeployment must be forced, or redeploy the application. Or if this is a new deployment, pick a different name.", name));
+                } else {
+                    throw new IllegalArgumentException(localStrings.getLocalString("use.create_app_ref_2", "Application {0} is already deployed in this domain. Please use create application ref to create application reference on target {1}.", name, target));
+                }
             }
             return;
         }
