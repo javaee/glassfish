@@ -52,10 +52,12 @@ import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.ManagementFactory;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import java.util.logging.Logger;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -70,6 +72,8 @@ import static org.glassfish.api.ActionReport.ExitCode.SUCCESS;
 @Service(name = "_get-runtime-info")
 @Scoped(PerLookup.class)
 @CommandLock(CommandLock.LockType.NONE)
+@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTERED_INSTANCE})
 public class RuntimeInfo implements AdminCommand {
 
     public RuntimeInfo() {
