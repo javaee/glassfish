@@ -32,7 +32,7 @@ or injection of dependencies as well as automatic resolution of dependencies.
 
 	In order to generate enough metadata to satisfy all injection points with a suitable injection target, HK2 has developped a simple class model which mimics a java class reflective API without the cost of loading the class files with a class loader. The class-model sub project can be used indenpendently of HK2, it is using ASM to load the byte code and provide a user friendly reflective APIs on the parsed classes.
 
-   Link to {{{.\/class-mode/index.html}Class-Model}}
+   Link to {{{.\/class-model/index.html}Class-Model}}
 
 * Configuration
  

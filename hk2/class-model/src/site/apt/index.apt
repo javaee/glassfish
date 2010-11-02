@@ -1,9 +1,10 @@
-														------
-														Introduction to Class-Model
-														------
-														Jerome Dochez
-														------
-														---
+    ------
+    Introduction to Class-Model
+    ------
+    Jerome Dochez
+    ------
+    ------
+
 
 	A lot of managed environment need extensive meta-data about the application/components it's managing. Such
 information can range from looking for annotations usages or class hierarchies. Although it is possible to use
@@ -15,16 +16,64 @@ that forces a reload using a different classloader adding to the performances is
 without requiring the presence of a classloader, it operates at the archive or directory level, loading .class
 files and processing them with the ASM library (http://asm.ow2.org/).
 
-* Scanning Process
+Scanning Process
 
     In order to obtain the class-model reflection for a particular set of classes, it is necessary to parse such
 classes. Parsing will build an in memory model (level of details of such model can be adapted to needs) while
 parsing the input classes.
 
-** Parsing Context
+* Example of parsing.
 
-    The entry point to the parsing is the {{{.\apidocs/org/glassfish/hk2/classmodel/reflect/ParsingContext.html}ParsingContext}}
+    The simplest way to use this library is
+
++-------------------------------+
+ParsingContext pc = (new ParsingContext.Builder()).build();
+Parser parser = new Parser(pc);
+parser.parse(new File("/path/to/a/jar/file"));
+parser.awaitTermination(100, TimeUnit.SECONDS);
++-------------------------------+
+
+    and extract the resulting visited types from the {{{.\/apidocs\/org\/glassfish\/hk2\/classmodel\/reflect\/ParsingContext.html#getTypes()}getTypes}} method
+
+* Parsing Context
+
+    The entry point to the parsing is the {{{.\/apidocs\/org\/glassfish\/hk2\/classmodel\/reflect\/ParsingContext.Builder.html}ParsingContext.Builder}}
 which can be used to provided environmental settings like the logger, or the executor service instance to run the
-parsing context.
+parsing activity.
 
-    A notable setting of the Parsing Context is the {{{apidocs/org/glassfish/hk2/classmodel/reflect/ParsingConfig.html}ParsingConfig}}
+** Parsing Config
+
+    A notable setting of the Parsing Context is the {{{.\/apidocs\/org\/glassfish\/hk2\/classmodel\/reflect\/util\/ParsingConfig.html}ParsingConfig}}
+which is used to filter the classes that should be exhaustively parsed. All classes provided in input will be parsed
+independently of the ParsingConfig settings, however classes that are either annotated with certain annotations or
+a subtype of certain types will be exhaustively parsed. See the table below for the difference between the 2 parsing activities.
+
+
+*----------*--------------*----------------*
+| Parsing  | Non Exhaustive | Exhaustive   |
+| type     |                |              |
+*----------*----------------*--------------*
+| {{{./apidocs/org/glassfish/hk2/classmodel/reflect/ExtensibleType.html#getParent()}getParent}}   | y              |  y           |
+*----------*----------------*--------------*
+| {{{./apidocs/org/glassfish/hk2/classmodel/reflect/ExtensibleType.html#subTypes()}subTypes}}   | y              |  y           |
+*----------*----------------*--------------*
+| {{{./apidocs/org/glassfish/hk2/classmodel/reflect/ExtensibleType.html#allSubTypes()}allInterfaces}}   | y              |  y           |
+*----------*----------------*--------------*
+| {{{./apidocs/org/glassfish/hk2/classmodel/reflect/ExtensibleType.html#getInterfaces()}getInterfaces}}   | y              |  y           |
+*----------*----------------*--------------*
+| {{{./apidocs/org/glassfish/hk2/classmodel/reflect/impl/AnnotationTypeImpl.html#allAnnotatedTypes()}allAnnotatedTypes()}} | y | y |
+*----------*----------------*--------------*
+| {{{./apidocs/org/glassfish/hk2/classmodel/reflect/ClassModel.html#getFields()}getFields()}} | n | y |
+*----------*--------------*----------------*
+
+** Resource Locator
+
+    Another important settings of the parsing context is the resource locator instance.
+It is sometimes important to selectively parser files based that are not part of the parsing imput
+files but can be referenced by one of those input files. Such reference should most of the time
+trigger a parsing of the referenced type as it may contains metadata of importance like an interface
+implementation or an annotation. At the end of the parsing activity on the source files, the parser
+will look at all the referenced types that were not visited (since not provided as an imput file)
+and will call the optionally provided {{{.\/apidocs\/org\/glassfish\/hk2\/classmodel\/reflect\/ResourceLocator.html}ResourceLocator}}
+instance to get access to the requested type .class file.
+

@@ -108,7 +108,7 @@ public class ModelClassVisitor implements ClassVisitor {
         type = ctx.getTypeBuilder(classDefURI).getType(access, className, parent);
         type.getProxy().visited();
         type.addDefiningURI(classDefURI);
-        deepVisit =ctx.getConfig().getInjectionTargetAnnotations().isEmpty();
+        deepVisit =ctx.getConfig().getAnnotationsOfInterest().isEmpty();
 
         // reverse index
         if (parent!=null) {
@@ -157,7 +157,7 @@ public class ModelClassVisitor implements ClassVisitor {
         // forward index
         type.addAnnotation(am);
 
-        if (ctx.getConfig().getInjectionTargetAnnotations().contains(desc)) {
+        if (ctx.getConfig().getAnnotationsOfInterest().contains(desc)) {
             logger.log(Level.FINER, "Inspecting fields of {0}", type.getName());
             deepVisit =true;
         }

@@ -119,23 +119,19 @@ public abstract class InhabitantsParsingContextGenerator implements Closeable {
         final Set<String> annotations = new HashSet<String>();
         annotations.add(Contract.class.getCanonicalName());
         annotations.add(Service.class.getCanonicalName());
-        // TODO: relocate "@Configured" declaration into core
         annotations.add("org.jvnet.hk2.config.Configured");
 
         builder.config(new ParsingConfig() {
             final Set<String> empty = Collections.emptySet();
 
-            public Set<String> getInjectionTargetAnnotations() {
+            public Set<String> getAnnotationsOfInterest() {
                 return empty;
             }
 
-            public Set<String> getInjectionTargetInterfaces() {
+            public Set<String> getTypesOfInterest() {
                 return annotations;
             }
 
-            public Set<String> getInjectionPointsAnnotations() {
-                return empty;
-            }
         });
 
         // optionally provide an executor
