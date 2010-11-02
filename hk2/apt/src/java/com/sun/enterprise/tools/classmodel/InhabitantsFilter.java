@@ -38,7 +38,9 @@ package com.sun.enterprise.tools.classmodel;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -90,29 +92,7 @@ public class InhabitantsFilter extends Constants {
     boolean sorted = Boolean.getBoolean(PARAM_INHABITANTS_SORTED);
     
     process(inDescriptor, outDescriptor, filter);
-
-    if (!outDescriptor.isEmpty()) {
-      logger.log(Level.INFO, "writing file {0}", targetInhabitantFile);
-      
-      if (!sorted) {
-        outDescriptor.write(targetInhabitantFile);
-      } else {
-        File parent = targetInhabitantFile.getParentFile();
-        if (null != parent) {
-          parent.mkdirs();
-        }
-        
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        PrintWriter w = new PrintWriter(out);
-        outDescriptor.write(w);
-        w.close();
-        
-        String sorterdInhabitants = Utilities.sortInhabitantsDescriptor(out.toString(), sorted);
-        FileOutputStream fos = new FileOutputStream(targetInhabitantFile);
-        fos.write(sorterdInhabitants.getBytes());
-        fos.close();
-      }
-    }
+    writeInhabitantsFile(targetInhabitantFile, outDescriptor, sorted);
   }
 
   /**
@@ -132,6 +112,43 @@ public class InhabitantsFilter extends Constants {
       String clazz = classOf(value);
       if (null == filter || filter.matches(clazz)) {
         outDescriptor.put(key, value);
+      }
+    }
+  }
+
+  /**
+   * Writes the inhabitants file to disk.
+   * 
+   * @param targetInhabitantFile
+   * @param outDescriptor
+   * @param sorted
+   */
+  public static void writeInhabitantsFile(
+      File targetInhabitantFile,
+      InhabitantsDescriptor outDescriptor,
+      boolean sorted) throws FileNotFoundException, IOException {
+    if (outDescriptor.isEmpty()) {
+      targetInhabitantFile.delete();
+    } else {
+      logger.log(Level.INFO, "writing file {0}", targetInhabitantFile);
+      
+      if (!sorted) {
+        outDescriptor.write(targetInhabitantFile);
+      } else {
+        File parent = targetInhabitantFile.getParentFile();
+        if (null != parent) {
+          parent.mkdirs();
+        }
+        
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PrintWriter w = new PrintWriter(out);
+        outDescriptor.write(w);
+        w.close();
+        
+        String sorterdInhabitants = Utilities.sortInhabitantsDescriptor(out.toString(), sorted);
+        FileOutputStream fos = new FileOutputStream(targetInhabitantFile);
+        fos.write(sorterdInhabitants.getBytes());
+        fos.close();
       }
     }
   }
