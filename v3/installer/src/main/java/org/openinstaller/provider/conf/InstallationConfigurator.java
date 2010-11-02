@@ -420,22 +420,39 @@ public final class InstallationConfigurator implements Configurator, Notificatio
     //execution environment PATH    
     private void updateConfigFile() throws EnhancedException {
 
-        // For advanced mode, fetch JAVA_HOME from panel.
-        if (ConfigHelper.getStringValue("InstallUserType.Option.USER_TYPE").equals("ADVANCED_USER")) {
-            try {
-                jdkHome = ConfigHelper.getStringValue("JDKSelection.directory.SELECTED_JDK");
-            } catch (Exception e) {
+        
+	// for SDK cobundles with JDK - see if cobundled JDK exists and use that
+        
+        if (org.glassfish.installer.util.FileUtils.isFileExist(productRef.getInstallLocation() + File.separator + "jdk")){
+	   jdkHome = productRef.getInstallLocation() + File.separator + "jdk";
+           
+           // on Unix, set executable permissions to jdk/bin/* and jdk/jre/bin/* 
+           if (!OSUtils.isWindows()) {
+              org.glassfish.installer.util.FileUtils.setAllFilesExecutable(productRef.getInstallLocation() + File.separator + "jdk" 
+                  + File.separator + "bin");
+              org.glassfish.installer.util.FileUtils.setAllFilesExecutable(productRef.getInstallLocation() + File.separator + "jdk" 
+                  + File.separator + "jre" + File.separator + "bin");
+           }
+         }
+         else {
+ 
+	    // For advanced mode, fetch JAVA_HOME from panel.
+            if (ConfigHelper.getStringValue("InstallUserType.Option.USER_TYPE").equals("ADVANCED_USER")) {
+                try {
+                    jdkHome = ConfigHelper.getStringValue("JDKSelection.directory.SELECTED_JDK");
+                 } catch (Exception e) {
+                    jdkHome = new File(System.getProperty("java.home")).getParent();
+                     if (OSUtils.isMac() || OSUtils.isAix()) {
+                        jdkHome = System.getProperty("java.home");
+                     }
+                }
+            }
+            // For basic mode, fetch JAVA_HOME from environment.
+            else {
                 jdkHome = new File(System.getProperty("java.home")).getParent();
                 if (OSUtils.isMac() || OSUtils.isAix()) {
                     jdkHome = System.getProperty("java.home");
                 }
-            }
-        }
-        // For basic mode, fetch JAVA_HOME from environment.
-        else {
-            jdkHome = new File(System.getProperty("java.home")).getParent();
-            if (OSUtils.isMac() || OSUtils.isAix()) {
-                jdkHome = System.getProperty("java.home");
             }
         }
         LOGGER.log(Level.INFO, Msg.get("UPDATE_CONFIG_HEADER", null));

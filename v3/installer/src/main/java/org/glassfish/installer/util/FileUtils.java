@@ -111,6 +111,27 @@ public class FileUtils {
         }
     }
 
+
+    /* Assign execute permissions for all files in specified directory 
+     * @param  dirName content directory.
+     */
+    public static void setAllFilesExecutable(String dirName) throws SecurityException {
+        LOGGER.log(Level.FINEST,dirName);
+        if (isFileExist(dirName)) {
+            File tDir = new File(dirName);
+            if (tDir.isDirectory()) {
+                File filesList[] = tDir.listFiles();
+
+                for (File eachFile : filesList) {
+                     LOGGER.log(Level.FINEST, eachFile.getAbsolutePath());
+                     if (eachFile.isFile()) {
+                         eachFile.setExecutable(true);
+                     }
+                }
+            }
+        }
+    }
+
     /* return true/false if the given file exists.
      * @param fileName file/directory to check.
      * @return true/false.
