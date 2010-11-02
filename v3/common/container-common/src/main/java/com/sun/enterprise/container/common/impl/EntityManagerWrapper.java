@@ -115,6 +115,12 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
         this.unitName = unitName;
         this.contextType = contextType;
         this.emProperties = emProperties;
+        if(contextType == PersistenceContextType.EXTENDED) {
+            // We are initializing an extended EM. The physical em is already created and stored in SessionContext to
+            // enable persistence context propagation.
+            // Initialize the delegate eagerly to support use cases like issue 11805
+            _getDelegate();
+        }
     }
 
     private void init() {
