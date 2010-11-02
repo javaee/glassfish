@@ -79,7 +79,7 @@ public class StopInstanceInstanceCommand extends StopServer implements AdminComm
     @Inject
     private ModulesRegistry registry;
     @Param(optional = true, defaultValue = "true")
-    private Boolean force;
+    private Boolean force = true;
 
     public void execute(AdminCommandContext context) {
 
