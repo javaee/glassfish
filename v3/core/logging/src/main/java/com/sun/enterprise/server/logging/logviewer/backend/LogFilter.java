@@ -476,7 +476,7 @@ public class LogFilter {
     /**
      * This provides access to the LogFile object.
      */
-    public static LogFile getLogFile() {
+    public LogFile getLogFile() {
         return _logFile;
     }
 
@@ -589,7 +589,7 @@ public class LogFilter {
         if (!(loggedDateTime.before(fromDateTime) ||
                 loggedDateTime.after(toDateTime))) {
             return true;
-        }
+        }                                               
 
         return false;
     }
@@ -718,7 +718,7 @@ public class LogFilter {
             System.getProperty("com.sun.aas.verboseMode", "false");
     private static String defaultLogFile =
             System.getProperty("com.sun.aas.defaultLogFile");
-    private static LogFile _logFile =
+    private LogFile _logFile =
             (pL != null && !verboseMode.equals("true") && defaultLogFile != null) ?
                     new LogFile(defaultLogFile) :
                     new LogFile(StringUtils.makeFilePath(serverLogElements, false));
