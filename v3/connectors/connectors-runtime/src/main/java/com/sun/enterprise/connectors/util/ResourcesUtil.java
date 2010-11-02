@@ -985,7 +985,7 @@ public class ResourcesUtil {
      * Determines if a connector connection pool is referred in a
      * server-instance via resource-refs
      * @param poolInfo pool-name
-     * @return boolean true if pool is referred in this server instance, false
+     * @return boolean true if pool is referred in this server instance as well enabled, false
      * otherwise
      */
     public boolean isPoolReferredInServerInstance(PoolInfo poolInfo) {
@@ -997,10 +997,11 @@ public class ResourcesUtil {
                 _logger.fine("poolname " + resource.getPoolName() + "resource " + resource.getJndiName());
             }
             ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(resource);
-            if ((resource.getPoolName().equalsIgnoreCase(poolInfo.getName())) && isReferenced(resourceInfo)){
+            if ((resource.getPoolName().equalsIgnoreCase(poolInfo.getName())) && isReferenced(resourceInfo)
+                    && isEnabled(resource)){
                 if(_logger.isLoggable(Level.FINE)) {
                     _logger.fine("Connector resource "  + resource.getJndiName() + "refers "
-                        + poolInfo + "in this server instance");
+                        + poolInfo + "in this server instance and is enabled");
                 }
                 return true;
             }
@@ -1015,7 +1016,7 @@ public class ResourcesUtil {
      * Determines if a JDBC connection pool is referred in a
      * server-instance via resource-refs
      * @param poolName pool-name
-     * @return boolean true if pool is referred in this server instance, false
+     * @return boolean true if pool is referred in this server instance as well enabled, false
      * otherwise
      */
     public boolean isJdbcPoolReferredInServerInstance(PoolInfo poolInfo) {
@@ -1025,13 +1026,14 @@ public class ResourcesUtil {
         for (JdbcResource resource : jdbcResources) {
             ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(resource);
             //Have to check isReferenced here!
-            if ((resource.getPoolName().equalsIgnoreCase(poolInfo.getName())) && isReferenced(resourceInfo)){
+            if ((resource.getPoolName().equalsIgnoreCase(poolInfo.getName())) && isReferenced(resourceInfo)
+                    && isEnabled(resource)){
                 if (_logger.isLoggable(Level.FINE)) {
                     _logger.fine("pool " + poolInfo + "resource " + resourceInfo
                             + " referred " + isReferenced(resourceInfo));
 
                     _logger.fine("JDBC resource " + resource.getJndiName() + "refers " + poolInfo
-                            + "in this server instance");
+                            + "in this server instance and is enabled");
                 }
                 return true;
             }
