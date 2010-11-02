@@ -63,9 +63,8 @@
             setSessionAttribute(key="restartRequired" value="$boolean{false}");
         }
 
-        gf.restRequest(
-            endpoint="#{request.scheme}://#{sessionScope.serverName}:#{sessionScope.serverPort}/management/domain/anonymous-user-enabled"
-            method="GET", result="#{requestScope.result}", quiet="false");
+        gf.restRequest(endpoint="#{request.scheme}://#{sessionScope.serverName}:#{sessionScope.serverPort}/management/domain/anonymous-user-enabled"
+            method="GET", result="#{requestScope.result}", quiet="true");
         
         setPageSessionAttribute(key="loginUser" value="#{requestScope.result.data.extraProperties.anonymousUserName}");
         setPageSessionAttribute(key="anonymousUserEnabled", value="#{requestScope.result.data.extraProperties.anonymousUserEnabled}");
