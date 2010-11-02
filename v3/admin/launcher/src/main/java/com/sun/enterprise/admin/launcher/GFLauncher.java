@@ -159,8 +159,12 @@ public abstract class GFLauncher {
         setupMonitoring(parser);
         sysPropsFromXml = parser.getSystemProperties();
         asenvProps.put(INSTANCE_ROOT_PROPERTY, getInfo().getInstanceRootDir().getPath());
+
+        // Set the config java-home value as the Java home for the environment,
+        // unless it is empty or it is already refering to a substitution of
+        // the environment variable.
         String jhome = javaConfig.getJavaHome();
-        if (GFLauncherUtils.ok(jhome)) {
+        if (GFLauncherUtils.ok(jhome) && !jhome.trim().equals("${" + JAVA_ROOT_PROPERTY + "}")) {
             asenvProps.put(JAVA_ROOT_PROPERTY, jhome);
         }
         debugOptions = getDebug();
