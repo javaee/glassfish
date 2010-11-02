@@ -87,7 +87,7 @@
                 <!command
                     saveLoggingAttributes(attrs="#{pageSession.logAttributes}" attrsInUI="#{pageSession.attrsInUI}" config="#{pageSession.configName}");
                     prepareSuccessfulMsg();
-                    gf.redirect(page="#{request.contextPath}/common/configuration/loggerGeneral.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                    gf.redirect(page="#{request.contextPath}/common/configuration/loggerGeneral.jsf?configName=#{pageSession.configName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
         </sun:panelGroup>
