@@ -235,8 +235,17 @@ public class Parser implements Closeable {
         throw e;
       }
     }
-    
-    public void parse(final ArchiveAdapter source, final Runnable doneHook) throws IOException {
+
+    /**
+     * Parse the archive adapter entries and run the runnable hook on completion.
+     *
+     * @param source the archive adapter to parse
+     * @param doneHook the runnable hook to run after completion
+     * @return the future object to monitor the result of the parsing.
+     *
+     * @throws IOException thrown by the source archive adapter when accessing entries
+     */
+    public Future parse(final ArchiveAdapter source, final Runnable doneHook) throws IOException {
 
         ExecutorService es = executorService;
         boolean immediateShutdown = false;
@@ -253,7 +262,7 @@ public class Parser implements Closeable {
                 logger.fine("Skipping reparsing..." + source.getURI());
             }
             doneHook.run();
-            return;
+            return null;
         }
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "at " + System.currentTimeMillis() + "in " + this + " submitting file " + source.getURI().getPath());
@@ -285,6 +294,7 @@ public class Parser implements Closeable {
         if (immediateShutdown) {
             es.shutdown();
         }
+        return future;
     }
 
     private synchronized Types getResult(URI uri) {
