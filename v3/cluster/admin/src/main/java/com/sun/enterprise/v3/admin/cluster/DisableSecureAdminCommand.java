@@ -40,19 +40,28 @@
 
 package com.sun.enterprise.v3.admin.cluster;
 
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.SecureAdmin;
-import org.glassfish.api.ActionReport.MessagePart;
+import java.util.Iterator;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.Transaction;
 
 /**
- * Adjusts each configuration in the domain to turn off secure admin.
+ * Adjusts each configuration in the domain to turn off secure admin, as if by
+ * executing these commands:
+ * <pre>
+ * {@code
+
+asadmin -s set configs.config.server-config.network-config.network-listeners.network-listener.admin-listener.protocol=admin-listener
+
+asadmin -s set configs.config.server-config.security-service.message-security-config.HttpServlet.provider-config.GFConsoleAuthModule.property.restAuthURL=http://localhost:4848/management/sessions
+
+asadmin -s delete-protocol sec-admin-listener
+asadmin -s delete-protocol admin-http-redirect
+asadmin -s delete-protocol pu-protocol
+}
  * 
  * @author Tim Quinn
  */
@@ -63,18 +72,56 @@ import org.jvnet.hk2.config.Transaction;
 public class DisableSecureAdminCommand extends SecureAdminCommand {
 
     @Override
-    protected void updateSecureAdminSettings(SecureAdmin secureAdmin_w) {
-        super.updateSecureAdminSettings(secureAdmin_w, false);
-    }
-
-    @Override
-    protected void updateAdminListenerConfig(Transaction transaction, Config config, MessagePart partForThisConfig) {
-
-    }
-
-    @Override
     protected String transactionErrorMessageKey() {
         return "disable.secure.admin.errdisable";
     }
 
+    @Override
+    Iterator<Work<TopLevelContext>> secureAdminSteps() {
+        return reverseStepsIterator(secureAdminSteps);
+    }
+
+    @Override
+    Iterator<Work<ConfigLevelContext>> perConfigSteps() {
+        return reverseStepsIterator(perConfigSteps);
+    }
+
+    /**
+     * Iterator which returns array elements from back to front.
+     * @param <T>
+     * @param steps
+     * @return
+     */
+    private <T extends SecureAdminCommand.Context> Iterator<Work<T>> reverseStepsIterator(Step<T>[] steps) {
+        return new Iterator<Work<T>> () {
+            private Step<T>[] steps;
+            private int nextSlot;
+
+            @Override
+            public boolean hasNext() {
+                return nextSlot >= 0;
+            }
+
+            /**
+             * Returns the disable work associated with the next step we should
+             * process for disabling secure admin.
+             */
+            @Override
+            public Work<T> next() {
+                return steps[nextSlot--].disableWork();
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+
+            Iterator<Work<T>> init(Step<T>[] steps) {
+                this.steps = steps;
+                nextSlot = this.steps.length - 1;
+                return this;
+            }
+
+        }.init(steps);
+    }
 }
