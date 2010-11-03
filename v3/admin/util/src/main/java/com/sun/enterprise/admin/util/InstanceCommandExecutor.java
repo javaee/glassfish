@@ -105,7 +105,7 @@ public class InstanceCommandExecutor extends ServerRemoteAdminCommand implements
                         aReport.getTopMessagePart().addProperty(key, attributes.get(key));
                     continue;
                 }
-                String keyWithoutSuffix = key.substring(0, key.indexOf("_name"));
+                String keyWithoutSuffix = key.substring(0, key.lastIndexOf("_name"));
                 aReport.getTopMessagePart().addProperty(keyWithoutSuffix, attributes.get(keyWithoutSuffix+"_value"));
             }
             /*

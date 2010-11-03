@@ -81,6 +81,9 @@ public class InstanceStateService implements Startup, PostConstruct {
     @Inject
     private Logger logger;
 
+    @Inject
+    private CommandThreadPool cmdPool;
+
     private InstanceStateFileProcessor stateProcessor;
 
     private HashMap<String, InstanceState> instanceStates = new HashMap<String, InstanceState>();
@@ -206,7 +209,7 @@ public class InstanceStateService implements Startup, PostConstruct {
         InstanceState s = instanceStates.get(server.getName());
         if(s == null)
             return null;
-        return s.submitJob(ice, r);
+        return cmdPool.submitJob(ice, r);
     }
 
     @Override
