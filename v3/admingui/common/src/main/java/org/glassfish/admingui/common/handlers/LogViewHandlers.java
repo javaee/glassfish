@@ -129,103 +129,107 @@ public class LogViewHandlers {
         List result = new ArrayList();
         String logFileDir = "";
         Boolean hasResults = Boolean.FALSE;
-        if ((instanceName != null) && (logFileName != null)) {
-            // Convert Date/Time fields
-            if ((dateEnabledString != null) &&
-		    ("enabled".equalsIgnoreCase(dateEnabledString)
-		    || "true".equalsIgnoreCase(dateEnabledString)))  {
-                // Date is enabled, figure out what the values are
-                fromDate = convertDateTime(handlerCtx, fromDate, fromTime);
-                toDate = convertDateTime(handlerCtx, toDate, toTime);
-                if ((fromDate == null)) {
-                    GuiUtil.handleError(handlerCtx, "Specific Date Range was chosen, however, date fields are incomplete.");
+        notNullStringPut(attMap, "instanceName", instanceName);
+        if ((instanceName != null)) {
+            	    notNullStringPut(attMap, "instanceName", instanceName);
+            if (logFileName != null) {
+                // Convert Date/Time fields
+                if ((dateEnabledString != null) &&
+                        ("enabled".equalsIgnoreCase(dateEnabledString)
+                        || "true".equalsIgnoreCase(dateEnabledString)))  {
+                    // Date is enabled, figure out what the values are
+                    fromDate = convertDateTime(handlerCtx, fromDate, fromTime);
+                    toDate = convertDateTime(handlerCtx, toDate, toTime);
+                    if ((fromDate == null)) {
+                        GuiUtil.handleError(handlerCtx, "Specific Date Range was chosen, however, date fields are incomplete.");
+                    }
+                    if (toDate != null && fromDate != null) {
+                        if (((Date) fromDate).after((Date) toDate)) {
+                            GuiUtil.handleError(handlerCtx, "Timestamp value of 'From: ' field " + fromDate +
+                                    " must not be greater than 'To: ' field value " + toDate);
+                        }
+                    }
+                } else {
+                    // Date not enabled, ignore from/to dates
+                    fromDate = null;
+                    toDate = null;
                 }
-                if (toDate != null && fromDate != null) {
-                    if (((Date) fromDate).after((Date) toDate)) {
-                        GuiUtil.handleError(handlerCtx, "Timestamp value of 'From: ' field " + fromDate +
-                                " must not be greater than 'To: ' field value " + toDate);
+
+                if ((logLevel != null) && (logLevel.trim().length() == 0)) {
+                    logLevel = null;
+                }
+
+                // Convert module array to List
+                //List moduleList = null;
+                //Set moduleList = new HashSet();
+                Set moduleList = null;
+                if (loggers != null) {
+                    int len = ((Object[]) loggers).length;
+                    if (len > 0) {
+                        moduleList = new HashSet();
+                        Object val;
+                        for (int count = 0; count < len; count++) {
+                            val = (((Object[]) loggers)[count]);
+                            if ((val == null) || (val.toString().trim().length() == 0)) {
+                                continue;
+                            }
+                            moduleList.add(val);
+                        }
                     }
                 }
-            } else {
-                // Date not enabled, ignore from/to dates
-                fromDate = null;
-                toDate = null;
-            }
 
-            if ((logLevel != null) && (logLevel.trim().length() == 0)) {
-		logLevel = null;
-            }
-
-            // Convert module array to List
-            //List moduleList = null;
-            //Set moduleList = new HashSet();
-            Set moduleList = null;
-            if (loggers != null) {
-                int len = ((Object[]) loggers).length;
-		if (len > 0) {
-		    moduleList = new HashSet();
-		    Object val;
-		    for (int count = 0; count < len; count++) {
-			val = (((Object[]) loggers)[count]);
-			if ((val == null) || (val.toString().trim().length() == 0)) {
-			    continue;
-			}
-			moduleList.add(val);
-		    }
-		}
-            }
-
-            // Add custom loggers
-            if ((customLoggers != null) &&
-                    (customLoggers.toString().trim().length() != 0)) {
-                StringTokenizer tok = new StringTokenizer(
-                        customLoggers.toString(),
-                        CUSTOM_LOGGER_DELIMITERS);
-                String token;
-                if (moduleList == null) {
-                    moduleList = new HashSet();
-                }
-
-                while (tok.hasMoreTokens()) {
-                    token = tok.nextToken();
-                    if ((token == null) || (token.length() == 0)) {
-                        continue;
+                // Add custom loggers
+                if ((customLoggers != null) &&
+                        (customLoggers.toString().trim().length() != 0)) {
+                    StringTokenizer tok = new StringTokenizer(
+                            customLoggers.toString(),
+                            CUSTOM_LOGGER_DELIMITERS);
+                    String token;
+                    if (moduleList == null) {
+                        moduleList = new HashSet();
                     }
-                    moduleList.add(token);
+
+                    while (tok.hasMoreTokens()) {
+                        token = tok.nextToken();
+                        if ((token == null) || (token.length() == 0)) {
+                            continue;
+                        }
+                        moduleList.add(token);
+                    }
                 }
+
+                // Get the number to Display
+                if (numberToDisplay == null) {
+                    numberToDisplay = DEFAULT_NUMBER_TO_DISPLAY;
+                }
+
+                // Get the direction
+                if (direction == null) {
+                    direction = Boolean.FALSE;
+                }
+
+                // Get AfterRecord flag
+                if (after == null) {
+                    // Not supplied, use direction
+                    after = direction;
+                }
+
+
+                notNullStringPut(attMap, "logFileName", logFileName);
+                notNullStringPut(attMap, "startIndex", fromRecord);
+                notNullStringPut(attMap, "searchForward", after);//direction
+                notNullStringPut(attMap, "maximumNumberOfResults", numberToDisplay);
+                notNullStringPut(attMap, "onlyLevel", onlyLevel);
+                notNullStringPut(attMap, "fromTime", fromDate);
+                notNullStringPut(attMap, "toTime", toDate);
+                notNullStringPut(attMap, "anySearch", anySearch);
+                notNullStringPut(attMap, "logLevel", logLevel);
+                notNullStringPut(attMap, "instanceName", instanceName);
+                if (moduleList != null) {
+                    attMap.put("listOfModules", moduleList);
+                }
+                //notNullStringPut(attMap, "logFileRefresh", logFileName);
             }
-
-            // Get the number to Display
-            if (numberToDisplay == null) {
-                numberToDisplay = DEFAULT_NUMBER_TO_DISPLAY;
-            }
-
-            // Get the direction
-            if (direction == null) {
-                direction = Boolean.FALSE;
-            }
-
-            // Get AfterRecord flag
-            if (after == null) {
-                // Not supplied, use direction
-                after = direction;
-            }
-
-
-	    notNullStringPut(attMap, "logFileName", logFileName);
-	    notNullStringPut(attMap, "startIndex", fromRecord);
-	    notNullStringPut(attMap, "searchForward", after);//direction
-	    notNullStringPut(attMap, "maximumNumberOfResults", numberToDisplay);
-	    notNullStringPut(attMap, "onlyLevel", onlyLevel);
-	    notNullStringPut(attMap, "fromTime", fromDate);
-	    notNullStringPut(attMap, "toTime", toDate);
-	    notNullStringPut(attMap, "anySearch", anySearch);
-	    notNullStringPut(attMap, "logLevel", logLevel);
-	    notNullStringPut(attMap, "instanceName", instanceName);
-	    if (moduleList != null) {
-		attMap.put("listOfModules", moduleList);
-	    }
-	    //notNullStringPut(attMap, "logFileRefresh", logFileName);
         }
         handlerCtx.setOutputValue("attributes", attMap);
     }
