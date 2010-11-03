@@ -111,7 +111,6 @@ public class EJBTimerService
 
     private long nextTimerIdMillis_ = 0;
     private long nextTimerIdCounter_ = 0;
-    private String serverName_;
     private String domainName_;
     private boolean isDas;
 
@@ -201,8 +200,12 @@ public class EJBTimerService
         lookupTimerResource();
 
         ServerEnvironmentImpl env = ejbContainerUtil.getServerEnvironment();
+
+        // Compose owner id for all timers created with this 
+        // server instance.  
+        ownerIdOfThisServer_ = env.getInstanceName();
+
         domainName_ = env.getDomainName();
-        serverName_ = env.getInstanceName();
         isDas = env.isDas() || env.isEmbedded();
 
         initProperties();
@@ -254,10 +257,6 @@ public class EJBTimerService
                 rescheduleFailedTimer = Boolean.valueOf(ejbt.getPropertyValue(RESCHEDULE_FAILED_TIMER));
 
             }
-
-            // Compose owner id for all timers created with this 
-            // server instance.  
-            ownerIdOfThisServer_ = ejbContainerUtil.getServerEnvironment().getInstanceName();
 
         } catch(Exception e) {
             logger.log(Level.FINE, "Exception converting timer service " +
@@ -2122,7 +2121,7 @@ public class EJBTimerService
 
         return new String(nextTimerIdCounter_ +
                           TIMER_ID_SEP + nextTimerIdMillis_ +
-                          TIMER_ID_SEP + serverName_ + 
+                          TIMER_ID_SEP + ownerIdOfThisServer_ + 
                           TIMER_ID_SEP + domainName_);
     }
 
