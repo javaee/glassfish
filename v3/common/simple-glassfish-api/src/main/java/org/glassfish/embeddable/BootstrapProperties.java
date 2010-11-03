@@ -104,26 +104,27 @@ public class BootstrapProperties {
     /**
      * Optionally set the platform on which the GlassFish should run.
      * <p/>
-     * <p/> Eg., setPlatform({@link BootstrapProperties.Platform#Felix}.toString());
+     * <p/> Eg., setPlatform({@link BootstrapProperties.Platform#Felix});
      * <p/>
-     * <p/> Default is {@link BootstrapProperties.Platform#Static}.toString();
+     * <p/> Default is {@link BootstrapProperties.Platform#Static}
      *
-     * @param platform Name of the platform
+     * @param platform Platform
      * @return This object after setting the platform.
      */
-    public BootstrapProperties setPlatform(String platform) {
-        properties.setProperty(PLATFORM_PROPERTY_KEY, platform);
+    public BootstrapProperties setPlatform(Platform platform) {
+        properties.setProperty(PLATFORM_PROPERTY_KEY, platform.toString());
         return this;
-
     }
 
     /**
      * Gets the name of the platform with which GlassFish is running or will run.
      *
-     * @return String Name of the platform.
+     * @return Name of the platform.
      */
-    public String getPlatform() {
-        return properties.getProperty(PLATFORM_PROPERTY_KEY);
+    public Platform getPlatform() {
+        String platform = properties.getProperty(PLATFORM_PROPERTY_KEY);
+        return platform == null || platform.trim().length() == 0 ? Platform.Static :
+                Platform.valueOf(platform.trim());
     }
 
     /**

@@ -41,12 +41,16 @@
 package org.glassfish.embeddable;
 
 /**
- * This is our primary interface to communicate with GlassFish,
- * All the methods in this interface are applicable to all types of GlassFish runtimes.
- * It provides necessary life cycle operations as well as it acts as a component registry.
+ * Represents a GlassFish instance and provides the ability to:
  *
- * Concurrency Note:
- * This interface can be used concurrently.
+ * <ul>
+ * <li> perform life cycle operations viz., start, stop and dispose. </li>
+ * <li> access {@link Deployer} to deploy/undeploy applications. </li>
+ * <li> access {@link CommandRunner} to perform runtime configurations.</li>
+ * <li> access to available service(s). </li>
+ * </ul>
+ *
+ * <p/>Note : multiple instances of GlassFish can be used concurrently.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
@@ -72,6 +76,8 @@ public interface GlassFish {
     void dispose() throws GlassFishException;
 
     /**
+     * Get the current status of GlassFish.
+     * 
      * @return Status of GlassFish
      */
     Status getStatus() throws GlassFishException;
@@ -114,10 +120,55 @@ public interface GlassFish {
     CommandRunner getCommandRunner() throws GlassFishException;
 
     /**
-     * Status of GlassFish object.
+     * Represents the status of {@link org.glassfish.embeddable.GlassFish}.
      */
     enum Status {
-        // Because GlassFish can sometimes take time to start or stop, we have STARTING and STOPPING states.
-        INIT, STARTING, STARTED, STOPPING, STOPPED, DISPOSED
+        /**
+         * Initial state of a newly created GlassFish.
+         *
+         * <p/>This will be the state just after {@link org.glassfish.embeddable.GlassFishRuntime#newGlassFish()}
+         * before performing any lifecycle operations.
+         */
+        INIT,
+
+        /**
+         * GlassFish is being started.
+         *
+         * <p/>This will be the state after {@link org.glassfish.embeddable.GlassFish#start()} has been called
+         * until the GlassFish is fully started.
+         */
+        STARTING,
+
+        /**
+         * GlassFish is up and running.
+         *
+         * <p/> This will be the state once {@link org.glassfish.embeddable.GlassFish#start()} has fully
+         * started the GlassFish.
+         */
+        STARTED,
+
+        /**
+         * GlassFish is being stopped.
+         *
+         * <p/> This will be the state after {@link org.glassfish.embeddable.GlassFish#stop()} has been
+         * called until the GlassFish is fully stopped.
+         */
+        STOPPING,
+
+        /**
+         * GlassFish is stopped.
+         *
+         * <p/>This will be the state after {@link org.glassfish.embeddable.GlassFish#stop()} has
+         * fully stopped the GlassFish.
+         */
+        STOPPED,
+
+        /**
+         * GlassFish is disposed and ready to be garbage collected.
+         *
+         * <p/>This will be the state  after {@link org.glassfish.embeddable.GlassFish#dispose()} or
+         * {@link org.glassfish.embeddable.GlassFishRuntime#shutdown()} has been called.
+         */
+        DISPOSED
     }
 }

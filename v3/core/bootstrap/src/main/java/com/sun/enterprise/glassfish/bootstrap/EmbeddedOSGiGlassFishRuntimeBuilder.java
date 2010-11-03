@@ -55,7 +55,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This {@link GlassFishRuntime.RuntimeBuilder} is responsible for setting up a {@link GlassFishRuntime}
+ * This {@link org.glassfish.embeddable.spi.RuntimeBuilder} is responsible for setting up a {@link GlassFishRuntime}
  * when user has a regular installation of GlassFish and they want to embed GlassFish in an existing OSGi runtime.
  *
  * It sets up the runtime like this:
@@ -65,8 +65,8 @@ import java.util.List;
  * registers a service of type GlassFishRuntime.
  * 3. It waits for GlassFishRuntime service to be available and returns when found.
  *
- * @see #build(java.util.Properties)
- * @see #handles(java.util.Properties)
+ * @see #build(org.glassfish.embeddable.BootstrapProperties)
+ * @see #handles(org.glassfish.embeddable.BootstrapProperties)
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */

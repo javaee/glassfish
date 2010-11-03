@@ -46,11 +46,11 @@ import org.osgi.framework.launch.Framework;
 
 /**
  * This RuntimeBuilder can only handle GlassFish_Platform of following types:
- * {@link org.glassfish.embeddable.Constants.Platform#Felix},
- * {@link org.glassfish.embeddable.Constants.Platform#Equinox},
- * and {@link org.glassfish.embeddable.Constants.Platform#Knopflerfish}.
+ * {@link org.glassfish.embeddable.BootstrapProperties.Platform#Felix},
+ * {@link org.glassfish.embeddable.BootstrapProperties.Platform#Equinox},
+ * and {@link org.glassfish.embeddable.BootstrapProperties.Platform#Knopflerfish}.
  *
- * It can't handle {@link org.glassfish.embeddable.Constants.Platform#GenericOSGi} platform,
+ * It can't handle {@link org.glassfish.embeddable.BootstrapProperties.Platform#GenericOSGi} platform,
  * because it reads framework configuration from a framework specific file when it calls
  * {@link ASMainHelper#buildStartupContext(java.util.Properties)}.
  *
@@ -98,12 +98,10 @@ public final class OSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
          * This builder can't handle GOSGi platform, because we read framework configuration from a framework
          * specific file in ASMainHelper.buildStartupContext(properties);
          */
-        final String platformStr = bsProps.getPlatform();
-        if (platformStr == null || platformStr.trim().isEmpty()) {
+        BootstrapProperties.Platform platform = bsProps.getPlatform();
+        if (platform == null) {
             return false;
         }
-        BootstrapProperties.Platform platform =
-                BootstrapProperties.Platform.valueOf(platformStr);
         switch (platform) {
             case Felix:
             case Equinox:
