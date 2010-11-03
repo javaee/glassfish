@@ -911,20 +911,19 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
         }
     }
 
-    protected ApplicationInfo unload(String appName, ExtendedDeploymentContext context) {
+    protected ApplicationInfo unload(ApplicationInfo info, ExtendedDeploymentContext context) {
         ActionReport report = context.getActionReport();
-        ApplicationInfo info = appRegistry.get(appName);
         if (info==null) {
-            report.failure(context.getLogger(), "Application " + appName + " not registered", null);
+            report.failure(context.getLogger(), "Application not registered", null);
             return null;
-
         }
         if (info.isLoaded()) {
             info.stop(context, context.getLogger());
             info.unload(context);
+            events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_DISABLED, info));
         }
-        return info;
 
+        return info;
     }
 
     public void undeploy(String appName, ExtendedDeploymentContext context) {
@@ -953,7 +952,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
         // for DAS target, the undeploy should unload the application
         // as well
         if (DeploymentUtils.isDASTarget(params.target)) {
-            unload(appName, context);
+            unload(info, context);
         }
 
         try {
@@ -1880,10 +1879,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
             deploymentContext.getAppProps().putAll(commandParams.properties);
         }
 
-        appInfo.stop(deploymentContext, deploymentContext.getLogger());
-        appInfo.unload(deploymentContext);
-        
-        events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_DISABLED, appInfo));
+        unload(appInfo, deploymentContext);
     }
 
     public void enable(String target, Application app, ApplicationRef appRef, 
