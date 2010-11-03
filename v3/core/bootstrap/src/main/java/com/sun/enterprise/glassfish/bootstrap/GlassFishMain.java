@@ -69,7 +69,7 @@ public class GlassFishMain {
         System.out.println("Launching GlassFish on " + platform + " platform");
 
         // Set the system property if downstream code wants to know about it
-        System.setProperty(BootstrapProperties.PLATFORM_PROPERTY_KEY, platform); // TODO(Sahoo): Why is this a system property?
+        System.setProperty(Constants.PLATFORM_PROPERTY_KEY, platform); // TODO(Sahoo): Why is this a system property?
 
         File installRoot = ASMainHelper.findInstallRoot();
 

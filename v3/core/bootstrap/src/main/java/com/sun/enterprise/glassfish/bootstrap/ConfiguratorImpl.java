@@ -60,10 +60,10 @@ class ConfiguratorImpl implements Configurator {
     private static final Map<String, String[]> httpListeners = new HashMap();
 
     static {
-        httpListeners.put(GlassFishProperties.HTTP_PORT, new String[]{
+        httpListeners.put("org.glassfish.embeddable.httpPort", new String[]{
                 "--listenerport={0}", "--listeneraddress=0.0.0.0", "--defaultvs=server",
                 "listener_id=embedded-listener-__1__"});
-        httpListeners.put(GlassFishProperties.HTTPS_PORT, new String[]{
+        httpListeners.put("org.glassfish.embeddable.httpsPort", new String[]{
                 "--listenerport={0}", "--listeneraddress=0.0.0.0", "--defaultvs=server",
                 "--securityenabled=true", "listener_id=embedded-listener-__2__"});
         // TODO :: support other simple configurations like jmx.port and jms.port

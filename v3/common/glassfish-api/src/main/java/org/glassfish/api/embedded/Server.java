@@ -220,27 +220,28 @@ public class Server {
     private final GlassFish glassfish;
     private static GlassFishRuntime glassfishRuntime;
 
-    private static final Logger logger = Logger.getLogger("maven-embedded-glassfish-plugin");
+    private static final Logger logger = Logger.getAnonymousLogger();
 
-    private void setProperties(EmbeddedFileSystem fs, Properties props) {
+    private void setBootstrapProperties(BootstrapProperties props, EmbeddedFileSystem fs) {
         props.setProperty("GlassFish_Platform", "Static");
-        props.setProperty("-type", "EMBEDDED");
         if (fs != null) {
             String instanceRoot = fs.instanceRoot != null ? fs.instanceRoot.getAbsolutePath() : null;
             String installRoot = fs.installRoot != null ? fs.installRoot.getAbsolutePath() : instanceRoot;
             if (installRoot != null) {
-                props.setProperty(BootstrapProperties.INSTALL_ROOT_PROP_NAME, installRoot);
-                props.setProperty(BootstrapProperties.INSTALL_ROOT_URI_PROP_NAME,
-                        new File(installRoot).toURI().toString());
+                props.setInstallRoot(installRoot);
             }
+        }
+    }
+
+    private void setGlassFishProperties(GlassFishProperties props, EmbeddedFileSystem fs) {
+        props.setProperty("-type", "EMBEDDED");
+        if (fs != null) {
+            String instanceRoot = fs.instanceRoot != null ? fs.instanceRoot.getAbsolutePath() : null;
             if (instanceRoot != null) {
-                props.setProperty(GlassFishProperties.INSTANCE_ROOT_PROP_NAME, fs.instanceRoot.getAbsolutePath());
-                props.setProperty(GlassFishProperties.INSTANCE_ROOT_URI_PROP_NAME,
-                        new File(instanceRoot).toURI().toString());
+                props.setInstanceRoot(fs.instanceRoot.getAbsolutePath());
             }
             if (fs.configFile != null) {
-                props.setProperty(GlassFishProperties.CONFIG_FILE_URI_PROP_NAME,
-                        fs.configFile.toURI().toString());
+                props.setConfigFileURI(fs.configFile.toURI().toString());
             }
             if (fs.autoDelete) {
                 props.setProperty("org.glassfish.embeddable.autoDelete", "true");
@@ -248,7 +249,7 @@ public class Server {
         }
         // TODO :: Support modification of jmxPort
     }
-
+    
     private Server(Builder builder, Properties properties) {
         serverName = builder.serverName;
         loggerEnabled = builder.loggerEnabled;
@@ -260,18 +261,22 @@ public class Server {
             if(properties == null) {
                 properties = new Properties();
             }
-            EmbeddedFileSystem fs = builder.fileSystem;                               
-            setProperties(fs, properties);
-            glassfishRuntime = GlassFishRuntime.bootstrap(new BootstrapProperties(properties),
-                    getClass().getClassLoader());
+            EmbeddedFileSystem fs = builder.fileSystem;
+            BootstrapProperties bootstrapProps = new BootstrapProperties(properties);
+            setBootstrapProperties(bootstrapProps, fs);
+            glassfishRuntime = GlassFishRuntime.bootstrap(bootstrapProps, getClass().getClassLoader());
 
-            glassfish = glassfishRuntime.newGlassFish(new GlassFishProperties(properties));
+            GlassFishProperties gfProps = new GlassFishProperties(properties);
+            setGlassFishProperties(gfProps, fs);
+            glassfish = glassfishRuntime.newGlassFish(gfProps);
             glassfish.start();
+            
             if(fs == null) {
                 EmbeddedFileSystem.Builder fsBuilder = new EmbeddedFileSystem.Builder();
                 fsBuilder.autoDelete(true);
                 fs = fsBuilder.build();
             }
+            
             // Add the neccessary inhabitants.
             habitat = glassfish.getService(Habitat.class);
             habitat.add(Inhabitants.create(this));

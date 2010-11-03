@@ -55,21 +55,6 @@ public class BootstrapProperties {
     private Properties properties;
 
     /**
-     * Key for specifying which platform the GlassFish should run with.
-     */
-    public final static String PLATFORM_PROPERTY_KEY = "GlassFish_Platform";
-
-    /**
-     * Key for specifying which installation root the GlassFish should run with.
-     */
-    public static final String INSTALL_ROOT_PROP_NAME = "com.sun.aas.installRoot";
-
-    /**
-     * Key for specifying which installation root (in URI format) the GlassFish should run with.
-     */
-    public static final String INSTALL_ROOT_URI_PROP_NAME = "com.sun.aas.installRootURI";
-
-    /**
      * Create BootstrapProperties with default properties.
      */
     public BootstrapProperties() {
@@ -162,27 +147,6 @@ public class BootstrapProperties {
     }
 
     /**
-     * Optionally set the installation root (in URI format) using which the
-     * GlassFish should run.
-     *
-     * @param installRootUri Location of installation root in java.net.URI format
-     * @return This object after setting the installation root.
-     */
-    public BootstrapProperties setInstallRootURI(String installRootUri) {
-        properties.setProperty(INSTALL_ROOT_URI_PROP_NAME, installRootUri);
-        return this;
-    }
-
-    /**
-     * Get the installation root URI set using {@link #setInstallRootURI}
-     *
-     * @return Installation root URI set using {@link #setInstallRootURI}
-     */
-    public String getInstallRootURI() {
-        return properties.getProperty(INSTALL_ROOT_URI_PROP_NAME);
-    }
-
-    /**
      * Various platforms on which GlassFish could run.
      */
     public enum Platform {
@@ -212,4 +176,10 @@ public class BootstrapProperties {
          */
         Static
     }
+
+    // PRIVATE constants.
+    // Key for specifying which platform the GlassFish should run with.
+    private final static String PLATFORM_PROPERTY_KEY = "GlassFish_Platform";
+    // Key for specifying which installation root the GlassFish should run with.
+    private static final String INSTALL_ROOT_PROP_NAME = "com.sun.aas.installRoot";
 }

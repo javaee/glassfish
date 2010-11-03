@@ -43,7 +43,6 @@ package org.glassfish.kernel.embedded;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.server.DomainXmlPersistence;
-import org.glassfish.embeddable.GlassFishProperties;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.config.DomDocument;
 
@@ -76,7 +75,7 @@ public class EmbeddedDomainPersistence extends DomainXmlPersistence {
     @Override
     protected File getDestination() throws IOException {
         String configFileReadOnly = startupContext.getArguments().getProperty(
-                GlassFishProperties.CONFIG_FILE_READ_ONLY);
+                "org.glassfish.embeddable.configFileReadOnly");
         if (configFileReadOnly != null &&
                 !Boolean.valueOf(configFileReadOnly).booleanValue()) {
             try {

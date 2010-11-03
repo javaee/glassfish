@@ -79,28 +79,28 @@ public class GlassFishMainActivator implements BundleActivator {
 
     private Properties prepareStartupContext(BundleContext context) {
         Properties properties = new Properties();
-        String installRoot = context.getProperty(BootstrapProperties.INSTALL_ROOT_PROP_NAME);
+        String installRoot = context.getProperty(Constants.INSTALL_ROOT_PROP_NAME);
 
         if (installRoot == null) {
             installRoot = guessInstallRoot(context);
             if (installRoot == null) {
-                throw new RuntimeException("Property named " + BootstrapProperties.INSTALL_ROOT_PROP_NAME + " is not set.");
+                throw new RuntimeException("Property named " + Constants.INSTALL_ROOT_PROP_NAME + " is not set.");
             } else {
                 System.out.println("Deduced install root as : " + installRoot + " from location of bundle. " +
                         "If this is not correct, set correct value in a property called " +
-                       BootstrapProperties.INSTALL_ROOT_PROP_NAME);
+                       Constants.INSTALL_ROOT_PROP_NAME);
             }
         }
         if (!new File(installRoot).exists()) {
             throw new RuntimeException("No such directory: [" + installRoot + "]");
         }
-        properties.setProperty(BootstrapProperties.INSTALL_ROOT_PROP_NAME,
+        properties.setProperty(Constants.INSTALL_ROOT_PROP_NAME,
                 installRoot);
-        String instanceRoot = properties.getProperty(GlassFishProperties.INSTANCE_ROOT_PROP_NAME);
+        String instanceRoot = properties.getProperty(Constants.INSTANCE_ROOT_PROP_NAME);
         if (instanceRoot == null) {
             instanceRoot = new File(installRoot, "domains/domain1/").getAbsolutePath();
         }
-        properties.setProperty(GlassFishProperties.INSTANCE_ROOT_PROP_NAME,
+        properties.setProperty(Constants.INSTANCE_ROOT_PROP_NAME,
                 instanceRoot);
 
         // This property is understood by our corresponding builder.

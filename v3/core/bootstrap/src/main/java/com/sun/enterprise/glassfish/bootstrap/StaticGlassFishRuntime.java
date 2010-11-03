@@ -158,14 +158,15 @@ public class StaticGlassFishRuntime extends GlassFishRuntime {
         if (instanceRootValue == null) {
             instanceRootValue = createTempInstanceRoot(gfProps);
             gfProps.setInstanceRoot(instanceRootValue);
-            gfProps.setInstanceRootURI(new File(instanceRootValue).toURI().toString());
+//            gfProps.setProperty(Constants.INSTANCE_ROOT_URI_PROP_NAME,
+//                    new File(instanceRootValue).toURI().toString());
         }
 
         File instanceRoot = new File(instanceRootValue);
         System.setProperty(Constants.INSTANCE_ROOT_PROP_NAME, instanceRoot.getAbsolutePath());
         System.setProperty(Constants.INSTANCE_ROOT_URI_PROP_NAME, instanceRoot.toURI().toString());
 
-        String installRootValue = System.getProperty(BootstrapProperties.INSTALL_ROOT_PROP_NAME);
+        String installRootValue = System.getProperty(Constants.INSTALL_ROOT_PROP_NAME);
         if (installRootValue == null) {
             installRootValue = instanceRoot.getAbsolutePath();
         }

@@ -57,51 +57,6 @@ public class GlassFishProperties {
     private Properties gfProperties;
 
     /**
-     * Key for specifying which instance root (aka domain dir) GlassFish should run with.
-     */
-    public final static String INSTANCE_ROOT_PROP_NAME =
-            "com.sun.aas.instanceRoot";
-    /**
-     * Key for specifying which instance root (aka domain dir) in URI format
-     * GlassFish should run with.
-     */
-    public static final String INSTANCE_ROOT_URI_PROP_NAME =
-            "com.sun.aas.instanceRootURI";
-
-    /**
-     * Key for specifying which configuration file (domain.xml) GlassFish should run with.
-     */
-    public static final String CONFIG_FILE_URI_PROP_NAME = "com.sun.aas.configFileURI";
-
-    /**
-     * Key for specifying whether the specified configuration file (domain.xml)
-     * or config/domain.xml at the user specified instanceRoot should be operated
-     * by GlassFish in read only mode or not.
-     */
-    public static final String CONFIG_FILE_READ_ONLY =
-            "org.glassfish.embeddable.configFileReadOnly";
-
-    /**
-     * Key for specifying the http port GlassFish should listen on.
-     */
-    public static final String HTTP_PORT = "org.glassfish.embeddable.httpPort";
-
-    /**
-     * Key for specifying the https port GlassFish should listen on.
-     */
-    public static final String HTTPS_PORT = "org.glassfish.embeddable.httpsPort";
-
-    /**
-     * Maps the simple user specified names to the internal fully qualified names.
-     */
-    private static final Map<String, String> nameMap = new HashMap();
-
-    static {
-        nameMap.put("http", HTTP_PORT);
-        nameMap.put("https", HTTPS_PORT);
-    }
-
-    /**
      * Create GlassFishProperties with default properties.
      */
     public GlassFishProperties() {
@@ -162,7 +117,7 @@ public class GlassFishProperties {
      * <p/>
      * <p/>If the instance root is not specified, then a small sized temporary
      * instance directory is created in the current directory. The temporary
-     * instance directory will get deleted when the glassfish.stop() is called.
+     * instance directory will get deleted when the glassfish.dispose() is called.
      *
      * @param instanceRoot Location of the instance root.
      * @return This object after setting the instance root.
@@ -179,30 +134,6 @@ public class GlassFishProperties {
      */
     public String getInstanceRoot() {
         return gfProperties.getProperty(INSTANCE_ROOT_PROP_NAME);
-    }
-
-    /**
-     * Optionally set the instance root (aka domain dir) in java.net.URI format using
-     * which the GlassFish should run.
-     * <p/>
-     * <p/> Refer {@link #setInstanceRoot(String)} for more details.
-     *
-     * @param instanceRootUri Location of the instance root in java.net.URI format.
-     * @return This object after setting the instance root URI.
-     */
-    public GlassFishProperties setInstanceRootURI(String instanceRootUri) {
-        gfProperties.setProperty(INSTANCE_ROOT_URI_PROP_NAME, instanceRootUri);
-        return this;
-    }
-
-
-    /**
-     * Get for instance root URI set using {@link #setInstanceRootURI(String)}
-     *
-     * @return Instance root URI set using {@link #setInstanceRootURI(String)}
-     */
-    public String getInstanceRootURI() {
-        return gfProperties.getProperty(INSTANCE_ROOT_URI_PROP_NAME);
     }
 
     /**
@@ -306,4 +237,24 @@ public class GlassFishProperties {
         }
         return port;
     }
+
+    // PRIVATE constants.
+    // Key for specifying which instance root (aka domain dir) GlassFish should run with.
+    private final static String INSTANCE_ROOT_PROP_NAME =
+            "com.sun.aas.instanceRoot";
+    // Key for specifying which configuration file (domain.xml) GlassFish should run with.
+    private static final String CONFIG_FILE_URI_PROP_NAME =
+            "org.glassfish.embeddable.configFileURI";
+    // Key for specifying whether the specified configuration file (domain.xml) or config/domain.xml
+    // at the user specified instanceRoot should be operated by GlassFish in read only mode or not.
+    private static final String CONFIG_FILE_READ_ONLY =
+            "org.glassfish.embeddable.configFileReadOnly";
+    // Maps the simple user specified names to the internal fully qualified names.
+    private static final Map<String, String> nameMap = new HashMap();
+    static {
+        nameMap.put("http", "org.glassfish.embeddable.httpPort");
+        nameMap.put("https", "org.glassfish.embeddable.httpsPort");
+    }
+
+
 }
