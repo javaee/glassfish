@@ -109,7 +109,6 @@ public class EmbeddedWebEntityResolver implements EntityResolver, PostConstruct 
             if (stream != null) {
                 resolvedEntity = new InputSource(stream);
                 resolvedEntity.setSystemId(url.toString());
-                System.out.println("Resolved " + systemId + " entity = " + resolvedEntity);
             }
         }
         return resolvedEntity;
