@@ -555,7 +555,7 @@ public class EjbContainerUtilImpl
                     } catch (Exception e) {
                         _logger.log (Level.WARNING, "Cannot deploy or load EJBTimerService: ", e);
                     } finally {
-                        if (!deployment.isRegistered(EjbContainerUtil.TIMER_SERVICE_APP_NAME) && appScratchFile.exists()) {
+                        if (_ejbTimerService == null && params.origin.isDeploy() && appScratchFile.exists()) {
                             // Remove marker file if deploy failed
                             appScratchFile.delete();
                         }
