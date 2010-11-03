@@ -204,9 +204,10 @@ public class NodeUtils {
         validatePassword(map.getOne(PARAM_SSHPASSWORD));
         validatePassword(map.getOne(PARAM_SSHKEYPASSPHRASE));
 
-        validateHostName(map.getOne(PARAM_NODEHOST));
+        String  nodehost = map.getOne(PARAM_NODEHOST);
+        validateHostName(nodehost);
 
-        if (sshL != null) {
+        if (sshL != null && ! nodehost.equals("localhost")) {
             validateSSHConnection(map);
         }
     }

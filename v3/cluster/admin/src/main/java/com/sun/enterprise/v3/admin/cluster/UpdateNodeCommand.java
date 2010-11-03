@@ -45,6 +45,7 @@ import com.sun.enterprise.config.serverbeans.Nodes;
 import com.sun.enterprise.config.serverbeans.SshConnector;
 import com.sun.enterprise.config.serverbeans.SshAuth;
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.util.StringUtils;
 import java.beans.PropertyVetoException;
 
 import org.glassfish.api.ActionReport;
@@ -121,6 +122,26 @@ public class UpdateNodeCommand implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);
             return;
+        }
+
+        // If the node is in use then we can't change certain attributes
+        // like the install directory or node directory.
+        if (node.nodeInUse()) {
+            String badparam = null;
+            if (StringUtils.ok(nodedir))  {
+                badparam = "nodedir";
+            }
+            if (StringUtils.ok(installdir))  {
+                badparam = "installdir";
+            }
+
+            if (StringUtils.ok(badparam)) {
+                String msg = Strings.get("noUpdate.nodeInUse", name, badparam);
+                logger.warning(msg);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(msg);
+                return;
+            }
         }
 
         try {
