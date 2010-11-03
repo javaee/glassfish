@@ -44,8 +44,6 @@ import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -58,14 +56,12 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.config.ConfigBean;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.Dom;
-import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.config.types.Property;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.*;
-import org.jvnet.hk2.config.ConfigModel;
 
 /**
  * User: Jerome Dochez
@@ -113,8 +109,8 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
     public void execute(AdminCommandContext context) {
         for (String value : values) {
 
-            if (value.contains(".log-service.")) {
-                fail(context, localStrings.getLocalString("n", "For setting log levels use set-log-levels command."));
+            if (value.contains(".log-service")) {
+                fail(context, localStrings.getLocalString("admin.set.invalid.logservice.command", "For setting log log levels/attributes use set-log-levels/set-log-attributes command."));
                 return;
             }
 

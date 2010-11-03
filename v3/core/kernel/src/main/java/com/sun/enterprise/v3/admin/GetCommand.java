@@ -54,7 +54,6 @@ import org.glassfish.external.statistics.Stats;
 import org.glassfish.external.statistics.impl.StatisticImpl;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import org.glassfish.internal.api.Target;
-import org.glassfish.config.support.CommandTarget;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -67,6 +66,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Proxy;
 import java.net.URLEncoder;
 import java.util.*;
+
 import static com.sun.enterprise.util.SystemPropertyConstants.SLASH;
 
 /**
@@ -123,9 +123,9 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         }
 
         // check for logging patterns
-        if (pattern.contains(".log-service.")) {
+        if (pattern.contains(".log-service")) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(localStrings.getLocalString("admin.get.invalid.logservice.command", "For getting log levels use list-log-levels command."));
+            report.setMessage(localStrings.getLocalString("admin.get.invalid.logservice.command", "For getting log levels/attributes use list-log-levels/list-log-attributes command."));
             return;
         }
 
