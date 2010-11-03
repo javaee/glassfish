@@ -245,7 +245,7 @@ public class Parser implements Closeable {
      *
      * @throws IOException thrown by the source archive adapter when accessing entries
      */
-    public Future parse(final ArchiveAdapter source, final Runnable doneHook) throws IOException {
+    public Future<Result> parse(final ArchiveAdapter source, final Runnable doneHook) throws IOException {
 
         ExecutorService es = executorService;
         boolean immediateShutdown = false;
@@ -298,7 +298,7 @@ public class Parser implements Closeable {
     }
 
     private synchronized Types getResult(URI uri) {
-        return processedURI.get(uri.getPath());
+        return processedURI.get(uri.getSchemeSpecificPart());
     }
                                
     private synchronized void saveResult(URI uri, Types types) {
@@ -372,7 +372,7 @@ public class Parser implements Closeable {
     private ExecutorService createExecutorService() {
         Runtime runtime = Runtime.getRuntime();
         int nrOfProcessors = runtime.availableProcessors();
-        return Executors.newFixedThreadPool(nrOfProcessors, new ThreadFactory() {
+        return Executors.newFixedThreadPool(nrOfProcessors+1, new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
                 Thread t = new Thread(r);
@@ -384,9 +384,9 @@ public class Parser implements Closeable {
     }
     
 
-    private class Result {
-        final String name;
-        final Exception fault;
+    public class Result {
+        public final String name;
+        public  final Exception fault;
 
         private Result(String name, Exception fault) {
             this.name = name;
