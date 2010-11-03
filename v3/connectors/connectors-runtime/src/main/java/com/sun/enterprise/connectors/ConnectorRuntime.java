@@ -434,10 +434,10 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * @throws ConnectorRuntimeException when unable to provide a connection manager
      */
     public ConnectionManager obtainConnectionManager(PoolInfo poolInfo,
-                                                     boolean forceNoLazyAssoc)
+                                                     boolean forceNoLazyAssoc, ResourceInfo resourceInfo)
             throws ConnectorRuntimeException {
         ConnectionManager mgr = ConnectionManagerFactory.
-                getAvailableConnectionManager(poolInfo, forceNoLazyAssoc);
+                getAvailableConnectionManager(poolInfo, forceNoLazyAssoc, resourceInfo);
         return mgr;
     }
 

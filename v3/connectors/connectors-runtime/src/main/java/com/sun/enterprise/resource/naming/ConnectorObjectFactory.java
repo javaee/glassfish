@@ -143,7 +143,7 @@ public class ConnectorObjectFactory implements ObjectFactory {
 
             String derivedJndiName = ConnectorsUtil.deriveJndiName(jndiName, env);
             ConnectionManagerImpl mgr = (ConnectionManagerImpl)
-                    getRuntime().obtainConnectionManager(poolInfo, forceNoLazyAssoc);
+                    getRuntime().obtainConnectionManager(poolInfo, forceNoLazyAssoc, resourceInfo);
             mgr.setJndiName(derivedJndiName);
             mgr.setRarName(moduleName);
 

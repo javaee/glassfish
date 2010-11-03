@@ -41,6 +41,7 @@
 package com.sun.enterprise.connectors;
 
 import org.glassfish.resource.common.PoolInfo;
+import org.glassfish.resource.common.ResourceInfo;
 
 import javax.resource.ResourceException;
 import javax.resource.spi.LazyAssociatableConnectionManager;
@@ -51,8 +52,8 @@ import javax.resource.spi.ManagedConnectionFactory;
  */
 public class LazyAssociatableConnectionManagerImpl extends ConnectionManagerImpl
         implements LazyAssociatableConnectionManager {
-    public LazyAssociatableConnectionManagerImpl(PoolInfo poolInfo) {
-        super(poolInfo);
+    public LazyAssociatableConnectionManagerImpl(PoolInfo poolInfo, ResourceInfo resourceInfo) {
+        super(poolInfo, resourceInfo);
     }
 
     public void associateConnection(Object connection,
