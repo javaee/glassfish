@@ -104,7 +104,7 @@ public class SetLogLevel implements AdminCommand {
     Clusters clusters;
 
 
-    String[] validLevels = {"SEVERE", "WARNING", "INFO", "CONFIG", "FINE", "FINER", "FINEST"};
+    String[] validLevels = {"ALL", "OFF", "SEVERE", "WARNING", "INFO", "CONFIG", "FINE", "FINER", "FINEST"};
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(SetLogLevel.class);
 
