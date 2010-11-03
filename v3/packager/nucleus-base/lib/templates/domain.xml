@@ -171,6 +171,7 @@
                 <property name="loginErrorPage" value="/loginError.jsf"></property>
             </provider-config>
         </message-security-config>
+	<property value="SHA-256" name="default-digest-algorithm" />
       </security-service>
       <transaction-service tx-log-dir="${com.sun.aas.instanceRoot}/logs" >
       </transaction-service>

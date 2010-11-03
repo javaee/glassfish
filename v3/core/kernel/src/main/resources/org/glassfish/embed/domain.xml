@@ -148,6 +148,7 @@
             <property value="${com.sun.aas.instanceRoot}/config/wss-server-config-1.0.xml" name="security.config" />
           </provider-config>
         </message-security-config>
+	<property value="SHA-256" name="default-digest-algorithm" />
       </security-service>
       <monitoring-service>
         <module-monitoring-levels />

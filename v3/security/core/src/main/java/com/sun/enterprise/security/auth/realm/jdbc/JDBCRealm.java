@@ -111,7 +111,6 @@ public final class JDBCRealm extends DigestRealmBase {
     public static final String PARAM_DB_PASSWORD = "db-password";
 
     public static final String PARAM_DIGEST_ALGORITHM = "digest-algorithm";
-    public static final String DEFAULT_DIGEST_ALGORITHM = "SHA-256";
     public static final String NONE = "none";
 
     public static final String PARAM_ENCODING = "encoding";
@@ -136,6 +135,7 @@ public final class JDBCRealm extends DigestRealmBase {
     private String groupQuery = null;
     private MessageDigest md = null;
 
+
     
     private ConnectorRuntime cr ;
     
@@ -159,7 +159,7 @@ public final class JDBCRealm extends DigestRealmBase {
         String dbPassword = props.getProperty(PARAM_DB_PASSWORD);
         String dsJndi = props.getProperty(PARAM_DATASOURCE_JNDI);
         String digestAlgorithm = props.getProperty(PARAM_DIGEST_ALGORITHM,
-            DEFAULT_DIGEST_ALGORITHM);
+            getDefaultDigestAlgorithm());
         String encoding = props.getProperty(PARAM_ENCODING);
         String charset = props.getProperty(PARAM_CHARSET);
         String userTable = props.getProperty(PARAM_USER_TABLE);

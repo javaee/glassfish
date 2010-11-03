@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,6 +60,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.config.types.Property;
 
 /**
  *
@@ -78,6 +80,11 @@ public class RealmsManager {
     
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private Config config;
+
+    private String defaultDigestAlgorithm = null;
+
+    private static final String DEFAULT_DIGEST_ALGORITHM = "default-digest-algorithm";
+
 
     public RealmsManager() {
         
@@ -174,6 +181,29 @@ public class RealmsManager {
        createRealms(config.getSecurityService());
    }
 
+   private void setDefaultDigestAlgorithm() {
+       SecurityService service = config.getSecurityService();
+       if(service == null) {
+           return;
+       }
+       List<Property> props = service.getProperty();
+       if(props == null) {
+           return;
+       }  
+       Iterator<Property> propsIterator = props.iterator();
+       while(propsIterator != null && propsIterator.hasNext()) {
+           Property prop = propsIterator.next();
+           if(prop != null && DEFAULT_DIGEST_ALGORITHM.equals(prop.getName())) {
+               this.defaultDigestAlgorithm = prop.getValue();
+               break;
+           }
+       }     
+   }
+
+   public String getDefaultDigestAlgorithm() {
+       return defaultDigestAlgorithm;
+   }
+
    /**
      * Load all configured realms from server.xml and initialize each
      * one.  Initialization is done by calling Realm.initialize() with
@@ -190,6 +220,7 @@ public class RealmsManager {
             return;
         }
 
+        setDefaultDigestAlgorithm();
         try {
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.fine("Initializing configured realms from SecurityService in Domain.xml....");

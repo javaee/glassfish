@@ -95,10 +95,14 @@ public abstract class Realm implements Comparable {
     public static final String PARAM_GROUP_MAPPING="group-mapping";
     protected GroupMapper groupMapper = null;
     private static RealmStatsProvider realmStatsProvier = null;
+    private static final String DEFAULT_DIGEST_ALGORITHM = "default-digest-algorithm";
+    private static final String DEFAULT_DEF_DIG_ALGO_VAL = "SHA-256";
 
     private static WeakReference<RealmsManager> realmsManager = new WeakReference<RealmsManager>(null);
+    private String defaultDigestAlgorithm = null;
 
     protected static final Logger _logger = LogDomains.getLogger(Realm.class, LogDomains.SECURITY_LOGGER);
+
     
     /**
      * Returns the name of this realm.
@@ -107,6 +111,10 @@ public abstract class Realm implements Comparable {
      */
     public final String	getName() { 
 	return myName; 
+    }
+
+    protected String getDefaultDigestAlgorithm() {
+        return defaultDigestAlgorithm;
     }
 
     
@@ -554,11 +562,21 @@ public abstract class Realm implements Comparable {
             groupMapper = new GroupMapper();
             groupMapper.parse(groupMapping);
         }
+        String defaultDigestAlgo = null;
+        if(_getRealmsManager() != null) {
+            defaultDigestAlgo = _getRealmsManager().getDefaultDigestAlgorithm();
+        }       
+       this.defaultDigestAlgorithm = (defaultDigestAlgo == null)?DEFAULT_DEF_DIG_ALGO_VAL:defaultDigestAlgo;       
     }
 
     private static synchronized  RealmsManager _getRealmsManager() {
         if (realmsManager.get() == null) {
-            realmsManager = new WeakReference<RealmsManager>(Globals.get(RealmsManager.class));
+            if(Globals.getDefaultHabitat() != null) {
+                realmsManager = new WeakReference<RealmsManager>(Globals.get(RealmsManager.class));
+            }
+            else {
+                return null;
+            }
         }
         return realmsManager.get();
     }
