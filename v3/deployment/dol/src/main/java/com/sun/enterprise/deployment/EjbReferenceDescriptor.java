@@ -270,11 +270,11 @@ public class EjbReferenceDescriptor extends EnvironmentProperty implements com.s
     }
 
     public String getLookupName() {
-        return lookupName;
+        return (lookupName != null)? lookupName : "";
     }
 
     public boolean hasLookupName() {
-        return (lookupName != null);
+        return (lookupName != null && lookupName.length() > 0);
     }
         
     /** return the ejb to whoch I refer.
