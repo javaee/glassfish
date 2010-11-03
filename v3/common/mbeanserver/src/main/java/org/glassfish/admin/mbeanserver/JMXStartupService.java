@@ -140,11 +140,11 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
     private synchronized void shutdown() {
         Util.getLogger().fine("JMXStartupService: shutting down AMX and JMX");
 
-        mConnectorsStarterThread.shutdown();
-        mConnectorsStarterThread = null;
-
         mBootAMX.shutdown();
         mBootAMX = null;
+
+        mConnectorsStarterThread.shutdown();
+        mConnectorsStarterThread = null;
 
         // we can't block here waiting, we have to assume that the rest of the AMX modules do the right thing
         Util.getLogger().log(java.util.logging.Level.INFO, "JMXStartupService and JMXConnectors have been shut down.");
@@ -190,14 +190,15 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
             if (starter instanceof RMIConnectorStarter) {
                 ((RMIConnectorStarter) starter).stopAndUnexport();
             }
-           /* try {
-                //mMBeanServer.unregisterMBean(connObjectName);
-                //connObjectName = null;
+            try {
+                System.out.println("connection OBJ Name = "+connObjectName);
+                mMBeanServer.unregisterMBean(connObjectName);
+                connObjectName = null;
             } catch (MBeanRegistrationException ex) {
                 Util.getLogger().log(Level.SEVERE, null, ex);
             } catch (InstanceNotFoundException ex) {
                 Util.getLogger().log(Level.SEVERE, null, ex);
-            } */
+            } 
             for (final JMXConnectorServer connector : mConnectorServers) {
                 try {
                     final JMXServiceURL address = connector.getAddress();
@@ -253,7 +254,9 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
 
             try {
                 connObjectName = new ObjectName(JMX_CONNECTOR_SERVER_PREFIX + ",protocol=" + protocol + ",name=" + connConfig.getName());
-                connObjectName = mMBeanServer.registerMBean(server, connObjectName).getObjectName();
+                System.out.println("connection OBJ Name while creation = "+connObjectName);
+                ObjectName connObjectName1 = mMBeanServer.registerMBean(server, connObjectName).getObjectName();
+                System.out.println("Registered the connector :: "+ connObjectName);
             } catch (final Exception e) {
                 // it's not critical to have it registered as an MBean
                 e.printStackTrace();
