@@ -143,7 +143,7 @@ public class DeleteInstanceCommand implements AdminCommand {
         }
 
         if (!fsfailure) {
-            nodedir = theNode.getNodeDir();
+            nodedir = theNode.getNodeDirAbsolute();
             deleteInstanceFilesystem(context);
             report = context.getActionReport();
             if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {

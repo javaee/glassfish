@@ -44,6 +44,7 @@ import com.sun.enterprise.config.serverbeans.customvalidators.NotTargetKeyword;
 import com.sun.enterprise.config.serverbeans.customvalidators.NotDuplicateTargetName;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.net.NetUtils;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
@@ -61,6 +62,7 @@ import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.config.ReferenceContainer;
 
 import java.beans.PropertyVetoException;
+import java.io.File;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -187,6 +189,25 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
     String getNodeDirUnixStyle();
 
     /**
+     * Returns the node dir as an absolute path. If the node dir path
+     * in the Node element is relative this will make it absolute relative
+     * to the node's installdir.
+     * @return the node's nodedir as an absolute path. Null if no nodedir.
+     */
+    @DuckTyped
+    String getNodeDirAbsolute();
+
+    @DuckTyped
+    String getNodeDirAbsoluteUnixStyle();
+
+    /**
+     * Is a node being used by any server instance?
+     * @return true if node is referenced by any server instance, else false.
+     */
+    @DuckTyped
+    boolean nodeInUse();
+
+    /**
      * True if the node's nodeHost is local to this
      * @return
      */
@@ -209,6 +230,30 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
             return nodeDir.replaceAll("\\\\","/");
         }
 
+        public static String getNodeDirAbsolute(Node node) {
+            // If nodedir is relative make it absolute relative to installRoot
+            String nodeDir= node.getNodeDir();
+            if (nodeDir == null)
+               return null;
+            File nodeDirFile = new File(nodeDir);
+            if (nodeDirFile.isAbsolute()) {
+                return nodeDir;
+            }
+            // node-dir is relative. Make it absolute. We root it under the
+            // GlassFish root install directory.
+            String installDir= node.getInstallDir();
+            File installRootFile = new File(installDir, "glassfish");
+            File absoluteNodeDirFile = new File(installRootFile, nodeDir);
+            return absoluteNodeDirFile.getPath();
+        }
+
+        public static String getNodeDirAbsoluteUnixStyle(Node node) {
+            String nodeDirAbsolute = getNodeDirAbsolute(node);
+            if (nodeDirAbsolute == null)
+               return null;
+            return nodeDirAbsolute.replaceAll("\\\\","/");
+        }
+
         public static boolean isLocal(Node node) {
             // Short circuit common case for efficiency
             if (node.getName().equals("localhost")) {
@@ -219,6 +264,22 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
                 return false;
             }
             return NetUtils.IsThisHostLocal(nodeHost);
+        }
+
+        public static boolean nodeInUse(Node node) {
+            //check if node is referenced by an instance
+            String nodeName = node.getName();
+            Dom serverDom = Dom.unwrap(node);
+            Servers servers = serverDom.getHabitat().getComponent(Servers.class);
+            List<Server> serverList=servers.getServer();
+            if (serverList != null) {
+                for (Server server : serverList){
+                    if (nodeName.equals(server.getNode())){
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
     
@@ -343,34 +404,33 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
                  "Cannot remove Node {0}. ",child.getName() );
                 
                  logger.log(Level.SEVERE, msg);
-                throw new TransactionFailure(msg);            }
+                throw new TransactionFailure(msg);
+            }
+
 
             List<Node> nodeList = nodes.getNode();
-            List<Server> serverList=servers.getServer();
-            //check if node is referenced in an instance
-            String instanceName = null;
-            if (serverList.size() > 0) {
-                for (Server server: serverList){
-                    if (nodeName.equals(server.getNode())){
-                        if (instanceName == null)
-                            instanceName = new String();
-                        instanceName = instanceName.concat(server.getName()+ ", ");
-                    }
-                }
-                if (instanceName != null) {
-                    final String msg = localStrings.getLocalString(
-                            "Node.referencedByInstance",
-                            "Node {0} referenced in server instance(s): {1}.  Remove instances before removing node."
-                            ,child.getName() ,instanceName );
-                            logger.log(Level.SEVERE, msg);
-                            throw new TransactionFailure(msg);
+
+            // See if any servers are using this node
+            List<Server> serversOnNode = servers.getServersOnNode(child);
+            int n = 0;
+            if (serversOnNode != null && serversOnNode.size() > 0) {
+                StringBuilder sb = new StringBuilder();
+                for (Server server : serversOnNode) {
+                    if (n > 0)
+                        sb.append(", ");
+                    sb.append(server.getName());
+                    n++;
                 }
 
+                final String msg = localStrings.getLocalString(
+                            "Node.referencedByInstance",
+                            "Node {0} referenced in server instance(s): {1}.  Remove instances before removing node."
+                            , child.getName(), sb.toString() );
+                            logger.log(Level.SEVERE, msg);
+                            throw new TransactionFailure(msg);
             }
 
             nodeList.remove(child);
-
         }
     }
-
 }

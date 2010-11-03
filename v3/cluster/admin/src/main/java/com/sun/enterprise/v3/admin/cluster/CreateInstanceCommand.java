@@ -170,7 +170,7 @@ public class CreateInstanceCommand implements AdminCommand {
         }
 
         nodeHost = theNode.getNodeHost();
-        nodeDir = theNode.getNodeDir();
+        nodeDir = theNode.getNodeDirAbsolute();
         installDir = theNode.getInstallDir();
 
         if (!StringUtils.ok(nodeHost)) {

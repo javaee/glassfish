@@ -154,7 +154,7 @@ public class StartInstanceCommand implements AdminCommand {
         
         node = nodes.getNode(noderef);
         if (node != null) {
-            nodedir = node.getNodeDir();
+            nodedir = node.getNodeDirAbsolute();
             nodeHost = node.getNodeHost();
         } else {
             msg = Strings.get("missingNode", noderef);

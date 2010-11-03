@@ -167,7 +167,7 @@ public class NodeRunner  {
         fullcommand.addAll(args);
 
         if (!asadmin.canExecute())
-            throw new ProcessManagerException("asadmin is not executable!");
+            throw new ProcessManagerException(asadmin.getAbsolutePath() + " is not executable.");
 
         lastCommandRun = commandListToString(fullcommand);
 

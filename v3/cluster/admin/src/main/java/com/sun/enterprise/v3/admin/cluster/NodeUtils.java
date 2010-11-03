@@ -154,7 +154,7 @@ public class NodeUtils {
         map.add("DEFAULT", node.getName());
         map.add(NodeUtils.PARAM_INSTALLDIR, node.getInstallDir());
         map.add(NodeUtils.PARAM_NODEHOST, node.getNodeHost());
-        map.add(NodeUtils.PARAM_NODEDIR, node.getNodeDir());
+        map.add(NodeUtils.PARAM_NODEDIR, node.getNodeDirAbsolute());
 
         SshConnector sshc = node.getSshConnector();
         if (sshc != null) {

@@ -53,6 +53,7 @@ import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.DuckTyped;
 
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * List of configured servers.
@@ -87,6 +88,16 @@ public interface Servers extends ConfigBeanProxy, Injectable  {
     @DuckTyped
     public Server getServer(String name);
 
+    /**
+     * Return the list of Servers that reference a Node
+     *
+     * @param   node    Node to get servers that reference
+     * @return          List of Server objects that reference the passed node.
+     *                  List will be of length 0 if no servers reference node.
+     */
+    @DuckTyped
+    public List<Server> getServersOnNode(Node node);
+
     class Duck {
         public static Server getServer(Servers instance, String name) {
             for (Server server : instance.getServer()) {
@@ -96,5 +107,21 @@ public interface Servers extends ConfigBeanProxy, Injectable  {
             }
             return null;
         }
+
+        public static List<Server> getServersOnNode(Servers servers, Node node) {
+            List<Server> serverList = servers.getServer();
+            List<Server> serverListOnNode = new ArrayList<Server>();
+            Server instance = null;
+            String nodeName = node.getName();
+            if (serverList.size() > 0) {
+                for (Server server: serverList){
+                    if (nodeName.equals(server.getNode())){
+                        serverListOnNode.add(server);
+                    }
+                }
+            }
+            return serverListOnNode;
+        }
+
     }
 }

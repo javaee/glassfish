@@ -100,7 +100,7 @@ public class UpdateNodeConfigCommand implements AdminCommand  {
         // Make sure Node is valid
         node = nodes.getNode(name);
         if (node == null) {
-            String m = Strings.get("noSuchNode", node);
+            String m = Strings.get("noSuchNode", name);
             logger.warning(m);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(m);

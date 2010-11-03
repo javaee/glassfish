@@ -101,20 +101,20 @@ public class ListNodesHelper {
                 sb.append(name + "  "+ nodeType + "  "+ host);
 
             if (long_opt){
-                List<Server> serverList=servers.getServer();
-                //check if node is referenced in an instance
-                String instanceList= new String();
-                if (serverList.size() > 0) {
-                    for (Server server: serverList){
-                        if (name.equals(server.getNode())){
-                            instanceList = instanceList.concat( " "+ server.getName() + ","); 
-                        }
+                List<Server> serversOnNode = servers.getServersOnNode(n);
+                StringBuilder instanceList = new StringBuilder();
+                if (serversOnNode.size() > 0) {
+                    int i = 0;
+                    for (Server server: serversOnNode){
+                        if (i > 0)
+                            instanceList.append(", ");
+                        instanceList.append(server.getName());
+                        i++;
                     }
-                    logger.warning(instanceList);
                 }
-                NodeInfo ni = new NodeInfo( name,  host,  installDir,  nodeType,  instanceList);
+                NodeInfo ni = new NodeInfo( name,  host,  installDir,
+                        nodeType,  instanceList.toString());
                 infos.add(ni);
-
             }
 
         }
