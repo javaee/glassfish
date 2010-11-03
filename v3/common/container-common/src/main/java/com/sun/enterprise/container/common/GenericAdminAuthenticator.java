@@ -74,6 +74,7 @@ import java.security.KeyStore;
 import java.security.Principal;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
+import java.util.Collections;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.component.PostConstruct;
 
@@ -145,7 +146,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
      * @throws LoginException
      */
     public boolean loginAsAdmin(String user, String password, String realm) throws LoginException {
-        return loginAsAdmin(user, password, realm, null, null);
+        return loginAsAdmin(user, password, realm, Collections.EMPTY_MAP, null);
     }
 
     /** Ensures that authentication and authorization works as specified in class documentation.
