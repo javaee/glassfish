@@ -3983,6 +3983,8 @@ public abstract class BaseContainer
                 }
                 scheduleIds = timerService.recoverAndCreateSchedules(
                         getContainerId(), getApplicationId(), schedules, deploy0);
+            } else {
+                throw new RuntimeException("EJB Timer Service is not available");
             }
         }
 

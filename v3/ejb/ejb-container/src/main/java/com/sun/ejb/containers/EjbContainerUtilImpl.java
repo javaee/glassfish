@@ -520,37 +520,42 @@ public class EjbContainerUtilImpl
                     File appScratchFile = new File(rootScratchDir, appName);
                     try {
                         String resourceName = getTimerResource(target);
+                        if (resourceName != null) {
+                            // appScratchFile is a marker file and needs to be created on Das on the 
+                            // first access of the Timer Service application - so use & instead of &&
+                            if (isDas() && (!isUpgrade(resourceName, target, appScratchFile.exists()) & appScratchFile.createNewFile())) {
+                                params.origin = OpsParams.Origin.deploy;
+                                if (target != null) {
+                                    params.target = target;
+                                }
+                            } else {
+                                params.origin = OpsParams.Origin.load;
+                                params.target = env.getInstanceName();
+                            }
 
-                        // appScratchFile is a marker file and needs to be created on Das on the 
-                        // first access of the Timer Service application - so use & instead of &&
-                        if (isDas() && (!isUpgrade(resourceName, target, appScratchFile.exists()) & appScratchFile.createNewFile())) {
-                            params.origin = OpsParams.Origin.deploy;
-                            if (target != null) {
-                                params.target = target;
+                            ExtendedDeploymentContext dc = deployment.getBuilder(
+                                    _logger, params, report).source(app).build();
+                            dc.addTransientAppMetaData(DatabaseConstants.JTA_DATASOURCE_JNDI_NAME_OVERRIDE, resourceName);
+                            Properties appProps = dc.getAppProps();
+                            appProps.setProperty(ServerTags.OBJECT_TYPE, DeploymentProperties.SYSTEM_ALL);
+
+                            deployment.deploy(dc);
+
+                            if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
+                                _logger.log (Level.WARNING, "Cannot deploy or load EJBTimerService: ",
+                                        report.getFailureCause());
+                            } else {
+                                _logger.log(Level.INFO, "ejb.timer_service_started", new Object[] { resourceName } );
                             }
                         } else {
-                            params.origin = OpsParams.Origin.load;
-                            params.target = env.getInstanceName();
+                            _logger.log (Level.WARNING, "Cannot deploy or load EJBTimerService: Timer resource for target " 
+                                    + target + " is not available");
                         }
-
-                        ExtendedDeploymentContext dc = deployment.getBuilder(
-                                _logger, params, report).source(app).build();
-                        dc.addTransientAppMetaData(DatabaseConstants.JTA_DATASOURCE_JNDI_NAME_OVERRIDE, resourceName);
-                        Properties appProps = dc.getAppProps();
-                        appProps.setProperty(ServerTags.OBJECT_TYPE, DeploymentProperties.SYSTEM_ALL);
-
-                        deployment.deploy(dc);
-
-                        if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
-                            _logger.log (Level.WARNING, "Cannot deploy or load EJBTimerService: ",
-                                    report.getFailureCause());
-                        }
-
-                        _logger.log(Level.INFO, "ejb.timer_service_started", new Object[] { resourceName } );
 
                     } catch (Exception e) {
                         _logger.log (Level.WARNING, "Cannot deploy or load EJBTimerService: ", e);
-                        if (params.origin == OpsParams.Origin.deploy && appScratchFile.exists()) {
+                    } finally {
+                        if (!deployment.isRegistered(EjbContainerUtil.TIMER_SERVICE_APP_NAME) && appScratchFile.exists()) {
                             // Remove marker file if deploy failed
                             appScratchFile.delete();
                         }
@@ -658,7 +663,9 @@ public class EjbContainerUtilImpl
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.fine("Found " + config);
             }
-            ejbt = config.getEjbContainer().getEjbTimerService();
+            if (config != null) {
+                ejbt = config.getEjbContainer().getEjbTimerService();
+            }
         }
 
         return ejbt;

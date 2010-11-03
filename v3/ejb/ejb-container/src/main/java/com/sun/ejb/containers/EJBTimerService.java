@@ -190,11 +190,15 @@ public class EJBTimerService
     private static final String RESCHEDULE_FAILED_TIMER = "reschedule-failed-timer";
     private boolean rescheduleFailedTimer = false;
 
-    public EJBTimerService(String appID, TimerLocal timerLocal) {
+    public EJBTimerService(String appID, TimerLocal timerLocal) throws Exception {
         timerLocal_ = timerLocal;
         timerCache_     = new TimerCache();
         shutdown_       = false;
         this.appID = appID;
+
+        // Verify that the DataSource ref is correct and store it to check if connections can be aquired if
+        // the timeout fails
+        lookupTimerResource();
 
         ServerEnvironmentImpl env = ejbContainerUtil.getServerEnvironment();
         domainName_ = env.getDomainName();
@@ -249,11 +253,6 @@ public class EJBTimerService
                 operationOnConnectionFailure = ejbt.getPropertyValue(ON_CONECTION_FAILURE);
                 rescheduleFailedTimer = Boolean.valueOf(ejbt.getPropertyValue(RESCHEDULE_FAILED_TIMER));
 
-                // Store the DataSource ref to check if connections can be aquired if
-                // the timeout fails
-                String resource_name = ejbContainerUtil.getTimerResource();
-                ConnectorRuntime connectorRuntime = ejbContainerUtil.getDefaultHabitat().getByContract(ConnectorRuntime.class);
-                timerDataSource = DataSource.class.cast(connectorRuntime.lookupNonTxResource(resource_name, false));
             }
 
             // Compose owner id for all timers created with this 
@@ -2319,6 +2318,9 @@ public class EJBTimerService
         boolean failed = false;
         Connection c = null;
         try {
+            if (timerDataSource == null) {
+                lookupTimerResource();
+            }
             c = timerDataSource.getConnection();
             failed = !c.isValid(0);
         } catch (Exception e) {
@@ -2340,6 +2342,12 @@ public class EJBTimerService
         }
 
         return failed;
+    }
+
+    private void lookupTimerResource() throws Exception {
+        String resource_name = ejbContainerUtil.getTimerResource();
+        ConnectorRuntime connectorRuntime = ejbContainerUtil.getDefaultHabitat().getByContract(ConnectorRuntime.class);
+        timerDataSource = DataSource.class.cast(connectorRuntime.lookupNonTxResource(resource_name, false));
     }
 
     static String txStatusToString(int txStatus) {
