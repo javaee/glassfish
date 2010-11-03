@@ -68,7 +68,7 @@ jsf_version="2.1.0,0-6"
 grizzly_version="1.9.21,0-1"
 metro_version="2.1,0-17"
 javahelp_version="2.0.2,0-1"
-shoal_version="1.5.20,0-0"
+shoal_version="1.5.21,0-0"
 
 #description
 glassfish_description="GlassFish Application Server"
