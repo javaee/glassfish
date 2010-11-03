@@ -61,13 +61,13 @@
         gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/servers/server/#{pageSession.encodedInstanceName}", valueMap="#{pageSession.vMap}");
         //println("=========status: #{pageSession.status}");
         if ("#{pageSession.status}=RUNNING"){
-            setAttribute(key="showStop" value="#{true}");
+            setAttribute(key="isRunning" value="#{true}");
         }
         if ("#{pageSession.status}=NOT_RUNNING"){
-            setAttribute(key="showStart" value="#{true}");
+            setAttribute(key="isStopped" value="#{true}");
         }
         if ("#{pageSession.status}=REQUIRES_RESTART"){
-            setAttribute(key="showRestart" value="#{true}");
+            setAttribute(key="isRestartRequired" value="#{true}");
         }
         //println("======#{requestScope.showStop}, #{requestScope.showStart},#{requestScope.showRestart}");
     />
@@ -87,7 +87,7 @@
             </sun:button>
         </sun:panelGroup>
         </facet>
-            <sun:button id="startInstance" visible="#{requestScope.showStart}" text="$resource{i18n.button.Start}"  primary="#{false}"
+            <sun:button id="startInstance" disabled="#{!requestScope.isStopped}" text="$resource{i18n.button.Start}"  primary="#{false}"
                 onClick="if ( getConfirm(this,'$resource{i18n.msg.JS.confirmStartInstance}') )
                     { return submitAndDisable(this, '$resource{i18n.button.Processing}');}  else {return false;} " > 
                  <!command
@@ -96,7 +96,7 @@
              />
             </sun:button>
 
-            <sun:button id="stopInstance" visible="#{requestScope.showStop}" text="$resource{i18n.button.Stop}" primary="#{false}"
+            <sun:button id="stopInstance" disabled="#{requestScope.isStopped}" text="$resource{i18n.button.Stop}" primary="#{false}"
                 onClick="if ( getConfirm(this,'$resource{i18n.msg.JS.confirmStopInstance}') )
                     { return submitAndDisable(this, '$resource{i18n.button.Processing}');}  else {return false;} " >
                 <!command
@@ -105,7 +105,7 @@
                 />
             </sun:button>
 
-            <sun:button id="restartInstance" visible="#{requestScope.showRestart}" text="$resource{i18n.button.Restart}" primary="#{false}"
+            <sun:button id="restartInstance" disabled="#{requestScope.isStopped}" text="$resource{i18n.button.Restart}" primary="#{false}"
                 onClick="if ( getConfirm(this,'$resource{i18n.msg.JS.confirmRestartInstance}') )
                     { return submitAndDisable(this, '$resource{i18n.button.Processing}');}  else {return false;} " >
                  <!command
@@ -114,17 +114,9 @@
                 />
             </sun:button>
 
-
-            <sun:button id="logViewer" text="$resource{i18n.button.logViewer} TBD"  primary="#{true}" disabled="true"
-                onClick="javascript:var win=window.open('#{request.contextPath}/common/logViewer/logViewer.jsf?instanceName=#{encodedInstanceName}&loglevel=INFO&viewResults=true','LogViewerWindow','width='+(screen.width-300)+',height='+(screen.height-75)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');win.focus(); return false;"
+            <sun:button id="logViewer" text="$resource{i18n.button.logViewer}"  disabled="#{requestScope.isStopped}" primary="#{false}"
+                onClick="javascript:var win=window.open('#{facesContext.externalContext.requestContextPath}/common/logViewer/logViewer.jsf?instanceName=#{pageSession.instanceName}&loglevel=INFO&viewResults=true','LogViewerWindow','width='+(screen.width-300)+',height='+(screen.height-75)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');win.focus(); return false;"
             />
-
-            <sun:button id="rotateLog" text="$resource{i18n.button.rotateLog} TBD" disabled="true" primary="#{false}">
-                <!command
-                    //# gf.restExecuteCommmand( .... rotate log command)
-                />
-            </sun:button>
-
 
             <sun:button id="recoverTrans" text="$resource{i18n.button.recoverTrans}" primary="#{false}">
                 <!command
@@ -152,6 +144,13 @@
             <sun:property id="statusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
                 <sun:staticText id="status" text="#{pageSession.statusString}" />
             </sun:property>
+
+        <sun:property id="jvmProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.JVMLabel}">
+            <sun:hyperlink id="jvmlink" text="$resource{i18nc.inst.jvmReport}"
+                onClick="javascript:
+                var jvmWin = window.open('#{request.contextPath}/common/appServer/jvmReport.jsf?reportType=summary&instanceName=#{pageSession.encodedInstanceName}','JVMReport','width='+(screen.width-300)+',height='+(screen.height-100)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');
+                jvmWin.focus(); return false;" />
+        </sun:property>
 
             <sun:property id="nodeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.nodeLabel}">
                 <sun:hyperlink id="nodeLink" text="#{pageSession.vMap['node']}"  url="#{request.contextPath}/cluster/node/nodeEdit.jsf?nodeName=#{pageSession.vMap['node']}" />
