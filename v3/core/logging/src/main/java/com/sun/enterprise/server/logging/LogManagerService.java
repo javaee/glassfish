@@ -143,7 +143,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
             if (targetServer.isDas()) {
                 file = new File(env.getConfigDirPath(), ServerEnvironmentImpl.kLoggingPropertiesFileName);
             } else if (targetServer.getCluster() != null) {
-                String pathForLogging = env.getConfigDirPath() + File.separator + targetServer.getCluster().getName() + "-config";
+                String pathForLogging = env.getConfigDirPath() + File.separator + targetServer.getCluster().getConfigRef();
                 File dirForLogging = new File(pathForLogging);
 
                 file = new File(dirForLogging, ServerEnvironmentImpl.kLoggingPropertiesFileName);
@@ -153,7 +153,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
                     file = new File(dirForLogging, ServerEnvironmentImpl.kLoggingPropertiesFileName);
                 }
             } else if (targetServer.isInstance()) {
-                String pathForLogging = env.getConfigDirPath() + File.separator + env.getInstanceName() + "-config";
+                String pathForLogging = env.getConfigDirPath() + File.separator + targetServer.getConfigRef();
                 File dirForLogging = new File(pathForLogging);
 
                 file = new File(dirForLogging, ServerEnvironmentImpl.kLoggingPropertiesFileName);
