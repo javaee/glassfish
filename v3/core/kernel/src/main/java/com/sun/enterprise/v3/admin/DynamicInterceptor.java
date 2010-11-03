@@ -185,6 +185,11 @@ public class DynamicInterceptor implements MBeanServer
                 instances.add("server");
             }
         }
+
+        if( oName.startsWith("amx-support") || oName.startsWith("jmxremote") ) {
+            instances.add("server");
+        }
+        
         // What abouut JVM
         System.out.println(" instance = "+oName+" :: "+instances.toString());
         return result;
