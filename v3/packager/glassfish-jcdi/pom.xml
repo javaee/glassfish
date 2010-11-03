@@ -107,6 +107,11 @@
             <groupId>org.jboss.weld</groupId>
             <artifactId>weld-osgi-bundle</artifactId>
         </dependency> 
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>osgi-cdi</artifactId>
+            <version>${project.version}</version>
+        </dependency> 
     </dependencies>
 
     <profiles>

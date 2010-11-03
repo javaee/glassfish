@@ -55,6 +55,7 @@ pkg = {
     "depends"       : { 
 	                "pkg:/glassfish-common@" + conf.glassfish_version : {"type" : "require" },
 			"pkg:/glassfish-jpa@" + conf.glassfish_version : {"type" : "require" },
+			"pkg:/glassfish-jcdi@" + conf.glassfish_version : {"type" : "require" },
 			"pkg:/glassfish-ejb-lite@" + conf.glassfish_version : {"type" : "require" },
 			"pkg:/glassfish-web@" + conf.glassfish_version : {"type" : "require" },
 			"pkg:/glassfish-osgi-http@" + conf.glassfish_version : {"type" : "require" },

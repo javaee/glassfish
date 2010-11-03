@@ -84,6 +84,10 @@
                     <groupId>javax.xml.stream</groupId>
                     <artifactId>stax-api</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.googlecode.jtype</groupId>
+                    <artifactId>jtype</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <!-- previous packages - required for dependency graph calculation -->
