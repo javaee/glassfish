@@ -66,6 +66,7 @@
                  helpText="$resource{i18nc.resourcesTarget.pageTitleHelp}" />
 "<br/>
 #include "/common/resourceNode/targetResourceTable.inc"
+<sun:hidden id="helpKey" value="$resource{help_common.serverInstResources}" />
 </sun:form>
 </define>
 </composition>
