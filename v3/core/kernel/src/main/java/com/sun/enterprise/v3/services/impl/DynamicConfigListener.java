@@ -176,8 +176,6 @@ public class DynamicConfigListener implements ConfigListener {
                     releaseListenerLock(portLock);
                 }
             }
-        } else {
-            System.out.println(listener.getName() + " not part of the original config");
         }
         return null;
     }
