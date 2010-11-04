@@ -49,7 +49,9 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.PropertyResolver;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -62,6 +64,7 @@ import org.jvnet.hk2.component.PerLookup;
  */
 @Service(name="__resolve-tokens")
 @Scoped(PerLookup.class)
+@TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTERED_INSTANCE })
 public class GetTokensCommand implements AdminCommand {
     @Inject
     private Domain domain;
@@ -72,10 +75,10 @@ public class GetTokensCommand implements AdminCommand {
     @Param(separator=',', primary=true)
     String[] tokens;
     
-    @Param(name="check-system-properties", defaultValue="false")
+    @Param(name="check-system-properties", defaultValue="false", optional=true)
     boolean checkSystemProperties;
 
-    @Param(optional=true)
+    @Param(optional=true, defaultValue=SystemPropertyConstants.DAS_SERVER_NAME)
     String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
     @Override

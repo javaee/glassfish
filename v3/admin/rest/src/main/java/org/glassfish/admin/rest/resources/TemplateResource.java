@@ -525,7 +525,7 @@ public class TemplateResource {
     //******************************************************************************************************************
 
     private Map<String, String> getAttributes(Dom entity) {
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new TreeMap<String, String>();
         Set<String> attributeNames = entity.model.getAttributeNames();
         for (String attributeName : attributeNames) {
             result.put(eleminateHypen(attributeName), entity.attribute(attributeName));
