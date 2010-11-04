@@ -1226,6 +1226,8 @@ public class RemoteAdminCommand {
             ParamModel opt = commandModel.getModelFor(paramName);
             if (opt != null && opt.getType() == File.class) {
                 sawFile = true;
+                final File optionFile = new File(options.getOne(opt.getName()));
+                sawDirectory |= optionFile.isDirectory();
             }
         }
 
@@ -1233,6 +1235,10 @@ public class RemoteAdminCommand {
         ParamModel operandParam = getOperandModel();
         if (operandParam != null && operandParam.getType() == File.class) {
             sawFile = ! operands.isEmpty();
+            for (String operandValue : operands) {
+                final File operandFile = new File(operandValue);
+                sawDirectory |= operandFile.isDirectory();
+            }
         }
 
         if (sawFile) {
