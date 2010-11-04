@@ -51,6 +51,7 @@ package org.glassfish.admingui.common.handlers;
 
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.JSONUtil;
+import org.glassfish.admingui.common.util.RestUtil;
 
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
@@ -78,7 +79,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Map;
-
 import javax.faces.component.UIViewRoot;
 
 
@@ -623,6 +623,22 @@ public class UtilHandlers {
 			commaString = GuiUtil.listToString(list, ",");
 		}
         handlerCtx.setOutputValue("commaString", commaString);
+    }
+
+    @Handler(id = "gf.resolveTokens",
+    input = {
+        @HandlerInput(name = "tokens", type = List.class, required = true),
+        @HandlerInput(name = "endpoint", type = String.class, required = true)},
+    output = {
+        @HandlerOutput(name = "resolvedTokens", type = List.class)})
+    public static void resolveTokens(HandlerContext handlerCtx) {
+        List<String> tokens = (List<String>)handlerCtx.getInputValue("tokens");
+        ArrayList<String> resolvedTokens = new ArrayList();
+
+        String endPoint = (String)handlerCtx.getInputValue("endPoint");
+        for (String token : tokens) 
+            resolvedTokens.add(RestUtil.resolveToken(endPoint, token));
+        handlerCtx.setOutputValue("resolvedTokens", resolvedTokens);
     }
 
     @Handler(id = "convertListToArray",
