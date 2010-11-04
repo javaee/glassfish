@@ -6721,11 +6721,7 @@ public class StandardContext
                 // Try looking up resource in
                 // WEB-INF/lib/[*.jar]/META-INF/resources
                 URL u = getMetaInfResource(path);
-                String realPath = urlEncoder.encode(file.getAbsolutePath());
-                if (realPath.length() > Constants.CHAR_LIMIT) {
-                    realPath = realPath.substring(0, Constants.CHAR_LIMIT);
-                }
-                return (u != null ? u.getPath() : realPath);
+                return (u != null ? u.getPath() : file.getAbsolutePath());
             } catch (Exception e) {
                 return null;
             }
