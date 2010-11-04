@@ -86,6 +86,7 @@ import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import org.glassfish.server.ServerEnvironmentImpl;
 
 import org.glassfish.api.invocation.ComponentInvocation;
+import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.ScheduledTimerDescriptor;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 
@@ -1258,110 +1259,141 @@ public class EJBTimerService
             Map<Method, List<ScheduledTimerDescriptor>> schedules,
             boolean deploy) {
 
-            return recoverAndCreateSchedules(containerId, applicationId, schedules, ownerIdOfThisServer_, (deploy && isDas));
-    }
-
-    /**
-     * Recover pre-existing timers associated with the Container identified 
-     * by the containerId, and create automatic timers defined by the @Schedule
-     * annotation on the EJB bean.
-     * 
-     * If this method is called on a deploy in a clustered deployment, only persistent schedule
-     * based timers will be created. And no timers will be scheduled.
-     * If it is called from deploy on a non-clustered instance, both
-     * persistent and non-persistent timers will be created.
-     * Otherwise only non-persistent timers are created by this method.
-     *
-     * @return a Map of both, restored and created timers, where the key is TimerPrimaryKey 
-     * and the value is the Method to be executed by the container when the timer with
-     * this PK times out.
-     */
-    public Map<TimerPrimaryKey, Method> recoverAndCreateSchedules(
-            long containerId, long applicationId,
-            Map<Method, List<ScheduledTimerDescriptor>> schedules,
-            String server_name, boolean deploy) {
-
         Map<TimerPrimaryKey, Method> result = new HashMap<TimerPrimaryKey, Method>();
 
         TransactionManager tm = ejbContainerUtil.getTransactionManager();
         try {
-                              
-            boolean startTimers = ownerIdOfThisServer_.equals(server_name);
             tm.begin();
 
-            if (startTimers) {
-                Set<TimerState> timers = _restoreTimers(
-                        (Set<TimerState>)timerLocal_.findActiveTimersOwnedByThisServerByContainer(containerId));
+            Set<TimerState> timers = _restoreTimers(
+                    (Set<TimerState>)timerLocal_.findActiveTimersOwnedByThisServerByContainer(containerId));
 
-                if (timers.size() > 0) {
-                    logger.log(Level.FINE, "Found " + timers.size() + 
-                            " persistent timers for containerId: " + containerId);
-                }
+            if (timers.size() > 0) {
+                logger.log(Level.FINE, "Found " + timers.size() + 
+                        " persistent timers for containerId: " + containerId);
+            }
 
-                for (TimerState timer : timers) {
-                    TimerSchedule ts = timer.getTimerSchedule();
-                    if (ts != null && ts.isAutomatic()) {
-                        for (Method m : schedules.keySet()) {
-                            if (m.getName().equals(ts.getTimerMethodName()) &&
-                                    m.getParameterTypes().length == ts.getMethodParamCount()) {
-                                result.put(new TimerPrimaryKey(timer.getTimerId()), m);
-                                if( logger.isLoggable(Level.FINE) ) {
-                                    logger.log(Level.FINE, "@@@ FOUND existing schedule: " + 
-                                            ts.getScheduleAsString() + " FOR method: " + m);
-                                }
+            for (TimerState timer : timers) {
+                TimerSchedule ts = timer.getTimerSchedule();
+                if (ts != null && ts.isAutomatic() && schedules != null) {
+                    for (Method m : schedules.keySet()) {
+                        if (m.getName().equals(ts.getTimerMethodName()) &&
+                                m.getParameterTypes().length == ts.getMethodParamCount()) {
+                            result.put(new TimerPrimaryKey(timer.getTimerId()), m);
+                            if( logger.isLoggable(Level.FINE) ) {
+                                logger.log(Level.FINE, "@@@ FOUND existing schedule: " + 
+                                        ts.getScheduleAsString() + " FOR method: " + m);
                             }
                         }
                     }
                 }
             }
 
-            for (Method m : schedules.keySet()) {
-                for (ScheduledTimerDescriptor sch : schedules.get(m)) {
-                    boolean persistent = sch.getPersistent();
-                    if ((persistent && !deploy) || (!persistent && !startTimers)) {
-                        // Do not recreate schedule-based timers on restart or create
-                        // non-persistent timers on a clustered deploy
-                        continue;
-                    }
+            createSchedules(containerId, applicationId, schedules, result, ownerIdOfThisServer_, true, (deploy && isDas));
 
-                    TimerSchedule ts = new TimerSchedule(sch, m.getName(), 
-                            m.getParameterTypes().length);
+            tm.commit();
 
-                    TimerConfig tc = new TimerConfig();
-                    String info = sch.getInfo();
-                    if (info != null && !info.equals("")) {
-                        tc.setInfo(info);
-                    }
-                    tc.setPersistent(persistent);
-                    TimerPrimaryKey tpk = createTimer(containerId, applicationId, ts, tc, server_name);
-                    if (startTimers) {
-                        result.put(tpk, m);
-                    }
-                    if( logger.isLoggable(Level.FINE) ) {
-                        logger.log(Level.FINE, "@@@ CREATED new schedule: " + 
-                                    ts.getScheduleAsString() + " FOR method: " + m);
-                    }
-                }
+        } catch(Exception e) {
+            recoverAndCreateSchedulesError(e, tm);
+        }
+
+        return result;
+    }
+
+    /**
+     * Create automatic timers defined by the @Schedule annotation on the EJB bean during
+     * deployment to a cluster or the first create-application-ref call after deployment
+     * to DAS only.
+     * 
+     * Only persistent schedule based timers for the containerId that has no timers associated 
+     * with it, will be created. And no timers will be scheduled.
+     */
+    public void createSchedules(long containerId, long applicationId,
+            Map<MethodDescriptor, List<ScheduledTimerDescriptor>> methodDescriptorSchedules, String server_name) {
+        TransactionManager tm = ejbContainerUtil.getTransactionManager();
+        try {
+            tm.begin();
+            int count = timerLocal_.countTimersByContainer(containerId);
+
+            if (count == 0) {
+                // No timers owned by this EJB
+                createSchedules(containerId, applicationId, methodDescriptorSchedules, null, server_name, false, true);
             }
 
             tm.commit();
 
         } catch(Exception e) {
-            logger.log(Level.WARNING, "Timer restore or schedule creation error", e);
+            recoverAndCreateSchedulesError(e, tm);
+        }
+    }
 
-            try {
-                tm.rollback();
-            } catch(Exception re) {
-                logger.log(Level.FINE, "Timer restore or schedule creation rollback error", re);
+    /**
+     * Create automatic timers defined by the @Schedule annotation on the EJB bean.
+     * 
+     * If this method is called on a deploy in a clustered deployment, only persistent schedule
+     * based timers will be created. And no timers will be scheduled.
+     * If it is called from deploy on a non-clustered instance, both
+     * persistent and non-persistent timers will be created.
+     * Otherwise only non-persistent timers are created by this method.
+     */
+    private void createSchedules(long containerId, long applicationId,
+            Map<?, List<ScheduledTimerDescriptor>> schedules,
+            Map<TimerPrimaryKey, Method> result,
+            String server_name, boolean startTimers, boolean deploy) throws Exception {
+
+        for (Object key : schedules.keySet()) {
+            String mname = null;
+            int args_length = 0;
+            if (key instanceof Method) {
+                mname = ((Method)key).getName();
+                args_length = ((Method)key).getParameterTypes().length;
+            } else {
+                mname = ((MethodDescriptor)key).getName();
+                args_length = ((MethodDescriptor)key).getJavaParameterClassNames().length;
             }
 
-            //Propagate the exception caught 
-            EJBException ejbEx = createEJBException( e );
-            throw ejbEx;
+            for (ScheduledTimerDescriptor sch : schedules.get(key)) {
+                boolean persistent = sch.getPersistent();
+                if ((persistent && !deploy) || (!persistent && !startTimers)) {
+                    // Do not recreate schedule-based timers on restart or create
+                    // non-persistent timers on a clustered deploy
+                    continue;
+                }
 
+                TimerSchedule ts = new TimerSchedule(sch, mname, args_length);
+                TimerConfig tc = new TimerConfig();
+                String info = sch.getInfo();
+                if (info != null && !info.equals("")) {
+                    tc.setInfo(info);
+                }
+                tc.setPersistent(persistent);
+                TimerPrimaryKey tpk = createTimer(containerId, applicationId, ts, tc, server_name);
+                if( logger.isLoggable(Level.FINE) ) {
+                        logger.log(Level.FINE, "@@@ CREATED new schedule: " + ts.getScheduleAsString() + " FOR method: " + key);
+                }
+
+                if (startTimers) {
+                    result.put(tpk, (Method)key);
+                }
+            }
+        }
+    }
+
+    /**
+     * Common code for exception processing in recoverAndCreateSchedules
+     */
+    private void recoverAndCreateSchedulesError(Exception e, TransactionManager tm) {
+        logger.log(Level.WARNING, "Timer restore or schedule creation error", e);
+
+        try {
+            tm.rollback();
+        } catch(Exception re) {
+            logger.log(Level.FINE, "Timer restore or schedule creation rollback error", re);
         }
 
-        return result;
+        //Propagate the exception caught as an EJBException
+        EJBException ejbEx = createEJBException( e );
+        throw ejbEx;
     }
 
     /**
