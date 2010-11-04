@@ -118,24 +118,8 @@ public class ReadableArchiveScannerAdapter extends AbstractAdapter {
 
                     final ReadableArchive subArchive = archive.getSubArchive(name);
 
-                    // this is non sense, the subArchive should do this job for me but it does not.
-                    // see the long comment from Tim on entries().
-                    URI subURI=subArchive.getURI();
-                    if (subURI.getScheme().startsWith("jar")) {
-                        try {
-                            subURI = new URI(
-                            "jar",
-                            "file:" + uri.getSchemeSpecificPart() +
-                                "!/" +
-                                name,
-                            null);
-                        } catch(URISyntaxException e) {
-                            logger.log(Level.FINE, e.getMessage(),e);
-                        }
-                    }
                     if (subArchive!=null) {
-
-                        ReadableArchiveScannerAdapter adapter = new ReadableArchiveScannerAdapter(parser, subArchive, subURI);
+                        ReadableArchiveScannerAdapter adapter = new ReadableArchiveScannerAdapter(parser, subArchive);
                         parser.parse(adapter, new Runnable() {
                             @Override
                             public void run() {
