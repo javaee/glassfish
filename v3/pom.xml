@@ -381,8 +381,6 @@
                 <module>extras/embedded/all</module>
                 <module>extras/embedded/web</module>
                 <module>extras/embedded/nucleus</module>
-                <module>extras/embedded/common</module>
-                <module>extras/embedded/glassfish-uber</module>
                 <module>osgi-javaee</module>
 		<module>ant-tasks</module>
             </modules>
@@ -437,8 +435,6 @@
                 <module>extras/embedded/all</module>
                 <module>extras/embedded/web</module>
                 <module>extras/embedded/nucleus</module>
-                <module>extras/embedded/common</module>
-                <module>extras/embedded/glassfish-uber</module>
                 <module>osgi-javaee</module>
                 <module>ant-tasks</module>
             </modules>
