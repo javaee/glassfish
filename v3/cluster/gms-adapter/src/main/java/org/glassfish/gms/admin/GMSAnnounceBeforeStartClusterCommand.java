@@ -65,7 +65,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-@Service(name = "_gmsAnnounceBeforeStartClusterCommand")
+@Service(name = "_gms-announce-before-start-cluster-command")
 @Supplemental(value = "start-cluster", on = Supplemental.Timing.Before, ifFailure = FailurePolicy.Warn)
 @Scoped(PerLookup.class)
 public class GMSAnnounceBeforeStartClusterCommand implements AdminCommand {

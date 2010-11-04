@@ -59,7 +59,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-@Service(name = "_gmsAnnounceAfterStopClusterCommand")
+@Service(name = "_gms-announce-after-stop-cluster-command")
 @Supplemental(value = "stop-cluster", on = Supplemental.Timing.After, ifFailure = FailurePolicy.Warn)
 @Scoped(PerLookup.class)
 public class GMSAnnounceAfterStopClusterCommand implements AdminCommand {

@@ -71,7 +71,7 @@ import java.util.logging.Logger;
  * INSTANCE_SHUTDOWN.  GMS clients may take advantage of this information that the entire cluster is stopping
  * rather than a single instance.
  */
-@Service(name = "_gmsAnnounceBeforeStopClusterCommand")
+@Service(name = "_gms-announce-before-stop-cluster-command")
 @Supplemental(value = "stop-cluster", on = Supplemental.Timing.Before, ifFailure = FailurePolicy.Warn)
 @Scoped(PerLookup.class)
 public class GMSAnnounceBeforeStopClusterCommand implements AdminCommand {

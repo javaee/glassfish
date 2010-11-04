@@ -47,6 +47,7 @@ import com.sun.enterprise.ee.cms.core.GroupManagementService;
 import com.sun.enterprise.ee.cms.impl.client.*;
 import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
 import com.sun.enterprise.ee.cms.spi.MemberStates;
+import com.sun.enterprise.mgmt.transport.NetworkUtility;
 import com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.Startup;
@@ -326,9 +327,13 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                             // this value could be anything from IPv4 address, IPv6 address, hostname, network interface name.
                             // Only supported IPv4 address in gf v2.
 
-                            // todo: handle invalid inputs.  for this case, validate that value can be associated with a network interface on machine.
-                            // need to provide admin feedback when this value is not set correctly.
+                        }
+                        if (NetworkUtility.isBindAddressValid(value)) {
                             configProps.put(keyName, value);
+                        } else {
+                            logger.log(Level.SEVERE,
+                                "gmsservice.bind.int.address.invalid",
+                                value);
                         }
                     }
                     break;
