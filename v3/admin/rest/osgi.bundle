@@ -43,6 +43,9 @@
 DynamicImport-Package: \
                         com.sun.jersey.api.container, \
                         com.sun.jersey.api.core, \
+                        com.sun.jersey.spi.inject, \
+                        com.sun.jersey.api.container.filter, \
+                        com.sun.jersey.api.client, \
                         com.sun.jersey.core.header, \
                         com.sun.jersey.multipart, \
                         com.sun.jersey.spi, \
