@@ -51,6 +51,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -70,7 +74,10 @@ public class Parser implements Closeable {
     private final ExecutorService executorService;
     private final boolean ownES;
 
-    private final int DEFAULT_TIMEOUT = Integer.getInteger(DEFAULT_WAIT_SYSPROP, 10);
+    // used to safeguard between await and parse
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+
+    private final int DEFAULT_TIMEOUT = Integer.getInteger(DEFAULT_WAIT_SYSPROP, 100);
     
     
     public Parser(ParsingContext context) {
@@ -85,7 +92,7 @@ public class Parser implements Closeable {
 
     public Exception[] awaitTermination(int timeOut, TimeUnit unit) throws InterruptedException {
         List<Exception> exceptions = new ArrayList<Exception>();
-        final Logger logger = context.logger;        
+        final Logger logger = context.logger;
         while(futures.size()>0) {
             if (context.logger.isLoggable(Level.FINE)) {
                  context.logger.log(Level.FINE, "Await iterating at " + System.currentTimeMillis() + " waiting for " + futures.size());
@@ -119,61 +126,68 @@ public class Parser implements Closeable {
                 }
             }
         }
-        // now we need to visit all the types that got referenced but not visited
-        final ResourceLocator locator = context.getLocator();
-        if (locator!=null) {
-            context.types.onNotVisitedEntries(new TypesCtr.ProxyTask() {
-                @Override
-                public void on(TypeProxy<?> proxy) {
 
-                    String name = proxy.getName();
-                    // make this name a resource name...
-                    String resourceName = name.replaceAll("\\.", "/") + ".class";
-                    URL url = locator.getResource(resourceName);
-                    if (url == null) return;
+        lock.writeLock().lock();
+        try {
 
-                    // copy URL into bytes
-                    InputStream is = null;
-                    int size = 0;
-                    try {
+            // now we need to visit all the types that got referenced but not visited
+            final ResourceLocator locator = context.getLocator();
+            if (locator!=null) {
+                context.types.onNotVisitedEntries(new TypesCtr.ProxyTask() {
+                    @Override
+                    public void on(TypeProxy<?> proxy) {
 
-                        URLConnection connection = url.openConnection();
-                        size = connection.getContentLength();
-                        is = connection.getInputStream();
+                        String name = proxy.getName();
+                        // make this name a resource name...
+                        String resourceName = name.replaceAll("\\.", "/") + ".class";
+                        URL url = locator.getResource(resourceName);
+                        if (url == null) return;
 
-                        // now visit...
-                        if (logger.isLoggable(Level.FINE)) {
-                            logger.fine("Going to visit " + resourceName + " from " + url + " of size " + size);
-                        }
-                        ClassReader cr = new ClassReader(is);
+                        // copy URL into bytes
+                        InputStream is = null;
+                        int size = 0;
                         try {
-                            File file = getFilePath(url.getPath(), resourceName);
-                            URI definingURI = getDefiningURI(file);
+
+                            URLConnection connection = url.openConnection();
+                            size = connection.getContentLength();
+                            is = connection.getInputStream();
+
+                            // now visit...
                             if (logger.isLoggable(Level.FINE)) {
-                                logger.fine("file=" + file + "; definingURI=" + definingURI);
+                                logger.fine("Going to visit " + resourceName + " from " + url + " of size " + size);
                             }
-                            cr.accept(context.getClassVisitor(definingURI, resourceName), ClassReader.SKIP_DEBUG);
-                        } catch (Throwable e) {
-                            logger.log(Level.SEVERE, "Exception while visiting " + name
-                                    + " of size " + size, e);
-                        }
-
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } finally {
-                        if (is != null)
+                            ClassReader cr = new ClassReader(is);
                             try {
-                                is.close();
-                            } catch (IOException e) {
-                                logger.log(Level.SEVERE, "Exception while closing " + resourceName + " stream", e);
+                                File file = getFilePath(url.getPath(), resourceName);
+                                URI definingURI = getDefiningURI(file);
+                                if (logger.isLoggable(Level.FINE)) {
+                                    logger.fine("file=" + file + "; definingURI=" + definingURI);
+                                }
+                                cr.accept(context.getClassVisitor(definingURI, resourceName), ClassReader.SKIP_DEBUG);
+                            } catch (Throwable e) {
+                                logger.log(Level.SEVERE, "Exception while visiting " + name
+                                        + " of size " + size, e);
                             }
+
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } finally {
+                            if (is != null)
+                                try {
+                                    is.close();
+                                } catch (IOException e) {
+                                    logger.log(Level.SEVERE, "Exception while closing " + resourceName + " stream", e);
+                                }
+                        }
                     }
-                }
-            });
+                });
+            }
+            close();
+            return exceptions.toArray(new Exception[exceptions.size()]);
+        } finally {
+            lock.writeLock().unlock();
         }
-        close();
-        return exceptions.toArray(new Exception[exceptions.size()]);
     }
 
     private static URI getDefiningURI(File file) {
@@ -224,9 +238,11 @@ public class Parser implements Closeable {
         }
     }
 
-    private ArchiveAdapter createArchiveAdapter(File source, Runnable doneHook) throws IOException {
+    private ArchiveAdapter createArchiveAdapter(File source, Runnable doneHook)
+            throws IOException {
       try {
-        ArchiveAdapter aa = source.isFile()?new JarArchive(source.toURI()):new DirectoryArchive(source);
+        ArchiveAdapter aa = source.isFile()?new JarArchive(this, source.toURI()):
+                                            new DirectoryArchive(this, source);
         return aa;
       } catch (IOException e) {
         if (doneHook!=null) {
@@ -247,54 +263,60 @@ public class Parser implements Closeable {
      */
     public Future<Result> parse(final ArchiveAdapter source, final Runnable doneHook) throws IOException {
 
-        ExecutorService es = executorService;
-        boolean immediateShutdown = false;
-        if (es.isShutdown()) {
-            Logger.getAnonymousLogger().info("Executor service is shutdown, since awaitTermination was called, " +
-                    "provide an executor service instance from the context to avoid automatic shutdown");
-            es = createExecutorService();
-            immediateShutdown = true;
-        }
-        final Logger logger = context.logger;
-        Types types = getResult(source.getURI());
-        if (types!=null) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Skipping reparsing..." + source.getURI());
-            }
-            doneHook.run();
-            return null;
-        }
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "at " + System.currentTimeMillis() + "in " + this + " submitting file " + source.getURI().getPath());
-            logger.log(Level.FINE, "submitting file " + source.getURI().getPath());
-        }
-        Future<Result> future = es.submit(new Callable<Result>() {
-            @Override
-            public Result call() throws Exception {
-                try {
-                    if (logger.isLoggable(Level.FINE)) {
-                        logger.log(Level.FINE, "elected file " + source.getURI().getPath());
-                    }
-                    if (logger.isLoggable(Level.FINE)) {
-                        context.logger.log(Level.FINE, "started working at " + System.currentTimeMillis() + "in "
-                                + this + " on " + source.getURI().getPath());
-                    }
-                    doJob(source, doneHook);
+        lock.readLock().lock();
+        try {
 
-                    return new Result(source.getURI().getPath(), null);
-                } catch (Exception e) {
-                    logger.log(Level.SEVERE, "Exception while parsing file " + source, e);
-                    return new Result(source.getURI().getPath(), e);
-                }
+            ExecutorService es = executorService;
+            boolean immediateShutdown = false;
+            if (es.isShutdown()) {
+                context.logger.info("Executor service is shutdown, since awaitTermination was called, " +
+                        "provide an executor service instance from the context to avoid automatic shutdown");
+                es = createExecutorService();
+                immediateShutdown = true;
             }
-        });        
-        synchronized(futures) {
-            futures.add(future);
+            final Logger logger = context.logger;
+            Types types = getResult(source.getURI());
+            if (types!=null) {
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.fine("Skipping reparsing..." + source.getURI());
+                }
+                doneHook.run();
+                return null;
+            }
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, "at " + System.currentTimeMillis() + "in " + this + " submitting file " + source.getURI().getPath());
+                logger.log(Level.FINE, "submitting file " + source.getURI().getPath());
+            }
+            Future<Result> future = es.submit(new Callable<Result>() {
+                @Override
+                public Result call() throws Exception {
+                    try {
+                        if (logger.isLoggable(Level.FINE)) {
+                            logger.log(Level.FINE, "elected file " + source.getURI().getPath());
+                        }
+                        if (logger.isLoggable(Level.FINE)) {
+                            context.logger.log(Level.FINE, "started working at " + System.currentTimeMillis() + "in "
+                                    + this + " on " + source.getURI().getPath());
+                        }
+                        doJob(source, doneHook);
+
+                        return new Result(source.getURI().getPath(), null);
+                    } catch (Exception e) {
+                        logger.log(Level.SEVERE, "Exception while parsing file " + source.getURI(), e);
+                        return new Result(source.getURI().getPath(), e);
+                    }
+                }
+            });
+            synchronized(futures) {
+                futures.add(future);
+            }
+            if (immediateShutdown) {
+                es.shutdown();
+            }
+            return future;
+        } finally {
+            lock.readLock().unlock();
         }
-        if (immediateShutdown) {
-            es.shutdown();
-        }
-        return future;
     }
 
     private synchronized Types getResult(URI uri) {
@@ -371,8 +393,8 @@ public class Parser implements Closeable {
 
     private ExecutorService createExecutorService() {
         Runtime runtime = Runtime.getRuntime();
-        int nrOfProcessors = runtime.availableProcessors();
-        return Executors.newFixedThreadPool(nrOfProcessors+1, new ThreadFactory() {
+        int nbOfProcessors = runtime.availableProcessors();
+        return Executors.newFixedThreadPool(nbOfProcessors+1, new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
                 Thread t = new Thread(r);
