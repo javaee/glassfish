@@ -132,7 +132,15 @@ public final class ListConfigsCommand implements AdminCommand {
         if (!StringUtils.ok(target))
             return allConfigs.getConfig();
 
+        Config c = domain.getConfigNamed(target);
+        if (c != null) {
+            List<Config> cl = new LinkedList<Config>();
+            cl.add(c);
+            return cl;
+        }
+
         ReferenceContainer rc = domain.getReferenceContainerNamed(target);
+        if (rc == null) return null;
 
         if (rc.isServer()) {
             Server s =((Server) rc);
@@ -146,8 +154,7 @@ public final class ListConfigsCommand implements AdminCommand {
             cl.add(domain.getConfigNamed(cluster.getConfigRef()));
             return cl;
         }
-        else
-            return null;
+        else return null;
     }
 
 }
