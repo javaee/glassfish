@@ -295,9 +295,17 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             throw new CommandException(Strings.get("DeleteInstance.badWhackWithException",
                     whackee, ioe, StringUtils.getStackTrace(ioe)));
         }
-        if (whackee.isDirectory())
+        if (whackee.isDirectory()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("whackee=").append(whackee.toString());
+            sb.append(", files in parent:");
+            files = parent.listFiles();
+            for (File f : files) sb.append(f.toString()).append(", ");
+            File f1 = new File(whackee.toString());
+            sb.append(", new wackee.exists=").append(f1.exists());
             throw new CommandException(Strings.get("DeleteInstance.badWhack",
-                    whackee));
+                    whackee) + ", " + sb.toString());
+        }
 
         // now see if the parent dir is empty.  If so wipe it out.
         // Don't be too picky with throwin errors here...
