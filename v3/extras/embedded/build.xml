@@ -126,6 +126,7 @@
 	<jar destfile="${finaljar}" basedir="${rootdir}/temp" >
            <manifest>
                 <attribute name="Bundle-SymbolicName" value="${bundlename}"/>
+                <attribute name="Main-Class" value="com.sun.enterprise.glassfish.bootstrap.UberMain"/>
             </manifest>
 	</jar>
 
