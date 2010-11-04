@@ -58,6 +58,7 @@
             gf.restRequest(endpoint="#{pageSession.httpListenerUrl}/#{row}.json", method="get", result="#{pageSession.httpListenerAttrs}");
             listAdd(value="#{pageSession.httpListenerAttrs.data.extraProperties.entity['port']}" list="#{pageSession.httpPortsList}");
         }
-        convertListToCommaString(list="#{pageSession.httpPortsList}" commaString="#{pageSession.httpPorts}");
+        gf.resolveTokens(tokens="#{pageSession.httpPortsList}" endPoint="#{sessionScope.REST_URL}/servers/server/#{pageSession.instanceName}" resolvedTokens="#{pageSession.httpResolvedPortsList}");
+        convertListToCommaString(list="#{pageSession.httpResolvedPortsList}" commaString="#{pageSession.httpPorts}");
     />
 </sun:property> 
