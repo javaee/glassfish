@@ -55,19 +55,33 @@ public class ClusterTeardownTest extends AdminBaseDevTest {
         final String i1name = "eein1-with-a-very-very-very-long-name";
         final String i2name = "eein2";
         
-        public boolean retStatus, ret1,ret2;
+        public boolean retStatus;
 
+        // Byron Nevins Nov 4,2010 -- Add plenty of output if there are problems.
+        // previously deleteInstanceTest would never say boo no matter what happened...
     @Test
     public void deleteInstanceTest() throws Exception{
-        report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
-        ret1 = report(tn + "stop-local-instance2", asadmin("stop-local-instance", i2name));
-        report(tn + "delete-local-instance1", asadmin("delete-local-instance", i1name));
-        ret2 = report(tn + "delete-local-instance2", asadmin("delete-local-instance", i2name));
+        AsadminReturn ar1 = asadminWithOutput("stop-local-instance", i1name);
+        AsadminReturn ar2 = asadminWithOutput("stop-local-instance", i2name);
+        AsadminReturn ar3 = asadminWithOutput("delete-local-instance", i1name);
+        AsadminReturn ar4 = asadminWithOutput("delete-local-instance", i2name);
+
+        report(tn + "stop-local-instance1", ar1.returnValue);
+        report(tn + "stop-local-instance2", ar2.returnValue);
+        report(tn + "delete-local-instance1", ar3.returnValue);
+        report(tn + "delete-local-instance2", ar4.returnValue);
+
+        Assert.assertTrue(ar1.returnValue, "Error stopping instance " + i1name + ": " + ar1.outAndErr);
+        Assert.assertTrue(ar2.returnValue, "Error stopping instance " + i2name + ": " + ar2.outAndErr);
+        Assert.assertTrue(ar3.returnValue, "Error deleting instance " + i1name + ": " + ar3.outAndErr);
+        Assert.assertTrue(ar4.returnValue, "Error deleting instance " + i2name + ": " + ar4.outAndErr);
     }
         
     @Test(dependsOnMethods = { "deleteInstanceTest" })
     public void deleteClusterTest() throws Exception{
-        retStatus = report(tn + "delete-cluster", asadmin("delete-cluster", cname));
-        Assert.assertEquals(retStatus&&ret1&&ret2, true, "Cluster unsetup failed ...");
+        AsadminReturn ar1 = asadminWithOutput("delete-cluster", cname);
+        retStatus = report(tn + "delete-cluster", ar1.returnValue);
+
+        Assert.assertTrue(retStatus, "Error deleting cluster " + cname + ": " + ar1.outAndErr);
     }
 }
