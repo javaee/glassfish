@@ -92,6 +92,8 @@ public class Client {
             System.out.println("EJB said: " + result);
             System.out.println("Done calling EJB");
             rc = true;
+            c.close();
+            c = EJBContainer.createEJBContainer();
         } finally {
             if (c != null) {
                 try {
