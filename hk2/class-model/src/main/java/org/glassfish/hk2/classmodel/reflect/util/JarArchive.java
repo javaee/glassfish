@@ -36,12 +36,15 @@
 
 package org.glassfish.hk2.classmodel.reflect.util;
 
+import org.glassfish.hk2.classmodel.reflect.Parser;
+
 import java.net.URI;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Enumeration;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -53,14 +56,23 @@ import java.util.logging.Logger;
  */
 public class JarArchive extends AbstractAdapter {
 
+    private final Parser parser;
     private final JarFile jar;
     private final URI uri;
 
-    public JarArchive(URI uri) throws IOException
+    /**
+     * We need to maintain how many internal jars got opened so that
+     * we don't close our jar archive until all the sub scanning
+     * has been done successfully.
+     */
+    private final AtomicInteger releaseCount = new AtomicInteger(1);
+
+    public JarArchive(Parser parser, URI uri) throws IOException
     {
         File f = new File(uri);
         this.uri = uri;
-        this.jar = new JarFile(f);    
+        this.jar = new JarFile(f);
+        this.parser = parser;
     }
 
     @Override
@@ -69,31 +81,36 @@ public class JarArchive extends AbstractAdapter {
     }
 
     @Override
-     public void onSelectedEntries(Selector selector, EntryTask task, Logger logger) throws IOException {
+     public void onSelectedEntries(Selector selector, EntryTask task, final Logger logger) throws IOException {
          Enumeration<JarEntry> enumEntries = jar.entries();
          while(enumEntries.hasMoreElements()) {
              JarEntry ja = enumEntries.nextElement();
              if (ja.getName().endsWith(".jar")) {
-                 InputStreamArchiveAdapter subArchive = null;
+                 URI subURI = null;
                  try {
-                     URI subURI = null;
+                     subURI = new URI("jar:"+uri+"!/"+ja.getName());
+                 } catch (URISyntaxException e) {
                      try {
-                         subURI = new URI("jar:"+uri+"!/"+ja.getName());
-                     } catch (URISyntaxException e) {
+                         subURI = new URI(ja.getName());
+                     } catch (URISyntaxException e1) {
+                         logger.log(Level.FINE, "ignoring exception", e1);
+                     }
+                 }
+
+                 final InputStreamArchiveAdapter subArchive = new InputStreamArchiveAdapter(this, subURI,
+                         jar.getInputStream(jar.getEntry(ja.getName())));
+                 releaseCount.incrementAndGet();
+                 parser.parse(subArchive, new Runnable() {
+                     @Override
+                     public void run() {
                          try {
-                             subURI = new URI(ja.getName());
-                         } catch (URISyntaxException e1) {
-                             logger.log(Level.FINE, "ignoring exception", e1);
+                             subArchive.close();
+                         } catch (IOException e) {
+                             logger.log(Level.SEVERE, "Cannot claose sub archive" + subArchive.getURI());
                          }
                      }
-                     subArchive = new InputStreamArchiveAdapter(subURI,
-                             jar.getInputStream(jar.getEntry(ja.getName())));
+                 });
                      subArchive.onSelectedEntries(selector, task, logger);
-                 } finally {
-                     if (subArchive!=null) {
-                         subArchive.close();
-                    }
-                 }
              }
              InputStream is = null;
              try {
@@ -124,6 +141,13 @@ public class JarArchive extends AbstractAdapter {
 
     @Override
     public void close() throws IOException {
-      jar.close();
+        releaseCount();
+    }
+
+    void releaseCount() throws IOException {
+        int release = releaseCount.decrementAndGet();
+        if (release==0) {
+            jar.close();
+        }
     }
 }

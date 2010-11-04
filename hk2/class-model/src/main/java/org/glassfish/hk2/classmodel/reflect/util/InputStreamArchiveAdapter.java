@@ -58,10 +58,12 @@ public class InputStreamArchiveAdapter extends AbstractAdapter {
     
     final private InputStream is;
     final private URI uri;
+    final private JarArchive parentArchive;
 
-    public InputStreamArchiveAdapter(URI uri, InputStream is) {
+    public InputStreamArchiveAdapter(JarArchive parent, URI uri, InputStream is) {
         this.uri = uri;
         this.is = is;
+        this.parentArchive = parent;
     }
 
     @Override

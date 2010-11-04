@@ -35,6 +35,8 @@
  */
 package org.glassfish.hk2.classmodel.reflect.util;
 
+import org.glassfish.hk2.classmodel.reflect.Parser;
+
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.net.URI;
@@ -49,9 +51,11 @@ import java.util.logging.Logger;
  */
 public class DirectoryArchive extends AbstractAdapter {
     public final File directory;
+    public final Parser parser;
 
-    public DirectoryArchive(File directory) {
+    public DirectoryArchive(Parser parser, File directory) {
         this.directory = directory;
+        this.parser = parser;
     }
 
     @Override
@@ -99,7 +103,7 @@ public class DirectoryArchive extends AbstractAdapter {
                 if (ae.name.endsWith(".jar")) {
                     JarArchive ja = null;
                     try {
-                        ja = new JarArchive(f.toURI());
+                        ja = new JarArchive(parser, f.toURI());
                         ja.onSelectedEntries(selector, task, logger);
                     } finally {
                         ja.close();

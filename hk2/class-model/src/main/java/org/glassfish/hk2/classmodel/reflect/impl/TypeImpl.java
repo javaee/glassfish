@@ -49,7 +49,7 @@ public class TypeImpl extends AnnotatedElementImpl implements Type {
 
     final TypeProxy<Type> sink;
     final List<MethodModel> methods = new ArrayList<MethodModel>();
-    final Set<URI> definingURIs=new HashSet<URI>();
+    final Set<URI> definingURIs= Collections.synchronizedSet(new HashSet<URI>());
 
 
     public TypeImpl(String name, TypeProxy<Type> sink) {

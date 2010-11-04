@@ -46,7 +46,7 @@ import java.util.*;
  */
 public class AnnotationTypeImpl extends InterfaceModelImpl implements AnnotationType {
 
-    private final Set<AnnotatedElement> references = new HashSet<AnnotatedElement>();
+    private final Set<AnnotatedElement> references = Collections.synchronizedSet(new HashSet<AnnotatedElement>());
 
     public AnnotationTypeImpl(String name, TypeProxy<Type> sink) {
         super(name, sink, null);
