@@ -50,6 +50,56 @@ package org.glassfish.embeddable;
  * <li> access to available service(s). </li>
  * </ul>
  *
+ * <p/> Usage example:
+ *
+ * <style type="text/css">
+.ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+.s0 { color: rgb(128,128,128); }
+.s1 { }
+.s2 { color: rgb(0,0,255); }
+.s3 { color: rgb(128,128,128); font-weight: bold; }
+.s4 { color: rgb(255,0,255); }
+</style>
+ *
+ * <pre>
+<span class="s0">
+        /** Create and start GlassFish &#42;&#47;</span><span class="s1">
+        {@link GlassFish} glassfish = {@link GlassFishRuntime}.bootstrap().newGlassFish();
+        glassfish.start();
+
+        </span><span class="s0">/** Deploy a web application simple.war with /hello as context root. &#42;&#47;</span><span class="s1">
+        {@link Deployer} deployer = glassfish.getService(Deployer.</span><span class="s2">class</span><span class="s1">);
+        String deployedApp = deployer.deploy(</span><span class="s2">new </span><span class="s1">File(</span><span class="s4">&quot;simple.war&quot;</span><span class="s1">).toURI(),
+                </span><span class="s4">&quot;--contextroot=hello&quot;</span><span class="s1">, </span><span class="s4">&quot;--force=true&quot;</span><span class="s1">);
+
+        </span><span class="s0">/** Run commands (as per your need). Here is an example to create a http listener and dynamically set its thread pool size. &#42;&#47;</span><span class="s1">
+        {@link CommandRunner} commandRunner = glassfish.getService(CommandRunner.</span><span class="s2">class</span><span class="s1">);
+
+        <span class="s0">// Run a command create 'my-http-listener' to listen at 9090</span>
+        {@link CommandResult} commandResult = commandRunner.run(
+                </span><span class="s4">&quot;create-http-listener&quot;</span><span class="s1">, </span><span class="s4">&quot;--listenerport=9090&quot;</span><span class="s1">,
+                </span><span class="s4">&quot;--listeneraddress=0.0.0.0&quot;</span><span class="s1">, </span><span class="s4">&quot;--defaultvs=server&quot;</span><span class="s1">,
+                </span><span class="s4">&quot;my-http-listener&quot;</span><span class="s1">);
+
+        </span><span class="s0">// Run a command to create your own thread pool</span><span class="s1">
+        commandResult = commandRunner.run(</span><span class="s4">&quot;create-threadpool&quot;</span><span class="s1">,
+                </span><span class="s4">&quot;--maxthreadpoolsize=200&quot;</span><span class="s1">, </span><span class="s4">&quot;--minthreadpoolsize=200&quot;</span><span class="s1">,
+                </span><span class="s4">&quot;my-thread-pool&quot;</span><span class="s1">);
+
+        </span><span class="s0">// Run a command to associate my-thread-pool with my-http-listener</span><span class="s1">
+        commandResult = commandRunner.run(</span><span class="s4">&quot;set&quot;</span><span class="s1">,
+                </span><span class="s4">&quot;server.network-config.network-listeners.network-listener.&quot; </span><span class="s1">+
+                        </span><span class="s4">&quot;my-http-listener.thread-pool=my-thread-pool&quot;</span><span class="s1">);
+
+        </span><span class="s0">/** Undeploy the application &#42;&#47;</span><span class="s1">
+        deployer.undeploy(deployedApp);
+
+        </span><span class="s0">/**Stop GlassFish.&#42;&#47;</span><span class="s1">
+        glassfish.stop();
+
+        </span><span class="s0">/** Dispose GlassFish. &#42;&#47;</span><span class="s1">
+        glassfish.dispose();
+ * </pre>
  * <p/>Note : multiple instances of GlassFish can be used concurrently.
  *
  * @author Sanjeeb.Sahoo@Sun.COM

@@ -52,6 +52,7 @@
       <sourceFolder url="file://$MODULE_DIR$/basic/lifecycle/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/ejb/ejb-api/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/ejb/ejb-api/src/test/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/basic/lifecycle/src/test/java" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -109,7 +109,7 @@ public class EmbeddedOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
 
     private void configureBundles() {
         // Set this, because some stupid downstream code may be relying on this property
-        System.setProperty(Constants.PLATFORM_PROPERTY_KEY, BootstrapProperties.Platform.GenericOSGi.toString());
+        System.setProperty(Constants.PLATFORM_PROPERTY_KEY, "GenericOSGi");
     }
 
     /**

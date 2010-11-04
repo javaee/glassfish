@@ -64,9 +64,13 @@ public interface Deployer {
      * to "asadmin deploy" command is also applicable here with same semantics. Please refer to GlassFish
      * deployment guide for all available options.
      *
-     * Example : deployer.deploy("http://acme.com/foo.war")
-     *           deployer.deploy(new File("/tmp/bar.ear").toURI(), "--name=foo", "--force=true", "--create-tables=true")
+     * <p/>Examples :
+     * <pre>
+     *           deployer.deploy("http://acme.com/foo.war")
      *
+     *           deployer.deploy(new File("/tmp/bar.ear").toURI(),
+     *                                    "--name=foo", "--force=true", "--create-tables=true")
+     * </pre>
      * @param archive URI identifying the application to be deployed.
      * @param params Optional list of deployment options.
      * @return the name of the deployed application

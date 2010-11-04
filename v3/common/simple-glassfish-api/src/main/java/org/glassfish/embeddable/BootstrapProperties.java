@@ -102,31 +102,15 @@ public class BootstrapProperties {
     }
 
     /**
-     * Optionally set the platform on which the GlassFish should run.
-     * <p/>
-     * <p/> Eg., setPlatform({@link BootstrapProperties.Platform#Felix});
-     * <p/>
-     * <p/> Default is {@link BootstrapProperties.Platform#Static}
+     * Get the value of the property with the specified key.
      *
-     * @param platform Platform
-     * @return This object after setting the platform.
+     * @param key the property key
+     * @return value of the property for the specified key, null if there is no such property.
      */
-    public BootstrapProperties setPlatform(Platform platform) {
-        properties.setProperty(PLATFORM_PROPERTY_KEY, platform.toString());
-        return this;
+    public String getProperty(String key) {
+        return properties.getProperty(key);
     }
-
-    /**
-     * Gets the name of the platform with which GlassFish is running or will run.
-     *
-     * @return Name of the platform.
-     */
-    public Platform getPlatform() {
-        String platform = properties.getProperty(PLATFORM_PROPERTY_KEY);
-        return platform == null || platform.trim().length() == 0 ? Platform.Static :
-                Platform.valueOf(platform.trim());
-    }
-
+    
     /**
      * Optionally set the installation root using which the GlassFish should run.
      *
@@ -145,37 +129,6 @@ public class BootstrapProperties {
      */
     public String getInstallRoot() {
         return properties.getProperty(INSTALL_ROOT_PROP_NAME);
-    }
-
-    /**
-     * Various platforms on which GlassFish could run.
-     */
-    public enum Platform {
-        /**
-         * Felix OSGi platform
-         */
-        Felix,
-
-        /**
-         * Equinox OSGi platform
-         */
-        Equinox,
-
-        /**
-         * Knopflerfish OSGi platform
-         */
-        Knopflerfish,
-
-        /**
-         * Generic OSGi R4.2 or higher platform.
-         * When this is chosen, we expect the framework to be set up in launcher classloader by user.
-         */
-        GenericOSGi,
-
-        /**
-         * Proprietary non-modular hk2 module system
-         */
-        Static
     }
 
     // PRIVATE constants.
