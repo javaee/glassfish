@@ -67,6 +67,7 @@ import org.glassfish.api.admin.ParameterMap;
  * that contains the logic for mapped commands RS Resources
  *
  */
+@Produces({"text/html;qs=2", MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class TemplateCommandDeleteResource extends TemplateExecCommand {
 
     public TemplateCommandDeleteResource(String resourceName, String commandName, String commandMethod, String commandAction, String commandDisplayName,  boolean b) {
@@ -79,10 +80,6 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand {
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_FORM_URLENCODED})
-    @Produces({
-        "text/html;qs=2",
-        MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_XML})
     public ActionReportResult processDelete(ParameterMap data) {
         if (data == null) {
             data = new ParameterMap();
@@ -128,10 +125,6 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand {
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_FORM_URLENCODED})
-    @Produces({
-        "text/html;qs=2",
-        MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_XML})
     public ActionReportResult hack(ParameterMap data) {
         if (data.containsKey("operation")) {
             List<String> l = data.get("operation");
@@ -144,15 +137,7 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand {
     }
 
     @GET
-    @Produces({
-        "text/html;qs=2",
-        MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_XML})
-    public CommandResourceGetResult get() {
-        try {
-            return new CommandResourceGetResult(resourceName, commandName, commandDisplayName, commandMethod, commandAction, options());
-        } catch (Exception e) {
-            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
+    public ActionReportResult get() {
+        return options();
     }
 }

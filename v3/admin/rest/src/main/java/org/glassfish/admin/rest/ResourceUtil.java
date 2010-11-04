@@ -336,8 +336,7 @@ public class ResourceUtil {
                     Attribute attribute = method.getAnnotation(Attribute.class);
                     if (attribute != null) {
                         ParameterMetaData parameterMetaData = getParameterMetaData(attribute);
-                        Deprecated dep = method.getAnnotation(Deprecated.class);
-                        if (dep != null) {
+                        if (method.getAnnotation(Deprecated.class) != null) {
                             parameterMetaData.putAttribute(Constants.DEPRECATED, "true");
                         }
 

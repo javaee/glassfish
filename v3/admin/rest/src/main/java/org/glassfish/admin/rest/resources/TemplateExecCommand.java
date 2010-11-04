@@ -59,7 +59,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Logger;
 import org.glassfish.admin.rest.CliFailureException;
 import org.jvnet.hk2.component.Habitat;
 
@@ -83,6 +85,7 @@ public class TemplateExecCommand {
     protected String commandAction;
 //    protected HashMap<String, String> commandParams = null;
     protected boolean isLinkedToParent = false;
+    protected Logger logger = Logger.getLogger(TemplateExecCommand.class.getName());
     /* * parameterType the type of parameter. Possible values are
      *        Constants.QUERY_PARAMETER and Constants.MESSAGE_PARAMETER
      *
@@ -105,25 +108,27 @@ public class TemplateExecCommand {
             MediaType.APPLICATION_JSON,
             "text/html;qs=2",
             MediaType.APPLICATION_XML})
-    public OptionsResult options() {
-        OptionsResult optionsResult = new OptionsResult(resourceName);
-        try {
-            //command method metadata
-            MethodMetaData methodMetaData = ResourceUtil.getMethodMetaData(
-                    commandName, getCommandParams(), parameterType, habitat, RestService.logger);
-            optionsResult.putMethodMetaData(commandMethod, methodMetaData);
-        } catch (Exception e) {
-            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
+    public ActionReportResult options() {
+        RestActionReporter ar = new RestActionReporter();
+        ar.setExtraProperties(new Properties());
+        ar.setActionDescription(commandDisplayName);
 
-        return optionsResult;
+        OptionsResult optionsResult = new OptionsResult(resourceName);
+        Map<String, MethodMetaData> mmd = new HashMap<String, MethodMetaData>();
+        MethodMetaData methodMetaData = ResourceUtil.getMethodMetaData(commandName, getCommandParams(), parameterType, habitat, RestService.logger);
+
+        optionsResult.putMethodMetaData(commandMethod, methodMetaData);
+        mmd.put(commandMethod, methodMetaData);
+        ResourceUtil.addMethodMetaData(ar, mmd);
+
+        return new ActionReportResult(ar, null, optionsResult);
     }
 
     protected ActionReportResult executeCommand(ParameterMap data) {
         RestActionReporter actionReport = ResourceUtil.runCommand(commandName, data, habitat,
                 ResourceUtil.getResultType(requestHeaders));
         ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
-        ActionReportResult results = new ActionReportResult(commandName, actionReport, options());
+        ActionReportResult results = new ActionReportResult(commandName, actionReport, options().getMetaData());
 
         if (exitCode != ActionReport.ExitCode.FAILURE) {
             results.setStatusCode(200); /*200 - ok*/
