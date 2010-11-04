@@ -438,8 +438,11 @@ public abstract class CLICommand implements PostConstruct {
                 // include every option that was specified on the command line
                 // and every option that has a default value
                 String value = getOption(opt.getName());
-                if (value == null)
+                if (value == null) {
                     value = opt.getParam().defaultValue();
+                    if (value != null && value.length() == 0)
+                        value = null;
+                }
                 if (value != null) {
                     sb.append("--").append(lc(opt.getName()));
                     if (opt.getType() == Boolean.class ||
