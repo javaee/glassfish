@@ -105,7 +105,7 @@ public class CreateConnectorConnectionPool implements AdminCommand {
     @Param(name=CCP_FAIL_ALL_CONNS, optional=true, defaultValue="false", alias="failAllConnections")
     Boolean failconnection;
 
-    @Param(name=CCP_LEAK_TIMEOUT, alias="connectionLeakTimeoutInSeconds", optional=true, defaultValue="3")
+    @Param(name=CCP_LEAK_TIMEOUT, alias="connectionLeakTimeoutInSeconds", optional=true, defaultValue="0")
     String leaktimeout = "0";
 
     @Param(name=CCP_LEAK_RECLAIM, alias="connectioLeakReclaim", optional=true, defaultValue="false")
