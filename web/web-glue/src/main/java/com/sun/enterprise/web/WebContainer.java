@@ -67,7 +67,7 @@ import com.sun.enterprise.web.logger.FileLoggerHandler;
 import com.sun.enterprise.web.logger.IASLogger;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.web.reconfig.WebConfigListener;
-import com.sun.grizzly.config.ContextRootInfo;
+import org.glassfish.grizzly.config.ContextRootInfo;
 import org.glassfish.grizzly.config.dom.NetworkConfig;
 import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.glassfish.grizzly.config.dom.NetworkListeners;

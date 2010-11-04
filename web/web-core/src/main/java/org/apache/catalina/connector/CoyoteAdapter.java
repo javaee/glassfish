@@ -59,7 +59,7 @@
 package org.apache.catalina.connector;
 
 import com.sun.appserv.ProxyHandler;
-import com.sun.grizzly.config.ContextRootInfo;
+import org.glassfish.grizzly.config.ContextRootInfo;
 import com.sun.grizzly.tcp.ActionCode;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.util.buf.ByteChunk;

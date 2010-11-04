@@ -40,7 +40,7 @@
 
 package com.sun.enterprise.configapi.tests;
 
-import com.sun.grizzly.config.GrizzlyConfig;
+import org.glassfish.grizzly.config.GrizzlyConfig;
 import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.glassfish.grizzly.config.dom.NetworkListeners;
 import org.glassfish.grizzly.config.dom.Transport;

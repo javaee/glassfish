@@ -40,7 +40,6 @@
 
 package com.sun.enterprise.security.ssl;
 
-import com.sun.grizzly.util.net.jsse.JSSE14SocketFactory;
 import java.io.IOException;
 import java.security.KeyStore;
 import java.util.logging.Level;

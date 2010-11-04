@@ -82,7 +82,7 @@
         </dependency> 
         <dependency>
             <groupId>org.glassfish.grizzly</groupId>
-            <artifactId>grizzly-utils</artifactId>
+            <artifactId>grizzly-http-server</artifactId>
         </dependency>
     </dependencies>
 </project>

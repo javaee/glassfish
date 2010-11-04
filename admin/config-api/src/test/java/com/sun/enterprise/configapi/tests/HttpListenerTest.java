@@ -40,7 +40,6 @@
 
 package com.sun.enterprise.configapi.tests;
 
-import com.sun.grizzly.config.GrizzlyConfig;
 import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.glassfish.grizzly.config.dom.NetworkListeners;
 import org.glassfish.grizzly.config.dom.Transport;
@@ -50,8 +49,6 @@ import org.junit.Test;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
-
-import java.beans.PropertyVetoException;
 
 /**
  * HttpListener related tests

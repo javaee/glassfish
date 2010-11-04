@@ -41,8 +41,8 @@
 package com.sun.enterprise.v3.services.impl.monitor;
 
 import com.sun.grizzly.Controller;
-import com.sun.grizzly.config.GrizzlyEmbeddedHttp;
-import com.sun.grizzly.config.GrizzlyServiceListener;
+import org.glassfish.grizzly.config.GrizzlyEmbeddedHttp;
+import org.glassfish.grizzly.config.GrizzlyServiceListener;
 
 /**
  * Monitoring aware {@link GrizzlyServiceListener} implementation.

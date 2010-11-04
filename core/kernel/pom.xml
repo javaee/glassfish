@@ -170,7 +170,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.grizzly</groupId>
-            <artifactId>grizzly-http</artifactId>
+            <artifactId>grizzly-http-server</artifactId>
         </dependency>
         <dependency>
             <groupId>org.glassfish.grizzly</groupId>

@@ -41,6 +41,7 @@
 package com.sun.enterprise.v3.services.impl;
 
 import com.sun.enterprise.util.Result;
+import org.glassfish.grizzly.http.server.HttpRequestProcessor;
 
 import java.net.InetAddress;
 import java.util.concurrent.Future;
@@ -55,7 +56,7 @@ import java.util.concurrent.Future;
  * 
  * @author Jeanfrancois Arcand
  */
-public interface NetworkProxy extends EndpointMapper<com.sun.grizzly.tcp.Adapter>{
+public interface NetworkProxy extends EndpointMapper<HttpRequestProcessor>{
 
 
     /** 

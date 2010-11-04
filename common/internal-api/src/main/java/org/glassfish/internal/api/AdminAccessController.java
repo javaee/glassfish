@@ -37,55 +37,58 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.internal.api;
 
-import com.sun.grizzly.tcp.Request;
 import java.security.Principal;
 import java.util.Map;
-import org.jvnet.hk2.annotations.Contract;
 import javax.security.auth.login.LoginException;
 
-/** Determines the behavior of administrative access to GlassFish v3. It should be enhanced to take into account
- *  Role-based Access Control. As of GlassFish v3, this takes care of authentication alone.
- * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net) 
+import org.jvnet.hk2.annotations.Contract;
+
+/**
+ * Determines the behavior of administrative access to GlassFish v3. It should be enhanced to take into account
+ * Role-based Access Control. As of GlassFish v3, this takes care of authentication alone.
+ *
+ * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  */
 @Contract
 public interface AdminAccessController {
-
-    /** Authenticates the admin user by delegating to the underlying realm. The implementing classes
-     *  should use the GlassFish security infrastructure constructs like LoginContextDriver. This method assumes that
-     *  the realm infrastructure is available in both the configuration and runtime of the server.
-     *  <p>
-     *  Like the name suggests the method also ensures that the admin group membership is satisfied.
+    /**
+     * Authenticates the admin user by delegating to the underlying realm. The implementing classes should use the
+     * GlassFish security infrastructure constructs like LoginContextDriver. This method assumes that the realm
+     * infrastructure is available in both the configuration and runtime of the server. <p> Like the name suggests the
+     * method also ensures that the admin group membership is satisfied.
+     *
      * @param user String representing the user name of the user doing an admin opearation
      * @param password String representing clear-text password of the user doing an admin operation
      * @param realm String representing the name of the admin realm for given server
-     * @throws LoginException if there is any error in underlying implementation
+     *
      * @return true if authentication succeeds, false otherwise
+     *
+     * @throws LoginException if there is any error in underlying implementation
      */
     boolean loginAsAdmin(String user, String password, String realm) throws LoginException;
 
-    /** Authenticates the admin user by delegating to the underlying realm. The implementing classes
-     *  should use the GlassFish security infrastructure constructs like LoginContextDriver. This method assumes that
-     *  the realm infrastructure is available in both the configuration and runtime of the server.
-     *  <p>
-     *  This variant also logs the requester in as an admin if the specified Principal
-     *  matches the Principal from the certificate in the truststore associated with
-     *  the alias configured in the domain configuration.  
+    /**
+     * Authenticates the admin user by delegating to the underlying realm. The implementing classes should use the
+     * GlassFish security infrastructure constructs like LoginContextDriver. This method assumes that the realm
+     * infrastructure is available in both the configuration and runtime of the server. <p> This variant also logs the
+     * requester in as an admin if the specified Principal matches the Principal from the certificate in the truststore
+     * associated with the alias configured in the domain configuration.
      *
-     *  Typically, methods invoking
-     *  this variant should pass the Principal associated with the request as
-     *  reported by the secure transport and the value from the X-GlassFish-admin header
-     *  (null if no such header exists).
+     * Typically, methods invoking this variant should pass the Principal associated with the request as reported by the
+     * secure transport and the value from the X-GlassFish-admin header (null if no such header exists).
+     *
      * @param user String representing the user name of the user doing an admin opearation
      * @param password String representing clear-text password of the user doing an admin operation
      * @param realm String representing the name of the admin realm for given server
      * @param authRelatedHeaders authentication-related headers from the incoming admin request
      * @param requestPrincipal Principal associated with the incoming admin request (can be null)
-     * @throws LoginException if there is any error in underlying implementation
+     *
      * @return true if authentication succeeds, false otherwise
+     *
+     * @throws LoginException if there is any error in underlying implementation
      */
     boolean loginAsAdmin(String user, String password, String realm,
-            Map<String,String> authRelatedHeaders, Principal requestPrincipal) throws LoginException;
+        Map<String, String> authRelatedHeaders, Principal requestPrincipal) throws LoginException;
 }

@@ -43,7 +43,7 @@ package com.sun.enterprise.configapi.tests;
 import org.glassfish.grizzly.config.dom.NetworkConfig;
 import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.glassfish.grizzly.config.dom.Ssl;
-import com.sun.grizzly.config.GrizzlyConfig;
+import org.glassfish.grizzly.config.GrizzlyConfig;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;

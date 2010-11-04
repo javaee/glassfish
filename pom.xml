@@ -833,6 +833,12 @@
 
             <dependency>
                 <groupId>org.glassfish.grizzly</groupId>
+                <artifactId>grizzly-http-server</artifactId>
+                <version>${grizzly.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.glassfish.grizzly</groupId>
                 <artifactId>grizzly-rcm</artifactId>
                 <version>${grizzly.version}</version>
             </dependency>

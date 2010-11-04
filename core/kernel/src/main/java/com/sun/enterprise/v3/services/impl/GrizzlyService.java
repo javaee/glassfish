@@ -77,6 +77,7 @@ import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
+import org.glassfish.grizzly.http.server.HttpRequestProcessor;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -431,7 +432,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         final boolean ajpListener = ConfigBeansUtilities.toBoolean(listener.getJkEnabled());
         // create the proxy for the port.
         GrizzlyProxy proxy = new GrizzlyProxy(this, listener);
-        if (!ajpListener && !("light-weight-listener".equals(listener.getProtocol()))) {
+        if (!ajpListener && !"light-weight-listener".equals(listener.getProtocol())) {
             final NetworkConfig networkConfig = listener.getParent(NetworkListeners.class).getParent(NetworkConfig.class);
             // attach all virtual servers to this port
             for (VirtualServer vs : networkConfig.getParent(Config.class).getHttpService().getVirtualServer()) {
@@ -526,7 +527,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      * @param endpointAdapter servicing requests.
      */
     @Override
-    public void registerEndpoint(String contextRoot, Adapter endpointAdapter,
+    public void registerEndpoint(String contextRoot, HttpRequestProcessor endpointAdapter,
                                  ApplicationContainer container) throws EndpointRegistrationException {
 
         registerEndpoint(contextRoot, endpointAdapter, container, null);
@@ -542,7 +543,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      * @param virtualServers comma separated list of the virtual servers
      */
     @Override
-    public void registerEndpoint(String contextRoot, Adapter endpointAdapter,
+    public void registerEndpoint(String contextRoot, HttpRequestProcessor endpointAdapter,
         ApplicationContainer container, String virtualServers) throws EndpointRegistrationException {
         List<String> virtualServerList;
         if (virtualServers == null) {
@@ -563,42 +564,29 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      * @param contextRoot for the proxy
      * @param endpointAdapter servicing requests.
      */
+
     @Override
-    public void registerEndpoint(String contextRoot, Collection<String> vsServers,
-            Adapter endpointAdapter,
-            ApplicationContainer container) throws EndpointRegistrationException {
-            
+    public void registerEndpoint(String contextRoot, Collection<String> vsServers, HttpRequestProcessor endpointAdapter,
+        ApplicationContainer container) throws EndpointRegistrationException {
         Collection<AddressInfo> addressInfos = getAddressInfoFromVirtualServers(vsServers);
         for (AddressInfo info : addressInfos) {
-            registerEndpoint(contextRoot,
-                             info.address,
-                             info.port,
-                             vsServers,
-                             endpointAdapter,
-                             container);
+            registerEndpoint(contextRoot, info.address, info.port, vsServers, endpointAdapter, container);
         }
     }
-
 
     /**
      * Registers a new endpoint for the given context root at the given port
      * number.
      */
     @Override
-    public void registerEndpoint(String contextRoot,
-                                 InetAddress address,
-                                 int port,
-                                 Collection<String> vsServers,
-                                 Adapter endpointAdapter,
-                                 ApplicationContainer container) throws EndpointRegistrationException {
+    public void registerEndpoint(String contextRoot, InetAddress address, int port, Collection<String> vsServers,
+        HttpRequestProcessor endpointAdapter, ApplicationContainer container) throws EndpointRegistrationException {
         for (NetworkProxy proxy : proxies) {
             if (proxy.getPort() == port && proxy.getAddress().equals(address)) {
-                proxy.registerEndpoint(contextRoot, vsServers,
-                                       endpointAdapter, container);
+                proxy.registerEndpoint(contextRoot, vsServers, endpointAdapter, container);
             }
         }
     }
-
 
     /**
      * Removes the context-root from our list of endpoints.
@@ -652,7 +640,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         InetAddress address = a.getListenAddress();
         List<String> vs     = a.getVirtualServers();
         String cr           = a.getContextRoot();
-        this.registerEndpoint(cr, address, port, vs, a, null);
+        registerEndpoint(cr, address, port, vs, a, null);
     }
 
     // get the ports from the http listeners that are associated with 

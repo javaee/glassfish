@@ -44,8 +44,8 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.sun.grizzly.tcp.Adapter;
-import com.sun.grizzly.util.http.mapper.Mapper;
+import org.glassfish.grizzly.http.server.HttpRequestProcessor;
+import org.glassfish.grizzly.http.server.util.Mapper;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.Service;
 
@@ -58,9 +58,9 @@ import org.jvnet.hk2.annotations.Service;
 @ContractProvided(Mapper.class)
 public class ContextMapper extends Mapper {
     protected final Logger logger;
-    protected Adapter adapter;
+    protected HttpRequestProcessor adapter;
     // The id of the associated network-listener
-    protected String id;
+    private String id;
 
     public ContextMapper() {
         this(Logger.getAnonymousLogger());
@@ -113,7 +113,7 @@ public class ContextMapper extends Mapper {
         // clean all the previously added information, specially the
         // MappingData.wrapper info as this information cannot apply
         // to this Container.
-        if (adapter != null && "org.apache.catalina.connector.CoyoteAdapter".equals(adapter.getClass().getName())) {
+        if (adapter != null && "org.apache.catalina.connector.CoyoteHttpRequestProcessor".equals(adapter.getClass().getName())) {
             removeContext(hostName, path);
         }
         super.addContext(hostName, path, context, welcomeResources, resources);
@@ -124,17 +124,17 @@ public class ContextMapper extends Mapper {
      */
     @Override
     public synchronized void removeHost(final String name) {
-        // Do let the WebContainer deconfigire us.
+        // Do let the WebContainer unconfigure us.
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("Faking removal of host: " + name);
         }
     }
 
-    public void setAdapter(final Adapter adapter) {
+    public void setHttpRequestProcessor(final HttpRequestProcessor adapter) {
         this.adapter = adapter;
     }
 
-    public Adapter getAdapter() {
+    public HttpRequestProcessor getHttpRequestProcessor() {
         return adapter;
     }
 

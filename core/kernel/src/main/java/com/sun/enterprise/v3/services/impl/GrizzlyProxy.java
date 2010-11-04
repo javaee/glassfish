@@ -46,7 +46,7 @@ import com.sun.enterprise.config.serverbeans.VirtualServer;
 import org.jvnet.hk2.config.types.Property;
 import com.sun.grizzly.Controller;
 import com.sun.grizzly.ControllerStateListener;
-import com.sun.grizzly.config.GrizzlyEmbeddedHttp;
+import org.glassfish.grizzly.config.GrizzlyEmbeddedHttp;
 import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.glassfish.grizzly.config.dom.Protocol;
 import com.sun.grizzly.http.SelectorThread;

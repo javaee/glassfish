@@ -53,41 +53,41 @@ import org.jvnet.hk2.annotations.Contract;
  *
  */
 @Contract
-public interface Adapter extends com.sun.grizzly.tcp.Adapter {
+public interface Adapter {
 
     /**
      * Returns the context root for this adapter
      * @return context root
      */
-    public String getContextRoot();
+    String getContextRoot();
 
     /**
      * Returns the listener port for this adapter
      * @return listener port
      */
-    public int getListenPort();
+    int getListenPort();
 
 
     /**
      * @return the {@link InetAddress} on which this adapter is listening
      */
-    public InetAddress getListenAddress();
+    InetAddress getListenAddress();
 
     /**
      * Returns the virtual servers supported by this adapter
      * @return List&lt;String&gt; the virtual server list supported by the adapter
      */
-    public List<String> getVirtualServers();
+    List<String> getVirtualServers();
 
     /**
      * Checks whether this adapter has been registered as a network endpoint.
      */
-    public boolean isRegistered();
+    boolean isRegistered();
 
 
     /**
      * Marks this adapter as having been registered or unregistered as a
      * network endpoint
      */
-    public void setRegistered(boolean isRegistered);
+    void setRegistered(boolean isRegistered);
 }
