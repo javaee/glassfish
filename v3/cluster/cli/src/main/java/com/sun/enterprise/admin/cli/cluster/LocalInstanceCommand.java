@@ -292,8 +292,8 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             FileUtils.whack(tmpwhackee);
         }
         catch (IOException ioe) {
-            throw new CommandException(Strings.get("DeleteInstance.badWhack",
-                    whackee));
+            throw new CommandException(Strings.get("DeleteInstance.badWhackWithException",
+                    whackee, ioe, StringUtils.getStackTrace(ioe)));
         }
         if (whackee.isDirectory())
             throw new CommandException(Strings.get("DeleteInstance.badWhack",
