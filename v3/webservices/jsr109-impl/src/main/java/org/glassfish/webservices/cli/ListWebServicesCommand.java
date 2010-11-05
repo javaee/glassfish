@@ -58,6 +58,11 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
+ * CLI for listing all web services.
+ * <p>
+ * asadmin __list-webservices [--appname <appname> [--modulename <modulename> [--
+endpointname <endpointname>]]]
+
  * @author Jitendra Kotamraju
  */
 @Service(name = "__list-webservices")
@@ -67,8 +72,8 @@ public class ListWebServicesCommand implements AdminCommand {
     @Inject
     private Habitat habitat;
 
-    @Param(optional=true)
-    String applicationName;
+    @Param(optional=true, alias="applicationname")
+    String appName;
 
     @Param(optional=true)
     String moduleName;
@@ -86,26 +91,26 @@ public class ListWebServicesCommand implements AdminCommand {
         }
         WebServicesDeploymentMBean bean = container.getDeploymentBean();
 
-        if (applicationName != null && moduleName != null && endpointName != null) {
+        if (appName != null && moduleName != null && endpointName != null) {
             Map<String, Map<String, Map<String, DeployedEndpointData>>> endpoints =
-                    bean.getEndpoint(applicationName, moduleName, endpointName);
-            fillAllEndpoints(report, endpoints);
-        } else if (applicationName != null && moduleName != null) {
+                    bean.getEndpoint(appName, moduleName, endpointName);
+            fillEndpoints(report, endpoints);
+        } else if (appName != null && moduleName != null) {
             Map<String, Map<String, Map<String, DeployedEndpointData>>> endpoints =
-                    bean.getEndpoints(applicationName, moduleName);
-            fillAllEndpoints(report, endpoints);
-        } else if (applicationName != null) {
+                    bean.getEndpoints(appName, moduleName);
+            fillEndpoints(report, endpoints);
+        } else if (appName != null) {
             Map<String, Map<String, Map<String, DeployedEndpointData>>> endpoints =
-                    bean.getEndpoints(applicationName);
-            fillAllEndpoints(report, endpoints);
+                    bean.getEndpoints(appName);
+            fillEndpoints(report, endpoints);
         } else {
             Map<String, Map<String, Map<String, DeployedEndpointData>>> endpoints = bean.getEndpoints();
-            fillAllEndpoints(report, endpoints);
+            fillEndpoints(report, endpoints);
         }
 
     }
 
-    private void fillAllEndpoints(ActionReport report, Map<String, Map<String, Map<String, DeployedEndpointData>>> endpoints) {
+    private void fillEndpoints(ActionReport report, Map<String, Map<String, Map<String, DeployedEndpointData>>> endpoints) {
         if (!endpoints.isEmpty()) {
             Properties extra = new Properties();
             extra.putAll(endpoints);
