@@ -77,6 +77,7 @@
 
     <build>
         <testSourceDirectory>src/test/java</testSourceDirectory>
+        <testOutputDirectory>target/test-classes/WEB-INF/classes</testOutputDirectory>
         <plugins>
             <!-- Get hold of all the required artifacts -->
             <plugin>

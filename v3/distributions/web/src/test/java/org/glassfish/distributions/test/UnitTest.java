@@ -69,7 +69,7 @@ public class UnitTest {
         Context ic = c.getContext();
         try {
             System.out.println("Looking up EJB...");
-            SampleEjb ejb = (SampleEjb) ic.lookup("java:global/test-classes/SampleEjb");
+            SampleEjb ejb = (SampleEjb) ic.lookup("java:global/classes/SampleEjb");
             if (ejb!=null) {
                 System.out.println("Invoking EJB...");
                 System.out.println(ejb.saySomething());

@@ -40,100 +40,68 @@
 
 package org.glassfish.distributions.test;
 
+import org.glassfish.distributions.test.ejb.SampleEjb;
+import org.glassfish.embeddable.CommandResult;
+import org.glassfish.embeddable.CommandRunner;
+import org.glassfish.embeddable.Deployer;
+import org.glassfish.embeddable.GlassFish;
+import org.glassfish.embeddable.GlassFishException;
+import org.glassfish.embeddable.GlassFishRuntime;
+import org.glassfish.embeddable.web.EmbeddedWebContainer;
+import org.glassfish.embeddable.web.HttpListener;
+import org.glassfish.embeddable.web.WebListener;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
-import org.glassfish.api.ActionReport.MessagePart;
-import org.glassfish.api.container.Sniffer;
-import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.api.embedded.ContainerBuilder;
-import org.glassfish.api.embedded.EmbeddedContainer;
-import org.glassfish.api.embedded.EmbeddedDeployer;
-import org.glassfish.api.embedded.LifecycleException;
-import org.glassfish.api.embedded.Port;
-import org.glassfish.api.embedded.ScatteredArchive;
-import org.glassfish.api.embedded.Server;
-import org.glassfish.api.embedded.admin.AdminInfo;
-import org.glassfish.api.embedded.admin.CommandExecution;
-import org.glassfish.api.embedded.admin.CommandParameters;
-import org.glassfish.api.embedded.admin.EmbeddedAdminContainer;
-import org.glassfish.embeddable.web.EmbeddedWebContainer;
-import org.glassfish.embeddable.web.HttpListener;
-import org.glassfish.distributions.test.ejb.SampleEjb;
-import org.glassfish.embeddable.GlassFishException;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 public class EmbeddedTest {
 
-    static Port http=null;
-    static Server server = null;
-    static EmbeddedAdminContainer ctr =null;
+    static GlassFish glassfish;
 
     @BeforeClass
-    public static void setup() throws org.glassfish.api.embedded.LifecycleException, GlassFishException {
+    public static void setup() throws GlassFishException {
+        glassfish = GlassFishRuntime.bootstrap().newGlassFish();
+        glassfish.start();
 
-        Server.Builder builder = new Server.Builder("build");
-
-        server = builder.build();
-        NetworkConfig nc = server.getHabitat().getComponent(NetworkConfig.class);
-        List<NetworkListener> listeners = nc.getNetworkListeners().getNetworkListener();
+        EmbeddedWebContainer webcontainer =
+                glassfish.getService(EmbeddedWebContainer.class);
+        Collection<WebListener> listeners = webcontainer.getWebListeners();
         System.out.println("Network listener size before creation " + listeners.size());
-        for (NetworkListener nl : listeners) {
-            System.out.println("Network listener " + nl.getPort());
+        for (WebListener listener : listeners) {
+            System.out.println("Network listener " + listener.getPort());
         }
 
-        server.addContainer(server.createConfig(ContainerBuilder.Type.ejb));
-//        ContainerBuilder b = server.createConfig(ContainerBuilder.Type.web);
-//        System.out.println("builder is " + b);
-//        server.addContainer(b);
-
-        // TODO :: change this to use org.glassfish.embeddable.GlassFish.getService
-        EmbeddedWebContainer embedded = server.getHabitat().
-                getComponent(EmbeddedWebContainer.class);
         try {
             HttpListener listener = new HttpListener();
             listener.setPort(8080);
             listener.setId("embedded-listener-1");
-            embedded.addWebListener(listener);
-        } catch(Exception e) {
+            webcontainer.addWebListener(listener);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-        embedded.start();
-        server.addContainer(ContainerBuilder.Type.all);
-        ctr = server.addContainer(server.createConfig(AdminInfo.class));
-
-        listeners = nc.getNetworkListeners().getNetworkListener();
+        listeners = webcontainer.getWebListeners();
         System.out.println("Network listener size after creation " + listeners.size());
-        Assert.assertTrue(listeners.size()==1);
-        for (NetworkListener nl : listeners) {
-            System.out.println("Network listener " + nl.getPort());
-        }
-        Collection<NetworkListener> cnl = server.getHabitat().getAllByContract(NetworkListener.class);
-        System.out.println("Network listener size after creation " + cnl.size());
-        for (NetworkListener nl : cnl) {
-            System.out.println("Network listener " + nl.getPort());
+        Assert.assertTrue(listeners.size() == 1);
+        for (WebListener listener : listeners) {
+            System.out.println("Network listener " + listener.getPort());
         }
 
     }
 
-
     @Test
-    public void testAll() throws LifecycleException {
+    public void testAll() throws GlassFishException {
+        /*
         Set<Sniffer> sniffers = new HashSet<Sniffer>();
         for (EmbeddedContainer c : server.getContainers()) {
             sniffers.addAll(c.getSniffers());
@@ -142,26 +110,25 @@ public class EmbeddedTest {
         for (Sniffer sniffer : sniffers) {
             System.out.println("Registered Sniffer " + sniffer.getModuleType());
         }
+        */
     }    
 
     @Test
-    public void testEjb() throws LifecycleException {
+    public void testEjb() throws GlassFishException {
+        Deployer deployer = glassfish.getDeployer();
 
-        EmbeddedDeployer deployer = server.getDeployer();
+        URL source = SampleEjb.class.getClassLoader().getResource(
+                "org/glassfish/distributions/test/ejb/SampleEjb.class");
+        String p = source.getPath().substring(0, source.getPath().length() -
+                "org/glassfish/distributions/test/ejb/SimpleEjb.class".length());
 
-        URL source = SampleEjb.class.getClassLoader().getResource("org/glassfish/distributions/test/ejb/SampleEjb.class");
-        String p = source.getPath().substring(0, source.getPath().length()-"org/glassfish/distributions/test/ejb/SimpleEjb.class".length());
-
-        File path = new File(p);
-        DeployCommandParameters dp = new DeployCommandParameters(path);
-        dp.name="sample";
-        String appName = deployer.deploy(path, dp);
+        String appName = deployer.deploy(new File(p).toURI(), "--name=sample");
 
         // ok now let's look up the EJB...
         try {
             InitialContext ic = new InitialContext();
             SampleEjb ejb = (SampleEjb) ic.lookup("java:global/sample/SampleEjb");
-            if (ejb!=null) {
+            if (ejb != null) {
                 try {
                     System.out.println(ejb.saySomething());
                 } catch (Exception e) {
@@ -172,102 +139,85 @@ public class EmbeddedTest {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
-        deployer.undeploy(appName, null);
+        deployer.undeploy(appName);
         System.out.println("Done with EJB");
     }
 
     @Test
-    public void testWeb() throws Exception {
-        System.out.println("Starting Web " + server);
-        EmbeddedDeployer deployer = server.getDeployer();
-        System.out.println("Added Web");
+    public void testWeb() throws GlassFishException {
+        System.out.println("Starting testWeb " + glassfish);
 
-        URL source = SampleEjb.class.getClassLoader().getResource("org/glassfish/distributions/test/web/WebHello.class");
-        String p = source.getPath().substring(0, source.getPath().length()-"org/glassfish/distributions/test/web/WebHello.class".length());
+        Deployer deployer = glassfish.getDeployer();
 
-        System.out.println("Root is " + p);
-        ScatteredArchive.Builder builder = new ScatteredArchive.Builder("sampleweb", new File(p));
-        builder.resources(new File(p));
-        builder.addClassPath((new File(p)).toURL());
-        DeployCommandParameters dp = new DeployCommandParameters(new File(p));
+        URL source = SampleEjb.class.getClassLoader().getResource(
+                "org/glassfish/distributions/test/web/WebHello.class");
+        String p = source.getPath().substring(0, source.getPath().length() -
+                "org/glassfish/distributions/test/web/WebHello.class".length());
 
-        System.out.println("Deploying " + p);
-        String appName = null;
-            appName = deployer.deploy(builder.buildWar(), dp);
-            System.out.println("Deployed " + appName);
-            Assert.assertTrue(appName != null); 
-            try {
-                URL servlet = new URL("http://localhost:8080/test-classes/hello");
-                URLConnection yc = servlet.openConnection();
-                BufferedReader in = new BufferedReader(
-                                        new InputStreamReader(
-                                        yc.getInputStream()));
-                String inputLine = in.readLine();
-                if (inputLine != null)
-                    System.out.println(inputLine);
-                Assert.assertEquals(inputLine.trim(), "Hello World !");
-                in.close();
-            } catch(Exception e) {
-                e.printStackTrace();
-		// do not throw the exception for now, because this may break the build if, for example, another instance of
-		// glassfish is running on 8080
-             //   throw e;
+        File path = new File(p).getParentFile().getParentFile();
+
+        String name = null;
+
+        if (path.getName().lastIndexOf('.') != -1) {
+            name = path.getName().substring(0, path.getName().lastIndexOf('.'));
+        } else {
+            name = path.getName();
+        }
+
+        System.out.println("Deploying " + path + ", name = " + name);
+
+        String appName = deployer.deploy(path.toURI(), "--name=" + name);
+
+        System.out.println("Deployed " + appName);
+
+        Assert.assertTrue(appName != null);
+
+        try {
+            URL servlet = new URL("http://localhost:8080/test-classes/hello");
+            URLConnection yc = servlet.openConnection();
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(
+                            yc.getInputStream()));
+            String inputLine = in.readLine();
+            if (inputLine != null) {
+                System.out.println(inputLine);
             }
-        if (appName!=null)
-            deployer.undeploy(appName, null);
+            Assert.assertNotNull(inputLine);
+            Assert.assertEquals(inputLine.trim(), "Hello World !");
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            // do not throw the exception for now, because this may break the build if,
+            // for example, another instance of glassfish is running on 8080
+            //   throw e;
+        }
+
+        if (appName != null) {
+            deployer.undeploy(appName);
+            System.out.println("Undeployed " + appName);
+        }
 
     }
 
     @Test
-    public void commandTest() {
-        CommandExecution ce = ctr.execute("list-modules", new CommandParameters());
-        try {
-            ce.getActionReport().writeReport(System.out);
-            System.out.println("");
-            for (MessagePart mp : ce.getActionReport().getTopMessagePart().getChildren()) {
-                 System.out.println(mp.getMessage());
-            }
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        CommandParameters cm = new CommandParameters();
-        cm.setOperand("org.glassfish.api.container.Sniffer");
-        ce = ctr.execute("list-contracts", cm);
-        try {
-            ce.getActionReport().writeReport(System.out);
-            System.out.println("");
-            for (MessagePart mp : ce.getActionReport().getTopMessagePart().getChildren()) {
-                 System.out.println(mp.getMessage());
-            }
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
+    public void commandTest() throws GlassFishException {
+        CommandRunner commandRunner = glassfish.getCommandRunner();
 
-        cm.setOperand("org.glassfish.api.container.Container");
-        cm.setOption("started", "true");
-        ce = ctr.execute("list-contracts", cm);
-        try {
-            ce.getActionReport().writeReport(System.out);
-            System.out.println("");
-            for (MessagePart mp : ce.getActionReport().getTopMessagePart().getChildren()) {
-                 System.out.println(mp.getMessage());
-            }
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
+        CommandResult commandResult = commandRunner.run("list-modules");
+        System.out.println("list-modules command result :\n" + commandResult.getOutput());
+
+        // Unknown commands throw NPE, uncomment once the issue is fixed.
+        //commandResult = commandRunner.run("list-contracts");
+        //System.out.println("list-contracts command result :\n" + commandResult.getOutput());
     }
-    
 
     @AfterClass
-    public static void  close() throws LifecycleException {
-        if (http!=null) {
-            http.close();
-            http=null;
-        }
-        System.out.println("Stopping server " + server);
-        if (server!=null) {
-            server.stop();
-            server=null;
+    public static void close() throws GlassFishException {
+        System.out.println("Stopping server " + glassfish);
+        if (glassfish != null) {
+            glassfish.stop();
+            glassfish.dispose();
+            glassfish = null;
         }
     }
 }
