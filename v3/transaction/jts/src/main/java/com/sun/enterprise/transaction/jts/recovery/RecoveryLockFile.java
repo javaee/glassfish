@@ -55,6 +55,7 @@ import java.nio.channels.FileLock;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import com.sun.logging.LogDomains;
+
 import com.sun.enterprise.transaction.jts.api.TransactionRecoveryFence;
 import com.sun.enterprise.transaction.jts.api.DelegatedTransactionRecoveryFence;
 
@@ -144,7 +145,9 @@ public class RecoveryLockFile implements TransactionRecoveryFence, DelegatedTran
      * {@inheritDoc}
      */
     public void lowerFence() {
+        _logger.log(Level.INFO, "Lower Fence request for instance " + instance_name);
         doneRecovering();
+        _logger.log(Level.INFO, "Fence lowered for instance " + instance_name);
     }
 
     /**
@@ -165,6 +168,7 @@ public class RecoveryLockFile implements TransactionRecoveryFence, DelegatedTran
      * {@inheritDoc}
      */
     public void raiseFence(String logPath, String instance, long timestamp) {
+        _logger.log(Level.INFO, "Raise Fence request for instance " + instance);
         while (isRecovering(logPath, instance, timestamp, BY)) {
             //wait
             try {
@@ -173,13 +177,16 @@ public class RecoveryLockFile implements TransactionRecoveryFence, DelegatedTran
             }
         }
         registerRecovery(logPath, instance);
+        _logger.log(Level.INFO, "Fence raised for instance " + instance);
     }
 
     /**
      * {@inheritDoc}
      */
     public void lowerFence(String logPath, String instance) {
+        _logger.log(Level.INFO, "Lower Fence request for instance " + instance);
         doneRecovering(logPath, instance);
+        _logger.log(Level.INFO, "Fence lowered for instance " + instance);
     }
 
     /**
@@ -221,6 +228,7 @@ public class RecoveryLockFile implements TransactionRecoveryFence, DelegatedTran
             return false;
         }
 
+        boolean result = false;
         try {
             _logger.log(Level.INFO, "Checking Lock File " + recoveryLockFile);
             RandomAccessFile raf = new RandomAccessFile(recoveryLockFile, "rw");
@@ -235,8 +243,8 @@ public class RecoveryLockFile implements TransactionRecoveryFence, DelegatedTran
                         throw new IllegalStateException();
                     } else if ((parts[0].equals(OWN) && parts[1].equals(instance)) ||
                              (instance == null && parts[0].equals(prefix))) {
-                    _logger.log(Level.INFO, "Recovering? " + (Long.parseLong(parts[2]) > timestamp));
-                        return (Long.parseLong(parts[2]) > timestamp);
+                        result = (Long.parseLong(parts[2]) > timestamp);
+                        break;
                     } else {
                         // skip all other lines
                         continue;
@@ -257,7 +265,8 @@ public class RecoveryLockFile implements TransactionRecoveryFence, DelegatedTran
             }
         }
 
-        return false;
+        _logger.log(Level.INFO, "Recovering? " + result);
+        return result;
     }
 
     /**
