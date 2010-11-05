@@ -82,11 +82,13 @@ public class StopServer {
             // ignore
         }
 
-        deletePidFile(env);
         
         if(force)
             System.exit(0);
+        else
+            deletePidFile(env);
     }
+    
     private final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(StopServer.class);
 
     /**
