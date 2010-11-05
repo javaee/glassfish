@@ -202,8 +202,10 @@ public abstract class BaseDevTest {
 
     protected final void writeFailure() {
         System.out.println(FAILURE_START);
-        System.out.println(lastAsadminReturn.out);
-        System.out.println(lastAsadminReturn.err);
+        if (lastAsadminReturn != null) {
+            System.out.println(lastAsadminReturn.out);
+            System.out.println(lastAsadminReturn.err);
+        }
     }
 
     /**
