@@ -235,8 +235,13 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
 
     protected String processReport(ActionReporter ar) {
         StringBuilder result = new StringBuilder();
+        String des=ar.getActionDescription();
+        //check for no description, make it blank
+        if (des==null){
+            des="";
+        }
         result.append("<h2>")
-                .append(ar.getActionDescription())
+                .append(des)
                 .append(" output:</h2><h3>")
                 .append(ar.getMessage() != null ? "<pre>"+ar.getMessage()+"</pre>" : "")
                 .append("</h3>");
