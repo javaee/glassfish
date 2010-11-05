@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -49,8 +49,8 @@ import java.util.Properties;
  * <p/>
  * <p/>Eg.., GlassFishRuntime.bootstrap(new BootstrapProperties()).newGlassFish(<b>new GlassFishProperties()</b>);
  *
- * @author Prasad.Subramanian@Sun.COM
  * @author bhavanishankar@dev.java.net
+ * @author Prasad.Subramanian@Sun.COM
  */
 public class GlassFishProperties {
 
@@ -97,11 +97,9 @@ public class GlassFishProperties {
      *
      * @param key   the key to be placed into this glassfish properties.
      * @param value the value corresponding to the key.
-     * @return This object after setting the custom property.
      */
-    public GlassFishProperties setProperty(String key, String value) {
+    public void setProperty(String key, String value) {
         gfProperties.setProperty(key, value);
-        return this;
     }
 
     /**
@@ -122,9 +120,8 @@ public class GlassFishProperties {
      * @param instanceRoot Location of the instance root.
      * @return This object after setting the instance root.
      */
-    public GlassFishProperties setInstanceRoot(String instanceRoot) {
+    public void setInstanceRoot(String instanceRoot) {
         gfProperties.setProperty(INSTANCE_ROOT_PROP_NAME, instanceRoot);
-        return this;
     }
 
     /**
@@ -144,11 +141,9 @@ public class GlassFishProperties {
      * To writeback any changes, call {@link #setConfigFileReadOnly(boolean)} with 'false'.
      *
      * @param configFileURI Location of configuration file.
-     * @return This object after setting the configuration file URI
      */
-    public GlassFishProperties setConfigFileURI(String configFileURI) {
+    public void setConfigFileURI(String configFileURI) {
         gfProperties.setProperty(CONFIG_FILE_URI_PROP_NAME, configFileURI);
-        return this;
     }
 
 
@@ -180,12 +175,10 @@ public class GlassFishProperties {
      * <p/> By default readOnly is true.
      *
      * @param readOnly false to writeback any changes.
-     * @return This object after setting configFileReadOnly
      */
-    public GlassFishProperties setConfigFileReadOnly(boolean readOnly) {
+    public void setConfigFileReadOnly(boolean readOnly) {
         gfProperties.setProperty(CONFIG_FILE_READ_ONLY,
                 Boolean.toString(readOnly));
-        return this;
     }
 
     /**
@@ -205,14 +198,13 @@ public class GlassFishProperties {
      * 
      * @return This object after setting the port.
      */
-    public GlassFishProperties setPort(String protocol, int port) {
+    public void setPort(String protocol, int port) {
         if (protocol != null) {
             String key = nameMap.get(protocol);
             if (key != null) {
                 gfProperties.setProperty(key, Integer.toString(port));
             }
         }
-        return this;
     }
 
     /**

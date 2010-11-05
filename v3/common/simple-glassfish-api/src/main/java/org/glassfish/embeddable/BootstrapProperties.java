@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,8 +47,8 @@ import java.util.Properties;
  * <p/>
  * <p/>Eg.., GlassFishRuntime.bootstrap(new BootstrapProperties());
  *
- * @author Prasad.Subramanian@Sun.COM
  * @author bhavanishankar@dev.java.net
+ * @author Prasad.Subramanian@Sun.COM
  */
 public class BootstrapProperties {
 
@@ -94,11 +94,9 @@ public class BootstrapProperties {
      *
      * @param key   the key to be placed into this bootstrap properties.
      * @param value the value corresponding to the key.
-     * @return This object after setting the custom property.
      */
-    public BootstrapProperties setProperty(String key, String value) {
+    public void setProperty(String key, String value) {
         properties.setProperty(key, value);
-        return this;
     }
 
     /**
@@ -117,9 +115,8 @@ public class BootstrapProperties {
      * @param installRoot Location of installation root.
      * @return This object after setting the installation root.
      */
-    public BootstrapProperties setInstallRoot(String installRoot) {
+    public void setInstallRoot(String installRoot) {
         properties.setProperty(INSTALL_ROOT_PROP_NAME, installRoot);
-        return this;
     }
 
     /**
@@ -131,9 +128,6 @@ public class BootstrapProperties {
         return properties.getProperty(INSTALL_ROOT_PROP_NAME);
     }
 
-    // PRIVATE constants.
-    // Key for specifying which platform the GlassFish should run with.
-    private final static String PLATFORM_PROPERTY_KEY = "GlassFish_Platform";
     // Key for specifying which installation root the GlassFish should run with.
     private static final String INSTALL_ROOT_PROP_NAME = "com.sun.aas.installRoot";
 }
