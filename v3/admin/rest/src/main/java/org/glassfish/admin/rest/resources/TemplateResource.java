@@ -415,7 +415,8 @@ public class TemplateResource {
 
         ResourceUtil.addMethodMetaData(ar, mmd);
         if (entity != null) {
-            ar.getExtraProperties().put("childResources", ResourceUtil.getResourceLinks(entity, uriInfo));
+            ar.getExtraProperties().put("childResources", ResourceUtil.getResourceLinks(entity, uriInfo, 
+                    ResourceUtil.canShowDeprecatedItems(habitat)));
         }
         ar.getExtraProperties().put("commands", ResourceUtil.getCommandLinks(getCommandResourcesPaths()));
 

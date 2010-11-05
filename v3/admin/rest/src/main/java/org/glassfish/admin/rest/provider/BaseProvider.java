@@ -39,9 +39,7 @@
  */
 package org.glassfish.admin.rest.provider;
 
-import com.sun.enterprise.config.serverbeans.Domain;
 import org.jvnet.hk2.component.Habitat;
-import com.sun.enterprise.config.serverbeans.Config;
 import org.glassfish.admin.rest.RestConfig;
 import java.util.Collections;
 import java.util.List;
@@ -125,21 +123,11 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
     }
     
     protected RestConfig getRestConfig() {
-        if (habitat == null) {
-            return null;
-        }
-        Domain domain = habitat.getComponent(Domain.class);
-        if (domain != null) {
-            Config config = domain.getConfigNamed("server-config");
-            if (config != null) {
-                return config.getExtensionByType(RestConfig.class);
-
-            }
-        }
-        return null;
-
+        return ResourceUtil.getRestConfig(habitat);
     }
-    
+     /*
+     * returns true if the HTML viewer displays the hidden CLI command links
+     */   
     protected boolean canShowHiddenCommands() {
 
         RestConfig rg = getRestConfig();
@@ -148,8 +136,20 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
         }
         return false;
     }
+    
+    /*
+     * returns true if the HTML viewer displays the deprecated elements or attributes
+     * of a config bean
+     */
         
+    protected boolean canShowDeprecatedItems() {
 
+        RestConfig rg = getRestConfig();
+        if ((rg != null) && (rg.getShowDeprecatedItems().equalsIgnoreCase("true"))) {
+            return true;
+        }
+        return false;
+    }
     /* check for the __debug request header
      *
      */

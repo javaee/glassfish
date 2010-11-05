@@ -239,7 +239,7 @@ public class ProviderUtil {
         }
         return stringMap;
     }
-
+    
     static protected String getHtmlRepresentationForAttributes(ConfigBean proxy, UriInfo uriInfo) {
         StringBuilder result = new StringBuilder();
 
@@ -485,6 +485,11 @@ public class ProviderUtil {
 
     static private String getHtmlRespresentationForParameter(String parameter,
             ParameterMetaData parameterMetaData, String parameterValue) {
+        
+      if ("true".equals(parameterMetaData.getAttributeValue(Constants.DEPRECATED))) {
+            return "";
+        }
+      
         String result = parameter;
         //set appropriate type of input field. In can be of type file or text
         //file type is used in case of deploy operation

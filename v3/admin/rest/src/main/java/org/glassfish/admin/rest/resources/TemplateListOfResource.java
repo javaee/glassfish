@@ -138,8 +138,6 @@ public abstract class TemplateListOfResource {
             String resourceToCreate = uriInfo.getAbsolutePath() + "/";
 
             if (null != commandName) {
-                // TODO: Not needed anymore?
-//                data = __resourceUtil.translateCamelCasedNamesToCommandParamNames(data,commandName, RestService.getHabitat(), RestService.logger);
                 ResourceUtil.adjustParameters(data); //adjusting for DEFAULT is required only while executing a CLI command
                 resourceToCreate += data.get("DEFAULT");
                 String typeOfResult = ResourceUtil.getResultType(requestHeaders);

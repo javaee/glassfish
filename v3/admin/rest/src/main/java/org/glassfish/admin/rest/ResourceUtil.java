@@ -41,6 +41,40 @@
 package org.glassfish.admin.rest;
 
 
+import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.Param;
+import org.jvnet.hk2.component.Habitat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.TreeMap;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import org.glassfish.api.admin.CommandModel;
+import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.admin.RestRedirect;
+import org.glassfish.api.admin.RestRedirects;
+import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigModel;
+import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.DomDocument;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.admin.rest.generator.ResourcesGeneratorBase;
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.provider.ParameterMetaData;
@@ -49,18 +83,7 @@ import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.utils.ConfigModelComparator;
 import org.glassfish.admin.rest.utils.DomConfigurator;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.Param;
-import org.glassfish.api.admin.*;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.config.*;
 
-import javax.ws.rs.core.*;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 import static org.glassfish.admin.rest.Util.*;
 import static org.glassfish.admin.rest.provider.ProviderUtil.getElementLink;
@@ -703,37 +726,7 @@ public class ResourceUtil {
         return methodNameFromDtdName(attributeName, "get");
     }
 
-    /**
-     * Translates all param names in </code>sourceMap</code> that corresponds to camelCasedName of a command param into corresponding command param name
-     *
-     * @param sourceMap   - The input. Contains untranslated names
-     * @param commandName - The command we want to translate for
-     * @param habitat
-     * @param logger
-     * @return A HashMap<String, String> that contains (1) all the entries from <code>sourceMap<code> whose key matches camleCaseName of
-     *         one of the parameters of command. The key of this entry is translated to corresponding command param name (2)
-     *         All the remaining entries from sourceMap as it is.
-     */
-    public static HashMap<String, String> translateCamelCasedNamesToCommandParamNames(HashMap<String, String> sourceMap, String commandName, Habitat habitat, Logger logger) {
-        //TODO after Bills changes to call toLowerCase() this translation might not be required as he will accept camleCased parameters. Remove this code then.
-        CommandRunner cr = habitat.getComponent(CommandRunner.class);
-        CommandModel cm = cr.getModel(commandName, logger);
-        Collection<CommandModel.ParamModel> paramModels = cm.getParameters();
-        HashMap<String, String> translatedMap = new HashMap<String, String>();
-        for (CommandModel.ParamModel paramModel : paramModels) {
-            Param param = paramModel.getParam();
-            String camelCaseName = param.alias();
-            if (sourceMap.containsKey(camelCaseName)) {
-                String paramValue = sourceMap.remove(camelCaseName);
-                translatedMap.put(paramModel.getName(), paramValue);
-            }
-        }
-        //Copy over the remaining values from sourceMap
-        translatedMap.putAll(sourceMap);
 
-        return translatedMap;
-
-    }
 
     private static String split(String lookback, String lookahead) {
         return "((?<=" + lookback + ")(?=" + lookahead + "))";
@@ -827,33 +820,59 @@ public class ResourceUtil {
 
         return pmdm;
     }
+    
+    /* REST can now be configured via RestConfig to show or hide the deprecated elements and attributes
+     * @return true if this model is deprecated
+     */
+    static public boolean isDeprecated(ConfigModel model) {
+        Class<? extends ConfigBeanProxy> cbp = null;
+        try {
+            cbp = (Class<? extends ConfigBeanProxy>) model.classLoaderHolder.get().loadClass(model.targetTypeName);
+            Deprecated dep = cbp.getAnnotation(Deprecated.class);
+            return dep != null;
+        } catch (ClassNotFoundException e) {
+            //e.printStackTrace();
+        }
+        return false;
 
-  public static Map<String, String> getResourceLinks(Dom dom, UriInfo uriInfo) {
+    }
+
+    public static Map<String, String> getResourceLinks(Dom dom, UriInfo uriInfo, boolean canShowDeprecated) {
         Map<String, String> links = new TreeMap<String, String>();
         Set<String> elementNames = dom.model.getElementNames();
 
-        //expose ../applications/application resource to enable deployment
-        //when no applications deployed on server
-//        if (elementNames.isEmpty()) {
-//            if("applications".equals(Util.getName(uriInfo.getPath(), '/'))) {
-//                elementNames.add("application");
-//            }
-//        }
         for (String elementName : elementNames) { //for each element
             if (elementName.equals("*")) {
                 ConfigModel.Node node = (ConfigModel.Node) dom.model.getElement(elementName);
                 ConfigModel childModel = node.getModel();
-                    List<ConfigModel> lcm = getRealChildConfigModels( childModel,  dom.document) ;
+                List<ConfigModel> lcm = getRealChildConfigModels(childModel, dom.document);
 
-                    Collections.sort(lcm, new ConfigModelComparator());
-                    if (lcm != null) {
-                        for (ConfigModel cmodel : lcm) {
+                Collections.sort(lcm, new ConfigModelComparator());
+                if (lcm != null) {
+                    for (ConfigModel cmodel : lcm) {
+                        if ((!isDeprecated(cmodel) || canShowDeprecated)) {
                             links.put(cmodel.getTagName(), ProviderUtil.getElementLink(uriInfo, cmodel.getTagName()));
                         }
                     }
+                }
 
             } else {
-                links.put(elementName, ProviderUtil.getElementLink(uriInfo, elementName));
+                ConfigModel.Property childElement = dom.model.getElement(elementName);
+                boolean deprec = false;
+
+                if (childElement instanceof ConfigModel.Node) {
+                    ConfigModel.Node node = (ConfigModel.Node) childElement;
+                    deprec = isDeprecated(node.getModel());
+                }
+                for (String annotation : childElement.getAnnotations()) {
+                    if (annotation.equals(Deprecated.class.getName())) {
+                        deprec = true;
+                    }
+                }
+                if ((!deprec || canShowDeprecated)) {
+                    links.put(elementName, ProviderUtil.getElementLink(uriInfo, elementName));
+                }
+
             }
         }
 
@@ -994,5 +1013,32 @@ public class ResourceUtil {
 
         ar.getExtraProperties().put("methods", methodMetaData);
     }
+    
+     public static RestConfig getRestConfig(Habitat habitat) {
+        if (habitat == null) {
+            return null;
+        }
+        Domain domain = habitat.getComponent(Domain.class);
+        if (domain != null) {
+            Config config = domain.getConfigNamed("server-config");
+            if (config != null) {
+                return config.getExtensionByType(RestConfig.class);
 
+            }
+        }
+        return null;
+
+    }
+    /*
+     * returns true if the HTML viewer displays the deprecated elements or attributes
+     * of a config bean
+     */
+    public static boolean canShowDeprecatedItems(Habitat habitat) {
+
+        RestConfig rg = getRestConfig(habitat);
+        if ((rg != null) && (rg.getShowDeprecatedItems().equalsIgnoreCase("true"))) {
+            return true;
+        }
+        return false;
+    }
 }
