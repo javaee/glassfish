@@ -135,7 +135,7 @@ public class GuiUtil {
             MessageFormat mf = new MessageFormat(msg);
             Object[] mfArgs = new Object[args.length];
             for (int i = 0; i < args.length; i++) {
-                mfArgs[i] = getMessage(args[i].toString());
+                mfArgs[i] = getMessage((args[i] != null) ? args[i].toString() : "");
             }
             msg = mf.format(mfArgs);
         }
