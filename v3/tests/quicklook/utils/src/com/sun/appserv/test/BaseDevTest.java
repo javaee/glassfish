@@ -38,6 +38,12 @@
  * holder.
  */
 
+ /**
+ * This is the same class as the one in v2/appserv-tests/util/reportbuilder/src/main/java/com/sun/appserv/test.
+ *
+ * Please see the original svn logs for the contributions.
+ */
+
 package com.sun.appserv.test;
 
 import java.io.File;

@@ -38,6 +38,12 @@
  * holder.
  */
 
+/**
+ * This is the same class as the one in v2/appserv-tests/devtests/admin/cli/src/admin.
+ *
+ * Thanks Tom and Byron for the contributions.
+ */
+
 package com.sun.appserv.test;
 
 //import com.sun.appserv.test.BaseDevTest;
