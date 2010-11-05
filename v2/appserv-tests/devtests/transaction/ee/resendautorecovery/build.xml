@@ -206,6 +206,8 @@
 
     <target name="run" depends="init-common">
         <antcall target="run-recover"/>
+        <antcall target="reset-tables"/>
+        <antcall target="run-recover-with-restart"/>
     </target>
 
     <target name="run-recover" depends="init-common">
@@ -227,6 +229,36 @@
            <param name="in" value="in2"/>
         </antcall>
 
+        <antcall target="verify"/>
+
+        <antcall target="reset-instances"/>
+    </target>
+
+    <target name="run-recover-with-restart" depends="init-common">
+        <parallel>
+           <antcall target="insert-data">
+               <param name="port" value="28080"/>
+               <param name="operation" value="insert_xa_data"/>
+           </antcall>
+
+           <antcall target="kill-instance">
+              <param name="in" value="in1"/>
+           </antcall>
+        </parallel>
+
+        <echo message="Restart in1 during recovery"/>
+
+        <!-- Let GMS start the work -->
+        <sleep seconds="50"/>
+        <exec executable="${ASADMIN}" failonerror="false">
+          <arg line="start-local-instance"/>
+          <arg line="in1"/>
+        </exec>
+
+        <antcall target="verify"/>
+    </target>
+
+    <target name="verify" depends="init-common">
         <echo message="Verifying results"/>
         <!-- Let GMS do the work -->
         <sleep seconds="105"/>
@@ -240,8 +272,6 @@
            <arg line="28082"/>
            <arg line="recover"/>
         </java>
-
-        <antcall target="reset-instances"/>
     </target>
 
     <target name="reset-instances" depends="init-common">
