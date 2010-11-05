@@ -18,7 +18,7 @@ import javax.naming.InitialContext;
 @Stateless
 public class MyBean {
 
-    private static final String DEF_RESOURCE = "jdbc/__default";
+    private static final String DEF_RESOURCE = "jdbc/xa2"; //__default";
     private static final String XA_RESOURCE = "jdbc/xa";
 
     public int verifydefault() throws Exception {
@@ -30,7 +30,9 @@ public class MyBean {
 
     public int verifyxa() throws Exception {
         InitialContext initCtx = new InitialContext();
-        DataSource ds = (DataSource) initCtx.lookup(XA_RESOURCE);
+        DataSource ds = (DataSource) initCtx.lookup(DEF_RESOURCE);
+        verify(ds);
+        ds = (DataSource) initCtx.lookup(XA_RESOURCE);
 
         return verify(ds);
    }

@@ -51,7 +51,7 @@ public class Client extends AdminBaseDevTest {
     public static final String CLUSTER_NAME = "c1";
     public static final String INSTANCE1_NAME = "in1";
     public static final String INSTANCE2_NAME = "in2";
-    public static final String DEF_RESOURCE = "jdbc/__default";
+    public static final String DEF_RESOURCE = "jdbc/xa2"; //__default";
     public static final String XA_RESOURCE = "jdbc/xa";
     public static final String TXID = "0000000000000001_00";
     public static final String TXID_MONITOR = "server.transaction-service.activeids-current";
