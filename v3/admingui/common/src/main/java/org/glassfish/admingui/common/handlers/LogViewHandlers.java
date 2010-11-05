@@ -126,9 +126,6 @@ public class LogViewHandlers {
         Boolean direction = (Boolean) handlerCtx.getInputValue("LogDateSortDirection");
         String instanceName = (String) handlerCtx.getInputValue("InstanceName");
 
-        List result = new ArrayList();
-        String logFileDir = "";
-        Boolean hasResults = Boolean.FALSE;
         notNullStringPut(attMap, "instanceName", instanceName);
         if ((instanceName != null)) {
             	    notNullStringPut(attMap, "instanceName", instanceName);
