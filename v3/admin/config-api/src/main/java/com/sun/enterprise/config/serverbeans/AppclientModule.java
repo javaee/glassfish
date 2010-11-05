@@ -55,6 +55,7 @@ import java.beans.PropertyVetoException;
 import java.util.List;
 
 @Configured
+@Deprecated
 public interface AppclientModule extends Injectable, ApplicationName, PropertyBag {
     
     /**
