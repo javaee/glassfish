@@ -63,7 +63,7 @@ public class Client extends AdminBaseDevTest {
     public static void main(String[] args) {
 
         if ("prepare".equals(args[0])) {
-            (new Client()).prepare(args[1]);
+            (new Client()).prepare(args[1], args[2]);
         } else if ("clean".equals(args[0])) {
             (new Client()).clean(args[1]);
         } else if ("insert_xa_data".equals(args[0])) {
@@ -80,10 +80,11 @@ public class Client extends AdminBaseDevTest {
         return "Unit test for transaction CLIs";
     }
 
-    public void prepare(String path) {
+    public void prepare(String path, String tx_log_dir) {
         try {
             asadmin("create-cluster", CLUSTER_NAME);
             asadmin("set", "configs.config." + CLUSTER_NAME + "-config.transaction-service.property.delegated-recovery=true");
+            asadmin("create-system-properties", "--target", CLUSTER_NAME, "TX-LOG-DIR=" + tx_log_dir);
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE1_NAME);
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE2_NAME);
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE3_NAME);
