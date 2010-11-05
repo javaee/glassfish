@@ -341,8 +341,15 @@ public class RemoteAdminCommand {
         // first, make sure we have the command model
         getCommandModel();
 
-        options = opts;
-        operands = options.get("DEFAULT");
+        // XXX : This is to take care of camel case from ReST calls which do not go through usual CLI path
+        // XXX : This is not clean; this should be handled the same way it is handled for incoming CLI commands
+        options = new ParameterMap();
+        for(Map.Entry<String, List<String>> o : opts.entrySet()) {
+            String key = o.getKey();
+            List<String> value = o.getValue();
+            options.set(key.toLowerCase(), value);
+        }
+        operands = options.get("DEFAULT".toLowerCase());
 
         try {
             initializeDoUpload();
@@ -362,7 +369,13 @@ public class RemoteAdminCommand {
                 }
                 String paramName = opt.getName();
                 // XXX - no multi-value support
-                String paramValue = options.getOne(paramName);
+                String paramValue = options.getOne(paramName.toLowerCase());
+                if(paramValue == null) {
+                    // is it an alias ?
+                    if(opt.isParamId(paramName)) {
+                        paramValue = options.getOne(opt.getParam().alias().toLowerCase());
+                    }
+                }
                 if (paramValue == null) // perhaps it's set in the environment?
                     paramValue = getFromEnvironment(paramName);
                 if (paramValue == null) {
