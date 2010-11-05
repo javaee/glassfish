@@ -447,6 +447,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
             // have time at the moment.  jdlee 8/11/10
             RestActionReporter report = new RestActionReporter(); //getClientActionReport(req);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setActionDescription("Error");
             report.setMessage(msg);
             BaseProvider<ActionReportResult> provider;
             String type = getAcceptedMimeType(req);
@@ -457,7 +458,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
                 res.setContentType("application/json");
                 provider = new ActionReportResultJsonProvider();
             } else {
-                res.setContentType("test/html");
+                res.setContentType("text/html");
                 provider = new ActionReportResultHtmlProvider();
             }
             res.setStatus(statusCode);
