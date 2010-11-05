@@ -56,12 +56,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import org.glassfish.admin.rest.CliFailureException;
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.resources.TemplateExecCommand;
-import org.glassfish.admin.rest.resources.generated.SystemPropertyResource;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.results.OptionsResult;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
@@ -130,27 +129,43 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
 
     @POST
     public ActionReportResult create(HashMap<String, String> data) {
-        return clearThenSaveProperties(data);
+        try {
+            deleteExistingProperties();
+            return saveProperties(data);
+        } catch (Exception ex) {
+            if (ex.getCause() instanceof ValidationException) {
+                return ResourceUtil.getActionReportResult(400, ex.getMessage(), requestHeaders, uriInfo);
+            } else {
+                throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
+            }
+        }
     }
 
     @PUT
     public ActionReportResult update(HashMap<String, String> data) {
-        return clearThenSaveProperties(data);
+        return create(data);
     }
 
     @Path("{Name}/")
-    public SystemPropertyResource getSystemPropertyResource(@PathParam("Name") String id) {
-        Dom parent = getEntity();
-        for (Dom child : parent.nodeElements(TAG_SYSTEM_PROPERTY)) {
-            if (child.getKey().equals(id)) {
-                SystemPropertyResource resource = resourceContext.getResource(SystemPropertyResource.class);
-                resource.setEntity(child);
+    @POST
+    public ActionReportResult getSystemPropertyResource(@PathParam("Name") String id, HashMap<String, String> data) {
+        data.put(id, data.get("value"));
+        data.remove("value");
+        List<PathSegment> segments = uriInfo.getPathSegments(true);
+        String grandParent = segments.get(segments.size()-3).getPath();
 
-                return resource;
-            }
-        }
-
-        throw new WebApplicationException(Status.NOT_FOUND);
+        return saveProperties(grandParent, data);
+//        Dom parent = getEntity();
+//        for (Dom child : parent.nodeElements(TAG_SYSTEM_PROPERTY)) {
+//            if (child.getKey().equals(id)) {
+//                SystemPropertyResource resource = resourceContext.getResource(SystemPropertyResource.class);
+//                resource.setEntity(child);
+//
+//                return resource;
+//            }
+//        }
+//
+//        throw new WebApplicationException(Status.NOT_FOUND);
     }
 
     protected String convertPropertyMapToString(HashMap<String, String> data) {
@@ -167,36 +182,31 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
         return options.toString();
     }
 
-    protected ActionReportResult clearThenSaveProperties(HashMap<String, String> data) {
-        try {
-            deleteExistingProperties();
-            String propertiesString = convertPropertyMapToString(data);
+    protected ActionReportResult saveProperties(HashMap<String, String> data) {
+        return saveProperties(null, data);
+    }
+    
+    protected ActionReportResult saveProperties(String parent, HashMap<String, String> data) {
+        String propertiesString = convertPropertyMapToString(data);
 
-            data = new HashMap<String, String>();
-            data.put("DEFAULT", propertiesString);
-            data.put("target", getParent(uriInfo));
+        data = new HashMap<String, String>();
+        data.put("DEFAULT", propertiesString);
+        data.put("target", (parent == null) ? getParent(uriInfo) : parent);
 
-            RestActionReporter actionReport = ResourceUtil.runCommand("create-system-properties", data, habitat, "");
-            ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
-            ActionReportResult results = new ActionReportResult(commandName, actionReport, new OptionsResult());
+        RestActionReporter actionReport = ResourceUtil.runCommand("create-system-properties", data, habitat, "");
+        ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
+        ActionReportResult results = new ActionReportResult(commandName, actionReport, new OptionsResult());
 
-            if (exitCode != ActionReport.ExitCode.FAILURE) {
-                results.setStatusCode(200); /*200 - ok*/
-            } else {
-                Throwable ex = actionReport.getFailureCause();
-                throw (ex == null)
-                        ? new CliFailureException(actionReport.getMessage())
-                        : new CliFailureException(actionReport.getMessage(), ex);
-            }
-
-            return results;
-        } catch (Exception ex) {
-            if (ex.getCause() instanceof ValidationException) {
-                return ResourceUtil.getActionReportResult(400, ex.getMessage(), requestHeaders, uriInfo);
-            } else {
-                throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
-            }
+        if (exitCode != ActionReport.ExitCode.FAILURE) {
+            results.setStatusCode(200); /*200 - ok*/
+        } else {
+            Throwable ex = actionReport.getFailureCause();
+            throw (ex == null)
+                    ? new CliFailureException(actionReport.getMessage())
+                    : new CliFailureException(actionReport.getMessage(), ex);
         }
+
+        return results;
     }
 
     protected void deleteExistingProperties() throws TransactionFailure {
