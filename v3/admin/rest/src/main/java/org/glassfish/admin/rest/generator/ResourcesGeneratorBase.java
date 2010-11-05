@@ -430,11 +430,70 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
     }
 
     //TODO - fetch command name from config bean(RestRedirect annotation).
+    //RESTREdirect currently only support automatically these deletes:
+    /*
+        delete-admin-object
+        delete-audit-module
+        delete-auth-realm
+        delete-connector-connection-pool
+        delete-connector-resource
+        delete-custom-resource
+        delete-http-listener
+        delete-iiop-listener
+        delete-javamail-resource
+        delete-jdbc-connection-pool
+        delete-jdbc-resource
+        delete-jms-host
+        delete-message-security-provider
+        delete-profiler
+        delete-resource-adapter-config
+        delete-resource-ref
+        delete-system-property
+        delete-virtual-server
+
+     What is missing is:
+     * 
+delete-jms-resource
+delete-jmsdest
+delete-jndi-resource
+delete-lifecycle-module
+delete-message-security-provider
+delete-connector-security-map           
+delete-connector-work-security-map      
+delete-node-config
+delete-node-ssh
+delete-file-user                        
+delete-password-alias                      
+delete-http-health-checker                          
+delete-http-lb-ref                                         
+delete-http-redirect                    
+delete-instance                    
+
+             */
+
+            
     private static final Map<String, String> configBeanToDELETECommand = new HashMap<String, String>() {{
         put("AmxPref", "GENERIC-DELETE");
+        put("AdminObjectResource", "delete-admin-object");
+        put("AuditModule", "delete-audit-module");
+        put("AuthRealm", "delete-auth-realm");
         put("ApplicationRef", "delete-application-ref");
+        
+        put("Cluster", "delete-cluster");
+        put("ConnectorConnectionPool", "delete-connector-connection-pool");
+        put("Config", "delete-config");
+        put("ConnectorConnectionPool", "delete-connector-connection-pool");
+        put("ConnectorResource", "delete-connector-resource");
+        put("CustomResource", "delete-custom-resource");
+        
         put("ExternalJndiResource", "delete-jndi-resource");
         put("GroupMap", "GENERIC-DELETE");
+
+        put("HttpListener", "delete-http-listener");
+        put("Http", "delete-http");
+        put("IiopListener", "delete-iiop-listener");
+        
+        put("JdbcResource", "delete-jdbc-resource");       
         put("JaccProvider", "delete-jacc-provider");
         put("LbConfig", "delete-http-lb-config");
         put("LoadBalancer", "delete-http-lb");
@@ -446,11 +505,16 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         put("Protocol", "delete-protocol");
         put("ProtocolFilter", "delete-protocol-filter");
         put("ProtocolFinder", "delete-protocol-finder");
+        put("ResourceAdapterConfig", "delete-resource-adapter-config");
+        
         put("SecurityMap", "delete-connector-security-map");
+        put("Ssl", "delete-ssl");
+        
         put("Transport", "delete-transport");
         put("ThreadPool", "delete-threadpool");
         put("UserGroup", "GENERIC-DELETE");
-        put("WorkSecurityMap", "delete-connector-work-security-map");
+        put("VirtualServer", "delete-virtual-server");     
+        put("WorkSecurityMap", "delete-connector-work-security-map");    
     }};
 
     //TODO - fetch command name from config bean(RestRedirect annotation).
