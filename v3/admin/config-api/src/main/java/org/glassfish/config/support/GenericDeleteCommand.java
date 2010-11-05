@@ -85,9 +85,9 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
         delete = targetMethod.getAnnotation(Delete.class);
         resolverType = delete.resolver();
         try {
-            // we pass null as the target type as the @param declarations on the target type are
-            // used for the Create, not for the Delete method parameters.
-            model = new GenericCommandModel(null, delete.cluster(), delete.i18n(),
+            // we pass false for "useAnnotations" as the @Param declarations on
+	    // the target type are not used for the Delete method parameters.
+            model = new GenericCommandModel(targetType, false, delete.cluster(), delete.i18n(),
                     new LocalStringManagerImpl(targetType),
                     habitat.getComponent(DomDocument.class), commandName,
                     delete.resolver(), delete.decorator());

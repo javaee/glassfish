@@ -89,7 +89,7 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
         create = getAnnotation(targetMethod, Create.class);
         resolverType = create.resolver();
         try {
-            model = new GenericCommandModel(targetType, create.cluster(), create.i18n(),
+            model = new GenericCommandModel(targetType, true, create.cluster(), create.i18n(),
                     new LocalStringManagerImpl(targetType),
                     habitat.getComponent(DomDocument.class),
                     commandName, create.resolver(), create.decorator());

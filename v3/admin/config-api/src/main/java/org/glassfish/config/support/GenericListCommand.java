@@ -83,7 +83,9 @@ public class GenericListCommand  extends GenericCrudCommand implements AdminComm
         listing = targetMethod.getAnnotation(Listing.class);
         resolverType = listing.resolver();
         try {
-            model = new GenericCommandModel(null, null, listing.i18n(),
+	    // we pass false for "useAnnotations" as the @Param declarations on
+	    // the target type are not used for the List method parameters.
+            model = new GenericCommandModel(targetType, false, null, listing.i18n(),
                     new LocalStringManagerImpl(targetType),
                     habitat.getComponent(DomDocument.class), commandName, listing.resolver(), null);
             if (logger.isLoggable(level)) {
