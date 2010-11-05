@@ -52,6 +52,7 @@
     &reporting;
 
     <target name="all" depends="build,setup,deploy,run,undeploy,unsetup,dev-report"/>
+    <target name="all0" depends="build,setup,deploy,run,undeploy"/>
 
     <target name="setup" depends="init-common">
       <antcall target="clean-results"/>
@@ -76,12 +77,12 @@
        <antcall target="asadmin-common">
           <param name="admin.command" value="set"/>
           <param name="operand.props"
-              value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-mypool-pool.is-connection-validation-required=true"/>
+              value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-mypool-pool.connection-validation-method=auto-commit"/>
        </antcall>
        <antcall target="asadmin-common">
           <param name="admin.command" value="set"/>
           <param name="operand.props"
-              value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-mypool-pool.connection-validation-method=auto-commit"/>
+              value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-mypool-pool.is-connection-validation-required=true"/>
        </antcall>
        <antcall target="asadmin-common">
           <param name="admin.command" value="set"/>
