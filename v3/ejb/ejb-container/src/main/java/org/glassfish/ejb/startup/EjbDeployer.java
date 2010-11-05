@@ -70,6 +70,7 @@ import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.deployment.common.DeploymentException;
+import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.Events;
@@ -474,8 +475,23 @@ public class EjbDeployer
             Application app = appInfo.getMetaData(Application.class);
 
             boolean isTimedApp = false;
+
+            String target = dcp.target;
+            if (dcp.isredeploy != null && dcp.isredeploy && DeploymentUtils.isDomainTarget(target)) {
+                List<String> targets = (List<String>)context.getTransientAppMetaData(DeploymentProperties.PREVIOUS_TARGETS, List.class);
+                for (String ref: targets) {
+                    target = ref;
+                    if (domain.getClusterNamed(target) != null) {
+                        break; // prefer cluster target
+                    }
+                 } 
+            }
+
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log( Level.FINE, "EjbDeployer using target for event as " + target);
+            }
             for (EjbBundleDescriptor ejbBundle : app.getEjbBundleDescriptors()) {
-                if (checkEjbBundleForTimers(ejbBundle, dcp.target)) { 
+                if (checkEjbBundleForTimers(ejbBundle, target)) { 
                     isTimedApp = true;
                 }
             }
