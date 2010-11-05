@@ -46,7 +46,7 @@ import java.util.*;
 public abstract class ExtensibleTypeImpl<T extends ExtensibleType> extends TypeImpl implements ExtensibleType<T> {
 
     private TypeProxy<?> parent;
-    final Set<TypeProxy<InterfaceModel>> implementedIntf = Collections.synchronizedSet(new HashSet<TypeProxy<InterfaceModel>>());
+    private final Set<TypeProxy<InterfaceModel>> implementedIntf = Collections.synchronizedSet(new HashSet<TypeProxy<InterfaceModel>>());
     
     public ExtensibleTypeImpl(String name, TypeProxy<Type> sink, TypeProxy parent) {
         super(name, sink);
@@ -65,23 +65,43 @@ public abstract class ExtensibleTypeImpl<T extends ExtensibleType> extends TypeI
         if (null == this.parent) { 
           this.parent = parent;
         }
-        
+        if (implementedIntf==null) {
+            System.out.println("WAIT my interfaces are null");
+            Map<Thread, StackTraceElement[]> traces = Thread.getAllStackTraces();
+            for (Map.Entry<Thread, StackTraceElement[]> entry : traces.entrySet()) {
+                if (entry.getKey().getName().contains("Hk2")) {
+                    System.out.println("Thread " + entry.getKey());
+                    for (StackTraceElement ste : entry.getValue()) {
+                        System.out.println("    "  + ste);
+                    }
+                }
+            }
+        }
         return this.parent;
     }
 
     void isImplementing(TypeProxy<InterfaceModel> intf) {
         if (implementedIntf==null) {
             System.out.println("WAIT my interfaces are null");
+            Map<Thread, StackTraceElement[]> traces = Thread.getAllStackTraces();
+            for (Map.Entry<Thread, StackTraceElement[]> entry : traces.entrySet()) {
+                if (entry.getKey().getName().contains("hk2")) {
+                    System.out.println("Thread " + entry.getKey());
+                    for (StackTraceElement ste : entry.getValue()) {
+                        System.out.println("    "  + ste);
+                    }
+                }
+            }
         }
         if (intf==null) {
            System.out.println("WAIT my parameter is null"); 
-        }
+        }                         
         implementedIntf.add(intf);
     }
 
     @Override
     public Collection<InterfaceModel> getInterfaces() {
-        return TypeProxy.adapter(implementedIntf);
+        return TypeProxy.adapter(Collections.unmodifiableCollection(implementedIntf));
     }
 
     @Override
@@ -110,5 +130,11 @@ public abstract class ExtensibleTypeImpl<T extends ExtensibleType> extends TypeI
     protected void print(StringBuffer sb) {
         super.print(sb);
         sb.append(", parent=").append(parent==null?"null":parent.getName());
+        sb.append(", interfaces=[");
+        for (TypeProxy<InterfaceModel> im : implementedIntf) {
+            sb.append(" ").append(im.getName());
+        }
+        sb.append("]");
+        
     }
 }

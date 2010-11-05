@@ -112,7 +112,7 @@ public class ModelClassVisitor implements ClassVisitor {
 
         // reverse index
         if (parent!=null) {
-            parent.getSubTypeRefs().add(type);
+            parent.addSubTypeRef(type);
         }
 
 
