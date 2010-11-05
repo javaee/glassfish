@@ -76,12 +76,17 @@
        <antcall target="asadmin-common">
           <param name="admin.command" value="set"/>
           <param name="operand.props"
-              value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-mypool-pool.is-connection-validation-required=true"/>
+              value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-mypool-pool.connection-validation-method=table"/>
        </antcall>
        <antcall target="asadmin-common">
           <param name="admin.command" value="set"/>
           <param name="operand.props"
-              value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-mypool-pool.connection-validation-method=auto-commit"/>
+              value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-mypool-pool.validation-table-name=sys.systables"/>
+       </antcall>
+       <antcall target="asadmin-common">
+          <param name="admin.command" value="set"/>
+          <param name="operand.props"
+              value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-mypool-pool.is-connection-validation-required=true"/>
        </antcall>
        <antcall target="asadmin-common">
           <param name="admin.command" value="set"/>
