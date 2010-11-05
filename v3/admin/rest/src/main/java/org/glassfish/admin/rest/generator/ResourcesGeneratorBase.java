@@ -493,7 +493,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         put("ListSecurityMap", "create-connector-security-map");
     }};
 
-    private static final String[][] configBeanCustomResources = {
+    public static final String[][] configBeanCustomResources = {
         // ConfigBean, Custom Resource Class, path
         {"Cluster", "SystemPropertiesCliResource", "system-properties"},
         {"Config", "SystemPropertiesCliResource", "system-properties"},
